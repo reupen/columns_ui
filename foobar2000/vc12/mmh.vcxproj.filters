@@ -1,0 +1,35 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="SHA-1">
+      <UniqueIdentifier>{d21b1dfa-d07b-47d1-90bc-089e8b75a643}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\mmh\sha1.cpp">
+      <Filter>SHA-1</Filter>
+    </ClCompile>
+    <ClCompile Include="..\mmh\comptr.cpp" />
+    <ClCompile Include="..\mmh\initquit.cpp" />
+    <ClCompile Include="..\mmh\library.cpp" />
+    <ClCompile Include="..\mmh\osversion.cpp" />
+    <ClCompile Include="..\mmh\sort.cpp" />
+    <ClCompile Include="..\mmh\stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\mmh\sha1.h">
+      <Filter>SHA-1</Filter>
+    </ClInclude>
+    <ClInclude Include="..\mmh\completion_notify.h" />
+    <ClInclude Include="..\mmh\comptr.h" />
+    <ClInclude Include="..\mmh\exception.h" />
+    <ClInclude Include="..\mmh\initquit.h" />
+    <ClInclude Include="..\mmh\istream.h" />
+    <ClInclude Include="..\mmh\library.h" />
+    <ClInclude Include="..\mmh\osversion.h" />
+    <ClInclude Include="..\mmh\rand.h" />
+    <ClInclude Include="..\mmh\sort.h" />
+    <ClInclude Include="..\mmh\stdafx.h" />
+    <ClInclude Include="..\mmh\stream.h" />
+  </ItemGroup>
+</Project>

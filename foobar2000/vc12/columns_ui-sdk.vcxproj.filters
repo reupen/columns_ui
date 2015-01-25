@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Panel API">
+      <UniqueIdentifier>{e15fcf9c-8637-43d0-98a1-0e78f81b8e2d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{2022b9c3-c253-4235-97b9-90dac50f6f52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="CUI">
+      <UniqueIdentifier>{f53abb3c-f2b1-4908-85d7-657f3e54b28b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\columns_ui-sdk\base.h">
+      <Filter>Panel API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\buttons.h">
+      <Filter>Panel API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\menu.h">
+      <Filter>Panel API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\splitter.h">
+      <Filter>Panel API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\visualisation.h">
+      <Filter>Panel API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\window.h">
+      <Filter>Panel API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\window_host.h">
+      <Filter>Panel API</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\container_window_v2.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\imp_helper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\win32_helpers.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\window_helper.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\columns_ui.h">
+      <Filter>CUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\columns_ui_appearance.h">
+      <Filter>CUI</Filter>
+    </ClInclude>
+    <ClInclude Include="..\columns_ui-sdk\ui_extension.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\columns_ui-sdk\win32_helpers.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\columns_ui-sdk\window_helper.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\columns_ui-sdk\columns_ui.cpp">
+      <Filter>CUI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\columns_ui-sdk\ui_extension.cpp" />
+  </ItemGroup>
+</Project>

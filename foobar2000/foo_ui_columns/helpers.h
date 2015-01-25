@@ -1,0 +1,4 @@
+#pragma once
+
+void g_ui_selection_manager_register_callback_no_now_playing_fallback(ui_selection_callback * p_callback);
+bool g_ui_selection_manager_is_now_playing_fallback();

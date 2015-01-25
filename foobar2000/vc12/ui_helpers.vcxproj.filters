@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="List View">
+      <UniqueIdentifier>{849e6bdd-edd2-4504-ada7-02bb241d39ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="OLE">
+      <UniqueIdentifier>{29b3132f-c094-4c8d-a22c-92ca8ed4b40f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\ui_helpers\List View\list_view.h">
+      <Filter>List View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ui_helpers\OLE\DataObj.h">
+      <Filter>OLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ui_helpers\OLE\Enumfe.h">
+      <Filter>OLE</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ui_helpers\fcl.h" />
+    <ClInclude Include="..\ui_helpers\gdi.h" />
+    <ClInclude Include="..\ui_helpers\libpng.h" />
+    <ClInclude Include="..\ui_helpers\menu.h" />
+    <ClInclude Include="..\ui_helpers\message_hook.h" />
+    <ClInclude Include="..\ui_helpers\message_window.h" />
+    <ClInclude Include="..\ui_helpers\solid_fill.h" />
+    <ClInclude Include="..\ui_helpers\stdafx.h" />
+    <ClInclude Include="..\ui_helpers\text_drawing.h" />
+    <ClInclude Include="..\ui_helpers\trackbar.h" />
+    <ClInclude Include="..\ui_helpers\uxtheme.h" />
+    <ClInclude Include="..\ui_helpers\win32_helpers.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\ui_helpers\List View\list_view_columns.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_header.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_hittest.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_inline_edit.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_item_state.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_items.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_keyboard.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_misc.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_msgproc.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_renderer.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_scroll.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_search.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\List View\list_view_tooltip.cpp">
+      <Filter>List View</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\OLE\DataObj.Cpp">
+      <Filter>OLE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\OLE\Enumfe.Cpp">
+      <Filter>OLE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ui_helpers\libpng.cpp" />
+    <ClCompile Include="..\ui_helpers\message_hook.cpp" />
+    <ClCompile Include="..\ui_helpers\solid_fill.cpp" />
+    <ClCompile Include="..\ui_helpers\stdafx.cpp" />
+    <ClCompile Include="..\ui_helpers\text_drawing.cpp" />
+    <ClCompile Include="..\ui_helpers\trackbar.cpp" />
+    <ClCompile Include="..\ui_helpers\uxtheme.cpp" />
+    <ClCompile Include="..\ui_helpers\win32_helpers.cpp" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,1 @@
+void format_title_group(pfc::list_base_const_t<metadb_handle_ptr> const & p_list,titleformat_hook * p_hook,pfc::string_base & p_out,service_ptr_t<titleformat_object> p_script,titleformat_text_filter * p_filter);
