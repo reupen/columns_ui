@@ -6,7 +6,7 @@
 #include <windows.h>
 #include <WindowsX.h>
 #include <commctrl.h>
-#include "text_drawing.h"
+//#include "text_drawing.h"
 
 namespace win32_helpers
 {

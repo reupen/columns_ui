@@ -259,15 +259,15 @@
     <ClCompile Include="..\foo_uie_example\main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\pfc\pfc.vcxproj">
+    <ProjectReference Include="pfc.vcxproj">
       <Project>{ebfffb4e-261d-44d3-b89c-957b31a0bf9c}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\foobar2000_component_client\foobar2000_component_client.vcxproj">
+    <ProjectReference Include="foobar2000_component_client.vcxproj">
       <Project>{71ad2674-065b-48f5-b8b0-e1f9d3892081}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\SDK\foobar2000_SDK.vcxproj">
+    <ProjectReference Include="foobar2000_SDK.vcxproj">
       <Project>{e8091321-d79d-4575-86ef-064ea1a4a20d}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
