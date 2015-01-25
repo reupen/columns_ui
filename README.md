@@ -2,7 +2,7 @@
 
 http://yuo.be/columns.php
 
-Columns UI is released under an LGPL licence.
+Columns UI and related libraries are released under an LGPL licence.
 
 libpng and foobar2000 SDK components retain their original licences which can be found in the respective folders.
 
