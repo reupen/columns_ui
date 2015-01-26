@@ -258,6 +258,9 @@
     <ClCompile Include="..\foo_ui_columns\helpers.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\status_bar.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -369,6 +372,9 @@
       <Filter>Helpers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
+    <ClInclude Include="..\foo_ui_columns\status_bar.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\foo_ui_columns\buttons2.bmp">

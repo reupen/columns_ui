@@ -8,6 +8,48 @@ extern GUID null_guid;
 extern cfg_rebar g_cfg_rebar;
 extern cfg_band_cache_t cfg_band_cache;
 
+
+void destroy_rebar(bool save_config)
+{
+	if (g_rebar_window)
+	{
+		g_rebar_window->destroy();
+		if (save_config)
+		{
+			g_cfg_rebar.set_rebar_info(g_rebar_window->bands);
+			cfg_band_cache.set_band_cache(g_rebar_window->cache);
+		}
+		delete g_rebar_window;
+		g_rebar_window = 0;
+		g_rebar = 0;
+	}
+}
+
+void create_rebar()
+{
+	if (cfg_toolbars)
+	{
+		if (!g_rebar_window)
+		{
+			g_rebar_window = new(std::nothrow) rebar_window();
+			if (g_rebar_window)
+			{
+				rebar_info blah;
+				g_cfg_rebar.get_rebar_info(blah);
+				cfg_band_cache.get_band_cache(g_rebar_window->cache);
+				g_rebar = g_rebar_window->init(blah);
+				if (!g_rebar)
+				{
+					delete g_rebar_window;
+					g_rebar_window = 0;
+				}
+			}
+		}
+	}
+	else destroy_rebar();
+}
+
+
 void cfg_rebar::export_config(stream_writer * p_out, t_uint32 mode, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort)
 {
 	enum {stream_version = 0};

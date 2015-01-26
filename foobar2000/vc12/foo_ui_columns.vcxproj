@@ -387,6 +387,7 @@
     <ClCompile Include="..\foo_ui_columns\fcs.cpp" />
     <ClCompile Include="..\foo_ui_columns\font_notify.cpp" />
     <ClCompile Include="..\foo_ui_columns\menu_items.cpp" />
+    <ClCompile Include="..\foo_ui_columns\status_bar.cpp" />
     <ClCompile Include="..\foo_ui_columns\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
@@ -451,6 +452,7 @@
     <ClInclude Include="..\foo_ui_columns\fcs.h" />
     <ClInclude Include="..\foo_ui_columns\font_notify.h" />
     <ClInclude Include="..\foo_ui_columns\menu_items.h" />
+    <ClInclude Include="..\foo_ui_columns\status_bar.h" />
     <ClInclude Include="..\foo_ui_columns\utf8api.h" />
     <ClInclude Include="..\foo_ui_columns\volume.h" />
     <ClInclude Include="..\foo_ui_columns\seekbar.h" />
