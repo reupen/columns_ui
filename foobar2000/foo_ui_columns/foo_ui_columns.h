@@ -131,7 +131,8 @@ extern cfg_columns_t g_columns;
 #include "volume.h"
 #include "splitter_tabs.h"
 #include "filter.h"
-
+#include "get_msg_hook.h"
+#include "setup_dialog.h"
 
 /* UI IDs */
 #define ID_REBAR     2100

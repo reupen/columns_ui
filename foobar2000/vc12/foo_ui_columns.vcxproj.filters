@@ -261,6 +261,12 @@
     <ClCompile Include="..\foo_ui_columns\status_bar.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\setup_dialog.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -374,6 +380,12 @@
     <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
     <ClInclude Include="..\foo_ui_columns\status_bar.h">
       <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\get_msg_hook.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\setup_dialog.h">
+      <Filter>Main Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
