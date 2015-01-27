@@ -120,8 +120,6 @@ extern HHOOK msghook;
 
 extern HICON g_icon;
 
-extern HFONT g_menu_font;
-
 extern cfg_string cfg_tray_icon_path,cfg_export,cfg_import,cfg_custom_buttons_path,cfg_globalstring,cfg_colour,cfg_pgenstring;
 
 extern cfg_menu_item cfg_statusdbl;

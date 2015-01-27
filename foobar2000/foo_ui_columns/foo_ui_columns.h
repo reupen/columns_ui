@@ -110,19 +110,15 @@ BOOL uDrawPanelTitle(HDC dc, const RECT * rc_clip, const char * text, int len, b
 
 #include "callback.h"
 #include "common.h"
+#include "status_bar.h"
 #include "columns_v2.h"
 #include "cache.h"
-//#include "text_drawing.h"
 #include "rebar.h"
-//#include "vis.h"
 #include "font_notify.h"
 #include "sort.h"
 #include "config.h"
-//#include "host.h"
 #include "splitter.h"
 #include "layout.h"
-//#include "playlists_hooks.h"
-//#include "seekbar.h"
 extern cfg_columns_t g_columns;
 #include "playlist_search.h"
 #include "playlist_view.h"
@@ -130,7 +126,6 @@ extern cfg_columns_t g_columns;
 #include "playlist_manager_utils.h"
 #include "playlist_switcher_v2.h"
 #include "playlist_tabs.h"
-//#include "seekbar_ext.h"
 #include "seekbar.h"
 #include "vis_gen_host.h"
 #include "volume.h"
@@ -249,7 +244,6 @@ public:
 
 extern cfg_struct_t<LOGFONT> cfg_tab_font;
 
-extern HFONT g_menu_font, g_menu_font_vert;
 void g_update_taskbar_buttons_now(bool b_init = false);
 void g_update_taskbar_buttons_delayed(bool b_init = false);
 
