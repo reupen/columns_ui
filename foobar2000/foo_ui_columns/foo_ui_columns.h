@@ -105,6 +105,8 @@ public:
 
 BOOL uDrawPanelTitle(HDC dc, const RECT * rc_clip, const char * text, int len, bool vert, bool world);
 
+#include "gdiplus.h"
+#include "menu_helpers.h"
 #include "prefs.h"
 #include "config_vars.h"
 

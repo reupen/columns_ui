@@ -1,514 +1,8 @@
 #include "foo_ui_columns.h"
 
-
 #define ID_BUTTONS  2001
 
-namespace menu_helpers
-{
-	bool __contextpath_from_guid_recur(contextmenu_item_node * p_node, const GUID & p_subcommand, pfc::string_base & p_out,bool b_short, bool b_root)
-	{
-		if (p_node) 
-		{
-			if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP)
-			{
-				pfc::string8 subname, temp = p_out;
-				unsigned dummy;
-				p_node->get_display_data(subname, dummy, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
-				if (temp.get_length() && temp.get_ptr()[temp.get_length()-1] != '/')
-					temp.add_byte('/');
-				temp << subname;
-				unsigned child, child_count = p_node->get_children_count();
-				for (child=0;child<child_count;child++)
-				{
-					contextmenu_item_node * p_child = p_node->get_child(child);
-					if (__contextpath_from_guid_recur(p_child, p_subcommand, temp, b_short, false))
-					{
-						p_out = temp;
-						return true;
-					}
-				}
-			}
-			else if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && !b_root)
-			{
-				if (p_node->get_guid() == p_subcommand)
-				{
-					pfc::string8 subname;
-					unsigned dummy;
-					p_node->get_display_data(subname, dummy, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
-					if (!b_short)
-						p_out.add_byte('/');
-					else
-						p_out.reset();
-					p_out.add_string(subname);
-					return true;
-				}
-			}
-		}
-		return false;
-	}
-	void contextpath_from_guid(const GUID & p_guid, const GUID & p_subcommand, pfc::string_base & p_out,bool b_short = false)
-	{
-		p_out.reset();
-		service_enum_t<contextmenu_item> e;
-		service_ptr_t<contextmenu_item> ptr;
-
-		unsigned p_service_item_index;
-		while(e.next(ptr))
-		{
-			unsigned p_service_item_count = ptr->get_num_items();
-			for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++)
-			{
-				if (p_guid == ptr->get_item_guid(p_service_item_index))
-				{
-					pfc::string8 name;
-					ptr->get_item_name(p_service_item_index, name);
-					if (!b_short)
-					{
-						ptr->get_item_default_path(p_service_item_index,p_out);
-						if (p_out.get_length() && p_out[p_out.get_length()-1] != '/')
-							p_out.add_byte('/');
-					}
-					p_out.add_string(name);
-
-					if (p_subcommand != pfc::guid_null)
-					{
-						pfc::ptrholder_t<contextmenu_item_node_root> p_node (ptr->instantiate_item(p_service_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list));
-
-						if (p_node.is_valid())
-							if (__contextpath_from_guid_recur(p_node.get_ptr(), p_subcommand, p_out, b_short, true))
-								return;
-					}
-				}
-
-			}
-		}
-	}
-	bool maingroupname_from_guid(const GUID & p_guid, pfc::string_base & p_out, GUID & parentout)
-	{
-		p_out.reset();
-		parentout = pfc::guid_null;
-		{
-			service_enum_t<mainmenu_group> e;
-			service_ptr_t<mainmenu_group> ptr;
-			service_ptr_t<mainmenu_group_popup> ptrp;
-
-			//unsigned p_service_item_index;
-			while(e.next(ptr))
-			{
-				{
-					if (ptr->get_guid() == p_guid)
-					{
-						parentout = ptr->get_parent();
-						if (ptr->service_query_t(ptrp))
-						{
-							ptrp->get_display_string(p_out);
-							return true;
-						}
-						return false;
-					}
-
-				}
-			}
-		}
-		return false;
-	}
-	bool mainmenunode_subguid_to_path(const mainmenu_node::ptr & ptr_node, const GUID & p_subguid, pfc::string8 & p_out, bool b_is_root = false)
-	{
-		if (ptr_node.is_valid())
-		{
-			switch (ptr_node->get_type())
-			{
-			case mainmenu_node::type_command:
-				{
-					if (p_subguid == ptr_node->get_guid())
-					{
-						t_uint32 flags;
-						ptr_node->get_display(p_out, flags);
-						return true;
-					}
-				}
-				return false;
-			case mainmenu_node::type_group:
-				{
-					mainmenu_node::ptr ptr_child;
-					for (t_size i = 0, count = ptr_node->get_children_count(); i<count; i++)
-					{
-						ptr_child = ptr_node->get_child(i);
-						pfc::string8 name;
-						if (mainmenunode_subguid_to_path(ptr_child, p_subguid, name))
-						{
-							if (b_is_root)
-								p_out = name;
-							else
-							{
-								t_uint32 flags;
-								ptr_node->get_display(p_out, flags);
-								p_out << "/" << name;
-							}
-							return true;
-						}
-					}
-				}
-				return false;
-			default:
-				return false;
-			};
-		}
-		return false;
-	}
-	void mainpath_from_guid(const GUID & p_guid, const GUID & p_subguid, pfc::string_base & p_out,bool b_short = false)
-	{
-		p_out.reset();
-		service_enum_t<mainmenu_commands> e;
-		service_ptr_t<mainmenu_commands> ptr;
-
-		unsigned p_service_item_index;
-		while(e.next(ptr))
-		{
-			service_ptr_t<mainmenu_commands_v2> ptr_v2;
-			ptr->service_query_t(ptr_v2);
-			unsigned p_service_item_count = ptr->get_command_count();
-			for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++)
-			{
-				if (p_guid == ptr->get_command(p_service_item_index))
-				{
-					pfc::string8 name;
-					ptr->get_name(p_service_item_index, name);
-					if (p_subguid != pfc::guid_null && ptr_v2.is_valid() && ptr_v2->is_command_dynamic(p_service_item_index))
-					{
-						pfc::string8 name_sub;
-						mainmenu_node::ptr ptr_node = ptr_v2->dynamic_instantiate(p_service_item_index);
-						mainmenunode_subguid_to_path(ptr_node, p_subguid, name_sub, true);
-						name << "/" << name_sub;
-					}
-					if (!b_short)
-					{
-						pfc::list_t<pfc::string8> levels;
-						GUID parent = ptr->get_parent();
-						while (parent != pfc::guid_null)
-						{
-							pfc::string8 parentname;
-							if (maingroupname_from_guid(GUID(parent), parentname, parent))
-								levels.insert_item(parentname, 0);
-						}
-						unsigned i, count = levels.get_count();
-						for (i=0; i<count; i++)
-						{
-							p_out.add_string(levels[i]);
-							p_out.add_byte('/');
-
-						}
-					}
-					p_out.add_string(name);
-				}
-
-			}
-		}
-	}
-};
-
-void g_compare_files(const service_ptr_t<file> & p1, const pfc::array_t<t_uint8> & p2, bool & b_same,abort_callback & p_abort)
-{
-	try
-	{
-	b_same = false;
-	t_filesize bytes;
-	bytes = p1->get_size(p_abort);
-
-	if (bytes == p2.get_size())
-	{
-
-		enum {BUFSIZE = 1024*1024};
-		unsigned size = (unsigned)(BUFSIZE<bytes ? BUFSIZE : bytes);
-		pfc::array_t<t_uint8> temp, temp2;
-		temp.set_size(size);temp2.set_size(size);
-
-		unsigned io_bytes_done;
-		t_filesize done = 0;
-		while(done<bytes)
-		{
-			if (p_abort.is_aborting()) throw exception_aborted();
-
-			t_int64 delta64 = bytes-done;
-			if (delta64>BUFSIZE) delta64 = BUFSIZE;
-			unsigned delta = (unsigned)delta64;
-
-			io_bytes_done = p1->read(temp.get_ptr(),delta,p_abort);
-
-			if (io_bytes_done<=0) break;
-
-			if (io_bytes_done != delta)
-				throw exception_io();
-
-			if (memcmp(temp.get_ptr(), (char*)p2.get_ptr()+done, io_bytes_done))
-				return;
-
-			done += delta;
-		}
-		b_same = true;
-	}
-	}
-	catch (const exception_io &)
-	{
-		return;
-	}
-}
-
-HRESULT g_get_comctl32_vresion(DLLVERSIONINFO2 & p_dvi)
-{
-	static bool have_version = false;
-	static HRESULT rv = E_FAIL;
-
-	static DLLVERSIONINFO2 g_dvi;
-
-	if (!have_version)
-	{
-		HINSTANCE hinstDll = LoadLibrary(_T("comctl32.dll"));
-		
-		if(hinstDll)
-		{
-			DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hinstDll, "DllGetVersion");
-
-
-			if(pDllGetVersion)
-			{
-
-				memset(&g_dvi, 0, sizeof(DLLVERSIONINFO2));
-				g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO2);
-
-				rv = (*pDllGetVersion)(&g_dvi.info1);
-
-				if (FAILED(rv))
-				{
-					memset(&g_dvi, 0, sizeof(DLLVERSIONINFO));
-					g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO);
-
-					rv = (*pDllGetVersion)(&g_dvi.info1);
-				}
-			}
-
-			FreeLibrary(hinstDll);
-		}
-		have_version = true;
-    }
-	p_dvi = g_dvi;
-    return rv;
-}
-
-FILE * ufsopen(const char * path, const char * param, int open_mode)
-{
-	FILE * rv = 0;
-	if (IsUnicode()) //meh
-		rv = _wfsopen(pfc::stringcvt::string_wide_from_utf8(path), pfc::stringcvt::string_wide_from_utf8(param), open_mode); 
-	else
-		rv = _fsopen(pfc::stringcvt::string_ansi_from_utf8(path), pfc::stringcvt::string_ansi_from_utf8(param), open_mode); 
-	return rv;
-}
-
-libpng_ptr p_libpng;
-
-void PNGAPI png_read_file (png_structp p_struct, png_bytep p_byte, png_size_t p_size_t)
-{
-	assert(p_libpng.is_valid());
-	FILE * p_file = (FILE*)p_libpng->png_get_io_ptr(p_struct);
-	fread(p_byte, 1, p_size_t, p_file);
-}
-
-void user_error_fn(png_structp png_ptr, png_const_charp error_msg)
-{
-	void * path = p_libpng->png_get_error_ptr(png_ptr);
-	if (error_msg)
-		console::printf("error loading image \"%s\": %s",path, error_msg);
-	throw "libpng aborted loading image";
-}
-void user_warning_fn(png_structp png_ptr,
-					 png_const_charp warning_msg)
-{
-	void * path = p_libpng->png_get_error_ptr(png_ptr);
-	if (warning_msg)
-		console::printf("warning loading image \"%s\": %s",path,warning_msg);
-}
-
 void _check_hresult (HRESULT hr) {if (FAILED(hr)) throw pfc::exception(pfc::string8() << "WIC error: " << format_win32_error(hr));}
-
-class CheckGdiplusStatus
-{
-public:
-	static void g_CheckGdiplusStatus(Gdiplus::Status pStatus)
-	{
-		switch (pStatus)
-		{
-		case Gdiplus::Ok:
-			break;
-		case Gdiplus::GenericError:
-			throw pfc::exception("GDI+ Error: Generic Error");
-		case Gdiplus::InvalidParameter:
-			throw pfc::exception("GDI+ Error: Invalid Parameter");
-		case Gdiplus::OutOfMemory:
-			throw pfc::exception("GDI+ Error: Out Of Memory");
-		case Gdiplus::ObjectBusy:
-			throw pfc::exception("GDI+ Error: Object Busy");
-		case Gdiplus::InsufficientBuffer:
-			throw pfc::exception("GDI+ Error: Insufficient Buffer");
-		case Gdiplus::NotImplemented:
-			throw pfc::exception("GDI+ Error: Not Implemented");
-		case Gdiplus::Win32Error:
-			throw pfc::exception("GDI+ Error: Win32 Error");
-		case Gdiplus::WrongState:
-			throw pfc::exception("GDI+ Error: Wrong State");
-		case Gdiplus::Aborted:
-			throw pfc::exception("GDI+ Error: Aborted");
-		case Gdiplus::FileNotFound:
-			throw pfc::exception("GDI+ Error: File Not Found");
-		case Gdiplus::ValueOverflow:
-			throw pfc::exception("GDI+ Error: Value Overflow");
-		case Gdiplus::AccessDenied:
-			throw pfc::exception("GDI+ Error: Access Denied");
-		case Gdiplus::UnknownImageFormat:
-			throw pfc::exception("GDI+ Error: Unknown Image Format");
-		case Gdiplus::FontFamilyNotFound:
-			throw pfc::exception("GDI+ Error: Font Family Not Found");
-		case Gdiplus::FontStyleNotFound:
-			throw pfc::exception("GDI+ Error: Font Style Not Found");
-		case Gdiplus::NotTrueTypeFont:
-			throw pfc::exception("GDI+ Error: Not TrueType Font");
-		case Gdiplus::UnsupportedGdiplusVersion:
-			throw pfc::exception("GDI+ Error: Unsupported Gdiplus Version");
-		case Gdiplus::GdiplusNotInitialized:
-			throw pfc::exception("GDI+ Error: Gdiplus Not Initialized");
-		case Gdiplus::PropertyNotFound:
-			throw pfc::exception("GDI+ Error: Property Not Found");
-		case Gdiplus::PropertyNotSupported:
-			throw pfc::exception("GDI+ Error: Property Not Supported");
-#if (GDIPVER >= 0x0110)
-		case Gdiplus::ProfileNotFound:
-			throw pfc::exception("GDI+ Error: Profile Not Found");
-#endif
-		default:
-			throw pfc::exception("GDI+ Error: Unknown Error");
-		};
-	}
-	void operator << (const Gdiplus::Status pStatus) {g_CheckGdiplusStatus(pStatus);}
-};
-
-HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData & pBitmapData)
-{
-	pfc::array_t<t_uint8> bm_data;
-	bm_data.set_size(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 0);
-	bm_data.fill(0);
-	
-	BITMAPINFOHEADER bmi;
-	memset(&bmi, 0, sizeof(bmi));
-	
-	bmi.biSize = sizeof(bmi);
-	bmi.biWidth = pBitmapData.Width;
-	bmi.biHeight = -pBitmapData.Height;
-	bmi.biPlanes = 1;
-	bmi.biBitCount = 32;
-	bmi.biCompression = BI_RGB;
-	bmi.biClrUsed = 0;
-	bmi.biClrImportant = 0;
-	
-	BITMAPINFO & bi = *(BITMAPINFO*)bm_data.get_ptr();
-	
-	bi.bmiHeader = bmi;
-	
-	void * data = 0;
-	HBITMAP bm = CreateDIBSection(0,&bi,DIB_RGB_COLORS,&data,0,0);
-	
-	if (data)
-	{
-		char * ptr = (char*)data;
-		
-		GdiFlush();
-
-		memcpy(ptr, pBitmapData.Scan0, pBitmapData.Stride*pBitmapData.Height);
-	}
-	return bm;
-}
-
-HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx = pfc_infinite, unsigned target_cy = pfc_infinite)
-{
-	//FIXME m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
-	pfc::string8 canPath;
-	HBITMAP bm = 0;
-
-	abort_callback_dummy p_abort;
-	file:: ptr p_file;
-	filesystem::g_get_canonical_path(fn, canPath);
-	filesystem::g_open_read(p_file, canPath, p_abort);
-	t_size fsize = pfc::downcast_guarded<t_size>(p_file->get_size_ex(p_abort));
-	pfc::array_staticsize_t<t_uint8> buffer(fsize);
-	p_file->read(buffer.get_ptr(), fsize, p_abort);
-	p_file.release();
-
-	IStream *pStream = NULL;
-	HGLOBAL gd = GlobalAlloc(GMEM_FIXED|GMEM_MOVEABLE, buffer.get_size());
-	if (gd == NULL)
-		throw exception_win32(GetLastError());
-	void * p_data = GlobalLock(gd);
-	if (p_data == NULL)
-	{
-		GlobalFree(gd);
-		throw exception_win32(GetLastError());
-	}
-
-	memcpy(p_data, buffer.get_ptr(), buffer.get_size());
-	GlobalUnlock(gd);
-
-	HRESULT hr = CreateStreamOnHGlobal (gd, TRUE, &pStream);
-	if (FAILED(hr))
-	{
-		GlobalFree(gd);
-		throw exception_win32(hr);
-	}
-
-	Gdiplus::Bitmap pImage(pStream);
-
-	CheckGdiplusStatus() << pImage.GetLastStatus();
-	{
-		Gdiplus::BitmapData bitmapData;
-		//Gdiplus::Bitmap * ppImage = &pImage;
-		if (target_cx != pfc_infinite || target_cy != pfc_infinite)
-		{
-			Gdiplus::Bitmap pBitmapResized(target_cx == pfc_infinite ? pImage.GetWidth() : target_cx, target_cy == pfc_infinite ? pImage.GetHeight() : target_cy, PixelFormat32bppARGB);
-			CheckGdiplusStatus() << pBitmapResized.GetLastStatus();
-			Gdiplus::Graphics pGraphics(&pBitmapResized);
-			CheckGdiplusStatus() << pGraphics.GetLastStatus();
-			CheckGdiplusStatus() << pGraphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
-			CheckGdiplusStatus() << pGraphics.SetInterpolationMode(Gdiplus::InterpolationModeBicubic);
-			Gdiplus::ImageAttributes imageAttributes;
-			CheckGdiplusStatus() << imageAttributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
-			CheckGdiplusStatus() << pGraphics.DrawImage(&pImage, Gdiplus::Rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight()), 0, 0, pImage.GetWidth(), pImage.GetHeight(), Gdiplus::UnitPixel, &imageAttributes );
-			
-			CheckGdiplusStatus() << pBitmapResized.LockBits(&Gdiplus::Rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight()), Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
-			bm = g_CreateHbitmapFromGdiplusBitmapData32bpp(bitmapData);
-			CheckGdiplusStatus() << pBitmapResized.UnlockBits(&bitmapData);
-		}
-		else
-		{
-			CheckGdiplusStatus() << pImage.LockBits(&Gdiplus::Rect(0, 0, pImage.GetWidth(), pImage.GetHeight()), Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
-			//assert bitmapData.Stride == bitmapData.Width
-			bm = g_CreateHbitmapFromGdiplusBitmapData32bpp(bitmapData);
-			CheckGdiplusStatus() << pImage.UnlockBits(&bitmapData);
-		}
-	}
-	return bm;
-	
-}
-
-HBITMAP g_load_png_gdiplus(HDC dc, const char * fn, unsigned target_cx = pfc_infinite, unsigned target_cy = pfc_infinite)
-{
-	try
-	{
-		return g_load_png_gdiplus_throw(dc, fn, target_cx, target_cy);
-	}
-	catch (pfc::exception const & ex)
-	{
-		console::formatter() << "Columns UI: Error loading image \"" << fn << "\" - " << ex.what();
-		return 0;
-	}
-}
 
 #if 0
 HBITMAP g_load_png_wic(HDC dc, const char * fn)
@@ -2315,7 +1809,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
 								filesystem::g_open(p_temp, wname, filesystem::open_mode_read, p_abort);
 								{
 									bool b_same = false;
-									g_compare_files(p_temp, data, b_same, p_abort);
+									g_compare_file_with_bytes(p_temp, data, b_same, p_abort);
 									if(b_same)
 									{
 										b_write = false;
@@ -2414,7 +1908,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
 									filesystem::g_open(p_temp, wname, filesystem::open_mode_read, p_abort);
 									{
 										bool b_same = false;
-										g_compare_files(p_temp, data, b_same, p_abort);
+										g_compare_file_with_bytes(p_temp, data, b_same, p_abort);
 										if (b_same)
 										{
 											b_write = false;
@@ -2636,7 +2130,7 @@ void toolbar_extension::create_toolbar()
 		HIMAGELIST il = 0;
 		HIMAGELIST iml_hot = 0;
 
-		libpng_handle::g_create(p_libpng);
+		//libpng_handle::g_create(p_libpng);
 
 		bool b_need_hot = false;
 
@@ -2776,7 +2270,7 @@ void toolbar_extension::create_toolbar()
 				}
 			}
 		}
-		p_libpng.release();
+		//p_libpng.release();
 
 		unsigned ex_style = SendMessage(wnd_toolbar, TB_GETEXTENDEDSTYLE, 0, 0);
 		SendMessage(wnd_toolbar, TB_SETEXTENDEDSTYLE, 0, ex_style | TBSTYLE_EX_DRAWDDARROWS | (!m_text_below ? TBSTYLE_EX_MIXEDBUTTONS : 0));
@@ -2790,7 +2284,7 @@ void toolbar_extension::create_toolbar()
 		{
 			SendMessage(wnd_toolbar, TB_SETPADDING, (WPARAM) 0, MAKELPARAM(0,0));
 			DLLVERSIONINFO2 dvi;
-			HRESULT hr = g_get_comctl32_vresion(dvi);
+			HRESULT hr = g_get_comctl32_version(dvi);
 			if (SUCCEEDED(hr) && dvi.info1.dwMajorVersion >= 6)
 			{
 				/*
@@ -2973,7 +2467,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 						if (m_appearance != APPEARANCE_NOEDGE && !m_text_below && lptbcd->nmcd.dwItemSpec >= 0 && lptbcd->nmcd.dwItemSpec<m_buttons.get_count() && m_buttons[lptbcd->nmcd.dwItemSpec].m_show == SHOW_TEXT)
 						{
 							DLLVERSIONINFO2 dvi;
-							HRESULT hr = g_get_comctl32_vresion(dvi);
+							HRESULT hr = g_get_comctl32_version(dvi);
 							if (SUCCEEDED(hr) && dvi.info1.dwMajorVersion >= 6)
 								lptbcd->rcText.left-=LOWORD(SendMessage(wnd_toolbar, TB_GETPADDING, (WPARAM) 0, 0)) + 2;  //Hack for commctrl6
 						}

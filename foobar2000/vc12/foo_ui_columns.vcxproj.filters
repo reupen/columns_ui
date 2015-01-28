@@ -267,6 +267,12 @@
     <ClCompile Include="..\foo_ui_columns\setup_dialog.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\gdiplus.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -386,6 +392,12 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\setup_dialog.h">
       <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\menu_helpers.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\gdiplus.h">
+      <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
