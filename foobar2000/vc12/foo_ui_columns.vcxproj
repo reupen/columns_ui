@@ -344,6 +344,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\foo_ui_columns\buttons_button.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_button_image.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_command_picker.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_param.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_droptarget.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_listview.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_custom_image.cpp" />
     <ClCompile Include="..\foo_ui_columns\cache.cpp" />
     <ClCompile Include="..\foo_ui_columns\columns_v2.cpp" />
     <ClCompile Include="..\foo_ui_columns\gdiplus.cpp" />
@@ -430,6 +437,7 @@
     <ClCompile Include="..\foo_ui_columns\helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\foo_ui_columns\buttons.h" />
     <ClInclude Include="..\foo_ui_columns\cache.h" />
     <ClInclude Include="..\foo_ui_columns\columns_v2.h" />
     <ClInclude Include="..\foo_ui_columns\gdiplus.h" />
