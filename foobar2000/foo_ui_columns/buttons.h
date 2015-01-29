@@ -1,0 +1,348 @@
+#pragma once
+
+#include "foo_ui_columns.h"
+
+class toolbar_extension : public ui_extension::container_ui_extension
+{
+	static const TCHAR * class_name;
+	int width;
+	int height;
+
+	enum t_config_version
+	{
+		VERSION_1,
+		VERSION_2,
+		VERSION_CURRENT = VERSION_2
+	};
+
+	enum t_filter
+	{
+		FILTER_NONE,
+		FILTER_PLAYING,
+		FILTER_PLAYLIST,
+		FILTER_ACTIVE_SELECTION
+	};
+
+	enum t_type
+	{
+		TYPE_SEPARATOR,
+		TYPE_BUTTON,
+		TYPE_MENU_ITEM_CONTEXT,
+		TYPE_MENU_ITEM_MAIN,
+	};
+
+	enum t_show
+	{
+		SHOW_IMAGE,
+		SHOW_IMAGE_TEXT,
+		SHOW_TEXT
+	};
+
+	enum t_appearance
+	{
+		APPEARANCE_NORMAL,
+		APPEARANCE_FLAT,
+		APPEARANCE_NOEDGE
+	};
+
+	/** For config dialog */
+	enum {
+		MSG_BUTTON_CHANGE = WM_USER + 2,
+		MSG_COMMAND_CHANGE = WM_USER + 3
+	};
+
+	virtual class_data & get_class_data()const;
+
+	WNDPROC menuproc;
+	bool initialised, m_gdiplus_initialised;
+	ULONG_PTR m_gdiplus_instance;
+
+public:
+	class button {
+	public:
+		t_type m_type;
+		t_filter m_filter;
+		t_show m_show;
+		types::t_guid m_guid;
+		types::t_guid m_subcommand;
+		bool m_use_custom;
+		bool m_use_custom_hot;
+		bool m_use_custom_text;
+		pfc::string_simple m_text;
+		class custom_image
+		{
+		public:
+			pfc::string_simple m_path;
+			pfc::string_simple m_mask_path;
+			COLORREF m_mask_colour;
+			ui_extension::t_mask m_mask_type;
+			custom_image & operator = (const custom_image & p_source);
+			void get_path(pfc::string8 & p_out) const;
+			void write(stream_writer * out, abort_callback & p_abort) const;
+			void read(t_config_version p_version, stream_reader * reader, abort_callback & p_abort);
+			void write_to_file(stream_writer & p_file, bool b_paths, abort_callback & p_abort);
+			void read_from_file(t_config_version p_version, const char * p_base, const char * p_name, stream_reader * p_file, unsigned p_size, abort_callback & p_abort);
+
+		}
+		m_custom_image, m_custom_hot_image;
+		service_ptr_t<uie::button> m_interface;
+
+		class callback_impl : public uie::button_callback
+		{
+			virtual void on_button_state_change(unsigned p_new_state); //see t_button_state
+
+			virtual void on_command_state_change(unsigned p_new_state){};
+
+			service_ptr_t<toolbar_extension> m_this;
+			unsigned id;
+		public:
+			callback_impl & operator = (const callback_impl & p_source);
+			void set_wnd(toolbar_extension * p_source);
+			void set_id(const unsigned i);
+			callback_impl();
+		}
+		m_callback;
+
+		void set(const button & p_source);
+
+		button(
+			GUID p_guid,
+			bool p_custom,
+			const char * p_custom_bitmap_path,
+			const char * p_custom_bitmap_mask_path,
+			COLORREF p_custom_bitmap_colour_mask,
+			ui_extension::t_mask p_custom_bitmap_mask_type
+			);
+		button();
+		const button & operator= (const button & p_source);
+		void write(stream_writer * out, abort_callback & p_abort) const;
+
+		void read(t_config_version p_version, stream_reader * reader, abort_callback & p_abort);
+		void get_display_text(pfc::string_base & p_out); //display
+		void get_short_name(pfc::string_base & p_out); //tooltip
+
+		void get_name_type(pfc::string_base & p_out); //config
+		void get_name_name(pfc::string_base & p_out); //config
+		void get_name(pfc::string_base & p_out); //config
+		void write_to_file(stream_writer & p_file, bool b_paths, abort_callback & p_abort);
+		void read_from_file(t_config_version p_version, const char * p_base, const char * p_name, stream_reader * p_file, unsigned p_size, abort_callback & p_abort);
+	};
+
+	class button_image
+	{
+		HBITMAP m_bm;
+		HICON m_icon;
+		ui_extension::t_mask m_mask_type;
+		HBITMAP m_bm_mask;
+		COLORREF m_mask_colour;
+	public:
+		button_image();
+		~button_image();
+		bool is_valid();
+		void load(const button::custom_image & p_image);
+		void load(const service_ptr_t<uie::button> & p_in, COLORREF colour_btnface, unsigned cx, unsigned cy);
+		unsigned add_to_imagelist(HIMAGELIST iml);
+		void get_size(SIZE & p_out);
+	};
+
+	static const button g_button_null;
+
+	HWND wnd_toolbar;
+	HWND wnd_host;
+
+	virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+	toolbar_extension();
+	~toolbar_extension();
+
+	static const GUID extension_guid;
+
+	virtual const GUID & get_extension_guid() const;
+
+	virtual void get_name(pfc::string_base & out)const;
+
+	virtual void get_category(pfc::string_base & out)const;
+
+	class config_param
+	{
+	public:
+		//service_ptr_t<toolbar_extension> m_this;
+		class t_button_list_view : public t_list_view
+		{
+			config_param & m_param;
+			static CLIPFORMAT g_clipformat();
+			struct DDData
+			{
+				t_uint32 version;
+				HWND wnd;
+			};
+			class IDropTarget_buttons_list : public IDropTarget
+			{
+				long drop_ref_count;
+				bool last_rmb;
+				t_button_list_view * m_button_list_view;
+				mmh::comptr_t<IDataObject> m_DataObject;
+				mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
+				//pfc::string
+			public:
+				virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
+				virtual ULONG STDMETHODCALLTYPE   AddRef();
+				virtual ULONG STDMETHODCALLTYPE   Release();
+				bool check_do(IDataObject *pDO);
+				virtual HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
+				virtual HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
+				virtual HRESULT STDMETHODCALLTYPE DragLeave();
+				virtual HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
+				IDropTarget_buttons_list(t_button_list_view * p_blv);
+
+
+			};
+			void notify_on_initialisation();
+			void notify_on_create();
+			void notify_on_destroy();
+			void notify_on_selection_change(const bit_array & p_affected, const bit_array & p_status, notification_source_t p_notification_source);
+			virtual bool do_drag_drop(WPARAM wp);
+
+		public:
+			t_button_list_view(config_param & p_param) : m_param(p_param) {};
+		} m_button_list;
+
+		modal_dialog_scope m_scope;
+		//t_list_view m_button_list;
+		button * m_selection;
+		HWND m_wnd, m_child;
+		unsigned m_active;
+		button::custom_image * m_image;
+		pfc::list_t<button> m_buttons;
+		bool m_text_below;
+		t_appearance m_appearance;
+		void export_to_file(const char * p_path, bool b_paths = false);
+		void import_from_file(const char * p_path, bool add);
+		void export_to_stream(stream_writer * p_writer, bool b_paths, abort_callback & p_abort);
+		void import_from_stream(stream_reader * p_reader, bool add, abort_callback & p_abort);
+
+		static BOOL CALLBACK g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+		BOOL ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+		void on_selection_change(t_size index);
+		void populate_buttons_list();
+		void refresh_buttons_list_items(t_size index, t_size count, bool b_update_display = true);
+
+		config_param();
+	};
+
+	//static BOOL CALLBACK toolbar_extension::ConfigPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+	static BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	static BOOL CALLBACK toolbar_extension::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+	virtual bool have_config_popup()const{ return true; }
+
+	virtual bool show_config_popup(HWND wnd_parent);
+
+	void create_toolbar();
+	void destroy_toolbar();
+
+	virtual void get_menu_items(ui_extension::menu_hook_t & p_hook);
+
+	virtual unsigned get_type() const;
+
+	pfc::list_t<button> m_buttons;
+	pfc::list_t<button> m_buttons_config;
+
+	bool m_text_below;
+	t_appearance m_appearance;
+
+	static void reset_buttons(pfc::list_base_t<button> & p_buttons);
+
+	virtual void get_config(stream_writer * data, abort_callback & p_abort) const;
+	virtual void set_config(stream_reader * p_reader, t_size p_sizehint, abort_callback & p_abort);
+	virtual void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
+	virtual void export_config(stream_writer * p_writer, abort_callback & p_abort) const;
+
+	//	virtual void write_to_file(stream_writer * out);
+
+	static const GUID g_guid_fcb;
+
+	enum t_identifier {
+		I_TEXT_BELOW,
+		I_APPEARANCE,
+		I_BUTTONS,
+	};
+	enum t_identifier_button {
+		I_BUTTON_TYPE, I_BUTTON_FILTER, I_BUTTON_SHOW, I_BUTTON_GUID, I_BUTTON_CUSTOM, I_BUTTON_CUSTOM_DATA, I_BUTTON_CUSTOM_HOT, I_BUTTON_CUSTOM_HOT_DATA,
+		I_BUTTON_MASK_TYPE, I_BUTTON_CUSTOM_IMAGE_DATA, I_BUTTON_CUSTOM_IMAGE_MASK_DATA, I_BUTTON_MASK_COLOUR, I_BUTTON_USE_CUSTOM_TEXT, I_BUTTON_TEXT, I_BUTTON_SUBCOMMAND
+	};
+
+	enum t_custom_image_identifiers
+	{
+		I_CUSTOM_BUTTON_PATH,
+		I_CUSTOM_BUTTON_MASK_PATH,
+		//I_BUTTON_MASK_TYPE=8
+	};
+
+	enum t_image_identifiers {
+		IMAGE_NAME,
+		IMAGE_DATA,
+		IMAGE_PATH
+	};
+
+
+};
+
+class command_picker_param
+{
+public:
+	types::t_guid m_guid, m_subcommand;
+	unsigned m_group;
+	unsigned m_filter;
+	command_picker_param() {};
+	command_picker_param(types::t_guid p_guid, types::t_guid p_subcommand, unsigned p_group, unsigned p_filter)
+		: m_guid(p_guid), m_subcommand(p_subcommand), m_group(p_group), m_filter(p_filter) {};
+};
+
+class command_picker_data
+{
+	modal_dialog_scope m_scope;
+	class command_data
+	{
+	public:
+		types::t_guid m_guid;
+		types::t_guid m_subcommand;
+		pfc::string8 m_desc;
+	};
+	ptr_list_autodel_t<command_data> m_data;
+	HWND m_wnd;
+	HWND wnd_group;
+	HWND wnd_filter;
+	HWND wnd_command;
+	unsigned m_group;
+	types::t_guid m_guid;
+	types::t_guid m_subcommand;
+	unsigned m_filter;
+
+	bool __populate_mainmenu_dynamic_recur(command_data & data, const mainmenu_node::ptr & ptr_node, pfc::string_base & full, bool b_root);
+	bool __populate_commands_recur(command_data & data, pfc::string_base & full, contextmenu_item_node * p_node, bool b_root);
+	void populate_commands();
+	void update_description();
+public:
+	void set_data(const command_picker_param & p_data);
+	void get_data(command_picker_param & p_data) const;
+	void initialise(HWND wnd);
+	void deinitialise(HWND wnd);
+	BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+};
+
+
+namespace pfc
+{
+	template<> class traits_t<toolbar_extension::t_image_identifiers> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_custom_image_identifiers> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_identifier_button> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_identifier> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_appearance> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_config_version> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_show> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_filter> : public traits_rawobject{};
+	template<> class traits_t<toolbar_extension::t_type> : public traits_rawobject{};
+	template<> class traits_t<uie::t_mask> : public traits_rawobject{};
+}

@@ -58,6 +58,9 @@
     <Filter Include="Helpers">
       <UniqueIdentifier>{3730da6a-bd0b-449b-b9f8-74362737a467}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Toolbars\Buttons">
+      <UniqueIdentifier>{0e99f624-ba9c-408e-af00-35cd33250b5a}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\foo_ui_columns\cache.cpp">
@@ -192,12 +195,6 @@
     <ClCompile Include="..\foo_ui_columns\volume.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\buttons.cpp">
-      <Filter>Toolbars</Filter>
-    </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\buttons_stock.cpp">
-      <Filter>Toolbars</Filter>
-    </ClCompile>
     <ClCompile Include="..\foo_ui_columns\menubar.cpp">
       <Filter>Toolbars</Filter>
     </ClCompile>
@@ -260,6 +257,45 @@
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\status_bar.cpp">
       <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\setup_dialog.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\gdiplus.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_config_droptarget.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_stock.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_custom_image.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_button.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_button_image.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_config_listview.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_command_picker.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\buttons_config_param.cpp">
+      <Filter>Toolbars\Buttons</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -374,6 +410,21 @@
     <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
     <ClInclude Include="..\foo_ui_columns\status_bar.h">
       <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\get_msg_hook.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\setup_dialog.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\menu_helpers.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\gdiplus.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\buttons.h">
+      <Filter>Toolbars\Buttons</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

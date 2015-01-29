@@ -344,10 +344,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\foo_ui_columns\buttons_button.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_button_image.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_command_picker.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_param.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_droptarget.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_listview.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_custom_image.cpp" />
     <ClCompile Include="..\foo_ui_columns\cache.cpp" />
     <ClCompile Include="..\foo_ui_columns\columns_v2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\gdiplus.cpp" />
+    <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp" />
+    <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_cache.cpp" />
+    <ClCompile Include="..\foo_ui_columns\setup_dialog.cpp" />
     <ClCompile Include="..\foo_ui_columns\sort.cpp" />
     <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist.cpp" />
     <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_artwork.cpp" />
@@ -426,9 +437,14 @@
     <ClCompile Include="..\foo_ui_columns\helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\foo_ui_columns\buttons.h" />
     <ClInclude Include="..\foo_ui_columns\cache.h" />
     <ClInclude Include="..\foo_ui_columns\columns_v2.h" />
+    <ClInclude Include="..\foo_ui_columns\gdiplus.h" />
+    <ClInclude Include="..\foo_ui_columns\get_msg_hook.h" />
+    <ClInclude Include="..\foo_ui_columns\menu_helpers.h" />
     <ClInclude Include="..\foo_ui_columns\playlist_view.h" />
+    <ClInclude Include="..\foo_ui_columns\setup_dialog.h" />
     <ClInclude Include="..\foo_ui_columns\sort.h" />
     <ClInclude Include="..\foo_ui_columns\NG Playlist\ng_playlist.h" />
     <ClInclude Include="..\foo_ui_columns\NG Playlist\ng_playlist_groups.h" />

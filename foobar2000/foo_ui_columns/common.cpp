@@ -585,10 +585,6 @@ const menu_item_cache::menu_item_info & menu_item_cache::get_item(unsigned n) co
 	return *m_data[n];
 }
 
-bool menu_helpers::run_command(const menu_item_identifier & p_command)
-{
-	return run_command_context(p_command.m_command,p_command.m_subcommand, metadb_handle_list());
-}
 
 void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_item_identifier & p_item, menu_item_cache & p_cache, bool insert_none)
 {

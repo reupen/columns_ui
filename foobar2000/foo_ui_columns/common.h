@@ -416,8 +416,8 @@ private:
 
 namespace menu_helpers
 {
-	bool run_command(const menu_item_identifier & p_command);
-	bool maingroupname_from_guid(const GUID & p_guid, pfc::string_base & p_out, GUID & parentout);
+	//bool run_command(const menu_item_identifier & p_command);
+	//bool maingroupname_from_guid(const GUID & p_guid, pfc::string_base & p_out, GUID & parentout);
 };
 void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_item_identifier & p_item, menu_item_cache & p_cache, bool insert_none);
 void on_menu_combo_change(HWND wnd, LPARAM lp, cfg_menu_item & cfg_menu_store, menu_item_cache & p_cache, unsigned ID_DESC) ;

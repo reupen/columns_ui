@@ -16,6 +16,7 @@ GUID null_guid =
 rebar_window * g_rebar_window = 0;
 
 layout_window g_layout_window;
+get_msg_hook_t g_get_msg_hook;
 
 #define VERSION "0.3.8.8"
 
@@ -368,74 +369,6 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
 	return false;
 }
 
-HHOOK keyb_hook = 0;
-
-LRESULT WINAPI GetMsgProc   (int code,WPARAM wParam,LPARAM lParam)
-{
-	LPMSG lpmsg = (LPMSG)lParam;
-	
-	if (code >= 0 )
-	{
-		if ((lpmsg->message == WM_KEYUP || lpmsg->message == WM_SYSKEYDOWN || lpmsg->message == WM_KEYDOWN) && IsChild(g_main_window, lpmsg->hwnd))
-		{
-			if (((HIWORD(lpmsg->lParam) & KF_ALTDOWN)))
-			{
-				if (!(HIWORD(lpmsg->lParam) & KF_REPEAT))
-				{
-					if (lpmsg->wParam == VK_MENU)
-					{
-						if ( (g_rebar_window && !g_rebar_window->is_menu_focused() ) || !g_layout_window.is_menu_focused())
-						{
-							if (g_rebar_window) g_rebar_window->on_alt_down();
-							g_layout_window.show_menu_access_keys();
-						}
-					}
-					else 
-					{
-						if (((HIWORD(lpmsg->lParam) & KF_ALTDOWN) == 0) )
-						{
-							if (g_rebar_window) g_rebar_window->hide_accelerators();
-							g_layout_window.hide_menu_access_keys();
-						}
-					}
-				}
-			}
-			else if (((HIWORD(lpmsg->lParam) & KF_UP)))
-			{
-				if (lpmsg->wParam == VK_MENU)
-				{
-					if (g_rebar_window) g_rebar_window->hide_accelerators();
-					g_layout_window.hide_menu_access_keys();
-				}
-			}
-			else if (lpmsg->wParam == VK_TAB)
-			{
-				unsigned flags = uSendMessage(lpmsg->hwnd, WM_GETDLGCODE, 0, (LPARAM)lpmsg);
-				if (!((flags & DLGC_WANTTAB) || (flags & DLGC_WANTMESSAGE)))
-				{
-					ui_extension::window::g_on_tab(lpmsg->hwnd);
-					lpmsg->message = WM_NULL;
-					lpmsg->lParam = 0;
-					lpmsg->wParam = 0;
-					SendMessage(lpmsg->hwnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
-				}
-			}
-		}
-		else if (lpmsg->message == WM_MOUSEWHEEL && IsChild(g_main_window, lpmsg->hwnd))
-		{
-			/**
-			* Redirects mouse wheel messages to window under the pointer.
-			*
-			* This implementation works with non-main message loops e.g. modal dialogs.
-			*/
-			POINT pt = {GET_X_LPARAM(lpmsg->lParam), GET_Y_LPARAM(lpmsg->lParam )};
-			ScreenToClient(g_main_window, &pt);
-			HWND wnd = uRecursiveChildWindowFromPoint(g_main_window, pt);
-			if (wnd) lpmsg->hwnd = wnd;
-		}
-	}
-	return CallNextHookEx(keyb_hook, code, wParam, lParam);
-}
 
 void set_main_window_text(const char * ptr)
 {
@@ -460,6 +393,9 @@ void destroy_systray_icon()
 void create_systray_icon()
 {
 	uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, "foobar2000"/*core_version_info::g_get_version_string()*/);
+	/* There was some misbehaviour with the newer messages. So we don't use them. */
+	//	if (!g_icon_created)
+	//		win32_helpers::uShellNotifyIcon(NIM_SETVERSION, g_main_window, 1, NOTIFYICON_VERSION, MSG_NOTICATION_ICON, g_icon, "foobar2000"/*core_version_info::g_get_version_string()*/);
 	g_icon_created = true;
 }
 
@@ -888,208 +824,6 @@ void rename_playlist (unsigned idx)
 HHOOK mouse_hook = 0;
 static HWND wnd_last;
 
-class setup_dialog_t : public pfc::refcounted_object_root
-{
-	pfc::list_t<cfg_layout_t::preset> m_presets;
-	uie::splitter_item_ptr m_previous_layout;
-	cui::colours::colour_mode_t m_previous_colour_mode;
-	bool m_previous_show_artwork, m_previous_show_grouping;
-	typedef pfc::refcounted_object_ptr_t<setup_dialog_t> ptr_t;
-	ptr_t m_this;
-	static BOOL CALLBACK g_SetupDialogProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
-		setup_dialog_t * p_data = NULL;
-		if (msg == WM_INITDIALOG)
-		{
-			p_data = reinterpret_cast<setup_dialog_t*>(lp);
-			SetWindowLongPtr(wnd, DWL_USER, lp);
-		}
-		else
-			p_data = reinterpret_cast<setup_dialog_t*>(GetWindowLongPtr(wnd, DWL_USER));
-		return p_data ? p_data->SetupDialogProc(wnd, msg, wp, lp) : FALSE;
-	}
-	BOOL SetupDialogProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
-		switch(msg)
-		{
-		case WM_INITDIALOG:
-			{
-				m_this = this;
-
-				modeless_dialog_manager::g_add(wnd);
-
-				HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
-				HWND wnd_theming = GetDlgItem(wnd, IDC_THEMING);
-				HWND wnd_grouping = GetDlgItem(wnd, IDC_GROUPING);
-
-				g_set_listview_window_explorer_theme(wnd_lv);
-
-				RECT rc_work, rc_dialog;
-				SystemParametersInfo(SPI_GETWORKAREA, NULL, &rc_work, NULL);
-				GetWindowRect(wnd, &rc_dialog);
-
-				const unsigned cx = rc_dialog.right-rc_dialog.left;
-				const unsigned cy = rc_dialog.bottom-rc_dialog.top;
-
-				unsigned left = (rc_work.right - rc_work.left - cx) / 2;
-				unsigned top = (rc_work.bottom - rc_work.top - cy) / 2;
-
-				SetWindowPos(wnd, NULL, left, top, 0, 0, SWP_NOZORDER|SWP_NOSIZE);
-
-				ListView_SetExtendedListViewStyleEx(wnd_lv, LVS_EX_FULLROWSELECT|0x10000000, LVS_EX_FULLROWSELECT|0x10000000);
-
-				LVCOLUMN lvc;
-				memset(&lvc, 0, sizeof(LVCOLUMN));
-				lvc.mask = LVCF_TEXT|LVCF_WIDTH;
-
-				//MapDialogWidth(wnd, 228);
-
-				RECT rc;
-				GetClientRect(wnd_lv, &rc);
-
-				ListView_InsertColumnText(wnd_lv, 0, _T("Preset"), RECT_CX(rc));
-
-				SendMessage(wnd_lv, WM_SETREDRAW, FALSE, 0);
-
-				cfg_layout.get_preset(cfg_layout.get_active(), m_previous_layout);
-				
-				layout_window::g_get_default_presets(m_presets);
-
-				LVITEM lvi;
-				memset(&lvi, 0, sizeof(LVITEM));
-				lvi.mask=LVIF_TEXT;
-				t_size i, count=m_presets.get_count();
-				for (i=0;i<count;i++)
-				{
-					ListView_InsertItemText(wnd_lv, i, 0, m_presets[i].m_name, false);
-				}
-				ComboBox_InsertString(wnd_theming, 0, L"No");
-				ComboBox_InsertString(wnd_theming, 1, L"Yes");
-				m_previous_colour_mode = g_get_global_colour_mode();
-
-				t_size select = -1;
-				if (m_previous_colour_mode == cui::colours::colour_mode_themed)
-					select = 1;
-				else if (m_previous_colour_mode == cui::colours::colour_mode_system)
-					select = 0;
-
-				ComboBox_SetCurSel(wnd_theming, select);
-
-				m_previous_show_grouping = pvt::cfg_grouping;
-				m_previous_show_artwork = pvt::cfg_show_artwork;
-
-				ComboBox_InsertString(wnd_grouping, 0, L"Disabled");
-				ComboBox_InsertString(wnd_grouping, 1, L"Groups (without artwork)");
-				ComboBox_InsertString(wnd_grouping, 2, L"Groups (with artwork)");
-
-				select = pvt::cfg_grouping ? (pvt::cfg_show_artwork ? 2 : 1) : 0;
-				ComboBox_SetCurSel(wnd_grouping, select);
-
-				//ListView_SetItemState(wnd_lv, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
-				SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
-				RedrawWindow(wnd_lv,NULL,NULL,RDW_INVALIDATE|RDW_UPDATENOW);
-			}
-			return TRUE;
-		case WM_CTLCOLORSTATIC:
-			SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
-			SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-			return (BOOL)GetSysColorBrush(COLOR_WINDOW);
-		case WM_PAINT:
-			ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDCANCEL));
-			return TRUE;
-		case WM_COMMAND:
-			switch (wp)
-			{
-			case IDCANCEL:
-				cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
-				g_set_global_colour_mode(m_previous_colour_mode);
-				pvt::cfg_show_artwork = m_previous_show_artwork;
-				pvt::cfg_grouping = m_previous_show_grouping;
-				pvt::ng_playlist_view_t::g_on_show_artwork_change();
-				pvt::ng_playlist_view_t::g_on_groups_change();
-			case IDOK:
-				DestroyWindow(wnd);
-				return 0;
-			case (CBN_SELCHANGE<<16)|IDC_THEMING:
-				{
-					t_size selection = ComboBox_GetCurSel(HWND(lp));
-					if (selection == 1)
-						g_set_global_colour_mode(cui::colours::colour_mode_themed);
-					else if (selection == 0)
-						g_set_global_colour_mode(cui::colours::colour_mode_system);
-				}
-				break;
-			case (CBN_SELCHANGE<<16)|IDC_GROUPING:
-				{
-					t_size selection = ComboBox_GetCurSel(HWND(lp));
-					if (selection >= 2)
-						pvt::cfg_show_artwork = true;
-					if (selection >= 1)
-						pvt::cfg_grouping = true;
-					if (selection <= 1)
-						pvt::cfg_show_artwork = false;
-					if (selection == 0)
-						pvt::cfg_grouping = false;
-
-					pvt::ng_playlist_view_t::g_on_show_artwork_change();
-					pvt::ng_playlist_view_t::g_on_groups_change();
-
-				}
-				break;
-			}
-			break;
-		case WM_CLOSE:
-			DestroyWindow(wnd);
-			return 0;
-		case WM_NOTIFY:
-			{
-				LPNMHDR lpnm = (LPNMHDR)lp;
-				switch (lpnm->idFrom)
-				{
-				case IDC_COLUMNS:
-					{
-						switch (lpnm->code)
-						{
-						case LVN_ITEMCHANGED:
-							{
-								LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
-								if (lpnmlv->iItem != -1 && lpnmlv->iItem >=0 && (t_size)lpnmlv->iItem < m_presets.get_count())
-								{
-									if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED))
-									{
-										uie::splitter_item_ptr ptr;
-										m_presets[lpnmlv->iItem].get(ptr);
-										cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr());
-									}
-								}
-							}
-							return 0;
-						};
-					}
-					break;
-				}
-				break;
-			}
-			break;
-		case WM_DESTROY:
-			modeless_dialog_manager::g_remove(wnd);
-			break;
-		case WM_NCDESTROY:
-			SetWindowLongPtr(wnd, DWL_USER, NULL);
-			m_this.release();
-			return FALSE;
-		}
-
-		return FALSE;
-	}
-
-public:
-	static void g_run()
-	{
-		setup_dialog_t::ptr_t dialog = new setup_dialog_t;
-		uCreateDialog(IDD_SELECT, g_main_window, g_SetupDialogProc, (LPARAM)dialog.get_ptr());
-	}
-};
 
 
 void RegisterShellHookWindowHelper(HWND wnd)
@@ -1728,7 +1462,7 @@ static LRESULT CALLBACK MainProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 			make_ui();
 
-			keyb_hook = uSetWindowsHookEx(WH_GETMESSAGE, GetMsgProc, 0, GetCurrentThreadId());
+			g_get_msg_hook.register_hook();
 
 			//lets try recursively in wm_showwindow
 
@@ -2040,7 +1774,7 @@ static LRESULT CALLBACK MainProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		break;
 	case WM_DESTROY:
 		{
-			if (keyb_hook) UnhookWindowsHookEx(keyb_hook);
+			g_get_msg_hook.deregister_hook();
 			g_layout_window.destroy();
 			DeregisterShellHookWindowHelper(wnd);
 

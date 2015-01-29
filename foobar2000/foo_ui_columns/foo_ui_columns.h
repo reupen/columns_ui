@@ -105,6 +105,8 @@ public:
 
 BOOL uDrawPanelTitle(HDC dc, const RECT * rc_clip, const char * text, int len, bool vert, bool world);
 
+#include "gdiplus.h"
+#include "menu_helpers.h"
 #include "prefs.h"
 #include "config_vars.h"
 
@@ -131,7 +133,9 @@ extern cfg_columns_t g_columns;
 #include "volume.h"
 #include "splitter_tabs.h"
 #include "filter.h"
-
+#include "get_msg_hook.h"
+#include "setup_dialog.h"
+#include "buttons.h"
 
 /* UI IDs */
 #define ID_REBAR     2100
