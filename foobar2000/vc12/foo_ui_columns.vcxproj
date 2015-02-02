@@ -353,6 +353,13 @@
     <ClCompile Include="..\foo_ui_columns\buttons_custom_image.cpp" />
     <ClCompile Include="..\foo_ui_columns\cache.cpp" />
     <ClCompile Include="..\foo_ui_columns\columns_v2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_guids.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_inline_edit.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_items.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_menu.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_render.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_search_bar.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_config_var.cpp" />
     <ClCompile Include="..\foo_ui_columns\gdiplus.cpp" />
     <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp" />
     <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />

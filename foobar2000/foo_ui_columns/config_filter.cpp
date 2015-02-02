@@ -63,9 +63,9 @@ static class tab_filter : public preferences_tab
 					}
 					replace_items(m_edit_index, items);
 					if (m_edit_column ==0)
-						filter_panel::g_on_field_title_change(field_old.m_name, valueReal);
+						filter_panel::filter_panel_t::g_on_field_title_change(field_old.m_name, valueReal);
 					else
-						filter_panel::g_on_field_query_change(filter_panel::cfg_field_list[m_edit_index]);
+						filter_panel::filter_panel_t::g_on_field_query_change(filter_panel::cfg_field_list[m_edit_index]);
 				}
 			}
 			m_edit_column = pfc_infinite;
@@ -197,7 +197,7 @@ public:
 						if (index && filter_panel::cfg_field_list.get_count())
 						{
 							filter_panel::cfg_field_list.swap_items(index, index-1);
-							filter_panel::g_on_fields_swapped(index, index-1);
+							filter_panel::filter_panel_t::g_on_fields_swapped(index, index - 1);
 
 							pfc::list_t<t_list_view::t_item_insert> items;
 							get_insert_items(index-1, 2, items);
@@ -216,7 +216,7 @@ public:
 						if (index+1 < count && index + 1 < filter_panel::cfg_field_list.get_count())
 						{
 							filter_panel::cfg_field_list.swap_items(index, index+1);
-							filter_panel::g_on_fields_swapped(index, index+1);
+							filter_panel::filter_panel_t::g_on_fields_swapped(index, index + 1);
 
 							pfc::list_t<t_list_view::t_item_insert> items;
 							get_insert_items(index, 2, items);
@@ -232,7 +232,7 @@ public:
 					temp.m_name = "<enter name here>";
 					temp.m_field = "<enter field here>";
 					t_size index = filter_panel::cfg_field_list.add_item(temp);
-					filter_panel::g_on_new_field(temp);
+					filter_panel::filter_panel_t::g_on_new_field(temp);
 
 					pfc::list_t<t_list_view::t_item_insert> items;
 					get_insert_items(index, 1, items);
@@ -260,7 +260,7 @@ public:
 						{
 							filter_panel::cfg_field_list.remove_by_idx(index);
 							m_field_list.remove_item(index);
-							filter_panel::g_on_field_removed(index);
+							filter_panel::filter_panel_t::g_on_field_removed(index);
 							t_size new_count = m_field_list.get_item_count();
 							if (new_count)
 							{
@@ -283,7 +283,7 @@ public:
 				break;
 			case IDC_SHOWEMPTY:
 				filter_panel::cfg_showemptyitems = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
-				filter_panel::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems);
+				filter_panel::filter_panel_t::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems);
 				break;
 			case (EN_CHANGE<<16)|IDC_SORT_STRING:
 				{
@@ -294,12 +294,12 @@ public:
 				if (!initialising)
 				{
 					filter_panel::cfg_itempadding = strtol(string_utf8_from_window((HWND)lp).get_ptr(), NULL, 10);
-					filter_panel::g_on_vertical_item_padding_change();
+					filter_panel::filter_panel_t::g_on_vertical_item_padding_change();
 				}
 				break;
 			case IDC_PRECEDENCE | (CBN_SELCHANGE<<16):
 				filter_panel::cfg_orderedbysplitters = uSendMessage((HWND)lp,CB_GETCURSEL,0,0) == 0;
-				filter_panel::g_on_orderedbysplitters_change();
+				filter_panel::filter_panel_t::g_on_orderedbysplitters_change();
 				break;
 			case IDC_MIDDLE | (CBN_SELCHANGE<<16):
 				filter_panel::cfg_middleclickaction = uSendMessage((HWND)lp,CB_GETCURSEL,0,0);
@@ -309,7 +309,7 @@ public:
 				break;
 			case IDC_EDGESTYLE | (CBN_SELCHANGE<<16):
 				filter_panel::cfg_edgestyle = uSendMessage((HWND)lp,CB_GETCURSEL,0,0);
-				filter_panel::g_on_edgestyle_change();
+				filter_panel::filter_panel_t::g_on_edgestyle_change();
 				break;
 			}
 		}
