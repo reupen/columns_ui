@@ -29,34 +29,29 @@ class titleformat_hook_playlist_name : public titleformat_hook
 	bool m_initialised;
 	pfc::string8 m_name;
 public:
-	void initialise()
-	{
-		if (!m_initialised)
-		{
-			static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_name(m_name);
-			m_initialised = true;
-		}
-	}
-	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag)
-	{
-		if (p_name_length && *p_name == '_')
-		{
-			p_name++;
-			p_name_length--;
-		}
-		if (!stricmp_utf8_ex(p_name, p_name_length, "playlist_name", pfc_infinite))
-		{
-			initialise();
-			p_out->write(titleformat_inputtypes::unknown, m_name);
-			p_found_flag = true;
-			return true;
-		}
-		return false;
-	}
+	void initialise();
+	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
 	virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) {return false;};
 	inline titleformat_hook_playlist_name() : m_initialised(false)
 	{
 	};
+};
+
+class IDropSource_playlist : public IDropSource
+{
+	long refcount;
+	service_ptr_t<playlist_view> p_playlist;
+public:
+	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void ** ppvObject);
+	virtual ULONG STDMETHODCALLTYPE AddRef();
+	virtual ULONG STDMETHODCALLTYPE Release();
+
+	virtual HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState);
+
+	virtual HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect);
+
+	IDropSource_playlist(playlist_view * playlist);;
+
 };
 
 class IDropTarget_playlist : public IDropTarget
@@ -76,17 +71,22 @@ public:
 	
 };
 
+class playlist_message_window : public ui_helpers::container_window
+{
+	long ref_count;
+public:
+	virtual class_data & get_class_data() const;
+
+	virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	void add_ref();
+	void release();
+	playlist_message_window() : ref_count(0) {};
+};
+
 class playlist_view : public ui_extension::container_ui_extension_t<ui_helpers::container_window, uie::playlist_window>
 {
 
-	virtual class_data & get_class_data() const 
-	{
-		long flags = 0;
-		if (cfg_frame == 1) flags |= WS_EX_CLIENTEDGE;
-		if (cfg_frame == 2) flags |= WS_EX_STATICEDGE;
-
-		__implement_get_class_data_ex(_T("{F20BED8F-225B-46c3-9FC7-454CEDB6CDAD}"), _T(""), false, 0, WS_CHILD | WS_CLIPSIBLINGS| WS_CLIPCHILDREN | WS_TABSTOP, flags, CS_DBLCLKS|CS_HREDRAW);
-	}
+	virtual class_data & get_class_data() const;
 //	static refcounted_ptr_t<titleformat_object> g_to_global;
 //	static refcounted_ptr_t<titleformat_object> g_to_global_colour;
 
@@ -133,47 +133,11 @@ public:
 		return ensure_visible(idx, true);
 	}
 
-	inline static void g_on_columns_size_change(const playlist_view * p_skip = NULL)
-	{
-		if (g_cache.is_active())
-			columns.set_widths(g_columns);
-		unsigned n, count = playlist_view::list_playlist.get_count();
-		for (n=0; n<count; n++)
-		{
-			playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
-			if (p_playlist != p_skip && p_playlist->wnd_header)
-			{
-				p_playlist->rebuild_header();			
-			}
-			RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
-		}
-	}
+	static void g_on_columns_size_change(const playlist_view * p_skip = NULL);
 
-	inline static void update_all_windows(HWND wnd_header_skip = 0)
-	{
-		unsigned n, count = playlist_view::list_playlist.get_count();
-		for (n=0; n<count; n++)
-		{
-			playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
-			if (p_playlist->wnd_header && wnd_header_skip != p_playlist->wnd_header)
-			{
-				p_playlist->rebuild_header();			
-			}
-			p_playlist->update_scrollbar(true);
-			RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
-		}
-	}
+	static void update_all_windows(HWND wnd_header_skip = 0);
 
-	static void g_on_playback_follows_cursor_change(bool b_val)
-	{
-		unsigned n, count = playlist_view::list_playlist.get_count();
-		for (n=0; n<count; n++)
-		{
-			playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
-			p_playlist->m_always_show_focus = b_val;
-			RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
-		}
-	}
+	static void g_on_playback_follows_cursor_change(bool b_val);
 	
 	static void on_playlist_activate(unsigned p_old,unsigned p_new);
 
@@ -211,8 +175,8 @@ public:
 	unsigned get_columns_total_width() const;
 
 	unsigned get_column_width(unsigned column_index) const; //ACTIVE idx!
-	template < template<typename> class t_alloc >
-	unsigned get_column_widths(pfc::array_t<int, t_alloc> & p_out) const;
+	
+	unsigned get_column_widths(pfc::array_t<int, pfc::alloc_fast_aggressive> & p_out) const;
 
 	static unsigned g_columns_get_width(unsigned column); //ACTIVE idx!!
 	inline static playlist_view_cache & g_get_cache() { return g_cache; }
@@ -226,59 +190,12 @@ public:
 
 	bool drawing_enabled;
 
-	void on_size()
-	{
-		RECT rc;
-		GetClientRect(get_wnd(), &rc);
-		on_size(rc.right,rc.bottom);
-	}
-	void on_size (unsigned cx, unsigned cy)
-	{
-		if (wnd_header) 
-		{
-			RECT rc_playlist, rc_header;
-			GetClientRect(get_wnd(), &rc_playlist);
-			GetRelativeRect(wnd_header, get_wnd(), &rc_header);
-			int header_height = calculate_header_height();
-
-			if (rc_header.left != 0-horizontal_offset ||
-				rc_header.top != 0 ||
-				rc_header.right - rc_header.left != rc_playlist.right-rc_playlist.left + horizontal_offset ||
-				rc_header.bottom - rc_header.top != header_height)
-			{
-				uSendMessage(wnd_header, WM_SETREDRAW, FALSE, 0);
-				SetWindowPos(wnd_header, 0, 0-horizontal_offset, 0,rc_playlist.right-rc_playlist.left + horizontal_offset, header_height, SWP_NOZORDER);
-				if (cfg_nohscroll) rebuild_header(false);
-				uSendMessage(wnd_header, WM_SETREDRAW, TRUE, 0);
-				RedrawWindow(wnd_header, 0, 0, RDW_UPDATENOW|RDW_INVALIDATE);
-				if (rc_header.bottom - rc_header.top != header_height) RedrawWindow(wnd_playlist, 0, 0, RDW_UPDATENOW|RDW_INVALIDATE);
-			}
-		}
-		//if (m_searcher.get_wnd())
-		//	SetWindowPos(m_searcher.get_wnd(), NULL, 0, HIWORD(lp)-20, LOWORD(lp), 20, SWP_NOZORDER);
-		update_scrollbar();
-	}
+	void on_size();
+	void on_size (unsigned cx, unsigned cy);
 private:
 //#ifdef INLINE_EDIT
 	HWND m_wnd_edit;
-	void exit_inline_edit()
-	{
-		if (m_wnd_edit) 
-		{
-			DestroyWindow(m_wnd_edit);
-			m_wnd_edit=0;
-		}
-
-		if (m_edit_timer)
-		{
-			KillTimer(wnd_playlist, EDIT_TIMER_ID);
-			m_edit_timer = false;
-		}
-		m_edit_field.set_string(pfc::empty_string_t<char>());
-		m_edit_item.release();
-		m_edit_items.remove_all();
-		m_edit_indices.remove_all();
-	}
+	void exit_inline_edit();
 	//void create_inline_edit(t_size index, unsigned column);
 	//void save_inline_edit();
 	unsigned m_edit_index, 
@@ -296,20 +213,8 @@ private:
 	metadb_handle_list m_edit_items;
 	pfc::list_t <t_uint32> m_edit_indices;
 	void create_inline_edit_v2(const pfc::list_base_const_t<t_uint32> & indices, unsigned column);
-	void create_inline_edit_v2(t_uint32 index, unsigned column)
-	{
-		pfc::list_t<t_uint32> temp;
-		temp.add_item(index);
-		create_inline_edit_v2(temp, column);
-	}
-	void create_inline_edit_v2(t_uint32 index, t_uint32 count, unsigned column)
-	{
-		pfc::list_t<t_uint32> temp;
-		t_size i;
-		for (i=0;i<count;i++)
-			temp.add_item(index+i);
-		create_inline_edit_v2(temp, column);
-	}
+	void create_inline_edit_v2(t_uint32 index, unsigned column);
+	void create_inline_edit_v2(t_uint32 index, t_uint32 count, unsigned column);
 	void save_inline_edit_v2();
 	static LRESULT WINAPI g_inline_edit_hook_v2(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
 	LRESULT WINAPI on_inline_edit_message_v2(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
@@ -409,6 +314,8 @@ public:
 };
 
 void set_day_timer();
+void kill_day_timer();
+void CALLBACK on_day_change();
 
 class titleformat_hook_style : public titleformat_hook
 {
@@ -422,5 +329,7 @@ public:
 	{
 	};
 };
+
+extern playlist_message_window g_playlist_message_window;
 
 #endif

@@ -61,7 +61,7 @@ class volume_control_t : public t_base, private play_callback
 
 							graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 
-							COLORREF cr_shadow, cr_hilight, cr_light;
+							COLORREF cr_shadow, cr_hilight/*, cr_light*/;
 							cr_shadow = GetSysColor(COLOR_3DSHADOW);
 							cr_hilight = GetSysColor(COLOR_3DHILIGHT);
 							if (0 && get_theme_handle())

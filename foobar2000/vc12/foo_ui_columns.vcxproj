@@ -365,6 +365,19 @@
     <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_cache.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_day_timer.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_draw.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_dropsource.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_droptarget.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_header.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_hittest.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_inline_edit.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_keyboard.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_msgproc.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_msgwindow.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_scroll.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_sizing.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_tfhook.cpp" />
     <ClCompile Include="..\foo_ui_columns\setup_dialog.cpp" />
     <ClCompile Include="..\foo_ui_columns\sort.cpp" />
     <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist.cpp" />
@@ -392,6 +405,8 @@
     <ClCompile Include="..\foo_ui_columns\item_details.cpp" />
     <ClCompile Include="..\foo_ui_columns\item_properties.cpp" />
     <ClCompile Include="..\foo_ui_columns\splitter.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_panel.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_panel_container.cpp" />
     <ClCompile Include="..\foo_ui_columns\splitter_tabs.cpp" />
     <ClCompile Include="..\foo_ui_columns\foo_ui_columns.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
@@ -405,6 +420,7 @@
     <ClCompile Include="..\foo_ui_columns\fcs.cpp" />
     <ClCompile Include="..\foo_ui_columns\font_notify.cpp" />
     <ClCompile Include="..\foo_ui_columns\menu_items.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_window.cpp" />
     <ClCompile Include="..\foo_ui_columns\status_bar.cpp" />
     <ClCompile Include="..\foo_ui_columns\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

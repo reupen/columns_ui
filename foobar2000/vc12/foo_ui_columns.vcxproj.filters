@@ -318,6 +318,54 @@
     <ClCompile Include="..\foo_ui_columns\filter_guids.cpp">
       <Filter>Panels\Filter</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_dropsource.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_droptarget.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_draw.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_hittest.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_header.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_scroll.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_inline_edit.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_msgproc.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_msgwindow.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_day_timer.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_keyboard.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_sizing.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_view_tfhook.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\splitter_window.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\splitter_panel_container.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\splitter_panel.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
