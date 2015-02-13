@@ -136,6 +136,7 @@ extern cfg_columns_t g_columns;
 #include "get_msg_hook.h"
 #include "setup_dialog.h"
 #include "buttons.h"
+#include "item_details.h"
 
 /* UI IDs */
 #define ID_REBAR     2100

@@ -362,6 +362,9 @@
     <ClCompile Include="..\foo_ui_columns\filter_config_var.cpp" />
     <ClCompile Include="..\foo_ui_columns\gdiplus.cpp" />
     <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_details_config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_details_font.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_details_text.cpp" />
     <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_cache.cpp" />
@@ -465,6 +468,7 @@
     <ClInclude Include="..\foo_ui_columns\columns_v2.h" />
     <ClInclude Include="..\foo_ui_columns\gdiplus.h" />
     <ClInclude Include="..\foo_ui_columns\get_msg_hook.h" />
+    <ClInclude Include="..\foo_ui_columns\item_details.h" />
     <ClInclude Include="..\foo_ui_columns\menu_helpers.h" />
     <ClInclude Include="..\foo_ui_columns\playlist_view.h" />
     <ClInclude Include="..\foo_ui_columns\setup_dialog.h" />

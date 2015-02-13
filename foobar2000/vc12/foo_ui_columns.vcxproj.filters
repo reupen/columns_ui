@@ -366,6 +366,15 @@
     <ClCompile Include="..\foo_ui_columns\splitter_panel.cpp">
       <Filter>Panels\Splitter</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\item_details_config.cpp">
+      <Filter>Panels\Item Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\item_details_font.cpp">
+      <Filter>Panels\Item Details</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\item_details_text.cpp">
+      <Filter>Panels\Item Details</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -494,6 +503,9 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\buttons.h">
       <Filter>Toolbars\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\item_details.h">
+      <Filter>Panels\Item Details</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
