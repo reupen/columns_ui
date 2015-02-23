@@ -364,6 +364,7 @@
     <ClCompile Include="..\foo_ui_columns\item_details_config.cpp" />
     <ClCompile Include="..\foo_ui_columns\item_details_font.cpp" />
     <ClCompile Include="..\foo_ui_columns\item_details_text.cpp" />
+    <ClCompile Include="..\foo_ui_columns\layout_config.cpp" />
     <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />
     <ClCompile Include="..\foo_ui_columns\mw_drop_target.cpp" />
     <ClCompile Include="..\foo_ui_columns\mw_wnd_proc.cpp" />

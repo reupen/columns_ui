@@ -381,6 +381,9 @@
     <ClCompile Include="..\foo_ui_columns\mw_wnd_proc.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\layout_config.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
