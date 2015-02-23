@@ -6,7 +6,8 @@
 extern HWND g_main_window,
 	g_tooltip,
 	g_rebar,
-	g_status;
+	g_status
+	;
 
 extern cfg_string cfg_playlist_switcher_tagz;
 extern cfg_menu_item cfg_playlist_double;
@@ -25,7 +26,6 @@ extern cfg_int cfg_back,
 	cfg_lock,
 	cfg_header,
 	cfg_drop_at_end,
-	cfg_scar_hidden,
 	cfg_mclick,
 	cfg_mclick2,
 	cfg_balloon,
@@ -64,7 +64,6 @@ extern cfg_int cfg_back,
 	cfg_pgen_dir,
 	cfg_custom_buttons_over,
 	cfg_custom_buttons_transparency,
-	cfg_playlist_sidebar_left_sep,
 	cfg_playlist_date,
 	cfg_playlist_sidebar_tooltips,
 	cfg_replace_drop_underscores,
@@ -80,7 +79,6 @@ extern cfg_int cfg_back,
 	cfg_playlist_panel_delete,
 	cfg_nohscroll;
 
-extern UINT g_seek_timer;
 extern bool g_playing;
 
 extern HBRUSH 

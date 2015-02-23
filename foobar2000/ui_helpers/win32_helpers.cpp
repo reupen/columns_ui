@@ -379,6 +379,32 @@ namespace win32_helpers
 		return index;
 	}
 
+	void RegisterShellHookWindowHelper(HWND wnd)
+	{
+		typedef BOOL(WINAPI * RegisterShellHookWindowProc)(HWND);
+		HINSTANCE inst = LoadLibrary(L"user32.dll");
+		if (inst)
+		{
+			RegisterShellHookWindowProc pRegisterShellHookWindow = (RegisterShellHookWindowProc)GetProcAddress(inst, "RegisterShellHookWindow");
+			if (pRegisterShellHookWindow)
+				pRegisterShellHookWindow(wnd);
+			FreeLibrary(inst);
+		}
+	}
+
+	void DeregisterShellHookWindowHelper(HWND wnd)
+	{
+		typedef BOOL(WINAPI * DeregisterShellHookWindowProc)(HWND);
+		HINSTANCE inst = LoadLibrary(L"user32.dll");
+		if (inst)
+		{
+			DeregisterShellHookWindowProc pDeregisterShellHookWindow = (DeregisterShellHookWindowProc)GetProcAddress(inst, "DeregisterShellHookWindow");
+			if (pDeregisterShellHookWindow)
+				pDeregisterShellHookWindow(wnd);
+			FreeLibrary(inst);
+		}
+	}
+
 }
 
 namespace ui_helpers

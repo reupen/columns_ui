@@ -153,7 +153,8 @@ namespace win32_helpers
 	BOOL uShellNotifyIcon(DWORD action,HWND wnd,UINT id,UINT version,UINT callbackmsg,HICON icon,const char * tip);
 	BOOL uShellNotifyIconEx(DWORD action,HWND wnd,UINT id,UINT callbackmsg,HICON icon,const char * tip,const char * balloon_title,const char * balloon_msg);
 	int ComboBox_AddStringData(HWND wnd, const TCHAR * str, LPARAM data);
-
+	void RegisterShellHookWindowHelper(HWND wnd);
+	void DeregisterShellHookWindowHelper(HWND wnd);
 }
 
 class disable_redrawing_t
