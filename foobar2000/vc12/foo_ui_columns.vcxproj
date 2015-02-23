@@ -343,6 +343,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\foo_ui_columns\artwork_helpers.cpp" />
     <ClCompile Include="..\foo_ui_columns\buttons_button.cpp" />
     <ClCompile Include="..\foo_ui_columns\buttons_button_image.cpp" />
     <ClCompile Include="..\foo_ui_columns\buttons_command_picker.cpp" />
@@ -351,6 +352,7 @@
     <ClCompile Include="..\foo_ui_columns\buttons_config_listview.cpp" />
     <ClCompile Include="..\foo_ui_columns\buttons_custom_image.cpp" />
     <ClCompile Include="..\foo_ui_columns\cache.cpp" />
+    <ClCompile Include="..\foo_ui_columns\colours_manager_data.cpp" />
     <ClCompile Include="..\foo_ui_columns\columns_v2.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_guids.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_inline_edit.cpp" />
@@ -359,6 +361,7 @@
     <ClCompile Include="..\foo_ui_columns\filter_render.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_search_bar.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_config_var.cpp" />
+    <ClCompile Include="..\foo_ui_columns\fonts_manager_data.cpp" />
     <ClCompile Include="..\foo_ui_columns\gdiplus.cpp" />
     <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp" />
     <ClCompile Include="..\foo_ui_columns\item_details_config.cpp" />
@@ -368,6 +371,7 @@
     <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />
     <ClCompile Include="..\foo_ui_columns\mw_drop_target.cpp" />
     <ClCompile Include="..\foo_ui_columns\mw_wnd_proc.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_tabs_drop_target.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_cache.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_day_timer.cpp" />
@@ -439,6 +443,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_colours.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_fonts.cpp" />
     <ClCompile Include="..\foo_ui_columns\utf8api.cpp" />
     <ClCompile Include="..\foo_ui_columns\volume.cpp" />
     <ClCompile Include="..\foo_ui_columns\buttons.cpp" />
@@ -465,9 +471,13 @@
     <ClCompile Include="..\foo_ui_columns\helpers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\foo_ui_columns\artwork_helpers.h" />
     <ClInclude Include="..\foo_ui_columns\buttons.h" />
     <ClInclude Include="..\foo_ui_columns\cache.h" />
+    <ClInclude Include="..\foo_ui_columns\colours_manager_data.h" />
     <ClInclude Include="..\foo_ui_columns\columns_v2.h" />
+    <ClInclude Include="..\foo_ui_columns\config_appearance.h" />
+    <ClInclude Include="..\foo_ui_columns\fonts_manager_data.h" />
     <ClInclude Include="..\foo_ui_columns\gdiplus.h" />
     <ClInclude Include="..\foo_ui_columns\get_msg_hook.h" />
     <ClInclude Include="..\foo_ui_columns\item_details.h" />
@@ -499,6 +509,8 @@
     <ClInclude Include="..\foo_ui_columns\font_notify.h" />
     <ClInclude Include="..\foo_ui_columns\menu_items.h" />
     <ClInclude Include="..\foo_ui_columns\status_bar.h" />
+    <ClInclude Include="..\foo_ui_columns\tab_colours.h" />
+    <ClInclude Include="..\foo_ui_columns\tab_fonts.h" />
     <ClInclude Include="..\foo_ui_columns\utf8api.h" />
     <ClInclude Include="..\foo_ui_columns\volume.h" />
     <ClInclude Include="..\foo_ui_columns\seekbar.h" />

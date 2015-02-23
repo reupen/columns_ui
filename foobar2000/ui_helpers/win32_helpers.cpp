@@ -405,6 +405,15 @@ namespace win32_helpers
 		}
 	}
 
+	int combobox_find_item_by_data(HWND wnd, t_size id)
+	{
+		t_size i, count = ComboBox_GetCount(wnd);
+		for (i = 0; i < count; i++)
+			if (ComboBox_GetItemData(wnd, i) == id)
+				return i;
+		return -1;
+	}
+
 }
 
 namespace ui_helpers

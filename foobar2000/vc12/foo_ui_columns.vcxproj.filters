@@ -384,6 +384,24 @@
     <ClCompile Include="..\foo_ui_columns\layout_config.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\playlist_tabs_drop_target.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\colours_manager_data.cpp">
+      <Filter>Prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\fonts_manager_data.cpp">
+      <Filter>Prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_colours.cpp">
+      <Filter>Prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_fonts.cpp">
+      <Filter>Prefs</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\artwork_helpers.cpp">
+      <Filter>Panels\Artwork View</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -518,6 +536,24 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\mw_drop_target.h">
       <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\colours_manager_data.h">
+      <Filter>Prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\fonts_manager_data.h">
+      <Filter>Prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\config_appearance.h">
+      <Filter>Prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\tab_colours.h">
+      <Filter>Prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\tab_fonts.h">
+      <Filter>Prefs</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\artwork_helpers.h">
+      <Filter>Panels\Artwork View</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

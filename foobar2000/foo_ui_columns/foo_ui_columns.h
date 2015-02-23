@@ -417,11 +417,17 @@ void make_ui();
 void size_windows();
 extern advconfig_checkbox_factory g_advbool_notification_icon_x_buttons;
 
+#include "artwork_helpers.h"
 #include "artwork.h"
 #include "ng playlist/ng_playlist.h"
 
 #include "fcl.h"
 #include "menu_items.h"
 #include "status_pane.h"
+#include "colours_manager_data.h"
+#include "fonts_manager_data.h"
+#include "config_appearance.h"
+#include "tab_colours.h"
+#include "tab_fonts.h"
 
 #endif

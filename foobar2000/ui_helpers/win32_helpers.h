@@ -155,6 +155,8 @@ namespace win32_helpers
 	int ComboBox_AddStringData(HWND wnd, const TCHAR * str, LPARAM data);
 	void RegisterShellHookWindowHelper(HWND wnd);
 	void DeregisterShellHookWindowHelper(HWND wnd);
+
+	int combobox_find_item_by_data(HWND wnd, t_size id);
 }
 
 class disable_redrawing_t
