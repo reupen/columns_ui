@@ -1,12 +1,12 @@
 #include "foo_ui_columns.h"
 
-extern pfc::string8 menudesc;
+pfc::string8 status_bar::menudesc;
 
 bool menu = false;
 
 void status_set_menu(bool on)
 {
-	if (!on) menudesc.reset();
+	if (!on) status_bar::menudesc.reset();
 	bool old_menu = menu;
 	menu = on;
 	// CHECK !!
@@ -18,10 +18,31 @@ void status_update_main(bool is_caller_menu_desc)
 	if (g_status)
 	{
 		if (menu && is_caller_menu_desc)
-			uSendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&menudesc));
+			uSendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&status_bar::menudesc));
 		else if (!menu)
 			uSendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&statusbartext));
 	}
+}
+
+void update_status()
+{
+	metadb_handle_ptr track;
+	static_api_ptr_t<play_control> play_api;
+	play_api->get_now_playing(track);
+	if (track.is_valid())
+	{
+
+		service_ptr_t<titleformat_object> to_status;
+		static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
+		play_api->playback_format_title_ex(track, 0, statusbartext, to_status, NULL, play_control::display_level_all);
+
+		track.release();
+	}
+	else
+	{
+		statusbartext = core_version_info::g_get_version_string();
+	}
+	status_update_main(false);
 }
 
 WNDPROC status_proc = NULL;

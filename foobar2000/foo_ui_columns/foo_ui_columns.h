@@ -104,6 +104,7 @@ public:
 };
 
 BOOL uDrawPanelTitle(HDC dc, const RECT * rc_clip, const char * text, int len, bool vert, bool world);
+LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 #include "gdiplus.h"
 #include "menu_helpers.h"
@@ -137,6 +138,7 @@ extern cfg_columns_t g_columns;
 #include "setup_dialog.h"
 #include "buttons.h"
 #include "item_details.h"
+#include "mw_drop_target.h"
 
 /* UI IDs */
 #define ID_REBAR     2100
@@ -253,9 +255,12 @@ void g_update_taskbar_buttons_now(bool b_init = false);
 void g_update_taskbar_buttons_delayed(bool b_init = false);
 
 extern class status_pane g_status_pane;
+extern rebar_window * g_rebar_window;
 
 namespace main_window
 {
+	extern user_interface::HookProc_t g_hookproc;
+	extern mmh::comptr_t<ITaskbarList3> g_ITaskbarList3;
 
 #if 0
 	class config_inline_metafield_edit_mode_t : public config_item_t<t_uint32>
@@ -378,22 +383,39 @@ namespace main_window
 	bool config_get_activate_target_playlist_on_dropped_items();
 	bool config_get_activate_target_playlist_on_dropped_items_default_value();
 	void config_set_activate_target_playlist_on_dropped_items(bool b_val);
-
-	/*void config_reset_status_bar_script();
-	const char * config_get_status_bar_script();
-	const char * config_get_status_bar_script_default_value();
-	void config_set_status_bar_script(const char * b_val);
-
-	void config_reset_notification_icon_script();
-	const char * config_get_notification_icon_script();
-	const char * config_get_notification_icon_script_default_value();
-	void config_set_notification_icon_script(const char * b_val);
-
-	void config_reset_notification_icon_script();
-	const char * config_get_notification_icon_script();
-	const char * config_get_notification_icon_script_default_value();
-	void config_set_notification_icon_script(const char * b_val);*/
 };
+
+namespace taskbar_buttons {
+	enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };
+}
+
+namespace cui {
+	class main_window_t
+	{
+	public:
+		void initialise()
+		{
+			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
+		}
+		void deinitialise()
+		{
+			if (m_gdiplus_initialised)
+				Gdiplus::GdiplusShutdown(m_gdiplus_instance);
+			m_gdiplus_initialised = false;
+		}
+
+		main_window_t() : m_gdiplus_initialised(false), m_gdiplus_instance(NULL) {};
+	private:
+		ULONG_PTR m_gdiplus_instance;
+		bool m_gdiplus_initialised;
+	};
+
+	extern main_window_t g_main_window;
+}
+
+void make_ui();
+void size_windows();
+extern advconfig_checkbox_factory g_advbool_notification_icon_x_buttons;
 
 #include "artwork.h"
 #include "ng playlist/ng_playlist.h"

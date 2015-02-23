@@ -199,29 +199,6 @@ void clip_minmaxinfo(MINMAXINFO & mmi)
 
 }
 
-/*HWND uRecursiveChildWindowFromPointv2(HWND parent, POINT pt_parent)
-{
-HWND wnd = ChildWindowFromPoint(parent, pt_parent);
-if (wnd && wnd != parent)
-{
-HWND wnd_last = wnd;
-POINT pt = pt_parent;
-MapWindowPoints(parent, wnd_last, &pt, 1);
-for (;;)
-{
-wnd = ChildWindowFromPoint(wnd_last, pt);
-if (!wnd) return 0;
-if (wnd == wnd_last) return wnd;
-MapWindowPoints(wnd_last, wnd, &pt, 1);
-wnd_last = wnd;
-RECT rc;
-GetClientRect(wnd_last, &rc);
-if (!PtInRect(&rc, pt)) return wnd_last;
-}
-}
-return wnd;
-}*/
-
 
 //#ifdef _DEBUG
 

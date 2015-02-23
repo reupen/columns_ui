@@ -255,9 +255,6 @@
     <ClCompile Include="..\foo_ui_columns\helpers.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\status_bar.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
     <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
@@ -375,6 +372,15 @@
     <ClCompile Include="..\foo_ui_columns\item_details_text.cpp">
       <Filter>Panels\Item Details</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\status_bar.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\mw_drop_target.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\mw_wnd_proc.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -486,9 +492,6 @@
       <Filter>Helpers</Filter>
     </ClInclude>
     <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
-    <ClInclude Include="..\foo_ui_columns\status_bar.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
     <ClInclude Include="..\foo_ui_columns\get_msg_hook.h">
       <Filter>Main Window</Filter>
     </ClInclude>
@@ -506,6 +509,12 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\item_details.h">
       <Filter>Panels\Item Details</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\status_bar.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\mw_drop_target.h">
+      <Filter>Main Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
