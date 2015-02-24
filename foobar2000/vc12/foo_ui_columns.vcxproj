@@ -396,6 +396,7 @@
     <ClCompile Include="..\foo_ui_columns\playlist_view_scroll.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_sizing.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_tfhook.cpp" />
+    <ClCompile Include="..\foo_ui_columns\prefs_utils.cpp" />
     <ClCompile Include="..\foo_ui_columns\setup_dialog.cpp" />
     <ClCompile Include="..\foo_ui_columns\sort.cpp" />
     <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist.cpp" />
@@ -454,7 +455,14 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\tab_colours.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_display2.cpp" />
     <ClCompile Include="..\foo_ui_columns\tab_fonts.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_global.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_main.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_notification_area.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_playlist.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_playlist_dd.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_status.cpp" />
     <ClCompile Include="..\foo_ui_columns\utf8api.cpp" />
     <ClCompile Include="..\foo_ui_columns\volume.cpp" />
     <ClCompile Include="..\foo_ui_columns\buttons.cpp" />

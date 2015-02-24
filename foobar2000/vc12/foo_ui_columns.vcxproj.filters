@@ -46,9 +46,6 @@
     <Filter Include="Toolbars">
       <UniqueIdentifier>{f6aa96cf-6e2e-4272-a19a-d9c63a27b902}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Prefs">
-      <UniqueIdentifier>{2a5af301-f1df-434b-aa47-3252737e8232}</UniqueIdentifier>
-    </Filter>
     <Filter Include="FCL">
       <UniqueIdentifier>{12e36933-63f3-4439-a991-67efc252a641}</UniqueIdentifier>
     </Filter>
@@ -63,6 +60,9 @@
     </Filter>
     <Filter Include="Config storage">
       <UniqueIdentifier>{22c6ed33-d522-410a-8db3-a15b45a7874d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Prefs UI">
+      <UniqueIdentifier>{2a5af301-f1df-434b-aa47-3252737e8232}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -211,28 +211,25 @@
       <Filter>Toolbars</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\config.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\config_appearance.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\config_artwork.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\config_columns.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\config_columns_v2.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\config_filter.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\config_layout.cpp">
-      <Filter>Prefs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\config_vars.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\fcl.cpp">
       <Filter>FCL</Filter>
@@ -387,17 +384,11 @@
     <ClCompile Include="..\foo_ui_columns\playlist_tabs_drop_target.cpp">
       <Filter>Panels\Playlist Switcher</Filter>
     </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\colours_manager_data.cpp">
-      <Filter>Prefs</Filter>
-    </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\fonts_manager_data.cpp">
-      <Filter>Prefs</Filter>
-    </ClCompile>
     <ClCompile Include="..\foo_ui_columns\tab_colours.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\tab_fonts.cpp">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\artwork_helpers.cpp">
       <Filter>Panels\Artwork View</Filter>
@@ -417,6 +408,39 @@
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\playlist_tabs_wndproc.cpp">
       <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\colours_manager_data.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\fonts_manager_data.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\config_vars.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\prefs_utils.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_display2.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_playlist.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_playlist_dd.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_main.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_notification_area.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_status.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_global.cpp">
+      <Filter>Prefs UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -511,13 +535,10 @@
       <Filter>Toolbars</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\config.h">
-      <Filter>Prefs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\foo_ui_columns\config_vars.h">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\prefs.h">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\fcl.h">
       <Filter>FCL</Filter>
@@ -553,20 +574,14 @@
     <ClInclude Include="..\foo_ui_columns\mw_drop_target.h">
       <Filter>Main Window</Filter>
     </ClInclude>
-    <ClInclude Include="..\foo_ui_columns\colours_manager_data.h">
-      <Filter>Prefs</Filter>
-    </ClInclude>
-    <ClInclude Include="..\foo_ui_columns\fonts_manager_data.h">
-      <Filter>Prefs</Filter>
-    </ClInclude>
     <ClInclude Include="..\foo_ui_columns\config_appearance.h">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\tab_colours.h">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\tab_fonts.h">
-      <Filter>Prefs</Filter>
+      <Filter>Prefs UI</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\artwork_helpers.h">
       <Filter>Panels\Artwork View</Filter>
@@ -577,6 +592,15 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\item_properties.h">
       <Filter>Panels\Item Properties</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\colours_manager_data.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\fonts_manager_data.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\config_vars.h">
+      <Filter>Config storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

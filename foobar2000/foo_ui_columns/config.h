@@ -50,6 +50,14 @@ preferences_tab * g_get_tab_columns_v2();
 preferences_tab * g_get_tab_columns_v3();
 preferences_tab * g_get_tab_filter();
 preferences_tab * g_get_tab_artwork();
+preferences_tab * g_get_tab_display2();
+preferences_tab * g_get_tab_sys();
+preferences_tab * g_get_tab_playlist();
+preferences_tab * g_get_tab_playlist_dd();
+preferences_tab * g_get_tab_main();
+preferences_tab * g_get_tab_status();
+preferences_tab * g_get_tab_global();
+
 
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
 bool colour_picker(HWND wnd, cfg_int & out, COLORREF custom);

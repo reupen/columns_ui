@@ -805,6 +805,25 @@ void playlist_view::g_on_columns_size_change(const playlist_view * p_skip /*= NU
 	}
 }
 
+void refresh_all_playlist_views()
+{
+	if (playlist_view::g_get_cache().is_active())
+	{
+		g_to_global.release();
+		g_to_global_colour.release();
+		playlist_view::g_reset_columns();
+		unsigned m, pcount = playlist_view::list_playlist.get_count();
+		for (m = 0; m < pcount; m++)
+		{
+			playlist_view * p_playlist = playlist_view::list_playlist.get_item(m);
+			p_playlist->create_header();
+			if (p_playlist->wnd_header)
+				p_playlist->move_header();
+		}
+		playlist_view::update_all_windows();
+	}
+}
+
 // {0CF29D60-1262-4f55-A6E1-BC4AE6579D19}
 const GUID appearance_client_pv_impl::g_guid = 
 { 0xcf29d60, 0x1262, 0x4f55, { 0xa6, 0xe1, 0xbc, 0x4a, 0xe6, 0x57, 0x9d, 0x19 } };
