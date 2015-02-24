@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 //! \since 0.9.6.1
 class NOVTABLE library_meta_autocomplete : public service_base {

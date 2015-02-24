@@ -1,7 +1,7 @@
 #ifndef _COLUMNS_FONT_H_
 #define _COLUMNS_FONT_H_
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 #include "extern.h"
 
 extern HFONT g_status_font;

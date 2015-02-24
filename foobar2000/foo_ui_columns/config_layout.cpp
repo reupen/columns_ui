@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 		uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
 		{

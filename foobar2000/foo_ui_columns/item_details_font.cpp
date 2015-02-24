@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 bool operator == (const font_data_t & item1, const font_data_t & item2) { return !font_data_t::g_compare(item1, item2); }
 

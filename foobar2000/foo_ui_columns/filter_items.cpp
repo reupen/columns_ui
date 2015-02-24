@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 namespace filter_panel {
 	void filter_panel_t::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast> & handles, bool b_last_in_chain)

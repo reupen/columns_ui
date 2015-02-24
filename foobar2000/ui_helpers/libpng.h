@@ -7,7 +7,7 @@
 * \author musicmusic
 */
 
-#define UI_EXTENSION_LIBPNG_SUPPORT_ENABLED
+//#define UI_EXTENSION_LIBPNG_SUPPORT_ENABLED
 #ifdef UI_EXTENSION_LIBPNG_SUPPORT_ENABLED
 
 #include "../lpng1234/png.h"

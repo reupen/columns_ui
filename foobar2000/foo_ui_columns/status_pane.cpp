@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
 const GUID status_pane::g_guid_font = 

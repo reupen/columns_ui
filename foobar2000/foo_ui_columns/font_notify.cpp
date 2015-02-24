@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 HFONT g_status_font = 0;
 HFONT g_tab_font = 0;

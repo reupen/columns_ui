@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 int playlist_view::hittest_item(int x, int y, bool check_in_column)
 {

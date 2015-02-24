@@ -1,6 +1,6 @@
 #pragma once
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 class toolbar_extension : public ui_extension::container_ui_extension
 {

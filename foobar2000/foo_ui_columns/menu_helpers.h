@@ -4,7 +4,7 @@
 * Various helpers used to construct menu item paths for display. Used by buttons toolbar.
 */
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 namespace menu_helpers
 {

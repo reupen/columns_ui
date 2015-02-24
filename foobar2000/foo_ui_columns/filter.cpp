@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 HRESULT g_get_comctl32_vresion(DLLVERSIONINFO2 & p_dvi);
 

@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 bool playlist_view::draw_items_wrapper(int start_item, int count)
 {

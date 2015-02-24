@@ -1,6 +1,6 @@
 #pragma once
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 extern const GUID g_guid_item_details;
 extern const GUID g_guid_item_details_tracking_mode;

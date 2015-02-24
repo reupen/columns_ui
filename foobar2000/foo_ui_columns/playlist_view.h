@@ -3,7 +3,7 @@
 
 #include "../SDK/foobar2000.h"
 #include "callback.h"
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 #include "extern.h"
 
 #define INLINE_EDIT 1

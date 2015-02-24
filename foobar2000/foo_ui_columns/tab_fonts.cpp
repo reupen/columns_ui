@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 bool tab_appearance_fonts::is_active()
 {

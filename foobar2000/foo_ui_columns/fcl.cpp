@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 // {EBD87879-65A7-4242-821B-812AF9F68E8F}
 const GUID cui::fcl::groups::titles_playlist_view = 

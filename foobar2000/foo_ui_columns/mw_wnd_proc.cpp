@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 INT_PTR g_taskbar_bitmaps[] = { IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND };
 
@@ -843,7 +843,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	}
 	break;
 	case MSG_SIZE:
-		move_window_controls();
+		size_windows();
 		return 0;
 
 
@@ -889,7 +889,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			{
 			case RBN_HEIGHTCHANGE:
 			{
-				move_window_controls();
+				size_windows();
 			}
 			break;
 			case RBN_LAYOUTCHANGED:

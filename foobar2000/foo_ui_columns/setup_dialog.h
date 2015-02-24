@@ -1,6 +1,6 @@
 #pragma once
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 class setup_dialog_t : public pfc::refcounted_object_root
 {

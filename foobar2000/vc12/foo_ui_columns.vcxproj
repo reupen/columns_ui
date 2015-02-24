@@ -140,7 +140,7 @@
       <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AssemblerOutput>All</AssemblerOutput>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -185,7 +185,7 @@
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <FloatingPointModel>Precise</FloatingPointModel>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AssemblerOutput>All</AssemblerOutput>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -225,7 +225,7 @@
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
@@ -267,7 +267,7 @@
       <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AssemblerOutput>All</AssemblerOutput>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -316,7 +316,7 @@
       <FloatingPointModel>Precise</FloatingPointModel>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <PrecompiledHeaderFile>foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <AssemblerOutput>All</AssemblerOutput>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -354,6 +354,7 @@
     <ClCompile Include="..\foo_ui_columns\cache.cpp" />
     <ClCompile Include="..\foo_ui_columns\colours_manager_data.cpp" />
     <ClCompile Include="..\foo_ui_columns\columns_v2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_items.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_guids.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_inline_edit.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_items.cpp" />
@@ -433,13 +434,13 @@
     <ClCompile Include="..\foo_ui_columns\status_bar.cpp" />
     <ClCompile Include="..\foo_ui_columns\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">foo_ui_columns.h</PrecompiledHeaderFile>
     </ClCompile>
@@ -477,6 +478,7 @@
     <ClInclude Include="..\foo_ui_columns\colours_manager_data.h" />
     <ClInclude Include="..\foo_ui_columns\columns_v2.h" />
     <ClInclude Include="..\foo_ui_columns\config_appearance.h" />
+    <ClInclude Include="..\foo_ui_columns\config_items.h" />
     <ClInclude Include="..\foo_ui_columns\fonts_manager_data.h" />
     <ClInclude Include="..\foo_ui_columns\gdiplus.h" />
     <ClInclude Include="..\foo_ui_columns\get_msg_hook.h" />
@@ -509,6 +511,7 @@
     <ClInclude Include="..\foo_ui_columns\font_notify.h" />
     <ClInclude Include="..\foo_ui_columns\menu_items.h" />
     <ClInclude Include="..\foo_ui_columns\status_bar.h" />
+    <ClInclude Include="..\foo_ui_columns\stdafx.h" />
     <ClInclude Include="..\foo_ui_columns\tab_colours.h" />
     <ClInclude Include="..\foo_ui_columns\tab_fonts.h" />
     <ClInclude Include="..\foo_ui_columns\utf8api.h" />

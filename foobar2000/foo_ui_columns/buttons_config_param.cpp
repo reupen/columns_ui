@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 void toolbar_extension::config_param::export_to_stream(stream_writer * p_file, bool b_paths, abort_callback & p_abort)
 {

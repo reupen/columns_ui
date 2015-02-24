@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 // {755971A7-109B-41dc-BED9-5A05CC07C905}

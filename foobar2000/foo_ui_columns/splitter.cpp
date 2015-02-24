@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 void g_get_panel_list(uie::window_info_list_simple & p_out, uie::window_host_ptr & p_host)
 {

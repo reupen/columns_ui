@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 #include "menu_items.h"
 
 extern HWND g_main_window;

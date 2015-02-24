@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 static const GUID fcs_header = 
@@ -674,7 +674,7 @@ bool g_import(const char * path)
 						//							create_tabs();
 
 
-						move_window_controls();
+						size_windows();
 						//							if (rm) RedrawWindow(g_main_window, 0, 0, RDW_INVALIDATE|RDW_UPDATENOW);
 					}
 

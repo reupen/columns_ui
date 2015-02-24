@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 bool command_picker_data::__populate_mainmenu_dynamic_recur(command_data & data, const mainmenu_node::ptr & ptr_node, pfc::string_base & full, bool b_root)
 {

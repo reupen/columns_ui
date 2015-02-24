@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 namespace filter_panel {
 	void filter_panel_t::render_background(HDC dc, const RECT * rc)

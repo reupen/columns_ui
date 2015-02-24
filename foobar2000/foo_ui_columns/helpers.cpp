@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 void g_ui_selection_manager_register_callback_no_now_playing_fallback(ui_selection_callback * p_callback)
 {

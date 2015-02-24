@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 #define cfg_default_search "%artist% - %title%"
 #define cfg_default_search_mode 0

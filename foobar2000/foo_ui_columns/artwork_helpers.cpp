@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 void artwork_panel::artwork_reader_v2_t::run_notification_thisthread(DWORD state)

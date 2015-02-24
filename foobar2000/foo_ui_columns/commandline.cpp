@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 static const char * g_help_text = "syntax: foobar2000 /columnsui:<command>\n\n"
 	"Available commands:\n"

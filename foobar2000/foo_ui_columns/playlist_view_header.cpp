@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 void playlist_view::rebuild_header(bool rebuild)

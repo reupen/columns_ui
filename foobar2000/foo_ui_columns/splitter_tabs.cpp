@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 // {6F000FC4-3F86-4fc5-80EA-F7AA4D9551E6}
 const GUID g_guid_splitter_tabs = 

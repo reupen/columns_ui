@@ -1,7 +1,7 @@
 #ifndef _COLUMNS_CONFIG_H_
 #define _COLUMNS_CONFIG_H_
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 #include "common.h"
 #include "extern.h"
 #include "playlist_switcher.h"

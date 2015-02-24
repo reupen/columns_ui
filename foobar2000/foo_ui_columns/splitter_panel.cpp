@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 splitter_window_impl::panel::panel() : m_hidden(false), m_guid(pfc::guid_null), m_locked(false), m_wnd(NULL),

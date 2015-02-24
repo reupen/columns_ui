@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 #define HOST_AUTOHIDE_TIMER_ID  672
 

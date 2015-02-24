@@ -1,7 +1,7 @@
 #ifndef _COLUMNS_UI_TABS_H_
 #define _COLUMNS_UI_TABS_H_
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 #include "callback.h"
 #include "extern.h"
 

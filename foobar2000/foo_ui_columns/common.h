@@ -19,6 +19,16 @@
 #define profiler_debug(x)
 #endif
 
+template <typename type_t>
+class ptr_list_autodel_t : public pfc::ptr_list_t < type_t >
+{
+public:
+	~ptr_list_autodel_t()
+	{
+		delete_all();
+	}
+};
+
 class format_win32_delayload_error {
 public:
 	format_win32_delayload_error(PDelayLoadInfo pdli)
@@ -354,9 +364,6 @@ bool is_winxp_or_newer();
 DWORD GetCommctl32Version(DLLVERSIONINFO2 & dvi, pfc::string_base & p_out);
 
 BOOL uEnableThemeDialogTexture(HWND wnd, DWORD flags);
-HBITMAP read_png(HDC dc, const char * fn);
-unsigned get_libpng_version(pfc::string8 & version, pfc::string8 & path) ;
-unsigned get_zlib_version(pfc::string8 & version, pfc::string8 & path) ;
 
 #define STAP_ALLOW_NONCLIENT    (1 << 0)
 #define STAP_ALLOW_CONTROLS     (1 << 1)

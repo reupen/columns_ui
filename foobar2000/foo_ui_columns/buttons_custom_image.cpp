@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 toolbar_extension::button::custom_image & toolbar_extension::button::custom_image::operator = (const toolbar_extension::button::custom_image & p_source)
 {

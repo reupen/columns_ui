@@ -1,7 +1,7 @@
 #ifndef _COLUMNS_REBAR_H_
 #define _COLUMNS_REBAR_H_
 
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 #include "extern.h"
 
 struct band_cache_entry

@@ -103,5 +103,6 @@ public:
 	cfg_columns_t(const GUID & p_guid);
 };
 
+extern cfg_columns_t g_columns;
 
 #endif

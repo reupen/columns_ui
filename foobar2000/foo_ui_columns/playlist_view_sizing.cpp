@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 void playlist_view::on_size(unsigned cx, unsigned cy)

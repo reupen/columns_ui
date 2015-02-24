@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 /* no range checks here !*/
 void playlist_view::process_keydown(int offset, bool alt_down, bool prevent_redrawing, bool repeat)

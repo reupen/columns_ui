@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 void playlist_view::create_inline_edit_v2(t_uint32 index, t_uint32 count, unsigned column)

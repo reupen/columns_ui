@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 // {70A5C273-67AB-4bb6-B61C-F7975A6871FD}
 const GUID playlist_switcher_t::g_guid_font = 

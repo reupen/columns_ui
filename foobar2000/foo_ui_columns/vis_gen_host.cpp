@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 #if 1
 class window_visualisation_interface : public ui_extension::visualisation_host

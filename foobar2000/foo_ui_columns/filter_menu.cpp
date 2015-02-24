@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 namespace filter_panel {
 	bool filter_panel_t::notify_on_contextmenu_header(const POINT & pt, const HDHITTESTINFO & ht)

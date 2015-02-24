@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 void column_t::read(stream_reader * p_reader, abort_callback & p_abort)
 {

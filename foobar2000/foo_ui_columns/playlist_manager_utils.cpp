@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 playlist_format_name_t::titleformat_hook_playlist_t::titleformat_hook_playlist_t(unsigned p_index, const char * p_name, t_size p_playing) 
 			: m_name(p_name), m_index(p_index), m_lock_name_initialised(false), 

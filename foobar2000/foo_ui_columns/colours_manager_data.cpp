@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 
 void colours_manager_data::g_on_common_bool_changed(t_size mask)

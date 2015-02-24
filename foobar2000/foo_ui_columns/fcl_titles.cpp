@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 cui::fcl::group_impl_factory fclgroupcolumns(cui::fcl::groups::titles_playlist_view, "Columns Playlist Scripts", "Columns Playlist Scripts", cui::fcl::groups::title_scripts);
 cui::fcl::group_impl_factory fclgroupcommon(cui::fcl::groups::titles_common, "Common Scripts", "Common Scripts", cui::fcl::groups::title_scripts);

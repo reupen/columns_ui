@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 playlist_view_cache playlist_view::g_cache;
 

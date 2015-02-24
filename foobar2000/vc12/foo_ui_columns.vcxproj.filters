@@ -61,6 +61,9 @@
     <Filter Include="Toolbars\Buttons">
       <UniqueIdentifier>{0e99f624-ba9c-408e-af00-35cd33250b5a}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Config storage">
+      <UniqueIdentifier>{22c6ed33-d522-410a-8db3-a15b45a7874d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\foo_ui_columns\cache.cpp">
@@ -184,9 +187,6 @@
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\menu_items.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\stdafx.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\utf8api.cpp">
@@ -402,6 +402,10 @@
     <ClCompile Include="..\foo_ui_columns\artwork_helpers.cpp">
       <Filter>Panels\Artwork View</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\config_items.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -554,6 +558,10 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\artwork_helpers.h">
       <Filter>Panels\Artwork View</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\stdafx.h" />
+    <ClInclude Include="..\foo_ui_columns\config_items.h">
+      <Filter>Config storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

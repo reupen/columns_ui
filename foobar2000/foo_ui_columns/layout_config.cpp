@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 cfg_layout_t::cfg_layout_t(const GUID & p_guid) : cfg_var(p_guid), m_active(0)//, m_initialised(false)
 {

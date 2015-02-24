@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 	bool playlist_switcher_t::notify_on_contextmenu(const POINT & pt)
 	{

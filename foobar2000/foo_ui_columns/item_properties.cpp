@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 // {8F6069CD-2E36-4ead-B171-93F3DFF0073A}
 static const GUID g_guid_selection_properties = 

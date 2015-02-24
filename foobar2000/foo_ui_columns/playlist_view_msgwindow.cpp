@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 LRESULT playlist_message_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {

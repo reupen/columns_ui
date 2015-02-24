@@ -1,4 +1,4 @@
-#include "foo_ui_columns.h"
+#include "stdafx.h"
 
 bool g_query_dataobj_supports_format(CLIPFORMAT cf, IDataObject * pDataObj )
 {
