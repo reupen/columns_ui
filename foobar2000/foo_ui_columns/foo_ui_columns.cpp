@@ -324,8 +324,6 @@ unsigned playlist_mclick_actions::id_to_idx(unsigned id)
 	return 0;
 }
 
-void rename_playlist (unsigned idx);
-
 bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
 {
 	static_api_ptr_t<keyboard_shortcut_manager_v2> keyboard_api;
@@ -594,20 +592,20 @@ static BOOL CALLBACK RenameProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	return 0;
 }
 
-bool g_rename(pfc::string8 * text,HWND parent)
+bool g_rename_dialog(pfc::string8 * text,HWND parent)
 {
 	rename_param param;
 	param.m_text = text;
 	return !!uDialogBox(IDD_RENAME_PLAYLIST,parent,RenameProc,(LPARAM)(&param));
 }
 
-void rename_playlist (unsigned idx)
+void g_rename_playlist(unsigned idx, HWND wnd_parent)
 {
 	static_api_ptr_t<playlist_manager> playlist_api;
 	pfc::string8 temp;
 	if (playlist_api->playlist_get_name(idx,temp))
 	{
-		if (g_rename(&temp,g_main_window))
+		if (g_rename_dialog(&temp, wnd_parent))
 		{//fucko: dialogobx has a messgeloop, someone might have called switcher api funcs in the meanwhile
 //			idx = ((HWND)wp == g_tab) ? idx : uSendMessage(g_plist,LB_GETCURSEL,0,0);
 			unsigned num = playlist_api->get_playlist_count();

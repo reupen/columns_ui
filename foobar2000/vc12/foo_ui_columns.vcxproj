@@ -145,13 +145,14 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -190,13 +191,14 @@
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -228,13 +230,14 @@
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>$(DATE)$(TIME)</MapFileName>
@@ -273,13 +276,14 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -322,13 +326,14 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>
       </DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>

@@ -282,7 +282,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				if (e.first(l))
 					do
 					{
-						if (g_rebar_window->check_band(l->get_extension_guid()) || (((cfg_show_all_toolbars || (l->get_type() & ui_extension::type_toolbar))) && l->is_available(&get_rebar_host())))
+						if (g_rebar_window->check_band(l->get_extension_guid()) || (((false || (l->get_type() & ui_extension::type_toolbar))) && l->is_available(&get_rebar_host())))
 						{
 							ui_extension::window_info_simple info;
 

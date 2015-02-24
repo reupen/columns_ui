@@ -35,7 +35,7 @@ bool toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_li
 	if (SUCCEEDED(pDO->GetData(&fe, &sm)))
 	{
 		DDData * pDDD = (DDData*)GlobalLock(sm.hGlobal);
-		if (pDDD->version == 0 && pDDD->wnd == m_button_list_view->get_wnd()) rv = true;
+		if (pDDD && pDDD->version == 0 && pDDD->wnd == m_button_list_view->get_wnd()) rv = true;
 		ReleaseStgMedium(&sm);
 	}
 	return rv;

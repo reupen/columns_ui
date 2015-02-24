@@ -725,7 +725,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM 
 								pfc::string8 temp;
 								if (playlist_api->playlist_get_name(idx,temp))
 								{
-									if (g_rename(&temp,wnd))
+									if (g_rename_dialog(&temp,wnd))
 									{//fucko: dialogobx has a messgeloop, someone might have called switcher api funcs in the meanwhile
 										//			idx = ((HWND)wp == wnd_tabs) ? idx : uSendMessage(g_plist,LB_GETCURSEL,0,0);
 										num = playlist_api->get_playlist_count();
@@ -937,7 +937,7 @@ LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM
 				if (idx >= 0) 
 				{
 					if (cfg_mclick && msg == WM_MBUTTONUP) {remove_playlist_helper(idx);}
-					if (cfg_plm_rename && msg == WM_LBUTTONDBLCLK) {rename_playlist(idx);}
+					if (cfg_plm_rename && msg == WM_LBUTTONDBLCLK) {g_rename_playlist(idx, get_wnd());}
 				}
 				else if (1) 
 				{

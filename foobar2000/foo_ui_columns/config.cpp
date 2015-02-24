@@ -981,7 +981,7 @@ public:
 		{
 		case WM_INITDIALOG:
 		{
-			p_cache = new(std::nothrow) menu_item_cache;
+			p_cache = new menu_item_cache;
 
 			populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, *p_cache, false);
 

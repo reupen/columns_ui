@@ -42,16 +42,16 @@ uie::window_factory<volume_control_panel> g_volume_panel;
 LONG g_exception_filter_delay_load(PEXCEPTION_POINTERS pExcPointers) {
    LONG lDisposition = EXCEPTION_EXECUTE_HANDLER;  
    PDelayLoadInfo pDelayLoadInfo = 
-    PDelayLoadInfo(pExcPointers->ExceptionRecord->ExceptionInformation[0]);
+	PDelayLoadInfo(pExcPointers->ExceptionRecord->ExceptionInformation[0]);
 
    switch (pExcPointers->ExceptionRecord->ExceptionCode) {
    case VcppException(ERROR_SEVERITY_ERROR, ERROR_MOD_NOT_FOUND):
-      break;
+	  break;
    case VcppException(ERROR_SEVERITY_ERROR, ERROR_PROC_NOT_FOUND):
-      break; 
+	  break; 
    default:
-      lDisposition = EXCEPTION_CONTINUE_SEARCH; 
-      break;
+	  lDisposition = EXCEPTION_CONTINUE_SEARCH; 
+	  break;
    }
    return(lDisposition);
 }

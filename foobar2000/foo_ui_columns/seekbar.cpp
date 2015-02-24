@@ -4,7 +4,6 @@
 
 
 #define ID_SEEK 2005
-#define SEEK_TIMER_ID  669
 
 pfc::ptr_list_t<seek_bar_extension> seek_bar_extension::windows;
 
@@ -45,7 +44,7 @@ void seek_bar_extension::update_seek_timer()
 	{
 		if (!g_seek_timer) 
 		{
-			g_seek_timer = SetTimer(0, SEEK_TIMER_ID, 150, (TIMERPROC)SeekTimerProc);
+			g_seek_timer = SetTimer(0, NULL, 150, (TIMERPROC)SeekTimerProc);
 		}
 	}
 	else if (g_seek_timer)
