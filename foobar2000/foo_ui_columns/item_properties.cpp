@@ -42,12 +42,6 @@ cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
 cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_show_group_titles, true);
 
-struct info_section_t
-{
-	t_uint32 id;
-	const char * name;
-	info_section_t(t_uint32 p_id, const char * p_name) : id(p_id), name(p_name) {};
-};
 const info_section_t g_info_sections[] = {
 	info_section_t(0, "Location"),
 	info_section_t(1, "General"),
@@ -55,6 +49,7 @@ const info_section_t g_info_sections[] = {
 	info_section_t(3, "Playback statistics"),
 	info_section_t(4, "Other")
 };
+
 
 t_size g_get_info_secion_index_by_name (const char * p_name)
 {
@@ -78,150 +73,7 @@ t_size g_get_info_secion_index_by_id (t_size id)
 	return pfc_infinite;
 }
 
-class field_t
-{
-public:
-	pfc::string8 m_name;
-	pfc::string8 m_name_friendly;
 
-	field_t(const char * friendly, const char * field) : m_name(field), m_name_friendly(friendly) {};
-	field_t() {};
-};
-
-class fields_list_view_t : public t_list_view
-{
-public:
-	t_size m_edit_index, m_edit_column;
-	pfc::list_t<field_t> & m_fields;
-	fields_list_view_t(pfc::list_t<field_t> & p_fields) : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite), m_fields(p_fields) {};
-
-	void get_insert_items(t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & items)
-	{
-		t_size i;
-		items.set_count(count);
-		for (i=0; i<count; i++)
-		{
-			items[i].m_subitems.add_item(m_fields[base+i].m_name_friendly);
-			items[i].m_subitems.add_item(m_fields[base+i].m_name);
-		}
-	}
-	virtual void notify_on_create()
-	{
-		set_single_selection(true);
-		pfc::list_t<t_column> columns;
-		columns.set_count(2);
-		columns[0].m_title = "Name";
-		columns[0].m_size = 150;
-		columns[1].m_title = "Field";
-		columns[1].m_size = 150;
-		t_list_view::set_columns(columns);
-
-		t_size count = m_fields.get_count();
-		pfc::list_t<t_list_view:: t_item_insert> items;
-		get_insert_items(0, count, items);
-		insert_items(0, count, items.get_ptr());
-
-	};
-	virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) 
-	{
-		if (column <= 1 && indices.get_count() ==1)
-			return true;
-		return false;
-	};
-	virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) 
-	{
-		t_size indices_count = indices.get_count();
-		if (indices_count == 1 && indices[0] < m_fields.get_count())
-		{
-			m_edit_index = indices[0];
-			m_edit_column = column;
-
-			p_text = m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly;
-
-			if (m_edit_column == 1)
-				p_flags = inline_edit_uppercase;
-
-			return true;
-		}
-		return false;
-	};
-	virtual void notify_save_inline_edit(const char * value) 
-	{
-		if (m_edit_index < m_fields.get_count())
-		{
-			(m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
-			pfc::list_t<t_list_view:: t_item_insert> items;
-			items.set_count(1);
-			items[0].m_subitems.add_item(m_fields[m_edit_index].m_name_friendly);
-			items[0].m_subitems.add_item(m_fields[m_edit_index].m_name);
-			replace_items(m_edit_index, items);
-		}
-		m_edit_column = pfc_infinite;
-		m_edit_index = pfc_infinite;
-	}
-private:
-};
-
-class track_property_callback_itemproperties : public track_property_callback_v2 {
-public:
-	class track_property_t
-	{
-	public:
-		typedef track_property_t self_t;
-		pfc::string8 m_name, m_value;
-		double m_sortpriority;
-
-		static int g_compare(self_t const & a, self_t const & b)
-		{
-			int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
-			if (!ret) ret = StrCmpLogicalW(pfc::stringcvt::string_wide_from_utf8(a.m_name), pfc::stringcvt::string_wide_from_utf8(b.m_name));
-			return ret;
-		}
-
-		track_property_t(double p_sortpriority,const char * p_name,const char * p_value)
-			: m_name(p_name), m_value(p_value), m_sortpriority(p_sortpriority)
-		{};
-		track_property_t() {};
-	};
-	virtual void set_property(const char * p_group,double p_sortpriority,const char * p_name,const char * p_value)
-	{
-		t_size index = g_get_info_secion_index_by_name(p_group);
-		if (index != pfc_infinite)
-			m_values[index].add_item( track_property_t(p_sortpriority, p_name, p_value) );
-	}
-#if 0
-	bool find_field (const char * name, t_size & index)
-	{
-		t_size i, count = m_values.get_count();
-		for (i=0; i<count; i++)
-		{
-			if (!stricmp_utf8(m_values[i].m_name, name))
-			{
-				index = i;
-				return true;
-			}
-		}
-		return false;
-	}
-#endif
-	virtual bool is_group_wanted(const char * p_group)
-	{
-		return true;
-	}
-	void sort() 
-	{
-		t_size i, count = m_values.get_size();
-		for (i=0; i<count; i++)
-		{
-			mmh::permutation_t perm(m_values[i].get_count());
-			mmh::g_sort_get_permutation_qsort_v2(m_values[i].get_ptr(), perm, track_property_t::g_compare, false);
-			m_values[i].reorder(perm.get_ptr());
-		}
-	}
-	
-	track_property_callback_itemproperties() : m_values( tabsize(g_info_sections) ) {};
-	pfc::array_staticsize_t< pfc::list_t<track_property_t> > m_values;
-};
 
 #if 0
 class track_property_callback_getgroups : public track_property_callback_v2 {
@@ -238,590 +90,6 @@ public:
 };
 #endif
 
-class selection_properties_config_t
-{
-public:
-	pfc::list_t<field_t> m_fields;
-	t_size m_edge_style;
-	t_uint32 m_info_sections_mask;
-	bool m_show_columns, m_show_groups;
-
-	bool m_initialising;
-	static BOOL CALLBACK g_DialogProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
-		selection_properties_config_t * p_data = NULL;
-		if (msg == WM_INITDIALOG)
-		{
-			p_data = reinterpret_cast<selection_properties_config_t*>(lp);
-			SetWindowLongPtr(wnd, DWL_USER, lp);
-		}
-		else
-			p_data = reinterpret_cast<selection_properties_config_t*>(GetWindowLongPtr(wnd, DWL_USER));
-		return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
-	}
-	selection_properties_config_t(const pfc::list_t<field_t> & p_fields, t_size edge_style, 
-		t_uint32 info_sections_mask, bool b_show_columns, bool b_show_groups)
-		: m_fields(p_fields), m_field_list(m_fields), m_edge_style(edge_style), m_initialising(false),
-		m_info_sections_mask(info_sections_mask), m_show_columns(b_show_columns), m_show_groups(b_show_groups) {};
-
-	bool run_modal(HWND wnd) {return uDialogBox(IDD_SELECTIONCONFIG, wnd, g_DialogProc, (LPARAM)this) != 0;}
-private:
-	BOOL CALLBACK on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
-		switch(msg)
-		{
-		case WM_INITDIALOG:
-			{
-				pfc::vartoggle_t<bool> init(m_initialising, true);
-
-				HWND wnd_fields = m_field_list.create_in_dialog_units(wnd, ui_helpers::window_position_t(21,17,226,150));
-				SetWindowPos(wnd_fields, HWND_TOP, 0,0,0,0,SWP_NOSIZE|SWP_NOMOVE);
-				ShowWindow(wnd_fields, SW_SHOWNORMAL);
-
-				HWND wnd_lv = GetDlgItem(wnd, IDC_INFOSECTIONS);
-				ListView_SetExtendedListViewStyleEx(wnd_lv, LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
-				g_set_listview_window_explorer_theme(wnd_lv);
-
-				RECT rc;
-				GetClientRect(wnd_lv, &rc);
-				ListView_InsertColumnText(wnd_lv, 0, L"", RECT_CX(rc));
-
-				t_size i, count = tabsize(g_info_sections);
-				for (i=0; i<count; i++)
-				{
-					ListView_InsertItemText(wnd_lv, i, 0, g_info_sections[i].name);
-					ListView_SetCheckState(wnd_lv, i, (m_info_sections_mask & (1<<g_info_sections[i].id) ) ? TRUE : FALSE);
-				}
-
-				HWND wnd_combo = GetDlgItem(wnd, IDC_EDGESTYLE);
-				ComboBox_AddString(wnd_combo, L"None");
-				ComboBox_AddString(wnd_combo, L"Sunken");
-				ComboBox_AddString(wnd_combo, L"Grey");
-				ComboBox_SetCurSel(wnd_combo, m_edge_style);
-
-				Button_SetCheck(GetDlgItem(wnd, IDC_SHOWCOLUMNS), m_show_columns ? BST_CHECKED : BST_UNCHECKED);
-				Button_SetCheck(GetDlgItem(wnd, IDC_SHOWGROUPS), m_show_groups ? BST_CHECKED : BST_UNCHECKED);
-			}
-			break;
-		case WM_DESTROY:
-			{
-				m_field_list.destroy();
-			}
-			break;
-		case WM_ERASEBKGND:
-			SetWindowLongPtr(wnd, DWL_MSGRESULT, TRUE);
-			return TRUE;
-		case WM_PAINT:
-			ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));
-			return TRUE;
-		case WM_CTLCOLORSTATIC:
-			SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
-			SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-			return (BOOL)GetSysColorBrush(COLOR_WINDOW);
-		case WM_NOTIFY:
-			{
-				LPNMHDR lpnm = (LPNMHDR)lp;
-				switch (lpnm->idFrom)
-				{
-				case IDC_INFOSECTIONS:
-					switch (lpnm->code)
-					{
-					case LVN_ITEMCHANGED:
-						{
-							LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
-							if (!m_initialising && lpnmlv->iItem < tabsize(g_info_sections) && (lpnmlv->uChanged & LVIF_STATE))
-							{
-								m_info_sections_mask = m_info_sections_mask & ~(1<<g_info_sections[lpnmlv->iItem].id);
-							
-								//if (((((UINT)(lpnmlv->uNewState & LVIS_STATEIMAGEMASK )) >> 12) -1))
-								if (ListView_GetCheckState(lpnm->hwndFrom, lpnmlv->iItem))
-									m_info_sections_mask = m_info_sections_mask | (1<<g_info_sections[lpnmlv->iItem].id);
-
-							}
-						}
-						break;
-					};
-					break;
-				};
-			}
-			break;
-		case WM_COMMAND:
-			switch (LOWORD(wp))
-			{
-			case IDOK:
-				EndDialog(wnd, 1);
-				break;
-			case IDCANCEL:
-				EndDialog(wnd, 0);
-				break;
-			case IDC_SHOWCOLUMNS:
-				m_show_columns = Button_GetCheck((HWND)lp) != 0;
-				break;
-			case IDC_SHOWGROUPS:
-				m_show_groups = Button_GetCheck((HWND)lp) != 0;
-				break;
-			case IDC_EDGESTYLE:
-				switch (HIWORD(wp))
-				{
-				case CBN_SELCHANGE:
-					m_edge_style = ComboBox_GetCurSel((HWND)lp);
-					break;
-				}
-				break;
-			case IDC_UP:
-				{
-					if (m_field_list.get_selection_count(2) == 1)
-					{
-						t_size index = 0, count = m_field_list.get_item_count();
-						while (!m_field_list.get_item_selected(index) && index < count) index++;
-						if (index && m_fields.get_count())
-						{
-							m_fields.swap_items(index, index-1);
-
-							pfc::list_t<t_list_view::t_item_insert> items;
-							m_field_list.get_insert_items(index-1, 2, items);
-							m_field_list.replace_items(index-1, items);
-							m_field_list.set_item_selected_single(index-1);
-						}
-					}
-				}
-				break;
-			case IDC_DOWN:
-				{
-					if (m_field_list.get_selection_count(2) == 1)
-					{
-						t_size index = 0, count = m_field_list.get_item_count();
-						while (!m_field_list.get_item_selected(index) && index < count) index++;
-						if (index+1 < count && index + 1 < m_fields.get_count())
-						{
-							m_fields.swap_items(index, index+1);
-
-							pfc::list_t<t_list_view::t_item_insert> items;
-							m_field_list.get_insert_items(index, 2, items);
-							m_field_list.replace_items(index, items);
-							m_field_list.set_item_selected_single(index+1);
-						}
-					}
-				}
-				break;
-			case IDC_NEW:
-				{
-					field_t temp;
-					temp.m_name_friendly = "<enter name here>";
-					temp.m_name = "<ENTER FIELD HERE>";
-					t_size index = m_fields.add_item(temp);
-
-					pfc::list_t<t_list_view::t_item_insert> items;
-					m_field_list.get_insert_items(index, 1, items);
-					m_field_list.insert_items(index, 1, items.get_ptr());
-					m_field_list.set_item_selected_single(index);
-					SetFocus(m_field_list.get_wnd());
-					m_field_list.activate_inline_editing();
-
-				}
-				break;
-			case IDC_REMOVE:
-				{
-					if (m_field_list.get_selection_count(2) == 1)
-					{
-						bit_array_bittable mask(m_field_list.get_item_count());
-						m_field_list.get_selection_state(mask);
-						//bool b_found = false;
-						t_size index=0, count=m_field_list.get_item_count();
-						while (index < count)
-						{
-							if (mask[index]) break;
-							index++;
-						}
-						if (index < count && index < m_fields.get_count())
-						{
-							m_fields.remove_by_idx(index);
-							m_field_list.remove_item(index);
-							t_size new_count = m_field_list.get_item_count();
-							if (new_count)
-							{
-								if (index < new_count)
-									m_field_list.set_item_selected_single(index);
-								else if (index)
-									m_field_list.set_item_selected_single(index-1);
-							}
-						}
-					}
-				}
-				break;
-			}
-			break;
-		}
-		return FALSE;
-	}
-
-	fields_list_view_t m_field_list;
-};
-
-class selection_properties_t : 
-	public uie::container_ui_extension_t<t_list_view, uie::window>,
-	public ui_selection_callback,
-	public play_callback,
-	public metadb_io_callback_dynamic
-{
-	class message_window_t : public ui_helpers::container_window
-	{
-		virtual class_data & get_class_data() const;
-		virtual LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
-	};
-
-	static message_window_t g_message_window;
-
-	enum 
-	{
-		MSG_REFRESH = WM_USER+2,
-	};
-
-public:
-	enum tracking_mode_t
-	{
-		track_selection,
-		track_nowplaying,
-		track_automatic,
-	};
-	//UIE funcs
-	virtual const GUID & get_extension_guid() const;
-	virtual void get_name(pfc::string_base & out)const;
-	virtual void get_category(pfc::string_base & out)const;
-	unsigned get_type () const;
-
-	enum {config_version_current=4};
-	void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
-	void get_config(stream_writer * p_writer, abort_callback & p_abort) const;
-
-	virtual bool have_config_popup()const{return true;}
-	virtual bool show_config_popup(HWND wnd_parent) 
-	{
-		selection_properties_config_t dialog(m_fields, m_edge_style, m_info_sections_mask, m_show_column_titles, m_show_group_titles);
-		if (dialog.run_modal(wnd_parent))
-		{
-			m_fields = dialog.m_fields;
-			if (get_wnd())
-			{
-				m_info_sections_mask = dialog.m_info_sections_mask;
-				cfg_selection_properties_info_sections = dialog.m_info_sections_mask;
-
-				m_show_column_titles = dialog.m_show_columns;
-				cfg_selection_poperties_show_column_titles = m_show_column_titles;
-				set_show_header(m_show_column_titles);
-
-				if (m_show_group_titles != dialog.m_show_groups)
-				{
-					m_show_group_titles = dialog.m_show_groups;
-					cfg_selection_poperties_show_group_titles = m_show_group_titles;
-
-					remove_items(bit_array_true(), false);
-					set_group_count(m_show_group_titles ? 1 : 0);
-				}
-
-
-				refresh_contents();
-				m_edge_style = dialog.m_edge_style;
-				cfg_selection_properties_edge_style = m_edge_style;
-				set_edge_style(m_edge_style);
-			}
-			return true;
-		}
-		return false;
-	}
-	class menu_node_track_mode : public ui_extension::menu_node_command_t
-	{
-		service_ptr_t<selection_properties_t> p_this;
-		t_size m_source;
-	public:
-		static const char * get_name(t_size source)
-		{
-			if (source == track_nowplaying) return "Playing item";
-			if (source == track_selection) return "Current selection";
-			if (source == track_automatic) return "Automatic";
-			return "";
-		}
-		virtual bool get_display_data(pfc::string_base & p_out,unsigned & p_displayflags)const
-		{
-			p_out = get_name(m_source);
-			p_displayflags= (m_source == p_this->m_tracking_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
-			return true;
-		}
-		virtual bool get_description(pfc::string_base & p_out)const
-		{
-			return false;
-		}
-		virtual void execute()
-		{
-			p_this->m_tracking_mode = m_source;
-			cfg_selection_properties_tracking_mode = m_source;
-			p_this->on_tracking_mode_change();
-		}
-		menu_node_track_mode(selection_properties_t * p_wnd, t_size p_value) : p_this(p_wnd), m_source(p_value) {};
-	};
-	class menu_node_autosize : public ui_extension::menu_node_command_t
-	{
-		service_ptr_t<selection_properties_t> p_this;
-	public:
-		virtual bool get_display_data(pfc::string_base & p_out,unsigned & p_displayflags)const
-		{
-			p_out = "Auto-sizing columns";
-			p_displayflags= (p_this->m_autosizing_columns) ? ui_extension::menu_node_t::state_checked : 0;
-			return true;
-		}
-		virtual bool get_description(pfc::string_base & p_out)const
-		{
-			return false;
-		}
-		virtual void execute()
-		{
-			p_this->m_autosizing_columns = !p_this->m_autosizing_columns;
-			p_this->set_autosize(p_this->m_autosizing_columns);
-		}
-		menu_node_autosize(selection_properties_t * p_wnd) : p_this(p_wnd) {};
-	};
-	class menu_node_source_popup : public ui_extension::menu_node_popup_t
-	{
-		pfc::list_t<ui_extension::menu_node_ptr> m_items;
-	public:
-		virtual bool get_display_data(pfc::string_base & p_out,unsigned & p_displayflags)const
-		{
-			p_out = "Tracking mode";
-			p_displayflags= 0;
-			return true;
-		}
-		virtual unsigned get_children_count()const{return m_items.get_count();}
-		virtual void get_child(unsigned p_index, uie::menu_node_ptr & p_out)const{p_out = m_items[p_index].get_ptr();}
-		menu_node_source_popup(selection_properties_t * p_wnd)
-		{
-			m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-			m_items.add_item(new menu_node_track_mode(p_wnd, 0));
-			//m_items.add_item(new uie::menu_node_separator_t());
-			//m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-			m_items.add_item(new menu_node_track_mode(p_wnd, 1));
-		};
-	};
-	virtual void get_menu_items (ui_extension::menu_hook_t & p_hook)
-	{
-		ui_extension::menu_node_ptr p_node;
-		p_node = new menu_node_source_popup(this);
-		p_hook.add_node(p_node);
-		p_node = new menu_node_autosize(this);
-		p_hook.add_node(p_node);
-		p_node = new uie::menu_node_configure(this);
-		p_hook.add_node(p_node);
-	}
-
-	//NGLV
-	virtual void notify_on_initialisation();
-	virtual void notify_on_create();
-	virtual void notify_on_destroy();
-	virtual void notify_on_set_focus(HWND wnd_lost);
-	virtual void notify_on_kill_focus(HWND wnd_receiving);
-	virtual void render_get_colour_data(colour_data_t & p_out);
-	virtual bool notify_on_keyboard_keydown_copy()		{copy_selected_items_as_text(1); return true;};
-	virtual bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed)
-	{
-		uie::window_ptr p_this = this;
-		bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-		b_processed = ret;
-		return ret;
-	};
-	void notify_on_column_size_change(t_size index, t_size new_width)
-	{
-		if (index == 0)
-			m_column_name_width = new_width;
-		else
-			m_column_field_width = new_width;
-	}
-	virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) 
-	{
-		if (m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count())
-			return true;
-		return false;
-	};
-	static void g_print_field (const char * field, const file_info & p_info, pfc::string_base & p_out)
-	{
-		t_size meta_index = p_info.meta_find(field);
-		if (meta_index != pfc_infinite)
-		{
-			t_size i, count = p_info.meta_enum_value_count(meta_index);
-			for (i=0; i<count; i++)
-				p_out << p_info.meta_enum_value(meta_index, i) << (i+1<count ? "; " : "");
-
-		}
-	}
-	virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) 
-	{
-		t_size indices_count = indices.get_count();
-		if (m_handles.get_count() && column == 1 && indices_count == 1 && indices[0] < m_fields.get_count())
-		{
-			m_edit_index = indices[0];
-			m_edit_column = column;
-			m_edit_field = m_fields[m_edit_index].m_name;
-			m_edit_handles = m_handles;
-
-			pfc::string8_fast_aggressive text, temp;
-			{
-				in_metadb_sync sync;
-				const file_info * p_info = NULL;
-				if (m_edit_handles[0]->get_info_locked(p_info))
-					g_print_field(m_edit_field, *p_info, text);
-				t_size i, count = m_handles.get_count();
-				for (i=1; i<count; i++)
-				{
-					temp.reset();
-					if (m_edit_handles[i]->get_info_locked(p_info))
-						g_print_field(m_edit_field, *p_info, temp);
-					if (strcmp(temp, text))
-					{
-						text = "<mixed values>";
-						break;
-					}
-				}
-			}
-
-			p_text = text;
-
-			return true;
-		}
-		return false;
-	};
-	virtual void notify_save_inline_edit(const char * value) 
-	{
-		static_api_ptr_t<metadb_io_v2> tagger_api;
-		if (strcmp(value, "<mixed values>"))
-		{
-			pfc::list_t<pfc::string8> values;
-			const char *ptr = value, * start = ptr;
-			while (*ptr)
-			{
-				start = ptr;
-				while (*ptr != ';' && *ptr) ptr++;
-				values.add_item(pfc::string8(start, ptr-start));
-				while (*ptr == ' ' || *ptr == ';' ) ptr++;
-			}
-
-			t_size j, value_count = values.get_count();
-
-			metadb_handle_list ptrs(m_edit_handles);
-			pfc::list_t<file_info_impl> infos;
-			pfc::list_t<bool> mask;
-			pfc::list_t<const file_info *> infos_ptr;
-			t_size i, count = ptrs.get_count();
-			mask.set_count(count);
-			infos.set_count(count);
-			//infos.set_count(count);
-			for (i=0; i<count; i++)
-			{
-				assert(ptrs[i].is_valid());
-				mask[i]= !ptrs[i]->get_info(infos[i]);
-				infos_ptr.add_item(&infos[i]);
-				if (!mask[i])
-				{
-					pfc::string8 old_value;
-					g_print_field(m_edit_field, infos[i], old_value);
-					if (!(mask[i] = !((strcmp(old_value, value)))))
-					{
-						infos[i].meta_remove_field(m_edit_field);
-						for (j=0; j<value_count; j++)
-							infos[i].meta_add(m_edit_field, values[j]);
-					}
-				}
-			}
-			infos_ptr.remove_mask(mask.get_ptr());
-			ptrs.remove_mask(mask.get_ptr());
-
-			{
-				service_ptr_t<file_info_filter_impl>  filter = new service_impl_t<file_info_filter_impl>(ptrs, infos_ptr);
-				tagger_api->update_info_async(ptrs, filter, GetAncestor(get_wnd(), GA_ROOT), metadb_io_v2::op_flag_no_errors|metadb_io_v2::op_flag_background|metadb_io_v2::op_flag_delay_ui, NULL);
-			}
-		}
-
-		/*if (m_edit_index < m_fields.get_count())
-		{
-			(m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
-			pfc::list_t<t_list_view:: t_item_insert> items;
-			items.set_count(1);
-			items[0].m_subitems.add_item(m_fields[m_edit_index].m_name_friendly);
-			items[0].m_subitems.add_item(m_fields[m_edit_index].m_name);
-			replace_items(m_edit_index, items);
-		}*/
-		m_edit_column = pfc_infinite;
-		m_edit_index = pfc_infinite;
-		m_edit_field.reset();
-		m_edit_handles.remove_all();
-	}
-
-	//UI SEL API
-	void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr> & p_selection);
-
-	//PC
-	void on_playback_starting(play_control::t_track_command p_command,bool p_paused) {}
-	void on_playback_new_track(metadb_handle_ptr p_track);
-	void on_playback_stop(play_control::t_stop_reason p_reason);
-	void on_playback_seek(double p_time) {}
-	void on_playback_pause(bool p_state) {}
-	void on_playback_edited(metadb_handle_ptr p_track) {}
-	void on_playback_dynamic_info(const file_info & p_info) {}
-	void on_playback_dynamic_info_track(const file_info & p_info) {}
-	void on_playback_time(double p_time) {}
-	void on_volume_change(float p_new_val) {}
-
-	void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook);
-
-	static void g_on_app_activate(bool b_activated);
-	static void g_redraw_all();
-	static void g_on_font_items_change();
-	static void g_on_font_header_change();
-	static void g_on_font_groups_change();
-
-	selection_properties_t() : m_callback_registered(false), m_tracking_mode(cfg_selection_properties_tracking_mode),
-		m_column_name_width(75), m_column_field_width(125), m_autosizing_columns(true), m_edit_column(pfc_infinite),
-		m_edit_index(pfc_infinite), m_edge_style(cfg_selection_properties_edge_style), m_info_sections_mask(cfg_selection_properties_info_sections),
-		m_show_column_titles(cfg_selection_poperties_show_column_titles), m_show_group_titles(cfg_selection_poperties_show_group_titles)
-	{
-		m_fields.add_item(field_t("Artist","ARTIST"));
-		m_fields.add_item(field_t("Title","TITLE"));
-		m_fields.add_item(field_t("Album","ALBUM"));
-		m_fields.add_item(field_t("Date","DATE"));
-		m_fields.add_item(field_t("Genre","GENRE"));
-		m_fields.add_item(field_t("Composer","COMPOSER"));
-		m_fields.add_item(field_t("Performer","PERFORMER"));
-		m_fields.add_item(field_t("Album Artist","ALBUM ARTIST"));
-		m_fields.add_item(field_t("Track Number","TRACKNUMBER"));
-		m_fields.add_item(field_t("Total Tracks","TOTALTRACKS"));
-		m_fields.add_item(field_t("Disc Number","DISCNUMBER"));
-		m_fields.add_item(field_t("Total Discs","TOTALDISCS"));
-		m_fields.add_item(field_t("Comment","COMMENT"));
-	};
-private:
-	void register_callback();
-	void deregister_callback();
-	void on_app_activate(bool b_activated);
-	void refresh_contents();
-	void on_tracking_mode_change();
-	bool check_process_on_selection_changed();
-
-	static pfc::ptr_list_t<selection_properties_t> g_windows;
-
-	ui_selection_holder::ptr m_selection_holder;
-	metadb_handle_list m_handles, m_selection_handles;
-	pfc::list_t<field_t> m_fields;
-	bool m_callback_registered;
-	t_size m_tracking_mode;
-
-	t_uint32 m_info_sections_mask;
-	bool m_show_column_titles, m_show_group_titles;
-
-	bool m_autosizing_columns;
-	t_size m_column_name_width, m_column_field_width;
-
-	t_size m_edge_style;
-	t_size m_edit_column, m_edit_index;
-	pfc::string8 m_edit_field;
-	metadb_handle_list m_edit_handles;
-};
 
 selection_properties_t::message_window_t selection_properties_t::g_message_window;
 
@@ -1480,6 +748,220 @@ void selection_properties_t::g_on_font_header_change()
 	}
 }
 
+selection_properties_t::selection_properties_t() : m_callback_registered(false), m_tracking_mode(cfg_selection_properties_tracking_mode),
+m_column_name_width(75), m_column_field_width(125), m_autosizing_columns(true), m_edit_column(pfc_infinite),
+m_edit_index(pfc_infinite), m_edge_style(cfg_selection_properties_edge_style), m_info_sections_mask(cfg_selection_properties_info_sections),
+m_show_column_titles(cfg_selection_poperties_show_column_titles), m_show_group_titles(cfg_selection_poperties_show_group_titles)
+{
+	m_fields.add_item(field_t("Artist", "ARTIST"));
+	m_fields.add_item(field_t("Title", "TITLE"));
+	m_fields.add_item(field_t("Album", "ALBUM"));
+	m_fields.add_item(field_t("Date", "DATE"));
+	m_fields.add_item(field_t("Genre", "GENRE"));
+	m_fields.add_item(field_t("Composer", "COMPOSER"));
+	m_fields.add_item(field_t("Performer", "PERFORMER"));
+	m_fields.add_item(field_t("Album Artist", "ALBUM ARTIST"));
+	m_fields.add_item(field_t("Track Number", "TRACKNUMBER"));
+	m_fields.add_item(field_t("Total Tracks", "TOTALTRACKS"));
+	m_fields.add_item(field_t("Disc Number", "DISCNUMBER"));
+	m_fields.add_item(field_t("Total Discs", "TOTALDISCS"));
+	m_fields.add_item(field_t("Comment", "COMMENT"));
+}
+
+void selection_properties_t::notify_save_inline_edit(const char * value)
+{
+	static_api_ptr_t<metadb_io_v2> tagger_api;
+	if (strcmp(value, "<mixed values>"))
+	{
+		pfc::list_t<pfc::string8> values;
+		const char *ptr = value, *start = ptr;
+		while (*ptr)
+		{
+			start = ptr;
+			while (*ptr != ';' && *ptr) ptr++;
+			values.add_item(pfc::string8(start, ptr - start));
+			while (*ptr == ' ' || *ptr == ';') ptr++;
+		}
+
+		t_size j, value_count = values.get_count();
+
+		metadb_handle_list ptrs(m_edit_handles);
+		pfc::list_t<file_info_impl> infos;
+		pfc::list_t<bool> mask;
+		pfc::list_t<const file_info *> infos_ptr;
+		t_size i, count = ptrs.get_count();
+		mask.set_count(count);
+		infos.set_count(count);
+		//infos.set_count(count);
+		for (i = 0; i < count; i++)
+		{
+			assert(ptrs[i].is_valid());
+			mask[i] = !ptrs[i]->get_info(infos[i]);
+			infos_ptr.add_item(&infos[i]);
+			if (!mask[i])
+			{
+				pfc::string8 old_value;
+				g_print_field(m_edit_field, infos[i], old_value);
+				if (!(mask[i] = !((strcmp(old_value, value)))))
+				{
+					infos[i].meta_remove_field(m_edit_field);
+					for (j = 0; j < value_count; j++)
+						infos[i].meta_add(m_edit_field, values[j]);
+				}
+			}
+		}
+		infos_ptr.remove_mask(mask.get_ptr());
+		ptrs.remove_mask(mask.get_ptr());
+
+		{
+			service_ptr_t<file_info_filter_impl>  filter = new service_impl_t<file_info_filter_impl>(ptrs, infos_ptr);
+			tagger_api->update_info_async(ptrs, filter, GetAncestor(get_wnd(), GA_ROOT), metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui, NULL);
+		}
+	}
+
+	/*if (m_edit_index < m_fields.get_count())
+	{
+	(m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
+	pfc::list_t<t_list_view:: t_item_insert> items;
+	items.set_count(1);
+	items[0].m_subitems.add_item(m_fields[m_edit_index].m_name_friendly);
+	items[0].m_subitems.add_item(m_fields[m_edit_index].m_name);
+	replace_items(m_edit_index, items);
+	}*/
+	m_edit_column = pfc_infinite;
+	m_edit_index = pfc_infinite;
+	m_edit_field.reset();
+	m_edit_handles.remove_all();
+}
+
+bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries)
+{
+	t_size indices_count = indices.get_count();
+	if (m_handles.get_count() && column == 1 && indices_count == 1 && indices[0] < m_fields.get_count())
+	{
+		m_edit_index = indices[0];
+		m_edit_column = column;
+		m_edit_field = m_fields[m_edit_index].m_name;
+		m_edit_handles = m_handles;
+
+		pfc::string8_fast_aggressive text, temp;
+		{
+			in_metadb_sync sync;
+			const file_info * p_info = NULL;
+			if (m_edit_handles[0]->get_info_locked(p_info))
+				g_print_field(m_edit_field, *p_info, text);
+			t_size i, count = m_handles.get_count();
+			for (i = 1; i < count; i++)
+			{
+				temp.reset();
+				if (m_edit_handles[i]->get_info_locked(p_info))
+					g_print_field(m_edit_field, *p_info, temp);
+				if (strcmp(temp, text))
+				{
+					text = "<mixed values>";
+					break;
+				}
+			}
+		}
+
+		p_text = text;
+
+		return true;
+	}
+	return false;
+}
+
+void selection_properties_t::g_print_field(const char * field, const file_info & p_info, pfc::string_base & p_out)
+{
+	t_size meta_index = p_info.meta_find(field);
+	if (meta_index != pfc_infinite)
+	{
+		t_size i, count = p_info.meta_enum_value_count(meta_index);
+		for (i = 0; i < count; i++)
+			p_out << p_info.meta_enum_value(meta_index, i) << (i + 1 < count ? "; " : "");
+
+	}
+}
+
+bool selection_properties_t::notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse)
+{
+	if (m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count())
+		return true;
+	return false;
+}
+
+void selection_properties_t::notify_on_column_size_change(t_size index, t_size new_width)
+{
+	if (index == 0)
+		m_column_name_width = new_width;
+	else
+		m_column_field_width = new_width;
+}
+
+bool selection_properties_t::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed)
+{
+	uie::window_ptr p_this = this;
+	bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
+	b_processed = ret;
+	return ret;
+}
+
+bool selection_properties_t::notify_on_keyboard_keydown_copy()
+{
+	copy_selected_items_as_text(1); return true;
+}
+
+void selection_properties_t::get_menu_items(ui_extension::menu_hook_t & p_hook)
+{
+	ui_extension::menu_node_ptr p_node;
+	p_node = new menu_node_source_popup(this);
+	p_hook.add_node(p_node);
+	p_node = new menu_node_autosize(this);
+	p_hook.add_node(p_node);
+	p_node = new uie::menu_node_configure(this);
+	p_hook.add_node(p_node);
+}
+
+bool selection_properties_t::show_config_popup(HWND wnd_parent)
+{
+	selection_properties_config_t dialog(m_fields, m_edge_style, m_info_sections_mask, m_show_column_titles, m_show_group_titles);
+	if (dialog.run_modal(wnd_parent))
+	{
+		m_fields = dialog.m_fields;
+		if (get_wnd())
+		{
+			m_info_sections_mask = dialog.m_info_sections_mask;
+			cfg_selection_properties_info_sections = dialog.m_info_sections_mask;
+
+			m_show_column_titles = dialog.m_show_columns;
+			cfg_selection_poperties_show_column_titles = m_show_column_titles;
+			set_show_header(m_show_column_titles);
+
+			if (m_show_group_titles != dialog.m_show_groups)
+			{
+				m_show_group_titles = dialog.m_show_groups;
+				cfg_selection_poperties_show_group_titles = m_show_group_titles;
+
+				remove_items(bit_array_true(), false);
+				set_group_count(m_show_group_titles ? 1 : 0);
+			}
+
+
+			refresh_contents();
+			m_edge_style = dialog.m_edge_style;
+			cfg_selection_properties_edge_style = m_edge_style;
+			set_edge_style(m_edge_style);
+		}
+		return true;
+	}
+	return false;
+}
+
+bool selection_properties_t::have_config_popup() const
+{
+	return true;
+}
+
 namespace
 {
 	font_client_selection_properties::factory<font_client_selection_properties> g_font_client_selection_properties;
@@ -1487,3 +969,131 @@ namespace
 	font_group_client_selection_properties::factory<font_group_client_selection_properties> g_font_group_client_selection_properties;
 }
 uie::window_factory<selection_properties_t> g_selection_properties;
+
+
+
+selection_properties_t::menu_node_source_popup::menu_node_source_popup(selection_properties_t * p_wnd)
+{
+	m_items.add_item(new menu_node_track_mode(p_wnd, 2));
+	m_items.add_item(new menu_node_track_mode(p_wnd, 0));
+	//m_items.add_item(new uie::menu_node_separator_t());
+	//m_items.add_item(new menu_node_track_mode(p_wnd, 2));
+	m_items.add_item(new menu_node_track_mode(p_wnd, 1));
+}
+
+void selection_properties_t::menu_node_source_popup::get_child(unsigned p_index, uie::menu_node_ptr & p_out) const
+{
+	p_out = m_items[p_index].get_ptr();
+}
+
+unsigned selection_properties_t::menu_node_source_popup::get_children_count() const
+{
+	return m_items.get_count();
+}
+
+bool selection_properties_t::menu_node_source_popup::get_display_data(pfc::string_base & p_out, unsigned & p_displayflags) const
+{
+	p_out = "Tracking mode";
+	p_displayflags = 0;
+	return true;
+}
+
+selection_properties_t::menu_node_autosize::menu_node_autosize(selection_properties_t * p_wnd) : p_this(p_wnd)
+{
+
+}
+
+void selection_properties_t::menu_node_autosize::execute()
+{
+	p_this->m_autosizing_columns = !p_this->m_autosizing_columns;
+	p_this->set_autosize(p_this->m_autosizing_columns);
+}
+
+bool selection_properties_t::menu_node_autosize::get_description(pfc::string_base & p_out) const
+{
+	return false;
+}
+
+bool selection_properties_t::menu_node_autosize::get_display_data(pfc::string_base & p_out, unsigned & p_displayflags) const
+{
+	p_out = "Auto-sizing columns";
+	p_displayflags = (p_this->m_autosizing_columns) ? ui_extension::menu_node_t::state_checked : 0;
+	return true;
+}
+
+selection_properties_t::menu_node_track_mode::menu_node_track_mode(selection_properties_t * p_wnd, t_size p_value) : p_this(p_wnd), m_source(p_value)
+{
+
+}
+
+void selection_properties_t::menu_node_track_mode::execute()
+{
+	p_this->m_tracking_mode = m_source;
+	cfg_selection_properties_tracking_mode = m_source;
+	p_this->on_tracking_mode_change();
+}
+
+bool selection_properties_t::menu_node_track_mode::get_description(pfc::string_base & p_out) const
+{
+	return false;
+}
+
+bool selection_properties_t::menu_node_track_mode::get_display_data(pfc::string_base & p_out, unsigned & p_displayflags) const
+{
+	p_out = get_name(m_source);
+	p_displayflags = (m_source == p_this->m_tracking_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
+	return true;
+}
+
+const char * selection_properties_t::menu_node_track_mode::get_name(t_size source)
+{
+	if (source == track_nowplaying) return "Playing item";
+	if (source == track_selection) return "Current selection";
+	if (source == track_automatic) return "Automatic";
+	return "";
+}
+
+track_property_callback_itemproperties::track_property_callback_itemproperties() : m_values(tabsize(g_info_sections))
+{
+
+}
+
+void track_property_callback_itemproperties::sort()
+{
+	t_size i, count = m_values.get_size();
+	for (i = 0; i < count; i++)
+	{
+		mmh::permutation_t perm(m_values[i].get_count());
+		mmh::g_sort_get_permutation_qsort_v2(m_values[i].get_ptr(), perm, track_property_t::g_compare, false);
+		m_values[i].reorder(perm.get_ptr());
+	}
+}
+
+bool track_property_callback_itemproperties::is_group_wanted(const char * p_group)
+{
+	return true;
+}
+
+void track_property_callback_itemproperties::set_property(const char * p_group, double p_sortpriority, const char * p_name, const char * p_value)
+{
+	t_size index = g_get_info_secion_index_by_name(p_group);
+	if (index != pfc_infinite)
+		m_values[index].add_item(track_property_t(p_sortpriority, p_name, p_value));
+}
+
+track_property_callback_itemproperties::track_property_t::track_property_t()
+{
+
+}
+
+track_property_callback_itemproperties::track_property_t::track_property_t(double p_sortpriority, const char * p_name, const char * p_value) : m_name(p_name), m_value(p_value), m_sortpriority(p_sortpriority)
+{
+
+}
+
+int track_property_callback_itemproperties::track_property_t::g_compare(self_t const & a, self_t const & b)
+{
+	int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
+	if (!ret) ret = StrCmpLogicalW(pfc::stringcvt::string_wide_from_utf8(a.m_name), pfc::stringcvt::string_wide_from_utf8(b.m_name));
+	return ret;
+}

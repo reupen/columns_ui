@@ -373,11 +373,14 @@
     <ClCompile Include="..\foo_ui_columns\item_details_config.cpp" />
     <ClCompile Include="..\foo_ui_columns\item_details_font.cpp" />
     <ClCompile Include="..\foo_ui_columns\item_details_text.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_properties_config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_properties_config_list_view.cpp" />
     <ClCompile Include="..\foo_ui_columns\layout_config.cpp" />
     <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />
     <ClCompile Include="..\foo_ui_columns\mw_drop_target.cpp" />
     <ClCompile Include="..\foo_ui_columns\mw_wnd_proc.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_tabs_drop_target.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_tabs_wndproc.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_cache.cpp" />
     <ClCompile Include="..\foo_ui_columns\playlist_view_day_timer.cpp" />
@@ -436,6 +439,7 @@
     <ClCompile Include="..\foo_ui_columns\font_notify.cpp" />
     <ClCompile Include="..\foo_ui_columns\menu_items.cpp" />
     <ClCompile Include="..\foo_ui_columns\splitter_window.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_window_wndproc.cpp" />
     <ClCompile Include="..\foo_ui_columns\status_bar.cpp" />
     <ClCompile Include="..\foo_ui_columns\stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -488,6 +492,7 @@
     <ClInclude Include="..\foo_ui_columns\gdiplus.h" />
     <ClInclude Include="..\foo_ui_columns\get_msg_hook.h" />
     <ClInclude Include="..\foo_ui_columns\item_details.h" />
+    <ClInclude Include="..\foo_ui_columns\item_properties.h" />
     <ClInclude Include="..\foo_ui_columns\menu_helpers.h" />
     <ClInclude Include="..\foo_ui_columns\mw_drop_target.h" />
     <ClInclude Include="..\foo_ui_columns\playlist_view.h" />

@@ -81,6 +81,7 @@
 #include "artwork_helpers.h"
 #include "artwork.h"
 #include "ng playlist/ng_playlist.h"
+#include "item_properties.h"
 
 #include "fcl.h"
 #include "menu_items.h"

@@ -9,6 +9,7 @@ void g_on_autohide_tabs_change();
 void g_on_multiline_tabs_change();
 void g_on_tabs_font_change();
 
+void remove_playlist_helper(t_size index);
 
 class playlists_tabs_extension : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2>, public playlist_callback
 {
@@ -185,5 +186,7 @@ private:
 
 	MINMAXINFO mmi;
 };
+
+extern ui_extension::window_host_factory<playlists_tabs_extension::window_host_impl> g_tab_host;
 
 #endif
