@@ -1,8 +1,6 @@
 #ifndef _COLUMNS_EXTERN_H_
 #define _COLUMNS_EXTERN_H_
 
-#include "../SDK/foobar2000.h"
-
 extern HWND g_main_window,
 	g_tooltip,
 	g_rebar,
@@ -81,32 +79,21 @@ extern cfg_int cfg_back,
 
 extern bool g_playing;
 
-extern HBRUSH 
-	g_pl_back_brush;
-
-extern HHOOK msghook;
-
 extern HICON g_icon;
 
-extern cfg_string cfg_tray_icon_path,cfg_export,cfg_import,cfg_custom_buttons_path,cfg_globalstring,cfg_colour,cfg_pgenstring;
+extern cfg_string cfg_tray_icon_path,
+	cfg_export,
+	cfg_import,
+	cfg_custom_buttons_path,cfg_globalstring,
+	cfg_colour,
+	cfg_pgenstring;
 
 extern cfg_menu_item cfg_statusdbl;
 
 extern bool 
 	ui_initialising,
-	g_vol,
-	g_sel_time,
 	g_minimised ,
-	drawing_enabled ,
-	g_dragging,
-	g_drag_lmb,
-	g_dragging1,
 	g_icon_created;
-
-extern int sub_menu_ref_count;
-
-extern int active_item,
-	actual_active;
 
 extern cfg_struct_t<LOGFONT> cfg_font,
 	cfg_status_font,

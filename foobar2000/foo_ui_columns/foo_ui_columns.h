@@ -62,6 +62,7 @@ namespace status_bar
 
 LOGFONT get_menu_font();
 LOGFONT get_icon_font();
+bool remember_window_pos();
 
 void update_titlebar();
 void update_status();
