@@ -159,9 +159,6 @@
     <ClCompile Include="..\foo_ui_columns\splitter_tabs.cpp">
       <Filter>Panels\Tab Stack</Filter>
     </ClCompile>
-    <ClCompile Include="..\foo_ui_columns\foo_ui_columns.cpp">
-      <Filter>Main Window</Filter>
-    </ClCompile>
     <ClCompile Include="..\foo_ui_columns\layout.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
@@ -451,6 +448,9 @@
     <ClCompile Include="..\foo_ui_columns\config_defaults.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\main_window.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -503,9 +503,6 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\resource.h">
       <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include="..\foo_ui_columns\foo_ui_columns.h">
-      <Filter>Main Window</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\layout.h">
       <Filter>Main Window</Filter>
@@ -613,6 +610,9 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\config_defaults.h">
       <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\main_window.h">
+      <Filter>Main Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -429,7 +429,7 @@
     <ClCompile Include="..\foo_ui_columns\splitter_panel.cpp" />
     <ClCompile Include="..\foo_ui_columns\splitter_panel_container.cpp" />
     <ClCompile Include="..\foo_ui_columns\splitter_tabs.cpp" />
-    <ClCompile Include="..\foo_ui_columns\foo_ui_columns.cpp">
+    <ClCompile Include="..\foo_ui_columns\main_window.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="..\foo_ui_columns\layout.cpp" />
@@ -523,7 +523,7 @@
     <ClInclude Include="..\foo_ui_columns\splitter.h" />
     <ClInclude Include="..\foo_ui_columns\splitter_tabs.h" />
     <ClInclude Include="..\foo_ui_columns\resource.h" />
-    <ClInclude Include="..\foo_ui_columns\foo_ui_columns.h" />
+    <ClInclude Include="..\foo_ui_columns\main_window.h" />
     <ClInclude Include="..\foo_ui_columns\layout.h" />
     <ClInclude Include="..\foo_ui_columns\rebar.h" />
     <ClInclude Include="..\foo_ui_columns\callback.h" />
