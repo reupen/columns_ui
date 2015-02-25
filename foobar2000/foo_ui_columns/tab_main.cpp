@@ -181,11 +181,11 @@ public:
 			{
 				DLLVERSIONINFO2 dvi;
 				pfc::string8 path;
-				DWORD ver = win32_helpers::get_comctl32_version(dvi, &path);
+				HRESULT hr = win32_helpers::get_comctl32_version(dvi, &path);
 
 				pfc::string8 temp;
 
-				if (!ver)
+				if (FAILED(hr))
 					temp = "4.70";
 				else if (dvi.info1.cbSize == sizeof(DLLVERSIONINFO2))
 				{

@@ -127,7 +127,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -166,7 +166,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateMapFile>true</GenerateMapFile>
@@ -204,7 +204,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateMapFile>true</GenerateMapFile>
       <OptimizeReferences>true</OptimizeReferences>
@@ -244,7 +244,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;libpng13.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../shared/shared.lib;Msimg32.lib;uxtheme.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateMapFile>true</GenerateMapFile>
       <OptimizeReferences>true</OptimizeReferences>

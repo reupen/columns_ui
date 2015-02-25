@@ -236,7 +236,7 @@ namespace win32_helpers
 
 		static DLLVERSIONINFO2 g_dvi;
 
-		if (!have_version)
+		if (!have_version || p_path_out)
 		{
 			HINSTANCE hinstDll = LoadLibrary(_T("comctl32.dll"));
 
@@ -244,28 +244,31 @@ namespace win32_helpers
 			{
 				if (p_path_out)
 					uGetModuleFileName(hinstDll, *p_path_out);
-				DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hinstDll, "DllGetVersion");
 
-				if(pDllGetVersion)
+				if (!have_version)
 				{
+					DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hinstDll, "DllGetVersion");
 
-					memset(&g_dvi, 0, sizeof(DLLVERSIONINFO2));
-					g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO2);
-
-					rv = (*pDllGetVersion)(&g_dvi.info1);
-
-					if (FAILED(rv))
+					if (pDllGetVersion)
 					{
-						memset(&g_dvi, 0, sizeof(DLLVERSIONINFO));
-						g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO);
+
+						memset(&g_dvi, 0, sizeof(DLLVERSIONINFO2));
+						g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO2);
 
 						rv = (*pDllGetVersion)(&g_dvi.info1);
-					}
-				}
 
+						if (FAILED(rv))
+						{
+							memset(&g_dvi, 0, sizeof(DLLVERSIONINFO));
+							g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO);
+
+							rv = (*pDllGetVersion)(&g_dvi.info1);
+						}
+					}
+					have_version = true;
+				}
 				FreeLibrary(hinstDll);
 			}
-			have_version = true;
 		}
 		p_dvi = g_dvi;
 		return rv;
