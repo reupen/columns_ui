@@ -38,7 +38,7 @@
 #include <io.h>
 #include <share.h>
 
-#include "foo_ui_columns.h"
+#include "main_window.h"
 
 #include "config_items.h"
 
