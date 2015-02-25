@@ -64,46 +64,6 @@ void g_compare_file_with_bytes(const service_ptr_t<file> & p1, const pfc::array_
 	}
 }
 
-HRESULT g_get_comctl32_version(DLLVERSIONINFO2 & p_dvi)
-{
-	static bool have_version = false;
-	static HRESULT rv = E_FAIL;
-
-	static DLLVERSIONINFO2 g_dvi;
-
-	if (!have_version)
-	{
-		HINSTANCE hinstDll = LoadLibrary(_T("comctl32.dll"));
-
-		if (hinstDll)
-		{
-			DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hinstDll, "DllGetVersion");
-
-
-			if (pDllGetVersion)
-			{
-
-				memset(&g_dvi, 0, sizeof(DLLVERSIONINFO2));
-				g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO2);
-
-				rv = (*pDllGetVersion)(&g_dvi.info1);
-
-				if (FAILED(rv))
-				{
-					memset(&g_dvi, 0, sizeof(DLLVERSIONINFO));
-					g_dvi.info1.cbSize = sizeof(DLLVERSIONINFO);
-
-					rv = (*pDllGetVersion)(&g_dvi.info1);
-				}
-			}
-
-			FreeLibrary(hinstDll);
-		}
-		have_version = true;
-	}
-	p_dvi = g_dvi;
-	return rv;
-}
 
 HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
 {

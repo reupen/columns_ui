@@ -7,7 +7,8 @@ namespace mmh
 	{
 	public:
 		static bool is_windows_7_or_newer() {return test_osversion(6,1);}
-		static bool is_windows_vista_or_newer() {return test_osversion(6,0);}
+		static bool is_windows_vista_or_newer() { return test_osversion(6, 0); }
+		static bool is_windows_xp_or_newer() { return test_osversion(5, 1); }
 		static bool test_osversion(DWORD major, DWORD minor)
 		{
 			_initialise(); 

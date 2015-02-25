@@ -764,7 +764,7 @@ void playlist_view::g_update_sort()
 					hdi.mask = HDI_FORMAT;
 					Header_GetItem(p_playlist->wnd_header, column, &hdi);
 					
-					if (is_winxp_or_newer())
+					if (mmh::osversion::is_windows_xp_or_newer())
 						hdi.fmt |= HDF_STRING | (descending ? 0x0200 : 0x0400);
 					else
 					{

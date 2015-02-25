@@ -26,7 +26,6 @@ public:
 
 extern cfg_int cfg_import_titles,
 cfg_export_titles;
-void refresh_all_playlist_views();
 
 namespace columns
 {
@@ -63,6 +62,7 @@ void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
 bool colour_picker(HWND wnd, cfg_int & out, COLORREF custom);
 bool colour_picker(HWND wnd, COLORREF & out, COLORREF custom);
 bool colour_picker2(HWND wnd, config_item_t<COLORREF> & p_out, COLORREF custom);
+BOOL font_picker(LOGFONT & p_font, HWND parent);
 bool font_picker(HWND wnd, cfg_struct_t<LOGFONT> & out);
 void preview_to_console(const char * spec, bool extra);
 

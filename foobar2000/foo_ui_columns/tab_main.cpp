@@ -181,7 +181,7 @@ public:
 			{
 				DLLVERSIONINFO2 dvi;
 				pfc::string8 path;
-				DWORD ver = GetCommctl32Version(dvi, path);
+				DWORD ver = win32_helpers::get_comctl32_version(dvi, &path);
 
 				pfc::string8 temp;
 

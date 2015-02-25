@@ -359,6 +359,8 @@
     <ClCompile Include="..\foo_ui_columns\cache.cpp" />
     <ClCompile Include="..\foo_ui_columns\colours_manager_data.cpp" />
     <ClCompile Include="..\foo_ui_columns\columns_v2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\component_impl.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_defaults.cpp" />
     <ClCompile Include="..\foo_ui_columns\config_items.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_guids.cpp" />
     <ClCompile Include="..\foo_ui_columns\filter_inline_edit.cpp" />
@@ -463,6 +465,7 @@
     <ClCompile Include="..\foo_ui_columns\tab_playlist.cpp" />
     <ClCompile Include="..\foo_ui_columns\tab_playlist_dd.cpp" />
     <ClCompile Include="..\foo_ui_columns\tab_status.cpp" />
+    <ClCompile Include="..\foo_ui_columns\user_interface_impl.cpp" />
     <ClCompile Include="..\foo_ui_columns\utf8api.cpp" />
     <ClCompile Include="..\foo_ui_columns\volume.cpp" />
     <ClCompile Include="..\foo_ui_columns\buttons.cpp" />
@@ -495,6 +498,7 @@
     <ClInclude Include="..\foo_ui_columns\colours_manager_data.h" />
     <ClInclude Include="..\foo_ui_columns\columns_v2.h" />
     <ClInclude Include="..\foo_ui_columns\config_appearance.h" />
+    <ClInclude Include="..\foo_ui_columns\config_defaults.h" />
     <ClInclude Include="..\foo_ui_columns\config_items.h" />
     <ClInclude Include="..\foo_ui_columns\fonts_manager_data.h" />
     <ClInclude Include="..\foo_ui_columns\gdiplus.h" />

@@ -60,8 +60,6 @@ namespace status_bar
 	void set_part_sizes(unsigned p_parts = t_parts_none);
 };
 
-LOGFONT get_menu_font();
-LOGFONT get_icon_font();
 bool remember_window_pos();
 
 void update_titlebar();

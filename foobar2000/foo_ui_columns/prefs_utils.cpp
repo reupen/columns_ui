@@ -87,6 +87,38 @@ bool colour_picker2(HWND wnd, config_item_t<COLORREF> & p_out, COLORREF custom)
 	return rv;
 }
 
+UINT_PTR CALLBACK choose_font_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+	switch (msg)
+	{
+	case WM_INITDIALOG:
+	{
+		CHOOSEFONT * cf = reinterpret_cast<CHOOSEFONT*>(lp);
+		reinterpret_cast<modal_dialog_scope*>(cf->lCustData)->initialize(FindOwningPopup(wnd));
+	}
+	return 0;
+	default:
+		return 0;
+	}
+}
+
+BOOL font_picker(LOGFONT & p_font, HWND parent)
+{
+	modal_dialog_scope scope(parent);
+
+	CHOOSEFONT cf;
+	memset(&cf, 0, sizeof(cf));
+	cf.lStructSize = sizeof(cf);
+	cf.hwndOwner = parent;
+	cf.lpLogFont = &p_font;
+	cf.Flags = CF_SCREENFONTS | CF_FORCEFONTEXIST | CF_INITTOLOGFONTSTRUCT/*|CF_ENABLEHOOK*/;
+	cf.nFontType = SCREEN_FONTTYPE;
+	cf.lCustData = reinterpret_cast<LPARAM>(&scope);
+	cf.lpfnHook = choose_font_hook;
+	BOOL rv = ChooseFont(&cf);
+	return rv;
+}
+
 bool font_picker(HWND wnd, cfg_struct_t<LOGFONT> & out)
 {
 	bool rv = false;

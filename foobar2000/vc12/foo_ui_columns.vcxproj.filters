@@ -442,6 +442,15 @@
     <ClCompile Include="..\foo_ui_columns\tab_global.cpp">
       <Filter>Prefs UI</Filter>
     </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\user_interface_impl.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\component_impl.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\config_defaults.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\foo_ui_columns\cache.h">
@@ -600,6 +609,9 @@
       <Filter>Config storage</Filter>
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\config_vars.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\config_defaults.h">
       <Filter>Config storage</Filter>
     </ClInclude>
   </ItemGroup>

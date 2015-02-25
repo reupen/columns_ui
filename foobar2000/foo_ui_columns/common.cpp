@@ -20,33 +20,6 @@ void colour::set(COLORREF new_colour)
 	R = LOBYTE(LOWORD(new_colour));
 }
 
-/*string_parser::string_parser(const char * ptr, char separator)
-{
-while(*ptr)
-{
-const char * start = ptr;
-while(*ptr && *ptr!=separator) ptr++;
-if (ptr>start) data.add_item(pfc::strdup_n(start,ptr-start));
-while(*ptr==separator) ptr++;
-}
-}
-
-string_parser::~string_parser()
-{
-data.free_all();
-}
-
-bool string_parser::is_in_list(const char * text)
-{
-int n,t = data.get_count();
-for (n=0; n<t; n++)
-{
-if (!strcmp(text, data.get_item(n)))
-return true;
-}
-return false;
-}*/
-
 void set_sel_single(int idx, bool toggle, bool focus, bool single_only)
 {
 	static_api_ptr_t<playlist_manager> playlist_api;
@@ -163,101 +136,6 @@ UINT GetNumScrollLines()
 	return(ucNumLines);
 }
 
-bool is_winxp_or_newer()
-{
-	static OSVERSIONINFO ov;
-	static bool blah = false;
-
-	if (!blah)
-	{
-		ov.dwOSVersionInfoSize = sizeof(ov);
-		GetVersionEx(&ov);
-	}
-	return (ov.dwMajorVersion > 5 || (ov.dwMajorVersion == 5 && ov.dwMinorVersion >= 1));
-}
-
-
-/*
-int move_playlist(int from, int to)
-{
-playlist_switcher * g_switcher = playlist_switcher::get();
-int count = g_switcher->get_num_playlists();
-if (from < to)
-{
-int n = from;
-order_helper order(count);
-while (n<to && n < count)
-{
-order.swap(n,n+1);
-n++;
-}
-return n;
-}
-else if (from > to)
-{
-int n = from;
-order_helper order(count);
-while (n>to && n > 0)
-{
-order.swap(n,n-1);
-n--;
-}
-return n;
-}
-return from;
-}
-*/
-
-#define PACKVERSION(major,minor) MAKELONG(minor,major)
-DWORD GetCommctl32Version(DLLVERSIONINFO2 & dvi, pfc::string_base & p_out)
-{
-	HINSTANCE hinstDll;
-	DWORD dwVersion = 0;
-
-	/* For security purposes, LoadLibrary should be provided with a
-	   fully-qualified path to the DLL. The lpszDllName variable should be
-	   tested to ensure that it is a fully qualified path before it is used. */
-	hinstDll = uLoadLibrary("comctl32.dll");
-
-	if (hinstDll)
-	{
-		uGetModuleFileName(hinstDll, p_out);
-		DLLGETVERSIONPROC pDllGetVersion;
-		pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hinstDll, "DllGetVersion");
-
-		/* Because some DLLs might not implement this function, you
-		must test for it explicitly. Depending on the particular
-		DLL, the lack of a DllGetVersion function can be a useful
-		indicator of the version. */
-
-		if (pDllGetVersion)
-		{
-			//       DLLVERSIONINFO dvi;
-			HRESULT hr;
-
-			memset(&dvi, 0, sizeof(DLLVERSIONINFO2));
-			dvi.info1.cbSize = sizeof(DLLVERSIONINFO2);
-
-			hr = (*pDllGetVersion)(&dvi.info1);
-
-			if (FAILED(hr))
-			{
-				memset(&dvi, 0, sizeof(DLLVERSIONINFO));
-				dvi.info1.cbSize = sizeof(DLLVERSIONINFO);
-
-				hr = (*pDllGetVersion)(&dvi.info1);
-			}
-
-			if (SUCCEEDED(hr))
-			{
-				dwVersion = PACKVERSION(dvi.info1.dwMajorVersion, dvi.info1.dwMinorVersion);
-			}
-		}
-
-		FreeLibrary(hinstDll);
-	}
-	return dwVersion;
-}
 string_pn::string_pn(metadb_handle_list_cref handles, const char * format, const char * def)
 {
 	pfc::string8_fast_aggressive a, b;
@@ -459,37 +337,6 @@ void on_menu_combo_change(HWND wnd, LPARAM lp, cfg_menu_item & cfg_menu_store, m
 	uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0, cache_idx < p_cache.get_count() ? p_cache.get_item(cache_idx).m_desc.get_ptr() : "");
 }
 
-UINT_PTR CALLBACK choose_font_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-	switch (msg)
-	{
-	case WM_INITDIALOG:
-	{
-		CHOOSEFONT * cf = reinterpret_cast<CHOOSEFONT*>(lp);
-		reinterpret_cast<modal_dialog_scope*>(cf->lCustData)->initialize(FindOwningPopup(wnd));
-	}
-	return 0;
-	default:
-		return 0;
-	}
-}
-
-BOOL font_picker(LOGFONT & p_font, HWND parent)
-{
-	modal_dialog_scope scope(parent);
-
-	CHOOSEFONT cf;
-	memset(&cf, 0, sizeof(cf));
-	cf.lStructSize = sizeof(cf);
-	cf.hwndOwner = parent;
-	cf.lpLogFont = &p_font;
-	cf.Flags = CF_SCREENFONTS | CF_FORCEFONTEXIST | CF_INITTOLOGFONTSTRUCT/*|CF_ENABLEHOOK*/;
-	cf.nFontType = SCREEN_FONTTYPE;
-	cf.lCustData = reinterpret_cast<LPARAM>(&scope);
-	cf.lpfnHook = choose_font_hook;
-	BOOL rv = ChooseFont(&cf);
-	return rv;
-}
 
 
 void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr> & p_items, const char * p_name)

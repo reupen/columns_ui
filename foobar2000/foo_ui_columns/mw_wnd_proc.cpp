@@ -580,7 +580,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		win32_helpers::send_message_to_direct_children(wnd, msg, wp, lp);
 		break;
 	case WM_THEMECHANGED:
-		if (is_winxp_or_newer())
+		if (mmh::osversion::is_windows_xp_or_newer())
 		{
 			if (g_rebar_window) g_rebar_window->on_themechanged();
 			if (g_status)

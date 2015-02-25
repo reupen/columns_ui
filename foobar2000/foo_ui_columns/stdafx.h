@@ -28,17 +28,15 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
-/*#include <uxtheme.h>
-#include <tmschema.h>*/
+#include <SHLWAPI.H>
+#include "zmouse.h"
+
+/*#include <tmschema.h>*/
 #define STRSAFE_NO_DEPRECATE
 #include <strsafe.h>
 
-//#include "..\lpng128\png.h"
 #include <io.h>
 #include <share.h>
-
-#define STRSAFE_NO_DEPRECATE
-#include <strsafe.h>
 
 #include "foo_ui_columns.h"
 
@@ -47,10 +45,12 @@
 #include "gdiplus.h"
 #include "menu_helpers.h"
 #include "prefs.h"
+#include "utf8api.h"
+#include "common.h"
 #include "config_vars.h"
+#include "config_defaults.h"
 
 #include "callback.h"
-#include "common.h"
 #include "status_bar.h"
 #include "columns_v2.h"
 #include "cache.h"

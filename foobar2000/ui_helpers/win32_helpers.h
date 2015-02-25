@@ -15,19 +15,19 @@ bool g_keyboard_cues_enabled();
 
 struct win32_keyboard_lparam
 {
-    /** Specifies the repeat count. The value is the number of times the keystroke is repeated as a result of the user's holding down the key. */
+	/** Specifies the repeat count. The value is the number of times the keystroke is repeated as a result of the user's holding down the key. */
 LPARAM repeat_count : 16;
-    /** Specifies the scan code. The value depends on the OEM. */
+	/** Specifies the scan code. The value depends on the OEM. */
 LPARAM scan_code : 8;
-    /** Specifies whether the key is an extended key, such as a function key or a key on the numeric keypad. The value is 1 if the key is an extended key; otherwise, it is 0. */
+	/** Specifies whether the key is an extended key, such as a function key or a key on the numeric keypad. The value is 1 if the key is an extended key; otherwise, it is 0. */
 LPARAM extended_key : 1;
-    /** Reserved. */
+	/** Reserved. */
 LPARAM reserved : 4;
-    /** Specifies the context code. The value is 1 if the ALT key is down; otherwise, it is 0.*/
+	/** Specifies the context code. The value is 1 if the ALT key is down; otherwise, it is 0.*/
 LPARAM context_code : 1;
-    /** Specifies the previous key state. The value is 1 if the key is down before the message is sent; it is 0 if the key is up.*/
+	/** Specifies the previous key state. The value is 1 if the key is down before the message is sent; it is 0 if the key is up.*/
 LPARAM previous_key_state : 1;
-    /** Specifies the transition state. The value is 0 if the key is being pressed and 1 if it is being released. */
+	/** Specifies the transition state. The value is 0 if the key is being pressed and 1 if it is being released. */
 LPARAM transition_code : 1;
 };
 
@@ -133,7 +133,7 @@ namespace win32_helpers
 
 
 	void format_date(t_filetimestamp time, std::basic_string<TCHAR> & str, bool b_convert_to_local = false);
-	HRESULT get_comctl32_version(DLLVERSIONINFO2 & p_dvi);
+	HRESULT get_comctl32_version(DLLVERSIONINFO2 & p_dvi, pfc::string_base * p_path_out = NULL);
 }
 
 int ListView_InsertColumnText(HWND wnd_lv, UINT index, const TCHAR * text, int cx);

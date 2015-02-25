@@ -1,17 +1,8 @@
 #ifndef _COLUMNS_HELPERS_H_
 #define _COLUMNS_HELPERS_H_
 
-#include <SHLWAPI.H>
 
 #include <DelayImp.h>
-#include "../SDK/foobar2000.h"
-#include "zmouse.h"
-//#include <shlwapi.h>
-
-/* for getting number lines to scroll with wheel */
-#ifndef SPI_GETWHEELSCROLLLINES
-#define SPI_GETWHEELSCROLLLINES   104
-#endif
 
 #ifdef _DEBUG
 #define profiler_debug(x) profiler(x)
@@ -229,29 +220,14 @@ enum config_data
 
 namespace pfc
 {
-template<> class traits_t<playlist_filter_type> : public traits_rawobject {};
-template<> class traits_t<alignment> : public traits_rawobject {};
-template<> class traits_t<column_data> : public traits_rawobject {};
-template<> class traits_t<config_data> : public traits_rawobject {};
+	template<> class traits_t<playlist_filter_type> : public traits_rawobject {};
+	template<> class traits_t<alignment> : public traits_rawobject {};
+	template<> class traits_t<column_data> : public traits_rawobject {};
+	template<> class traits_t<config_data> : public traits_rawobject {};
 }
 
 
-#include "utf8api.h"
-
 const char * strchr_n(const char * src, char c, unsigned len = -1);
-
-/*class sort_info
-{
-public:
-	pfc::string_simple item;
-	int n;
-	sort_info(const char * text, int idx, unsigned len = -1) : item(text,len),n(idx) {}
-};
-
-static int sort_info_sortproc(const sort_info * &n1,const sort_info * &n2)
-{
-	return uStringCompare(n1->item,n2->item);
-}*/
 
 struct create_guid : public GUID
 {
@@ -343,34 +319,13 @@ public:
 	{if (count) return (double)(diff*1000000000) / (double)(interval*count); else return 0;}
 };
 
-/*class string_parser
-{
-	pfc::ptr_list_t<char> data;
-public:
-	string_parser(const char * ptr, char separator);
-	~string_parser();
-	bool is_in_list(const char * text);
-};*/
-
 void set_sel_single(int idx, bool toggle, bool focus, bool single_only);
 void set_sel_range(int start, int end, bool keep, bool deselect=false);
 
 int rebar_id_to_idx(HWND wnd, unsigned id);
 void rebar_show_all_bands(HWND wnd);
+
 UINT GetNumScrollLines();
-bool is_winxp_or_newer();
-//int move_playlist(int from, int to);
-
-DWORD GetCommctl32Version(DLLVERSIONINFO2 & dvi, pfc::string_base & p_out);
-
-BOOL uEnableThemeDialogTexture(HWND wnd, DWORD flags);
-
-#define STAP_ALLOW_NONCLIENT    (1 << 0)
-#define STAP_ALLOW_CONTROLS     (1 << 1)
-#define STAP_ALLOW_WEBCONTENT   (1 << 2)
-
-void uSetThemeAppProperties(DWORD flags);
-BOOL uSetWindowTheme(HWND wnd, LPCWSTR pszSubAppName, LPCWSTR pszSubIdList);
 
 class menu_item_identifier
 {
@@ -385,22 +340,6 @@ public:
 
 bool operator==(const menu_item_identifier & p1, const menu_item_identifier & p2);
 bool operator!=(const menu_item_identifier & p1, const menu_item_identifier & p2);
-
-class cfg_menu_item :
-	 public cfg_struct_t<menu_item_identifier>
-{
-public:
-	using cfg_struct_t<menu_item_identifier>::operator=;
-	using cfg_struct_t<menu_item_identifier>::operator menu_item_identifier;
-	void reset()
-	{
-		menu_item_identifier temp;
-		*this = temp;
-	}
-	explicit inline cfg_menu_item(const GUID & p_guid,const menu_item_identifier & p_val) : cfg_struct_t<menu_item_identifier>(p_guid, p_val) {};
-	explicit inline cfg_menu_item(const GUID & p_guid,const GUID & p_val, const GUID & psub = pfc::guid_null) : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier(p_val, psub)) {};
-	explicit inline cfg_menu_item(const GUID & p_guid) : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier()) {};
-};
 
 class menu_item_cache
 {
@@ -421,15 +360,8 @@ private:
 	pfc::ptr_list_t<menu_item_info> m_data;
 };
 
-namespace menu_helpers
-{
-	//bool run_command(const menu_item_identifier & p_command);
-	//bool maingroupname_from_guid(const GUID & p_guid, pfc::string_base & p_out, GUID & parentout);
-};
 void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_item_identifier & p_item, menu_item_cache & p_cache, bool insert_none);
-void on_menu_combo_change(HWND wnd, LPARAM lp, cfg_menu_item & cfg_menu_store, menu_item_cache & p_cache, unsigned ID_DESC) ;
-
-BOOL font_picker(LOGFONT & p_font,HWND parent);
+void on_menu_combo_change(HWND wnd, LPARAM lp, class cfg_menu_item & cfg_menu_store, menu_item_cache & p_cache, unsigned ID_DESC) ;
 
 void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr> & p_items, const char * name);
 

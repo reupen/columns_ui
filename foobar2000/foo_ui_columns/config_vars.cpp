@@ -138,3 +138,26 @@ const GUID g_guid_colours_fonts_imported =
 { 0x27dfb9b0, 0x2621, 0x4935, { 0xb6, 0x70, 0x2, 0x57, 0x69, 0x45, 0xc0, 0x12 } };
 
 cfg_bool g_colours_fonts_imported(g_guid_colours_fonts_imported, false);
+
+cfg_window_placement_t cfg_window_placement_columns(create_guid(0x8bdb3caa, 0x6544, 0x07a6, 0x89, 0x67, 0xf8, 0x13, 0x3a, 0x80, 0x75, 0xbb));
+
+
+cfg_window_placement_t::cfg_window_placement_t(const GUID & p_guid) : cfg_struct_t<WINDOWPLACEMENT>(p_guid, get_def_window_pos())
+{
+
+}
+
+void cfg_window_placement_t::get_data_raw(stream_writer * out, abort_callback & p_abort)
+{
+	if (g_main_window && remember_window_pos())
+	{
+		WINDOWPLACEMENT wp;
+		memset(&wp, 0, sizeof(wp));
+		wp.length = sizeof(wp);
+		if (GetWindowPlacement(g_main_window, &wp))
+			*this = wp;
+	}
+	const WINDOWPLACEMENT & wp = get_value();
+
+	out->write(&wp, sizeof(wp), p_abort);
+}

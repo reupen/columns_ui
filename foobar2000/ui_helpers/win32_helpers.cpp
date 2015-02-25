@@ -229,7 +229,7 @@ namespace win32_helpers
 		str += _T(" ");
 		str += buf2.get_ptr();
 	}
-	HRESULT get_comctl32_version(DLLVERSIONINFO2 & p_dvi)
+	HRESULT get_comctl32_version(DLLVERSIONINFO2 & p_dvi, pfc::string_base * p_path_out)
 	{
 		static bool have_version = false;
 		static HRESULT rv = E_FAIL;
@@ -242,8 +242,9 @@ namespace win32_helpers
 
 			if(hinstDll)
 			{
+				if (p_path_out)
+					uGetModuleFileName(hinstDll, *p_path_out);
 				DLLGETVERSIONPROC pDllGetVersion = (DLLGETVERSIONPROC)GetProcAddress(hinstDll, "DllGetVersion");
-
 
 				if(pDllGetVersion)
 				{

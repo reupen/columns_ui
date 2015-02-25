@@ -21,6 +21,8 @@ extern cfg_int cfg_pv_use_system_frame,
 extern service_ptr_t<titleformat_object> g_to_global;
 extern service_ptr_t<titleformat_object> g_to_global_colour;
 
+void refresh_all_playlist_views();
+
 class playlist_view;
 class IDropTarget_playlist;
 
@@ -331,5 +333,6 @@ public:
 };
 
 extern playlist_message_window g_playlist_message_window;
+
 
 #endif
