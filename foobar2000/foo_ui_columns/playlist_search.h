@@ -1,7 +1,7 @@
 #ifndef _COLUMNS_PLAYLIST_SEARCH_H_
 #define _COLUMNS_PLAYLIST_SEARCH_H_
 
-/** What's all this? Never finished, obsolete or abandoned? */
+/** What's all this? Never finished, obsolete or abandoned? Based on Typefind code. */
 
 #define SEARCH_CACHING_ENABLED
 

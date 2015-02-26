@@ -542,7 +542,7 @@
     <ClInclude Include="..\foo_ui_columns\vis_gen_host.h" />
     <ClInclude Include="..\foo_ui_columns\config.h" />
     <ClInclude Include="..\foo_ui_columns\config_vars.h" />
-    <ClInclude Include="..\foo_ui_columns\prefs.h" />
+    <ClInclude Include="..\foo_ui_columns\prefs_utils.h" />
     <ClInclude Include="..\foo_ui_columns\fcl.h" />
     <ClInclude Include="..\foo_ui_columns\status_pane.h" />
     <ClInclude Include="..\foo_ui_columns\helpers.h" />

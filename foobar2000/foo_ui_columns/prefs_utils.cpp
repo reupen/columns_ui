@@ -131,3 +131,59 @@ bool font_picker(HWND wnd, cfg_struct_t<LOGFONT> & out)
 	return rv;
 }
 
+void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_item_identifier & p_item, menu_item_cache & p_cache, bool insert_none)
+{
+	HWND wnd_combo = GetDlgItem(wnd, ID);
+
+	unsigned n, count = p_cache.get_count();
+	pfc::string8_fast_aggressive temp;
+	unsigned idx_none = 0;
+	if (insert_none)
+	{
+		idx_none = uSendDlgItemMessageText(wnd, ID, CB_ADDSTRING, 0, "(None)");
+		uSendMessage(wnd_combo, CB_SETITEMDATA, idx_none, -1);
+	}
+
+	unsigned sel = -1;
+	pfc::string8 desc;
+
+	for (n = 0; n < count; n++)
+	{
+		unsigned idx = uSendMessageText(wnd_combo, CB_ADDSTRING, 0, p_cache.get_item(n).m_name);
+		SendMessage(wnd_combo, CB_SETITEMDATA, idx, n);
+
+		if (sel == -1 && p_cache.get_item(n) == p_item) { sel = idx; desc = p_cache.get_item(n).m_desc; }
+		else if (sel != -1 && idx <= sel) sel++;
+
+		if (insert_none && idx <= idx_none) idx_none++;
+	}
+
+	uSendMessageText(wnd_combo, CB_SETCURSEL, sel == -1 && insert_none ? idx_none : sel, 0);
+
+	//menu_helpers::get_description(menu_item::TYPE_MAIN, item, desc);
+	uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0, desc);
+
+}
+
+void on_menu_combo_change(HWND wnd, LPARAM lp, cfg_menu_item & cfg_menu_store, menu_item_cache & p_cache, unsigned ID_DESC)
+{
+	HWND wnd_combo = (HWND)lp;
+
+	pfc::string8 temp;
+	unsigned cache_idx = uSendMessage(wnd_combo, CB_GETITEMDATA, uSendMessage(wnd_combo, CB_GETCURSEL, 0, 0), 0);
+
+	if (cache_idx == -1)
+	{
+		cfg_menu_store = menu_item_identifier();
+	}
+	else if (cache_idx < p_cache.get_count())
+	{
+		cfg_menu_store = p_cache.get_item(cache_idx);
+	}
+
+	pfc::string8 desc;
+	//if (cfg_menu_store != pfc::guid_null) menu_helpers::get_description(menu_item::TYPE_MAIN, cfg_menu_store, desc);
+	uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0, cache_idx < p_cache.get_count() ? p_cache.get_item(cache_idx).m_desc.get_ptr() : "");
+}
+
+

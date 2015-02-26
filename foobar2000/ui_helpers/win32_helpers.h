@@ -157,6 +157,9 @@ namespace win32_helpers
 	void DeregisterShellHookWindowHelper(HWND wnd);
 
 	int combobox_find_item_by_data(HWND wnd, t_size id);
+
+	int rebar_id_to_idx(HWND wnd, unsigned id);
+	void rebar_show_all_bands(HWND wnd);
 }
 
 class disable_redrawing_t

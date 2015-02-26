@@ -418,6 +418,35 @@ namespace win32_helpers
 		return -1;
 	}
 
+	int rebar_id_to_idx(HWND wnd, unsigned id)
+	{
+		/* Avoid RB_IDTOINDEX for backwards compatibility */
+		REBARBANDINFO  rbbi;
+		memset(&rbbi, 0, sizeof(rbbi));
+		rbbi.cbSize = sizeof(rbbi);
+		rbbi.fMask = RBBIM_ID;
+
+		UINT count = uSendMessage(wnd, RB_GETBANDCOUNT, 0, 0);
+		unsigned n;
+		for (n = 0; n < count; n++)
+		{
+			uSendMessage(wnd, RB_GETBANDINFO, n, (long)&rbbi);
+			if (rbbi.wID == id) return n;
+		}
+		return -1;
+	}
+
+	void rebar_show_all_bands(HWND wnd)
+	{
+		UINT count = uSendMessage(wnd, RB_GETBANDCOUNT, 0, 0);
+		unsigned n;
+		for (n = 0; n < count; n++)
+		{
+			uSendMessage(wnd, RB_SHOWBAND, n, TRUE);
+		}
+	}
+
+
 }
 
 namespace ui_helpers

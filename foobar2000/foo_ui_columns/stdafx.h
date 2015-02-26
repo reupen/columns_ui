@@ -43,12 +43,12 @@
 #include "config_items.h"
 
 #include "gdiplus.h"
-#include "menu_helpers.h"
-#include "prefs.h"
 #include "utf8api.h"
 #include "common.h"
+#include "menu_helpers.h"
 #include "config_vars.h"
 #include "config_defaults.h"
+#include "prefs_utils.h"
 
 #include "callback.h"
 #include "status_bar.h"

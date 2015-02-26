@@ -543,9 +543,6 @@
     <ClInclude Include="..\foo_ui_columns\config.h">
       <Filter>Prefs UI</Filter>
     </ClInclude>
-    <ClInclude Include="..\foo_ui_columns\prefs.h">
-      <Filter>Prefs UI</Filter>
-    </ClInclude>
     <ClInclude Include="..\foo_ui_columns\fcl.h">
       <Filter>FCL</Filter>
     </ClInclude>
@@ -613,6 +610,9 @@
     </ClInclude>
     <ClInclude Include="..\foo_ui_columns\main_window.h">
       <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include="..\foo_ui_columns\prefs_utils.h">
+      <Filter>Prefs UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

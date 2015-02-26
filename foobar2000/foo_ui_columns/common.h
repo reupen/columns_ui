@@ -1,14 +1,7 @@
 #ifndef _COLUMNS_HELPERS_H_
 #define _COLUMNS_HELPERS_H_
 
-
 #include <DelayImp.h>
-
-#ifdef _DEBUG
-#define profiler_debug(x) profiler(x)
-#else
-#define profiler_debug(x)
-#endif
 
 template <typename type_t>
 class ptr_list_autodel_t : public pfc::ptr_list_t < type_t >
@@ -275,93 +268,11 @@ public:
 	string_pn(metadb_handle_list_cref handles, const char * format, const char * def = "Untitled");
 };
 
-__int64 get_timestamp();
-
-class performance_counter_v2
-{
-	__int64 startc, endc, diff,count;
-public:
-	performance_counter_v2() :  startc(0), endc(0), diff(0), count(0) {};
-	__inline void start()
-	{startc = get_timestamp();};
-	__inline void stop()
-	{endc = get_timestamp();diff+=(endc-startc);count++;}
-	void reset()
-	{diff = 0;count=0;}
-	__int64 get_cycles()
-	{return diff;}
-	__int64 get_mean_cycles()
-	{return count ? (diff/count) : 0;}
-};
-
-
-class performance_counter
-{
-	bool supported;
-	__int64 interval, a, b, diff,count;
-public:
-	performance_counter() : interval(0), a(0), b(0), diff(0), count(0) {supported = (QueryPerformanceFrequency((LARGE_INTEGER*)&interval) != 0);};
-	bool get_supported()
-	{return supported;}
-	void start()
-	{QueryPerformanceCounter((LARGE_INTEGER*)&a);};
-	void stop()
-	{QueryPerformanceCounter((LARGE_INTEGER*)&b); diff += (b-a);count++;}
-	void reset()
-	{diff = 0;count=0;}
-	__int64 get_diff()
-	{return diff;}
-	double get_diff_seconds()
-	{if (count) return (double)diff / (double)(interval*count); else return 0;}
-	double get_diff_milliseconds()
-	{if (count) return (double)(diff*1000) / (double)(interval*count); else return 0;}
-	double get_diff_nanoseconds()
-	{if (count) return (double)(diff*1000000000) / (double)(interval*count); else return 0;}
-};
-
 void set_sel_single(int idx, bool toggle, bool focus, bool single_only);
 void set_sel_range(int start, int end, bool keep, bool deselect=false);
 
-int rebar_id_to_idx(HWND wnd, unsigned id);
-void rebar_show_all_bands(HWND wnd);
 
 UINT GetNumScrollLines();
-
-class menu_item_identifier
-{
-public:
-	types::t_guid m_command;
-	types::t_guid m_subcommand;
-	inline const menu_item_identifier & operator=(const menu_item_identifier & p_source) {m_command = p_source.m_command;m_subcommand = p_source.m_subcommand;return *this;}
-	menu_item_identifier(){};
-	menu_item_identifier(const GUID & p_val, const GUID & psub = pfc::guid_null)
-		: m_command(p_val), m_subcommand(psub){};
-};
-
-bool operator==(const menu_item_identifier & p1, const menu_item_identifier & p2);
-bool operator!=(const menu_item_identifier & p1, const menu_item_identifier & p2);
-
-class menu_item_cache
-{
-	class menu_item_info : public menu_item_identifier
-	{
-	public:
-		pfc::string8 m_name;
-		pfc::string8 m_desc;
-	};
-public:
-	menu_item_cache();
-	const menu_item_info & get_item(unsigned n) const;
-	inline unsigned get_count()
-	{
-		return m_data.get_count();
-	}
-private:
-	pfc::ptr_list_t<menu_item_info> m_data;
-};
-
-void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_item_identifier & p_item, menu_item_cache & p_cache, bool insert_none);
-void on_menu_combo_change(HWND wnd, LPARAM lp, class cfg_menu_item & cfg_menu_store, menu_item_cache & p_cache, unsigned ID_DESC) ;
 
 void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr> & p_items, const char * name);
 

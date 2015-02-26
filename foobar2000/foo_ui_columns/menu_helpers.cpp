@@ -1,5 +1,98 @@
 #include "stdafx.h"
 
+
+bool operator==(const menu_item_identifier & p1, const menu_item_identifier & p2)
+{
+	return p1.m_command == p2.m_command && p1.m_subcommand == p2.m_subcommand;
+}
+
+bool operator!=(const menu_item_identifier & p1, const menu_item_identifier & p2)
+{
+	return !(p1 == p2);
+}
+
+menu_item_cache::menu_item_cache()
+{
+	service_enum_t<mainmenu_commands> e;
+	service_ptr_t<mainmenu_commands> ptr;
+
+	unsigned p_item_index = 0, p_service_item_index;
+	while (e.next(ptr))
+	{
+		//if (ptr->get_type() == menu_item::TYPE_MAIN)
+		{
+			unsigned p_service_item_count = ptr->get_command_count();
+			for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++)
+			{
+				menu_item_info info;
+
+				info.m_command = ptr->get_command(p_service_item_index);
+
+				pfc::string8 name, full;
+				ptr->get_name(p_service_item_index, name);
+				{
+					pfc::list_t<pfc::string8> levels;
+					GUID parent = ptr->get_parent();
+					while (parent != pfc::guid_null)
+					{
+						pfc::string8 parentname;
+						if (menu_helpers::maingroupname_from_guid(GUID(parent), parentname, parent))
+							levels.insert_item(parentname, 0);
+					}
+					unsigned i, count = levels.get_count();
+					for (i = 0; i < count; i++)
+					{
+						full.add_string(levels[i]);
+						full.add_byte('/');
+
+					}
+				}
+				full.add_string(name);
+
+
+				/*if (p_node.is_valid() && p_node->get_type() == menu_item_node::TYPE_POPUP)
+				{
+				unsigned child, child_count = p_node->get_children_count();
+				for (child=0;child<child_count;child++)
+				{
+				menu_item_node * p_child = p_node->get_child(child);
+				if (p_child->get_type() == menu_item_node::TYPE_COMMAND)
+				{
+				pfc::string8 subfull = full,subname;
+				unsigned dummy;
+				p_child->get_display_data(subname, dummy, metadb_handle_list(), pfc::guid_null);
+				subfull.add_byte('/');
+				subfull.add_string(subname);
+
+				menu_item_info * p_info = new(std::nothrow) menu_item_info (info);
+				p_info->m_subcommand = p_child->get_guid();
+				p_child->get_description(p_info->m_desc);
+				p_info->m_name = subfull;
+
+				m_data.add_item(p_info);
+				}
+				}
+				}
+				else*/
+				{
+					menu_item_info * p_info = new menu_item_info(info);
+					ptr->get_description(p_service_item_index, p_info->m_desc);
+					p_info->m_name = full;
+
+					m_data.add_item(p_info);
+				}
+
+
+			}
+		}
+	}
+}
+
+const menu_item_cache::menu_item_info & menu_item_cache::get_item(unsigned n) const
+{
+	return *m_data[n];
+}
+
 namespace menu_helpers
 {
 	bool __contextpath_from_guid_recur(contextmenu_item_node * p_node, const GUID & p_subcommand, pfc::string_base & p_out, bool b_short, bool b_root)
