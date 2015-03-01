@@ -20,4 +20,4 @@ This is a helper library containing various non-UI helper classes and functions 
 
 ### foobar2000/ui_helpers
 
-This is a helper library containing various UI helper classes and functions. These include a reusable custom list view control, a custom track bar control and various UI related helpers helpers 
+This is a helper library containing various UI helper classes and functions. These include a reusable custom list view control, a custom track bar control and various UI related helpers. 
