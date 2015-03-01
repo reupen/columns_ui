@@ -1,6 +1,15 @@
 #ifndef _COLUMNS_UI_H_
 #define _COLUMNS_UI_H_
 
+/*!
+ * \file main_window.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Largely functions used for initialising and deinitialising the core parts of the UI
+ */
+
 #define SWITCH_TIMER_ID  670
 #define DAY_TIMER_ID  671
 

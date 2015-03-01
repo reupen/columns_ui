@@ -1,6 +1,13 @@
 #ifndef _COLUMNS_MENU_ITEMS_H_
 #define _COLUMNS_MENU_ITEMS_H_
-
+/*!
+ * \file menu_items.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Main menu commands
+ */
 namespace mainmenu_groups_columns
 {
 	extern const GUID view_columns_part;

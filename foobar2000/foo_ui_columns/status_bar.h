@@ -1,5 +1,14 @@
 #pragma once
 
+/*!
+ * \file status_bar.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Portions of the status bar code
+ */
+
 #include "volume.h"
 
 void status_set_menu(bool on);

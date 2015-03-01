@@ -1,6 +1,15 @@
 #ifndef _COLUMNS_REBAR_H_
 #define _COLUMNS_REBAR_H_
 
+/*!
+ * \file rebar.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Classes used for the toolbars (rebar control) of the main window
+ */
+
 #include "stdafx.h"
 #include "extern.h"
 

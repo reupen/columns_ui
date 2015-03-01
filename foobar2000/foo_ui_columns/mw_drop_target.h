@@ -1,5 +1,14 @@
 #pragma once
 
+/*!
+ * \file mw_drop_target.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Class used for handling drag and drop operations on the main window (drop target only)
+ */
+
 class drop_handler_interface : public IDropTarget
 {
 	long drop_ref_count;

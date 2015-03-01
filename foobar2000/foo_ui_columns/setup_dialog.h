@@ -1,5 +1,14 @@
 #pragma once
 
+/*!
+ * \file setup_dialog.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Initial quick set-up dialog box
+ */
+
 #include "stdafx.h"
 
 class setup_dialog_t : public pfc::refcounted_object_root

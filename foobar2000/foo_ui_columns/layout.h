@@ -1,6 +1,15 @@
 #ifndef _FOO_UI_COLUMNS_LAYOUT_H_
 #define _FOO_UI_COLUMNS_LAYOUT_H_
 
+/*!
+ * \file layout.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Classes used for hosting panels in the main area of the UI
+ */
+
 class cfg_layout_t : public cfg_var
 {
 public:

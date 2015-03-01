@@ -1,5 +1,14 @@
 #pragma once
 
+/*!
+ * \file gdiplus.h
+ *
+ * \author musicmusic
+ * \date March 2015
+ *
+ * Contains helper functions for loading PNG images using Gdiplus
+ */
+
 #include "stdafx.h"
 
 class CheckGdiplusStatus

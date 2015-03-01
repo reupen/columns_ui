@@ -1,6 +1,15 @@
 #ifndef _COLUMNS_EXTERN_H_
 #define _COLUMNS_EXTERN_H_
 
+/*!
+ * \file extern.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Shared global variables
+ */
+
 extern HWND g_main_window,
 	g_tooltip,
 	g_rebar,

@@ -1,6 +1,15 @@
 #ifndef _COLUMNS_VOLUME_H_
 #define _COLUMNS_VOLUME_H_
 
+/*!
+ * \file volume.h
+ *
+ * \author musicmusic
+ * \date 1 March 2015
+ *
+ * Volume control
+ */
+
 #include "../SDK/foobar2000.h"
 
 #include <windows.h>
