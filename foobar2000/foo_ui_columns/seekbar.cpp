@@ -169,7 +169,7 @@ LRESULT seek_bar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
 		LPMINMAXINFO mmi = LPMINMAXINFO(lp);
 
-		mmi->ptMinTrackSize.y = 20;
+		mmi->ptMinTrackSize.y = MulDiv(21, QueryScreenDPI(), 96);
 		//mmi->ptMaxTrackSize.y = 20;
 
 		return 0;

@@ -945,6 +945,7 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 	if (force_destroy_bands) destroy_bands();
 //	else if (save) save_bands(false);
 	
+	SIZE dpi = QueryScreenDPIEx();
 	unsigned n, count = bands.get_count();
 	for (n=0; n<count;)
 	{
@@ -1000,8 +1001,8 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 					rbbi.cyMaxChild   = mmi.ptMaxTrackSize.y;
 					rbbi.cxMinChild   = mmi.ptMinTrackSize.x;
 
-					if (!rbbi.cyMinChild) rbbi.cyMinChild = (21 > rbbi.cyMaxChild ? rbbi.cyMaxChild : 21);
-					if (!rbbi.cxMinChild) rbbi.cxMinChild = 50;
+					if (!rbbi.cyMinChild) rbbi.cyMinChild = MulDiv(21 > rbbi.cyMaxChild ? rbbi.cyMaxChild : 21, dpi.cy, 96);
+					if (!rbbi.cxMinChild) rbbi.cxMinChild = MulDiv(50, dpi.cx, 96);
 				}
 				else
 				{

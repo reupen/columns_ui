@@ -34,7 +34,7 @@ unsigned QueryScreenDPI() {
 
 SIZE QueryScreenDPIEx() {
 	HDC dc = GetDC(0);
-	SIZE ret = { GetDeviceCaps(dc,LOGPIXELSY), GetDeviceCaps(dc,LOGPIXELSY) };
+	SIZE ret = { GetDeviceCaps(dc,LOGPIXELSX), GetDeviceCaps(dc,LOGPIXELSY) };
 	ReleaseDC(0,dc);
 	return ret;
 }
