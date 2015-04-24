@@ -1001,7 +1001,10 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 					rbbi.cyMaxChild   = mmi.ptMaxTrackSize.y;
 					rbbi.cxMinChild   = mmi.ptMinTrackSize.x;
 
-					if (!rbbi.cyMinChild) rbbi.cyMinChild = MulDiv(21 > rbbi.cyMaxChild ? rbbi.cyMaxChild : 21, dpi.cy, 96);
+					if (!rbbi.cyMinChild) {
+						rbbi.cyMinChild = MulDiv(21, dpi.cy, 96);
+						if (rbbi.cyMinChild > rbbi.cyMaxChild) rbbi.cyMinChild = rbbi.cyMaxChild;
+					}
 					if (!rbbi.cxMinChild) rbbi.cxMinChild = MulDiv(50, dpi.cx, 96);
 				}
 				else
