@@ -13,6 +13,7 @@ void t_list_view::scroll(bool b_sb, int val, bool b_horizontal)
 {
 	INT sb = b_horizontal ? SB_HORZ : SB_VERT;
 	int & p_scroll_position = b_horizontal ? m_horizontal_scroll_position : m_scroll_position;
+	const int original_scroll_position = p_scroll_position;
 
 	SCROLLINFO si;
 	memset(&si, 0, sizeof(SCROLLINFO));
@@ -36,9 +37,11 @@ void t_list_view::scroll(bool b_sb, int val, bool b_horizontal)
 			pos = p_scroll_position - si.nPage;
 		else if (val == SB_PAGEDOWN) 
 			pos = p_scroll_position + si.nPage;
-		else if (val == SB_THUMBTRACK) 
+		else if (val == SB_THUMBTRACK)
 			pos = si.nTrackPos;
-		else if (val == SB_BOTTOM) 
+		else if (val == SB_THUMBPOSITION)
+			pos = si.nTrackPos;
+		else if (val == SB_BOTTOM)
 			pos = si.nMax;
 		else if (val == SB_TOP) 
 			pos = si.nMin;
@@ -47,7 +50,7 @@ void t_list_view::scroll(bool b_sb, int val, bool b_horizontal)
 		pos = val;
 	scroll2.nPos = pos;
 
-	if (si.nPos != scroll2.nPos)
+	if (p_scroll_position != scroll2.nPos)
 	{
 		destroy_tooltip();
 		//exit_inline_edit();
@@ -57,7 +60,7 @@ void t_list_view::scroll(bool b_sb, int val, bool b_horizontal)
 			get_items_rect(&playlist);
 			int dx = 0;
 			int dy = 0;
-			(b_horizontal ? dx : dy) = (si.nPos - p_scroll_position);
+			(b_horizontal ? dx : dy) = (original_scroll_position - p_scroll_position);
 			ScrollWindowEx(get_wnd(), dx, dy, &playlist, &playlist, 0, 0, SW_INVALIDATE);
 			RedrawWindow(get_wnd(),0,0,RDW_UPDATENOW);
 			if (b_horizontal)

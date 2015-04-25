@@ -124,6 +124,8 @@ void playlist_view::scroll(t_scroll_direction p_direction, t_scroll_type p_type,
 			new_pos = old_pos + si.nPage;
 		if (p_value == SB_THUMBTRACK)
 			new_pos = si.nTrackPos;
+		if (p_value == SB_THUMBPOSITION)
+			new_pos = si.nTrackPos;
 		if (p_value == SB_BOTTOM)
 			new_pos = si.nMax;
 		if (p_value == SB_TOP)
@@ -160,8 +162,8 @@ void playlist_view::scroll(t_scroll_direction p_direction, t_scroll_type p_type,
 		{
 			RECT playlist;
 			get_playlist_rect(&playlist);
-			int dx = (p_direction == scroll_horizontally) ? (si.nPos - position) : 0;
-			int dy = (p_direction == scroll_vertically) ? (si.nPos - position) * get_item_height() : 0;
+			int dx = (p_direction == scroll_horizontally) ? (old_pos - position) : 0;
+			int dy = (p_direction == scroll_vertically) ? (old_pos - position) * get_item_height() : 0;
 			ScrollWindowEx(wnd_playlist, dx, dy, &playlist, &playlist, 0, 0, SW_INVALIDATE);
 			RedrawWindow(wnd_playlist, 0, 0, RDW_UPDATENOW);
 		}
