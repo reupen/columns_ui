@@ -229,6 +229,20 @@ namespace win32_helpers
 		str += _T(" ");
 		str += buf2.get_ptr();
 	}
+	BOOL set_process_dpi_aware() {
+		typedef BOOL(WINAPI* SETPROCESSDPIAWAREPROC)();
+		HINSTANCE hinstDll = LoadLibrary(_T("user32.dll"));
+
+		if (hinstDll) {
+			SETPROCESSDPIAWAREPROC pSetProcessDPIAware = (SETPROCESSDPIAWAREPROC)GetProcAddress(hinstDll, "SetProcessDPIAware");
+			
+			if (pSetProcessDPIAware) {
+				return pSetProcessDPIAware();
+			}
+		}
+		
+		return FALSE;
+	}
 	HRESULT get_comctl32_version(DLLVERSIONINFO2 & p_dvi, pfc::string_base * p_path_out)
 	{
 		static bool have_version = false;

@@ -150,11 +150,13 @@ void create_systray_icon()
 
 void create_icon_handle()
 {
-	if (g_icon) {DestroyIcon(g_icon); g_icon=0;}
+	const unsigned cx = GetSystemMetrics(SM_CXSMICON);
+	const unsigned cy = GetSystemMetrics(SM_CYSMICON);
+	if (g_icon) { DestroyIcon(g_icon); g_icon = 0; }
 	if (cfg_custom_icon)
-		g_icon = (HICON)uLoadImage(core_api::get_my_instance(), cfg_tray_icon_path, IMAGE_ICON, 16, 16, LR_LOADFROMFILE);
+		g_icon = (HICON)uLoadImage(core_api::get_my_instance(), cfg_tray_icon_path, IMAGE_ICON, cx, cy, LR_LOADFROMFILE);
 	if (!g_icon)
-		g_icon = static_api_ptr_t<ui_control>()->load_main_icon(16, 16);
+		g_icon = static_api_ptr_t<ui_control>()->load_main_icon(cx, cy);
 }
 
 

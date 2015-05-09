@@ -160,6 +160,8 @@ namespace win32_helpers
 
 	int rebar_id_to_idx(HWND wnd, unsigned id);
 	void rebar_show_all_bands(HWND wnd);
+
+	BOOL set_process_dpi_aware();
 }
 
 class disable_redrawing_t

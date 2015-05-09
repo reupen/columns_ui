@@ -41,7 +41,6 @@ public:
 
 		main_window::g_hookproc = hook;
 
-
 		WNDCLASS  wc;
 		memset(&wc, 0, sizeof(wc));
 
