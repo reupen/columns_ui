@@ -45,6 +45,8 @@ public:
 	COLORREF cr_back;
 	unsigned mode;
 
+	unsigned short m_bar_width, m_bar_gap;
+
 	t_size m_scale, m_vertical_scale;
 
 	static pfc::ptr_list_t<spectrum_extension> list_vis;
@@ -184,8 +186,10 @@ pfc::ptr_list_t<spectrum_extension> spectrum_extension::list_vis;
 pfc::ptr_list_t<spectrum_extension> spectrum_extension::g_visualisations;
 
 
-spectrum_extension::spectrum_extension() : br_foreground(0), br_background(0), 
-	cr_fore(cfg_vis2), cr_back(cfg_vis), b_active(false), mode(cfg_vis_mode), m_scale(cfg_scale), m_vertical_scale(cfg_vertical_scale)
+spectrum_extension::spectrum_extension()
+	: br_foreground(0), br_background(0), cr_fore(cfg_vis2), cr_back(cfg_vis), b_active(false), 
+	mode(cfg_vis_mode), m_scale(cfg_scale), m_vertical_scale(cfg_vertical_scale), m_bar_width(3),
+	m_bar_gap(1)
 {
 };
 
@@ -219,6 +223,10 @@ void spectrum_extension::enable( const ui_extension::visualisation_host_ptr & p_
 {
 	p_host = p_vis_host;
 	b_active = true;
+
+	const unsigned cx_dpi = QueryScreenDPIEx().cx;
+	m_bar_width = MulDiv(cx_dpi, 3, 96);
+	m_bar_gap = MulDiv(cx_dpi, 1, 96);
 	
 	if (list_vis.add_item(this) == 0)
 		static_api_ptr_t<visualisation_manager>()->create_stream(g_stream, NULL);
@@ -516,12 +524,9 @@ void spectrum_extension::refresh(const audio_chunk * p_chunk)
 				br_foreground = CreateSolidBrush(cr_fore);
 
 
-			unsigned n;
-
-			unsigned i;
 			if (mode == MODE_BARS)
 			{
-				unsigned totalbars = rc_client->right /3;
+				unsigned totalbars = rc_client->right / m_bar_width;
 				if (totalbars)
 				{
 
@@ -550,8 +555,8 @@ void spectrum_extension::refresh(const audio_chunk * p_chunk)
 						if (val>1.0) val = 1.0;
 
 						RECT r;
-						r.left = 1 + i*3;
-						r.right = r.left + 2;
+						r.left = 1 + i*m_bar_width;
+						r.right = r.left + m_bar_width - m_bar_gap;
 						r.bottom = rc_client->bottom ? rc_client->bottom-1 : 0;
 						r.top = g_scale_value_single(1.0-val, rc_client->bottom, m_vertical_scale == scale_logarithmic); //pfc::rint32((1.0 - val) * (rc_client->bottom));
 						if (r.bottom>r.top)
