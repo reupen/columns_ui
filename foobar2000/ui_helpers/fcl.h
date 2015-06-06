@@ -230,6 +230,11 @@ namespace fcl
 		reader(stream_reader * p_input, t_size size, abort_callback & p_abort)
 			: m_abort(p_abort), m_input(p_input), m_position(0), m_size(size)
 		{} ;
+		reader(reader & p_reader, t_size size, abort_callback & p_abort)
+			: m_abort(p_abort), m_input(p_reader.m_input), m_position(0), m_size(size)
+		{
+			p_reader.m_position += size;
+		};
 	private:
 		t_size m_size, m_position;
 		stream_reader * m_input;

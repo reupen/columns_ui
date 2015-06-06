@@ -64,6 +64,14 @@ namespace pvt {
 		ng_playlist_view_t::g_on_groups_change();
 		return ret;
 	}
+
+	void cfg_groups_t::set_groups(const pfc::list_base_const_t<group_t> & p_groups, bool b_update_views) {
+		m_groups.remove_all();
+		m_groups.add_items(p_groups);
+		if (b_update_views)
+			ng_playlist_view_t::g_on_groups_change();
+	}
+
 	void cfg_groups_t::remove_group (t_size index)
 	{
 		m_groups.remove_by_idx(index);

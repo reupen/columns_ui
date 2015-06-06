@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-cui::fcl::group_impl_factory fclgroupcolumns(cui::fcl::groups::titles_playlist_view, "Columns Playlist Scripts", "Columns Playlist Scripts", cui::fcl::groups::title_scripts);
+cui::fcl::group_impl_factory fclgroupcolumns(cui::fcl::groups::titles_playlist_view, "Columns/NG Playlist Scripts", "Columns/NG Playlist Scripts", cui::fcl::groups::title_scripts);
 cui::fcl::group_impl_factory fclgroupcommon(cui::fcl::groups::titles_common, "Common Scripts", "Common Scripts", cui::fcl::groups::title_scripts);
 
 class export_columns : public cui::fcl::dataset
@@ -85,7 +85,7 @@ class export_columns : public cui::fcl::dataset
 
 			column_t::ptr item = new column_t;
 
-			fcl::reader reader2(p_reader, column_size, p_abort);
+			fcl::reader reader2(reader, column_size, p_abort);
 
 			t_uint32 element_id;
 			t_uint32 element_size;
@@ -168,7 +168,175 @@ class export_columns : public cui::fcl::dataset
 	}
 };
 
-cui::fcl::dataset_factory<export_columns> g_export_coloumns_t;
+cui::fcl::dataset_factory<export_columns> g_export_columns_t;
+
+
+class export_groups : public cui::fcl::dataset
+{
+	enum t_identifiers
+	{
+		identifier_groups,
+		identifier_show_groups,
+		/*identifier_show_artwork, //Need somewhere to stick these
+		identifier_artwork_width,
+		identifier_artwork_reflection,*/
+	};
+
+	enum t_group_identifiers
+	{
+		identifier_group
+	};
+
+	enum t_columns
+	{
+		identifier_script,
+		identifier_playlist_filter_mode,
+		identifier_playlist_filter_string,
+
+	};
+	virtual void get_name(pfc::string_base & p_out) const
+	{
+		p_out = "Groups";
+	}
+	virtual const GUID & get_group() const
+	{
+		return cui::fcl::groups::titles_playlist_view;
+	}
+	virtual const GUID & get_guid() const
+	{
+		// {A89F68C6-B40A-4200-BA2A-68999F704FFD}
+		static const GUID guid =
+		{ 0xa89f68c6, 0xb40a, 0x4200, { 0xba, 0x2a, 0x68, 0x99, 0x9f, 0x70, 0x4f, 0xfd } };
+		return guid;
+	}
+	virtual void get_data(stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	{
+		fcl::writer out(p_writer, p_abort);
+
+		out.write_item(identifier_show_groups, pvt::cfg_grouping);
+		//out.write_item(identifier_show_artwork, pvt::cfg_show_artwork);
+		//out.write_item(identifier_artwork_width, pvt::cfg_artwork_width);
+		//out.write_item(identifier_artwork_reflection, pvt::cfg_artwork_reflection);
+
+		stream_writer_memblock groups_sw;
+		fcl::writer groups_writer(&groups_sw, p_abort);
+
+		const pfc::list_base_const_t<pvt::group_t> & groups = pvt::g_groups.get_groups();
+		t_size count = groups.get_count(), i;
+		pfc::string8 temp;
+
+		groups_writer.write_raw(count);
+
+
+		for (i = 0; i<count; i++)
+		{
+			const pvt::group_t & group = groups[i];
+			stream_writer_memblock sw;
+			fcl::writer w(&sw, p_abort);
+			w.write_item(identifier_script, group.string);
+			w.write_item(identifier_playlist_filter_mode, (t_uint32)group.filter_type);
+			w.write_item(identifier_playlist_filter_string, group.filter_playlists);
+
+			groups_writer.write_item(identifier_group, sw.m_data.get_ptr(), sw.m_data.get_size());
+		}
+
+		out.write_item(identifier_groups, groups_sw.m_data.get_ptr(), groups_sw.m_data.get_size());
+	}
+	virtual void set_data(stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	{
+		fcl::reader reader(p_reader, stream_size, p_abort);
+
+		t_uint32 element_id;
+		t_uint32 element_size;
+
+		pfc::list_t<pvt::group_t> newgroups;
+		bool b_groups_set = false;
+
+		while (reader.get_remaining())
+		{
+			reader.read_item(element_id);
+			reader.read_item(element_size);
+
+			switch (element_id)
+			{
+			case identifier_show_groups:
+				reader.read_item(pvt::cfg_grouping);
+				break;
+			//case identifier_artwork_reflection:
+			//	reader.read_item(pvt::cfg_artwork_reflection);
+			//	break;
+			//case identifier_show_artwork:
+			//	reader.read_item(pvt::cfg_show_artwork);
+			//	break;
+			//case identifier_artwork_width:
+			//	reader.read_item(pvt::cfg_artwork_width);
+			//	break;
+			case identifier_groups:
+			{
+				t_size i, count;
+				reader.read_item(count);
+				for (i = 0; i<count; i++)
+				{
+					t_uint32 group_id;
+					t_uint32 group_size;
+
+					reader.read_item(group_id);
+					reader.read_item(group_size);
+
+					pvt::group_t item;
+
+					fcl::reader reader2(reader, group_size, p_abort);
+
+					t_uint32 group_element_id;
+					t_uint32 group_element_size;
+
+					while (reader2.get_remaining())
+					{
+						reader2.read_item(group_element_id);
+						reader2.read_item(group_element_size);
+
+						switch (group_element_id)
+						{
+						case identifier_script:
+							reader2.read_item(item.string, group_element_size);
+							break;
+						case identifier_playlist_filter_mode:
+						{
+							t_uint32 temp;
+							reader2.read_item(temp);
+							item.filter_type = (playlist_filter_type&)temp;
+						}
+						break;
+						case identifier_playlist_filter_string:
+							reader2.read_item(item.filter_playlists, group_element_size);
+							break;
+						default:
+							reader2.skip(group_element_size);
+							break;
+						};
+					}
+					newgroups.add_item(item);
+				}
+				b_groups_set = true;
+				break;
+			}
+			default:
+				reader.skip(element_size);
+				break;
+			};
+		}
+
+		if (b_groups_set)
+			pvt::g_groups.set_groups(newgroups, false);
+		pvt::ng_playlist_view_t::g_on_groups_change();
+		//pvt::ng_playlist_view_t::g_on_show_artwork_change();
+		//pvt::ng_playlist_view_t::g_on_artwork_width_change();
+
+	}
+};
+
+cui::fcl::dataset_factory<export_groups> g_export_groups_t;
+
 
 class export_pview : public cui::fcl::dataset
 {

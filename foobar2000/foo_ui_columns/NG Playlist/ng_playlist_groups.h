@@ -40,7 +40,8 @@ namespace pvt {
 		void remove_group (t_size index);
 		void replace_group (t_size index, const group_t & p_group);
 		void swap (t_size index1, t_size index2);
-		cfg_groups_t (const GUID & p_guid) : cfg_var(p_guid) 
+		void set_groups(const pfc::list_base_const_t<group_t> & p_groups, bool b_update_views = true);
+		cfg_groups_t(const GUID & p_guid) : cfg_var(p_guid)
 		{
 			add_group(group_t("$if2(%album artist%,<no artist>)[ / %album%]"));
 		};
