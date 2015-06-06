@@ -400,7 +400,7 @@ namespace pvt
 				int gdiff = ((target & 0xff00)>>8) - ((colour & 0xff00)>>8);
 				int bdiff = ((target & 0xff0000)>>16) - ((colour & 0xff0000)>>16);
 
-				int totaldiff = abs(rdiff + gdiff + bdiff);
+				int totaldiff = abs(rdiff) + abs(gdiff) + abs(bdiff);
 
 				int newr = (colour & 0xff) + (totaldiff ? (rdiff * amount*3 / totaldiff) : 0);
 				if (newr < 0) newr = 0;
