@@ -1,5 +1,8 @@
 #include "foobar2000.h"
 
+#undef FOOGUIDDECL
+#define FOOGUIDDECL
+
 // {4B897EC8-A2F9-478d-A95E-1A2110A40078}
 FOOGUIDDECL const GUID hasher_md5::class_guid =
 { 0x4b897ec8, 0xa2f9, 0x478d, { 0xa9, 0x5e, 0x1a, 0x21, 0x10, 0xa4, 0x0, 0x78 } };
