@@ -6,7 +6,7 @@ Columns UI and related libraries are released under the Lesser GNU Public Licenc
 
 foobar2000 SDK components retain their original licences which can be found in their respective folders.
 
-The code should compile as is. VS2013 projects can be found in foobar2000/vc12.
+The code should compile as is. VS2015 projects can be found in foobar2000/vc14.
 
 ## Guide to projects
 
