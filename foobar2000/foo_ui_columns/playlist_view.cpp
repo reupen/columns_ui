@@ -22,7 +22,7 @@ column_list_t playlist_view::columns;
 pfc::ptr_list_t<playlist_view> playlist_view::list_playlist;
 
 playlist_view::playlist_view()
-	: wnd_playlist(0),
+	: wnd_playlist(0), wnd_header(0),
 	initialised(false), drawing_enabled(false), dragged(true), drag_type(0),
 	dragitem(0), dragstartitem(0), last_idx(-1), last_column(-1), g_shift_item_start(0), 
 	scroll_item_offset(0), horizontal_offset(0),	g_dragging(false),	g_drag_lmb(false),
