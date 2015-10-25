@@ -68,7 +68,7 @@ void cfg_rebar::export_config(stream_writer * p_out, t_uint32 mode, cui::fcl::t_
 	for(i=0;i<count;i++)
 	{
 		feedback.add_required_panel(pentries.get_item(i)->guid);
-		pentries.get_item(i)->export(p_out, mode, p_abort);
+		pentries.get_item(i)->_export(p_out, mode, p_abort);
 	}
 }
 
@@ -199,7 +199,7 @@ rebar_band_info::rebar_band_info(GUID id = null_guid, unsigned h = 100) : guid(i
 #define _SETDATAPARAMS(x) \
 	&stream_reader_memblock_ref(x.get_ptr(), x.get_size()), x.get_size(), p_abort
 
-void rebar_band_info::export(stream_writer * out, t_uint32 type, abort_callback & p_abort)
+void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback & p_abort)
 {
 	uie::window_ptr ptr = p_ext;
 	if (!ptr.is_valid())

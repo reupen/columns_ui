@@ -177,7 +177,7 @@ void colours_manager_data::entry_t::import(stream_reader * p_reader, t_size stre
 	}
 }
 
-void colours_manager_data::entry_t::export(stream_writer * p_stream, abort_callback & p_abort)
+void colours_manager_data::entry_t::_export(stream_writer * p_stream, abort_callback & p_abort)
 {
 	fcl::writer out(p_stream, p_abort);
 	out.write_item(identifier_guid, guid);

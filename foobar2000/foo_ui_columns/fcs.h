@@ -14,6 +14,6 @@ bool g_import(const char * path);
 bool g_export(const char * path);
 
 void import(HWND wnd);
-void export(HWND wnd);
+void _export(HWND wnd);
 
 #endif

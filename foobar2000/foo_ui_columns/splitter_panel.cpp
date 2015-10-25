@@ -141,7 +141,7 @@ void splitter_window_impl::panel::write(stream_writer * out, abort_callback & p_
 	out->write_string(m_custom_title, p_abort);
 }
 
-void splitter_window_impl::panel::export(stream_writer * out, abort_callback & p_abort)
+void splitter_window_impl::panel::_export(stream_writer * out, abort_callback & p_abort)
 {
 	stream_writer_memblock child_exported_data;
 	uie::window_ptr ptr = m_child;

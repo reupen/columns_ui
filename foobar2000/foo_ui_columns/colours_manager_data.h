@@ -42,7 +42,7 @@ public:
 		font_header;*/
 		cui::colours::colour_mode_t colour_mode;
 		void write(stream_writer * p_stream, abort_callback & p_abort);
-		void export(stream_writer * p_stream, abort_callback & p_abort);
+		void _export(stream_writer * p_stream, abort_callback & p_abort);
 		virtual void import(stream_reader * p_reader, t_size stream_size, t_uint32 type, abort_callback & p_abort);
 		void read(t_uint32 version, stream_reader * p_stream, abort_callback & p_abort);
 		void reset_colors();

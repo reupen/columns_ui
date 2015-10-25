@@ -60,7 +60,7 @@ public:
 	bool rbbs_break;
 
 	rebar_band_info(GUID id , unsigned h);
-	void rebar_band_info::export(stream_writer * out, t_uint32 type, abort_callback & p_abort);
+	void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback & p_abort);
 	void rebar_band_info::import(stream_reader * p_reader, t_uint32 type, abort_callback & p_abort);
 	void rebar_band_info::write(stream_writer * out, abort_callback & p_abort);
 	void rebar_band_info::read(stream_reader * p_reader, abort_callback & p_abort);

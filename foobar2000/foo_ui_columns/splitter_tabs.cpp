@@ -258,7 +258,7 @@ void splitter_window_tabs_impl::panel::write(stream_writer * out, abort_callback
 	out->write_lendian_t(m_use_custom_title, p_abort);
 	out->write_string(m_custom_title, p_abort);
 }
-void splitter_window_tabs_impl::panel::export(stream_writer * out, abort_callback & p_abort)
+void splitter_window_tabs_impl::panel::_export(stream_writer * out, abort_callback & p_abort)
 {
 	stream_writer_memblock child_exported_data;
 	uie::window_ptr ptr = m_child;
@@ -425,7 +425,7 @@ void splitter_window_tabs_impl::export_config(stream_writer * p_writer, abort_ca
 	p_writer->write_lendian_t(count, p_abort);
 	for (n=0; n<count; n++)
 	{
-		m_panels[n]->export(p_writer, p_abort);
+		m_panels[n]->_export(p_writer, p_abort);
 	}
 };
 

@@ -530,7 +530,7 @@ class fcl_colours_t : public cui::fcl::dataset
 		//p_writer->write_lendian_t(stream_version, p_abort);
 		{
 			stream_writer_memblock mem;
-			g_colours_manager_data.m_global_entry->export(&mem, p_abort);
+			g_colours_manager_data.m_global_entry->_export(&mem, p_abort);
 			out.write_item(identifier_global_entry, mem.m_data.get_ptr(), mem.m_data.get_size());
 		}
 		{
@@ -541,7 +541,7 @@ class fcl_colours_t : public cui::fcl::dataset
 			for (i=0; i<count; i++)
 			{
 				stream_writer_memblock mem2;
-				g_colours_manager_data.m_entries[i]->export(&mem2, p_abort);
+				g_colours_manager_data.m_entries[i]->_export(&mem2, p_abort);
 				out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
 			}
 			out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
@@ -651,12 +651,12 @@ class fcl_fonts_t : public cui::fcl::dataset
 		//p_writer->write_lendian_t(stream_version, p_abort);
 		{
 			stream_writer_memblock mem;
-			g_fonts_manager_data.m_common_items_entry->export(&mem, p_abort);
+			g_fonts_manager_data.m_common_items_entry->_export(&mem, p_abort);
 			out.write_item(identifier_global_items, mem.m_data.get_ptr(), mem.m_data.get_size());
 		}
 		{
 			stream_writer_memblock mem;
-			g_fonts_manager_data.m_common_labels_entry->export(&mem, p_abort);
+			g_fonts_manager_data.m_common_labels_entry->_export(&mem, p_abort);
 			out.write_item(identifier_global_labels, mem.m_data.get_ptr(), mem.m_data.get_size());
 		}
 		{
@@ -667,7 +667,7 @@ class fcl_fonts_t : public cui::fcl::dataset
 			for (i=0; i<count; i++)
 			{
 				stream_writer_memblock mem2;
-				g_fonts_manager_data.m_entries[i]->export(&mem2, p_abort);
+				g_fonts_manager_data.m_entries[i]->_export(&mem2, p_abort);
 				out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
 			}
 			out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());

@@ -956,7 +956,7 @@ void splitter_window_impl::export_config(stream_writer * p_writer, abort_callbac
 	p_writer->write_lendian_t(count, p_abort);
 	for (n = 0; n < count; n++)
 	{
-		m_panels[n]->export(p_writer, p_abort);
+		m_panels[n]->_export(p_writer, p_abort);
 	}
 }
 
