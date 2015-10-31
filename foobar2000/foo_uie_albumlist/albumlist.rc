@@ -1,0 +1,194 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.K.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_CONFIG DIALOGEX 0, 0, 325, 260
+STYLE DS_SETFONT | WS_CHILD
+FONT 8, "Tahoma", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Views",IDC_STATIC,4,4,310,136
+    PUSHBUTTON      "Up",IDC_VIEW_UP,149,120,37,14
+    PUSHBUTTON      "Down",IDC_VIEW_DOWN,189,120,37,14
+    PUSHBUTTON      "Delete",IDC_VIEW_DELETE,229,120,37,14
+    PUSHBUTTON      "New",IDC_VIEW_NEW,269,120,37,14
+    LISTBOX         IDC_VIEWS,12,16,294,98,LBS_NOINTEGRALHEIGHT | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Reset",IDC_VIEW_RESET,12,120,37,14
+    LTEXT           "Double-click action:",IDC_STATIC,4,153,62,8
+    COMBOBOX        IDC_DBLCLK,4,164,149,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Middle button action:",IDC_STATIC,164,154,68,8
+    COMBOBOX        IDC_MIDDLE,164,164,150,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Auto send to playlist:",IDC_AUTO_SEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,4,188,84,10
+    EDITTEXT        IDC_PLAYLIST_NAME,4,199,310,15,ES_AUTOHSCROLL
+    RTEXT           "Use %_view% to retrieve the current view name",IDC_STATIC,156,216,158,8
+END
+
+IDD_EDIT_VIEW DIALOG  0, 0, 320, 95
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Edit view"
+FONT 8, "Tahoma"
+BEGIN
+    RTEXT           "Name:",IDC_STATIC,5,8,30,8
+    EDITTEXT        IDC_NAME,36,6,280,12,ES_AUTOHSCROLL
+    RTEXT           "Value:",IDC_STATIC,3,24,32,8
+    EDITTEXT        IDC_VALUE,36,22,280,52,ES_MULTILINE | WS_VSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,214,78,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,266,78,50,14
+END
+
+IDD_HOST DIALOGEX 0, 0, 332, 296
+STYLE DS_SETFONT | WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "Tahoma", 0, 0, 0x1
+BEGIN
+    CONTROL         "Tab1",IDC_TAB1,"SysTabControl32",WS_TABSTOP,2,0,326,287
+END
+
+IDD_ADVANCED DIALOGEX 0, 0, 322, 257
+STYLE DS_SETFONT | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "Tahoma", 0, 0, 0x0
+BEGIN
+    GROUPBOX        "Appearance",IDC_STATIC,5,4,310,132
+    CONTROL         "Show sub-item counts",IDC_SHOW_NUMBERS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,23,89,10
+    CONTROL         "Show horizontal scrollbar",IDC_HSCROLL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,42,95,10
+    CONTROL         "Show item indicies",IDC_SHOW_NUMBERS2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,166,24,78,10
+    CONTROL         "Show root node",IDC_SHOW_ROOT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,166,42,67,10
+    CONTROL         "Use custom vertical item padding:",IDC_USE_ITEM_HEIGHT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,62,123,10
+    EDITTEXT        IDC_ITEM_HEIGHT,19,74,43,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_ITEM_HEIGHT_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,64,74,9,15
+    CONTROL         "Use custom indentation:",IDC_USE_INDENT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,166,60,90,12
+    EDITTEXT        IDC_INDENT,165,73,43,14,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_INDENT_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,208,67,9,15
+    LTEXT           "Window frame style:",IDC_STATIC,19,99,67,8
+    COMBOBOX        IDC_FRAME,19,110,76,59,CBS_DROPDOWNLIST | WS_TABSTOP
+    GROUPBOX        "Behaviour",IDC_STATIC,5,159,310,79
+    CONTROL         "Autoplay on send to playlist",IDC_AUTOPLAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,178,105,10
+    CONTROL         "Apply core sort settings to added items",IDC_ADD_ITEMS_USE_CORE_SORT,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,196,141,10
+    CONTROL         "Select added items",IDC_ADD_ITEMS_SELECT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,19,214,76,10
+    CONTROL         "Populate on initialisation",IDC_POPULATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,165,178,93,10
+    CONTROL         "Process keyboard shortcuts",IDC_KEYB,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,165,196,105,10
+    CONTROL         "Auto-collapse on item expand",IDC_AUTOCOLLAPSE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,165,215,111,10
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO 
+BEGIN
+    IDD_CONFIG, DIALOG
+    BEGIN
+        LEFTMARGIN, 4
+        RIGHTMARGIN, 314
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 253
+        HORZGUIDE, 134
+    END
+
+    IDD_EDIT_VIEW, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 313
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 88
+    END
+
+    IDD_HOST, DIALOG
+    BEGIN
+        LEFTMARGIN, 2
+        RIGHTMARGIN, 328
+        BOTTOMMARGIN, 287
+    END
+
+    IDD_ADVANCED, DIALOG
+    BEGIN
+        LEFTMARGIN, 5
+        RIGHTMARGIN, 315
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 250
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+#endif    // English (U.K.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

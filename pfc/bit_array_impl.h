@@ -2,7 +2,7 @@
 #define _PFC_BIT_ARRAY_IMPL_H_
 
 template<class T>
-class bit_array_table_t : public bit_array
+class bit_array_table_t : public pfc::bit_array
 {
 	const T * data;
 	t_size count;

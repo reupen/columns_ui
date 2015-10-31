@@ -8,11 +8,15 @@ foobar2000 SDK components retain their original licences which can be found in t
 
 The code should compile as is. VS2015 projects can be found in foobar2000/vc14.
 
-## Guide to projects
+## Projects
 
 ### foobar2000/foo_ui_columns
 
 The is the core Columns UI code.
+
+### foobar2000/foo_uie_albumlist
+
+The is the Album list panel code. Album list panel is based on Album List 3.1.0, by Peter Pawlowski.
 
 ### foobar2000/mmh
 
