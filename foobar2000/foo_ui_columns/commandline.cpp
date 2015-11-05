@@ -54,14 +54,13 @@ public:
 
 				HWND parent = core_api::get_main_window();
 				if (parent) static_api_ptr_t<ui_control>()->activate();
-				if (uMessageBox(parent,uStringPrintf("Are you sure you want to import the %s configuration? Your current configuration will be lost.",pfc::string_filename(path).get_ptr()),"Import configuration?",MB_YESNO) == IDYES)
-				{
-					pfc::string_extension ext(path);
-					if (!stricmp_utf8("fcl", ext))
-						g_import_layout(core_api::get_main_window(), path);
-					else if (!stricmp_utf8("fcs", ext))
-						g_import(path);
-				}
+
+				pfc::string_extension ext(path);
+				if (!stricmp_utf8("fcl", ext))
+					g_import_layout2(core_api::get_main_window(), path);
+				else if (!stricmp_utf8("fcs", ext))
+					g_import(path);
+				static_api_ptr_t<ui_control>()->activate();
 				return RESULT_PROCESSED;
 			}
 			/*else if (!stricmp_utf8_partial(ptr,"export:"))
