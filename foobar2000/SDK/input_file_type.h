@@ -7,7 +7,11 @@ public:
 	virtual bool get_mask(unsigned idx,pfc::string_base & out)=0;//eg. "*.MP3;*.MP2"; separate with semicolons
 	virtual bool is_associatable(unsigned idx) = 0;
 
+#if FOOBAR2000_TARGET_VERSION >= 76
 	static void build_openfile_mask(pfc::string_base & out,bool b_include_playlists=true);
+	static void make_extension_support_fingerprint(pfc::string_base & str);
+	static void make_filetype_support_fingerprint(pfc::string_base & str);
+#endif
 
 	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(input_file_type);
 };
@@ -92,3 +96,14 @@ private:
 //! Usage: DECLARE_FILE_TYPE_EX("mp1;mp2;mp3","MPEG file","MPEG files")
 #define DECLARE_FILE_TYPE_EX(extensions, name, namePlural) \
 	namespace { static service_factory_single_t<input_file_type_v2_impl> g_myfiletype(extensions, name, namePlural); }
+
+
+//! Service for registering protocol types that can be associated with foobar2000.
+class input_protocol_type : public service_base {
+	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(input_protocol_type)
+public:
+	//! Returns the name of the protocol, such as "ftp" or "http".
+	virtual void get_protocol_name(pfc::string_base & out) = 0;
+	//! Returns a human-readable description of the protocol.
+	virtual void get_description(pfc::string_base & out) = 0;
+};

@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "dropdown_helper.h"
 
+#ifdef _WIN32
 
-void cfg_dropdown_history::build_list(pfc::ptr_list_t<char> & out)
+void _cfg_dropdown_history_base::build_list(pfc::ptr_list_t<char> & out)
 {
-	const char * src = data;
+	pfc::string8 temp; get_state(temp);
+	const char * src = temp;
 	while(*src)
 	{
 		int ptr = 0;
@@ -18,7 +20,7 @@ void cfg_dropdown_history::build_list(pfc::ptr_list_t<char> & out)
 	}
 }
 
-void cfg_dropdown_history::parse_list(const pfc::ptr_list_t<char> & src)
+void _cfg_dropdown_history_base::parse_list(const pfc::ptr_list_t<char> & src)
 {
 	t_size n;
 	pfc::string8_fastalloc temp;
@@ -27,7 +29,7 @@ void cfg_dropdown_history::parse_list(const pfc::ptr_list_t<char> & src)
 		temp.add_string(src[n]);
 		temp.add_char(separator);		
 	}
-	data = temp;
+	set_state(temp);
 }
 
 static void g_setup_dropdown_fromlist(HWND wnd,const pfc::ptr_list_t<char> & list)
@@ -39,7 +41,7 @@ static void g_setup_dropdown_fromlist(HWND wnd,const pfc::ptr_list_t<char> & lis
 	}
 }
 
-void cfg_dropdown_history::setup_dropdown(HWND wnd)
+void _cfg_dropdown_history_base::setup_dropdown(HWND wnd)
 {
 	pfc::ptr_list_t<char> list;
 	build_list(list);
@@ -47,9 +49,9 @@ void cfg_dropdown_history::setup_dropdown(HWND wnd)
 	list.free_all();
 }
 
-void cfg_dropdown_history::add_item(const char * item)
+bool _cfg_dropdown_history_base::add_item(const char * item)
 {
-	if (!item || !*item) return;
+	if (!item || !*item) return false;
 	pfc::string8 meh;
 	if (strchr(item,separator))
 	{
@@ -72,16 +74,24 @@ void cfg_dropdown_history::add_item(const char * item)
 
 	if (!found)
 	{
-		while(list.get_count() > max) list.delete_by_idx(list.get_count()-1);
+		while(list.get_count() > m_max) list.delete_by_idx(list.get_count()-1);
 		list.insert_item(_strdup(item),0);
 	}
 	parse_list(list);
 	list.free_all();
+	return found;
 }
 
-bool cfg_dropdown_history::is_empty()
+bool _cfg_dropdown_history_base::add_item(const char *item, HWND combobox) {
+	const bool state = add_item(item);
+	if (state) uSendMessageText(combobox, CB_ADDSTRING, 0, item);
+	return state;
+}
+
+bool _cfg_dropdown_history_base::is_empty()
 {
-	const char * src = data;
+	pfc::string8 temp; get_state(temp);
+	const char * src = temp;
 	while(*src)
 	{
 		if (*src!=separator) return false;
@@ -90,7 +100,7 @@ bool cfg_dropdown_history::is_empty()
 	return true;
 }
 
-void cfg_dropdown_history::on_context(HWND wnd,LPARAM coords) {
+bool _cfg_dropdown_history_base::on_context(HWND wnd,LPARAM coords) {
 	try {
 		int coords_x = (short)LOWORD(coords), coords_y = (short)HIWORD(coords);
 		if (coords_x == -1 && coords_y == -1)
@@ -115,25 +125,22 @@ void cfg_dropdown_history::on_context(HWND wnd,LPARAM coords) {
 		{
 		case ID_ERASE_ALL:
 			{
-				data = "";
+				set_state("");
 				pfc::string8 value;//preserve old value while wiping dropdown list
 				uGetWindowText(wnd,value);
 				uSendMessage(wnd,CB_RESETCONTENT,0,0);
 				uSetWindowText(wnd,value);
+				return true;
 			}
-			break;
 		case ID_ERASE_ONE:
 			{
 				pfc::string8 value;
 				uGetWindowText(wnd,value);
 
 				pfc::ptr_list_t<char> list;
-				t_size n,m;
-				bool found;
 				build_list(list);
-				m = list.get_count();
-				found = false;
-				for(n=0;n<m;n++)
+				bool found = false;
+				for(t_size n=0;n<list.get_size();n++)
 				{
 					if (!strcmp(value,list[n]))
 					{
@@ -146,8 +153,11 @@ void cfg_dropdown_history::on_context(HWND wnd,LPARAM coords) {
 				if (found) parse_list(list);
 				g_setup_dropdown_fromlist(wnd,list);
 				list.free_all();
+				return found;
 			}
-			break;
 		}
 	} catch(...) {}
+	return false;
 }
+
+#endif // _WIN32

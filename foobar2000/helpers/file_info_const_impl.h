@@ -29,22 +29,22 @@ public:
 	replaygain_info	get_replaygain() const {return m_replaygain;}
 
 private:
-	void		set_length(double p_length) {throw pfc::exception_bug_check_v2();}
+	void		set_length(double p_length) {uBugCheck();}
 
-	t_size		meta_set_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {throw pfc::exception_bug_check_v2();}
-	void		meta_insert_value_ex(t_size p_index,t_size p_value_index,const char * p_value,t_size p_value_length) {throw pfc::exception_bug_check_v2();}
-	void		meta_remove_mask(const bit_array & p_mask) {throw pfc::exception_bug_check_v2();}
-	void		meta_reorder(const t_size * p_order) {throw pfc::exception_bug_check_v2();}
-	void		meta_remove_values(t_size p_index,const bit_array & p_mask) {throw pfc::exception_bug_check_v2();}
-	void		meta_modify_value_ex(t_size p_index,t_size p_value_index,const char * p_value,t_size p_value_length) {throw pfc::exception_bug_check_v2();}
+	t_size		meta_set_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {uBugCheck();}
+	void		meta_insert_value_ex(t_size p_index,t_size p_value_index,const char * p_value,t_size p_value_length) {uBugCheck();}
+	void		meta_remove_mask(const bit_array & p_mask) {uBugCheck();}
+	void		meta_reorder(const t_size * p_order) {uBugCheck();}
+	void		meta_remove_values(t_size p_index,const bit_array & p_mask) {uBugCheck();}
+	void		meta_modify_value_ex(t_size p_index,t_size p_value_index,const char * p_value,t_size p_value_length) {uBugCheck();}
 
-	t_size		info_set_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {throw pfc::exception_bug_check_v2();}
-	void		info_remove_mask(const bit_array & p_mask) {throw pfc::exception_bug_check_v2();}
+	t_size		info_set_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {uBugCheck();}
+	void		info_remove_mask(const bit_array & p_mask) {uBugCheck();}
 
-	void			set_replaygain(const replaygain_info & p_info) {throw pfc::exception_bug_check_v2();}
+	void			set_replaygain(const replaygain_info & p_info) {uBugCheck();}
 	
-	t_size		meta_set_nocheck_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {throw pfc::exception_bug_check_v2();}
-	t_size		info_set_nocheck_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {throw pfc::exception_bug_check_v2();}
+	t_size		meta_set_nocheck_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {uBugCheck();}
+	t_size		info_set_nocheck_ex(const char * p_name,t_size p_name_length,const char * p_value,t_size p_value_length) {uBugCheck();}
 public:
 	struct meta_entry {
 		const char * m_name;

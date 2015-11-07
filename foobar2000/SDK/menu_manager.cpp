@@ -347,13 +347,22 @@ bool keyboard_shortcut_manager::on_keydown_restricted_auto_context(const pfc::li
 	return on_keydown_auto_context(data,wp,caller);
 }
 
+static bool filterTypableWindowMessage(const MSG * msg, t_uint32 modifiers) {
+	if (keyboard_shortcut_manager::is_typing_key_combo((t_uint32)msg->wParam, modifiers)) {
+		try {
+			if (static_api_ptr_t<ui_element_typable_window_manager>()->is_registered(msg->hwnd)) return false;
+		} catch(exception_service_not_found) {}
+	}
+	return true;
+}
+
 bool keyboard_shortcut_manager_v2::pretranslate_message(const MSG * msg, HWND thisPopupWnd) {
 	switch(msg->message) {
 		case WM_KEYDOWN:
 		case WM_SYSKEYDOWN:
 			if (thisPopupWnd != NULL && FindOwningPopup(msg->hwnd) == thisPopupWnd) {
 				const t_uint32 modifiers = GetHotkeyModifierFlags();
-				/*if (filterTypableWindowMessage(msg, modifiers))*/ {
+				if (filterTypableWindowMessage(msg, modifiers)) {
 					if (process_keydown_simple(get_key_code(msg->wParam,modifiers))) return true;
 				}
 			}

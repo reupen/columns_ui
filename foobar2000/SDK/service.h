@@ -39,59 +39,97 @@ template<typename T> static void service_add_ref_safe(T * p_ptr) throw() {
 
 class service_base;
 
+template<typename T>
+class service_ptr_base_t {
+public:
+	inline T* get_ptr() const throw() {return m_ptr;}
+protected:
+	T * m_ptr;
+};
+
+// forward declaration
+template<typename T> class service_nnptr_t;
+
 //! Autopointer class to be used with all services. Manages reference counter calls behind-the-scenes.
 template<typename T>
-class service_ptr_t {
+class service_ptr_t : public service_ptr_base_t<T> {
 private:
 	typedef service_ptr_t<T> t_self;
+
+	template<typename t_source> void _init(t_source * in) throw() {
+		this->m_ptr = in;
+		if (this->m_ptr) this->m_ptr->service_add_ref();
+	}
+	template<typename t_source> void _init(t_source && in) throw() {
+		this->m_ptr = in.detach();
+	}
 public:
-	inline service_ptr_t() throw() : m_ptr(NULL) {}
-	inline service_ptr_t(T* p_ptr) throw() : m_ptr(NULL) {copy(p_ptr);}
-	inline service_ptr_t(const t_self & p_source) throw() : m_ptr(NULL) {copy(p_source);}
-
-	template<typename t_source>
-	inline service_ptr_t(t_source * p_ptr) throw() : m_ptr(NULL) {copy(p_ptr);}
-
-	template<typename t_source>
-	inline service_ptr_t(const service_ptr_t<t_source> & p_source) throw() : m_ptr(NULL) {copy(p_source);}
-
-	inline ~service_ptr_t() throw() {service_release_safe(m_ptr);}
+	service_ptr_t() throw() {this->m_ptr = NULL;}
+	service_ptr_t(T * p_ptr) throw() {_init(p_ptr);}
+	service_ptr_t(const t_self & p_source) throw() {_init(p_source.get_ptr());}
+	service_ptr_t(t_self && p_source) throw() {_init(std::move(p_source));}
+	template<typename t_source> service_ptr_t(t_source * p_ptr) throw() {_init(p_ptr);}
+	template<typename t_source> service_ptr_t(const service_ptr_base_t<t_source> & p_source) throw() {_init(p_source.get_ptr());}
+	template<typename t_source> service_ptr_t(const service_nnptr_t<t_source> & p_source) throw() { this->m_ptr = p_source.get_ptr(); this->m_ptr->service_add_ref(); }
+	template<typename t_source> service_ptr_t(service_ptr_t<t_source> && p_source) throw() { _init(std::move(p_source)); }
+	
+	~service_ptr_t() throw() {service_release_safe(this->m_ptr);}
 	
 	template<typename t_source>
 	void copy(t_source * p_ptr) throw() {
 		service_add_ref_safe(p_ptr);
-		service_release_safe(m_ptr);
-		m_ptr = pfc::safe_ptr_cast<T>(p_ptr);
-		
+		service_release_safe(this->m_ptr);
+		this->m_ptr = pfc::safe_ptr_cast<T>(p_ptr);
 	}
 
 	template<typename t_source>
-	inline void copy(const service_ptr_t<t_source> & p_source) throw() {copy(p_source.get_ptr());}
+	void copy(const service_ptr_base_t<t_source> & p_source) throw() {copy(p_source.get_ptr());}
+
+	template<typename t_source>
+	void copy(service_ptr_t<t_source> && p_source) throw() {attach(p_source.detach());}
 
 
 	inline const t_self & operator=(const t_self & p_source) throw() {copy(p_source); return *this;}
+	inline const t_self & operator=(t_self && p_source) throw() {copy(std::move(p_source)); return *this;}
 	inline const t_self & operator=(T * p_ptr) throw() {copy(p_ptr); return *this;}
 
-	template<typename t_source> inline t_self & operator=(const service_ptr_t<t_source> & p_source) throw() {copy(p_source); return *this;}
+	template<typename t_source> inline t_self & operator=(const service_ptr_base_t<t_source> & p_source) throw() {copy(p_source); return *this;}
+	template<typename t_source> inline t_self & operator=(service_ptr_t<t_source> && p_source) throw() {copy(std::move(p_source)); return *this;}
 	template<typename t_source> inline t_self & operator=(t_source * p_ptr) throw() {copy(p_ptr); return *this;}
+
+	template<typename t_source> inline t_self & operator=(const service_nnptr_t<t_source> & p_ptr) throw() {
+		service_release_safe(this->m_ptr);
+		t_source * ptr = p_ptr.get_ptr();
+		ptr->service_add_ref();
+		this->m_ptr = ptr;
+		return *this;
+	}
+
 	
 	inline void release() throw() {
-		service_release_safe(m_ptr);
-		m_ptr = NULL;
+		service_release_safe(this->m_ptr);
+		this->m_ptr = NULL;
 	}
 
 
-	inline service_obscure_refcounting<T>* operator->() const throw() {PFC_ASSERT(m_ptr != NULL);return service_obscure_refcounting_cast(m_ptr);}
+	inline service_obscure_refcounting<T>* operator->() const throw() {PFC_ASSERT(this->m_ptr != NULL);return service_obscure_refcounting_cast(this->m_ptr);}
 
-	inline T* get_ptr() const throw() {return m_ptr;}
+	inline T* get_ptr() const throw() {return this->m_ptr;}
 	
-	inline bool is_valid() const throw() {return m_ptr != NULL;}
-	inline bool is_empty() const throw() {return m_ptr == NULL;}
+	inline bool is_valid() const throw() {return this->m_ptr != NULL;}
+	inline bool is_empty() const throw() {return this->m_ptr == NULL;}
 
-	inline bool operator==(const t_self & p_item) const throw() {return m_ptr == p_item.get_ptr();}
-	inline bool operator!=(const t_self & p_item) const throw() {return m_ptr != p_item.get_ptr();}
-	inline bool operator>(const t_self & p_item) const throw() {return m_ptr > p_item.get_ptr();}
-	inline bool operator<(const t_self & p_item) const throw() {return m_ptr < p_item.get_ptr();}
+	inline bool operator==(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr == p_item.get_ptr();}
+	inline bool operator!=(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr != p_item.get_ptr();}
+
+	inline bool operator>(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr > p_item.get_ptr();}
+	inline bool operator<(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr < p_item.get_ptr();}
+
+	inline bool operator==(T * p_item) const throw() {return this->m_ptr == p_item;}
+	inline bool operator!=(T * p_item) const throw() {return this->m_ptr != p_item;}
+
+	inline bool operator>(T * p_item) const throw() {return this->m_ptr > p_item;}
+	inline bool operator<(T * p_item) const throw() {return this->m_ptr < p_item;}
 
 	template<typename t_other>
 	inline t_self & operator<<(service_ptr_t<t_other> & p_source) throw() {attach(p_source.detach());return *this;}
@@ -99,22 +137,22 @@ public:
 	inline t_self & operator>>(service_ptr_t<t_other> & p_dest) throw() {p_dest.attach(detach());return *this;}
 
 
-	inline T* __unsafe_duplicate() const throw() {//should not be used ! temporary !
-		service_add_ref_safe(m_ptr);
-		return m_ptr;
+	inline T* _duplicate_ptr() const throw() {//should not be used ! temporary !
+		service_add_ref_safe(this->m_ptr);
+		return this->m_ptr;
 	}
 
 	inline T* detach() throw() {
-		return pfc::replace_null_t(m_ptr);
+		return pfc::replace_null_t(this->m_ptr);
 	}
 
 	template<typename t_source>
 	inline void attach(t_source * p_ptr) throw() {
-		service_release_safe(m_ptr);
-		m_ptr = pfc::safe_ptr_cast<T>(p_ptr);
+		service_release_safe(this->m_ptr);
+		this->m_ptr = pfc::safe_ptr_cast<T>(p_ptr);
 	}
 
-	T & operator*() const throw() {return *m_ptr;}
+	T & operator*() const throw() {return *this->m_ptr;}
 
 	service_ptr_t<service_base> & _as_base_ptr() {
 		PFC_ASSERT( _as_base_ptr_check() );
@@ -123,16 +161,108 @@ public:
 	static bool _as_base_ptr_check() {
 		return static_cast<service_base*>((T*)NULL) == reinterpret_cast<service_base*>((T*)NULL);
 	}
+        
+    //! Forced cast operator - obtains a valid service pointer to the expected class or crashes the app if such pointer cannot be obtained.
+    template<typename otherPtr_t>
+    void operator ^= ( otherPtr_t other ) {
+        PFC_ASSERT( other.is_valid() );
+        if (!other->cast(*this)) uBugCheck();
+    }
+        
+    //! Conditional cast operator - attempts to obtain a vaild service pointer to the expected class; returns true on success, false on failure.
+    template<typename otherPtr_t>
+    bool operator &= ( otherPtr_t other ) {
+        PFC_ASSERT( other.is_valid() );
+        return other->cast(*this);
+    }
+    
+};
+
+//! Autopointer class to be used with all services. Manages reference counter calls behind-the-scenes. \n
+//! This assumes that the pointers are valid all the time (can't point to null). Mainly intended to be used for scenarios where null pointers are not valid and relevant code should crash ASAP if somebody passes invalid pointers around. \n
+//! You want to use service_ptr_t<> rather than service_nnptr_t<> most of the time.
+template<typename T>
+class service_nnptr_t : public service_ptr_base_t<T> {
 private:
-	T* m_ptr;
+	typedef service_nnptr_t<T> t_self;
+
+	template<typename t_source> void _init(t_source * in) {
+		this->m_ptr = in;
+		this->m_ptr->service_add_ref();
+	}
+	service_nnptr_t() throw() {pfc::crash();}
+public:
+	service_nnptr_t(T * p_ptr) throw() {_init(p_ptr);}
+	service_nnptr_t(const t_self & p_source) throw() {_init(p_source.get_ptr());}
+	template<typename t_source> service_nnptr_t(t_source * p_ptr) throw() {_init(p_ptr);}
+	template<typename t_source> service_nnptr_t(const service_ptr_base_t<t_source> & p_source) throw() {_init(p_source.get_ptr());}
+
+	template<typename t_source> service_nnptr_t(service_ptr_t<t_source> && p_source) throw() {this->m_ptr = p_source.detach();}
+
+	~service_nnptr_t() throw() {this->m_ptr->service_release();}
+	
+	template<typename t_source>
+	void copy(t_source * p_ptr) throw() {
+		p_ptr->service_add_ref();
+		this->m_ptr->service_release();
+		this->m_ptr = pfc::safe_ptr_cast<T>(p_ptr);
+	}
+
+	template<typename t_source>
+	void copy(const service_ptr_base_t<t_source> & p_source) throw() {copy(p_source.get_ptr());}
+
+
+	inline const t_self & operator=(const t_self & p_source) throw() {copy(p_source); return *this;}
+	inline const t_self & operator=(T * p_ptr) throw() {copy(p_ptr); return *this;}
+
+	template<typename t_source> inline t_self & operator=(const service_ptr_base_t<t_source> & p_source) throw() {copy(p_source); return *this;}
+	template<typename t_source> inline t_self & operator=(t_source * p_ptr) throw() {copy(p_ptr); return *this;}
+	template<typename t_source> inline t_self & operator=(service_ptr_t<t_source> && p_source) throw() {this->m_ptr->service_release(); this->m_ptr = p_source.detach();}
+
+
+	inline service_obscure_refcounting<T>* operator->() const throw() {PFC_ASSERT(this->m_ptr != NULL);return service_obscure_refcounting_cast(this->m_ptr);}
+
+	inline T* get_ptr() const throw() {return this->m_ptr;}
+	
+	inline bool is_valid() const throw() {return true;}
+	inline bool is_empty() const throw() {return false;}
+
+	inline bool operator==(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr == p_item.get_ptr();}
+	inline bool operator!=(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr != p_item.get_ptr();}
+
+	inline bool operator>(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr > p_item.get_ptr();}
+	inline bool operator<(const service_ptr_base_t<T> & p_item) const throw() {return this->m_ptr < p_item.get_ptr();}
+
+	inline bool operator==(T * p_item) const throw() {return this->m_ptr == p_item;}
+	inline bool operator!=(T * p_item) const throw() {return this->m_ptr != p_item;}
+
+	inline bool operator>(T * p_item) const throw() {return this->m_ptr > p_item;}
+	inline bool operator<(T * p_item) const throw() {return this->m_ptr < p_item;}
+
+	inline T* _duplicate_ptr() const throw() {//should not be used ! temporary !
+		service_add_ref_safe(this->m_ptr);
+		return this->m_ptr;
+	}
+
+	T & operator*() const throw() {return *this->m_ptr;}
+
+	service_ptr_t<service_base> & _as_base_ptr() {
+		PFC_ASSERT( _as_base_ptr_check() );
+		return *reinterpret_cast<service_ptr_t<service_base>*>(this);
+	}
+	static bool _as_base_ptr_check() {
+		return static_cast<service_base*>((T*)NULL) == reinterpret_cast<service_base*>((T*)NULL);
+	}
 };
 
 namespace pfc {
-	template<typename T>
-	class traits_t<service_ptr_t<T> > : public traits_default {
+	class traits_service_ptr : public traits_default {
 	public:
 		enum { realloc_safe = true, constructor_may_fail = false};
 	};
+
+	template<typename T> class traits_t<service_ptr_t<T> > : public traits_service_ptr {};
+	template<typename T> class traits_t<service_nnptr_t<T> > : public traits_service_ptr {};
 }
 
 
@@ -158,6 +288,9 @@ class service_list_t : public pfc::list_t<service_ptr_t<T>, t_alloc >
 			else return PARENTCLASS::service_query(p_out,p_guid);	\
 		}	\
 		typedef service_ptr_t<t_interface> ptr;	\
+		typedef service_nnptr_t<t_interface> nnptr;	\
+		typedef ptr ref; \
+		typedef nnptr nnref; \
 	protected:	\
 		THISCLASS() {}	\
 		~THISCLASS() {}	\
@@ -216,9 +349,12 @@ public:
 	template<class T>
 	bool service_query_t(service_ptr_t<T> & p_out)
 	{
-		pfc::assert_same_type<T,T::t_interface>();
+		pfc::assert_same_type<T,typename T::t_interface>();
 		return service_query( *reinterpret_cast<service_ptr_t<service_base>*>(&p_out),T::class_guid);
 	}
+	//! New shortened version, same as service_query_t.
+	template<typename outPtr_t> 
+	bool cast( outPtr_t & outPtr ) { return service_query_t( outPtr ); }
 
 	typedef service_base t_interface;
 	
@@ -231,21 +367,22 @@ private:
 };
 
 typedef service_ptr_t<service_base> service_ptr;
+typedef service_nnptr_t<service_base> service_nnptr;
 
 template<typename T>
-static void __validate_service_class_helper() {
-	__validate_service_class_helper<T::t_interface_parent>();
+inline void __validate_service_class_helper() {
+	__validate_service_class_helper<typename T::t_interface_parent>();
 }
 
 template<>
-static void __validate_service_class_helper<service_base>() {}
+inline void __validate_service_class_helper<service_base>() {}
 
 
 #include "service_impl.h"
 
 class NOVTABLE service_factory_base {
 protected:
-	inline service_factory_base(const GUID & p_guid) : m_guid(p_guid) {PFC_ASSERT(!core_api::are_services_available());__internal__next=__internal__list;__internal__list=this;}
+	inline service_factory_base(const GUID & p_guid, service_factory_base * & factoryList) : m_guid(p_guid) {PFC_ASSERT(!core_api::are_services_available());__internal__next=factoryList;factoryList=this;}
 	inline ~service_factory_base() {PFC_ASSERT(!core_api::are_services_available());}
 public:
 	inline const GUID & get_class_guid() const {return m_guid;}
@@ -267,16 +404,19 @@ private:
 	const GUID & m_guid;
 };
 
+template<typename B>
+class service_factory_traits {
+public:
+	static service_factory_base * & factory_list() {return service_factory_base::__internal__list;}
+};
 
 template<typename B>
 class service_factory_base_t : public service_factory_base {
 public:
-	service_factory_base_t() : service_factory_base(B::class_guid) {
-		pfc::assert_same_type<B,B::t_interface_entrypoint>();
+	service_factory_base_t() : service_factory_base(B::class_guid, service_factory_traits<B>::factory_list()) {
+		pfc::assert_same_type<B,typename B::t_interface_entrypoint>();
 	}
-
 };
-
 
 template<typename T> static void _validate_service_ptr(service_ptr_t<T> const & ptr) {
 	PFC_ASSERT( ptr.is_valid() );
@@ -291,7 +431,7 @@ template<typename T> static void _validate_service_ptr(service_ptr_t<T> const & 
 #endif
 
 template<class T> static bool service_enum_create_t(service_ptr_t<T> & p_out,t_size p_index) {
-	pfc::assert_same_type<T,T::t_interface_entrypoint>();
+	pfc::assert_same_type<T,typename T::t_interface_entrypoint>();
 	service_ptr_t<service_base> ptr;
 	if (service_factory_base::enum_create(ptr,service_factory_base::enum_find_class(T::class_guid),p_index)) {
 		p_out = static_cast<T*>(ptr.get_ptr());
@@ -303,7 +443,7 @@ template<class T> static bool service_enum_create_t(service_ptr_t<T> & p_out,t_s
 }
 
 template<typename T> static service_class_ref _service_find_class() {
-	pfc::assert_same_type<T,T::t_interface_entrypoint>();
+	pfc::assert_same_type<T,typename T::t_interface_entrypoint>();
 	return service_factory_base::enum_find_class(T::class_guid);
 }
 
@@ -327,7 +467,7 @@ static bool _service_instantiate_helper(service_ptr_t<what> & out, service_class
 template<typename T> class service_class_helper_t {
 public:
 	service_class_helper_t() : m_class(service_factory_base::enum_find_class(T::class_guid)) {
-		pfc::assert_same_type<T,T::t_interface_entrypoint>();
+		pfc::assert_same_type<T,typename T::t_interface_entrypoint>();
 	}
 	t_size get_count() const {
 		return service_factory_base::enum_get_count(m_class);
@@ -339,7 +479,7 @@ public:
 
 	service_ptr_t<T> create(t_size p_index) const {
 		service_ptr_t<T> temp;
-		if (!create(temp,p_index)) throw pfc::exception_bug_check_v2();
+		if (!create(temp,p_index)) uBugCheck();
 		return temp;
 	}
 	service_class_ref get_class() const {return m_class;}
@@ -349,26 +489,31 @@ private:
 
 void _standard_api_create_internal(service_ptr & out, const GUID & classID);
 
-template<typename T> static void standard_api_create_t(service_ptr_t<T> & p_out) {
-	if (pfc::is_same_type<T,T::t_interface_entrypoint>::value) {
+template<typename T> inline void standard_api_create_t(service_ptr_t<T> & p_out) {
+	if (pfc::is_same_type<T,typename T::t_interface_entrypoint>::value) {
 		_standard_api_create_internal(p_out._as_base_ptr(), T::class_guid);
 		FB2K_ASSERT_VALID_SERVICE_PTR(p_out);
 	} else {
-		service_ptr_t<T::t_interface_entrypoint> temp;
+		service_ptr_t<typename T::t_interface_entrypoint> temp;
 		standard_api_create_t(temp);
 		if (!temp->service_query_t(p_out)) throw exception_service_extension_not_found();
 	}
 }
 
-template<typename T> static service_ptr_t<T> standard_api_create_t() {
+template<typename T> inline void standard_api_create_t(T* & p_out) {
+	p_out = NULL;
+	standard_api_create_t( *reinterpret_cast< service_ptr_t<T> * >( & p_out ) );
+}
+
+template<typename T> inline service_ptr_t<T> standard_api_create_t() {
 	service_ptr_t<T> temp;
 	standard_api_create_t(temp);
 	return temp;
 }
 
 template<typename T>
-static bool static_api_test_t() {
-	typedef T::t_interface_entrypoint EP;
+inline bool static_api_test_t() {
+	typedef typename T::t_interface_entrypoint EP;
 	service_class_helper_t<EP> helper;
 	if (helper.get_count() != 1) return false;
 	if (!pfc::is_same_type<T,EP>::value) {
@@ -386,14 +531,22 @@ static bool static_api_test_t() {
 //! Throws exception_service_not_found if service could not be reached (which can be ignored for core APIs that are always present unless there is some kind of bug in the code).
 template<typename t_interface>
 class static_api_ptr_t {
+private:
+	typedef static_api_ptr_t<t_interface> t_self;
 public:
 	static_api_ptr_t() {
 		standard_api_create_t(m_ptr);
 	}
-	service_obscure_refcounting<t_interface>* operator->() const {return service_obscure_refcounting_cast(m_ptr.get_ptr());}
-	t_interface* get_ptr() const {return m_ptr.get_ptr();}
+	service_obscure_refcounting<t_interface>* operator->() const {return service_obscure_refcounting_cast(m_ptr);}
+	t_interface * get_ptr() const {return m_ptr;}
+	~static_api_ptr_t() {m_ptr->service_release();}
+	
+	static_api_ptr_t(const t_self & in) {
+		m_ptr = in.m_ptr; m_ptr->service_add_ref();
+	}
+	const t_self & operator=(const t_self & in) {return *this;} //obsolete, each instance should carry the same pointer
 private:
-	service_ptr_t<t_interface> m_ptr;
+	t_interface * m_ptr;
 };
 
 //! Helper; simulates array with instance of each available implementation of given service class.
@@ -452,54 +605,58 @@ private:
 	service_class_helper_t<t_interface> m_helper;
 };
 
+        
+        
 template<typename T>
 class service_factory_t : public service_factory_base_t<typename T::t_interface_entrypoint> {
 public:
-	void instance_create(service_ptr_t<service_base> & p_out) {
-		p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(  new service_impl_t<T>  )));
-	}
+    void instance_create(service_ptr_t<service_base> & p_out) {
+        p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(  new service_impl_t<T>  )));
+    }
 };
 
+        
 template<typename T>
 class service_factory_single_t : public service_factory_base_t<typename T::t_interface_entrypoint> {
-	service_impl_single_t<T> g_instance;
+    service_impl_single_t<T> g_instance;
 public:
-	TEMPLATE_CONSTRUCTOR_FORWARD_FLOOD(service_factory_single_t,g_instance)
-
-	void instance_create(service_ptr_t<service_base> & p_out) {
-		p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(&g_instance)));
-	}
-
-	inline T& get_static_instance() {return g_instance;}
+    TEMPLATE_CONSTRUCTOR_FORWARD_FLOOD(service_factory_single_t,g_instance)
+    
+    void instance_create(service_ptr_t<service_base> & p_out) {
+        p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(&g_instance)));
+    }
+    
+    inline T& get_static_instance() {return g_instance;}
+    inline const T& get_static_instance() const {return g_instance;}
 };
 
 template<typename T>
 class service_factory_single_ref_t : public service_factory_base_t<typename T::t_interface_entrypoint>
 {
 private:
-	T & instance;
+    T & instance;
 public:
-	service_factory_single_ref_t(T& param) : instance(param) {}
-
-	void instance_create(service_ptr_t<service_base> & p_out) {
-		p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(&instance)));
-	}
-
-	inline T& get_static_instance() {return instance;}
+    service_factory_single_ref_t(T& param) : instance(param) {}
+    
+    void instance_create(service_ptr_t<service_base> & p_out) {
+        p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(&instance)));
+    }
+    
+    inline T& get_static_instance() {return instance;}
 };
 
 
 template<typename T>
 class service_factory_single_transparent_t : public service_factory_base_t<typename T::t_interface_entrypoint>, public service_impl_single_t<T>
-{	
+{
 public:
-	TEMPLATE_CONSTRUCTOR_FORWARD_FLOOD(service_factory_single_transparent_t,service_impl_single_t<T>)
-
-	void instance_create(service_ptr_t<service_base> & p_out) {
-		p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(this)));
-	}
-
-	inline T& get_static_instance() {return *(T*)this;}
+    TEMPLATE_CONSTRUCTOR_FORWARD_FLOOD(service_factory_single_transparent_t,service_impl_single_t<T>)
+    
+    void instance_create(service_ptr_t<service_base> & p_out) {
+        p_out = pfc::implicit_cast<service_base*>(pfc::implicit_cast<typename T::t_interface_entrypoint*>(pfc::implicit_cast<T*>(this)));
+    }
+    
+    inline T& get_static_instance() {return *(T*)this;}
 };
 
 
@@ -533,6 +690,7 @@ public:
 
 	bool ready() const {return m_inited;}
 
+	// Caller must ensure initialize call before create() as well as thread safety of initialize() calls. The rest of this class is thread safe (only reads member data).
 	void initialize() {
 		if (m_inited) return;
 		pfc::assert_same_type< what, typename what::t_interface_entrypoint >();
@@ -547,14 +705,14 @@ public:
 		m_inited = true;
 	}
 
-	bool create(service_ptr_t<what> & out, const GUID & id) const {
+	bool create(service_ptr_t<what> & out, const GUID & theID) const {
 		PFC_ASSERT(m_inited);
 		t_size index;
-		if (!m_order.query(id,index)) return false;
+		if (!m_order.query(theID,index)) return false;
 		return _service_instantiate_helper(out, m_servClass, index);
 	}
-	service_ptr_t<what> create(const GUID & id) const {
-		service_ptr_t<what> temp; if (!crete(temp,id)) throw exception_service_not_found(); return temp;
+	service_ptr_t<what> create(const GUID & theID) const {
+		service_ptr_t<what> temp; if (!crete(temp,theID)) throw exception_service_not_found(); return temp;
 	}
 
 private:
@@ -577,7 +735,7 @@ static void service_by_guid_init() {
 	data.initialize();
 }
 template<typename what>
-static bool service_by_guid(service_ptr_t<what> & out, const GUID & id) {
+static bool service_by_guid(service_ptr_t<what> & out, const GUID & theID) {
 	pfc::assert_same_type< what, typename what::t_interface_entrypoint >();
 	service_by_guid_data<what> & data = _service_by_guid_data_container<what>::data;
 	if (data.ready()) {
@@ -586,19 +744,27 @@ static bool service_by_guid(service_ptr_t<what> & out, const GUID & id) {
 		data.initialize();
 	} else {
 #ifdef _DEBUG
-		uDebugLog() << "Warning: service_by_guid() used in non-main thread without initialization, using fallback";
+		FB2K_DebugLog() << "Warning: service_by_guid() used in non-main thread without initialization, using fallback";
 #endif
-		return service_by_guid_fallback(out,id);
+		return service_by_guid_fallback(out,theID);
 	}
-	return data.create(out,id);
+	return data.create(out,theID);
 }
 template<typename what>
-static service_ptr_t<what> service_by_guid(const GUID & id) {
+static service_ptr_t<what> service_by_guid(const GUID & theID) {
 	service_ptr_t<what> temp;
-	if (!service_by_guid(temp,id)) throw exception_service_not_found();
+	if (!service_by_guid(temp,theID)) throw exception_service_not_found();
 	return temp;
 }
 
-#define FB2K_FOR_EACH_SERVICE(type, call) {service_enum_t<type> e; service_ptr_t<type> ptr; while(e.next(ptr)) {ptr->call;} }
+#define FB2K_FOR_EACH_SERVICE(type, call) {service_enum_t<typename type::t_interface_entrypoint> e; service_ptr_t<type> ptr; while(e.next(ptr)) {ptr->call;} }
+
+
+
+class comparator_service_guid {
+public:
+	template<typename what> static int compare(const what & v1, const what & v2) { return pfc::compare_t(v1->get_guid(), v2->get_guid()); }
+};
+
 
 #endif //_foobar2000_sdk_service_h_included_

@@ -18,8 +18,23 @@ namespace console
 	public:
 		~formatter() {if (!is_empty()) console::print(get_ptr());}
 	};
+#define FB2K_console_formatter() ::console::formatter()._formatter()
+    
 	void complain(const char * what, const char * msg);
 	void complain(const char * what, std::exception const & e);
+
+	class timer_scope {
+	public:
+		timer_scope(const char * name) : m_name(name) {m_timer.start();}
+		~timer_scope() {
+			try {
+				FB2K_console_formatter() << m_name << ": " << pfc::format_time_ex(m_timer.query(), 6);
+			} catch(...) {}
+		}
+	private:
+		pfc::hires_timer m_timer;
+		const char * const m_name;
+	};
 };
 
 //! Interface receiving console output. Do not call directly; use console namespace functions instead.

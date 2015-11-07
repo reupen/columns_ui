@@ -36,7 +36,7 @@ public:
 	virtual bool query_item_replace(t_size p_index,const metadb_handle_ptr & p_old,const metadb_handle_ptr & p_new)=0;
 	//! Queries whether renaming the locked playlist is allowed.
 	//! @param p_new_name Requested new name of the playlist; a UTF-8 encoded string.
-	//! @param p_new_name_len Length limit of the name string, in bytes (actual string may be shorter if null terminator is encountered before). Set this to pfc_infinite to use plain null-terminated strings.
+	//! @param p_new_name_len Length limit of the name string, in bytes (actual string may be shorter if null terminator is encountered before). Set this to infinite to use plain null-terminated strings.
 	//! @returns True to allow the operation, false to block it.
 	virtual bool query_playlist_rename(const char * p_new_name,t_size p_new_name_len) = 0;
 	//! Queries whether removal of the locked playlist is allowed. Note that the lock will be released when the playlist is removed.
@@ -84,9 +84,9 @@ public:
 
 	//! Retrieves number of playlists.
 	virtual t_size get_playlist_count() = 0;
-	//! Retrieves index of active playlist; pfc_infinite if no playlist is active.
+	//! Retrieves index of active playlist; infinite if no playlist is active.
 	virtual t_size get_active_playlist() = 0;
-	//! Sets active playlist (pfc_infinite to set no active playlist).
+	//! Sets active playlist (infinite to set no active playlist).
 	virtual void set_active_playlist(t_size p_index) = 0;
 	//! Retrieves playlist from which items to be played are taken from.
 	virtual t_size get_playing_playlist() = 0;
@@ -96,9 +96,9 @@ public:
 	virtual bool remove_playlists(const bit_array & p_mask) = 0;
 	//! Creates a new playlist.
 	//! @param p_name Name of playlist to create; a UTF-8 encoded string.
-	//! @param p_name_length Length limit of playlist name string, in bytes (actual string may be shorter if null terminator is encountered before). Set this to pfc_infinite to use plain null-terminated strings.
-	//! @param p_index Index at which to insert new playlist; set to pfc_infinite to put it at the end of playlist list.
-	//! @returns Actual index of newly inserted playlist, pfc_infinite on failure (call from invalid context).
+	//! @param p_name_length Length limit of playlist name string, in bytes (actual string may be shorter if null terminator is encountered before). Set this to infinite to use plain null-terminated strings.
+	//! @param p_index Index at which to insert new playlist; set to infinite to put it at the end of playlist list.
+	//! @returns Actual index of newly inserted playlist, infinite on failure (call from invalid context).
 	virtual t_size create_playlist(const char * p_name,t_size p_name_length,t_size p_index) = 0;
 	//! Reorders the playlist list according to specified permutation.
 	//! @returns True on success, false on failure (call from invalid context).
@@ -109,7 +109,7 @@ public:
 	virtual t_size playlist_get_item_count(t_size p_playlist) = 0;
 	//! Enumerates contents of specified playlist.
 	virtual void playlist_enum_items(t_size p_playlist,enum_items_callback & p_callback,const bit_array & p_mask) = 0;
-	//! Retrieves index of focus item on specified playlist; returns pfc_infinite when no item has focus.
+	//! Retrieves index of focus item on specified playlist; returns infinite when no item has focus.
 	virtual t_size playlist_get_focus_item(t_size p_playlist) = 0;
 	//! Retrieves name of specified playlist. Should never fail unless the parameters are invalid.
 	virtual bool playlist_get_name(t_size p_playlist,pfc::string_base & p_out) = 0;
@@ -125,7 +125,7 @@ public:
 	virtual bool playlist_remove_items(t_size p_playlist,const bit_array & mask)=0;
 	//! Replaces specified item on specified playlist. Returns true on success or false on failure (playlist locked).
 	virtual bool playlist_replace_item(t_size p_playlist,t_size p_item,const metadb_handle_ptr & p_new_item) = 0;
-	//! Sets index of focus item on specified playlist; use pfc_infinite to set no focus item.
+	//! Sets index of focus item on specified playlist; use infinite to set no focus item.
 	virtual void playlist_set_focus_item(t_size p_playlist,t_size p_item) = 0;
 	//! Inserts new items into specified playlist, at specified position.
 	virtual t_size playlist_insert_items(t_size p_playlist,t_size p_base,const pfc::list_base_const_t<metadb_handle_ptr> & data,const bit_array & p_selection) = 0;
@@ -133,7 +133,7 @@ public:
 	virtual void playlist_ensure_visible(t_size p_playlist,t_size p_item) = 0;
 	//! Renames specified playlist.
 	//! @param p_name New name of playlist; a UTF-8 encoded string.
-	//! @param p_name_length Length limit of playlist name string, in bytes (actual string may be shorter if null terminator is encountered before). Set this to pfc_infinite to use plain null-terminated strings.
+	//! @param p_name_length Length limit of playlist name string, in bytes (actual string may be shorter if null terminator is encountered before). Set this to infinite to use plain null-terminated strings.
 	//! @returns True on success, false on failure (playlist locked).
 	virtual bool playlist_rename(t_size p_index,const char * p_name,t_size p_name_length) = 0;
 
@@ -207,7 +207,7 @@ public:
 	virtual void queue_add_item(metadb_handle_ptr p_item) = 0;
 	virtual t_size queue_get_count() = 0;
 	virtual void queue_get_contents(pfc::list_base_t<t_playback_queue_item> & p_out) = 0;
-	//! Returns index (0-based) on success, pfc_infinite on failure (item not in queue).
+	//! Returns index (0-based) on success, infinite on failure (item not in queue).
 	virtual t_size queue_find_index(t_playback_queue_item const & p_item) = 0;
 
 	//! Registers a playlist callback; registered object receives notifications about any modifications of any of loaded playlists.
@@ -275,7 +275,7 @@ public:
 	//retrieving status
 	t_size activeplaylist_get_item_count();
 	void activeplaylist_enum_items(enum_items_callback & p_callback,const bit_array & p_mask);
-	t_size activeplaylist_get_focus_item();//focus may be pfc_infinite if no item is focused
+	t_size activeplaylist_get_focus_item();//focus may be infinite if no item is focused
 	bool activeplaylist_get_name(pfc::string_base & p_out);
 
 	//modifying playlist
@@ -338,7 +338,7 @@ public:
 	t_size find_or_create_playlist(const char * p_name,t_size p_name_length = ~0);
 	t_size find_or_create_playlist_unlocked(const char * p_name,t_size p_name_length = ~0);
 
-	t_size create_playlist_autoname(t_size p_index = pfc_infinite);
+	t_size create_playlist_autoname(t_size p_index = ~0);
 
 	bool activeplaylist_sort_by_format(const char * spec,bool p_sel_only);
 
@@ -431,8 +431,8 @@ public:
 	//! \param p_property GUID that identifies the property
 	//! \param p_data array that contains the data that will be associated with the property
 	template<typename t_array> void playlist_set_property(t_size p_playlist,const GUID & p_property,const t_array & p_data) {
-		pfc::static_assert_t<sizeof(p_data[0]) == 1>();
-		playlist_set_property(p_playlist,p_property,&stream_reader_memblock_ref(p_data),p_data.get_size(),abort_callback_impl());
+		PFC_STATIC_ASSERT( sizeof(p_data[0]) == 1 );
+		playlist_set_property(p_playlist,p_property,&stream_reader_memblock_ref(p_data),p_data.get_size(),abort_callback_dummy());
 	}
 	//! Read a persistent playlist property.
 	//! \param p_playlist Index of the playlist
@@ -440,10 +440,10 @@ public:
 	//! \param p_data array that will receive the stored data
 	//! \return true if the property exists, false otherwise
 	template<typename t_array> bool playlist_get_property(t_size p_playlist,const GUID & p_property,t_array & p_data) {
-		pfc::static_assert_t<sizeof(p_data[0]) == 1>();
+		PFC_STATIC_ASSERT( sizeof(p_data[0]) == 1 );
 		typedef pfc::array_t<t_uint8,pfc::alloc_fast_aggressive> t_temp;
 		t_temp temp;
-		if (!playlist_get_property(p_playlist,p_property,&stream_writer_buffer_append_ref_t<t_temp>(temp),abort_callback_impl())) return false;
+		if (!playlist_get_property(p_playlist,p_property,&stream_writer_buffer_append_ref_t<t_temp>(temp),abort_callback_dummy())) return false;
 		p_data = temp;
 		return true;
 	}

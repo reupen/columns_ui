@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifdef _WIN32
+
 static bool g_is_enabled()
 {
 	return standard_config_objects::query_remember_window_positions();
@@ -41,8 +43,15 @@ bool cfg_window_placement::read_from_window(HWND window)
 	WINDOWPLACEMENT wp = {};
 	if (g_is_enabled()) {
 		wp.length = sizeof(wp);
-		if (!GetWindowPlacement(window,&wp))
+		if (!GetWindowPlacement(window,&wp)) {
+			PFC_ASSERT(!"GetWindowPlacement fail!");
 			memset(&wp,0,sizeof(wp));
+		} else {
+			// bad, breaks with taskbar on top
+			/*if (wp.showCmd == SW_SHOWNORMAL) {
+				GetWindowRect(window, &wp.rcNormalPosition);
+			}*/
+		}
 		/*else
 		{
 			if (!IsWindowVisible(window)) wp.showCmd = SW_HIDE;
@@ -119,11 +128,11 @@ cfg_window_placement::cfg_window_placement(const GUID & p_guid) : cfg_var(p_guid
 }
 
 
-cfg_window_size::cfg_window_size(const GUID & p_guid) : cfg_var(p_guid), m_width(pfc::infinite32), m_height(pfc::infinite32) {}
+cfg_window_size::cfg_window_size(const GUID & p_guid) : cfg_var(p_guid), m_width(~0), m_height(~0) {}
 
 static BOOL SetWindowSize(HWND p_wnd,unsigned p_x,unsigned p_y)
 {
-	if (p_x != pfc::infinite32 && p_y != pfc::infinite32)
+	if (p_x != ~0 && p_y != ~0)
 		return SetWindowPos(p_wnd,0,0,0,p_x,p_y,SWP_NOACTIVATE|SWP_NOMOVE|SWP_NOZORDER);
 	else
 		return FALSE;
@@ -165,13 +174,13 @@ bool cfg_window_size::read_from_window(HWND p_wnd)
 		}
 		else
 		{
-			m_width = m_height = pfc::infinite32;
+			m_width = m_height = ~0;
 			return false;
 		}
 	}
 	else
 	{
-		m_width = m_height = pfc::infinite32;
+		m_width = m_height = ~0;
 		return false;
 	}
 }
@@ -187,7 +196,7 @@ void cfg_window_size::get_data_raw(stream_writer * p_stream,abort_callback & p_a
 			}
 		}
 
-		if (m_width != pfc::infinite32 && m_height != pfc::infinite32) {
+		if (m_width != ~0 && m_height != ~0) {
 			p_stream->write_lendian_t(m_width,p_abort);
 			p_stream->write_lendian_t(m_height,p_abort);
 		}
@@ -204,3 +213,4 @@ void cfg_window_size::set_data_raw(stream_reader * p_stream,t_size p_sizehint,ab
 
 	m_width = width; m_height = height;
 }
+#endif // _WIN32

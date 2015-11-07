@@ -3,15 +3,10 @@
 
 static void g_on_files_deleted_sorted(const pfc::list_base_const_t<const char *> & p_items)
 {
-	static_api_ptr_t<library_manager>()->on_files_deleted_sorted(p_items);
+	//static_api_ptr_t<library_manager>()->on_files_deleted_sorted(p_items);
 	static_api_ptr_t<playlist_manager>()->on_files_deleted_sorted(p_items);
 
-	service_ptr_t<file_operation_callback> ptr;
-	service_enum_t<file_operation_callback> e;
-	while(e.next(ptr))
-	{
-		ptr->on_files_deleted_sorted(p_items);
-	}
+	FB2K_FOR_EACH_SERVICE(file_operation_callback,  on_files_deleted_sorted(p_items));
 }
 
 static void g_on_files_moved_sorted(const pfc::list_base_const_t<const char *> & p_from,const pfc::list_base_const_t<const char *> & p_to)
@@ -19,22 +14,12 @@ static void g_on_files_moved_sorted(const pfc::list_base_const_t<const char *> &
 	static_api_ptr_t<playlist_manager>()->on_files_moved_sorted(p_from,p_to);
 	static_api_ptr_t<playlist_manager>()->on_files_deleted_sorted(p_from);
 
-	service_ptr_t<file_operation_callback> ptr;
-	service_enum_t<file_operation_callback> e;
-	while(e.next(ptr))
-	{
-		ptr->on_files_moved_sorted(p_from,p_to);
-	}
+	FB2K_FOR_EACH_SERVICE(file_operation_callback, on_files_moved_sorted(p_from,p_to));
 }
 
 static void g_on_files_copied_sorted(const pfc::list_base_const_t<const char *> & p_from,const pfc::list_base_const_t<const char *> & p_to)
 {
-	service_ptr_t<file_operation_callback> ptr;
-	service_enum_t<file_operation_callback> e;
-	while(e.next(ptr))
-	{
-		ptr->on_files_copied_sorted(p_from,p_to);
-	}
+	FB2K_FOR_EACH_SERVICE(file_operation_callback, on_files_copied_sorted(p_from,p_to));
 }
 
 void file_operation_callback::g_on_files_deleted(const pfc::list_base_const_t<const char *> & p_items)

@@ -14,13 +14,13 @@ static const char * const standard_infonames[] = {
 
 static const char * optimize_fieldname(const char * p_string) {
 	t_size index;
-	if (!pfc::binarySearch<pfc::comparator_strcmp>::run(standard_fieldnames,0,tabsize(standard_fieldnames),p_string,index)) return NULL;
+	if (!pfc::binarySearch<pfc::comparator_strcmp>::run(standard_fieldnames,0,PFC_TABSIZE(standard_fieldnames),p_string,index)) return NULL;
 	return standard_fieldnames[index];
 }
 
 static const char * optimize_infoname(const char * p_string) {
 	t_size index;
-	if (!pfc::binarySearch<pfc::comparator_strcmp>::run(standard_infonames,0,tabsize(standard_infonames),p_string,index)) return NULL;
+	if (!pfc::binarySearch<pfc::comparator_strcmp>::run(standard_infonames,0,PFC_TABSIZE(standard_infonames),p_string,index)) return NULL;
 	return standard_infonames[index];
 }
 
@@ -82,7 +82,7 @@ namespace {
 
 		inline int test(t_size p_index) const
 		{
-			return pfc::stricmp_ascii_ex(m_meta[m_hintmap[p_index]].m_name,pfc_infinite,m_name,m_name_length);
+			return pfc::stricmp_ascii_ex(m_meta[m_hintmap[p_index]].m_name,~0,m_name,m_name_length);
 		}
 
 	private:
@@ -106,6 +106,9 @@ void file_info_const_impl::copy(const file_info & p_source)
 	t_size hintmap_size = 0;
 #endif
 
+	const char * optbuf[64];
+	size_t optwalk = 0;
+
 	{
 //		profiler(file_info_const_impl__copy__pass1);
 		t_size index;
@@ -118,8 +121,9 @@ void file_info_const_impl::copy(const file_info & p_source)
 		{
 			{
 				const char * name = p_source.meta_enum_name(index);
-				if (optimize_fieldname(name) == 0)
-					stringbuffer_size += strlen(name) + 1;
+				const char * opt = optimize_fieldname(name);
+				if (optwalk < _countof(optbuf)) optbuf[optwalk++] = opt;
+				if (opt == NULL) stringbuffer_size += strlen(name) + 1;
 			}
 
 			t_size val; const t_size val_max = p_source.meta_enum_value_count(index);
@@ -144,7 +148,9 @@ void file_info_const_impl::copy(const file_info & p_source)
 		for(index = 0; index < m_info_count; index++ )
 		{
 			const char * name = p_source.info_enum_name(index);
-			if (optimize_infoname(name) == NULL) stringbuffer_size += strlen(name) + 1;
+			const char * opt = optimize_infoname(name);
+			if (optwalk < _countof(optbuf)) optbuf[optwalk++] = opt;
+			if (opt == NULL) stringbuffer_size += strlen(name) + 1;
 			stringbuffer_size += strlen(p_source.info_enum_value(index)) + 1;
 		}
 	}
@@ -179,6 +185,7 @@ void file_info_const_impl::copy(const file_info & p_source)
 	m_hintmap = hintmap;
 #endif
 
+	optwalk = 0;
 	{
 //		profiler(file_info_const_impl__copy__pass2);
 		t_size index;
@@ -188,7 +195,11 @@ void file_info_const_impl::copy(const file_info & p_source)
 
 			{
 				const char * name = p_source.meta_enum_name(index);
-				const char * name_opt = optimize_fieldname(name);
+				const char * name_opt;
+
+				if (optwalk < _countof(optbuf)) name_opt = optbuf[optwalk++];
+				else name_opt = optimize_fieldname(name);
+
 				if (name_opt == NULL)
 					meta[index].m_name = stringbuffer_append(stringbuffer, name );
 				else
@@ -212,7 +223,11 @@ void file_info_const_impl::copy(const file_info & p_source)
 		for( index = 0; index < m_info_count; index ++ )
 		{
 			const char * name = p_source.info_enum_name(index);
-			const char * name_opt = optimize_infoname(name);
+			const char * name_opt;
+
+			if (optwalk < _countof(optbuf)) name_opt = optbuf[optwalk++];
+			else name_opt = optimize_infoname(name);
+
 			if (name_opt == NULL)
 				info[index].m_name = stringbuffer_append(stringbuffer, name );
 			else
@@ -242,8 +257,8 @@ t_size file_info_const_impl::meta_find_ex(const char * p_name,t_size p_name_leng
 {
 #ifdef __file_info_const_impl_have_hintmap__
 	if (m_hintmap != NULL) {
-		t_size result = pfc_infinite;
-		if (!pfc::bsearch_inline_t(m_meta_count,bsearch_callback_hintmap_impl(m_meta,m_hintmap,p_name,p_name_length),result)) return pfc_infinite;
+		t_size result = ~0;
+		if (!pfc::bsearch_inline_t(m_meta_count,bsearch_callback_hintmap_impl(m_meta,m_hintmap,p_name,p_name_length),result)) return ~0;
 		else return m_hintmap[result];
 	} else {
 		return file_info::meta_find_ex(p_name,p_name_length);

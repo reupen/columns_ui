@@ -13,7 +13,7 @@ namespace create_directory_helper
 	}
 
 	static bool is_valid_netpath_char(char p_char) {
-		return pfc::char_is_ascii_alphanumeric(p_char) || p_char == '_' || p_char == '-';
+		return pfc::char_is_ascii_alphanumeric(p_char) || p_char == '_' || p_char == '-' || p_char == '.';
 	}
 
 	static bool test_localpath(const char * p_path) {
@@ -46,16 +46,20 @@ namespace create_directory_helper
 			while(p_path[walk] == '\\') walk++;
 			while(p_path[walk] != 0 && p_path[walk] != '\\') walk++;
 			while(p_path[walk] == '\\') walk++;
+			while(p_path[walk] != 0 && p_path[walk] != '\\') walk++;
+			while(p_path[walk] == '\\') walk++;
 			create_path_internal(p_path,walk,p_abort);
 		} else {
-			throw exception_io("Could not create directory structure; unknown path format");
+            pfc::throw_exception_with_message< exception_io > ("Could not create directory structure; unknown path format");
 		}
 	}
 
+#ifdef _WIN32
 	static bool is_bad_dirchar(char c)
 	{
 		return c==' ' || c=='.';
 	}
+#endif
 
 	void make_path(const char * parent,const char * filename,const char * extension,bool allow_new_dirs,pfc::string8 & out,bool really_create_dirs,abort_callback & p_abort)
 	{
@@ -111,12 +115,54 @@ namespace create_directory_helper
 	}
 }
 
-void create_directory_helper::format_filename(const metadb_handle_ptr & handle,titleformat_hook * p_hook,const char * spec,pfc::string8 & out)
+pfc::string create_directory_helper::sanitize_formatted_path(pfc::stringp formatted, bool allowWC) {
+	pfc::string out;
+	t_size curSegBase = 0;
+	for(t_size walk = 0; ; ++walk) {
+		const char c = formatted[walk];
+		if (c == 0 || pfc::io::path::isSeparator(c)) {
+			if (curSegBase < walk) {
+				pfc::string seg( formatted + curSegBase, walk - curSegBase );
+				out = pfc::io::path::combine(out, pfc::io::path::validateFileName(seg, allowWC));
+			}
+			if (c == 0) break;
+			curSegBase = walk + 1;
+		}
+	}
+	return out;
+};
+
+void create_directory_helper::format_filename_ex(const metadb_handle_ptr & handle,titleformat_hook * p_hook,titleformat_object::ptr spec,const char * suffix, pfc::string_base & out) {
+	pfc::string_formatter formatted;
+    titleformat_text_filter_myimpl filter;
+	handle->format_title(p_hook,formatted,spec,&filter);
+	formatted << suffix;
+	out = sanitize_formatted_path(formatted).ptr();
+}
+void create_directory_helper::format_filename(const metadb_handle_ptr & handle,titleformat_hook * p_hook,titleformat_object::ptr spec,pfc::string_base & out) {
+	format_filename_ex(handle, p_hook, spec, "", out);
+}
+void create_directory_helper::format_filename(const metadb_handle_ptr & handle,titleformat_hook * p_hook,const char * spec,pfc::string_base & out)
 {
-	titleformat_text_filter_impl_filename_chars filter;
-	pfc::string8 temp;
-	handle->format_title_legacy(p_hook,temp,spec,&filter);
-	temp.replace_char('/','\\');
-	temp.fix_filename_chars('_','\\');
-	out = temp;
+	service_ptr_t<titleformat_object> script;
+	if (static_api_ptr_t<titleformat_compiler>()->compile(script,spec)) {
+		format_filename(handle, p_hook, script, out);
+	} else {
+		out.reset();
+	}
+}
+
+void create_directory_helper::titleformat_text_filter_myimpl::write(const GUID & p_inputType,pfc::string_receiver & p_out,const char * p_data,t_size p_dataLength) {
+	if (p_inputType == titleformat_inputtypes::meta) {
+		pfc::string_formatter temp;
+		for(t_size walk = 0; walk < p_dataLength; ++walk) {
+			char c = p_data[walk];
+			if (c == 0) break;
+			if (pfc::io::path::isSeparator(c)) {
+				c = '-';
+			}
+			temp.add_byte(c);
+		}
+		p_out.add_string(temp);
+	} else p_out.add_string(p_data,p_dataLength);
 }

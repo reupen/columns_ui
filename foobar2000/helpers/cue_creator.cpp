@@ -166,6 +166,12 @@ namespace cue_creator
 		m_index_list.reset();
 		m_index_list.m_positions[0] = m_index_list.m_positions[1] = p_time;
 	}
+	void t_entry::set_index01(double index0, double index1) {
+		PFC_ASSERT( index0 <= index1 );
+		m_index_list.reset();
+		m_index_list.m_positions[0] = index0;
+		m_index_list.m_positions[1] = index1;
+	}
 
 }
 

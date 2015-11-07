@@ -40,13 +40,23 @@ namespace pfc {
 				throw;
 			}
 		}
-		const t_self & operator=(const t_self & p_other) {
+		template<typename t_in> void _set(const t_in & in) {
+			remove_all(); _add(in);
+		}
+		template<typename t_in> void _add(const t_in & in) {
+			for(typename t_in::const_iterator iter = in.first(); iter.is_valid(); ++in) add_item(*iter);
+		}
+		template<typename t_in> t_self & operator=(const t_in & in) {_set(in); return *this;}
+
+		t_self & operator=(const t_self & p_other) {
 			remove_all();
 			for(t_elem * walk = p_other.m_first; walk != NULL; walk = walk->m_next) {
 				add_item(walk->m_content);
 			}
 			return *this;
 		}
+		// templated constructors = spawn of satan
+		// template<typename t_other> chain_list_v2_t(const t_other & in) { try {_add(in);} catch(...) {remove_all(); throw;} }
 
 		t_size get_count() const {return m_count;}
 

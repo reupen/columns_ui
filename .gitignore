@@ -183,3 +183,5 @@ UpgradeLog*.htm
 FakesAssemblies/
 foobar2000/vc14/Debug.Win32/**/*
 foobar2000/vc14/Release.Win32/**/*
+foobar2000/vc14/columns_ui-public.VC.VC.opendb
+foobar2000/vc14/columns_ui-public.VC.db
