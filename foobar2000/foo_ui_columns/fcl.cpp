@@ -403,8 +403,8 @@ void g_import_layout(HWND wnd, const char * path)
 				for (i=0; i<count; i++)
 					datasetsguids.add_item(datasets[i].guid);
 				FCLDialog pFCLDialog(true, datasetsguids);
-				if (!uDialogBox (IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
-					throw exception_aborted();
+					if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
+						throw exception_aborted();
 				ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
 				for (i=0; i<count; i++)
 				{
@@ -443,7 +443,7 @@ void g_import_layout(HWND wnd, const char * path)
 		};
 }
 
-void g_import_layout2(HWND wnd, const char * path)
+void g_import_layout_quiet(HWND wnd, const char * path)
 {
 	class t_import_feedback_impl : public cui::fcl::t_import_feedback, public pfc::list_t<GUID>
 	{
@@ -543,7 +543,7 @@ void g_import_layout2(HWND wnd, const char * path)
 			for (i = 0; i<count; i++)
 				datasetsguids.add_item(datasets[i].guid);
 			//FCLDialog pFCLDialog(true, datasetsguids);
-			//if (!uDialogBox (IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
+			//if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
 			//	throw exception_aborted();
 			ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
 			for (i = 0; i<count; i++)
@@ -582,6 +582,7 @@ void g_import_layout2(HWND wnd, const char * path)
 		popup_message::g_show(ex.what(), "Error");
 	};
 }
+
 void g_import_layout(HWND wnd)
 {
 	pfc::string8 path;
