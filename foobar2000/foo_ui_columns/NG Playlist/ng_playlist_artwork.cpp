@@ -25,7 +25,7 @@ namespace pvt
 		HBITMAP ret = NULL;
 		try
 		{
-			// FIXME: hardcoded font cover
+			// FIXME: hardcoded to front cover
 			data = p_extractor->query(album_art_ids::cover_front, p_abort);
 			ret = g_create_hbitmap_from_data(data, cx, cy, cr_back, b_reflection);
 		}
