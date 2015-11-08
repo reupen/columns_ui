@@ -191,24 +191,7 @@ namespace status_bar
 		sels.prealloc(count);
 
 		playlist_api->activeplaylist_get_selected_items(sels);
-
-		metadb_api->database_lock();
-
-		int n, t = sels.get_count();
-		for (n = 0; n<t; n++)
-		{
-			double rv = 0;
-			const file_info * info;
-			if (sels.get_item(n)->get_info_locked(info))
-			{
-				double temp = info->get_length();
-				if (temp != -1)
-					length += temp;
-			}
-			//			length += sels.get_item(n)->get_length();
-		}
-
-		metadb_api->database_unlock();
+		length = sels.calc_total_duration();
 
 		p_out = pfc::format_time_ex(length, dp);
 	}

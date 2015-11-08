@@ -293,7 +293,8 @@ public:
 	inline operator const char * () const {return m_data.get_ptr();}
 	inline t_size length() const {return m_data.length();}
 	inline bool is_empty() const {return length() == 0;}
-	inline const char * get_ptr() const {return m_data.get_ptr();}
+	inline const char * get_ptr() const { return m_data.get_ptr(); }
+	inline const char * c_str() const { return get_ptr(); }
 private:
 	pfc::string8 m_data;
 };
