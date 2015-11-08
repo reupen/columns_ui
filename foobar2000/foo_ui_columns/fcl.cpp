@@ -303,7 +303,7 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 PFC_DECLARE_EXCEPTION(exception_fcl_dependentpanelmissing, pfc::exception, "Missing dependent panel(s)");
 
-void g_import_layout(HWND wnd, const char * path)
+void g_import_layout(HWND wnd, const char * path, bool quiet)
 {
 	class t_import_feedback_impl : public cui::fcl::t_import_feedback, public pfc::list_t<GUID>
 	{
@@ -402,15 +402,29 @@ void g_import_layout(HWND wnd, const char * path)
 				pfc::list_t<GUID> datasetsguids;
 				for (i=0; i<count; i++)
 					datasetsguids.add_item(datasets[i].guid);
-				FCLDialog pFCLDialog(true, datasetsguids);
+				if (quiet) {
+					//FCLDialog pFCLDialog(true, datasetsguids);
+					//if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
+					//	throw exception_aborted();
+					ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
+					for (i = 0; i<count; i++)
+					{
+						cui::fcl::dataset_ptr ptr;
+						if (export_items.find_by_guid(datasets[i].guid, ptr))
+							ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(), mode, feed, p_abort);
+					}
+				}
+				else {
+					FCLDialog pFCLDialog(true, datasetsguids);
 					if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
-						throw exception_aborted();
-				ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
-				for (i=0; i<count; i++)
-				{
-					cui::fcl::dataset_ptr ptr;
-					if (export_items.find_by_guid(datasets[i].guid, ptr) && pFCLDialog.have_node_checked(ptr->get_group()))
-						ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(),mode,feed, p_abort);
+					throw exception_aborted();
+					ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
+					for (i = 0; i<count; i++)
+					{
+						cui::fcl::dataset_ptr ptr;
+						if (export_items.find_by_guid(datasets[i].guid, ptr) && pFCLDialog.have_node_checked(ptr->get_group()))
+							ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(), mode, feed, p_abort);
+					}
 				}
 				if (feed.get_count())
 				{
@@ -443,152 +457,13 @@ void g_import_layout(HWND wnd, const char * path)
 		};
 }
 
-void g_import_layout_quiet(HWND wnd, const char * path)
-{
-	class t_import_feedback_impl : public cui::fcl::t_import_feedback, public pfc::list_t<GUID>
-	{
-	public:
-		virtual void add_required_panel(const char * name, const GUID & guid)
-		{
-			add_item(guid);
-		}
-	};
-
-	//pfc::list_t<t_required_panel> required_panels;
-	panel_info_list panel_info;
-	try
-	{
-		class t_dataset
-		{
-		public:
-			GUID guid;
-			pfc::array_t<t_uint8> data;
-		};
-
-		service_ptr_t<file> p_file;
-		abort_callback_impl p_abort;
-		filesystem::g_open_read(p_file, path, p_abort);
-		GUID guid;
-		t_uint32 version;
-		p_file->read_lendian_t(guid, p_abort);
-		if (guid != g_fcl_header)
-			throw pfc::exception("Unrecognised file header");
-		p_file->read_lendian_t(version, p_abort);
-		if (version > fcl_stream_version)
-			throw pfc::exception("Need newer foo_ui_columns");
-		t_uint32 mode = cui::fcl::type_public;
-		if (version >= 1)
-			p_file->read_lendian_t(mode, p_abort);
-		{
-			pfc::list_t<bool> mask;
-			t_size i, count;
-			p_file->read_lendian_t(count, p_abort);
-			for (i = 0; i<count; i++)
-			{
-				t_panel_info info;
-				p_file->read_lendian_t(info.guid, p_abort);
-				p_file->read_string(info.name, p_abort);
-				panel_info.add_item(info);
-
-				uie::window_ptr ptr;
-				mask.add_item(uie::window::create_by_guid(info.guid, ptr));
-			}
-			panel_info.remove_mask(mask.get_ptr());
-		}
-		{
-			t_size count = panel_info.get_count();
-			if (count)
-			{
-				throw exception_fcl_dependentpanelmissing();
-				/*pfc::string8 msg, name;
-				msg << "Import aborted: The following required panels are not present.\r\n\r\nGUID, Name\r\n";
-				t_size i, count = panel_info.get_count();
-				for (i=0; i<count; i++)
-				{
-				msg << pfc::print_guid(panel_info[i].guid);
-				msg << ", " << panel_info[i].name;
-				msg << "\r\n";
-				//required_panels.add_item(t_required_panel(
-				}
-				throw pfc::exception(msg);*/
-			}
-		}
-		{
-			cui::fcl::dataset_list export_items;
-			t_size i, count;
-			p_file->read_lendian_t(count, p_abort);
-			t_import_feedback_impl feed;
-			pfc::array_t< pfc::array_t<t_uint32> > panel_indices;
-			panel_indices.set_count(count);
-			pfc::array_t< t_dataset > datasets;
-			datasets.set_count(count);
-			for (i = 0; i<count; i++)
-			{
-				//GUID guiditem;
-				pfc::string8 name;
-				p_file->read_lendian_t(datasets[i].guid, p_abort);
-				p_file->read_string(name, p_abort);
-				t_uint32 pcount, j;
-				p_file->read_lendian_t(pcount, p_abort);
-				panel_indices[i].set_count(pcount);
-				for (j = 0; j<pcount; j++)
-					p_file->read_lendian_t(panel_indices[i][j], p_abort);
-				//pfc::array_t<t_uint8> data;
-				t_size size;
-				p_file->read_lendian_t(size, p_abort);
-				datasets[i].data.set_size(size);
-				p_file->read(datasets[i].data.get_ptr(), size, p_abort);
-			}
-			pfc::list_t<GUID> datasetsguids;
-			for (i = 0; i<count; i++)
-				datasetsguids.add_item(datasets[i].guid);
-			//FCLDialog pFCLDialog(true, datasetsguids);
-			//if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
-			//	throw exception_aborted();
-			ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
-			for (i = 0; i<count; i++)
-			{
-				cui::fcl::dataset_ptr ptr;
-				if (export_items.find_by_guid(datasets[i].guid, ptr))
-					ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(), mode, feed, p_abort);
-			}
-			if (feed.get_count())
-			{
-				throw pfc::exception("Bug check: panels missing");
-				/*pfc::string8 msg, name;
-				msg << "The following required panels are not present. Some parts of the layout may not have been imported.\r\n\r\nGUID, Name\r\n";
-				t_size i, count = feed.get_count();
-				for (i=0; i<count; i++)
-				{
-				bool b_name = panel_info.get_name_by_guid(feed[i], name);
-				msg << pfc::print_guid(feed[i]);
-				if (b_name) msg << ", " << name;
-				msg << "\r\n";
-				}
-				throw pfc::exception(msg);*/
-			}
-		}
-	}
-	catch (const exception_aborted &)
-	{
-	}
-	catch (const exception_fcl_dependentpanelmissing &)
-	{
-		t_import_results_data data(panel_info, true);
-		ShowWindow(uCreateDialog(IDD_RESULTS, wnd, g_ImportResultsProc, (LPARAM)&data), SW_SHOWNORMAL);
-	}
-	catch (const pfc::exception & ex)
-	{
-		popup_message::g_show(ex.what(), "Error");
-	};
-}
 
 void g_import_layout(HWND wnd)
 {
 	pfc::string8 path;
 	if (uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Import from", NULL, path, FALSE))
 	{
-		g_import_layout(wnd, path);
+		g_import_layout(wnd, path, false);
 	}
 }
 

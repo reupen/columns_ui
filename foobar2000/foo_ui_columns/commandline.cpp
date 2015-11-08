@@ -4,8 +4,10 @@ static const char * g_help_text = "syntax: foobar2000 /columnsui:<command>\n\n"
 	"Available commands:\n"
 	"help,? - displays this commandline help\n"
 	//"export:\"<path>\" - exports an fcs files\n"
-	"import:\"<path>\" - imports an fcl or fcs file"
+	"import:\"<path>\" - imports an fcl or fcs file\n"
 	"import-quiet:\"<path>\" - imports an fcl file quiet";
+
+bool quiet = false;
 
 class commandline_handler_columns : public commandline_handler
 {
@@ -45,6 +47,7 @@ public:
 			}
 			else if (!stricmp_utf8_partial(ptr,"import:"))
 			{
+				quiet = false;
 				ptr += 7;
 				if (*ptr && *ptr =='\"') ptr++;
 				unsigned len = strlen(ptr);
@@ -58,7 +61,7 @@ public:
 
 				pfc::string_extension ext(path);
 				if (!stricmp_utf8("fcl", ext))
-					g_import_layout(core_api::get_main_window(), path);
+					g_import_layout(core_api::get_main_window(), path, quiet);
 				else if (!stricmp_utf8("fcs", ext))
 					g_import(path);
 				static_api_ptr_t<ui_control>()->activate();
@@ -66,6 +69,7 @@ public:
 			}
 			else if (!stricmp_utf8_partial(ptr, "import-quiet:"))
 			{
+				quiet = true;
 				ptr += 13;
 				if (*ptr && *ptr == '\"') ptr++;
 				unsigned len = strlen(ptr);
@@ -79,7 +83,7 @@ public:
 
 				pfc::string_extension ext(path);
 				if (!stricmp_utf8("fcl", ext))
-					g_import_layout_quiet(core_api::get_main_window(), path);
+					g_import_layout(core_api::get_main_window(), path , quiet);
 				static_api_ptr_t<ui_control>()->activate();
 				return RESULT_PROCESSED;
 			}
