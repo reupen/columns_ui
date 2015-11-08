@@ -756,7 +756,7 @@ namespace filter_panel {
 		class handle_info_t
 		{
 		public:
-			const file_info * m_info;
+			metadb_info_container::ptr m_info;
 			t_size m_value_count;
 			t_size m_field_index;
 		};
@@ -794,18 +794,17 @@ namespace filter_panel {
 				infos.set_count(count);
 				handle_info_t * p_infos = infos.get_ptr();
 
-				in_metadb_sync sync;
 				t_size i, counter = 0, k = 0, l, lcount = m_field_data.m_fields.get_count();
 
 #if 1
 				for (i = 0; i<count; i++)
 				{
-					if (p_handles[i]->get_info_locked(p_infos[i].m_info))
+					if (p_handles[i]->get_info_ref(p_infos[i].m_info))
 					{
 						for (l = 0; l<lcount; l++)
 						{
-							p_infos[i].m_field_index = p_infos[i].m_info->meta_find(m_field_data.m_fields[l]);
-							p_infos[i].m_value_count = p_infos[i].m_field_index != pfc_infinite ? p_infos[i].m_info->meta_enum_value_count(p_infos[i].m_field_index) : 0;
+							p_infos[i].m_field_index = p_infos[i].m_info->info().meta_find(m_field_data.m_fields[l]);
+							p_infos[i].m_value_count = p_infos[i].m_field_index != pfc_infinite ? p_infos[i].m_info->info().meta_enum_value_count(p_infos[i].m_field_index) : 0;
 							counter += p_infos[i].m_value_count;
 							if (p_infos[i].m_value_count)
 								break;
@@ -822,7 +821,7 @@ namespace filter_panel {
 					t_size j;
 					for (j = 0; j<p_infos[i].m_value_count; j++)
 					{
-						const char * str = p_infos[i].m_info->meta_enum_value(p_infos[i].m_field_index, j);
+						const char * str = p_infos[i].m_info->info().meta_enum_value(p_infos[i].m_field_index, j);
 						if (b_show_empty || *str)
 						{
 							pp_out[k].m_handle = p_handles[i];

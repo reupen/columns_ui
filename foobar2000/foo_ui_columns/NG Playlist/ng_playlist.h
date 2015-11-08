@@ -134,8 +134,7 @@ namespace pvt
 		{
 		};
 
-		void initialise(const album_art_manager_instance_ptr & api,
-			const pfc::chain_list_v2_t<GUID> & p_requestIds,
+		void initialise(const pfc::chain_list_v2_t<GUID> & p_requestIds,
 			const pfc::map_t<GUID, pfc::list_t<pfc::string8> > & p_repositories,
 			t_size native_artwork_reader_mode,
 			const metadb_handle_ptr & p_handle,
@@ -149,7 +148,6 @@ namespace pvt
 			m_repositories = p_repositories;
 			m_handle = p_handle;
 			m_notify = p_notify;
-			m_api = api;
 			m_cx = cx;
 			m_cy = cy;
 			m_reflection = b_reflection;
@@ -169,7 +167,6 @@ namespace pvt
 	private:
 		unsigned read_artwork(abort_callback & p_abort);
 
-		album_art_manager_instance_ptr m_api;
 		pfc::chain_list_v2_t<GUID> m_requestIds;
 		pfc::map_t<GUID, pfc::rcptr_t< gdi_object_t<HBITMAP>::ptr_t > > m_bitmaps;
 		pfc::map_t<GUID, pfc::list_t<pfc::string8> > m_repositories;

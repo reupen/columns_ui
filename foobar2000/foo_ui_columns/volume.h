@@ -431,6 +431,6 @@ public:
 	static COLORREF get_background_colour() {return -1;}
 };
 
-typedef volume_control_t<true, true, volume_popup_class_name> volume_control;
+typedef volume_control_t<true, true, volume_popup_class_name> volume_popup_t;
 
 #endif

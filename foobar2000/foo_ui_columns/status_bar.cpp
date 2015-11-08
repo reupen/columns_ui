@@ -140,7 +140,7 @@ namespace status_bar {
 
 namespace status_bar
 {
-	volume_control volume_popup_window;
+	volume_popup_t volume_popup_window;
 	unsigned u_volume_size;
 	unsigned u_selected_length_size;
 	unsigned u_playback_lock_size;

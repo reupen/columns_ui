@@ -19,13 +19,14 @@ namespace pvt
 	}
 	HBITMAP g_get_nocover_bitmap (t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback & p_abort)
 	{
-		album_art_manager_instance_ptr api = static_api_ptr_t<album_art_manager>()->instantiate();
+		album_art_extractor_instance_v2::ptr p_extractor = static_api_ptr_t<album_art_manager_v2>()->open_stub(p_abort);
 
 		album_art_data_ptr data;
 		HBITMAP ret = NULL;
 		try
 		{
-			data = api->query_stub_image(p_abort);
+			// FIXME: hardcoded font cover
+			data = p_extractor->query(album_art_ids::cover_front, p_abort);
 			ret = g_create_hbitmap_from_data(data, cx, cy, cr_back, b_reflection);
 		}
 		catch(const exception_aborted &)
@@ -51,7 +52,7 @@ namespace pvt
 		pfc::rcptr_t<artwork_reader_ng_t> p_new_reader;
 		{
 			p_new_reader = pfc::rcnew_t<artwork_reader_ng_t>();
-			p_new_reader->initialise(static_api_ptr_t<album_art_manager>()->instantiate(), m_requestIds,
+			p_new_reader->initialise(m_requestIds,
 				m_repositories,
 				artwork_panel::cfg_fb2k_artwork_mode,
 				p_handle,
@@ -160,6 +161,7 @@ namespace pvt
 		bool b_loaded=false, b_extracter_attempted=false;;
 		pfc::chain_list_v2_t<GUID>::const_iterator walk;
 		album_art_extractor_instance_ptr p_extractor;
+		static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
 		{
 
 			walk = m_requestIds.first();
@@ -275,19 +277,11 @@ namespace pvt
 				if (!b_found && m_native_artwork_reader_mode == artwork_panel::fb2k_artwork_embedded_and_external)
 				{
 					album_art_extractor_instance_v2::ptr artwork_api_v2;
-					if (static_api_test_t<album_art_manager_v2>())
-					{
-						artwork_api_v2 = static_api_ptr_t<album_art_manager_v2>()->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), pfc::list_single_ref_t<GUID>(*walk), p_abort);
-					}
-					else
-						m_api->open(m_handle->get_path(),p_abort);
+					artwork_api_v2 = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), pfc::list_single_ref_t<GUID>(*walk), p_abort);
 					{
 						try
 						{
-							if (artwork_api_v2.is_valid())
-								data = artwork_api_v2->query(*walk, p_abort);
-							else
-								data = m_api->query(*walk,p_abort);
+							data = artwork_api_v2->query(*walk, p_abort);
 							b_found=true;
 						}
 						catch(const exception_aborted &)

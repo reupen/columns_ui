@@ -21,7 +21,7 @@ namespace status_bar {
 	extern HICON icon_lock;
 	extern HTHEME thm_status;
 
-	extern volume_control volume_popup_window;
+	extern volume_popup_t volume_popup_window;
 
 	HICON get_icon();
 	void destroy_icon();

@@ -6,7 +6,14 @@ void artwork_panel::artwork_reader_v2_t::run_notification_thisthread(DWORD state
 	if (m_notify.is_valid()) m_notify->on_completion(state); m_notify.release();
 }
 
-void artwork_panel::artwork_reader_v2_t::initialise(const album_art_manager_instance_ptr & api, const pfc::chain_list_v2_t<GUID> & p_requestIds, const pfc::map_t<GUID, album_art_data_ptr> & p_content_previous, const pfc::map_t<GUID, pfc::list_t<pfc::string8> > & p_repositories, bool b_read_emptycover, t_size b_native_artwork_reader_mode, const metadb_handle_ptr & p_handle, const completion_notify_ptr & p_notify, class artwork_reader_manager_t * const p_manager)
+void artwork_panel::artwork_reader_v2_t::initialise(const pfc::chain_list_v2_t<GUID> & p_requestIds,
+	const pfc::map_t<GUID, album_art_data_ptr> & p_content_previous, 
+	const pfc::map_t<GUID, pfc::list_t<pfc::string8> > & p_repositories,
+	bool b_read_emptycover, 
+	t_size b_native_artwork_reader_mode, 
+	const metadb_handle_ptr & p_handle, 
+	const completion_notify_ptr & p_notify, 
+	class artwork_reader_manager_t * const p_manager)
 {
 	m_requestIds = p_requestIds;
 	m_content = p_content_previous;
@@ -14,7 +21,6 @@ void artwork_panel::artwork_reader_v2_t::initialise(const album_art_manager_inst
 	m_read_emptycover = b_read_emptycover;
 	m_handle = p_handle;
 	m_notify = p_notify;
-	m_api = api;
 	m_manager = p_manager;
 	m_native_artwork_reader_mode = b_native_artwork_reader_mode;
 }
@@ -75,12 +81,10 @@ void artwork_panel::artwork_reader_manager_t::deinitialise()
 		m_current_reader.release();
 	}
 	m_emptycover.release();
-	//m_api.release();
 }
 
 void artwork_panel::artwork_reader_manager_t::initialise()
 {
-	//m_api = static_api_ptr_t<album_art_manager>()->instantiate();
 }
 
 bool artwork_panel::artwork_reader_manager_t::QueryEmptyCover(album_art_data_ptr & p_data)
@@ -108,7 +112,7 @@ void artwork_panel::artwork_reader_manager_t::Request(const metadb_handle_ptr & 
 	abort_current_task();
 	{
 		m_current_reader = pfc::rcnew_t<artwork_reader_v2_t>();
-		m_current_reader->initialise(static_api_ptr_t<album_art_manager>()->instantiate(), m_requestIds,
+		m_current_reader->initialise(m_requestIds,
 			b_prev_valid ? ptr_prev->get_content() : pfc::map_t<GUID, album_art_data_ptr>(),
 			m_repositories,
 			!m_emptycover.is_valid(),
@@ -131,8 +135,6 @@ void artwork_panel::artwork_reader_manager_t::Reset()
 	abort_current_task();
 	m_current_reader.release();
 	m_emptycover.release();
-	//if (m_api.is_valid())
-	//	m_api->close();
 }
 
 void artwork_panel::artwork_reader_manager_t::ResetRepository()
@@ -140,8 +142,6 @@ void artwork_panel::artwork_reader_manager_t::ResetRepository()
 	abort_current_task();
 	m_repositories.remove_all();
 	m_emptycover.release();
-	//if (m_api.is_valid())
-	//	m_api->close();
 }
 
 void artwork_panel::artwork_reader_manager_t::SetScript(const GUID & p_what, const pfc::list_t<pfc::string8> & script)
@@ -301,6 +301,7 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 	pfc::chain_list_v2_t<GUID>::const_iterator walk;
 	album_art_extractor_instance_ptr p_extractor;
 	album_art_extractor_instance_v2::ptr artwork_api_v2;
+	static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
 
 	{
 
@@ -420,27 +421,19 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 				{
 					if (!b_opened)
 					{
-						if (static_api_test_t<album_art_manager_v2>())
+						pfc::list_t<GUID> guids;
+						pfc::chain_list_v2_t<GUID>::const_iterator walk1 = m_requestIds.first();
+						for (; walk1.is_valid(); ++walk1)
 						{
-							pfc::list_t<GUID> guids;
-							pfc::chain_list_v2_t<GUID>::const_iterator walk1 = m_requestIds.first();
-							for (; walk1.is_valid(); ++walk1)
-							{
-								guids.add_item(*walk1);
-							}
-							artwork_api_v2 = static_api_ptr_t<album_art_manager_v2>()->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
+							guids.add_item(*walk1);
 						}
-						else
-							m_api->open(m_handle->get_path(), p_abort);
+						artwork_api_v2 = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
 						b_opened = true;
 					}
 					album_art_data_ptr data;
 					try
 					{
-						if (artwork_api_v2.is_valid())
-							data = artwork_api_v2->query(*walk, p_abort);
-						else
-							data = m_api->query(*walk, p_abort);
+						data = artwork_api_v2->query(*walk, p_abort);
 						m_content.set(*walk, data);
 						b_found = true;
 					}
@@ -497,7 +490,9 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 			{
 				try
 				{
-					m_emptycover = m_api->query_stub_image(p_abort);
+					auto p_extractor = p_album_art_manager_v2->open_stub(p_abort);
+					// FIXME: We are always using the front no cover image
+					m_emptycover = p_extractor->query(album_art_ids::cover_front, p_abort);
 				}
 				catch (const exception_aborted &)
 				{

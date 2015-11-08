@@ -411,14 +411,14 @@ namespace ui_extension{
 	* \brief Service factory for multiple instance windows.
 	* \par Usage example
 	* \code
-	* static ui_extension_factory< my_ui_extension > foo_extension;
+	* static window_factory< my_ui_extension > foo_extension;
 	* \endcode
 	*/
 	template<class T>
-	class window_factory : public service_factory_base
+	class window_factory : public service_factory_base_t<window>
 	{
 	public:
-		window_factory() : service_factory_base(window::class_guid)
+		window_factory() : service_factory_base_t<window>()
 		{
 		}
 
@@ -443,11 +443,11 @@ namespace ui_extension{
 	* as <code>foo_extension2.get_static_instance()</code>.
 	*/
 	template<class T>
-	class window_factory_single : public service_factory_base
+	class window_factory_single : public service_factory_base_t<window>
 	{
 		service_impl_single_t<window_implementation<T, true> > g_instance;
 	public:
-		window_factory_single() : service_factory_base(window::class_guid) {}
+		window_factory_single() : service_factory_base_t<window>() {}
 
 		~window_factory_single() {}
 
@@ -469,10 +469,10 @@ namespace ui_extension{
 	* as <code>foo_extension3</code>.
 	*/
 	template<class T>
-	class window_factory_transparent_single : public service_factory_base, public service_impl_single_t<window_implementation<T, true> >
+	class window_factory_transparent_single : public service_factory_base_t<window>, public service_impl_single_t<window_implementation<T, true> >
 	{	
 	public:
-		window_factory_transparent_single() : service_factory_base(window::class_guid) {}
+		window_factory_transparent_single() : service_factory_base_t<window>() {}
 
 		virtual void instance_create(service_ptr_t<service_base> & p_out)
 		{

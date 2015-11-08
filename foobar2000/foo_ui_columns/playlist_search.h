@@ -3,6 +3,8 @@
 
 /** What's all this? Never finished, obsolete or abandoned? Based on Typefind code. */
 
+#ifdef QUICKFIND_ENABLED
+
 #define SEARCH_CACHING_ENABLED
 
 enum t_search_mode
@@ -43,8 +45,6 @@ class progressive_search
 		}
 		if (m_string.length() && !b_clear)
 		{
-			if (m_mode == mode_query)
-				static_api_ptr_t<metadb>()->database_lock();
 			bool b_first = true;
 			unsigned focus;
 			unsigned n, count = m_entries.get_count();
@@ -86,8 +86,6 @@ class progressive_search
 					}
 				}
 			}
-			if (m_mode == mode_query)
-				static_api_ptr_t<metadb>()->database_unlock();
 			api->playlist_set_selection(active, bit_array_true(), bit_array_table_t<bool>(m_filter.get_ptr(), m_filter.get_size()));
 			unsigned the_focus = api->playlist_get_focus_item(active);
 			if (!b_first && !(the_focus < m_filter.get_size() && m_filter[the_focus]))
@@ -272,5 +270,7 @@ public:
 private:
 	gdi_object_t<HFONT>::ptr_t m_font;
 };
+
+#endif
 
 #endif _COLUMNS_PLAYLIST_SEARCH_H_
