@@ -1,5 +1,7 @@
 #include "foobar2000.h"
 
+#if FOOBAR2000_TARGET_VERSION >= 76
+
 typedef pfc::avltree_t<pfc::string8,pfc::io::path::comparator> t_fnList;
 
 static void formatMaskList(pfc::string_base & out, t_fnList const & in) {
@@ -19,6 +21,51 @@ static void formatMaskList(pfc::string_base & out, t_fnList const & in, const ch
 	}
 }
 
+void input_file_type::make_filetype_support_fingerprint(pfc::string_base & str) {
+	pfc::string_formatter out;
+	pfc::avltree_t<pfc::string8, pfc::string::comparatorCaseInsensitive> names;
+	
+	{
+		componentversion::ptr ptr; service_enum_t<componentversion> e;
+		pfc::string_formatter name;
+		while(e.next(ptr)) {
+			name = "";
+			ptr->get_component_name(name);
+			if (strstr(name, "decoder") != NULL || strstr(name, "Decoder") != NULL) names += name;
+		}
+	}
+
+	
+	make_extension_support_fingerprint(out);
+	for(pfc::const_iterator<pfc::string8> walk = names.first(); walk.is_valid(); ++walk) {
+		if (!out.is_empty()) str << "|";
+		out << *walk;
+	}
+	str = out;
+}
+void input_file_type::make_extension_support_fingerprint(pfc::string_base & str) {
+	pfc::avltree_t<pfc::string8, pfc::string::comparatorCaseInsensitive> masks;
+	{
+		service_enum_t<input_file_type> e;
+		service_ptr_t<input_file_type> ptr;
+		pfc::string_formatter mask;
+		while(e.next(ptr)) {
+			const unsigned count = ptr->get_count();
+			for(unsigned n=0;n<count;n++) {
+				mask.reset();
+				if (ptr->get_mask(n,mask)) {
+					if (strchr(mask,'|') == NULL) masks += mask;
+				}
+			}
+		}
+	}
+	pfc::string_formatter out;
+	for(pfc::const_iterator<pfc::string8> walk = masks.first(); walk.is_valid(); ++walk) {
+		if (!out.is_empty()) out << "|";
+		out << *walk;
+	}
+	str = out;
+}
 void input_file_type::build_openfile_mask(pfc::string_base & out, bool b_include_playlists)
 {	
 	t_fnList extensionsAll, extensionsPl;;
@@ -63,3 +110,4 @@ void input_file_type::build_openfile_mask(pfc::string_base & out, bool b_include
 	}
 	out = outBuf;
 }
+#endif

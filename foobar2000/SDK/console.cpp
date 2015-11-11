@@ -15,11 +15,11 @@ void console::print_location(const metadb_handle_ptr & src)
 
 void console::print_location(const playable_location & src)
 {
-	formatter() << src;
+    FB2K_console_formatter() << src;
 }
 
 void console::complain(const char * what, const char * msg) {
-	formatter() << what << ": " << msg;
+	FB2K_console_formatter() << what << ": " << msg;
 }
 void console::complain(const char * what, std::exception const & e) {
 	complain(what, e.what());
@@ -30,7 +30,7 @@ void console::print(const char* p_message)
 	if (core_api::are_services_available()) {
 		service_ptr_t<console_receiver> ptr;
 		service_enum_t<console_receiver> e;
-		while(e.next(ptr)) ptr->print(p_message,pfc_infinite);
+		while(e.next(ptr)) ptr->print(p_message,~0);
 	}
 }
 

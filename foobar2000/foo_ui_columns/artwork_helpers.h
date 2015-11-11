@@ -23,8 +23,7 @@ namespace artwork_panel
 
 		artwork_reader_v2_t();;
 
-		void initialise(const album_art_manager_instance_ptr & api,
-			const pfc::chain_list_v2_t<GUID> & p_requestIds,
+		void initialise(const pfc::chain_list_v2_t<GUID> & p_requestIds,
 			const pfc::map_t<GUID, album_art_data_ptr> & p_content_previous,
 			const pfc::map_t<GUID, pfc::list_t<pfc::string8> > & p_repositories,
 			bool b_read_emptycover,
@@ -40,7 +39,6 @@ namespace artwork_panel
 		bool isContentEqual(const pfc::map_t<GUID, album_art_data_ptr> & content1,
 			const pfc::map_t<GUID, album_art_data_ptr> & content2);
 
-		album_art_manager_instance_ptr m_api;
 		pfc::chain_list_v2_t<GUID> m_requestIds;
 		pfc::map_t<GUID, album_art_data_ptr> m_content;
 		pfc::map_t<GUID, pfc::list_t<pfc::string8> > m_repositories;

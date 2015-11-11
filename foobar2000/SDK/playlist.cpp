@@ -1,6 +1,5 @@
 #include "foobar2000.h"
 
-
 namespace {
 	class enum_items_callback_retrieve_item : public playlist_manager::enum_items_callback
 	{
@@ -294,7 +293,7 @@ bool playlist_manager::playlist_update_content(t_size playlist, metadb_handle_li
 		playlist_add_items(playlist, content, bit_array_false());
 		return true;
 	}
-	pfc::avltree_t<metadb_handle_ptr> itemsOld, itemsNew;
+	pfc::avltree_t<metadb_handle::nnptr> itemsOld, itemsNew;
 
 	for(t_size walk = 0; walk < old.get_size(); ++walk) itemsOld += old[walk];
 	for(t_size walk = 0; walk < content.get_size(); ++walk) itemsNew += content[walk];
@@ -324,7 +323,15 @@ bool playlist_manager::playlist_update_content(t_size playlist, metadb_handle_li
 			playlist_add_items(playlist, temp, bit_array_false());
 		} else {
 			playlist_add_items(playlist, content, bit_array_false());
-		}		
+		}
+	}
+
+	{
+		playlist_get_all_items(playlist, old);
+		pfc::array_t<t_size> order;
+		if (pfc::guess_reorder_pattern<pfc::list_base_const_t<metadb_handle_ptr> >(order, old, content)) {
+			playlist_reorder_items(playlist, order.get_ptr(), order.get_size());
+		}
 	}
 	return true;
 }
@@ -551,6 +558,7 @@ void playlist_manager::activeplaylist_get_items(pfc::list_base_t<metadb_handle_p
 {
 	t_size playlist = get_active_playlist();
 	if (playlist != pfc_infinite) playlist_get_items(playlist,out,p_mask);
+	else out.remove_all();
 }
 
 void playlist_manager::active_playlist_fix()

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#ifdef QUICKFIND_ENABLED
+
 #define cfg_default_search "%artist% - %title%"
 #define cfg_default_search_mode 0
 
@@ -170,3 +172,5 @@ LRESULT WINAPI quickfind_window::on_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	}
 	return uCallWindowProc(m_editproc,wnd,msg,wp,lp);
 }
+
+#endif

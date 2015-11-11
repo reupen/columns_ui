@@ -1,9 +1,12 @@
+PFC_DECLARE_EXCEPTION(exception_tagging_unsupported, exception_io_data, "Tagging of this file format is not supported")
+
 enum {
 	input_flag_no_seeking					= 1 << 0,
 	input_flag_no_looping					= 1 << 1,
 	input_flag_playback						= 1 << 2,
 	input_flag_testing_integrity			= 1 << 3,
 	input_flag_allow_inaccurate_seeking		= 1 << 4,
+	input_flag_no_postproc					= 1 << 5,
 
 	input_flag_simpledecode = input_flag_no_seeking|input_flag_no_looping,
 };
@@ -104,6 +107,15 @@ public:
 	virtual void set_logger(event_logger::ptr ptr) = 0;
 };
 
+class NOVTABLE input_decoder_v3 : public input_decoder_v2 {
+	FB2K_MAKE_SERVICE_INTERFACE(input_decoder_v3, input_decoder_v2);
+public:
+	//! OPTIONAL, in case your input cares about paused/unpaused state, handle this to do any necessary additional processing. Valid only after initialize() with input_flag_playback.
+	virtual void set_pause(bool paused) = 0;
+	//! OPTIONAL, should return false in most cases; return true to force playback buffer flush on unpause. Valid only after initialize() with input_flag_playback.
+	virtual bool flush_on_pause() = 0;
+};
+
 //! Class providing interface for writing metadata and replaygain info to files. Also see: file_info. \n
 //! Instantiating: see input_entry.\n
 //! Implementing: see input_impl.
@@ -122,6 +134,14 @@ public:
 	virtual void commit(abort_callback & p_abort) = 0;
 
 	FB2K_MAKE_SERVICE_INTERFACE(input_info_writer,input_info_reader);
+};
+
+class NOVTABLE input_info_writer_v2 : public input_info_writer {
+public:
+	//! Removes all tags from this file. Cancels any set_info() requests on this object. Does not require a commit() afterwards.
+	virtual void remove_tags(abort_callback & abort) = 0;
+
+	FB2K_MAKE_SERVICE_INTERFACE(input_info_writer_v2, input_info_writer);
 };
 
 class NOVTABLE input_entry : public service_base
@@ -173,6 +193,7 @@ public:
 	inline bool are_parallel_reads_slow() {return (get_flags() & flag_parallel_reads_slow) != 0;}
 
 	static bool g_find_service_by_path(service_ptr_t<input_entry> & p_out,const char * p_path);
+    static bool g_find_service_by_path(service_ptr_t<input_entry> & p_out,const char * p_path, const char * p_ext);
 	static bool g_find_service_by_content_type(service_ptr_t<input_entry> & p_out,const char * p_content_type);
 	static void g_open_for_decoding(service_ptr_t<input_decoder> & p_instance,service_ptr_t<file> p_filehint,const char * p_path,abort_callback & p_abort,bool p_from_redirect = false);
 	static void g_open_for_info_read(service_ptr_t<input_info_reader> & p_instance,service_ptr_t<file> p_filehint,const char * p_path,abort_callback & p_abort,bool p_from_redirect = false);

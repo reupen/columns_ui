@@ -13,7 +13,7 @@ static bool is_reserved_meta_entry(const char * p_name) {
 
 static bool is_global_meta_entry(const char * p_name) {
 	static const char header[] = "cue_track";
-	return pfc::stricmp_ascii_ex(p_name,strlen(header),header,pfc_infinite) != 0;
+	return pfc::stricmp_ascii_ex(p_name,strlen(header),header,~0) != 0;
 }
 static bool is_allowed_field(const char * p_name) {
 	return !is_reserved_meta_entry(p_name) && is_global_meta_entry(p_name);
@@ -124,7 +124,7 @@ namespace {
 
 static void strip_redundant_track_meta(unsigned p_tracknumber,const file_info & p_cueinfo,file_info_record::t_meta_map & p_meta,const char * p_metaname) {
 	t_size metaindex = p_cueinfo.meta_find(p_metaname);
-	if (metaindex == pfc_infinite) return;
+	if (metaindex == ~0) return;
 	pfc::string_formatter namelocal;
 	build_cue_meta_name(p_metaname,p_tracknumber,namelocal);
 	{
@@ -148,7 +148,10 @@ void embeddedcue_metadata_manager::get_tag(file_info & p_info) const {
 		p_info.meta_remove_field("cuesheet");
 	} else {
 		cue_creator::t_entry_list entries;
-		m_content.enumerate(__get_tag_cue_track_list_builder(entries));
+        {
+            __get_tag_cue_track_list_builder e(entries);
+            m_content.enumerate(e);
+        }
 		pfc::string_formatter cuesheet;
 		cue_creator::create(cuesheet,entries);
 		entries.remove_all();
@@ -164,14 +167,14 @@ void embeddedcue_metadata_manager::get_tag(file_info & p_info) const {
 			//1. find global infos and forward them
 			{
 				field_name_list fields;
-				m_content.enumerate(__get_tag__enum_fields_enumerator(fields));
-				fields.enumerate(__get_tag__filter_globals(m_content,globals));
+				{ __get_tag__enum_fields_enumerator e(fields); m_content.enumerate(e);}
+                { __get_tag__filter_globals e(m_content,globals); fields.enumerate(e); }
 			}
 			
 			output.overwrite_meta(globals);
 
 			//2. find local infos
-			m_content.enumerate(__get_tag__local_field_filter(globals,output.m_meta));
+            {__get_tag__local_field_filter e(globals,output.m_meta); m_content.enumerate(e);}
 		}
 		
 
@@ -200,7 +203,7 @@ void embeddedcue_metadata_manager::get_tag(file_info & p_info) const {
 static bool resolve_cue_meta_name(const char * p_name,pfc::string_base & p_outname,unsigned & p_tracknumber) {
 	//"cue_trackNN_fieldname"
 	static const char header[] = "cue_track";
-	if (pfc::stricmp_ascii_ex(p_name,strlen(header),header,pfc_infinite) != 0) return false;
+	if (pfc::stricmp_ascii_ex(p_name,strlen(header),header,~0) != 0) return false;
 	p_name += strlen(header);
 	if (!pfc::char_is_numeric(p_name[0]) || !pfc::char_is_numeric(p_name[1]) || p_name[2] != '_') return false;
 	unsigned tracknumber = pfc::atoui_ex(p_name,2);
@@ -246,15 +249,25 @@ void embeddedcue_metadata_manager::set_tag(file_info const & p_info) {
 	//processing order
 	//1. cuesheet content
 	//2. overwrite with global metadata from the tag
-	//2. overwrite with local metadata from the tag
+	//3. overwrite with local metadata from the tag
 
 	{
 		cue_creator::t_entry_list entries;
 		try {
 			cue_parser::parse_full(cuesheet,entries);
 		} catch(exception_io_data const & e) {
-			console::print(e.what());
+			console::complain("Attempting to embed an invalid cuesheet", e.what());
 			return;
+		}
+
+		{
+			const double length = p_info.get_length();
+			for(cue_creator::t_entry_list::const_iterator iter = entries.first(); iter.is_valid(); ++iter ) {
+				if (iter->m_index_list.start() > length) {
+					console::info("Invalid cuesheet - index outside allowed range");
+					return;
+				}
+			}
 		}
 
 		for(cue_creator::t_entry_list::const_iterator iter = entries.first(); iter.is_valid(); ) {

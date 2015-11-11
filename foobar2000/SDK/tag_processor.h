@@ -31,6 +31,8 @@ public:
 
 	static bool g_get(service_ptr_t<tag_processor_id3v2> & p_out);
 	static void g_skip(const service_ptr_t<file> & p_file,t_filesize & p_size_skipped,abort_callback & p_abort);
+	static void g_skip_at(const service_ptr_t<file> & p_file,t_filesize p_base, t_filesize & p_size_skipped,abort_callback & p_abort);
+	static t_size g_multiskip(const service_ptr_t<file> & p_file,t_filesize & p_size_skipped,abort_callback & p_abort);
 	static void g_remove(const service_ptr_t<file> & p_file,t_filesize & p_size_removed,abort_callback & p_abort);
 	static void g_remove_ex(tag_write_callback & p_callback,const service_ptr_t<file> & p_file,t_filesize & p_size_removed,abort_callback & p_abort);
 

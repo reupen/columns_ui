@@ -11,4 +11,13 @@ namespace foobar2000_io {
 		pfc::string_fixed_t<32> m_buffer;
 	};
 
+	class format_filetimestamp_utc {
+	public:
+		format_filetimestamp_utc(t_filetimestamp p_timestamp);
+		operator const char*() const {return m_buffer;}
+		const char * get_ptr() const {return m_buffer;}
+	private:
+		pfc::string_fixed_t<32> m_buffer;
+	};
+
 }

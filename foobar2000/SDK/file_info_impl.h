@@ -80,9 +80,9 @@ namespace file_info_impl_utils {
 
 		inline t_size get_count() const {return m_data.get_size();}
 		
-		inline const char * get_name(t_size p_index) const {assert(p_index < m_data.get_size()); return m_data[p_index].get_name();}
-		inline const char * get_value(t_size p_index,t_size p_value_index) const {assert(p_index < m_data.get_size()); return m_data[p_index].get_value(p_value_index);}
-		inline t_size get_value_count(t_size p_index) const {assert(p_index < m_data.get_size()); return m_data[p_index].get_value_count();}
+		inline const char * get_name(t_size p_index) const {PFC_ASSERT(p_index < m_data.get_size()); return m_data[p_index].get_name();}
+		inline const char * get_value(t_size p_index,t_size p_value_index) const {PFC_ASSERT(p_index < m_data.get_size()); return m_data[p_index].get_value(p_value_index);}
+		inline t_size get_value_count(t_size p_index) const {PFC_ASSERT(p_index < m_data.get_size()); return m_data[p_index].get_value_count();}
 
 	private:
 		meta_entry_array m_data;

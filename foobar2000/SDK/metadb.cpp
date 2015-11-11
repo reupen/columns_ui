@@ -44,7 +44,7 @@ bool metadb::g_get_random_handle(metadb_handle_ptr & p_out) {
 
 		t_size playlist_count = api->get_playlist_count();
 		t_size active_playlist = api->get_active_playlist();
-		if (active_playlist != pfc_infinite) {
+		if (active_playlist != ~0) {
 			if (api->playlist_get_focus_item_handle(p_out,active_playlist)) return true;
 		}
 
@@ -52,7 +52,7 @@ bool metadb::g_get_random_handle(metadb_handle_ptr & p_out) {
 			if (api->playlist_get_focus_item_handle(p_out,n)) return true;
 		}
 
-		if (active_playlist != pfc_infinite) {
+		if (active_playlist != ~0) {
 			t_size item_count = api->playlist_get_item_count(active_playlist);
 			if (item_count > 0) {
 				if (api->playlist_get_item_handle(p_out,active_playlist,0)) return true;

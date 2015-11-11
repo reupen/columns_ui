@@ -113,8 +113,8 @@ public:
 	virtual GUID get_item_guid(unsigned p_index) = 0;
 	//! Retrieves human-readable name of the context menu item.
 	virtual void get_item_name(unsigned p_index,pfc::string_base & p_out) = 0;
-	//! Retrieves default path of the context menu item ("" for root).
-	virtual void get_item_default_path(unsigned p_index,pfc::string_base & p_out) = 0;
+	//! Obsolete since v1.0, don't use or override in new components.
+	virtual void get_item_default_path(unsigned p_index,pfc::string_base & p_out) {p_out = "";}
 	//! Retrieves item's description to show in the status bar. Set p_out to the string to be displayed and return true if you provide a description, return false otherwise.
 	virtual bool get_item_description(unsigned p_index,pfc::string_base & p_out) = 0;
 	//! Controls default state of context menu preferences for this item: \n
@@ -168,7 +168,6 @@ public:
 	virtual t_enabled_state get_enabled_state(unsigned p_index) {return contextmenu_item::DEFAULT_ON;}
 	virtual unsigned get_num_items() = 0;
 	virtual void get_item_name(unsigned p_index,pfc::string_base & p_out) = 0;
-	virtual void get_item_default_path(unsigned p_index,pfc::string_base & p_out) = 0;
 	virtual void context_command(unsigned p_index,metadb_handle_list_cref p_data,const GUID& p_caller) = 0;
 	virtual bool context_get_display(unsigned p_index,metadb_handle_list_cref p_data,pfc::string_base & p_out,unsigned & p_displayflags,const GUID & p_caller) {
 		PFC_ASSERT(p_index>=0 && p_index<get_num_items());
@@ -280,7 +279,7 @@ public:
 
 class contextmenu_groups {
 public:
-	static const GUID root, utilities, tagging, replaygain, fileoperations, playbackstatistics, properties, convert, legacy;
+	static const GUID root, utilities, tagging, tagging_pictures, replaygain, fileoperations, playbackstatistics, properties, convert, legacy;
 };
 
 class contextmenu_group_impl : public contextmenu_group {
@@ -321,5 +320,18 @@ namespace contextmenu_priorities {
 		root_playbackstatistics,
 		root_legacy = 99,
 		root_properties = 100,
+		tagging_pictures = 100,
 	};
+};
+
+
+
+class contextmenu_group_factory : public service_factory_single_t<contextmenu_group_impl> {
+public:
+	contextmenu_group_factory(const GUID & guid, const GUID & parent, double sortPriority = 0) : service_factory_single_t<contextmenu_group_impl>(guid, parent, sortPriority) {}
+};
+
+class contextmenu_group_popup_factory : public service_factory_single_t<contextmenu_group_popup_impl> {
+public:
+	contextmenu_group_popup_factory(const GUID & guid, const GUID & parent, const char * name, double sortPriority = 0) : service_factory_single_t<contextmenu_group_popup_impl>(guid, parent, name, sortPriority) {}
 };

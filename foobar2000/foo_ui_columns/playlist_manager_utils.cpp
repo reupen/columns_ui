@@ -88,23 +88,7 @@ bool playlist_format_name_t::titleformat_hook_playlist_t::process_field(titlefor
 			list.set_count(m_size);
 			m_api->playlist_get_all_items(m_index, list);
 
-			m_metadb_api->database_lock();
-
-			double length = 0;
-			unsigned n, count = list.get_count();
-			for (n=0; n<count; n++)
-			{
-				metadb_handle_ptr & p_item = list.get_item(n);
-				const file_info * info;
-				if (p_item.is_valid() && p_item->get_info_locked(info))
-				{
-					double temp = info->get_length();
-					if (temp != -1) length += temp;
-				}
-			}
-			m_metadb_api->database_unlock();
-
-			m_length = pfc::format_time_ex(length, 0);
+			m_length = pfc::format_time_ex(list.calc_total_duration(), 0);
 			m_length_initialised=true;
 		}
 		p_out->write(titleformat_inputtypes::unknown, m_length.get_ptr(), pfc_infinite);

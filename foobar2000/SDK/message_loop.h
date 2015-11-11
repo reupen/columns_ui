@@ -70,6 +70,23 @@ private:
 	PFC_CLASS_NOT_COPYABLE(message_filter_impl_accel,message_filter_impl_accel);
 };
 
+class message_filter_remap_f1 : public message_filter_impl_base {
+public:
+	bool pretranslate_message(MSG * p_msg) {
+		if (IsOurMsg(p_msg) && m_wnd != NULL && GetActiveWindow() == m_wnd) {
+			::PostMessage(m_wnd, WM_SYSCOMMAND, SC_CONTEXTHELP, -1);
+			return true;
+		}
+		return false;
+	}
+	void set_wnd(HWND wnd) {m_wnd = wnd;}
+private:
+	static bool IsOurMsg(const MSG * msg) {
+		return msg->message == WM_KEYDOWN && msg->wParam == VK_F1;
+	}
+	HWND m_wnd;
+};
+
 class idle_handler_impl_base : public idle_handler {
 public:
 	idle_handler_impl_base() {static_api_ptr_t<message_loop>()->add_idle_handler(this);}

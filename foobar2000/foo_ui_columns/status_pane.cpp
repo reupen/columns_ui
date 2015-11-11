@@ -89,22 +89,7 @@ void status_pane::get_length_data(bool & p_selection, t_size & p_count, pfc::str
 	else
 		playlist_api->activeplaylist_get_all_items(sels);
 
-	metadb_api->database_lock();
-
-	int n,t = sels.get_count();
-	for (n=0; n<t; n++)
-	{
-		double rv = 0;
-		const file_info * info;
-		if (sels.get_item(n)->get_info_locked(info))
-		{
-			double temp = info->get_length();
-			if (temp != -1)
-				length += temp;
-		}
-	}
-
-	metadb_api->database_unlock();
+	length = sels.calc_total_duration();
 
 	p_out = pfc::format_time_ex(length,0);
 	p_count = count;

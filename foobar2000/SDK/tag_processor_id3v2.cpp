@@ -6,7 +6,8 @@ bool tag_processor_id3v2::g_get(service_ptr_t<tag_processor_id3v2> & p_out)
 }
 
 void tag_processor_id3v2::g_remove(const service_ptr_t<file> & p_file,t_uint64 & p_size_removed,abort_callback & p_abort) {
-	g_remove_ex(tag_write_callback_dummy(),p_file,p_size_removed,p_abort);
+    tag_write_callback_dummy cb;
+	g_remove_ex(cb,p_file,p_size_removed,p_abort);
 }
 
 void tag_processor_id3v2::g_remove_ex(tag_write_callback & p_callback,const service_ptr_t<file> & p_file,t_uint64 & p_size_removed,abort_callback & p_abort)
@@ -22,7 +23,7 @@ void tag_processor_id3v2::g_remove_ex(tag_write_callback & p_callback,const serv
 	p_file->seek(0,p_abort);
 	
 	t_uint64 offset;
-	g_skip(p_file,offset,p_abort);
+	g_multiskip(p_file,offset,p_abort);
 	
 	if (offset>0 && offset<len)
 	{
@@ -43,44 +44,46 @@ void tag_processor_id3v2::g_remove_ex(tag_write_callback & p_callback,const serv
 	p_size_removed = offset;
 }
 
-void tag_processor_id3v2::g_skip(const service_ptr_t<file> & p_file,t_uint64 & p_size_skipped,abort_callback & p_abort)
-{
+t_size tag_processor_id3v2::g_multiskip(const service_ptr_t<file> & p_file,t_filesize & p_size_skipped,abort_callback & p_abort) {
+	t_filesize offset = 0;
+	t_size count = 0;
+	for(;;) {
+		t_filesize delta;
+		g_skip_at(p_file, offset, delta, p_abort);
+		if (delta == 0) break;
+		offset += delta;
+		++count;
+	}
+	p_size_skipped = offset;
+	return count;
+}
+void tag_processor_id3v2::g_skip(const service_ptr_t<file> & p_file,t_uint64 & p_size_skipped,abort_callback & p_abort) {
+	g_skip_at(p_file, 0, p_size_skipped, p_abort);
+}
+
+void tag_processor_id3v2::g_skip_at(const service_ptr_t<file> & p_file,t_filesize p_base, t_filesize & p_size_skipped,abort_callback & p_abort) {
 
 	unsigned char  tmp[10];
 
-	t_size io_bytes_done;
+	p_file->seek ( p_base, p_abort );
 
-	p_file->seek ( 0, p_abort );
-
-	io_bytes_done = p_file->read( tmp, sizeof(tmp),  p_abort);
-	if (io_bytes_done != sizeof(tmp))  {
-		p_file->seek ( 0, p_abort );
+	if (p_file->read( tmp, sizeof(tmp),  p_abort) != sizeof(tmp))  {
+		p_file->seek ( p_base, p_abort );
 		p_size_skipped = 0;
 		return;
 	}
 
-	if ( 0 != memcmp ( tmp, "ID3", 3) ) {
-		p_file->seek ( 0, p_abort );
+	if ( 
+		0 != memcmp ( tmp, "ID3", 3) ||
+		( tmp[5] & 0x0F ) != 0 || 
+		((tmp[6] | tmp[7] | tmp[8] | tmp[9]) & 0x80) != 0 
+		) {
+		p_file->seek ( p_base, p_abort );
 		p_size_skipped = 0;
 		return;
 	}
 
-	int Unsynchronisation = tmp[5] & 0x80;
-	int ExtHeaderPresent  = tmp[5] & 0x40;
-	int ExperimentalFlag  = tmp[5] & 0x20;
 	int FooterPresent     = tmp[5] & 0x10;
-
-	if ( tmp[5] & 0x0F ) {
-		p_file->seek ( 0, p_abort );
-		p_size_skipped = 0;
-		return;
-	}
-
-	if ( (tmp[6] | tmp[7] | tmp[8] | tmp[9]) & 0x80 ) {
-		p_file->seek ( 0, p_abort );
-		p_size_skipped = 0;
-		return;
-	}
 
 	t_uint32 ret;
 	ret  = tmp[6] << 21;
@@ -90,7 +93,13 @@ void tag_processor_id3v2::g_skip(const service_ptr_t<file> & p_file,t_uint64 & p
 	ret += 10;
 	if ( FooterPresent ) ret += 10;
 
-	p_file->seek ( ret, p_abort );
+	try {
+		p_file->seek ( p_base + ret, p_abort );
+	} catch(exception_io_seek_out_of_range) {
+		p_file->seek( p_base, p_abort );
+		p_size_skipped = 0;
+		return;
+	}
 
 	p_size_skipped = ret;
 

@@ -941,7 +941,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						HWND wndvol = status_bar::volume_popup_window.create(wnd);
 						POINT pt = lpnm->pt;
 						ClientToScreen(lpnm->hdr.hwndFrom, &pt);
-						int cx = volume_control::g_get_caption_size() + 28;
+						int cx = volume_popup_t::g_get_caption_size() + 28;
 						int cy = 150;
 						int x = pt.x;
 						int y = pt.y;

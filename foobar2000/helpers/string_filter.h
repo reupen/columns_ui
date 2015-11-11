@@ -1,10 +1,10 @@
 class string_filter_noncasesensitive {
 public:
-	string_filter_noncasesensitive(const char * p_string,t_size p_string_len = pfc_infinite) {
-		uStringLower(m_pattern,p_string,p_string_len);
+	string_filter_noncasesensitive(const char * p_string,t_size p_string_len = ~0) {
+		::uStringLower(m_pattern,p_string,p_string_len);
 	}
 
-	bool test(const char * p_string,t_size p_string_len = pfc_infinite) const {
+	bool test(const char * p_string,t_size p_string_len = ~0) const {
 		::uStringLower(m_lowercasebuffer,p_string,p_string_len);
 		t_size walk = 0;
 		while(m_pattern[walk] != 0) {
@@ -12,7 +12,7 @@ public:
 			t_size delta = 0;
 			while(m_pattern[walk+delta] != 0 && m_pattern[walk+delta] != ' ') delta++;
 			if (delta > 0) {
-				if (pfc::string_find_first_ex(m_lowercasebuffer,pfc_infinite,m_pattern+walk,delta) == pfc_infinite) return false;
+				if (pfc::string_find_first_ex(m_lowercasebuffer,~0,m_pattern+walk,delta) == ~0) return false;
 			}
 			walk += delta;
 		}

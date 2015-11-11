@@ -1,15 +1,11 @@
 /*!
 This service implements methods allowing you to interact with the Media Library.\n
 All methods are valid from main thread only, unless noted otherwise.\n
-To avoid race conditions, methods that alter library contents should not be called from inside global callbacks.\n
-Usage: Use static_api_ptr_t<library_manager> to instantiate. \n
-
-Future compatibility notes: \n
-In 0.9.6, the Media Library backend will be entirely reimplemented to perform tracking of folder content changes on its own. This API will still be provided for backwards compatibility, though most of methods will become stubs as their original purpose will be no longer valid. \n
-To keep your component working sanely in future foobar2000 releases, do not depend on functions flagged as scheduled to be dropped - you can still call them, but keep in mind that they will become meaningless in the next major release.
+Usage: Use static_api_ptr_t<library_manager> to instantiate.
 */
 
 class NOVTABLE library_manager : public service_base {
+	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(library_manager);
 public:
 	//! Interface for use with library_manager::enum_items().
 	class NOVTABLE enum_callback {
@@ -29,20 +25,17 @@ public:
 	virtual bool get_relative_path(const metadb_handle_ptr & p_item,pfc::string_base & p_out) = 0;
 	//! Calls callback method for every item in the Media Library. Note that order of items in Media Library is undefined.
 	virtual void enum_items(enum_callback & p_callback) = 0;
-	//! Scheduled to be dropped in 0.9.6 (will do nothing). \n
-	//! Adds specified items to the Media Library (items actually added will be filtered according to user settings).
-	virtual void add_items(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) = 0;
-	//! Scheduled to be dropped in 0.9.6 (will do nothing). \n
-	//! Removes specified items from the Media Library (does nothing if specific item is not in the Media Library).
-	virtual void remove_items(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) = 0;
-	//! Scheduled to be dropped in 0.9.6 (will do nothing). \n
-	//! Adds specified items to the Media Library (items actually added will be filtered according to user settings). The difference between this and add_items() is that items are not added immediately; the operation is queued and executed later, so it is safe to call from e.g. global callbacks.
-	virtual void add_items_async(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) = 0;
-
-	//! Scheduled to be dropped in 0.9.6 (will do nothing). \n
-	//! For internal use only; p_data must be sorted by metadb::path_compare; use file_operation_callback static methods instead of calling this directly.
-	virtual void on_files_deleted_sorted(const pfc::list_base_const_t<const char *> & p_data) = 0;
-
+protected:
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual void add_items(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) = 0;
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual void remove_items(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) = 0;
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual void add_items_async(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) = 0;
+	
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual void on_files_deleted_sorted(const pfc::list_base_const_t<const char *> & p_data) = 0;
+public:
 	//! Retrieves the entire Media Library content.
 	virtual void get_all_items(pfc::list_base_t<metadb_handle_ptr> & p_out) = 0;
 
@@ -51,42 +44,31 @@ public:
 	//! Pops up the Media Library preferences page.
 	virtual void show_preferences() = 0;
 
-	//! Scheduled to be dropped in 0.9.6. \n
-	//! Deprecated; use library_manager_v2::rescan_async() when possible.\n
-	//! Rescans user-specified Media Library directories for new files and removes references to files that no longer exist from the Media Library.\n
-	//! Note that this function creates modal dialog and does not return until the operation has completed.\n
+	//! OBSOLETE, do not call.
 	virtual void rescan() = 0;
 	
-	//! Scheduled to be dropped in 0.9.6. \n
-	//! Deprecated; use library_manager_v2::check_dead_entries_async() when possible.\n
-	//! Hints Media Library about possible dead items, typically used for "remove dead entries" context action in ML viewers. The implementation will verify whether the items are actually dead before ML contents are altered.\n
-	//! Note that this function creates modal dialog and does not return until the operation has completed.\n
-	virtual void check_dead_entries(const pfc::list_base_t<metadb_handle_ptr> & p_list) = 0;
+protected:
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual void check_dead_entries(const pfc::list_base_t<metadb_handle_ptr> & p_list) = 0;
+public:
 
-	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(library_manager);
+	
 };
 
 //! \since 0.9.3
 class NOVTABLE library_manager_v2 : public library_manager {
-public:
-	//! Scheduled to be dropped in 0.9.6 (will always return false). \n
-	//! Returns whether a rescan process is currently running.
-	virtual bool is_rescan_running() = 0;
-
-	//! Scheduled to be dropped in 0.9.6 (will do nothing and instantly signal completion). \n
-	//! Starts an async rescan process. Note that if another process is already running, the process is silently aborted.
-	//! @param p_parent Parent window for displayed progress dialog.
-	//! @param p_notify Allows caller to receive notifications about the process finishing. Status code: 1 on success, 0 on user abort. Pass NULL if caller doesn't care.
-	virtual void rescan_async(HWND p_parent,completion_notify_ptr p_notify) = 0;
-
-	//! Scheduled to be dropped in 0.9.6 (will do nothing and instantly signal completion). \n
-	//! Hints Media Library about possible dead items, typically used for "remove dead entries" context action in ML viewers. The implementation will verify whether the items are actually dead before ML contents are altered.\n
-	//! @param p_list List of items to process.
-	//! @param p_parent Parent window for displayed progress dialog.
-	//! @param p_notify Allows caller to receive notifications about the process finishing. Status code: 1 on success, 0 on user abort. Pass NULL if caller doesn't care.
-	virtual void check_dead_entries_async(const pfc::list_base_const_t<metadb_handle_ptr> & p_list,HWND p_parent,completion_notify_ptr p_notify) = 0;
-
 	FB2K_MAKE_SERVICE_INTERFACE(library_manager_v2,library_manager);
+protected:
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual bool is_rescan_running() = 0;
+
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual void rescan_async(HWND p_parent,completion_notify_ptr p_notify) = 0;
+
+	//! OBSOLETE, do not call, does nothing.
+	__declspec(deprecated) virtual void check_dead_entries_async(const pfc::list_base_const_t<metadb_handle_ptr> & p_list,HWND p_parent,completion_notify_ptr p_notify) = 0;
+
+	
 };
 
 
@@ -178,4 +160,38 @@ public:
 	virtual void show(const char * query) = 0;
 
 	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(library_search_ui)
+};
+
+//! \since 0.9.6
+class NOVTABLE library_file_move_scope : public service_base {
+	FB2K_MAKE_SERVICE_INTERFACE(library_file_move_scope, service_base)
+public:
+};
+
+//! \since 0.9.6
+class NOVTABLE library_file_move_manager : public service_base {
+	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(library_file_move_manager)
+public:
+	virtual library_file_move_scope::ptr acquire_scope() = 0;
+	virtual bool is_move_in_progress() = 0;
+};
+
+//! \since 0.9.6
+class NOVTABLE library_file_move_notify_ {
+public:
+	virtual void on_state_change(bool isMoving) = 0;
+};
+
+//! \since 0.9.6
+class NOVTABLE library_file_move_notify : public service_base, public library_file_move_notify_ {
+	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(library_file_move_notify)
+public:
+};
+
+
+//! \since 0.9.6.1
+class NOVTABLE library_meta_autocomplete : public service_base {
+	FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(library_meta_autocomplete)
+public:
+	virtual bool get_value_list(const char * metaName, pfc::com_ptr_t<IUnknown> & out) = 0;
 };

@@ -1,16 +1,5 @@
 #include "stdafx.h"
 
-//! \since 0.9.6.1
-class NOVTABLE library_meta_autocomplete : public service_base {
-        FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(library_meta_autocomplete)
-public:
-        //! Gives you a value list IUnknown to pass to IAutoComplete, for the specified metadata field name.
-        //! Returns false when there's nothing to autocomplete to / this field is not configured as autocompletable.
-        virtual bool get_value_list(const char * metaName, pfc::com_ptr_t<IUnknown> & out) = 0;
-};
-
-FOOGUIDDECL const GUID library_meta_autocomplete::class_guid = { 0x4b976e34, 0xf05a, 0x4da4, { 0xad, 0x65, 0x71, 0x9c, 0xdf, 0xd, 0xed, 0xae } };
-
 namespace pvt
 {
 	bool ng_playlist_view_t::notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) 

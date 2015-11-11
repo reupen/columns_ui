@@ -1,3 +1,4 @@
+#ifdef _WIN32
 #include <shlobj.h>
 
 namespace IDataObjectUtils {
@@ -50,10 +51,7 @@ namespace IDataObjectUtils {
 
 	class CDataObjectBase : public IDataObject {
 	public:
-		COM_QI_BEGIN()
-			COM_QI_ENTRY(IUnknown)
-			COM_QI_ENTRY(IDataObject)
-		COM_QI_END()
+		COM_QI_SIMPLE(IDataObject)
 
 		HRESULT STDMETHODCALLTYPE GetData(FORMATETC * formatetc, STGMEDIUM * medium) {
 			return GetData_internal(formatetc,medium,false);
@@ -99,8 +97,8 @@ namespace IDataObjectUtils {
 				if (pFormatetc == NULL || pmedium == NULL) return E_INVALIDARG;
 
 				/*TCHAR buf[256];
-				if (GetClipboardFormatName(pFormatetc->cfFormat,buf,tabsize(buf)) > 0) {
-					buf[tabsize(buf)-1] = 0;
+				if (GetClipboardFormatName(pFormatetc->cfFormat,buf,PFC_TABSIZE(buf)) > 0) {
+					buf[PFC_TABSIZE(buf)-1] = 0;
 					OutputDebugString(TEXT("SetData: ")); OutputDebugString(buf); OutputDebugString(TEXT("\n"));
 				} else {
 					OutputDebugString(TEXT("SetData: unknown clipboard format.\n"));
@@ -181,3 +179,5 @@ namespace IDataObjectUtils {
 		t_entries m_entries;
 	};
 }
+
+#endif // _WIN32

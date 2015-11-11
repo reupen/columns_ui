@@ -70,15 +70,32 @@ t_filetimestamp foobar2000_io::filetimestamp_from_string(const char * date) {
 	}
 }
 
-
+static const char g_invalidMsg[] = "<invalid timestamp>";
 
 format_filetimestamp::format_filetimestamp(t_filetimestamp p_timestamp) {
-	SYSTEMTIME st; FILETIME ft;
-	if (FileTimeToLocalFileTime((FILETIME*)&p_timestamp,&ft)) {
-		if (FileTimeToSystemTime(&ft,&st)) {
+	try {
+		SYSTEMTIME st; FILETIME ft;
+		if (FileTimeToLocalFileTime((FILETIME*)&p_timestamp,&ft)) {
+			if (FileTimeToSystemTime(&ft,&st)) {
+				m_buffer 
+					<< pfc::format_uint(st.wYear,4) << "-" << pfc::format_uint(st.wMonth,2) << "-" << pfc::format_uint(st.wDay,2) << " " 
+					<< pfc::format_uint(st.wHour,2) << ":" << pfc::format_uint(st.wMinute,2) << ":" << pfc::format_uint(st.wSecond,2);
+				return;
+			}
+		}
+	} catch(...) {}
+	m_buffer = g_invalidMsg;
+}
+
+format_filetimestamp_utc::format_filetimestamp_utc(t_filetimestamp p_timestamp) {
+	try {
+		SYSTEMTIME st;
+		if (FileTimeToSystemTime((const FILETIME*)&p_timestamp,&st)) {
 			m_buffer 
 				<< pfc::format_uint(st.wYear,4) << "-" << pfc::format_uint(st.wMonth,2) << "-" << pfc::format_uint(st.wDay,2) << " " 
 				<< pfc::format_uint(st.wHour,2) << ":" << pfc::format_uint(st.wMinute,2) << ":" << pfc::format_uint(st.wSecond,2);
-		} else m_buffer << "<invalid timestamp>";
-	} else m_buffer << "<invalid timestamp>";
+			return;
+		} 
+	} catch(...) {}
+	m_buffer = g_invalidMsg;
 }

@@ -462,13 +462,12 @@ void selection_properties_t::refresh_contents()
 		//metadata_aggregator.process_track_properties(m_handles);
 	}
 	{
-		in_metadb_sync sync;
 		for (i=0; i<count; i++)
 		{
-			const file_info * p_info;
-			if (m_handles[i]->get_info_locked(p_info))
+			metadb_info_container::ptr p_info;
+			if (m_handles[i]->get_info_ref(p_info))
 			{
-				metadata_aggregator.process_file_info_v2(p_info);
+				metadata_aggregator.process_file_info_v2(&p_info->info());
 			}
 		}
 	}
@@ -846,16 +845,15 @@ bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_cons
 
 		pfc::string8_fast_aggressive text, temp;
 		{
-			in_metadb_sync sync;
-			const file_info * p_info = NULL;
-			if (m_edit_handles[0]->get_info_locked(p_info))
-				g_print_field(m_edit_field, *p_info, text);
+			metadb_info_container::ptr p_info;
+			if (m_edit_handles[0]->get_info_ref(p_info))
+				g_print_field(m_edit_field, p_info->info(), text);
 			t_size i, count = m_handles.get_count();
 			for (i = 1; i < count; i++)
 			{
 				temp.reset();
-				if (m_edit_handles[i]->get_info_locked(p_info))
-					g_print_field(m_edit_field, *p_info, temp);
+				if (m_edit_handles[i]->get_info_ref(p_info))
+					g_print_field(m_edit_field, p_info->info(), temp);
 				if (strcmp(temp, text))
 				{
 					text = "<mixed values>";

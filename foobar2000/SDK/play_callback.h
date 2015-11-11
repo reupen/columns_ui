@@ -122,7 +122,7 @@ class playback_statistics_collector_factory_t : public service_factory_single_t<
 
 
 
-//! Helper providing a simplified interface for receiving playback events, in case your code does not care about the kind of playback event that has occured; useful typically for GUI/rendering code that just refreshes some control whenever a playback state change occurs.
+//! Helper providing a simplified interface for receiving playback events, in case your code does not care about the kind of playback event that has occurred; useful typically for GUI/rendering code that just refreshes some control whenever a playback state change occurs.
 class playback_event_notify : private play_callback_impl_base {
 public:
 	playback_event_notify(playback_control::t_display_level level = playback_control::display_level_all) : play_callback_impl_base(GrabCBFlags(level)) {}
@@ -146,4 +146,11 @@ private:
 	void on_playback_dynamic_info_track(const file_info & p_info) {on_playback_event();}
 	void on_playback_time(double p_time) {on_playback_event();}
 	void on_volume_change(float p_new_val) {on_playback_event();}
+};
+
+class playback_volume_notify : private play_callback_impl_base {
+public:	
+	playback_volume_notify() : play_callback_impl_base(flag_on_volume_change) {}
+	// override me
+	void on_volume_change(float p_new_val) {}
 };
