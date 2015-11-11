@@ -7,7 +7,7 @@ static const char * g_help_text = "syntax: foobar2000 /columnsui:<command>\n\n"
 	"import:\"<path>\" - imports an fcl or fcs file\n"
 	"import-quiet:\"<path>\" - imports an fcl file quiet";
 
-bool quiet = false;
+bool quiet;
 
 class commandline_handler_columns : public commandline_handler
 {
