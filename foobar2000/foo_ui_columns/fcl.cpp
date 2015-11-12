@@ -402,44 +402,21 @@ void g_import_layout(HWND wnd, const char * path, bool quiet)
 				pfc::list_t<GUID> datasetsguids;
 				for (i=0; i<count; i++)
 					datasetsguids.add_item(datasets[i].guid);
-				if (quiet) {
-					//FCLDialog pFCLDialog(true, datasetsguids);
-					//if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
-					//	throw exception_aborted();
-					ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
-					for (i = 0; i<count; i++)
-					{
-						cui::fcl::dataset_ptr ptr;
-						if (export_items.find_by_guid(datasets[i].guid, ptr))
-							ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(), mode, feed, p_abort);
-					}
-				}
-				else {
-					FCLDialog pFCLDialog(true, datasetsguids);
+				FCLDialog pFCLDialog(true, datasetsguids);
+				if (!quiet) {
 					if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
-					throw exception_aborted();
-					ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
-					for (i = 0; i<count; i++)
-					{
-						cui::fcl::dataset_ptr ptr;
-						if (export_items.find_by_guid(datasets[i].guid, ptr) && pFCLDialog.have_node_checked(ptr->get_group()))
-							ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(), mode, feed, p_abort);
-					}
+						throw exception_aborted();
+				}
+				ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
+				for (i = 0; i<count; i++)
+				{
+					cui::fcl::dataset_ptr ptr;
+					if (export_items.find_by_guid(datasets[i].guid, ptr) && (quiet || pFCLDialog.have_node_checked(ptr->get_group())))
+						ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(), mode, feed, p_abort);
 				}
 				if (feed.get_count())
 				{
 					throw pfc::exception("Bug check: panels missing");
-					/*pfc::string8 msg, name;
-					msg << "The following required panels are not present. Some parts of the layout may not have been imported.\r\n\r\nGUID, Name\r\n";
-					t_size i, count = feed.get_count();
-					for (i=0; i<count; i++)
-					{
-						bool b_name = panel_info.get_name_by_guid(feed[i], name);
-						msg << pfc::print_guid(feed[i]);
-						if (b_name) msg << ", " << name;
-						msg << "\r\n";
-					}
-					throw pfc::exception(msg);*/
 				}
 			}
 		}

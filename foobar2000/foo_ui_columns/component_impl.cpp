@@ -10,8 +10,7 @@ VERSION,
 
 "Columns UI\n"
 "Version " VERSION ", Date "__DATE__"\n"
-"Written by musicmusic\n"
-"Copyright (C) 2003-2015\n"
+"Copyright (C) 2003-2015 musicmusic and contributors\n"
 "Current version at: yuo.be\n\n"
 
 "Columns UI SDK version: " UI_EXTENSION_VERSION

@@ -2,53 +2,48 @@
 
 static const char * g_help_text = "syntax: foobar2000 /columnsui:<command>\n\n"
 	"Available commands:\n"
-	"help,? - displays this commandline help\n"
-	//"export:\"<path>\" - exports an fcs files\n"
+	"help, ? - displays this command-line help\n"
 	"import:\"<path>\" - imports an fcl or fcs file\n"
-	"import-quiet:\"<path>\" - imports an fcl file quiet";
-
-bool quiet;
+	"import-quiet:\"<path>\" - imports an fcl file without confirmation dialog boxes";
 
 class commandline_handler_columns : public commandline_handler
 {
 private:
 	enum 
 	{
-		COMMAND_IMPORT = 1,
-		COMMAND_EXPORT,
+		command_help = 1,
+		command_import,
+		command_import_quiet
 	};
-//	metadb_handle_list files;
-//	pfc::ptr_list_t<char> commands;
-
-	pfc::string8 path;
-	unsigned command;
-
-	void reset()
-	{
-		path.reset();
-		command = 0;
-	//	files.delete_all();
-	//	commands.free_all();
-	}
 
 public:
+	// This could probably be improved...
 	virtual result on_token(const char * token)
-			{
-		reset();
+	{
 		if (!stricmp_utf8_partial(token,"/columnsui:"))
 		{
+			unsigned command = NULL;
 			const char * ptr = strchr(token,':')+1;
-			if (!stricmp_utf8(ptr,"help") || !stricmp_utf8(ptr,"?"))
+			if (!stricmp_utf8(ptr, "help") || !stricmp_utf8(ptr, "?"))
+				command = command_help;
+			else if (!stricmp_utf8_partial(ptr, "import:")) {
+				command = command_import;
+				ptr += 7;
+			}
+			else if (!stricmp_utf8_partial(ptr, "import-quiet:")) {
+				command = command_import_quiet;
+				ptr += 13;
+			}
+
+			if (command == command_help)
 			{
 				HWND parent = core_api::get_main_window();
 				if (parent) static_api_ptr_t<ui_control>()->activate();//SetActiveWindow(parent);
-				uMessageBox(parent,g_help_text,"Columns UI commandline help",0);
+				uMessageBox(parent,g_help_text,"Columns UI command-line help",0);
 				return RESULT_PROCESSED;
 			}
-			else if (!stricmp_utf8_partial(ptr,"import:"))
+			else if (command == command_import || command == command_import_quiet)
 			{
-				quiet = false;
-				ptr += 7;
 				if (*ptr && *ptr =='\"') ptr++;
 				unsigned len = strlen(ptr);
 				const char * end = strchr(ptr, '\"');
@@ -59,47 +54,19 @@ public:
 				HWND parent = core_api::get_main_window();
 				if (parent) static_api_ptr_t<ui_control>()->activate();
 
-				pfc::string_extension ext(path);
-				if (!stricmp_utf8("fcl", ext))
-					g_import_layout(core_api::get_main_window(), path, quiet);
-				else if (!stricmp_utf8("fcs", ext))
-					g_import(path);
-				static_api_ptr_t<ui_control>()->activate();
+				if (!stricmp_utf8("fcl", pfc::string_extension(path))) {
+					if (command == command_import_quiet || uMessageBox(parent, pfc::string_formatter()
+						<< "Are you sure you want to import the "
+						<< pfc::string_filename(path)
+						<< " configuration? Your current configuration will be lost.", "Import configuration?", MB_YESNO) == IDYES)
+					{
+						g_import_layout(core_api::get_main_window(), path, command == command_import_quiet);
+					}
+
+				}
+
 				return RESULT_PROCESSED;
 			}
-			else if (!stricmp_utf8_partial(ptr, "import-quiet:"))
-			{
-				quiet = true;
-				ptr += 13;
-				if (*ptr && *ptr == '\"') ptr++;
-				unsigned len = strlen(ptr);
-				const char * end = strchr(ptr, '\"');
-				if (end) len = end - ptr;
-
-				pfc::string8 path(ptr, len);
-
-				HWND parent = core_api::get_main_window();
-				if (parent) static_api_ptr_t<ui_control>()->activate();
-
-				pfc::string_extension ext(path);
-				if (!stricmp_utf8("fcl", ext))
-					g_import_layout(core_api::get_main_window(), path , quiet);
-				static_api_ptr_t<ui_control>()->activate();
-				return RESULT_PROCESSED;
-			}
-			/*else if (!stricmp_utf8_partial(ptr,"export:"))
-			{
-				ptr += 7;
-				if (*ptr && *ptr =='\"') ptr++;
-				unsigned len = strlen(ptr);
-				const char * end = strchr(ptr, '\"');
-				if (end) len = end-ptr;
-
-				pfc::string8 path(ptr, len);
-				g_export(path);
-
-				return RESULT_PROCESSED;
-			}*/
 		}
 		return RESULT_NOT_OURS;
 	}

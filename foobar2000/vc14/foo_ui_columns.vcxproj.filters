@@ -778,6 +778,8 @@
     <None Include="..\foo_ui_columns\changelog.txt">
       <Filter>Misc</Filter>
     </None>
+    <None Include="..\..\README.md" />
+    <None Include="..\..\COPYRIGHT" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\foo_ui_columns\foo_ui_columns.rc">

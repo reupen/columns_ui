@@ -556,6 +556,8 @@
     <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\COPYRIGHT" />
+    <None Include="..\..\README.md" />
     <None Include="..\foo_ui_columns\buttons2.bmp" />
     <None Include="..\foo_ui_columns\emptycoverdark.png" />
     <None Include="..\foo_ui_columns\icons\star\left.ico" />
