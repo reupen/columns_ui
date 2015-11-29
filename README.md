@@ -14,7 +14,7 @@ Some libraries have been moved to the [foobar2000-common](https://github.com/msq
 
 Use `--recursive` when cloning this repository to clone foobar2000-common at the same time.
 
-To update an existing clone, use `git submodule init` and `git submodule update`.
+For an existing clone, use `git submodule init` and `git submodule update`.
 
 ## Projects
 
