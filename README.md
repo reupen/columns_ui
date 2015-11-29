@@ -4,13 +4,17 @@ http://yuo.be/columns.php
 
 Columns UI and Album list panel are released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
 
-The code should compile as is. VS2015 projects can be found in foobar2000/vc14.
+VS2015 projects can be found in the vc14 folder.
 
-**Note – 29 November 2015**
+## Updates
 
-Some libraries have been moved to the https://github.com/msquared2/foobar2000-common repository as a submodule. 
+### 29 November 2015
 
-Use `--recursive` when cloning this repository to clone all dependencies at the same time.
+Some libraries have been moved to the [foobar2000-common](https://github.com/msquared2/foobar2000-common) repository and added to this repository as a submodule. 
+
+Use `--recursive` when cloning this repository to clone foobar2000-common at the same time.
+
+To update an existing clone, use `git submodule init` and `git submodule update`.
 
 ## Projects
 
