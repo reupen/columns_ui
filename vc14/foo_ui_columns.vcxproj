@@ -1,0 +1,642 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release (Dynamic Link)|Win32">
+      <Configuration>Release (Dynamic Link)</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release staticlink|Win32">
+      <Configuration>Release staticlink</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release64|Win32">
+      <Configuration>Release64</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{743CBAAD-BE8E-430A-918B-2BB68008A616}</ProjectGuid>
+    <RootNamespace>foo_ui_columns</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseOfMfc>false</UseOfMfc>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v140_xp</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.40219.1</_ProjectFileVersion>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)$(Configuration)\$(ProjectName)\</IntDir>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">./$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">./$(Configuration)/$(ProjectName)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">$(Configuration)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">false</LinkIncremental>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">$(Configuration)\</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">./$(Configuration)/$(ProjectName)\</IntDir>
+    <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">true</IgnoreImportLibrary>
+    <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">false</LinkIncremental>
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'" />
+    <CodeAnalysisRuleSet Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">AllRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+    <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\../Release/foo_ui_columns.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>
+      </ProgramDatabaseFile>
+      <GenerateMapFile>true</GenerateMapFile>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\../Debug/foo_bitcompare.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>-Zm121 %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x600;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <EnableCOMDATFolding>false</EnableCOMDATFolding>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+      <SubSystem>Windows</SubSystem>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\../Release/foo_bitcompare.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>MinSpace</Optimization>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateMapFile>true</GenerateMapFile>
+      <MapFileName>$(DATE)$(TIME)</MapFileName>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\../Release/foo_ui_columns.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHs %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <TypeLibraryName>.\../Release/foo_ui_columns.tlb</TypeLibraryName>
+      <HeaderFileName>
+      </HeaderFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalOptions>/EHs %(AdditionalOptions)</AdditionalOptions>
+      <Optimization>MaxSpeed</Optimization>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;_WIN32_WINNT=0x0501;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <FloatingPointModel>Precise</FloatingPointModel>
+      <RuntimeTypeInfo>false</RuntimeTypeInfo>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <AssemblerOutput>All</AssemblerOutput>
+      <WarningLevel>Level3</WarningLevel>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DebugInformationFormat>
+      </DebugInformationFormat>
+      <ExceptionHandling>SyncCThrow</ExceptionHandling>
+      <EnableEnhancedInstructionSet>NoExtensions</EnableEnhancedInstructionSet>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0809</Culture>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <GenerateMapFile>true</GenerateMapFile>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
+      <RandomizedBaseAddress>false</RandomizedBaseAddress>
+      <DataExecutionPrevention>
+      </DataExecutionPrevention>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\foo_ui_columns\artwork_helpers.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_button.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_button_image.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_command_picker.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_param.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_droptarget.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_config_listview.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_custom_image.cpp" />
+    <ClCompile Include="..\foo_ui_columns\cache.cpp" />
+    <ClCompile Include="..\foo_ui_columns\colours_manager_data.cpp" />
+    <ClCompile Include="..\foo_ui_columns\columns_v2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\component_impl.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_defaults.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_items.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_guids.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_inline_edit.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_items.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_menu.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_render.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_search_bar.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter_config_var.cpp" />
+    <ClCompile Include="..\foo_ui_columns\fonts_manager_data.cpp" />
+    <ClCompile Include="..\foo_ui_columns\gdiplus.cpp" />
+    <ClCompile Include="..\foo_ui_columns\get_msg_hook.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_details_config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_details_font.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_details_text.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_properties_config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_properties_config_list_view.cpp" />
+    <ClCompile Include="..\foo_ui_columns\layout_config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\menu_helpers.cpp" />
+    <ClCompile Include="..\foo_ui_columns\mw_drop_target.cpp" />
+    <ClCompile Include="..\foo_ui_columns\mw_wnd_proc.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_tabs_drop_target.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_tabs_wndproc.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_cache.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_day_timer.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_draw.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_dropsource.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_droptarget.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_header.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_hittest.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_inline_edit.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_keyboard.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_msgproc.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_msgwindow.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_scroll.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_sizing.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_view_tfhook.cpp" />
+    <ClCompile Include="..\foo_ui_columns\prefs_utils.cpp" />
+    <ClCompile Include="..\foo_ui_columns\setup_dialog.cpp" />
+    <ClCompile Include="..\foo_ui_columns\sort.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_artwork.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_callbacks.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_clipboard.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_dropsource.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_droptarget.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_inline_edit.cpp" />
+    <ClCompile Include="..\foo_ui_columns\NG Playlist\ng_playlist_renderer.cpp" />
+    <ClCompile Include="..\foo_ui_columns\ng playlist\ng_playlist_style.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_search.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_manager_utils.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_switcher.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_switcher_callbacks.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_switcher_drop_source.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_switcher_drop_target.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_switcher_inline_edit.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_switcher_shortcut_menu.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_switcher_v2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\playlist_tabs.cpp" />
+    <ClCompile Include="..\foo_ui_columns\artwork.cpp" />
+    <ClCompile Include="..\foo_ui_columns\filter.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_details.cpp" />
+    <ClCompile Include="..\foo_ui_columns\item_properties.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_panel.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_panel_container.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_tabs.cpp" />
+    <ClCompile Include="..\foo_ui_columns\main_window.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Use</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\layout.cpp" />
+    <ClCompile Include="..\foo_ui_columns\rebar.cpp" />
+    <ClCompile Include="..\foo_ui_columns\callbacks.cpp" />
+    <ClCompile Include="..\foo_ui_columns\callbacks_config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\commandline.cpp" />
+    <ClCompile Include="..\foo_ui_columns\common.cpp" />
+    <ClCompile Include="..\foo_ui_columns\fcs.cpp" />
+    <ClCompile Include="..\foo_ui_columns\font_notify.cpp" />
+    <ClCompile Include="..\foo_ui_columns\menu_items.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_window.cpp" />
+    <ClCompile Include="..\foo_ui_columns\splitter_window_wndproc.cpp" />
+    <ClCompile Include="..\foo_ui_columns\status_bar.cpp" />
+    <ClCompile Include="..\foo_ui_columns\stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release (Dynamic Link)|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release staticlink|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release64|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="..\foo_ui_columns\tab_colours.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_display2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_fonts.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_global.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_main.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_notification_area.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_playlist.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_playlist_dd.cpp" />
+    <ClCompile Include="..\foo_ui_columns\tab_status.cpp" />
+    <ClCompile Include="..\foo_ui_columns\user_interface_impl.cpp" />
+    <ClCompile Include="..\foo_ui_columns\utf8api.cpp" />
+    <ClCompile Include="..\foo_ui_columns\volume.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons.cpp" />
+    <ClCompile Include="..\foo_ui_columns\buttons_stock.cpp" />
+    <ClCompile Include="..\foo_ui_columns\menubar.cpp" />
+    <ClCompile Include="..\foo_ui_columns\order_dropdown.cpp" />
+    <ClCompile Include="..\foo_ui_columns\seekbar.cpp" />
+    <ClCompile Include="..\foo_ui_columns\vis_gen_host.cpp" />
+    <ClCompile Include="..\foo_ui_columns\vis_spectrum.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_appearance.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_artwork.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_columns.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_columns_v2.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_filter.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_layout.cpp" />
+    <ClCompile Include="..\foo_ui_columns\config_vars.cpp" />
+    <ClCompile Include="..\foo_ui_columns\fcl.cpp" />
+    <ClCompile Include="..\foo_ui_columns\fcl_colours.cpp" />
+    <ClCompile Include="..\foo_ui_columns\fcl_layout.cpp" />
+    <ClCompile Include="..\foo_ui_columns\fcl_titles.cpp" />
+    <ClCompile Include="..\foo_ui_columns\status_pane.cpp" />
+    <ClCompile Include="..\foo_ui_columns\status_pane_msgproc.cpp" />
+    <ClCompile Include="..\foo_ui_columns\helpers.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\foo_ui_columns\artwork_helpers.h" />
+    <ClInclude Include="..\foo_ui_columns\buttons.h" />
+    <ClInclude Include="..\foo_ui_columns\cache.h" />
+    <ClInclude Include="..\foo_ui_columns\colours_manager_data.h" />
+    <ClInclude Include="..\foo_ui_columns\columns_v2.h" />
+    <ClInclude Include="..\foo_ui_columns\config_appearance.h" />
+    <ClInclude Include="..\foo_ui_columns\config_defaults.h" />
+    <ClInclude Include="..\foo_ui_columns\config_items.h" />
+    <ClInclude Include="..\foo_ui_columns\fonts_manager_data.h" />
+    <ClInclude Include="..\foo_ui_columns\gdiplus.h" />
+    <ClInclude Include="..\foo_ui_columns\get_msg_hook.h" />
+    <ClInclude Include="..\foo_ui_columns\item_details.h" />
+    <ClInclude Include="..\foo_ui_columns\item_properties.h" />
+    <ClInclude Include="..\foo_ui_columns\menu_helpers.h" />
+    <ClInclude Include="..\foo_ui_columns\mw_drop_target.h" />
+    <ClInclude Include="..\foo_ui_columns\playlist_view.h" />
+    <ClInclude Include="..\foo_ui_columns\setup_dialog.h" />
+    <ClInclude Include="..\foo_ui_columns\sort.h" />
+    <ClInclude Include="..\foo_ui_columns\NG Playlist\ng_playlist.h" />
+    <ClInclude Include="..\foo_ui_columns\NG Playlist\ng_playlist_groups.h" />
+    <ClInclude Include="..\foo_ui_columns\ng playlist\ng_playlist_style.h" />
+    <ClInclude Include="..\foo_ui_columns\playlist_search.h" />
+    <ClInclude Include="..\foo_ui_columns\playlist_manager_utils.h" />
+    <ClInclude Include="..\foo_ui_columns\playlist_switcher.h" />
+    <ClInclude Include="..\foo_ui_columns\playlist_switcher_v2.h" />
+    <ClInclude Include="..\foo_ui_columns\playlist_tabs.h" />
+    <ClInclude Include="..\foo_ui_columns\artwork.h" />
+    <ClInclude Include="..\foo_ui_columns\filter.h" />
+    <ClInclude Include="..\foo_ui_columns\splitter.h" />
+    <ClInclude Include="..\foo_ui_columns\splitter_tabs.h" />
+    <ClInclude Include="..\foo_ui_columns\resource.h" />
+    <ClInclude Include="..\foo_ui_columns\main_window.h" />
+    <ClInclude Include="..\foo_ui_columns\layout.h" />
+    <ClInclude Include="..\foo_ui_columns\rebar.h" />
+    <ClInclude Include="..\foo_ui_columns\callback.h" />
+    <ClInclude Include="..\foo_ui_columns\common.h" />
+    <ClInclude Include="..\foo_ui_columns\extern.h" />
+    <ClInclude Include="..\foo_ui_columns\fcs.h" />
+    <ClInclude Include="..\foo_ui_columns\font_notify.h" />
+    <ClInclude Include="..\foo_ui_columns\menu_items.h" />
+    <ClInclude Include="..\foo_ui_columns\status_bar.h" />
+    <ClInclude Include="..\foo_ui_columns\stdafx.h" />
+    <ClInclude Include="..\foo_ui_columns\tab_colours.h" />
+    <ClInclude Include="..\foo_ui_columns\tab_fonts.h" />
+    <ClInclude Include="..\foo_ui_columns\utf8api.h" />
+    <ClInclude Include="..\foo_ui_columns\volume.h" />
+    <ClInclude Include="..\foo_ui_columns\seekbar.h" />
+    <ClInclude Include="..\foo_ui_columns\vis_gen_host.h" />
+    <ClInclude Include="..\foo_ui_columns\config.h" />
+    <ClInclude Include="..\foo_ui_columns\config_vars.h" />
+    <ClInclude Include="..\foo_ui_columns\prefs_utils.h" />
+    <ClInclude Include="..\foo_ui_columns\fcl.h" />
+    <ClInclude Include="..\foo_ui_columns\status_pane.h" />
+    <ClInclude Include="..\foo_ui_columns\helpers.h" />
+    <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\foo_ui_columns\buttons2.bmp" />
+    <None Include="..\foo_ui_columns\emptycoverdark.png" />
+    <None Include="..\foo_ui_columns\icons\star\left.ico" />
+    <None Include="icons\star\left.ico" />
+    <None Include="..\foo_ui_columns\LOCK.ico" />
+    <None Include="..\foo_ui_columns\next.bmp" />
+    <None Include="..\foo_ui_columns\official_buttons_pack\next.bmp" />
+    <None Include="..\foo_ui_columns\next1.bmp" />
+    <None Include="icons\New Folder\square\next256.ico" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\next256.ico" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\next64.bmp" />
+    <None Include="icons\New Folder\square\next64.bmp" />
+    <None Include="..\foo_ui_columns\open.bmp" />
+    <None Include="..\foo_ui_columns\official_buttons_pack\open.bmp" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\open256.ico" />
+    <None Include="icons\New Folder\square\open256.ico" />
+    <None Include="icons\New Folder\square\open64.bmp" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\open64.bmp" />
+    <None Include="..\foo_ui_columns\official_buttons_pack\pause.bmp" />
+    <None Include="..\foo_ui_columns\pause.bmp" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\pause256.ico" />
+    <None Include="icons\New Folder\square\pause256.ico" />
+    <None Include="icons\New Folder\square\pause64.bmp" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\pause64.bmp" />
+    <None Include="..\foo_ui_columns\official_buttons_pack\play.bmp" />
+    <None Include="..\foo_ui_columns\play.bmp" />
+    <None Include="icons\New Folder\square\play256.ico" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\play256.ico" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\play64.bmp" />
+    <None Include="icons\New Folder\square\play64.bmp" />
+    <None Include="..\foo_ui_columns\official_buttons_pack\prev.bmp" />
+    <None Include="..\foo_ui_columns\prev.bmp" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\prev256.ico" />
+    <None Include="icons\New Folder\square\prev256.ico" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\prev64.bmp" />
+    <None Include="icons\New Folder\square\prev64.bmp" />
+    <None Include="..\foo_ui_columns\rand.bmp" />
+    <None Include="..\foo_ui_columns\official_buttons_pack\rand.bmp" />
+    <None Include="icons\New Folder\square\rand256.ico" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\rand256.ico" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\rand64.bmp" />
+    <None Include="icons\New Folder\square\rand64.bmp" />
+    <None Include="..\foo_ui_columns\icons\star\star off.ico" />
+    <None Include="icons\star\star off.ico" />
+    <None Include="icons\star\star on.ico" />
+    <None Include="..\foo_ui_columns\icons\star\star on.ico" />
+    <None Include="..\foo_ui_columns\official_buttons_pack\stop.bmp" />
+    <None Include="..\foo_ui_columns\stop1.bmp" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\stop256.ico" />
+    <None Include="icons\New Folder\square\stop256.ico" />
+    <None Include="icons\New Folder\square\stop64.bmp" />
+    <None Include="..\foo_ui_columns\icons\New Folder\square\stop64.bmp" />
+    <None Include="..\foo_ui_columns\up1.bmp" />
+    <None Include="..\foo_ui_columns\changelog.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="..\foo_ui_columns\foo_ui_columns.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\common\vc14\columns_ui-sdk.vcxproj">
+      <Project>{93ec0ede-01cd-4fb0-b8e8-4f2a027e026e}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\common\vc14\foobar2000_component_client.vcxproj">
+      <Project>{71ad2674-065b-48f5-b8b0-e1f9d3892081}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\common\vc14\foobar2000_SDK.vcxproj">
+      <Project>{e8091321-d79d-4575-86ef-064ea1a4a20d}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\common\vc14\foobar2000_sdk_helpers.vcxproj">
+      <Project>{ee47764e-a202-4f85-a767-abdab4aff35f}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\common\vc14\mmh.vcxproj">
+      <Project>{c90a19c3-554d-4037-b4d3-bd12c1f1ad86}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\common\vc14\pfc.vcxproj">
+      <Project>{ebfffb4e-261d-44d3-b89c-957b31a0bf9c}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\common\vc14\ui_helpers.vcxproj">
+      <Project>{a8c4298d-00f5-46f7-91ba-f503fd581590}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets" />
+</Project>
