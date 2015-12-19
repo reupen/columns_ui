@@ -30,14 +30,6 @@ public:
 
 	void send_to_playlist(bool replace);
 
-	void remove_from_db() const;
-
-	void remove_dead() const
-	{
-		static_api_ptr_t<library_manager> api;
-		api->check_dead_entries(entries);
-	}
-
 	inline const char * get_sort_data() const { return value; }
 
 	node(const char * p_value, unsigned p_value_len, class album_list_window * dbe);

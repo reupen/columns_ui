@@ -60,7 +60,7 @@ LRESULT album_list_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		break;
 	case WM_CONTEXTMENU:
 	{
-		enum { ID_SEND = 1, ID_ADD, ID_NEW, ID_AUTOSEND, ID_REMOVE, ID_REMOVEDEAD, ID_REFRESH, ID_FILT, ID_CONF, ID_VIEW_BASE };
+		enum { ID_SEND = 1, ID_ADD, ID_NEW, ID_AUTOSEND, ID_REFRESH, ID_FILT, ID_CONF, ID_VIEW_BASE };
 
 		HMENU menu = CreatePopupMenu();
 
@@ -160,11 +160,6 @@ LRESULT album_list_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			uAppendMenu(menu, MF_STRING, ID_NEW, show_shortcuts ? "Send to &new playlist\tCtrl+Enter" : "Send to &new playlist");
 			uAppendMenu(menu, MF_STRING, ID_AUTOSEND, "Send to &autosend playlist");
 
-			if (!static_api_ptr_t<core_version_info_v2>()->test_version(0, 9, 6, 0))
-			{
-				uAppendMenu(menu, MF_STRING, ID_REMOVE, "&Remove from library");
-				uAppendMenu(menu, MF_STRING, ID_REMOVEDEAD, "Remove &dead entries (slow)");
-			}
 			uAppendMenu(menu, MF_SEPARATOR, 0, "");
 
 			contextmenu_manager::g_create(p_menu_manager);
@@ -227,12 +222,6 @@ LRESULT album_list_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					create_or_destroy_filter();
 				}
 				break;
-				case ID_REMOVE:
-					p_node->remove_from_db();
-					break;
-				case ID_REMOVEDEAD:
-					p_node->remove_dead();
-					break;
 				case ID_REFRESH:
 					if (!m_populated && !cfg_populate)
 						refresh_tree();

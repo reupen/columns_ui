@@ -421,7 +421,6 @@ void album_list_window::refresh_tree_internal()
 					m_filter_ptr = static_api_ptr_t<search_filter_manager>()->create(pattern);
 				}
 
-				in_metadb_sync lock;
 				api->get_all_items(library);
 				pfc::array_t<bool> mask;
 				mask.set_count(library.get_count());
@@ -491,19 +490,15 @@ void album_list_window::refresh_tree_internal()
 				string8_fastalloc formatbuffer;
 
 				{
-					in_metadb_sync lock;
-
-					static const file_info_impl null_info;
-
 					for (t_size n = 0; n < count; n++)
 					{
 						const playable_location & location = library[n]->get_location();
-						const file_info * info;
-						if (!library[n]->get_info_locked(info))
-							info = &null_info;
+						metadb_info_container::ptr info_ptr;
+						info_ptr = library[n]->get_info_ref();
+
 #if 1
 						library[n]->format_title(
-							&titleformat_hook_impl_file_info_branch(location, info),
+							&titleformat_hook_impl_file_info_branch(location, &info_ptr->info()),
 							formatbuffer,
 							script,
 							&titleformat_text_filter_impl_reserved_chars("|")
@@ -697,19 +692,14 @@ void album_list_window::refresh_tree_internal_add_tracks(metadb_handle_list & p_
 				string8_fastalloc formatbuffer;
 
 				{
-					in_metadb_sync lock;
-
-					static const file_info_impl null_info;
-
 					for (t_size n = 0; n < count; n++)
 					{
 						const playable_location & location = new_tracks[n]->get_location();
-						const file_info * info;
-						if (!new_tracks[n]->get_info_locked(info))
-							info = &null_info;
+						metadb_info_container::ptr info_ptr;
+						info_ptr = new_tracks[n]->get_info_ref();
 #if 1
 						new_tracks[n]->format_title(
-							&titleformat_hook_impl_file_info_branch(location, info),
+							&titleformat_hook_impl_file_info_branch(location, &info_ptr->info()),
 							formatbuffer,
 							script,
 							&titleformat_text_filter_impl_reserved_chars("|")

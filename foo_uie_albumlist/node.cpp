@@ -71,12 +71,6 @@ void node::send_to_playlist(bool replace)
 	}
 }
 
-void node::remove_from_db() const
-{
-	static_api_ptr_t<library_manager> api;
-	api->remove_items(entries);
-}
-
 node::node(const char * p_value, unsigned p_value_len, album_list_window * dbe) : p_dbe(dbe), m_ti(NULL), m_label_dirty(false)
 {
 	if (p_value && p_value_len > 0)
