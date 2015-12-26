@@ -263,7 +263,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\foo_uie_console\main.cpp" />
+    <ClCompile Include=".\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\vc14\columns_ui-sdk.vcxproj">

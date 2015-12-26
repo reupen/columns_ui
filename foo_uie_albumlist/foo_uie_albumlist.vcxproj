@@ -137,29 +137,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\foo_uie_albumlist\albumlist.rc" />
+    <ResourceCompile Include=".\albumlist.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\foo_uie_albumlist\actions.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\config.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\drop_source.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\fcl.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\main.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\main_hook_proc.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\main_tree_builder.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\main_window_proc.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\node.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\prefs.cpp" />
-    <ClCompile Include="..\foo_uie_albumlist\tfhook.cpp" />
+    <ClCompile Include=".\actions.cpp" />
+    <ClCompile Include=".\config.cpp" />
+    <ClCompile Include=".\drop_source.cpp" />
+    <ClCompile Include=".\fcl.cpp" />
+    <ClCompile Include=".\main.cpp" />
+    <ClCompile Include=".\main_hook_proc.cpp" />
+    <ClCompile Include=".\main_tree_builder.cpp" />
+    <ClCompile Include=".\main_window_proc.cpp" />
+    <ClCompile Include=".\node.cpp" />
+    <ClCompile Include=".\prefs.cpp" />
+    <ClCompile Include=".\tfhook.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\foo_uie_albumlist\config.h" />
-    <ClInclude Include="..\foo_uie_albumlist\main.h" />
-    <ClInclude Include="..\foo_uie_albumlist\node.h" />
-    <ClInclude Include="..\foo_uie_albumlist\prefs.h" />
-    <ClInclude Include="..\foo_uie_albumlist\resource.h" />
-    <ClInclude Include="..\foo_uie_albumlist\stdafx.h" />
-    <ClInclude Include="..\foo_uie_albumlist\tfhook.h" />
+    <ClInclude Include=".\config.h" />
+    <ClInclude Include=".\main.h" />
+    <ClInclude Include=".\node.h" />
+    <ClInclude Include=".\prefs.h" />
+    <ClInclude Include=".\resource.h" />
+    <ClInclude Include=".\stdafx.h" />
+    <ClInclude Include=".\tfhook.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\common\vc14\columns_ui-sdk.vcxproj">

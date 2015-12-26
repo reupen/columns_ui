@@ -1,0 +1,736 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Panels">
+      <UniqueIdentifier>{b19366fb-a9d2-428e-8041-ab38abc39a3f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Columns Playlist">
+      <UniqueIdentifier>{b772bc74-9a73-4f13-9ff9-6a24d6106ce9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\NG Playlist">
+      <UniqueIdentifier>{9bc42edf-9fd0-4976-b96f-a1ac4492b347}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Others">
+      <UniqueIdentifier>{6047e99d-011a-442c-9c20-737a5d355212}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Playlist Switcher">
+      <UniqueIdentifier>{ba824d61-8c79-4423-bc23-2cfd17687e30}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Artwork View">
+      <UniqueIdentifier>{81de405a-a971-4435-b304-18a4c1f07323}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Filter">
+      <UniqueIdentifier>{33b0a09e-ebaa-43a1-b0b1-e3b62e4445bb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Item Details">
+      <UniqueIdentifier>{f18011cc-68a9-440c-81f9-85faf63f5dd7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Item Properties">
+      <UniqueIdentifier>{6a4ff493-79a1-403b-85f4-a3fe79443c81}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Splitter">
+      <UniqueIdentifier>{15e18c43-e86f-482d-99d3-18f58203437a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Panels\Tab Stack">
+      <UniqueIdentifier>{37f9b403-a74c-419c-83bd-1fafd52de8aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{140994fe-32f1-4f18-ac3c-3c4d4ab5a4b6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main Window">
+      <UniqueIdentifier>{3b726c1c-2add-4130-982c-8228977b103d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Misc">
+      <UniqueIdentifier>{ef783cbf-0b28-473a-bbb9-75673c710f34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toolbars">
+      <UniqueIdentifier>{f6aa96cf-6e2e-4272-a19a-d9c63a27b902}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="FCL">
+      <UniqueIdentifier>{12e36933-63f3-4439-a991-67efc252a641}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Status Pane">
+      <UniqueIdentifier>{43d0f8a5-91ad-4dcb-a00b-c6d125807f9d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Helpers">
+      <UniqueIdentifier>{3730da6a-bd0b-449b-b9f8-74362737a467}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Toolbars\Buttons">
+      <UniqueIdentifier>{0e99f624-ba9c-408e-af00-35cd33250b5a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Config storage">
+      <UniqueIdentifier>{22c6ed33-d522-410a-8db3-a15b45a7874d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Prefs UI">
+      <UniqueIdentifier>{2a5af301-f1df-434b-aa47-3252737e8232}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include=".\cache.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\columns_v2.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_cache.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\sort.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_artwork.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_callbacks.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_clipboard.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_config.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_dropsource.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_droptarget.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_inline_edit.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\NG Playlist\ng_playlist_renderer.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\ng playlist\ng_playlist_style.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_search.cpp">
+      <Filter>Panels\Others</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_manager_utils.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_switcher.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_switcher_callbacks.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_switcher_drop_source.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_switcher_drop_target.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_switcher_inline_edit.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_switcher_shortcut_menu.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_switcher_v2.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_tabs.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\artwork.cpp">
+      <Filter>Panels\Artwork View</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\item_details.cpp">
+      <Filter>Panels\Item Details</Filter>
+    </ClCompile>
+    <ClCompile Include=".\item_properties.cpp">
+      <Filter>Panels\Item Properties</Filter>
+    </ClCompile>
+    <ClCompile Include=".\splitter.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\splitter_tabs.cpp">
+      <Filter>Panels\Tab Stack</Filter>
+    </ClCompile>
+    <ClCompile Include=".\layout.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\rebar.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\callbacks.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\callbacks_config.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\commandline.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\common.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\fcs.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\font_notify.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\menu_items.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\utf8api.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\volume.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
+    <ClCompile Include=".\menubar.cpp">
+      <Filter>Toolbars</Filter>
+    </ClCompile>
+    <ClCompile Include=".\order_dropdown.cpp">
+      <Filter>Toolbars</Filter>
+    </ClCompile>
+    <ClCompile Include=".\seekbar.cpp">
+      <Filter>Toolbars</Filter>
+    </ClCompile>
+    <ClCompile Include=".\vis_gen_host.cpp">
+      <Filter>Toolbars</Filter>
+    </ClCompile>
+    <ClCompile Include=".\vis_spectrum.cpp">
+      <Filter>Toolbars</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_appearance.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_artwork.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_columns.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_columns_v2.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_filter.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_layout.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\fcl.cpp">
+      <Filter>FCL</Filter>
+    </ClCompile>
+    <ClCompile Include=".\fcl_colours.cpp">
+      <Filter>FCL</Filter>
+    </ClCompile>
+    <ClCompile Include=".\fcl_layout.cpp">
+      <Filter>FCL</Filter>
+    </ClCompile>
+    <ClCompile Include=".\fcl_titles.cpp">
+      <Filter>FCL</Filter>
+    </ClCompile>
+    <ClCompile Include=".\status_pane.cpp">
+      <Filter>Status Pane</Filter>
+    </ClCompile>
+    <ClCompile Include=".\status_pane_msgproc.cpp">
+      <Filter>Status Pane</Filter>
+    </ClCompile>
+    <ClCompile Include=".\helpers.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include=".\get_msg_hook.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\setup_dialog.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\menu_helpers.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include=".\gdiplus.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_config_droptarget.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_stock.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_custom_image.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_button.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_button_image.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_config_listview.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_command_picker.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\buttons_config_param.cpp">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter_config_var.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter_inline_edit.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter_items.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter_menu.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter_render.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter_search_bar.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\filter_guids.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_dropsource.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_droptarget.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_draw.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_hittest.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_header.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_scroll.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_inline_edit.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_msgproc.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_msgwindow.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_day_timer.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_keyboard.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_sizing.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_tfhook.cpp">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClCompile>
+    <ClCompile Include=".\splitter_window.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\splitter_panel_container.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\splitter_panel.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\item_details_config.cpp">
+      <Filter>Panels\Item Details</Filter>
+    </ClCompile>
+    <ClCompile Include=".\item_details_font.cpp">
+      <Filter>Panels\Item Details</Filter>
+    </ClCompile>
+    <ClCompile Include=".\item_details_text.cpp">
+      <Filter>Panels\Item Details</Filter>
+    </ClCompile>
+    <ClCompile Include=".\status_bar.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\mw_drop_target.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\mw_wnd_proc.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\layout_config.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_tabs_drop_target.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_colours.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_fonts.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\artwork_helpers.cpp">
+      <Filter>Panels\Artwork View</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_items.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include=".\stdafx.cpp" />
+    <ClCompile Include=".\item_properties_config.cpp">
+      <Filter>Panels\Item Properties</Filter>
+    </ClCompile>
+    <ClCompile Include=".\item_properties_config_list_view.cpp">
+      <Filter>Panels\Item Properties</Filter>
+    </ClCompile>
+    <ClCompile Include=".\splitter_window_wndproc.cpp">
+      <Filter>Panels\Splitter</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_tabs_wndproc.cpp">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClCompile>
+    <ClCompile Include=".\colours_manager_data.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include=".\fonts_manager_data.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_vars.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include=".\prefs_utils.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_display2.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_playlist.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_playlist_dd.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_main.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_notification_area.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_status.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\tab_global.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
+    <ClCompile Include=".\user_interface_impl.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\component_impl.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\config_defaults.cpp">
+      <Filter>Config storage</Filter>
+    </ClCompile>
+    <ClCompile Include=".\main_window.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include=".\cache.h">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include=".\columns_v2.h">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include=".\playlist_view.h">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include=".\sort.h">
+      <Filter>Panels\Columns Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include=".\NG Playlist\ng_playlist.h">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include=".\NG Playlist\ng_playlist_groups.h">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include=".\ng playlist\ng_playlist_style.h">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClInclude>
+    <ClInclude Include=".\playlist_search.h">
+      <Filter>Panels\Others</Filter>
+    </ClInclude>
+    <ClInclude Include=".\playlist_manager_utils.h">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClInclude>
+    <ClInclude Include=".\playlist_switcher.h">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClInclude>
+    <ClInclude Include=".\playlist_switcher_v2.h">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClInclude>
+    <ClInclude Include=".\playlist_tabs.h">
+      <Filter>Panels\Playlist Switcher</Filter>
+    </ClInclude>
+    <ClInclude Include=".\artwork.h">
+      <Filter>Panels\Artwork View</Filter>
+    </ClInclude>
+    <ClInclude Include=".\filter.h">
+      <Filter>Panels\Filter</Filter>
+    </ClInclude>
+    <ClInclude Include=".\splitter.h">
+      <Filter>Panels\Splitter</Filter>
+    </ClInclude>
+    <ClInclude Include=".\splitter_tabs.h">
+      <Filter>Panels\Tab Stack</Filter>
+    </ClInclude>
+    <ClInclude Include=".\resource.h">
+      <Filter>Resources</Filter>
+    </ClInclude>
+    <ClInclude Include=".\layout.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include=".\rebar.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include=".\callback.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\common.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\extern.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\fcs.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\font_notify.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\menu_items.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\utf8api.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\volume.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include=".\seekbar.h">
+      <Filter>Toolbars</Filter>
+    </ClInclude>
+    <ClInclude Include=".\vis_gen_host.h">
+      <Filter>Toolbars</Filter>
+    </ClInclude>
+    <ClInclude Include=".\config.h">
+      <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include=".\fcl.h">
+      <Filter>FCL</Filter>
+    </ClInclude>
+    <ClInclude Include=".\status_pane.h">
+      <Filter>Status Pane</Filter>
+    </ClInclude>
+    <ClInclude Include=".\helpers.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
+    <ClInclude Include=".\get_msg_hook.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include=".\setup_dialog.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include=".\menu_helpers.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include=".\gdiplus.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include=".\buttons.h">
+      <Filter>Toolbars\Buttons</Filter>
+    </ClInclude>
+    <ClInclude Include=".\item_details.h">
+      <Filter>Panels\Item Details</Filter>
+    </ClInclude>
+    <ClInclude Include=".\status_bar.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include=".\mw_drop_target.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include=".\config_appearance.h">
+      <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include=".\tab_colours.h">
+      <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include=".\tab_fonts.h">
+      <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include=".\artwork_helpers.h">
+      <Filter>Panels\Artwork View</Filter>
+    </ClInclude>
+    <ClInclude Include=".\stdafx.h" />
+    <ClInclude Include=".\config_items.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include=".\item_properties.h">
+      <Filter>Panels\Item Properties</Filter>
+    </ClInclude>
+    <ClInclude Include=".\colours_manager_data.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include=".\fonts_manager_data.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include=".\config_vars.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include=".\config_defaults.h">
+      <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include=".\main_window.h">
+      <Filter>Main Window</Filter>
+    </ClInclude>
+    <ClInclude Include=".\prefs_utils.h">
+      <Filter>Prefs UI</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".\buttons2.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\emptycoverdark.png">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\star\left.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\LOCK.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\next.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\official_buttons_pack\next.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\next1.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\next256.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\next64.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\open.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\official_buttons_pack\open.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\open256.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\open64.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\official_buttons_pack\pause.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\pause.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\pause256.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\pause64.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\official_buttons_pack\play.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\play.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\play256.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\play64.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\official_buttons_pack\prev.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\prev.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\prev256.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\prev64.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\rand.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\official_buttons_pack\rand.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\rand256.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\rand64.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\star\star off.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\star\star on.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\official_buttons_pack\stop.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\stop1.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\stop256.ico">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\icons\New Folder\square\stop64.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\up1.bmp">
+      <Filter>Resources</Filter>
+    </None>
+    <None Include=".\changelog.txt">
+      <Filter>Misc</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include=".\foo_ui_columns.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

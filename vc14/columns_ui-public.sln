@@ -17,22 +17,22 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_SDK", "..\common
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfc", "..\common\vc14\pfc.vcxproj", "{EBFFFB4E-261D-44D3-B89C-957B31A0BF9C}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_ui_columns", "foo_ui_columns.vcxproj", "{743CBAAD-BE8E-430A-918B-2BB68008A616}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_ui_columns", "..\foo_ui_columns\foo_ui_columns.vcxproj", "{743CBAAD-BE8E-430A-918B-2BB68008A616}"
 	ProjectSection(ProjectDependencies) = postProject
 		{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E} = {93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_console", "foo_uie_console.vcxproj", "{BCB18C6E-6384-43B0-93EF-EF469AFAB822}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_console", "..\foo_uie_console\foo_uie_console.vcxproj", "{BCB18C6E-6384-43B0-93EF-EF469AFAB822}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui_helpers", "..\common\vc14\ui_helpers.vcxproj", "{A8C4298D-00F5-46F7-91BA-F503FD581590}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "columns_ui_sdk", "..\common\vc14\columns_ui-sdk.vcxproj", "{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_example", "foo_uie_example.vcxproj", "{8EA39BCB-E71E-4975-9623-CEC47CE42EC6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_example", "..\foo_uie_example\foo_uie_example.vcxproj", "{8EA39BCB-E71E-4975-9623-CEC47CE42EC6}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mmh", "..\common\vc14\mmh.vcxproj", "{C90A19C3-554D-4037-B4D3-BD12C1F1AD86}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_albumlist", "foo_uie_albumlist.vcxproj", "{D3C63842-0EB3-4BBD-BB20-2AFCC98D0152}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_albumlist", "..\foo_uie_albumlist\foo_uie_albumlist.vcxproj", "{D3C63842-0EB3-4BBD-BB20-2AFCC98D0152}"
 	ProjectSection(ProjectDependencies) = postProject
 		{E8091321-D79D-4575-86EF-064EA1A4A20D} = {E8091321-D79D-4575-86EF-064EA1A4A20D}
 		{EE47764E-A202-4F85-A767-ABDAB4AFF35F} = {EE47764E-A202-4F85-A767-ABDAB4AFF35F}
