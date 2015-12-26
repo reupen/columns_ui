@@ -2,11 +2,15 @@
 
 http://yuo.be/columns.php
 
-Columns UI and Album list panel are released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
+Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
 
-VS2015 projects can be found in the vc14 folder.
+A VS2015 solution can be found in the vc14 folder.
 
 ## Updates
+
+### 26 December 2015
+
+There has been further restructure of all the repos with more stuff moved to submodules. The instructions below about cloning/updating clones still apply.
 
 ### 29 November 2015
 
@@ -15,13 +19,3 @@ Some libraries have been moved to the [foobar2000-common](https://github.com/msq
 Use `--recursive` when cloning this repository to clone foobar2000-common at the same time.
 
 For an existing clone, use `git submodule init` and `git submodule update`.
-
-## Projects
-
-### foo_ui_columns
-
-The is the core Columns UI code.
-
-### foo_uie_albumlist
-
-The is the Album list panel code. Album list panel is based on Album List 3.1.0, by Peter Pawlowski.
