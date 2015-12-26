@@ -9,7 +9,7 @@
  *
  * Status bar text drawing functions only
  */
-#include "../common/pfc/pfc.h"
+#include "../pfc/pfc.h"
 
 #include <windows.h>
 #include <WindowsX.h>

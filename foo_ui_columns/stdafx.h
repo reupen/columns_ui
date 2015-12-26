@@ -12,15 +12,15 @@
 
 #define OEMRESOURCE
 
-#include "../common/foobar2000/SDK/foobar2000.h"
-#include "../common/foobar2000/SDK/core_api.h"
+#include "../foobar2000/SDK/foobar2000.h"
+#include "../foobar2000/SDK/core_api.h"
 /*#define UI_EXTENSION_LIBPNG_SUPPORT_ENABLED*/
 #include "uxtheme.h"
 #include "Wincodec.h"
-#include "../common/columns_ui-sdk/ui_extension.h"
-#include "../common/ui_helpers/stdafx.h"
-#include "../common/mmh/stdafx.h"
-#include "../common/foobar2000/helpers/helpers.h"
+#include "../columns_ui-sdk/ui_extension.h"
+#include "../ui_helpers/stdafx.h"
+#include "../mmh/stdafx.h"
+#include "../foobar2000/helpers/helpers.h"
 #include "resource.h"
 #include "utf8api.h"
 #include "helpers.h"

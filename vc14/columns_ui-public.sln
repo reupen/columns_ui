@@ -9,41 +9,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "foobar2000 SDK", "foobar200
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Component SDKs", "Component SDKs", "{3A85ACE2-E7C5-4F1F-A253-9C60B8076BE8}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_component_client", "..\common\vc14\foobar2000_component_client.vcxproj", "{71AD2674-065B-48F5-B8B0-E1F9D3892081}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_component_client", "..\foobar2000\foobar2000_component_client\foobar2000_component_client.vcxproj", "{71AD2674-065B-48F5-B8B0-E1F9D3892081}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_sdk_helpers", "..\common\vc14\foobar2000_sdk_helpers.vcxproj", "{EE47764E-A202-4F85-A767-ABDAB4AFF35F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_sdk_helpers", "..\foobar2000\helpers\foobar2000_sdk_helpers.vcxproj", "{EE47764E-A202-4F85-A767-ABDAB4AFF35F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_SDK", "..\common\vc14\foobar2000_SDK.vcxproj", "{E8091321-D79D-4575-86EF-064EA1A4A20D}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_SDK", "..\foobar2000\SDK\foobar2000_SDK.vcxproj", "{E8091321-D79D-4575-86EF-064EA1A4A20D}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfc", "..\common\vc14\pfc.vcxproj", "{EBFFFB4E-261D-44D3-B89C-957B31A0BF9C}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "pfc", "..\pfc\pfc.vcxproj", "{EBFFFB4E-261D-44D3-B89C-957B31A0BF9C}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_ui_columns", "..\foo_ui_columns\foo_ui_columns.vcxproj", "{743CBAAD-BE8E-430A-918B-2BB68008A616}"
 	ProjectSection(ProjectDependencies) = postProject
 		{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E} = {93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_console", "..\foo_uie_console\foo_uie_console.vcxproj", "{BCB18C6E-6384-43B0-93EF-EF469AFAB822}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui_helpers", "..\ui_helpers\ui_helpers.vcxproj", "{A8C4298D-00F5-46F7-91BA-F503FD581590}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ui_helpers", "..\common\vc14\ui_helpers.vcxproj", "{A8C4298D-00F5-46F7-91BA-F503FD581590}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "columns_ui_sdk", "..\columns_ui-sdk\columns_ui-sdk.vcxproj", "{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "columns_ui_sdk", "..\common\vc14\columns_ui-sdk.vcxproj", "{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_example", "..\foo_uie_example\foo_uie_example.vcxproj", "{8EA39BCB-E71E-4975-9623-CEC47CE42EC6}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mmh", "..\common\vc14\mmh.vcxproj", "{C90A19C3-554D-4037-B4D3-BD12C1F1AD86}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foo_uie_albumlist", "..\foo_uie_albumlist\foo_uie_albumlist.vcxproj", "{D3C63842-0EB3-4BBD-BB20-2AFCC98D0152}"
-	ProjectSection(ProjectDependencies) = postProject
-		{E8091321-D79D-4575-86EF-064EA1A4A20D} = {E8091321-D79D-4575-86EF-064EA1A4A20D}
-		{EE47764E-A202-4F85-A767-ABDAB4AFF35F} = {EE47764E-A202-4F85-A767-ABDAB4AFF35F}
-		{EBFFFB4E-261D-44D3-B89C-957B31A0BF9C} = {EBFFFB4E-261D-44D3-B89C-957B31A0BF9C}
-		{71AD2674-065B-48F5-B8B0-E1F9D3892081} = {71AD2674-065B-48F5-B8B0-E1F9D3892081}
-		{A8C4298D-00F5-46F7-91BA-F503FD581590} = {A8C4298D-00F5-46F7-91BA-F503FD581590}
-		{C90A19C3-554D-4037-B4D3-BD12C1F1AD86} = {C90A19C3-554D-4037-B4D3-BD12C1F1AD86}
-		{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E} = {93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "foobar2000_ATL_helpers", "..\common\vc14\foobar2000_ATL_helpers.vcxproj", "{622E8B19-8109-4717-BD4D-9657AA78363E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mmh", "..\mmh\mmh.vcxproj", "{C90A19C3-554D-4037-B4D3-BD12C1F1AD86}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0FF158B9-F515-4DCF-B879-3D38EEC6DA2C}"
 	ProjectSection(SolutionItems) = preProject

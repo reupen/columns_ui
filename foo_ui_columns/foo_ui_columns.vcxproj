@@ -154,7 +154,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -202,7 +202,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -244,7 +244,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <GenerateMapFile>true</GenerateMapFile>
       <MapFileName>$(DATE)$(TIME)</MapFileName>
@@ -291,7 +291,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -342,7 +342,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../common/foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;gdiplus.lib;../foobar2000/shared/shared.lib;uxtheme.lib;usp10.lib;Windowscodecs.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DelayLoadDLLs>%(DelayLoadDLLs)</DelayLoadDLLs>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -600,25 +600,25 @@
     <ResourceCompile Include=".\foo_ui_columns.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\common\vc14\columns_ui-sdk.vcxproj">
+    <ProjectReference Include="..\columns_ui-sdk\columns_ui-sdk.vcxproj">
       <Project>{93ec0ede-01cd-4fb0-b8e8-4f2a027e026e}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\common\vc14\foobar2000_component_client.vcxproj">
+    <ProjectReference Include="..\foobar2000\foobar2000_component_client\foobar2000_component_client.vcxproj">
       <Project>{71ad2674-065b-48f5-b8b0-e1f9d3892081}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\common\vc14\foobar2000_SDK.vcxproj">
+    <ProjectReference Include="..\foobar2000\SDK\foobar2000_SDK.vcxproj">
       <Project>{e8091321-d79d-4575-86ef-064ea1a4a20d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\common\vc14\foobar2000_sdk_helpers.vcxproj">
+    <ProjectReference Include="..\foobar2000\helpers\foobar2000_sdk_helpers.vcxproj">
       <Project>{ee47764e-a202-4f85-a767-abdab4aff35f}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\common\vc14\mmh.vcxproj">
+    <ProjectReference Include="..\mmh\mmh.vcxproj">
       <Project>{c90a19c3-554d-4037-b4d3-bd12c1f1ad86}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\common\vc14\pfc.vcxproj">
+    <ProjectReference Include="..\pfc\pfc.vcxproj">
       <Project>{ebfffb4e-261d-44d3-b89c-957b31a0bf9c}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\common\vc14\ui_helpers.vcxproj">
+    <ProjectReference Include="..\ui_helpers\ui_helpers.vcxproj">
       <Project>{a8c4298d-00f5-46f7-91ba-f503fd581590}</Project>
     </ProjectReference>
   </ItemGroup>
