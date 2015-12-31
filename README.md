@@ -8,6 +8,10 @@ A VS2015 solution can be found in the vc14 folder.
 
 ## Updates
 
+### 31 December 2015
+
+I'm in the process of transferring all repos to my main GitHub account, so don't be alarmed at the change in repo owner. GitHub should keep redirects in place for the current repo URIs.
+
 ### 26 December 2015
 
 There has been further restructure of all the repos with more stuff moved to submodules. The instructions below about cloning/updating clones still apply.
