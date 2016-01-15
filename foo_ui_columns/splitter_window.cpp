@@ -662,17 +662,19 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
 void splitter_window_impl::start_autohide_dehide(unsigned p_panel, bool b_next_too)
 {
 	bool b_have_next = b_next_too && is_index_valid(p_panel + 1);
-	if ((m_panels[p_panel]->m_hidden) || (b_have_next && m_panels[p_panel + 1]->m_hidden))
+	auto & panel_before = m_panels[p_panel];
+	auto & panel_after = b_have_next ? m_panels[p_panel + 1] : panel::null_ptr;
+	if ((panel_before->m_autohide && !panel_before->m_container.m_hook_active) || (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active))
 	{
 		bool a1 = false, a2 = false;
-		if (m_panels[p_panel]->m_autohide) { m_panels[p_panel]->m_hidden = false; a1 = true; }
-		if (b_have_next && m_panels[p_panel + 1]->m_autohide) { m_panels[p_panel + 1]->m_hidden = false; a2 = true; }
+		if (panel_before->m_autohide && !panel_before->m_container.m_hook_active) { panel_before->m_hidden = false; a1 = true; }
+		if (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active) { panel_after->m_hidden = false; a2 = true; }
 		if (a1 || a2)
 		{
 			get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
 			on_size_changed();
-			if (a1) m_panels[p_panel]->m_container.enter_autohide_hook();
-			if (a2) m_panels[p_panel + 1]->m_container.enter_autohide_hook();
+			if (a1) panel_before->m_container.enter_autohide_hook();
+			if (a2) panel_after->m_container.enter_autohide_hook();
 		}
 	}
 }

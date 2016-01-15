@@ -301,6 +301,8 @@ class splitter_window_vertical : public splitter_window_impl
 uie::window_factory<splitter_window_horizontal> g_splitter_window_horizontal;
 uie::window_factory<splitter_window_vertical> g_splitter_window_vertical;
 
+splitter_window_impl::panel::ptr splitter_window_impl::panel::null_ptr = splitter_window_impl::panel::ptr();
+
 #if 0
 template <orientation_t t_orientation>
 class dummy_class

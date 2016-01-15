@@ -103,13 +103,13 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 						if (m_panels[n]->m_caption_orientation == horizontal)
 						{
 							mmi.ptMinTrackSize.y += caption_height;
-							if (mmi.ptMaxTrackSize.y < MAXLONG - caption_height) mmi.ptMaxTrackSize.y += caption_height;
+							if (mmi.ptMaxTrackSize.y < MAXLONG - (long)caption_height) mmi.ptMaxTrackSize.y += caption_height;
 							else mmi.ptMaxTrackSize.y = MAXLONG;
 						}
 						else
 						{
 							mmi.ptMinTrackSize.x += caption_height;
-							if (mmi.ptMaxTrackSize.x < MAXLONG - caption_height) mmi.ptMaxTrackSize.x += caption_height;
+							if (mmi.ptMaxTrackSize.x < MAXLONG - (long)caption_height) mmi.ptMaxTrackSize.x += caption_height;
 							else mmi.ptMaxTrackSize.x = MAXLONG;
 						}
 					}
@@ -143,7 +143,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				{
 					lpmmi->ptMinTrackSize.x += mmi.ptMinTrackSize.x + divider_size;
 					lpmmi->ptMinTrackSize.y = max(mmi.ptMinTrackSize.y, lpmmi->ptMinTrackSize.y);
-					if (lpmmi->ptMaxTrackSize.x <= MAXLONG - mmi.ptMaxTrackSize.x && lpmmi->ptMaxTrackSize.x + mmi.ptMaxTrackSize.x <= MAXLONG - divider_size)
+					if (lpmmi->ptMaxTrackSize.x <= MAXLONG - mmi.ptMaxTrackSize.x && lpmmi->ptMaxTrackSize.x + mmi.ptMaxTrackSize.x <= MAXLONG - (long)divider_size)
 					{
 						lpmmi->ptMaxTrackSize.x += mmi.ptMaxTrackSize.x + divider_size;
 					}
@@ -278,7 +278,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 
 				if (b_on_divider)
 				{
-					SetCursor(LoadCursor(0, MAKEINTRESOURCE(get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS)));
+					SetCursor(LoadCursor(0, get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS));
 
 					if (msg == WM_LBUTTONDOWN)
 					{
@@ -293,7 +293,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				}
 				else
 				{
-					if (!(wp & MK_LBUTTON)) SetCursor(LoadCursor(0, MAKEINTRESOURCE(IDC_ARROW)));
+					if (!(wp & MK_LBUTTON)) SetCursor(LoadCursor(0, IDC_ARROW));
 					m_panel_dragging_valid = false;
 				}
 			}
@@ -303,15 +303,18 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				int new_height = m_last_position - (get_orientation() == vertical ? pt.y : pt.x);
 				int delta = (get_orientation() == vertical ? pt.y : pt.x) - m_last_position;
 				//console::formatter() << "before or: pt = " << pt.y << "," << pt.x << " lastpos: " << m_last_position << " enddelta: " << delta;
-				if (m_panels[m_panel_dragging]->m_hidden && delta)
+				auto & p_panel = m_panels[m_panel_dragging];
+				if (p_panel->m_hidden && delta)
 				{
-					m_panels[m_panel_dragging]->m_hidden = false;
-					m_panels[m_panel_dragging]->m_size = 0;
+					p_panel->m_hidden = false;
+					p_panel->m_size = 0;
 					get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
 				}
 				int delta_changed = override_size(m_panel_dragging, delta);
 				m_last_position = (get_orientation() == vertical ? pt.y : pt.x) + delta_changed;
 				on_size_changed();
+				if (delta + delta_changed)
+					start_autohide_dehide(m_panel_dragging);
 			}
 		}
 		//msg_last = msg;

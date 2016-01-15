@@ -50,7 +50,7 @@ public:
 		wc.style = CS_DBLCLKS;
 		wc.hInstance = core_api::get_my_instance();
 		wc.hIcon = static_api_ptr_t<ui_control>()->get_main_icon();//g_main_icon;
-		wc.hCursor = LoadCursor(NULL, MAKEINTRESOURCE(IDC_ARROW));
+		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
 		wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 		wc.lpszClassName = main_window_class_name;
 

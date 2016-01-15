@@ -149,7 +149,10 @@ private:
 		void on_size(unsigned cx, unsigned cy);
 
 		void destroy();
-		panel();;
+		panel();
+
+		using ptr = pfc::refcounted_object_ptr_t<panel>;
+		static ptr null_ptr;
 	};
 	class panel_list : public pfc::list_t < pfc::refcounted_object_ptr_t<panel> >
 	{
