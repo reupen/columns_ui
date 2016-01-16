@@ -67,11 +67,11 @@ public:
 		switch(msg)
 		{
 		case WM_INITDIALOG:
-			SetWindowLongPtr(wnd, DWL_USER, lp);
+			SetWindowLongPtr(wnd, DWLP_USER, lp);
 			p_this = reinterpret_cast<FCLDialog*>(lp);
 			break;
 		default:
-			p_this = reinterpret_cast<FCLDialog*>(GetWindowLongPtr(wnd, DWL_USER));
+			p_this = reinterpret_cast<FCLDialog*>(GetWindowLongPtr(wnd, DWLP_USER));
 			break;
 		}
 		if (p_this)

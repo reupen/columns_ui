@@ -664,7 +664,7 @@ class tab_layout_new : public preferences_tab
 		switch(msg)
 		{
 		case WM_INITDIALOG:
-			uSetWindowLong(wnd,DWL_USER,lp);
+			SetWindowLongPtr(wnd,DWLP_USER,lp);
 			{
 				rename_param * ptr = (rename_param *)lp;
 				ptr->m_scope.initialize(FindOwningPopup(wnd));
@@ -677,7 +677,7 @@ class tab_layout_new : public preferences_tab
 			{
 			case IDOK:
 				{
-					rename_param * ptr = (rename_param *)GetWindowLong(wnd,DWL_USER);
+					rename_param * ptr = (rename_param *)GetWindowLong(wnd,DWLP_USER);
 					uGetDlgItemText(wnd,IDC_EDIT,ptr->m_text);
 					EndDialog(wnd,1);
 				}

@@ -137,7 +137,7 @@ void toolbar_extension::create_toolbar()
 
 	if (wnd_toolbar)
 	{
-		//			uSetWindowLong(p_this->wnd_toolbar,GWL_USERDATA,(LPARAM)(p_this));
+		//			SetWindowLongPtr(p_this->wnd_toolbar,GWLP_USERDATA,(LPARAM)(p_this));
 
 		HIMAGELIST il = 0;
 		HIMAGELIST iml_hot = 0;
@@ -660,13 +660,13 @@ BOOL CALLBACK toolbar_extension::ConfigCommandProc(HWND wnd,UINT msg,WPARAM wp,L
 	{
 	case WM_INITDIALOG:
 		{
-			uSetWindowLong(wnd,DWL_USER,lp);
+			SetWindowLongPtr(wnd,DWLP_USER,lp);
 			command_picker_data * ptr = reinterpret_cast<command_picker_data*>(lp);
 			return ptr->on_message(wnd, msg, wp, lp);
 		}
 	default:
 		{
-			command_picker_data * ptr = reinterpret_cast<command_picker_data*>(uGetWindowLong(wnd,DWL_USER));
+			command_picker_data * ptr = reinterpret_cast<command_picker_data*>(GetWindowLongPtr(wnd,DWLP_USER));
 			return ptr->on_message(wnd, msg, wp, lp);
 		}
 	}
@@ -677,7 +677,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 	switch(msg)
 	{
 	case WM_INITDIALOG:
-		uSetWindowLong(wnd,DWL_USER,lp);
+		SetWindowLongPtr(wnd,DWLP_USER,lp);
 		{
 			config_param * ptr = reinterpret_cast<config_param*>(lp);
 
@@ -689,7 +689,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 		return TRUE;
 		case MSG_COMMAND_CHANGE:
 			{
-				config_param * ptr = reinterpret_cast<config_param*>(uGetWindowLong(wnd,DWL_USER));
+				config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
 				if (ptr->m_selection)
 				{
 					bool & b_custom = (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom);
@@ -702,7 +702,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 			break;
 		case MSG_BUTTON_CHANGE:
 			{
-				config_param * ptr = reinterpret_cast<config_param*>(uGetWindowLong(wnd,DWL_USER));
+				config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
 				bool b_custom = ptr->m_selection ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom) : false;
 
 				SendDlgItemMessage(wnd,IDC_IMAGE_TYPE,CB_SETCURSEL,ptr->m_selection && b_custom?1:0,0);
@@ -722,7 +722,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 		{
 		case (CBN_SELCHANGE<<16)|IDC_IMAGE_TYPE:
 			{
-				config_param * ptr = reinterpret_cast<config_param*>(uGetWindowLong(wnd,DWL_USER));
+				config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
 				if (ptr->m_selection && ptr->m_image)
 				{
 					unsigned idx = SendMessage((HWND)lp,CB_GETCURSEL,0,0);
@@ -745,7 +745,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 			break;
 		case (EN_CHANGE<<16)|IDC_IMAGE_PATH:
 			{
-				config_param * ptr = reinterpret_cast<config_param*>(uGetWindowLong(wnd,DWL_USER));
+				config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
 				if (ptr->m_image)
 				{
 					ptr->m_image->m_path = string_utf8_from_window((HWND)lp);
@@ -754,7 +754,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 			break;
 		case IDC_BROWSE:
 			{
-				config_param * ptr = reinterpret_cast<config_param*>(uGetWindowLong(wnd,DWL_USER));
+				config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
 				bool b_custom = ptr->m_selection ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom) : 0;
 				if (ptr->m_image && b_custom)
 				{

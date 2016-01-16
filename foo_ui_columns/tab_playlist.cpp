@@ -122,7 +122,7 @@ public:
 					//		create_tabs();
 					long flags = WS_CHILD | TCS_HOTTRACK | TCS_TABS | (cfg_tabs_multiline ? TCS_MULTILINE : TCS_SINGLELINE) | WS_VISIBLE | WS_CLIPSIBLINGS | TCS_SINGLELINE;
 
-					uSetWindowLong(g_tab, GWL_STYLE, flags);
+					SetWindowLongPtr(g_tab, GWL_STYLE, flags);
 					move_window_controls();
 				}
 #endif

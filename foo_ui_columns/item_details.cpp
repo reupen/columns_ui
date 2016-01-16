@@ -1150,7 +1150,7 @@ const bool item_details_t::g_track_mode_includes_now_playing(t_size mode)
 
 item_details_t::class_data & item_details_t::get_class_data() const
 {
-	long flags = 0;
+	DWORD flags = 0;
 	if (m_edge_style == 1) flags |= WS_EX_CLIENTEDGE;
 	if (m_edge_style == 2) flags |= WS_EX_STATICEDGE;
 	__implement_get_class_data_ex(_T("\r\nCUI_Item_Details_Panel"), _T(""), false, 0, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT | flags, 0);

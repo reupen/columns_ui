@@ -527,8 +527,8 @@ void splitter_window_tabs_impl::set_styles(bool visible)
 	{
 		long flags = WS_CHILD |  TCS_HOTTRACK | TCS_TABS | (0 ? TCS_MULTILINE|TCS_RIGHTJUSTIFY  : TCS_SINGLELINE) |(visible ? WS_VISIBLE : 0)|WS_CLIPSIBLINGS |WS_TABSTOP |0;
 
-		if (uGetWindowLong(m_wnd_tabs, GWL_STYLE) != flags)
-			uSetWindowLong(m_wnd_tabs, GWL_STYLE, flags);
+		if (GetWindowLongPtr(m_wnd_tabs, GWL_STYLE) != flags)
+			SetWindowLongPtr(m_wnd_tabs, GWL_STYLE, flags);
 	}
 }
 
@@ -897,12 +897,12 @@ void splitter_window_tabs_impl::create_tabs()
 	g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs);
 	RECT rc;
 	GetClientRect(get_wnd(), &rc);
-	long flags = WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | (1 ? WS_VISIBLE : 0); //TCS_MULTILINE hack to prevent BS.
+	DWORD flags = WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | (1 ? WS_VISIBLE : 0); //TCS_MULTILINE hack to prevent BS.
 	m_wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Tab stack"),
 		flags, 0, 0, rc.right, rc.bottom,
 		get_wnd(), HMENU(2345), core_api::get_my_instance(), NULL);
-	SetWindowLongPtr(m_wnd_tabs,GWL_USERDATA,(LPARAM)(this));
-	m_tab_proc = (WNDPROC)SetWindowLongPtr(m_wnd_tabs,GWL_WNDPROC,(LPARAM)g_hook_proc);
+	SetWindowLongPtr(m_wnd_tabs,GWLP_USERDATA,(LPARAM)(this));
+	m_tab_proc = (WNDPROC)SetWindowLongPtr(m_wnd_tabs,GWLP_WNDPROC,(LPARAM)g_hook_proc);
 	//SetWindowTheme(m_wnd_tabs, L"BrowserTab", NULL);
 	SendMessage(m_wnd_tabs,WM_SETFONT,(WPARAM)g_font.get(),MAKELPARAM(0,0));
 }
@@ -999,7 +999,7 @@ LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd,UINT msg,WPARAM w
 	splitter_window_tabs_impl * p_this;
 	LRESULT rv;
 
-	p_this = reinterpret_cast<splitter_window_tabs_impl*>(GetWindowLongPtr(wnd,GWL_USERDATA));
+	p_this = reinterpret_cast<splitter_window_tabs_impl*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 
 	rv = p_this ? p_this->on_hooked_message(wnd,msg,wp,lp) : DefWindowProc(wnd, msg, wp, lp);;
 

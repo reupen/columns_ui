@@ -193,10 +193,10 @@ BOOL CALLBACK tab_appearance_fonts::g_on_message(HWND wnd, UINT msg, WPARAM wp, 
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<tab_appearance_fonts*>(lp);
-		SetWindowLongPtr(wnd, DWL_USER, lp);
+		SetWindowLongPtr(wnd, DWLP_USER, lp);
 	}
 	else
-		p_data = reinterpret_cast<tab_appearance_fonts*>(GetWindowLongPtr(wnd, DWL_USER));
+		p_data = reinterpret_cast<tab_appearance_fonts*>(GetWindowLongPtr(wnd, DWLP_USER));
 	return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }
 

@@ -112,10 +112,10 @@ public:
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<self_t*>(lp);
-			SetWindowLongPtr(wnd, DWL_USER, lp);
+			SetWindowLongPtr(wnd, DWLP_USER, lp);
 		}
 		else
-			p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, DWL_USER));
+			p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, DWLP_USER));
 		return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 	}
 
@@ -338,7 +338,7 @@ public:
 	static LRESULT WINAPI g_EditHook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
 		self_t * p_data = NULL;
-		p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, GWL_USERDATA));
+		p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 		return p_data ? p_data->EditHook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 	}
 
@@ -363,10 +363,10 @@ public:
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<self_t*>(lp);
-			SetWindowLongPtr(wnd, DWL_USER, lp);
+			SetWindowLongPtr(wnd, DWLP_USER, lp);
 		}
 		else
-			p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, DWL_USER));
+			p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, DWLP_USER));
 		return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 	}
 
@@ -399,7 +399,7 @@ public:
 				refresh_me(wnd, true);
 
 				SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING),GWLP_USERDATA,(LPARAM)this);
-				editproc = (WNDPROC)SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING),GWL_WNDPROC,(LPARAM)g_EditHook);
+				editproc = (WNDPROC)SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING),GWLP_WNDPROC,(LPARAM)g_EditHook);
 
 				g_editor_font_notify.set(GetDlgItem(wnd, IDC_STRING));
 			}
@@ -612,10 +612,10 @@ public:
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<tab_columns_v3*>(lp);
-			SetWindowLongPtr(wnd, DWL_USER, lp);
+			SetWindowLongPtr(wnd, DWLP_USER, lp);
 		}
 		else
-			p_data = reinterpret_cast<tab_columns_v3*>(GetWindowLongPtr(wnd, DWL_USER));
+			p_data = reinterpret_cast<tab_columns_v3*>(GetWindowLongPtr(wnd, DWLP_USER));
 		return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 	}
 

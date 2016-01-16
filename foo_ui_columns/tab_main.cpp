@@ -30,7 +30,7 @@ public:
 		{
 			HWND wnd_lv = GetDlgItem(wnd, IDC_LIBRARIES);
 			g_set_listview_window_explorer_theme(wnd_lv);
-			//uSetWindowLong(wnd_lv, GWL_EXSTYLE, uGetWindowLong(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
+			//SetWindowLongPtr(wnd_lv, GWL_EXSTYLE, GetWindowLongPtr(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
 
 			listview_helper::insert_column(wnd_lv, 0, "Library", 50);
 			listview_helper::insert_column(wnd_lv, 1, "Version", 70);
@@ -171,7 +171,7 @@ public:
 			modeless_dialog_manager::g_add(wnd);
 			HWND wnd_lv = GetDlgItem(wnd, IDC_LIBRARIES);
 			g_set_listview_window_explorer_theme(wnd_lv);
-			//uSetWindowLong(wnd_lv, GWL_EXSTYLE, uGetWindowLong(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
+			//SetWindowLongPtr(wnd_lv, GWL_EXSTYLE, GetWindowLongPtr(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
 
 			listview_helper::insert_column(wnd_lv, 0, "Library", 50);
 			listview_helper::insert_column(wnd_lv, 1, "Version", 70);

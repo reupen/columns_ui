@@ -542,9 +542,9 @@ namespace filter_panel {
 		m_toolbar_cx = rc.right;
 		m_toolbar_cy = rc.bottom;
 
-		SetWindowLongPtr(m_search_editbox, GWL_USERDATA, (LPARAM)(this));
-		SetWindowLongPtr(cbi.hwndItem, GWL_USERDATA, (LPARAM)(this));
-		m_proc_search_edit = (WNDPROC)SetWindowLongPtr(cbi.hwndItem, GWL_WNDPROC, (LPARAM)(g_on_search_edit_message));
+		SetWindowLongPtr(m_search_editbox, GWLP_USERDATA, (LPARAM)(this));
+		SetWindowLongPtr(cbi.hwndItem, GWLP_USERDATA, (LPARAM)(this));
+		m_proc_search_edit = (WNDPROC)SetWindowLongPtr(cbi.hwndItem, GWLP_WNDPROC, (LPARAM)(g_on_search_edit_message));
 		Edit_SetCueBannerText(cbi.hwndItem, uT("Search Filters"));
 
 		for (t_size i = 0, count = cfg_favourites.get_count(); i<count; i++)
@@ -558,7 +558,7 @@ namespace filter_panel {
 		filter_search_bar * p_this;
 		LRESULT rv;
 
-		p_this = reinterpret_cast<filter_search_bar*>(GetWindowLongPtr(wnd, GWL_USERDATA));
+		p_this = reinterpret_cast<filter_search_bar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
 		rv = p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);;
 

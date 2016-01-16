@@ -182,7 +182,7 @@ public:
 				{
 					playlist_view * p_playlist = playlist_view::list_playlist.get_item(m);
 					long flags = WS_CHILD | WS_VISIBLE | HDS_HOTTRACK | HDS_HORZ | (cfg_nohscroll ? 0 : HDS_FULLDRAG) | (cfg_header_hottrack ? HDS_BUTTONS : 0);
-					uSetWindowLong(p_playlist->wnd_header, GWL_STYLE, flags);
+					SetWindowLongPtr(p_playlist->wnd_header, GWL_STYLE, flags);
 				}
 				pvt::ng_playlist_view_t::g_on_sorting_enabled_change();
 			}
@@ -201,7 +201,7 @@ public:
 							if (cfg_frame == 1) flags |= WS_EX_CLIENTEDGE;
 							if (cfg_frame == 2) flags |= WS_EX_STATICEDGE;
 
-							uSetWindowLong(p_playlist->wnd_playlist, GWL_EXSTYLE, flags);
+							SetWindowLongPtr(p_playlist->wnd_playlist, GWL_EXSTYLE, flags);
 
 							SetWindowPos(p_playlist->wnd_playlist, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 							//					move_window_controls();

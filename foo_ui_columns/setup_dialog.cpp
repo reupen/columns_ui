@@ -6,10 +6,10 @@ BOOL CALLBACK setup_dialog_t::g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, L
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<setup_dialog_t*>(lp);
-		SetWindowLongPtr(wnd, DWL_USER, lp);
+		SetWindowLongPtr(wnd, DWLP_USER, lp);
 	}
 	else
-		p_data = reinterpret_cast<setup_dialog_t*>(GetWindowLongPtr(wnd, DWL_USER));
+		p_data = reinterpret_cast<setup_dialog_t*>(GetWindowLongPtr(wnd, DWLP_USER));
 	return p_data ? p_data->SetupDialogProc(wnd, msg, wp, lp) : FALSE;
 }
 BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -179,7 +179,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		modeless_dialog_manager::g_remove(wnd);
 		break;
 	case WM_NCDESTROY:
-		SetWindowLongPtr(wnd, DWL_USER, NULL);
+		SetWindowLongPtr(wnd, DWLP_USER, NULL);
 		m_this.release();
 		return FALSE;
 	}

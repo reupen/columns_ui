@@ -310,7 +310,7 @@ void create_status()
 			WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0, g_main_window, (HMENU)ID_STATUS,
 			core_api::get_my_instance(), NULL);
 
-		status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWL_WNDPROC, (LPARAM)(g_status_hook));
+		status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWLP_WNDPROC, (LPARAM)(g_status_hook));
 
 		status_bar::create_theme_handle();
 

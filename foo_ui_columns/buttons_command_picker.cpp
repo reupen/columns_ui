@@ -304,7 +304,7 @@ BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		deinitialise(wnd);
 		return TRUE;
 	case WM_ERASEBKGND:
-		SetWindowLongPtr(wnd, DWL_MSGRESULT, TRUE);
+		SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
 		return TRUE;
 	case WM_PAINT:
 		ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));

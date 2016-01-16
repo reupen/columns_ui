@@ -303,7 +303,7 @@ LRESULT WINAPI menu_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	menu_extension * p_this;
 	LRESULT rv;
 
-	p_this = reinterpret_cast<menu_extension*>(uGetWindowLong(wnd,GWL_USERDATA));
+	p_this = reinterpret_cast<menu_extension*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 	
 	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);;
 	
@@ -330,7 +330,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		
 		if (wnd_menu)
 		{
-			SetWindowLongPtr(wnd_menu,GWL_USERDATA,(LPARAM)(this));
+			SetWindowLongPtr(wnd_menu,GWLP_USERDATA,(LPARAM)(this));
 			
 			SendMessage(wnd_menu, TB_SETBITMAPSIZE, (WPARAM) 0, MAKELONG(0,0));
 			SendMessage(wnd_menu, TB_SETBUTTONSIZE, (WPARAM) 0, MAKELONG(0,/*GetSystemMetrics(SM_CYMENUSIZE)*/0));
@@ -362,7 +362,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			}
 			
 //			uSendMessage(wnd_menu, TB_SETPARENT, (WPARAM) (HWND)wnd_host, 0);
-			menuproc = (WNDPROC)SetWindowLongPtr(wnd_menu,GWL_WNDPROC,(LPARAM)main_hook);
+			menuproc = (WNDPROC)SetWindowLongPtr(wnd_menu,GWLP_WNDPROC,(LPARAM)main_hook);
 		}
 		
 		

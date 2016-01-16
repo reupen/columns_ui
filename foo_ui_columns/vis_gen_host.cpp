@@ -125,7 +125,7 @@ LRESULT window_visualisation::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		if (m_frame == 1) flags |= WS_EX_CLIENTEDGE;
 		if (m_frame == 2) flags |= WS_EX_STATICEDGE;
 			
-		uSetWindowLong(wnd, GWL_EXSTYLE, flags);
+		SetWindowLongPtr(wnd, GWL_EXSTYLE, flags);
 		SetWindowPos(wnd,0,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE|SWP_FRAMECHANGED);
 
 		list_vis.add_item(this);

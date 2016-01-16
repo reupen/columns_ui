@@ -245,10 +245,6 @@ void make_ui()
 	RECT rc;
 	GetWindowRect(g_main_window, &rc);
 	
-	long flags = 0;
-	if (cfg_frame == 1) flags |= WS_EX_CLIENTEDGE;
-	if (cfg_frame == 2) flags |= WS_EX_STATICEDGE;
-
 	g_layout_window.create(g_main_window);
 	
 	create_rebar();
@@ -330,7 +326,7 @@ static BOOL CALLBACK RenameProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	switch(msg)
 	{
 	case WM_INITDIALOG:
-		uSetWindowLong(wnd,DWL_USER,lp);
+		SetWindowLongPtr(wnd,DWLP_USER,lp);
 		{
 			rename_param * ptr = (rename_param *)lp;
 			ptr->m_scope.initialize(FindOwningPopup(wnd));
@@ -343,7 +339,7 @@ static BOOL CALLBACK RenameProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		{
 		case IDOK:
 			{
-				rename_param * ptr = (rename_param *)GetWindowLong(wnd,DWL_USER);
+				rename_param * ptr = (rename_param *)GetWindowLong(wnd,DWLP_USER);
 				uGetDlgItemText(wnd,IDC_EDIT,*ptr->m_text);
 				EndDialog(wnd,1);
 			}

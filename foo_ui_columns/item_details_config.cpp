@@ -5,7 +5,7 @@ BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
 	switch (msg)
 	{
 		/*case DM_GETDEFID:
-		SetWindowLongPtr(wnd, DWL_MSGRESULT, MAKELONG(m_modal ? IDOK : IDCANCEL, DC_HASDEFID));
+		SetWindowLongPtr(wnd, DWLP_MSGRESULT, MAKELONG(m_modal ? IDOK : IDCANCEL, DC_HASDEFID));
 		return TRUE;*/
 	case WM_INITDIALOG:
 	{
@@ -66,12 +66,12 @@ BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
 		if (!m_modal)
 		{
 			modeless_dialog_manager::g_remove(wnd);
-			SetWindowLongPtr(wnd, DWL_USER, NULL);
+			SetWindowLongPtr(wnd, DWLP_USER, NULL);
 			delete this;
 		}
 		break;
 	case WM_ERASEBKGND:
-		SetWindowLongPtr(wnd, DWL_MSGRESULT, TRUE);
+		SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
 		return TRUE;
 	case WM_PAINT:
 		ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));
@@ -211,9 +211,9 @@ BOOL CALLBACK item_details_config_t::g_DialogProc(HWND wnd, UINT msg, WPARAM wp,
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<item_details_config_t*>(lp);
-		SetWindowLongPtr(wnd, DWL_USER, lp);
+		SetWindowLongPtr(wnd, DWLP_USER, lp);
 	}
 	else
-		p_data = reinterpret_cast<item_details_config_t*>(GetWindowLongPtr(wnd, DWL_USER));
+		p_data = reinterpret_cast<item_details_config_t*>(GetWindowLongPtr(wnd, DWLP_USER));
 	return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }

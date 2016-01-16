@@ -174,7 +174,7 @@ LRESULT playlist_view::CreateToolTip(const char * text)
 	g_tooltip = CreateWindowEx(b_comctl_6?WS_EX_TRANSPARENT:0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_NOPREFIX ,		
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, wnd_playlist, 0, core_api::get_my_instance(), NULL);
 
-	//	toolproc = (WNDPROC)uSetWindowLong(g_tooltip,GWL_WNDPROC,(LPARAM)(TooltipHook));
+	//	toolproc = (WNDPROC)SetWindowLongPtr(g_tooltip,GWLP_WNDPROC,(LPARAM)(TooltipHook));
 
 
 	//	uSendMessage(g_tooltip, CCM_SETVERSION, (WPARAM) COMCTL32_VERSION, 0);
@@ -756,7 +756,7 @@ void playlist_view::g_get_global_style_titleformat_object(service_ptr_t<titlefor
 
 playlist_view::class_data & playlist_view::get_class_data() const
 {
-	long flags = 0;
+	DWORD flags = 0;
 	if (cfg_frame == 1) flags |= WS_EX_CLIENTEDGE;
 	if (cfg_frame == 2) flags |= WS_EX_STATICEDGE;
 

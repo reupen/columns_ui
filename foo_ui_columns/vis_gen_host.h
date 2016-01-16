@@ -24,7 +24,7 @@ public:
 
 	virtual class_data & get_class_data()const 
 	{
-		long flags = WS_EX_CONTROLPARENT;
+		DWORD flags = WS_EX_CONTROLPARENT;
 		if (m_frame == 1) flags |= WS_EX_CLIENTEDGE;
 		if (m_frame == 2) flags |= WS_EX_STATICEDGE;
 		

@@ -20,7 +20,7 @@ namespace pvt
 		switch(msg)
 		{
 		case WM_INITDIALOG:
-			uSetWindowLong(wnd,DWL_USER,lp);
+			SetWindowLongPtr(wnd,DWLP_USER,lp);
 			{
 				edit_view_param * ptr = reinterpret_cast<edit_view_param*>(lp);
 				SetWindowText(wnd, ptr->b_new ? L"Add New Group" : L"Edit Group");
@@ -53,7 +53,7 @@ namespace pvt
 				break;
 			case IDOK:
 				{
-					edit_view_param * ptr = reinterpret_cast<edit_view_param*>(uGetWindowLong(wnd,DWL_USER));
+					edit_view_param * ptr = reinterpret_cast<edit_view_param*>(GetWindowLongPtr(wnd,DWLP_USER));
 					uGetDlgItemText(wnd,IDC_VALUE,ptr->value.string);
 					ptr->value.filter_type = ((playlist_filter_type)uSendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE,CB_GETCURSEL,0,0));
 					ptr->value.filter_playlists = (string_utf8_from_window(wnd, IDC_PLAYLIST_FILTER_STRING));

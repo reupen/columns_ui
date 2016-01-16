@@ -145,7 +145,7 @@ LRESULT WINAPI order_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	order_extension * p_this;
 	LRESULT rv;
 
-	p_this = reinterpret_cast<order_extension*>(uGetWindowLong(wnd,GWL_USERDATA));
+	p_this = reinterpret_cast<order_extension*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 	
 	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);
 	
@@ -166,7 +166,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 		if (wnd_combo)
 		{
-			uSetWindowLong(wnd_combo,GWL_USERDATA,(LPARAM)(this));
+			SetWindowLongPtr(wnd_combo,GWLP_USERDATA,(LPARAM)(this));
 
 			static_api_ptr_t<playlist_manager> playlist_api;
 
@@ -192,7 +192,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			
 			//g_order_modify_callback.register_callback(wnd_combo, true);
 
-			orderproc = (WNDPROC)uSetWindowLong(wnd_combo,GWL_WNDPROC,(LPARAM)main_hook);
+			orderproc = (WNDPROC)SetWindowLongPtr(wnd_combo,GWLP_WNDPROC,(LPARAM)main_hook);
 
 			COMBOBOXINFO cbi;
 			memset(&cbi, 0, sizeof(cbi));

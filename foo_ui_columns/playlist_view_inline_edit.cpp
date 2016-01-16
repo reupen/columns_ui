@@ -173,8 +173,8 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
 			cx, cy, wnd_playlist, HMENU(667),
 			core_api::get_my_instance(), 0);
 
-		SetWindowLongPtr(m_wnd_edit, GWL_USERDATA, (LPARAM)(this));
-		m_inline_edit_proc = (WNDPROC)SetWindowLongPtr(m_wnd_edit, GWL_WNDPROC, (LPARAM)(g_inline_edit_hook_v2));
+		SetWindowLongPtr(m_wnd_edit, GWLP_USERDATA, (LPARAM)(this));
+		m_inline_edit_proc = (WNDPROC)SetWindowLongPtr(m_wnd_edit, GWLP_WNDPROC, (LPARAM)(g_inline_edit_hook_v2));
 		SetWindowPos(m_wnd_edit, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 		SendMessage(m_wnd_edit, WM_SETFONT, (WPARAM)g_font, MAKELONG(TRUE, 0));
@@ -291,7 +291,7 @@ LRESULT WINAPI playlist_view::g_inline_edit_hook_v2(HWND wnd, UINT msg, WPARAM w
 	playlist_view * p_this;
 	LRESULT rv;
 
-	p_this = reinterpret_cast<playlist_view*>(GetWindowLongPtr(wnd, GWL_USERDATA));
+	p_this = reinterpret_cast<playlist_view*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
 	rv = p_this ? p_this->on_inline_edit_message_v2(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);;
 

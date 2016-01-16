@@ -157,7 +157,7 @@ LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,L
 	playlists_tabs_extension * p_this;
 	LRESULT rv;
 
-	p_this = reinterpret_cast<playlists_tabs_extension*>(uGetWindowLong(wnd,GWL_USERDATA));
+	p_this = reinterpret_cast<playlists_tabs_extension*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 
 	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);;
 
@@ -234,7 +234,7 @@ bool playlists_tabs_extension::create_tabs()
 
 		if (wnd_tabs)
 		{
-			uSetWindowLong(wnd_tabs,GWL_USERDATA,(LPARAM)(this));
+			SetWindowLongPtr(wnd_tabs,GWLP_USERDATA,(LPARAM)(this));
 
 			if (g_font)
 			{
@@ -245,7 +245,7 @@ bool playlists_tabs_extension::create_tabs()
 
 			SetWindowPos(wnd_tabs,HWND_BOTTOM,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 
-			tabproc = (WNDPROC)uSetWindowLong(wnd_tabs,GWL_WNDPROC,(LPARAM)main_hook);
+			tabproc = (WNDPROC)SetWindowLongPtr(wnd_tabs,GWLP_WNDPROC,(LPARAM)main_hook);
 
 			pfc::string8 temp2;
 			for (i = 0; i < t; i++)
@@ -798,8 +798,8 @@ void playlists_tabs_extension::set_styles(bool visible /*= true*/)
 	{
 		long flags = WS_CHILD | TCS_HOTTRACK | TCS_TABS | ((cfg_tabs_multiline && (TabCtrl_GetItemCount(wnd_tabs) > 1)) ? TCS_MULTILINE | TCS_RIGHTJUSTIFY : TCS_SINGLELINE) | (visible ? WS_VISIBLE : 0) | WS_CLIPSIBLINGS | WS_TABSTOP | 0;
 
-		if (uGetWindowLong(wnd_tabs, GWL_STYLE) != flags)
-			uSetWindowLong(wnd_tabs, GWL_STYLE, flags);
+		if (GetWindowLongPtr(wnd_tabs, GWL_STYLE) != flags)
+			SetWindowLongPtr(wnd_tabs, GWL_STYLE, flags);
 	}
 }
 

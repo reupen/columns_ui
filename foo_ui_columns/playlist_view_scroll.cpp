@@ -2,7 +2,7 @@
 
 void playlist_view::update_scrollbar(bool redraw)
 {
-	LONG_PTR old_style = uGetWindowLong(wnd_playlist, GWL_STYLE);
+	LONG_PTR old_style = GetWindowLongPtr(wnd_playlist, GWL_STYLE);
 	bool need_move = false;
 
 	static_api_ptr_t<playlist_manager> playlist_api;

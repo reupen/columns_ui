@@ -389,10 +389,10 @@ private:
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<t_self*>(lp);
-			SetWindowLongPtr(wnd, DWL_USER, lp);
+			SetWindowLongPtr(wnd, DWLP_USER, lp);
 		}
 		else
-			p_data = reinterpret_cast<t_self*>(GetWindowLongPtr(wnd, DWL_USER));
+			p_data = reinterpret_cast<t_self*>(GetWindowLongPtr(wnd, DWLP_USER));
 		return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 	}
 

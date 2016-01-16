@@ -199,11 +199,11 @@ BOOL CALLBACK toolbar_extension::config_param::g_ConfigPopupProc(HWND wnd, UINT 
 	switch (msg)
 	{
 	case WM_INITDIALOG:
-		SetWindowLongPtr(wnd, DWL_USER, lp);
+		SetWindowLongPtr(wnd, DWLP_USER, lp);
 		ptr = reinterpret_cast<config_param*>(lp);
 		break;
 	default:
-		ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWL_USER));
+		ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
 		break;
 	};
 	return ptr ? ptr->ConfigPopupProc(wnd, msg, wp, lp) : FALSE;
@@ -286,7 +286,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 		return (BOOL)GetSysColorBrush(COLOR_WINDOW);
 #endif
 		//case WM_ERASEBKGND:
-		//	SetWindowLongPtr(wnd, DWL_MSGRESULT, FALSE);
+		//	SetWindowLongPtr(wnd, DWLP_MSGRESULT, FALSE);
 		//	return TRUE;
 		//case WM_PAINT:
 		//	ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));

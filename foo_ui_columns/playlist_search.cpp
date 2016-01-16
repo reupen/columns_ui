@@ -51,8 +51,8 @@ LRESULT quickfind_window::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				m_font = CreateFontIndirect(&cfg_font.get_value());
 				SendMessage(wnd_edit,WM_SETFONT,(WPARAM)m_font.get(),MAKELPARAM(FALSE,0));
 
-				SetWindowLongPtr(wnd_edit,GWL_USERDATA,(LPARAM)(this));
-				m_editproc = (WNDPROC)SetWindowLongPtr(wnd_edit,GWL_WNDPROC,(LPARAM)(hook_proc));
+				SetWindowLongPtr(wnd_edit,GWLP_USERDATA,(LPARAM)(this));
+				m_editproc = (WNDPROC)SetWindowLongPtr(wnd_edit,GWLP_WNDPROC,(LPARAM)(hook_proc));
 			}
 
 			height = uGetFontHeight(m_font) + 2;
@@ -107,7 +107,7 @@ LRESULT WINAPI quickfind_window::hook_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp
 	quickfind_window * p_this;
 	LRESULT rv;
 
-	p_this = reinterpret_cast<quickfind_window*>(GetWindowLongPtr(wnd,GWL_USERDATA));
+	p_this = reinterpret_cast<quickfind_window*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 
 	rv = p_this ? p_this->on_hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);
 

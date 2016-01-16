@@ -76,7 +76,7 @@ public:
 			uSendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
 
 			refresh_me(wnd);
-			editproc = (WNDPROC)uSetWindowLong(GetDlgItem(wnd, IDC_STRING), GWL_WNDPROC, (LPARAM)EditHook);
+			editproc = (WNDPROC)SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING), GWLP_WNDPROC, (LPARAM)EditHook);
 
 			g_editor_font_notify.set(GetDlgItem(wnd, IDC_STRING));
 		}

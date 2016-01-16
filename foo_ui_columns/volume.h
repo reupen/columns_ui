@@ -285,8 +285,8 @@ public:
 					GetClientRect(wnd, &rc_client);
 					SIZE sz = {0};
 					get_caption_extent(sz);
-					unsigned size_caption = get_caption_size();
-					RECT rc_caption = {0, 0, b_vertical?size_caption:sz.cx, rc_client.bottom};
+					long size_caption = (long)get_caption_size();
+					RECT rc_caption = {0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom};
 
 					if (IntersectRect(&rc_dummy, &rc_caption, &ps.rcPaint))
 					{

@@ -647,7 +647,7 @@ namespace artwork_panel
 
 	artwork_panel_t::class_data & artwork_panel_t::get_class_data() const
 	{
-		long flags = 0;
+		DWORD flags = 0;
 		if (cfg_edge_style == 1) flags |= WS_EX_CLIENTEDGE;
 		if (cfg_edge_style == 2) flags |= WS_EX_STATICEDGE;
 		__implement_get_class_data_ex2(_T("CUI Artwork View"), _T(""), false, true, 0, WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT | flags, 0, IDC_HAND);
