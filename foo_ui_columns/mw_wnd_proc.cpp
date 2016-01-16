@@ -684,15 +684,13 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 							metadb_handle_ptr track;
 							if (play_api->get_now_playing(track))
 							{
-								const file_info * info;
-								track->metadb_lock();
-								if (track->get_info_async_locked(info) || track->get_info_locked(info))
+								metadb_info_container::ptr p_info;
+								if (track->get_async_info_ref(p_info))
 								{
-									const char * ptr = info->meta_get("TITLE", 0);
+									const char * ptr = p_info->info().meta_get("TITLE", 0);
 									if (ptr)
 										title2 = ptr;
 								}
-								track->metadb_unlock();
 							}
 							if (title2.length() > 25) { title2.truncate(24); title2 += "\xe2\x80\xa6"; }
 
