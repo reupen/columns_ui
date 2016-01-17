@@ -543,6 +543,7 @@ namespace pvt {
 			mmh::permutation_t order(data.get_count());
 			g_sort_get_permutation_qsort_v2(data.get_ptr(), order, g_compare_wchar, true, b_descending);
 
+			m_playlist_api->activeplaylist_undo_backup();
 			if (b_selection_only)
 			{
 				mmh::permutation_t order2(count);

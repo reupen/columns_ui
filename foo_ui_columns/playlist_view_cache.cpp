@@ -726,6 +726,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 			uSendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, FALSE, 0);
 		}
 		
+		playlist_api->activeplaylist_undo_backup();
 		playlist_api->activeplaylist_reorder_items(order.get_ptr(), count);
 		
 		for (n=0; n<window_count; n++)
