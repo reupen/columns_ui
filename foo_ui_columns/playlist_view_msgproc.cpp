@@ -586,7 +586,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					DWORD blah;
 					{
 						pfc::com_ptr_t<IDropSource_playlist> p_IDropSource_playlist = new IDropSource_playlist(this);
-						DoDragDrop(pDataObject, p_IDropSource_playlist.get_ptr(), DROPEFFECT_COPY, &blah);
+						SHDoDragDrop(get_wnd(), pDataObject, p_IDropSource_playlist.get_ptr(), DROPEFFECT_COPY, &blah);
 					}
 					pDataObject->Release();
 				}

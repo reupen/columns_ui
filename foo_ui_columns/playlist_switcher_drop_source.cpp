@@ -19,8 +19,7 @@ bool playlist_switcher_t::do_drag_drop(WPARAM wp)
 			pfc::com_ptr_t<mmh::ole::IDropSource_Generic> p_IDropSource = new mmh::ole::IDropSource_Generic(get_wnd(), pDataObject.get_ptr(), wp);
 			m_dragging = true;
 			m_DataObject = pDataObject;
-			HRESULT hr = DoDragDrop(pDataObject.get_ptr(),p_IDropSource.get_ptr(),DROPEFFECT_COPY|DROPEFFECT_MOVE,&blah);
-				//SHDoDragDrop(get_wnd(), pDataObject.get_ptr(),NULL,DROPEFFECT_COPY|DROPEFFECT_MOVE,&blah);
+			HRESULT hr = SHDoDragDrop(get_wnd(), pDataObject.get_ptr(), p_IDropSource.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, &blah);
 			m_DataObject.release();
 			m_dragging = false;
 		}

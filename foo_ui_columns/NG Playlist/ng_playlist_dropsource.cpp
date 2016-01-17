@@ -41,8 +41,7 @@ namespace pvt
 					m_DataObject = pDataObject;
 					m_dragging_initial_playlist = m_playlist_api->get_active_playlist();
 					pfc::com_ptr_t<mmh::ole::IDropSource_Generic> p_IDropSource_playlist = new mmh::ole::IDropSource_Generic(get_wnd(), pDataObject, wp);
-					HRESULT hr = DoDragDrop(pDataObject,p_IDropSource_playlist.get_ptr(),DROPEFFECT_COPY|DROPEFFECT_MOVE,&blah);
-						//SHDoDragDrop(get_wnd(), pDataObject,NULL,DROPEFFECT_COPY|DROPEFFECT_MOVE,&blah);
+					HRESULT hr = SHDoDragDrop(get_wnd(), pDataObject,p_IDropSource_playlist.get_ptr(),DROPEFFECT_COPY|DROPEFFECT_MOVE,&blah);
 
 					m_dragging=false;
 					m_DataObject.release();
