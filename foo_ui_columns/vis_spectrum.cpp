@@ -229,7 +229,12 @@ void spectrum_extension::enable( const ui_extension::visualisation_host_ptr & p_
 	m_bar_gap = MulDiv(cx_dpi, 1, 96);
 	
 	if (list_vis.add_item(this) == 0)
-		static_api_ptr_t<visualisation_manager>()->create_stream(g_stream, NULL);
+	{
+		static_api_ptr_t<visualisation_manager>()->create_stream(g_stream, visualisation_manager::KStreamFlagNewFFT);
+		visualisation_stream_v2::ptr p_stream_v2;
+		if (g_stream->service_query_t(p_stream_v2))
+			p_stream_v2->set_channel_mode(visualisation_stream_v2::channel_mode_mono);
+	}
 
 	static_api_ptr_t<play_callback_manager>()->register_callback(this, play_callback::flag_on_playback_new_track|play_callback::flag_on_playback_stop|play_callback::flag_on_playback_pause, false);
 	if (static_api_ptr_t<play_control>()->is_playing())
@@ -460,43 +465,47 @@ void CALLBACK spectrum_extension::g_timer_proc(HWND wnd, UINT msg,UINT_PTR id_ev
 	g_refresh_all();
 }
 
-double g_scale(double val)
-{
-	//return pow (pow (10, val), 1.0/3.0);
-	return pow (10, val);
-}
 void g_scale_value(t_size source_count, t_size index, t_size dest_count, t_size & source_start, t_size & source_end, bool b_log)
 {
+	double start, end;
 	if (b_log)
 	{
-		const double exp_upper = 3.7, exp_lower=2.6, exp_range = exp_upper - exp_lower;
-		double start = (double)source_count*( (g_scale(exp_lower + exp_range * ((double)(index)/(double)dest_count)) - g_scale(exp_lower) )/(g_scale(exp_upper) - g_scale(exp_lower)) );
-		double end = (double)source_count*( (g_scale(exp_lower + exp_range * ((double)(index+1)/(double)dest_count)) - g_scale(exp_lower) )/(g_scale(exp_upper) - g_scale(exp_lower)) );
-		source_start = pfc::rint32(start);
-		source_end = pfc::rint32(end);
+		static constexpr auto power = 500;
+		static const double exp0 = pow(power, 0);
+		static const double exp1 = pow(power, 1);
+		start = (double)source_count * (pow(power, double(index) / (double)dest_count) - exp0) / (exp1 - exp0);
+		end = (double)source_count *(pow(power, double(index + 1) / (double)dest_count) - exp0) / (exp1 - exp0);
 	}
 	else
 	{
-		double start = (double)source_count*((double)(index)/(double)dest_count);
-		double end = (double)source_count*((double)(index+1)/(double)dest_count);
-		source_start = pfc::rint32(start);
-		source_end = pfc::rint32(end);
+		start = (double)source_count*((double)(index)/(double)dest_count);
+		end = (double)source_count*((double)(index+1)/(double)dest_count);
 	}
+	source_start = pfc::rint32(start);
+	source_end = pfc::rint32(end);
+	if (source_end > source_start)
+		--source_end;
 }
 
 t_size g_scale_value_single(double val, t_size count, bool b_log)
 {
+	double val_trans;
 	if (b_log)
 	{
-		const double exp_upper = 3.7, exp_lower=2.6, exp_range = exp_upper - exp_lower;
-		double start = (double)count*( (g_scale(exp_lower + exp_range * val) - g_scale(exp_lower) )/(g_scale(exp_upper) - g_scale(exp_lower)) );
-		return pfc::rint32(start);
+		constexpr auto minimum_value = -4;
+		double log_val = val > 0 ? log10(val) : minimum_value;
+		if (log_val < minimum_value)
+			log_val = minimum_value;
+		val_trans = count * (log_val + -minimum_value) / -minimum_value;
 	}
 	else
 	{
 		double start = (double)count*val;
-		return pfc::rint32(start);
+		val_trans = start;
 	}
+	t_size ret = pfc::rint32(val_trans);
+	ret = max(min(ret, count), 0);
+	return ret;
 }
 
 void spectrum_extension::refresh(const audio_chunk * p_chunk)
@@ -507,16 +516,7 @@ void spectrum_extension::refresh(const audio_chunk * p_chunk)
 	HDC dc = ps->get_device_context();
 	const RECT * rc_client = ps->get_area();
 	{
-		/*
-		if (!br_background)
-			br_background = CreateSolidBrush(cr_back);
-
-		FillRect(dc,&rc_client,br_background);*/
-
 		paint_background(dc, rc_client);
-
-		//HPEN pn = CreatePen(PS_SOLID, 1, cr_fore);
-		//HPEN pn_old = SelectPen(dc, pn);
 
 		if (g_is_stream_active(this) && p_chunk)
 		{
@@ -529,8 +529,6 @@ void spectrum_extension::refresh(const audio_chunk * p_chunk)
 				unsigned totalbars = rc_client->right / m_bar_width;
 				if (totalbars)
 				{
-
-#if 1
 					const audio_sample * p_data = p_chunk->get_data();
 					t_size sample_count = p_chunk->get_sample_count();
 					t_size channel_count = p_chunk->get_channels();
@@ -544,75 +542,24 @@ void spectrum_extension::refresh(const audio_chunk * p_chunk)
 						{
 							if (j < sample_count)
 							{
+								double sample_val = 0;
 								t_size k;
 								for (k=0; k<channel_count; k++)
-									val += p_data[j*channel_count + k];
+									sample_val += p_data[j*channel_count + k];
+								sample_val *= 1.0 / channel_count;
+								val = max(val, sample_val);
 							}
 
 						}
-						val *= 1.0/( (endi-starti+1)*channel_count);
-						val *= 0.80;
-						if (val>1.0) val = 1.0;
 
 						RECT r;
 						r.left = 1 + i*m_bar_width;
 						r.right = r.left + m_bar_width - m_bar_gap;
 						r.bottom = rc_client->bottom ? rc_client->bottom-1 : 0;
-						r.top = g_scale_value_single(1.0-val, rc_client->bottom, m_vertical_scale == scale_logarithmic); //pfc::rint32((1.0 - val) * (rc_client->bottom));
+						r.top = rc_client->bottom - g_scale_value_single(val, rc_client->bottom, m_vertical_scale == scale_logarithmic); //pfc::rint32((1.0 - val) * (rc_client->bottom));
 						if (r.bottom>r.top)
 							FillRect(dc,&r,br_foreground);
 					}
-#else
-					int spread = MulDiv(1, p_chunk->get_sample_count(), totalbars);
-					if (spread < 1) spread = 1;
-					double div = 1.0 / (double) p_chunk->get_channels();
-					unsigned left = 1;
-					for(i=0;i<totalbars;i++)
-					{
-						unsigned right = left+MulDiv(1, rc_client->right-left-totalbars+i, totalbars-i);
-						RECT r;
-						r.left = left;
-						r.right = right;
-
-						double val = 0;
-						unsigned start=MulDiv(i, p_chunk->get_sample_count()-spread, totalbars),co = 0;
-
-						for (n=start;n<(start+spread);n++)
-						{
-							if (n<p_chunk->get_sample_count())
-							{
-								co++;
-								unsigned c;
-								for(c=0;c<p_chunk->get_channels();c++)
-								{
-									val += ((p_chunk->get_data()[n*p_chunk->get_channels() + c]));
-								}
-							}
-						}
-						val *= div;
-						if (co) val *= (1.0/(double)co);
-						//val = log((val/2.0) + 1.0)*2.0;
-						val *= 0.80;
-						if (val>1.0) val = 1.0;
-						r.bottom = rc_client->bottom > 0 ? rc_client->bottom-1 : 0;
-						int top = (int)( (val) * (double(r.bottom)) + 0.5);
-						top= r.bottom - top;
-						//						if (top==0) top++;
-						/*
-						for (;r.bottom-1>top; r.bottom-=2)
-						{
-							r.top = r.bottom-1;
-							//FillRect(dc,&r,br_foreground);//LineToEx ?
-							MoveToEx(dc, r.left, r.top, NULL);
-							LineTo(dc, r.right, r.bottom);
-						}*/
-						{
-							RECT rc = {left, top, right, rc_client->bottom > 0 ? rc_client->bottom-1 : 0};
-							FillRect(dc,&rc,br_foreground);
-						}
-						left=right+1;
-					}
-#endif
 					int j;
 					for (j=rc_client->bottom; j>rc_client->top; j-=2)
 					{
@@ -623,85 +570,36 @@ void spectrum_extension::refresh(const audio_chunk * p_chunk)
 			}
 			else
 			{
-#if 1
-				//gdi_object_t<HPEN>::ptr_t pn = CreatePen(PS_SOLID, 1, cr_fore);
-				//HPEN pn_old = SelectPen(dc, pn.get());
-					const audio_sample * p_data = p_chunk->get_data();
-					t_size sample_count = p_chunk->get_sample_count();
-					t_size channel_count = p_chunk->get_channels();
-					t_size i;
-					for(i=0;i<(t_size)rc_client->right;i++)
+				const audio_sample * p_data = p_chunk->get_data();
+				t_size sample_count = p_chunk->get_sample_count();
+				t_size channel_count = p_chunk->get_channels();
+				t_size i;
+				for(i=0;i<(t_size)rc_client->right;i++)
+				{
+					double val = 0;
+					t_size starti, endi, j;
+					g_scale_value(sample_count, i, rc_client->right, starti, endi, m_scale == scale_logarithmic);
+					for (j=starti;j<=endi; j++)
 					{
-						double val = 0;
-						//t_size starti = pfc::rint32(start), endi = pfc::rint32(end), j;
-						t_size starti, endi, j;
-						g_scale_value(sample_count, i, rc_client->right, starti, endi, m_scale == scale_logarithmic);
-						for (j=starti;j<=endi; j++)
+						if (j < sample_count)
 						{
-							if (j < sample_count)
-							{
-								t_size k;
-								for (k=0; k<channel_count; k++)
-									val += p_data[j*channel_count + k];
-							}
-
+							double sample_val = 0;
+							t_size k;
+							for (k = 0; k<channel_count; k++)
+								sample_val += p_data[j*channel_count + k];
+							sample_val *= 1.0 / channel_count;
+							val = max(val, sample_val);
 						}
-						val *= 1.0/( (endi-starti+1)*channel_count);
-						val *= 0.80;
-						if (val>1.0) val = 1.0;
 
-						RECT r;
-						r.left = i;
-						r.right = i+1;
-						r.bottom = rc_client->bottom;
-						r.top = g_scale_value_single (1.0-val, rc_client->bottom, m_vertical_scale == scale_logarithmic);//pfc::rint32((1.0 - val) * (rc_client->bottom));
-						if (r.bottom>r.top)
-							FillRect(dc,&r,br_foreground);
-						//MoveToEx(dc, r.left, r.bottom, NULL);
-						//LineTo(dc, r.left, r.top);
 					}
-					//SelectPen(dc, pn_old);
-#else
-				int spread = MulDiv(1, p_chunk->get_sample_count(), rc_client->right);
-					if (spread < 1) spread = 1;
-					double div = 1.0 / (double) p_chunk->get_channels();
-					assert(rc_client->right>=0);
-					for(i=0;i<(unsigned)rc_client->right;i++)
-					{
-						RECT r;
-						r.left = i;//MulDiv(rc_client->right,n,data->spectrum_size+1);
-						r.right = i+1;//MulDiv(rc_client->right,n+1,data->spectrum_size+1);
-						//					if (r.left < r.right)
-						double val = 0;
-						unsigned start=MulDiv(i, p_chunk->get_sample_count()-spread, rc_client->right),co = 0;
-
-						for (n=start;n<(start+spread);n++)
-						{
-							if (n<p_chunk->get_sample_count())
-							{
-								co++;
-								unsigned c;
-								for(c=0;c<p_chunk->get_channels();c++)
-								{
-									val += p_chunk->get_data()[n*p_chunk->get_channels() + c];
-								}
-							}
-						}
-						val *= div;
-						if (co) val *= (1.0/(double)co);
-						//val = log((val/2.0) + 1.0) * 2.0; //close to a str8 line
-						val *= 0.80;
-						if (val>1.0) val = 1.0;
-						r.bottom = rc_client->bottom;
-						r.top = (int)((1.0 - val) * (rc_client->bottom));
-						/*double rt = sqrt(val);
-						HBRUSH br_test = CreateSolidBrush(pfc::rint32((1.0-rt)*0xff + rt*(0x55)));
-						FillRect(dc,&r,br_test);
-						DeleteBrush(br_test);*/
+					RECT r;
+					r.left = i;
+					r.right = i+1;
+					r.bottom = rc_client->bottom;
+					r.top = rc_client->bottom - g_scale_value_single (val, rc_client->bottom, m_vertical_scale == scale_logarithmic);
+					if (r.bottom>r.top)
 						FillRect(dc,&r,br_foreground);
-					}
-#endif
-
+				}
 			}
 		}
 	}
@@ -714,11 +612,7 @@ void spectrum_extension::g_refresh_all()
 	g_stream->get_absolute_time(p_time);
 	audio_chunk_impl p_chunk;
 
-	//unsigned needed_fft_size = 1;
-	//while (unsigned(rc_client.right - rc_client.left)*2 > needed_fft_size)
-	//	needed_fft_size <<= 1;
-
-	unsigned fft_size = 1024;//min(needed_fft_size, 512);
+	unsigned fft_size = 4096;
 	bool ret = g_stream->get_spectrum_absolute(p_chunk, p_time, fft_size);
 
 	unsigned n, count = spectrum_extension::g_visualisations.get_count();
@@ -729,161 +623,6 @@ void spectrum_extension::g_refresh_all()
 			vis_ext->refresh(&p_chunk);
 	}
 }
-
-#if 0
-class spectrum_vis_callback : public visualization
-{
-public:
-	virtual bool is_active() {return (spectrum_extension::list_vis.get_count() > 0);}
-	virtual bool need_spectrum() {return true;}
-	
-	virtual void on_data(const vis_chunk * data)
-	{
-		unsigned n, count = spectrum_extension::list_vis.get_count();
-		for (n=0; n<count; n++)
-		{
-			spectrum_extension * vis_ext = spectrum_extension::list_vis[n];
-
-			if (data->flags & vis_chunk::FLAG_LAGGED) return;
-
-			ui_extension::visualisation_host::vis_paint_struct ps;
-			vis_ext->p_host->begin_paint(ps);
-
-			HDC dc = ps.dc;
-			RECT rc_client = ps.rc_client;
-			
-			{
-				if (!vis_ext->br_background)
-					vis_ext->br_background = CreateSolidBrush(vis_ext->cr_back);
-				if (!vis_ext->br_foreground)
-					vis_ext->br_foreground = CreateSolidBrush(vis_ext->cr_fore);
-
-				FillRect(dc,&rc_client,vis_ext->br_background);
-				
-				//HPEN pn = CreatePen(PS_SOLID, 1, vis_ext->cr_fore);
-				//HPEN pn_old = SelectPen(dc, pn);
-
-				unsigned n;
-				vis_sample * src = data->spectrum;
-
-				unsigned i;
-				if (vis_ext->mode == MODE_BARS)
-				{
-					unsigned totalbars = rc_client.right /3;
-					if (totalbars)
-					{
-						
-						int spread = MulDiv(1, data->spectrum_size, totalbars);
-						if (spread < 1) spread = 1;
-						double div = 1.0 / (double) data->nch;
-						unsigned left = 1;
-						for(i=0;i<totalbars;i++)
-						{
-							unsigned right = left+MulDiv(1, rc_client.right-left-totalbars+i, totalbars-i);
-							RECT r;
-							r.left = left;
-							r.right = right;
-							
-							double val = 0;
-							unsigned start=MulDiv(i, data->spectrum_size-spread, totalbars),co = 0;
-							
-							for (n=start;n<(start+spread);n++)
-							{
-								if (n<data->spectrum_size)
-								{
-									co++;
-									unsigned c;
-									for(c=0;c<data->nch;c++)
-									{
-										val += fabs((src[n*data->nch + c]));//*exp(((double)n*2)/(double)data->spectrum_size);
-										//			val = log(val*exp((double)(n)/(double)data->spectrum_size)+3.0);
-									}
-								}
-							}
-							val *= div;
-							if (co) val *= (1.0/(double)co);
-							val = log((val/2) + 1) / log(2.0);
-							val *= 0.25;
-							if (val>1.0) val = 1.0;
-							r.bottom = rc_client.bottom > 0 ? rc_client.bottom-1 : 0;
-							int top = (int)((1.0 - val) * double(rc_client.bottom-1));
-							//						if (top==0) top++;
-							for (;r.bottom-1>top; r.bottom-=2)
-							{
-								r.top = r.bottom-1;
-								FillRect(dc,&r,vis_ext->br_foreground);//LineToEx ?
-							}
-							left=right+1;
-						}
-					}
-				}
-				else
-				{
-					int spread = MulDiv(1, data->spectrum_size, rc_client.right);
-					if (spread < 1) spread = 1;
-					double div = 1.0 / (double) data->nch;
-					assert(rc_client.right>=0);
-					for(i=0;i<(unsigned)rc_client.right;i++)
-					{
-						RECT r;
-						r.left = i;//MulDiv(rc_client.right,n,data->spectrum_size+1);
-						r.right = i+1;//MulDiv(rc_client.right,n+1,data->spectrum_size+1);
-						//					if (r.left < r.right)
-						double val = 0;
-						unsigned start=MulDiv(i, data->spectrum_size-spread, rc_client.right),co = 0;
-						
-						for (n=start;n<(start+spread);n++)
-						{
-							if (n<data->spectrum_size)
-							{
-								co++;
-								unsigned c;
-								for(c=0;c<data->nch;c++)
-								{
-									val += fabs((src[n*data->nch + c]));
-								}
-							}
-						}
-						val *= div;
-						if (co) val *= (1.0/(double)co);
-						val = log((val/2) + 1) / log(2.0);
-						val *= 0.25;
-						if (val>1.0) val = 1.0;
-						r.bottom = rc_client.bottom;
-						r.top = (int)((2.0 - 2*val) * (rc_client.bottom / 2));
-						//MoveToEx(dc, r.left, r.bottom, NULL);
-						//LineTo(dc, r.right, r.top);
-						FillRect(dc,&r,vis_ext->br_foreground);
-					}
-				}
-
-				//SelectPen(dc, pn_old);
-				//DeletePen(pn);
-				
-			}
-			vis_ext->p_host->end_paint(ps);
-			
-		}
-		
-	}
-	virtual void on_flush()
-	{
-		
-		unsigned n, count = spectrum_extension::list_vis.get_count();
-		for (n=0; n<count; n++)
-		{
-			spectrum_extension * vis_ext = spectrum_extension::list_vis[n];
-
-			// ???
-			vis_ext->flush_bitmap();
-		}
-		
-	}
-};
-
-static visualization_factory<spectrum_vis_callback> foo;
-#endif
-
 
 void spectrum_extension::get_name(pfc::string_base & out)const
 {
@@ -1010,7 +749,7 @@ class window_visualisation_spectrum : public window_visualisation
 				p_temp->get_config(&stream_writer_memblock_ref(m_data), abort_callback_impl());
 				set_vis_data(m_data.get_ptr(), m_data.get_size());
 				}
-				catch (pfc::exception & e)
+				catch (pfc::exception &)
 				{};
 			}
 
