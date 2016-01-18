@@ -113,6 +113,8 @@ private:
 
 			bool m_hook_active;
 			bool m_timer_active;
+		private:
+			bool test_autohide_window(HWND wnd);
 		} m_container;
 
 		GUID m_guid;

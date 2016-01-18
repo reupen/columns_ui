@@ -2,6 +2,11 @@
 
 #define HOST_AUTOHIDE_TIMER_ID  672
 
+bool splitter_window_impl::panel::panel_container::test_autohide_window(HWND wnd)
+{
+	return IsChild(get_wnd(), wnd) || wnd == get_wnd() || wnd == m_this->get_wnd();
+}
+
 bool splitter_window_impl::panel::panel_container::on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp)
 {
 	if (p_type == message_hook_manager::type_mouse_low_level)
@@ -15,15 +20,18 @@ bool splitter_window_impl::panel::panel_container::on_hooked_message(message_hoo
 					unsigned index = m_this->m_panels.find_item(m_panel);
 					if (index != pfc_infinite)
 					{
-						HWND hwnd = GetCapture();
-						if (!hwnd) hwnd = WindowFromPoint(lpmhs->pt);
+						HWND wnd_capture = GetCapture(),
+							wnd_pt = WindowFromPoint(lpmhs->pt);
 						POINT pt = lpmhs->pt;
 						ScreenToClient(m_this->get_wnd(), &pt);
 						//if (!hwnd)
 						//hwnd = uRecursiveChildWindowFromPointv2(m_this->get_wnd(), pt);
 						//console::printf("pts: (%u, %u) pt: (%i, %i)  window: %x", lpmhs->pt, pt.x, pt.y, hwnd);
 
-						if (!IsChild(get_wnd(), hwnd) && !(hwnd == get_wnd()) && !(hwnd == m_this->get_wnd()) && !m_this->test_divider_pt(pt, index))
+						// We need to test wnd_pt when wnd_capture is non-NULL because during drag-and-drop operations wnd_capture is an OLE window. 
+						// Alternative fixes are checking the window with the keyboard focus (has side-effects) and checking the window class of wnd_capture (a hack).
+						// (For future reference: the class of wnd_capture during drag-and-drop operations is CLIPBRDWNDCLASS.)
+						if (!(wnd_capture && test_autohide_window(wnd_capture)) && !(wnd_pt && test_autohide_window(wnd_pt)) && !m_this->test_divider_pt(pt, index))
 						{
 							if (!m_timer_active)
 								PostMessage(get_wnd(), MSG_AUTOHIDE_END, 0, 0);
