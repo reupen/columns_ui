@@ -556,7 +556,7 @@ void spectrum_extension::refresh(const audio_chunk * p_chunk)
 						r.left = 1 + i*m_bar_width;
 						r.right = r.left + m_bar_width - m_bar_gap;
 						r.bottom = rc_client->bottom ? rc_client->bottom-1 : 0;
-						r.top = rc_client->bottom - g_scale_value_single(val, rc_client->bottom, m_vertical_scale == scale_logarithmic); //pfc::rint32((1.0 - val) * (rc_client->bottom));
+						r.top = rc_client->bottom - g_scale_value_single(val, (rc_client->bottom + 1)/2 , m_vertical_scale == scale_logarithmic)*2;
 						if (r.bottom>r.top)
 							FillRect(dc,&r,br_foreground);
 					}
