@@ -1,10 +1,14 @@
 # Columns UI
 
-http://yuo.be/columns.php
+http://yuo.be/columns_ui
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
 
 A VS2015 solution can be found in the vc14 folder.
+
+To clone the repo and dependencies, run:
+
+`git clone --recursive https://github.com/reupen/columns_ui.git`
 
 ## Updates
 
