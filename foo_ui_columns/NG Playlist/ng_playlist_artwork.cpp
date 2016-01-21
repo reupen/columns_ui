@@ -418,7 +418,6 @@ namespace pvt
 
 			{
 				Gdiplus::Bitmap scaled(bitmap, NULL);
-				t_size i;
 				if (reflect_cy)
 				{
 

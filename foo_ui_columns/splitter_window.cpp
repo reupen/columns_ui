@@ -745,8 +745,14 @@ m_panel_dragging(NULL), m_panel_dragging_valid(false)
 
 unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
 {
-	unsigned divider_width = 2;
-	return index == m_panels.get_count() - 1 ? 0 : divider_width;
+	static const unsigned vertical_divider_size = MulDiv(2, win32_helpers::get_system_dpi_cached().cx, 96);
+	static const unsigned horizontal_divider_size = MulDiv(2, win32_helpers::get_system_dpi_cached().cy, 96);
+	unsigned ret = 0;
+	if (index + 1 < m_panels.get_count())
+	{
+		ret = get_orientation() == horizontal ? vertical_divider_size : horizontal_divider_size;
+	}
+	return ret;
 }
 
 bool splitter_window_impl::set_config_item(unsigned index, const GUID & p_type, stream_reader * p_source, abort_callback & p_abort)

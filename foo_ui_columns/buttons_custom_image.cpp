@@ -170,7 +170,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
 										}
 									}
 								}
-								catch (pfc::exception & e)
+								catch (pfc::exception &)
 								{
 								}
 							}
@@ -268,7 +268,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
 										}
 									}
 								}
-								catch (pfc::exception & e)
+								catch (pfc::exception &)
 								{
 								}
 							}

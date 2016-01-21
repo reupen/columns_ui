@@ -406,7 +406,6 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_
 
 				stream_writer_memblock conf1, conf2, conf3, conf4;
 
-				t_size index;
 				val = false;
 				t_uint32 sz = 175;
 

@@ -421,7 +421,7 @@ namespace pvt
 				m_artwork_manager->abort_current_tasks();
 				m_artwork_manager->flush_nocover();
 			}
-			t_size i,j,cg,count=get_item_count();
+			t_size i, cg, count=get_item_count();
 			for (i=0; i<count; i++)
 			{
 				cg = get_item(i)->get_group_count();
