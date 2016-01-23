@@ -6,7 +6,7 @@
 * This component is an example of a very simple multiple instance panel that does not take keyboard input
 */
 
-#include "stdafx.h"
+#include "..\stdafx.h"
 
 namespace artwork_panel
 {

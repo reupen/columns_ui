@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "..\stdafx.h"
 namespace pvt
 {
 	bool ng_playlist_view_t::do_drag_drop(WPARAM wp)

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "..\stdafx.h"
 namespace pvt
 {
 	HRESULT STDMETHODCALLTYPE IDropTarget_playlist::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)
