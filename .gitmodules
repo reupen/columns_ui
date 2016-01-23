@@ -1,15 +1,15 @@
 [submodule "common"]
 	path = foobar2000
-	url = https://github.com/msquared2/foobar2000-common
+	url = https://github.com/reupen/foobar2000-common
 [submodule "ui_helpers"]
 	path = ui_helpers
-	url = https://github.com/msquared2/ui_helpers.git
+	url = https://github.com/reupen/ui_helpers.git
 [submodule "mmh"]
 	path = mmh
-	url = https://github.com/msquared2/mmh.git
+	url = https://github.com/reupen/mmh.git
 [submodule "pfc"]
 	path = pfc
-	url = https://github.com/msquared2/pfc.git
+	url = https://github.com/reupen/pfc.git
 [submodule "columns_ui-sdk"]
 	path = columns_ui-sdk
-	url = https://github.com/msquared2/columns_ui-sdk.git
+	url = https://github.com/reupen/columns_ui-sdk.git
