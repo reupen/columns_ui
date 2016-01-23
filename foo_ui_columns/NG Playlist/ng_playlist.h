@@ -672,12 +672,6 @@ namespace pvt
 
 	class IDropTarget_playlist : public IDropTarget
 	{
-		long drop_ref_count;
-		bool last_rmb;
-		service_ptr_t<ng_playlist_view_t> p_playlist;
-		pfc::com_ptr_t<IDataObject> m_DataObject;
-		mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
-		//pfc::string
 	public:
 		virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
 		virtual ULONG STDMETHODCALLTYPE   AddRef();
@@ -687,7 +681,14 @@ namespace pvt
 		virtual HRESULT STDMETHODCALLTYPE DragLeave( void);
 		virtual HRESULT STDMETHODCALLTYPE Drop( IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
 		IDropTarget_playlist(ng_playlist_view_t * playlist);
+	private:
+		HRESULT UpdateDropDescription(IDataObject *pDataObj, DWORD pdwEffect);
 
+		long drop_ref_count;
+		bool last_rmb;
+		service_ptr_t<ng_playlist_view_t> p_playlist;
+		pfc::com_ptr_t<IDataObject> m_DataObject;
+		mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
 	};
 
 	class IDropSource_playlist : public IDropSource

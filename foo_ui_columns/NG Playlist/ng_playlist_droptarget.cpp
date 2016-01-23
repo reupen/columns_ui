@@ -59,9 +59,7 @@ namespace pvt
 		*pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL)) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 		if (ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect) || static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj))
 		{
-			pfc::string8 name;
-			static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-			mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
+			UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
 			return S_OK; 	
 		}
 		return S_FALSE; 	
@@ -78,9 +76,7 @@ namespace pvt
 		pti.y = ptl.y;
 		pti.x = ptl.x;
 
-		pfc::string8 name;
-		static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-		mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
+		UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
 
 		if (p_playlist->get_wnd())
 		{
@@ -145,10 +141,6 @@ namespace pvt
 		*pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL))? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 		m_DataObject.release();
 		
-		pfc::string8 name;
-		static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-		mmh::ole::SetDropDescription(pDataObj, DROPIMAGE_COPY, "Add to %1", name);
-
 		p_playlist->destroy_timer_scroll_up();
 		p_playlist->destroy_timer_scroll_down();
 
@@ -330,5 +322,35 @@ namespace pvt
 	IDropTarget_playlist::IDropTarget_playlist(ng_playlist_view_t * playlist) : drop_ref_count(0), last_rmb(false), p_playlist(playlist)
 	{
 		m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER);
+	}
+	HRESULT IDropTarget_playlist::UpdateDropDescription(IDataObject * pDataObj, DWORD pdwEffect)
+	{
+		static_api_ptr_t<playlist_manager> playlist_api;
+		DROPIMAGETYPE dit = DROPIMAGE_INVALID;
+		const char * message = NULL;
+		pfc::string8 insertText;
+
+		if (pdwEffect == DROPEFFECT_MOVE)
+		{
+			dit = DROPIMAGE_MOVE;
+			if (p_playlist->m_dragging_initial_playlist != playlist_api->get_active_playlist())
+			{
+				message = "Move to %1";
+				playlist_api->activeplaylist_get_name(insertText);
+
+			}
+			else
+			{
+				message = "Move here";
+			}
+		}
+		else // always set to DROPEFFECT_MOVE or DROPEFFECT_COPY
+		{
+			dit = DROPIMAGE_COPY;
+			message = "Add to %1";
+			playlist_api->activeplaylist_get_name(insertText);
+
+		}
+		return mmh::ole::SetDropDescription(pDataObj, dit, message, insertText);
 	}
 }

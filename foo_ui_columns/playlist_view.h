@@ -1,6 +1,10 @@
 #ifndef _COLUMNS_UI_PLAYLIST_VIEW_H_
 #define _COLUMNS_UI_PLAYLIST_VIEW_H_
 
+/**
+* \deprecated	Columns playlist is deprecated and has been superseded by NG playlist.
+*/
+
 #include "callback.h"
 #include "stdafx.h"
 #include "extern.h"

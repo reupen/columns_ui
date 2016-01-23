@@ -593,8 +593,7 @@ namespace filter_panel {
 			{
 				DWORD blah = DROPEFFECT_NONE;
 				{
-					pfc::com_ptr_t<mmh::ole::IDropSource_Generic> p_IDropSource_filter = new mmh::ole::IDropSource_Generic(get_wnd(), pDataObject, wp);
-					HRESULT hr = SHDoDragDrop(get_wnd(), pDataObject, p_IDropSource_filter.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, &blah);
+					HRESULT hr = mmh::ole::DoDragDrop(get_wnd(), wp, pDataObject, DROPEFFECT_COPY | DROPEFFECT_MOVE, &blah);
 				}
 				pDataObject->Release();
 			}

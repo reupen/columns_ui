@@ -57,11 +57,7 @@ bool toolbar_extension::config_param::t_button_list_view::do_drag_drop(WPARAM wp
 
 		DWORD blah = DROPEFFECT_NONE;
 
-		if (g_test_os_version(6, 0))
-			SHDoDragDrop(get_wnd(), pDO, NULL, DROPEFFECT_MOVE, &blah);
-		else
-			SHDoDragDrop(get_wnd(), pDO, mmh::comptr_t<IDropSource>(new mmh::ole::IDropSource_Generic(get_wnd(), pDO, wp, true)), DROPEFFECT_MOVE, &blah);
-		//DoDragDrop(pDO, mmh::comptr_t<IDropSource>(new mmh::ole::IDropSource_Generic(get_wnd(), pDO, wp, true)), DROPEFFECT_MOVE, &blah);
+		mmh::ole::DoDragDrop(get_wnd(), wp, pDO, DROPEFFECT_MOVE, &blah);
 	}
 
 	return true;
