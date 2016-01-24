@@ -1,6 +1,6 @@
 [submodule "common"]
 	path = foobar2000
-	url = https://github.com/reupen/foobar2000-common
+	url = https://github.com/reupen/foobar2000-sdk.git
 [submodule "ui_helpers"]
 	path = ui_helpers
 	url = https://github.com/reupen/ui_helpers.git
