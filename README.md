@@ -2,6 +2,8 @@
 
 http://yuo.be/columns_ui
 
+[![Build status](https://ci.appveyor.com/api/projects/status/h1iqjogb73f3yqp1/branch/master?svg=true)](https://ci.appveyor.com/project/reupen/columns-ui/branch/master)
+
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
 
 A VS2015 solution can be found in the vc14 folder.
