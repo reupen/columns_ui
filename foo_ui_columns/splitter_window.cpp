@@ -745,8 +745,9 @@ m_panel_dragging(NULL), m_panel_dragging_valid(false)
 
 unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
 {
-	static const unsigned vertical_divider_size = MulDiv(2, win32_helpers::get_system_dpi_cached().cx, 96);
-	static const unsigned horizontal_divider_size = MulDiv(2, win32_helpers::get_system_dpi_cached().cy, 96);
+	const unsigned standard_divider_size = settings::use_custom_splitter_divider_width ? settings::custom_splitter_divider_width : 2;
+	const unsigned vertical_divider_size = MulDiv(standard_divider_size, win32_helpers::get_system_dpi_cached().cx, 96);
+	const unsigned horizontal_divider_size = MulDiv(standard_divider_size, win32_helpers::get_system_dpi_cached().cy, 96);
 	unsigned ret = 0;
 	if (index + 1 < m_panels.get_count())
 	{

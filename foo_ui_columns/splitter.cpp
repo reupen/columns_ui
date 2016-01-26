@@ -200,15 +200,6 @@ void clip_minmaxinfo(MINMAXINFO & mmi)
 }
 
 
-//#ifdef _DEBUG
-
-// {914E6992-08C4-459c-8374-000B3CE3E636}
-static const GUID g_guid_divider = 
-{ 0x914e6992, 0x8c4, 0x459c, { 0x83, 0x74, 0x0, 0xb, 0x3c, 0xe3, 0xe6, 0x36 } };
-
-//TODO: font, host..
-
-
 
 BOOL uDrawPanelTitle(HDC dc, const RECT * rc_clip, const char * text, int len, bool vert, bool world)
 {

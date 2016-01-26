@@ -27,7 +27,10 @@ public:
 
 namespace settings
 {
-	extern cfg_bool show_status_pane;
+	extern cfg_bool show_status_pane,
+		use_custom_splitter_divider_width;
+
+	extern cfg_uint custom_splitter_divider_width;
 }
 
 extern cfg_string cfg_playlist_switcher_tagz;
