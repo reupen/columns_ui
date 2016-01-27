@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+pfc::ptr_list_t<splitter_window_impl> splitter_window_impl::g_instances;
+
 void g_get_panel_list(uie::window_info_list_simple & p_out, uie::window_host_ptr & p_host)
 {
 	service_enum_t<ui_extension::window> e;
@@ -121,7 +123,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 			g_append_menu_panels(menu_add, panels, ID_PARENT_ADD_BASE);
 			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT_PTR)menu_add, L"Add panel");
 		}
-		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,wnd,0);
+		unsigned cmd = (unsigned)TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,wnd,0);
 		p_overlay.destroy();
 		{
 			{

@@ -699,28 +699,45 @@ class tab_layout_new : public preferences_tab
 		switch (msg)
 		{
 		case WM_INITDIALOG:
-			g_set_treeview_window_explorer_theme(GetDlgItem(wnd, IDC_TREE));
-			cfg_layout.save_active_preset ();
-			if (!cfg_layout.get_presets().get_count())
-				cfg_layout.reset_presets();
-			g_changed=false;
-			g_active_preset = cfg_layout.get_active();
-			if (g_active_preset >= cfg_layout.get_presets().get_count())
 			{
-				g_active_preset = 0;
-				g_changed = true;
-			}
-			initialise_presets(wnd);
-			initialise_tree(wnd);
-			uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Horizontal");
-			uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Vertical");
+				g_set_treeview_window_explorer_theme(GetDlgItem(wnd, IDC_TREE));
+				cfg_layout.save_active_preset();
+				if (!cfg_layout.get_presets().get_count())
+					cfg_layout.reset_presets();
+				g_changed = false;
+				g_active_preset = cfg_layout.get_active();
+				if (g_active_preset >= cfg_layout.get_presets().get_count())
+				{
+					g_active_preset = 0;
+					g_changed = true;
+				}
+				initialise_presets(wnd);
+				initialise_tree(wnd);
 
-			uSetDlgItemInt(wnd, IDC_SHOW_DELAY, cfg_sidebar_show_delay , FALSE);
-			uSetDlgItemInt(wnd, IDC_HIDE_DELAY, cfg_sidebar_hide_delay , FALSE);
-			uSendDlgItemMessage(wnd,IDC_USE_CUSTOM_SHOW_DELAY,BM_SETCHECK,cfg_sidebar_use_custom_show_delay,0);
-			EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
-			EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
-			g_initialised=true;
+				uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Horizontal");
+				uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Vertical");
+
+				SetDlgItemInt(wnd, IDC_SHOW_DELAY, cfg_sidebar_show_delay, FALSE);
+				SetDlgItemInt(wnd, IDC_HIDE_DELAY, cfg_sidebar_hide_delay, FALSE);
+				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
+				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
+				uSendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
+
+				SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
+				SendDlgItemMessage(wnd, IDC_HIDE_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
+
+				HWND wnd_custom_divider_width = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH);
+				HWND wnd_custom_divider_width_spin = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN);
+				HWND wnd_use_custom_divider_width = GetDlgItem(wnd, IDC_USE_CUSTOM_DIVIDER_WIDTH);
+
+				SendMessage(wnd_use_custom_divider_width, BM_SETCHECK, settings::use_custom_splitter_divider_width, 0);
+				SetDlgItemInt(wnd, IDC_CUSTOM_DIVIDER_WIDTH, settings::custom_splitter_divider_width, FALSE);
+				EnableWindow(wnd_custom_divider_width, settings::use_custom_splitter_divider_width);
+				EnableWindow(wnd_custom_divider_width_spin, settings::use_custom_splitter_divider_width);
+				SendMessage(wnd_custom_divider_width_spin, UDM_SETRANGE32, 0, 20);
+
+				g_initialised = true;
+			}
 			break;
 		case WM_DESTROY:
 			g_initialised=false;
@@ -856,10 +873,25 @@ class tab_layout_new : public preferences_tab
 					if (result) cfg_sidebar_show_delay = new_height;
 				}
 				break;
+			case (EN_CHANGE << 16) | IDC_CUSTOM_DIVIDER_WIDTH:
+				if (g_initialised)
+				{
+					BOOL result;
+					int new_width = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
+					if (result) settings::custom_splitter_divider_width = new_width;
+					splitter_window_impl::g_on_size_change();
+				}
+				break;
 			case IDC_USE_CUSTOM_SHOW_DELAY:
-				cfg_sidebar_use_custom_show_delay = uSendMessage((HWND)lp,BM_GETCHECK,0,0);
+				cfg_sidebar_use_custom_show_delay = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
+				break;
+			case IDC_USE_CUSTOM_DIVIDER_WIDTH:
+				settings::use_custom_splitter_divider_width = Button_GetCheck((HWND)lp) != 0;
+				EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH), settings::use_custom_splitter_divider_width);
+				EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN), settings::use_custom_splitter_divider_width);
+				splitter_window_impl::g_on_size_change();
 				break;
 			}
 			break;

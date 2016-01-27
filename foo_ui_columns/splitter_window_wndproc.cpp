@@ -6,6 +6,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 	{
 	case WM_NCCREATE:
 		m_wnd = wnd;
+		g_instances.add_item(this);
 		break;
 	case WM_CREATE:
 		if (!g_count++)
@@ -24,6 +25,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 		}
 		break;
 	case WM_NCDESTROY:
+		g_instances.remove_item(this);
 		m_wnd = NULL;
 		break;
 	case WM_SHOWWINDOW:
