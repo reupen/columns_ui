@@ -745,8 +745,9 @@ m_panel_dragging(NULL), m_panel_dragging_valid(false)
 
 unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
 {
-	static const unsigned vertical_divider_size = MulDiv(2, win32_helpers::get_system_dpi_cached().cx, 96);
-	static const unsigned horizontal_divider_size = MulDiv(2, win32_helpers::get_system_dpi_cached().cy, 96);
+	auto dpi = win32_helpers::get_system_dpi_cached();
+	const unsigned vertical_divider_size = settings::use_custom_splitter_divider_width ? settings::custom_splitter_divider_width : MulDiv(2, dpi.cx, 96);
+	const unsigned horizontal_divider_size = settings::use_custom_splitter_divider_width ? settings::custom_splitter_divider_width : MulDiv(2, dpi.cy, 96);
 	unsigned ret = 0;
 	if (index + 1 < m_panels.get_count())
 	{
@@ -1225,4 +1226,12 @@ const GUID & splitter_window_impl::splitter_host_impl::get_host_guid() const
 	static const GUID rv =
 	{ 0xfc0ed6ef, 0xdca2, 0x4679, { 0xb7, 0xfe, 0x48, 0x16, 0x2d, 0xe3, 0x21, 0xfc } };
 	return rv;
+}
+
+void splitter_window_impl::g_on_size_change()
+{
+	for (t_size index = 0; index < g_instances.get_count(); index++)
+	{
+		g_instances[index]->on_size_changed();
+	}
 }

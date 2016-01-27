@@ -271,12 +271,16 @@
 #define IDC_SHOW_DELAY                  1078
 #define IDC_SHOW_DELAY_SPIN             1079
 #define IDC_USE_HIDE_DELAY              1080
-#define IDC_SHOW_DELAY_SPIN2            1080
 #define IDC_PLAYLIST_DOUBLE             1080
+#define IDC_HIDE_DELAY_SPIN             1080
 #define IDC_HIDE_DELAY                  1081
 #define IDC_USE_PLAYLIST_TF             1081
 #define IDC_PLAYLIST_MIDDLE             1081
 #define IDC_PLAYLIST_TF                 1082
+#define IDC_USE_CUSTOM_DIVIDER_WIDTH    1082
+#define IDC_CUSTOM_DIVIDER_WIDTH        1083
+#define IDC_DIVIDER_WIDTH_SPIN          1084
+#define IDC_CUSTOM_DIVIDER_WIDTH_SPIN   1084
 #define IDC_CHOOSE_PLAYLIST_COLOUR      1085
 #define IDC_CHOOSE_PLAYLIST_SWITCHER_COLOURS 1086
 #define IDC_TAB_FONT                    1087

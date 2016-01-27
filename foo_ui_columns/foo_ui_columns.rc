@@ -149,41 +149,51 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,41,146,10
 END
 
-IDD_LAYOUT DIALOGEX 0, 0, 316, 270
+IDD_LAYOUT DIALOGEX 0, 0, 317, 271
 STYLE DS_SETFONT | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
-    GROUPBOX        "Presets",IDC_STATIC,7,7,302,29
-    COMBOBOX        IDC_PRESETS,13,17,138,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "New",IDC_NEW_PRESET,157,17,33,13
-    PUSHBUTTON      "Delete",IDC_DELETE_PRESET,193,17,33,13
-    PUSHBUTTON      "Rename",IDC_RENAME_PRESET,229,17,33,13
-    PUSHBUTTON      "Reset",IDC_RESET_PRESETS,265,17,33,13
-    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,7,41,157,157
-    GROUPBOX        "Item details",IDC_STATIC,172,39,137,169
-    CONTROL         "Show caption",IDC_CAPTION,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,183,54,59,10
-    CONTROL         "Hidden",IDC_HIDDEN,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,183,69,38,10
-    CONTROL         "Auto-hide",IDC_AUTOHIDE,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,183,84,47,10
-    CONTROL         "Locked",IDC_LOCKED,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,183,99,38,10
-    LTEXT           "Caption orientation:",IDC_STATIC,184,158,65,8
-    COMBOBOX        IDC_CAPTIONSTYLE,183,168,60,51,CBS_DROPDOWNLIST | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
-    PUSHBUTTON      "Configure...",IDC_CONFIGURE,183,186,58,14,WS_DISABLED
-    LTEXT           "Use the tree shortcut menu to make changes",IDC_STATIC,12,200,145,8
-    GROUPBOX        "Autohide",IDC_STATIC,7,216,302,26
-    CONTROL         "Use custom show delay of",IDC_USE_CUSTOM_SHOW_DELAY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,227,97,10
-    EDITTEXT        IDC_SHOW_DELAY,113,225,42,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "",IDC_SHOW_DELAY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,140,228,9,12
-    LTEXT           "ms",IDC_STATIC,159,228,9,9
-    LTEXT           "Hide delay:",IDC_STATIC,190,227,37,8
-    EDITTEXT        IDC_HIDE_DELAY,230,225,42,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "",IDC_SHOW_DELAY_SPIN2,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,259,221,9,12
-    LTEXT           "ms",IDC_STATIC,275,227,9,9
-    PUSHBUTTON      "Apply",IDC_APPLY,259,249,50,14
-    CONTROL         "Create left toggle area",IDC_TOGGLE_AREA,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,183,114,89,10
-    CONTROL         "Use custom title:",IDC_USE_CUSTOM_TITLE,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,183,129,69,10
-    EDITTEXT        IDC_CUSTOM_TITLE,183,140,114,12,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Presets",IDC_STATIC,7,4,25,8
+    CONTROL         "",IDC_STATIC,"Static",SS_GRAYFRAME | SS_SUNKEN | WS_GROUP,38,9,272,1,WS_EX_STATICEDGE
+    COMBOBOX        IDC_PRESETS,7,15,155,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "New",IDC_NEW_PRESET,168,15,33,13
+    PUSHBUTTON      "Delete",IDC_DELETE_PRESET,204,15,33,13
+    PUSHBUTTON      "Rename",IDC_RENAME_PRESET,240,15,33,13
+    PUSHBUTTON      "Reset",IDC_RESET_PRESETS,277,15,33,13
+    CONTROL         "Tree1",IDC_TREE,"SysTreeView32",TVS_HASBUTTONS | TVS_HASLINES | TVS_SHOWSELALWAYS | WS_BORDER | WS_HSCROLL | WS_TABSTOP,7,33,157,163
+    LTEXT           "Item details",IDC_STATIC,171,32,39,8
+    CONTROL         "",IDC_STATIC,"Static",SS_GRAYFRAME | SS_SUNKEN | WS_GROUP,213,36,94,1,WS_EX_STATICEDGE
+    CONTROL         "Show caption",IDC_CAPTION,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,172,43,59,10
+    CONTROL         "Locked",IDC_LOCKED,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,242,43,38,10
+    CONTROL         "Hidden",IDC_HIDDEN,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,172,58,38,10
+    CONTROL         "Auto-hide",IDC_AUTOHIDE,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,242,58,47,10
+    CONTROL         "Create left toggle area",IDC_TOGGLE_AREA,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,172,73,89,10
+    CONTROL         "Use custom title:",IDC_USE_CUSTOM_TITLE,"Button",BS_AUTOCHECKBOX | WS_DISABLED | WS_TABSTOP,172,88,69,10
+    EDITTEXT        IDC_CUSTOM_TITLE,172,99,114,12,ES_AUTOHSCROLL | WS_DISABLED
+    LTEXT           "Caption orientation:",IDC_STATIC,173,117,65,8
+    COMBOBOX        IDC_CAPTIONSTYLE,172,127,60,51,CBS_DROPDOWNLIST | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Configure...",IDC_CONFIGURE,172,145,58,14,WS_DISABLED
+    LTEXT           "Use the tree shortcut menu to make changes",IDC_STATIC,7,197,152,8
+    LTEXT           "Horizontal and vertical splitters",IDC_STATIC,7,214,102,8
+    CONTROL         "Use custom divider width:",IDC_USE_CUSTOM_DIVIDER_WIDTH,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,227,98,10
+    CONTROL         "",IDC_STATIC,"Static",SS_GRAYFRAME | SS_SUNKEN | WS_GROUP,113,219,197,1,WS_EX_STATICEDGE
+    EDITTEXT        IDC_CUSTOM_DIVIDER_WIDTH,108,226,42,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_CUSTOM_DIVIDER_WIDTH_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,118,223,12,12
+    LTEXT           "px",IDC_STATIC,152,228,11,9
+    LTEXT           "Auto-hide",IDC_STATIC,7,243,32,8
+    CONTROL         "Use custom show delay:",IDC_USE_CUSTOM_SHOW_DELAY,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,256,94,10
+    CONTROL         "",IDC_STATIC,"Static",SS_GRAYFRAME | SS_SUNKEN | WS_GROUP,44,248,266,1,WS_EX_STATICEDGE
+    EDITTEXT        IDC_SHOW_DELAY,102,254,42,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_SHOW_DELAY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,133,257,9,12
+    LTEXT           "ms",IDC_STATIC,147,257,13,9
+    LTEXT           "Hide delay:",IDC_STATIC,172,257,37,8
+    EDITTEXT        IDC_HIDE_DELAY,212,254,42,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "",IDC_HIDE_DELAY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,245,256,9,12
+    LTEXT           "ms",IDC_STATIC,257,256,12,9
+    PUSHBUTTON      "Apply layout",IDC_APPLY,253,196,57,14
 END
 
 IDD_POPUP_VISHOST DIALOGEX 0, 0, 244, 94
@@ -209,7 +219,6 @@ BEGIN
     GROUPBOX        "FCS importing",IDC_STATIC,4,55,144,67
     CONTROL         "Include common title scripts",IDC_IMPORT_TITLES,"Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,21,96,104,10
     PUSHBUTTON      "Import...",IDC_IMPORT,47,73,51,14
-    GROUPBOX        "Miscellaneous",IDC_STATIC,4,133,308,130
     PUSHBUTTON      "Reset toolbars",IDC_RESET_TOOLBARS,238,149,63,14
     CONTROL         "Show toolbars",IDC_TOOLBARS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,153,61,10
     CONTROL         "Use system menu height",IDC_FULL_SIZE_MENU,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,121,150,94,10
@@ -224,6 +233,7 @@ BEGIN
     LTEXT           "Main window title format script:",IDC_STATIC,16,190,287,8
     PUSHBUTTON      "Quick setup",IDC_QUICKSETUP,45,18,59,14
     GROUPBOX        "Setup",IDC_STATIC,4,4,143,37
+    GROUPBOX        "Miscellaneous",IDC_STATIC,4,133,308,130
 END
 
 IDD_PV_COLOURS DIALOGEX 0, 0, 318, 273
@@ -769,9 +779,9 @@ BEGIN
     IDD_LAYOUT, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 309
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 263
+        RIGHTMARGIN, 310
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 267
     END
 
     IDD_POPUP_VISHOST, DIALOG
@@ -999,21 +1009,37 @@ END
 //
 
 IDB_ARROWS              BITMAP                  "up1.bmp"
+
 IDB_STOP                BITMAP                  "stop1.bmp"
+
 IDB_RAND                BITMAP                  "rand.bmp"
+
 IDB_PREV                BITMAP                  "prev.bmp"
+
 IDB_PLAY                BITMAP                  "play.bmp"
+
 IDB_PAUSE               BITMAP                  "pause.bmp"
+
 IDB_OPEN                BITMAP                  "open.bmp"
+
 IDB_NEXT                BITMAP                  "next.bmp"
+
 IDB_BLANK               BITMAP                  "next1.bmp"
+
 IDB_NEXT32              BITMAP                  "official_buttons_pack\\next.bmp"
+
 IDB_OPEN32              BITMAP                  "official_buttons_pack\\open.bmp"
+
 IDB_PAUSE32             BITMAP                  "official_buttons_pack\\pause.bmp"
+
 IDB_PLAY32              BITMAP                  "official_buttons_pack\\play.bmp"
+
 IDB_PREV32              BITMAP                  "official_buttons_pack\\prev.bmp"
+
 IDB_RAND32              BITMAP                  "official_buttons_pack\\rand.bmp"
+
 IDB_STOP32              BITMAP                  "official_buttons_pack\\stop.bmp"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1023,16 +1049,27 @@ IDB_STOP32              BITMAP                  "official_buttons_pack\\stop.bmp
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
 IDI_LOCK                ICON                    "LOCK.ico"
+
 IDI_PLAY                ICON                    "icons\\New Folder\\square\\play256.ico"
+
 IDI_STOP                ICON                    "icons\\New Folder\\square\\stop256.ico"
+
 IDI_NEXT                ICON                    "icons\\New Folder\\square\\next256.ico"
+
 IDI_RAND                ICON                    "icons\\New Folder\\square\\rand256.ico"
+
 IDI_OPEN                ICON                    "icons\\New Folder\\square\\open256.ico"
+
 IDI_PAUSE               ICON                    "icons\\New Folder\\square\\pause256.ico"
+
 IDI_PREV                ICON                    "icons\\New Folder\\square\\prev256.ico"
+
 IDI_STARON              ICON                    "icons\\star\\star on.ico"
+
 IDI_STAROFF             ICON                    "icons\\star\\star off.ico"
+
 IDI_LEFT                ICON                    "icons\\star\\left.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1040,6 +1077,7 @@ IDI_LEFT                ICON                    "icons\\star\\left.ico"
 //
 
 IDB_NOCOVER             PNG                     "emptycoverdark.png"
+
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
