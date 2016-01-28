@@ -179,7 +179,7 @@ public:
 		case WM_COMMAND:
 			switch(wp)
 			{
-			case IDC_HELP:
+			case IDC_FILTER_HELP:
 				{
 					const char * text = 
 						"You can use either enter field names (for remappings, separate multiple field names by a semi-colon) or titleformatting scripts to specify fields. "

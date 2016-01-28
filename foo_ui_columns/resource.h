@@ -166,7 +166,7 @@
 #define IDC_NEW                         1030
 #define IDC_UP2                         1030
 #define IDC_BROWSE_ICON                 1031
-#define IDC_HELP                        1031
+#define IDC_FILTER_HELP                 1031
 #define IDC_USE_CUSTOM_BUTTONS          1032
 #define IDC_INCLUDE_STATUS              1033
 #define IDC_BROWSE_BUTTONS              1033
@@ -359,7 +359,6 @@
 #define IDC_VALIGN                      1157
 #define IDC_DISC                        1158
 #define IDC_ARTWORKWIDTH                1158
-#define IDC_ICON                        1159
 #define IDC_QUICKSETUP                  1159
 #define IDC_SPINPADDING                 1160
 #define IDC_EDIT1                       1162

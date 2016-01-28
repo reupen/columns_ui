@@ -500,11 +500,6 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 		/* initialise ui */
 
-		OSVERSIONINFOEX  vi;
-		vi.dwOSVersionInfoSize = sizeof(vi);
-
-		GetVersionEx((OSVERSIONINFO*)&vi);
-
 		//			modeless_dialog_manager::add(wnd);
 
 		WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
