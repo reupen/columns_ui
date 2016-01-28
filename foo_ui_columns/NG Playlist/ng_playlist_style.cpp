@@ -55,7 +55,7 @@ namespace pvt
 					{
 						text.set_size(33);
 						text.fill(0);
-						_ultoa(p_default_colours.text_colour, text.get_ptr(), 0x10);
+						_ultoa_s(p_default_colours.text_colour, text.get_ptr(), text.get_size(), 0x10);
 					}
 					p_out->write(titleformat_inputtypes::unknown,text.get_ptr(),text.get_size());
 					p_found_flag = true;
@@ -67,7 +67,7 @@ namespace pvt
 					{
 						selected_text.set_size(33);
 						selected_text.fill(0);
-						_ultoa(p_default_colours.selected_text_colour, selected_text.get_ptr(), 0x10);
+						_ultoa_s(p_default_colours.selected_text_colour, selected_text.get_ptr(), selected_text.get_size(), 0x10);
 					}
 					p_out->write(titleformat_inputtypes::unknown,selected_text.get_ptr(),selected_text.get_size());
 					p_found_flag = true;
@@ -79,7 +79,7 @@ namespace pvt
 					{
 						back.set_size(33);
 						back.fill(0);
-						_ultoa(p_default_colours.background_colour, back.get_ptr(), 0x10);
+						_ultoa_s(p_default_colours.background_colour, back.get_ptr(), back.get_size(), 0x10);
 					}
 					p_out->write(titleformat_inputtypes::unknown,back.get_ptr(),back.get_size());
 					p_found_flag = true;
@@ -91,7 +91,7 @@ namespace pvt
 					{
 						selected_back.set_size(33);
 						selected_back.fill(0);
-						_ultoa(p_default_colours.selected_background_colour, selected_back.get_ptr(), 0x10);
+						_ultoa_s(p_default_colours.selected_background_colour, selected_back.get_ptr(), selected_back.get_size(), 0x10);
 					}
 					p_out->write(titleformat_inputtypes::unknown,selected_back.get_ptr(),selected_back.get_size());
 					p_found_flag = true;
@@ -103,7 +103,7 @@ namespace pvt
 					{
 						selected_back_no_focus.set_size(33);
 						selected_back_no_focus.fill(0);
-						_ultoa(p_default_colours.selected_background_colour_non_focus, selected_back_no_focus.get_ptr(), 0x10);
+						_ultoa_s(p_default_colours.selected_background_colour_non_focus, selected_back_no_focus.get_ptr(), selected_back_no_focus.get_size(), 0x10);
 					}
 					p_out->write(titleformat_inputtypes::unknown,selected_back_no_focus.get_ptr(),selected_back_no_focus.get_size());
 					p_found_flag = true;
@@ -115,7 +115,7 @@ namespace pvt
 					{
 						selected_text_no_focus.set_size(33);
 						selected_text_no_focus.fill(0);
-						_ultoa(p_default_colours.selected_text_colour_non_focus, selected_text_no_focus.get_ptr(), 0x10);
+						_ultoa_s(p_default_colours.selected_text_colour_non_focus, selected_text_no_focus.get_ptr(), selected_text_no_focus.get_size(), 0x10);
 					}
 					p_out->write(titleformat_inputtypes::unknown,selected_text_no_focus.get_ptr(),selected_text_no_focus.get_size());
 					p_found_flag = true;
@@ -137,7 +137,7 @@ namespace pvt
 					{
 						m_index_text.set_size(33);
 						m_index_text.fill(0);
-						_ultoa(m_index+1, m_index_text.get_ptr(), 10);
+						_ultoa_s(m_index+1, m_index_text.get_ptr(), m_index_text.get_size(), 10);
 					}
 					p_out->write(titleformat_inputtypes::unknown,m_index_text.get_ptr(),m_index_text.get_size());
 					p_found_flag = true;
@@ -378,7 +378,7 @@ namespace pvt
 
 				char temp[33];
 				memset(temp, 0, 33);
-				_ultoa(blend_target, temp, 16);
+				_ultoa_s(blend_target, temp, 16);
 				p_out->write(titleformat_inputtypes::unknown, temp, 33);
 				p_found_flag = true;
 				return true;
@@ -419,7 +419,7 @@ namespace pvt
 				char temp[33];
 				memset(temp, 0, 33);
 
-				_ultoa(newrgb, temp, 16);
+				_ultoa_s(newrgb, temp, 16);
 				p_out->write(titleformat_inputtypes::unknown, temp, 33);
 				p_found_flag = true;
 				return true;

@@ -42,7 +42,7 @@ bool titleformat_hook_style::process_field(titleformat_text_out * p_out, const c
 				{
 					text.set_size(33);
 					text.fill(0);
-					_ultoa(p_default_colours.text_colour, text.get_ptr(), 0x10);
+					_ultoa_s(p_default_colours.text_colour, text.get_ptr(), text.get_size(), 0x10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, text.get_ptr(), text.get_size());
 				p_found_flag = true;
@@ -54,7 +54,7 @@ bool titleformat_hook_style::process_field(titleformat_text_out * p_out, const c
 				{
 					selected_text.set_size(33);
 					selected_text.fill(0);
-					_ultoa(p_default_colours.selected_text_colour, selected_text.get_ptr(), 0x10);
+					_ultoa_s(p_default_colours.selected_text_colour, selected_text.get_ptr(), selected_text.get_size(), 0x10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, selected_text.get_ptr(), selected_text.get_size());
 				p_found_flag = true;
@@ -66,7 +66,7 @@ bool titleformat_hook_style::process_field(titleformat_text_out * p_out, const c
 				{
 					back.set_size(33);
 					back.fill(0);
-					_ultoa(p_default_colours.background_colour, back.get_ptr(), 0x10);
+					_ultoa_s(p_default_colours.background_colour, back.get_ptr(), back.get_size(), 0x10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, back.get_ptr(), back.get_size());
 				p_found_flag = true;
@@ -78,7 +78,7 @@ bool titleformat_hook_style::process_field(titleformat_text_out * p_out, const c
 				{
 					selected_back.set_size(33);
 					selected_back.fill(0);
-					_ultoa(p_default_colours.selected_background_colour, selected_back.get_ptr(), 0x10);
+					_ultoa_s(p_default_colours.selected_background_colour, selected_back.get_ptr(), selected_back.get_size(), 0x10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, selected_back.get_ptr(), selected_back.get_size());
 				p_found_flag = true;
@@ -90,7 +90,7 @@ bool titleformat_hook_style::process_field(titleformat_text_out * p_out, const c
 				{
 					selected_back_no_focus.set_size(33);
 					selected_back_no_focus.fill(0);
-					_ultoa(p_default_colours.selected_background_colour_non_focus, selected_back_no_focus.get_ptr(), 0x10);
+					_ultoa_s(p_default_colours.selected_background_colour_non_focus, selected_back_no_focus.get_ptr(), selected_back_no_focus.get_size(), 0x10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, selected_back_no_focus.get_ptr(), selected_back_no_focus.get_size());
 				p_found_flag = true;
@@ -102,7 +102,7 @@ bool titleformat_hook_style::process_field(titleformat_text_out * p_out, const c
 				{
 					selected_text_no_focus.set_size(33);
 					selected_text_no_focus.fill(0);
-					_ultoa(p_default_colours.selected_text_colour_non_focus, selected_text_no_focus.get_ptr(), 0x10);
+					_ultoa_s(p_default_colours.selected_text_colour_non_focus, selected_text_no_focus.get_ptr(), selected_text_no_focus.get_size(), 0x10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, selected_text_no_focus.get_ptr(), selected_text_no_focus.get_size());
 				p_found_flag = true;
@@ -344,7 +344,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
 
 			char temp[33];
 			memset(temp, 0, 33);
-			_ultoa(blend_target, temp, 16);
+			_ultoa_s(blend_target, temp, 16);
 			p_out->write(titleformat_inputtypes::unknown, temp, 33);
 			p_found_flag = true;
 			return true;
@@ -385,7 +385,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
 			char temp[33];
 			memset(temp, 0, 33);
 
-			_ultoa(newrgb, temp, 16);
+			_ultoa_s(newrgb, temp, 16);
 			p_out->write(titleformat_inputtypes::unknown, temp, 33);
 			p_found_flag = true;
 			return true;
@@ -518,7 +518,7 @@ bool titleformat_hook_date::process_field(titleformat_text_out * p_out, const ch
 				{
 					year.set_size(33);
 					year.fill(0);
-					_ultoa(p_st->wYear, year.get_ptr(), 10);
+					_ultoa_s(p_st->wYear, year.get_ptr(), year.get_size(), 10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, year.get_ptr(), pfc_infinite);
 				p_found_flag = true;
@@ -530,7 +530,7 @@ bool titleformat_hook_date::process_field(titleformat_text_out * p_out, const ch
 				{
 					month.set_size(33);
 					month.fill(0);
-					_ultoa(p_st->wMonth, month.get_ptr(), 10);
+					_ultoa_s(p_st->wMonth, month.get_ptr(), month.get_size(), 10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, month.get_ptr(), pfc_infinite);
 				p_found_flag = true;
@@ -542,7 +542,7 @@ bool titleformat_hook_date::process_field(titleformat_text_out * p_out, const ch
 				{
 					day.set_size(33);
 					day.fill(0);
-					_ultoa(p_st->wDay, day.get_ptr(), 10);
+					_ultoa_s(p_st->wDay, day.get_ptr(), day.get_size(), 10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, day.get_ptr(), pfc_infinite);
 				p_found_flag = true;
@@ -554,7 +554,7 @@ bool titleformat_hook_date::process_field(titleformat_text_out * p_out, const ch
 				{
 					dayofweek.set_size(33);
 					dayofweek.fill(0);
-					_ultoa(p_st->wDayOfWeek + 1, dayofweek.get_ptr(), 10);
+					_ultoa_s(p_st->wDayOfWeek + 1, dayofweek.get_ptr(), dayofweek.get_size(), 10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, dayofweek.get_ptr(), pfc_infinite);
 				p_found_flag = true;
@@ -566,7 +566,7 @@ bool titleformat_hook_date::process_field(titleformat_text_out * p_out, const ch
 				{
 					julian.set_size(33);
 					julian.fill(0);
-					_ultoa(date_to_julian(p_st), julian.get_ptr(), 10);
+					_ultoa_s(date_to_julian(p_st), julian.get_ptr(), julian.get_size(), 10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, julian.get_ptr(), pfc_infinite);
 				p_found_flag = true;
@@ -578,7 +578,7 @@ bool titleformat_hook_date::process_field(titleformat_text_out * p_out, const ch
 				{
 					hour.set_size(33);
 					hour.fill(0);
-					_ultoa(p_st->wHour, hour.get_ptr(), 10);
+					_ultoa_s(p_st->wHour, hour.get_ptr(), hour.get_size(), 10);
 				}
 				p_out->write(titleformat_inputtypes::unknown, hour.get_ptr(), pfc_infinite);
 				p_found_flag = true;
