@@ -107,6 +107,8 @@ public:
 	void notify_save_inline_edit(const char * value) ;
 
 	void render_get_colour_data(colour_data_t & p_out);
+	virtual const char * get_drag_unit_singular() { return "playlist"; }
+	virtual const char * get_drag_unit_plural() { return "playlists"; }
 
 	bool do_drag_drop(WPARAM wp);
 

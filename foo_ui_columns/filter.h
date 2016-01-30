@@ -195,6 +195,8 @@ namespace filter_panel {
 		//void set_focus() {SetFocus(get_wnd());}
 		virtual void render_background(HDC dc, const RECT * rc);
 		virtual void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc);
+		virtual void render_get_colour_data(colour_data_t & p_out) override;
+
 		virtual t_size get_highlight_item();
 		virtual bool notify_on_keyboard_keydown_search();
 #ifdef FILTER_OLD_SEARCH

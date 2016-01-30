@@ -639,6 +639,7 @@ namespace pvt
 		virtual void render_background(HDC dc, const RECT * rc);
 		virtual void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc);
 		virtual void render_group(HDC dc, t_size index, t_size group, const char * text, t_size indentation, t_size level, const RECT & rc);
+		virtual void render_get_colour_data(playlist_switcher_t::colour_data_t & p_out) override;
 
 		virtual void notify_on_menu_select(WPARAM wp, LPARAM lp);
 

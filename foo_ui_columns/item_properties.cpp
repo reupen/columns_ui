@@ -125,19 +125,7 @@ namespace {
 
 void selection_properties_t::render_get_colour_data(selection_properties_t::colour_data_t & p_out)
 {
-	cui::colours::helper p_helper(appearance_client_selection_properties_impl::g_guid);
-	p_out.m_themed = p_helper.get_themed();
-	p_out.m_use_custom_active_item_frame = p_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
-	p_out.m_text = p_helper.get_colour(cui::colours::colour_text);
-	p_out.m_selection_text = p_helper.get_colour(cui::colours::colour_selection_text);
-	p_out.m_background = p_helper.get_colour(cui::colours::colour_background);
-	p_out.m_selection_background = p_helper.get_colour(cui::colours::colour_selection_background);
-	p_out.m_inactive_selection_text = p_helper.get_colour(cui::colours::colour_inactive_selection_text);
-	p_out.m_inactive_selection_background = p_helper.get_colour(cui::colours::colour_inactive_selection_background);
-	p_out.m_active_item_frame = p_helper.get_colour(cui::colours::colour_active_item_frame);
-	if (!p_out.m_themed || !get_group_text_colour_default(p_out.m_group_text))
-		p_out.m_group_text = p_out.m_text;
-	p_out.m_group_background = p_out.m_background;
+	g_cui_colour_data_to_list_view(appearance_client_selection_properties_impl::g_guid, *this, p_out);
 }
 
 void selection_properties_t::g_redraw_all()

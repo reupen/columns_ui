@@ -171,18 +171,7 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 
 void playlist_switcher_t::render_get_colour_data(playlist_switcher_t::colour_data_t & p_out)
 {
-	cui::colours::helper p_helper(g_guid_colours);
-	p_out.m_themed = p_helper.get_themed();
-	p_out.m_use_custom_active_item_frame = p_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
-	p_out.m_text = p_helper.get_colour(cui::colours::colour_text);
-	p_out.m_selection_text = p_helper.get_colour(cui::colours::colour_selection_text);
-	p_out.m_background = p_helper.get_colour(cui::colours::colour_background);
-	p_out.m_selection_background = p_helper.get_colour(cui::colours::colour_selection_background);
-	p_out.m_inactive_selection_text = p_helper.get_colour(cui::colours::colour_inactive_selection_text);
-	p_out.m_inactive_selection_background = p_helper.get_colour(cui::colours::colour_inactive_selection_background);
-	p_out.m_active_item_frame = p_helper.get_colour(cui::colours::colour_active_item_frame);
-	p_out.m_group_text = get_group_text_colour_default();
-	p_out.m_group_background = p_out.m_background;
+	g_cui_colour_data_to_list_view(g_guid_colours, *this, p_out);
 }
 
 

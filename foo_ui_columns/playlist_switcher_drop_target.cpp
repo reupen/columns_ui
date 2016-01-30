@@ -191,7 +191,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
 					m_window->remove_highlight_item();
 					m_window->set_insert_mark(hi.index+1);
 					m_window->destroy_switch_timer();
-					mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+					mmh::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, *pdwEffect == DROPEFFECT_MOVE ? "Move here" : "Add to new playlist", "");
 				}
 				else
 				{
