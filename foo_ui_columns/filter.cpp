@@ -591,11 +591,11 @@ namespace filter_panel {
 			IDataObject * pDataObject = incoming_api->create_dataobject(data);
 			if (pDataObject)
 			{
+				m_drag_item_count = data.get_count();
 				DWORD blah = DROPEFFECT_NONE;
-				{
-					HRESULT hr = mmh::ole::DoDragDrop(get_wnd(), wp, pDataObject, DROPEFFECT_COPY | DROPEFFECT_MOVE, &blah);
-				}
+				HRESULT hr = mmh::ole::DoDragDrop(get_wnd(), wp, pDataObject, DROPEFFECT_COPY | DROPEFFECT_MOVE, &blah);
 				pDataObject->Release();
+				m_drag_item_count = 0;
 			}
 		}
 		return true;
@@ -1133,7 +1133,7 @@ namespace filter_panel {
 #ifdef FILTER_OLD_SEARCH
 		m_query_active(false), m_query_timer_active(false),
 #endif
-		m_show_search(false), m_contextmenu_manager_base(NULL)
+		m_show_search(false), m_contextmenu_manager_base(NULL), m_drag_item_count(0)
 	{
 
 	}
@@ -1189,6 +1189,11 @@ namespace filter_panel {
 	font_client_filter::factory<font_client_filter> g_font_client_filter;
 	font_header_client_filter::factory<font_header_client_filter> g_font_header_client_filter;
 
+
+	void appearance_client_filter_impl::on_colour_changed(t_size mask) const
+	{
+		filter_panel_t::g_redraw_all();
+	}
 
 }
 

@@ -50,6 +50,7 @@
 #include "config_defaults.h"
 #include "prefs_utils.h"
 
+#include "list_view_panel.h"
 #include "callback.h"
 #include "status_bar.h"
 #include "columns_v2.h"
@@ -65,6 +66,7 @@
 #include "playlist_view.h"
 #include "fcs.h"
 #include "playlist_manager_utils.h"
+#include "playlist_switcher.h"
 #include "playlist_switcher_v2.h"
 #include "playlist_tabs.h"
 #include "seekbar.h"

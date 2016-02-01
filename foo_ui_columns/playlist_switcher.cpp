@@ -32,27 +32,6 @@ public:
 
 font_client_switcher::factory<font_client_switcher> g_font_client_switcher;
 
-class appearance_client_ps_impl : public cui::colours::client
-{
-public:
-	static const GUID g_guid;
-
-	virtual const GUID & get_client_guid() const { return g_guid;};
-	virtual void get_name (pfc::string_base & p_out) const {p_out = "Playlist Switcher";};
-
-	virtual t_size get_supported_colours() const {return cui::colours::colour_flag_all;}; //bit-mask
-	virtual t_size get_supported_fonts() const {return 0;}; //bit-mask
-	virtual t_size get_supported_bools() const {return cui::colours::bool_flag_use_custom_active_item_frame;}; //bit-mask
-	virtual bool get_themes_supported() const {return true;};
-
-	virtual void on_colour_changed(t_size mask) const 
-	{
-		playlist_switcher_t::g_redraw_all();
-	};
-	virtual void on_font_changed(t_size mask) const {};
-	virtual void on_bool_changed(t_size mask) const {};
-};
-
 // {EB38A997-3B5F-4126-8746-262AA9C1F94B}
 const GUID appearance_client_ps_impl::g_guid = 
 { 0xeb38a997, 0x3b5f, 0x4126, { 0x87, 0x46, 0x26, 0x2a, 0xa9, 0xc1, 0xf9, 0x4b } };
@@ -84,3 +63,7 @@ namespace playlist_switcher
 	};
 }
 
+void appearance_client_ps_impl::on_colour_changed(t_size mask) const
+{
+	playlist_switcher_t::g_redraw_all();
+}

@@ -95,26 +95,6 @@ selection_properties_t::message_window_t selection_properties_t::g_message_windo
 
 pfc::ptr_list_t<selection_properties_t> selection_properties_t::g_windows;
 
-class appearance_client_selection_properties_impl : public cui::colours::client
-{
-public:
-	static const GUID g_guid;
-
-	virtual const GUID & get_client_guid() const { return g_guid;};
-	virtual void get_name (pfc::string_base & p_out) const {p_out = "Item Properties";};
-
-	virtual t_size get_supported_colours() const {return cui::colours::colour_flag_all;}; //bit-mask
-	virtual t_size get_supported_fonts() const {return 0;}; //bit-mask
-	virtual t_size get_supported_bools() const {return cui::colours::bool_flag_use_custom_active_item_frame;}; //bit-mask
-	virtual bool get_themes_supported() const {return true;};
-
-	virtual void on_colour_changed(t_size mask) const 
-	{
-		selection_properties_t::g_redraw_all();
-	};
-	virtual void on_bool_changed(t_size mask) const {};
-};
-
 // {862F8A37-16E0-4a74-B27E-2B73DB567D0F}
 const GUID appearance_client_selection_properties_impl::g_guid = 
 { 0x862f8a37, 0x16e0, 0x4a74, { 0xb2, 0x7e, 0x2b, 0x73, 0xdb, 0x56, 0x7d, 0xf } };
@@ -122,11 +102,6 @@ const GUID appearance_client_selection_properties_impl::g_guid =
 namespace {
 	cui::colours::client::factory<appearance_client_selection_properties_impl> g_appearance_client_impl;
 };
-
-void selection_properties_t::render_get_colour_data(selection_properties_t::colour_data_t & p_out)
-{
-	g_cui_colour_data_to_list_view(appearance_client_selection_properties_impl::g_guid, *this, p_out);
-}
 
 void selection_properties_t::g_redraw_all()
 {
@@ -1082,4 +1057,9 @@ int track_property_callback_itemproperties::track_property_t::g_compare(self_t c
 	int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
 	if (!ret) ret = StrCmpLogicalW(pfc::stringcvt::string_wide_from_utf8(a.m_name), pfc::stringcvt::string_wide_from_utf8(b.m_name));
 	return ret;
+}
+
+void appearance_client_selection_properties_impl::on_colour_changed(t_size mask) const
+{
+	selection_properties_t::g_redraw_all();
 }

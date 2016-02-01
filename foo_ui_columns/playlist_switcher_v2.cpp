@@ -4,10 +4,6 @@
 const GUID playlist_switcher_t::g_guid_font = 
 { 0x70a5c273, 0x67ab, 0x4bb6, { 0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd } };
 
-// {EB38A997-3B5F-4126-8746-262AA9C1F94B}
-const GUID playlist_switcher_t::g_guid_colours = 
-{ 0xeb38a997, 0x3b5f, 0x4126, { 0x87, 0x46, 0x26, 0x2a, 0xa9, 0xc1, 0xf9, 0x4b } };
-
 pfc::ptr_list_t<playlist_switcher_t> playlist_switcher_t::g_windows;
 
 void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & p_out)
@@ -168,11 +164,6 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 		m_playlist_api.release();
 		m_playback_api.release();
 	}
-
-void playlist_switcher_t::render_get_colour_data(playlist_switcher_t::colour_data_t & p_out)
-{
-	g_cui_colour_data_to_list_view(g_guid_colours, *this, p_out);
-}
 
 
 namespace

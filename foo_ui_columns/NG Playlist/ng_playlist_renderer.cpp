@@ -209,9 +209,4 @@ namespace pvt
 			}
 		}
 
-		void ng_playlist_view_t::render_get_colour_data(ng_playlist_view_t::colour_data_t & p_out)
-		{
-			g_cui_colour_data_to_list_view(appearance_client_ngpv_impl::g_guid, *this, p_out);
-		}
-
 }

@@ -17,6 +17,23 @@ namespace filter_panel {
 	extern const GUID g_guid_favouritequeries;
 	extern const GUID g_guid_showsearchclearbutton;
 
+	class appearance_client_filter_impl : public cui::colours::client {
+	public:
+		static const GUID g_guid;
+
+		virtual const GUID & get_client_guid() const { return g_guid; };
+		virtual void get_name(pfc::string_base & p_out) const { p_out = "Filter Panel"; };
+
+		virtual t_size get_supported_colours() const { return cui::colours::colour_flag_all; }; //bit-mask
+		virtual t_size get_supported_fonts() const { return 0; }; //bit-mask
+		virtual t_size get_supported_bools() const { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
+		virtual bool get_themes_supported() const { return true; };
+
+		virtual void on_colour_changed(t_size mask) const;;
+		virtual void on_font_changed(t_size mask) const {};
+		virtual void on_bool_changed(t_size mask) const {};
+	};
+
 	class field_t
 	{
 	public:
@@ -59,7 +76,7 @@ namespace filter_panel {
 	extern cfg_fields_t cfg_field_list;
 
 	class filter_panel_t :
-		public uie::container_ui_extension_t<t_list_view, uie::window>,
+		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_filter_impl>, uie::window>,
 		private mmh::fb2k::library_callback_t
 	{
 	public:
@@ -195,7 +212,6 @@ namespace filter_panel {
 		//void set_focus() {SetFocus(get_wnd());}
 		virtual void render_background(HDC dc, const RECT * rc);
 		virtual void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc);
-		virtual void render_get_colour_data(colour_data_t & p_out) override;
 
 		virtual t_size get_highlight_item();
 		virtual bool notify_on_keyboard_keydown_search();
@@ -244,8 +260,12 @@ namespace filter_panel {
 
 		void notify_on_set_focus(HWND wnd_lost);
 		void notify_on_kill_focus(HWND wnd_receiving);
+
+		virtual t_size get_drag_item_count() override {return m_drag_item_count;}
+
 		ui_selection_holder::ptr m_selection_holder;
 
+		t_size m_drag_item_count;
 		pfc::string8 m_edit_previous_value;
 		pfc::list_t<pfc::string8> m_edit_fields;
 		metadb_handle_list m_edit_handles;
@@ -370,28 +390,6 @@ namespace filter_panel {
 
 		static pfc::ptr_list_t<filter_search_bar> g_active_instances;
 	};
-
-	class appearance_client_filter_impl : public cui::colours::client
-	{
-	public:
-		static const GUID g_guid;
-
-		virtual const GUID & get_client_guid() const { return g_guid; };
-		virtual void get_name(pfc::string_base & p_out) const { p_out = "Filter Panel"; };
-
-		virtual t_size get_supported_colours() const { return cui::colours::colour_flag_all; }; //bit-mask
-		virtual t_size get_supported_fonts() const { return 0; }; //bit-mask
-		virtual t_size get_supported_bools() const { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
-		virtual bool get_themes_supported() const { return true; };
-
-		virtual void on_colour_changed(t_size mask) const
-		{
-			filter_panel_t::g_redraw_all();
-		};
-		virtual void on_font_changed(t_size mask) const {};
-		virtual void on_bool_changed(t_size mask) const {};
-	};
-
 
 };
 

@@ -1,7 +1,7 @@
 #pragma once
 
 class playlist_switcher_t : 
-	public uie::container_ui_extension_t<t_list_view, uie::window>, 
+	public uie::container_ui_extension_t<t_list_view_panel<appearance_client_ps_impl>, uie::window>,
 	private playlist_callback,
 	private play_callback
 {
@@ -106,9 +106,7 @@ public:
 	bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) ;
 	void notify_save_inline_edit(const char * value) ;
 
-	void render_get_colour_data(colour_data_t & p_out);
-	virtual const char * get_drag_unit_singular() { return "playlist"; }
-	virtual const char * get_drag_unit_plural() { return "playlists"; }
+	virtual const char * get_drag_unit_plural() const override { return "playlists"; }
 
 	bool do_drag_drop(WPARAM wp);
 
@@ -321,6 +319,5 @@ private:
 	service_ptr_t<playback_control> m_playback_api;
 
 	static const GUID g_guid_font;
-	static const GUID g_guid_colours;
 	static pfc::ptr_list_t<playlist_switcher_t> g_windows;
 };

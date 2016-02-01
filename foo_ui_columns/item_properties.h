@@ -74,6 +74,22 @@ public:
 	pfc::array_staticsize_t< pfc::list_t<track_property_t> > m_values;
 };
 
+class appearance_client_selection_properties_impl : public cui::colours::client {
+public:
+	static const GUID g_guid;
+
+	virtual const GUID & get_client_guid() const { return g_guid; };
+	virtual void get_name(pfc::string_base & p_out) const { p_out = "Item Properties"; };
+
+	virtual t_size get_supported_colours() const { return cui::colours::colour_flag_all; }; //bit-mask
+	virtual t_size get_supported_fonts() const { return 0; }; //bit-mask
+	virtual t_size get_supported_bools() const { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
+	virtual bool get_themes_supported() const { return true; };
+
+	virtual void on_colour_changed(t_size mask) const;;
+	virtual void on_bool_changed(t_size mask) const {};
+};
+
 class selection_properties_config_t
 {
 public:
@@ -95,7 +111,7 @@ private:
 };
 
 class selection_properties_t :
-	public uie::container_ui_extension_t<t_list_view, uie::window>,
+	public uie::container_ui_extension_t<t_list_view_panel<appearance_client_selection_properties_impl>, uie::window>,
 	public ui_selection_callback,
 	public play_callback,
 	public metadb_io_callback_dynamic
@@ -169,7 +185,6 @@ public:
 	virtual void notify_on_destroy();
 	virtual void notify_on_set_focus(HWND wnd_lost);
 	virtual void notify_on_kill_focus(HWND wnd_receiving);
-	virtual void render_get_colour_data(colour_data_t & p_out);
 	virtual bool notify_on_keyboard_keydown_copy();;
 	virtual bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed);;
 	void notify_on_column_size_change(t_size index, t_size new_width);

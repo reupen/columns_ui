@@ -451,6 +451,9 @@
     <ClCompile Include=".\main_window.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
+    <ClCompile Include="list_view_panel.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -613,6 +616,9 @@
     </ClInclude>
     <ClInclude Include=".\prefs_utils.h">
       <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include="list_view_panel.h">
+      <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

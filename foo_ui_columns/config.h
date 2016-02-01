@@ -1,28 +1,8 @@
 #ifndef _COLUMNS_CONFIG_H_
 #define _COLUMNS_CONFIG_H_
 
-#include "stdafx.h"
-#include "common.h"
-#include "extern.h"
-#include "playlist_switcher.h"
-//#include "sidebar.h"
-
 #define COLOUR_HELP "Style string - $set_style(text,<text colour>,<selected text colour>)\r\n$set_style(back,<background colour>,<selected background colour>[,<selected background colour no focus>])\r\n\r\n"\
 					"Square brackets denote an optional parameter."
-
-
-/*class config_ui : public config
-{
-	static bool initialising;
-	static void set_detail_enabled(HWND wnd, BOOL show);
-	static void refresh_me(HWND wnd);
-	static BOOL CALLBACK ConfigProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
-public:
-	HWND create(HWND parent);
-	const char * get_name();
-	const char * get_parent_name();
-}
-*/
 
 extern cfg_int cfg_import_titles,
 cfg_export_titles;
@@ -45,7 +25,6 @@ public:
 };
 
 preferences_tab * g_get_tab_layout();
-preferences_tab * g_get_tab_columns_v2();
 preferences_tab * g_get_tab_columns_v3();
 preferences_tab * g_get_tab_filter();
 preferences_tab * g_get_tab_artwork();

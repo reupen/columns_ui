@@ -1289,4 +1289,11 @@ namespace pvt {
 	font_header_client_ngpv::factory<font_header_client_ngpv> g_font_header_client_ngpv;
 	font_group_header_client_ngpv::factory<font_group_header_client_ngpv> g_font_group_header_client_ngpv;
 
+	void appearance_client_ngpv_impl::on_colour_changed(t_size mask) const
+	{
+		if (cfg_show_artwork && cfg_artwork_reflection && (mask & (cui::colours::colour_flag_background)))
+			ng_playlist_view_t::g_flush_artwork();
+		ng_playlist_view_t::g_update_all_items();
+	}
+
 }

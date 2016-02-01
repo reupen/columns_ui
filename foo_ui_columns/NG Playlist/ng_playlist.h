@@ -315,7 +315,28 @@ namespace pvt
 		t_size m_nocover_cx, m_nocover_cy;
 	};
 
-	class ng_playlist_view_t : public uie::container_ui_extension_t<t_list_view, uie::playlist_window>, private playlist_callback_single, private playlist_callback_base
+	class appearance_client_ngpv_impl : public cui::colours::client {
+	public:
+		static const GUID g_guid;
+
+		virtual const GUID & get_client_guid() const { return g_guid; };
+		virtual void get_name(pfc::string_base & p_out) const { p_out = "NG Playlist"; };
+
+		virtual t_size get_supported_colours() const { return cui::colours::colour_flag_all; }; //bit-mask
+		virtual t_size get_supported_fonts() const { return 0; }; //bit-mask
+		virtual t_size get_supported_bools() const { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
+		virtual bool get_themes_supported() const { return true; };
+
+		virtual void on_colour_changed(t_size mask) const;;
+		virtual void on_font_changed(t_size mask) const {};
+		virtual void on_bool_changed(t_size mask) const {};
+	};
+
+	class ng_playlist_view_t : 
+		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_ngpv_impl>, 
+		uie::playlist_window>,
+		private playlist_callback_single,
+		private playlist_callback_base
 	{
 		//friend class
 		//	artwork_reader_manager_ng_t;
@@ -639,7 +660,6 @@ namespace pvt
 		virtual void render_background(HDC dc, const RECT * rc);
 		virtual void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc);
 		virtual void render_group(HDC dc, t_size index, t_size group, const char * text, t_size indentation, t_size level, const RECT & rc);
-		virtual void render_get_colour_data(playlist_switcher_t::colour_data_t & p_out) override;
 
 		virtual void notify_on_menu_select(WPARAM wp, LPARAM lp);
 
@@ -720,28 +740,6 @@ namespace pvt
 			p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:grouping";
 			return true;
 		}
-	};
-	class appearance_client_ngpv_impl : public cui::colours::client
-	{
-	public:
-		static const GUID g_guid;
-
-		virtual const GUID & get_client_guid() const { return g_guid;};
-		virtual void get_name (pfc::string_base & p_out) const {p_out = "NG Playlist";};
-
-		virtual t_size get_supported_colours() const {return cui::colours::colour_flag_all;}; //bit-mask
-		virtual t_size get_supported_fonts() const {return 0;}; //bit-mask
-		virtual t_size get_supported_bools() const {return cui::colours::bool_flag_use_custom_active_item_frame;}; //bit-mask
-		virtual bool get_themes_supported() const {return true;};
-
-		virtual void on_colour_changed(t_size mask) const 
-		{
-			if (cfg_show_artwork && cfg_artwork_reflection && (mask & (cui::colours::colour_flag_background)))
-				ng_playlist_view_t::g_flush_artwork();
-			ng_playlist_view_t::g_update_all_items();
-		};
-		virtual void on_font_changed(t_size mask) const {};
-		virtual void on_bool_changed(t_size mask) const {};
 	};
 }
 

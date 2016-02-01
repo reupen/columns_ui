@@ -2,11 +2,6 @@
 
 namespace filter_panel {
 
-	void filter_panel_t::render_get_colour_data(colour_data_t & p_out)
-	{
-		g_cui_colour_data_to_list_view(appearance_client_filter_impl::g_guid, *this, p_out);
-	}
-
 	void filter_panel_t::render_background(HDC dc, const RECT * rc)
 	{
 		cui::colours::helper p_helper(appearance_client_filter_impl::g_guid);
