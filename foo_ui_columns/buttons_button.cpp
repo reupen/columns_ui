@@ -229,7 +229,7 @@ void toolbar_extension::button::get_name(pfc::string_base & p_out) //config
 }
 
 
-void toolbar_extension::button::read_from_file(t_config_version p_version, const char * p_base, const char * p_name, stream_reader * p_file, unsigned p_size, abort_callback & p_abort) throw (const exception_io &)
+void toolbar_extension::button::read_from_file(t_config_version p_version, const char * p_base, const char * p_name, stream_reader * p_file, unsigned p_size, abort_callback & p_abort)
 {
 	//t_filesize p_start = p_file->get_position(p_abort);
 	t_size read = 0;

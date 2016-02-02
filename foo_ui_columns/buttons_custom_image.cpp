@@ -58,7 +58,7 @@ void toolbar_extension::button::custom_image::read(t_config_version p_version, s
 		reader->read_lendian_t(m_mask_colour, p_abort);
 }
 
-void toolbar_extension::button::custom_image::read_from_file(t_config_version p_version, const char * p_base, const char * p_name, stream_reader * p_file, unsigned p_size, abort_callback & p_abort) throw (const exception_io &)
+void toolbar_extension::button::custom_image::read_from_file(t_config_version p_version, const char * p_base, const char * p_name, stream_reader * p_file, unsigned p_size, abort_callback & p_abort)
 {
 	//t_filesize p_start = p_file->get_position(p_abort);
 	t_filesize read = 0;
@@ -299,7 +299,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
 }
 
 
-void toolbar_extension::button::custom_image::write_to_file(stream_writer &p_file, bool b_paths, abort_callback & p_abort) throw (const exception_io &)
+void toolbar_extension::button::custom_image::write_to_file(stream_writer &p_file, bool b_paths, abort_callback & p_abort)
 {
 	p_file.write_lendian_t(I_BUTTON_MASK_TYPE, p_abort);
 	p_file.write_lendian_t(sizeof(m_mask_type), p_abort);
