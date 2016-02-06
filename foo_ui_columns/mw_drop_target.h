@@ -11,10 +11,6 @@
 
 class drop_handler_interface : public IDropTarget
 {
-	long drop_ref_count;
-	POINTL last_over;
-	mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
-	mmh::comptr_t<IDataObject> m_DataObject;
 public:
 	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
 	virtual ULONG STDMETHODCALLTYPE   AddRef();
@@ -30,4 +26,11 @@ public:
 	virtual HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
 	drop_handler_interface();
 
+private:
+	static bool check_window_allowed(HWND wnd);
+
+	long drop_ref_count;
+	POINTL last_over;
+	mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
+	mmh::comptr_t<IDataObject> m_DataObject;
 };

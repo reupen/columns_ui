@@ -30,39 +30,26 @@ namespace pvt
 		m_DataObject = pDataObj;
 		last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 
-#if 0
-		IEnumFORMATETC * pEnumFORMATETC = NULL;
-		if (SUCCEEDED(pDataObj->EnumFormatEtc(DATADIR_GET, &pEnumFORMATETC)))
-		{
-			FORMATETC fe;
-			memset(&fe,0,sizeof(fe));
-			while (S_OK == pEnumFORMATETC->Next(1, &fe, NULL))
-			{
-				STGMEDIUM stgm;
-				memset(&stgm, 0, sizeof(0));
-				if (SUCCEEDED(pDataObj->GetData(&fe, &stgm)))
-				{
-					//if (stgm.tymed != TYMED_ISTREAM)
-					//	pDataObjectFixed->SetData(&fe, &stgm, FALSE);
-					ReleaseStgMedium(&stgm);
-				}
-				//memset(&fe,0,sizeof(fe));
-			}
-
-			pEnumFORMATETC->Release();
-		}
-#endif
-
 		POINT pt = {ptl.x, ptl.y};
 		if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragEnter(p_playlist->get_wnd(), pDataObj, &pt, *pdwEffect);
 
-		*pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL)) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
-		if (ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect) || static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj))
+		bool uid_handled = ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect);
+
+		m_is_accepted_type = uid_handled || static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj);
+		if (!uid_handled)
 		{
-			UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
-			return S_OK; 	
+			if (m_is_accepted_type)
+			{
+				*pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL)) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
+				UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
+			}
+			else
+			{
+				*pdwEffect = DROPEFFECT_NONE;
+				mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+			}
 		}
-		return S_FALSE; 	
+		return S_OK;
 	}
 
 	HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
@@ -70,12 +57,22 @@ namespace pvt
 		POINT pt = {ptl.x, ptl.y};
 		if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
-		*pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == m_DataObject  && (0 == (grfKeyState & MK_CONTROL)) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 		last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 		POINT pti;
 		pti.y = ptl.y;
 		pti.x = ptl.x;
 
+		if (!m_is_accepted_type)
+		{
+			*pdwEffect = DROPEFFECT_NONE;
+			mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+			return S_OK;
+		}
+
+		if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get_ptr(), pdwEffect))
+			return S_OK;
+
+		*pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == m_DataObject  && (0 == (grfKeyState & MK_CONTROL)) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 		UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
 
 		if (p_playlist->get_wnd())
@@ -140,9 +137,15 @@ namespace pvt
 
 		*pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL))? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 		m_DataObject.release();
-		
 		p_playlist->destroy_timer_scroll_up();
 		p_playlist->destroy_timer_scroll_down();
+
+		if (!m_is_accepted_type)
+		{
+			*pdwEffect = DROPEFFECT_NONE;
+			p_playlist->remove_insert_mark();
+			return S_OK;
+		}
 
 		POINT pti;
 		pti.y = ptl.y;
@@ -319,7 +322,7 @@ namespace pvt
 
 		return S_OK;		
 	}
-	IDropTarget_playlist::IDropTarget_playlist(ng_playlist_view_t * playlist) : drop_ref_count(0), last_rmb(false), p_playlist(playlist)
+	IDropTarget_playlist::IDropTarget_playlist(ng_playlist_view_t * playlist) : drop_ref_count(0), last_rmb(false), p_playlist(playlist), m_is_accepted_type(false)
 	{
 		m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER);
 	}

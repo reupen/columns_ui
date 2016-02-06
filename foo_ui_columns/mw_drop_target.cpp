@@ -8,6 +8,11 @@ drop_handler_interface::drop_handler_interface() : drop_ref_count(0)
 	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER);
 }
 
+bool drop_handler_interface::check_window_allowed(HWND wnd)
+{
+	return wnd && (wnd == g_main_window || wnd == g_rebar || IsChild(g_rebar, wnd)) || wnd == g_status_pane.get_wnd() || wnd == g_status;
+}
+
 HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
 {
 	POINT pt = { ptl.x, ptl.y };
@@ -17,11 +22,11 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DW
 	static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
 
 	HWND wnd = WindowFromPoint(pt);
-	bool b_fuck_death = wnd != g_main_window && !IsChild(g_main_window, wnd);
+	bool is_allowed_window = check_window_allowed(wnd);
 
-	*pdwEffect = b_fuck_death ? DROPEFFECT_NONE : DROPEFFECT_COPY;
+	*pdwEffect = is_allowed_window ? DROPEFFECT_COPY : DROPEFFECT_NONE;
 
-	bool process = !ui_drop_item_callback::g_on_drop(pDataObj) && !b_fuck_death;
+	bool process = !ui_drop_item_callback::g_on_drop(pDataObj) && is_allowed_window;
 
 	if (process && g_last_rmb)
 	{
@@ -93,21 +98,25 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragOver(DWORD grfKeyState, PO
 	g_last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 
 	HWND wnd = WindowFromPoint(pt);
-	bool b_fuck_death = wnd != g_main_window && !IsChild(g_main_window, wnd);
+	bool is_allowed_window = check_window_allowed(wnd);
+	bool uid_handled = ui_drop_item_callback::g_is_accepted_type(m_DataObject, pdwEffect);
 
 	//if (last_over.x != pt.x || last_over.y != pt.y)
-	if (ui_drop_item_callback::g_is_accepted_type(m_DataObject, pdwEffect) || (!b_fuck_death && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(m_DataObject)))
+	if (!uid_handled)
 	{
-		*pdwEffect = DROPEFFECT_COPY;
+		if (is_allowed_window && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(m_DataObject))
+		{
+			*pdwEffect = DROPEFFECT_COPY;
 
-		pfc::string8 name;
-		static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-		mmh::ole::SetDropDescription(m_DataObject, DROPIMAGE_COPY, "Add to %1", name);
-	}
-	else
-	{
-		*pdwEffect = DROPEFFECT_NONE;
-		mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+			pfc::string8 name;
+			static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
+			mmh::ole::SetDropDescription(m_DataObject, DROPIMAGE_COPY, "Add to %1", name);
+		}
+		else
+		{
+			*pdwEffect = DROPEFFECT_NONE;
+			mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+		}
 	}
 
 	last_over = ptl;
@@ -128,20 +137,23 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragEnter(IDataObject *pDataOb
 	g_last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 
 	HWND wnd = WindowFromPoint(pt);
-	bool b_fuck_death = wnd != g_main_window && !IsChild(g_main_window, wnd);
+	bool is_allowed_window = check_window_allowed(wnd);
+	bool uid_handled = ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect);
 
-	if (ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect) || (!b_fuck_death && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj)))
+	if (!uid_handled)
 	{
-		*pdwEffect = DROPEFFECT_COPY;
-		pfc::string8 name;
-		static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-		mmh::ole::SetDropDescription(pDataObj, DROPIMAGE_COPY, "Add to %1", name);
-		return S_OK;
-	}
-	else
-	{
-		*pdwEffect = DROPEFFECT_NONE;
-		mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+		if (is_allowed_window && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj))
+		{
+			*pdwEffect = DROPEFFECT_COPY;
+			pfc::string8 name;
+			static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
+			mmh::ole::SetDropDescription(pDataObj, DROPIMAGE_COPY, "Add to %1", name);
+		}
+		else
+		{
+			*pdwEffect = DROPEFFECT_NONE;
+			mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+		}
 	}
 	return S_OK; //??
 }

@@ -38,14 +38,16 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
 	if (ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect))
 	{
-		return S_OK;
+		m_is_accepted_type = true;
 	}
 	else if (static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj))
 	{
 		*pdwEffect = DROPEFFECT_COPY;
-		return S_OK;
+		m_is_accepted_type = true;
 	}
-	return S_FALSE;
+	else
+		m_is_accepted_type = false;
+	return S_OK;
 }
 
 
@@ -54,11 +56,22 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 	POINT pt = { ptl.x, ptl.y };
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
+	if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get_ptr(), pdwEffect))
+		return S_OK;
+
 	*pdwEffect = DROPEFFECT_COPY;
 	m_last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 
 	if (last_over.x != pt.x || last_over.y != pt.y)
 	{
+		last_over = ptl;
+
+		if (!m_is_accepted_type)
+		{
+			*pdwEffect = DROPEFFECT_NONE;
+			mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+			return S_OK;
+		}
 
 		static_api_ptr_t<playlist_manager> playlist_api;
 		POINT pti, ptm;
@@ -108,8 +121,6 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
 		}
 		if ((!p_list->wnd_tabs || wnd != p_list->wnd_tabs))  p_list->kill_switch_timer();
-
-		last_over = ptl;
 	}
 
 	return S_OK;
@@ -136,6 +147,15 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
 	p_list->kill_switch_timer();
+	m_DataObject.release();
+	last_over.x = 0;
+	last_over.y = 0;
+
+	if (!m_is_accepted_type)
+	{
+		mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+		return S_OK;
+	}
 
 	static_api_ptr_t<playlist_manager> playlist_api;
 
@@ -318,11 +338,10 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 			data.remove_all();
 		}
 	}
-	m_DataObject.release();
 
 	return S_OK;
 }
-playlists_tabs_extension::playlists_tabs_drop_target::playlists_tabs_drop_target(playlists_tabs_extension * p_wnd) : drop_ref_count(0), p_list(p_wnd), m_last_rmb(false)
+playlists_tabs_extension::playlists_tabs_drop_target::playlists_tabs_drop_target(playlists_tabs_extension * p_wnd) : drop_ref_count(0), p_list(p_wnd), m_last_rmb(false), m_is_accepted_type(false)
 {
 	last_over.x = 0; last_over.y = 0;
 	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC);

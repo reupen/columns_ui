@@ -707,6 +707,7 @@ namespace pvt
 
 		long drop_ref_count;
 		bool last_rmb;
+		bool m_is_accepted_type;
 		service_ptr_t<ng_playlist_view_t> p_playlist;
 		pfc::com_ptr_t<IDataObject> m_DataObject;
 		mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;

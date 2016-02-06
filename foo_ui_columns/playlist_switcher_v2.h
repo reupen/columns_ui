@@ -25,14 +25,6 @@ class playlist_switcher_t :
 
 	class IDropTarget_t : public IDropTarget
 	{
-		long drop_ref_count;
-		bool m_last_rmb;
-		bool m_is_playlists;
-		service_ptr_t<playlist_switcher_t> m_window;
-		pfc::com_ptr_t<IDataObject> m_DataObject;
-		service_ptr_t<ole_interaction_v2> m_ole_api;
-		service_ptr_t<playlist_manager_v4> m_playlist_api;
-		mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
 	public:
 		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
 		ULONG STDMETHODCALLTYPE   AddRef();
@@ -43,7 +35,16 @@ class playlist_switcher_t :
 		HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
 
 		IDropTarget_t(playlist_switcher_t * p_window);
-
+	private:
+		long drop_ref_count;
+		bool m_last_rmb;
+		bool m_is_playlists;
+		bool m_is_accepted_type;
+		service_ptr_t<playlist_switcher_t> m_window;
+		pfc::com_ptr_t<IDataObject> m_DataObject;
+		service_ptr_t<ole_interaction_v2> m_ole_api;
+		service_ptr_t<playlist_manager_v4> m_playlist_api;
+		mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
 	};
 
 public:

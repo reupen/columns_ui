@@ -79,12 +79,6 @@ public:
 
 	class playlists_tabs_drop_target : public IDropTarget
 	{
-		bool m_last_rmb;
-		long drop_ref_count;
-		POINTL last_over;
-		service_ptr_t<playlists_tabs_extension> p_list;
-		pfc::com_ptr_t<IDataObject> m_DataObject;
-		mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
 	public:
 		virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
 		virtual ULONG STDMETHODCALLTYPE   AddRef();
@@ -94,6 +88,14 @@ public:
 		virtual HRESULT STDMETHODCALLTYPE DragLeave(void);
 		virtual HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
 		playlists_tabs_drop_target(playlists_tabs_extension * p_wnd);
+	private:
+		bool m_last_rmb;
+		bool m_is_accepted_type;
+		long drop_ref_count;
+		POINTL last_over;
+		service_ptr_t<playlists_tabs_extension> p_list;
+		pfc::com_ptr_t<IDataObject> m_DataObject;
+		mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
 	};
 
 	virtual void FB2KAPI on_items_removing(unsigned p_playlist, const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count);;//called before actually removing them

@@ -106,24 +106,36 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragEnter(IDataObj
 
 	m_is_playlists = g_query_dataobj_supports_format(m_ole_api->get_clipboard_format(m_ole_api->KClipboardFormatMultiFPL), pDataObj);
 
-	if (ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect) 
-		|| (S_OK == m_ole_api->check_dataobject(pDataObj, dummy, native)))
+	m_is_accepted_type = ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect) || S_OK == m_ole_api->check_dataobject(pDataObj, dummy, native);
+	if (!m_is_accepted_type)
 	{
-		return S_OK; 	
+		*pdwEffect = DROPEFFECT_NONE;
+		mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
 	}
-	return S_FALSE; 	
+	return S_OK; 	
 }
 
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
 {
-		POINT pt = {ptl.x, ptl.y};
-		if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragOver(&pt, *pdwEffect);
+	POINT pt = {ptl.x, ptl.y};
+	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
 	if (!m_ole_api.is_valid())
 		return S_FALSE;
 
+	if (!m_is_accepted_type)
+	{
+		*pdwEffect = DROPEFFECT_NONE;
+		mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+		return S_OK;
+	}
+
+	if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get_ptr(), pdwEffect))
+		return S_OK;
+
 	*pdwEffect = m_window->m_dragging && m_window->m_DataObject == m_DataObject  && (0 == (grfKeyState & MK_CONTROL)) ? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 	m_last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
+
 	POINT pti;
 	pti.y = ptl.y;
 	pti.x = ptl.x;
@@ -219,6 +231,8 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave( void)
 	m_window->destroy_timer_scroll_down();
 	m_window->destroy_switch_timer();
 	m_is_playlists = false;
+	m_is_accepted_type = false;
+
 	mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
 
 	m_DataObject.release();
@@ -236,10 +250,18 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 
 	*pdwEffect = m_window->m_dragging && m_window->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL))? DROPEFFECT_MOVE : DROPEFFECT_COPY;
 	m_DataObject.release();
-
 	m_window->destroy_timer_scroll_up();
 	m_window->destroy_timer_scroll_down();
 	m_window->destroy_switch_timer();
+
+	if (!m_is_accepted_type)
+	{
+		*pdwEffect = DROPEFFECT_NONE;
+		m_window->remove_insert_mark();
+		m_window->remove_highlight_item();
+		m_is_playlists = false;
+		return S_OK;
+	}
 
 	POINT pti;
 	pti.y = ptl.y;
@@ -422,11 +444,13 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 	mmh::ole::SetDropDescription(pDataObj, DROPIMAGE_INVALID, "", "");
 
 	m_is_playlists = false;
+	m_is_accepted_type = false;
 
 	return S_OK;		
 }
+
 playlist_switcher_t::IDropTarget_t::IDropTarget_t(playlist_switcher_t * p_window) : drop_ref_count(0), 
-m_last_rmb(false), m_window(p_window), m_is_playlists(false)
+m_last_rmb(false), m_window(p_window), m_is_playlists(false), m_is_accepted_type(false)
 {
 	try {
 		m_ole_api = standard_api_create_t<ole_interaction_v2>();
