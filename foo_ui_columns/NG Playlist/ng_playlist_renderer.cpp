@@ -186,7 +186,7 @@ namespace pvt
 
 			ui_helpers::text_out_colours_tab(dc, text, strlen(text), 2 + indentation*level, 2, &rc, false, cr, true, true, true, ui_helpers::ALIGN_LEFT, NULL, true, true, &text_width);
 
-			t_size cx = text_width;
+			LONG cx = (LONG)min(text_width, MAXLONG);
 
 			RECT rc_line = {cx+7, rc.top+RECT_CY(rc)/2, rc.right-4, rc.top+RECT_CY(rc)/2+1};
 

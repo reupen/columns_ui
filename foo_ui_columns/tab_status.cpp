@@ -93,7 +93,7 @@ public:
 			break;
 			case IDC_SHOW_STATUSPANE:
 			{
-				settings::show_status_pane = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				settings::show_status_pane = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0;
 				on_show_status_pane_change();
 			}
 			break;

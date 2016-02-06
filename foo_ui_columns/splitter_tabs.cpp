@@ -489,8 +489,8 @@ void splitter_window_tabs_impl::update_size_limits()
 			m_size_limits.max_height = m_size_limits.min_height;
 	}
 	clip_sizelimit(m_size_limits);
-	RECT rcmin = {0, 0, m_size_limits.min_width, m_size_limits.min_height};
-	RECT rcmax = {0, 0, m_size_limits.max_width, m_size_limits.max_height};
+	RECT rcmin = {0, 0, (LONG)m_size_limits.min_width, (LONG)m_size_limits.min_height};
+	RECT rcmax = {0, 0, (LONG)m_size_limits.max_width, (LONG)m_size_limits.max_height};
 	adjust_rect(TRUE, &rcmin);
 	adjust_rect(TRUE, &rcmax);
 	m_size_limits.min_width = RECT_CX(rcmin);
@@ -952,7 +952,7 @@ void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
 	//SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 	
 	t_size i, count = m_active_panels.get_count();
-	RECT rc = {0,0,width,height};
+	RECT rc = {0, 0, (LONG)width, (LONG)height};
 	adjust_rect(FALSE, &rc);
 	for (i=0; i<count; i++)
 	{
