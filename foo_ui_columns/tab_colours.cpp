@@ -83,11 +83,6 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 	case WM_COMMAND:
 		switch (wp)
 		{
-			/*case IDC_IMPORT:
-			{
-			g_import_pv_colours_to_unified_global();
-			}
-			break;*/
 		case IDC_COLOURS_ELEMENT | (CBN_SELCHANGE << 16) :
 		{
 			int idx = ComboBox_GetCurSel((HWND)lp);

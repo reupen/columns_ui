@@ -88,22 +88,22 @@ BEGIN
     GROUPBOX        "General",IDC_STATIC,4,5,309,41
     CONTROL         "Allow playlist rearrangement by dragging",IDC_PLDRAG,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,91,147,10
-    CONTROL         "Middle click deletes playlists",IDC_MCLICK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,22,103,10
-    CONTROL         "Double click renames playlist",IDC_MCLICK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,195,91,106,10
+    CONTROL         "Middle-click deletes playlists",IDC_MCLICK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,22,106,10
+    CONTROL         "Double-click renames playlist",IDC_MCLICK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,195,91,106,10
     GROUPBOX        "Playlists switcher tabs",IDC_STATIC,4,61,309,50
     CONTROL         "Only show tabs when multiple playlists are open",IDC_PLAUTOHIDE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,77,169,10
     CONTROL         "Multiline tabs",IDC_TABS_MULTILINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,195,77,57,10
     GROUPBOX        "Playlists switcher panel",IDC_STATIC,4,127,309,135
-    LTEXT           "Vertical item padding:",IDC_STATIC,15,146,70,8
+    LTEXT           "Vertical item padding:",IDC_STATIC,15,146,73,8
     EDITTEXT        IDC_PLHEIGHT,91,144,41,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPINPL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,123,150,9,10
     CONTROL         "Show tooltips for clipped items",IDC_SIDEBAR_TOOLTIPS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,162,113,10
     LTEXT           "Edge style:",IDC_STATIC,164,146,37,8
     COMBOBOX        IDC_PLISTEDGE,205,144,41,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Use titleformatting for playlist title in panel:",IDC_USE_PLAYLIST_TF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,176,154,10
+    CONTROL         "Use title formatting for playlist title in panel:",IDC_USE_PLAYLIST_TF,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,176,161,10
     EDITTEXT        IDC_PLAYLIST_TF,14,188,290,50,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "px",IDC_STATIC,134,146,9,8
     PUSHBUTTON      "Apply",IDC_APPLY,253,240,50,14
@@ -121,8 +121,7 @@ BEGIN
     PUSHBUTTON      "Browse...",IDC_BROWSE_ICON,83,52,39,14
     CONTROL         "Show popup notification balloons",IDC_BALLOON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,71,121,10
     CONTROL         "Show now playing sub-menu in icon shortcut menu",IDC_NOWPL,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,87,177,10
-    CONTROL         "Update only...",IDC_UPDATEONLY,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,235,70,63,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,87,181,10
     EDITTEXT        IDC_STRING,15,116,287,56,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "Tooltip title format script:",IDC_STATIC,16,106,287,8
 END
@@ -134,15 +133,15 @@ FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
     GROUPBOX        "Drag and drop",-1,4,4,309,260
     CONTROL         "Switch playlist when dragging items over tabs or panel, delay",IDC_AUTOSWITCH,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,24,211,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,24,215,10
     EDITTEXT        IDC_SWITCH_DELAY,230,22,34,12,ES_AUTOHSCROLL
     CONTROL         "Spin1",IDC_SWITCH_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,256,23,9,10
     LTEXT           "ms",-1,267,24,10,8
-    LTEXT           "When creating a playlist from dropped files..",-1,14,61,143,8
+    LTEXT           "When creating a playlist from dropped files..",-1,14,61,161,8
     CONTROL         "Replace underscores from filename/directory generated playlist names",IDC_REMOVE_UNDERSCORES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,79,247,10
     CONTROL         "Compare following string and use output for name if identical for all files dropped",IDC_DROP_USE_STRING,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,96,282,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,96,283,10
     EDITTEXT        IDC_DROP_STRING,14,113,291,63,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "Use \\ character to separate multiple strings",-1,15,176,142,8
     CONTROL         "Activate target playlist on dropped items",IDC_ACTIVATE_TARGET,
@@ -208,7 +207,7 @@ BEGIN
     LTEXT           "Visualisation:",IDC_STATIC,3,4,42,8
     PUSHBUTTON      "Configure...",IDC_CONFIGURE,191,29,48,14
     COMBOBOX        IDC_FRAME,3,57,236,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Window frame style:",IDC_STATIC,3,47,67,8
+    LTEXT           "Window frame style:",IDC_STATIC,3,47,73,8
 END
 
 IDD_MAIN DIALOGEX 0, 0, 318, 270
@@ -221,7 +220,6 @@ BEGIN
     PUSHBUTTON      "Import...",IDC_IMPORT,47,73,51,14
     PUSHBUTTON      "Reset toolbars",IDC_RESET_TOOLBARS,238,149,63,14
     CONTROL         "Show toolbars",IDC_TOOLBARS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,153,61,10
-    CONTROL         "Use system menu height",IDC_FULL_SIZE_MENU,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,121,150,94,10
     CONTROL         "Use transparency, opacity",IDC_USE_TRANSPARENCY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,170,101,10
     EDITTEXT        IDC_TRANSPARENCY_LEVEL,118,168,31,12,ES_AUTOHSCROLL
     CONTROL         "",IDC_TRANSPARENCY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,151,169,11,10
@@ -234,76 +232,6 @@ BEGIN
     PUSHBUTTON      "Quick setup",IDC_QUICKSETUP,45,18,59,14
     GROUPBOX        "Setup",IDC_STATIC,4,4,143,37
     GROUPBOX        "Miscellaneous",IDC_STATIC,4,133,308,130
-END
-
-IDD_PV_COLOURS DIALOGEX 0, 0, 318, 273
-STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD
-EXSTYLE WS_EX_CONTROLPARENT
-FONT 8, "Tahoma", 0, 0, 0x1
-BEGIN
-    GROUPBOX        "Colours",IDC_STATIC,4,78,309,166,NOT WS_VISIBLE
-    LTEXT           "Playlist:",IDC_STATIC,14,24,26,8
-    LTEXT           "Column titles:",IDC_STATIC,14,42,44,8
-    LTEXT           "Static",IDC_PLAYLIST_FONT_DESC,78,24,165,10
-    LTEXT           "Static",IDC_COLUMNS_FONT_DESC,78,42,165,10
-    PUSHBUTTON      "Change...",IDC_CHANGE_PLAYLIST_FONT,252,21,52,14
-    PUSHBUTTON      "Change...",IDC_CHANGE_COLUMNS_FONT,252,39,52,14
-    GROUPBOX        "Fonts",IDC_STATIC,4,4,309,59
-    LTEXT           "Text:",IDC_STATIC,13,113,18,8,NOT WS_VISIBLE
-    LTEXT           "Selection text:",IDC_STATIC,14,129,48,8,NOT WS_VISIBLE
-    LTEXT           "",IDC_PATCH_TEXT,225,108,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    PUSHBUTTON      "Change...",IDC_CHANGE_TEXT,252,108,52,14,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_TEXT,252,127,52,14,NOT WS_VISIBLE
-    LTEXT           "Background:",IDC_STATIC,14,148,41,8,NOT WS_VISIBLE
-    LTEXT           "Selection background:",IDC_STATIC,14,167,72,8,NOT WS_VISIBLE
-    LTEXT           "",IDC_PATCH_BACK,225,146,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    PUSHBUTTON      "Change...",IDC_CHANGE_BACK,252,146,52,14,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_BACK,252,165,52,14,NOT WS_VISIBLE
-    LTEXT           "Inactive selection background:",IDC_STATIC,14,203,99,8,NOT WS_VISIBLE
-    LTEXT           "",IDC_PATCH_FRAME,225,220,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_BACK_NO_FOCUS,252,201,52,14,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_FRAME,252,220,52,14,NOT WS_VISIBLE
-    RTEXT           "Note: Item specific colours can be overriden in the style string.",IDC_STATIC,111,255,202,8,NOT WS_VISIBLE
-    CONTROL         "Custom active item frame:",IDC_CUSTOM_FRAME,"Button",BS_AUTOCHECKBOX | NOT WS_VISIBLE | WS_TABSTOP,13,223,100,10
-    LTEXT           "Inactive selection text:",IDC_STATIC,14,185,75,8,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_TEXT_NO_FOCUS,252,183,52,14,NOT WS_VISIBLE
-    COMBOBOX        IDC_COLOURS_MODE,167,90,135,12,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Mode:",IDC_STATIC,14,97,21,8,NOT WS_VISIBLE
-END
-
-IDD_SWITCHER_COLOURS DIALOGEX 0, 0, 319, 272
-STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD
-EXSTYLE WS_EX_CONTROLPARENT
-FONT 8, "Tahoma", 0, 0, 0x1
-BEGIN
-    GROUPBOX        "Fonts",IDC_STATIC,4,4,310,65
-    LTEXT           "Text:",IDC_STATIC,13,117,18,8,NOT WS_VISIBLE
-    LTEXT           "Selection text:",IDC_STATIC,14,136,48,8,NOT WS_VISIBLE
-    LTEXT           "",IDC_PATCH_TEXT,224,115,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    LTEXT           "",IDC_PATCH_SEL_TEXT,224,134,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    PUSHBUTTON      "Change...",IDC_CHANGE_TEXT,251,115,52,14,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_TEXT,251,134,52,14,NOT WS_VISIBLE
-    LTEXT           "Playlist switcher:",IDC_STATIC,14,24,54,8
-    LTEXT           "Playlist tabs:",IDC_STATIC,14,42,42,8
-    LTEXT           "Static",IDC_SWITCHER_FONT_DESC,78,24,170,10
-    LTEXT           "Static",IDC_TABS_FONT_DESC,78,42,170,10
-    PUSHBUTTON      "Change...",IDC_CHANGE_SWITCHER_FONT,251,21,52,14
-    PUSHBUTTON      "Change...",IDC_CHANGE_TABS_FONT,251,39,52,14
-    LTEXT           "Background:",IDC_STATIC,14,155,41,8,NOT WS_VISIBLE
-    LTEXT           "Selection background:",IDC_STATIC,14,174,72,8,NOT WS_VISIBLE
-    LTEXT           "",IDC_PATCH_BACK,224,153,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    LTEXT           "",IDC_PATCH_SEL_BACK,224,172,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    PUSHBUTTON      "Change...",IDC_CHANGE_BACK,251,153,52,14,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_BACK,251,172,52,14,NOT WS_VISIBLE
-    GROUPBOX        "Colours",IDC_STATIC,4,95,310,167,NOT WS_VISIBLE
-    LTEXT           "Inactive selection background (no focus):",IDC_STATIC,14,212,134,8,NOT WS_VISIBLE
-    LTEXT           "Active item frame:",IDC_STATIC,14,231,60,8,NOT WS_VISIBLE
-    LTEXT           "",IDC_PATCH_SEL_BACK_NO_FOCUS,224,210,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    LTEXT           "",IDC_PATCH_FRAME,224,229,18,14,NOT WS_VISIBLE,WS_EX_STATICEDGE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_BACK_NO_FOCUS,251,210,52,14,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_FRAME,251,229,52,14,NOT WS_VISIBLE
-    LTEXT           "Inactive selection text:",IDC_STATIC,14,193,75,8,NOT WS_VISIBLE
-    PUSHBUTTON      "Change...",IDC_CHANGE_SEL_TEXT_NO_FOCUS,252,191,52,14,NOT WS_VISIBLE
 END
 
 IDD_POPUP_SPECTRUM_NEW DIALOGEX 0, 0, 202, 168
@@ -321,11 +249,11 @@ BEGIN
     PUSHBUTTON      "Change...",IDC_CHANGE_BACK,128,25,60,14
     CONTROL         "Bars mode",IDC_BARS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,49,49,10
     COMBOBOX        IDC_FRAME_COMBO,14,110,174,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Window frame style:",IDC_STATIC,14,100,67,8
+    LTEXT           "Window frame style:",IDC_STATIC,14,100,97,8
     COMBOBOX        IDC_SCALE,14,78,79,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Horizontal scale:",IDC_STATIC,14,68,54,8
     COMBOBOX        IDC_VERTICAL_SCALE,109,78,79,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Vertical scale:",IDC_STATIC,109,68,45,8
+    LTEXT           "Vertical scale:",IDC_STATIC,109,68,66,8
 END
 
 IDD_IMAGE DIALOGEX 0, 0, 288, 61
@@ -414,16 +342,16 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,158,55,125,10
     CONTROL         "Display sort arrows on sorted playlists",IDC_SORT_ARROWS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,158,71,137,10
-    LTEXT           "Vertical item padding:",IDC_STATIC,14,106,70,8
-    EDITTEXT        IDC_HEIGHT,86,104,31,12,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "Vertical item padding:",IDC_STATIC,14,106,75,8
+    EDITTEXT        IDC_HEIGHT,88,104,31,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "Spin1",IDC_SPIN1,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,131,106,11,10
-    LTEXT           "px",IDC_STATIC,119,106,9,8
+    LTEXT           "px",IDC_STATIC,121,106,9,8
     LTEXT           "Playlist edge style:",IDC_STATIC,159,106,61,8
     COMBOBOX        IDC_PLEDGE,223,103,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Action to perform when double clicking on empty playlist area:",IDC_STATIC,14,126,199,8
+    LTEXT           "Action to perform when double clicking on empty playlist area:",IDC_STATIC,14,126,220,8
     COMBOBOX        IDC_PLAYLIST_DOUBLE,14,136,290,136,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "",IDC_MENU_DESC,14,153,289,10,WS_DISABLED
-    LTEXT           "Action to perform when middle clicking on playlist item:",IDC_STATIC,14,168,174,8
+    LTEXT           "Action to perform when middle clicking on playlist item:",IDC_STATIC,14,168,190,8
     COMBOBOX        IDC_PLAYLIST_MIDDLE,14,178,290,136,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Artwork (NG Playlist only)",IDC_STATIC,4,214,309,52
     CONTROL         "Display artwork in groups",IDC_SHOWARTWORK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,13,232,97,10
@@ -532,21 +460,21 @@ BEGIN
     PUSHBUTTON      "Move down",IDC_DOWN,73,101,50,14
     PUSHBUTTON      "New",IDC_NEW,140,101,50,14
     PUSHBUTTON      "Remove",IDC_REMOVE,194,101,50,14
-    PUSHBUTTON      "Help", IDC_FILTER_HELP,247,101,50,14
+    PUSHBUTTON      "Help",IDC_FILTER_HELP,247,101,50,14
     GROUPBOX        "Behaviour",IDC_STATIC,5,137,308,124
     CONTROL         "Sort incoming files by:",IDC_SORT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,154,86,10
     EDITTEXT        IDC_SORT_STRING,106,152,190,14,ES_AUTOHSCROLL
     CONTROL         "Auto-send selection to playlist",IDC_AUTOSEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,20,172,112,10
-    LTEXT           "Double click action:",IDC_STATIC,19,224,62,8
+    LTEXT           "Double-click action:",IDC_STATIC,19,224,73,8
     COMBOBOX        IDC_DBLCLK,19,234,127,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Middle click action:",IDC_STATIC,169,224,60,8
+    LTEXT           "Middle-click action:",IDC_STATIC,169,224,76,8
     COMBOBOX        IDC_MIDDLE,169,234,127,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Edge style:",IDC_STATIC,169,192,37,8
     COMBOBOX        IDC_EDGESTYLE,169,202,51,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Filter precedence:",IDC_STATIC,19,192,59,8
+    LTEXT           "Filter precedence:",IDC_STATIC,19,192,69,8
     COMBOBOX        IDC_PRECEDENCE,19,202,127,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Show items with empty labels",IDC_SHOWEMPTY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,169,172,109,10
-    LTEXT           "Vertical item padding:",IDC_STATIC,229,192,70,8
+    LTEXT           "Vertical item padding:",IDC_STATIC,229,192,84,8
     EDITTEXT        IDC_PADDING,229,202,41,12,ES_AUTOHSCROLL | ES_NUMBER
     CONTROL         "",IDC_SPINPADDING,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,285,205,11,10
     LTEXT           "px",IDC_STATIC,272,204,9,8
@@ -625,7 +553,7 @@ BEGIN
     CONTROL         "Show status bar",IDC_SHOW_STATUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,22,68,10
     CONTROL         "Show volume",IDC_VOL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,37,58,10
     CONTROL         "Show selected tracks' total length",IDC_SELTIME,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,158,37,123,10
-    LTEXT           "Action to perform on double click:",IDC_STATIC,14,126,108,8
+    LTEXT           "Action to perform on double-click:",IDC_STATIC,14,126,124,8
     COMBOBOX        IDC_MENU_DBLCLK,14,137,289,136,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "",IDC_MENU_DESC,14,155,289,10,WS_DISABLED
     CONTROL         "Show playlist lock status",IDC_SHOW_LOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,158,22,93,10
@@ -662,8 +590,7 @@ BEGIN
     PUSHBUTTON      "Change...",IDC_CHANGE_BACK6,146,230,52,14,NOT WS_VISIBLE
     COMBOBOX        IDC_COLOURS_ELEMENT,167,19,135,12,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Element:",IDC_STATIC,13,24,29,8
-    LTEXT           "Active item frame:",IDC_STATIC,14,163,60,8
-    PUSHBUTTON      "Import playlist view colour settings from previous versions as global settings",IDC_IMPORT,13,201,290,14,NOT WS_VISIBLE
+    LTEXT           "Active item frame:",IDC_STATIC,14,163,75,8
 END
 
 IDD_ARTWORK DIALOGEX 0, 0, 319, 270
@@ -673,7 +600,7 @@ FONT 8, "Tahoma", 0, 0, 0x0
 BEGIN
     GROUPBOX        "Artwork sources",IDC_GROUP_FIELDS,5,3,308,190
     LTEXT           "You can set up sources for artwork here. Enter title formatting scripts that specify absolute or relative paths to the artwork. Do not specify the file extension.",IDC_STATIC,21,20,278,18
-    LTEXT           "Built-in foobar2000 artwork reader mode:",IDC_STATIC,22,153,134,8
+    LTEXT           "Built-in foobar2000 artwork reader mode:",IDC_STATIC,22,153,142,8
     COMBOBOX        IDC_FB2KARTWORK,20,162,276,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     GROUPBOX        "Artwork view panel",IDC_GROUP_FIELDS2,5,217,308,47
     LTEXT           "Panel edge style:",IDC_STATIC,22,238,56,8
@@ -719,11 +646,11 @@ BEGIN
     PUSHBUTTON      "Generate font code...",IDC_GEN_FONT,24,217,88,14
     EDITTEXT        IDC_FONT_CODE,118,218,141,12,ES_AUTOHSCROLL | ES_READONLY
     GROUPBOX        "Appearance",IDC_STATIC,14,254,256,54
-    LTEXT           "Horizontal alignment:",IDC_STATIC,25,271,68,8
-    COMBOBOX        IDC_HALIGN,97,268,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Vertical alignment:",IDC_STATIC,25,287,60,8
-    COMBOBOX        IDC_VALIGN,97,285,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Panel edge style:",IDC_STATIC,147,271,56,8
+    LTEXT           "Horizontal alignment:",IDC_STATIC,25,271,70,8
+    COMBOBOX        IDC_HALIGN,99,268,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Vertical alignment:",IDC_STATIC,25,287,67,8
+    COMBOBOX        IDC_VALIGN,99,285,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Panel edge style:",IDC_STATIC,150,271,56,8
     COMBOBOX        IDC_EDGESTYLE,219,268,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
@@ -798,22 +725,6 @@ BEGIN
         RIGHTMARGIN, 312
         TOPMARGIN, 4
         BOTTOMMARGIN, 263
-    END
-
-    IDD_PV_COLOURS, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 313
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 263
-    END
-
-    IDD_SWITCHER_COLOURS, DIALOG
-    BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 314
-        TOPMARGIN, 4
-        BOTTOMMARGIN, 262
     END
 
     IDD_POPUP_SPECTRUM_NEW, DIALOG
