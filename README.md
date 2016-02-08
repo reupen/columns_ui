@@ -6,26 +6,33 @@ http://yuo.be/columns_ui
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
 
-A VS2015 solution can be found in the vc14 folder.
-
 To clone the repo and dependencies, run:
 
 `git clone --recursive https://github.com/reupen/columns_ui.git`
 
-## Updates
+This repo makes use of git submodules. If you're not familiar with them, [there is a guide here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
-### 31 December 2015
+## Build instructions
 
-I'm in the process of transferring all repos to my main GitHub account, so don't be alarmed at the change in repo owner. GitHub should keep redirects in place for the current repo URIs.
+Visual Studio 2015 Update 1 is requied to build Columns UI. You may also need the [Windows SDK for Windows 10](https://dev.windows.com/en-us/downloads/windows-10-sdk) and the [Windows SDK for Windows 7 and .NET Framework 4](https://www.microsoft.com/en-gb/download/details.aspx?id=8279).
 
-### 26 December 2015
+### Using the Visual Studio IDE
+Open `vc14/columns_ui-public.sln` in Visual Studio 2015 Update 1. 
+Select the Release configuration and the Win32 platform, and build the solution. 
+If the build is successful, `foo_ui_columns.dll` will be output in `vc14\Release`.
 
-There has been further restructure of all the repos with more stuff moved to submodules. The instructions below about cloning/updating clones still apply.
+### Using MSBuild
 
-### 29 November 2015
+You can use MSBuild if you prefer. In a VS2015 Native Tools x86 command prompt, run:
 
-Some libraries have been moved to the [foobar2000-common](https://github.com/msquared2/foobar2000-common) repository and added to this repository as a submodule. 
+```
+msbuild /m /p:Platform=Win32 /p:Configuration=Release vc14\columns_ui-public.sln
+```
 
-Use `--recursive` when cloning this repository to clone foobar2000-common at the same time.
+If the build is successful, `foo_ui_columns.dll` will be output in `vc14\Release`.
 
-For an existing clone, use `git submodule init` and `git submodule update`.
+For a clean build, run:
+
+```
+msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc14\columns_ui-public.sln
+```
