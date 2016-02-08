@@ -193,10 +193,13 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_SYSCOMMAND:
 		if (wp == SC_KEYMENU && !lp)
 		{
-			bool processed = false;
-			if (g_rebar_window) processed = g_rebar_window->on_alt_up();
-			if (!processed) g_layout_window.set_menu_focus();
-			else g_layout_window.hide_menu_access_keys();
+			if (!HIBYTE(GetKeyState(VK_CONTROL))) // Workaround for obscure OS bug involving global keyboard shortcuts
+			{
+				bool processed = false;
+				if (g_rebar_window) processed = g_rebar_window->on_alt_up();
+				if (!processed) g_layout_window.set_menu_focus();
+				else g_layout_window.hide_menu_access_keys();
+			}
 			return 0;
 		}
 		break;
