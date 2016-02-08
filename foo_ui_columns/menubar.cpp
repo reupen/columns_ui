@@ -207,6 +207,7 @@ class menu_extension : public ui_extension::container_menu_ui_extension, message
 
 	WNDPROC menuproc;
 	bool initialised;
+	bool m_menu_key_pressed;
 public:
 //	static pfc::ptr_list_t<playlists_list_window> list_wnd;
 	//static HHOOK msghook;
@@ -282,7 +283,7 @@ bool menu_extension::hooked = false;
 
 menu_extension::menu_extension() : wnd_menu(0), menuproc(0), 
 	redrop(true), is_submenu(false), active_item(0), sub_menu_ref_count(-1), /*hooked(false), */
-	actual_active(0), initialised(false), p_manager(0), wnd_prev_focus(0)
+	actual_active(0), initialised(false), p_manager(0), wnd_prev_focus(0), m_menu_key_pressed(false)
 {
 };
 
@@ -535,11 +536,13 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
 	case WM_KILLFOCUS:
 		{
+			m_menu_key_pressed = false;
 			update_menu_acc();
 		}
 		break;
 	case WM_SETFOCUS:
 		{
+			m_menu_key_pressed = false;
 			show_menu_acc();
 			wnd_prev_focus=(HWND)wp;
 		}
@@ -551,11 +554,18 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	case WM_KEYDOWN:
 		{
 			win32_keyboard_lparam & lpkeyb = get_keyboard_lparam(lp);
-			if ( (wp == VK_ESCAPE || wp==VK_MENU) && !lpkeyb.previous_key_state) 
+			if ( (wp == VK_ESCAPE || (wp == VK_F10 && !HIBYTE(GetKeyState(VK_SHIFT))) || wp==VK_MENU) && !lpkeyb.previous_key_state)
 			{
 				update_menu_acc();
-				if (wp == VK_ESCAPE) SetFocus(wnd_prev_focus);
-				else PostMessage(wnd, TB_SETHOTITEM, -1, 0);
+				if (wp == VK_ESCAPE)
+				{
+					SetFocus(wnd_prev_focus);
+				}
+				else
+				{
+					m_menu_key_pressed = true;
+					PostMessage(wnd, TB_SETHOTITEM, -1, 0);
+				}
 				return 0;
 			}
 			else if ( (wp == VK_SPACE) && !lpkeyb.previous_key_state) 
@@ -570,9 +580,10 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		break;
 	case WM_SYSKEYUP:
 		{
-			if ( wp==VK_MENU) 
+			if (m_menu_key_pressed && (wp==VK_MENU || wp == VK_F10))
 			{
 				SetFocus(wnd_prev_focus);
+				m_menu_key_pressed = false;
 				return 0;
 			}
 		}
