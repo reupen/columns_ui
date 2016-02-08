@@ -83,8 +83,17 @@ public:
 
 				if (g_main_window)
 				{
-					if (cfg_show_systray && !g_icon_created) create_systray_icon();
-					else if (!cfg_show_systray && g_icon_created && (!IsIconic(g_main_window) || !cfg_minimise_to_tray)) destroy_systray_icon();
+					auto is_iconic = IsIconic(g_main_window) != 0;
+					if (cfg_show_systray && !g_icon_created)
+					{
+						create_systray_icon();
+					}
+					else if (!cfg_show_systray && g_icon_created && (!is_iconic || !cfg_minimise_to_tray))
+					{
+						destroy_systray_icon();
+						if (is_iconic)
+							standard_commands::main_activate();
+					}
 					if (g_status) update_systray();
 				}
 			}
