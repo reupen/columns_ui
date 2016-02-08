@@ -10,7 +10,7 @@ To clone the repo and dependencies, run:
 
 `git clone --recursive https://github.com/reupen/columns_ui.git`
 
-This repo makes use of git submodules. If you're not familiar with them, [there is a guide here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
+This repo makes use of git submodules. If you're not familiar with them, [check out the guide here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
 ## Build instructions
 
