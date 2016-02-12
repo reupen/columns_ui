@@ -278,7 +278,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 		break;
 #if 0
 	case WM_PAINT:
-		ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));
+		uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDOK));
 		return TRUE;
 	case WM_CTLCOLORSTATIC:
 		SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
@@ -289,7 +289,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 		//	SetWindowLongPtr(wnd, DWLP_MSGRESULT, FALSE);
 		//	return TRUE;
 		//case WM_PAINT:
-		//	ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));
+		//	uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDOK));
 		//	return TRUE;
 		//case WM_CTLCOLORBTN:
 		//case WM_CTLCOLORDLG:

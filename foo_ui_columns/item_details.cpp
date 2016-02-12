@@ -362,7 +362,7 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
 
 void item_details_t::refresh_contents(bool b_new_track)
 {
-	//disable_redrawing_t noRedraw(get_wnd());
+	//DisableRedrawing noRedraw(get_wnd());
 	bool b_Update = true;
 	if (m_handles.get_count())
 	{

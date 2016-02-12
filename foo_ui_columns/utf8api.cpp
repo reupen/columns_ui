@@ -14,7 +14,7 @@ namespace win32_helpers
 
 		bool b_themed = thm != NULL;//p_uxtheme->IsThemeActive() && p_uxtheme->IsAppThemed();
 
-		HRESULT hr = get_comctl32_version(dvi);
+		HRESULT hr = uih::GetComCtl32Version(dvi);
 
 		if (!(SUCCEEDED(hr) && dvi.info1.dwMajorVersion == 6))
 			//uxtheme_handle::g_create(p_uxtheme);

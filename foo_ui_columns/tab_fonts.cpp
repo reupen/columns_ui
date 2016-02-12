@@ -184,7 +184,7 @@ void tab_appearance_fonts::update_mode_combobox()
 	index = ComboBox_AddString(m_wnd_colours_mode, L"Custom");
 	ComboBox_SetItemData(m_wnd_colours_mode, index, cui::fonts::font_mode_custom);
 
-	ComboBox_SetCurSel(m_wnd_colours_mode, win32_helpers::combobox_find_item_by_data(m_wnd_colours_mode, m_element_ptr->font_mode));
+	ComboBox_SetCurSel(m_wnd_colours_mode, uih::ComboBox_FindItemByData(m_wnd_colours_mode, m_element_ptr->font_mode));
 }
 
 BOOL CALLBACK tab_appearance_fonts::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

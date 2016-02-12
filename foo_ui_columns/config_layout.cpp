@@ -700,7 +700,7 @@ class tab_layout_new : public preferences_tab
 		{
 		case WM_INITDIALOG:
 			{
-				g_set_treeview_window_explorer_theme(GetDlgItem(wnd, IDC_TREE));
+				uih::SetTreeViewWindowExplorerTheme(GetDlgItem(wnd, IDC_TREE));
 				cfg_layout.save_active_preset();
 				if (!cfg_layout.get_presets().get_count())
 					cfg_layout.reset_presets();

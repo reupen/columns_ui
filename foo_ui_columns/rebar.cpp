@@ -833,7 +833,7 @@ void rebar_window::destroy()
 void rebar_window::update_bands()
 {
 	refresh_bands(false);
-	win32_helpers::rebar_show_all_bands(wnd_rebar);
+	uih::Rebar_ShowAllBands(wnd_rebar);
 }
 
 void rebar_window::delete_band(unsigned n)

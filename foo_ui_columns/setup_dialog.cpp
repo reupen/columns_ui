@@ -26,7 +26,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		HWND wnd_theming = GetDlgItem(wnd, IDC_THEMING);
 		HWND wnd_grouping = GetDlgItem(wnd, IDC_GROUPING);
 
-		g_set_listview_window_explorer_theme(wnd_lv);
+		uih::SetListViewWindowExplorerTheme(wnd_lv);
 
 		RECT rc_work, rc_dialog;
 		SystemParametersInfo(SPI_GETWORKAREA, NULL, &rc_work, NULL);
@@ -51,7 +51,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		RECT rc;
 		GetClientRect(wnd_lv, &rc);
 
-		ListView_InsertColumnText(wnd_lv, 0, _T("Preset"), RECT_CX(rc));
+		uih::ListView_InsertColumnText(wnd_lv, 0, _T("Preset"), RECT_CX(rc));
 
 		SendMessage(wnd_lv, WM_SETREDRAW, FALSE, 0);
 
@@ -65,7 +65,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		t_size i, count = m_presets.get_count();
 		for (i = 0; i<count; i++)
 		{
-			ListView_InsertItemText(wnd_lv, i, 0, m_presets[i].m_name, false);
+			uih::ListView_InsertItemText(wnd_lv, i, 0, m_presets[i].m_name, false);
 		}
 		ComboBox_InsertString(wnd_theming, 0, L"No");
 		ComboBox_InsertString(wnd_theming, 1, L"Yes");
@@ -99,7 +99,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
 		return (BOOL)GetSysColorBrush(COLOR_WINDOW);
 	case WM_PAINT:
-		ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDCANCEL));
+		uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDCANCEL));
 		return TRUE;
 	case WM_COMMAND:
 		switch (wp)

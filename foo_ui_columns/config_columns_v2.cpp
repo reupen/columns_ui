@@ -589,7 +589,7 @@ public:
 		int i, t = m_columns.get_count();
 		for (i = 0; i < t; i++)
 		{
-			ListView_InsertItemText(wnd_lv, i, 0 ,m_columns[i]->name);
+			uih::ListView_InsertItemText(wnd_lv, i, 0 ,m_columns[i]->name);
 		}
 
 		uSendDlgItemMessage(wnd,IDC_COLUMNS,WM_SETREDRAW,true,0);
@@ -629,9 +629,9 @@ public:
 				m_wnd = wnd;
 				//if (g_main_window && !cfg_nohscroll ) playlist_view::g_save_columns();
 				HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
-				g_set_listview_window_explorer_theme(wnd_lv);
+				uih::SetListViewWindowExplorerTheme(wnd_lv);
 				ListView_SetExtendedListViewStyleEx(wnd_lv, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
-				ListView_InsertColumnText(wnd_lv, 0, L"Column", 50);
+				uih::ListView_InsertColumnText(wnd_lv, 0, L"Column", 50);
 
 				m_columns.set_entries_copy(g_columns);
 
@@ -677,7 +677,7 @@ public:
 							column_t::ptr temp = new column_t;
 							temp->name = "New Column";
 							t_size insert = m_columns.insert_item(temp, idx>=0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
-							ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
+							uih::ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
 							ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
 							ListView_EnsureVisible(wnd_lv, insert, FALSE);
 						}
@@ -700,8 +700,8 @@ public:
 							{
 								if (idx > 0 && m_columns.move_up(idx)) 
 								{
-									ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-									ListView_InsertItemText(wnd_lv, idx-1, 0, m_columns[idx-1]->name, true);
+									uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
+									uih::ListView_InsertItemText(wnd_lv, idx-1, 0, m_columns[idx-1]->name, true);
 									ListView_SetItemState(wnd_lv, idx-1, LVIS_SELECTED, LVIS_SELECTED);
 									ListView_EnsureVisible(wnd_lv, idx-1, FALSE);
 								}
@@ -710,8 +710,8 @@ public:
 							{
 								if ((t_size)(idx +1) < m_columns.get_count() && m_columns.move_down(idx)) 
 								{
-									ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-									ListView_InsertItemText(wnd_lv, idx+1, 0, m_columns[idx+1]->name, true);
+									uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
+									uih::ListView_InsertItemText(wnd_lv, idx+1, 0, m_columns[idx+1]->name, true);
 									ListView_SetItemState(wnd_lv, idx+1, LVIS_SELECTED, LVIS_SELECTED);
 									ListView_EnsureVisible(wnd_lv, idx+1, FALSE);
 								}
@@ -755,7 +755,7 @@ public:
 				HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
 				int item = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
 				if (item != -1 && item < m_columns.get_count())
-					ListView_InsertItemText(wnd_lv, item, 0, m_columns[item]->name, true);
+					uih::ListView_InsertItemText(wnd_lv, item, 0, m_columns[item]->name, true);
 			}
 			return 0;
 		case WM_NOTIFY:
@@ -834,8 +834,8 @@ public:
 					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
 					if (idx >= 0 && idx>0 && m_columns.move_up(idx)) 
 					{
-						ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-						ListView_InsertItemText(wnd_lv, idx-1, 0, m_columns[idx-1]->name, true);
+						uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
+						uih::ListView_InsertItemText(wnd_lv, idx-1, 0, m_columns[idx-1]->name, true);
 						ListView_SetItemState(wnd_lv, idx-1, LVIS_SELECTED, LVIS_SELECTED);
 						ListView_EnsureVisible(wnd_lv, idx-1, FALSE);
 					}
@@ -848,8 +848,8 @@ public:
 					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
 					if (idx >= 0 && (t_size(idx+1)) < m_columns.get_count() && m_columns.move_down(idx)) 
 					{
-						ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-						ListView_InsertItemText(wnd_lv, idx+1, 0, m_columns[idx+1]->name, true);
+						uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
+						uih::ListView_InsertItemText(wnd_lv, idx+1, 0, m_columns[idx+1]->name, true);
 						ListView_SetItemState(wnd_lv, idx+1, LVIS_SELECTED, LVIS_SELECTED);
 						ListView_EnsureVisible(wnd_lv, idx+1, FALSE);
 					}
@@ -865,7 +865,7 @@ public:
 						column_t::ptr temp = new column_t;
 						temp->name = "New Column";
 						t_size insert = m_columns.insert_item(temp, idx>=0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
-						ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
+						uih::ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
 						ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
 						ListView_EnsureVisible(wnd_lv, insert, FALSE);
 					}
@@ -900,7 +900,7 @@ public:
 						pfc::string8 temp;
 						m_columns.get_string(new_idx, temp, STRING_NAME);
 
-						if (ListView_InsertItemText(wnd_lv, new_idx, 0, "New Column") == -1)
+						if (uih::ListView_InsertItemText(wnd_lv, new_idx, 0, "New Column") == -1)
 							m_columns.delete_item(new_idx);
 						else
 						{
@@ -917,7 +917,7 @@ public:
 					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
 					if (idx >= 0 && m_columns.insert_item(idx, "New Column", "", false, "", false, "", 100, ALIGN_LEFT, FILTER_NONE, "", 100, true, ""))
 					{
-						if (ListView_InsertItemText(wnd_lv, idx, 0, "New Column") == -1)
+						if (uih::ListView_InsertItemText(wnd_lv, idx, 0, "New Column") == -1)
 						{
 							m_columns.delete_item(idx);
 						}
@@ -930,7 +930,7 @@ public:
 					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
 					column_info * temp = new column_info;
 					temp->set_string(STRING_NAME, "New Column");
-					ListView_InsertItemText(wnd_lv, m_columns.get_count(), 0, "New Column");
+					uih::ListView_InsertItemText(wnd_lv, m_columns.get_count(), 0, "New Column");
 					ListView_SetItemState(wnd_lv, m_columns.get_count(), LVIS_SELECTED, LVIS_SELECTED);
 					ListView_EnsureVisible(wnd_lv, m_columns.get_count(), FALSE);
 					m_columns.add_item(temp);

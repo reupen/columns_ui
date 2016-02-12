@@ -553,7 +553,7 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	case WM_SYSKEYDOWN:
 	case WM_KEYDOWN:
 		{
-			win32_keyboard_lparam & lpkeyb = get_keyboard_lparam(lp);
+			auto lpkeyb = uih::GetKeyboardLParam(lp);
 			if ( (wp == VK_ESCAPE || (wp == VK_F10 && !HIBYTE(GetKeyState(VK_SHIFT))) || wp==VK_MENU) && !lpkeyb.previous_key_state)
 			{
 				update_menu_acc();
@@ -571,7 +571,7 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			else if ( (wp == VK_SPACE) && !lpkeyb.previous_key_state) 
 			{
 				LPARAM newlp = lp;
-				((win32_keyboard_lparam&)newlp).context_code = 1;
+				((uih::KeyboardLParam&)newlp).context_code = 1;
 				HWND wndparent = uFindParentPopup(wnd);
 				if (wndparent) PostMessage(wndparent, WM_SYSKEYDOWN, wp, lp | (1<<29) ); 
 				return 0;

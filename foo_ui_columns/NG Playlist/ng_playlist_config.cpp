@@ -83,16 +83,16 @@ namespace pvt
 				HWND list = uGetDlgItem(wnd,IDC_GROUPS);
 
 				ListView_SetExtendedListViewStyleEx(list, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
-				g_set_listview_window_explorer_theme(list);
+				uih::SetListViewWindowExplorerTheme(list);
 
 				Button_SetCheck(GetDlgItem(wnd, IDC_GROUPING), cfg_grouping ? BST_CHECKED : BST_UNCHECKED);
-				ListView_InsertColumnText(list, 0, _T("Script"), 400);
+				uih::ListView_InsertColumnText(list, 0, _T("Script"), 400);
 
 				unsigned n,m = g_groups.get_groups().get_count();
 				pfc::string8_fastalloc temp;
 				for(n=0;n<m;n++)
 				{
-					ListView_InsertItemText(list, n, 0, g_groups.get_groups()[n].string.get_ptr());
+					uih::ListView_InsertItemText(list, n, 0, g_groups.get_groups()[n].string.get_ptr());
 				}
 			}
 			//initialised=true;
@@ -115,7 +115,7 @@ namespace pvt
 							if (run_edit_view(p,wnd))
 							{
 								g_groups.replace_group(lpnmia->iItem, p.value);
-								ListView_InsertItemText(lpnm->hwndFrom, lpnmia->iItem, 0, p.value.string, true);
+								uih::ListView_InsertItemText(lpnm->hwndFrom, lpnmia->iItem, 0, p.value.string, true);
 							}
 						}
 
@@ -139,8 +139,8 @@ namespace pvt
 					if (idx != LB_ERR && idx>0)
 					{
 						g_groups.swap(idx,idx-1);
-						ListView_InsertItemText(list, idx, 0, g_groups.get_groups()[idx].string.get_ptr(), true);
-						ListView_InsertItemText(list, idx-1, 0, g_groups.get_groups()[idx-1].string.get_ptr(), true);
+						uih::ListView_InsertItemText(list, idx, 0, g_groups.get_groups()[idx].string.get_ptr(), true);
+						uih::ListView_InsertItemText(list, idx-1, 0, g_groups.get_groups()[idx-1].string.get_ptr(), true);
 						ListView_SetItemState(list, idx-1, LVIS_SELECTED, LVIS_SELECTED);
 					}
 				}
@@ -152,8 +152,8 @@ namespace pvt
 					if (idx != LB_ERR && idx+1<g_groups.get_groups().get_count())
 					{
 						g_groups.swap(idx,idx+1);
-						ListView_InsertItemText(list, idx, 0, g_groups.get_groups()[idx].string.get_ptr(), true);
-						ListView_InsertItemText(list, idx+1, 0, g_groups.get_groups()[idx+1].string.get_ptr(), true);
+						uih::ListView_InsertItemText(list, idx, 0, g_groups.get_groups()[idx].string.get_ptr(), true);
+						uih::ListView_InsertItemText(list, idx+1, 0, g_groups.get_groups()[idx+1].string.get_ptr(), true);
 						ListView_SetItemState(list, idx+1, LVIS_SELECTED, LVIS_SELECTED);
 					}
 				}
@@ -180,7 +180,7 @@ namespace pvt
 					{
 						HWND list = uGetDlgItem(wnd,IDC_GROUPS);
 						unsigned n = g_groups.add_group(group_t(p.value));
-						ListView_InsertItemText(list, n, 0, p.value.string.get_ptr());
+						uih::ListView_InsertItemText(list, n, 0, p.value.string.get_ptr());
 						ListView_SetItemState(list, n, LVIS_SELECTED, LVIS_SELECTED);
 					}
 				}

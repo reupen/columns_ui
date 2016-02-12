@@ -74,7 +74,7 @@ BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
 		SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
 		return TRUE;
 	case WM_PAINT:
-		ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));
+		uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDOK));
 		return TRUE;
 	case WM_CTLCOLORSTATIC:
 		SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));

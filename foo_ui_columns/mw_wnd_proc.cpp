@@ -509,7 +509,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
 		WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
 
-		win32_helpers::RegisterShellHookWindowHelper(wnd);
+		uih::RegisterShellHookWindowHelper(wnd);
 
 		INITCOMMONCONTROLSEX icex;
 		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -520,7 +520,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 		//g_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&g_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
 
-		if (!g_keyboard_cues_enabled())
+		if (!uih::GetKeyboardCuesEnabled())
 			SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
 		g_main_window = wnd;
@@ -570,7 +570,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 		else if (wp == SPI_SETKEYBOARDCUES)
 		{
-			bool cues = g_keyboard_cues_enabled();
+			bool cues = uih::GetKeyboardCuesEnabled();
 			SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(cues ? UIS_CLEAR : UIS_SET, UISF_HIDEFOCUS), NULL);
 			//SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(cues ? UIS_CLEAR : UIS_SET, UISF_HIDEFOCUS), NULL);
 			//return 0;
@@ -811,7 +811,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 		if ((LOWORD(wp) == WA_INACTIVE))
 		{
-			if (!g_keyboard_cues_enabled())
+			if (!uih::GetKeyboardCuesEnabled())
 				SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
 			wnd_last = GetFocus();
 			//if (is_win2k_or_newer())
@@ -850,7 +850,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 		g_get_msg_hook.deregister_hook();
 		g_layout_window.destroy();
-		win32_helpers::DeregisterShellHookWindowHelper(wnd);
+		uih::DeregisterShellHookWindowHelper(wnd);
 
 
 		destroy_rebar(false);

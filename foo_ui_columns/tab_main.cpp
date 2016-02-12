@@ -29,7 +29,7 @@ public:
 		case WM_INITDIALOG:
 		{
 			HWND wnd_lv = GetDlgItem(wnd, IDC_LIBRARIES);
-			g_set_listview_window_explorer_theme(wnd_lv);
+			uih::SetListViewWindowExplorerTheme(wnd_lv);
 			//SetWindowLongPtr(wnd_lv, GWL_EXSTYLE, GetWindowLongPtr(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
 
 			listview_helper::insert_column(wnd_lv, 0, "Library", 50);
@@ -170,7 +170,7 @@ public:
 		{
 			modeless_dialog_manager::g_add(wnd);
 			HWND wnd_lv = GetDlgItem(wnd, IDC_LIBRARIES);
-			g_set_listview_window_explorer_theme(wnd_lv);
+			uih::SetListViewWindowExplorerTheme(wnd_lv);
 			//SetWindowLongPtr(wnd_lv, GWL_EXSTYLE, GetWindowLongPtr(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
 
 			listview_helper::insert_column(wnd_lv, 0, "Library", 50);
@@ -181,7 +181,7 @@ public:
 			{
 				DLLVERSIONINFO2 dvi;
 				pfc::string8 path;
-				HRESULT hr = win32_helpers::get_comctl32_version(dvi, &path);
+				HRESULT hr = uih::GetComCtl32Version(dvi, &path);
 
 				pfc::string8 temp;
 

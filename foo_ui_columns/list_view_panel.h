@@ -26,8 +26,7 @@ protected:
 		// Load 256x256 icon because otherwise Windows helpfully picks a low-res version
 		icon_ptr icon((static_api_ptr_t<ui_control>()->load_main_icon(256, 256)));
 		// Ideally, we would show artwork, but this will do for now.
-		// We may want to use better scaling too.
-		DrawIconEx(dc, 0, 0, icon, RECT_CX(rc), RECT_CY(rc), NULL, NULL, DI_NORMAL);
+		uih::DrawDragImageIcon(dc, rc, icon);
 	}
 private:
 };

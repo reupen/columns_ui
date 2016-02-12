@@ -169,7 +169,7 @@ LRESULT playlist_view::CreateToolTip(const char * text)
 	if (g_tooltip) {DestroyWindow(g_tooltip); g_tooltip=0;}
 
 	DLLVERSIONINFO2 dvi;
-	bool b_comctl_6 = SUCCEEDED(win32_helpers::get_comctl32_version(dvi)) && dvi.info1.dwMajorVersion >= 6;
+	bool b_comctl_6 = SUCCEEDED(uih::GetComCtl32Version(dvi)) && dvi.info1.dwMajorVersion >= 6;
 
 	g_tooltip = CreateWindowEx(b_comctl_6?WS_EX_TRANSPARENT:0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_NOPREFIX ,		
 		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, wnd_playlist, 0, core_api::get_my_instance(), NULL);

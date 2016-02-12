@@ -300,7 +300,7 @@ public:
 			return 0;
 		case WM_KEYDOWN:
 			{
-				win32_keyboard_lparam & lpkeyb = get_keyboard_lparam(lp);
+				auto lpkeyb = uih::GetKeyboardLParam(lp);
 				if (b_popup && wp == VK_ESCAPE && !lpkeyb.transition_code && !lpkeyb.previous_key_state)
 				{
 					PostMessage(wnd, WM_CLOSE, 0, 0);

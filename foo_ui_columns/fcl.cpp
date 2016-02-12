@@ -91,7 +91,7 @@ public:
 				HWND wnd_combo = m_import ? NULL : GetDlgItem(wnd, IDC_DEST);
 				SetWindowLongPtr(wnd_tree, GWL_STYLE, GetWindowLongPtr(wnd_tree, GWL_STYLE)|TVS_CHECKBOXES);
 
-				g_set_treeview_window_explorer_theme(wnd_tree);
+				uih::SetTreeViewWindowExplorerTheme(wnd_tree);
 
 				if (wnd_combo)
 				{
@@ -252,7 +252,7 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			modeless_dialog_manager::g_add(wnd);
 			SetWindowText(wnd, _T("FCL import results"));
 			HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
-			g_set_listview_window_explorer_theme(wnd_lv);
+			uih::SetListViewWindowExplorerTheme(wnd_lv);
 			t_import_results_data * p_data = reinterpret_cast<t_import_results_data*>(lp);
 
 			SetWindowText(GetDlgItem(wnd, IDC_CAPTION), 
@@ -263,8 +263,8 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			memset(&lvc, 0, sizeof(LVCOLUMN));
 			lvc.mask = LVCF_TEXT|LVCF_WIDTH;
 
-			ListView_InsertColumnText(wnd_lv, 0, _T("Name"), 150);
-			ListView_InsertColumnText(wnd_lv, 1, _T("GUID"), 300);
+			uih::ListView_InsertColumnText(wnd_lv, 0, _T("Name"), 150);
+			uih::ListView_InsertColumnText(wnd_lv, 1, _T("GUID"), 300);
 
 			SendMessage(wnd_lv, WM_SETREDRAW, FALSE, 0);
 
@@ -275,8 +275,8 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			for (i=0;i<count;i++)
 			{
 				pfc::string8 temp;
-				ListView_InsertItemText(wnd_lv, i, 0, p_data->m_items[i].name, false);
-				ListView_InsertItemText(wnd_lv, i, 1, pfc::print_guid(p_data->m_items[i].guid), true);
+				uih::ListView_InsertItemText(wnd_lv, i, 0, p_data->m_items[i].name, false);
+				uih::ListView_InsertItemText(wnd_lv, i, 1, pfc::print_guid(p_data->m_items[i].guid), true);
 			}
 			SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
 			RedrawWindow(wnd_lv,NULL,NULL,RDW_INVALIDATE|RDW_UPDATENOW);

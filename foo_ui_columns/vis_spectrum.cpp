@@ -328,7 +328,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
 		return TRUE;
 	case WM_PAINT:
-		ui_helpers::innerWMPaintModernBackground(wnd, GetDlgItem(wnd, IDOK));
+		uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDOK));
 		return TRUE;
 	case WM_CTLCOLORSTATIC:
 		{
