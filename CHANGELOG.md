@@ -1,5 +1,7 @@
 # Change log
+
 ## 0.4.0 (preliminary)
+
 ### Improved spectrum analyser
 Improved spectrum analyser display by using foobar2000's 'New FFT [behaviour] for spectrum-generating methods' and adjusting x- and y-axis logarithmic scales. 
 
@@ -39,24 +41,30 @@ The setting is on the Layout preferences page.
 * Fixed incorrect inclusion of trailing spaces on lines in Item details when word wrapping was on.
 
 ## 0.3.9.x
+
 ### 0.3.9.2
 *  Updated to latest foobar2000 SDK; foobar2000 1.3+ now required
 *  Disabled a compiler option causing problems on XP/Wine
 *  Compiled with Visual Studio 2015 Update 1
 *  New /columnsui:import-quiet CLI command to import FCLs with fewer prompts than /columnsui:import
+
 ### 0.3.9.1
 *  Fixed obscure bug sometimes causing panels not to appear on start-up when using Columns playlist
+
 ### 0.3.9.0
 *  Fixed notification area icon scaling in high-DPI mode
 *  Fixed spectrum analyser bars mode scaling in high-DPI mode
 *  Added NG Playlist groups to FCLs
 *  Compiled with Visual Studio 2015
+
 ## 0.3.8.x
+
 ### 0.3.8.9
 *  Fixed high-DPI bugs in the toolbars
 *  Fixed/worked around Windows 8 panning gesture misbehaviour
 *  Various code tidy-ups
 *  Compiled with Visual Studio 2013
+
 ### 0.3.8.8
 *  Removed libpng dependency in buttons toolbar
 *  Added support for more image types in buttons toolbar
@@ -68,6 +76,7 @@ The setting is on the Layout preferences page.
 *  Improved artwork edge-pixel rendering
 *  Added support for paths relative (to foobar2000 installation) in buttons toolbar
 *  Misc fixes
+
 ### 0.3.8.7
 *  Made Filter search clear button optional
 *  When placed in a stock splitter with Filter panels, Filter search will only affect those Filters
@@ -76,25 +85,31 @@ The setting is on the Layout preferences page.
 *  Playlist grouping is now case-sensitive.
 *  Added support for Ctrl+C to Item Properties panel (copies selection as text)
 *  Misc changes
+
 ### 0.3.8.6
 *  Misc changes
+
 ### 0.3.8.5
 *  Filter search will now function if no Filter panels are in the active layout
 *  Added Clear button to Filter search
 *  Fixed Filter search misbehaviours when Filter precendence is set to "By field list above".
 *  Enter key in Filter search now displays results in Filter panel autosend playlist
 *  Misc Filter search bug fixes
+
 ### 0.3.8.4
 *  Added status pane font configuration
 *  Resolved some item details font change word wrapping issues
 *  Added new Filter search toolbar; removed the previous search facility
+
 ### 0.3.8.3
 *  Added support for foobar2000 1.0 dynamic main menu commands in buttons toolbar
 *  Added "active selection" mode for buttons in buttons toolbar
 *  Fixed toolbar issues on Windows XP
 *  Added tab-column support in status pane
+
 ### 0.3.8.2
 *  Fixed crash when using playlist inline metadata editing
+
 ### 0.3.8.1
 *  Improved UI appearance when closing foobar2000 during playback
 *  Added new "status pane"
@@ -104,57 +119,77 @@ The setting is on the Layout preferences page.
 *  Fixed: starting a drag and drop operation with the right mouse button wasn't implemented in the new list control (NG Playlist etc.)
 *  Improved drag and drop feedback on Windows Vista and newer when source item is from Windows Explorer
 *  Misc changes / bug fixes
+
 ### 0.3.8.0
 *  Fixed a regression in version 0.3.6.5 where Item Details panel didn't correctly update when a scrollbar is shown/hidden
+
 ## 0.3.7.x
+
 ### 0.3.7.9
 *  Fixed/worked around status bar flicker issue
 *  Worked around an issue when updating Windows 7 task bar thumbnail buttons
+
 ### 0.3.7.8
 *  Fixed an issue with colour codes in Item details panel
+
 ### 0.3.7.7
 *  Fixed issue with padding when using "tab columns"
+
 ### 0.3.7.6
 *  Bug fix
+
 ### 0.3.7.5
 *  Bug fix
+
 ### 0.3.7.4
 *  Worked around ExtTextOut font fallback issues; rewrote large portions of text rendering code
 *  In layout preferences, copy & pasting nodes now does not allow multiple instances of single instance panels
 *  Updated keyboard shortcut processing in standard panels to use newer Core API
 *  Misc changes / fixes
+
 ### 0.3.7.3
 *  Bug fixes
+
 ### 0.3.7.2
 *  Fixes a rare issue with Item details panel, with it encountering invalid UTF-8 characters - apparently when listening to certain radio streams - causing the panel to get stuck in an infinite loop (eventually crashing). 
+
 ### 0.3.7.1
 *  Fixed an issue preventing 'Artist picture' being selected as a source in the artwork panel.
+
 ### 0.3.7.0
 *  Added support for artist picture to artwork view panel
 *  Added autocomplete suggestions to NG Playlist inline editing
 *  Bug fixes
+
 ## 0.3.6.x
+
 ### 0.3.6.9
 *  Improvements to the Item Properties panel
 *  Bug fixes
+
 ### 0.3.6.8
 *  Fixed a crash when removing items whilst making a selection in NG Playlist and other panels
 *  Various bug fixes
 *  Optimisations to Filter Panel updates on media library changes.
+
 ### 0.3.6.7
 *  Various bug fixes
+
 ### 0.3.6.6
 *  Rewritten playlist switcher panel
 *  Fixed a couple of cases where natural numeric sorting was not in place
 *  Default buttons toolbar icons are now 16x16
 *  Help button in preferences now directly opens the respective wiki page
 *  Misc changes / fixes
+
 ### 0.3.6.5
 *  Workaround for kernel stack exhaustion on 64-bit Windows when applications with certain global hooks are running
 *  Uses 'natural number sorting'
 *  Added support for multiple artwork sources per artwork type (requires reconfiguring artwork sources after upgrading)
+
 ### 0.3.6.4
 *  Bug fix
+
 ### 0.3.6.3
 *  NG Playlist: Fixed 'Show groups' option not working
 *  Added edge style options to item properties, item details, artwork view panels
@@ -163,6 +198,7 @@ The setting is on the Layout preferences page.
 *  Item details panel: Some bug fixes
 *  Item details panel: Added %default_font_face% and %default_font_size% fields
 *  General tidying
+
 ### 0.3.6.2
 *  Work on 'out of the box' user experience
     * Retired Columns Playlist as the default playlist view
@@ -172,18 +208,25 @@ The setting is on the Layout preferences page.
 *  Fixed an issue with NG Playlist not sorting files dropped from external applications correctly
 *  Alternate selection model works with NG Playlist
 *  Rearranging columns by their titles now works in NG Playlist
+
 ### 0.3.6.1
 *  Item details panel: Fixed some issues with word wrapping and colour codes.
+
 ### 0.3.6.0
 *  Item details panel: Added possibility to dynamically change font.
+
 ## 0.3.5.x
+
 ### 0.3.5.5
 *  NG playlist: Fixed tooltips setting was not applied correctly after restarting fooobar2000
 *  Artwork view: Fixed displayed artwork type being reset after restarting foobar2000
+
 ### 0.3.5.4
 *  Fixed an few issue with Filter panel when tracks are removed from media library
+
 ### 0.3.5.3
 *  Fixed a crash issue with artwork view panel
+
 ### 0.3.5.2
 *  Item details panel: mouse wheel support
 *  Item details panel: word wrapping support
@@ -192,20 +235,26 @@ The setting is on the Layout preferences page.
 *  Filter panel: Fixed search query not being applied on media library changes
 *  Filter panel: Performance optimisations to media library change handlers
 *  NG Playlist: Fixed double clicking on columns title divider
+
 ### 0.3.5.1
 *  Hot fix
+
 ### 0.3.5.0
 *  Fixed: Item count in first filter in chain did not update correctly on media library changes
 *  Fixed: Some issues in button toolbar command picker for context menu commands
 *  Changed: Tab stack forces broken panels to be hidden on creation
 *  Added: New Item details panel.
+
 ## 0.3.4.x
+
 ### 0.3.4.2
 *  Added 'Lock type' option to artwork view panel to prevent displayed artwork type automatically changing
 *  New tracking modes for artwork view panel including 'Current selection'
 *  Can now toggle displayed artwork type from artwork view shortcut menu
+
 ### 0.3.4.1
 *  Hot fix
+
 ### 0.3.4.0
 *  Added option to preserve aspect ratio in artwork view
 *  Support for artwork with alpha channel in NG Playlist
@@ -215,9 +264,12 @@ The setting is on the Layout preferences page.
 *  Improved performance of "Show reflections" for artwork in NG Playlist
 *  Added option to disable low artwork reader thread priority in NG Playlist
 *  Misc bug fixes
+
 ## 0.3.3.x
+
 ### 0.3.3.1
 *  bug fixes
+
 ### 0.3.3.0
 *  artwork reader threads are now low priority
 *  can change font of NG Playlist group titles
@@ -226,9 +278,13 @@ The setting is on the Layout preferences page.
 *  'automatic' tracking mode in item properties
 *  tweaked default no artwork found image
 *  fixed versioning scheme
+
 ## 0.3
+
 ### beta 2
+
 #### preview 11
+
 ##### initial release
 *  Improved initial setup dialog
 *  Can now access initial setup from preferences
@@ -238,17 +294,22 @@ The setting is on the Layout preferences page.
 *  Fixed: F2 didn't if mouse activated inline editing was disabled in NG Playlist
 *  Fixed: Put dropped files at end of playlist did not work in NG Playlist
 *  Misc bug fixes
+
 ##### build c
 *  You can view autoplaylist properties (with foobar2000 0.9.5.4+)
 *  You can use the mouse wheel over tab stack/playlist tabs (tested on Vista only)
 *  Partial fix of the problem with tall artwork and reflections
+
 ##### build e
 *  Various bug fixes
 *  Passes through artwork images unaltered if the source size is the same as the destination size
+
 #### preview 10
 *  added search query to Filter Panel
+
 #### preview 9
 *  fixed: extra empty item was displayed in Filter Panel
+
 #### preview 8
 *  added selectable tracking modes for artwork viewer panel: auto/playing item/active playlist item
 *  fixed NG Playlist issue with global style string not being inherited into custom column style strings
@@ -258,11 +319,14 @@ The setting is on the Layout preferences page.
 *  changed default no cover image
 *  added %playlist_name%/%_playlist_name% in playlist views
 *  added option to show artwork reflection in NG Playlist
+
 #### preview 7
 *  fixed some bugs with relative artwork paths
+
 #### preview 6
 *  corrected some possible glitches when resizing artwork column in NG Playlist
 *  fixed NG Playlist / Filter Panel losing scroll position when resize really small
+
 #### preview 5
 *  Fixed incorrect text positioning when using tab characters in playlist etc.
 *  Added support for wildcards in artwork source scripts
@@ -277,20 +341,27 @@ The setting is on the Layout preferences page.
 *  Updated default global style string to use %list_index% rather than %playlist_number%
 *  NG Playlist now automatically scrolls when dragging items over it
 *  Optimised performance of NG Playlist when date/time changes (when date info enabled)
+
 #### preview 4
 *  Fixed bug that prevented width of artwork column from being saved across sessions
+
 #### preview 3
 *  Added minimum height for groups when artwork is enabled
 *  Bug fixes
+
 #### preview 2
 *  Fixed display glitch with inline metadata editing in NG Playlist
 *  Changed processing order for artwork reading in NG Playlist
+
 #### preview 1
 *  Added support for displaying artwork within NG Playlist
 *  Some changes/fixes to NG Playlist
+
 ### beta 1
+
 #### preview 6
 *  some fixes for %filesize% field in playlist switcher
+
 #### preview 5
 *  Some improvements to dropping items on NG Playlist
 *  Fixed: Items dragged from Filter Panel were not sorted
@@ -300,27 +371,37 @@ The setting is on the Layout preferences page.
 *  Added "Show items with empty labels" option in Filter Panel
 *  Added New button on columns config page
 *  added %filesize% and %filesize_raw% to NG Playlist
+
 #### preview 4
 *  Added support for fixed artwork repositories in Artwork panel
 *  Some fixes / changes to the Artwork panel
+
 #### preview 3
 *  Fixed some rendering glitches in splitters in preview 2
+
 #### preview 2
 *  Some bug fixes and minor changes
+
 #### preview 1
 *  Added option for filter panel precedence to be determined by position in splitter. Note: Only works with standard horizontal/vertical splitters.
 *  Added simple artwork viewer for currently playing track.
 *  Some optimisations for Filter Panel prefs page
 *  Some fixes to Colours prefs page
 *  Some bug-fixes to Filter panel
+
 ## 0.2.1
+
 ### alpha 11
+
 #### final
+
 ##### v3
 *  fixed filter field assignments being reset on startup
+
 ##### v2
 *  fixed problem with selected item text colour in unified colour config
 *  fixed an issue clicking on group headers in NG Playlist
+
 ##### initial release
 *  Unified colour and font settings are now exported to FCL files
 *  Added support for field remappings and titleformatting to Filter Panel
@@ -328,9 +409,12 @@ The setting is on the Layout preferences page.
 *  Fixed column style strings in NGPV
 *  Fixed middle click action in Filter Panel
 *  Misc fixes / changes.
+
 #### preview 2
+
 ##### v2
 *  fixed colours prefs page layout
+
 ##### initial release
 *  Added unified fonts configuration
 *  Colour and font settings from previous versions are now automatically imported
@@ -338,6 +422,7 @@ The setting is on the Layout preferences page.
 *  Added 'Show caption' and 'Locked' options to live editing panel context menu
 *  This is a PREVIEW RELEASE only and is not the final alpha 11. It has the following limitations:
     * Settings from the new unified colours and fonts page are not exported to FCL files
+
 #### preview 1
 *  Added unified colour configuration page
 *  NGPV now scrolls to the focused item the first time you activate a playlist
@@ -346,7 +431,9 @@ The setting is on the Layout preferences page.
 *  This is a PREVIEW RELEASE only and is not the final alpha 11. It has the following limitations:
     * The design/specification of the unified colour configuration is not finalised and does not include fonts as yet
     * As per the previous point, settings from the new unified colours page are not exported to FCL files
+
 ### alpha 10
+
 #### v4
 *  fixed Ctrl+mouse wheel horizontal scrolling not working correctly
 *  added support for restoring deleted playlists in playlist switcher/tabs panel
@@ -356,10 +443,13 @@ The setting is on the Layout preferences page.
 *  fixed failed FCL export when layout contains empty playlist tabs panel
 *  fixed: moving playing item no longer loses playback marker
 *  other miscellaneous changes / fixes
+
 #### v3
 *  fixed crash introduced in v2 on empty playlists in NGPV
+
 #### v2
 *  fixed some more suboptimal rendering issues in NG Playlist
+
 #### initial release
 *  filter panel now acts as a source for drag and drop operations.
 *  fixed double click on empty area being triggered in some areas it shouldn't
@@ -367,9 +457,12 @@ The setting is on the Layout preferences page.
 *  fixed: too much rendering was going on when updating the playing item in NGPV
 *  fixed: duplicates would be sent to the playlist in filter panel if a track appears in the selected nodes multiple times.
 *  fixed/changed various other miscellaneous things
+
 ### alpha 9
+
 #### v2 / v3
 *  fixes grouping bugs when second (or above) level group has same text as adjacent group at the same level.
+
 #### initial release
 *  fixed undo command for some actions in playlist
 *  added support for vertical item padding setting in NGPV
@@ -381,6 +474,7 @@ The setting is on the Layout preferences page.
 *  added logarithmic (horizontal and vertical) scale options to spectrum analyser (enabled by default)
 *  added configurable double/middle click actions to Filter Panel
 *  misc. changes / fixes
+
 ### alpha 8
 *  Fixed: middle clicking in filter panel did unexpected things
 *  Added: configurable colours and style string support to NGPV
@@ -397,9 +491,12 @@ The setting is on the Layout preferences page.
 *  Fixed: various column settings synchronisation issues (between NGPV and Columns Playlist)
 *  Fixed: columns were lost under some circumstances
 *  Other misc. fixes
+
 ### alpha 7
+
 #### v2
 *  Fixed NG Playlist groups refresh on active playlist rename
+
 #### initial release
 *  Corrected some selection behaviours in NG Playlist/Filter Panel
 *  Added playlist filters for NG Playlist groups and removed playlist-specific fields from group script title formatting
@@ -411,20 +508,25 @@ The setting is on the Layout preferences page.
 *  Added support for 'Show columns titles' option to NG Playlist
 *  Added FCL support for existing command line import command
 *  Miscellaneous fixes
+
 ### alpha 6
 *  Bug fixes to live layout editing
 *  Changed Columns prefs page
 *  Fixed NG Playlist not updating %playlist_number% etc. correctly on playlist contents change
 *  Various miscellaneous bug fixes
+
 ### alpha 5
 *  Added cut, copy and paste commands to playlist view and playlist switcher
 *  Fixed crash bug in Filter Panel on media library changes
 *  Small change in splitter behaviour to allow for live editing
 *  Requires foobar2000 0.9.5
 *  Misc changes/improvements
+
 ### alpha 4
+
 #### v2
 *  fixed auto-size in NG Playlist when switching playlists
+
 #### initial release
 *  Auto-sizing columns in NG Playlist
 *  Inline metadata editing in NG Playlist
@@ -438,25 +540,32 @@ The setting is on the Layout preferences page.
 *  Fixed Filter panel focus bug on startup
 *  Added double click action to Filter Panel and some context menu entries
 *  Some bug-fixes
+
 ### alpha 3
 *  Filter Panel updates to media library changes
 *  Added context menu to Filter Panel
 *  Misc. bug fixes / changes to Filter Panel
+
 ### alpha 2
 *  added filter panel
 *  added support for globals, playlist filters to NG Playlist
 *  added pressed state for live editing command in buttons toolbar
+
 ### alpha 1
 *  moved NG Playlist into Columns UI
 *  added 'Live editing' of layout
 *  discontinued support for Windows 2000
+
 ## 0.2.0
+
 ### final
 *  bug fixes
+
 ### RC 1
 *  fixed mouse wheel on playback order dropdown
 *  removed FCL warnings
 *  respects system wide setting for showing item focus
+
 ### beta 1
 *  Added new mode to FCL exporting (private/non-shareable)
 *  Some other changes around FCL im/exporting
@@ -464,11 +573,13 @@ The setting is on the Layout preferences page.
 *  Some bug fixes in tab stack
 *  Some bug fixes in layout editor
 *  Worked around Vista ComboBox in playback order toolbar not responding to WM_MOUSEWHEEL anymore
+
 ### alpha 3
 *  built-in tab stack splitter
 *  fixed total selected length for tracks with undefined length (i.e. live internet streams)
 *  fixed 'reset presets' in layout editor
 *  misc bug fixes / changes
+
 ### alpha 2
 *  Added FCL import settings selection dialog and missing panels dialog
 *  fixed bug where if the only change you made in layout editor was changing the base the changes would not get applied/saved
@@ -477,6 +588,7 @@ The setting is on the Layout preferences page.
 *  fixed sort arrows in columns playlist on vista
 *  some small changes to prefs
 *  changed some behaviours of inline metafield editor
+
 ### alpha 1
 *  **Changed versioning scheme, since old one was a mess.**
 *  fixed bug in inline metafield editor where editing single file/empty field resulted in "`<multiple values>`" being pre-filled
@@ -488,17 +600,22 @@ The setting is on the Layout preferences page.
 *  Fixed regression where window focus wasn't saved after switching windows
 *  Seek bar/Volume bar use pressed state when themed
 *  Playlist switcher item actions in context menu moved to submenu
+
 ## 0.1.3
+
 ### beta 1
+
 #### v8 TEST (forum release)
 *  fixed bug in spectrum analyser bars mode where extra filled rows were sometimes drawn
 *  fixed bug where buttons toolbar doesn't call register_callback/deregister_callback on clients
 *  added multi-file inline metafield editor (highlight multiple consecutive files and use F2 to activate)
 *  added copy/paste to layout editor
 *  updated to current foobar2000 SDK
+
 #### v7
 *  fixed crash with button using Now Playing item group when nothing is playing
 *  misc. fixes
+
 #### v6 TEST
 *  fixed problem resizing panels with toggle area enabled
 *  fixed crash when panel calls relinquish_ownership on panel owned by splitter
@@ -507,16 +624,22 @@ The setting is on the Layout preferences page.
 *  fixed a  problem with autohide and maximised window
 *  fixed inline metadata editing problems (tabbing) since foobar2000 version 0.9.3
 *  compiled with lastest foobar2000 SDK (Vista compatibility)
+
 #### v5
 *  fixed problems with move up/down in layout config
+
 #### v4
 *  fixed default buttons on XP with < 32 bpp system colour depth
+
 #### v3
 *  fixed bug in layout editor with single instance panels
+
 #### v2
 *  fixed crash pressing ALT with toolbars disabled
+
 #### initial release
 Released 2006.04.28
+
 ##### layout
 *  replaced old vertical/horizontal splitters with new panel based horizontal/vertical splitters
 *  added preset support, with accompanying menu items, and default presets
@@ -526,6 +649,7 @@ Released 2006.04.28
 *  axed sidebar
 *  added toggle area, custom title option for panels
 *  other minor changes
+
 ##### other
 *  added new "inactive selection text" colour, fixes default config on default XP theme
 *  the playlist view colours listed in colours and fonts are now exported to fcs files
@@ -538,12 +662,16 @@ Released 2006.04.28
 *  fixed corrupted PNG loading apparently no-one ever managed to notice (bit-depth < 32bpp and greyscale imgaes)
 *  resolved problem where masstage scripts were not listed in buttons action list
 *  other minor changes
+
 ### pre-alpha 17
+
 #### v6
 *  Volume toolbar uses GDI+ where available
 *  Fixed rendering glitch with tooltips on Windows 2000.
+
 #### v5
 *  fixed bugged toolbar/panel context menus
+
 #### v4
 *  fixed some recent rendering issues in toolbars
 *  fixed volume toolbar taking focus
@@ -553,6 +681,7 @@ Released 2006.04.28
 *  fixed status bar part sizing in certain conditions
 *  broke compatibility with old panels (there was none, but..)
 *  other changes / fixes
+
 #### v3
 *  made text below icons not force text on all buttons now
 *  fixed double click on empty playlist area action
@@ -561,8 +690,10 @@ Released 2006.04.28
 *  added toolbar support for volume control
 *  cleaned-up part of text renderer code; prevent possible infinite loop
 *  other misc changes / fixes
+
 #### v2
 *  fixed crash when selecting "Show toolbars" in menu
+
 #### v1
 *  menu bar buttons no longer hardcoded, generated at time menu is created from new main menu apis
 *  added basic inline metafield editing
@@ -570,12 +701,15 @@ Released 2006.04.28
 *  some fixes to volume popup
 *  fixed "Save playlist..." in playlist switcher
 *  other minor fixes / changes
+
 ### pre-alpha 16
+
 #### v2
 *  fixed problem with cell-frames
 *  old-style style string only supported when legacy mode enabled now
 *  fixed 'show keyboard shortcuts in menus' in several places
 *  fixed status bar context menu
+
 #### v1
 *  removed "show keyboard shortcuts in menus" option, uses global setting now, and fixed some related bugs
 *  added vertical position saving when switching between playlists
@@ -584,15 +718,20 @@ Released 2006.04.28
 *  added support for colour codes with selection colours to $set_style
 *  bumped fcs version
 *  updated to beta 13
+
 ### pre-alpha 15
+
 #### v4
 *  fixed bug were vis updates increased after each track played during non-stop playback
+
 #### v3
 *  fixed custom buttons custom bitmap not remembered
 *  fixed bug in new colours
 *  increased vis fps to 40
+
 #### v2
 *  fixed crash bug with multiple spectrum analysers
+
 #### v1
 *  fixed problem with 'no edges' buttons toolbar style
 *  fixed couple issues with tooltips in playlist switcher panel
@@ -607,6 +746,7 @@ Released 2006.04.28
 *  updated to b12
 *  compiled with vc8
 *  other less visible fixes / changes etc.
+
 ### pre-alpha 14
 *  restored 'spectrum analyser' to list of panels, removed 'simple visualisation'
 *  fixed an issue with %_is_playing% in playlist switcher
@@ -619,15 +759,19 @@ Released 2006.04.28
 *  updated to 0.9 b7
 *  added %_text% etc to style string to specify default colours
 *  re-added highlight of playing track todefault config
+
 ### pre-alpha 13
+
 #### v5
 *  corrected order dropdown minimum height
+
 #### v4
 
 *  fixed crash bug after deleting playing playlist and it was last playlist
 *  corrected minimum width of playback order dropdown
 *  fixed GDI leak in playlist in previous pa13 versions
 *  changed behaviour of playlist switcher %is_playing% field, should work better now
+
 #### v3
 *  fixed when switching themes, playlist view colours did not update as expected when use custom colours is off.
 *  fixed after switching to classic theme, seekbar would not render correctly until foobar2000 was restarted.
@@ -639,8 +783,10 @@ Released 2006.04.28
 *  changed positioning of child window to something similar to old style
 *  added %length%, %is_active%, %is_playing%, and %lock_name% to playlist swwitcher formatting
 *  fixed a caching bug in playlist view when reordering playlists
+
 #### v2
 *  fixed crash when all status bar parts removed
+
 #### v1
 *  playlist switcher panel does not use LBS_HASSTRINGS anymore
 *  playlist switcher titleformatting has %size% available
@@ -660,14 +806,19 @@ Released 2006.04.28
 *  fixed playlist tabs contextmenu when invoked from keyboard
 *  axed 'list all toolbars'
 *  other misc. fixes/changes
+
 ### pre-alpha 12
+
 #### v4
 *  fixed size limits for splitters (again)
+
 #### v3
 *  some bug fixes
+
 #### v2
 *  fixed clipped prefs
 *  fixed sorting when dropping files
+
 #### v1
 Released 2005.06.05
 *  fixed: double clicking on a track when tracks are in playback queue does not work
@@ -682,15 +833,19 @@ Released 2005.06.05
 *  added %is_locked% to playlist switcher panel formatting
 *  now sets maximum height for seekbar
 *  fixed some other minor issues
+
 ### pre-alpha 11
+
 #### v3
 Released 2005.05.26
 *  fixed playlist switcher context menus were slow
 *  fixed using %_system_month% would either crash, or return the year instead
 *  fixed playlist view action when double clicking on empty space was broken.
+
 #### v2
 Released 2005.05.26
 *  fixed a size limit bug for splitters in v1
+
 #### v1
 Released 2005.05.25
 *  date fields apply everywhere, added julian days field
@@ -705,6 +860,7 @@ Released 2005.05.25
 *  fixed wrong colour on "active item frame" colour patch in prefs
 *  fixed toggling "shift + lmb.." changed playlist switch panel formatting string
 *  other fixes
+
 ### pre-alpha 10
 Released 2005.05.23
 *  added full config for colours in "colours and fonts" page for default playlist view
@@ -714,6 +870,7 @@ Released 2005.05.23
 *  added confirmation dialog when you delete a playlist through delete key on keyboard (and removed option from prefs)
 *  fixed opening and closing a popup window didnt restore focus to previously focused window
 *  changes to playlist switcher panel colours correctly applied when apply pressed
+
 ### pre-alpha 9
 private release
 *  size limits obeyed for child splitters
@@ -724,6 +881,7 @@ private release
 *  fixed no status bar descriptions for context menu items in default playlist view, playlist switcher.
 *  changed default fonts
 *  updated to a25 sdk
+
 ### pre-alpha 8
 private release
 *  killed some options from prefs
@@ -732,15 +890,18 @@ private release
     * “Action to perform when double clicking..” on playlist view tab is initially blank on clean install
     * Removing and reinserting the playback order dropdown results in it using the System font.
 *  host caption uses COLOR_3DFACE as oposed to COLOR_MENUBAR on winxp with themes off
+
 ### pre-alpha 7
 private release
 *  further config clean-up
 *  prevented windows being overlapped in some instances (but not all). proper fix to come when size limits fixed for child splitters.
+
 ### pre-alpha 6
 private release
 *  updated for alpha 23
 *  activated experimental autohide (for splitters only ATM)
 *  some more prefs changes
+
 ### pre-alpha 5
 private release
 *  status bar displays "loading track..." when file is being opened
@@ -750,11 +911,13 @@ private release
 *  fixed resizing in splitters at >1 depth
 *  `<del>`made auto hide for splitters half-work`</del>` prob wont be finished in time for release
 *  serveral other bug fixes/changes
+
 ### pre-alpha 4
 private release
 *  fixed some bugs in prefs with 120DPI display
 *  some initial reorganising of prefs
 *  updated for 0.9 alpha 21
+
 ### pre-alpha 3
 private release
 *  fixed show caption in layout prefs
@@ -771,18 +934,22 @@ private release
 *  other bug fixes
 *  autosize no longer default mode again
 *  updated 0.9 alpah 20
+
 ### pre-alpha 2
 private release
 *  Changed string for default title column
 *  Fixed bug where toggling enable sidebar, show status bar, and show toolbars from preferences did not take immediate effect.
 *  Fixed bug where nth (n>0) instance of playlist switcher had items with 1px height.
 *  Fixed a selection bug where up/down keys had no effect if first/last item on playlist was focused but not selected
+
 ### pre-alpha 1
 private release
+
 #### Bug fixes
 *  Toggling spectrum analyser bars mode sometimes required you to toggle mode twice to take effect
 *  Tabs in Columns UI preferences did not have correct background under XP themes when Columns UI is not active UI
 *  libpng linked to different CRT than msvcrt.dll would cause a crash on playback buttons toolbar creation when using PNG buttons
+
 #### Other changes
 *  The Columns UI playlist view is now a multiple instance UI Extension
 *  Configurable layout for main UI area
@@ -798,17 +965,21 @@ private release
 *  Updated to 0.9 alpah 19 SDK 
 *  Playlist view no longer uses BeginPaint/EndPaint in WM_PAINT handler
 *  Global variables now use new functions $set_global(var, val) and $get_global(var). (Former in global string, latter in other strings).
+
 ## 0.1.2
+
 ### final
 Released 2004.12.28
 *  focus is restored to correct window after clicking on a menu item
 *  mouse wheel now scrolls correct window when turning mouse whell in non-client area (e.g. scrollbar)
 *  added option to disable delete key in playlist switcher panel
 *  added vis bars mode
+
 ### RC2
 Released 2004.12.23
 *  On XP, panel title backgrounds are drawn using uxtheme as the rebar background. The background colour of the sidebar is now COLOR_BTNFACE on all OSs.
 *  Fixed aforementioned tooltip bug in playlist, playlist switcher panel
+
 ### RC1
 Released 2004.12.08
 *  The focused window should be remembered when you focus foobar again
@@ -816,6 +987,7 @@ Released 2004.12.08
 
 *  Alt etc. keys will work when you have a menu in the sidebar
 *  Fixed visibility etc. stuff in sidebar, they where broken in beta 4. So now e.g. for the playlistfind panel going to components/playlistfind/find in playlist will show the panel/sidebar if necessary (doesnt work if you use autohide though)
+
 ### beta 4
 Released 2004.11.25
 *  Sidebar: Invalid description was displayed for panel menu entries in host menu
@@ -828,6 +1000,7 @@ Released 2004.11.25
 *  API: Implemented new version of UI Extension api
 *  Playlists panel: Tab characters are no longer used to indicate right aligned text in playlist switcher panel (was broken, and fixing it would cause mess probably)
 *  Other minor fixes
+
 ### beta 3
 Released 2004.11.08
 *  toolbars are added where you right click
@@ -835,6 +1008,7 @@ Released 2004.11.08
 *  you can hold shift when inserting a toolbar to force a new instance
 *  fixed bug in speed test, added total time to speed test
 *  other fixes/changes
+
 ### beta 2
 Released 2004.10.30
 *  fixed sidebar hide delay
@@ -843,6 +1017,7 @@ Released 2004.10.30
 *  added option to choose middle click in playlist action
 *  minor fix for tooltips in playlist switcher panel
 *  hopefully fixed sidebar panel resizing bugs
+
 ### beta 1
 Released 2004.10.23
 *  mousewheel scrolls window underneath cursor
@@ -851,6 +1026,7 @@ Released 2004.10.23
 *  png loader now attempts to load libpng13.dll first
 *  tab key stops at playlist tabs
 *  other bugfixes
+
 ### alpha 5
 Released 2004.10.20
 *  sidebar panel captions are now optional, default to off for toolbars
@@ -871,6 +1047,7 @@ Released 2004.10.20
 *  fixed some bugs in playlist switcher drawing code
 *  changed wm_mousewheel handler, should scroll properly for pages now
 *  added annoying warning to "List all toolbars"
+
 ### alpha 4
 Released 2004.09.25
 *  fixed bug in painting menu, button toolbar backgrounds
@@ -881,6 +1058,7 @@ Released 2004.09.25
 *  implement revised ui_extension api
 *  ui is now tabable
 *  changed sidebar add panel behaviour
+
 ### alpha 3
 Released 2004.09.01
 *  fixed sending useless messages to seekbar again
@@ -899,6 +1077,7 @@ Released 2004.09.01
 *  added more menu items
 *  fixed "selected tracks length" when items added to playlist already selected
 *  fixed playlist painting bug when scrolling to bottom of playlist and sizing downwards
+
 ### alpha 2
 Released 2004.08.27
 *  fixed panel resizing
@@ -910,6 +1089,7 @@ Released 2004.08.27
 *  changed colour string parsing code to accomodate the above colours as optional; strings that output in bad format may be broken as a result
 *  added auto-hide (mouse) for sidebar; does not work properly yet (may be removed if it proves too much hassle to fix)
 *  made some changes to ui extension api; broke compatibility so update other panels as well
+
 ### alpha 1
 Released 2004.08.25
 *  bugfix: some toolbar windows where not destroyed when the toolbar was removed, but recreated later
@@ -918,30 +1098,42 @@ Released 2004.08.25
 *  use proposed ui_extension api for sidebar, toolbars
 *  added tooltips support for playlist switcher ui
 *  toolbars can be completely hidden (useful without xp themes)
+
 ## 0.1.1
+
 ### final
 Released 2004.07.06
 *  Fixed a selection bug
 *  Fixed the seekbar timer bug from beta 10
 *  Fixed shift+lmb to delete playlists
+
 ### beta 10
 *  Bug fixes
+
 ### beta 9
 *  Bug fixes
+
 ### beta 8
 *  Bug fixes
+
 ### beta 7
 *  Bug fixes
+
 ### beta 6
 *  Bug fixes
+
 ### beta 5
 *  Bug fixes
+
 ### beta 4
 *  Bug fixes
+
 ### beta 3
 *  Bug fixes
+
 ### beta 2
 *  Bug fixes
+
 ### beta 1
 Released 2004.05.31
 *  lower memory usage
@@ -962,14 +1154,18 @@ Released 2004.05.31
 *  customisable editor font, preview to console, colour code picker
 *  option to map colour codes for global variables
 *  numerous bug fixes (inc. the systray bug, balloon tip + dynamic bitrate, reseting colour codes, ellipsis etc.)
+
 ## 0.1
+
 ###  final
 Released 2004.05.10
 *  Bug fixes
+
 ### RC4
 Released 2004.05.05
 *  Fixed item height setting
 *  Fixed menus on multi-monitor displays
+
 ### RC3
 Released 2004.04.27
 *  fixed minor bug when menu button partially off the left off the screen, menu would appear in strange place
@@ -983,6 +1179,7 @@ Released 2004.04.27
 *  more error checking when importing
 *  fixed dynamic titles on systray
 *  other minor fixes
+
 ### RC2
 Released 2004.04.16
 *  shift + drag on seekbar
@@ -1000,6 +1197,7 @@ Released 2004.04.16
 *  fixed minor bug when remember window positions is disabled
 *  changed some systray behaviour
 *  random fixes
+
 ### RC1
 Released 2004.04.07
 *  "Enable double clicking to rename playlists" works when "Enable middle/double clicking to add playlists" is not enabled.
@@ -1016,10 +1214,12 @@ Released 2004.04.07
 *  renaming active playlist correctly updates shown columns
 *  seekbar improvements: increased accuracy; can press escape to cancel seek
 *  in tabs/sidebar, playlist keyboard shortcuts no longer executed
+
 ### beta 8
 Released 28.03.2004
 *  fixed colour codes bug with multibyte chars
 *  fixed resizing columns in non-autoresizing mode
+
 ### beta 7
 Released 27.03.2004
 *  sorting (by column) now has a "memory" of items previous location in playlist (i.e. so you can combine sorts, e.g. click title column then artist column will get you an artist - title sort)
@@ -1037,6 +1237,7 @@ Released 27.03.2004
 *  can double click on plist divider to hide/show it
 *  can use old global string behaviour if want (is simpler with colour codes, but is far slower)
 *  window title is only updated when actually changes (avoids problem when mouse over close etc. butttons, at least here)
+
 ### beta 6
 Released 15.03.2004
 *  fix ellipsis + colour codes
@@ -1066,6 +1267,7 @@ Released 15.03.2004
 *  can double click in tabs/ playlist sidecar to add playlists
 *  replaced global string with global variables.
 *  improved "no horizontal scrolling" mode
+
 ### beta 5
 Released 03.03.2004
 *  fixed spacing in front of toolbars
@@ -1082,6 +1284,7 @@ Released 03.03.2004
 *  some minor fixes to drag + drop
 *  cancel menu displayed when items dropped on with right button
 *  fixed some other minor things
+
 ### beta 4
 Released 28.02.2004
 *  tabs/playlists auto hide (needs enabling)
@@ -1096,10 +1299,12 @@ Released 28.02.2004
 *  shift+ctrl works with pgup/down/hme/end
 *  balloon tip shortcut
 *  other minor fixes
+
 ### beta 3
 Released 17.02.2004
 *  fixed some annoying selection bugs
 *  fixed ping on ALT  * shortcuts (thanks kode54) 
+
 ### beta 2
 Released 17.02.2004
 *  fix aforementioned crash bug when drag items to left & tooltips enabled
@@ -1117,6 +1322,7 @@ Released 17.02.2004
 *  alternative playlist border, same options for listbox playlist switcher
 *  made drag + drop on listbox pl switcher like the tabs
 *  other minor changes/fixes
+
 ### beta 1
 Released 11.02.2004
 *  selection menu items in playlist context menu
@@ -1134,6 +1340,7 @@ Released 11.02.2004
 *  double clicking the volume/selected tracks time does the same actios as in standard ui.
 *  option to switch playlist when dragging items over its tab
 *  when items dropped over a tab, they are added to that playlist
+
 ### alpha 9
 Released 08.02.2004
 *  support left/right/centre alignment for columns
@@ -1146,6 +1353,7 @@ Released 08.02.2004
 *  fixed colour codes shown in tooltips
 *  "global" string also used when sorting.
 *  added some options from standard ui.
+
 ### alpha 8
 Released 01.02.2004
 *  changed selection behaviour
@@ -1158,6 +1366,7 @@ Released 01.02.2004
 *  fixed renaming playlist in tabs
 *  fixed blurred tray icon, tray icon resource leak (thanks kode54)
 *  fixed vertical scrollbar redrawing bug in prveious version
+
 ### alpha 7
 Released 29.01.2004
 *  fix turnng off toolbar buttons
@@ -1165,6 +1374,7 @@ Released 29.01.2004
 *  fix rendering when scrolling
 *  fix total time count
 *  some more options for fonts/ colours
+
 ### alpha 6
 Released 28.01.2004
 *  can move mouse between menus, sort of
@@ -1176,6 +1386,7 @@ Released 28.01.2004
 *  buttons toolbar
 *  separated prefs into two pages
 *  other minor things
+
 ### alpha 5
 Released 26.01.2004
 *  fixed files added via drag & drop sent in ansi encoding not utf8
@@ -1188,6 +1399,7 @@ Released 26.01.2004
 *  fixed some mouse selection behaviours
 *  playback order dropdown minimun width set to width of widest name
 *  some improvements to rebar
+
 ### alpha 4
 Released 25.01.2004
 *  fixed playback order drop down
@@ -1195,6 +1407,7 @@ Released 25.01.2004
 *  fixed incorrect positioning of controls
 *  fixed systray menu not destroyed when click out of it
 *  added alternative playlist switcher using tabs
+
 ### alpha 3
 Released 24.01.2004
 *  mouse movements captured outside of playlist (i.e. scrolls when mouse below/above playlist area)
@@ -1204,12 +1417,14 @@ Released 24.01.2004
 *  added separate config for status bar font
 *  ensure visible focuses items in the centre of playlist
 *  playlist renamer
+
 ### alpha 2
 Released 24.01.2004
 *  fixed crash w/ new columns
 *  improved keyboard navigation of playlist (added home/end/pg up/page down/alt-up/alt-down/space actions & fixed up/down keys; also removed jerkyness/corruptions when scrolling past top/bottom of playlist area using up/down keys)
 *  fixed scrolling too far past end of playlist
 *  corrected font of playback order dropdown
+
 ### alpha 1
 Released 21.01.2004
 *  first version :-)
