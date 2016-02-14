@@ -410,7 +410,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
 					thisFontChangeCount--;
 				}
 
-				SIZE sz2;
+				SIZE sz2 = {0};
 				t_size length_chars_no_colours = g_get_text_ptr_characters_colour(&text[ptr], ptrThisCount);
 				INT max_chars = length_chars_no_colours;
 
@@ -453,6 +453,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
 				INT max_chars = length_chars_no_colours;
 
 				character_extents.increase_size(length_chars_no_colours);
+				character_extents.fill_null();
 				pGetTextExtentExPoint.run(dc, &text[ptr], ptrThisCount, ptrTextWidth > max_width ? 0 : max_width - ptrTextWidth, b_word_wrapping ? &max_chars : NULL, character_extents.get_ptr() + ptrCharacterExtent, &sz2, NULL, false);
 
 #if 0
@@ -542,6 +543,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
 				//	widthCuml += ui_helpers::get_text_width_color(dc, &text[ptr], wrapByte - (ptr - ptrStart));// widths[wrapChar-1];
 
 				t_size widthChar = min(textWrappedPtr ? textWrappedPtr - 1 : 0, wrapChar);
+				if (b_skipped && widthChar) widthChar--;
 				if (widthChar < character_extents.get_size())
 					widthCuml = character_extents[widthChar];
 
@@ -795,8 +797,8 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 		}
 
 		rc_line.bottom = rc_line.top + thisLineHeight;
-		rc_line.left = rc.left + 2;
-		rc_line.right = rc.right - 2;
+		rc_line.left = rc.left + min(RECT_CX(rc), 2);
+		rc_line.right = rc.right - min(RECT_CX(rc), 2);
 
 		t_size widthLine = RECT_CX(rc_line), widthLineText = newLineDataWrapped[i].m_width;
 

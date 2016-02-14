@@ -35,6 +35,8 @@ class display_line_info_t : public line_info_t
 public:
 	t_size m_width;
 	t_size m_height;
+
+	display_line_info_t() : m_width(0), m_height(0) {};
 };
 
 class font_data_t
