@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25008.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{5CE500DE-1CE0-4222-9433-DCE0A3364124}"
 EndProject
@@ -32,6 +32,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		..\.gitignore = ..\.gitignore
 		..\.gitmodules = ..\.gitmodules
+		CHANGELOG.md = CHANGELOG.md
 		..\COPYING = ..\COPYING
 		..\COPYING.LESSER = ..\COPYING.LESSER
 		..\COPYRIGHT = ..\COPYRIGHT
