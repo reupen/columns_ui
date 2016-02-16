@@ -745,15 +745,7 @@ m_panel_dragging(NULL), m_panel_dragging_valid(false)
 
 unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
 {
-	auto dpi = uih::GetSystemDpiCached();
-	const unsigned vertical_divider_size = settings::use_custom_splitter_divider_width ? settings::custom_splitter_divider_width : MulDiv(2, dpi.cx, 96);
-	const unsigned horizontal_divider_size = settings::use_custom_splitter_divider_width ? settings::custom_splitter_divider_width : MulDiv(2, dpi.cy, 96);
-	unsigned ret = 0;
-	if (index + 1 < m_panels.get_count())
-	{
-		ret = get_orientation() == horizontal ? vertical_divider_size : horizontal_divider_size;
-	}
-	return ret;
+	return index + 1 < m_panels.get_count() ? settings::custom_splitter_divider_width : 0;
 }
 
 bool splitter_window_impl::set_config_item(unsigned index, const GUID & p_type, stream_reader * p_source, abort_callback & p_abort)

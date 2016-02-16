@@ -8,17 +8,12 @@ namespace settings
 		const GUID show_status_pane =
 		{ 0xa1333c45, 0xb247, 0x4b84, { 0xaf, 0xba, 0xf5, 0xda, 0xf5, 0xe, 0xbf, 0x33 } };
 
-		// {271C92D4-D853-4E07-BD0B-E66A27070D71}
+		// {92416F05-BD93-4F50-93BD-5577C37CF14D}
 		static const GUID custom_splitter_divider_width =
-		{ 0x271c92d4, 0xd853, 0x4e07,{ 0xbd, 0xb, 0xe6, 0x6a, 0x27, 0x7, 0xd, 0x71 } };
-
-		// {E389E058-0166-4A27-8D2E-FE7C6FB4DEEB}
-		static const GUID use_custom_splitter_divider_width =
-		{ 0xe389e058, 0x166, 0x4a27,{ 0x8d, 0x2e, 0xfe, 0x7c, 0x6f, 0xb4, 0xde, 0xeb } };
+		{ 0x92416f05, 0xbd93, 0x4f50,{ 0x93, 0xbd, 0x55, 0x77, 0xc3, 0x7c, 0xf1, 0x4d } };
 	}
 
-	cfg_bool use_custom_splitter_divider_width(guids::use_custom_splitter_divider_width, false);
-	cfg_uint custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
+	uih::ConfigUint32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
 	cfg_bool show_status_pane(guids::show_status_pane, true);
 }
 

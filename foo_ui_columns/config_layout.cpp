@@ -730,10 +730,7 @@ class tab_layout_new : public preferences_tab
 				HWND wnd_custom_divider_width_spin = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN);
 				HWND wnd_use_custom_divider_width = GetDlgItem(wnd, IDC_USE_CUSTOM_DIVIDER_WIDTH);
 
-				SendMessage(wnd_use_custom_divider_width, BM_SETCHECK, settings::use_custom_splitter_divider_width, 0);
 				SetDlgItemInt(wnd, IDC_CUSTOM_DIVIDER_WIDTH, settings::custom_splitter_divider_width, FALSE);
-				EnableWindow(wnd_custom_divider_width, settings::use_custom_splitter_divider_width);
-				EnableWindow(wnd_custom_divider_width_spin, settings::use_custom_splitter_divider_width);
 				SendMessage(wnd_custom_divider_width_spin, UDM_SETRANGE32, 0, 20);
 
 				g_initialised = true;
@@ -886,12 +883,6 @@ class tab_layout_new : public preferences_tab
 				cfg_sidebar_use_custom_show_delay = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
-				break;
-			case IDC_USE_CUSTOM_DIVIDER_WIDTH:
-				settings::use_custom_splitter_divider_width = Button_GetCheck((HWND)lp) != 0;
-				EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH), settings::use_custom_splitter_divider_width);
-				EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN), settings::use_custom_splitter_divider_width);
-				splitter_window_impl::g_on_size_change();
 				break;
 			}
 			break;
