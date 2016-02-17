@@ -95,7 +95,7 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 		t_size i, count = g_windows.get_count();
 		for (i=0; i<count; i++)
 		{
-			g_windows[i]->set_vertical_item_padding(cfg_plheight);
+			g_windows[i]->set_vertical_item_padding(settings::playlist_switcher_item_padding);
 		}
 	}
 	void playlist_switcher_t::g_redraw_all()
@@ -126,7 +126,7 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 		set_single_selection(true);
 		set_show_header(false);
 		set_edge_style(cfg_plistframe);
-		set_vertical_item_padding(cfg_plheight);
+		set_vertical_item_padding(settings::playlist_switcher_item_padding);
 
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_font, lf);

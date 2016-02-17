@@ -130,6 +130,7 @@ class export_colours_switcher : public cui::fcl::dataset
 		colours_switcher_font_tabs,
 		colours_switcher_font_list,
 		identifier_item_height,
+		identifier_item_height_dpi
 	};
 	virtual void get_name (pfc::string_base & p_out) const
 	{
@@ -157,7 +158,8 @@ class export_colours_switcher : public cui::fcl::dataset
 		out.write_item_config(colours_switcher_inactive_selection_text, playlist_switcher::colours::config_inactive_selection_text);
 		out.write_item(colours_switcher_font_tabs, cfg_tab_font);
 		out.write_item(colours_switcher_font_list, cfg_plist_font);*/
-		out.write_item(identifier_item_height, cfg_plheight);
+		out.write_item(identifier_item_height, settings::playlist_switcher_item_padding.getRawValue().value);
+		out.write_item(identifier_item_height_dpi, settings::playlist_switcher_item_padding.getRawValue().dpi);
 	}
 	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
 	{
@@ -165,6 +167,9 @@ class export_colours_switcher : public cui::fcl::dataset
 		t_uint32 element_id;
 		t_uint32 element_size;
 		bool b_font_read = false;
+
+		bool item_padding_read = false;
+		uih::IntegerAndDpi<int32_t> item_padding(0, uih::GetSystemDpiCached().cx);
 
 		while (reader.get_remaining())
 		{
@@ -174,7 +179,11 @@ class export_colours_switcher : public cui::fcl::dataset
 			switch (element_id)
 			{
 			case identifier_item_height:
-				reader.read_item(cfg_plheight);
+				item_padding_read = true;
+				reader.read_item(item_padding.value);
+				break;
+			case identifier_item_height_dpi:
+				reader.read_item(item_padding.dpi);
 				break;
 			case colours_switcher_background:
 				reader.read_item(cfg_plist_bk);
@@ -206,9 +215,13 @@ class export_colours_switcher : public cui::fcl::dataset
 				break;
 			};
 
-			if (b_font_read)
-				g_import_fonts_to_unified(false, true, false);
 		}
+
+		if (b_font_read)
+			g_import_fonts_to_unified(false, true, false);
+
+		if (item_padding_read)
+			settings::playlist_switcher_item_padding = item_padding;
 
 		//update_playlist_switcher_panels();
 		//on_switcher_font_change();

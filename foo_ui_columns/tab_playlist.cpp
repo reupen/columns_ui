@@ -17,7 +17,7 @@ static class tab_playlist : public preferences_tab
 		uSendDlgItemMessage(wnd, IDC_PLDRAG, BM_SETCHECK, cfg_drag_pl, 0);
 		uSendDlgItemMessage(wnd, IDC_PLAUTOHIDE, BM_SETCHECK, cfg_pl_autohide, 0);
 
-		uSendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETPOS32, 0, cfg_plheight);
+		uSendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETPOS32, 0, settings::playlist_switcher_item_padding);
 		uSendDlgItemMessage(wnd, IDC_TABS_MULTILINE, BM_SETCHECK, cfg_tabs_multiline, 0);
 		uSendDlgItemMessage(wnd, IDC_SIDEBAR_TOOLTIPS, BM_SETCHECK, cfg_playlist_sidebar_tooltips, 0);
 		uSendDlgItemMessage(wnd, IDC_USE_PLAYLIST_TF, BM_SETCHECK, cfg_playlist_switcher_use_tagz, 0);
@@ -63,7 +63,7 @@ public:
 				{
 					BOOL result;
 					int new_height = GetDlgItemInt(wnd, IDC_PLHEIGHT, &result, TRUE);
-					if (result) cfg_plheight = new_height;
+					if (result) settings::playlist_switcher_item_padding = new_height;
 					//						if (g_plist) uSendMessage(g_plist, LB_SETITEMHEIGHT, 0, get_pl_item_height());
 					playlist_switcher_t::g_on_vertical_item_padding_change();
 				}

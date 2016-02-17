@@ -435,7 +435,9 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 		}
 	case CONFIG_PLHEIGHT:
 		{
-			read_dword_cfg(p_file, &cfg_plheight);
+			int32_t item_padding_temp;
+			reader.read_item(item_padding_temp);
+			settings::playlist_switcher_item_padding = item_padding_temp;
 			break;
 		}
 	case CONFIG_COLOUR_FRAME:

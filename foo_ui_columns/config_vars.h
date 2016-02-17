@@ -30,6 +30,8 @@ namespace settings
 	extern cfg_bool show_status_pane;
 
 	extern uih::ConfigUint32DpiAware custom_splitter_divider_width;
+
+	extern uih::ConfigInt32DpiAware playlist_switcher_item_padding;
 }
 
 extern cfg_string cfg_playlist_switcher_tagz;
@@ -41,7 +43,6 @@ extern cfg_int cfg_back,
 	cfg_header_hottrack,
 	cfg_sortsel,
 	cfg_global_sort,
-	cfg_plheight,
 	cfg_focus,
 	cfg_vis,
 	cfg_vis2,
