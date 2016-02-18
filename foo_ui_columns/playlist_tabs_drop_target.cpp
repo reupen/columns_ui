@@ -54,6 +54,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
 {
 	POINT pt = { ptl.x, ptl.y };
+	bool isAltDown = (grfKeyState & MK_ALT) != 0;
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
 	if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get_ptr(), pdwEffect))
@@ -104,10 +105,10 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 				hittest.pt.y = pttab.y;
 				int idx = TabCtrl_HitTest(p_list->wnd_tabs, &hittest);
 				int old = playlist_api->get_active_playlist();
-				if (cfg_drag_autoswitch && idx >= 0 && old != idx) p_list->switch_to_playlist_delayed2(idx);//playlist_switcher::get()->set_active_playlist(idx);
+				if (cfg_drag_autoswitch && idx >= 0 && old != idx && !isAltDown) p_list->switch_to_playlist_delayed2(idx);//playlist_switcher::get()->set_active_playlist(idx);
 				else p_list->kill_switch_timer();
 
-				if (idx != -1)
+				if (idx != -1 && !isAltDown)
 				{
 					pfc::string8 name;
 					static_api_ptr_t<playlist_manager>()->playlist_get_name(idx, name);
@@ -144,6 +145,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
 {
 	POINT pt = { ptl.x, ptl.y };
+	bool isAltDown = (grfKeyState & MK_ALT) != 0;
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
 	p_list->kill_switch_timer();
@@ -217,6 +219,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
 
 			int idx = -1;
+			t_size newPlaylistIndex = pfc_infinite;
 			//	if ((g_tab && wnd == g_tab) || g_plist && wnd == g_plist)
 
 
@@ -224,7 +227,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 			t_size target_index = playlist_api->get_active_playlist();
 
 
-			if (p_list->wnd_tabs && wnd == p_list->wnd_tabs && !send_new_playlist)
+			if (p_list->wnd_tabs && wnd == p_list->wnd_tabs)
 			{
 				RECT tabs;
 
@@ -236,9 +239,11 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 					hittest.pt.y = pttab.y;
 					int idx = TabCtrl_HitTest(p_list->wnd_tabs, &hittest);
 					int old = playlist_api->get_active_playlist();
-					if (idx < 0)
+					if (send_new_playlist || idx < 0 || isAltDown)
 					{
 						send_new_playlist = true;
+						if (idx >= 0)
+							newPlaylistIndex = idx;
 					}
 					else target_index = idx;
 				}
@@ -316,11 +321,13 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 				}
 
 				unsigned new_idx;
+				if (newPlaylistIndex == pfc_infinite)
+					newPlaylistIndex = playlist_api->get_playlist_count();
 
 				if (named && cfg_replace_drop_underscores) playlist_name.replace_char('_', ' ', 0);
-				if (!named && cfg_pgen_tf) new_idx = playlist_api->create_playlist(string_pn(data, cfg_pgenstring), pfc_infinite, playlist_api->get_playlist_count());
+				if (!named && cfg_pgen_tf) new_idx = playlist_api->create_playlist(string_pn(data, cfg_pgenstring), pfc_infinite, newPlaylistIndex);
 
-				else  new_idx = playlist_api->create_playlist(playlist_name, pfc_infinite, playlist_api->get_playlist_count());
+				else  new_idx = playlist_api->create_playlist(playlist_name, pfc_infinite, newPlaylistIndex);
 
 				playlist_api->playlist_add_items(new_idx, data, bit_array_false());
 				if (main_window::config_get_activate_target_playlist_on_dropped_items())

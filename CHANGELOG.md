@@ -15,6 +15,8 @@ You can no longer drop files on panels in the layout area that do not implement 
 
 The default action when dragging files to Windows Explorer is now always copy. Previously, when dragging files to another folder on the same drive, the default operation would be to move the files.
 
+When dragging files to the playlist switcher, you can now force a new playlist to be created by holding down Alt.
+
 Fixed a bug where dragging unsupported objects over some panels would cause the drag image to get stuck on the edge of the panel was fixed.
 
 Fixed a bug where dragging a file from Windows Explorer to foobar2000 near the right-edge of the screen would cause the drop description label to jump about.

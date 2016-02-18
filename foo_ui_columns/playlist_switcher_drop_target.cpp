@@ -118,6 +118,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragEnter(IDataObj
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
 {
 	POINT pt = {ptl.x, ptl.y};
+	bool isAltDown = (grfKeyState & MK_ALT) != 0;
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
 	if (!m_ole_api.is_valid())
@@ -176,7 +177,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
 			}
 			else*/
 			{
-				m_window->hit_test_ex(ptt, hi);
+				m_window->hit_test_ex(ptt, hi, true);
 				if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
 					|| hi.result == t_list_view::hit_test_obscured_below)
 				{
@@ -188,14 +189,24 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
 					}
 					else
 					{
-						m_window->remove_insert_mark();
-						m_window->set_highlight_item(hi.index);
-						if (cfg_drag_autoswitch)
-						m_window->set_switch_timer(hi.index);
 
-						pfc::string8 name;
-						static_api_ptr_t<playlist_manager>()->playlist_get_name(hi.index, name);
-						mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
+						if (isAltDown)
+						{
+							m_window->set_insert_mark(hi.index);
+							m_window->destroy_switch_timer();
+							m_window->remove_highlight_item();
+							mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+						}
+						else
+						{
+							m_window->remove_insert_mark();
+							m_window->set_highlight_item(hi.index);
+							if (cfg_drag_autoswitch)
+								m_window->set_switch_timer(hi.index);
+							pfc::string8 name;
+							static_api_ptr_t<playlist_manager>()->playlist_get_name(hi.index, name);
+							mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
+						}
 					}
 				}
 				else if (hi.result == t_list_view::hit_test_below_items)
@@ -243,6 +254,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave( void)
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
 { 
 	POINT pt = {ptl.x, ptl.y};
+	bool isAltDown = (grfKeyState & MK_ALT) != 0;
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
 	if (!m_ole_api.is_valid())
@@ -277,7 +289,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 			{
 				POINT ptt = pti;
 				ScreenToClient(m_window->get_wnd(), &ptt);
-				m_window->hit_test_ex(ptt, hi);
+				m_window->hit_test_ex(ptt, hi, true);
 			}
 
 			playlist_dataobject_desc_impl data;
@@ -368,13 +380,13 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 				m_ole_api->parse_dataobject(pDataObj, dropped_data);
 
 				bool create_new = true;
-				t_size idx = NULL;
+				t_size idx = pfc_infinite;
 
 				if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
 					|| hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above
 					)
 				{
-					create_new = false;
+					create_new = isAltDown;
 					idx = hi.index;
 				}
 				else if (hi.result == t_list_view::hit_test_below_items)
@@ -406,7 +418,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 										if (cfg_pgen_tf) m_playlist_name = string_pn(p_items, cfg_pgenstring);
 										else m_playlist_name = "Untitled";
 
-									m_insertIndexTracker.m_playlist = playlist_api->create_playlist(m_playlist_name, pfc_infinite, (m_insertIndexTracker.m_playlist = playlist_api->get_playlist_count()));
+									m_insertIndexTracker.m_playlist = playlist_api->create_playlist(m_playlist_name, pfc_infinite, m_insertIndexTracker.m_playlist);
 								}
 								else
 								{
