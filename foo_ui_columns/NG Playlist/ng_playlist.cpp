@@ -46,7 +46,7 @@ namespace pvt {
 		cfg_artwork_reflection(g_artwork_reflection, true),
 		cfg_artwork_lowpriority(g_artwork_lowpriority, true),
 		cfg_grouping(g_guid_grouping, true);
-	cfg_uint cfg_artwork_width(g_artwork_width_guid, 100);
+	uih::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
 
 	void cfg_groups_t::swap (t_size index1, t_size index2)
 	{
