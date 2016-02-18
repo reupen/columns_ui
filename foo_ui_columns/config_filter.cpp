@@ -106,7 +106,7 @@ public:
 		get_insert_items(0, count, items);
 		m_field_list.insert_items(0, items.get_count(), items.get_ptr());
 
-		uSendDlgItemMessage(wnd,IDC_SPINPADDING,UDM_SETPOS32,0,filter_panel::cfg_itempadding);
+		uSendDlgItemMessage(wnd,IDC_SPINPADDING,UDM_SETPOS32,0,filter_panel::cfg_vertical_item_padding);
 
 		initialising = false;	
 	}
@@ -293,7 +293,7 @@ public:
 			case (EN_CHANGE<<16)|IDC_PADDING:
 				if (!initialising)
 				{
-					filter_panel::cfg_itempadding = strtol(string_utf8_from_window((HWND)lp).get_ptr(), NULL, 10);
+					filter_panel::cfg_vertical_item_padding = strtol(string_utf8_from_window((HWND)lp).get_ptr(), NULL, 10);
 					filter_panel::filter_panel_t::g_on_vertical_item_padding_change();
 				}
 				break;

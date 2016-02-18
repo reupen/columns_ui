@@ -15,7 +15,7 @@ namespace filter_panel {
 	cfg_int cfg_doubleclickaction(g_guid_doubleclickaction, 1);
 	cfg_int cfg_middleclickaction(g_guid_middleclickaction, 0);
 	cfg_int cfg_edgestyle(g_guid_edgestyle, 2);
-	cfg_int cfg_itempadding(g_guid_itempadding, 4);
+	uih::ConfigInt32DpiAware cfg_vertical_item_padding(g_guid_itempadding, 4);
 
 	cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 
@@ -144,7 +144,7 @@ namespace filter_panel {
 		t_size i, count = g_windows.get_count();
 		for (i = 0; i<count; i++)
 		{
-			g_windows[i]->set_vertical_item_padding(cfg_itempadding);
+			g_windows[i]->set_vertical_item_padding(cfg_vertical_item_padding);
 		}
 	}
 
@@ -977,7 +977,7 @@ namespace filter_panel {
 		//set_variable_height_items(true); //Implementation not finished
 		set_edge_style(cfg_edgestyle);
 		set_autosize(true);
-		set_vertical_item_padding(cfg_itempadding);
+		set_vertical_item_padding(cfg_vertical_item_padding);
 
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);

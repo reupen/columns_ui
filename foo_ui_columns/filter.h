@@ -72,8 +72,10 @@ namespace filter_panel {
 
 	extern cfg_string /*cfg_fields, */cfg_sort_string;
 	extern cfg_bool cfg_sort, cfg_autosend, cfg_orderedbysplitters, cfg_showemptyitems, cfg_showsearchclearbutton;
-	extern cfg_int cfg_doubleclickaction, cfg_middleclickaction, cfg_edgestyle, cfg_itempadding;
+	extern cfg_int cfg_doubleclickaction, cfg_middleclickaction, cfg_edgestyle;
 	extern cfg_fields_t cfg_field_list;
+
+	extern uih::ConfigInt32DpiAware cfg_vertical_item_padding;
 
 	class filter_panel_t :
 		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_filter_impl>, uie::window>,
