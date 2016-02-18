@@ -430,7 +430,9 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 		}
 	case CONFIG_HEIGHT:
 		{
-			read_dword_cfg(p_file, &cfg_height);
+			int32_t item_padding_temp;
+			reader.read_item(item_padding_temp);
+			settings::playlist_view_item_padding = item_padding_temp;
 			break;
 		}
 	case CONFIG_PLHEIGHT:

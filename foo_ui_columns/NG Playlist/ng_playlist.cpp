@@ -356,7 +356,7 @@ namespace pvt {
 	{
 		t_size i, count = g_windows.get_count();
 		for (i=0; i<count; i++)
-			g_windows[i]->set_vertical_item_padding(cfg_height);
+			g_windows[i]->set_vertical_item_padding(settings::playlist_view_item_padding);
 	} 
 	void ng_playlist_view_t::g_on_font_change()
 	{
@@ -569,7 +569,7 @@ namespace pvt {
 		set_show_header(cfg_header != 0);
 		set_autosize(cfg_nohscroll != 0);
 		set_always_show_focus(config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false));
-		set_vertical_item_padding(cfg_height);
+		set_vertical_item_padding(settings::playlist_view_item_padding);
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_items_font, lf);
 		set_font(&lf);

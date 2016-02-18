@@ -158,7 +158,7 @@ int playlist_view::get_item_height()
 	if (g_font)
 	{
 		//	if (!g_font) return 1;
-		rv = uGetFontHeight(g_font) + cfg_height;
+		rv = uGetFontHeight(g_font) + settings::playlist_view_item_padding;
 		if (rv < 1) rv = 1;
 	}
 	return rv;

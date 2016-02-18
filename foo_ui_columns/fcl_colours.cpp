@@ -14,7 +14,8 @@ class export_colours : public cui::fcl::dataset
 		colours_pview_header_font,
 		colours_pview_list_font,
 		colours_pview_use_system_focus_frame,
-		identifier_item_height,
+		identifier_vertical_item_padding,
+		identifier_vertical_item_padding_dpi,
 	};
 	virtual void get_name (pfc::string_base & p_out) const
 	{
@@ -44,7 +45,8 @@ class export_colours : public cui::fcl::dataset
 		out.write_item(colours_pview_list_font, cfg_font);
 		out.write_item(colours_pview_header_font, cfg_header_font);*/
 		//out.write_item(colours_pview_use_system_focus_frame, cfg_pv_use_system_frame);
-		out.write_item(identifier_item_height, cfg_height);
+		out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.getRawValue().value);
+		out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.getRawValue().dpi);
 	}
 	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
 	{
@@ -53,6 +55,9 @@ class export_colours : public cui::fcl::dataset
 		t_uint32 element_size;
 		bool b_font_read = false, b_colour_read=false;
 
+		bool item_padding_read = false;
+		uih::IntegerAndDpi<int32_t> item_padding(0, uih::GetSystemDpiCached().cx);
+
 		while (reader.get_remaining())
 		{
 			reader.read_item(element_id);
@@ -60,8 +65,13 @@ class export_colours : public cui::fcl::dataset
 
 			switch (element_id)
 			{
-			case identifier_item_height:
-				reader.read_item(cfg_height);
+			case identifier_vertical_item_padding:
+				reader.read_item(item_padding.value);
+				item_padding_read = true;
+				break;
+			case identifier_vertical_item_padding_dpi:
+				reader.read_item(item_padding.dpi);
+				item_padding_read = true;
 				break;
 			case colours_pview_mode:
 				reader.read_item(cfg_pv_use_custom_colours);
@@ -109,6 +119,9 @@ class export_colours : public cui::fcl::dataset
 			g_import_fonts_to_unified(true, false, false);
 		if (b_colour_read)
 			g_import_pv_colours_to_unified_global();
+
+		if (item_padding_read)
+			settings::playlist_view_item_padding = item_padding;
 		//refresh_all_playlist_views();	
 		//pvt::ng_playlist_view_t::g_update_all_items();
 	}

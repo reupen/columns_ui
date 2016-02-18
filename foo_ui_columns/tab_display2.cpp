@@ -25,7 +25,7 @@ static class tab_display2 : public preferences_tab
 
 		uSendDlgItemMessage(wnd, IDC_HHTRACK, BM_SETCHECK, cfg_header_hottrack, 0);
 
-		uSendDlgItemMessage(wnd, IDC_SPIN1, UDM_SETPOS32, 0, cfg_height);
+		uSendDlgItemMessage(wnd, IDC_SPIN1, UDM_SETPOS32, 0, settings::playlist_view_item_padding);
 
 		uSendDlgItemMessage(wnd, IDC_SORT_ARROWS, BM_SETCHECK, cfg_show_sort_arrows, 0);
 		uSendDlgItemMessage(wnd, IDC_DROP_AT_END, BM_SETCHECK, cfg_drop_at_end, 0);
@@ -93,7 +93,7 @@ public:
 				{
 					BOOL result;
 					int new_height = GetDlgItemInt(wnd, IDC_HEIGHT, &result, TRUE);
-					if (result) cfg_height = new_height;
+					if (result) settings::playlist_view_item_padding = new_height;
 					refresh_all_playlist_views();
 					pvt::ng_playlist_view_t::g_on_vertical_item_padding_change();
 				}
