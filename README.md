@@ -14,7 +14,7 @@ This repo makes use of git submodules. If you're not familiar with them, [check 
 
 ## Build instructions
 
-Visual Studio 2015 Update 1 is requied to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx).
+Visual Studio 2015 Update 1 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx).
 
 You may also need the [Windows SDK for Windows 10](https://dev.windows.com/en-us/downloads/windows-10-sdk) and the [Windows SDK for Windows 7 and .NET Framework 4](https://www.microsoft.com/en-gb/download/details.aspx?id=8279).
 
