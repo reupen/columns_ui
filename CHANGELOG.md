@@ -11,13 +11,17 @@ Using a linear y-axis is no longer particularly useful and it's recommended that
 
 All standard panels now implement drag images, labels and drop descriptions when a drag and drop operation is started from them. Currently, the image is the foobar2000 alien cat icon.
 
-You can no longer drop files on panels in the layout area that do not implement drop handlers (e.g. Console panel, Album list panel).
+You can no longer drop files on panels in the layout area that do not implement drop handlers (e.g. Console panel and Album list panel).
 
 The default action when dragging files to Windows Explorer is now always copy. Previously, when dragging files to another folder on the same drive, the default operation would be to move the files.
 
-When dragging files to the playlist switcher, you can now force a new playlist to be created by holding down Alt.
+When dragging files to the playlist switcher or playlist tabs, you can now force a new playlist to be created by holding down Alt.
 
-Fixed a bug where dragging unsupported objects over some panels would cause the drag image to get stuck on the edge of the panel was fixed.
+When a new playlist is created by dropping files on the playlist tabs, it will be created where the files were dropped when possible.
+
+When reordering playlists in the playlist switcher, the insertion point is now below the item under the pointer when over the bottom half of that item.
+
+Fixed a bug where dragging unsupported objects over some panels would cause the drag image to get stuck on the edge of the panel.
 
 Fixed a bug where dragging a file from Windows Explorer to foobar2000 near the right-edge of the screen would cause the drop description label to jump about.
 
@@ -27,14 +31,28 @@ If a drag-and-drop operation is started from a auto-hide panel, or a panel in an
 
 Resizing a hidden auto-hide panel would sometimes cause it to get stuck open. This has been fixed.
 
-### Splitter divider with is now configurable
+### Splitter divider width is now configurable
 
 The setting is on the Layout preferences page.
+
+### Improved high-DPI behaviour
+
+The default values of the following are now DPI-aware:
+
+* Splitter divider width
+* Columns/NG playlist vertical item padding
+* Playlist switcher vertical item padding
+* Filter panel vertical item padding
+* NG playlist artwork column width
+
+Additionally, when transferring those settings to another PC via FCL files, or when changing the system DPI, the values will automatically be scaled appropriately.
+ 
+Similar changes will be made for other settings in an upcoming version.
 
 ### Other bug fixes
 
 * If you sort by a column in NG Playlist, this can now be undone using the Undo command.
-* Some text labels were truncated in various dialogs on certain DPI settings. This has been fixed.
+* Fixed various truncated text labels in various dialogs on certain DPI settings.
 * Corrected the behaviour of the up and down buttons for the auto-hide show and hide delay settings in preferences.
 * Added a workaround for an OS bug that could cause the main menu to be incorrectly activated when foobar2000 was alt-tabbed out of and a global keyboard shortcut using Ctrl+Alt was used to activate the foobar2000 window.
 * When the main menu is focused (by pressing Alt or F10), F10 can now correctly be used to deactivate the menu.
@@ -889,7 +907,7 @@ private release
 *  killed some options from prefs
 *  fixed:
     * Default paths for menu item actin lists in prefs is missing (regression from updating to 0.9)
-    * ìAction to perform when double clicking..î on playlist view tab is initially blank on clean install
+    * ‚ÄúAction to perform when double clicking..‚Äù on playlist view tab is initially blank on clean install
     * Removing and reinserting the playback order dropdown results in it using the System font.
 *  host caption uses COLOR_3DFACE as oposed to COLOR_MENUBAR on winxp with themes off
 
@@ -1249,7 +1267,7 @@ Released 15.03.2004
 *  fixed status bar font colour
 *  fix horizontal scrollbar when switch playlist
 *  fixed toggling no horizontal scrollbar mode setting if h scrollbar is visible
-*  fixed sorting - colour codes, non latin (?) characters (È Ì Û ˙ · etc.)
+*  fixed sorting - colour codes, non latin (?) characters (√© √≠ √≥ √∫ √° etc.)
 *  numerous other bug fixes
 *  scrolling horizontally with mouse wheel moves in slightly bigger steps
 *  ctrl + mouse wheel scrolls horizontally
