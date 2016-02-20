@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#define VERSION "0.4.0"
+#define VERSION "0.4.0-rc.1"
 
 VALIDATE_COMPONENT_FILENAME("foo_ui_columns.dll");
 
