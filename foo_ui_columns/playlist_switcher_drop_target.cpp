@@ -177,13 +177,13 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
 			}
 			else*/
 			{
-				m_window->hit_test_ex(ptt, hi, true);
+				m_window->hit_test_ex(ptt, hi);
 				if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
 					|| hi.result == t_list_view::hit_test_obscured_below)
 				{
 					if (m_is_playlists)
 					{
-						m_window->set_insert_mark(hi.index);
+						m_window->set_insert_mark(hi.insertion_index);
 						m_window->destroy_switch_timer();
 						mmh::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, *pdwEffect == DROPEFFECT_MOVE ? "Move here" : "Copy here", "");
 					}
@@ -192,7 +192,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
 
 						if (isAltDown)
 						{
-							m_window->set_insert_mark(hi.index);
+							m_window->set_insert_mark(hi.insertion_index);
 							m_window->destroy_switch_timer();
 							m_window->remove_highlight_item();
 							mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
@@ -212,9 +212,17 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
 				else if (hi.result == t_list_view::hit_test_below_items)
 				{
 					m_window->remove_highlight_item();
-					m_window->set_insert_mark(hi.index+1);
+					m_window->set_insert_mark(hi.insertion_index);
 					m_window->destroy_switch_timer();
-					mmh::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, *pdwEffect == DROPEFFECT_MOVE ? "Move here" : "Add to new playlist", "");
+					pfc::string8 message;
+					if (*pdwEffect == DROPEFFECT_MOVE)
+						message = "Move here";
+					else if (m_is_playlists)
+						message = "Copy here";
+					else
+						message = "Add to new playlist";
+
+					mmh::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, message, "");
 				}
 				else
 				{
@@ -289,7 +297,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 			{
 				POINT ptt = pti;
 				ScreenToClient(m_window->get_wnd(), &ptt);
-				m_window->hit_test_ex(ptt, hi, true);
+				m_window->hit_test_ex(ptt, hi);
 			}
 
 			playlist_dataobject_desc_impl data;
@@ -305,35 +313,30 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 						|| hi.result == t_list_view::hit_test_below_items)
 					{
 						t_size count = m_playlist_api->get_playlist_count();
-						if (hi.index < count)
+						order_helper order(count);
 						{
-
-							order_helper order(count);
+							t_size from = m_window->get_selected_item_single();
+							if (from != pfc_infinite)
 							{
-								t_size from = m_window->get_selected_item_single();
-								if (from != pfc_infinite)
+								t_size to = hi.insertion_index;
+								if (to > from) to--;
+								if (from != to && to < count)
 								{
-									t_size to = hi.index;
-									if (hi.result == t_list_view::hit_test_below_items) to++;
-									if (to > from) to--;
-									if (from != to)
-									{
-										if (from < to)
-											while (from<to && from < count)
-											{
-												order.swap(from,from+1);
-												from++;
-											}
-										else if (from > to)
-											while (from>to && from > 0)
-											{
-												order.swap(from,from-1);
-												from--;
-											}
-											{
-												m_playlist_api->reorder(order.get_ptr(),count);
-											}
-									}
+									if (from < to)
+										while (from<to && from < count)
+										{
+											order.swap(from,from+1);
+											from++;
+										}
+									else if (from > to)
+										while (from>to && from > 0)
+										{
+											order.swap(from,from-1);
+											from--;
+										}
+										{
+											m_playlist_api->reorder(order.get_ptr(),count);
+										}
 								}
 							}
 						}
@@ -345,10 +348,9 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 						t_size index_insert = m_playlist_api->get_playlist_count();
 
 						if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-							|| hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above)
-							index_insert = hi.index;
-						else if (hi.result == t_list_view::hit_test_below_items)
-							index_insert = hi.index + 1;
+							|| hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above
+							|| hi.result == t_list_view::hit_test_below_items)
+							index_insert = hi.insertion_index;
 
 						t_size index_activate = NULL;
 
@@ -362,7 +364,8 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 							data.get_entry_name(i, name);
 							data.get_entry_content(i, handles);
 							data.get_side_data(i, sidedata);
-							t_size index = m_playlist_api->create_playlist_ex(name, pfc_infinite, index_insert + i, handles, &stream_reader_memblock_ref((t_uint8*)sidedata.get_ptr(), sidedata.get_size()), abort_callback_dummy());
+							stream_reader_memblock_ref side_data_reader(static_cast<t_uint8*>(sidedata.get_ptr()), sidedata.get_size());
+							t_size index = m_playlist_api->create_playlist_ex(name, pfc_infinite, index_insert + i, handles, &side_data_reader, abort_callback_dummy());
 							if (i == 0) index_activate = index;
 						}
 						if (count)
@@ -387,7 +390,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 					)
 				{
 					create_new = isAltDown;
-					idx = hi.index;
+					idx = create_new ? hi.insertion_index : hi.index;
 				}
 				else if (hi.result == t_list_view::hit_test_below_items)
 				{

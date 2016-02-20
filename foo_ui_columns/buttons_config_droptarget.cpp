@@ -100,12 +100,10 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
 			}
 			else m_button_list_view->destroy_timer_scroll_down();
 			{
-				m_button_list_view->hit_test_ex(ptt, hi, true);
+				m_button_list_view->hit_test_ex(ptt, hi);
 				if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-					|| hi.result == t_list_view::hit_test_obscured_below)
-					m_button_list_view->set_insert_mark(hi.index);
-				else if (hi.result == t_list_view::hit_test_below_items)
-					m_button_list_view->set_insert_mark(hi.index + 1);
+					|| hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_below_items)
+					m_button_list_view->set_insert_mark(hi.insertion_index);
 				else
 					m_button_list_view->remove_insert_mark();
 			}
@@ -141,15 +139,13 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
 		POINT ptt = pt;
 		ScreenToClient(m_button_list_view->get_wnd(), &ptt);
 
-		m_button_list_view->hit_test_ex(ptt, hi, true);
+		m_button_list_view->hit_test_ex(ptt, hi);
 
 		t_size new_index = pfc_infinite;
 
 		if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-			|| hi.result == t_list_view::hit_test_obscured_below)
-			new_index = hi.index;
-		else if (hi.result == t_list_view::hit_test_below_items)
-			new_index = hi.index + 1;
+			|| hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_below_items)
+			new_index = hi.insertion_index;
 
 		if (new_index != pfc_infinite && new_index > index) --new_index;
 

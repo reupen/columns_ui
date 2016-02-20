@@ -105,12 +105,10 @@ namespace pvt
 					p_playlist->set_insert_mark(p_playlist->get_item_count());
 				else
 				{
-					p_playlist->hit_test_ex(ptt, hi, true);
+					p_playlist->hit_test_ex(ptt, hi);
 					if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-						|| hi.result == t_list_view::hit_test_obscured_below)
-						p_playlist->set_insert_mark(hi.index);
-					else if (hi.result == t_list_view::hit_test_below_items)
-						p_playlist->set_insert_mark(hi.index+1);
+						|| hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_below_items)
+						p_playlist->set_insert_mark(hi.insertion_index);
 					else
 						p_playlist->remove_insert_mark();
 				}
@@ -202,18 +200,15 @@ namespace pvt
 					POINT ptt = pti;
 					ScreenToClient(p_playlist->get_wnd(), &ptt);
 					//p_playlist->hit_test(ptt, idx);
-					p_playlist->hit_test_ex(ptt, hi, true);
+					p_playlist->hit_test_ex(ptt, hi);
 				}
 
 				if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
 					|| hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above
+					|| hi.result == t_list_view::hit_test_below_items
 					)
 				{
-					idx = hi.index;
-				}
-				else if (hi.result == t_list_view::hit_test_below_items)
-				{
-					idx = hi.index + 1;
+					idx = hi.insertion_index;
 				}
 
 				if (*pdwEffect == DROPEFFECT_COPY && cfg_drop_at_end)
