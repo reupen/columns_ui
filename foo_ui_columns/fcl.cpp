@@ -8,7 +8,7 @@ const GUID cui::fcl::groups::titles_playlist_view =
 const GUID cui::fcl::groups::titles_common = 
 { 0xf17dddf4, 0xbb3e, 0x4f36, { 0xb9, 0xe1, 0xd6, 0x26, 0x62, 0x9f, 0x2c, 0x76 } };
 
-enum {fcl_stream_version=1};
+enum {fcl_stream_version=2};
 
 // {9FAADFF3-E51A-4a8b-B4A3-D209A36AB301}
 static const GUID g_fcl_header = 
@@ -335,7 +335,7 @@ void g_import_layout(HWND wnd, const char * path, bool quiet)
 				throw pfc::exception("Unrecognised file header");
 			p_file->read_lendian_t(version, p_abort);
 			if (version > fcl_stream_version)
-				throw pfc::exception("Need newer foo_ui_columns");
+				throw pfc::exception("Need a newer version of Columns UI");
 			t_uint32 mode = cui::fcl::type_public;
 			if (version >= 1)
 				p_file->read_lendian_t(mode, p_abort);
