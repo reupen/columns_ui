@@ -10,7 +10,8 @@ drop_handler_interface::drop_handler_interface() : drop_ref_count(0)
 
 bool drop_handler_interface::check_window_allowed(HWND wnd)
 {
-	return wnd && (wnd == g_main_window || wnd == g_rebar || IsChild(g_rebar, wnd)) || wnd == g_status_pane.get_wnd() || wnd == g_status;
+	return wnd && (wnd == g_main_window || wnd == g_rebar || (g_rebar && IsChild(g_rebar, wnd)) || wnd == g_status_pane.get_wnd() 
+		|| (g_status_pane.get_wnd() && IsChild(g_status_pane.get_wnd(), wnd)) || wnd == g_status);
 }
 
 HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect)
