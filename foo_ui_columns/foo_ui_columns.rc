@@ -140,7 +140,7 @@ BEGIN
     LTEXT           "When creating a playlist from dropped files..",-1,14,61,161,8
     CONTROL         "Replace underscores from filename/directory generated playlist names",IDC_REMOVE_UNDERSCORES,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,79,247,10
-    CONTROL         "Compare following string and use output for name if identical for all files dropped",IDC_DROP_USE_STRING,
+    CONTROL         "Compare following string and use output for name if identical for all files dropped:",IDC_DROP_USE_STRING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,96,283,10
     EDITTEXT        IDC_DROP_STRING,14,113,291,63,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "Use \\ character to separate multiple strings",-1,15,176,142,8
