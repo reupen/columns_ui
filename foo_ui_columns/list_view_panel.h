@@ -20,11 +20,5 @@ protected:
 			p_out.m_group_text = p_out.m_text;
 		p_out.m_group_background = p_out.m_background;
 	}
-	icon_ptr get_drag_image_icon() override
-	{
-		// Perhaps cache?
-		// Load 256x256 icon because otherwise Windows helpfully picks a low-res version
-		return icon_ptr((static_api_ptr_t<ui_control>()->load_main_icon(256, 256)));
-	}
 private:
 };
