@@ -1,0 +1,11 @@
+version: 1.0.{build}
+configuration:
+- Release
+- Debug
+platform: Win32
+install:
+- cmd: git submodule update --init --recursive
+build:
+  project: vc14/columns_ui-public.sln
+  parallel: true
+  verbosity: normal
