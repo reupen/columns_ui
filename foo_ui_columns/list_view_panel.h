@@ -4,6 +4,8 @@ template<typename t_appearance_client>
 class t_list_view_panel : public t_list_view {
 protected:
 	virtual const char * get_drag_unit_plural() const override { return "tracks"; }
+	virtual const char * get_drag_unit_singular() const override { return "track"; }
+	virtual bool should_show_drag_text(t_size selection_count) override { return true; }
 	virtual void render_get_colour_data(colour_data_t & p_out) override
 	{
 		cui::colours::helper p_helper(t_appearance_client::g_guid);

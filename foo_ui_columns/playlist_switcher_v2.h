@@ -107,6 +107,7 @@ public:
 	bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) ;
 	void notify_save_inline_edit(const char * value) ;
 
+	virtual const char * get_drag_unit_singular() const override { return "playlist"; }
 	virtual const char * get_drag_unit_plural() const override { return "playlists"; }
 
 	bool do_drag_drop(WPARAM wp);
