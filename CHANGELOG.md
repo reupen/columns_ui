@@ -1,6 +1,6 @@
 # Change log
 
-## 0.4.0 (preliminary)
+## 0.4.0
 
 ### Improved spectrum analyser
 Improved spectrum analyser display by using foobar2000's 'New FFT [behaviour] for spectrum-generating methods' and adjusting x- and y-axis logarithmic scales. 
@@ -9,7 +9,7 @@ Using a linear y-axis is no longer particularly useful and it's recommended that
 
 ### Improved drag and drop behaviour
 
-All standard panels now implement drag images, labels and drop descriptions when a drag and drop operation is started from them. Currently, the image is the foobar2000 alien cat icon.
+All standard panels now implement drag images, labels and drop descriptions when a drag and drop operation is started from them. Currently, the drag image is the default image provided by the shell, but this may include artwork in the future.
 
 You can no longer drop files on panels in the layout area that do not implement drop handlers (e.g. Console panel and Album list panel).
 
