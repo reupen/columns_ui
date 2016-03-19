@@ -417,38 +417,10 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 			if (lpdis->itemData)
 			{
-#if 0
-				HDC dc_mem = CreateCompatibleDC(((LPDRAWITEMSTRUCT)lp)->hDC);
-
-				HBITMAP bm_mem = CreateCompatibleBitmap(((LPDRAWITEMSTRUCT)lp)->hDC, rc.right - rc.left, rc.bottom - rc.top);
-				HBITMAP bm_old = (HBITMAP)SelectObject(dc_mem, bm_mem);
-
-				RECT rc2 = { 0, 0, rc.right - rc.left, rc.bottom - rc.top };
-
-				OffsetWindowOrgEx(((LPDRAWITEMSTRUCT)lp)->hDC, 0 - rc.left, 0 - rc.top, 0);
-
-				BitBlt(dc_mem, 0, 0, rc.right - rc.left, rc.bottom - rc.top,
-					((LPDRAWITEMSTRUCT)lp)->hDC, 0, 0, SRCCOPY);
-
-				OffsetWindowOrgEx(((LPDRAWITEMSTRUCT)lp)->hDC, rc.left, rc.top, 0);
-
-
-				ui_helpers::text_out_colours_tab(dc_mem, *(pfc::string8 *)((LPDRAWITEMSTRUCT)lp)->itemData,
-					((pfc::string8 *)((LPDRAWITEMSTRUCT)lp)->itemData)->length(), 2, 0, &rc, FALSE, GetSysColor(COLOR_MENUTEXT),
-					TRUE, true, false, ui_helpers::ALIGN_LEFT);
-
-				BitBlt(((LPDRAWITEMSTRUCT)lp)->hDC, rc.left, rc.top, rc.right, rc.bottom,
-					dc_mem, 0, 0, SRCCOPY);
-
-				SelectObject(dc_mem, bm_old);
-				DeleteObject(bm_mem);
-				DeleteDC(dc_mem);
-#else
 				pfc::string8 & text = *reinterpret_cast<pfc::string8 *>(lpdis->itemData);
 				ui_helpers::text_out_colours_tab(lpdis->hDC, text,
 					text.length(), 2, 0, &rc, FALSE, GetSysColor(COLOR_MENUTEXT),
 					TRUE, true, false, ui_helpers::ALIGN_LEFT);
-#endif
 			}
 
 			return TRUE;
@@ -818,19 +790,15 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	break;
 	case WM_SETFOCUS:
 	{
-		if (wnd_last && IsWindow(wnd_last)) SetFocus(wnd_last);
-		else g_layout_window.set_focus();
+		if (wnd_last && IsWindow(wnd_last))
+			SetFocus(wnd_last);
+		else
+			g_layout_window.set_focus();
 
 		// wnd_last = 0; // meh minimised fuko
 	}
 	break;
-	case MSG_SET_FOCUS:
-	{
-	}
-	break;
 	case WM_ACTIVATEAPP:
-	{
-	}
 	break;
 	case MSG_SIZE:
 		size_windows();
@@ -865,17 +833,14 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		standard_commands::main_exit();
 	}
 	return 0;
-	case WM_TIMER:
-	{
-
-	}
-	break;
 
 	case WM_NOTIFY:
-		switch (((LPNMHDR)lp)->idFrom)
+		auto lpnmh = reinterpret_cast<LPNMHDR>(lp);
+
+		switch (lpnmh->idFrom)
 		{
 		case ID_REBAR:
-			switch (((LPNMHDR)lp)->code)
+			switch (lpnmh->code)
 			{
 			case RBN_HEIGHTCHANGE:
 			{
@@ -893,28 +858,28 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			}
 			break;
 		case ID_STATUS:
-			switch (((LPNMHDR)lp)->code)
+			switch (lpnmh->code)
 			{
 			case NM_RCLICK:
 			case NM_CLICK:
 			{
-				LPNMMOUSE lpnm = (LPNMMOUSE)lp;
-				unsigned u_parts = SendMessage(lpnm->hdr.hwndFrom, SB_GETPARTS, 0, 0);
+				auto lpnmm = reinterpret_cast<LPNMMOUSE>(lp);
+				unsigned u_parts = SendMessage(lpnmm->hdr.hwndFrom, SB_GETPARTS, 0, 0);
 				pfc::array_t<unsigned> parts;
 				parts.set_size(u_parts);
-				SendMessage(lpnm->hdr.hwndFrom, SB_GETPARTS, parts.get_size(), (LPARAM)parts.get_ptr());
+				SendMessage(lpnmm->hdr.hwndFrom, SB_GETPARTS, parts.get_size(), (LPARAM)parts.get_ptr());
 				u_parts = parts.get_size();
 				if (!IsZoomed(wnd) && u_parts && parts[u_parts - 1] == pfc_infinite)
 				{
 					RECT rc;
-					GetClientRect(lpnm->hdr.hwndFrom, &rc);
+					GetClientRect(lpnmm->hdr.hwndFrom, &rc);
 					parts[u_parts - 1] = rc.right - GetSystemMetrics(SM_CXVSCROLL);
 				}
 
 				unsigned part = -1, n = 0;
 				for (n = 0; n < u_parts; n++)
 				{
-					if ((unsigned)lpnm->pt.x < parts[n])
+					if ((unsigned)lpnmm->pt.x < parts[n])
 					{
 						part = n;
 						break;
@@ -927,10 +892,10 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					{
 						//caption vertical. alt-f4 send crazy with two??
 						RECT rc_status;
-						GetWindowRect(lpnm->hdr.hwndFrom, &rc_status);
+						GetWindowRect(lpnmm->hdr.hwndFrom, &rc_status);
 						HWND wndvol = status_bar::volume_popup_window.create(wnd);
-						POINT pt = lpnm->pt;
-						ClientToScreen(lpnm->hdr.hwndFrom, &pt);
+						POINT pt = lpnmm->pt;
+						ClientToScreen(lpnmm->hdr.hwndFrom, &pt);
 						int cx = volume_popup_t::g_get_caption_size() + 28;
 						int cy = 150;
 						int x = pt.x;
@@ -967,7 +932,8 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			break;
 			case NM_DBLCLK:
 			{
-				unsigned long part = ((LPNMMOUSE)lp)->dwItemSpec;
+				auto lpnmm = reinterpret_cast<LPNMMOUSE>(lp);
+				unsigned long part = lpnmm->dwItemSpec;
 
 				if (part == 0)
 					mainmenu_commands::g_execute(cfg_statusdbl.get_value().m_command);
@@ -988,5 +954,5 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 		break;
 	}
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
