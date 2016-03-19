@@ -13,9 +13,9 @@ bool get_msg_hook_t::on_hooked_message(message_hook_manager::t_message_hook_type
 			{
 				if (lpmsg->wParam == VK_MENU)
 				{
-					if ((g_rebar_window && !g_rebar_window->is_menu_focused()) || !g_layout_window.is_menu_focused())
+					if ((g_rebar_window && !g_rebar_window->is_menu_focused()) && !g_layout_window.is_menu_focused())
 					{
-						if (g_rebar_window) g_rebar_window->on_alt_down();
+						if (g_rebar_window) g_rebar_window->show_accelerators();
 						g_layout_window.show_menu_access_keys();
 					}
 				}

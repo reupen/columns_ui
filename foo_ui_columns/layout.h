@@ -88,6 +88,7 @@ public:
 	bool on_menu_char (unsigned short c);
 	bool set_menu_focus();
 	bool is_menu_focused();
+	HWND get_previous_menu_focus_window() const;
 
 	void set_layout_editing_active(bool b_val);
 	bool get_layout_editing_active();
@@ -127,6 +128,7 @@ private:
 	void __show_menu_access_keys_recur(const uie::window_ptr & p_wnd);
 	void __hide_menu_access_keys_recur(const uie::window_ptr & p_wnd);
 	bool __on_menu_char_recur (const uie::window_ptr & p_wnd, unsigned short c);
+	bool __get_previous_menu_focus_window_recur(const uie::window_ptr & p_wnd, HWND & wnd_previous) const;
 
 	uie::window_ptr m_child;
 	GUID m_child_guid;

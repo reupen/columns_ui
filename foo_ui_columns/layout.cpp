@@ -291,6 +291,45 @@ bool layout_window::__is_menu_focused_recur (const uie::window_ptr & p_wnd)
 	return false;
 }
 
+HWND layout_window::get_previous_menu_focus_window() const
+{
+	HWND ret = nullptr;
+	__get_previous_menu_focus_window_recur(m_child, ret);
+	return ret;
+}
+
+bool layout_window::__get_previous_menu_focus_window_recur(const uie::window_ptr & p_wnd, HWND & wnd_previous) const
+{
+	service_ptr_t<uie::menu_window_v2> p_menu_wnd;
+	service_ptr_t<uie::splitter_window> p_splitter_wnd;
+	if (p_wnd.is_valid())
+	{
+		if (p_wnd->service_query_t(p_menu_wnd))
+		{ 
+			if (p_menu_wnd->is_menu_focused() ) {
+				wnd_previous = p_menu_wnd->get_previous_focus_window();
+				return true;
+			}
+		}
+		else if (p_wnd->service_query_t(p_splitter_wnd))
+		{
+			unsigned n, count;
+			count = p_splitter_wnd->get_panel_count();
+			for (n=0; n<count; n++)
+			{
+				uie::splitter_item_ptr temp;
+				p_splitter_wnd->get_panel(n, temp);
+				if (temp.is_valid())
+				{
+					if (__get_previous_menu_focus_window_recur(temp->get_window_ptr(), wnd_previous))
+						return true;
+
+				}
+			}
+		}
+	}
+	return false;
+}
 
 void layout_window::__hide_menu_access_keys_recur(const uie::window_ptr & p_wnd)
 {

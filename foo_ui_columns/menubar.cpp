@@ -145,7 +145,7 @@ public:
 
 
 
-class menu_extension : public ui_extension::container_menu_ui_extension, message_hook_manager::message_hook
+class menu_extension : public ui_extension::containter_uie_window_t<uie::menu_window_v2>, message_hook_manager::message_hook
 {
 	static const TCHAR * class_name;
 
@@ -160,14 +160,13 @@ public:
 
 	bool redrop;
 	bool is_submenu;
-	bool full_hieght;
 	int active_item;
 	int actual_active;
 	int sub_menu_ref_count;
 	service_ptr_t<mainmenu_manager> p_manager;
 	service_ptr_t<ui_status_text_override> m_status_override;
 
-	virtual class_data & get_class_data()const 
+	virtual class_data & get_class_data()const  override
 	{
 		__implement_get_class_data_child_ex(class_name, true, false);
 	}
@@ -178,46 +177,47 @@ public:
 
 	LRESULT WINAPI hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
 	static LRESULT WINAPI main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
-	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
-	virtual bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp);
+	virtual bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
 
 	void make_menu(unsigned idx);
 
-	inline void destroy_menu()
+	inline void destroy_menu() const
 	{
 		uSendMessage(get_wnd(), WM_CANCELMODE, 0, 0);
 	}
 
-	inline void update_menu_acc()
+	inline void update_menu_acc() const
 	{
 		uPostMessage(get_wnd(), MSG_HIDE_MENUACC, 0, 0);
 	}
 
-	inline void show_menu_acc()
+	inline void show_menu_acc() const
 	{
 		uPostMessage(get_wnd(), MSG_SHOW_MENUACC, 0, 0);
 	}
 
 	static const GUID extension_guid;
 
-	const GUID & get_extension_guid() const
+	const GUID & get_extension_guid() const override
 	{
 		return extension_guid;
 	}
 
-	virtual void get_name(pfc::string_base & out)const;
-	virtual void get_category(pfc::string_base & out)const;
+	virtual void get_name(pfc::string_base & out) const override;
+	virtual void get_category(pfc::string_base & out) const override;
 
-	virtual void set_focus();
-	virtual void show_accelerators();
-	virtual void hide_accelerators();
+	virtual void set_focus() override;
+	virtual void show_accelerators() override;
+	virtual void hide_accelerators() override;
 
 	virtual bool on_menuchar(unsigned short chr);
 
-	virtual unsigned get_type () const {return ui_extension::type_toolbar;};
+	virtual unsigned get_type () const override {return ui_extension::type_toolbar;};
 
-	virtual bool is_menu_focused()const; 
+	virtual bool is_menu_focused()const override;
+	virtual HWND get_previous_focus_window() const override;
 
 	menu_extension();
 	~menu_extension();
@@ -227,7 +227,7 @@ bool menu_extension::hooked = false;
 
 menu_extension::menu_extension() : wnd_menu(0), menuproc(0), 
 	redrop(true), is_submenu(false), active_item(0), sub_menu_ref_count(-1), /*hooked(false), */
-	actual_active(0), initialised(false), p_manager(0), wnd_prev_focus(0), m_menu_key_pressed(false)
+	actual_active(0), initialised(false), p_manager(0), wnd_prev_focus(nullptr), m_menu_key_pressed(false)
 {
 };
 
@@ -240,6 +240,11 @@ const TCHAR * menu_extension::class_name = _T("{76E6DB50-0DE3-4f30-A7E4-93FD628B
 bool menu_extension::is_menu_focused()const
 {
 	return GetFocus() == wnd_menu;
+}
+
+HWND menu_extension::get_previous_focus_window() const
+{
+	return wnd_prev_focus;
 }
 
 
@@ -494,6 +499,7 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		{
 			m_menu_key_pressed = false;
 			update_menu_acc();
+			wnd_prev_focus = nullptr;
 		}
 		break;
 	case WM_SETFOCUS:
@@ -515,7 +521,8 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				update_menu_acc();
 				if (wp == VK_ESCAPE)
 				{
-					SetFocus(wnd_prev_focus);
+					if (wnd_prev_focus && IsWindow(wnd_prev_focus))
+						SetFocus(wnd_prev_focus);
 				}
 				else
 				{
@@ -526,8 +533,6 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			}
 			else if ( (wp == VK_SPACE) && !lpkeyb.previous_key_state) 
 			{
-				LPARAM newlp = lp;
-				((uih::KeyboardLParam&)newlp).context_code = 1;
 				HWND wndparent = uFindParentPopup(wnd);
 				if (wndparent) PostMessage(wndparent, WM_SYSKEYDOWN, wp, lp | (1<<29) ); 
 				return 0;
@@ -538,7 +543,8 @@ LRESULT WINAPI menu_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		{
 			if (m_menu_key_pressed && (wp==VK_MENU || wp == VK_F10))
 			{
-				SetFocus(wnd_prev_focus);
+				if (wnd_prev_focus && IsWindow(wnd_prev_focus))
+					SetFocus(wnd_prev_focus);
 				m_menu_key_pressed = false;
 				return 0;
 			}

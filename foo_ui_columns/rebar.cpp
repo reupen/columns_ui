@@ -615,7 +615,7 @@ bool rebar_window::on_menu_char (unsigned short c)
 
 }
 
-void rebar_window::on_alt_down ()
+void rebar_window::show_accelerators ()
 {
 	unsigned n, count = bands.get_count();
 
@@ -678,6 +678,28 @@ bool rebar_window::is_menu_focused()
 	return false;
 }
 
+bool rebar_window::get_previous_menu_focus_window(HWND & wnd_previous) const
+{
+	t_size n, count = bands.get_count();
+
+	for (n = 0; n<count; n++)
+	{
+		HWND wnd = bands[n]->wnd;
+		ui_extension::window_ptr p_ext = bands[n]->p_ext;
+		if (p_ext.is_valid() && wnd)
+		{
+			service_ptr_t<uie::menu_window_v2> p_menu_ext;
+			if (p_ext->service_query_t(p_menu_ext))
+			{
+				if (p_menu_ext->is_menu_focused()) {
+					wnd_previous = p_menu_ext->get_previous_focus_window();
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
 
 bool rebar_window::set_menu_focus ()
 {

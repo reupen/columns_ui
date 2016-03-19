@@ -124,10 +124,11 @@ public:
 	void on_themechanged ();
 
 	bool on_menu_char (unsigned short c);
-	void on_alt_down();
+	void show_accelerators();
 	bool set_menu_focus();
 	void hide_accelerators ();
 	bool is_menu_focused();
+	bool get_previous_menu_focus_window(HWND & wnd_previous) const;
 
 	//save bands on layout changed - easier
 	

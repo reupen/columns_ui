@@ -28,6 +28,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	static bool g_last_sysray_r_down;
 	static bool g_last_sysray_x1_down;
 	static bool g_last_sysray_x2_down;
+	static HWND g_wnd_focused_before_menu;
 
 	static HIMAGELIST g_imagelist_taskbar;
 
@@ -243,6 +244,9 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					if (!uih::GetKeyboardCuesEnabled())
 					SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
 					wnd_last = GetFocus();
+					if (!g_rebar_window || !g_rebar_window->get_previous_menu_focus_window(g_wnd_focused_before_menu))
+						g_wnd_focused_before_menu = g_layout_window.get_previous_menu_focus_window();
+					
 					//if (is_win2k_or_newer())
 					{
 						if (g_rebar_window)
@@ -254,8 +258,9 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			break;
 		case WM_SETFOCUS:
 			{
-				if (wnd_last && IsWindow(wnd_last))
-					SetFocus(wnd_last);
+				HWND wnd_focus = g_wnd_focused_before_menu ? g_wnd_focused_before_menu : wnd_last;
+				if (wnd_focus && IsWindow(wnd_focus))
+					SetFocus(wnd_focus);
 				else
 					g_layout_window.set_focus();
 
@@ -266,13 +271,10 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			if (wp == SC_KEYMENU && !lp) {
 				if (!HIBYTE(GetKeyState(VK_CONTROL))) // Workaround for obscure OS bug involving global keyboard shortcuts
 				{
-					bool processed = false;
-					if (g_rebar_window)
-						processed = g_rebar_window->set_menu_focus();
-					if (!processed)
-						g_layout_window.set_menu_focus();
-					else
+					if (g_rebar_window && g_rebar_window->set_menu_focus())
 						g_layout_window.hide_menu_access_keys();
+					else
+						g_layout_window.set_menu_focus();
 				}
 				return 0;
 			}
