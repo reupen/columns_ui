@@ -1,71 +1,18 @@
 #include "stdafx.h"
 
-//#define _WIN32_WINNT 0x500
-
 cfg_int cfg_fullsizemenu(create_guid(0xe880f267,0x73de,0x7952,0x5b,0x79,0xb5,0xda,0x77,0x28,0x6d,0xb6),0);
 
-
-#define WM_CHANGEUISTATE                0x0127
-#define WM_UPDATEUISTATE                0x0128
-#define WM_QUERYUISTATE                 0x0129
-
-/*
- * LOWORD(wParam) values in WM_*UISTATE*
- */
-#define UIS_SET                         1
-#define UIS_CLEAR                       2
-#define UIS_INITIALIZE                  3
-
-/*
- * HIWORD(wParam) values in WM_*UISTATE*
- */
-#define UISF_HIDEFOCUS                  0x1
-#define UISF_HIDEACCEL                  0x2
-//#if(_WIN32_WINNT >= 0x0501)
-#define UISF_ACTIVE                     0x4
-
-#include <windows.h>
-#include <COMMCTRL.H>
-#include <WinUser.h>
-#include <windowsx.h>
-#include <commctrl.h>
-#include <strsafe.h>
-
 #define ID_MENU  2001
-enum {MSG_HIDE_MENUACC = WM_USER + 1, MSG_SHOW_MENUACC = WM_USER + 2, MSG_CREATE_MENU = WM_USER + 3, MSG_SIZE_LIMIT_CHANGE};
 
-#if 0
-
-struct main_menu_group
+enum
 {
-	const char * name;
-	const TCHAR * name_accel;
-	const GUID * guid;
-	main_menu_group(const char * p_name, const TCHAR * p_name_accel, const GUID * p_guid)
-		:name(p_name),name_accel(p_name_accel),guid(p_guid)
-	{};
+	MSG_HIDE_MENUACC = WM_USER + 1, 
+	MSG_SHOW_MENUACC = WM_USER + 2, 
+	MSG_CREATE_MENU = WM_USER + 3, 
+	MSG_SIZE_LIMIT_CHANGE
 };
 
-namespace menu_groups
-{
-
-	main_menu_group file("File",_T("&File"),&mainmenu_groups::file);
-	main_menu_group edit("Edit",_T("&Edit"),&mainmenu_groups::edit);
-	main_menu_group view("View",_T("&View"),&mainmenu_groups::view);
-	main_menu_group playback("Playback",_T("&Playback"),&mainmenu_groups::playback);
-	main_menu_group library("Library",_T("&Library"),&mainmenu_groups::library);
-	main_menu_group help("Help",_T("&Help"),&mainmenu_groups::help);
-};
-
-main_menu_group * g_menu_groups[] = 
-{
-	&menu_groups::file, &menu_groups::edit, &menu_groups::view, &menu_groups::playback, &menu_groups::library,
-	&menu_groups::help
-};
-
-#endif
-
-//menu_manager.cpp
+//from menu_manager.cpp
 class mnemonic_manager
 {
 	pfc::string8_fast_aggressive used;
@@ -80,9 +27,6 @@ class mnemonic_manager
 	{
 		return (c>='a' && c<='z') || (c>='A' && c<='Z') || (c>='0' && c<='9');
 	}
-
-
-
 
 	void insert(const char * src,unsigned idx,pfc::string_base & out)
 	{
@@ -313,217 +257,229 @@ LRESULT WINAPI menu_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 {
-	
-	if(msg == WM_CREATE)
+	switch (msg) 
 	{
-		initialised = true;
-
-		mainmenu_root_group::g_get_root_items(m_buttons);
-		t_size button_count = m_buttons.get_count();
-
-		pfc::array_t<TBBUTTON> tbb;
-		tbb.set_size(button_count);
-		memset(tbb.get_ptr(), 0, tbb.get_size()*sizeof(TBBUTTON));
-		
-		wnd_menu = CreateWindowEx(/*TBSTYLE_EX_MIXEDBUTTONS|*/WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, NULL, 
-			WS_CHILD | WS_VISIBLE|WS_CLIPSIBLINGS | WS_CLIPCHILDREN |TBSTYLE_FLAT | TBSTYLE_TRANSPARENT |TBSTYLE_LIST | CCS_NORESIZE| CCS_NOPARENTALIGN| CCS_NODIVIDER, 
-			0, 0, 0, 25, wnd, (HMENU) ID_MENU, core_api::get_my_instance(), NULL); 
-		
-		if (wnd_menu)
+		case WM_CREATE:
 		{
-			SetWindowLongPtr(wnd_menu,GWLP_USERDATA,(LPARAM)(this));
-			
-			SendMessage(wnd_menu, TB_SETBITMAPSIZE, (WPARAM) 0, MAKELONG(0,0));
-			SendMessage(wnd_menu, TB_SETBUTTONSIZE, (WPARAM) 0, MAKELONG(0,/*GetSystemMetrics(SM_CYMENUSIZE)*/0));
-			
-			SendMessage(wnd_menu, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0); 
+			initialised = true;
 
-			unsigned n, count = tbb.get_size();
-			for (n=0; n<count; n++)
+			mainmenu_root_group::g_get_root_items(m_buttons);
+			t_size button_count = m_buttons.get_count();
+
+			pfc::array_t<TBBUTTON> tbb;
+			tbb.set_size(button_count);
+			memset(tbb.get_ptr(), 0, tbb.get_size() * sizeof(TBBUTTON));
+
+			wnd_menu = CreateWindowEx(/*TBSTYLE_EX_MIXEDBUTTONS|*/WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, NULL,
+				WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TBSTYLE_FLAT | TBSTYLE_TRANSPARENT | TBSTYLE_LIST | CCS_NORESIZE | CCS_NOPARENTALIGN | CCS_NODIVIDER,
+				0, 0, 0, 25, wnd, (HMENU)ID_MENU, core_api::get_my_instance(), NULL);
+
+			if (wnd_menu)
 			{
-				tbb[n].iBitmap = I_IMAGECALLBACK; 
-				tbb[n].idCommand = n+1; 
-				tbb[n].fsState = TBSTATE_ENABLED; 
-				tbb[n].fsStyle = BTNS_DROPDOWN|BTNS_AUTOSIZE ; 
-				tbb[n].dwData = 0; 
-				tbb[n].iString = (int)m_buttons[n].m_name_with_accelerators.get_ptr(); 
+				SetWindowLongPtr(wnd_menu, GWLP_USERDATA, (LPARAM)(this));
+
+				SendMessage(wnd_menu, TB_SETBITMAPSIZE, (WPARAM)0, MAKELONG(0, 0));
+				SendMessage(wnd_menu, TB_SETBUTTONSIZE, (WPARAM)0, MAKELONG(0,/*GetSystemMetrics(SM_CYMENUSIZE)*/0));
+
+				SendMessage(wnd_menu, TB_BUTTONSTRUCTSIZE, (WPARAM) sizeof(TBBUTTON), 0);
+
+				unsigned n, count = tbb.get_size();
+				for (n = 0; n < count; n++)
+				{
+					tbb[n].iBitmap = I_IMAGECALLBACK;
+					tbb[n].idCommand = n + 1;
+					tbb[n].fsState = TBSTATE_ENABLED;
+					tbb[n].fsStyle = BTNS_DROPDOWN | BTNS_AUTOSIZE;
+					tbb[n].dwData = 0;
+					tbb[n].iString = (int)m_buttons[n].m_name_with_accelerators.get_ptr();
+				}
+
+				SendMessage(wnd_menu, TB_ADDBUTTONS, (WPARAM)tbb.get_size(), (LPARAM)(LPTBBUTTON)tbb.get_ptr());
+
+				//			uSendMessage(wnd_menu, TB_SETEXTENDEDSTYLE, 0, TBSTYLE_EX_MIXEDBUTTONS);
+
+				//			uSendMessage(wnd_menu, TB_AUTOSIZE, 0, 0); 
+
+							//if (is_win2k_or_newer())
+				{
+					BOOL a = true;
+					SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
+					uSendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
+				}
+
+				//			uSendMessage(wnd_menu, TB_SETPARENT, (WPARAM) (HWND)wnd_host, 0);
+				menuproc = (WNDPROC)SetWindowLongPtr(wnd_menu, GWLP_WNDPROC, (LPARAM)main_hook);
 			}
 
-			SendMessage(wnd_menu, TB_ADDBUTTONS, (WPARAM) tbb.get_size(), (LPARAM) (LPTBBUTTON) tbb.get_ptr());
-			
-//			uSendMessage(wnd_menu, TB_SETEXTENDEDSTYLE, 0, TBSTYLE_EX_MIXEDBUTTONS);
-			
-//			uSendMessage(wnd_menu, TB_AUTOSIZE, 0, 0); 
-			
+
+			break;
+		}
+		case WM_WINDOWPOSCHANGED:
+		{
+			LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+			if (!(lpwp->flags & SWP_NOSIZE))
+			{
+				//SIZE sz = {0,0};
+				//SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
+
+				RECT rc = { 0,0,0,0 };
+				t_size count = m_buttons.get_count();
+				int cx = lpwp->cx;
+				int cy = lpwp->cy;
+				int extra = 0;
+				if (count && (BOOL)SendMessage(wnd_menu, TB_GETITEMRECT, count - 1, (LPARAM)(&rc)))
+				{
+					cx = min(cx, rc.right);
+					cy = min(cy, rc.bottom);
+					extra = (lpwp->cy - rc.bottom) / 2;
+				}
+				SetWindowPos(wnd_menu, 0, 0, extra, cx, cy, SWP_NOZORDER);
+				RedrawWindow(wnd, 0, 0, RDW_ERASE | RDW_INVALIDATE);
+			}
+			break;
+		}
+
+		case WM_NOTIFY:
+		{
+			if (((LPNMHDR)lp)->idFrom == ID_MENU) {
+				switch (((LPNMHDR)lp)->code)
+				{
+				case TBN_HOTITEMCHANGE:
+				{
+					if (!(((LPNMTBHOTITEM)lp)->dwFlags & HICF_LEAVING) && (((LPNMTBHOTITEM)lp)->dwFlags & HICF_MOUSE || ((LPNMTBHOTITEM)lp)->dwFlags & HICF_LMOUSE))
+						redrop = true;
+					break;
+				}
+				case TBN_DROPDOWN:
+				{
+					if (redrop)
+						PostMessage(wnd, MSG_CREATE_MENU, ((LPNMTOOLBAR)lp)->iItem, 0);
+					else
+						redrop = true;
+
+					return TBDDRET_DEFAULT;
+				}
+				}
+			}
+			break;
+		}
+		case MSG_HIDE_MENUACC:
+		{
 			//if (is_win2k_or_newer())
 			{
 				BOOL a = true;
 				SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
-				uSendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET , UISF_HIDEACCEL), 0);
-			}
-			
-//			uSendMessage(wnd_menu, TB_SETPARENT, (WPARAM) (HWND)wnd_host, 0);
-			menuproc = (WNDPROC)SetWindowLongPtr(wnd_menu,GWLP_WNDPROC,(LPARAM)main_hook);
-		}
-		
-		
-		
-	}
-	else if (msg == WM_WINDOWPOSCHANGED)
-	{
-		LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
-		if (!(lpwp->flags & SWP_NOSIZE))
-		{
-			//SIZE sz = {0,0};
-			//SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
-
-			RECT rc = {0,0,0,0};
-			t_size count = m_buttons.get_count();
-			int cx = lpwp->cx;
-			int cy = lpwp->cy;
-			int extra = 0;
-			if (count && (BOOL)SendMessage(wnd_menu, TB_GETITEMRECT, count - 1, (LPARAM)(&rc)))
-			{
-				cx = min(cx, rc.right);
-				cy = min(cy, rc.bottom);
-				extra = (lpwp->cy - rc.bottom)/2;
-			}
-			SetWindowPos(wnd_menu, 0, 0, extra, cx, cy, SWP_NOZORDER);
-			RedrawWindow(wnd, 0, 0, RDW_ERASE|RDW_INVALIDATE);
-		}
-	}
-	else if (msg==WM_SIZE)
-	{
-	}
-	else if (msg== WM_NOTIFY && ((LPNMHDR)lp)->idFrom == ID_MENU)
-	{
-		switch (((LPNMHDR)lp)->code)
-		{
-		case TBN_HOTITEMCHANGE:
-			{
-				if (!(((LPNMTBHOTITEM)lp)->dwFlags & HICF_LEAVING)  && (((LPNMTBHOTITEM)lp)->dwFlags & HICF_MOUSE || ((LPNMTBHOTITEM)lp)->dwFlags & HICF_LMOUSE))
-					redrop = true;
+				if ((uSendMessage(wnd_menu, WM_QUERYUISTATE, 0, 0) & UISF_HIDEACCEL) != !a)
+					SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
 			}
 			break;
-		case TBN_DROPDOWN:
+		}
+		case MSG_SHOW_MENUACC:
+		{
+			//if (is_win2k_or_newer())
 			{
-				if (redrop)
-				{
-					PostMessage(wnd, MSG_CREATE_MENU, ((LPNMTOOLBAR)lp)->iItem, 0);
-				}
-				else redrop = true;
-				
-				return TBDDRET_DEFAULT;
+				SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), 0);
 			}
+			break;
 		}
-	}
-	else if (msg == MSG_HIDE_MENUACC)
-	{
-		//if (is_win2k_or_newer())
+		case MSG_CREATE_MENU:
 		{
-			BOOL a = true;
-			SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
-			if ((uSendMessage(wnd_menu, WM_QUERYUISTATE,0,0) & UISF_HIDEACCEL) != !a)
-			SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ?  UIS_CLEAR  : UIS_SET , UISF_HIDEACCEL), 0);
+			if (lp) SetFocus(wnd_menu);
+			active_item = wp;
+
+			make_menu(wp);
+			break;
 		}
-	}
-	else if (msg == MSG_SHOW_MENUACC)
-	{
-		//if (is_win2k_or_newer())
+		case WM_MENUSELECT:
 		{
-			SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), 0);
-		}
-	}
-	
-	else if (msg == MSG_CREATE_MENU)
-	{
-		if (lp) SetFocus(wnd_menu);
-		active_item = wp;
-		
-		make_menu(wp);
-	}
-	else if (msg == WM_MENUSELECT)
-	{
-		if (HIWORD(wp) & MF_POPUP)
-		{
-			is_submenu = true;
-			m_status_override.release();
-		}
-		else 
-		{
-			is_submenu = false;
-			if (p_manager.is_valid())
+			if (HIWORD(wp) & MF_POPUP)
 			{
-				unsigned id = LOWORD(wp);
-				
-				bool set = false;
-
-				pfc::string8 blah;
-
-				set = p_manager->get_description(id-1, blah);
-				
-				service_ptr_t<ui_status_text_override> p_status_override;
-
-				if (set)
+				is_submenu = true;
+				m_status_override.release();
+			}
+			else
+			{
+				is_submenu = false;
+				if (p_manager.is_valid())
 				{
-					get_host()->override_status_text_create(p_status_override);
+					unsigned id = LOWORD(wp);
 
-					if (p_status_override.is_valid())
+					bool set = false;
+
+					pfc::string8 blah;
+
+					set = p_manager->get_description(id - 1, blah);
+
+					service_ptr_t<ui_status_text_override> p_status_override;
+
+					if (set)
 					{
-						p_status_override->override_text(blah);
+						get_host()->override_status_text_create(p_status_override);
+
+						if (p_status_override.is_valid())
+						{
+							p_status_override->override_text(blah);
+						}
 					}
+					m_status_override = p_status_override;
 				}
-				m_status_override = p_status_override;
 			}
+			break;
 		}
-	}
-	else if (msg == WM_INITMENUPOPUP)
-	{
-		sub_menu_ref_count++;
-	}
-	else if (msg == WM_UNINITMENUPOPUP)
-	{
-		sub_menu_ref_count--;
-	}
-	else if (msg == WM_GETMINMAXINFO)
-	{
-		LPMINMAXINFO mmi = LPMINMAXINFO(lp);
-
-		RECT rc = {0,0,0,0};
-		SendMessage(wnd_menu,  TB_GETITEMRECT, m_buttons.get_count()-1, (LPARAM)(&rc));
-
-		//SIZE sz = {0,0};
-		//SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
-		//console::formatter() << sz.cx << sz.cy;
-
-		mmi->ptMinTrackSize.x = rc.right;
-		mmi->ptMinTrackSize.y = rc.bottom;
-		mmi->ptMaxTrackSize.y = rc.bottom;
-		return 0;
-	}
-	else if (msg == WM_SETTINGCHANGE)
-	{
-		if (wp == SPI_SETNONCLIENTMETRICS)
+		case WM_INITMENUPOPUP:
 		{
-			PostMessage(wnd, MSG_SIZE_LIMIT_CHANGE, 0,0);
+			sub_menu_ref_count++;
+			break;
 		}
-	}
-	else if (wp == SPI_GETKEYBOARDCUES)
-	{
-		BOOL a = TRUE;
-		SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
-		SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM((a || GetFocus() == wnd_menu) ? UIS_CLEAR : UIS_SET , UISF_HIDEACCEL), 0);
-	}
-	else if (msg == MSG_SIZE_LIMIT_CHANGE)
-	{
-		get_host()->on_size_limit_change(wnd, uie::size_limit_minimum_height|uie::size_limit_maximum_height|uie::size_limit_minimum_width);
-	}
-	else if (msg == WM_DESTROY)
-	{
-		DestroyWindow(wnd_menu);
-		wnd_menu=NULL;
-		m_buttons.remove_all();
-		initialised = false;
+		case WM_UNINITMENUPOPUP:
+		{
+			sub_menu_ref_count--;
+			break;
+		}
+		case WM_GETMINMAXINFO:
+		{
+			LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+
+			RECT rc = { 0,0,0,0 };
+			SendMessage(wnd_menu, TB_GETITEMRECT, m_buttons.get_count() - 1, (LPARAM)(&rc));
+
+			//SIZE sz = {0,0};
+			//SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
+			//console::formatter() << sz.cx << sz.cy;
+
+			mmi->ptMinTrackSize.x = rc.right;
+			mmi->ptMinTrackSize.y = rc.bottom;
+			mmi->ptMaxTrackSize.y = rc.bottom;
+			return 0;
+		}
+		case WM_SETTINGCHANGE:
+		{
+			if (wp == SPI_SETNONCLIENTMETRICS)
+			{
+				PostMessage(wnd, MSG_SIZE_LIMIT_CHANGE, 0, 0);
+			}
+			break;
+		}
+		case SPI_GETKEYBOARDCUES:
+		{
+			BOOL a = TRUE;
+			SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
+			SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM((a || GetFocus() == wnd_menu) ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
+			break;
+		}
+		case MSG_SIZE_LIMIT_CHANGE:
+		{
+			get_host()->on_size_limit_change(wnd, uie::size_limit_minimum_height | uie::size_limit_maximum_height | uie::size_limit_minimum_width);
+			break;
+		}
+		case WM_DESTROY:
+		{
+			DestroyWindow(wnd_menu);
+			wnd_menu = NULL;
+			m_buttons.remove_all();
+			initialised = false;
+			break;
+		}
 	}
 	return DefWindowProc(wnd, msg, wp, lp);
 }
