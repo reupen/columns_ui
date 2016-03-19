@@ -27,7 +27,7 @@ void splitter_window_impl::insert_panel(unsigned index, const uie::splitter_item
 
 void splitter_window_impl::replace_panel(unsigned index, const uie::splitter_item_t *  p_item)
 {
-	if (index <= m_panels.get_count())
+	if (index < m_panels.get_count())
 	{
 		if (get_wnd())
 			m_panels[index]->destroy();
