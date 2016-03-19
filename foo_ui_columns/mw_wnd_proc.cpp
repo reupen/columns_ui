@@ -119,6 +119,81 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 	switch (msg)
 	{
+	case WM_CREATE:
+	{
+		/* initialise ui */
+
+		//			modeless_dialog_manager::add(wnd);
+
+		WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
+		WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
+		WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
+
+		uih::RegisterShellHookWindowHelper(wnd);
+
+		INITCOMMONCONTROLSEX icex;
+		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+		icex.dwICC = ICC_BAR_CLASSES | ICC_COOL_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
+		InitCommonControlsEx(&icex);
+
+		cui::g_main_window.initialise();
+
+		//g_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&g_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
+
+		if (!uih::GetKeyboardCuesEnabled())
+			SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
+
+		g_main_window = wnd;
+		statusbartext = core_version_info::g_get_version_string();
+		set_main_window_text("foobar2000"/*core_version_info::g_get_version_string()*/);
+		if (cfg_show_systray) create_systray_icon();
+
+		HRESULT hr = OleInitialize(nullptr);
+		pfc::com_ptr_t<drop_handler_interface> drop_handler = new drop_handler_interface;
+		RegisterDragDrop(g_main_window, drop_handler.get_ptr());
+
+		/* end of initialisation */
+
+		//			ShowWindow(wnd, SW_SHOWNORMAL);
+
+		make_ui();
+
+		g_get_msg_hook.register_hook();
+
+		//lets try recursively in wm_showwindow
+
+		//			SetWindowPos(wnd, 0, cfg_window_placement_columns.get_value().rcNormalPosition.left, cfg_window_placement_columns.get_value().rcNormalPosition.top, cfg_window_placement_columns.get_value().rcNormalPosition.right - cfg_window_placement_columns.get_value().rcNormalPosition.left, cfg_window_placement_columns.get_value().rcNormalPosition.bottom - cfg_window_placement_columns.get_value().rcNormalPosition.top, SWP_NOZORDER);
+		//			ShowWindow(wnd, SW_SHOWNORMAL);
+		if (config_object::g_get_data_bool_simple(standard_config_objects::bool_ui_always_on_top, false))
+			SendMessage(wnd, MSG_SET_AOT, TRUE, 0);
+
+
+	}
+
+	return 0;
+	case WM_DESTROY:
+	{
+		g_get_msg_hook.deregister_hook();
+		g_layout_window.destroy();
+		uih::DeregisterShellHookWindowHelper(wnd);
+
+
+		destroy_rebar(false);
+		status_bar::destroy_status_window();
+		main_window::g_ITaskbarList3.release();
+		RevokeDragDrop(g_main_window);
+		destroy_systray_icon();
+		cui::g_main_window.deinitialise();
+		OleUninitialize();
+	}
+	break;
+	case WM_NCDESTROY:
+		if (g_imagelist_taskbar)
+			ImageList_Destroy(g_imagelist_taskbar);
+		break;
+	case WM_CLOSE:
+		standard_commands::main_exit();
+		return 0;
 	case WM_COMMAND:
 	{
 		switch (wp)
@@ -188,6 +263,31 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 	}
 	break;
+	case WM_ACTIVATE:
+	{
+		if ((LOWORD(wp) == WA_INACTIVE))
+		{
+			if (!uih::GetKeyboardCuesEnabled())
+				SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
+			wnd_last = GetFocus();
+			//if (is_win2k_or_newer())
+			{
+				if (g_rebar_window) g_rebar_window->hide_accelerators();
+				g_layout_window.hide_menu_access_keys();
+			}
+		}
+	}
+	break;
+	case WM_SETFOCUS:
+	{
+		if (wnd_last && IsWindow(wnd_last))
+			SetFocus(wnd_last);
+		else
+			g_layout_window.set_focus();
+
+		// wnd_last = 0; // meh minimised fuko
+	}
+	break;
 	case WM_SYSCOMMAND:
 		if (wp == SC_KEYMENU && !lp)
 		{
@@ -201,6 +301,18 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			return 0;
 		}
 		break;
+	case WM_MENUCHAR:
+	{
+		unsigned short chr = LOWORD(wp);
+		bool processed = false;
+		if (g_rebar_window)
+		{
+			processed = g_rebar_window->on_menu_char(chr);
+		}
+		if (!processed)
+			g_layout_window.on_menu_char(chr);
+	}
+	return (MNC_CLOSE << 16);
 	case WM_CONTEXTMENU:
 		if (g_status && (HWND)wp == g_status)
 		{
@@ -449,87 +561,6 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 	}
 	break;
-
-
-	case WM_LBUTTONDOWN:
-	case WM_MOUSEMOVE:
-	case WM_LBUTTONUP:
-		break;
-	case WM_MENUCHAR:
-	{
-		unsigned short chr = LOWORD(wp);
-		bool processed = false;
-		if (g_rebar_window)
-		{
-			processed = g_rebar_window->on_menu_char(chr);
-		}
-		if (!processed)
-			g_layout_window.on_menu_char(chr);
-	}
-	return (MNC_CLOSE << 16);
-	case WM_SHOWWINDOW:
-		break;
-	case WM_KILLFOCUS:
-		break;
-	case WM_CREATE:
-	{
-		/* initialise ui */
-
-		//			modeless_dialog_manager::add(wnd);
-
-		WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
-		WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
-		WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
-
-		uih::RegisterShellHookWindowHelper(wnd);
-
-		INITCOMMONCONTROLSEX icex;
-		icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-		icex.dwICC = ICC_BAR_CLASSES | ICC_COOL_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
-		InitCommonControlsEx(&icex);
-
-		cui::g_main_window.initialise();
-
-		//g_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&g_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
-
-		if (!uih::GetKeyboardCuesEnabled())
-			SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
-
-		g_main_window = wnd;
-		statusbartext = core_version_info::g_get_version_string();
-		set_main_window_text("foobar2000"/*core_version_info::g_get_version_string()*/);
-		if (cfg_show_systray) create_systray_icon();
-
-		HRESULT hr = OleInitialize(nullptr);
-		pfc::com_ptr_t<drop_handler_interface> drop_handler = new drop_handler_interface;
-		RegisterDragDrop(g_main_window, drop_handler.get_ptr());
-
-		/* end of initialisation */
-
-		//			ShowWindow(wnd, SW_SHOWNORMAL);
-
-		make_ui();
-
-		g_get_msg_hook.register_hook();
-
-		//lets try recursively in wm_showwindow
-
-		//			SetWindowPos(wnd, 0, cfg_window_placement_columns.get_value().rcNormalPosition.left, cfg_window_placement_columns.get_value().rcNormalPosition.top, cfg_window_placement_columns.get_value().rcNormalPosition.right - cfg_window_placement_columns.get_value().rcNormalPosition.left, cfg_window_placement_columns.get_value().rcNormalPosition.bottom - cfg_window_placement_columns.get_value().rcNormalPosition.top, SWP_NOZORDER);
-		//			ShowWindow(wnd, SW_SHOWNORMAL);
-		if (config_object::g_get_data_bool_simple(standard_config_objects::bool_ui_always_on_top, false))
-			SendMessage(wnd, MSG_SET_AOT, TRUE, 0);
-
-
-	}
-
-	return 0;
-	case WM_PARENTNOTIFY:
-	{
-		if (wp == WM_DESTROY)
-		{
-		}
-	}
-	break;
 	case WM_SYSCOLORCHANGE:
 		win32_helpers::send_message_to_direct_children(wnd, msg, wp, lp);
 		break;
@@ -773,66 +804,9 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			return TRUE;
 		}
 		break;
-	case WM_ACTIVATE:
-	{
-		if ((LOWORD(wp) == WA_INACTIVE))
-		{
-			if (!uih::GetKeyboardCuesEnabled())
-				SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
-			wnd_last = GetFocus();
-			//if (is_win2k_or_newer())
-			{
-				if (g_rebar_window) g_rebar_window->hide_accelerators();
-				g_layout_window.hide_menu_access_keys();
-			}
-		}
-	}
-	break;
-	case WM_SETFOCUS:
-	{
-		if (wnd_last && IsWindow(wnd_last))
-			SetFocus(wnd_last);
-		else
-			g_layout_window.set_focus();
-
-		// wnd_last = 0; // meh minimised fuko
-	}
-	break;
-	case WM_ACTIVATEAPP:
-	break;
 	case MSG_SIZE:
 		size_windows();
 		return 0;
-
-
-	case WM_LBUTTONDBLCLK:
-	case WM_MBUTTONUP:
-		break;
-	case WM_DESTROY:
-	{
-		g_get_msg_hook.deregister_hook();
-		g_layout_window.destroy();
-		uih::DeregisterShellHookWindowHelper(wnd);
-
-
-		destroy_rebar(false);
-		status_bar::destroy_status_window();
-		main_window::g_ITaskbarList3.release();
-		RevokeDragDrop(g_main_window);
-		destroy_systray_icon();
-		cui::g_main_window.deinitialise();
-		OleUninitialize();
-	}
-	break;
-	case WM_NCDESTROY:
-		if (g_imagelist_taskbar)
-			ImageList_Destroy(g_imagelist_taskbar);
-		break;
-	case WM_CLOSE:
-	{
-		standard_commands::main_exit();
-	}
-	return 0;
 
 	case WM_NOTIFY:
 		auto lpnmh = reinterpret_cast<LPNMHDR>(lp);
