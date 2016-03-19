@@ -27,10 +27,8 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	static UINT WM_TASKBARBUTTONCREATED;
 	static UINT WM_SHELLHOOKMESSAGE;
 	static bool g_last_sysray_r_down;
-	static bool g_last_sysray_l_down;
 	static bool g_last_sysray_x1_down;
 	static bool g_last_sysray_x2_down;
-	static bool g_sep_toggle;
 
 	static HIMAGELIST g_imagelist_taskbar;
 
@@ -271,7 +269,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				RBHITTESTINFO rbht;
 				rbht.pt = pt_client;
 
-				int idx_hit = uSendMessage(g_rebar, RB_HITTEST, 0, (LPARAM)&rbht);
+				int idx_hit = uSendMessage(g_rebar, RB_HITTEST, 0, reinterpret_cast<LPARAM>(&rbht));
 
 				uie::window_ptr p_ext;
 
@@ -285,7 +283,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				if (e.first(l))
 					do
 					{
-						if (g_rebar_window->check_band(l->get_extension_guid()) || (((false || (l->get_type() & ui_extension::type_toolbar))) && l->is_available(&get_rebar_host())))
+						if (g_rebar_window->check_band(l->get_extension_guid()) || ((l->get_type() & ui_extension::type_toolbar) && l->is_available(&get_rebar_host())))
 						{
 							ui_extension::window_info_simple info;
 
@@ -303,7 +301,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					moo.sort();
 
 					unsigned count_exts = moo.get_count();
-					HMENU popup;
+					HMENU popup = NULL;
 					for (n = 0; n < count_exts; n++)
 					{
 						if (!n || uStringCompare(moo[n - 1].category, moo[n].category))
@@ -396,10 +394,11 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		return DLGC_WANTALLKEYS;
 	case WM_DRAWITEM:
 	{
+		LPDRAWITEMSTRUCT lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lp);
 
-		if (((LPDRAWITEMSTRUCT)lp)->CtlID == ID_STATUS)
+		if (lpdis->CtlID == ID_STATUS)
 		{
-			RECT rc = ((LPDRAWITEMSTRUCT)lp)->rcItem;
+			RECT rc = lpdis->rcItem;
 			//			rc.right -= 3;
 			if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(g_main_window))
 			{
@@ -416,7 +415,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 			if (rc.left > rc.right) rc.right = rc.left;
 
-			if (((LPDRAWITEMSTRUCT)lp)->itemData)
+			if (lpdis->itemData)
 			{
 #if 0
 				HDC dc_mem = CreateCompatibleDC(((LPDRAWITEMSTRUCT)lp)->hDC);
@@ -445,8 +444,9 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				DeleteObject(bm_mem);
 				DeleteDC(dc_mem);
 #else
-				ui_helpers::text_out_colours_tab(((LPDRAWITEMSTRUCT)lp)->hDC, *(pfc::string8 *)((LPDRAWITEMSTRUCT)lp)->itemData,
-					((pfc::string8 *)((LPDRAWITEMSTRUCT)lp)->itemData)->length(), 2, 0, &rc, FALSE, GetSysColor(COLOR_MENUTEXT),
+				pfc::string8 & text = *reinterpret_cast<pfc::string8 *>(lpdis->itemData);
+				ui_helpers::text_out_colours_tab(lpdis->hDC, text,
+					text.length(), 2, 0, &rc, FALSE, GetSysColor(COLOR_MENUTEXT),
 					TRUE, true, false, ui_helpers::ALIGN_LEFT);
 #endif
 			}
@@ -459,7 +459,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	break;
 	case WM_WINDOWPOSCHANGED:
 	{
-		LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+		LPWINDOWPOS lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
 		if (!(lpwp->flags & SWP_NOSIZE))
 		{
 			ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
@@ -528,7 +528,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		set_main_window_text("foobar2000"/*core_version_info::g_get_version_string()*/);
 		if (cfg_show_systray) create_systray_icon();
 
-		HRESULT hr = OleInitialize(0);
+		HRESULT hr = OleInitialize(nullptr);
 		pfc::com_ptr_t<drop_handler_interface> drop_handler = new drop_handler_interface;
 		RegisterDragDrop(g_main_window, drop_handler.get_ptr());
 
@@ -600,14 +600,8 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		if (process_keydown(msg, lp, wp)) return 0;
 		break;
 	case MSG_NOTICATION_ICON:
-		if (lp == WM_LBUTTONDOWN)
+		if (lp == WM_LBUTTONUP)
 		{
-			g_last_sysray_l_down = true;
-		}
-		else if (lp == WM_LBUTTONUP)
-		{
-			//bool b_wasDown = g_last_sysray_l_down;
-			g_last_sysray_l_down = false;
 			//if (b_wasDown) 
 			standard_commands::main_activate_or_hide();
 		}
