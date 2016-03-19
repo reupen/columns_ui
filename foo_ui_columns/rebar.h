@@ -125,7 +125,7 @@ public:
 
 	bool on_menu_char (unsigned short c);
 	void on_alt_down();
-	bool on_alt_up();
+	bool set_menu_focus();
 	void hide_accelerators ();
 	bool is_menu_focused();
 

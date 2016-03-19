@@ -268,7 +268,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				{
 					bool processed = false;
 					if (g_rebar_window)
-						processed = g_rebar_window->on_alt_up();
+						processed = g_rebar_window->set_menu_focus();
 					if (!processed)
 						g_layout_window.set_menu_focus();
 					else

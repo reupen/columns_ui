@@ -679,7 +679,7 @@ bool rebar_window::is_menu_focused()
 }
 
 
-bool rebar_window::on_alt_up ()
+bool rebar_window::set_menu_focus ()
 {
 	unsigned n, count = bands.get_count();
 	bool rv = false;
