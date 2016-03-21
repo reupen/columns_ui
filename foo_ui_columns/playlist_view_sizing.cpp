@@ -15,10 +15,10 @@ void playlist_view::on_size(unsigned cx, unsigned cy)
 			rc_header.right - rc_header.left != rc_playlist.right - rc_playlist.left + horizontal_offset ||
 			rc_header.bottom - rc_header.top != header_height)
 		{
-			uSendMessage(wnd_header, WM_SETREDRAW, FALSE, 0);
+			SendMessage(wnd_header, WM_SETREDRAW, FALSE, 0);
 			SetWindowPos(wnd_header, 0, 0 - horizontal_offset, 0, rc_playlist.right - rc_playlist.left + horizontal_offset, header_height, SWP_NOZORDER);
 			if (cfg_nohscroll) rebuild_header(false);
-			uSendMessage(wnd_header, WM_SETREDRAW, TRUE, 0);
+			SendMessage(wnd_header, WM_SETREDRAW, TRUE, 0);
 			RedrawWindow(wnd_header, 0, 0, RDW_UPDATENOW | RDW_INVALIDATE);
 			if (rc_header.bottom - rc_header.top != header_height) RedrawWindow(wnd_playlist, 0, 0, RDW_UPDATENOW | RDW_INVALIDATE);
 		}

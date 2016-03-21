@@ -39,7 +39,7 @@ bool get_msg_hook_t::on_hooked_message(message_hook_manager::t_message_hook_type
 		}
 		else if (lpmsg->wParam == VK_TAB)
 		{
-			unsigned flags = uSendMessage(lpmsg->hwnd, WM_GETDLGCODE, 0, (LPARAM)lpmsg);
+			unsigned flags = SendMessage(lpmsg->hwnd, WM_GETDLGCODE, 0, (LPARAM)lpmsg);
 			if (!((flags & DLGC_WANTTAB) || (flags & DLGC_WANTMESSAGE)))
 			{
 				ui_extension::window::g_on_tab(lpmsg->hwnd);

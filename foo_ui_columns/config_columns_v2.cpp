@@ -156,7 +156,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						m_column->align= ((alignment)uSendMessage((HWND)lp,CB_GETCURSEL,0,0));
+						m_column->align= ((alignment)SendMessage((HWND)lp,CB_GETCURSEL,0,0));
 					}
 				}
 				break;
@@ -164,7 +164,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						m_column->filter_type = ((playlist_filter_type)uSendMessage((HWND)lp,CB_GETCURSEL,0,0));
+						m_column->filter_type = ((playlist_filter_type)SendMessage((HWND)lp,CB_GETCURSEL,0,0));
 						EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), m_column->filter_type != FILTER_NONE);
 					}
 				}
@@ -173,7 +173,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						m_column->show = ((uSendMessage((HWND)lp,BM_GETCHECK,0,0) !=0 ));
+						m_column->show = ((SendMessage((HWND)lp,BM_GETCHECK,0,0) !=0 ));
 					}
 				}
 				break;
@@ -349,7 +349,7 @@ public:
 		case WM_CHAR:
 			if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) &&  (GetKeyState(VK_CONTROL) & KF_UP))
 			{
-				uSendMessage(wnd, EM_SETSEL, 0, -1);
+				SendMessage(wnd, EM_SETSEL, 0, -1);
 				return 0;
 			}	
 			break;
@@ -438,7 +438,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						m_column->use_custom_sort = ((uSendMessage((HWND)lp,BM_GETCHECK,0,0) !=0 ));
+						m_column->use_custom_sort = ((SendMessage((HWND)lp,BM_GETCHECK,0,0) !=0 ));
 					}
 				}
 				break;
@@ -446,7 +446,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						m_column->use_custom_colour = ((uSendMessage((HWND)lp,BM_GETCHECK,0,0) !=0 ));
+						m_column->use_custom_colour = ((SendMessage((HWND)lp,BM_GETCHECK,0,0) !=0 ));
 					}
 				}
 				break;

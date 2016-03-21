@@ -371,7 +371,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			message.wParam = wp;
 			message.lParam = lp;
 
-			uSendMessage(g_tooltip, TTM_RELAYEVENT, 0, (LPARAM)&message);
+			SendMessage(g_tooltip, TTM_RELAYEVENT, 0, (LPARAM)&message);
 		}
 		bool b_was_focused = GetFocus() == wnd;
 		if (!b_was_focused)
@@ -494,7 +494,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			message.wParam = wp;
 			message.lParam = lp;
 
-			uSendMessage(g_tooltip, TTM_RELAYEVENT, 0, (LPARAM)&message);
+			SendMessage(g_tooltip, TTM_RELAYEVENT, 0, (LPARAM)&message);
 		}
 		ReleaseCapture();
 		g_drag_lmb = false;
@@ -565,7 +565,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			message.wParam = wp;
 			message.lParam = lp;
 
-			uSendMessage(g_tooltip, TTM_RELAYEVENT, 0, (LPARAM)&message);
+			SendMessage(g_tooltip, TTM_RELAYEVENT, 0, (LPARAM)&message);
 		}
 		const unsigned cx_drag = (unsigned)abs(GetSystemMetrics(SM_CXDRAG));
 		const unsigned cy_drag = (unsigned)abs(GetSystemMetrics(SM_CYDRAG));
@@ -792,7 +792,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			exit_inline_edit();
 			m_no_next_edit = true;
 			//#endif
-			//if (!is_visible(idx)) uSendMessage(wnd_playlist, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0),0);
+			//if (!is_visible(idx)) SendMessage(wnd_playlist, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0),0);
 
 #if 0
 			// DEATH's code
@@ -1014,7 +1014,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			hittest.pt.y = temp.y;
 
 
-			uSendMessage(wnd_header, HDM_HITTEST, 0, (LPARAM)&hittest);
+			SendMessage(wnd_header, HDM_HITTEST, 0, (LPARAM)&hittest);
 
 			enum { IDM_ASC = 1, IDM_DES = 2, IDM_SEL_ASC, IDM_SEL_DES, IDM_AUTOSIZE, IDM_PREFS, IDM_EDIT_COLUMN, IDM_CUSTOM_BASE };
 
@@ -1433,6 +1433,6 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		}
 
 	}
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
 

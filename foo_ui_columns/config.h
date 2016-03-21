@@ -56,14 +56,14 @@ class editor_font_notify
 		if (wnd) 
 		{
 			g_edit_font = CreateFontIndirect(&(LOGFONT)cfg_editor_font);
-			uSendMessage(wnd,WM_SETFONT,(WPARAM)g_edit_font,MAKELPARAM(1,0));
+			SendMessage(wnd,WM_SETFONT,(WPARAM)g_edit_font,MAKELPARAM(1,0));
 		}
 	}
 	void _release()
 	{
 		if (g_edit_font!=0)
 		{
-			if (wnd) uSendMessage(wnd,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
+			if (wnd) SendMessage(wnd,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 			DeleteObject(g_edit_font);
 			g_edit_font=0;
 		}

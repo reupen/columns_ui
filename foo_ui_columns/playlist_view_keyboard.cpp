@@ -18,7 +18,7 @@ void playlist_view::process_keydown(int offset, bool alt_down, bool prevent_redr
 
 	bool focus_sel = playlist_api->activeplaylist_is_item_selected(focus);
 	if (prevent_redrawing)
-		uSendMessage(wnd_playlist, WM_SETREDRAW, FALSE, 0);
+		SendMessage(wnd_playlist, WM_SETREDRAW, FALSE, 0);
 
 	if ((GetKeyState(VK_SHIFT) & KF_UP) && (GetKeyState(VK_CONTROL) & KF_UP))
 	{
@@ -40,7 +40,7 @@ void playlist_view::process_keydown(int offset, bool alt_down, bool prevent_redr
 
 	if (prevent_redrawing)
 	{
-		uSendMessage(wnd_playlist, WM_SETREDRAW, TRUE, 0);
+		SendMessage(wnd_playlist, WM_SETREDRAW, TRUE, 0);
 		RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 }

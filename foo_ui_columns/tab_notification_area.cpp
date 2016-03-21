@@ -50,12 +50,12 @@ public:
 
 			case IDC_NOWPL:
 			{
-				cfg_np = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_np = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 			case IDC_USE_CUSTOM_ICON:
 			{
-				cfg_custom_icon = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_custom_icon = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				create_icon_handle(); create_systray_icon();
 			}
 			break;
@@ -73,12 +73,12 @@ public:
 
 			case IDC_MINIMISE_TO_SYSTRAY:
 			{
-				cfg_minimise_to_tray = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_minimise_to_tray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 			case IDC_SHOW_SYSTRAY:
 			{
-				cfg_show_systray = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_show_systray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				//				EnableWindow(GetDlgItem(wnd, IDC_MINIMISE_TO_SYSTRAY), cfg_show_systray);
 
 				if (g_main_window)
@@ -100,7 +100,7 @@ public:
 			break;
 			case IDC_BALLOON:
 			{
-				cfg_balloon = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_balloon = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 			}

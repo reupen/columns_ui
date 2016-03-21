@@ -84,7 +84,7 @@ public:
 
 			case IDC_DROP_AT_END:
 			{
-				cfg_drop_at_end = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_drop_at_end = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 			case (EN_CHANGE << 16) | IDC_HEIGHT:
@@ -107,17 +107,17 @@ public:
 			break;
 			case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_MIDDLE:
 			{
-				cfg_playlist_middle_action = uSendMessage((HWND)lp, CB_GETITEMDATA, uSendMessage((HWND)lp, CB_GETCURSEL, 0, 0), 0);
+				cfg_playlist_middle_action = SendMessage((HWND)lp, CB_GETITEMDATA, SendMessage((HWND)lp, CB_GETCURSEL, 0, 0), 0);
 			}
 			break;
 			case IDC_TOOLTIPS:
-				cfg_tooltip = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_tooltip = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				EnableWindow(GetDlgItem(wnd, IDC_TOOLTIPS_CLIPPED), cfg_tooltip);
 				pvt::ng_playlist_view_t::g_on_show_tooltips_change();
 				break;
 
 			case IDC_SELECTION_MODEL:
-				cfg_alternative_sel = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_alternative_sel = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				pvt::ng_playlist_view_t::g_on_alternate_selection_change();
 				break;
 			case IDC_SHOWARTWORK:
@@ -139,22 +139,22 @@ public:
 				}
 				break;
 			case IDC_SORT_ARROWS:
-				cfg_show_sort_arrows = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_show_sort_arrows = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				pvt::ng_playlist_view_t::g_on_show_sort_indicators_change();
 				break;
 			case IDC_TOOLTIPS_CLIPPED:
-				cfg_tooltips_clipped = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_tooltips_clipped = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				pvt::ng_playlist_view_t::g_on_show_tooltips_change();
 				break;
 
 			case IDC_ELLIPSIS:
-				cfg_ellipsis = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_ellipsis = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				break;
 
 
 			case IDC_HEADER:
 			{
-				cfg_header = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_header = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				unsigned m, pcount = playlist_view::list_playlist.get_count();
 				for (m = 0; m < pcount; m++)
 				{
@@ -168,7 +168,7 @@ public:
 			break;
 			case IDC_NOHSCROLL:
 			{
-				cfg_nohscroll = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_nohscroll = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				playlist_view::update_all_windows();
 				pvt::ng_playlist_view_t::g_on_autosize_change();
 			}
@@ -176,7 +176,7 @@ public:
 
 			case IDC_HHTRACK:
 			{
-				cfg_header_hottrack = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_header_hottrack = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				unsigned m, pcount = playlist_view::list_playlist.get_count();
 				for (m = 0; m < pcount; m++)
 				{
@@ -189,7 +189,7 @@ public:
 			break;
 			case (CBN_SELCHANGE << 16) | IDC_PLEDGE:
 			{
-				cfg_frame = uSendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+				cfg_frame = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
 				{
 					unsigned m, pcount = playlist_view::list_playlist.get_count();
 					for (m = 0; m < pcount; m++)

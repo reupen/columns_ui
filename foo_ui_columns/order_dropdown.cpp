@@ -147,7 +147,7 @@ LRESULT WINAPI order_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 	p_this = reinterpret_cast<order_extension*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 	
-	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);
+	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : DefWindowProc(wnd, msg, wp, lp);
 	
 	return rv;
 }
@@ -170,7 +170,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 			static_api_ptr_t<playlist_manager> playlist_api;
 
-			uSendMessage(wnd_combo,WM_SETFONT,(WPARAM)font_icon,MAKELPARAM(1,0));
+			SendMessage(wnd_combo,WM_SETFONT,(WPARAM)font_icon,MAKELPARAM(1,0));
 
 			HDC dc = GetDC(wnd_combo);
 			HFONT font_old = SelectFont(dc, font_icon);
@@ -223,7 +223,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 	else if (msg== WM_COMMAND && wp == ((CBN_SELCHANGE<<16)|ID_ORDER))
 	{
-		int sel = uSendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+		int sel = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
 		pfc::string8 temp;
 		uComboBox_GetText(wnd_combo, sel, temp);
 		static_api_ptr_t<playlist_manager> playlist_api;
@@ -261,7 +261,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		}
 	}
 
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
 
 

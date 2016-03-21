@@ -18,9 +18,9 @@ void status_update_main(bool is_caller_menu_desc)
 	if (g_status)
 	{
 		if (menu && is_caller_menu_desc)
-			uSendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&status_bar::menudesc));
+			SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&status_bar::menudesc));
 		else if (!menu)
-			uSendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&statusbartext));
+			SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&statusbartext));
 	}
 }
 
@@ -285,7 +285,7 @@ namespace status_bar
 			if (b_old_lock && (!status_bar::b_lock || status_bar::u_lock_pos != u_old_lock_pos))
 				SendMessage(g_status, SB_SETICON, u_old_lock_pos, 0);
 
-			uSendMessage(g_status, SB_SETPARTS, m_parts.get_count(), (LPARAM)m_parts.get_ptr());
+			SendMessage(g_status, SB_SETPARTS, m_parts.get_count(), (LPARAM)m_parts.get_ptr());
 
 			if (cfg_show_vol && (p_parts & t_part_volume))
 				uStatus_SetText(g_status, u_vol_pos, text_volume);

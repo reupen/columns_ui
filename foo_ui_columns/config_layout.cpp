@@ -880,7 +880,7 @@ class tab_layout_new : public preferences_tab
 				}
 				break;
 			case IDC_USE_CUSTOM_SHOW_DELAY:
-				cfg_sidebar_use_custom_show_delay = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_sidebar_use_custom_show_delay = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
 				break;

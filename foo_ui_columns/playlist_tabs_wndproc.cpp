@@ -73,7 +73,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 		list_wnd.remove_item(this);
 		if (!list_wnd.get_count())
 		{
-			uSendMessage(wnd, WM_SETFONT, 0, 0);
+			SendMessage(wnd, WM_SETFONT, 0, 0);
 			if (g_font) DeleteObject(g_font);
 			g_font = 0;
 		}
@@ -453,7 +453,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 								{
 									if (g_rename_dialog(&temp, wnd))
 									{//fucko: dialogobx has a messgeloop, someone might have called switcher api funcs in the meanwhile
-										//			idx = ((HWND)wp == wnd_tabs) ? idx : uSendMessage(g_plist,LB_GETCURSEL,0,0);
+										//			idx = ((HWND)wp == wnd_tabs) ? idx : SendMessage(g_plist,LB_GETCURSEL,0,0);
 										num = playlist_api->get_playlist_count();
 										if ((signed)idx >= 0 && idx<num)
 										{

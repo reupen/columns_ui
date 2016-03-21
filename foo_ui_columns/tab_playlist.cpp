@@ -64,7 +64,7 @@ public:
 					BOOL result;
 					int new_height = GetDlgItemInt(wnd, IDC_PLHEIGHT, &result, TRUE);
 					if (result) settings::playlist_switcher_item_padding = new_height;
-					//						if (g_plist) uSendMessage(g_plist, LB_SETITEMHEIGHT, 0, get_pl_item_height());
+					//						if (g_plist) SendMessage(g_plist, LB_SETITEMHEIGHT, 0, get_pl_item_height());
 					playlist_switcher_t::g_on_vertical_item_padding_change();
 				}
 
@@ -80,7 +80,7 @@ public:
 
 			case IDC_PLAUTOHIDE:
 			{
-				cfg_pl_autohide = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_pl_autohide = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				g_on_autohide_tabs_change();
 				//					if (g_main_window)
 				//					{
@@ -92,13 +92,13 @@ public:
 			}
 			break;
 			case IDC_MCLICK:
-				cfg_mclick = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_mclick = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				break;
 				//case IDC_SHIFT_LMB:
 				//		cfg_playlists_shift_lmb = SendMessage((HWND)lp,BM_GETCHECK,0,0);
 				//		break;
 				//case IDC_DELETE:
-				//cfg_playlist_panel_delete = uSendMessage((HWND)lp,BM_GETCHECK,0,0);
+				//cfg_playlist_panel_delete = SendMessage((HWND)lp,BM_GETCHECK,0,0);
 				//break;
 			case (EN_CHANGE << 16) | IDC_PLAYLIST_TF:
 				cfg_playlist_switcher_tagz = string_utf8_from_window((HWND)lp);
@@ -114,7 +114,7 @@ public:
 				break;
 			case IDC_TABS_MULTILINE:
 			{
-				cfg_tabs_multiline = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_tabs_multiline = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				g_on_multiline_tabs_change();
 #if 0
 				if (g_main_window && g_tab)
@@ -130,23 +130,23 @@ public:
 			break;
 			case IDC_MCLICK3:
 			{
-				cfg_plm_rename = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_plm_rename = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 			case IDC_PLDRAG:
 			{
-				cfg_drag_pl = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_drag_pl = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 #if 0
 			case IDC_MCLICK2:
 			{
-				cfg_mclick2 = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_mclick2 = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 			case IDC_TABS:
 			{
-				cfg_tabs = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_tabs = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				if (g_main_window)
 				{
 					create_tabs();
@@ -157,7 +157,7 @@ public:
 #endif
 			case (CBN_SELCHANGE << 16) | IDC_PLISTEDGE:
 			{
-				cfg_plistframe = uSendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+				cfg_plistframe = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
 				playlist_switcher_t::g_on_edgestyle_change();
 			}
 			break;

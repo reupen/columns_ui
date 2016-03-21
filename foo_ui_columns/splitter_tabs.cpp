@@ -799,7 +799,7 @@ void splitter_window_tabs_impl::refresh_children()
 						memset(&mmi, 0, sizeof(MINMAXINFO));
 						mmi.ptMaxTrackSize.x = MAXLONG;
 						mmi.ptMaxTrackSize.y = MAXLONG;
-						uSendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+						SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
 						clip_minmaxinfo(mmi);
 
 						m_panels[n]->m_wnd = wnd_panel;
@@ -930,14 +930,14 @@ void splitter_window_tabs_impl::on_font_change()
 	{
 		if (g_font.is_valid())
 		{
-			uSendMessage(m_wnd_tabs,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
+			SendMessage(m_wnd_tabs,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 		}
 
 		g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs);
 
 		if (m_wnd_tabs) 
 		{
-			uSendMessage(m_wnd_tabs,WM_SETFONT,(WPARAM)g_font.get(),MAKELPARAM(1,0));
+			SendMessage(m_wnd_tabs,WM_SETFONT,(WPARAM)g_font.get(),MAKELPARAM(1,0));
 			update_size_limits();
 			get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
 			on_size_changed();

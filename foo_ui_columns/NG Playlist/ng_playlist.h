@@ -361,7 +361,7 @@ namespace pvt
 					break;
 
 				}
-				return uDefWindowProc(wnd, msg, wp, lp);
+				return DefWindowProc(wnd, msg, wp, lp);
 			}
 		};
 	public:

@@ -141,7 +141,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_ite
 	if (insert_none)
 	{
 		idx_none = uSendDlgItemMessageText(wnd, ID, CB_ADDSTRING, 0, "(None)");
-		uSendMessage(wnd_combo, CB_SETITEMDATA, idx_none, -1);
+		SendMessage(wnd_combo, CB_SETITEMDATA, idx_none, -1);
 	}
 
 	unsigned sel = -1;
@@ -170,7 +170,7 @@ void on_menu_combo_change(HWND wnd, LPARAM lp, cfg_menu_item & cfg_menu_store, m
 	HWND wnd_combo = (HWND)lp;
 
 	pfc::string8 temp;
-	unsigned cache_idx = uSendMessage(wnd_combo, CB_GETITEMDATA, uSendMessage(wnd_combo, CB_GETCURSEL, 0, 0), 0);
+	unsigned cache_idx = SendMessage(wnd_combo, CB_GETITEMDATA, SendMessage(wnd_combo, CB_GETCURSEL, 0, 0), 0);
 
 	if (cache_idx == -1)
 	{

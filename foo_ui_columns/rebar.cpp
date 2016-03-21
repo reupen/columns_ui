@@ -821,7 +821,7 @@ void rebar_window::destroy_bands()
 {
 //	save_bands(false);
 
-	UINT count  = uSendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0);
+	UINT count  = SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0);
 
 	if (count>0 && count == bands.get_count())
 	{
@@ -829,8 +829,8 @@ void rebar_window::destroy_bands()
 		unsigned n;
 		for (n=0;count;n++,count--)
 		{
-			uSendMessage(wnd_rebar, RB_SHOWBAND , 0, FALSE);
-			uSendMessage(wnd_rebar, RB_DELETEBAND, 0, 0);
+			SendMessage(wnd_rebar, RB_SHOWBAND , 0, FALSE);
+			SendMessage(wnd_rebar, RB_DELETEBAND, 0, 0);
 			ui_extension::window_ptr p_ext = bands[n]->p_ext;
 			if (p_ext.is_valid())
 			{
@@ -866,8 +866,8 @@ void rebar_window::delete_band(unsigned n)
 //	save_bands();
 	if (n < bands.get_count())
 	{
-		uSendMessage(wnd_rebar, RB_SHOWBAND , n, FALSE);
-		uSendMessage(wnd_rebar, RB_DELETEBAND, n, 0);
+		SendMessage(wnd_rebar, RB_SHOWBAND , n, FALSE);
+		SendMessage(wnd_rebar, RB_DELETEBAND, n, 0);
 		ui_extension::window_ptr p_ext = bands[n]->p_ext;
 		if (p_ext.is_valid())
 		{
@@ -886,8 +886,8 @@ void rebar_window::delete_band(HWND wnd, bool destroy)
 	unsigned n = bands.find_by_wnd_n(wnd);
 	if (n < bands.get_count())
 	{
-		uSendMessage(wnd_rebar, RB_SHOWBAND , n, FALSE);
-		uSendMessage(wnd_rebar, RB_DELETEBAND, n, 0);
+		SendMessage(wnd_rebar, RB_SHOWBAND , n, FALSE);
+		SendMessage(wnd_rebar, RB_DELETEBAND, n, 0);
 		ui_extension::window_ptr p_ext = bands[n]->p_ext;
 		if (p_ext.is_valid())
 		{
@@ -944,7 +944,7 @@ void rebar_window::update_band(unsigned n, bool size/*, bool min_height, bool ma
 		memset(&mmi, 0, sizeof(MINMAXINFO));
 		mmi.ptMaxTrackSize.x = MAXLONG;
 		mmi.ptMaxTrackSize.y = MAXLONG;
-		uSendMessage(bands[n]->wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+		SendMessage(bands[n]->wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
 		
 		rbbi.cyMinChild   = mmi.ptMinTrackSize.y;
 		rbbi.cyMaxChild   = mmi.ptMaxTrackSize.y;
@@ -1019,7 +1019,7 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 					memset(&mmi, 0, sizeof(MINMAXINFO));
 					mmi.ptMaxTrackSize.x = MAXLONG;
 					mmi.ptMaxTrackSize.y = MAXLONG;
-					uSendMessage(wnd_band, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+					SendMessage(wnd_band, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
 
 					rbbi.cyMinChild   = mmi.ptMinTrackSize.y;
 					rbbi.cyMaxChild   = mmi.ptMaxTrackSize.y;

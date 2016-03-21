@@ -89,12 +89,12 @@ public:
 				break;
 			case IDC_IMPORT_TITLES:
 			{
-				cfg_import_titles = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_import_titles = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 			}
 			break;
 			/*case IDC_EXPORT_TITLES:
 			{
-			cfg_export_titles = uSendMessage((HWND)lp,BM_GETCHECK,0,0);
+			cfg_export_titles = SendMessage((HWND)lp,BM_GETCHECK,0,0);
 			}
 			break;*/
 			case (EN_CHANGE << 16) | IDC_TRANSPARENCY_LEVEL:
@@ -112,10 +112,10 @@ public:
 			}
 			break;
 			case IDC_USE_TRANSPARENCY:
-				main_window::config_set_transparency_enabled(uSendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
+				main_window::config_set_transparency_enabled(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
 				break;
 			case IDC_TOOLBARS:
-				cfg_toolbars = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_toolbars = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				on_show_toolbars_change();
 				break;
 			case IDC_RESET_TOOLBARS:
@@ -141,7 +141,7 @@ public:
 			break;/*
 				  case IDC_KEYB:
 				  {
-				  config_object::g_get_data_bool_simple(standard_config_objects::bool_show_keyboard_shortcuts_in_menus, true) = uSendMessage((HWND)lp,BM_GETCHECK,0,0);
+				  config_object::g_get_data_bool_simple(standard_config_objects::bool_show_keyboard_shortcuts_in_menus, true) = SendMessage((HWND)lp,BM_GETCHECK,0,0);
 				  }
 				  break;*/
 			}

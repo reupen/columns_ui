@@ -134,7 +134,7 @@ unsigned int playlist_view::calculate_header_height()
 	unsigned rv = 0;
 	if (wnd_header)
 	{
-		HFONT font = (HFONT)uSendMessage(wnd_header, WM_GETFONT, 0, 0);
+		HFONT font = (HFONT)SendMessage(wnd_header, WM_GETFONT, 0, 0);
 		rv = uGetFontHeight(font) + 5;
 	}
 	return rv;
@@ -177,7 +177,7 @@ LRESULT playlist_view::CreateToolTip(const char * text)
 	//	toolproc = (WNDPROC)SetWindowLongPtr(g_tooltip,GWLP_WNDPROC,(LPARAM)(TooltipHook));
 
 
-	//	uSendMessage(g_tooltip, CCM_SETVERSION, (WPARAM) COMCTL32_VERSION, 0);
+	//	SendMessage(g_tooltip, CCM_SETVERSION, (WPARAM) COMCTL32_VERSION, 0);
 
 	//SetWindowPos(g_tooltip, HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
 
@@ -450,7 +450,7 @@ void playlist_view::on_playlist_activate(unsigned p_old,unsigned p_new)
 				p_playlist->ensure_visible(static_api_ptr_t<playlist_manager>()->playlist_get_focus_item(p_new));
 		}
 
-		uSendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, TRUE, 0);		
+		SendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, TRUE, 0);		
 		RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
 	}
 }

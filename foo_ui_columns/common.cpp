@@ -92,7 +92,7 @@ UINT GetNumScrollLines()
 			uiMsh_MsgScrollLines = RegisterWindowMessage
 				(MSH_SCROLL_LINES);
 			if (uiMsh_MsgScrollLines)
-				ucNumLines = (int)uSendMessage(hdlMsWheel,
+				ucNumLines = (int)SendMessage(hdlMsWheel,
 				uiMsh_MsgScrollLines,
 				0,
 				0);

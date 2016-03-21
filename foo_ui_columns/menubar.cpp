@@ -185,7 +185,7 @@ public:
 
 	inline void destroy_menu() const
 	{
-		uSendMessage(get_wnd(), WM_CANCELMODE, 0, 0);
+		SendMessage(get_wnd(), WM_CANCELMODE, 0, 0);
 	}
 
 	inline void update_menu_acc() const
@@ -255,7 +255,7 @@ LRESULT WINAPI menu_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 	p_this = reinterpret_cast<menu_extension*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 	
-	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);;
+	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : DefWindowProc(wnd, msg, wp, lp);;
 	
 	return rv;
 }
@@ -301,18 +301,18 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 				SendMessage(wnd_menu, TB_ADDBUTTONS, (WPARAM)tbb.get_size(), (LPARAM)(LPTBBUTTON)tbb.get_ptr());
 
-				//			uSendMessage(wnd_menu, TB_SETEXTENDEDSTYLE, 0, TBSTYLE_EX_MIXEDBUTTONS);
+				//			SendMessage(wnd_menu, TB_SETEXTENDEDSTYLE, 0, TBSTYLE_EX_MIXEDBUTTONS);
 
-				//			uSendMessage(wnd_menu, TB_AUTOSIZE, 0, 0); 
+				//			SendMessage(wnd_menu, TB_AUTOSIZE, 0, 0); 
 
 							//if (is_win2k_or_newer())
 				{
 					BOOL a = true;
 					SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
-					uSendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
+					SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
 				}
 
-				//			uSendMessage(wnd_menu, TB_SETPARENT, (WPARAM) (HWND)wnd_host, 0);
+				//			SendMessage(wnd_menu, TB_SETPARENT, (WPARAM) (HWND)wnd_host, 0);
 				menuproc = (WNDPROC)SetWindowLongPtr(wnd_menu, GWLP_WNDPROC, (LPARAM)main_hook);
 			}
 
@@ -374,7 +374,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			{
 				BOOL a = true;
 				SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
-				if ((uSendMessage(wnd_menu, WM_QUERYUISTATE, 0, 0) & UISF_HIDEACCEL) != !a)
+				if ((SendMessage(wnd_menu, WM_QUERYUISTATE, 0, 0) & UISF_HIDEACCEL) != !a)
 					SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
 			}
 			break;
@@ -565,7 +565,7 @@ void menu_extension::make_menu(unsigned idx)
 	RECT rc;
 	POINT pt;
 	
-	uSendMessage(wnd_menu, TB_GETRECT,	idx, (LPARAM)&rc);
+	SendMessage(wnd_menu, TB_GETRECT,	idx, (LPARAM)&rc);
 	
 	MapWindowPoints(wnd_menu, HWND_DESKTOP, (LPPOINT)&rc, 2);  
 	
@@ -650,7 +650,7 @@ void menu_extension::make_menu(unsigned idx)
 
 	if (cmd>0 && p_menu.is_valid())
 	{
-//		uSendMessage(wnd_menu, TB_SETHOTITEM, -1, 0);
+//		SendMessage(wnd_menu, TB_SETHOTITEM, -1, 0);
 		if (IsWindow(wnd_prev_focus))
 			SetFocus(wnd_prev_focus);
 		p_menu->execute_command(cmd - 1);
@@ -682,7 +682,7 @@ bool menu_extension::on_hooked_message(message_hook_manager::t_message_hook_type
 		case WM_LBUTTONDOWN:
 		case WM_RBUTTONDOWN:
 			{
-				uSendMessage(wnd_menu, TB_SETHOTITEM, -1, 0);
+				SendMessage(wnd_menu, TB_SETHOTITEM, -1, 0);
 				if (((MSG*)lp)->message == WM_LBUTTONDOWN)
 				{
 					POINT pt; RECT toolbar;
@@ -726,7 +726,7 @@ bool menu_extension::on_hooked_message(message_hook_manager::t_message_hook_type
 					if (!sub_menu_ref_count) 
 					{
 						SetFocus(wnd_menu);
-						uSendMessage(wnd_menu, TB_SETHOTITEM, active_item-1, 0);
+						SendMessage(wnd_menu, TB_SETHOTITEM, active_item-1, 0);
 						destroy_menu();
 					}
 					break;
@@ -745,7 +745,7 @@ bool menu_extension::on_hooked_message(message_hook_manager::t_message_hook_type
 					if (wnd_hit == wnd_menu)
 					{
 						POINT pt = px;
-						int hot_item = uSendMessage(wnd_menu, TB_GETHOTITEM, 0, 0);
+						int hot_item = SendMessage(wnd_menu, TB_GETHOTITEM, 0, 0);
 						if (ScreenToClient(wnd_menu, &pt))
 						{
 
@@ -803,7 +803,7 @@ bool menu_extension::on_menuchar(unsigned short chr)
 {
 	{
 		UINT id;
-		if (uSendMessage(wnd_menu,TB_MAPACCELERATOR,chr,(LPARAM)&id))
+		if (SendMessage(wnd_menu,TB_MAPACCELERATOR,chr,(LPARAM)&id))
 		{
 			uPostMessage(get_wnd(),MSG_CREATE_MENU,id,TRUE);
 			return true;

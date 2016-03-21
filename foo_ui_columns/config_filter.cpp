@@ -139,7 +139,7 @@ public:
 					uSendMessageText(list,CB_ADDSTRING,0,"Send to playlist");
 					uSendMessageText(list,CB_ADDSTRING,0,"Send to playlist and play");
 					uSendMessageText(list,CB_ADDSTRING,0,"Add to active playlist");
-					uSendMessage(list,CB_SETCURSEL,filter_panel::cfg_doubleclickaction,0);
+					SendMessage(list,CB_SETCURSEL,filter_panel::cfg_doubleclickaction,0);
 					
 					list = uGetDlgItem(wnd,IDC_MIDDLE);
 					uSendMessageText(list,CB_ADDSTRING,0,"None");
@@ -148,7 +148,7 @@ public:
 					uSendMessageText(list,CB_ADDSTRING,0,"Send to playlist");
 					uSendMessageText(list,CB_ADDSTRING,0,"Send to playlist and play");
 					uSendMessageText(list,CB_ADDSTRING,0,"Add to active playlist");
-					uSendMessage(list,CB_SETCURSEL,filter_panel::cfg_middleclickaction,0);
+					SendMessage(list,CB_SETCURSEL,filter_panel::cfg_middleclickaction,0);
 
 					uSendDlgItemMessageText(wnd,IDC_EDGESTYLE,CB_ADDSTRING,0,"None");
 					uSendDlgItemMessageText(wnd,IDC_EDGESTYLE,CB_ADDSTRING,0,"Sunken");
@@ -298,17 +298,17 @@ public:
 				}
 				break;
 			case IDC_PRECEDENCE | (CBN_SELCHANGE<<16):
-				filter_panel::cfg_orderedbysplitters = uSendMessage((HWND)lp,CB_GETCURSEL,0,0) == 0;
+				filter_panel::cfg_orderedbysplitters = SendMessage((HWND)lp,CB_GETCURSEL,0,0) == 0;
 				filter_panel::filter_panel_t::g_on_orderedbysplitters_change();
 				break;
 			case IDC_MIDDLE | (CBN_SELCHANGE<<16):
-				filter_panel::cfg_middleclickaction = uSendMessage((HWND)lp,CB_GETCURSEL,0,0);
+				filter_panel::cfg_middleclickaction = SendMessage((HWND)lp,CB_GETCURSEL,0,0);
 				break;
 			case IDC_DBLCLK | (CBN_SELCHANGE<<16):
-				filter_panel::cfg_doubleclickaction = uSendMessage((HWND)lp,CB_GETCURSEL,0,0);
+				filter_panel::cfg_doubleclickaction = SendMessage((HWND)lp,CB_GETCURSEL,0,0);
 				break;
 			case IDC_EDGESTYLE | (CBN_SELCHANGE<<16):
-				filter_panel::cfg_edgestyle = uSendMessage((HWND)lp,CB_GETCURSEL,0,0);
+				filter_panel::cfg_edgestyle = SendMessage((HWND)lp,CB_GETCURSEL,0,0);
 				filter_panel::filter_panel_t::g_on_edgestyle_change();
 				break;
 			}

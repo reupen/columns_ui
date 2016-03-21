@@ -74,26 +74,26 @@ public:
 			break;
 			case IDC_VOL:
 			{
-				cfg_show_vol = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_show_vol = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				status_bar::set_part_sizes(status_bar::t_part_volume);
 			}
 			break;
 			case IDC_SELTIME:
 			{
-				cfg_show_seltime = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_show_seltime = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				status_bar::set_part_sizes(status_bar::t_part_length | status_bar::t_part_volume);
 
 			}
 			break;
 			case IDC_SHOW_STATUS:
 			{
-				cfg_status = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_status = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				on_show_status_change();
 			}
 			break;
 			case IDC_SHOW_STATUSPANE:
 			{
-				settings::show_status_pane = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0;
+				settings::show_status_pane = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0;
 				on_show_status_pane_change();
 			}
 			break;

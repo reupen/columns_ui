@@ -141,7 +141,7 @@ void splitter_window_impl::refresh_children()
 						memset(&mmi, 0, sizeof(MINMAXINFO));
 						mmi.ptMaxTrackSize.x = MAXLONG;
 						mmi.ptMaxTrackSize.y = MAXLONG;
-						uSendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+						SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
 						clip_minmaxinfo(mmi);
 
 						m_panels[n]->m_wnd = wnd_host;

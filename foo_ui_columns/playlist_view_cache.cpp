@@ -723,7 +723,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 		for (n=0; n<window_count; n++)
 		{
 			playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
-			uSendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, FALSE, 0);
+			SendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, FALSE, 0);
 		}
 		
 		playlist_api->activeplaylist_undo_backup();
@@ -732,7 +732,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 		for (n=0; n<window_count; n++)
 		{
 			playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
-			uSendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, TRUE, 0);
+			SendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, TRUE, 0);
 			RedrawWindow(p_playlist->wnd_playlist, 0, 0, RDW_INVALIDATE|RDW_UPDATENOW);
 		}
 		if (!selection_only)

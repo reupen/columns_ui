@@ -84,7 +84,7 @@ void playlists_tabs_extension::on_font_change()
 		for (n=0; n<count; n++)
 		{
 			HWND wnd = list_wnd[n]->wnd_tabs;
-			if (wnd) uSendMessage(wnd,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
+			if (wnd) SendMessage(wnd,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 		}
 		DeleteObject(g_font);
 	}
@@ -97,7 +97,7 @@ void playlists_tabs_extension::on_font_change()
 		HWND wnd = list_wnd[n]->wnd_tabs;
 		if (wnd) 
 		{
-			uSendMessage(wnd,WM_SETFONT,(WPARAM)g_font,MAKELPARAM(1,0));
+			SendMessage(wnd,WM_SETFONT,(WPARAM)g_font,MAKELPARAM(1,0));
 			list_wnd[n]->on_size();
 			list_wnd[n]->on_child_position_change();
 		}
@@ -238,7 +238,7 @@ bool playlists_tabs_extension::create_tabs()
 
 			if (g_font)
 			{
-				uSendMessage(wnd_tabs,WM_SETFONT,(WPARAM)g_font,MAKELPARAM(0,0));
+				SendMessage(wnd_tabs,WM_SETFONT,(WPARAM)g_font,MAKELPARAM(0,0));
 			}
 			else
 				on_font_change();

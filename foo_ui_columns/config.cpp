@@ -99,7 +99,7 @@ private:
 		case WM_INITDIALOG:
 		{
 			HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
-			//uSendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
+			//SendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
 			unsigned n, count = tabsize(g_tabs);
 			for (n = 0; n < count; n++)
 			{

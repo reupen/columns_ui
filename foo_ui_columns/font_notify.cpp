@@ -159,7 +159,7 @@ void on_status_font_change()
 	{
 		if (g_status_font!=0)
 		{
-			if (g_status) uSendMessage(g_status,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
+			if (g_status) SendMessage(g_status,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 			DeleteObject(g_status_font);
 			g_status_font=0;
 		}
@@ -167,7 +167,7 @@ void on_status_font_change()
 		if (g_status) 
 		{
 			g_status_font = static_api_ptr_t<cui::fonts::manager>()->get_font(font_client_status_guid);
-			uSendMessage(g_status,WM_SETFONT,(WPARAM)g_status_font,MAKELPARAM(1,0));
+			SendMessage(g_status,WM_SETFONT,(WPARAM)g_status_font,MAKELPARAM(1,0));
 			status_bar::set_part_sizes(status_bar::t_parts_all);
 			size_windows();
 		}
@@ -180,7 +180,7 @@ void on_tab_font_change()
 	{
 		if (g_tab_font!=0)
 		{
-			if (g_tab) uSendMessage(g_tab,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
+			if (g_tab) SendMessage(g_tab,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 			DeleteObject(g_tab_font);
 			g_tab_font=0;
 		}
@@ -188,7 +188,7 @@ void on_tab_font_change()
 		if (g_tab) 
 		{
 			g_tab_font = CreateFontIndirect(&(LOGFONT)cfg_tab_font);
-			uSendMessage(g_tab,WM_SETFONT,(WPARAM)g_tab_font,MAKELPARAM(1,0));
+			SendMessage(g_tab,WM_SETFONT,(WPARAM)g_tab_font,MAKELPARAM(1,0));
 			size_windows();
 			
 		}
@@ -237,7 +237,7 @@ void on_header_font_change()
 				playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
 				if (p_playlist->wnd_header)
 				{
-					uSendMessage(p_playlist->wnd_header,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
+					SendMessage(p_playlist->wnd_header,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 				}
 			}
 			
@@ -253,7 +253,7 @@ void on_header_font_change()
 			if (p_playlist->wnd_header)
 			{
 				if (!g_header_font) g_header_font = static_api_ptr_t<cui::fonts::manager>()->get_font(font_client_cph_guid);
-				uSendMessage(p_playlist->wnd_header,WM_SETFONT,(WPARAM)g_header_font,MAKELPARAM(1,0));
+				SendMessage(p_playlist->wnd_header,WM_SETFONT,(WPARAM)g_header_font,MAKELPARAM(1,0));
 				p_playlist->on_size();
 			}
 		}

@@ -388,7 +388,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		case IDC_BARS:
 			{
 				spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
-				ptr->mode = (uSendMessage((HWND)lp, BM_GETCHECK, 0, 0) != TRUE ? MODE_STANDARD : MODE_BARS);
+				ptr->mode = (SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != TRUE ? MODE_STANDARD : MODE_BARS);
 			}
 			break;
 		case IDC_FRAME_COMBO|(CBN_SELCHANGE<<16):

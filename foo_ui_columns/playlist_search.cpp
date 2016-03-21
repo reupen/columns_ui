@@ -58,7 +58,7 @@ LRESULT quickfind_window::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			height = uGetFontHeight(m_font) + 2;
 			SetFocus(wnd_edit);
 
-			uSendMessage(wnd_edit, EM_SETSEL, 0, -1);
+			SendMessage(wnd_edit, EM_SETSEL, 0, -1);
 			string_utf8_from_window text(wnd_edit);
 			m_search.init();
 			if (text.length()) m_search.set_string(text);
@@ -150,7 +150,7 @@ LRESULT WINAPI quickfind_window::on_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				//assert (wp != VK_DELETE);
 				unsigned start, end;
 				SendMessage(wnd, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
-				if (wp == VK_BACK || start != end || end != uSendMessage(wnd, WM_GETTEXTLENGTH, 0, 0))
+				if (wp == VK_BACK || start != end || end != SendMessage(wnd, WM_GETTEXTLENGTH, 0, 0))
 				{
 					LRESULT ret = uCallWindowProc(m_editproc,wnd,msg,wp,lp);
 					m_search.set_string(string_utf8_from_window(wnd));

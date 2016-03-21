@@ -47,7 +47,7 @@ namespace pvt
 				{
 					if (1) 
 					{
-						EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), ((playlist_filter_type)uSendMessage((HWND)lp,CB_GETCURSEL,0,0)) != FILTER_NONE);
+						EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), ((playlist_filter_type)SendMessage((HWND)lp,CB_GETCURSEL,0,0)) != FILTER_NONE);
 					}
 				}
 				break;
@@ -189,7 +189,7 @@ namespace pvt
 				{
 				cfg_view_list.reset();
 				HWND list = uGetDlgItem(wnd,IDC_GROUPS);
-				uSendMessage(list,LB_RESETCONTENT,0,0);
+				SendMessage(list,LB_RESETCONTENT,0,0);
 				unsigned n,m = cfg_view_list.get_count();
 				string8_fastalloc temp;
 				for(n=0;n<m;n++)

@@ -15,7 +15,7 @@ public:
 			/*	case WM_KEYDOWN:
 			if (!(HIWORD(lp) & KF_REPEAT) && (wp == 'a' || wp =='A') &&  (GetKeyState(VK_CONTROL) & KF_UP))
 			{
-			uSendMessage(wnd, EM_SETSEL, 0, -1);
+			SendMessage(wnd, EM_SETSEL, 0, -1);
 			return 0;
 			}
 
@@ -23,7 +23,7 @@ public:
 		case WM_CHAR:
 			if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) && (GetKeyState(VK_CONTROL) & KF_UP))
 			{
-				uSendMessage(wnd, EM_SETSEL, 0, -1);
+				SendMessage(wnd, EM_SETSEL, 0, -1);
 				return 0;
 			}
 			break;
@@ -115,10 +115,10 @@ public:
 			switch (wp)
 			{
 			case IDC_GLOBAL:
-				cfg_global = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_global = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				break;
 			case IDC_DATE:
-				cfg_playlist_date = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_playlist_date = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				set_day_timer();
 				pvt::ng_playlist_view_t::g_on_use_date_info_change();
 				break;
@@ -180,10 +180,10 @@ public:
 
 			break;
 			case IDC_OLDGLOBAL:
-				cfg_oldglobal = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_oldglobal = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				break;
 			case IDC_GLOBALSORT:
-				cfg_global_sort = uSendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+				cfg_global_sort = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				break;
 			case IDC_APPLY:
 				save_string(wnd);

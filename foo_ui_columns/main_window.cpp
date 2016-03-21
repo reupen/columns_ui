@@ -270,8 +270,8 @@ void size_windows()
 			if (g_status) 
 			{
 
-				//uSendMessage(g_status, WM_SETREDRAW, FALSE, 0);
-				uSendMessage(g_status,WM_SIZE,0,0);
+				//SendMessage(g_status, WM_SETREDRAW, FALSE, 0);
+				SendMessage(g_status,WM_SIZE,0,0);
 				RECT rc_status;
 				GetWindowRect(g_status, &rc_status);
 				
@@ -371,7 +371,7 @@ void g_rename_playlist(unsigned idx, HWND wnd_parent)
 	{
 		if (g_rename_dialog(&temp, wnd_parent))
 		{//fucko: dialogobx has a messgeloop, someone might have called switcher api funcs in the meanwhile
-//			idx = ((HWND)wp == g_tab) ? idx : uSendMessage(g_plist,LB_GETCURSEL,0,0);
+//			idx = ((HWND)wp == g_tab) ? idx : SendMessage(g_plist,LB_GETCURSEL,0,0);
 			unsigned num = playlist_api->get_playlist_count();
 			if (idx<num)
 			{

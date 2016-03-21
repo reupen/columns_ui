@@ -350,7 +350,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					RBHITTESTINFO rbht;
 					rbht.pt = pt_client;
 
-					int idx_hit = uSendMessage(g_rebar, RB_HITTEST, 0, reinterpret_cast<LPARAM>(&rbht));
+					int idx_hit = SendMessage(g_rebar, RB_HITTEST, 0, reinterpret_cast<LPARAM>(&rbht));
 
 					uie::window_ptr p_ext;
 
@@ -476,7 +476,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						rc.right = rc_main.right - GetSystemMetrics(SM_CXVSCROLL);
 					} else {
 						int blah[3];
-						uSendMessage(g_status, SB_GETBORDERS, 0, (LPARAM)&blah);
+						SendMessage(g_status, SB_GETBORDERS, 0, (LPARAM)&blah);
 						rc.right -= blah[2];
 					}
 
