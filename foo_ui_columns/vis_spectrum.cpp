@@ -224,9 +224,8 @@ void spectrum_extension::enable( const ui_extension::visualisation_host_ptr & p_
 	p_host = p_vis_host;
 	b_active = true;
 
-	const unsigned cx_dpi = QueryScreenDPIEx().cx;
-	m_bar_width = MulDiv(cx_dpi, 3, 96);
-	m_bar_gap = MulDiv(cx_dpi, 1, 96);
+	m_bar_width = uih::ScaleDpiValue(3);
+	m_bar_gap = uih::ScaleDpiValue(1);
 	
 	if (list_vis.add_item(this) == 0)
 	{

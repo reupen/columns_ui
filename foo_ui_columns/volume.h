@@ -248,10 +248,9 @@ public:
 
 				if (!b_popup)
 				{
-					SIZE dpi = QueryScreenDPIEx();
 					if (!b_vertical)
-						mmi->ptMinTrackSize.y = MulDiv(21, dpi.cy, 96);
-					mmi->ptMinTrackSize.x = MulDiv(50, dpi.cx, 96);
+						mmi->ptMinTrackSize.y = uih::ScaleDpiValue(21);
+					mmi->ptMinTrackSize.x = uih::ScaleDpiValue(50);
 					//mmi->ptMaxTrackSize.y = 20;
 				}
 
