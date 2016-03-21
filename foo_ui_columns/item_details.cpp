@@ -185,7 +185,7 @@ LRESULT item_details_t::message_window_t::on_message(HWND wnd,UINT msg,WPARAM wp
 		break;
 
 	}
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
 
 void item_details_t::g_on_app_activate(bool b_activated)

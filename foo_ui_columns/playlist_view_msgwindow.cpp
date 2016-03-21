@@ -35,7 +35,7 @@ LRESULT playlist_message_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
 		break;
 
 	}
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
 
 void playlist_message_window::add_ref()

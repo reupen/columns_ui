@@ -529,5 +529,5 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 	}
 	break;
 	}
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }

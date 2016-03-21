@@ -128,7 +128,7 @@ LRESULT selection_properties_t::message_window_t::on_message(HWND wnd,UINT msg,W
 		break;
 
 	}
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
 
 void selection_properties_t::g_on_app_activate(bool b_activated)

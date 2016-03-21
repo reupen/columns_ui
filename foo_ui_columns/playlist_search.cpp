@@ -99,7 +99,7 @@ LRESULT quickfind_window::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		m_font.release();
 		break;
 	}
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
 
 LRESULT WINAPI quickfind_window::hook_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
@@ -109,7 +109,7 @@ LRESULT WINAPI quickfind_window::hook_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp
 
 	p_this = reinterpret_cast<quickfind_window*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 
-	rv = p_this ? p_this->on_hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);
+	rv = p_this ? p_this->on_hook(wnd,msg,wp,lp) : DefWindowProc(wnd, msg, wp, lp);
 
 	return rv;
 }

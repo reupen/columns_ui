@@ -159,7 +159,7 @@ LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,L
 
 	p_this = reinterpret_cast<playlists_tabs_extension*>(GetWindowLongPtr(wnd,GWLP_USERDATA));
 
-	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : uDefWindowProc(wnd, msg, wp, lp);;
+	rv = p_this ? p_this->hook(wnd,msg,wp,lp) : DefWindowProc(wnd, msg, wp, lp);;
 
 	return rv;
 }

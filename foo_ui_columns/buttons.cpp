@@ -601,7 +601,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		}
 	}
 
-	return uDefWindowProc(wnd, msg, wp, lp);
+	return DefWindowProc(wnd, msg, wp, lp);
 }
 
 void toolbar_extension::get_name(pfc::string_base & out)const
