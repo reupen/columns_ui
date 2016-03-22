@@ -315,6 +315,7 @@
 #define IDC_RENAME_PRESET               1127
 #define IDC_RESET_PRESETS               1128
 #define IDC_CUSTOM_TITLE                1129
+#define IDC_DUPLICATE_PRESET            1130
 #define IDC_COLOURS_MODE                1131
 #define IDC_COLOURS_ELEMENT             1132
 #define IDC_PATCH_FORE                  1133

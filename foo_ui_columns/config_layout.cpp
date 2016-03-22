@@ -656,8 +656,8 @@ class tab_layout_new : public preferences_tab
 	{
 	public:
 		pfc::string8 m_text;
+		pfc::string8 m_title;
 		modal_dialog_scope m_scope;
-		bool m_rename;
 	};
 	static BOOL CALLBACK RenameProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
@@ -666,9 +666,9 @@ class tab_layout_new : public preferences_tab
 		case WM_INITDIALOG:
 			SetWindowLongPtr(wnd,DWLP_USER,lp);
 			{
-				rename_param * ptr = (rename_param *)lp;
+				rename_param * ptr = reinterpret_cast<rename_param *>(lp);
 				ptr->m_scope.initialize(FindOwningPopup(wnd));
-				uSetWindowText(wnd,(ptr->m_rename ? "Rename preset: Enter name" : "New preset: Enter name"));
+				uSetWindowText(wnd,(ptr->m_title));
 				uSetDlgItemText(wnd,IDC_EDIT,ptr->m_text);
 			}
 			return 1;
@@ -677,7 +677,7 @@ class tab_layout_new : public preferences_tab
 			{
 			case IDOK:
 				{
-					rename_param * ptr = (rename_param *)GetWindowLong(wnd,DWLP_USER);
+					rename_param * ptr = reinterpret_cast<rename_param *>(GetWindowLong(wnd,DWLP_USER));
 					uGetDlgItemText(wnd,IDC_EDIT,ptr->m_text);
 					EndDialog(wnd,1);
 				}
@@ -750,9 +750,9 @@ class tab_layout_new : public preferences_tab
 			case IDC_NEW_PRESET:
 				{
 					rename_param param;
-					param.m_rename = false;
+					param.m_title = "New preset: Enter name";
 					param.m_text = "New preset";
-					if (uDialogBox(IDD_RENAME_PLAYLIST,wnd,RenameProc,(LPARAM)(&param)))
+					if (uDialogBox(IDD_RENAME_PLAYLIST,wnd,RenameProc,reinterpret_cast<LPARAM>(&param)))
 					{
 						t_size index = cfg_layout.add_preset(param.m_text.get_ptr(), param.m_text.get_length());
 						uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, param.m_text.get_ptr());
@@ -761,14 +761,32 @@ class tab_layout_new : public preferences_tab
 					}
 				}
 				break;
+			case IDC_DUPLICATE_PRESET:
+				{
+					rename_param param;
+					param.m_title = "Duplicate preset: Enter name";
+					cfg_layout.get_preset_name(g_active_preset, param.m_text);
+					param.m_text << " (copy)";
+					if (uDialogBox(IDD_RENAME_PLAYLIST, wnd, RenameProc, reinterpret_cast<LPARAM>(&param))) {
+						cfg_layout_t::preset preset;
+						preset.m_name = param.m_text;
+						preset.set(g_node_root->m_item->get_ptr());
+						auto preset_index = cfg_layout.add_preset(preset);
+
+						uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, param.m_text.get_ptr());
+						SendDlgItemMessage(wnd, IDC_PRESETS, CB_SETCURSEL, preset_index, NULL);
+						switch_to_preset(wnd, preset_index);
+					}
+				}
+				break;
 			case IDC_RENAME_PRESET:
 				{
 					rename_param param;
-					param.m_rename = true;
+					param.m_title = "Rename preset: Enter name";
 					cfg_layout.get_preset_name(g_active_preset, param.m_text);
 					HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
 					unsigned index = ComboBox_GetCurSel(wnd_combo);
-					if (uDialogBox(IDD_RENAME_PLAYLIST,wnd,RenameProc,(LPARAM)(&param)))
+					if (uDialogBox(IDD_RENAME_PLAYLIST,wnd,RenameProc,reinterpret_cast<LPARAM>(&param)))
 					{
 						cfg_layout.set_preset_name(index, param.m_text.get_ptr(), param.m_text.get_length());
 						ComboBox_DeleteString(wnd_combo, index);
