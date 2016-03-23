@@ -8,7 +8,7 @@ void column_t::read(stream_reader * p_reader, abort_callback & p_abort)
 	p_reader->read_string(colour_spec, p_abort);
 	p_reader->read_lendian_t(use_custom_sort, p_abort);
 	p_reader->read_string(sort_spec, p_abort);
-	p_reader->read_lendian_t(width, p_abort);
+	p_reader->read_lendian_t(width.value, p_abort);
 	p_reader->read_lendian_t(align, p_abort);
 	p_reader->read_lendian_t(filter_type, p_abort);
 	p_reader->read_string(filter, p_abort);
@@ -25,7 +25,7 @@ void column_t::write(stream_writer * out, abort_callback & p_abort)
 	out->write_string(colour_spec, p_abort);
 	out->write_lendian_t(use_custom_sort, p_abort);
 	out->write_string(sort_spec, p_abort);
-	out->write_lendian_t(width, p_abort);
+	out->write_lendian_t(width.value, p_abort);
 	out->write_lendian_t(align, p_abort);
 	out->write_lendian_t(filter_type, p_abort);
 	out->write_string(filter, p_abort);

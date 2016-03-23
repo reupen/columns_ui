@@ -64,7 +64,7 @@ class export_columns : public cui::fcl::dataset
 			w.write_item(identifier_filter_type, (t_uint32)g_columns[i]->filter_type);
 			w.write_item(identifier_alignment, (t_uint32)g_columns[i]->align);
 			w.write_item(identifier_resize, (t_uint32)g_columns[i]->parts);
-			w.write_item(identifier_width, (t_uint32)g_columns[i]->width);
+			w.write_item(identifier_width, (t_uint32)g_columns[i]->width.value);
 
 			out.write_item(identifier_column, sw.m_data.get_ptr(), sw.m_data.get_size());
 		}
@@ -122,7 +122,7 @@ class export_columns : public cui::fcl::dataset
 					break;
 				case identifier_width:
 					{
-						reader2.read_item(item->width);
+						reader2.read_item(item->width.value);
 					}
 					break;
 				case identifier_alignment:

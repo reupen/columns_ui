@@ -13,7 +13,7 @@ public:
 	pfc::string8 colour_spec;
 	bool use_custom_sort;
 	pfc::string8 sort_spec;
-	t_uint32 width;
+	uih::IntegerAndDpi<uint32_t> width;
 	alignment align;
 	playlist_filter_type filter_type;
 	pfc::string8 filter;
