@@ -1,5 +1,13 @@
 # Change log
 
+## 0.x.x (upcoming release)
+
+A duplicate preset button has been added to the layout configuration page. 
+
+When the main window is deactivated with the menu bar focused, the focus is now restored to the window that had the keyboard focus before the menu bar did when the main window is reactivated. (Previously, the focus was incorrectly returned to the menu bar.)
+
+The minimum width of toolbars has been reduced to be the same as the minimum height (21 pixels at 100% DPI).
+
 ## 0.4.0
 
 ### Improved spectrum analyser
