@@ -147,7 +147,11 @@ void cfg_columns_t::get_data_raw(stream_writer * out, abort_callback & p_abort)
 	out->write_lendian_t(num, p_abort);
 	for(n=0;n<num;n++)
 	{
-		get_item(n)->write(out, m_StreamVersion, p_abort);
+		stream_writer_memblock columnData;
+		get_item(n)->write(&columnData, m_StreamVersion, p_abort);
+		if (m_StreamVersion >= ColumnStreamVersion::streamVersion1)
+			out->write_lendian_t(pfc::downcast_guarded<uint32_t>(columnData.m_data.get_size()), p_abort);
+		out->write(columnData.m_data.get_ptr(), columnData.m_data.get_size(), p_abort);
 	}
 }
 void cfg_columns_t::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort)
@@ -164,7 +168,16 @@ void cfg_columns_t::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, 
 		for(;num;num--)
 		{
 			column_t::ptr item = new column_t;
-			item->read(p_reader, streamVersion, p_abort);
+			if (streamVersion >= ColumnStreamVersion::streamVersion1) {
+				uint32_t columnDataSize;
+				p_reader->read_lendian_t(columnDataSize, p_abort);
+				pfc::array_staticsize_t<t_uint8> columnData(columnDataSize);
+				p_reader->read(columnData.get_ptr(), columnData.get_size(), p_abort);
+				stream_reader_memblock_ref columnReader(columnData);
+				item->read(&columnReader, streamVersion, p_abort);
+			} else {
+				item->read(p_reader, streamVersion, p_abort);
+			}
 			add_item(item);
 		}
 	}
