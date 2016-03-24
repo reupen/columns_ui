@@ -448,7 +448,7 @@ void playlist_view_cache::update_active_columns(unsigned playlist)
 
 void playlist_view::g_load_columns()
 {
-	columns.set_entries_copy(g_columns);
+	columns.set_entries_copy(g_columns_v0);
 }
 
 void playlist_view::g_reset_columns()

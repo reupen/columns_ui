@@ -167,7 +167,7 @@ public:
 
 	static void g_load_columns(); //from config
 	static void g_reset_columns(); //from config
-	inline static void g_save_columns()	{g_columns.set_entries_copy(columns);}
+	inline static void g_save_columns()	{g_columns_v0.set_entries_copy(columns);}
 	inline static void g_kill_columns()
 	{
 		//g_save_columns();

@@ -155,7 +155,7 @@ public:
 				}
 				else if (cmd == IDM_SPEEDTEST)
 				{
-					speedtest(g_columns, cfg_global != 0, cfg_oldglobal != 0, cfg_playlist_date != 0);
+					speedtest(g_columns_v0, cfg_global != 0, cfg_oldglobal != 0, cfg_playlist_date != 0);
 				}
 				else if (cmd == IDM_PREVIEW)
 				{

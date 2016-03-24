@@ -480,7 +480,7 @@ public:
 					}
 					else if (cmd == IDM_SPEEDTEST)
 					{
-						speedtest(g_columns, cfg_global != 0, cfg_oldglobal != 0, cfg_playlist_date != 0);
+						speedtest(g_columns_v0, cfg_global != 0, cfg_oldglobal != 0, cfg_playlist_date != 0);
 					}
 					else if (cmd == IDM_PREVIEW)
 					{
@@ -633,7 +633,7 @@ public:
 				ListView_SetExtendedListViewStyleEx(wnd_lv, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 				uih::ListView_InsertColumnText(wnd_lv, 0, L"Column", 50);
 
-				m_columns.set_entries_copy(g_columns);
+				m_columns.set_entries_copy(g_columns_v0);
 
 				refresh_me(wnd, true);
 
@@ -944,7 +944,7 @@ public:
 	}
 	void apply()
 	{
-		g_columns.set_entries_copy(m_columns);
+		g_columns_v0.set_entries_copy(m_columns);
 		refresh_all_playlist_views();
 		pvt::ng_playlist_view_t::g_on_columns_change();
 	}

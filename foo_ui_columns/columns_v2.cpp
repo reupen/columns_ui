@@ -1,37 +1,45 @@
 #include "stdafx.h"
 
-void column_t::read(stream_reader * p_reader, abort_callback & p_abort)
+void column_t::read(stream_reader * reader, ColumnStreamVersion streamVersion, abort_callback & abortCallback)
 {
-	p_reader->read_string(name, p_abort);
-	p_reader->read_string(spec, p_abort);
-	p_reader->read_lendian_t(use_custom_colour, p_abort);
-	p_reader->read_string(colour_spec, p_abort);
-	p_reader->read_lendian_t(use_custom_sort, p_abort);
-	p_reader->read_string(sort_spec, p_abort);
-	p_reader->read_lendian_t(width.value, p_abort);
-	p_reader->read_lendian_t(align, p_abort);
-	p_reader->read_lendian_t(filter_type, p_abort);
-	p_reader->read_string(filter, p_abort);
-	p_reader->read_lendian_t(parts, p_abort);
-	p_reader->read_lendian_t(show, p_abort);
-	p_reader->read_string(edit_field, p_abort);
+	reader->read_string(name, abortCallback);
+	reader->read_string(spec, abortCallback);
+	reader->read_lendian_t(use_custom_colour, abortCallback);
+	reader->read_string(colour_spec, abortCallback);
+	reader->read_lendian_t(use_custom_sort, abortCallback);
+	reader->read_string(sort_spec, abortCallback);
+	reader->read_lendian_t(width.value, abortCallback);
+	reader->read_lendian_t(align, abortCallback);
+	reader->read_lendian_t(filter_type, abortCallback);
+	reader->read_string(filter, abortCallback);
+	reader->read_lendian_t(parts, abortCallback);
+	reader->read_lendian_t(show, abortCallback);
+	reader->read_string(edit_field, abortCallback);
+	if (streamVersion >= ColumnStreamVersion::streamVersion1) {
+		reader->read_lendian_t(width.dpi, abortCallback);
+	} else {
+		width.dpi = uih::GetSystemDpiCached().cx;
+	}
 }
 
-void column_t::write(stream_writer * out, abort_callback & p_abort)
+void column_t::write(stream_writer * out, ColumnStreamVersion streamVersion, abort_callback & abortCallback) const
 {
-	out->write_string(name.get_ptr(), p_abort);
-	out->write_string(spec.get_ptr(), p_abort);
-	out->write_lendian_t(use_custom_colour, p_abort);
-	out->write_string(colour_spec, p_abort);
-	out->write_lendian_t(use_custom_sort, p_abort);
-	out->write_string(sort_spec, p_abort);
-	out->write_lendian_t(width.value, p_abort);
-	out->write_lendian_t(align, p_abort);
-	out->write_lendian_t(filter_type, p_abort);
-	out->write_string(filter, p_abort);
-	out->write_lendian_t(parts, p_abort);
-	out->write_lendian_t(show, p_abort);
-	out->write_string(edit_field, p_abort);
+	out->write_string(name.get_ptr(), abortCallback);
+	out->write_string(spec.get_ptr(), abortCallback);
+	out->write_lendian_t(use_custom_colour, abortCallback);
+	out->write_string(colour_spec, abortCallback);
+	out->write_lendian_t(use_custom_sort, abortCallback);
+	out->write_string(sort_spec, abortCallback);
+	out->write_lendian_t(width.value, abortCallback);
+	out->write_lendian_t(align, abortCallback);
+	out->write_lendian_t(filter_type, abortCallback);
+	out->write_string(filter, abortCallback);
+	out->write_lendian_t(parts, abortCallback);
+	out->write_lendian_t(show, abortCallback);
+	out->write_string(edit_field, abortCallback);
+	if (streamVersion >= ColumnStreamVersion::streamVersion1) {
+		out->write_lendian_t(width.dpi, abortCallback);
+	}
 }
 
 bool column_list_t::move_up(t_size idx)
@@ -133,16 +141,22 @@ void cfg_columns_t::get_data_raw(stream_writer * out, abort_callback & p_abort)
 
 	unsigned n;
 	unsigned num = get_count();
+	if (m_StreamVersion >= ColumnStreamVersion::streamVersion1)
+		out->write_lendian_t(m_StreamVersion, p_abort);
+
 	out->write_lendian_t(num, p_abort);
 	for(n=0;n<num;n++)
 	{
-		get_item(n)->write(out, p_abort);
+		get_item(n)->write(out, m_StreamVersion, p_abort);
 	}
 }
 void cfg_columns_t::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort)
 {
 	remove_all();
 
+	ColumnStreamVersion streamVersion = ColumnStreamVersion::streamVersion0;
+	if (m_StreamVersion >= ColumnStreamVersion::streamVersion1)
+		p_reader->read_lendian_t(streamVersion, p_abort);
 
 	t_uint32 num;
 	p_reader->read_lendian_t(num, p_abort);
@@ -150,7 +164,7 @@ void cfg_columns_t::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, 
 		for(;num;num--)
 		{
 			column_t::ptr item = new column_t;
-			item->read(p_reader, p_abort);
+			item->read(p_reader, streamVersion, p_abort);
 			add_item(item);
 		}
 	}
@@ -166,7 +180,7 @@ void cfg_columns_t::reset()
 	add_item(new column_t("Length","[%_time_elapsed% / ]%_length%",false,"",true,"$num(%_length_seconds%,6)",60, ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
 }
 
-cfg_columns_t::cfg_columns_t(const GUID & p_guid) : cfg_var(p_guid) 
+cfg_columns_t::cfg_columns_t(const GUID & p_guid, ColumnStreamVersion streamVersion) : cfg_var(p_guid), m_StreamVersion(streamVersion)
 {
 	reset();
 }
