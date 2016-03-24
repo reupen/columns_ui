@@ -792,7 +792,7 @@ void playlist_view::update_all_windows(HWND wnd_header_skip /*= 0*/)
 void playlist_view::g_on_columns_size_change(const playlist_view * p_skip /*= NULL*/)
 {
 	if (g_cache.is_active())
-		columns.set_widths(g_columns_v0);
+		columns.set_widths(g_columns);
 	unsigned n, count = playlist_view::list_playlist.get_count();
 	for (n = 0; n < count; n++)
 	{

@@ -53,8 +53,11 @@ public:
 	void get_to_colour(titleformat_object::ptr& p_out);
 	void get_to_sort(titleformat_object::ptr& p_out);
 
-	void read(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback);
-	void write(stream_writer* writer, ColumnStreamVersion streamVersion, abort_callback& abortCallback) const;
+	void read(stream_reader* reader, abort_callback& abortCallback);
+	void write(stream_writer* writer, abort_callback& abortCallback) const;
+	void read_extra(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback);
+	void write_extra(stream_writer* writer, abort_callback& abortCallback) const;
+
 
 	column_t() {};
 
@@ -114,13 +117,12 @@ public:
 	void reset();
 
 	cfg_columns_t(const GUID& p_guid, ColumnStreamVersion streamVersion);
+
 protected:
 	virtual void get_data_raw(stream_writer* out, abort_callback& p_abort);
 	virtual void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort);
-private:
-	ColumnStreamVersion m_StreamVersion;
 };
 
-extern cfg_columns_t g_columns_v0;
+extern cfg_columns_t g_columns;
 
 #endif

@@ -135,10 +135,10 @@ cfg_menu_item cfg_playlist_double(create_guid(0xffc47d9d, 0xb43d, 0x8fad, 0x8f, 
 cfg_string cfg_playlist_switcher_tagz(create_guid(0x13f4b9ae, 0x5db5, 0xb083, 0x15, 0x36, 0x08, 0x4d, 0x55, 0xe3, 0xb5, 0x64), "%title%");
 
 // {F006EC50-7F52-4037-9D48-7447BBF742AA}
-static const GUID guid_columns_v0 =
+static const GUID guid_columns =
 { 0xf006ec50, 0x7f52, 0x4037, { 0x9d, 0x48, 0x74, 0x47, 0xbb, 0xf7, 0x42, 0xaa } };
 
-cfg_columns_t g_columns_v0(guid_columns_v0, ColumnStreamVersion::streamVersion0);
+cfg_columns_t g_columns(guid_columns, ColumnStreamVersion::streamVersion0);
 
 // {27DFB9B0-2621-4935-B670-02576945C012}
 const GUID g_guid_colours_fonts_imported =

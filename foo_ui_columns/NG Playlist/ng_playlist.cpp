@@ -172,7 +172,7 @@ namespace pvt {
 		pfc::list_t<t_size> widths;
 		for (i=0; i<count; i++)
 			if (m_column_mask[i])
-				widths.add_item(g_columns_v0[i]->width);
+				widths.add_item(g_columns[i]->width);
 		set_column_widths(widths);
 	}
 
@@ -201,11 +201,11 @@ namespace pvt {
 			p_compiler->compile_safe(m_script_global, cfg_globalstring);
 		p_compiler->compile_safe(m_script_global_style, cfg_colour);
 
-		t_size i, count = g_columns_v0.get_count();
+		t_size i, count = g_columns.get_count();
 		m_column_mask.set_size(count);
 		for (i=0; i<count; i++)
 		{
-			column_t * source = g_columns_v0[i].get_ptr();
+			column_t * source = g_columns[i].get_ptr();
 			bool b_valid = false;
 			if (source->show)
 			{
@@ -687,11 +687,11 @@ namespace pvt {
 
 			pfc::string8_fast_aggressive filter, name;
 
-			int s,e=g_columns_v0.get_count();
+			int s,e=g_columns.get_count();
 			for (s=0;s<e;s++)
 			{
 				bool add = false;
-				switch(g_columns_v0[s]->filter_type)
+				switch(g_columns[s]->filter_type)
 				{
 				case FILTER_NONE:
 					{
@@ -700,7 +700,7 @@ namespace pvt {
 					}
 				case FILTER_SHOW:
 					{
-						if (wildcard_helper::test(playlist_name,g_columns_v0[s]->filter,true))
+						if (wildcard_helper::test(playlist_name,g_columns[s]->filter,true))
 						{
 							add = true;
 						}
@@ -708,7 +708,7 @@ namespace pvt {
 					break;
 				case FILTER_HIDE:
 					{
-						if (!wildcard_helper::test(playlist_name,g_columns_v0[s]->filter,true))
+						if (!wildcard_helper::test(playlist_name,g_columns[s]->filter,true))
 						{
 							add = true;
 						}
@@ -717,7 +717,7 @@ namespace pvt {
 				}
 				if (add)
 				{
-					uAppendMenu(menu,MF_STRING|(g_columns_v0[s]->show ? MF_CHECKED : MF_UNCHECKED),IDM_CUSTOM_BASE+s,g_columns_v0[s]->name);
+					uAppendMenu(menu,MF_STRING|(g_columns[s]->show ? MF_CHECKED : MF_UNCHECKED),IDM_CUSTOM_BASE+s,g_columns[s]->name);
 				}
 			}
 
@@ -777,9 +777,9 @@ namespace pvt {
 		}
 		else if (cmd >= IDM_CUSTOM_BASE)
 		{
-			if (t_size(cmd - IDM_CUSTOM_BASE) < g_columns_v0.get_count())
+			if (t_size(cmd - IDM_CUSTOM_BASE) < g_columns.get_count())
 			{
-				g_columns_v0[cmd - IDM_CUSTOM_BASE]->show = !g_columns_v0[cmd - IDM_CUSTOM_BASE]->show; //g_columns_v0
+				g_columns[cmd - IDM_CUSTOM_BASE]->show = !g_columns[cmd - IDM_CUSTOM_BASE]->show; //g_columns
 				//if (!cfg_nohscroll) 
 				//playlist_view::g_save_columns();
 				//g_cache.flush_all();

@@ -1056,7 +1056,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						if (wildcard_helper::test(playlist_name, columns[s]->filter, true))
 						{
 							add = true;
-							/*				g_columns_v0.get_string(s, name, STRING_NAME);
+							/*				g_columns.get_string(s, name, STRING_NAME);
 							uAppendMenu(menu,MF_STRING|MF_CHECKED,IDM_CUSTOM_BASE+s,name);*/
 						}
 					}
@@ -1066,7 +1066,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						if (!wildcard_helper::test(playlist_name, columns[s]->filter, true))
 						{
 							add = true;
-							/*						g_columns_v0.get_string(s, name, STRING_NAME);
+							/*						g_columns.get_string(s, name, STRING_NAME);
 							uAppendMenu(menu,MF_STRING|MF_CHECKED,IDM_CUSTOM_BASE+s,name);*/
 						}
 					}
@@ -1129,7 +1129,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			{
 				if (t_size(cmd - IDM_CUSTOM_BASE) < columns.get_count())
 				{
-					columns[cmd - IDM_CUSTOM_BASE]->show = !columns[cmd - IDM_CUSTOM_BASE]->show; //g_columns_v0
+					columns[cmd - IDM_CUSTOM_BASE]->show = !columns[cmd - IDM_CUSTOM_BASE]->show; //g_columns
 					//if (!cfg_nohscroll) 
 					g_save_columns();
 					//g_cache.flush_all();

@@ -655,7 +655,7 @@ bool g_import(const char * path)
 						cfg_oldglobal = TRUE;
 
 					/* update ui */
-					g_columns_v0.set_entries_ref(fcs_config_columns);
+					g_columns.set_entries_ref(fcs_config_columns);
 					//g_on_tabs_font_change();
 					//on_switcher_font_change();
 					//on_header_font_change();

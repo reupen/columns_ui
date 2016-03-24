@@ -575,9 +575,9 @@ namespace pvt
 		virtual void notify_on_column_size_change(t_size index, t_size new_width) 
 		{
 			t_size act = column_index_display_to_actual(index);
-			if (act != pfc_infinite && act < g_columns_v0.get_count())
+			if (act != pfc_infinite && act < g_columns.get_count())
 			{
-				g_columns_v0[act]->width = new_width;
+				g_columns[act]->width = new_width;
 				g_on_column_widths_change(this);
 				playlist_view::g_on_columns_size_change();
 			}
@@ -587,7 +587,7 @@ namespace pvt
 		{
 			t_size act_from = column_index_display_to_actual(index_from);
 			t_size act_to = column_index_display_to_actual(index_to);
-			g_columns_v0.move(act_from,act_to);
+			g_columns.move(act_from,act_to);
 			playlist_view::g_reset_columns();
 			playlist_view::update_all_windows();
 			pvt::ng_playlist_view_t::g_on_columns_change();

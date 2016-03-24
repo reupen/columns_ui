@@ -45,7 +45,7 @@ class export_columns : public cui::fcl::dataset
 	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
 	{
 		fcl::writer out(p_writer, p_abort);
-		t_size count = g_columns_v0.get_count(), i;
+		t_size count = g_columns.get_count(), i;
 		pfc::string8 temp;
 		out.write_raw(count);
 
@@ -53,20 +53,20 @@ class export_columns : public cui::fcl::dataset
 		{
 			stream_writer_memblock sw;
 			fcl::writer w(&sw, p_abort);
-			w.write_item(identifier_name, g_columns_v0[i]->name);
-			w.write_item(identifier_display, g_columns_v0[i]->spec);
-			w.write_item(identifier_style, g_columns_v0[i]->colour_spec);
-			w.write_item(identifier_edit_field, g_columns_v0[i]->edit_field);
-			w.write_item(identifier_filter, g_columns_v0[i]->filter);
-			w.write_item(identifier_sort, g_columns_v0[i]->sort_spec);
-			w.write_item(identifier_use_style, g_columns_v0[i]->use_custom_colour);
-			w.write_item(identifier_use_sort, g_columns_v0[i]->use_custom_sort);
-			w.write_item(identifier_show, g_columns_v0[i]->show);
-			w.write_item(identifier_filter_type, (t_uint32)g_columns_v0[i]->filter_type);
-			w.write_item(identifier_alignment, (t_uint32)g_columns_v0[i]->align);
-			w.write_item(identifier_resize, g_columns_v0[i]->parts);
-			w.write_item(identifier_width, g_columns_v0[i]->width.value);
-			w.write_item(identifier_width_dpi, g_columns_v0[i]->width.dpi);
+			w.write_item(identifier_name, g_columns[i]->name);
+			w.write_item(identifier_display, g_columns[i]->spec);
+			w.write_item(identifier_style, g_columns[i]->colour_spec);
+			w.write_item(identifier_edit_field, g_columns[i]->edit_field);
+			w.write_item(identifier_filter, g_columns[i]->filter);
+			w.write_item(identifier_sort, g_columns[i]->sort_spec);
+			w.write_item(identifier_use_style, g_columns[i]->use_custom_colour);
+			w.write_item(identifier_use_sort, g_columns[i]->use_custom_sort);
+			w.write_item(identifier_show, g_columns[i]->show);
+			w.write_item(identifier_filter_type, (t_uint32)g_columns[i]->filter_type);
+			w.write_item(identifier_alignment, (t_uint32)g_columns[i]->align);
+			w.write_item(identifier_resize, g_columns[i]->parts);
+			w.write_item(identifier_width, g_columns[i]->width.value);
+			w.write_item(identifier_width_dpi, g_columns[i]->width.dpi);
 
 			out.write_item(identifier_column, sw.m_data.get_ptr(), sw.m_data.get_size());
 		}
@@ -164,7 +164,7 @@ class export_columns : public cui::fcl::dataset
 			newcolumns.add_item(item);
 		}
 
-		g_columns_v0.set_entries_ref(newcolumns);
+		g_columns.set_entries_ref(newcolumns);
 		refresh_all_playlist_views();	
 		pvt::ng_playlist_view_t::g_on_columns_change();
 	}
