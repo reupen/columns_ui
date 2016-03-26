@@ -49,7 +49,7 @@ public:
 		static int g_compare(self_t const & a, self_t const & b);
 
 		track_property_t(double p_sortpriority, const char * p_name, const char * p_value);;
-		track_property_t();;
+		track_property_t();
 	};
 	virtual void set_property(const char * p_group, double p_sortpriority, const char * p_name, const char * p_value);
 #if 0

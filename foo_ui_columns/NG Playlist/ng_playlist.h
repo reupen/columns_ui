@@ -126,7 +126,8 @@ namespace pvt
 		const pfc::map_t<GUID, pfc::rcptr_t< gdi_object_t<HBITMAP>::ptr_t > > & get_content() const {return m_bitmaps;}
 
 		artwork_reader_ng_t()
-			: m_succeeded(false), m_native_artwork_reader_mode(artwork_panel::fb2k_artwork_embedded_and_external), m_cx(0), m_cy(0)
+			: m_cx(0), m_cy(0), m_back(RGB(255, 255, 255)), m_reflection(false), m_succeeded(false), 
+			m_native_artwork_reader_mode(artwork_panel::fb2k_artwork_embedded_and_external)
 		{
 		};
 

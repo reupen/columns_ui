@@ -326,7 +326,7 @@ public:
 	inline COLORREF active_get_colour(unsigned idx, int col, colour_type colour)
 	{
 		assert (active_playlist != pfc_infinite);
-		get_colour(active_playlist, idx, col, colour);
+		return get_colour(active_playlist, idx, col, colour);
 	}
 	inline void active_get_colour(unsigned idx, int col, colourinfo & out)
 	{

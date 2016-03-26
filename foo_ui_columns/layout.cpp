@@ -66,7 +66,7 @@ public:
 
 ui_extension::window_host_factory_single<window_host_layout> g_window_host_layout_factory;
 
-layout_window::layout_window() : m_child_guid(columns_ui::panels::guid_playlist_view_v2), m_layout_editing_active(false) {};
+layout_window::layout_window() : m_child_guid(columns_ui::panels::guid_playlist_view_v2), m_layout_editing_active(false), m_child_wnd(nullptr) {};
 bool layout_window::set_focus()
 {
 	return __set_focus_recur(m_child);

@@ -295,7 +295,7 @@ public:
 	types::t_guid m_guid, m_subcommand;
 	unsigned m_group;
 	unsigned m_filter;
-	command_picker_param() {};
+	command_picker_param() = delete;
 	command_picker_param(types::t_guid p_guid, types::t_guid p_subcommand, unsigned p_group, unsigned p_filter)
 		: m_guid(p_guid), m_subcommand(p_subcommand), m_group(p_group), m_filter(p_filter) {};
 };

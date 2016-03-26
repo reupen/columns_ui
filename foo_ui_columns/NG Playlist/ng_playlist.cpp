@@ -81,7 +81,7 @@ namespace pvt {
 	ng_playlist_view_t::ng_playlist_view_t()
 		: m_dragging(false), m_dragging_initial_playlist(pfc_infinite), m_ignore_callback(false),
 		m_gdiplus_token(NULL), m_gdiplus_initialised(false), m_mainmenu_manager_base(NULL),
-		m_contextmenu_manager_base(NULL)
+		m_contextmenu_manager_base(NULL), m_day_timer_active(false)
 	{};
 
 	ng_playlist_view_t::~ng_playlist_view_t()

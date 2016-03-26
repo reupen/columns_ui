@@ -14,7 +14,9 @@ const GUID & toolbar_extension::get_extension_guid() const
 }
 
 
-toolbar_extension ::config_param::config_param() : m_button_list(*this), m_wnd(NULL), m_child(NULL) {};
+toolbar_extension::config_param::config_param() 
+	: m_button_list(*this), m_selection(nullptr), m_wnd(nullptr), m_child(nullptr), m_active(0), 
+	m_image(nullptr), m_text_below(false), m_appearance(APPEARANCE_NORMAL) {}
 
 
 void toolbar_extension::get_menu_items(ui_extension::menu_hook_t & p_hook)
@@ -23,7 +25,7 @@ void toolbar_extension::get_menu_items(ui_extension::menu_hook_t & p_hook)
 	p_hook.add_node(p_node);
 }
 
-unsigned toolbar_extension::get_type() const{ return ui_extension::type_toolbar; };
+unsigned toolbar_extension::get_type() const{ return ui_extension::type_toolbar; }
 
 void toolbar_extension::import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort)
 {
@@ -97,8 +99,8 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button> & p_buttons)
 	p_buttons.add_item(temp);
 }
 
-toolbar_extension::toolbar_extension() :  wnd_toolbar(0), initialised(false), wnd_host(0), m_text_below(false),
-m_appearance(APPEARANCE_NORMAL), width(0), height(0), m_gdiplus_initialised(false)
+toolbar_extension::toolbar_extension() :  width(0), height(0), menuproc(nullptr), initialised(false),
+m_gdiplus_initialised(false), wnd_toolbar(0), wnd_host(0), m_text_below(false), m_appearance(APPEARANCE_NORMAL)
 {
 	reset_buttons(m_buttons_config);
 	memset(&m_gdiplus_instance, 0, sizeof(m_gdiplus_instance));

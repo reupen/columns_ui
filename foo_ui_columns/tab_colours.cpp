@@ -275,8 +275,9 @@ void tab_appearance::refresh_me(HWND wnd)
 	initialising = false;
 }
 
-tab_appearance::tab_appearance() : initialising(false), m_wnd_colours_mode(NULL), m_element_guid(pfc::guid_null),
-m_wnd(NULL)
+tab_appearance::tab_appearance() 
+	: initialising(false), m_wnd_colours_mode(NULL), m_element_guid(pfc::guid_null),
+	m_wnd(NULL), m_wnd_colours_element(nullptr)
 {
 
 }

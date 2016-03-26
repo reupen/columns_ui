@@ -108,7 +108,7 @@ class status_pane : public ui_helpers::container_window, private playlist_callba
 	}
 	void get_length_data(bool & p_selection, t_size & p_count, pfc::string_base & p_out);
 public:
-	status_pane() : m_menu_active(false), m_selection(false), m_theme(NULL) {};
+	status_pane() : m_selection(false), m_item_count(0), m_menu_active(false), m_theme(NULL) {};
 	t_size get_ideal_height() { return uGetFontHeight(m_font)*2 + 6 + 6; }
 	void enter_menu_mode(const char * p_text)
 	{

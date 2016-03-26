@@ -68,8 +68,9 @@ namespace filter_panel {
 	}
 
 	filter_search_bar::filter_search_bar() : m_search_editbox(NULL), m_favourite_state(false),
-		m_query_timer_active(false), m_wnd_last_focused(NULL), m_imagelist(NULL),
-		m_combo_cx(0), m_combo_cy(0), m_toolbar_cx(0), m_toolbar_cy(0), m_show_clear_button(cfg_showsearchclearbutton) {};
+		m_query_timer_active(false), m_show_clear_button(cfg_showsearchclearbutton), m_wnd_last_focused(NULL),
+		m_imagelist(NULL), m_combo_cx(0), m_combo_cy(0), m_toolbar_cx(0), m_toolbar_cy(0),
+		m_wnd_toolbar(nullptr), m_proc_search_edit(nullptr) {};
 
 	void g_get_search_bar_sibling_streams(filter_search_bar const * p_serach_bar, pfc::list_t<filter_panel_t::filter_stream_t::ptr> & p_out)
 	{

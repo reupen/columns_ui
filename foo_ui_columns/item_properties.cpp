@@ -1043,9 +1043,7 @@ void track_property_callback_itemproperties::set_property(const char * p_group, 
 }
 
 track_property_callback_itemproperties::track_property_t::track_property_t()
-{
-
-}
+	: m_sortpriority(0) {}
 
 track_property_callback_itemproperties::track_property_t::track_property_t(double p_sortpriority, const char * p_name, const char * p_value) : m_name(p_name), m_value(p_value), m_sortpriority(p_sortpriority)
 {

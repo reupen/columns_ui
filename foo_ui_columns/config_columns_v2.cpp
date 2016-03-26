@@ -524,7 +524,7 @@ private:
 	//edit_column_window_options m_tab_options;
 	//edit_column_window_scripts m_tab_scripts;
 public:
-	tab_columns_v3() : initialising(false) {};
+	tab_columns_v3() : initialising(false), m_wnd_child(nullptr), m_wnd(nullptr) {};
 
 	void make_child()
 	{

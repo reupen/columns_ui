@@ -87,7 +87,7 @@ public:
 	}
 	
 	
-	editor_font_notify() : g_edit_font(0) {};
+	editor_font_notify() : g_edit_font(nullptr), wnd(nullptr) {};
 	~editor_font_notify()
 	{
 		if (g_edit_font) {DeleteObject(g_edit_font);g_edit_font=0;}

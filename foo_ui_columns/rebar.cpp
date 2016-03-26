@@ -387,14 +387,14 @@ void cfg_rebar::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abor
 	{
 		for(;num;num--)
 		{
-			rebar_band_info * item = new(std::nothrow) rebar_band_info(null_guid,100);
+			rebar_band_info * item = new rebar_band_info(null_guid,100);
 			
 			try{ item->read(p_reader, p_abort);}
 			catch (pfc::exception & e)
 			{
 				delete item; 
 				item = 0;
-				throw e;
+				throw;
 			}
 			entries.add_item(item);
 		}
