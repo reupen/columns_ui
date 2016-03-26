@@ -46,17 +46,18 @@ class config_host : public preferences_page
 public:
 	static HWND child;
 private:
-
+	static void destroy_child()
+	{
+		if (child) {
+			ShowWindow(child, SW_HIDE);
+			DestroyWindow(child);
+			child = nullptr;
+		}
+	}
 
 	static void make_child(HWND wnd)
 	{
-		//HWND wnd_destroy = child;
-		if (child)
-		{
-			ShowWindow(child, SW_HIDE);
-			DestroyWindow(child);
-			child = 0;
-		}
+		destroy_child();
 
 		HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
 
@@ -87,9 +88,6 @@ private:
 
 		ShowWindow(child, SW_SHOWNORMAL);
 		//UpdateWindow(child);
-
-		//if (wnd_destroy)
-		//DestroyWindow(wnd_destroy);
 	}
 
 	static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -110,6 +108,19 @@ private:
 		}
 		break;
 		case WM_DESTROY:
+			break;
+		case WM_WINDOWPOSCHANGED:
+			{
+				auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+				// Temporary workaround for various bugs that occur due to foobar2000 1.0+ 
+				// having a dislike for destroying preference pages
+				if (lpwp->flags & SWP_HIDEWINDOW) {
+					destroy_child();
+				}
+				else if (lpwp->flags & SWP_SHOWWINDOW && !child) {
+					make_child(wnd);
+				}
+			}
 			break;
 		case WM_NOTIFY:
 			switch (((LPNMHDR)lp)->idFrom)
@@ -196,15 +207,19 @@ private:
 			p_out = "http://yuo.be/wiki/columns_ui:manual";
 		return true;
 	}
-	static void make_child(HWND wnd)
+
+	static void destroy_child()
 	{
-		//HWND wnd_destroy = child;
-		if (child)
-		{
+		if (child) {
 			ShowWindow(child, SW_HIDE);
 			DestroyWindow(child);
-			child = 0;
+			child = nullptr;
 		}
+	}
+
+	static void make_child(HWND wnd)
+	{
+		destroy_child();
 
 		HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
 
@@ -267,6 +282,19 @@ private:
 
 		break;
 		case WM_DESTROY:
+			break;
+		case WM_WINDOWPOSCHANGED:
+			{
+				auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+				// Temporary workaround for various bugs that occur due to foobar2000 1.0+ 
+				// having a dislike for destroying preference pages
+				if (lpwp->flags & SWP_HIDEWINDOW) {
+					destroy_child();
+				}
+				else if (lpwp->flags & SWP_SHOWWINDOW && !child) {
+					make_child(wnd);
+				}
+			}
 			break;
 		case WM_NOTIFY:
 			switch (((LPNMHDR)lp)->idFrom)
@@ -338,16 +366,18 @@ private:
 			p_out = "http://yuo.be/wiki/columns_ui:manual";
 		return true;
 	}
+	static void destroy_child()
+	{
+		if (child) {
+			ShowWindow(child, SW_HIDE);
+			DestroyWindow(child);
+			child = nullptr;
+		}
+	}
 
 	static void make_child(HWND wnd)
 	{
-		//HWND wnd_destroy = child;
-		if (child)
-		{
-			ShowWindow(child, SW_HIDE);
-			DestroyWindow(child);
-			child = 0;
-		}
+		destroy_child();
 
 		HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
 
@@ -380,9 +410,6 @@ private:
 
 		ShowWindow(child, SW_SHOWNORMAL);
 		//UpdateWindow(child);
-
-		//if (wnd_destroy)
-		//	DestroyWindow(wnd_destroy);
 	}
 
 	static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -410,6 +437,19 @@ private:
 
 		break;
 		case WM_DESTROY:
+			break;
+		case WM_WINDOWPOSCHANGED:
+			{
+				// Temporary workaround for various bugs that occur due to foobar2000 1.0+ 
+				// having a dislike for destroying preference pages
+				auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+				if (lpwp->flags & SWP_HIDEWINDOW) {
+					destroy_child();
+				}
+				else if (lpwp->flags & SWP_SHOWWINDOW && !child) {
+					make_child(wnd);
+				}
+			}
 			break;
 		case WM_NOTIFY:
 			switch (((LPNMHDR)lp)->idFrom)

@@ -340,17 +340,18 @@ public:
 	HWND m_wnd_child;
 	HWND m_wnd;
 private:
-
+	void destroy_child()
+	{
+		if (m_wnd_child) {
+			ShowWindow(m_wnd_child, SW_HIDE);
+			DestroyWindow(m_wnd_child);
+			m_wnd_child = NULL;
+		}
+	}
 
 	void make_child()
 	{
-		//HWND wnd_destroy = child;
-		if (m_wnd_child)
-		{
-			ShowWindow(m_wnd_child, SW_HIDE);
-			DestroyWindow(m_wnd_child);
-			m_wnd_child=NULL;
-		}
+		destroy_child();
 
 		HWND wnd_tab = GetDlgItem(m_wnd, IDC_TAB1);
 		
@@ -422,6 +423,19 @@ private:
 			break;
 		case WM_DESTROY:
 			m_wnd = NULL;
+			break;
+		case WM_WINDOWPOSCHANGED:
+			{
+				auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+				// Temporary workaround for various bugs that occur due to foobar2000 1.0+ 
+				// having a dislike for destroying preference pages
+				if (lpwp->flags & SWP_HIDEWINDOW) {
+					destroy_child();
+				}
+				else if (lpwp->flags & SWP_SHOWWINDOW && !m_wnd_child) {
+					make_child();
+				}
+			}
 			break;
 		case WM_NOTIFY:
 			switch (((LPNMHDR)lp)->idFrom)
