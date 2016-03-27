@@ -24,7 +24,7 @@ public:
 	virtual unsigned get_panel_count()const;;
 	virtual uie::splitter_item_t * get_panel(unsigned index)const;;
 	enum { stream_version_current = 0 };
-	virtual void set_config(stream_reader * config, t_size p_size, abort_callback & p_abort);;
+	virtual void set_config(stream_reader * config, t_size p_size, abort_callback & p_abort);
 	virtual void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);;
 	virtual void export_config(stream_writer * p_writer, abort_callback & p_abort) const;;
 
@@ -136,9 +136,9 @@ private:
 
 		service_ptr_t<class splitter_host_impl> m_interface;
 
-		unsigned m_size;
+		uih::IntegerAndDpi<uint32_t> m_size;
 
-		uie::splitter_item_full_t * create_splitter_item(bool b_set_ptr = true);
+		uie::splitter_item_full_v2_t * create_splitter_item(bool b_set_ptr = true);
 
 		void set_from_splitter_item(const uie::splitter_item_t * p_source);
 
@@ -146,6 +146,8 @@ private:
 		void write(stream_writer * out, abort_callback & p_abort);
 		void import(stream_reader*t, abort_callback & p_abort);
 		void read(stream_reader*t, abort_callback & p_abort);
+		void read_extra(stream_reader* reader, abort_callback & p_abort);
+		void write_extra(stream_writer* writer, abort_callback & p_abort);
 
 		void set_hidden(bool val);
 
@@ -166,6 +168,9 @@ private:
 		bool find_by_wnd(HWND wnd, unsigned & p_out);
 		bool find_by_wnd_child(HWND wnd, unsigned & p_out);
 	};
+
+	void read_config(stream_reader * p_reader, t_size p_size, bool is_import, abort_callback & p_abort);
+	void write_config(stream_writer * p_writer, bool is_export, abort_callback & p_abort) const;
 
 	void start_autohide_dehide(unsigned index, bool b_next_too = true);
 

@@ -103,7 +103,7 @@ public:
 		panel();
 		~panel();
 
-		uie::splitter_item_full_t * create_splitter_item();
+		uie::splitter_item_full_v2_t * create_splitter_item();
 
 		void set_from_splitter_item(const uie::splitter_item_t * p_source);
 

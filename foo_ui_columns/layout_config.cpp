@@ -121,6 +121,7 @@ void cfg_layout_t::set_presets(const pfc::list_base_const_t<preset> & presets, t
 
 void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_out)
 {
+	abort_callback_dummy abortCallbackDummy;
 	{
 		uie::window_ptr wnd, wnd2, wnd3;
 		service_ptr_t<uie::splitter_window> splitter, splitter2, splitter3;
@@ -134,25 +135,25 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_
 				bool val = true;
 				splitter2->add_panel(&item);
 				stream_writer_memblock conf1;
-				splitter2->get_config(&conf1, abort_callback_impl());
+				splitter2->get_config(&conf1, abortCallbackDummy);
 				item2.set_panel_config(&stream_reader_memblock_ref(conf1.m_data.get_ptr(), conf1.m_data.get_size()), conf1.m_data.get_size());
 
 				t_size index = splitter->add_panel(&item2);
-				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 				val = false;
-				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
-				t_uint32 sz = 175;
-				splitter->set_config_item(index, uie::splitter_window::uint32_size, &stream_reader_memblock_ref(&sz, sizeof(t_uint32)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
+
+				splitter->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 
 				item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
 				t_size index_playlist = splitter->add_panel(&item);
-				splitter->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 
 				cfg_layout_t::preset preset_default;
 				preset_default.m_name = "NG Playlist + Playlist Switcher";
 				preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 				stream_writer_memblock_ref conf(preset_default.m_val, true);
-				splitter->get_config(&conf, abort_callback_impl());
+				splitter->get_config(&conf, abortCallbackDummy);
 
 				p_out.add_item(preset_default);
 			}
@@ -177,78 +178,78 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_
 				bool val = true;
 				splitter2->add_panel(&item);
 				stream_writer_memblock conf1, conf2, conf3;
-				splitter2->get_config(&conf1, abort_callback_impl());
+				splitter2->get_config(&conf1, abortCallbackDummy);
 				item2.set_panel_config(&stream_reader_memblock_ref(conf1.m_data.get_ptr(), conf1.m_data.get_size()), conf1.m_data.get_size());
 
 				t_size index = splitter->add_panel(&item2);
-				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 				val = false;
-				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
-				t_uint32 sz = 175;
-				splitter->set_config_item(index, uie::splitter_window::uint32_size, &stream_reader_memblock_ref(&sz, sizeof(t_uint32)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
+				
+				splitter->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 
 				t_size index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				{
-					splitter_filter->get_config(&conf3, abort_callback_impl());
+					splitter_filter->get_config(&conf3, abortCallbackDummy);
 					item_filter_splitter.set_panel_config(&stream_reader_memblock_ref(conf3.m_data.get_ptr(), conf3.m_data.get_size()), conf3.m_data.get_size());
 					t_size indexfs = splitter3->add_panel(&item_filter_splitter);
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 					bool temp = true;
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, temp, abort_callback_dummy());
-					t_uint32 size = 175;
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::uint32_size, size, abort_callback_dummy());
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, temp, abortCallbackDummy);
+					
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 				}
 
 				item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
 				t_size index_playlist = splitter3->add_panel(&item);
-				splitter3->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter3->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 
-				splitter3->get_config(&conf2, abort_callback_impl());
+				splitter3->get_config(&conf2, abortCallbackDummy);
 				item3.set_panel_config(&stream_reader_memblock_ref(conf2.m_data.get_ptr(), conf2.m_data.get_size()), conf2.m_data.get_size());
 
 				t_size index_splitter2 = splitter->add_panel(&item3);
-				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 
 				cfg_layout_t::preset preset_default;
 				preset_default.m_name = "NG Playlist + Playlist Switcher + Filters";
 				preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 				stream_writer_memblock_ref conf(preset_default.m_val, true);
-				splitter->get_config(&conf, abort_callback_impl());
+				splitter->get_config(&conf, abortCallbackDummy);
 
 				p_out.add_item(preset_default);
 
 				index = splitter2->add_panel(&item_artwork);
 				bool b_true = true;
-				splitter2->set_config_item_t(index, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
-				splitter2->set_config_item_t(index, uie::splitter_window::bool_locked, b_true, abort_callback_dummy());
-				splitter2->set_config_item_t(index, uie::splitter_window::uint32_size, sz, abort_callback_dummy());
+				splitter2->set_config_item_t(index, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
+				splitter2->set_config_item_t(index, uie::splitter_window::bool_locked, b_true, abortCallbackDummy);
+				splitter2->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 				conf1.m_data.set_size(0);
-				splitter2->get_config(&conf1, abort_callback_impl());
+				splitter2->get_config(&conf1, abortCallbackDummy);
 				item2.set_panel_config(&stream_reader_memblock_ref(conf1.m_data.get_ptr(), conf1.m_data.get_size()), conf1.m_data.get_size());
 				splitter->replace_panel(0, &item2);
-				splitter->set_config_item(0, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&b_true, sizeof(bool)), abort_callback_impl());
-				splitter->set_config_item(0, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
-				splitter->set_config_item(0, uie::splitter_window::uint32_size, &stream_reader_memblock_ref(&sz, sizeof(t_uint32)), abort_callback_impl());
+				splitter->set_config_item(0, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&b_true, sizeof(bool)), abortCallbackDummy);
+				splitter->set_config_item(0, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
+				splitter->set_config_item_t(0, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 
 				preset_default.m_name = "NG Playlist + Playlist Switcher + Artwork + Filters";
 				preset_default.m_val.set_size(0);
-				splitter->get_config(&conf, abort_callback_impl());
+				splitter->get_config(&conf, abortCallbackDummy);
 				t_size index_preset = p_out.add_item(preset_default);
 
 				splitter3->remove_panel(0);
 				conf2.m_data.set_size(0);
-				splitter3->get_config(&conf2, abort_callback_impl());
+				splitter3->get_config(&conf2, abortCallbackDummy);
 				item3.set_panel_config(&stream_reader_memblock_ref(conf2.m_data.get_ptr(), conf2.m_data.get_size()), conf2.m_data.get_size());
 
 				splitter->replace_panel(index_splitter2, &item3);
-				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, false, abort_callback_dummy());
+				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 				preset_default.m_name = "NG Playlist + Playlist Switcher + Artwork";
-				splitter->get_config(&stream_writer_memblock_ref(preset_default.m_val, true), abort_callback_dummy());
+				splitter->get_config(&stream_writer_memblock_ref(preset_default.m_val, true), abortCallbackDummy);
 				p_out.insert_item(preset_default, index_preset);
 			}
 		}
@@ -276,84 +277,82 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_
 				bool val = true;
 				splitter2->add_panel(&item);
 				stream_writer_memblock conf1, conf2, conf3, conf4;
-				splitter2->get_config(&conf1, abort_callback_impl());
+				splitter2->get_config(&conf1, abortCallbackDummy);
 				item2.set_panel_config(&stream_reader_memblock_ref(conf1.m_data.get_ptr(), conf1.m_data.get_size()), conf1.m_data.get_size());
 
 				t_size index = splitter->add_panel(&item2);
-				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 				val = false;
-				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
-				t_uint32 sz = 175;
-				splitter->set_config_item(index, uie::splitter_window::uint32_size, &stream_reader_memblock_ref(&sz, sizeof(t_uint32)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
+				splitter->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 
 				t_size index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				{
-					splitter_filter->get_config(&conf3, abort_callback_impl());
+					splitter_filter->get_config(&conf3, abortCallbackDummy);
 					item_filter_splitter.set_panel_config(&stream_reader_memblock_ref(conf3.m_data.get_ptr(), conf3.m_data.get_size()), conf3.m_data.get_size());
 				}
 
 				item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
 				t_size index_playlist = splitter3->add_panel(&item);
-				splitter3->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter3->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 
 				{
 					t_size index = splitter_bottom->add_panel(&item_item_details);
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abort_callback_dummy());
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
 					index = splitter_bottom->add_panel(&item_artwork);
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abort_callback_dummy());
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::uint32_size, t_size(125), abort_callback_dummy());
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abort_callback_dummy());
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
 
-					splitter_bottom->get_config(&conf4, abort_callback_impl());
+					splitter_bottom->get_config(&conf4, abortCallbackDummy);
 					item_bottom_splitter.set_panel_config(&stream_reader_memblock_ref(conf4.m_data.get_ptr(), conf4.m_data.get_size()), conf4.m_data.get_size());
 					index = splitter3->add_panel(&item_bottom_splitter);
-					splitter3->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abort_callback_dummy());
-					splitter3->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abort_callback_dummy());
-					splitter3->set_config_item_t(index, uie::splitter_window::uint32_size, t_size(125), abort_callback_dummy());
+					splitter3->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
+					splitter3->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
+					splitter3->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
 				}
 
-				splitter3->get_config(&conf2, abort_callback_impl());
+				splitter3->get_config(&conf2, abortCallbackDummy);
 				item3.set_panel_config(&stream_reader_memblock_ref(conf2.m_data.get_ptr(), conf2.m_data.get_size()), conf2.m_data.get_size());
 
 				t_size index_splitter2 = splitter->add_panel(&item3);
-				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 
 				cfg_layout_t::preset preset_default;
 				preset_default.m_name = "NG Playlist + Playlist Switcher + Item Details + Artwork";
 				preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 				stream_writer_memblock_ref conf(preset_default.m_val, true);
-				splitter->get_config(&conf, abort_callback_impl());
+				splitter->get_config(&conf, abortCallbackDummy);
 
 				p_out.add_item(preset_default);
 
 				{
 					t_size indexfs = 0;
 					splitter3->insert_panel(0, &item_filter_splitter);
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_show_caption, false, abort_callback_dummy());
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, true, abort_callback_dummy());
-					t_uint32 size = 175;
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::uint32_size, size, abort_callback_dummy());
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, true, abortCallbackDummy);
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 				}
 
 
 				conf2.m_data.set_size(0);
-				splitter3->get_config(&conf2, abort_callback_impl());
+				splitter3->get_config(&conf2, abortCallbackDummy);
 				item3.set_panel_config(&stream_reader_memblock_ref(conf2.m_data.get_ptr(), conf2.m_data.get_size()), conf2.m_data.get_size());
 
 				//t_size index_splitter2 = 
 				splitter->replace_panel(1, &item3);
-				splitter->set_config_item_t(1, uie::splitter_window::bool_show_caption, false, abort_callback_dummy());
+				splitter->set_config_item_t(1, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
 				cfg_layout_t::preset preset_default2;
 				preset_default2.m_name = "NG Playlist + Playlist Switcher + Filters + Item Details + Artwork";
 				preset_default2.m_guid = columns_ui::panels::guid_horizontal_splitter;
 				stream_writer_memblock_ref conft(preset_default2.m_val, true);
-				splitter->get_config(&conft, abort_callback_impl());
+				splitter->get_config(&conft, abortCallbackDummy);
 
 				p_out.add_item(preset_default2);
 			}
@@ -374,7 +373,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_
 				preset_default.m_name = "NG Playlist + Playlist Tabs";
 				preset_default.m_guid = columns_ui::panels::guid_playlist_tabs;
 				stream_writer_memblock_ref conf(preset_default.m_val, true);
-				splitter->get_config(&conf, abort_callback_impl());
+				splitter->get_config(&conf, abortCallbackDummy);
 
 				//m_active = pfc_infinite;
 
@@ -410,71 +409,70 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_
 				t_uint32 sz = 175;
 
 				t_size index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				index_filter = splitter_filter->add_panel(&item_filter);
-				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter_filter->set_config_item_t(index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 				{
-					splitter_filter->get_config(&conf3, abort_callback_impl());
+					splitter_filter->get_config(&conf3, abortCallbackDummy);
 					item_filter_splitter.set_panel_config(&stream_reader_memblock_ref(conf3.m_data.get_ptr(), conf3.m_data.get_size()), conf3.m_data.get_size());
 					t_size indexfs = splitter3->add_panel(&item_filter_splitter);
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 					bool temp = true;
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, temp, abort_callback_dummy());
-					t_uint32 size = 175;
-					splitter3->set_config_item_t(indexfs, uie::splitter_window::uint32_size, size, abort_callback_dummy());
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, temp, abortCallbackDummy);
+					splitter3->set_config_item_t(indexfs, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 				}
 
 				item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
 				t_size index_playlist = splitter_tabs->add_panel(&item);
-				splitter_tabs->get_config(&conf1, abort_callback_impl());
+				splitter_tabs->get_config(&conf1, abortCallbackDummy);
 				item_tabs.set_panel_config(&stream_reader_memblock_ref(conf1.m_data.get_ptr(), conf1.m_data.get_size()), conf1.m_data.get_size());
 				t_size index_tabs = splitter3->add_panel(&item_tabs);
-				splitter3->set_config_item_t(index_tabs, uie::splitter_window::bool_show_caption, false, abort_callback_impl());
+				splitter3->set_config_item_t(index_tabs, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
 
-				splitter3->get_config(&conf2, abort_callback_impl());
+				splitter3->get_config(&conf2, abortCallbackDummy);
 				item3.set_panel_config(&stream_reader_memblock_ref(conf2.m_data.get_ptr(), conf2.m_data.get_size()), conf2.m_data.get_size());
 
 				t_size index_splitter2 = splitter->add_panel(&item3);
-				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, val, abort_callback_dummy());
+				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 
 				cfg_layout_t::preset preset_default;
 				preset_default.m_name = "NG Playlist + Playlist Tabs + Filters";
 				preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 				stream_writer_memblock_ref conf(preset_default.m_val, true);
-				splitter->get_config(&conf, abort_callback_impl());
+				splitter->get_config(&conf, abortCallbackDummy);
 
 				p_out.add_item(preset_default);
 
 				{
 					t_size index = splitter_bottom->add_panel(&item_item_details);
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abort_callback_dummy());
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
 					index = splitter_bottom->add_panel(&item_artwork);
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abort_callback_dummy());
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::uint32_size, t_size(125), abort_callback_dummy());
-					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abort_callback_dummy());
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
+					splitter_bottom->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
 
-					splitter_bottom->get_config(&conf4, abort_callback_impl());
+					splitter_bottom->get_config(&conf4, abortCallbackDummy);
 					item_bottom_splitter.set_panel_config(&stream_reader_memblock_ref(conf4.m_data.get_ptr(), conf4.m_data.get_size()), conf4.m_data.get_size());
 					index = splitter3->add_panel(&item_bottom_splitter);
-					splitter3->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abort_callback_dummy());
-					splitter3->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abort_callback_dummy());
-					splitter3->set_config_item_t(index, uie::splitter_window::uint32_size, t_size(125), abort_callback_dummy());
+					splitter3->set_config_item_t(index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
+					splitter3->set_config_item_t(index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
+					splitter3->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
 				}
 
 				conf2.m_data.set_size(0);
-				splitter3->get_config(&conf2, abort_callback_impl());
+				splitter3->get_config(&conf2, abortCallbackDummy);
 				item3.set_panel_config(&stream_reader_memblock_ref(conf2.m_data.get_ptr(), conf2.m_data.get_size()), conf2.m_data.get_size());
 
 				splitter->replace_panel(index_splitter2, &item3);
-				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, false, abort_callback_dummy());
+				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
 				preset_default.m_name = "NG Playlist + Playlist Tabs + Filters + Item Details + Artwork";
 				preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 
-				splitter->get_config(&stream_writer_memblock_ref(preset_default.m_val, true), abort_callback_impl());
+				splitter->get_config(&stream_writer_memblock_ref(preset_default.m_val, true), abortCallbackDummy);
 
 
 				t_size preset_tabs_all = p_out.add_item(preset_default);
@@ -482,16 +480,16 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset> & p_
 
 				splitter3->remove_panel(0);
 				conf2.m_data.set_size(0);
-				splitter3->get_config(&conf2, abort_callback_impl());
+				splitter3->get_config(&conf2, abortCallbackDummy);
 				item3.set_panel_config(&stream_reader_memblock_ref(conf2.m_data.get_ptr(), conf2.m_data.get_size()), conf2.m_data.get_size());
 
 				splitter->replace_panel(index_splitter2, &item3);
-				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, false, abort_callback_dummy());
+				splitter->set_config_item_t(index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
 				preset_default.m_name = "NG Playlist + Playlist Tabs + Item Details + Artwork";
 				preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 
-				splitter->get_config(&stream_writer_memblock_ref(preset_default.m_val, true), abort_callback_impl());
+				splitter->get_config(&stream_writer_memblock_ref(preset_default.m_val, true), abortCallbackDummy);
 
 
 				p_out.insert_item(preset_default, preset_tabs_all);
@@ -504,6 +502,7 @@ void cfg_layout_t::reset_presets()
 {
 	if (core_api::are_services_available())
 	{
+		abort_callback_dummy abortCallbackDummy;
 		m_presets.remove_all();
 		uie::window_ptr wnd, wnd2;
 		service_ptr_t<uie::splitter_window> splitter, splitter2;
@@ -521,15 +520,14 @@ void cfg_layout_t::reset_presets()
 				item2.set_panel_config(&stream_reader_memblock_ref(conf1.m_data.get_ptr(), conf1.m_data.get_size()), conf1.m_data.get_size());
 
 				t_size index = splitter->add_panel(&item2);
-				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_locked, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 				val = false;
-				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
-				t_uint32 sz = 175;
-				splitter->set_config_item(index, uie::splitter_window::uint32_size, &stream_reader_memblock_ref(&sz, sizeof(t_uint32)), abort_callback_impl());
+				splitter->set_config_item(index, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
+				splitter->set_config_item_t(index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 
 				item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
 				t_size index_playlist = splitter->add_panel(&item);
-				splitter->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abort_callback_impl());
+				splitter->set_config_item(index_playlist, uie::splitter_window::bool_show_caption, &stream_reader_memblock_ref(&val, sizeof(bool)), abortCallbackDummy);
 
 				preset preset_default;
 				preset_default.m_name = "Default";

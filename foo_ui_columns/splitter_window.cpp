@@ -787,9 +787,20 @@ bool splitter_window_impl::set_config_item(unsigned index, const GUID & p_type, 
 			p_source->read_object_t(m_panels[index]->m_caption_orientation, p_abort);
 			return true;
 		}
-		else if (p_type == uie::splitter_window::uint32_size)
+		else if (p_type == uie::splitter_window::uint32_size) 
 		{
-			p_source->read_object_t(m_panels[index]->m_size, p_abort);
+			uint32_t size;
+			p_source->read_object_t(size, p_abort);
+			m_panels[index]->m_size = size;
+			return true;
+		}
+		else if (p_type == uie::splitter_window::size_and_dpi) 
+		{
+			uie::size_and_dpi sad;
+			p_source->read_object_t(sad.size, p_abort);
+			p_source->read_object_t(sad.dpi, p_abort);
+			m_panels[index]->m_size.value = sad.size;
+			m_panels[index]->m_size.dpi = sad.dpi;
 			return true;
 		}
 		else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal)
@@ -841,9 +852,13 @@ bool splitter_window_impl::get_config_item(unsigned index, const GUID & p_type, 
 			p_out->write_object_t(m_panels[index]->m_caption_orientation, p_abort);
 			return true;
 		}
-		else if (p_type == uie::splitter_window::uint32_size)
-		{
-			p_out->write_object_t(m_panels[index]->m_size, p_abort);
+		else if (p_type == uie::splitter_window::uint32_size) {
+			p_out->write_object_t(m_panels[index]->m_size.getScaledValue(), p_abort);
+			return true;
+		}
+		else if (p_type == uie::splitter_window::size_and_dpi) {
+			p_out->write_object_t(m_panels[index]->m_size.value, p_abort);
+			p_out->write_object_t(m_panels[index]->m_size.dpi, p_abort);
 			return true;
 		}
 		else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal)
@@ -877,6 +892,7 @@ bool splitter_window_impl::get_config_item_supported(unsigned index, const GUID 
 			|| p_type == uie::splitter_window::bool_autohide
 			|| (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal)
 			|| p_type == uie::splitter_window::uint32_size
+			|| p_type == uie::splitter_window::size_and_dpi
 			|| p_type == uie::splitter_window::bool_use_custom_title
 			|| p_type == uie::splitter_window::string_custom_title
 			)
@@ -941,69 +957,84 @@ bool splitter_window_impl::have_config_popup(unsigned index) const
 
 void splitter_window_impl::get_config(stream_writer * out, abort_callback & p_abort) const
 {
-	out->write_lendian_t((t_uint32)stream_version_current, p_abort);
-	unsigned n, count = m_panels.get_count();
-	out->write_lendian_t(count, p_abort);
-	for (n = 0; n < count; n++)
-	{
-		m_panels[n]->write(out, p_abort);
-	}
+	write_config(out, false, p_abort);
 }
 
 void splitter_window_impl::export_config(stream_writer * p_writer, abort_callback & p_abort) const
 {
-	p_writer->write_lendian_t((t_uint32)stream_version_current, p_abort);
-	unsigned n, count = m_panels.get_count();
+	write_config(p_writer, true, p_abort);
+}
+
+void splitter_window_impl::write_config(stream_writer * p_writer, bool is_export, abort_callback & p_abort) const
+{
+	p_writer->write_lendian_t(static_cast<t_uint32>(stream_version_current), p_abort);
+	unsigned i, count = m_panels.get_count();
 	p_writer->write_lendian_t(count, p_abort);
-	for (n = 0; n < count; n++)
-	{
-		m_panels[n]->_export(p_writer, p_abort);
+	for (i = 0; i < count; i++) {
+		if (is_export)
+			m_panels[i]->_export(p_writer, p_abort);
+		else
+			m_panels[i]->write(p_writer, p_abort);
+	}
+	// Extra data added in version 0.5.0
+	for (i = 0; i < count; i++) {
+		stream_writer_memblock extraData;
+		m_panels[i]->write_extra(&extraData, p_abort);
+		p_writer->write_lendian_t(pfc::downcast_guarded<uint32_t>(extraData.m_data.get_size()), p_abort);
+		p_writer->write(extraData.m_data.get_ptr(), extraData.m_data.get_size(), p_abort);
+	}
+}
+
+void splitter_window_impl::read_config(stream_reader * config, t_size p_size, bool is_import, abort_callback & p_abort)
+{
+	if (p_size) {
+		t_uint32 version;
+		config->read_lendian_t(version, p_abort);
+		if (version <= stream_version_current) {
+			panel_list panels;
+
+			unsigned count;
+			config->read_lendian_t(count, p_abort);
+
+			unsigned i;
+			for (i = 0; i < count; i++) {
+				pfc::refcounted_object_ptr_t<panel> temp = new panel;
+				if (is_import)
+					temp->import(config, p_abort);
+				else
+					temp->read(config, p_abort);
+				panels.add_item(temp);
+			}
+
+			// Extra data added in version 0.5.0
+			for (i = 0; i < count; i++) {
+				uint32_t extraDataSize;
+				try {
+					config->read_lendian_t(extraDataSize, p_abort);
+				}
+				catch (const exception_io_data_truncation &) {
+					if (i == 0) break;
+					throw;
+				}
+				pfc::array_staticsize_t<t_uint8> columnExtraData(extraDataSize);
+				config->read(columnExtraData.get_ptr(), columnExtraData.get_size(), p_abort);
+				stream_reader_memblock_ref columnReader(columnExtraData);
+				panels[i]->read_extra(&columnReader, p_abort);
+			}
+
+			m_panels = panels;
+		}
 	}
 }
 
 void splitter_window_impl::import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort)
 {
-	t_uint32 version;
-	p_reader->read_lendian_t(version, p_abort);
-	if (version <= stream_version_current)
-	{
-		m_panels.remove_all();
-
-		unsigned count;
-		p_reader->read_lendian_t(count, p_abort);
-
-		unsigned n;
-		for (n = 0; n < count; n++)
-		{
-			pfc::refcounted_object_ptr_t<panel> temp = new panel;
-			temp->import(p_reader, p_abort);
-			m_panels.add_item(temp);
-		}
-	}
+	read_config(p_reader, p_size, true, p_abort);
 }
 
 void splitter_window_impl::set_config(stream_reader * config, t_size p_size, abort_callback & p_abort)
 {
-	if (p_size)
-	{
-		t_uint32 version;
-		config->read_lendian_t(version, p_abort);
-		if (version <= stream_version_current)
-		{
-			m_panels.remove_all();
-
-			unsigned count;
-			config->read_lendian_t(count, p_abort);
-
-			unsigned n;
-			for (n = 0; n < count; n++)
-			{
-				pfc::refcounted_object_ptr_t<panel> temp = new panel;
-				temp->read(config, p_abort);
-				m_panels.add_item(temp);
-			}
-		}
-	}
+	read_config(config, p_size, false, p_abort);
 }
 
 uie::splitter_item_t * splitter_window_impl::get_panel(unsigned index) const

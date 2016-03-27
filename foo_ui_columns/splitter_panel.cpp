@@ -40,8 +40,8 @@ void splitter_window_impl::panel::on_size(unsigned cx, unsigned cy)
 		SetWindowPos(m_wnd_child, 0, x, y, cx - x, cy - y, SWP_NOZORDER);
 	if (caption_size /*&& (m_caption_orientation == vertical || (m_container.m_uxtheme.is_valid() && m_container.m_theme))*/)
 	{
-		unsigned caption_cx = m_caption_orientation == vertical ? caption_size : (cx);
-		unsigned caption_cy = m_caption_orientation == vertical ? cy : caption_size;
+		int caption_cx = min(m_caption_orientation == vertical ? caption_size : (cx), MAXLONG);
+		int caption_cy = min(m_caption_orientation == vertical ? cy : caption_size, MAXLONG);
 
 		RECT rc_caption = { 0, 0, caption_cx, caption_cy };
 		RedrawWindow(m_wnd, &rc_caption, 0, RDW_INVALIDATE | RDW_UPDATENOW);
@@ -76,13 +76,15 @@ void splitter_window_impl::panel::read(stream_reader*t, abort_callback & p_abort
 	t->read_lendian_t(m_show_caption, p_abort);
 	t->read_lendian_t(m_autohide, p_abort);
 	if (m_autohide) m_hidden = true;
-	t->read_lendian_t(m_size, p_abort);
+	uint32_t size;
+	t->read_lendian_t(size, p_abort);
+	m_size = size;
 	//console::formatter() << "read panel, size: " << m_size;
 	t->read_lendian_t(m_show_toggle_area, p_abort);
-	unsigned size;
-	t->read_lendian_t(size, p_abort);
-	m_child_data.set_size(size);
-	t->read(m_child_data.get_ptr(), size, p_abort);
+	unsigned data_size;
+	t->read_lendian_t(data_size, p_abort);
+	m_child_data.set_size(data_size);
+	t->read(m_child_data.get_ptr(), data_size, p_abort);
 	t->read_lendian_t(m_use_custom_title, p_abort);
 	t->read_string(m_custom_title, p_abort);
 }
@@ -96,14 +98,16 @@ void splitter_window_impl::panel::import(stream_reader*t, abort_callback & p_abo
 	t->read_lendian_t(m_show_caption, p_abort);
 	t->read_lendian_t(m_autohide, p_abort);
 	if (m_autohide) m_hidden = true;
-	t->read_lendian_t(m_size, p_abort);
+	uint32_t size;
+	t->read_lendian_t(size, p_abort);
+	m_size = size;
 	//console::formatter() << "read panel, size: " << m_size;
 	t->read_lendian_t(m_show_toggle_area, p_abort);
-	unsigned size;
-	t->read_lendian_t(size, p_abort);
+	unsigned data_size;
+	t->read_lendian_t(data_size, p_abort);
 	pfc::array_t<t_uint8> data;
-	data.set_size(size);
-	t->read(data.get_ptr(), size, p_abort);
+	data.set_size(data_size);
+	t->read(data.get_ptr(), data_size, p_abort);
 	t->read_lendian_t(m_use_custom_title, p_abort);
 	t->read_string(m_custom_title, p_abort);
 
@@ -120,6 +124,18 @@ void splitter_window_impl::panel::import(stream_reader*t, abort_callback & p_abo
 	//	throw pfc::exception_not_implemented();
 }
 
+void splitter_window_impl::panel::read_extra(stream_reader* reader, abort_callback & p_abort)
+{
+	reader->read_lendian_t(m_size.value, p_abort);
+	reader->read_lendian_t(m_size.dpi, p_abort);
+}
+
+void splitter_window_impl::panel::write_extra(stream_writer* writer, abort_callback & p_abort)
+{
+	writer->write_lendian_t(m_size.value, p_abort);
+	writer->write_lendian_t(m_size.dpi, p_abort);
+}
+
 void splitter_window_impl::panel::write(stream_writer * out, abort_callback & p_abort)
 {
 	if (m_child.is_valid())
@@ -133,7 +149,7 @@ void splitter_window_impl::panel::write(stream_writer * out, abort_callback & p_
 	out->write_lendian_t(m_hidden, p_abort);
 	out->write_lendian_t(m_show_caption, p_abort);
 	out->write_lendian_t(m_autohide, p_abort);
-	out->write_lendian_t(m_size, p_abort);
+	out->write_lendian_t(m_size.getScaledValue(), p_abort);
 	out->write_lendian_t(m_show_toggle_area, p_abort);
 	out->write_lendian_t(m_child_data.get_size(), p_abort);
 	out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
@@ -163,7 +179,7 @@ void splitter_window_impl::panel::_export(stream_writer * out, abort_callback & 
 			out->write_lendian_t(m_hidden, p_abort);
 			out->write_lendian_t(m_show_caption, p_abort);
 			out->write_lendian_t(m_autohide, p_abort);
-			out->write_lendian_t(m_size, p_abort);
+			out->write_lendian_t(m_size.getScaledValue(), p_abort);
 			out->write_lendian_t(m_show_toggle_area, p_abort);
 			out->write_lendian_t(child_exported_data.m_data.get_size(), p_abort);
 			out->write(child_exported_data.m_data.get_ptr(), child_exported_data.m_data.get_size(), p_abort);
@@ -174,9 +190,8 @@ void splitter_window_impl::panel::_export(stream_writer * out, abort_callback & 
 void splitter_window_impl::panel::set_from_splitter_item(const uie::splitter_item_t * p_source)
 {
 	if (m_wnd) destroy();
-	const uie::splitter_item_full_t * ptr = NULL;
-	if (p_source->query(ptr))
-	{
+	const uie::splitter_item_full_t * ptr = nullptr;
+	if (p_source->query(ptr)) {
 		m_autohide = ptr->m_autohide;
 		m_caption_orientation = ptr->m_caption_orientation;
 		m_locked = ptr->m_locked;
@@ -187,14 +202,18 @@ void splitter_window_impl::panel::set_from_splitter_item(const uie::splitter_ite
 		m_use_custom_title = ptr->m_custom_title;
 		ptr->get_title(m_custom_title);
 	}
-	m_child = p_source->get_window_ptr();
+	const uie::splitter_item_full_v2_t * splitter_item_v2 = nullptr;
+	if (p_source->query(splitter_item_v2)) {
+		m_size.value = splitter_item_v2->m_size_v2;
+		m_size.dpi = splitter_item_v2->m_size_v2_dpi;
+	}
 	m_guid = p_source->get_panel_guid();
 	p_source->get_panel_config(&stream_writer_memblock_ref(m_child_data, true));
 }
 
-uie::splitter_item_full_t * splitter_window_impl::panel::create_splitter_item(bool b_set_ptr /*= true*/)
+uie::splitter_item_full_v2_t * splitter_window_impl::panel::create_splitter_item(bool b_set_ptr /*= true*/)
 {
-	uie::splitter_item_full_impl_t * ret = new uie::splitter_item_full_impl_t;
+	uie::splitter_item_full_v2_impl_t * ret = new uie::splitter_item_full_v2_impl_t;
 	ret->m_autohide = m_autohide;
 	ret->m_caption_orientation = m_caption_orientation;
 	ret->m_locked = m_locked;
@@ -206,6 +225,8 @@ uie::splitter_item_full_t * splitter_window_impl::panel::create_splitter_item(bo
 	ret->m_show_toggle_area = m_show_toggle_area;
 	ret->m_custom_title = m_use_custom_title;
 	ret->set_title(m_custom_title, m_custom_title.length());
+	ret->m_size_v2 = m_size.value;
+	ret->m_size_v2_dpi = m_size.dpi;
 
 	if (b_set_ptr)
 		ret->set_window_ptr(m_child);

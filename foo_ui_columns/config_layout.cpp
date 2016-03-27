@@ -2,11 +2,11 @@
 
 		uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
 		{
-			const uie::splitter_item_full_t * ptr = NULL;
-			uie::splitter_item_t * ret = NULL;
+			const uie::splitter_item_full_t * ptr = nullptr;
+			uie::splitter_item_t * ret = nullptr;
 			if (p_source->query(ptr))
 			{
-				uie::splitter_item_full_impl_t * full = new uie::splitter_item_full_impl_t;
+				uie::splitter_item_full_v2_impl_t * full = new uie::splitter_item_full_v2_impl_t;
 				ret = full;
 				full->m_autohide = ptr->m_autohide;
 				full->m_caption_orientation = ptr->m_caption_orientation;
@@ -19,6 +19,15 @@
 				pfc::string8 title;
 				ptr->get_title(title);
 				full->set_title(title, title.get_length());
+
+				const uie::splitter_item_full_v2_t * ptr_v2 = nullptr;
+				if (p_source->query(ptr_v2)) {
+					full->m_size_v2 = ptr_v2->m_size_v2;
+					full->m_size_v2_dpi = ptr_v2->m_size_v2_dpi;
+				} else {
+					full->m_size_v2 = full->m_size;
+					full->m_size_v2_dpi = uih::GetSystemDpiCached().cx;
+				}
 			}
 			else
 				ret = new uie::splitter_item_simple_t;

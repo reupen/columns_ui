@@ -189,9 +189,9 @@ splitter_window_tabs_impl::panel::~panel()
 {
 }
 
-uie::splitter_item_full_t * splitter_window_tabs_impl::panel::create_splitter_item()
+uie::splitter_item_full_v2_t * splitter_window_tabs_impl::panel::create_splitter_item()
 {
-	uie::splitter_item_full_impl_t * ret = new uie::splitter_item_full_impl_t;
+	uie::splitter_item_full_v2_impl_t * ret = new uie::splitter_item_full_v2_impl_t;
 	ret->set_panel_guid(m_guid);
 	ret->set_panel_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size());
 	ret->set_window_ptr(m_child);
@@ -205,6 +205,8 @@ uie::splitter_item_full_t * splitter_window_tabs_impl::panel::create_splitter_it
 	ret->m_show_toggle_area = false;
 	ret->m_size = 0;
 	ret->m_show_caption = true;
+	ret->m_size_v2 = 0;
+	ret->m_size_v2_dpi = USER_DEFAULT_SCREEN_DPI;
 	return ret;
 }
 
