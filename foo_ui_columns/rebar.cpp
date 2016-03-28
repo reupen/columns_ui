@@ -133,7 +133,7 @@ unsigned band_cache::get_width(const GUID & guid)
 	unsigned n, count = get_count();
 	for (n=0;n<count;n++)
 	{
-		band_cache_entry & p_bce = get_item(n);
+		const auto & p_bce = get_item_ref(n);
 		if (p_bce.guid == guid)
 		{
 			rv = p_bce.width;
@@ -147,7 +147,7 @@ void band_cache::write(stream_writer * out, abort_callback & p_abort)
 	out->write_lendian_t(count, p_abort);
 	for (n=0; n<count; n++)
 	{
-		band_cache_entry & p_bce = get_item(n);
+		const auto & p_bce = get_item_ref(n);
 		out->write_lendian_t(p_bce.guid, p_abort);
 		out->write_lendian_t(p_bce.width, p_abort);
 	}
@@ -199,9 +199,6 @@ void cfg_band_cache_t::reset()
 rebar_band_info::rebar_band_info(GUID id = null_guid, unsigned h = 100) : guid(id), /*guid2(id), */wnd(0), p_ext(0), width(h), rbbs_break(0) {};
 
 
-#define _SETDATAPARAMS(x) \
-	&stream_reader_memblock_ref(x.get_ptr(), x.get_size()), x.get_size(), p_abort
-
 void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback & p_abort)
 {
 	uie::window_ptr ptr = p_ext;
@@ -211,7 +208,7 @@ void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback
 		{
 			//if (type==cui::fcl::type_public)
 			try {
-			ptr->set_config(_SETDATAPARAMS(config));
+			ptr->set_config_from_ptr(config.get_ptr(), config.get_size(), p_abort);
 			} catch (const exception_io &) {};
 		}
 		else
@@ -223,7 +220,7 @@ void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback
 	else
 		ptr->get_config(&w, p_abort);
 	out->write_lendian_t(guid, p_abort);
-	out->write_lendian_t(width, p_abort);
+	out->write_lendian_t(width.getScaledValue(), p_abort);
 	out->write_lendian_t(rbbs_break, p_abort);
 	DWORD size = w.m_data.get_size();
 	out->write_lendian_t(size, p_abort);
@@ -235,7 +232,9 @@ void rebar_band_info::import(stream_reader * r, t_uint32 type, abort_callback & 
 	if (p_ext.is_valid())
 		throw pfc::exception_bug_check();
 	r->read_lendian_t(guid, p_abort);
-	r->read_lendian_t(width, p_abort);
+	uint32_t width_;
+	r->read_lendian_t(width_, p_abort);
+	width = width_;
 	r->read_lendian_t(rbbs_break, p_abort);
 	unsigned mem_size;
 	r->read_lendian_t(mem_size, p_abort);
@@ -248,33 +247,36 @@ void rebar_band_info::import(stream_reader * r, t_uint32 type, abort_callback & 
 
 		if (type==cui::fcl::type_public)
 		{
-
 			uie::window_ptr ptr;
 
 			if (uie::window::create_by_guid(guid, ptr))
 			{
-				ptr->import_config(_SETDATAPARAMS(data));
-				ptr->get_config(&stream_writer_memblock_ref(config, true), p_abort);
+				stream_reader_memblock_ref reader(data.get_ptr(), data.get_size());
+				ptr->import_config(&reader, data.get_size(), p_abort);
+				stream_writer_memblock_ref writer(config, true);
+				ptr->get_config(&writer, p_abort);
 			}
 		}
 		else config = data;
 	}
 }
+
 void rebar_band_info::write(stream_writer * out, abort_callback & p_abort)
 {
 		out->write_lendian_t(guid, p_abort);
-		out->write_lendian_t(width, p_abort);
+		out->write_lendian_t(width.getScaledValue(), p_abort);
 		out->write_lendian_t(rbbs_break, p_abort);
 		DWORD size = config.get_size();
 		out->write_lendian_t(size, p_abort);
 		out->write(config.get_ptr(), size, p_abort);
 }
+
 void rebar_band_info::read(stream_reader * r, abort_callback & p_abort)
 {
 		r->read_lendian_t(guid, p_abort);
-
-		r->read_lendian_t(width, p_abort);
-
+		uint32_t width_;
+		r->read_lendian_t(width_, p_abort);
+		width = width_;
 		r->read_lendian_t(rbbs_break, p_abort);
 
 		unsigned mem_size;
@@ -283,11 +285,23 @@ void rebar_band_info::read(stream_reader * r, abort_callback & p_abort)
 		if (mem_size)
 		{
 			config.set_size(mem_size);
-
 			r->read(config.get_ptr(), mem_size, p_abort);
 		}
 	
 }
+
+void rebar_band_info::write_extra(stream_writer * out, abort_callback & p_abort)
+{
+	out->write_lendian_t(width.value, p_abort);
+	out->write_lendian_t(width.dpi, p_abort);
+}
+
+void rebar_band_info::read_extra(stream_reader * r, abort_callback & p_abort)
+{
+	r->read_lendian_t(width.value, p_abort);
+	r->read_lendian_t(width.dpi, p_abort);
+}
+
 void rebar_band_info::copy(rebar_band_info & out)
 {
 	out.guid = guid;
@@ -298,10 +312,11 @@ void rebar_band_info::copy(rebar_band_info & out)
 	if (wnd && p_ext.is_valid())
 	{
 		try {
-		config.set_size(0);
-		p_ext->get_config(&stream_writer_memblock_ref(config), abort_callback_impl());
-		}
-		catch (const pfc::exception &) {};
+			abort_callback_dummy abortCallbackDummy;
+			stream_writer_memblock_ref writer(config);
+			config.set_size(0);
+			p_ext->get_config(&writer, abortCallbackDummy);
+		} catch (const pfc::exception &) {};
 	}
 	out.config.append_fromptr(config.get_ptr(), config.get_size());
 }
@@ -367,39 +382,60 @@ void rebar_info::insert_band(unsigned idx,const GUID & id, unsigned width, bool 
 
 void cfg_rebar::get_data_raw(stream_writer * out, abort_callback & p_abort)
 {
-		if (g_rebar_window)
-			entries.set_rebar_info(g_rebar_window->bands);
-		unsigned n;
-		unsigned long num = entries.get_count();
-		out->write_lendian_t(num, p_abort);
-		for(n=0;n<num;n++)
-		{
-			entries.get_item(n)->write(out, p_abort);
-		}
+	if (g_rebar_window)
+		entries.set_rebar_info(g_rebar_window->bands);
+
+	uint32_t num = pfc::downcast_guarded<uint32_t>(entries.get_count());
+	out->write_lendian_t(num, p_abort);
+	for(uint32_t n=0;n<num;n++)
+	{
+		entries.get_item(n)->write(out, p_abort);
+	}
+	
+	// Extra data added in version 0.5.0
+	out->write_lendian_t(static_cast<uint32_t>(StreamVersion::VersionCurrent), p_abort);
+
+	for (t_size n = 0; n < num; n++) {
+		stream_writer_memblock extraData;
+		entries.get_item(n)->write_extra(&extraData, p_abort);
+		out->write_lendian_t(pfc::downcast_guarded<uint32_t>(extraData.m_data.get_size()), p_abort);
+		out->write(extraData.m_data.get_ptr(), extraData.m_data.get_size(), p_abort);
+	}
 }
 
 void cfg_rebar::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort)
 {
 	entries.delete_all();
 	
-	unsigned num;
-	p_reader->read_lendian_t(num, p_abort);
+	uint32_t itemCount;
+	p_reader->read_lendian_t(itemCount, p_abort);
+
+	for (uint32_t i = 0; i < itemCount; i++)
 	{
-		for(;num;num--)
-		{
-			rebar_band_info * item = new rebar_band_info(null_guid,100);
-			
-			try{ item->read(p_reader, p_abort);}
-			catch (pfc::exception & e)
-			{
-				delete item; 
-				item = 0;
-				throw;
-			}
-			entries.add_item(item);
-		}
+		auto item = std::make_unique<rebar_band_info>(null_guid, 100);
+		item->read(p_reader, p_abort);
+		entries.add_item(item.release());
 	}
 
+	// Extra data added in version 0.5.0
+	StreamVersion streamVersion = StreamVersion::Version0;
+	try {
+		uint32_t streamVersion_;
+		p_reader->read_lendian_t(streamVersion_, p_abort);
+		streamVersion = static_cast<StreamVersion>(streamVersion_);
+	} catch (const exception_io_data_truncation &) {
+	}
+
+	if (streamVersion >= StreamVersion::Version1) {
+		for (uint32_t i = 0; i < itemCount; i++) {
+			uint32_t extraDataSize;
+			p_reader->read_lendian_t(extraDataSize, p_abort);
+			pfc::array_staticsize_t<t_uint8> columnExtraData(extraDataSize);
+			p_reader->read(columnExtraData.get_ptr(), columnExtraData.get_size(), p_abort);
+			stream_reader_memblock_ref columnReader(columnExtraData);
+			entries[i]->read_extra(&columnReader, p_abort);
+		}
+	}
 }
 
 void cfg_rebar::get_rebar_info(rebar_info & out)
@@ -704,7 +740,7 @@ bool rebar_window::get_previous_menu_focus_window(HWND & wnd_previous) const
 	return false;
 }
 
-bool rebar_window::set_menu_focus ()
+bool rebar_window::set_menu_focus()
 {
 	unsigned n, count = bands.get_count();
 	bool rv = false;
@@ -820,12 +856,12 @@ bool rebar_window::delete_band(const GUID & id)
 void rebar_window::destroy_bands()
 {
 //	save_bands(false);
+	abort_callback_dummy abortCallbackDummy;
 
 	UINT count  = SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0);
 
 	if (count>0 && count == bands.get_count())
 	{
-
 		unsigned n;
 		for (n=0;count;n++,count--)
 		{
@@ -836,8 +872,8 @@ void rebar_window::destroy_bands()
 			{
 				bands[n]->config.set_size(0);
 				stream_writer_memblock_ref data(bands[n]->config);
-				try{
-				p_ext->get_config(&data, abort_callback_impl());
+				try {
+					p_ext->get_config(&data, abortCallbackDummy);
 				}
 				catch (const pfc::exception &) {};
 				p_ext->destroy_window();
@@ -944,18 +980,22 @@ void rebar_window::update_band(unsigned n, bool size/*, bool min_height, bool ma
 		memset(&mmi, 0, sizeof(MINMAXINFO));
 		mmi.ptMaxTrackSize.x = MAXLONG;
 		mmi.ptMaxTrackSize.y = MAXLONG;
-		SendMessage(bands[n]->wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+		SendMessage(bands[n]->wnd, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));
 		
-		rbbi.cyMinChild   = mmi.ptMinTrackSize.y;
-		rbbi.cyMaxChild   = mmi.ptMaxTrackSize.y;
-		rbbi.cxMinChild   = mmi.ptMinTrackSize.x;
-		
-		if (!rbbi.cyMinChild) rbbi.cyMinChild = min(uih::ScaleDpiValue(default_toolbar_height), rbbi.cyMaxChild);
-		if (!rbbi.cxMinChild) rbbi.cxMinChild = uih::ScaleDpiValue(default_toolbar_width);
+		if (mmi.ptMaxTrackSize.y < 0)
+			mmi.ptMaxTrackSize.y = 0;
+		if (mmi.ptMinTrackSize.y <= 0)
+			mmi.ptMinTrackSize.y = min(uih::ScaleDpiValue(default_toolbar_height), mmi.ptMaxTrackSize.y);
+		if (mmi.ptMinTrackSize.x <= 0)
+			mmi.ptMinTrackSize.x = uih::ScaleDpiValue(default_toolbar_width);
+
+		rbbi.cyMinChild = mmi.ptMinTrackSize.y;
+		rbbi.cyMaxChild = mmi.ptMaxTrackSize.y;
+		rbbi.cxMinChild = mmi.ptMinTrackSize.x;
 		
 		if (size)
 		{
-			rbbi.fMask        |= RBBIM_SIZE;
+			rbbi.fMask |= RBBIM_SIZE;
 			rbbi.cx = bands[n]->width;
 		}
 
@@ -967,6 +1007,8 @@ void rebar_window::update_band(unsigned n, bool size/*, bool min_height, bool ma
 
 void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 {
+	abort_callback_dummy abortCallbackDummy;
+
 	if (force_destroy_bands) destroy_bands();
 //	else if (save) save_bands(false);
 	
@@ -999,11 +1041,12 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 				{
 					try
 					{
-						p_ext->set_config(&stream_reader_memblock_ref(bands[n]->config.get_ptr(), bands[n]->config.get_size()),bands[n]->config.get_size(),abort_callback_impl());
+						p_ext->set_config_from_ptr(bands[n]->config.get_ptr(), bands[n]->config.get_size(), abortCallbackDummy);
 					}
 					catch (const exception_io & e)
 					{
-						console::formatter() << "Error setting panel config: " << e.what();
+						console::formatter formatter;
+						formatter << "Error setting panel config: " << e.what();
 					}
 				}
 				wnd_band = p_ext->create_or_transfer_window(wnd_rebar, ui_extension::window_host_ptr(&g_ui_ext_host_rebar.get_static_instance()));
@@ -1013,22 +1056,24 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 					bands[n]->wnd = wnd_band;
 					ShowWindow(wnd_band, SW_SHOWNORMAL);
 					
-					rbbi.fMask        |= RBBIM_CHILDSIZE |  0;
+					rbbi.fMask |= RBBIM_CHILDSIZE;
 
 					MINMAXINFO mmi;
 					memset(&mmi, 0, sizeof(MINMAXINFO));
 					mmi.ptMaxTrackSize.x = MAXLONG;
 					mmi.ptMaxTrackSize.y = MAXLONG;
-					SendMessage(wnd_band, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+					SendMessage(wnd_band, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));
+
+					if (mmi.ptMaxTrackSize.y < 0)
+						mmi.ptMaxTrackSize.y = 0;
+					if (mmi.ptMinTrackSize.y <= 0)
+						mmi.ptMinTrackSize.y = min(uih::ScaleDpiValue(default_toolbar_height), mmi.ptMaxTrackSize.y);
+					if (mmi.ptMinTrackSize.x <= 0)
+						mmi.ptMinTrackSize.x = uih::ScaleDpiValue(default_toolbar_width);
 
 					rbbi.cyMinChild   = mmi.ptMinTrackSize.y;
 					rbbi.cyMaxChild   = mmi.ptMaxTrackSize.y;
 					rbbi.cxMinChild   = mmi.ptMinTrackSize.x;
-
-					if (!rbbi.cyMinChild)
-						rbbi.cyMinChild = min(uih::ScaleDpiValue(default_toolbar_height), rbbi.cyMaxChild);
-					if (!rbbi.cxMinChild) 
-						rbbi.cxMinChild = uih::ScaleDpiValue(default_toolbar_width);
 				}
 				else
 				{
@@ -1045,15 +1090,13 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
 
 		if (wnd_band)
 		{
-			
-			
-			rbbi.fMask        |= RBBIM_SIZE|  RBBIM_CHILD |RBBIM_HEADERSIZE | RBBIM_LPARAM | RBBIM_STYLE |  0;
+			rbbi.fMask |= RBBIM_SIZE | RBBIM_CHILD | RBBIM_HEADERSIZE | RBBIM_LPARAM | RBBIM_STYLE;
 			//rbbi.cyIntegral = 1;
-			rbbi.cx           = bands[n]->width;
-			rbbi.fStyle       = /*RBBS_VARIABLEHEIGHT|*/RBBS_CHILDEDGE |RBBS_GRIPPERALWAYS| ((bands[n]->rbbs_break) ? RBBS_BREAK : 0 )| ((cfg_lock) ? RBBS_NOGRIPPER: 0);
-			rbbi.lParam          = n;
-			rbbi.hwndChild    = wnd_band;
-			rbbi.cxHeader    = cfg_lock ? 5 : 9;
+			rbbi.cx = bands[n]->width;
+			rbbi.fStyle = /*RBBS_VARIABLEHEIGHT|*/RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS | (bands[n]->rbbs_break ? RBBS_BREAK : 0 )| (cfg_lock ? RBBS_NOGRIPPER: 0);
+			rbbi.lParam = n;
+			rbbi.hwndChild = wnd_band;
+			rbbi.cxHeader = cfg_lock ? 5 : 9;
 
 			uRebar_InsertItem(wnd_rebar, n, &rbbi, adding);
 			

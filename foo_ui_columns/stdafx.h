@@ -7,6 +7,7 @@
 #endif
 
 #include <vector>
+#include <memory>
 #include <complex>
 #include <iostream>
 

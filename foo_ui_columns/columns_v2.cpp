@@ -141,7 +141,7 @@ void cfg_columns_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
 		get_item(n)->write(out, p_abort);
 
 	// Extra data added in version 0.5.0
-	out->write_lendian_t(ColumnStreamVersion::streamVersionCurrent, p_abort);
+	out->write_lendian_t(static_cast<uint32_t>(ColumnStreamVersion::streamVersionCurrent), p_abort);
 
 	for (t_size n = 0; n < num; n++) {
 		stream_writer_memblock columnExtraData;
@@ -166,7 +166,9 @@ void cfg_columns_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, a
 
 	// Extra data added in version 0.5.0
 	try {
-		p_reader->read_lendian_t(streamVersion, p_abort);
+		uint32_t streamVersion_;
+		p_reader->read_lendian_t(streamVersion_, p_abort);
+		streamVersion = static_cast<ColumnStreamVersion>(streamVersion_);
 	}
 	catch (const exception_io_data_truncation&) { }
 

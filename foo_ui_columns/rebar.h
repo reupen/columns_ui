@@ -56,7 +56,9 @@ public:
 	HWND wnd;
 	ui_extension::window_ptr p_ext;
 	pfc::array_t<t_uint8> config;
-	unsigned width;
+	// Although we store the DPI, this does virtually nothing as remaining space is automatically 
+	// distributed among the remaining bands.
+	uih::IntegerAndDpi<uint32_t> width;
 	bool rbbs_break;
 
 	rebar_band_info(GUID id , unsigned h);
@@ -64,6 +66,8 @@ public:
 	void rebar_band_info::import(stream_reader * p_reader, t_uint32 type, abort_callback & p_abort);
 	void rebar_band_info::write(stream_writer * out, abort_callback & p_abort);
 	void rebar_band_info::read(stream_reader * p_reader, abort_callback & p_abort);
+	void rebar_band_info::write_extra(stream_writer * out, abort_callback & p_abort);
+	void rebar_band_info::read_extra(stream_reader * p_reader, abort_callback & p_abort);
 	void rebar_band_info::copy(rebar_band_info & out);
 };
 
@@ -80,6 +84,12 @@ public:
 class cfg_rebar : public cfg_var
 {
 private:
+	enum class StreamVersion:uint32_t {
+		Version0 = 0,
+		Version1 = 1,
+		VersionCurrent = Version1
+	};
+
 	rebar_info entries;
 	
 	virtual void cfg_rebar::get_data_raw(stream_writer * out, abort_callback & p_abort);

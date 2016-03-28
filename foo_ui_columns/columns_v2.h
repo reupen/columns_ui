@@ -38,12 +38,6 @@ enum class ColumnStreamVersion {
 
 };
 
-namespace pfc {	
-	template<> class traits_t<ColumnStreamVersion> : public traits_rawobject {};
-}
-
-pfc::traits_t<ColumnStreamVersion> traitsColumnStreamVersion;
-
 class column_t : public column_base_t {
 	typedef column_t self_t;
 public:
