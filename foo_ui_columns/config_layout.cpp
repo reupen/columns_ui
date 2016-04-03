@@ -1,43 +1,43 @@
 #include "stdafx.h"
 
-		uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
-		{
-			const uie::splitter_item_full_t * ptr = nullptr;
-			uie::splitter_item_t * ret = nullptr;
-			if (p_source->query(ptr))
-			{
-				uie::splitter_item_full_v2_impl_t * full = new uie::splitter_item_full_v2_impl_t;
-				ret = full;
-				full->m_autohide = ptr->m_autohide;
-				full->m_caption_orientation = ptr->m_caption_orientation;
-				full->m_locked = ptr->m_locked;
-				full->m_hidden = ptr->m_hidden;
-				full->m_show_caption = ptr->m_show_caption;
-				full->m_size = ptr->m_size;
-				full->m_show_toggle_area = ptr->m_show_toggle_area;
-				full->m_custom_title = ptr->m_custom_title;
-				pfc::string8 title;
-				ptr->get_title(title);
-				full->set_title(title, title.get_length());
+uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
+{
+	const uie::splitter_item_full_t * ptr = nullptr;
+	uie::splitter_item_t * ret = nullptr;
+	if (p_source->query(ptr))
+	{
+		uie::splitter_item_full_v2_impl_t * full = new uie::splitter_item_full_v2_impl_t;
+		ret = full;
+		full->m_autohide = ptr->m_autohide;
+		full->m_caption_orientation = ptr->m_caption_orientation;
+		full->m_locked = ptr->m_locked;
+		full->m_hidden = ptr->m_hidden;
+		full->m_show_caption = ptr->m_show_caption;
+		full->m_size = ptr->m_size;
+		full->m_show_toggle_area = ptr->m_show_toggle_area;
+		full->m_custom_title = ptr->m_custom_title;
+		pfc::string8 title;
+		ptr->get_title(title);
+		full->set_title(title, title.get_length());
 
-				const uie::splitter_item_full_v2_t * ptr_v2 = nullptr;
-				if (p_source->query(ptr_v2)) {
-					full->m_size_v2 = ptr_v2->m_size_v2;
-					full->m_size_v2_dpi = ptr_v2->m_size_v2_dpi;
-				} else {
-					full->m_size_v2 = full->m_size;
-					full->m_size_v2_dpi = uih::GetSystemDpiCached().cx;
-				}
-			}
-			else
-				ret = new uie::splitter_item_simple_t;
-			//ret->m_child = p_source->get_window_ptr();
-			ret->set_panel_guid(p_source->get_panel_guid());
-			stream_writer_memblock data;
-			p_source->get_panel_config(&data);
-			ret->set_panel_config(&stream_reader_memblock_ref(data.m_data.get_ptr(), data.m_data.get_size()), data.m_data.get_size());
-			return ret;
+		const uie::splitter_item_full_v2_t * ptr_v2 = nullptr;
+		if (p_source->query(ptr_v2)) {
+			full->m_size_v2 = ptr_v2->m_size_v2;
+			full->m_size_v2_dpi = ptr_v2->m_size_v2_dpi;
+		} else {
+			full->m_size_v2 = full->m_size;
+			full->m_size_v2_dpi = uih::GetSystemDpiCached().cx;
 		}
+	}
+	else
+		ret = new uie::splitter_item_simple_t;
+	//ret->m_child = p_source->get_window_ptr();
+	ret->set_panel_guid(p_source->get_panel_guid());
+	stream_writer_memblock data;
+	p_source->get_panel_config(&data);
+	ret->set_panel_config(&stream_reader_memblock_ref(data.m_data.get_ptr(), data.m_data.get_size()), data.m_data.get_size());
+	return ret;
+}
 
 
 class tab_layout_new : public preferences_tab
@@ -731,6 +731,7 @@ class tab_layout_new : public preferences_tab
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
 				uSendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
+				SendDlgItemMessage(wnd, IDC_ALLOW_LOCKED_PANEL_RESIZING, BM_SETCHECK, settings::allow_locked_panel_reszing, 0);
 
 				SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
 				SendDlgItemMessage(wnd, IDC_HIDE_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
@@ -910,6 +911,9 @@ class tab_layout_new : public preferences_tab
 				cfg_sidebar_use_custom_show_delay = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
+				break;
+			case IDC_ALLOW_LOCKED_PANEL_RESIZING:
+				settings::allow_locked_panel_reszing = Button_GetCheck((HWND)lp) == BST_CHECKED;
 				break;
 			}
 			break;

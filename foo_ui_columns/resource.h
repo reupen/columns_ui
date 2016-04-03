@@ -347,6 +347,7 @@
 #define IDC_CHECK1                      1163
 #define IDC_GROUPING                    1163
 #define IDC_SHOWCOLUMNS                 1163
+#define IDC_ALLOW_LOCKED_PANEL_RESIZING 1163
 #define IDC_GEN_COLOUR                  1164
 #define IDC_CHECK2                      1164
 #define IDC_SHOWGROUPS                  1164

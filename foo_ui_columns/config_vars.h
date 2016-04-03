@@ -29,6 +29,7 @@ namespace settings
 {
 	extern cfg_bool show_status_pane;
 
+	extern uih::ConfigBool allow_locked_panel_reszing;
 	extern uih::ConfigUint32DpiAware custom_splitter_divider_width;
 
 	extern uih::ConfigInt32DpiAware playlist_switcher_item_padding,
