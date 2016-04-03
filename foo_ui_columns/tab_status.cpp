@@ -10,11 +10,11 @@ public:
 
 	static void refresh_me(HWND wnd)
 	{
-		uSendDlgItemMessage(wnd, IDC_VOL, BM_SETCHECK, cfg_show_vol, 0);
-		uSendDlgItemMessage(wnd, IDC_SELTIME, BM_SETCHECK, cfg_show_seltime, 0);
-		uSendDlgItemMessage(wnd, IDC_SHOW_STATUS, BM_SETCHECK, cfg_status, 0);
-		uSendDlgItemMessage(wnd, IDC_SHOW_STATUSPANE, BM_SETCHECK, settings::show_status_pane, 0);
-		uSendDlgItemMessage(wnd, IDC_SHOW_LOCK, BM_SETCHECK, main_window::config_get_status_show_lock(), 0);
+		SendDlgItemMessage(wnd, IDC_VOL, BM_SETCHECK, cfg_show_vol, 0);
+		SendDlgItemMessage(wnd, IDC_SELTIME, BM_SETCHECK, cfg_show_seltime, 0);
+		SendDlgItemMessage(wnd, IDC_SHOW_STATUS, BM_SETCHECK, cfg_status, 0);
+		SendDlgItemMessage(wnd, IDC_SHOW_STATUSPANE, BM_SETCHECK, settings::show_status_pane, 0);
+		SendDlgItemMessage(wnd, IDC_SHOW_LOCK, BM_SETCHECK, main_window::config_get_status_show_lock(), 0);
 
 		uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, main_window::config_status_bar_script.get());
 	}

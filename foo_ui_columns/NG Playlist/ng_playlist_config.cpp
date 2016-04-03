@@ -31,7 +31,7 @@ namespace pvt
 
 				EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), ptr->value.filter_type != FILTER_NONE);
 
-				uSendDlgItemMessage(wnd,IDC_PLAYLIST_FILTER_TYPE,CB_SETCURSEL,(t_size)ptr->value.filter_type,0);
+				SendDlgItemMessage(wnd,IDC_PLAYLIST_FILTER_TYPE,CB_SETCURSEL,(t_size)ptr->value.filter_type,0);
 				uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, ptr->value.filter_playlists);
 
 				uSetDlgItemText(wnd,IDC_VALUE,ptr->value.string);
@@ -55,7 +55,7 @@ namespace pvt
 				{
 					edit_view_param * ptr = reinterpret_cast<edit_view_param*>(GetWindowLongPtr(wnd,DWLP_USER));
 					uGetDlgItemText(wnd,IDC_VALUE,ptr->value.string);
-					ptr->value.filter_type = ((playlist_filter_type)uSendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE,CB_GETCURSEL,0,0));
+					ptr->value.filter_type = ((playlist_filter_type)SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE,CB_GETCURSEL,0,0));
 					ptr->value.filter_playlists = (string_utf8_from_window(wnd, IDC_PLAYLIST_FILTER_STRING));
 					EndDialog(wnd,1);
 

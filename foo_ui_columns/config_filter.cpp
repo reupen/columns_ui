@@ -106,7 +106,7 @@ public:
 		get_insert_items(0, count, items);
 		m_field_list.insert_items(0, items.get_count(), items.get_ptr());
 
-		uSendDlgItemMessage(wnd,IDC_SPINPADDING,UDM_SETPOS32,0,filter_panel::cfg_vertical_item_padding);
+		SendDlgItemMessage(wnd,IDC_SPINPADDING,UDM_SETPOS32,0,filter_panel::cfg_vertical_item_padding);
 
 		initialising = false;	
 	}
@@ -159,7 +159,7 @@ public:
 					uSendDlgItemMessageText(wnd,IDC_PRECEDENCE,CB_ADDSTRING,0,"By field list above");
 					uSendDlgItemMessageText(wnd,IDC_PRECEDENCE,CB_SETCURSEL,filter_panel::cfg_orderedbysplitters ? 0 : 1,0);
 
-					uSendDlgItemMessage(wnd,IDC_SPINPADDING,UDM_SETRANGE32,-100,100);
+					SendDlgItemMessage(wnd,IDC_SPINPADDING,UDM_SETRANGE32,-100,100);
 
 					HWND wnd_fields = m_field_list.create_in_dialog_units(wnd, ui_helpers::window_position_t(20,17,278,79));
 					SetWindowPos(wnd_fields, HWND_TOP, 0,0,0,0,SWP_NOSIZE|SWP_NOMOVE);

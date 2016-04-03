@@ -7,13 +7,13 @@ public:
 
 	static void refresh_me(HWND wnd)
 	{
-		uSendDlgItemMessage(wnd, IDC_IMPORT_TITLES, BM_SETCHECK, cfg_import_titles, 0);
-		//uSendDlgItemMessage(wnd,IDC_EXPORT_TITLES,BM_SETCHECK,cfg_export_titles,0);
+		SendDlgItemMessage(wnd, IDC_IMPORT_TITLES, BM_SETCHECK, cfg_import_titles, 0);
+		//SendDlgItemMessage(wnd,IDC_EXPORT_TITLES,BM_SETCHECK,cfg_export_titles,0);
 
-		uSendDlgItemMessage(wnd, IDC_TOOLBARS, BM_SETCHECK, cfg_toolbars, 0);
-		//uSendDlgItemMessage(wnd,IDC_KEYB,BM_SETCHECK,config_object::g_get_data_bool_simple(standard_config_objects::bool_show_keyboard_shortcuts_in_menus, true),0);
-		uSendDlgItemMessage(wnd, IDC_USE_TRANSPARENCY, BM_SETCHECK, main_window::config_get_transparency_enabled(), 0);
-		uSendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETPOS32, 0, main_window::config_get_transparency_level());
+		SendDlgItemMessage(wnd, IDC_TOOLBARS, BM_SETCHECK, cfg_toolbars, 0);
+		//SendDlgItemMessage(wnd,IDC_KEYB,BM_SETCHECK,config_object::g_get_data_bool_simple(standard_config_objects::bool_show_keyboard_shortcuts_in_menus, true),0);
+		SendDlgItemMessage(wnd, IDC_USE_TRANSPARENCY, BM_SETCHECK, main_window::config_get_transparency_enabled(), 0);
+		SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETPOS32, 0, main_window::config_get_transparency_level());
 
 		if (!g_main_window)
 			EnableWindow(GetDlgItem(wnd, IDC_QUICKSETUP), FALSE);
@@ -36,7 +36,7 @@ public:
 			listview_helper::insert_column(wnd_lv, 1, "Version", 70);
 			listview_helper::insert_column(wnd_lv, 2, "Extended Info", 150);
 
-			uSendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
+			SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
 
 			refresh_me(wnd);
 			initialised = true;

@@ -6,21 +6,21 @@ static class tab_playlist : public preferences_tab
 
 	static void refresh_me(HWND wnd)
 	{
-		uSendDlgItemMessage(wnd, IDC_MCLICK, BM_SETCHECK, cfg_mclick, 0);
-		//uSendDlgItemMessage(wnd,IDC_MCLICK2,BM_SETCHECK,cfg_mclick2,0);
-		uSendDlgItemMessage(wnd, IDC_MCLICK3, BM_SETCHECK, cfg_plm_rename, 0);
-		//uSendDlgItemMessage(wnd,IDC_SHIFT_LMB,BM_SETCHECK,cfg_playlists_shift_lmb,0);
-		//uSendDlgItemMessage(wnd,IDC_DELETE,BM_SETCHECK,cfg_playlist_panel_delete,0);
-		//uSendDlgItemMessage(wnd,IDC_TABS,BM_SETCHECK,cfg_tabs,0);
-		//uSendDlgItemMessage(wnd,IDC_AUTOSWITCH,BM_SETCHECK,cfg_drag_autoswitch,0);
-		uSendDlgItemMessage(wnd, IDC_PLISTEDGE, CB_SETCURSEL, cfg_plistframe, 0);
-		uSendDlgItemMessage(wnd, IDC_PLDRAG, BM_SETCHECK, cfg_drag_pl, 0);
-		uSendDlgItemMessage(wnd, IDC_PLAUTOHIDE, BM_SETCHECK, cfg_pl_autohide, 0);
+		SendDlgItemMessage(wnd, IDC_MCLICK, BM_SETCHECK, cfg_mclick, 0);
+		//SendDlgItemMessage(wnd,IDC_MCLICK2,BM_SETCHECK,cfg_mclick2,0);
+		SendDlgItemMessage(wnd, IDC_MCLICK3, BM_SETCHECK, cfg_plm_rename, 0);
+		//SendDlgItemMessage(wnd,IDC_SHIFT_LMB,BM_SETCHECK,cfg_playlists_shift_lmb,0);
+		//SendDlgItemMessage(wnd,IDC_DELETE,BM_SETCHECK,cfg_playlist_panel_delete,0);
+		//SendDlgItemMessage(wnd,IDC_TABS,BM_SETCHECK,cfg_tabs,0);
+		//SendDlgItemMessage(wnd,IDC_AUTOSWITCH,BM_SETCHECK,cfg_drag_autoswitch,0);
+		SendDlgItemMessage(wnd, IDC_PLISTEDGE, CB_SETCURSEL, cfg_plistframe, 0);
+		SendDlgItemMessage(wnd, IDC_PLDRAG, BM_SETCHECK, cfg_drag_pl, 0);
+		SendDlgItemMessage(wnd, IDC_PLAUTOHIDE, BM_SETCHECK, cfg_pl_autohide, 0);
 
-		uSendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETPOS32, 0, settings::playlist_switcher_item_padding);
-		uSendDlgItemMessage(wnd, IDC_TABS_MULTILINE, BM_SETCHECK, cfg_tabs_multiline, 0);
-		uSendDlgItemMessage(wnd, IDC_SIDEBAR_TOOLTIPS, BM_SETCHECK, cfg_playlist_sidebar_tooltips, 0);
-		uSendDlgItemMessage(wnd, IDC_USE_PLAYLIST_TF, BM_SETCHECK, cfg_playlist_switcher_use_tagz, 0);
+		SendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETPOS32, 0, settings::playlist_switcher_item_padding);
+		SendDlgItemMessage(wnd, IDC_TABS_MULTILINE, BM_SETCHECK, cfg_tabs_multiline, 0);
+		SendDlgItemMessage(wnd, IDC_SIDEBAR_TOOLTIPS, BM_SETCHECK, cfg_playlist_sidebar_tooltips, 0);
+		SendDlgItemMessage(wnd, IDC_USE_PLAYLIST_TF, BM_SETCHECK, cfg_playlist_switcher_use_tagz, 0);
 		uSendDlgItemMessageText(wnd, IDC_PLAYLIST_TF, WM_SETTEXT, 0, cfg_playlist_switcher_tagz);
 
 
@@ -38,8 +38,8 @@ public:
 			uSendDlgItemMessageText(wnd, IDC_PLISTEDGE, CB_ADDSTRING, 0, "Sunken");
 			uSendDlgItemMessageText(wnd, IDC_PLISTEDGE, CB_ADDSTRING, 0, "Grey");
 
-			uSendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETRANGE32, -100, 100);
-			uSendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETRANGE32, 0, 10000);
+			SendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETRANGE32, -100, 100);
+			SendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETRANGE32, 0, 10000);
 
 			refresh_me(wnd);
 			initialised = true;

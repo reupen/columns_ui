@@ -56,9 +56,9 @@ public:
 			uSendDlgItemMessageText(wnd, IDC_EDITFIELD, WM_SETTEXT, 0, "");
 			SetDlgItemInt(wnd, IDC_WIDTH, 0, false);
 			SetDlgItemInt(wnd, IDC_PARTS, 0, false);
-			uSendDlgItemMessage(wnd, IDC_SHOW_COLUMN, BM_SETCHECK, 0, 0);
-			uSendDlgItemMessage(wnd, IDC_ALIGNMENT, CB_SETCURSEL, 0, 0);
-			uSendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, 0, 0);
+			SendDlgItemMessage(wnd, IDC_SHOW_COLUMN, BM_SETCHECK, 0, 0);
+			SendDlgItemMessage(wnd, IDC_ALIGNMENT, CB_SETCURSEL, 0, 0);
+			SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, 0, 0);
 		}
 
 		EnableWindow(GetDlgItem(wnd, IDC_STRING), show);
@@ -83,9 +83,9 @@ public:
 			uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, m_column->filter);
 			uSendDlgItemMessageText(wnd, IDC_EDITFIELD, WM_SETTEXT, 0, m_column->edit_field);
 
-			uSendDlgItemMessage(wnd,IDC_SHOW_COLUMN,BM_SETCHECK,m_column->show,0);
-			uSendDlgItemMessage(wnd,IDC_ALIGNMENT,CB_SETCURSEL,(t_size)m_column->align,0);
-			uSendDlgItemMessage(wnd,IDC_PLAYLIST_FILTER_TYPE,CB_SETCURSEL,(t_size)m_column->filter_type,0);
+			SendDlgItemMessage(wnd,IDC_SHOW_COLUMN,BM_SETCHECK,m_column->show,0);
+			SendDlgItemMessage(wnd,IDC_ALIGNMENT,CB_SETCURSEL,(t_size)m_column->align,0);
+			SendDlgItemMessage(wnd,IDC_PLAYLIST_FILTER_TYPE,CB_SETCURSEL,(t_size)m_column->filter_type,0);
 
 			SetDlgItemInt(wnd, IDC_WIDTH, m_column->width, false);
 			SetDlgItemInt(wnd, IDC_PARTS, m_column->parts, false);
@@ -137,7 +137,7 @@ public:
 				uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show only on playlists:");
 				uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Hide on playlists:");
 
-				uSendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
+				SendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
 
 				refresh_me(wnd, true);
 			}
@@ -263,8 +263,8 @@ public:
 			pfc::vartoggle_t<bool>(initialising, true);
 			
 			uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, "");
-			uSendDlgItemMessage(wnd, IDC_CUSTOM_SORT, BM_SETCHECK, 0, 0);
-			uSendDlgItemMessage(wnd, IDC_CUSTOM_COLOUR, BM_SETCHECK, 0, 0);
+			SendDlgItemMessage(wnd, IDC_CUSTOM_SORT, BM_SETCHECK, 0, 0);
+			SendDlgItemMessage(wnd, IDC_CUSTOM_COLOUR, BM_SETCHECK, 0, 0);
 		}
 
 		EnableWindow(GetDlgItem(wnd, IDC_STRING), show);
@@ -278,8 +278,8 @@ public:
 		if (m_column.is_valid())
 		{
 			update_string(wnd);
-			uSendDlgItemMessage(wnd,IDC_CUSTOM_SORT,BM_SETCHECK,m_column->use_custom_sort,0);
-			uSendDlgItemMessage(wnd,IDC_CUSTOM_COLOUR,BM_SETCHECK,m_column->use_custom_colour,0);
+			SendDlgItemMessage(wnd,IDC_CUSTOM_SORT,BM_SETCHECK,m_column->use_custom_sort,0);
+			SendDlgItemMessage(wnd,IDC_CUSTOM_COLOUR,BM_SETCHECK,m_column->use_custom_colour,0);
 		}
 
 		initialising = false;
@@ -394,7 +394,7 @@ public:
 
 				colour_code_gen(wnd, IDC_COLOUR, true, true); 
 
-				uSendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
+				SendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
 
 				refresh_me(wnd, true);
 
@@ -580,7 +580,7 @@ public:
 		initialising = true;	
 		HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
 
-		uSendDlgItemMessage(wnd,IDC_COLUMNS,WM_SETREDRAW,false,0);
+		SendDlgItemMessage(wnd,IDC_COLUMNS,WM_SETREDRAW,false,0);
 		int idx =(init ?  cfg_cur_prefs_col : ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED));
 		ListView_DeleteAllItems(wnd_lv);
 
@@ -592,7 +592,7 @@ public:
 			uih::ListView_InsertItemText(wnd_lv, i, 0 ,m_columns[i]->name);
 		}
 
-		uSendDlgItemMessage(wnd,IDC_COLUMNS,WM_SETREDRAW,true,0);
+		SendDlgItemMessage(wnd,IDC_COLUMNS,WM_SETREDRAW,true,0);
 		initialising = false;
 
 		if (idx>=0 && idx < (int)m_columns.get_count())

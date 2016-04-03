@@ -7,34 +7,34 @@ static class tab_display2 : public preferences_tab
 
 	static void refresh_me(HWND wnd)
 	{
-		uSendDlgItemMessage(wnd, IDC_HEADER, BM_SETCHECK, cfg_header, 0);
-		//uSendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
-		uSendDlgItemMessage(wnd, IDC_NOHSCROLL, BM_SETCHECK, cfg_nohscroll, 0);
-		uSendDlgItemMessage(wnd, IDC_ELLIPSIS, BM_SETCHECK, cfg_ellipsis, 0);
-		uSendDlgItemMessage(wnd, IDC_PLEDGE, CB_SETCURSEL, cfg_frame, 0);
+		SendDlgItemMessage(wnd, IDC_HEADER, BM_SETCHECK, cfg_header, 0);
+		//SendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
+		SendDlgItemMessage(wnd, IDC_NOHSCROLL, BM_SETCHECK, cfg_nohscroll, 0);
+		SendDlgItemMessage(wnd, IDC_ELLIPSIS, BM_SETCHECK, cfg_ellipsis, 0);
+		SendDlgItemMessage(wnd, IDC_PLEDGE, CB_SETCURSEL, cfg_frame, 0);
 
-		uSendDlgItemMessage(wnd, IDC_INLINE_MODE, BM_SETCHECK, main_window::config_get_inline_metafield_edit_mode() != 0, 0);
+		SendDlgItemMessage(wnd, IDC_INLINE_MODE, BM_SETCHECK, main_window::config_get_inline_metafield_edit_mode() != 0, 0);
 
-		uSendDlgItemMessage(wnd, IDC_SELECTION_MODEL, BM_SETCHECK, cfg_alternative_sel, 0);
-		//uSendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
+		SendDlgItemMessage(wnd, IDC_SELECTION_MODEL, BM_SETCHECK, cfg_alternative_sel, 0);
+		//SendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
 
-		uSendDlgItemMessage(wnd, IDC_TOOLTIPS, BM_SETCHECK, cfg_tooltip, 0);
-		//uSendDlgItemMessage(wnd,IDC_SORTSELONLY,BM_SETCHECK,cfg_sortsel,0);
-		uSendDlgItemMessage(wnd, IDC_TOOLTIPS_CLIPPED, BM_SETCHECK, cfg_tooltips_clipped, 0);
+		SendDlgItemMessage(wnd, IDC_TOOLTIPS, BM_SETCHECK, cfg_tooltip, 0);
+		//SendDlgItemMessage(wnd,IDC_SORTSELONLY,BM_SETCHECK,cfg_sortsel,0);
+		SendDlgItemMessage(wnd, IDC_TOOLTIPS_CLIPPED, BM_SETCHECK, cfg_tooltips_clipped, 0);
 		EnableWindow(GetDlgItem(wnd, IDC_TOOLTIPS_CLIPPED), cfg_tooltip);
 
-		uSendDlgItemMessage(wnd, IDC_HHTRACK, BM_SETCHECK, cfg_header_hottrack, 0);
+		SendDlgItemMessage(wnd, IDC_HHTRACK, BM_SETCHECK, cfg_header_hottrack, 0);
 
-		uSendDlgItemMessage(wnd, IDC_SPIN1, UDM_SETPOS32, 0, settings::playlist_view_item_padding);
+		SendDlgItemMessage(wnd, IDC_SPIN1, UDM_SETPOS32, 0, settings::playlist_view_item_padding);
 
-		uSendDlgItemMessage(wnd, IDC_SORT_ARROWS, BM_SETCHECK, cfg_show_sort_arrows, 0);
-		uSendDlgItemMessage(wnd, IDC_DROP_AT_END, BM_SETCHECK, cfg_drop_at_end, 0);
+		SendDlgItemMessage(wnd, IDC_SORT_ARROWS, BM_SETCHECK, cfg_show_sort_arrows, 0);
+		SendDlgItemMessage(wnd, IDC_DROP_AT_END, BM_SETCHECK, cfg_drop_at_end, 0);
 
-		uSendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, pvt::cfg_show_artwork, 0);
-		uSendDlgItemMessage(wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, pvt::cfg_artwork_reflection, 0);
-		uSendDlgItemMessage(wnd, IDC_LOWPRIORITY, BM_SETCHECK, pvt::cfg_artwork_lowpriority, 0);
-		uSendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETRANGE32, 0, MAXLONG);
-		uSendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETPOS32, NULL, pvt::cfg_artwork_width);
+		SendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, pvt::cfg_show_artwork, 0);
+		SendDlgItemMessage(wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, pvt::cfg_artwork_reflection, 0);
+		SendDlgItemMessage(wnd, IDC_LOWPRIORITY, BM_SETCHECK, pvt::cfg_artwork_lowpriority, 0);
+		SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETRANGE32, 0, MAXLONG);
+		SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETPOS32, NULL, pvt::cfg_artwork_width);
 
 	}
 
@@ -51,9 +51,9 @@ public:
 			uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Sunken");
 			uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Grey");
 
-			uSendDlgItemMessage(wnd, IDC_SPIN1, UDM_SETRANGE32, -100, 100);
-			//		uSendDlgItemMessage(wnd,IDC_SPINPL,UDM_SETRANGE32,-100,100);
-			//		uSendDlgItemMessage(wnd,IDC_SPINSEL,UDM_SETRANGE32,0,3);
+			SendDlgItemMessage(wnd, IDC_SPIN1, UDM_SETRANGE32, -100, 100);
+			//		SendDlgItemMessage(wnd,IDC_SPINPL,UDM_SETRANGE32,-100,100);
+			//		SendDlgItemMessage(wnd,IDC_SPINSEL,UDM_SETRANGE32,0,3);
 
 			populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, *p_menu_cache, true);
 
@@ -61,10 +61,10 @@ public:
 			for (n = 0; n < count; n++)
 			{
 				uSendDlgItemMessageText(wnd, IDC_PLAYLIST_MIDDLE, CB_ADDSTRING, 0, playlist_mclick_actions::g_pma_actions[n].name);
-				uSendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETITEMDATA, n, playlist_mclick_actions::g_pma_actions[n].id);
+				SendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETITEMDATA, n, playlist_mclick_actions::g_pma_actions[n].id);
 			}
 
-			uSendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETCURSEL, playlist_mclick_actions::id_to_idx(cfg_playlist_middle_action), 0);
+			SendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETCURSEL, playlist_mclick_actions::id_to_idx(cfg_playlist_middle_action), 0);
 
 
 			refresh_me(wnd);

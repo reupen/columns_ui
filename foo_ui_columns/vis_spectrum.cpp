@@ -302,7 +302,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		{
 			spec_param * ptr = reinterpret_cast<spec_param*>(lp);
 			ptr->m_scope.initialize(FindOwningPopup(wnd));
-			uSendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, ptr->ptr->mode == MODE_BARS, 0);
+			SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, ptr->ptr->mode == MODE_BARS, 0);
 			HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
 			EnableWindow(wnd_combo, ptr->b_show_frame);
 			if (ptr->b_show_frame)

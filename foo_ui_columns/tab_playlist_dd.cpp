@@ -6,15 +6,15 @@ static class tab_playlist_dd : public preferences_tab
 
 	static void refresh_me(HWND wnd)
 	{
-		uSendDlgItemMessage(wnd, IDC_AUTOSWITCH, BM_SETCHECK, cfg_drag_autoswitch, 0);
+		SendDlgItemMessage(wnd, IDC_AUTOSWITCH, BM_SETCHECK, cfg_drag_autoswitch, 0);
 
-		uSendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETPOS32, 0, cfg_autoswitch_delay);
+		SendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETPOS32, 0, cfg_autoswitch_delay);
 		SendDlgItemMessage(wnd, IDC_ACTIVATE_TARGET, BM_SETCHECK, main_window::config_get_activate_target_playlist_on_dropped_items(), 0);
 
-		//uSendDlgItemMessage(wnd,IDC_DROP_NAME,BM_SETCHECK,cfg_pgen_dir,0);
-		//uSendDlgItemMessage(wnd,IDC_DROP_PLAYLIST,BM_SETCHECK,cfg_pgen_playlist,0);
-		uSendDlgItemMessage(wnd, IDC_DROP_USE_STRING, BM_SETCHECK, cfg_pgen_tf, 0);
-		uSendDlgItemMessage(wnd, IDC_REMOVE_UNDERSCORES, BM_SETCHECK, cfg_replace_drop_underscores, 0);
+		//SendDlgItemMessage(wnd,IDC_DROP_NAME,BM_SETCHECK,cfg_pgen_dir,0);
+		//SendDlgItemMessage(wnd,IDC_DROP_PLAYLIST,BM_SETCHECK,cfg_pgen_playlist,0);
+		SendDlgItemMessage(wnd, IDC_DROP_USE_STRING, BM_SETCHECK, cfg_pgen_tf, 0);
+		SendDlgItemMessage(wnd, IDC_REMOVE_UNDERSCORES, BM_SETCHECK, cfg_replace_drop_underscores, 0);
 		uSendDlgItemMessageText(wnd, IDC_DROP_STRING, WM_SETTEXT, 0, cfg_pgenstring);
 
 	}
@@ -28,8 +28,8 @@ public:
 		case WM_INITDIALOG:
 		{
 
-			uSendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETRANGE32, -100, 100);
-			uSendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETRANGE32, 0, 10000);
+			SendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETRANGE32, -100, 100);
+			SendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETRANGE32, 0, 10000);
 
 			refresh_me(wnd);
 			initialised = true;

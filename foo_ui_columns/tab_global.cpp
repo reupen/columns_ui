@@ -33,11 +33,11 @@ public:
 
 	static void refresh_me(HWND wnd)
 	{
-		uSendDlgItemMessage(wnd, IDC_GLOBAL, BM_SETCHECK, cfg_global, 0);
-		uSendDlgItemMessage(wnd, IDC_OLDGLOBAL, BM_SETCHECK, cfg_oldglobal, 0);
-		uSendDlgItemMessage(wnd, IDC_GLOBALSORT, BM_SETCHECK, cfg_global_sort, 0);
+		SendDlgItemMessage(wnd, IDC_GLOBAL, BM_SETCHECK, cfg_global, 0);
+		SendDlgItemMessage(wnd, IDC_OLDGLOBAL, BM_SETCHECK, cfg_oldglobal, 0);
+		SendDlgItemMessage(wnd, IDC_GLOBALSORT, BM_SETCHECK, cfg_global_sort, 0);
 		uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, (g_cur_tab2 == 0 ? cfg_globalstring : cfg_colour));
-		uSendDlgItemMessage(wnd, IDC_DATE, BM_SETCHECK, cfg_playlist_date, 0);
+		SendDlgItemMessage(wnd, IDC_DATE, BM_SETCHECK, cfg_playlist_date, 0);
 	}
 
 	static void save_string(HWND wnd)
@@ -73,7 +73,7 @@ public:
 			uSendDlgItemMessageText(wnd, IDC_CHAR7, WM_SETTEXT, 0, "\x07");
 			colour_code_gen(wnd, IDC_COLOUR, false, true);
 
-			uSendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
+			SendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
 
 			refresh_me(wnd);
 			editproc = (WNDPROC)SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING), GWLP_WNDPROC, (LPARAM)EditHook);
