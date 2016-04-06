@@ -423,6 +423,42 @@ void splitter_window_impl::get_panels_sizes(unsigned client_width, unsigned clie
 	}
 }
 
+bool splitter_window_impl::can_resize_divider(t_size index) const
+{
+	t_size count_left = 0;
+	t_size count_right = 0;
+	for (t_size i = 0, count = m_panels.get_count(); i < count; i++) {
+		if (can_resize_panel(i)) {
+			if (i <= index) 
+				count_left++;
+			else
+				count_right++;
+		}
+	}
+	return count_left && count_right;
+}
+
+bool splitter_window_impl::can_resize_panel(t_size index) const
+{
+	const auto & panel = m_panels[index];
+
+	if (!settings::allow_locked_panel_reszing && panel->m_locked)
+		return false;
+
+	if (panel->m_wnd_child) {
+		RECT rc_window;
+		GetWindowRect(panel->m_wnd_child, &rc_window);
+
+		if (get_orientation() == vertical && RECT_CY(rc_window) == panel->m_size_limits.max_height && RECT_CY(rc_window) == panel->m_size_limits.min_height)
+			return false;
+
+		if (get_orientation() == horizontal && RECT_CX(rc_window) == panel->m_size_limits.max_width && RECT_CX(rc_window) == panel->m_size_limits.min_width)
+			return false;
+	}
+
+	return true;
+}
+
 
 int splitter_window_impl::override_size(unsigned & panel, int delta)
 {

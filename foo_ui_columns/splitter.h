@@ -187,6 +187,8 @@ private:
 
 	void save_sizes(unsigned width, unsigned height);
 
+	bool can_resize_divider(t_size index) const;
+	bool can_resize_panel(t_size index) const;
 	int override_size(unsigned & panel, int delta);
 
 	void refresh_children();

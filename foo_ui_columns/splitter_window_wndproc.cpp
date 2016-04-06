@@ -210,14 +210,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 	case WM_LBUTTONDOWN:
 	case WM_MOUSEMOVE:
 	{
-		//static LPARAM lp_last;
-		//static WPARAM wp_last;
-		//static UINT msg_last;
-		//static unsigned start_height;
-
-		if (m_panels.get_count()
-			//&&(msg_last != msg || lp_last != lp || wp_last != wp)
-			)
+		if (m_panels.get_count())
 		{
 
 			POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
@@ -235,8 +228,6 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				else
 					b_on_divider = find_by_divider_pt(pt, p_panel);
 
-				//assert (b_on_divider);
-
 				if (b_on_divider)
 				{
 					if (p_panel < m_panels.get_count())
@@ -244,7 +235,6 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 						b_have_next = (p_panel + 1 < m_panels.get_count());
 					}
 
-#if 1
 					if (msg == WM_MOUSEMOVE && ((is_index_valid(p_panel) && m_panels[p_panel]->m_autohide) || (b_have_next && m_panels[p_panel + 1]->m_autohide)))
 					{
 						if (cfg_sidebar_use_custom_show_delay && !cfg_sidebar_show_delay)
@@ -276,9 +266,8 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 
 					}
 				}
-#endif
 
-				if (b_on_divider)
+				if (b_on_divider && is_index_valid(p_panel) && can_resize_divider(p_panel))
 				{
 					SetCursor(LoadCursor(0, get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS));
 
