@@ -110,6 +110,7 @@ class export_layout_misc : public cui::fcl::dataset
 	{
 		identifier_status,
 		identifier_status_pane,
+		identifier_allow_locked_panel_resizing
 	};
 	virtual void get_name (pfc::string_base & p_out) const
 	{
@@ -131,6 +132,7 @@ class export_layout_misc : public cui::fcl::dataset
 		fcl::writer out(p_writer, p_abort);
 		out.write_item(identifier_status, cfg_status);
 		out.write_item(identifier_status_pane, settings::show_status_pane);
+		out.write_item(identifier_allow_locked_panel_resizing, settings::allow_locked_panel_resizing.get());
 	}
 	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
 	{
@@ -150,6 +152,9 @@ class export_layout_misc : public cui::fcl::dataset
 				break;
 			case identifier_status_pane:
 				reader.read_item(settings::show_status_pane);
+				break;
+			case identifier_allow_locked_panel_resizing:
+				reader.read_item_config(settings::allow_locked_panel_resizing);
 				break;
 			default:
 				reader.skip(element_size);
