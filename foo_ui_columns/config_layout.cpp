@@ -731,7 +731,7 @@ class tab_layout_new : public preferences_tab
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
 				SendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
-				SendDlgItemMessage(wnd, IDC_ALLOW_LOCKED_PANEL_RESIZING, BM_SETCHECK, settings::allow_locked_panel_reszing, 0);
+				SendDlgItemMessage(wnd, IDC_ALLOW_LOCKED_PANEL_RESIZING, BM_SETCHECK, settings::allow_locked_panel_resizing, 0);
 
 				SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
 				SendDlgItemMessage(wnd, IDC_HIDE_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
@@ -913,7 +913,7 @@ class tab_layout_new : public preferences_tab
 				EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
 				break;
 			case IDC_ALLOW_LOCKED_PANEL_RESIZING:
-				settings::allow_locked_panel_reszing = Button_GetCheck((HWND)lp) == BST_CHECKED;
+				settings::allow_locked_panel_resizing = Button_GetCheck((HWND)lp) == BST_CHECKED;
 				break;
 			}
 			break;

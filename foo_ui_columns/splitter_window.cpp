@@ -442,7 +442,7 @@ bool splitter_window_impl::can_resize_panel(t_size index) const
 {
 	const auto & panel = m_panels[index];
 
-	if (!settings::allow_locked_panel_reszing && panel->m_locked)
+	if (!settings::allow_locked_panel_resizing && panel->m_locked)
 		return false;
 
 	if (panel->m_wnd_child) {

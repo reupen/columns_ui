@@ -17,7 +17,7 @@ namespace settings
 		{ 0x3a0ef00a, 0xd538, 0x4470,{ 0x9a, 0x18, 0xdc, 0xf8, 0x22, 0xcc, 0x96, 0x73 } };
 	}
 
-	uih::ConfigBool allow_locked_panel_reszing(guids::allow_locked_panel_reszing, true);
+	uih::ConfigBool allow_locked_panel_resizing(guids::allow_locked_panel_reszing, true);
 	uih::ConfigUint32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
 
 	uih::ConfigInt32DpiAware playlist_switcher_item_padding(create_guid(0xc8f7e065, 0xeb66, 0xe282, 0xbd, 0xe3, 0x70, 0xaa, 0xf4, 0x3a, 0x10, 0x97), 2),
