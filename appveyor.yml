@@ -1,11 +1,26 @@
 version: 1.0.{build}
-configuration:
-- Release
-- Debug
-platform: Win32
+environment:
+  Platform: Win32
+  matrix:
+  - PlatformToolset: LLVM-vs2014
+    Configuration: Release
+  - PlatformToolset: LLVM-vs2014
+    Configuration: Debug
+  - PlatformToolset: Default
+    Configuration: Release
+  - PlatformToolset: Default
+    Configuration: Debug
+matrix:
+  allow_failures:
+    - PlatformToolset: LLVM-vs2014
 install:
 - cmd: git submodule update --init --recursive
-build:
-  project: vc14/columns_ui-public.sln
-  parallel: true
-  verbosity: normal
+build_script:
+- ps: >-
+    $toolset = If ($Env:PlatformToolset -ne "Default") {"/p:PlatformToolset=" + $Env:PlatformToolset} Else {""}
+
+    $command = 'msbuild "vc14/columns_ui-public.sln" /m /verbosity:normal ' + $toolset +' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
+
+    iex $command
+
+    $host.SetShouldExit($LASTEXITCODE)
