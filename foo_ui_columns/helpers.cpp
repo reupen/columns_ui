@@ -104,10 +104,12 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
 	return rv;
 }
 
-
-void _check_hresult(HRESULT hr) { if (FAILED(hr)) throw pfc::exception(pfc::string8() << "WIC error: " << format_win32_error(hr)); }
-
 #if 0
+void _check_hresult(HRESULT hr)
+{
+	if (FAILED(hr)) throw pfc::exception(pfc::string8() << "WIC error: " << format_win32_error(hr));
+}
+
 /** WIC PNG reader. Not used. */
 HBITMAP g_load_png_wic(HDC dc, const char * fn)
 {

@@ -412,7 +412,7 @@ void g_import_layout(HWND wnd, const char * path, bool quiet)
 				{
 					cui::fcl::dataset_ptr ptr;
 					if (export_items.find_by_guid(datasets[i].guid, ptr) && (quiet || pFCLDialog.have_node_checked(ptr->get_group())))
-						ptr->set_data(&stream_reader_memblock_ref(datasets[i].data.get_ptr(), datasets[i].data.get_size()), datasets[i].data.get_size(), mode, feed, p_abort);
+						ptr->set_data_from_ptr(datasets[i].data.get_ptr(), datasets[i].data.get_size(), mode, feed, p_abort);
 				}
 				if (feed.get_count())
 				{

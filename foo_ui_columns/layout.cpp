@@ -363,11 +363,12 @@ void layout_window::get_child (uie::splitter_item_ptr & p_out)
 	if (m_child.is_valid())
 	{
 		stream_writer_memblock conf;
-		m_child->get_config(&conf, abort_callback_impl());
-		p_out->set_panel_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()), conf.m_data.get_size());
+		abort_callback_dummy p_abort;
+		m_child->get_config(&conf, p_abort);
+		p_out->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 	}
 	else
-		p_out->set_panel_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size());
+		p_out->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 }
 void layout_window::set_child (const uie::splitter_item_t * item)
 {
@@ -377,7 +378,7 @@ void layout_window::set_child (const uie::splitter_item_t * item)
 		destroy_child();
 	}
 	m_child_guid = item->get_panel_guid();
-	item->get_panel_config(&stream_writer_memblock_ref(m_child_data, true));
+	item->get_panel_config_to_array(m_child_data, true);
 	if (get_wnd())
 	{
 		create_child();
@@ -412,7 +413,8 @@ void __get_panel_list_recur(const uie::window_ptr & p_wnd, pfc::list_base_t<GUID
 							stream_writer_memblock w;
 							temp->get_panel_config(&w);
 							try {
-							ptr->set_config(&stream_reader_memblock_ref(w.m_data.get_ptr(), w.m_data.get_size()), w.m_data.get_size(), abort_callback_impl());
+								abort_callback_dummy p_abort;
+								ptr->set_config_from_ptr(w.m_data.get_ptr(), w.m_data.get_size(), p_abort);
 							} catch (const exception_io &) {};
 						}
 						else throw cui::fcl::exception_missing_panel();
@@ -448,9 +450,9 @@ bool layout_window::import_config_to_object(stream_reader * p_reader, t_size psi
 		if (uie::window::create_by_guid(guid, wnd))
 		{
 			try {
-			wnd->import_config(&stream_reader_memblock_ref(data.get_ptr(), data.get_size()), data.get_size(), p_abort);
+				wnd->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
 			} catch (const exception_io &) {};
-			wnd->get_config(&stream_writer_memblock_ref(conf), p_abort);
+			wnd->get_config_to_array(conf, p_abort);
 			__get_panel_list_recur(wnd, panels);
 		}
 		else return false;
@@ -464,7 +466,7 @@ bool layout_window::import_config_to_object(stream_reader * p_reader, t_size psi
 		if (uie::window::create_by_guid(guid, wnd))
 		{
 			try {
-			wnd->set_config(&stream_reader_memblock_ref(data.get_ptr(), data.get_size()), data.get_size(), p_abort);
+			wnd->set_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
 			} catch (const exception_io &) {};
 			__get_panel_list_recur(wnd, panels);
 		}
@@ -505,7 +507,7 @@ void layout_window::export_config(stream_writer * p_out, t_uint32 mode, pfc::lis
 					stream_writer_memblock data;
 					item->get_panel_config(&data);
 					try {
-					ptr->set_config(&stream_reader_memblock_ref(data.m_data.get_ptr(), data.m_data.get_size()), data.m_data.get_size(), p_abort);
+						ptr->set_config_from_ptr(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
 					} catch (const exception_io &) {};
 					__get_panel_list_recur(ptr, panels);
 					ptr->export_config(&writer, p_abort);
@@ -526,7 +528,7 @@ void layout_window::export_config(stream_writer * p_out, t_uint32 mode, pfc::lis
 					throw cui::fcl::exception_missing_panel();
 				{
 					try {
-					ptr->set_config(&stream_reader_memblock_ref(writer.m_data.get_ptr(), writer.m_data.get_size()), writer.m_data.get_size(), p_abort);
+					ptr->set_config_from_ptr(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
 					} catch (const exception_io &) {};
 					__get_panel_list_recur(ptr, panels);
 				}
@@ -537,7 +539,8 @@ void layout_window::export_config(stream_writer * p_out, t_uint32 mode, pfc::lis
 		}
 		catch (const pfc::exception & ex)
 		{
-			throw pfc::exception( pfc::string8() << "Error exporting layout preset \"" << name << "\" - " << ex.what());
+			pfc::string_formatter formatter;
+			throw pfc::exception(formatter << "Error exporting layout preset \"" << name << "\" - " << ex.what());
 		}
 	}
 }
@@ -550,10 +553,12 @@ void layout_window::create_child()
 	if (uie::window::create_by_guid(m_child_guid, m_child))
 	{
 		try {
-		m_child->set_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size(), abort_callback_impl());
+			abort_callback_dummy p_abort;
+			m_child->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
 		} catch (const exception_io & ex)
 		{
-			console::formatter() << "Error setting panel config: " << ex.what();
+			console::formatter formatter;
+			formatter << "Error setting panel config: " << ex.what();
 		}
 		if (m_child_wnd = m_child->create_or_transfer_window(get_wnd(), uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()), ui_helpers::window_position_t(rc)))
 		{
@@ -565,8 +570,8 @@ void layout_window::destroy_child()
 {
 	if (m_child_wnd && m_child.is_valid())
 	{
-		stream_writer_memblock_ref conf(m_child_data, true);
-		m_child->get_config(&conf, abort_callback_impl());
+		abort_callback_dummy p_abort;
+		m_child->get_config_to_array(m_child_data, p_abort, true);
 		m_child->destroy_window();
 		m_child.release();
 	}
@@ -587,7 +592,7 @@ void layout_window::refresh_child ()
 	if (item.is_valid())
 	{
 		m_child_guid = item->get_panel_guid();
-		item->get_panel_config(&stream_writer_memblock_ref(m_child_data, true));
+		item->get_panel_config_to_array(m_child_data, true);
 	}
 	else
 	{
@@ -698,10 +703,13 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 								get_child(newsi);
 
 								stream_writer_memblock conf;
-								try {splitter->get_config(&conf, abort_callback_impl());}
+								try {
+									abort_callback_dummy p_abort;
+									splitter->get_config(&conf, p_abort);
+								}
 								catch (const pfc::exception &) {};
 								newsi->set_panel_guid(panels[panel_index].guid);
-								newsi->set_panel_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()), conf.m_data.get_size());
+								newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
 								set_child(newsi.get_ptr());
 							}
@@ -874,6 +882,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 			{
 				if (cmd)
 				{
+					abort_callback_dummy p_abort;
 					if (cmd == ID_CLOSE)
 					{
 						p_container->remove_panel(p_window);
@@ -882,13 +891,13 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 					{
 						bool b_old;
 						p_container->get_config_item(index, uie::splitter_window::bool_show_caption, b_old);
-						p_container->set_config_item_t(index, uie::splitter_window::bool_show_caption, !b_old, abort_callback_dummy());
+						p_container->set_config_item_t(index, uie::splitter_window::bool_show_caption, !b_old, p_abort);
 					}
 					else if (cmd == ID_LOCKED)
 					{
 						bool b_old;
 						p_container->get_config_item(index, uie::splitter_window::bool_locked, b_old);
-						p_container->set_config_item_t(index, uie::splitter_window::bool_locked, !b_old, abort_callback_dummy());
+						p_container->set_config_item_t(index, uie::splitter_window::bool_locked, !b_old, p_abort);
 					}
 					else if (cmd >=ID_CHANGE_BASE && cmd < panels.get_count()+ID_CHANGE_BASE)
 					{
@@ -925,10 +934,10 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 								get_child(newsi);
 
 								stream_writer_memblock conf;
-								try {splitter->get_config(&conf, abort_callback_impl());}
+								try {splitter->get_config(&conf, p_abort);}
 								catch (const pfc::exception &) {};
 								newsi->set_panel_guid(panels[panel_index].guid);
-								newsi->set_panel_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()), conf.m_data.get_size());
+								newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
 								set_child(newsi.get_ptr());
 							}
@@ -963,10 +972,10 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 								p_container->get_panel(index, newsi);
 
 								stream_writer_memblock conf;
-								try {splitter->get_config(&conf, abort_callback_impl());}
+								try {splitter->get_config(&conf, p_abort);}
 								catch (const pfc::exception &) {};
 								newsi->set_panel_guid(panels[panel_index].guid);
-								newsi->set_panel_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()), conf.m_data.get_size());
+								newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
 								p_container->replace_panel(index, newsi.get_ptr());
 							}

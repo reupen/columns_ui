@@ -16,7 +16,7 @@ menu_item_cache::menu_item_cache()
 	service_enum_t<mainmenu_commands> e;
 	service_ptr_t<mainmenu_commands> ptr;
 
-	unsigned p_item_index = 0, p_service_item_index;
+	unsigned p_service_item_index;
 	while (e.next(ptr))
 	{
 		//if (ptr->get_type() == menu_item::TYPE_MAIN)

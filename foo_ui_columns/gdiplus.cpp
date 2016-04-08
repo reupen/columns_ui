@@ -145,13 +145,15 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
 			CheckGdiplusStatus() << imageAttributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
 			CheckGdiplusStatus() << pGraphics.DrawImage(&pImage, Gdiplus::Rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight()), 0, 0, pImage.GetWidth(), pImage.GetHeight(), Gdiplus::UnitPixel, &imageAttributes);
 
-			CheckGdiplusStatus() << pBitmapResized.LockBits(&Gdiplus::Rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight()), Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+			Gdiplus::Rect rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight());
+			CheckGdiplusStatus() << pBitmapResized.LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
 			bm = g_CreateHbitmapFromGdiplusBitmapData32bpp(bitmapData);
 			CheckGdiplusStatus() << pBitmapResized.UnlockBits(&bitmapData);
 		}
 		else
 		{
-			CheckGdiplusStatus() << pImage.LockBits(&Gdiplus::Rect(0, 0, pImage.GetWidth(), pImage.GetHeight()), Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+			Gdiplus::Rect rect(0, 0, pImage.GetWidth(), pImage.GetHeight());
+			CheckGdiplusStatus() << pImage.LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
 			//assert bitmapData.Stride == bitmapData.Width
 			bm = g_CreateHbitmapFromGdiplusBitmapData32bpp(bitmapData);
 			CheckGdiplusStatus() << pImage.UnlockBits(&bitmapData);
@@ -169,7 +171,8 @@ HBITMAP g_load_png_gdiplus(HDC dc, const char * fn, unsigned target_cx, unsigned
 	}
 	catch (pfc::exception const & ex)
 	{
-		console::formatter() << "Columns UI: Error loading image \"" << fn << "\" - " << ex.what();
+		console::formatter formatter;
+		formatter << "Columns UI: Error loading image \"" << fn << "\" - " << ex.what();
 		return 0;
 	}
 }
