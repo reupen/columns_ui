@@ -55,7 +55,7 @@ class editor_font_notify
 	{
 		if (wnd) 
 		{
-			g_edit_font = CreateFontIndirect(&(LOGFONT)cfg_editor_font);
+			g_edit_font = CreateFontIndirect(&cfg_editor_font.get_value());
 			SendMessage(wnd,WM_SETFONT,(WPARAM)g_edit_font,MAKELPARAM(1,0));
 		}
 	}

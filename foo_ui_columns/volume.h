@@ -188,7 +188,8 @@ public:
 				{
 					try
 					{
-						if (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_Gdiplus_token, &Gdiplus::GdiplusStartupInput(), NULL))
+						Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+						if (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_Gdiplus_token, &gdiplusStartupInput, NULL))
 							m_using_gdiplus = true;
 					}
 					catch (const exception_delayload &)

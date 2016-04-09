@@ -57,7 +57,8 @@ public:
 		if (p_vis.is_valid())
 		{
 			p_out.set_size(0);
-			p_vis->get_config(&stream_writer_memblock_ref(p_out), abort_callback_impl());
+			abort_callback_dummy abort;
+			p_vis->get_config_to_array(p_out, abort);
 		}
 	}
 	friend class window_visualisation_interface;

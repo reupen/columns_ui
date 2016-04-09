@@ -148,7 +148,8 @@ namespace cui
 	public:
 		void initialise()
 		{
-			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
+			Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, NULL));
 		}
 		void deinitialise()
 		{

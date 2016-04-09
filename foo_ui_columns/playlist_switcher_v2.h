@@ -145,7 +145,8 @@ public:
 		{
 			pfc::string8 name;
 			m_playlist_api->playlist_get_name(index, name);
-			if (uMessageBox(get_wnd(), pfc::string8() << "Are you sure you want to delete the \"" << name << "\" playlist?","Delete Playlist", MB_YESNO) == IDYES)
+			pfc::string_formatter formatter;
+			if (uMessageBox(get_wnd(), formatter << "Are you sure you want to delete the \"" << name << "\" playlist?","Delete Playlist", MB_YESNO) == IDYES)
 				m_playlist_api->remove_playlist_switch(index);
 		}
 		return true;

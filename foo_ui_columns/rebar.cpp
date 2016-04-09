@@ -355,7 +355,7 @@ unsigned rebar_info::find_by_wnd_n(HWND wnd)
 	}
 	return rv;
 }
-void rebar_info::add_band(const GUID & id, unsigned width, bool new_line, ui_extension::window_ptr & p_ext)
+void rebar_info::add_band(const GUID & id, unsigned width, bool new_line, const ui_extension::window_ptr & p_ext)
 {
 	rebar_band_info * item = new(std::nothrow) rebar_band_info(id, width);
 	if (item)
@@ -366,7 +366,7 @@ void rebar_info::add_band(const GUID & id, unsigned width, bool new_line, ui_ext
 	}
 }
 
-void rebar_info::insert_band(unsigned idx,const GUID & id, unsigned width, bool new_line, ui_extension::window_ptr & p_ext)
+void rebar_info::insert_band(unsigned idx,const GUID & id, unsigned width, bool new_line, const ui_extension::window_ptr & p_ext)
 {
 	if (idx <= get_count())
 	{
@@ -937,14 +937,14 @@ void rebar_window::delete_band(HWND wnd, bool destroy)
 	}
 }
 
-void rebar_window::add_band(const GUID & guid, unsigned width, ui_extension::window_ptr & p_ext)
+void rebar_window::add_band(const GUID & guid, unsigned width, const ui_extension::window_ptr & p_ext)
 {
 //	save_bands();
 	bands.add_band(guid, width, false, p_ext);
 	refresh_bands(false, false);
 }
 
-void rebar_window::insert_band(unsigned idx, const GUID & guid, unsigned width, ui_extension::window_ptr & p_ext)
+void rebar_window::insert_band(unsigned idx, const GUID & guid, unsigned width, const ui_extension::window_ptr & p_ext)
 {
 //	save_bands();
 	bands.insert_band(idx, guid, width, false, p_ext);
