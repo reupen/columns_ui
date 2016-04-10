@@ -144,7 +144,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
 
 					wname.add_string(name.get_ptr(), name.get_size());
 					pfc::string8 name_only = pfc::string_filename(wname);
-					pfc::string8 ext = pfc::string_extension(wname);
+					pfc::string8 ext = pfc::string_extension(wname).get_ptr();
 					unsigned n = 0;
 
 					bool b_write = true;
@@ -243,7 +243,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
 					wname.add_string(name.get_ptr(), name.get_size());
 
 					pfc::string8 name_only = pfc::string_filename(wname);
-					pfc::string8 ext = pfc::string_extension(wname);
+					pfc::string8 ext = pfc::string_extension(wname).get_ptr();
 					unsigned n = 0;
 					bool b_write = true;
 					{
@@ -347,7 +347,8 @@ void toolbar_extension::button::custom_image::write_to_file(stream_writer &p_fil
 		}
 		catch (const pfc::exception & err)
 		{
-			throw pfc::exception(pfc::string_formatter() << "Error reading file \"" << realPath << "\" : " << err.what());
+			pfc::string_formatter formatter;
+			throw pfc::exception(formatter << "Error reading file \"" << realPath << "\" : " << err.what());
 		}
 	}
 	if (m_mask_type == uie::MASK_BITMAP)
@@ -389,7 +390,8 @@ void toolbar_extension::button::custom_image::write_to_file(stream_writer &p_fil
 			}
 			catch (const pfc::exception & err)
 			{
-				throw pfc::exception(pfc::string_formatter() << "Error reading file \"" << m_mask_path << "\" : " << err.what());
+				pfc::string_formatter formatter;
+				throw pfc::exception(formatter << "Error reading file \"" << m_mask_path << "\" : " << err.what());
 			}
 		}
 	}

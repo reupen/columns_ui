@@ -35,7 +35,7 @@ uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
 	ret->set_panel_guid(p_source->get_panel_guid());
 	stream_writer_memblock data;
 	p_source->get_panel_config(&data);
-	ret->set_panel_config(&stream_reader_memblock_ref(data.m_data.get_ptr(), data.m_data.get_size()), data.m_data.get_size());
+	ret->set_panel_config_from_ptr(data.m_data.get_ptr(), data.m_data.get_size());
 	return ret;
 }
 
@@ -166,10 +166,12 @@ class tab_layout_new : public preferences_tab
 			p_node->m_item->get_ptr()->get_panel_config(&conf);
 			p_wnd->get_name(sz_text);
 			try {
-			p_wnd->set_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()),conf.m_data.get_size(), abort_callback_impl());
+				abort_callback_dummy abortCallback;
+				p_wnd->set_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size(), abortCallback);
 			} catch (const pfc::exception & ex) 
 			{
-				console::formatter() << "warning: " << sz_text << ": function uie::window::set_config; error " << ex.what();
+				console::formatter formatter;
+				formatter << "warning: " << sz_text << ": function uie::window::set_config; error " << ex.what();
 			};
 		}
 		else
@@ -305,13 +307,14 @@ class tab_layout_new : public preferences_tab
 					if (p_child_window->service_query_t(p_child_sw))
 					{
 						stream_writer_memblock sw;
+						abort_callback_dummy abortCallback;
 						p_si->get_panel_config(&sw);
-						p_child_window->set_config(&stream_reader_memblock_ref(sw.m_data), sw.m_data.get_size(), abort_callback_dummy());
+						p_child_window->set_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size(), abortCallback);
 						if (_fix_single_instance_recur(p_child_sw))
 						{
 							sw.m_data.set_size(0);
-							p_child_window->get_config(&sw, abort_callback_dummy());
-							p_si->set_panel_config(&stream_reader_memblock_ref(sw.m_data), sw.m_data.get_size());
+							p_child_window->get_config(&sw, abortCallback);
+							p_si->set_panel_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size());
 							p_window->replace_panel(i, p_si.get_ptr());
 							b_ret = true;
 						}
@@ -333,13 +336,14 @@ class tab_layout_new : public preferences_tab
 				uie::splitter_window_ptr p_sw;
 				if (p_window->service_query_t(p_sw))
 				{
-					p_window->set_config(&stream_reader_memblock_ref(sw.m_data), sw.m_data.get_size(), abort_callback_dummy());
+					abort_callback_dummy abortCallback;
+					p_window->set_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size(), abortCallback);
 					if (_fix_single_instance_recur(p_sw))
 					{
 						p_out = copy_splitter_item(p_source.get_ptr());
 						sw.m_data.set_size(0);
-						p_window->get_config(&sw, abort_callback_dummy());
-						p_out->set_panel_config(&stream_reader_memblock_ref(sw.m_data), sw.m_data.get_size());
+						p_window->get_config(&sw, abortCallback);
+						p_out->set_panel_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size());
 					}
 					else
 						p_out = copy_splitter_item(p_source.get_ptr());
@@ -455,10 +459,13 @@ class tab_layout_new : public preferences_tab
 						for (n=0; n<count; n++)
 							splitter->add_panel(p_node->m_children[n]->m_item->get_ptr());
 						stream_writer_memblock conf;
-						try {splitter->get_config(&conf, abort_callback_impl());}
+						try {
+							abort_callback_dummy abort_callback;
+							splitter->get_config(&conf, abort_callback);
+						}
 						catch (const pfc::exception &) {};
 						p_node->m_item->get_ptr()->set_panel_guid(p_guid);
-						p_node->m_item->get_ptr()->set_panel_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()), conf.m_data.get_size());
+						p_node->m_item->get_ptr()->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 						//p_node->m_window = window;
 						//p_node->m_splitter = splitter;
 						p_node->m_children.remove_all();
@@ -512,9 +519,10 @@ class tab_layout_new : public preferences_tab
 			{
 				stream_writer_memblock conf;
 				try {
-					p_node->m_window->get_config(&conf, abort_callback_impl());
+					abort_callback_dummy abortCallback;
+					p_node->m_window->get_config(&conf, abortCallback);
 				} catch (const pfc::exception &) {};
-				p_node->m_item->get_ptr()->set_panel_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()), conf.m_data.get_size());
+				p_node->m_item->get_ptr()->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 			}
 			HTREEITEM parent = TreeView_GetParent(wnd_tv, ti);
 			if (parent)
@@ -541,7 +549,8 @@ class tab_layout_new : public preferences_tab
 	template <typename T>
 	static void set_item_property(HWND wnd, HTREEITEM ti, const GUID & guid, const T & val)
 	{
-		set_item_property_stream(wnd, ti, guid, &stream_reader_memblock_ref(&val, sizeof(T)));
+		stream_reader_memblock_ref reader(&val, sizeof(T));
+		set_item_property_stream(wnd, ti, guid, &reader);
 	}
 	static void set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID & guid, stream_reader * val)
 	{
@@ -564,7 +573,8 @@ class tab_layout_new : public preferences_tab
 					unsigned index = tree_view_get_child_index(wnd_tv, ti);
 					if (index < p_node_parent->m_splitter->get_panel_count())
 					{
-						p_node_parent->m_splitter->set_config_item(index, guid, val, abort_callback_impl());
+						abort_callback_dummy abortCallback;
+						p_node_parent->m_splitter->set_config_item(index, guid, val, abortCallback);
 						p_node_parent->m_splitter->get_panel(index, *p_node->m_item);
 						save_item(wnd, ti_parent);
 					}
@@ -858,7 +868,8 @@ class tab_layout_new : public preferences_tab
 					stream_writer_memblock str;
 					abort_callback_impl p_abort;
 					str.write_string(text, p_abort);
-					set_item_property_stream(wnd, uie::splitter_window::string_custom_title, &stream_reader_memblock_ref(str.m_data.get_ptr(), str.m_data.get_size()));
+					stream_reader_memblock_ref reader(str.m_data.get_ptr(), str.m_data.get_size());
+					set_item_property_stream(wnd, uie::splitter_window::string_custom_title, &reader);
 				}
 				break;
 			case IDC_AUTOHIDE:
@@ -993,7 +1004,8 @@ class tab_layout_new : public preferences_tab
 								{
 									stream_writer_memblock str;
 									p_parent_node->m_splitter->get_config_item(index, uie::splitter_window::string_custom_title, &str);
-									stream_reader_memblock_ref(str.m_data.get_ptr(), str.m_data.get_size()).read_string(custom_title_val, abort_callback_impl());
+									abort_callback_dummy abortCallback;
+									stream_reader_memblock_ref(str.m_data.get_ptr(), str.m_data.get_size()).read_string(custom_title_val, abortCallback);
 								}
 							}
 						}

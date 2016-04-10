@@ -154,7 +154,8 @@ namespace filter_panel {
 								node.m_handles[k] = p_data[perm[start + k]].m_handle;
 
 							m_nodes.insert_item(node, index_item);
-							insert_items(index_item, 1, &t_item_insert());
+							t_item_insert item;
+							insert_items(index_item, 1, &item);
 						}
 					}
 
@@ -429,7 +430,8 @@ namespace filter_panel {
 							node.m_handles[k] = p_data[perm[start + k]].m_handle;
 
 						m_nodes.insert_item(node, index_item);
-						insert_items(index_item, 1, &t_item_insert(), false);
+						t_item_insert item;
+						insert_items(index_item, 1, &item, false);
 					}
 				}
 

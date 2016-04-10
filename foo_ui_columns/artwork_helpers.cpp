@@ -215,7 +215,6 @@ void artwork_panel::artwork_reader_manager_t::on_reader_abort(const artwork_read
 bool artwork_panel::artwork_reader_v2_t::isContentEqual(const pfc::map_t<GUID, album_art_data_ptr> & content1,
 	const pfc::map_t<GUID, album_art_data_ptr> & content2)
 {
-	bool b_ret = true;
 	pfc::chain_list_v2_t<GUID>::const_iterator walk;
 
 	walk = m_requestIds.first();
@@ -255,7 +254,8 @@ DWORD artwork_panel::artwork_reader_v2_t::on_thread()
 	catch (pfc::exception const & e)
 	{
 		m_content.remove_all();
-		console::formatter() << "Album Art loading failure: " << e.what();
+		console::formatter formatter;
+		formatter << "Album Art loading failure: " << e.what();
 		ret = -1;
 	}
 	//send this first so thread gets closed first
@@ -340,7 +340,13 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 								const char * pMainPath = realPath;
 								if (!stricmp_utf8_partial(pMainPath, "file://"))
 									pMainPath += 7;
-								puFindFile pSearcher = uFindFirstFile(pfc::string8() << pMainPath << ".*");
+
+								puFindFile pSearcher;
+								{
+									pfc::string_formatter formatter;
+									pSearcher = uFindFirstFile(formatter << pMainPath << ".*");
+								}
+
 								pfc::string8 searchPath = realPath;
 								realPath.reset();
 								if (pSearcher)
@@ -380,7 +386,8 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 											pfc::string8 canPath;
 											try
 											{
-												filesystem::g_get_canonical_path(pfc::string8() << realPath << "." << image_extensions[i], canPath);
+												pfc::string_formatter formatter;
+												filesystem::g_get_canonical_path(formatter << realPath << "." << image_extensions[i], canPath);
 
 												if (!filesystem::g_is_remote_or_unrecognized(canPath))
 												{
@@ -446,7 +453,8 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 					}
 					catch (exception_io const & e)
 					{
-						console::formatter() << "Requested Album Art entry could not be retrieved: " << e.what();
+						console::formatter formatter;
+						formatter << "Requested Album Art entry could not be retrieved: " << e.what();
 					}
 				}
 			}
@@ -477,7 +485,8 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 					}
 					catch (exception_io const & e)
 					{
-						console::formatter() << "Requested Album Art entry could not be retrieved: " << e.what();
+						console::formatter formatter;
+						formatter << "Requested Album Art entry could not be retrieved: " << e.what();
 					}
 				}
 			}
@@ -503,7 +512,8 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 				}
 				catch (exception_io const & e)
 				{
-					console::formatter() << "Requested Album Art entry could not be retrieved: " << e.what();
+					console::formatter formatter;
+					formatter << "Requested Album Art entry could not be retrieved: " << e.what();
 				}
 				if (!m_emptycover.is_valid() && pvt::g_get_default_nocover_bitmap_data(m_emptycover, p_abort))
 				{

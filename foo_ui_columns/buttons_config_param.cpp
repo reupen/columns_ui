@@ -43,8 +43,9 @@ void toolbar_extension::config_param::export_to_file(const char * p_path, bool b
 	}
 	catch (const pfc::exception & p_error)
 	{
-		popup_message::g_show_ex(p_error.what(), pfc_infinite, "Error writing FCB file", pfc_infinite);;
-		filesystem::g_remove(p_path, abort_callback_impl());
+		popup_message::g_show_ex(p_error.what(), pfc_infinite, "Error writing FCB file", pfc_infinite);
+		abort_callback_dummy abortCallback;
+		filesystem::g_remove(p_path, abortCallback);
 	}
 }
 
@@ -106,7 +107,8 @@ void toolbar_extension::config_param::import_from_stream(stream_reader * p_file,
 					button temp = g_button_null;
 					unsigned size_button;
 					p_file->read_lendian_t(size_button, p_abort);
-					temp.read_from_file(vers, str_base, pfc::string_formatter() << dirname, p_file, size_button, p_abort);
+					pfc::string_formatter formatter;
+					temp.read_from_file(vers, str_base, formatter << dirname, p_file, size_button, p_abort);
 					//						assert(n < 7);
 					m_buttons.add_item(temp);
 				}

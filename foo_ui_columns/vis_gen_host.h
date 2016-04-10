@@ -57,8 +57,8 @@ public:
 		if (p_vis.is_valid())
 		{
 			p_out.set_size(0);
-			abort_callback_dummy abort;
-			p_vis->get_config_to_array(p_out, abort);
+			abort_callback_dummy abortCallback;
+			p_vis->get_config_to_array(p_out, abortCallback);
 		}
 	}
 	friend class window_visualisation_interface;
