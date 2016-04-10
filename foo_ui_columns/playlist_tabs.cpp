@@ -173,7 +173,8 @@ void playlists_tabs_extension::create_child()
 		if (m_child.is_valid())
 		{
 			try {
-			m_child->set_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()),m_child_data.get_size(),abort_callback_impl());
+				abort_callback_dummy abortCallback;
+				m_child->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
 			} catch (const exception_io &) {};
 			m_child_wnd = m_child->create_or_transfer_window(m_host_wnd, ui_extension::window_host_ptr(m_host.get_ptr()));
 			if (m_child_wnd)
@@ -487,12 +488,13 @@ bool playlists_tabs_extension::show_config_popup(unsigned p_index, HWND wnd_pare
 {
 	if (p_index == 0 && m_child_guid != pfc::guid_null)
 	{
+		abort_callback_dummy abortCallback;
 		uie::window_ptr p_window = m_child;
 		if (!p_window.is_valid())
 		{
 			if (uie::window::create_by_guid(m_child_guid, p_window))
 			{
-				p_window->set_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size(), abort_callback_impl());
+				p_window->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
 			}
 		}
 		if (p_window.is_valid())
@@ -500,8 +502,7 @@ bool playlists_tabs_extension::show_config_popup(unsigned p_index, HWND wnd_pare
 			bool rv = p_window->show_config_popup(wnd_parent);
 			if (rv)
 			{
-				m_child_data.set_size(0);
-				p_window->get_config(&stream_writer_memblock_ref(m_child_data), abort_callback_impl());
+				p_window->get_config_to_array(m_child_data, abortCallback, true);
 			}
 		}
 	}
@@ -528,7 +529,8 @@ void playlists_tabs_extension::get_config(stream_writer * out, abort_callback & 
 	{
 		pfc::array_t<t_uint8> data;
 		stream_writer_memblock_ref w(data);
-		m_child->get_config(&w, abort_callback_impl());
+		abort_callback_dummy abortCallback;
+		m_child->get_config(&w, abortCallback);
 		out->write_lendian_t(data.get_size(), p_abort);
 		out->write(data.get_ptr(), data.get_size(), p_abort);
 	}
@@ -554,6 +556,7 @@ void playlists_tabs_extension::set_config(stream_reader * config, t_size p_size,
 
 void playlists_tabs_extension::export_config(stream_writer * p_writer, abort_callback & p_abort) const
 {
+	abort_callback_dummy abortCallback;
 	p_writer->write_lendian_t(m_child_guid, p_abort);
 	uie::window_ptr ptr = m_child;
 	if (!ptr.is_valid() && m_child_guid != pfc::guid_null)
@@ -561,7 +564,7 @@ void playlists_tabs_extension::export_config(stream_writer * p_writer, abort_cal
 		if (uie::window::create_by_guid(m_child_guid, ptr))
 		{
 			try {
-				ptr->set_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size(), abort_callback_impl());
+				ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
 			}
 			catch (const exception_io &) {};
 		}
@@ -570,7 +573,7 @@ void playlists_tabs_extension::export_config(stream_writer * p_writer, abort_cal
 	pfc::array_t<t_uint8> data;
 	stream_writer_memblock_ref w(data);
 	if (ptr.is_valid())
-		ptr->export_config(&w, abort_callback_impl());
+		ptr->export_config(&w, abortCallback);
 	p_writer->write_lendian_t(data.get_size(), p_abort);
 	p_writer->write(data.get_ptr(), data.get_size(), p_abort);
 }
@@ -591,11 +594,10 @@ void playlists_tabs_extension::import_config(stream_reader * p_reader, t_size p_
 		if (uie::window::create_by_guid(m_child_guid, ptr))
 		{
 			try {
-				ptr->import_config(&stream_reader_memblock_ref(data.get_ptr(), data.get_size()), data.get_size(), p_abort);
+				ptr->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
 			}
 			catch (const exception_io &) {};
-			m_child_data.set_size(0);
-			ptr->get_config(&stream_writer_memblock_ref(m_child_data), p_abort);
+			ptr->get_config_to_array(m_child_data, p_abort, true);
 		}
 		//p_reader->read(m_child_data.get_ptr(), size, p_abort);
 	}
@@ -605,7 +607,7 @@ uie::splitter_item_t * playlists_tabs_extension::get_panel(unsigned index) const
 {
 	uie::splitter_item_simple_t * ptr = new uie::splitter_item_simple_t;
 	ptr->set_panel_guid(m_child_guid);
-	ptr->set_panel_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size());
+	ptr->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 	if (index == 0 && m_child_guid != pfc::guid_null)
 	{
 		if (m_child_wnd && m_child.is_valid())

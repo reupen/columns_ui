@@ -193,7 +193,7 @@ uie::splitter_item_full_v2_t * splitter_window_tabs_impl::panel::create_splitter
 {
 	uie::splitter_item_full_v2_impl_t * ret = new uie::splitter_item_full_v2_impl_t;
 	ret->set_panel_guid(m_guid);
-	ret->set_panel_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size());
+	ret->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 	ret->set_window_ptr(m_child);
 	ret->m_custom_title = m_use_custom_title;
 	ret->set_title(m_custom_title, m_custom_title.length());
@@ -221,7 +221,7 @@ void splitter_window_tabs_impl::panel::set_from_splitter_item(const uie::splitte
 	}
 	m_child = p_source->get_window_ptr();
 	m_guid = p_source->get_panel_guid();
-	p_source->get_panel_config(&stream_writer_memblock_ref(m_child_data, true));
+	p_source->get_panel_config_to_array(m_child_data, true);
 }
 
 void splitter_window_tabs_impl::panel::destroy()
@@ -252,7 +252,7 @@ void splitter_window_tabs_impl::panel::write(stream_writer * out, abort_callback
 	if (m_child.is_valid())
 	{
 		m_child_data.set_size(0);
-		m_child->get_config(&stream_writer_memblock_ref(m_child_data), p_abort);
+		m_child->get_config_to_array(m_child_data, p_abort);
 	}
 	out->write_lendian_t(m_guid, p_abort);
 	out->write_lendian_t(m_child_data.get_size(), p_abort);
@@ -269,7 +269,7 @@ void splitter_window_tabs_impl::panel::_export(stream_writer * out, abort_callba
 		if (!uie::window::create_by_guid(m_guid, ptr))
 			throw cui::fcl::exception_missing_panel();
 		try {
-			ptr->set_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size(), p_abort);
+			ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
 		} catch (const exception_io &) {};
 	}
 	{
@@ -295,10 +295,10 @@ void splitter_window_tabs_impl::panel::import(stream_reader*t, abort_callback & 
 	if (uie::window::create_by_guid(m_guid, m_child))
 	{
 		try {
-			m_child->import_config(&stream_reader_memblock_ref(data.get_ptr(), data.get_size()), data.get_size(), p_abort);
+			m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
 		} catch (const exception_io &) {};
 		m_child_data.set_size(0);
-		m_child->get_config(&stream_writer_memblock_ref(m_child_data), p_abort);
+		m_child->get_config_to_array(m_child_data, p_abort);
 	}
 	//else
 	//	throw pfc::exception_not_implemented();
@@ -767,11 +767,13 @@ void splitter_window_tabs_impl::refresh_children()
 					if (b_new)
 					{
 						try {
-							p_ext->set_config(&stream_reader_memblock_ref(m_panels[n]->m_child_data.get_ptr(), m_panels[n]->m_child_data.get_size()),m_panels[n]->m_child_data.get_size(),abort_callback_impl());
+							abort_callback_dummy abortCallback;
+							p_ext->set_config_from_ptr(m_panels[n]->m_child_data.get_ptr(), m_panels[n]->m_child_data.get_size(), abortCallback);
 						}
 						catch (const exception_io & e)
 						{
-							console::formatter() << "Error setting panel config: " << e.what();
+							console::formatter formatter;
+							formatter << "Error setting panel config: " << e.what();
 						}
 					}
 
@@ -786,7 +788,8 @@ void splitter_window_tabs_impl::refresh_children()
 						{
 							pfc::string8 name;
 							p_ext->get_name(name);
-							console::formatter() << "Columns UI/Tab stack: Warning: " << name << " panel was visible on creation! This usually indicates a bug in this panel."; 
+							console::formatter formatter;
+							formatter << "Columns UI/Tab stack: Warning: " << name << " panel was visible on creation! This usually indicates a bug in this panel.";
 							ShowWindow(wnd_panel, SW_HIDE);
 						}
 						SetWindowLongPtr(wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE)|WS_CLIPSIBLINGS);
