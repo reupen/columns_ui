@@ -1,5 +1,5 @@
-#ifndef _CUI_FILTER_H_
-#define _CUI_FILTER_H_
+#pragma once
+
 namespace filter_panel {
 
 	extern const GUID g_guid_cfg_sort;
@@ -39,6 +39,7 @@ namespace filter_panel {
 	public:
 		pfc::string8 m_name, m_field;
 	};
+
 	class cfg_fields_t : public cfg_var, public pfc::list_t<field_t>
 	{
 	public:
@@ -61,7 +62,6 @@ namespace filter_panel {
 		bool have_item(const char * p_item);
 		bool find_item(const char * p_item, t_size & index);
 
-	public:
 		cfg_favouriteslist(const GUID & p_guid) : cfg_var(p_guid) {}
 	};
 
@@ -394,5 +394,3 @@ namespace filter_panel {
 	};
 
 };
-
-#endif

@@ -745,31 +745,24 @@ namespace filter_panel {
 			}
 		}
 	}
+	
 	void filter_panel_t::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
 	{
-		action_t action = (action_t)(filter_panel::cfg_doubleclickaction.get_value());
-		/*if (cfg_doubleclickaction == 0)
-		action = action_send_to_autosend;
-		else if (cfg_doubleclickaction == 1)
-		action = action_send_to_autosend_play;
-		else if (cfg_doubleclickaction == 2)
-		action = action_send_to_new;
-		else if (cfg_doubleclickaction == 3)
-		action = action_send_to_new_play;
-		else if (cfg_doubleclickaction == 3)
-		action = action_add_to_active;*/
+		action_t action = static_cast<action_t>(cfg_doubleclickaction.get_value());
 		do_selection_action(action);
-	};
+	}
+	
 	bool filter_panel_t::notify_on_middleclick(bool on_item, t_size index)
 	{
-		if (filter_panel::cfg_middleclickaction && on_item && index < m_nodes.get_count())
+		if (cfg_middleclickaction && on_item && index < m_nodes.get_count())
 		{
-			action_t action = (action_t)(filter_panel::cfg_middleclickaction.get_value() - 1);
+			action_t action = static_cast<action_t>(cfg_middleclickaction.get_value() - 1);
 			do_items_action(bit_array_one(index), action);
 			return true;
 		}
 		return false;
 	}
+
 	void filter_panel_t::send_results_to_playlist(bool b_play )
 	{
 		metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
