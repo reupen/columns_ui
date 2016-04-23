@@ -16,6 +16,7 @@ namespace filter_panel {
 	cfg_int cfg_middleclickaction(g_guid_middleclickaction, 0);
 	cfg_int cfg_edgestyle(g_guid_edgestyle, 2);
 	uih::ConfigInt32DpiAware cfg_vertical_item_padding(g_guid_itempadding, 4);
+	uih::ConfigBool cfg_show_column_titles(g_guid_show_column_titles, true);
 
 	cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 
@@ -139,16 +140,22 @@ namespace filter_panel {
 			g_field_data[field_index].m_name = p_new;
 		}
 	}
+
 	void filter_panel_t::g_on_vertical_item_padding_change()
 	{
 		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++)
-		{
+		for (i = 0; i<count; i++) {
 			g_windows[i]->set_vertical_item_padding(cfg_vertical_item_padding);
 		}
 	}
 
-
+	void filter_panel_t::g_on_show_column_titles_change()
+	{
+		t_size i, count = g_windows.get_count();
+		for (i = 0; i < count; i++) {
+			g_windows[i]->set_show_header(cfg_show_column_titles);
+		}
+	}
 
 	void filter_panel_t::g_on_field_query_change(const field_t & field)
 	{
@@ -971,6 +978,7 @@ namespace filter_panel {
 		set_edge_style(cfg_edgestyle);
 		set_autosize(true);
 		set_vertical_item_padding(cfg_vertical_item_padding);
+		set_show_header(cfg_show_column_titles);
 
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
