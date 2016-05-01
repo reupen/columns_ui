@@ -73,7 +73,7 @@
 #define IDD_FCL1                        210
 #define IDD_EDIT_GROUP                  213
 #define IDD_CONFIG_NG                   214
-#define IDD_FILTER                      215
+#define IDD_FILTER_FIELDS               215
 #define IDD_FONTS_GLOBAL                216
 #define IDD_COLUMN_OPTIONS              218
 #define IDD_COLUMN_SCRIPTS              219
@@ -84,6 +84,7 @@
 #define IDD_SELECT1                     224
 #define IDD_SELECTIONCONFIG             224
 #define IDD_ITEMDETAILS_CONFIG          225
+#define IDD_FILTER_MISC                 226
 #define IDC_PREFERENCES                 1000
 #define IDC_REFRESH                     1002
 #define IDC_LIST1                       1003
@@ -336,7 +337,6 @@
 #define IDC_FRONT                       1156
 #define IDC_HALIGN                      1156
 #define IDC_FB2KARTWORK                 1157
-#define IDC_EDGESTYLE3                  1157
 #define IDC_VALIGN                      1157
 #define IDC_DISC                        1158
 #define IDC_ARTWORKWIDTH                1158
