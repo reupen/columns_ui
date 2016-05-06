@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "item_properties.h"
 
 BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "status_pane.h"
+
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
 const GUID status_pane::g_guid_font = 
 { 0x522e01c6, 0xea7c, 0x49f2, { 0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24 } };

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "fonts_manager_data.h"
 
 
 

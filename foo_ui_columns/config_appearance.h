@@ -1,5 +1,8 @@
 #pragma once
 
+#include "fonts_manager_data.h"
+#include "colours_manager_data.h"
+
 class colours_client_list_entry_t
 {
 public:

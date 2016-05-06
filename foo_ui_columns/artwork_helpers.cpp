@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "NG Playlist/ng_playlist.h"
+#include "artwork.h"
+#include "artwork_helpers.h"
 
 
 void artwork_panel::artwork_reader_v2_t::run_notification_thisthread(DWORD state)

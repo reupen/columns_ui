@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "menu_items.h"
 
 namespace settings
 {

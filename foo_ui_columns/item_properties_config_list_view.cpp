@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "item_properties.h"
 
 void fields_list_view_t::notify_save_inline_edit(const char * value)
 {

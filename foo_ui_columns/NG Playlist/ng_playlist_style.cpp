@@ -1,5 +1,8 @@
 #include "..\stdafx.h"
 
+#include "ng_playlist.h"
+#include "ng_playlist_style.h"
+
 namespace pvt 
 {
 	namespace style_cache_manager

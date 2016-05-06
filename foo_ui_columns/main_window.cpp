@@ -6,6 +6,8 @@
 
 #include "stdafx.h"
 
+#include "status_pane.h"
+
 GUID null_guid = 
 { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
 

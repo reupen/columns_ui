@@ -15,7 +15,7 @@
 
 #include "../foobar2000/SDK/foobar2000.h"
 #include "../foobar2000/SDK/core_api.h"
-/*#define UI_EXTENSION_LIBPNG_SUPPORT_ENABLED*/
+
 #include "uxtheme.h"
 #include "Wincodec.h"
 #include "../columns_ui-sdk/ui_extension.h"
@@ -78,19 +78,3 @@
 #include "get_msg_hook.h"
 #include "setup_dialog.h"
 #include "buttons.h"
-#include "item_details.h"
-#include "mw_drop_target.h"
-
-#include "artwork_helpers.h"
-#include "artwork.h"
-#include "ng playlist/ng_playlist.h"
-#include "item_properties.h"
-
-#include "fcl.h"
-#include "menu_items.h"
-#include "status_pane.h"
-#include "colours_manager_data.h"
-#include "fonts_manager_data.h"
-#include "config_appearance.h"
-#include "tab_colours.h"
-#include "tab_fonts.h"

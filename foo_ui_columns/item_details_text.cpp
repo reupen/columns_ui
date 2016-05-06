@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "item_details.h"
 
 
 void g_get_text_font_data(const char * p_text, pfc::string8_fast_aggressive & p_new_text, font_change_data_list_t & p_out)

@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "tab_fonts.h"
+
 bool tab_appearance_fonts::is_active()
 {
 	return m_wnd != 0;

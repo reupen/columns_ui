@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "artwork.h"
+
 namespace artwork_panel
 {
 #if 0

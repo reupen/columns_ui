@@ -1,4 +1,6 @@
 #include "..\stdafx.h"
+#include "ng_playlist.h"
+
 namespace pvt
 {
 

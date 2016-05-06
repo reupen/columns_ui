@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "item_details.h"
 
 BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {

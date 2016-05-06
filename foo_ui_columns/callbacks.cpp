@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "NG Playlist/ng_playlist.h"
 
 //callback_manager g_callback_manager;
 

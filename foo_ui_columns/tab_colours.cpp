@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "tab_colours.h"
 
 
 bool tab_appearance::is_active()

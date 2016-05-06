@@ -1,10 +1,10 @@
 #ifndef _CUI_ARTWORK_H_
 #define _CUI_ARTWORK_H_
 
+#include "artwork_helpers.h"
+
 namespace artwork_panel
 {
-
-	//extern cfg_string cfg_front, cfg_back, cfg_disc;//, cfg_icon;
 	extern cfg_uint cfg_fb2k_artwork_mode;
 	extern cfg_objList<pfc::string8> cfg_front_scripts, cfg_back_scripts, cfg_disc_scripts, cfg_artist_scripts;
 

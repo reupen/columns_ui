@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "fcl.h"
 
 static class tab_main : public preferences_tab
 {

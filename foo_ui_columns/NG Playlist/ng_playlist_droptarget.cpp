@@ -1,4 +1,6 @@
 #include "..\stdafx.h"
+#include "ng_playlist.h"
+
 namespace pvt
 {
 	HRESULT STDMETHODCALLTYPE IDropTarget_playlist::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)

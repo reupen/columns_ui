@@ -1,4 +1,5 @@
 #include "..\stdafx.h"
+#include "ng_playlist.h"
 
 namespace playlist_utils
 {

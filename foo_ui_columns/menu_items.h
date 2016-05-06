@@ -1,5 +1,7 @@
-#ifndef _COLUMNS_MENU_ITEMS_H_
-#define _COLUMNS_MENU_ITEMS_H_
+#pragma once
+
+#include "fcl.h"
+
 /*!
  * \file menu_items.h
  *
@@ -228,6 +230,4 @@ public:
 			static_api_ptr_t<ui_control>()->activate();
 	}
 };
-#endif
-
 #endif

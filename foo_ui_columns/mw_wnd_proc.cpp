@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "mw_drop_target.h"
+
 INT_PTR g_taskbar_bitmaps[] = {IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND};
 
 namespace statusbar_contextmenus {

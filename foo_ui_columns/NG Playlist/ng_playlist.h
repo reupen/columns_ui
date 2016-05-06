@@ -1,9 +1,8 @@
 #ifndef _PVT_MAIN_H_
 #define _PVT_MAIN_H_
 
-#include "ng_playlist_groups.h"
 #include "ng_playlist_style.h"
-#include "resource.h"
+#include "..\artwork.h"
 
 namespace pvt 
 {

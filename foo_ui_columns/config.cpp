@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "NG Playlist/ng_playlist.h"
 
 #include "config_host.h"
 

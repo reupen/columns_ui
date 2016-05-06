@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "status_pane.h"
+#include "mw_drop_target.h"
 
 bool g_last_rmb = false;
 

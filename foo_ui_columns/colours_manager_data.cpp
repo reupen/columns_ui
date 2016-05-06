@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "colours_manager_data.h"
 
 void colours_manager_data::g_on_common_bool_changed(t_size mask)
 {

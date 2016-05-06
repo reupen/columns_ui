@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config_appearance.h"
+
 class tab_appearance_fonts : public preferences_tab
 {
 	HWND m_wnd;

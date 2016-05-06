@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "fcl.h"
+#include "NG Playlist/ng_playlist_groups.h"
+#include "NG Playlist/ng_playlist.h"
 
 cui::fcl::group_impl_factory fclgroupcolumns(cui::fcl::groups::titles_playlist_view, "Columns/NG Playlist Scripts", "Columns/NG Playlist Scripts", cui::fcl::groups::title_scripts);
 cui::fcl::group_impl_factory fclgroupcommon(cui::fcl::groups::titles_common, "Common Scripts", "Common Scripts", cui::fcl::groups::title_scripts);

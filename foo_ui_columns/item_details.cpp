@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "item_details.h"
 //#include <Richedit.h>
 
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}

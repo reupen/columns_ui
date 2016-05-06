@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "fcl.h"
 
 // {EBD87879-65A7-4242-821B-812AF9F68E8F}
 const GUID cui::fcl::groups::titles_playlist_view = 

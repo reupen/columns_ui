@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "NG Playlist/ng_playlist.h"
+
+#include "status_pane.h"
 
 HFONT g_status_font = 0;
 HFONT g_tab_font = 0;
