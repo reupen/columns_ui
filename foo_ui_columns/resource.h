@@ -128,6 +128,7 @@
 #define IDC_OLDGLOBAL                   1017
 #define IDC_DROP_AT_END                 1017
 #define IDC_FCL_IMPORT                  1017
+#define IDC_FILTERS_SHOW_COLUMN_TITLES  1017
 #define IDC_TABS                        1018
 #define IDC_EXPORT                      1018
 #define IDC_MAP_COLOUR_CODES            1018

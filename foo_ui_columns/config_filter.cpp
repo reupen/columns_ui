@@ -265,9 +265,11 @@ public:
 		HWND wnd_sort_string = GetDlgItem(wnd, IDC_SORT_STRING);
 		HWND wnd_autosend = GetDlgItem(wnd, IDC_AUTOSEND);
 		HWND wnd_showempty = GetDlgItem(wnd, IDC_SHOWEMPTY);
+		auto wnd_show_column_titles = GetDlgItem(wnd, IDC_FILTERS_SHOW_COLUMN_TITLES);
 		uSetWindowText(wnd_sort_string, filter_panel::cfg_sort_string);
 		Button_SetCheck(wnd_sort, filter_panel::cfg_sort ? BST_CHECKED : BST_UNCHECKED);
 		Button_SetCheck(wnd_showempty, filter_panel::cfg_showemptyitems ? BST_CHECKED : BST_UNCHECKED);
+		Button_SetCheck(wnd_show_column_titles, filter_panel::cfg_show_column_titles ? BST_CHECKED : BST_UNCHECKED);
 
 		Button_SetCheck(wnd_autosend, filter_panel::cfg_autosend ? BST_CHECKED : BST_UNCHECKED);
 
@@ -342,6 +344,10 @@ public:
 						break;
 					case IDC_AUTOSEND:
 						filter_panel::cfg_autosend = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
+						break;
+					case IDC_FILTERS_SHOW_COLUMN_TITLES:
+						filter_panel::cfg_show_column_titles = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
+						filter_panel::filter_panel_t::g_on_show_column_titles_change();
 						break;
 					case IDC_SHOWEMPTY:
 						filter_panel::cfg_showemptyitems = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
