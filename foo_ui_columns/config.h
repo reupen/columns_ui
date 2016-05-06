@@ -1,6 +1,8 @@
 #ifndef _COLUMNS_CONFIG_H_
 #define _COLUMNS_CONFIG_H_
 
+#include "columns_v2.h"
+
 #define COLOUR_HELP "Style string - $set_style(text,<text colour>,<selected text colour>)\r\n$set_style(back,<background colour>,<selected background colour>[,<selected background colour no focus>])\r\n\r\n"\
 					"Square brackets denote an optional parameter."
 

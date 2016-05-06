@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #ifdef QUICKFIND_ENABLED
+#include "playlist_search.h"
 
 #define cfg_default_search "%artist% - %title%"
 #define cfg_default_search_mode 0

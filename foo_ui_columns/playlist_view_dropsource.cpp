@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_view.h"
 
 
 HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryInterface(REFIID iid, void ** ppvObject)

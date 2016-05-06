@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_view.h"
 
 bool playlist_view::draw_items_wrapper(int start_item, int count)
 {

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "main_window.h"
 #include "status_pane.h"
 
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}

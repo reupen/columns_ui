@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "seekbar.h"
 
 //#define _WIN32_WINNT 0x500
 

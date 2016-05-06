@@ -10,13 +10,9 @@
  * Volume control
  */
 
-#include <windows.h>
-#include <COMMCTRL.H>
-#include <WinUser.h>
-#include <windowsx.h>
-#include <commctrl.h>
 
-#include <gdiplus.h>
+#include "main_window.h"
+
 
 template <bool b_vertical, bool b_popup, typename t_attributes, class t_base = ui_helpers::container_window>
 class volume_control_t : public t_base, private play_callback

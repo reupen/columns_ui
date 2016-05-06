@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "playlist_tabs.h"
+#include "playlist_manager_utils.h"
+#include "main_window.h"
 
 enum { ID_SWITCH = 1, ID_REMOVE, ID_RENAME, ID_NEW, ID_SAVE, ID_SAVE_ALL, ID_LOAD, ID_UP, ID_DOWN, ID_CUT, ID_COPY, ID_PASTE, ID_AUTOPLAYLIST, ID_RECYCLER_CLEAR, ID_RECYCLER_BASE };
 

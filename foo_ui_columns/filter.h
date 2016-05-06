@@ -1,5 +1,7 @@
 #pragma once
 
+#include "list_view_panel.h"
+
 namespace filter_panel {
 
 	extern const GUID g_guid_cfg_sort;

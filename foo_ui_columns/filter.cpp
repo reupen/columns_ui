@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "filter.h"
 
 HRESULT g_get_comctl32_vresion(DLLVERSIONINFO2 & p_dvi);
 

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "buttons.h"
 
 toolbar_extension::button_image::button_image() : m_bm(0), m_mask_type(uie::MASK_NONE), m_bm_mask(0), m_mask_colour(0), m_icon(0)
 {

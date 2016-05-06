@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "splitter.h"
 
 
 splitter_window_impl::panel::panel() : m_hidden(false), m_guid(pfc::guid_null), m_locked(false), m_wnd(NULL),

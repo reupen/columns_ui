@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_view.h"
 
 
 void playlist_view::on_size(unsigned cx, unsigned cy)

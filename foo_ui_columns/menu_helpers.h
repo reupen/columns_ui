@@ -11,6 +11,7 @@
 
 
 #include "stdafx.h"
+#include "common.h"
 
 namespace menu_helpers
 {

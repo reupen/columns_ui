@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "splitter.h"
+#include "main_window.h"
 
 #define HOST_AUTOHIDE_TIMER_ID  672
 

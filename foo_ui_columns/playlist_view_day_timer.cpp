@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_view.h"
 
 static unsigned g_day_timer;
 

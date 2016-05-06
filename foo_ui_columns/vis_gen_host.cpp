@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "vis_gen_host.h"
 
 #if 1
 class window_visualisation_interface : public ui_extension::visualisation_host {

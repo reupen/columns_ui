@@ -9,7 +9,7 @@
  * Initial quick set-up dialog box
  */
 
-#include "stdafx.h"
+#include "layout.h"
 
 class setup_dialog_t : public pfc::refcounted_object_root
 {

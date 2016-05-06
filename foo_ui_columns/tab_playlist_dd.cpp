@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "config.h"
 
 static class tab_playlist_dd : public preferences_tab
 {

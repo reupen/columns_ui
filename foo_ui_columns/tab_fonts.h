@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config_appearance.h"
+#include "config.h"
 
 class tab_appearance_fonts : public preferences_tab
 {

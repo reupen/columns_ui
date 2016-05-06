@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "playlist_view.h"
+#include "sort.h"
 
 playlist_view_cache playlist_view::g_cache;
 

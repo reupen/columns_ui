@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "playlist_view.h"
+#include "font_notify.h"
 
 LRESULT playlist_message_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {

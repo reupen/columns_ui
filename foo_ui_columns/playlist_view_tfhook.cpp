@@ -1,5 +1,5 @@
 #include "stdafx.h"
-
+#include "playlist_view.h"
 
 
 bool titleformat_hook_playlist_name::process_field(titleformat_text_out * p_out, const char * p_name, unsigned p_name_length, bool & p_found_flag)

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "filter.h"
 
 namespace filter_panel {
 

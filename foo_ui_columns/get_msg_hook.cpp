@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "get_msg_hook.h"
+#include "layout.h"
+#include "rebar.h"
 
 extern rebar_window * g_rebar_window;
 

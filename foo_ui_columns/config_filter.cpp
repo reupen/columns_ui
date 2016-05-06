@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "filter.h"
+#include "config.h"
 
 class t_list_view_filter : public t_list_view
 {

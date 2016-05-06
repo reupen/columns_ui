@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_view.h"
 
 void playlist_view::update_scrollbar(bool redraw)
 {

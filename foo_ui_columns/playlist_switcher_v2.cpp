@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_switcher_v2.h"
 
 // {70A5C273-67AB-4bb6-B61C-F7975A6871FD}
 const GUID playlist_switcher_t::g_guid_font = 

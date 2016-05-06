@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "splitter.h"
 
 ui_extension::window_host_factory<splitter_window_impl::splitter_host_impl > g_splitter_host_vert;
 

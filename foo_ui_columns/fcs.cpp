@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
-
+#include "playlist_switcher_v2.h"
+#include "fcs.h"
 
 static const GUID fcs_header = 
 { 0x5d6e2a5, 0x9dd5, 0x23ca, { 0xbe, 0x5a, 0x74, 0x72, 0x3c, 0x6f, 0xc, 0x74 } };

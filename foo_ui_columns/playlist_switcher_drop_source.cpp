@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_switcher_v2.h"
 
 
 bool playlist_switcher_t::do_drag_drop(WPARAM wp) 

@@ -7,6 +7,9 @@
 #include "stdafx.h"
 
 #include "status_pane.h"
+#include "layout.h"
+
+#include "main_window.h"
 
 GUID null_guid = 
 { 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
@@ -19,8 +22,6 @@ status_pane g_status_pane;
 mmh::comptr_t<ITaskbarList3> main_window::g_ITaskbarList3;
 
 HIMAGELIST  g_imagelist = NULL;
-
-cache_manager g_cache_manager;
 
 HWND g_main_window=0,
 	g_tooltip=0,

@@ -1,6 +1,10 @@
 #include "stdafx.h"
 
 #include "mw_drop_target.h"
+#include "setup_dialog.h"
+#include "get_msg_hook.h"
+#include "rebar.h"
+#include "status_bar.h"
 
 INT_PTR g_taskbar_bitmaps[] = {IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND};
 

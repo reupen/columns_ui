@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "buttons.h"
 
 
 HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)

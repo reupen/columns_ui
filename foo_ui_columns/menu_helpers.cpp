@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "menu_helpers.h"
 
 
 bool operator==(const menu_item_identifier & p1, const menu_item_identifier & p2)

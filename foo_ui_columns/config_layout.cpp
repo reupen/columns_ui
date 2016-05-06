@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "layout.h"
+#include "config.h"
+#include "splitter.h"
 
 uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
 {

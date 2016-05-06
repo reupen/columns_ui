@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "config.h"
+#include "main_window.h"
 
 static class tab_sys : public preferences_tab
 {

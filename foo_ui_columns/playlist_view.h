@@ -5,9 +5,9 @@
 * \deprecated	Columns playlist is deprecated and has been superseded by NG playlist.
 */
 
-#include "callback.h"
-#include "stdafx.h"
-#include "extern.h"
+#include "cache.h"
+#include "columns_v2.h"
+#include "main_window.h"
 
 #define INLINE_EDIT 1
 #define cfg_inline_edit 1

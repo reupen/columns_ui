@@ -9,12 +9,6 @@
  *
  * Status bar text drawing functions only
  */
-#include "../pfc/pfc.h"
-
-#include <windows.h>
-#include <WindowsX.h>
-#include <commctrl.h>
-//#include "text_drawing.h"
 
 namespace win32_helpers
 {

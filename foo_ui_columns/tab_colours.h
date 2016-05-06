@@ -1,6 +1,7 @@
 #pragma once
 
 #include "config_appearance.h"
+#include "config.h"
 
 class tab_appearance : public preferences_tab
 {

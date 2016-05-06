@@ -1,6 +1,8 @@
 #pragma once
 
 #include "fcl.h"
+#include "layout.h"
+#include "font_notify.h"
 
 /*!
  * \file menu_items.h

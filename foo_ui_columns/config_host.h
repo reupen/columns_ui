@@ -1,5 +1,7 @@
 #pragma once
 
+#include "config.h"
+
 class config_host_generic : public preferences_page {
 public:
 	config_host_generic(const char* p_name, preferences_tab*const * const p_tabs, size_t p_tab_count, const GUID& p_guid, const GUID& p_parent_guid, cfg_int* const p_active_tab)

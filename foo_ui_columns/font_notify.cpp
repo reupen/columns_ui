@@ -2,6 +2,7 @@
 #include "NG Playlist/ng_playlist.h"
 
 #include "status_pane.h"
+#include "font_notify.h"
 
 HFONT g_status_font = 0;
 HFONT g_tab_font = 0;

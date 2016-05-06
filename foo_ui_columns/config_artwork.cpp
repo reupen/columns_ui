@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
 #include "artwork.h"
+#include "config.h"
 
 namespace artwork_panel
 {

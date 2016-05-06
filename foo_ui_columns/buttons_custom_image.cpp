@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "buttons.h"
 
 toolbar_extension::button::custom_image & toolbar_extension::button::custom_image::operator = (const toolbar_extension::button::custom_image & p_source)
 {

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "playlist_view.h"
 #include "config_appearance.h"
 #include "config_host.h"
 #include "tab_colours.h"

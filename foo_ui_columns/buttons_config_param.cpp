@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "buttons.h"
 
 void toolbar_extension::config_param::export_to_stream(stream_writer * p_file, bool b_paths, abort_callback & p_abort)
 {

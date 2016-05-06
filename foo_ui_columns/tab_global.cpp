@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
+#include "config.h"
 
 static cfg_int g_cur_tab2(create_guid(0x5fb6e011, 0x1ead, 0x49fe, 0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b), 0);
 

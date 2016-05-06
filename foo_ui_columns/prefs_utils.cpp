@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "playlist_view.h"
+#include "tab_colours.h"
+#include "prefs_utils.h"
 
 void preview_to_console(const char * spec, bool extra)
 {

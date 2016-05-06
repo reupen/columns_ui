@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "vis_gen_host.h"
+#include "main_window.h"
 
 #if 1
 class spectrum_vis_callback;

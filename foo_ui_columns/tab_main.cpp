@@ -1,5 +1,10 @@
 #include "stdafx.h"
 #include "fcl.h"
+#include "fcs.h"
+#include "config.h"
+#include "font_notify.h"
+#include "rebar.h"
+#include "main_window.h"
 
 static class tab_main : public preferences_tab
 {

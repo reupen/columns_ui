@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "common.h"
 
 
 const char * strchr_n(const char * src, char c, unsigned len)

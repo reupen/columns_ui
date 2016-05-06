@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "playlist_view.h"
+#include "columns_v2.h"
 
 void column_t::read(stream_reader* reader, abort_callback& abortCallback)
 {

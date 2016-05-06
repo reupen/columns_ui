@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "volume.h"
 
 class volume_panel_class_name
 {

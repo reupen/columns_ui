@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_view.h"
 
 /* no range checks here !*/
 void playlist_view::process_keydown(int offset, bool alt_down, bool prevent_redrawing, bool repeat)

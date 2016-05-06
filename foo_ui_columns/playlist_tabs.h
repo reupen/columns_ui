@@ -2,7 +2,6 @@
 #define _COLUMNS_UI_TABS_H_
 
 #include "stdafx.h"
-#include "callback.h"
 #include "extern.h"
 
 void g_on_autohide_tabs_change();

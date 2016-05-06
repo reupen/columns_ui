@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "layout.h"
+#include "splitter.h"
 
 
 // {755971A7-109B-41dc-BED9-5A05CC07C905}

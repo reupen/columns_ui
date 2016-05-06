@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
+#include "config.h"
 
 extern cfg_int g_cur_tab;
 extern cfg_int g_last_colour;

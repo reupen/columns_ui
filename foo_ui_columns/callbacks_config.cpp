@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "main_window.h"
 
 class config_object_notify_columns : public config_object_notify
 {

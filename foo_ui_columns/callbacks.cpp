@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
+#include "seekbar.h"
+#include "playlist_view.h"
+#include "main_window.h"
 
 //callback_manager g_callback_manager;
 

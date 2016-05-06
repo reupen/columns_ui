@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "font_notify.h"
+#include "status_bar.h"
 
 pfc::string8 status_bar::menudesc;
 

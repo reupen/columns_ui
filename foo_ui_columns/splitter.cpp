@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "splitter.h"
 
 pfc::ptr_list_t<splitter_window_impl> splitter_window_impl::g_instances;
 

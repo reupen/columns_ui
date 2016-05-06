@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "buttons.h"
 
 CLIPFORMAT toolbar_extension::config_param::t_button_list_view::g_clipformat()
 {

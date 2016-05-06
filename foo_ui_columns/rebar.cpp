@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "rebar.h"
+#include "main_window.h"
 
 //extern HBITMAP buttons_images;
 

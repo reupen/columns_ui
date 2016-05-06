@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "playlist_switcher_v2.h"
+#include "playlist_tabs.h"
+#include "config.h"
 
 static class tab_playlist : public preferences_tab
 {

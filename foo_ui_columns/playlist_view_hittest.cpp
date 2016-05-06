@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_view.h"
 
 int playlist_view::hittest_item(int x, int y, bool check_in_column)
 {

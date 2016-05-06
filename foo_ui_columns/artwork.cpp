@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "artwork.h"
+#include "config.h"
 
 namespace artwork_panel
 {

@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "buttons.h"
 
 #define ID_BUTTONS  2001
 

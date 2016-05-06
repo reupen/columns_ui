@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
+#include "config.h"
+#include "prefs_utils.h"
 
 static class tab_display2 : public preferences_tab
 {

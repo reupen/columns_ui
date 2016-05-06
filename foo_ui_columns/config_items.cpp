@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "main_window.h"
+
 namespace main_window
 {
 	config_status_bar_script_t::config_status_bar_script_t() : config_item_t<pfc::string8>(get_guid(), get_default_value())

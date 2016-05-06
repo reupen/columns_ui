@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "layout.h"
+#include "font_notify.h"
+#include "rebar.h"
 
 class export_layout : public cui::fcl::dataset
 {

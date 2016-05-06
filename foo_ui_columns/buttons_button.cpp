@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "buttons.h"
 
 void toolbar_extension::button::callback_impl::on_button_state_change(unsigned p_new_state) //see t_button_state
 {

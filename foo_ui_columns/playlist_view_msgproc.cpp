@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
+#include "playlist_view.h"
+#include "font_notify.h"
 
 
 LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

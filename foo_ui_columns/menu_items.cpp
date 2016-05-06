@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "menu_items.h"
+#include "layout.h"
 
 extern HWND g_main_window;
 

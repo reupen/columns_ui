@@ -1,4 +1,5 @@
 #pragma once
+#include "volume.h"
 
 void g_split_string_by_crlf(const char * text, pfc::string_list_impl & p_out);
 

@@ -1,6 +1,8 @@
 #include "stdafx.h"
+#include "playlist_tabs.h"
+#include "main_window.h"
 
-cfg_guid cfg_default_playlist(create_guid(0x68527c89,0xb0f7,0xf653,0x00,0x53,0x8c,0xeb,0x47,0xe7,0xa3,0xb3), playlist_view::extension_guid);
+cfg_guid cfg_default_playlist(create_guid(0x68527c89,0xb0f7,0xf653,0x00,0x53,0x8c,0xeb,0x47,0xe7,0xa3,0xb3), columns_ui::panels::guid_playlist_view_v2);
 
 // {942C36A4-4E28-4cea-9644-F223C9A838EC}
 const GUID g_guid_playlist_switcher_tabs_font = 

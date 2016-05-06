@@ -1,5 +1,6 @@
 #pragma once
 
+#include "menu_helpers.h"
 
 class cfg_window_placement_t : public cfg_struct_t < WINDOWPLACEMENT >
 {

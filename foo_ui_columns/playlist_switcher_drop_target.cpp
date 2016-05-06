@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_switcher_v2.h"
 
 bool g_query_dataobj_supports_format(CLIPFORMAT cf, IDataObject * pDataObj )
 {

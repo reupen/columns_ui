@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "playlist_view.h"
+#include "font_notify.h"
 
 
 void playlist_view::rebuild_header(bool rebuild)

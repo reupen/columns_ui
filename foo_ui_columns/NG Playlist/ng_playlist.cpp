@@ -7,6 +7,7 @@
 */
 
 #include "..\stdafx.h"
+
 #include "ng_playlist.h"
 #include "ng_playlist_groups.h"
 

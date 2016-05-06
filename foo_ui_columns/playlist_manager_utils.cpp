@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "playlist_manager_utils.h"
 
 playlist_format_name_t::titleformat_hook_playlist_t::titleformat_hook_playlist_t(unsigned p_index, const char * p_name, t_size p_playing) 
 			: m_name(p_name), m_index(p_index), m_lock_name_initialised(false), 

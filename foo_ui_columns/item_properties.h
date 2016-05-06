@@ -1,5 +1,7 @@
 #pragma once
 
+#include "list_view_panel.h"
+
 struct info_section_t
 {
 	t_uint32 id;

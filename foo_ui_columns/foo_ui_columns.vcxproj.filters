@@ -516,9 +516,6 @@
     <ClInclude Include=".\rebar.h">
       <Filter>Main Window</Filter>
     </ClInclude>
-    <ClInclude Include=".\callback.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
     <ClInclude Include=".\common.h">
       <Filter>Misc</Filter>
     </ClInclude>

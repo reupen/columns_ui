@@ -1,4 +1,7 @@
 #include "stdafx.h"
+#include "playlist_switcher_v2.h"
+#include "playlist_view.h"
+#include "config.h"
 
 class export_colours : public cui::fcl::dataset
 {

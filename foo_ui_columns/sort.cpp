@@ -1,4 +1,6 @@
 #include "stdafx.h"
+#include "playlist_view.h"
+#include "sort.h"
 
 void create_image_list() /*sort arrows*/
 {
