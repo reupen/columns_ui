@@ -481,6 +481,7 @@
     <ClCompile Include=".\status_pane.cpp" />
     <ClCompile Include=".\status_pane_msgproc.cpp" />
     <ClCompile Include=".\helpers.cpp" />
+    <ClCompile Include="config_host.cpp" />
     <ClCompile Include="list_view_panel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -539,6 +540,7 @@
     <ClInclude Include=".\status_pane.h" />
     <ClInclude Include=".\helpers.h" />
     <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
+    <ClInclude Include="config_host.h" />
     <ClInclude Include="list_view_panel.h" />
   </ItemGroup>
   <ItemGroup>

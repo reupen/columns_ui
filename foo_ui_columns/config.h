@@ -98,6 +98,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 
 extern editor_font_notify g_editor_font_notify;
 extern cfg_int g_last_colour;
+extern const GUID g_guid_columns_ui_preferences_page;
 
 void g_import_pv_colours_to_unified_global();
 void g_import_fonts_to_unified(bool b_pv=true, bool b_ps=true, bool b_status=true);

@@ -454,6 +454,9 @@
     <ClCompile Include="list_view_panel.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="config_host.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -619,6 +622,9 @@
     </ClInclude>
     <ClInclude Include="list_view_panel.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="config_host.h">
+      <Filter>Prefs UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,165 +1,6 @@
 #include "stdafx.h"
 
-class config_host_generic : public preferences_page {
-public:
-	config_host_generic(const char* p_name, preferences_tab*const * const p_tabs, size_t p_tab_count, const GUID& p_guid, const GUID& p_parent_guid, cfg_int* const p_active_tab)
-		: m_child(nullptr), m_name(p_name), m_guid(p_guid), m_parent_guid(p_parent_guid), m_tabs(p_tabs), m_tab_count(p_tab_count), m_active_tab(*p_active_tab) {}
-
-	HWND create(HWND parent) override
-	{
-		return uCreateDialog(IDD_HOST, parent, g_on_message, reinterpret_cast<LPARAM>(this));
-	}
-
-	const char* get_name() override
-	{
-		return m_name;
-	}
-
-	GUID get_guid() override
-	{
-		return m_guid;
-	}
-
-	GUID get_parent_guid() override
-	{
-		return m_parent_guid;
-	}
-
-	bool reset_query() override
-	{
-		return false;
-	}
-
-	void reset() override { };
-
-	bool get_help_url(pfc::string_base& p_out) override
-	{
-		if (!(m_active_tab < (int)m_tab_count && m_tabs[m_active_tab]->get_help_url(p_out)))
-			p_out = "http://yuo.be/wiki/columns_ui:manual";
-		return true;
-	}
-
-private:
-	void destroy_child()
-	{
-		if (m_child) {
-			ShowWindow(m_child, SW_HIDE);
-			DestroyWindow(m_child);
-			m_child = nullptr;
-		}
-	}
-
-	void make_child(HWND wnd)
-	{
-		destroy_child();
-
-		HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
-
-		RECT tab;
-
-		GetWindowRect(wnd_tab, &tab);
-		MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)&tab, 2);
-
-		TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
-
-		if (m_active_tab >= (int)m_tab_count)
-			m_active_tab = 0;
-
-		if (m_active_tab < (int)m_tab_count && m_active_tab >= 0) {
-			m_child = m_tabs[m_active_tab]->create(wnd);
-		}
-
-		//SetWindowPos(wnd_tab,HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
-
-		if (m_child) {
-			EnableThemeDialogTexture(m_child, ETDT_ENABLETAB);
-		}
-
-		SetWindowPos(m_child, 0, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, SWP_NOZORDER);
-		SetWindowPos(wnd_tab, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-		ShowWindow(m_child, SW_SHOWNORMAL);
-		//UpdateWindow(child);
-	}
-
-	static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-	{
-		config_host_generic* p_instance;
-		if (msg == WM_INITDIALOG) {
-			p_instance = reinterpret_cast<config_host_generic*>(lp);
-			SetWindowLongPtr(wnd, DWLP_USER, lp);
-		} else
-			p_instance = reinterpret_cast<config_host_generic*>(GetWindowLongPtr(wnd, DWLP_USER));
-		return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
-	}
-
-	BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-	{
-		switch (msg) {
-			case WM_INITDIALOG:
-				{
-					HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
-					//SendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
-					unsigned n, count = m_tab_count;
-					for (n = 0; n < count; n++) {
-						uTabCtrl_InsertItemText(wnd_tab, n, m_tabs[n]->get_name());
-					}
-					TabCtrl_SetCurSel(wnd_tab, m_active_tab);
-					make_child(wnd);
-				}
-				break;
-			case WM_DESTROY:
-				break;
-			case WM_WINDOWPOSCHANGED:
-				{
-					auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
-					// Temporary workaround for various bugs that occur due to foobar2000 1.0+ 
-					// having a dislike for destroying preference pages
-					if (lpwp->flags & SWP_HIDEWINDOW) {
-						destroy_child();
-					} else if (lpwp->flags & SWP_SHOWWINDOW && !m_child) {
-						make_child(wnd);
-					}
-				}
-				break;
-			case WM_NOTIFY:
-				switch (((LPNMHDR)lp)->idFrom) {
-					case IDC_TAB1:
-						switch (((LPNMHDR)lp)->code) {
-							case TCN_SELCHANGE:
-								{
-									m_active_tab = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-									make_child(wnd);
-								}
-								break;
-						}
-						break;
-				}
-				break;
-
-
-			case WM_PARENTNOTIFY:
-				switch (wp) {
-					case WM_DESTROY:
-						{
-							if (m_child && (HWND)lp == m_child)
-								m_child = 0;
-						}
-						break;
-				}
-				break;
-		}
-		return 0;
-	}
-
-	HWND m_child;
-	const char* m_name;
-	const GUID &m_guid, &m_parent_guid;
-	preferences_tab*const * const m_tabs;
-	const size_t m_tab_count;
-	cfg_int& m_active_tab;
-};
-
+#include "config_host.h"
 
 cfg_struct_t<LOGFONT> cfg_editor_font(create_guid(0xd429d322, 0xd236, 0x7356, 0x33, 0x25, 0x4b, 0x67, 0xc5, 0xd4, 0x50, 0x3e), get_menu_font());
 cfg_int cfg_import_titles(create_guid(0xcd062463, 0x488f, 0xc7ec, 0x56, 0xf2, 0x90, 0x7f, 0x0a, 0xfe, 0x77, 0xda), 1);
@@ -209,13 +50,13 @@ static preferences_tab* g_tabs_playlist_view[] =
 };
 
 // {DF6B9443-DCC5-4647-8F8C-D685BF25BD09}
-const GUID guid_config_host =
+const GUID g_guid_columns_ui_preferences_page =
 {0xdf6b9443, 0xdcc5, 0x4647, {0x8f, 0x8c, 0xd6, 0x85, 0xbf, 0x25, 0xbd, 0x9}};
 
 void g_show_artwork_settings()
 {
 	cfg_child = 5;
-	static_api_ptr_t<ui_control>()->show_preferences(guid_config_host);
+	static_api_ptr_t<ui_control>()->show_preferences(g_guid_columns_ui_preferences_page);
 }
 
 // {779F2FA6-3B76-4829-9E02-2E579CA510BF}
@@ -238,15 +79,15 @@ namespace columns {
 
 	const GUID& config_get_main_guid()
 	{
-		return guid_config_host;
+		return g_guid_columns_ui_preferences_page;
 	}
 };
 
 
-static service_factory_single_t<config_host_generic> main_page("Columns UI", g_tabs, tabsize(g_tabs), guid_config_host, preferences_page::guid_display, &cfg_child);
-static service_factory_single_t<config_host_generic> playlist_view_page("Playlist view", g_tabs_playlist_view, tabsize(g_tabs_playlist_view), guid_playlist_view_page, guid_config_host, &cfg_child_playlist);
-static service_factory_single_t<config_host_generic> playlist_switcher_page("Playlist switcher", g_tabs_panels, tabsize(g_tabs_panels), guid_playlist_switcher_page, guid_config_host, &cfg_child_panels);
-static service_factory_single_t<config_host_generic> filters_page("Filters", g_tabs_filters, tabsize(g_tabs_filters), guid_filters_page, guid_config_host, &cfg_child_filters);
+static service_factory_single_t<config_host_generic> main_page("Columns UI", g_tabs, tabsize(g_tabs), g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
+static service_factory_single_t<config_host_generic> playlist_view_page("Playlist view", g_tabs_playlist_view, tabsize(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
+static service_factory_single_t<config_host_generic> playlist_switcher_page("Playlist switcher", g_tabs_panels, tabsize(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
+static service_factory_single_t<config_host_generic> filters_page("Filters", g_tabs_filters, tabsize(g_tabs_filters), guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);
 
 
 void g_set_tab(const char* name)

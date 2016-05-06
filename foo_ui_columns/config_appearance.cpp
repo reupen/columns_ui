@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "config_host.h"
+
 /*
 * Fonts: 
 *  Tabs - playlist tabs, tab stack
@@ -333,185 +335,11 @@ const GUID g_guid_cfg_child_appearance =
 
 cfg_int cfg_child_appearance(g_guid_cfg_child_appearance,0);
 
-class config_tabs : public preferences_page
-{
-	typedef config_tabs t_self;
-public:
-	HWND m_wnd_child;
-	HWND m_wnd;
-private:
-	void destroy_child()
-	{
-		if (m_wnd_child) {
-			ShowWindow(m_wnd_child, SW_HIDE);
-			DestroyWindow(m_wnd_child);
-			m_wnd_child = NULL;
-		}
-	}
-
-	void make_child()
-	{
-		destroy_child();
-
-		HWND wnd_tab = GetDlgItem(m_wnd, IDC_TAB1);
-		
-		RECT tab;
-		
-		GetWindowRect(wnd_tab,&tab);
-		MapWindowPoints(HWND_DESKTOP, m_wnd, (LPPOINT)&tab, 2);
-		
-		TabCtrl_AdjustRect(wnd_tab,FALSE,&tab);
-		
-		unsigned count = tabsize(g_tabs_appearance);
-		if (cfg_child_appearance >= count) cfg_child_appearance = 0;
-
-		if (cfg_child_appearance < count && cfg_child_appearance >= 0)
-		{
-			m_wnd_child = g_tabs_appearance[cfg_child_appearance]->create(m_wnd);
-		}
-
-		//SetWindowPos(child,HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
-		
-		if (m_wnd_child) 
-		{
-			EnableThemeDialogTexture(m_wnd_child, ETDT_ENABLETAB);
-		}
-
-		SetWindowPos(m_wnd_child, 0, tab.left, tab.top, tab.right-tab.left, tab.bottom-tab.top, SWP_NOZORDER);
-		SetWindowPos(wnd_tab,HWND_BOTTOM,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
-		
-		ShowWindow(m_wnd_child, SW_SHOWNORMAL);
-		//UpdateWindow(child);
-	}
-
-	static BOOL CALLBACK g_on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
-		t_self * p_data = NULL;
-		if (msg == WM_INITDIALOG)
-		{
-			p_data = reinterpret_cast<t_self*>(lp);
-			SetWindowLongPtr(wnd, DWLP_USER, lp);
-		}
-		else
-			p_data = reinterpret_cast<t_self*>(GetWindowLongPtr(wnd, DWLP_USER));
-		return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
-	}
-
-	BOOL on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
-		switch(msg)
-		{
-		case WM_INITDIALOG:
-			{
-				m_wnd = wnd;
-
-				HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
-				unsigned n, count = tabsize(g_tabs_appearance);
-
-
-				for (n=0; n<count; n++)
-				{
-					uTabCtrl_InsertItemText(wnd_tab, n, g_tabs_appearance[n]->get_name());
-				}
-				
-				TabCtrl_SetCurSel(wnd_tab, cfg_child_appearance);
-				
-				make_child();
-				
-			}
-			
-			break;
-		case WM_DESTROY:
-			m_wnd = NULL;
-			break;
-		case WM_WINDOWPOSCHANGED:
-			{
-				auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
-				// Temporary workaround for various bugs that occur due to foobar2000 1.0+ 
-				// having a dislike for destroying preference pages
-				if (lpwp->flags & SWP_HIDEWINDOW) {
-					destroy_child();
-				}
-				else if (lpwp->flags & SWP_SHOWWINDOW && !m_wnd_child) {
-					make_child();
-				}
-			}
-			break;
-		case WM_NOTIFY:
-			switch (((LPNMHDR)lp)->idFrom)
-			{
-			case IDC_TAB1:
-				switch (((LPNMHDR)lp)->code)
-				{
-				case TCN_SELCHANGE:
-					{
-						cfg_child_appearance = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-						make_child();
-					}
-					break;
-				}
-				break;
-			}
-			break;
-			
-			
-			case WM_PARENTNOTIFY:
-				switch(wp)
-				{
-				case WM_DESTROY:
-					{
-						if (m_wnd_child && (HWND)lp == m_wnd_child)
-							m_wnd_child = NULL;
-					}
-					break;	
-				}
-				break;
-		}
-		return 0;
-	}
-	
-
-
-
-public:
-	HWND create(HWND parent)
-	{
-		return uCreateDialog(IDD_HOST,parent,g_on_message, (LPARAM)this);
-	}
-	const char * get_name() {return "Colours and Fonts";}
-	static const GUID guid;
-
-	virtual bool get_help_url(pfc::string_base & p_out)
-	{
-		if (!(cfg_child_appearance < tabsize (g_tabs_appearance) && g_tabs_appearance[cfg_child_appearance]->get_help_url(p_out)))
-			p_out = "http://yuo.be/wiki/columns_ui:manual";
-		return true;
-	}
-
-	virtual GUID get_guid()
-	{
-		return guid;
-	}
-	virtual GUID get_parent_guid() 
-	{
-		static const GUID ret = 
-		{ 0xdf6b9443, 0xdcc5, 0x4647, { 0x8f, 0x8c, 0xd6, 0x85, 0xbf, 0x25, 0xbd, 0x9 } };
-		return ret;
-	}
-	virtual bool reset_query()	{return false;}
-	virtual void reset() {};
-
-};
-
 // {41E6D7ED-A1DC-4d84-9BC9-352DAF7788B0}
-const GUID config_tabs::guid = 
-{ 0x41e6d7ed, 0xa1dc, 0x4d84, { 0x9b, 0xc9, 0x35, 0x2d, 0xaf, 0x77, 0x88, 0xb0 } };
+constexpr const GUID g_guid_colour_preferences =
+{ 0x41e6d7ed, 0xa1dc, 0x4d84,{ 0x9b, 0xc9, 0x35, 0x2d, 0xaf, 0x77, 0x88, 0xb0 } };
 
-preferences_page_factory_t<config_tabs> g_config_tabs;
-
-
-
-
+static service_factory_single_t<config_host_generic> g_config_tabs("Colours and Fonts", g_tabs_appearance, tabsize(g_tabs_appearance), g_guid_colour_preferences, g_guid_columns_ui_preferences_page, &cfg_child_appearance);
 
 
 class fcl_colours_t : public cui::fcl::dataset
