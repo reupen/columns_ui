@@ -2,13 +2,13 @@ version: 1.0.{build}
 environment:
   Platform: Win32
   matrix:
-  - PlatformToolset: LLVM-vs2014
+  - PlatformToolset: Default
     Configuration: Release
-  - PlatformToolset: LLVM-vs2014
+  - PlatformToolset: Default
     Configuration: Debug
-  - PlatformToolset: Default
+  - PlatformToolset: LLVM-vs2014
     Configuration: Release
-  - PlatformToolset: Default
+  - PlatformToolset: LLVM-vs2014
     Configuration: Debug
 matrix:
   allow_failures:
