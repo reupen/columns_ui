@@ -182,7 +182,8 @@ namespace artwork_panel
 		{
 		case WM_CREATE:
 		{
-			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
+			Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, NULL));
 			m_artwork_loader = new artwork_reader_manager_t;//pfc::rcnew_t<artwork_reader_t>();
 			//		m_nowplaying_artwork_loader.initialise(this);
 			t_size i, count = tabsize(g_artwork_types);

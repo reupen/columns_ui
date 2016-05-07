@@ -1065,7 +1065,8 @@ namespace filter_panel {
 		get_initial_handles(handles);
 		populate_list(handles);
 		double time = timer0.query();
-		console::formatter() << "Filter Panel - " << m_field_data.m_name << ": initialised in " << pfc::format_float(time, 0, 3) <<" s";
+		console::formatter formatter;
+		formatter << "Filter Panel - " << m_field_data.m_name << ": initialised in " << pfc::format_float(time, 0, 3) <<" s";
 
 		g_windows.add_item(this);
 		mmh::fb2k::library_callback_manager::g_register_callback(this);

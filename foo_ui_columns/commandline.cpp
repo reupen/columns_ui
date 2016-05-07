@@ -56,7 +56,8 @@ public:
 				if (parent) static_api_ptr_t<ui_control>()->activate();
 
 				if (!stricmp_utf8("fcl", pfc::string_extension(path))) {
-					if (command == command_import_quiet || uMessageBox(parent, pfc::string_formatter()
+					pfc::string_formatter formatter;
+					if (command == command_import_quiet || uMessageBox(parent, formatter
 						<< "Are you sure you want to import the "
 						<< pfc::string_filename(path)
 						<< " configuration? Your current configuration will be lost.", "Import configuration?", MB_YESNO) == IDYES)

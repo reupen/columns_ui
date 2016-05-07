@@ -43,16 +43,16 @@ mainmenu_group_factory g_mainmenu_group_playlisy_misc_part(mainmenu_groups_colum
 mainmenu_group_factory g_mainmenu_group_view_layout_commands_part(mainmenu_groups_columns::view_layout_commands, mainmenu_groups_columns::view_layout_popup, mainmenu_commands::sort_priority_base);
 mainmenu_group_factory g_mainmenu_group_view_layout_presets_part(mainmenu_groups_columns::view_layout_presets, mainmenu_groups_columns::view_layout_popup, mainmenu_commands::sort_priority_base+1);
 
-const mainmenu_activate_now_playing_t g_mainmenu_activate_now_playing;
-const mainmenu_decrease_fontsize_t g_mainmenu_decrease_fontsize;
-const mainmenu_increase_fontsize_t g_mainmenu_increase_fontsize;
-const mainmenu_show_statusbar_t g_mainmenu_show_statusbar;
-const mainmenu_show_statuspane_t g_mainmenu_show_statuspane;
-const mainmenu_show_toolbars_t g_mainmenu_show_toolbars;
-const mainmenu_export_layout_t g_mainmenu_export_layout;
-const mainmenu_import_layout_t g_mainmenu_import_layout;
+const mainmenu_activate_now_playing_t g_mainmenu_activate_now_playing{};
+const mainmenu_decrease_fontsize_t g_mainmenu_decrease_fontsize{};
+const mainmenu_increase_fontsize_t g_mainmenu_increase_fontsize{};
+const mainmenu_show_statusbar_t g_mainmenu_show_statusbar{};
+const mainmenu_show_statuspane_t g_mainmenu_show_statuspane{};
+const mainmenu_show_toolbars_t g_mainmenu_show_toolbars{};
+const mainmenu_export_layout_t g_mainmenu_export_layout{};
+const mainmenu_import_layout_t g_mainmenu_import_layout{};
 //const mainmenu_activate_t g_mainmenu_activate;
-const mainmenu_layout_live_edit_t g_mainmenu_layout_live_edit;
+const mainmenu_layout_live_edit_t g_mainmenu_layout_live_edit{};
 
 const mainmenu_command_t * const g_mainmenu_commands_playlist_font_part[] = {&g_mainmenu_increase_fontsize, &g_mainmenu_decrease_fontsize};
 const mainmenu_command_t * const g_mainmenu_commands_view_columns_part[] = {&g_mainmenu_show_statusbar,&g_mainmenu_show_statuspane,&g_mainmenu_show_toolbars/*,&g_mainmenu_export_layout,&g_mainmenu_import_layout*/};

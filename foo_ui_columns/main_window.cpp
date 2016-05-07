@@ -11,9 +11,6 @@
 
 #include "main_window.h"
 
-GUID null_guid = 
-{ 0, 0, 0, { 0, 0, 0, 0, 0, 0, 0, 0 } };
-
 rebar_window * g_rebar_window = 0;
 layout_window g_layout_window;
 cui::main_window_t cui::g_main_window;

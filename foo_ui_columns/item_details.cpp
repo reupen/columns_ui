@@ -370,13 +370,14 @@ void item_details_t::refresh_contents(bool b_new_track)
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
 
+		titleformat_hook_change_font tf_hook(lf);
 		pfc::string8_fast_aggressive temp, temp2;
 		temp.prealloc(2048);
 		temp2.prealloc(2048);
 		if (m_nowplaying_active)
-			static_api_ptr_t<playback_control>()->playback_format_title(&titleformat_hook_change_font(lf),temp, m_to, NULL, playback_control::display_level_all);
+			static_api_ptr_t<playback_control>()->playback_format_title(&tf_hook, temp, m_to, NULL, playback_control::display_level_all);
 		else
-			m_handles[0]->format_title(&titleformat_hook_change_font(lf),temp, m_to, NULL);
+			m_handles[0]->format_title(&tf_hook, temp, m_to, NULL);
 
 		if (strcmp(temp, m_current_text_raw))
 		{

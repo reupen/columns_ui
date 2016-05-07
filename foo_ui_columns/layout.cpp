@@ -633,7 +633,8 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 		HMENU menu = CreatePopupMenu();
 		HMENU menu_change = CreatePopupMenu();
 		uie::window_info_list_simple panels;
-		g_get_panel_list(panels, uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()));
+		uie::window_host_ptr p_host(&g_window_host_layout_factory.get_static_instance());
+		g_get_panel_list(panels, p_host);
 		enum {ID_CLOSE= 1, ID_CHANGE_BASE = 2};
 
 		uie::splitter_window_ptr p_splitter;
@@ -673,14 +674,16 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 					if (cmd >=ID_CHANGE_BASE && cmd < panels.get_count()+ID_CHANGE_BASE)
 					{
 						t_size panel_index = cmd - ID_CHANGE_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						set_child(si.get_ptr());
 					}
 					else if (cmd >=ID_ADD_BASE && cmd < panels.get_count()+ID_ADD_BASE)
 					{
 						t_size panel_index = cmd - ID_ADD_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						p_splitter->add_panel(si.get_ptr());
 					}
@@ -904,14 +907,16 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 					else if (cmd >=ID_CHANGE_BASE && cmd < panels.get_count()+ID_CHANGE_BASE)
 					{
 						t_size panel_index = cmd - ID_CHANGE_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						set_child(si.get_ptr());
 					}
 					else if (cmd >=ID_PARENT_ADD_BASE && cmd < panels.get_count()+ID_PARENT_ADD_BASE)
 					{
 						t_size panel_index = cmd - ID_PARENT_ADD_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						p_container->add_panel(si.get_ptr());
 					}
@@ -949,7 +954,8 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 					else if (cmd >=ID_ADD_BASE && cmd < panels.get_count()+ID_ADD_BASE)
 					{
 						t_size panel_index = cmd - ID_ADD_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						p_splitter->add_panel(si.get_ptr());
 					}

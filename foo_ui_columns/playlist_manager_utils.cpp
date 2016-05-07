@@ -18,7 +18,8 @@ playlist_format_name_t::playlist_format_name_t(unsigned p_index, const char * sr
 	{
 		service_ptr_t<titleformat_object> to_temp;
 		static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp,cfg_playlist_switcher_tagz);
-		to_temp->run(&titleformat_hook_playlist_t(p_index, src, p_playing), *this, NULL);
+		titleformat_hook_playlist_t tf_hook(p_index, src, p_playing);
+		to_temp->run(&tf_hook, *this, NULL);
 	}
 	else set_string(src);
 }

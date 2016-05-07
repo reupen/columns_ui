@@ -137,14 +137,16 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 					else if (cmd >=ID_CHANGE_BASE && cmd < panels.get_count()+ID_CHANGE_BASE)
 					{
 						t_size panel_index = cmd - ID_CHANGE_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						p_container->replace_panel(index, si.get_ptr());
 					}
 					else if (cmd >=ID_ADD_BASE && cmd < panels.get_count()+ID_ADD_BASE)
 					{
 						t_size panel_index = cmd - ID_ADD_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						p_splitter->add_panel(si.get_ptr());
 					}
@@ -169,10 +171,11 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 								p_container->get_panel(index, newsi);
 
 								stream_writer_memblock conf;
-								try {splitter->get_config(&conf, abort_callback_impl());}
+								abort_callback_dummy p_abort;
+								try {splitter->get_config(&conf, p_abort);}
 								catch (const pfc::exception &) {};
 								newsi->set_panel_guid(panels[panel_index].guid);
-								newsi->set_panel_config(&stream_reader_memblock_ref(conf.m_data.get_ptr(), conf.m_data.get_size()), conf.m_data.get_size());
+								newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
 								p_container->replace_panel(index, newsi.get_ptr());
 							}
@@ -182,7 +185,8 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 					else if (cmd >=ID_PARENT_ADD_BASE && cmd < panels.get_count()+ID_PARENT_ADD_BASE)
 					{
 						t_size panel_index = cmd - ID_PARENT_ADD_BASE;
-						uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
+						uie::splitter_item_ptr si;
+						si = new uie::splitter_item_simple_t;
 						si->set_panel_guid(panels[panel_index].guid);
 						p_container->add_panel(si.get_ptr());
 					}

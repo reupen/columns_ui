@@ -366,7 +366,8 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 							data.get_entry_content(i, handles);
 							data.get_side_data(i, sidedata);
 							stream_reader_memblock_ref side_data_reader(static_cast<t_uint8*>(sidedata.get_ptr()), sidedata.get_size());
-							t_size index = m_playlist_api->create_playlist_ex(name, pfc_infinite, index_insert + i, handles, &side_data_reader, abort_callback_dummy());
+							abort_callback_dummy p_abort;
+							t_size index = m_playlist_api->create_playlist_ex(name, pfc_infinite, index_insert + i, handles, &side_data_reader, p_abort);
 							if (i == 0) index_activate = index;
 						}
 						if (count)

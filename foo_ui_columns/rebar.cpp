@@ -6,7 +6,6 @@
 
 extern rebar_window * g_rebar_window;
 
-extern GUID null_guid;
 extern cfg_rebar g_cfg_rebar;
 extern cfg_band_cache_t cfg_band_cache;
 
@@ -88,7 +87,7 @@ void cfg_rebar::import_config(stream_reader * p_reader, t_size size, t_uint32 mo
 	p_reader->read_lendian_t(count, p_abort);
 	for(i=0;i<count;i++)
 	{
-		rebar_band_info * temp = new rebar_band_info(null_guid,100);
+		rebar_band_info * temp = new rebar_band_info(pfc::guid_null,100);
 		temp->import(p_reader, mode, p_abort);
 
 		uie::window_ptr ptr;
@@ -117,7 +116,7 @@ void band_cache::add_entry(const GUID & guid, unsigned width)
 	unsigned n, count = get_count();
 	for (n=0;n<count;n++)
 	{
-		band_cache_entry & p_bce = get_item(n);
+		band_cache_entry & p_bce = (*this)[n];
 		if (p_bce.guid == guid)
 		{
 			p_bce.width = width;
@@ -198,7 +197,7 @@ void cfg_band_cache_t::reset()
 	entries.remove_all();
 }
 
-rebar_band_info::rebar_band_info(GUID id = null_guid, unsigned h = 100) : guid(id), /*guid2(id), */wnd(0), p_ext(0), width(h), rbbs_break(0) {};
+rebar_band_info::rebar_band_info(GUID id, unsigned h) : guid(id), /*guid2(id), */wnd(0), p_ext(0), width(h), rbbs_break(0) {};
 
 
 void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback & p_abort)
@@ -329,7 +328,7 @@ void rebar_info::set_rebar_info(rebar_info & in)
 	unsigned n, count = in.get_count();
 	for (n=0; n<count; n++)
 	{
-		rebar_band_info * item = new(std::nothrow) rebar_band_info(null_guid, 100);
+		rebar_band_info * item = new(std::nothrow) rebar_band_info(pfc::guid_null, 100);
 		if (item)
 		{
 			in[n]->copy(*item);
@@ -414,7 +413,7 @@ void cfg_rebar::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abor
 
 	for (uint32_t i = 0; i < itemCount; i++)
 	{
-		auto item = std::make_unique<rebar_band_info>(null_guid, 100);
+		auto item = std::make_unique<rebar_band_info>(pfc::guid_null, 100);
 		item->read(p_reader, p_abort);
 		entries.add_item(item.release());
 	}
@@ -446,7 +445,7 @@ void cfg_rebar::get_rebar_info(rebar_info & out)
 	unsigned n, count = entries.get_count();
 	for (n=0; n<count; n++)
 	{
-		rebar_band_info * item = new(std::nothrow) rebar_band_info(null_guid,100);
+		rebar_band_info * item = new(std::nothrow) rebar_band_info(pfc::guid_null,100);
 		if (item)
 		{
 			entries[n]->copy(*item);
@@ -460,7 +459,7 @@ void cfg_rebar::set_rebar_info(rebar_info & in)
 	unsigned n, count = in.get_count();
 	for (n=0; n<count; n++)
 	{
-		rebar_band_info * item = new(std::nothrow) rebar_band_info(null_guid,100);
+		rebar_band_info * item = new(std::nothrow) rebar_band_info(pfc::guid_null,100);
 		if (item)
 		{
 			in[n]->copy(*item);

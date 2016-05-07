@@ -61,7 +61,7 @@ public:
 	uih::IntegerAndDpi<uint32_t> width;
 	bool rbbs_break;
 
-	rebar_band_info(GUID id , unsigned h);
+	rebar_band_info(GUID id = pfc::guid_null, unsigned h = 100);
 	void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback & p_abort);
 	void rebar_band_info::import(stream_reader * p_reader, t_uint32 type, abort_callback & p_abort);
 	void rebar_band_info::write(stream_writer * out, abort_callback & p_abort);
