@@ -507,11 +507,19 @@ namespace pvt {
 					global_variable_list extra_items;
 
 					{
+						titleformat_hook_date tf_hook_date(&st);
+						titleformat_hook_playlist_name tf_hook_playlist_name;
 
-					if (extra)
-						m_playlist_api->activeplaylist_item_format_title(n, &titleformat_hook_splitter_pt3(&titleformat_hook_set_global<true,false>(extra_items,false), date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), pfc::string8(), m_script_global, 0, play_control::display_level_none);
+						if (extra) {
+							titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items, false);
+							titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+							pfc::string8 output;
+							m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
+						}
 
-					m_playlist_api->activeplaylist_item_format_title(n, &titleformat_hook_splitter_pt3(extra ? &titleformat_hook_set_global<false,true>(extra_items, false) : 0 , date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), temp, m_column_data[index].m_sort_script, 0, play_control::display_level_none);
+						titleformat_hook_set_global<false, true> tf_hook_get_global(extra_items, false);
+						titleformat_hook_splitter_pt3 tf_hook(&extra ? &tf_hook_get_global : 0, date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+						m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp, m_column_data[index].m_sort_script, nullptr, play_control::display_level_none);
 					}
 
 					const char * ptr = temp.get_ptr();
@@ -588,7 +596,8 @@ namespace pvt {
 		set_alternate_selection_model(cfg_alternative_sel != 0);
 		set_allow_header_rearrange(true);
 		
-		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &Gdiplus::GdiplusStartupInput(), NULL));
+		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, NULL));
 		m_artwork_manager = new artwork_reader_manager_ng_t;
 		m_artwork_manager->initialise();
 		m_artwork_manager->add_type(album_art_ids::cover_front);
@@ -933,8 +942,14 @@ namespace pvt {
 		if (b_date) 
 			GetLocalTime(&st);
 
-		if (b_global)
-			m_playlist_api->activeplaylist_item_format_title(index, &titleformat_hook_splitter_pt3(&titleformat_hook_set_global<true,false>(globals,false), b_date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), str_dummy, m_script_global, 0, play_control::display_level_all);
+		titleformat_hook_date tf_hook_date(&st);
+		titleformat_hook_playlist_name tf_hook_playlist_name;
+
+		if (b_global) {
+			titleformat_hook_set_global<true, false> tf_hook_set_global(globals, false);
+			titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : 0, &tf_hook_date);
+			m_playlist_api->activeplaylist_item_format_title(index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
+		}
 
 		style_data_cell_info_t style_data_item = style_data_cell_info_t::g_create_default();
 
@@ -945,24 +960,30 @@ namespace pvt {
 
 		metadb_handle_ptr ptr;
 		m_playlist_api->activeplaylist_get_item_handle(ptr, index);
-			
+
+		titleformat_hook_set_global<false, true> tf_hook_get_global(globals, false);
+
 		t_size item_index = get_item_display_index(index);
 		for (i=0; i<count_display_groups; i++)
 		{
 			t_size count_groups=p_item->get_group_count();
 			style_data_cell_info_t style_data_group = style_data_cell_info_t::g_create_default();
-			if (ptr.is_valid() &&  m_script_global_style.is_valid())
-				//m_playlist_api->activeplaylist_item_format_title(index, 
-				//&titleformat_hook_splitter_pt3(&titleformat_hook_style_v2(style_data_group, item_index-i-1, true),b_global ? &titleformat_hook_set_global<false,true>(globals, false) : 0,NULL), temp, m_script_global_style, 0, play_control::display_level_all);
-				ptr->format_title(&titleformat_hook_splitter_pt3(&titleformat_hook_style_v2(style_data_group, item_index-i-1, true),b_global ? &titleformat_hook_set_global<false,true>(globals, false) : 0,b_date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), temp, m_script_global_style, NULL);
+			if (ptr.is_valid() && m_script_global_style.is_valid()) {
+				titleformat_hook_style_v2 tf_hook_style(style_data_group, item_index - i - 1, true);
+				titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+				ptr->format_title(&tf_hook, temp, m_script_global_style, NULL);
+			}
 			//count_display_groups > 0 => count_groups > 0
 			style_cache_manager::g_add_object(style_data_group, p_item->get_group(count_groups-i-1)->m_style_data);
 		}
 
 		for (i=0;i<count;i++)
 		{
-			m_playlist_api->activeplaylist_item_format_title(index, &titleformat_hook_splitter_pt3(b_global ? &titleformat_hook_set_global<false,true>(globals, false) :0, b_date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), temp, m_column_data[i].m_display_script, NULL, playback_control::display_level_all);
-			p_out[i]=temp;
+			{
+				titleformat_hook_splitter_pt3 tf_hook(b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+				m_playlist_api->activeplaylist_item_format_title(index, &tf_hook, temp, m_column_data[i].m_display_script, NULL, playback_control::display_level_all);
+				p_out[i] = temp;
+			}
 
 			style_data_cell_info_t style_temp = style_data_cell_info_t::g_create_default();
 
@@ -971,9 +992,12 @@ namespace pvt {
 			{
 				if (!colour_global_av)
 				{
-					if (m_script_global_style.is_valid())
-						m_playlist_api->activeplaylist_item_format_title(index, 
-						&titleformat_hook_splitter_pt3(&titleformat_hook_style_v2(style_data_item, item_index),b_global ? &titleformat_hook_set_global<false,true>(globals, false) : 0,b_date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), temp, m_script_global_style, 0, play_control::display_level_all);
+					if (m_script_global_style.is_valid()) {
+						titleformat_hook_style_v2 tf_hook_style(style_data_item, item_index);
+						titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+						m_playlist_api->activeplaylist_item_format_title(index,
+							&tf_hook, temp, m_script_global_style, 0, play_control::display_level_all);
+					}
 
 					colour_global_av = true;
 				}
@@ -981,10 +1005,12 @@ namespace pvt {
 			}
 			if (b_custom)
 			{
-				if (m_column_data[i].m_style_script.is_valid())
-					m_playlist_api->activeplaylist_item_format_title(index, 
-					&titleformat_hook_splitter_pt3(&titleformat_hook_style_v2(style_temp, item_index),b_global ? &titleformat_hook_set_global<false,true>(globals, false) : 0, b_date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()) 
-					, temp, m_column_data[i].m_style_script, 0, play_control::display_level_all);
+				if (m_column_data[i].m_style_script.is_valid()) {
+					titleformat_hook_style_v2 tf_hook_style(style_temp, item_index);
+					titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+					m_playlist_api->activeplaylist_item_format_title(index, &tf_hook, temp, m_column_data[i].m_style_script, 
+						nullptr, play_control::display_level_all);
+				}
 			}
 			style_cache_manager::g_add_object(style_temp, get_item(index)->m_style_data[i]);
 			

@@ -138,7 +138,8 @@ namespace pvt
 		catch(pfc::exception const & e)
 		{
 			m_bitmaps.remove_all();
-			console::formatter() << "Album Art loading failure: " << e.what();
+			console::formatter formatter; 
+			formatter << "Album Art loading failure: " << e.what();
 			ret = -1;
 		}
 		//send this first so thread gets closed first
@@ -201,7 +202,8 @@ namespace pvt
 									const char * pMainPath = realPath;
 									if (!stricmp_utf8_partial(pMainPath, "file://"))
 										pMainPath += 7;
-									puFindFile pSearcher = uFindFirstFile(pfc::string8() << pMainPath << ".*");
+									pfc::string_formatter search_pattern;
+									puFindFile pSearcher = uFindFirstFile(search_pattern << pMainPath << ".*");
 									pfc::string8 searchPath = realPath;
 									realPath.reset();
 									if (pSearcher)
@@ -242,7 +244,8 @@ namespace pvt
 												pfc::string8 canPath;
 												try
 												{
-													filesystem::g_get_canonical_path(pfc::string8() << realPath << "." << image_extensions[i], canPath);
+													pfc::string_formatter realPathExt;
+													filesystem::g_get_canonical_path(realPathExt << realPath << "." << image_extensions[i], canPath);
 													if (!filesystem::g_is_remote_or_unrecognized(canPath))
 													{
 														filesystem::g_open(file, canPath, filesystem::open_mode_read, p_abort);
@@ -294,7 +297,8 @@ namespace pvt
 						}
 						catch(pfc::exception const & e)
 						{
-							console::formatter() << "Requested Album Art entry could not be retrieved: " << e.what();
+							console::formatter formatter;
+							formatter << "Requested Album Art entry could not be retrieved: " << e.what();
 						}
 					}
 				}
@@ -323,7 +327,8 @@ namespace pvt
 						}
 						catch(exception_io const & e)
 						{
-							console::formatter() << "Requested Album Art entry could not be retrieved: " << e.what();
+							console::formatter formatter;
+							formatter << "Requested Album Art entry could not be retrieved: " << e.what();
 						}
 					}
 				}
