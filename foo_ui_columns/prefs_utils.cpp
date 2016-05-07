@@ -28,10 +28,16 @@ void preview_to_console(const char * spec, bool extra)
 		service_ptr_t<titleformat_object> to_temp;
 		static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, spec);
 
+		titleformat_hook_set_global<false, true> tf_hook_set_global(extra_items, b_legacy);
+		titleformat_hook_date tf_hook_date(&st);
+
+		titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : nullptr);
+
 		//0.9 fallout
-		playlist_api->activeplaylist_item_format_title(idx, &titleformat_hook_impl_splitter(extra ? &titleformat_hook_set_global<false, true>(extra_items, b_legacy) : 0, b_date ? &titleformat_hook_date(&st) : 0), temp, to_temp, 0, play_control::display_level_all);
+		playlist_api->activeplaylist_item_format_title(idx, &tf_hook, temp, to_temp, 0, play_control::display_level_all);
 		//	if (map) temp.replace_char(6, 3);
-		popup_message::g_show(temp, pfc::string8() << "Preview of track " << (idx + 1));
+		pfc::string_formatter formatter;
+		popup_message::g_show(temp, formatter << "Preview of track " << (idx + 1));
 	}
 	//console::popup();
 }

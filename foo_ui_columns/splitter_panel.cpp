@@ -115,11 +115,10 @@ void splitter_window_impl::panel::import(stream_reader*t, abort_callback & p_abo
 	if (uie::window::create_by_guid(m_guid, m_child))
 	{
 		try {
-			m_child->import_config(&stream_reader_memblock_ref(data.get_ptr(), data.get_size()), data.get_size(), p_abort);
+			m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
 		}
 		catch (const exception_io &) {};
-		m_child_data.set_size(0);
-		m_child->get_config(&stream_writer_memblock_ref(m_child_data), p_abort);
+		m_child->get_config_to_array(m_child_data, p_abort, true);
 	}
 	//else
 	//	throw pfc::exception_not_implemented();
@@ -141,8 +140,7 @@ void splitter_window_impl::panel::write(stream_writer * out, abort_callback & p_
 {
 	if (m_child.is_valid())
 	{
-		m_child_data.set_size(0);
-		m_child->get_config(&stream_writer_memblock_ref(m_child_data), p_abort);
+		m_child->get_config_to_array(m_child_data, p_abort, true);
 	}
 	out->write_lendian_t(m_guid, p_abort);
 	out->write_lendian_t(m_caption_orientation, p_abort);
@@ -167,7 +165,7 @@ void splitter_window_impl::panel::_export(stream_writer * out, abort_callback & 
 		if (!uie::window::create_by_guid(m_guid, ptr))
 			throw cui::fcl::exception_missing_panel();
 		try {
-			ptr->set_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size(), p_abort);
+			ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
 		}
 		catch (const exception_io &) {};
 	}
@@ -209,7 +207,7 @@ void splitter_window_impl::panel::set_from_splitter_item(const uie::splitter_ite
 		m_size.dpi = splitter_item_v2->m_size_v2_dpi;
 	}
 	m_guid = p_source->get_panel_guid();
-	p_source->get_panel_config(&stream_writer_memblock_ref(m_child_data, true));
+	p_source->get_panel_config_to_array(m_child_data, true);
 }
 
 uie::splitter_item_full_v2_t * splitter_window_impl::panel::create_splitter_item(bool b_set_ptr /*= true*/)
@@ -222,7 +220,7 @@ uie::splitter_item_full_v2_t * splitter_window_impl::panel::create_splitter_item
 	ret->m_show_caption = m_show_caption;
 	ret->m_size = m_size;
 	ret->set_panel_guid(m_guid);
-	ret->set_panel_config(&stream_reader_memblock_ref(m_child_data.get_ptr(), m_child_data.get_size()), m_child_data.get_size());
+	ret->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 	ret->m_show_toggle_area = m_show_toggle_area;
 	ret->m_custom_title = m_use_custom_title;
 	ret->set_title(m_custom_title, m_custom_title.length());

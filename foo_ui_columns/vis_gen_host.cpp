@@ -142,7 +142,8 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 					GetClientRect(wnd, &rc_client);
 					window_visualisation_interface::g_create(m_interface, this);
 					try {
-						p_vis->set_config(&stream_reader_memblock_ref(m_data.get_ptr(), m_data.get_size()), m_data.get_size(), abort_callback_impl());
+						abort_callback_dummy p_abort;
+						p_vis->set_config_from_ptr(m_data.get_ptr(), m_data.get_size(), p_abort);
 					}
 					catch (const exception_io&) {};
 					p_vis->enable(ui_extension::visualisation_host_ptr(m_interface.get_ptr()));

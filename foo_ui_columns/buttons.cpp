@@ -361,7 +361,8 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	if(msg == WM_CREATE)
 	{
 		wnd_host=wnd;
-		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
+		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, NULL));
 		initialised=true;
 		create_toolbar();
 

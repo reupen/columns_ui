@@ -97,8 +97,10 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			if (m_selection) items_text << " selected";
 
 			ui_helpers::text_out_colours_tab(dc, items_text, -1, 4, 2, &rc_top, false, 0, false, false, false, ui_helpers::ALIGN_LEFT);
-			if (m_item_count)
-				ui_helpers::text_out_colours_tab(dc, pfc::string8() << "Length: " << m_length_text, -1, 4, 2, &rc_bottom, false, 0, false, false, false, ui_helpers::ALIGN_LEFT);
+			if (m_item_count) {
+				pfc::string_formatter formatter;
+				ui_helpers::text_out_colours_tab(dc, formatter << "Length: " << m_length_text, -1, 4, 2, &rc_bottom, false, 0, false, false, false, ui_helpers::ALIGN_LEFT);
+			}
 
 			if (m_menu_active)
 			{
@@ -116,7 +118,8 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				{
 					RECT rc_item = rc_top;
 					//rc_item.right = 4 + placeholder_len + placeholder2_len;
-					ui_helpers::text_out_colours_tab(dc, pfc::string8() << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, NULL, true, true, NULL);
+					pfc::string_formatter formatter;
+					ui_helpers::text_out_colours_tab(dc, formatter << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, NULL, true, true, NULL);
 				}
 				if (playing1.get_length())
 				{

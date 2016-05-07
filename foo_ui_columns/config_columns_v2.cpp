@@ -226,8 +226,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						pfc::string8 name = string_utf8_from_window((HWND)lp);
-						m_column->name = (name);
+						m_column->name = string_utf8_from_window((HWND)lp);
 						SendMessage(GetAncestor(wnd, GA_PARENT), MSG_COLUMN_NAME_CHANGED, NULL, NULL);
 					}
 				}
@@ -756,7 +755,7 @@ public:
 			{
 				HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
 				int item = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-				if (item != -1 && item < m_columns.get_count())
+				if (item >= 0 && (unsigned)item < m_columns.get_count())
 					uih::ListView_InsertItemText(wnd_lv, item, 0, m_columns[item]->name, true);
 			}
 			return 0;

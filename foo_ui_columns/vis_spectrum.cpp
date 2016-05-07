@@ -716,10 +716,11 @@ class window_visualisation_spectrum : public window_visualisation
 		pfc::array_t<t_uint8> m_data;
 		if (!p_temp->b_active)
 		{
-			try{
-			get_vis_data(m_data);
-			p_temp->set_config(&stream_reader_memblock_ref(m_data.get_ptr(), m_data.get_size()),m_data.get_size(),abort_callback_impl());
-			}catch (const exception_io &) {};
+			try {
+				abort_callback_dummy p_abort;
+				get_vis_data(m_data);
+				p_temp->set_config_from_ptr(m_data.get_ptr(), m_data.get_size(), p_abort);
+			} catch (const exception_io &) {};
 		}
 
 		spec_param param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale, p_temp.get_ptr(), true, get_frame_style());
@@ -745,10 +746,10 @@ class window_visualisation_spectrum : public window_visualisation
 			}
 			else
 			{
-				m_data.set_size(0);
-				try{
-				p_temp->get_config(&stream_writer_memblock_ref(m_data), abort_callback_impl());
-				set_vis_data(m_data.get_ptr(), m_data.get_size());
+				try {
+					abort_callback_dummy p_abort;
+					p_temp->get_config_to_array(m_data, p_abort, true);
+					set_vis_data(m_data.get_ptr(), m_data.get_size());
 				}
 				catch (pfc::exception &)
 				{};

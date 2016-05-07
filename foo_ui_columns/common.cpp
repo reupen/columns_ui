@@ -28,14 +28,15 @@ void set_sel_single(int idx, bool toggle, bool focus, bool single_only)
 	unsigned idx_focus = playlist_api->activeplaylist_get_focus_item();
 
 	bit_array_bittable mask(total);
-	//	if (!single_only) playlist_api->activeplaylist_get_selection_mask(mask);
 	mask.set(idx, toggle ? !playlist_api->activeplaylist_is_item_selected(idx) : true);
 
-	//	if (single_only)
-	//		playlist_api->activeplaylist_set_selection(bit_array_one(idx), mask);
-	//	else
-	if (single_only || toggle || !playlist_api->activeplaylist_is_item_selected(idx))
-		playlist_api->activeplaylist_set_selection(single_only ? (bit_array&)bit_array_true() : (bit_array&)bit_array_one(idx), mask);
+	if (single_only) {
+		playlist_api->activeplaylist_set_selection(bit_array_true(), mask);
+	}
+	else if (toggle || !playlist_api->activeplaylist_is_item_selected(idx)) {
+		playlist_api->activeplaylist_set_selection(bit_array_one(idx), mask);
+	}
+	
 	if (focus && idx_focus != idx) playlist_api->activeplaylist_set_focus_item(idx);
 }
 
@@ -190,7 +191,8 @@ void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr> &
 	if (uGetOpenFileName(wnd, ext, def_index, "fpl", "Save playlist...", NULL, name, TRUE))
 	{
 		try{
-			playlist_loader::g_save_playlist(name, p_items, abort_callback_impl());
+			abort_callback_dummy p_abort;
+			playlist_loader::g_save_playlist(name, p_items, p_abort);
 		}
 		catch (pfc::exception & e)
 		{

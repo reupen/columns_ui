@@ -707,8 +707,13 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 				}
 
 		//		g_oper->format_title(n, temp,spec,(extra ? extra_items.get_ptr() : 0));
+				titleformat_hook_set_global<false, true> tf_hook_set_global(extra_items, b_legacy);
+				titleformat_hook_playlist_name tf_hook_playlist_name;
+				titleformat_hook_date tf_hook_date(&st);
 
-				playlist_api->activeplaylist_item_format_title(n, &titleformat_hook_splitter_pt3(extra ? &titleformat_hook_set_global<false,true>(extra_items, b_legacy) : 0 , date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), temp, to_sort, 0, play_control::display_level_none);
+				titleformat_hook_splitter_pt3 tf_hook(extra ? &tf_hook_set_global : 0, date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+
+				playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp, to_sort, 0, play_control::display_level_none);
 				}
 		/*		else
 				{
@@ -738,7 +743,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 			data.sort(asc_sort_callback);
 		}
 
-		unsigned new_count = data.get_count(), i=0;
+		unsigned i=0;
 
 		for(n=0;n<count;n++)
 		{

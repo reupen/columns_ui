@@ -412,7 +412,10 @@ class fcl_colours_t : public cui::fcl::dataset
 			switch (element_id)
 			{
 			case identifier_global_entry:
-				g_colours_manager_data.m_global_entry->import(&stream_reader_memblock_ref(data), data.get_size(), type, p_abort);
+				{
+					stream_reader_memblock_ref colour_reader(data);
+					g_colours_manager_data.m_global_entry->import(&colour_reader, data.get_size(), type, p_abort);
+				}
 				break;
 			case identifier_client_entries:
 				{
@@ -436,8 +439,9 @@ class fcl_colours_t : public cui::fcl::dataset
 							pfc::array_t<t_uint8> data2;
 							data2.set_size(element_size2);
 							reader2.read(data2.get_ptr(), data2.get_size());
+							stream_reader_memblock_ref colour_reader(data2);
 							g_colours_manager_data.m_entries[i] = new colours_manager_data::entry_t;
-							g_colours_manager_data.m_entries[i]->import(&stream_reader_memblock_ref(data2), data2.get_size(), type, p_abort);
+							g_colours_manager_data.m_entries[i]->import(&colour_reader, data2.get_size(), type, p_abort);
 						}
 						else
 							reader2.skip(element_size2);
@@ -533,20 +537,20 @@ class fcl_fonts_t : public cui::fcl::dataset
 			pfc::array_t<t_uint8> data;
 			data.set_size(element_size);
 			reader.read(data.get_ptr(), data.get_size());
-			
+
+			stream_reader_memblock_ref data_reader(data);
 
 			switch (element_id)
 			{
 			case identifier_global_items:
-				g_fonts_manager_data.m_common_items_entry->import(&stream_reader_memblock_ref(data), data.get_size(), type, p_abort);
+				g_fonts_manager_data.m_common_items_entry->import(&data_reader, data.get_size(), type, p_abort);
 				break;
 			case identifier_global_labels:
-				g_fonts_manager_data.m_common_labels_entry->import(&stream_reader_memblock_ref(data), data.get_size(), type, p_abort);
+				g_fonts_manager_data.m_common_labels_entry->import(&data_reader, data.get_size(), type, p_abort);
 				break;
 			case identifier_client_entries:
 				{
-					stream_reader_memblock_ref stream2(data);
-					fcl::reader reader2(&stream2, data.get_size(), p_abort);
+					fcl::reader reader2(&data_reader, data.get_size(), p_abort);
 
 					t_size count, i;
 					reader2.read_item(count);
@@ -565,8 +569,9 @@ class fcl_fonts_t : public cui::fcl::dataset
 							pfc::array_t<t_uint8> data2;
 							data2.set_size(element_size2);
 							reader2.read(data2.get_ptr(), data2.get_size());
+							stream_reader_memblock_ref element_reader(data2);
 							g_fonts_manager_data.m_entries[i] = new fonts_manager_data::entry_t;
-							g_fonts_manager_data.m_entries[i]->import(&stream_reader_memblock_ref(data2), data2.get_size(), type, p_abort);
+							g_fonts_manager_data.m_entries[i]->import(&element_reader, data2.get_size(), type, p_abort);
 						}
 						else
 							reader2.skip(element_size2);
