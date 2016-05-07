@@ -126,11 +126,13 @@ void splitter_window_impl::refresh_children()
 					if (b_new)
 					{
 						try {
-							p_ext->set_config(&stream_reader_memblock_ref(m_panels[n]->m_child_data.get_ptr(), m_panels[n]->m_child_data.get_size()), m_panels[n]->m_child_data.get_size(), abort_callback_impl());
+							abort_callback_dummy p_abort;
+							p_ext->set_config_from_ptr(m_panels[n]->m_child_data.get_ptr(), m_panels[n]->m_child_data.get_size(), p_abort);
 						}
 						catch (const exception_io & e)
 						{
-							console::formatter() << "Error setting panel config: " << e.what();
+							console::formatter formatter;
+							formatter << "Error setting panel config: " << e.what();
 						}
 					}
 
@@ -330,7 +332,7 @@ void splitter_window_impl::get_panels_sizes(unsigned client_width, unsigned clie
 		{
 			unsigned panel_divider_size = get_panel_divider_size(n);;
 
-			unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size;
+			unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size.getScaledValue();
 			if (height>MAXLONG) height = MAXLONG;
 			if (available_height > (-MAXLONG + (int)height))
 				available_height -= height;
@@ -508,7 +510,7 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
 				//minmax[n].caption_height = caption_height;
 				minmax[n].min_height = min_height;
 				minmax[n].max_height = max_height;
-				minmax[n].height = m_panels[n]->m_hidden ? caption_height : m_panels[n]->m_size;
+				minmax[n].height = m_panels[n]->m_hidden ? caption_height : m_panels[n]->m_size.getScaledValue();
 			}
 
 			bool is_up = delta < 0;//new_height < m_panels[panel].height;
@@ -955,11 +957,13 @@ bool splitter_window_impl::show_config_popup(HWND wnd, unsigned index)
 			if (p_panel.is_valid())
 			{
 				try{
-					p_panel->set_config(&stream_reader_memblock_ref(&m_panels[index]->m_child_data, m_panels[index]->m_child_data.get_size()), m_panels[index]->m_child_data.get_size(), abort_callback_impl());
+					abort_callback_dummy p_abort;
+					p_panel->set_config_from_ptr(&m_panels[index]->m_child_data, m_panels[index]->m_child_data.get_size(), p_abort);
 				}
 				catch (const exception_io & e)
 				{
-					console::formatter() << "Error setting panel config: " << e.what();
+					console::formatter formatter;
+					formatter << "Error setting panel config: " << e.what();
 				}
 			}
 		}
@@ -967,8 +971,8 @@ bool splitter_window_impl::show_config_popup(HWND wnd, unsigned index)
 		{
 			if (p_panel->show_config_popup(wnd))
 			{
-				m_panels[index]->m_child_data.set_size(0);
-				p_panel->get_config(&stream_writer_memblock_ref(m_panels[index]->m_child_data), abort_callback_impl());
+				abort_callback_dummy p_abort;
+				p_panel->get_config_to_array(m_panels[index]->m_child_data, p_abort, true);
 				return true;
 			}
 		}

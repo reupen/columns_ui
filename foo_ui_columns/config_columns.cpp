@@ -144,15 +144,19 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 							pfc::hires_timer timer;
 							timer.start();
 							{
+								titleformat_hook_set_global<true, false> tf_hook_set_global(p_vars, b_legacy);
 								if (b_date)
 								{
-									playlist_api->activeplaylist_item_format_title(tracks[j], &titleformat_hook_impl_splitter(&titleformat_hook_set_global<true,false>(p_vars,b_legacy), b_date ? &titleformat_hook_date(&st) : 0), str_temp, to_global, 0, play_control::display_level_all);
+									titleformat_hook_date tf_hook_date(&st);
+									titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, &tf_hook_date);
+									playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, to_global, 
+										nullptr, play_control::display_level_all);
 								}
 								else
 								{
-									playlist_api->activeplaylist_item_format_title(tracks[j], &titleformat_hook_set_global<true,false>(p_vars,b_legacy), str_temp, to_global, 0, play_control::display_level_all);
+									playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook_set_global, str_temp, 
+										to_global, nullptr, play_control::display_level_all);
 								}
-
 
 								//	if (map_codes) extra_formatted.replace_char(3, 6);
 
@@ -196,7 +200,12 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 							colourinfo col_item(0,0,0,0,0,0);
 							pfc::hires_timer timer;
 							timer.start();
-							playlist_api->activeplaylist_item_format_title(tracks[j], &titleformat_hook_splitter_pt3(&titleformat_hook_style(col_item),b_global ? &titleformat_hook_set_global<false,true>(p_vars, b_legacy) : 0,b_date ? &titleformat_hook_date(&st) : 0), str_temp, to_global_colour, 0, play_control::display_level_all);
+							titleformat_hook_style tf_hook_style(col_item);
+							titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+							titleformat_hook_date tf_hook_date(&st);
+							titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
+
+							playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, to_global_colour, nullptr, play_control::display_level_all);
 							time_temp += timer.query();
 						}
 					}
@@ -227,7 +236,11 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 						{
 							pfc::hires_timer timer;
 							timer.start();
-							playlist_api->activeplaylist_item_format_title(tracks[j], &titleformat_hook_impl_splitter( b_global ? &titleformat_hook_set_global<false,true>(p_vars, b_legacy) :0, b_date ? &titleformat_hook_date(&st) : 0), str_temp, times_columns[n].to_display, 0, play_control::display_level_all);
+							titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+							titleformat_hook_date tf_hook_date(&st);
+							titleformat_hook_impl_splitter tf_hook(b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
+
+							playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, times_columns[n].to_display, 0, play_control::display_level_all);
 							time_temp += timer.query();
 						}
 					}
@@ -259,7 +272,12 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 								colourinfo col_item(0,0,0,0,0,0);
 								pfc::hires_timer timer;
 								timer.start();
-								playlist_api->activeplaylist_item_format_title(tracks[j], &titleformat_hook_splitter_pt3(&titleformat_hook_style(col_item),b_global ? &titleformat_hook_set_global<false,true>(p_vars, b_legacy) : 0,b_date ? &titleformat_hook_date(&st) : 0), str_temp, times_columns[n].to_colour, 0, play_control::display_level_all);
+								titleformat_hook_style tf_hook_style(col_item);
+								titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+								titleformat_hook_date tf_hook_date(&st);
+								titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
+
+								playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, times_columns[n].to_colour, 0, play_control::display_level_all);
 								time_temp += timer.query();
 							}
 						}

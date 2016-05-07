@@ -2,6 +2,12 @@
 
 #define VERSION "0.5.0-dev"
 
+#ifndef __clang__
+#define DATE ", Date "__DATE__
+#else
+#define DATE
+#endif
+
 VALIDATE_COMPONENT_FILENAME("foo_ui_columns.dll");
 
 DECLARE_COMPONENT_VERSION("Columns UI",
@@ -9,7 +15,7 @@ DECLARE_COMPONENT_VERSION("Columns UI",
 VERSION,
 
 "Columns UI\n"
-"Version " VERSION ", Date "__DATE__"\n"
+"Version " VERSION DATE "\n"
 "Copyright (C) 2003-2016 musicmusic and contributors\n"
 "Current version at: yuo.be\n\n"
 

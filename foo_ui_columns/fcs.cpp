@@ -83,37 +83,42 @@ namespace fcs
 
 void read_bool_cfg(service_ptr_t<file> & p_file, cfg_int * cfg_out)
 {
+	abort_callback_dummy p_abort;
 	bool temp;
 	unsigned read = 0;
-	read=p_file->read(&temp,1,abort_callback_impl());
+	read=p_file->read(&temp,1, p_abort);
 	*cfg_out = temp;
 }
 
 void read_bool(service_ptr_t<file> & p_file, bool &out)
 {
+	abort_callback_dummy p_abort;
 	bool temp;
 	unsigned read = 0;
-	read=p_file->read(&temp,1,abort_callback_impl());
+	read=p_file->read(&temp,1, p_abort);
 	out = temp;
 }
 
 void read_dword_cfg(service_ptr_t<file> & p_file, cfg_int * cfg_out)
 {
+	abort_callback_dummy p_abort;
 	DWORD temp;
 	unsigned read = 0;
-	p_file->read_lendian_t(temp, abort_callback_impl());
+	p_file->read_lendian_t(temp, p_abort);
 	*cfg_out = temp;
 }
 
 void read_dword(service_ptr_t<file> & p_file, DWORD &out)
 {
-	p_file->read_lendian_t(out, abort_callback_impl());
+	abort_callback_dummy p_abort;
+	p_file->read_lendian_t(out, p_abort);
 }
 
 void read_string(service_ptr_t<file> & p_file, pfc::string8 & out, unsigned len)
 {
 	if (!len) return;
 
+	abort_callback_dummy p_abort;
 	pfc::array_t<char> temp;
 	temp.set_size(len+1);
 
@@ -121,7 +126,7 @@ void read_string(service_ptr_t<file> & p_file, pfc::string8 & out, unsigned len)
 
 	{
 		unsigned read = 0;
-		read = p_file->read(temp.get_ptr(), len, abort_callback_impl());
+		read = p_file->read(temp.get_ptr(), len, p_abort);
 		if (read != len) throw exception_io_data_truncation();
 		out.set_string(temp.get_ptr(),temp.get_size());
 	}
@@ -137,6 +142,7 @@ void read_string_cfg(service_ptr_t<file> & p_file, cfg_string * cfg_out, unsigne
 void read_font_cfg(service_ptr_t<file> & p_file, cfg_struct_t<LOGFONT> * cfg_out)
 {
 	DWORD dword;
+	abort_callback_dummy p_abort;
 
 	uLOGFONT font;
 	abort_callback_impl ac;
@@ -158,7 +164,7 @@ void read_font_cfg(service_ptr_t<file> & p_file, cfg_struct_t<LOGFONT> * cfg_out
 
 	unsigned read = 0;
 	
-	read = p_file->read(&font.lfItalic,8 + 32, abort_callback_impl());
+	read = p_file->read(&font.lfItalic,8 + 32, p_abort);
 
 	LOGFONT temp;
 	
@@ -171,10 +177,11 @@ void read_font_cfg(service_ptr_t<file> & p_file, cfg_struct_t<LOGFONT> * cfg_out
 void parse_column(service_ptr_t<file> & p_file, column_t::ptr & column, unsigned identifier, unsigned version)
 {
 	bool size_available = false;
+	abort_callback_dummy p_abort;
 	DWORD size = 0;
 	if (version >= 3) 
 	{
-		p_file->read_lendian_t(size, abort_callback_impl());
+		p_file->read_lendian_t(size, p_abort);
 		size_available = true;
 	}
 
@@ -303,7 +310,7 @@ void parse_column(service_ptr_t<file> & p_file, column_t::ptr & column, unsigned
 			if (version >= 3)
 			{
 				console::warning(pfc::string_printf("unrecognised column element id %u found in file and was ignored",identifier));
-				p_file->seek_ex(size, file::seek_from_current, abort_callback_impl());
+				p_file->seek_ex(size, file::seek_from_current, p_abort);
 			}
 		}
 		break;
@@ -313,14 +320,13 @@ void parse_column(service_ptr_t<file> & p_file, column_t::ptr & column, unsigned
 void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 {
 	bool size_available = false;
+	abort_callback_dummy p_abort;
 	DWORD size = 0;
 	if (version >= 3) 
 	{
-		p_file->read_lendian_t(size, abort_callback_impl());
+		p_file->read_lendian_t(size, p_abort);
 		size_available = true;
 	}
-
-	abort_callback_impl p_abort;
 
 	fcs::reader reader(p_file.get_ptr(), p_abort);
 
@@ -336,7 +342,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 
 			for(;;)
 			{
-				p_file->read_lendian_t(identifier_column, abort_callback_impl());
+				p_file->read_lendian_t(identifier_column, p_abort);
 				if (identifier_column == COLUMN_END)
 					break;
 				parse_column(p_file, item, identifier_column, version);
@@ -353,7 +359,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 	case CONFIG_USE_LEGACY_GLOBAL:
 		{
 			bool temp;
-			p_file->read_lendian_t(temp, abort_callback_impl());
+			p_file->read_lendian_t(temp, p_abort);
 			if (version <= 3)
 			{
 				cfg_oldglobal = true;
@@ -406,7 +412,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 		}
 	case CONFIG_SHOW_PLIST:
 		{
-			p_file->seek_ex(1, file::seek_from_current, abort_callback_impl());
+			p_file->seek_ex(1, file::seek_from_current, p_abort);
 			break;
 		}
 	case CONFIG_SHOW_TABS:
@@ -524,7 +530,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 	case CONFIG_FONT_STATUS:
 		{
 			if (cfg_import_titles)  read_font_cfg(p_file, &cfg_status_font);
-			else p_file->seek_ex(sizeof(uLOGFONT), file::seek_from_current, abort_callback_impl()) ;
+			else p_file->seek_ex(sizeof(uLOGFONT), file::seek_from_current, p_abort) ;
 
 
 	//	uLOGFONT temp = cfg_status_font;
@@ -550,7 +556,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 			else len = size;
 
 			pfc::string8 temp;
-			 read_string(p_file, temp, len);
+			read_string(p_file, temp, len);
 			if (cfg_import_titles)
 			{
 				main_window::config_status_bar_script.set(temp);
@@ -564,7 +570,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 			else len = size;
 
 			pfc::string8 temp;
-			 read_string(p_file, temp, len);
+			read_string(p_file, temp, len);
 			if (cfg_import_titles)
 			{
 				main_window::config_notification_icon_script.set(temp);
@@ -603,7 +609,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
 			if (version >= 3)
 			{
 				console::warning(pfc::string_printf("unrecognised element id %u found in file and was ignotred",identifier));
-				p_file->seek_ex(size, file::seek_from_current, abort_callback_impl());
+				p_file->seek_ex(size, file::seek_from_current, p_abort);
 			}
 		}
 		break;
@@ -614,20 +620,21 @@ bool g_import(const char * path)
 {
 	bool rv = false;
 	service_ptr_t<file> p_file;
+	abort_callback_dummy p_abort;
 	try
 	{
 
-		filesystem::g_open_read(p_file, path,abort_callback_impl());
+		filesystem::g_open_read(p_file, path, p_abort);
 		if (!p_file.is_valid()) console::error(uStringPrintf("Unable to open file: \"%s\"",path));
 		else
 		{
 			GUID temp;
-			p_file->read_lendian_t(temp, abort_callback_impl());
+			p_file->read_lendian_t(temp, p_abort);
 			if (temp != fcs_header_v2 && temp != fcs_header) throw pfc::exception("Invalid file");
 			else 
 			{
 				DWORD ver = 1;
-				if (temp == fcs_header_v2) 	p_file->read_lendian_t(ver, abort_callback_impl());
+				if (temp == fcs_header_v2) 	p_file->read_lendian_t(ver, p_abort);
 				if (ver > FCS_VERSION)
 					throw pfc::exception("please update columns ui in order to use this fcs file");
 				else 
@@ -639,7 +646,7 @@ bool g_import(const char * path)
 					{
 						for (;;)
 						{
-							p_file->read_lendian_t(identifier, abort_callback_impl());
+							p_file->read_lendian_t(identifier, p_abort);
 							if (identifier == CONFIG_END)
 								throw p_end_signal;
 							parse(p_file, identifier, ver);

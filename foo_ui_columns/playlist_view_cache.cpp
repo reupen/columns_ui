@@ -212,9 +212,14 @@ void playlist_view_cache::make_extra(unsigned playlist, unsigned idx, global_var
 		static_api_ptr_t<titleformat_compiler>()->compile_safe(g_to_global, cfg_globalstring);
 	}
 	
-	//watchout, might not be active playlist
-	playlist_api->playlist_item_format_title(playlist, idx, &titleformat_hook_splitter_pt3(&titleformat_hook_set_global<true,false>(p_out,b_legacy), st ? &titleformat_hook_date(st) : 0, &titleformat_hook_playlist_name()), extra_formatted, g_to_global, 0, play_control::display_level_all);
-	
+	titleformat_hook_set_global<true, false> tf_hook_set_global(p_out, b_legacy);
+	titleformat_hook_playlist_name tf_hook_playlist_name;
+	titleformat_hook_date tf_hook_date(st);
+
+	titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, st ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+
+	// watch out, might not be active playlist
+	playlist_api->playlist_item_format_title(playlist, idx, &tf_hook, extra_formatted, g_to_global, nullptr, play_control::display_level_all);
 	
 	//	if (map_codes) extra_formatted.replace_char(3, 6);
 	
@@ -316,8 +321,15 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
 
 				playlist_view::g_get_columns()[s]->get_to_display(to_display);
 				//playlist_view::g_get_titleformat_object(s, STRING_DISPLAY, to_display);
-				if (to_display.is_valid())
-					playlist_api->playlist_item_format_title(playlist, idx, &titleformat_hook_splitter_pt3(global ? &titleformat_hook_set_global<false,true>(p_vars, b_legacy) :0, date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), display, to_display, 0, play_control::display_level_all);
+				if (to_display.is_valid()) {
+					titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+					titleformat_hook_playlist_name tf_hook_playlist_name;
+					titleformat_hook_date tf_hook_date(&st);
+
+					titleformat_hook_splitter_pt3 tf_hook(global ? &tf_hook_set_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+
+					playlist_api->playlist_item_format_title(playlist, idx, &tf_hook, display, to_display, nullptr, play_control::display_level_all);
+				}
 
 				colourinfo col_item(
 					p_helper.get_colour(cui::colours::colour_text),
@@ -338,9 +350,21 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
 					if (!colour_global_av)
 					{
 						playlist_view::g_get_global_style_titleformat_object(to_global_style);
-						if (to_global_style.is_valid())
-							playlist_api->playlist_item_format_title(playlist, idx, 
-								&titleformat_hook_splitter_pt3(&titleformat_hook_style(colours_global),global ? &titleformat_hook_set_global<false,true>(p_vars, b_legacy) : 0,date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()), colour, to_global_style, 0, play_control::display_level_all);
+						if (to_global_style.is_valid()) {
+							titleformat_hook_style tf_hook_style(colours_global);
+							titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+							titleformat_hook_playlist_name tf_hook_playlist_name;
+							titleformat_hook_date tf_hook_date(&st);
+
+							titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, 
+								global ? &tf_hook_set_global : nullptr, 
+								date ? &tf_hook_date : nullptr, 
+								&tf_hook_playlist_name
+							);
+
+							playlist_api->playlist_item_format_title(playlist, idx, &tf_hook, colour, 
+								to_global_style, 0, play_control::display_level_all);
+						}
 
 						if (cfg_oldglobal && !colour.is_empty())
 							process_colour_string(colour, colours_global);
@@ -350,10 +374,21 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
 				}
 				if (b_custom)
 				{
-					if (to_colour.is_valid())
-						playlist_api->playlist_item_format_title(playlist, idx, 
-							&titleformat_hook_splitter_pt3(&titleformat_hook_style(col_item),global ? &titleformat_hook_set_global<false,true>(p_vars, b_legacy) : 0,date ? &titleformat_hook_date(&st) : 0, &titleformat_hook_playlist_name()) 
-							, colour, to_colour, 0, play_control::display_level_all);
+					if (to_colour.is_valid()) {
+						titleformat_hook_style tf_hook_style(col_item);
+						titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+						titleformat_hook_playlist_name tf_hook_playlist_name;
+						titleformat_hook_date tf_hook_date(&st);
+
+						titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style,
+							global ? &tf_hook_set_global : nullptr,
+							date ? &tf_hook_date : nullptr,
+							&tf_hook_playlist_name
+						);
+
+						playlist_api->playlist_item_format_title(playlist, idx, &tf_hook, colour, 
+							to_colour, nullptr, play_control::display_level_all);
+					}
 					
 					
 					if (cfg_oldglobal && !colour.is_empty())
@@ -554,27 +589,25 @@ struct sort_info
 };
 
 template<class T>
-class sort_info_callback_base : public pfc::list_base_t<T>
+class asc_sort_callback : public pfc::list_base_t<T>::sort_callback
 {
-public:
-	class asc_sort_callback : public sort_callback
+	virtual int compare(const T& p_item1,const T& p_item2)
 	{
-		virtual int compare(const T& p_item1,const T& p_item2)
-		{
-			int temp = uSortStringCompare(p_item1->text,p_item2->text);
-			if (temp==0) temp = (p_item1->index > p_item2->index ? 1 : -1);
-			return temp;
-		}
-	};
-	class desc_sort_callback : public sort_callback
+		int temp = uSortStringCompare(p_item1->text,p_item2->text);
+		if (temp==0) temp = (p_item1->index > p_item2->index ? 1 : -1);
+		return temp;
+	}
+};
+
+template<class T>
+class desc_sort_callback : public pfc::list_base_t<T>::sort_callback
+{
+	virtual int compare(const T &elem1, const T &elem2 )
 	{
-		virtual int compare(const T &elem1, const T &elem2 )
-		{
-			int temp = uSortStringCompare(elem1->text,elem2->text)*-1;
-			if (temp==0) temp = (elem1->index > elem2->index ? 1 : -1); //we could swap -1 and 1 for desc, but then, apart from not making any sense, same sort repeated would yield diff results
-			return temp;
-		}
-	};
+		int temp = uSortStringCompare(elem1->text,elem2->text)*-1;
+		if (temp==0) temp = (elem1->index > elem2->index ? 1 : -1); //we could swap -1 and 1 for desc, but then, apart from not making any sense, same sort repeated would yield diff results
+		return temp;
+	}
 };
 
 
@@ -696,12 +729,13 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 
 		if (descending)
 		{
-			data.sort(sort_info_callback_base<sort_info*>::desc_sort_callback());
+			desc_sort_callback<sort_info*> desc_sort_callback;
+			data.sort(desc_sort_callback);
 		}
 		else
 		{
-			sort_info_callback_base<sort_info*>::asc_sort_callback cc;
-			data.sort(cc);
+			asc_sort_callback<sort_info*> asc_sort_callback;
+			data.sort(asc_sort_callback);
 		}
 
 		unsigned new_count = data.get_count(), i=0;
