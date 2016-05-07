@@ -43,6 +43,9 @@ namespace pvt {
 	const GUID g_guid_grouping = 
 	{ 0xa28cc736, 0x2b8b, 0x484c, { 0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57 } };
 
+	pfc::ptr_list_t<ng_playlist_view_t> ng_playlist_view_t::g_windows;
+	ng_playlist_view_t::ng_global_mesage_window ng_playlist_view_t::g_global_mesage_window;
+
 	cfg_groups_t g_groups(g_groups_guid);
 
 	cfg_bool cfg_show_artwork(g_show_artwork_guid,false),
@@ -61,10 +64,11 @@ namespace pvt {
 		m_groups.replace_item(index, p_group);
 		ng_playlist_view_t::g_on_groups_change();
 	}
-	t_size cfg_groups_t::add_group (const group_t & p_group)
+	t_size cfg_groups_t::add_group (const group_t & p_group, bool notify_playlist_views)
 	{
 		t_size ret = m_groups.add_item(p_group);
-		ng_playlist_view_t::g_on_groups_change();
+		if (notify_playlist_views)
+			ng_playlist_view_t::g_on_groups_change();
 		return ret;
 	}
 
@@ -1221,9 +1225,6 @@ namespace pvt {
 	{ 0xfb059406, 0x5f14, 0x4bd0, { 0x8a, 0x11, 0x42, 0x42, 0x85, 0x4c, 0xbb, 0xa5 } };
 
 	uie::window_factory<ng_playlist_view_t> g_pvt;
-
-	pfc::ptr_list_t<ng_playlist_view_t> ng_playlist_view_t::g_windows;
-	ng_playlist_view_t::ng_global_mesage_window ng_playlist_view_t::g_global_mesage_window;
 
 	// {C882D3AC-C014-44df-9C7E-2DADF37645A0}
 	const GUID appearance_client_ngpv_impl::g_guid = 
