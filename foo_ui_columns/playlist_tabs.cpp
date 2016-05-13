@@ -134,10 +134,10 @@ void playlists_tabs_extension::switch_to_playlist_delayed2(unsigned idx)
 }
 
 
-playlists_tabs_extension::playlists_tabs_extension() : m_dragging(false), m_dragging_idx(0), m_playlist_switched(false),
-m_switch_timer(false), m_switch_playlist(0), initialised(false), wnd_tabs(nullptr),
-m_child_guid(/*cfg_default_playlist*/pfc::guid_null), m_child_wnd(nullptr), m_host_wnd(nullptr), m_child_top(0),
-ID_CUSTOM_BASE(NULL), m_mousewheel_delta(0), tabproc(nullptr)
+playlists_tabs_extension::playlists_tabs_extension() : tabproc(nullptr), m_dragging(false), m_dragging_idx(0),
+m_playlist_switched(false), m_switch_timer(false), m_switch_playlist(0), initialised(false),
+m_mousewheel_delta(0), ID_CUSTOM_BASE(NULL), wnd_tabs(nullptr), m_child_guid(/*cfg_default_playlist*/pfc::guid_null),
+m_child_wnd(nullptr), m_host_wnd(nullptr), m_child_top(0)
 {
 	//reset_size_limits();
 	memset(&mmi, 0, sizeof(mmi));

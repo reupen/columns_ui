@@ -2,8 +2,8 @@
 #include "playlist_manager_utils.h"
 
 playlist_format_name_t::titleformat_hook_playlist_t::titleformat_hook_playlist_t(unsigned p_index, const char * p_name, t_size p_playing) 
-			: m_name(p_name), m_index(p_index), m_lock_name_initialised(false), 
-			m_length_initialised(false), m_filesize_initialised(false), m_filesize(NULL), m_playing(p_playing == p_index)
+			: m_name(p_name), m_playing(p_playing == p_index), m_index(p_index), 
+			m_lock_name_initialised(false), m_length_initialised(false), m_filesize_initialised(false), m_filesize(NULL)
 		{
 			m_metadb_api = static_api_ptr_t<metadb>().get_ptr();
 			m_api = static_api_ptr_t<playlist_manager_v3>().get_ptr();

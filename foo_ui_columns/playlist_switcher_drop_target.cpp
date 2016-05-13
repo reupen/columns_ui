@@ -441,7 +441,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 						{
 						}
 
-						delayed_drop_target_processer_t() : m_new_playlist(false), m_insertIndexTracker(false) {};
+						delayed_drop_target_processer_t() : m_insertIndexTracker(false), m_new_playlist(false) {};
 					};
 
 					service_ptr_t<delayed_drop_target_processer_t> ptr = new service_impl_t<delayed_drop_target_processer_t>;
@@ -467,7 +467,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 }
 
 playlist_switcher_t::IDropTarget_t::IDropTarget_t(playlist_switcher_t * p_window) : drop_ref_count(0), 
-m_last_rmb(false), m_window(p_window), m_is_playlists(false), m_is_accepted_type(false)
+m_last_rmb(false), m_is_playlists(false), m_is_accepted_type(false), m_window(p_window)
 {
 	try {
 		m_ole_api = standard_api_create_t<ole_interaction_v2>();

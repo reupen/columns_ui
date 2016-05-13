@@ -330,7 +330,7 @@ class titleformat_hook_style : public titleformat_hook
 public:
 	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
 	virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag);
-	inline titleformat_hook_style(colourinfo & vars) : p_colours(vars), p_default_colours(vars)
+	inline titleformat_hook_style(colourinfo & vars) : p_default_colours(vars), p_colours(vars)
 	{
 	};
 };

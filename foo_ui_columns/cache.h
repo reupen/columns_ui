@@ -45,7 +45,8 @@ public:
 		out.use_frame_right = use_frame_right;
 		out.use_frame_bottom = use_frame_bottom;
 	}
-	inline colourinfo(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus, COLORREF sel_no_focus) : ref(1), use_frame_left(false), use_frame_top(false), use_frame_bottom(false), use_frame_right(false)
+	inline colourinfo(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus, COLORREF sel_no_focus) 
+		: ref(1), use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false)
 	{
 		text_colour.set(text);
 		selected_text_colour.set(text_sel);
@@ -212,7 +213,7 @@ public:
 		return m_active_columns_valid;
 	}
 
-	playlist_cache() : m_active_columns_valid(false), m_active_columns(0),
+	playlist_cache() : m_active_columns(0), m_active_columns_valid(false),
 		m_sorted(false),m_sorted_column(0),m_sorted_descending(false)
 	{};
 

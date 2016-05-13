@@ -258,7 +258,7 @@ struct colour
 	BYTE G;
 	BYTE R;
 //public:
-	colour() : R(0),G(0),B(0) {}
+	colour() : B(0),G(0),R(0) {}
 	void set(COLORREF new_colour);
 	inline operator COLORREF () const
 	{

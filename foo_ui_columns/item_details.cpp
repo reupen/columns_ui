@@ -983,11 +983,11 @@ void item_details_t::on_colours_change()
 	invalidate_all();
 }
 
-item_details_t::item_details_t() : m_callback_registered(false), m_tracking_mode(cfg_item_details_tracking_mode),
-m_script(cfg_item_details_script), m_horizontal_alignment(cfg_item_details_horizontal_alignment), m_hscroll(cfg_item_details_hscroll),
-m_nowplaying_active(false), m_word_wrapping(cfg_item_details_word_wrapping), m_font_change_info_valid(false),
-m_display_info_valid(false), m_edge_style(cfg_item_details_edge_style),
-m_vertical_alignment(cfg_item_details_vertical_alignment),
+item_details_t::item_details_t() : m_callback_registered(false), m_nowplaying_active(false),
+m_tracking_mode(cfg_item_details_tracking_mode), m_font_change_info_valid(false), m_display_info_valid(false),
+m_script(cfg_item_details_script), m_horizontal_alignment(cfg_item_details_horizontal_alignment), m_vertical_alignment(cfg_item_details_vertical_alignment),
+m_edge_style(cfg_item_details_edge_style), m_hscroll(cfg_item_details_hscroll),
+m_word_wrapping(cfg_item_details_word_wrapping),
 m_wnd_config(nullptr)
 //, m_update_scrollbar_range_in_progress(false)
 //m_library_richedit(NULL), m_wnd_richedit(NULL)

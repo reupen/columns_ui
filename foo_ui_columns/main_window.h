@@ -158,7 +158,7 @@ namespace cui
 			m_gdiplus_initialised = false;
 		}
 
-		main_window_t() : m_gdiplus_initialised(false), m_gdiplus_instance(NULL) {};
+		main_window_t() : m_gdiplus_instance(NULL), m_gdiplus_initialised(false) {};
 	private:
 		ULONG_PTR m_gdiplus_instance;
 		bool m_gdiplus_initialised;

@@ -712,9 +712,9 @@ void selection_properties_t::g_on_font_header_change()
 }
 
 selection_properties_t::selection_properties_t() : m_callback_registered(false), m_tracking_mode(cfg_selection_properties_tracking_mode),
-m_column_name_width(75), m_column_field_width(125), m_autosizing_columns(true), m_edit_column(pfc_infinite),
-m_edit_index(pfc_infinite), m_edge_style(cfg_selection_properties_edge_style), m_info_sections_mask(cfg_selection_properties_info_sections),
-m_show_column_titles(cfg_selection_poperties_show_column_titles), m_show_group_titles(cfg_selection_poperties_show_group_titles)
+m_info_sections_mask(cfg_selection_properties_info_sections), m_show_column_titles(cfg_selection_poperties_show_column_titles), m_show_group_titles(cfg_selection_poperties_show_group_titles), m_autosizing_columns(true),
+m_column_name_width(75), m_column_field_width(125), m_edge_style(cfg_selection_properties_edge_style),
+m_edit_column(pfc_infinite), m_edit_index(pfc_infinite)
 {
 	m_fields.add_item(field_t("Artist", "ARTIST"));
 	m_fields.add_item(field_t("Title", "TITLE"));

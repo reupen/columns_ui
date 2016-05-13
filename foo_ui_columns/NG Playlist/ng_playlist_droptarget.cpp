@@ -319,7 +319,7 @@ namespace pvt
 
 		return S_OK;		
 	}
-	IDropTarget_playlist::IDropTarget_playlist(ng_playlist_view_t * playlist) : drop_ref_count(0), last_rmb(false), p_playlist(playlist), m_is_accepted_type(false)
+	IDropTarget_playlist::IDropTarget_playlist(ng_playlist_view_t * playlist) : drop_ref_count(0), last_rmb(false), m_is_accepted_type(false), p_playlist(playlist)
 	{
 		m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 	}

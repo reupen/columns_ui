@@ -208,7 +208,7 @@ void tab_appearance_fonts::refresh_me(HWND wnd)
 	initialising = false;
 }
 
-tab_appearance_fonts::tab_appearance_fonts() : initialising(false), m_wnd_colours_mode(nullptr), m_wnd_colours_element(nullptr), m_wnd(nullptr)
+tab_appearance_fonts::tab_appearance_fonts() : m_wnd(nullptr), m_wnd_colours_mode(nullptr), m_wnd_colours_element(nullptr), initialising(false)
 {
 
 }

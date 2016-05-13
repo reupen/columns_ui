@@ -33,7 +33,7 @@ namespace fcs
 			m_output->write_lendian_t(t_int_type(item.get_value()), m_abort);
 		};
 		writer(stream_writer * p_out, abort_callback & p_abort)
-			: m_abort(p_abort), m_output(p_out)
+			: m_output(p_out), m_abort(p_abort)
 		{} ;
 	private:
 		stream_writer * m_output;
@@ -73,7 +73,7 @@ namespace fcs
 			p_out = temp;
 		};
 		reader(stream_reader * p_input, abort_callback & p_abort)
-			: m_abort(p_abort), m_input(p_input)
+			: m_input(p_input), m_abort(p_abort)
 		{} ;
 	private:
 		stream_reader * m_input;

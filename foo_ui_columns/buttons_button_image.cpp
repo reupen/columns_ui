@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-toolbar_extension::button_image::button_image() : m_bm(nullptr), m_mask_type(uie::MASK_NONE), m_bm_mask(nullptr), m_mask_colour(0), m_icon(nullptr)
+toolbar_extension::button_image::button_image() : m_bm(nullptr), m_icon(nullptr), m_mask_type(uie::MASK_NONE), m_bm_mask(nullptr), m_mask_colour(0)
 {
 	;
 }

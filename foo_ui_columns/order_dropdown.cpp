@@ -130,7 +130,7 @@ public:
 
 HFONT order_extension::font_icon = nullptr;
 
-order_extension::order_extension() : wnd_combo(nullptr), orderproc(nullptr), min_width(0), height(0), initialised(false), m_mousewheel_delta(0)
+order_extension::order_extension() : orderproc(nullptr), min_width(0), height(0), initialised(false), m_mousewheel_delta(0), wnd_combo(nullptr)
 {
 };
 

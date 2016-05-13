@@ -343,7 +343,7 @@ public:
 		return DefWindowProc(wnd, msg, wp, lp);
 	}
 
-	volume_control_t() : wnd_trackbar(NULL), m_track_bar_host(this), m_child(this), m_Gdiplus_token(NULL), m_using_gdiplus(false) {};
+	volume_control_t() : m_child(this), m_track_bar_host(this), wnd_trackbar(NULL), m_Gdiplus_token(NULL), m_using_gdiplus(false) {};
 	~volume_control_t() {};
 
 	virtual ui_helpers::container_window::class_data & get_class_data()const 

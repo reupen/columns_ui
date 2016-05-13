@@ -22,7 +22,7 @@ public:
 		};
 
 		painter_impl(window_visualisation* p_wnd)
-			: m_wnd(p_wnd), m_gdiobj(nullptr)
+			: m_gdiobj(nullptr), m_wnd(p_wnd)
 		{
 			m_dc = CreateCompatibleDC(nullptr);
 			if (!p_wnd->get_bitmap())

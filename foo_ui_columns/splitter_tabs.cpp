@@ -996,7 +996,7 @@ void splitter_window_tabs_impl::on_active_tab_changed(t_size index_to)
 		m_active_tab = pfc_infinite;
 };
 splitter_window_tabs_impl::splitter_window_tabs_impl()
-: m_wnd_tabs(nullptr), m_active_tab(pfc_infinite), m_tab_proc(nullptr), m_mousewheel_delta(NULL)
+: m_tab_proc(nullptr), m_wnd_tabs(nullptr), m_active_tab(pfc_infinite), m_mousewheel_delta(NULL)
 {};
 
 LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)

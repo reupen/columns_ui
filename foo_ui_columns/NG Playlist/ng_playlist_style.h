@@ -40,9 +40,10 @@ namespace pvt
 			use_frame_bottom = in->use_frame_bottom;
 		}
 
-		style_data_cell_info_t() : use_frame_left(false), use_frame_top(false), use_frame_bottom(false), use_frame_right(false) {};
+		style_data_cell_info_t() : use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false) {};
 
-		style_data_cell_info_t(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus, COLORREF sel_no_focus) : use_frame_left(false), use_frame_top(false), use_frame_bottom(false), use_frame_right(false)
+		style_data_cell_info_t(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus, COLORREF sel_no_focus) 
+			: use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false)
 		{
 			text_colour.set(text);
 			selected_text_colour.set(text_sel);
@@ -134,7 +135,7 @@ namespace pvt
 	public:
 		virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
 		virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag);
-		inline titleformat_hook_style_v2(style_data_cell_info_t & vars, t_size index, bool b_is_group = false) : p_colours(vars), p_default_colours(vars), m_index(index), m_is_group(b_is_group)
+		inline titleformat_hook_style_v2(style_data_cell_info_t & vars, t_size index, bool b_is_group = false) : p_default_colours(vars), p_colours(vars), m_index(index), m_is_group(b_is_group)
 		{
 		};
 	};

@@ -225,9 +225,9 @@ public:
 
 bool menu_extension::hooked = false;
 
-menu_extension::menu_extension() : wnd_menu(nullptr), menuproc(nullptr), 
-	redrop(true), is_submenu(false), active_item(0), sub_menu_ref_count(-1), /*hooked(false), */
-	actual_active(0), initialised(false), p_manager(nullptr), wnd_prev_focus(nullptr), m_menu_key_pressed(false)
+menu_extension::menu_extension() : menuproc(nullptr), initialised(false), 
+	m_menu_key_pressed(false), redrop(true), is_submenu(false), active_item(0), /*hooked(false), */
+	actual_active(0), sub_menu_ref_count(-1), p_manager(nullptr), wnd_menu(nullptr), wnd_prev_focus(nullptr)
 {
 };
 

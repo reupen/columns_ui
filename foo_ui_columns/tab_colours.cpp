@@ -290,8 +290,8 @@ void tab_appearance::refresh_me(HWND wnd)
 }
 
 tab_appearance::tab_appearance() 
-	: initialising(false), m_wnd_colours_mode(nullptr), m_element_guid(pfc::guid_null),
-	m_wnd(nullptr), m_wnd_colours_element(nullptr)
+	: m_wnd(nullptr), m_wnd_colours_mode(nullptr), m_wnd_colours_element(nullptr),
+	m_element_guid(pfc::guid_null), initialising(false)
 {
 
 }

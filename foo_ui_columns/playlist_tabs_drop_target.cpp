@@ -348,7 +348,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
 	return S_OK;
 }
-playlists_tabs_extension::playlists_tabs_drop_target::playlists_tabs_drop_target(playlists_tabs_extension * p_wnd) : drop_ref_count(0), p_list(p_wnd), m_last_rmb(false), m_is_accepted_type(false)
+playlists_tabs_extension::playlists_tabs_drop_target::playlists_tabs_drop_target(playlists_tabs_extension * p_wnd) : m_last_rmb(false), m_is_accepted_type(false), drop_ref_count(0), p_list(p_wnd)
 {
 	last_over.x = 0; last_over.y = 0;
 	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC);

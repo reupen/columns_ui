@@ -119,8 +119,8 @@ namespace artwork_panel
 		p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_options()));
 	}
 
-	artwork_panel_t::artwork_panel_t() : m_position(0), m_gdiplus_instance(NULL),
-		m_gdiplus_initialised(false), m_track_mode(cfg_track_mode),
+	artwork_panel_t::artwork_panel_t() : m_gdiplus_instance(NULL), m_gdiplus_initialised(false),
+		m_position(0), m_track_mode(cfg_track_mode),
 		m_preserve_aspect_ratio(cfg_preserve_aspect_ratio), m_lock_type(false) {};
 
 

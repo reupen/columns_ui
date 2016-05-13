@@ -189,9 +189,9 @@ pfc::ptr_list_t<spectrum_extension> spectrum_extension::g_visualisations;
 
 
 spectrum_extension::spectrum_extension()
-	: br_foreground(nullptr), br_background(nullptr), cr_fore(cfg_vis2), cr_back(cfg_vis), b_active(false), 
-	mode(cfg_vis_mode), m_scale(cfg_scale), m_vertical_scale(cfg_vertical_scale), m_bar_width(3),
-	m_bar_gap(1)
+	: b_active(false), br_foreground(nullptr), br_background(nullptr), cr_fore(cfg_vis2), cr_back(cfg_vis), 
+	mode(cfg_vis_mode), m_bar_width(3), m_bar_gap(1), m_scale(cfg_scale),
+	m_vertical_scale(cfg_vertical_scale)
 {
 };
 

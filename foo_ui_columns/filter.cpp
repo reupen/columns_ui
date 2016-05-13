@@ -1136,7 +1136,7 @@ namespace filter_panel {
 #ifdef FILTER_OLD_SEARCH
 		m_query_active(false), m_query_timer_active(false),
 #endif
-		m_show_search(false), m_contextmenu_manager_base(NULL), m_drag_item_count(0)
+		m_drag_item_count(0), m_show_search(false), m_contextmenu_manager_base(NULL)
 	{
 
 	}

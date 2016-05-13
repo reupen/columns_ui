@@ -195,8 +195,8 @@ bool selection_properties_config_t::run_modal(HWND wnd)
 	return uDialogBox(IDD_SELECTIONCONFIG, wnd, g_DialogProc, (LPARAM)this) != 0;
 }
 
-selection_properties_config_t::selection_properties_config_t(pfc::list_t<field_t>  p_fields, t_size edge_style, t_uint32 info_sections_mask, bool b_show_columns, bool b_show_groups) : m_fields(std::move(p_fields)), m_field_list(m_fields), m_edge_style(edge_style), m_initialising(false),
-m_info_sections_mask(info_sections_mask), m_show_columns(b_show_columns), m_show_groups(b_show_groups)
+selection_properties_config_t::selection_properties_config_t(pfc::list_t<field_t>  p_fields, t_size edge_style, t_uint32 info_sections_mask, bool b_show_columns, bool b_show_groups) : m_fields(std::move(p_fields)), m_edge_style(edge_style), m_info_sections_mask(info_sections_mask), m_show_columns(b_show_columns),
+m_show_groups(b_show_groups), m_initialising(false), m_field_list(m_fields)
 {
 
 }

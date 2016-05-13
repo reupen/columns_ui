@@ -41,7 +41,7 @@ public:
 		HTREEITEM item;
 		cui::fcl::group_ptr group;
 		bool checked;
-		t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : group(std::move(ptr)), item(pitem), checked(true)
+		t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)), checked(true)
 		{};
 		t_node() : item(nullptr), checked(true) {};
 	};
@@ -200,7 +200,7 @@ public:
 		return m_mode;
 	}
 	FCLDialog(bool b_import= false, const pfc::list_base_const_t<GUID> & p_list = pfc::list_t<GUID>())
-		: m_import(b_import), m_mode(0)
+		: m_mode(0), m_import(b_import)
 	{m_filter.add_items(p_list);};
 	private:
 		t_uint32 m_mode;

@@ -304,8 +304,8 @@ public:
 		return uie::type_panel;
 	}
 
-	playlist_switcher_t() : m_playing_playlist(pfc_infinite), m_contextmenu_manager_base(NULL), 
-		m_dragging(false), m_switch_timer_active(false) {};
+	playlist_switcher_t() : m_contextmenu_manager_base(NULL), m_switch_timer_active(false), 
+		m_dragging(false), m_playing_playlist(pfc_infinite) {};
 
 
 private:

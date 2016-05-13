@@ -39,7 +39,7 @@ public:
 		return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this);
 	}
 	//virtual const char * get_name()=0;
-	edit_column_window_options(column_t::ptr  column) : initialising(false), editproc(nullptr), m_column(std::move(column)),m_wnd(nullptr) {};
+	edit_column_window_options(column_t::ptr  column) : initialising(false), editproc(nullptr), m_wnd(nullptr),m_column(std::move(column)) {};
 
 	bool initialising;
 	WNDPROC editproc;
@@ -248,7 +248,7 @@ public:
 		return uCreateDialog(IDD_COLUMN_SCRIPTS, wnd, g_on_message, (LPARAM)this);
 	}
 	//virtual const char * get_name()=0;
-	edit_column_window_scripts(column_t::ptr  col) : initialising(false), editproc(nullptr), m_column(std::move(col)), m_wnd(nullptr) {};
+	edit_column_window_scripts(column_t::ptr  col) : m_wnd(nullptr), initialising(false), editproc(nullptr), m_column(std::move(col)) {};
 
 	HWND m_wnd;
 
@@ -525,7 +525,7 @@ private:
 	//edit_column_window_options m_tab_options;
 	//edit_column_window_scripts m_tab_scripts;
 public:
-	tab_columns_v3() : initialising(false), m_wnd_child(nullptr), m_wnd(nullptr) {};
+	tab_columns_v3() : m_wnd_child(nullptr), m_wnd(nullptr), initialising(false) {};
 
 	void make_child()
 	{

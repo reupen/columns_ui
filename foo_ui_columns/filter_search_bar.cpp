@@ -68,10 +68,10 @@ namespace filter_panel {
 		p_this->on_show_clear_button_change();
 	}
 
-	filter_search_bar::filter_search_bar() : m_search_editbox(nullptr), m_favourite_state(false),
-		m_query_timer_active(false), m_show_clear_button(cfg_showsearchclearbutton), m_wnd_last_focused(nullptr),
-		m_imagelist(nullptr), m_combo_cx(0), m_combo_cy(0), m_toolbar_cx(0), m_toolbar_cy(0),
-		m_wnd_toolbar(nullptr), m_proc_search_edit(nullptr) {};
+	filter_search_bar::filter_search_bar() : m_search_editbox(nullptr), m_wnd_toolbar(nullptr),
+		m_proc_search_edit(nullptr), m_favourite_state(false), m_query_timer_active(false),
+		m_show_clear_button(cfg_showsearchclearbutton), m_wnd_last_focused(nullptr), m_imagelist(nullptr), m_combo_cx(0), m_combo_cy(0),
+		m_toolbar_cx(0), m_toolbar_cy(0) {};
 
 	void g_get_search_bar_sibling_streams(filter_search_bar const * p_serach_bar, pfc::list_t<filter_panel_t::filter_stream_t::ptr> & p_out)
 	{

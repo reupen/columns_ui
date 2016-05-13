@@ -78,8 +78,8 @@ toolbar_extension::button::button(
 
 }
 toolbar_extension::button::button() 
-	: m_type(TYPE_SEPARATOR), m_filter(FILTER_ACTIVE_SELECTION), m_show(SHOW_IMAGE), m_use_custom(false),
-	m_use_custom_hot(false), m_use_custom_text(false), m_guid(pfc::guid_null)
+	: m_type(TYPE_SEPARATOR), m_filter(FILTER_ACTIVE_SELECTION), m_show(SHOW_IMAGE), m_guid(pfc::guid_null),
+	m_use_custom(false), m_use_custom_hot(false), m_use_custom_text(false)
 {}
 
 const toolbar_extension::button & toolbar_extension::button::operator= (const toolbar_extension::button & p_source)
