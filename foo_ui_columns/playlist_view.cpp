@@ -49,8 +49,7 @@ playlist_view::playlist_view()
 };
 
 playlist_view::~playlist_view()
-{
-}
+= default;
 
 // {F20BED8F-225B-46c3-9FC7-454CEDB6CDAD}
 GUID playlist_view::extension_guid = 

@@ -196,8 +196,7 @@ spectrum_extension::spectrum_extension()
 };
 
 spectrum_extension::~spectrum_extension()
-{
-}
+= default;
 
 void spectrum_extension::flush_brushes()
 {

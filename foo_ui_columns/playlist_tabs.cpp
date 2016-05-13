@@ -151,8 +151,7 @@ ID_CUSTOM_BASE(NULL), m_mousewheel_delta(0), tabproc(nullptr)
 
 
 playlists_tabs_extension::~playlists_tabs_extension()
-{
-}
+= default;
 
 LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 {

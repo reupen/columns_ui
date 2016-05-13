@@ -71,7 +71,7 @@ window_visualisation::window_visualisation() : initialised(false), m_frame(cfg_v
 	memset(&rc_client, 0, sizeof(RECT));
 };
 
-window_visualisation::~window_visualisation() {}
+window_visualisation::~window_visualisation() = default;
 
 
 void window_visualisation::set_frame_style(unsigned p_type)

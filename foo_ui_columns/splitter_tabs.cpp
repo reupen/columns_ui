@@ -187,8 +187,7 @@ splitter_window_tabs_impl::panel::panel()
 {};
 
 splitter_window_tabs_impl::panel::~panel()
-{
-}
+= default;
 
 uie::splitter_item_full_v2_t * splitter_window_tabs_impl::panel::create_splitter_item()
 {

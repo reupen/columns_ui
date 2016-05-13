@@ -232,8 +232,7 @@ menu_extension::menu_extension() : wnd_menu(nullptr), menuproc(nullptr),
 };
 
 menu_extension::~menu_extension()
-{
-}
+= default;
 
 const TCHAR * menu_extension::class_name = _T("{76E6DB50-0DE3-4f30-A7E4-93FD628B1401}");
 

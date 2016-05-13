@@ -108,8 +108,7 @@ m_gdiplus_initialised(false), wnd_toolbar(nullptr), wnd_host(nullptr), m_text_be
 };
 
 toolbar_extension::~toolbar_extension()
-{
-}
+= default;
 
 const TCHAR * toolbar_extension::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFFE56A16}");
 

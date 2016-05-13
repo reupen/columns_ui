@@ -417,9 +417,7 @@ void splitter_window_impl::panel::panel_container::set_window_ptr(splitter_windo
 }
 
 splitter_window_impl::panel::panel_container::~panel_container()
-{
-
-}
+= default;
 
 splitter_window_impl::panel::panel_container::panel_container(panel * p_panel) : m_theme(nullptr), m_panel(p_panel), m_hook_active(false), m_timer_active(false)
 {

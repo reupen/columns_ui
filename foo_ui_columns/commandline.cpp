@@ -75,7 +75,7 @@ public:
 	
 	commandline_handler_columns() {}
 
-	~commandline_handler_columns() {}
+	~commandline_handler_columns() = default;
 };
 
 static commandline_handler_factory_t<commandline_handler_columns> asdfasdfadsf;

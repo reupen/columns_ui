@@ -92,7 +92,7 @@ namespace pvt {
 	{};
 
 	ng_playlist_view_t::~ng_playlist_view_t()
-	{}
+	= default;
 
 	void ng_playlist_view_t::populate_list()
 	{

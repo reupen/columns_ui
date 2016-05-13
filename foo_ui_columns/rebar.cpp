@@ -610,7 +610,7 @@ ui_extension::window_host_factory_single<ui_ext_host_rebar> g_ui_ext_host_rebar;
 
 
 rebar_window::rebar_window() : wnd_rebar(nullptr) {};
-rebar_window::~rebar_window() {};
+rebar_window::~rebar_window() = default;;
 
 HWND rebar_window::init(rebar_info & new_bands)
 {

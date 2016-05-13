@@ -2,15 +2,7 @@
 #include "buttons.h"
 
 toolbar_extension::button::custom_image & toolbar_extension::button::custom_image::operator = (const toolbar_extension::button::custom_image & p_source)
-{
-	m_path = p_source.m_path;
-	m_mask_type = p_source.m_mask_type;
-	//				if (m_mask_type == uie::MASK_BITMAP)
-	m_mask_path = p_source.m_mask_path;
-	//				else if (m_mask_type == uie::MASK_COLOUR)
-	m_mask_colour = p_source.m_mask_colour;
-	return *this;
-}
+= default;
 
 void toolbar_extension::button::custom_image::get_path(pfc::string8 & p_out) const
 {

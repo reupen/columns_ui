@@ -135,8 +135,7 @@ order_extension::order_extension() : wnd_combo(nullptr), orderproc(nullptr), min
 };
 
 order_extension::~order_extension()
-{
-}
+= default;
 
 const TCHAR * order_extension::class_name = _T("{ABA09E7E-9C95-443e-BDFC-049D66B324A0}");
 
