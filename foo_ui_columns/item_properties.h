@@ -27,10 +27,10 @@ public:
 	fields_list_view_t(pfc::list_t<field_t> & p_fields);;
 
 	void get_insert_items(t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & items);
-	virtual void notify_on_create();;
-	virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse);;
-	virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries);;
-	virtual void notify_save_inline_edit(const char * value);
+	void notify_on_create() override;;
+	bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;;
+	bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;;
+	void notify_save_inline_edit(const char * value) override;
 private:
 };
 
@@ -53,7 +53,8 @@ public:
 		track_property_t(double p_sortpriority, const char * p_name, const char * p_value);;
 		track_property_t();
 	};
-	virtual void set_property(const char * p_group, double p_sortpriority, const char * p_name, const char * p_value);
+
+	void set_property(const char * p_group, double p_sortpriority, const char * p_name, const char * p_value) override;
 #if 0
 	bool find_field(const char * name, t_size & index)
 	{
@@ -69,7 +70,7 @@ public:
 		return false;
 	}
 #endif
-	virtual bool is_group_wanted(const char * p_group);
+	bool is_group_wanted(const char * p_group) override;
 	void sort();
 
 	track_property_callback_itemproperties();;
@@ -80,16 +81,18 @@ class appearance_client_selection_properties_impl : public cui::colours::client 
 public:
 	static const GUID g_guid;
 
-	virtual const GUID & get_client_guid() const { return g_guid; };
-	virtual void get_name(pfc::string_base & p_out) const { p_out = "Item Properties"; };
+	const GUID & get_client_guid() const override { return g_guid; };
 
-	virtual t_size get_supported_colours() const { return cui::colours::colour_flag_all; }; //bit-mask
-	virtual t_size get_supported_fonts() const { return 0; }; //bit-mask
-	virtual t_size get_supported_bools() const { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
-	virtual bool get_themes_supported() const { return true; };
+	void get_name(pfc::string_base & p_out) const override { p_out = "Item Properties"; };
 
-	virtual void on_colour_changed(t_size mask) const;;
-	virtual void on_bool_changed(t_size mask) const {};
+	t_size get_supported_colours() const override { return cui::colours::colour_flag_all; }; //bit-mask
+
+	t_size get_supported_bools() const override { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
+	bool get_themes_supported() const override { return true; };
+
+	void on_colour_changed(t_size mask) const override;;
+
+	void on_bool_changed(t_size mask) const override {};
 };
 
 class selection_properties_config_t
@@ -120,8 +123,8 @@ class selection_properties_t :
 {
 	class message_window_t : public ui_helpers::container_window
 	{
-		virtual class_data & get_class_data() const;
-		virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+		class_data & get_class_data() const override;
+		LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 	};
 
 	static message_window_t g_message_window;
@@ -139,78 +142,79 @@ public:
 		track_automatic,
 	};
 	//UIE funcs
-	virtual const GUID & get_extension_guid() const;
-	virtual void get_name(pfc::string_base & out)const;
-	virtual void get_category(pfc::string_base & out)const;
-	unsigned get_type() const;
+	const GUID & get_extension_guid() const override;
+	void get_name(pfc::string_base & out)const override;
+	void get_category(pfc::string_base & out)const override;
+	unsigned get_type() const override;
 
 	enum { config_version_current = 4 };
-	void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
-	void get_config(stream_writer * p_writer, abort_callback & p_abort) const;
+	void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
+	void get_config(stream_writer * p_writer, abort_callback & p_abort) const override;
 
-	virtual bool have_config_popup()const;
-	virtual bool show_config_popup(HWND wnd_parent);
+	bool have_config_popup()const override;
+	bool show_config_popup(HWND wnd_parent) override;
 	class menu_node_track_mode : public ui_extension::menu_node_command_t
 	{
 		service_ptr_t<selection_properties_t> p_this;
 		t_size m_source;
 	public:
 		static const char * get_name(t_size source);
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual bool get_description(pfc::string_base & p_out)const;
-		virtual void execute();
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		bool get_description(pfc::string_base & p_out)const override;
+		void execute() override;
 		menu_node_track_mode(selection_properties_t * p_wnd, t_size p_value);;
 	};
 	class menu_node_autosize : public ui_extension::menu_node_command_t
 	{
 		service_ptr_t<selection_properties_t> p_this;
 	public:
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual bool get_description(pfc::string_base & p_out)const;
-		virtual void execute();
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		bool get_description(pfc::string_base & p_out)const override;
+		void execute() override;
 		menu_node_autosize(selection_properties_t * p_wnd);;
 	};
 	class menu_node_source_popup : public ui_extension::menu_node_popup_t
 	{
 		pfc::list_t<ui_extension::menu_node_ptr> m_items;
 	public:
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual unsigned get_children_count()const;
-		virtual void get_child(unsigned p_index, uie::menu_node_ptr & p_out)const;
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		unsigned get_children_count()const override;
+		void get_child(unsigned p_index, uie::menu_node_ptr & p_out)const override;
 		menu_node_source_popup(selection_properties_t * p_wnd);;
 	};
-	virtual void get_menu_items(ui_extension::menu_hook_t & p_hook);
+
+	void get_menu_items(ui_extension::menu_hook_t & p_hook) override;
 
 	//NGLV
-	virtual void notify_on_initialisation();
-	virtual void notify_on_create();
-	virtual void notify_on_destroy();
-	virtual void notify_on_set_focus(HWND wnd_lost);
-	virtual void notify_on_kill_focus(HWND wnd_receiving);
-	virtual bool notify_on_keyboard_keydown_copy();;
-	virtual bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed);;
-	void notify_on_column_size_change(t_size index, t_size new_width);
-	virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse);;
+	void notify_on_initialisation() override;
+	void notify_on_create() override;
+	void notify_on_destroy() override;
+	void notify_on_set_focus(HWND wnd_lost) override;
+	void notify_on_kill_focus(HWND wnd_receiving) override;
+	bool notify_on_keyboard_keydown_copy() override;;
+	bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed) override;;
+	void notify_on_column_size_change(t_size index, t_size new_width) override;
+	bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;;
 	static void g_print_field(const char * field, const file_info & p_info, pfc::string_base & p_out);
-	virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries);;
-	virtual void notify_save_inline_edit(const char * value);
+	bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;;
+	void notify_save_inline_edit(const char * value) override;
 
 	//UI SEL API
-	void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr> & p_selection);
+	void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr> & p_selection) override;
 
 	//PC
-	void on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
-	void on_playback_new_track(metadb_handle_ptr p_track);
-	void on_playback_stop(play_control::t_stop_reason p_reason);
-	void on_playback_seek(double p_time) {}
-	void on_playback_pause(bool p_state) {}
-	void on_playback_edited(metadb_handle_ptr p_track) {}
-	void on_playback_dynamic_info(const file_info & p_info) {}
-	void on_playback_dynamic_info_track(const file_info & p_info) {}
-	void on_playback_time(double p_time) {}
-	void on_volume_change(float p_new_val) {}
+	void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
+	void on_playback_new_track(metadb_handle_ptr p_track) override;
+	void on_playback_stop(play_control::t_stop_reason p_reason) override;
+	void on_playback_seek(double p_time) override {}
+	void on_playback_pause(bool p_state) override {}
+	void on_playback_edited(metadb_handle_ptr p_track) override {}
+	void on_playback_dynamic_info(const file_info & p_info) override {}
+	void on_playback_dynamic_info_track(const file_info & p_info) override {}
+	void on_playback_time(double p_time) override {}
+	void on_volume_change(float p_new_val) override {}
 
-	void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook);
+	void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
 
 	static void g_on_app_activate(bool b_activated);
 	static void g_redraw_all();

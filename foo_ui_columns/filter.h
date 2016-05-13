@@ -24,17 +24,18 @@ namespace filter_panel {
 	public:
 		static const GUID g_guid;
 
-		virtual const GUID & get_client_guid() const { return g_guid; };
-		virtual void get_name(pfc::string_base & p_out) const { p_out = "Filter Panel"; };
+		const GUID & get_client_guid() const override { return g_guid; };
 
-		virtual t_size get_supported_colours() const { return cui::colours::colour_flag_all; }; //bit-mask
-		virtual t_size get_supported_fonts() const { return 0; }; //bit-mask
-		virtual t_size get_supported_bools() const { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
-		virtual bool get_themes_supported() const { return true; };
+		void get_name(pfc::string_base & p_out) const override { p_out = "Filter Panel"; };
 
-		virtual void on_colour_changed(t_size mask) const;;
-		virtual void on_font_changed(t_size mask) const {};
-		virtual void on_bool_changed(t_size mask) const {};
+		t_size get_supported_colours() const override { return cui::colours::colour_flag_all; }; //bit-mask
+
+		t_size get_supported_bools() const override { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
+		bool get_themes_supported() const override { return true; };
+
+		void on_colour_changed(t_size mask) const override;;
+
+		void on_bool_changed(t_size mask) const override {};
 	};
 
 	class field_t
@@ -47,8 +48,9 @@ namespace filter_panel {
 	{
 	public:
 		enum {stream_version=0};
-		virtual void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort);
-		virtual void get_data_raw(stream_writer * p_stream, abort_callback & p_abort);
+
+		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
+		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
 		void reset();
 		bool have_name(const char * p_name);
 		void fix_name(const char * p_name, pfc::string8 & p_out);
@@ -59,8 +61,8 @@ namespace filter_panel {
 	class cfg_favouriteslist : public cfg_var, public pfc::list_t<pfc::string8>
 	{
 	public:
-		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort);
-		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort);
+		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
+		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
 
 		bool have_item(const char * p_item);
 		bool find_item(const char * p_item, t_size & index);
@@ -116,15 +118,16 @@ namespace filter_panel {
 
 		static pfc::ptr_list_t<filter_panel_t> g_windows;
 
-		virtual const GUID & get_extension_guid() const;
-		virtual void get_name(pfc::string_base & out)const;
-		virtual void get_category(pfc::string_base & out)const;
-		unsigned get_type() const;
+		const GUID & get_extension_guid() const override;
+		void get_name(pfc::string_base & out)const override;
+		void get_category(pfc::string_base & out)const override;
+		unsigned get_type() const override;
 
 
 		enum { config_version_current = 1 };
-		virtual void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
-		virtual void get_config(stream_writer * p_writer, abort_callback & p_abort) const;
+
+		void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
+		void get_config(stream_writer * p_writer, abort_callback & p_abort) const override;
 		static t_size g_get_stream_index_by_window(const uie::window_ptr & ptr);
 		static void g_on_orderedbysplitters_change();
 		static void g_on_fields_change();
@@ -182,7 +185,7 @@ namespace filter_panel {
 
 		void set_field(const field_data_t & field, bool b_force = false);
 
-		virtual void notify_update_item_data(t_size index);
+		void notify_update_item_data(t_size index) override;
 
 		class data_entry_t
 		{
@@ -213,29 +216,29 @@ namespace filter_panel {
 
 		bool is_visible() { RECT rc; return get_wnd() && IsWindowVisible(get_wnd()) && GetClientRect(get_wnd(), &rc) && RECT_CY(rc) > 0; }
 
-		virtual void notify_on_create();
-		virtual void notify_on_initialisation();
-		virtual void notify_on_destroy();
+		void notify_on_create() override;
+		void notify_on_initialisation() override;
+		void notify_on_destroy() override;
 		//void set_focus() {SetFocus(get_wnd());}
-		virtual void render_background(HDC dc, const RECT * rc);
-		virtual void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc);
+		void render_background(HDC dc, const RECT * rc) override;
+		void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc) override;
 
-		virtual t_size get_highlight_item();
-		virtual bool notify_on_keyboard_keydown_search();
+		t_size get_highlight_item() override;
+		bool notify_on_keyboard_keydown_search() override;
 #ifdef FILTER_OLD_SEARCH
 		virtual void notify_on_search_box_contents_change(const char * p_str);
 		virtual void notify_on_search_box_close();
 		virtual bool notify_on_timer(UINT_PTR timerid);
 #endif
-		virtual bool notify_on_contextmenu_header(const POINT & pt, const HDHITTESTINFO & ht);
-		void notify_on_menu_select(WPARAM wp, LPARAM lp);
-		virtual bool notify_on_contextmenu(const POINT & pt);
+		bool notify_on_contextmenu_header(const POINT & pt, const HDHITTESTINFO & ht) override;
+		void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
+		bool notify_on_contextmenu(const POINT & pt) override;
 
-		virtual bool do_drag_drop(WPARAM wp);
+		bool do_drag_drop(WPARAM wp) override;
 
-		virtual bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed);
-		virtual void move_selection(int delta)
-		{};
+		bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed) override;
+
+		void move_selection(int delta) override {};
 		void get_selection_handles(metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_out, bool fallback = true, bool b_sort = false);
 		enum action_t
 		{
@@ -247,26 +250,26 @@ namespace filter_panel {
 		};
 		void do_selection_action(action_t action = action_send_to_autosend);
 		void do_items_action(const bit_array & p_nodes, action_t action = action_send_to_autosend);
-		virtual void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl);
-		bool notify_on_middleclick(bool on_item, t_size index);
+		void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl) override;
+		bool notify_on_middleclick(bool on_item, t_size index) override;
 		void send_results_to_playlist(bool b_play = false);
-		virtual void notify_on_selection_change(const bit_array & p_affected, const bit_array & p_status, notification_source_t p_notification_source);
+		void notify_on_selection_change(const bit_array & p_affected, const bit_array & p_status, notification_source_t p_notification_source) override;
 		void update_first_node_text(bool b_update = false);
 
-		virtual void on_items_added(const pfc::list_base_const_t<metadb_handle_ptr> & p_data);
-		virtual void on_items_removed(const pfc::list_base_const_t<metadb_handle_ptr> & p_data);
-		virtual void on_items_modified(const pfc::list_base_const_t<metadb_handle_ptr> & p_data);
+		void on_items_added(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) override;
+		void on_items_removed(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) override;
+		void on_items_modified(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) override;
 		void _on_items_modified(const metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_data);
 		void _on_items_added(const metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_data);
 		void _on_items_removed(const metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_data);
 
-		virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse);
-		virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries);
-		virtual void notify_save_inline_edit(const char * value);
-		virtual void notify_exit_inline_edit();
+		bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;
+		bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;
+		void notify_save_inline_edit(const char * value) override;
+		void notify_exit_inline_edit() override;
 
-		void notify_on_set_focus(HWND wnd_lost);
-		void notify_on_kill_focus(HWND wnd_receiving);
+		void notify_on_set_focus(HWND wnd_lost) override;
+		void notify_on_kill_focus(HWND wnd_receiving) override;
 
 		virtual t_size get_drag_item_count() override {return m_drag_item_count;}
 
@@ -318,9 +321,9 @@ namespace filter_panel {
 		{
 			service_ptr_t<filter_search_bar> p_this;
 		public:
-			virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags) const;
-			virtual bool get_description(pfc::string_base & p_out) const;
-			virtual void execute();
+			bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags) const override;
+			bool get_description(pfc::string_base & p_out) const override;
+			void execute() override;
 			menu_node_show_clear_button(filter_search_bar * wnd) : p_this(wnd) {};
 		};
 	public:
@@ -347,21 +350,24 @@ namespace filter_panel {
 		}
 
 
-		virtual void get_name(pfc::string_base & out) const { out = "Filter search"; }
-		virtual const GUID & get_extension_guid() const { return cui::toolbars::guid_filter_search_bar; }
-		virtual void get_category(pfc::string_base & out) const { out = "Toolbars"; }
-		virtual unsigned get_type() const { return uie::type_toolbar; }
+		void get_name(pfc::string_base & out) const override { out = "Filter search"; }
+
+		const GUID & get_extension_guid() const override { return cui::toolbars::guid_filter_search_bar; }
+
+		void get_category(pfc::string_base & out) const override { out = "Toolbars"; }
+
+		unsigned get_type() const override { return uie::type_toolbar; }
 		//virtual HBRUSH get_class_background() const {return HBRUSH(COLOR_WINDOW+1);}
-		virtual t_uint32 get_flags() const { return flag_default_flags_plus_transparent_background; }
+		t_uint32 get_flags() const override { return flag_default_flags_plus_transparent_background; }
 
 		filter_search_bar();
 
 	private:
-		virtual const GUID & get_class_guid() { return cui::toolbars::guid_filter_search_bar; }
+		const GUID & get_class_guid() override { return cui::toolbars::guid_filter_search_bar; }
 
-		virtual void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
-		virtual void get_config(stream_writer * p_writer, abort_callback & p_abort) const;
-		virtual void get_menu_items(uie::menu_hook_t & p_hook);
+		void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
+		void get_config(stream_writer * p_writer, abort_callback & p_abort) const override;
+		void get_menu_items(uie::menu_hook_t & p_hook) override;
 
 		void on_show_clear_button_change();
 		void on_search_editbox_change();
@@ -369,9 +375,9 @@ namespace filter_panel {
 
 		void update_favourite_icon(const char * p_new = NULL);
 
-		virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+		LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 		void create_edit();
-		void on_size(t_size cx, t_size cy);
+		void on_size(t_size cx, t_size cy) override;
 		void activate();
 
 		static LRESULT WINAPI g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);

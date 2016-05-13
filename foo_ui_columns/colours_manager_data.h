@@ -5,8 +5,8 @@ class colours_manager_data : public cfg_var
 public:
 	static const GUID g_cfg_guid;
 	enum { cfg_version = 0 };
-	void get_data_raw(stream_writer * p_stream, abort_callback & p_abort);
-	void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort);
+	void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
+	void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
 	class entry_t : public pfc::refcounted_object_root
 	{
 	public:

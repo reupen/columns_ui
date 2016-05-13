@@ -169,8 +169,8 @@ class titleformat_hook_set_global : public titleformat_hook
 	global_variable_list & p_vars;
 	bool b_legacy;
 public:
-	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
-	virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag);
+	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
+	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override;
 	inline titleformat_hook_set_global(global_variable_list & vars, bool legacy = false) : p_vars(vars), b_legacy(legacy)
 	{
 	};
@@ -181,8 +181,8 @@ class titleformat_hook_date : public titleformat_hook
 	const SYSTEMTIME * p_st;
 	pfc::array_t<char> year,month,day,dayofweek,hour,julian;
 public:
-	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
-	virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag);
+	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
+	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override;
 	inline titleformat_hook_date(const SYSTEMTIME * st = 0) : p_st(st)
 	{
 	};
@@ -192,8 +192,8 @@ class titleformat_hook_splitter_pt3 : public titleformat_hook
 {
 public:
 	inline titleformat_hook_splitter_pt3(titleformat_hook * p_hook1,titleformat_hook * p_hook2,titleformat_hook * p_hook3,titleformat_hook * p_hook4 = NULL) : m_hook1(p_hook1), m_hook2(p_hook2), m_hook3(p_hook3), m_hook4(p_hook4) {};
-	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
-	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag);
+	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
+	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override;
 private:
 	titleformat_hook * m_hook1, * m_hook2, * m_hook3, * m_hook4;
 };
@@ -461,6 +461,7 @@ public:
 		bool m_last_position_valid;
 		unsigned m_last_position;
 	};
+
 	bool get_entry(unsigned index, t_local_cache_entry * & p_out)
 	{
 		if (index < m_entries.get_count())
@@ -484,39 +485,54 @@ public:
 		playlist_api->unregister_callback(this);
 		m_entries.remove_all();
 	}
-	private:
-		virtual void FB2KAPI on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) {};
-		virtual void FB2KAPI on_items_reordered(unsigned p_playlist,const unsigned * order,unsigned count){};
-		virtual void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};//called before actually removing them
-		virtual void FB2KAPI on_items_removed(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};
-		virtual void FB2KAPI on_items_selection_change(unsigned p_playlist,const bit_array & affected,const bit_array & state){};
-		virtual void FB2KAPI on_item_focus_change(unsigned p_playlist,unsigned from,unsigned to){};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-		virtual void FB2KAPI on_items_modified(unsigned p_playlist,const bit_array & p_mask){};
-		virtual void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level){};
-		virtual void FB2KAPI on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data){};
-		virtual void FB2KAPI on_item_ensure_visible(unsigned p_playlist,unsigned idx){};
-		virtual void FB2KAPI on_playlist_activate(unsigned p_old,unsigned p_new){};
-		virtual void on_playlist_created(unsigned p_index,const char * p_name,unsigned p_name_len)
-		{
-			m_entries.insert_item(t_local_cache_entry(), p_index);
-		};
-		virtual void on_playlists_reorder(const unsigned * p_order,unsigned p_count)
-		{
-			if (p_count == m_entries.get_count())
-				m_entries.reorder(p_order);
-		};
-		virtual void on_playlists_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};
-		virtual void on_playlists_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
-		{
-			m_entries.remove_mask(p_mask);
-		}
-		virtual void on_playlist_renamed(unsigned p_index,const char * p_new_name,unsigned p_new_name_len){};
+private:
+	void FB2KAPI on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override {};
 
-		virtual void on_default_format_changed(){};
-		virtual void on_playback_order_changed(unsigned p_new_index){};
-		virtual void on_playlist_locked(unsigned p_playlist,bool p_locked){};
+	void FB2KAPI on_items_reordered(unsigned p_playlist,const unsigned * order,unsigned count) override {};
 
-		pfc::list_t<t_local_cache_entry> m_entries;
+	void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override {};//called before actually removing them
+	void FB2KAPI on_items_removed(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override {};
+
+	void FB2KAPI on_items_selection_change(unsigned p_playlist,const bit_array & affected,const bit_array & state) override {};
+
+	void FB2KAPI on_item_focus_change(unsigned p_playlist,unsigned from,unsigned to) override {};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
+	void FB2KAPI on_items_modified(unsigned p_playlist,const bit_array & p_mask) override {};
+
+	void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) override {};
+
+	void FB2KAPI on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override {};
+
+	void FB2KAPI on_item_ensure_visible(unsigned p_playlist,unsigned idx) override {};
+
+	void FB2KAPI on_playlist_activate(unsigned p_old,unsigned p_new) override {};
+
+	void on_playlist_created(unsigned p_index,const char * p_name,unsigned p_name_len) override
+	{
+		m_entries.insert_item(t_local_cache_entry(), p_index);
+	};
+
+	void on_playlists_reorder(const unsigned * p_order, unsigned p_count) override
+	{
+		if (p_count == m_entries.get_count())
+			m_entries.reorder(p_order);
+	};
+
+	void on_playlists_removing(const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override {};
+
+	void on_playlists_removed(const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override
+	{
+		m_entries.remove_mask(p_mask);
+	}
+
+	void on_playlist_renamed(unsigned p_index,const char * p_new_name,unsigned p_new_name_len) override {};
+
+	void on_default_format_changed() override {};
+
+	void on_playback_order_changed(unsigned p_new_index) override {};
+
+	void on_playlist_locked(unsigned p_playlist,bool p_locked) override {};
+
+	pfc::list_t<t_local_cache_entry> m_entries;
 };
 
 #endif

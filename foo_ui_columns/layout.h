@@ -45,9 +45,9 @@ public:
 	void save_active_preset ();
 
 	void set_presets(const pfc::list_base_const_t<preset> & presets, t_size active);
-	virtual void get_data_raw(stream_writer * out, abort_callback & p_abort);
+	void get_data_raw(stream_writer * out, abort_callback & p_abort) override;
 
-	virtual void set_data_raw(stream_reader *, unsigned p_sizehint, abort_callback & p_abort);
+	void set_data_raw(stream_reader *, unsigned p_sizehint, abort_callback & p_abort) override;
 
 	void reset_presets();//needs services
 
@@ -112,12 +112,14 @@ private:
 	void run_live_edit_base_delayed(POINT pt_menu);
 	void run_live_edit_base_delayed_v2(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr> & p_hierarchy);
 	void run_live_edit_base_v2(const live_edit_data_t & p_data);
-	bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp);
-	virtual class_data & get_class_data()const 
+	bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
+
+	class_data & get_class_data()const override
 	{
 		__implement_get_class_data(_T("{DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}"), false);
 	}
-	virtual LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
 	void create_child();
 	void destroy_child();

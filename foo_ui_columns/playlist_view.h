@@ -35,8 +35,10 @@ class titleformat_hook_playlist_name : public titleformat_hook
 	pfc::string8 m_name;
 public:
 	void initialise();
-	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
-	virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) {return false;};
+	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
+
+	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override
+	{return false;};
 	inline titleformat_hook_playlist_name() : m_initialised(false)
 	{
 	};
@@ -47,13 +49,13 @@ class IDropSource_playlist : public IDropSource
 	long refcount;
 	service_ptr_t<playlist_view> p_playlist;
 public:
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void ** ppvObject);
-	virtual ULONG STDMETHODCALLTYPE AddRef();
-	virtual ULONG STDMETHODCALLTYPE Release();
+	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid, void ** ppvObject) override;
+	ULONG STDMETHODCALLTYPE AddRef() override;
+	ULONG STDMETHODCALLTYPE Release() override;
 
-	virtual HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState);
+	HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState) override;
 
-	virtual HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect);
+	HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect) override;
 
 	IDropSource_playlist(playlist_view * playlist);;
 
@@ -65,13 +67,13 @@ class IDropTarget_playlist : public IDropTarget
 	bool last_rmb;
 	service_ptr_t<playlist_view> p_playlist;
 public:
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
-	virtual ULONG STDMETHODCALLTYPE   AddRef();
-	virtual ULONG STDMETHODCALLTYPE   Release();
-	virtual HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
-	virtual HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
-	virtual HRESULT STDMETHODCALLTYPE DragLeave( void);
-	virtual HRESULT STDMETHODCALLTYPE Drop( IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject) override;
+	ULONG STDMETHODCALLTYPE   AddRef() override;
+	ULONG STDMETHODCALLTYPE   Release() override;
+	HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
+	HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
+	HRESULT STDMETHODCALLTYPE DragLeave( void) override;
+	HRESULT STDMETHODCALLTYPE Drop( IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
 	IDropTarget_playlist(playlist_view * playlist);
 	
 };
@@ -80,9 +82,9 @@ class playlist_message_window : public ui_helpers::container_window
 {
 	long ref_count;
 public:
-	virtual class_data & get_class_data() const;
+	class_data & get_class_data() const override;
 
-	virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 	void add_ref();
 	void release();
 	playlist_message_window() : ref_count(0) {};
@@ -91,7 +93,7 @@ public:
 class playlist_view : public ui_extension::container_ui_extension_t<ui_helpers::container_window, uie::playlist_window>
 {
 
-	virtual class_data & get_class_data() const;
+	class_data & get_class_data() const override;
 //	static refcounted_ptr_t<titleformat_object> g_to_global;
 //	static refcounted_ptr_t<titleformat_object> g_to_global_colour;
 
@@ -105,7 +107,7 @@ public:
 	HWND wnd_playlist,wnd_header;
 
 	//static LRESULT WINAPI window_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
-	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
 	void move_header(bool redraw = true, bool update = true);
 	void rebuild_header(bool full_rebuild = true);
@@ -127,7 +129,8 @@ public:
 	unsigned get_last_viewable_item();
 	bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist = true, bool keyb = true);
 	void get_playlist_rect(RECT * out);
-	virtual void set_focus()
+
+	void set_focus() override
 	{
 		if (wnd_playlist)
 			SetFocus(wnd_playlist);
@@ -150,13 +153,14 @@ public:
 
 	~playlist_view();
 
-	virtual const GUID & get_extension_guid() const;
+	const GUID & get_extension_guid() const override;
 
-	virtual void get_name(pfc::string_base & out) const;
-	virtual void get_category(pfc::string_base & out) const;
-	virtual bool get_short_name(pfc::string_base & out) const;
+	void get_name(pfc::string_base & out) const override;
+	void get_category(pfc::string_base & out) const override;
+	bool get_short_name(pfc::string_base & out) const override;
 
-	virtual unsigned get_type() const{return ui_extension::type_playlist|ui_extension::type_panel;};
+	unsigned get_type() const override
+	{return ui_extension::type_playlist|ui_extension::type_panel;};
 
 	inline static const pfc::list_base_const_t<column_t::ptr> & g_get_columns() {return columns;};
 	/*inline static void g_get_titleformat_object(unsigned index, string_type string, service_ptr_t<titleformat_object> & p_out)
@@ -302,20 +306,21 @@ class appearance_client_pv_impl : public cui::colours::client
 public:
 	static const GUID g_guid;
 
-	virtual const GUID & get_client_guid() const { return g_guid;};
-	virtual void get_name (pfc::string_base & p_out) const {p_out = "Columns Playlist";};
+	const GUID & get_client_guid() const override { return g_guid;};
 
-	virtual t_size get_supported_colours() const {return cui::colours::colour_flag_all;}; //bit-mask
-	virtual t_size get_supported_fonts() const {return 0;}; //bit-mask
-	virtual t_size get_supported_bools() const {return cui::colours::bool_flag_use_custom_active_item_frame;}; //bit-mask
-	virtual bool get_themes_supported() const {return true;};
+	void get_name (pfc::string_base & p_out) const override {p_out = "Columns Playlist";};
 
-	virtual void on_colour_changed(t_size mask) const 
+	t_size get_supported_colours() const override {return cui::colours::colour_flag_all;}; //bit-mask
+
+	t_size get_supported_bools() const override {return cui::colours::bool_flag_use_custom_active_item_frame;}; //bit-mask
+	bool get_themes_supported() const override {return true;};
+
+	void on_colour_changed(t_size mask) const override
 	{
 		refresh_all_playlist_views();
 	};
-	virtual void on_font_changed(t_size mask) const {};
-	virtual void on_bool_changed(t_size mask) const {};
+
+	void on_bool_changed(t_size mask) const override {};
 };
 
 void set_day_timer();
@@ -328,8 +333,8 @@ class titleformat_hook_style : public titleformat_hook
 	pfc::array_t<char> text,selected_text,back,selected_back,selected_back_no_focus,selected_text_no_focus;
 	colourinfo & p_colours;
 public:
-	virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
-	virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag);
+	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
+	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override;
 	inline titleformat_hook_style(colourinfo & vars) : p_default_colours(vars), p_colours(vars)
 	{
 	};

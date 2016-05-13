@@ -6,17 +6,17 @@ class splitter_window_tabs_impl :
 {
 	typedef splitter_window_tabs_impl t_self;
 public:
-	virtual class_data & get_class_data()const ;
-	void get_name(pfc::string_base & p_out) const;
-	virtual const GUID & get_extension_guid() const;
-	void get_category(pfc::string_base & p_out) const;
-	virtual unsigned get_type  () const;
+	class_data & get_class_data()const override;
+	void get_name(pfc::string_base & p_out) const override;
+	const GUID & get_extension_guid() const override;
+	void get_category(pfc::string_base & p_out) const override;
+	unsigned get_type  () const override;
 
-	virtual void insert_panel(unsigned index, const uie::splitter_item_t *  p_item);
-	virtual void remove_panel(unsigned index);
-	virtual void replace_panel(unsigned index, const uie::splitter_item_t *  p_item);
+	void insert_panel(unsigned index, const uie::splitter_item_t *  p_item) override;
+	void remove_panel(unsigned index) override;
+	void replace_panel(unsigned index, const uie::splitter_item_t *  p_item) override;
 
-	virtual bool is_point_ours(HWND wnd_point, const POINT & pt_screen, pfc::list_base_t<uie::window::ptr> & p_hierarchy)
+	bool is_point_ours(HWND wnd_point, const POINT & pt_screen, pfc::list_base_t<uie::window::ptr> & p_hierarchy) override
 	{
 		if (wnd_point == get_wnd() || IsChild(get_wnd(), wnd_point))
 		{
@@ -55,21 +55,23 @@ public:
 		}
 		return false;
 	}
-	virtual void get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported);
-	virtual unsigned get_panel_count()const;
-	virtual uie::splitter_item_t * get_panel(unsigned index)const;
 
-	virtual bool get_config_item_supported(unsigned index, const GUID & p_type) const;
-	virtual bool get_config_item(unsigned index, const GUID & p_type, stream_writer * p_out, abort_callback & p_abort) const;
-	virtual bool set_config_item(unsigned index, const GUID & p_type, stream_reader * p_source, abort_callback & p_abort);
+	void get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported) override;
+	unsigned get_panel_count()const override;
+	uie::splitter_item_t * get_panel(unsigned index)const override;
+
+	bool get_config_item_supported(unsigned index, const GUID & p_type) const override;
+	bool get_config_item(unsigned index, const GUID & p_type, stream_writer * p_out, abort_callback & p_abort) const override;
+	bool set_config_item(unsigned index, const GUID & p_type, stream_reader * p_source, abort_callback & p_abort) override;
 
 	enum {stream_version_current=0};
-	virtual void set_config(stream_reader * config, t_size p_size, abort_callback & p_abort);
-	virtual void get_config(stream_writer * out, abort_callback & p_abort) const;
 
-	virtual void export_config(stream_writer * p_writer, abort_callback & p_abort) const;
+	void set_config(stream_reader * config, t_size p_size, abort_callback & p_abort) override;
+	void get_config(stream_writer * out, abort_callback & p_abort) const override;
 
-	virtual void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
+	void export_config(stream_writer * p_writer, abort_callback & p_abort) const override;
+
+	void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
 
 	class splitter_host_impl;
 
@@ -125,7 +127,8 @@ public:
 		//bool move_down(unsigned idx);
 		bool find_by_wnd(HWND wnd, unsigned & p_out);
 	};
-	virtual LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 	LRESULT WINAPI on_hooked_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
 	static LRESULT WINAPI g_hook_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
 	WNDPROC m_tab_proc;

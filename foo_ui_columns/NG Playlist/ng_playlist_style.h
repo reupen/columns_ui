@@ -133,8 +133,8 @@ namespace pvt
 		t_size m_index;
 		bool m_is_group;
 	public:
-		virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
-		virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag);
+		bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
+		bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override;
 		inline titleformat_hook_style_v2(style_data_cell_info_t & vars, t_size index, bool b_is_group = false) : p_default_colours(vars), p_colours(vars), m_index(index), m_is_group(b_is_group)
 		{
 		};

@@ -33,44 +33,44 @@ namespace pvt
 			static_api_ptr_t<playlist_manager>()->modify_callback(this,p_flags);
 		}
 		//dummy implementations - avoid possible pure virtual function calls!
-		void on_items_added(t_size p_playlist,t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) {}
-		void on_items_reordered(t_size p_playlist,const t_size * p_order,t_size p_count) {}
-		void on_items_removing(t_size p_playlist,const bit_array & p_mask,t_size p_old_count,t_size p_new_count) {}
-		void on_items_removed(t_size p_playlist,const bit_array & p_mask,t_size p_old_count,t_size p_new_count) {}
-		void on_items_selection_change(t_size p_playlist,const bit_array & p_affected,const bit_array & p_state) {}
-		void on_item_focus_change(t_size p_playlist,t_size p_from,t_size p_to) {}
+		void on_items_added(t_size p_playlist,t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override {}
+		void on_items_reordered(t_size p_playlist,const t_size * p_order,t_size p_count) override {}
+		void on_items_removing(t_size p_playlist,const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {}
+		void on_items_removed(t_size p_playlist,const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {}
+		void on_items_selection_change(t_size p_playlist,const bit_array & p_affected,const bit_array & p_state) override {}
+		void on_item_focus_change(t_size p_playlist,t_size p_from,t_size p_to) override {}
 		
-		void on_items_modified(t_size p_playlist,const bit_array & p_mask) {}
-		void on_items_modified_fromplayback(t_size p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) {}
+		void on_items_modified(t_size p_playlist,const bit_array & p_mask) override {}
+		void on_items_modified_fromplayback(t_size p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) override {}
 
-		void on_items_replaced(t_size p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) {}
+		void on_items_replaced(t_size p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override {}
 
-		void on_item_ensure_visible(t_size p_playlist,t_size p_idx) {}
+		void on_item_ensure_visible(t_size p_playlist,t_size p_idx) override {}
 
-		void on_playlist_activate(t_size p_old,t_size p_new) {}
-		void on_playlist_created(t_size p_index,const char * p_name,t_size p_name_len) {}
-		void on_playlists_reorder(const t_size * p_order,t_size p_count) {}
-		void on_playlists_removing(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) {}
-		void on_playlists_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) {}
-		void on_playlist_renamed(t_size p_index,const char * p_new_name,t_size p_new_name_len) {}
+		void on_playlist_activate(t_size p_old,t_size p_new) override {}
+		void on_playlist_created(t_size p_index,const char * p_name,t_size p_name_len) override {}
+		void on_playlists_reorder(const t_size * p_order,t_size p_count) override {}
+		void on_playlists_removing(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {}
+		void on_playlists_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {}
+		void on_playlist_renamed(t_size p_index,const char * p_new_name,t_size p_new_name_len) override {}
 
-		void on_default_format_changed() {}
-		void on_playback_order_changed(t_size p_new_index) {}
-		void on_playlist_locked(t_size p_playlist,bool p_locked) {}
+		void on_default_format_changed() override {}
+		void on_playback_order_changed(t_size p_new_index) override {}
+		void on_playlist_locked(t_size p_playlist,bool p_locked) override {}
 	};
 
 	template <class item_t>
 	class playlist_cache_t : private playlist_callback_base, public pfc::list_t<item_t>
 	{
-		void on_playlist_created(t_size p_index,const char * p_name,t_size p_name_len)
+		void on_playlist_created(t_size p_index,const char * p_name,t_size p_name_len) override
 		{
 			insert_item(item_t(), p_index);
 		}
-		void on_playlists_reorder(const t_size * p_order,t_size p_count)
+		void on_playlists_reorder(const t_size * p_order,t_size p_count) override
 		{
 			reorder(p_order);
 		}
-		void on_playlists_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) 
+		void on_playlists_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override
 		{
 			remove_mask(p_mask);
 		}
@@ -166,7 +166,7 @@ namespace pvt
 			}
 		}
 	protected:
-		virtual DWORD on_thread();
+		DWORD on_thread() override;
 	private:
 		unsigned read_artwork(abort_callback & p_abort);
 
@@ -322,17 +322,17 @@ namespace pvt
 	public:
 		static const GUID g_guid;
 
-		virtual const GUID & get_client_guid() const { return g_guid; };
-		virtual void get_name(pfc::string_base & p_out) const { p_out = "NG Playlist"; };
+		const GUID & get_client_guid() const override { return g_guid; };
 
-		virtual t_size get_supported_colours() const { return cui::colours::colour_flag_all; }; //bit-mask
-		virtual t_size get_supported_fonts() const { return 0; }; //bit-mask
-		virtual t_size get_supported_bools() const { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
-		virtual bool get_themes_supported() const { return true; };
+		void get_name(pfc::string_base & p_out) const override { p_out = "NG Playlist"; };
 
-		virtual void on_colour_changed(t_size mask) const;;
-		virtual void on_font_changed(t_size mask) const {};
-		virtual void on_bool_changed(t_size mask) const {};
+		t_size get_supported_colours() const override { return cui::colours::colour_flag_all; }; //bit-mask
+		t_size get_supported_bools() const override { return cui::colours::bool_flag_use_custom_active_item_frame; }; //bit-mask
+		bool get_themes_supported() const override { return true; };
+
+		void on_colour_changed(t_size mask) const override;;
+
+		void on_bool_changed(t_size mask) const override {};
 	};
 
 	class ng_playlist_view_t : 
@@ -346,12 +346,12 @@ namespace pvt
 
 		class ng_global_mesage_window : public ui_helpers::container_window
 		{
-			virtual class_data & get_class_data() const 
+			class_data & get_class_data() const override
 			{
 				__implement_get_class_data_ex(_T("NGPV_GMW"), _T(""), false, 0, 0, 0, 0);
 			}
 
-			virtual LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
+			LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override
 			{
 				switch(msg)
 				{
@@ -400,11 +400,11 @@ namespace pvt
 
 		void on_use_date_info_change();
 
-		virtual const GUID & get_extension_guid() const;
-		virtual void get_name(pfc::string_base & out)const;
-		virtual bool get_short_name(pfc::string_base & out)const;
-		virtual void get_category(pfc::string_base & out)const;
-		unsigned get_type () const;
+		const GUID & get_extension_guid() const override;
+		void get_name(pfc::string_base & out)const override;
+		bool get_short_name(pfc::string_base & out)const override;
+		void get_category(pfc::string_base & out)const override;
+		unsigned get_type () const override;
 
 		bool m_dragging;
 		pfc::com_ptr_t<IDataObject> m_DataObject;
@@ -460,7 +460,8 @@ namespace pvt
 				
 			}
 		}
-		virtual void notify_on_group_info_area_size_change(t_size new_width)
+
+		void notify_on_group_info_area_size_change(t_size new_width) override
 		{
 			cfg_artwork_width = new_width;
 			//flush_artwork_images();
@@ -496,7 +497,8 @@ namespace pvt
 		public:
 			typedef pfc::refcounted_object_ptr_t<completion_notify_artwork_t> ptr_t;
 
-			virtual void on_completion(const pfc::rcptr_t<artwork_reader_ng_t> & p_reader) {m_window->on_artwork_read_complete(m_group, p_reader);}
+			void on_completion(const pfc::rcptr_t<artwork_reader_ng_t> & p_reader) override
+			{m_window->on_artwork_read_complete(m_group, p_reader);}
 
 			item_group_ng_t::ptr m_group;
 			service_ptr_t<ng_playlist_view_t> m_window;
@@ -509,35 +511,40 @@ namespace pvt
 		void refresh_all_items_text(bool b_update_display = true);
 		void update_items(t_size index, t_size count, bool b_update_display = true);
 
-		virtual t_item * storage_create_item() {return new item_ng_t;}
-		virtual t_group * storage_create_group() {return new item_group_ng_t;}
+		t_item * storage_create_item() override {return new item_ng_t;}
+
+		t_group * storage_create_group() override {return new item_group_ng_t;}
 
 		item_ng_t * get_item(t_size index) {return static_cast<item_ng_t*>(t_list_view::get_item(index));}
 
-		void notify_update_item_data(t_size index);
+		void notify_update_item_data(t_size index) override;
 
 		const style_data_t & get_style_data(t_size index);
 		void get_insert_items(t_size start, t_size count, pfc::list_t<t_list_view::t_item_insert, pfc::alloc_fast_aggressive> & items);
 		void flush_items();
 		void reset_items();
 
-		virtual void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection);
-		virtual void on_items_reordered(const t_size * p_order,t_size p_count);
-		virtual void on_items_removing(const bit_array & p_mask,t_size p_old_count,t_size p_new_count){};//called before actually removing them
-		virtual void on_items_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count);
-		virtual void on_items_selection_change(const bit_array & p_affected,const bit_array & p_state) ;
-		virtual void on_item_focus_change(t_size p_from,t_size p_to);
-		virtual void on_items_modified(const bit_array & p_mask);
-		virtual void on_items_modified_fromplayback(const bit_array & p_mask,play_control::t_display_level p_level);
-		virtual void on_items_replaced(const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data);
-		virtual void on_item_ensure_visible(t_size p_idx);
-		virtual void on_playlist_switch() ;
-		virtual void on_playlist_renamed(const char * p_new_name,t_size p_new_name_len);
-		virtual void on_default_format_changed() {};
-		virtual void on_playback_order_changed(t_size p_new_index) {};
-		virtual void on_playlist_locked(bool p_locked) {};
+		void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override;
+		void on_items_reordered(const t_size * p_order,t_size p_count) override;
 
-		void on_playlist_activate(t_size p_old,t_size p_new) 
+		void on_items_removing(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {};//called before actually removing them
+		void on_items_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override;
+		void on_items_selection_change(const bit_array & p_affected,const bit_array & p_state) override;
+		void on_item_focus_change(t_size p_from,t_size p_to) override;
+		void on_items_modified(const bit_array & p_mask) override;
+		void on_items_modified_fromplayback(const bit_array & p_mask,play_control::t_display_level p_level) override;
+		void on_items_replaced(const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data) override;
+		void on_item_ensure_visible(t_size p_idx) override;
+		void on_playlist_switch() override;
+		void on_playlist_renamed(const char * p_new_name,t_size p_new_name_len) override;
+
+		void on_default_format_changed() override {};
+
+		void on_playback_order_changed(t_size p_new_index) override {};
+
+		void on_playlist_locked(bool p_locked) override {};
+
+		void on_playlist_activate(t_size p_old,t_size p_new) override
 		{
 			if (p_old != pfc_infinite)
 			{
@@ -555,27 +562,29 @@ namespace pvt
 		t_size column_index_display_to_actual (t_size display_index);
 		t_size column_index_actual_to_display (t_size actual_index);
 
-		virtual void notify_on_initialisation();
-		virtual void notify_on_create();
-		virtual void notify_on_destroy();
-		void set_focus() {SetFocus(get_wnd());}
-		virtual t_size get_highlight_item() ;
-		virtual bool notify_on_contextmenu(const POINT & pt);
-		virtual bool notify_on_contextmenu_header(const POINT & pt, const HDHITTESTINFO & ht);
-		virtual bool notify_on_middleclick(bool on_item, t_size index);
-		virtual bool notify_on_doubleleftclick_nowhere();
+		void notify_on_initialisation() override;
+		void notify_on_create() override;
+		void notify_on_destroy() override;
+		void set_focus() override {SetFocus(get_wnd());}
 
-		virtual bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed);
-		virtual bool notify_on_keyboard_keydown_remove()	;
+		t_size get_highlight_item() override;
+		bool notify_on_contextmenu(const POINT & pt) override;
+		bool notify_on_contextmenu_header(const POINT & pt, const HDHITTESTINFO & ht) override;
+		bool notify_on_middleclick(bool on_item, t_size index) override;
+		bool notify_on_doubleleftclick_nowhere() override;
 
-		virtual bool notify_on_keyboard_keydown_search();
+		bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed) override;
+		bool notify_on_keyboard_keydown_remove() override;
 
-		virtual bool notify_on_keyboard_keydown_undo();
-		virtual bool notify_on_keyboard_keydown_redo();
-		virtual bool notify_on_keyboard_keydown_cut();
-		virtual bool notify_on_keyboard_keydown_copy();
-		virtual bool notify_on_keyboard_keydown_paste();
-		virtual void notify_on_column_size_change(t_size index, t_size new_width) 
+		bool notify_on_keyboard_keydown_search() override;
+
+		bool notify_on_keyboard_keydown_undo() override;
+		bool notify_on_keyboard_keydown_redo() override;
+		bool notify_on_keyboard_keydown_cut() override;
+		bool notify_on_keyboard_keydown_copy() override;
+		bool notify_on_keyboard_keydown_paste() override;
+
+		void notify_on_column_size_change(t_size index, t_size new_width) override
 		{
 			t_size act = column_index_display_to_actual(index);
 			if (act != pfc_infinite && act < g_columns.get_count())
@@ -586,7 +595,7 @@ namespace pvt
 			}
 		};
 
-		void notify_on_header_rearrange(t_size index_from, t_size index_to)
+		void notify_on_header_rearrange(t_size index_from, t_size index_to) override
 		{
 			t_size act_from = column_index_display_to_actual(index_from);
 			t_size act_to = column_index_display_to_actual(index_to);
@@ -596,7 +605,7 @@ namespace pvt
 			pvt::ng_playlist_view_t::g_on_columns_change();
 		}
 
-		virtual bool notify_on_timer(UINT_PTR timerid)
+		bool notify_on_timer(UINT_PTR timerid) override
 		{
 			if (timerid == timer_date_change)
 			{
@@ -605,7 +614,8 @@ namespace pvt
 			}
 			return false;
 		};
-		virtual void notify_on_time_change()
+
+		void notify_on_time_change() override
 		{
 			//on_time_change();
 		};
@@ -639,32 +649,32 @@ namespace pvt
 			m_day_timer_active = true;
 		}
 
-		virtual void notify_sort_column(t_size index, bool b_descending, bool b_selection_only);
-		virtual t_size storage_get_focus_item();
-		virtual void storage_set_focus_item(t_size index);
-		virtual void storage_get_selection_state(bit_array_var & out);
-		virtual bool storage_set_selection_state(const bit_array & p_affected,const bit_array & p_status, bit_array_var * p_changed = NULL);
-		virtual bool storage_get_item_selected(t_size index);
-		virtual t_size storage_get_selection_count(t_size max);
+		void notify_sort_column(t_size index, bool b_descending, bool b_selection_only) override;
+		t_size storage_get_focus_item() override;
+		void storage_set_focus_item(t_size index) override;
+		void storage_get_selection_state(bit_array_var & out) override;
+		bool storage_set_selection_state(const bit_array & p_affected,const bit_array & p_status, bit_array_var * p_changed = NULL) override;
+		bool storage_get_item_selected(t_size index) override;
+		t_size storage_get_selection_count(t_size max) override;
 
-		virtual void execute_default_action (t_size index, t_size column, bool b_keyboard, bool b_ctrl) ;
-		virtual void move_selection (int delta);
-		virtual bool do_drag_drop(WPARAM wp);
+		void execute_default_action (t_size index, t_size column, bool b_keyboard, bool b_ctrl) override;
+		void move_selection (int delta) override;
+		bool do_drag_drop(WPARAM wp) override;
 
-		virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) ;
-		virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) ;
-		virtual void notify_save_inline_edit(const char * value) ;
-		virtual void notify_exit_inline_edit() ;
+		bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;
+		bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;
+		void notify_save_inline_edit(const char * value) override;
+		void notify_exit_inline_edit() override;
 
-		virtual void notify_on_set_focus(HWND wnd_lost);
-		virtual void notify_on_kill_focus(HWND wnd_receiving);
+		void notify_on_set_focus(HWND wnd_lost) override;
+		void notify_on_kill_focus(HWND wnd_receiving) override;
 
-		virtual void render_group_info(HDC dc, t_size index, t_size group_count, const RECT & rc2);
-		virtual void render_background(HDC dc, const RECT * rc);
-		virtual void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc);
-		virtual void render_group(HDC dc, t_size index, t_size group, const char * text, t_size indentation, t_size level, const RECT & rc);
+		void render_group_info(HDC dc, t_size index, t_size group_count, const RECT & rc2) override;
+		void render_background(HDC dc, const RECT * rc) override;
+		void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc) override;
+		void render_group(HDC dc, t_size index, t_size group, const char * text, t_size indentation, t_size level, const RECT & rc) override;
 
-		virtual void notify_on_menu_select(WPARAM wp, LPARAM lp);
+		void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 
 		service_list_t<titleformat_object> m_scripts;
 		pfc::list_t<column_data_t> m_column_data;
@@ -697,13 +707,13 @@ namespace pvt
 	class IDropTarget_playlist : public IDropTarget
 	{
 	public:
-		virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
-		virtual ULONG STDMETHODCALLTYPE   AddRef();
-		virtual ULONG STDMETHODCALLTYPE   Release();
-		virtual HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
-		virtual HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
-		virtual HRESULT STDMETHODCALLTYPE DragLeave( void);
-		virtual HRESULT STDMETHODCALLTYPE Drop( IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect);
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject) override;
+		ULONG STDMETHODCALLTYPE   AddRef() override;
+		ULONG STDMETHODCALLTYPE   Release() override;
+		HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
+		HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
+		HRESULT STDMETHODCALLTYPE DragLeave( void) override;
+		HRESULT STDMETHODCALLTYPE Drop( IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
 		IDropTarget_playlist(ng_playlist_view_t * playlist);
 	private:
 		HRESULT UpdateDropDescription(IDataObject *pDataObj, DWORD pdwEffect);
@@ -722,11 +732,11 @@ namespace pvt
 		service_ptr_t<ng_playlist_view_t> p_playlist;
 		DWORD m_initial_key_state;
 	public:
-		virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid,void ** ppvObject);
-		virtual ULONG STDMETHODCALLTYPE AddRef();
-		virtual ULONG STDMETHODCALLTYPE Release();
-		virtual HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed,DWORD grfKeyState);
-		virtual HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect);
+		HRESULT STDMETHODCALLTYPE QueryInterface(REFIID iid,void ** ppvObject) override;
+		ULONG STDMETHODCALLTYPE AddRef() override;
+		ULONG STDMETHODCALLTYPE Release() override;
+		HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed,DWORD grfKeyState) override;
+		HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect) override;
 		IDropSource_playlist(ng_playlist_view_t * playlist, DWORD initial_key_state);
 	};
 
@@ -734,12 +744,13 @@ namespace pvt
 	{
 		static BOOL CALLBACK ConfigProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
 	public:
-		HWND create(HWND parent)
+		HWND create(HWND parent) override
 		{
 			return uCreateDialog(IDD_CONFIG_NG,parent,ConfigProc);
 		}
-		const char * get_name() {return "Grouping";}
-		bool get_help_url(pfc::string_base & p_out)
+		const char * get_name() override
+		{return "Grouping";}
+		bool get_help_url(pfc::string_base & p_out) override
 		{
 			p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:grouping";
 			return true;

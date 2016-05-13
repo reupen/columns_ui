@@ -46,7 +46,7 @@ namespace pvt {
 			add_group(group_t("$if2(%album artist%,<no artist>)[ / %album%]"), false);
 		};
 	private:
-		virtual void get_data_raw(stream_writer * p_stream,abort_callback & p_abort)
+		void get_data_raw(stream_writer * p_stream,abort_callback & p_abort) override
 		{
 			t_size count = m_groups.get_count(), i;
 			p_stream->write_lendian_t(t_size(stream_version_current), p_abort);
@@ -54,7 +54,8 @@ namespace pvt {
 			for (i=0; i<count; i++)
 				m_groups[i].write(p_stream, p_abort);
 		}
-		virtual void set_data_raw(stream_reader * p_stream,t_size p_sizehint,abort_callback & p_abort)
+
+		void set_data_raw(stream_reader * p_stream,t_size p_sizehint,abort_callback & p_abort) override
 		{
 			t_size count, i, version;
 			p_stream->read_lendian_t(version, p_abort);

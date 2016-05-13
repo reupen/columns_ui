@@ -12,18 +12,18 @@
 class drop_handler_interface : public IDropTarget
 {
 public:
-	virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
-	virtual ULONG STDMETHODCALLTYPE   AddRef();
-	virtual ULONG STDMETHODCALLTYPE   Release();
+	HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject) override;
+	ULONG STDMETHODCALLTYPE   AddRef() override;
+	ULONG STDMETHODCALLTYPE   Release() override;
 
-	virtual HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
+	HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
 
 
-	virtual HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
+	HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
 
-	virtual HRESULT STDMETHODCALLTYPE DragLeave(void);
+	HRESULT STDMETHODCALLTYPE DragLeave(void) override;
 
-	virtual HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
+	HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
 	drop_handler_interface();
 
 private:

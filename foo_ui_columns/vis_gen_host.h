@@ -20,9 +20,9 @@ public:
 	const RECT * get_rect_client() {return &rc_client;}
 	static pfc::ptr_list_t<window_visualisation> list_vis;
 
-	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
-	virtual class_data & get_class_data()const 
+	class_data & get_class_data()const override
 	{
 		DWORD flags = WS_EX_CONTROLPARENT;
 		if (m_frame == 1) flags |= WS_EX_CLIENTEDGE;
@@ -38,14 +38,15 @@ public:
 	void flush_bitmap();
 	void make_bitmap(HDC hdc=0);
 
-	virtual void get_name(pfc::string_base & out)const;
-	virtual void get_category(pfc::string_base & out)const;
+	void get_name(pfc::string_base & out)const override;
+	void get_category(pfc::string_base & out)const override;
 
 	void set_frame_style(unsigned p_type);
 	unsigned get_frame_style() const {return m_frame;}
 	void get_vis_ptr(uie::visualisation_ptr & p_out){p_out = p_vis;}
 
-	virtual unsigned get_type  () const{return ui_extension::type_toolbar|ui_extension::type_panel;};
+	unsigned get_type  () const override
+	{return ui_extension::type_toolbar|ui_extension::type_panel;};
 
 	void set_vis_data(const void * p_data, unsigned p_size)
 	{

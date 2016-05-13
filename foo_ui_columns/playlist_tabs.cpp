@@ -1086,8 +1086,3 @@ unsigned playlists_tabs_extension::window_host_impl::is_resize_supported(HWND wn
 	//We won't support ui_extension::size_width since we can't reliably detect multiline tab shit
 	return (m_this->get_host()->is_resize_supported(m_this->get_wnd()) & ui_extension::size_height);
 }
-
-unsigned playlists_tabs_extension::window_host_impl::get_supported_types() const
-{
-	return ui_extension::type_panel;
-}

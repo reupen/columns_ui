@@ -38,9 +38,9 @@ class cfg_band_cache_t : public cfg_var
 {
 private:
 	band_cache entries;
-	
-	virtual void get_data_raw(stream_writer * out, abort_callback & p_abort);
-	virtual void set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort);
+
+	void get_data_raw(stream_writer * out, abort_callback & p_abort) override;
+	void set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort) override;
 	
 public:
 	explicit inline cfg_band_cache_t(const GUID & p_guid) : cfg_var(p_guid) {reset();};
@@ -91,9 +91,9 @@ private:
 	};
 
 	rebar_info entries;
-	
-	virtual void cfg_rebar::get_data_raw(stream_writer * out, abort_callback & p_abort);
-	virtual void cfg_rebar::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort);
+
+	void cfg_rebar::get_data_raw(stream_writer * out, abort_callback & p_abort) override;
+	void cfg_rebar::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort) override;
 	
 public:
 	void export_config(stream_writer * p_out, t_uint32 mode, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort);

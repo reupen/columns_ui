@@ -13,22 +13,23 @@ public:
 
 	virtual orientation_t get_orientation()const = 0;
 	static unsigned g_get_caption_size();
-	void get_category(pfc::string_base & p_out) const;
-	virtual unsigned get_type() const;;
+	void get_category(pfc::string_base & p_out) const override;
+	unsigned get_type() const override;;
 
-	virtual void insert_panel(unsigned index, const uie::splitter_item_t *  p_item);
+	void insert_panel(unsigned index, const uie::splitter_item_t *  p_item) override;
 
-	virtual void remove_panel(unsigned index);;
-	virtual void replace_panel(unsigned index, const uie::splitter_item_t *  p_item);
+	void remove_panel(unsigned index) override;;
+	void replace_panel(unsigned index, const uie::splitter_item_t *  p_item) override;
 
-	virtual unsigned get_panel_count()const;;
-	virtual uie::splitter_item_t * get_panel(unsigned index)const;;
+	unsigned get_panel_count()const override;;
+	uie::splitter_item_t * get_panel(unsigned index)const override;;
 	enum { stream_version_current = 0 };
-	virtual void set_config(stream_reader * config, t_size p_size, abort_callback & p_abort);
-	virtual void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);;
-	virtual void export_config(stream_writer * p_writer, abort_callback & p_abort) const;;
 
-	virtual void get_config(stream_writer * out, abort_callback & p_abort) const;;
+	void set_config(stream_reader * config, t_size p_size, abort_callback & p_abort) override;
+	void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;;
+	void export_config(stream_writer * p_writer, abort_callback & p_abort) const override;;
+
+	void get_config(stream_writer * out, abort_callback & p_abort) const override;;
 
 	virtual bool have_config_popup(unsigned index) const;
 
@@ -36,44 +37,45 @@ public:
 
 	bool is_index_valid(unsigned index) const;
 
-	virtual bool get_config_item_supported(unsigned index, const GUID & p_type) const;
+	bool get_config_item_supported(unsigned index, const GUID & p_type) const override;
 
-	virtual bool get_config_item(unsigned index, const GUID & p_type, stream_writer * p_out, abort_callback & p_abort) const;
+	bool get_config_item(unsigned index, const GUID & p_type, stream_writer * p_out, abort_callback & p_abort) const override;
 
-	virtual bool set_config_item(unsigned index, const GUID & p_type, stream_reader * p_source, abort_callback & p_abort);;
+	bool set_config_item(unsigned index, const GUID & p_type, stream_reader * p_source, abort_callback & p_abort) override;;
 
 	class splitter_host_impl : public ui_extension::window_host_ex
 	{
 		service_ptr_t<splitter_window_impl > m_this;
 	public:
-		virtual const GUID & get_host_guid()const;
+		const GUID & get_host_guid()const override;
 
-		virtual bool get_keyboard_shortcuts_enabled()const;
-		virtual void get_children(pfc::list_base_t<uie::window::ptr> & p_out);
+		bool get_keyboard_shortcuts_enabled()const override;
+		void get_children(pfc::list_base_t<uie::window::ptr> & p_out) override;
 
-		virtual void on_size_limit_change(HWND wnd, unsigned flags);;
+		void on_size_limit_change(HWND wnd, unsigned flags) override;;
 
 		//unsigned get_orientation();
 		orientation_t get_orientation()const;
 
-		virtual unsigned is_resize_supported(HWND wnd)const;
+		unsigned is_resize_supported(HWND wnd)const override;
 
-		virtual bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height);
+		bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height) override;
 
-		virtual bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out);
+		bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out) override;
 
-		virtual bool is_visible(HWND wnd) const;
+		bool is_visible(HWND wnd) const override;
 
-		virtual bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const;
-		virtual bool set_window_visibility(HWND wnd, bool visibility);
+		bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override;
+		bool set_window_visibility(HWND wnd, bool visibility) override;
 
 		void set_window_ptr(splitter_window_impl * p_ptr);
 
-		virtual void relinquish_ownership(HWND wnd);
+		void relinquish_ownership(HWND wnd) override;
 
 	};
-	virtual bool is_point_ours(HWND wnd_point, const POINT & pt_screen, pfc::list_base_t<uie::window::ptr> & p_hierarchy);
-	virtual void get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported);
+
+	bool is_point_ours(HWND wnd_point, const POINT & pt_screen, pfc::list_base_t<uie::window::ptr> & p_hierarchy) override;
+	void get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported) override;
 
 	static void g_on_size_change();
 private:
@@ -105,9 +107,9 @@ private:
 			void set_window_ptr(splitter_window_impl * p_ptr);
 			void enter_autohide_hook();
 			//private:
-			virtual class_data & get_class_data()const;
-			virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-			virtual bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp);
+			class_data & get_class_data()const override;
+			LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
+			bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
 			service_ptr_t< splitter_window_impl > m_this;
 
 			HTHEME m_theme;
@@ -174,7 +176,7 @@ private:
 
 	void start_autohide_dehide(unsigned index, bool b_next_too = true);
 
-	virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 	void get_panels_sizes(unsigned width, unsigned height, pfc::list_base_t<unsigned> & p_out);
 	bool find_by_divider_pt(POINT & pt, unsigned & p_out);
 	bool test_divider_pt(const POINT & pt, unsigned p_out);

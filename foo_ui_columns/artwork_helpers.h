@@ -33,7 +33,7 @@ namespace artwork_panel
 		class artwork_reader_manager_t * const p_manager);
 		void run_notification_thisthread(DWORD state);
 	protected:
-		virtual DWORD on_thread();
+		DWORD on_thread() override;
 	private:
 		unsigned read_artwork(abort_callback & p_abort);
 		bool isContentEqual(const pfc::map_t<GUID, album_art_data_ptr> & content1,
@@ -94,7 +94,7 @@ namespace artwork_panel
 	class artwork_reader_notification_t : public main_thread_callback
 	{
 	public:
-		virtual void callback_run();
+		void callback_run() override;
 
 		static void g_run(artwork_reader_manager_t * p_manager, bool p_aborted, DWORD ret, const artwork_reader_v2_t * p_reader);
 

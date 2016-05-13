@@ -51,7 +51,7 @@ class toolbar_extension : public ui_extension::container_ui_extension
 		MSG_COMMAND_CHANGE = WM_USER + 3
 	};
 
-	virtual class_data & get_class_data()const;
+	class_data & get_class_data()const override;
 
 	WNDPROC menuproc;
 	bool initialised, m_gdiplus_initialised;
@@ -89,9 +89,9 @@ public:
 
 		class callback_impl : public uie::button_callback
 		{
-			virtual void on_button_state_change(unsigned p_new_state); //see t_button_state
+			void on_button_state_change(unsigned p_new_state) override; //see t_button_state
 
-			virtual void on_command_state_change(unsigned p_new_state){};
+			void on_command_state_change(unsigned p_new_state) override {};
 
 			service_ptr_t<toolbar_extension> m_this;
 			unsigned id;
@@ -150,18 +150,18 @@ public:
 	HWND wnd_toolbar;
 	HWND wnd_host;
 
-	virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
 	toolbar_extension();
 	~toolbar_extension();
 
 	static const GUID extension_guid;
 
-	virtual const GUID & get_extension_guid() const;
+	const GUID & get_extension_guid() const override;
 
-	virtual void get_name(pfc::string_base & out)const;
+	void get_name(pfc::string_base & out)const override;
 
-	virtual void get_category(pfc::string_base & out)const;
+	void get_category(pfc::string_base & out)const override;
 
 	class config_param
 	{
@@ -185,23 +185,23 @@ public:
 				mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
 				//pfc::string
 			public:
-				virtual HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject);
-				virtual ULONG STDMETHODCALLTYPE   AddRef();
-				virtual ULONG STDMETHODCALLTYPE   Release();
+				HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject) override;
+				ULONG STDMETHODCALLTYPE   AddRef() override;
+				ULONG STDMETHODCALLTYPE   Release() override;
 				bool check_do(IDataObject *pDO);
-				virtual HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
-				virtual HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
-				virtual HRESULT STDMETHODCALLTYPE DragLeave();
-				virtual HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect);
+				HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
+				HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
+				HRESULT STDMETHODCALLTYPE DragLeave() override;
+				HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
 				IDropTarget_buttons_list(t_button_list_view * p_blv);
 
 
 			};
-			void notify_on_initialisation();
-			void notify_on_create();
-			void notify_on_destroy();
-			void notify_on_selection_change(const bit_array & p_affected, const bit_array & p_status, notification_source_t p_notification_source);
-			virtual bool do_drag_drop(WPARAM wp);
+			void notify_on_initialisation() override;
+			void notify_on_create() override;
+			void notify_on_destroy() override;
+			void notify_on_selection_change(const bit_array & p_affected, const bit_array & p_status, notification_source_t p_notification_source) override;
+			bool do_drag_drop(WPARAM wp) override;
 
 		public:
 			t_button_list_view(config_param & p_param) : m_param(p_param) {};
@@ -235,16 +235,17 @@ public:
 	static BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 	static BOOL CALLBACK toolbar_extension::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-	virtual bool have_config_popup()const{ return true; }
+	bool have_config_popup()const override
+	{ return true; }
 
-	virtual bool show_config_popup(HWND wnd_parent);
+	bool show_config_popup(HWND wnd_parent) override;
 
 	void create_toolbar();
 	void destroy_toolbar();
 
-	virtual void get_menu_items(ui_extension::menu_hook_t & p_hook);
+	void get_menu_items(ui_extension::menu_hook_t & p_hook) override;
 
-	virtual unsigned get_type() const;
+	unsigned get_type() const override;
 
 	pfc::list_t<button> m_buttons;
 	pfc::list_t<button> m_buttons_config;
@@ -254,10 +255,10 @@ public:
 
 	static void reset_buttons(pfc::list_base_t<button> & p_buttons);
 
-	virtual void get_config(stream_writer * data, abort_callback & p_abort) const;
-	virtual void set_config(stream_reader * p_reader, t_size p_sizehint, abort_callback & p_abort);
-	virtual void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
-	virtual void export_config(stream_writer * p_writer, abort_callback & p_abort) const;
+	void get_config(stream_writer * data, abort_callback & p_abort) const override;
+	void set_config(stream_reader * p_reader, t_size p_sizehint, abort_callback & p_abort) override;
+	void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
+	void export_config(stream_writer * p_writer, abort_callback & p_abort) const override;
 
 	//	virtual void write_to_file(stream_writer * out);
 

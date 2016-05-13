@@ -31,9 +31,9 @@ public:
 
 	BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 	void apply();
-	virtual HWND create(HWND wnd);
-	virtual const char * get_name();
-	bool get_help_url(pfc::string_base & p_out);
+	HWND create(HWND wnd) override;
+	const char * get_name() override;
+	bool get_help_url(pfc::string_base & p_out) override;
 	bool is_active();
 
 private:

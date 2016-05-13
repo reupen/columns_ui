@@ -19,7 +19,7 @@ class volume_control_t : public t_base, private play_callback
 {
 	class track_bar_volume : public track_bar_impl
 	{
-		virtual void get_channel_rect(RECT * rc) const
+		void get_channel_rect(RECT * rc) const override
 		{
 			if (b_popup) track_bar_impl::get_channel_rect(rc);
 			else 
@@ -34,7 +34,8 @@ class volume_control_t : public t_base, private play_callback
 				rc->bottom = get_orientation() ? rc_client.bottom - cx + cx/2 : rc_client.bottom - 5;
 			}
 		}
-		virtual void draw_background (HDC dc, const RECT * rc) const
+
+		void draw_background (HDC dc, const RECT * rc) const override
 		{
 			if (t_attributes::get_background_colour() != -1)
 				FillRect(dc, rc, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(t_attributes::get_background_colour())));
@@ -50,7 +51,7 @@ class volume_control_t : public t_base, private play_callback
 			else 
 				track_bar_impl::draw_thumb(dc, rc);
 		}*/
-		virtual void draw_channel (HDC dc, const RECT * rc) const
+		void draw_channel (HDC dc, const RECT * rc) const override
 		{
 			if (b_popup) track_bar_impl::draw_channel(dc,rc);
 			else
@@ -132,7 +133,7 @@ class volume_control_t : public t_base, private play_callback
 
 	class track_bar_host_impl : public track_bar_host
 	{
-		void on_position_change(unsigned pos, bool b_tracking)
+		void on_position_change(unsigned pos, bool b_tracking) override
 		{
 			double scaled = pos / 1000.0;
 			double offset = pow (10, -5.0/3.0);
@@ -145,7 +146,7 @@ class volume_control_t : public t_base, private play_callback
 
 			static_api_ptr_t<playback_control>()->set_volume(float(vol));
 		}
-		void get_tooltip_text(unsigned pos, track_bar_string & out)
+		void get_tooltip_text(unsigned pos, track_bar_string & out) override
 		{
 			double scaled = pos / 1000.0;
 			double offset = pow (10, -5.0/3.0);
@@ -157,7 +158,7 @@ class volume_control_t : public t_base, private play_callback
 			out.append(pfc::stringcvt::string_os_from_utf8(pfc::format_float(volume, 0, 2)));
 			out.append(_T(" dB"));
 		};
-		bool on_key(WPARAM wp, LPARAM lp)
+		bool on_key(WPARAM wp, LPARAM lp) override
 		{
 			if (b_popup && wp == VK_ESCAPE && !(lp & (1<<31)))
 			{
@@ -346,7 +347,7 @@ public:
 	volume_control_t() : m_child(this), m_track_bar_host(this), wnd_trackbar(NULL), m_Gdiplus_token(NULL), m_using_gdiplus(false) {};
 	~volume_control_t() {};
 
-	virtual ui_helpers::container_window::class_data & get_class_data()const 
+	ui_helpers::container_window::class_data & get_class_data()const override
 	{
 		__implement_get_class_data_ex(t_attributes::get_class_name(), _T(""), !b_popup, 0, b_popup ? WS_POPUP|WS_CLIPCHILDREN|WS_BORDER : WS_CHILD|WS_CLIPCHILDREN, b_popup ? WS_EX_DLGMODALFRAME|WS_EX_TOOLWINDOW|WS_EX_TOPMOST : WS_EX_CONTROLPARENT, 0);
 	}
@@ -396,19 +397,21 @@ private:
 		ReleaseDC(get_wnd(), dc);
 		return ret;
 	}
-	virtual void FB2KAPI on_playback_starting(play_control::t_track_command p_command,bool p_paused){};
-	virtual void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track){};
-	virtual void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason){};
-	virtual void FB2KAPI on_playback_seek(double p_time){};
-	virtual void FB2KAPI on_playback_pause(bool p_state){};
-	virtual void FB2KAPI on_playback_edited(metadb_handle_ptr p_track){};
-	virtual void FB2KAPI on_playback_dynamic_info(const file_info & p_info){};
-	virtual void FB2KAPI on_playback_dynamic_info_track(const file_info & p_info){};
-	virtual void FB2KAPI on_playback_time(double p_time){};
-	virtual void FB2KAPI on_volume_change(float p_new_val)
+
+	void FB2KAPI on_playback_starting(play_control::t_track_command p_command,bool p_paused) override {};
+	void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override {};
+	void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason) override {};
+	void FB2KAPI on_playback_seek(double p_time) override {};
+	void FB2KAPI on_playback_pause(bool p_state) override {};
+	void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override {};
+	void FB2KAPI on_playback_dynamic_info(const file_info & p_info) override {};
+	void FB2KAPI on_playback_dynamic_info_track(const file_info & p_info) override {};
+	void FB2KAPI on_playback_time(double p_time) override {};
+	void FB2KAPI on_volume_change(float p_new_val) override
 	{
 		update_position(p_new_val);
 	}
+
 	gdi_object_t<HFONT>::ptr_t m_font_caption;
 	ULONG_PTR m_Gdiplus_token;
 	bool m_using_gdiplus;

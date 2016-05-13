@@ -113,8 +113,8 @@ public:
 	cfg_columns_t(const GUID& p_guid, ColumnStreamVersion streamVersion);
 
 protected:
-	virtual void get_data_raw(stream_writer* out, abort_callback& p_abort);
-	virtual void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort);
+	void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
+	void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
 };
 
 extern cfg_columns_t g_columns;

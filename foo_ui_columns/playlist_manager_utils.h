@@ -19,7 +19,7 @@ class playlist_format_name_t : private pfc::string8
 		pfc::string8 m_lock_name;
 		pfc::string8 m_length;
 	public:
-		virtual bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag);
+		bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
 		static int g_compare_metadb_handle_path(const metadb_handle_ptr & ptr1, const metadb_handle_ptr & ptr2)
 		{
 			return strcmp(ptr1->get_path(), ptr2->get_path());
@@ -35,7 +35,8 @@ class playlist_format_name_t : private pfc::string8
 				m_filesize_initialised=true;
 			}
 		}
-		virtual bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag)
+
+		bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override
 		{
 			p_found_flag = false;
 			return false;

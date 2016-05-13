@@ -131,9 +131,9 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 class titleformat_hook_change_font : public titleformat_hook
 {
 public:
-	virtual bool process_field(titleformat_text_out * p_out, const char * p_name, unsigned p_name_length, bool & p_found_flag);
+	bool process_field(titleformat_text_out * p_out, const char * p_name, unsigned p_name_length, bool & p_found_flag) override;
 
-	virtual bool process_function(titleformat_text_out * p_out, const char * p_name, unsigned p_name_length, titleformat_hook_function_params * p_params, bool & p_found_flag);
+	bool process_function(titleformat_text_out * p_out, const char * p_name, unsigned p_name_length, titleformat_hook_function_params * p_params, bool & p_found_flag) override;
 
 	titleformat_hook_change_font(const LOGFONT & lf);
 private:
@@ -168,8 +168,8 @@ class item_details_t :
 {
 	class message_window_t : public ui_helpers::container_window
 	{
-		virtual class_data & get_class_data() const;
-		virtual LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+		class_data & get_class_data() const override;
+		LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 	};
 
 	static message_window_t g_message_window;
@@ -179,7 +179,7 @@ class item_details_t :
 		MSG_REFRESH = WM_USER + 2,
 	};
 
-	virtual class_data & get_class_data()const;
+	class_data & get_class_data()const override;
 
 public:
 	enum track_mode_t
@@ -205,9 +205,9 @@ public:
 		t_size m_source;
 	public:
 		static const char * get_name(t_size source);
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual bool get_description(pfc::string_base & p_out)const;
-		virtual void execute();
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		bool get_description(pfc::string_base & p_out)const override;
+		void execute() override;
 		menu_node_track_mode(item_details_t * p_wnd, t_size p_value);;
 	};
 
@@ -215,9 +215,9 @@ public:
 	{
 		pfc::list_t<ui_extension::menu_node_ptr> m_items;
 	public:
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual unsigned get_children_count()const;
-		virtual void get_child(unsigned p_index, uie::menu_node_ptr & p_out)const;
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		unsigned get_children_count()const override;
+		void get_child(unsigned p_index, uie::menu_node_ptr & p_out)const override;
 		menu_node_source_popup(item_details_t * p_wnd);;
 	};
 
@@ -227,9 +227,9 @@ public:
 		t_size m_type;
 	public:
 		static const char * get_name(t_size source);
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual bool get_description(pfc::string_base & p_out)const;
-		virtual void execute();
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		bool get_description(pfc::string_base & p_out)const override;
+		void execute() override;
 		menu_node_alignment(item_details_t * p_wnd, t_size p_value);;
 	};
 
@@ -237,9 +237,9 @@ public:
 	{
 		pfc::list_t<ui_extension::menu_node_ptr> m_items;
 	public:
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual unsigned get_children_count()const;
-		virtual void get_child(unsigned p_index, uie::menu_node_ptr & p_out)const;
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		unsigned get_children_count()const override;
+		void get_child(unsigned p_index, uie::menu_node_ptr & p_out)const override;
 		menu_node_alignment_popup(item_details_t * p_wnd);;
 	};
 
@@ -247,18 +247,18 @@ public:
 	{
 		service_ptr_t<item_details_t> p_this;
 	public:
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual bool get_description(pfc::string_base & p_out)const;
-		virtual void execute();
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		bool get_description(pfc::string_base & p_out)const override;
+		void execute() override;
 		menu_node_options(item_details_t * p_wnd);;
 	};
 	class menu_node_hscroll : public ui_extension::menu_node_command_t
 	{
 		service_ptr_t<item_details_t> p_this;
 	public:
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual bool get_description(pfc::string_base & p_out)const;
-		virtual void execute();
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		bool get_description(pfc::string_base & p_out)const override;
+		void execute() override;
 		menu_node_hscroll(item_details_t * p_wnd);;
 	};
 
@@ -266,40 +266,40 @@ public:
 	{
 		service_ptr_t<item_details_t> p_this;
 	public:
-		virtual bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const;
-		virtual bool get_description(pfc::string_base & p_out)const;
-		virtual void execute();
+		bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags)const override;
+		bool get_description(pfc::string_base & p_out)const override;
+		void execute() override;
 		menu_node_wwrap(item_details_t * p_wnd);;
 	};
 
 	//UIE funcs
-	virtual const GUID & get_extension_guid() const;
-	virtual void get_name(pfc::string_base & out)const;
-	virtual void get_category(pfc::string_base & out)const;
-	unsigned get_type() const;
+	const GUID & get_extension_guid() const override;
+	void get_name(pfc::string_base & out)const override;
+	void get_category(pfc::string_base & out)const override;
+	unsigned get_type() const override;
 
 	enum { stream_version_current = 2 };
-	void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
-	void get_config(stream_writer * p_writer, abort_callback & p_abort) const;
-	bool have_config_popup()const;
-	bool show_config_popup(HWND wnd_parent);
+	void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
+	void get_config(stream_writer * p_writer, abort_callback & p_abort) const override;
+	bool have_config_popup()const override;
+	bool show_config_popup(HWND wnd_parent) override;
 
-	void get_menu_items(ui_extension::menu_hook_t & p_hook);
+	void get_menu_items(ui_extension::menu_hook_t & p_hook) override;
 
 	//UI SEL API
-	void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr> & p_selection);
+	void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr> & p_selection) override;
 
 	//PC
-	void on_playback_starting(play_control::t_track_command p_command, bool p_paused);
-	void on_playback_new_track(metadb_handle_ptr p_track);
-	void on_playback_stop(play_control::t_stop_reason p_reason);
-	void on_playback_seek(double p_time);
-	void on_playback_pause(bool p_state);
-	void on_playback_edited(metadb_handle_ptr p_track);
-	void on_playback_dynamic_info(const file_info & p_info);
-	void on_playback_dynamic_info_track(const file_info & p_info);
-	void on_playback_time(double p_time);
-	void on_volume_change(float p_new_val);
+	void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override;
+	void on_playback_new_track(metadb_handle_ptr p_track) override;
+	void on_playback_stop(play_control::t_stop_reason p_reason) override;
+	void on_playback_seek(double p_time) override;
+	void on_playback_pause(bool p_state) override;
+	void on_playback_edited(metadb_handle_ptr p_track) override;
+	void on_playback_dynamic_info(const file_info & p_info) override;
+	void on_playback_dynamic_info_track(const file_info & p_info) override;
+	void on_playback_time(double p_time) override;
+	void on_volume_change(float p_new_val) override;
 
 	//PL
 	enum {
@@ -307,27 +307,27 @@ public:
 		playlist_callback_single::flag_on_items_selection_change
 		| playlist_callback_single::flag_on_playlist_switch
 	};
-	void on_playlist_switch();
-	void on_item_focus_change(t_size p_from, t_size p_to);;
+	void on_playlist_switch() override;
+	void on_item_focus_change(t_size p_from, t_size p_to) override;;
 
-	void on_items_added(t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr> & p_data, const bit_array & p_selection);
-	void on_items_reordered(const t_size * p_order, t_size p_count);
-	void on_items_removing(const bit_array & p_mask, t_size p_old_count, t_size p_new_count);
-	void on_items_removed(const bit_array & p_mask, t_size p_old_count, t_size p_new_count);
-	void on_items_selection_change(const bit_array & p_affected, const bit_array & p_state);
-	void on_items_modified(const bit_array & p_mask);
-	void on_items_modified_fromplayback(const bit_array & p_mask, play_control::t_display_level p_level);
-	void on_items_replaced(const bit_array & p_mask, const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data);
-	void on_item_ensure_visible(t_size p_idx);
+	void on_items_added(t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr> & p_data, const bit_array & p_selection) override;
+	void on_items_reordered(const t_size * p_order, t_size p_count) override;
+	void on_items_removing(const bit_array & p_mask, t_size p_old_count, t_size p_new_count) override;
+	void on_items_removed(const bit_array & p_mask, t_size p_old_count, t_size p_new_count) override;
+	void on_items_selection_change(const bit_array & p_affected, const bit_array & p_state) override;
+	void on_items_modified(const bit_array & p_mask) override;
+	void on_items_modified_fromplayback(const bit_array & p_mask, play_control::t_display_level p_level) override;
+	void on_items_replaced(const bit_array & p_mask, const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data) override;
+	void on_item_ensure_visible(t_size p_idx) override;
 
-	void on_playlist_renamed(const char * p_new_name, t_size p_new_name_len);
-	void on_playlist_locked(bool p_locked);
+	void on_playlist_renamed(const char * p_new_name, t_size p_new_name_len) override;
+	void on_playlist_locked(bool p_locked) override;
 
-	void on_default_format_changed();
-	void on_playback_order_changed(t_size p_new_index);
+	void on_default_format_changed() override;
+	void on_playback_order_changed(t_size p_new_index) override;
 
 	//ML
-	void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook);
+	void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
 
 	static void g_on_app_activate(bool b_activated);
 	static void g_redraw_all();
@@ -347,7 +347,7 @@ public:
 
 	item_details_t();;
 private:
-	LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
 	void register_callback();
 	void deregister_callback();

@@ -14,8 +14,8 @@ class seek_bar_extension : public ui_extension::container_ui_extension
 
 	class track_bar_host_impl : public track_bar_host
 	{
-		void on_position_change(unsigned pos, bool b_tracking);
-		void get_tooltip_text(unsigned pos, track_bar_string & out);
+		void on_position_change(unsigned pos, bool b_tracking) override;
+		void get_tooltip_text(unsigned pos, track_bar_string & out) override;
 	} m_track_bar_host;
 
 public:
@@ -23,7 +23,7 @@ public:
 
 	HWND wnd_seekbar;
 
-	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
 	void disable_seek();
 	void update_seek();
@@ -31,17 +31,17 @@ public:
 	seek_bar_extension();
 	~seek_bar_extension();
 
-	virtual class_data & get_class_data()const 
+	class_data & get_class_data()const override
 	{
 		__implement_get_class_data(_T("{89A3759F-348A-4e3f-BF43-3D16BC059186}"), true);
 	}
 
-	virtual const GUID & get_extension_guid() const ;
+	const GUID & get_extension_guid() const override;
 
-	virtual void get_name(pfc::string_base & out)const;
-	virtual void get_category(pfc::string_base & out)const;
+	void get_name(pfc::string_base & out)const override;
+	void get_category(pfc::string_base & out)const override;
 
-	virtual unsigned get_type  () const;
+	unsigned get_type  () const override;
 
 	static void update_seek_timer();
 	static unsigned g_seek_timer;

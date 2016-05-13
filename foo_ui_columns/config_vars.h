@@ -5,7 +5,7 @@
 class cfg_window_placement_t : public cfg_struct_t < WINDOWPLACEMENT >
 {
 	using cfg_struct_t<WINDOWPLACEMENT>::operator=;
-	virtual void get_data_raw(stream_writer * out, abort_callback & p_abort);
+	void get_data_raw(stream_writer * out, abort_callback & p_abort) override;
 public:
 	cfg_window_placement_t(const GUID & p_guid);;
 };
