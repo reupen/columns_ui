@@ -238,7 +238,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
 	return S_OK; 
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave( void)
+HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave( )
 {
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
 

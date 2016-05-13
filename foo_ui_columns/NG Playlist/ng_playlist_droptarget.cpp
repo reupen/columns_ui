@@ -119,7 +119,7 @@ namespace pvt
 		return S_OK; 
 	}
 
-	HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave( void)
+	HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave( )
 	{
 		if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
 		mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");

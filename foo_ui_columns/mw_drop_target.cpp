@@ -82,7 +82,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DW
 	return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE drop_handler_interface::DragLeave(void)
+HRESULT STDMETHODCALLTYPE drop_handler_interface::DragLeave()
 {
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
 	mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");

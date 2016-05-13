@@ -130,7 +130,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
 }
 
-HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragLeave(void)
+HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragLeave()
 {
 	if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
 	last_over.x = 0;

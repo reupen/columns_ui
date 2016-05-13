@@ -816,7 +816,7 @@ void playlists_tabs_extension::on_playback_order_changed(unsigned int)
 
 }
 
-void playlists_tabs_extension::on_default_format_changed(void)
+void playlists_tabs_extension::on_default_format_changed()
 {
 
 }

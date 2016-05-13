@@ -60,7 +60,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragOver(DWORD grfKeyState, POIN
 
 }
 
-HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave(void)
+HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave()
 {
 	return S_OK;
 }
