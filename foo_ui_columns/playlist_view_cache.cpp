@@ -857,7 +857,7 @@ void playlist_view_cache::rebuild()
 	unsigned n,pcount = playlist_api->get_playlist_count();
 	for (n=0; n<pcount; n++)
 	{
-		playlist_cache * p_cache = new(std::nothrow) playlist_cache;
+		auto  p_cache = new(std::nothrow) playlist_cache;
 		unsigned i,count = playlist_api->playlist_get_item_count(n);
 		for (i=0;i<count;i++)
 			p_cache->add_item(i);

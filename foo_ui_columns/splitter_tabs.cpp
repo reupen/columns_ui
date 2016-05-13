@@ -191,7 +191,7 @@ splitter_window_tabs_impl::panel::~panel()
 
 uie::splitter_item_full_v2_t * splitter_window_tabs_impl::panel::create_splitter_item()
 {
-	uie::splitter_item_full_v2_impl_t * ret = new uie::splitter_item_full_v2_impl_t;
+	auto  ret = new uie::splitter_item_full_v2_impl_t;
 	ret->set_panel_guid(m_guid);
 	ret->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 	ret->set_window_ptr(m_child);

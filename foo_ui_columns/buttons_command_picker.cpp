@@ -17,7 +17,7 @@ bool command_picker_data::__populate_mainmenu_dynamic_recur(command_data & data,
 				subfull.add_byte('/');
 			subfull.add_string(subname);
 
-			command_data * p_data = new command_data(data);
+			auto  p_data = new command_data(data);
 			p_data->m_subcommand = ptr_node->get_guid();
 			ptr_node->get_description(p_data->m_desc);
 
@@ -84,7 +84,7 @@ bool command_picker_data::__populate_commands_recur(command_data & data, pfc::st
 				subfull.add_byte('/');
 			subfull.add_string(subname);
 
-			command_data * p_data = new command_data(data);
+			auto  p_data = new command_data(data);
 			p_data->m_subcommand = p_node->get_guid();
 			p_node->get_description(p_data->m_desc);
 
@@ -132,7 +132,7 @@ void command_picker_data::populate_commands()
 							full.add_byte('/');
 						full.add_string(name);
 
-						command_data * p_data = new command_data(data);
+						auto  p_data = new command_data(data);
 						ptr->get_item_description(p_service_item_index, p_data->m_desc);
 						m_data.add_item(p_data);
 
@@ -188,7 +188,7 @@ void command_picker_data::populate_commands()
 					}
 					else
 					{
-						command_data * p_data = new command_data(data);
+						auto  p_data = new command_data(data);
 						ptr->get_description(p_service_item_index, p_data->m_desc);
 						m_data.add_item(p_data);
 						unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, full);
@@ -207,7 +207,7 @@ void command_picker_data::populate_commands()
 			service_ptr_t<uie::custom_button> p_button;
 			if (ptr->get_guid_type() == uie::BUTTON_GUID_BUTTON && ptr->service_query_t(p_button))
 			{
-				command_data * p_data = new command_data;
+				auto  p_data = new command_data;
 				p_data->m_guid = ptr->get_item_guid();
 				p_button->get_description(p_data->m_desc);
 				m_data.add_item(p_data);

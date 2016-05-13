@@ -37,7 +37,7 @@ void appearance_message_window_t::g_initialise()
 	{
 		if (!g_initialised)
 		{
-			appearance_message_window_t * ptr = new appearance_message_window_t;
+			auto  ptr = new appearance_message_window_t;
 			ptr->create(HWND_MESSAGE);
 			g_initialised = true;
 		}

@@ -87,7 +87,7 @@ void cfg_rebar::import_config(stream_reader * p_reader, t_size size, t_uint32 mo
 	p_reader->read_lendian_t(count, p_abort);
 	for(i=0;i<count;i++)
 	{
-		rebar_band_info * temp = new rebar_band_info(pfc::guid_null,100);
+		auto  temp = new rebar_band_info(pfc::guid_null,100);
 		temp->import(p_reader, mode, p_abort);
 
 		uie::window_ptr ptr;
@@ -328,7 +328,7 @@ void rebar_info::set_rebar_info(rebar_info & in)
 	unsigned n, count = in.get_count();
 	for (n=0; n<count; n++)
 	{
-		rebar_band_info * item = new(std::nothrow) rebar_band_info(pfc::guid_null, 100);
+		auto  item = new(std::nothrow) rebar_band_info(pfc::guid_null, 100);
 		if (item)
 		{
 			in[n]->copy(*item);
@@ -358,7 +358,7 @@ unsigned rebar_info::find_by_wnd_n(HWND wnd)
 }
 void rebar_info::add_band(const GUID & id, unsigned width, bool new_line, const ui_extension::window_ptr & p_ext)
 {
-	rebar_band_info * item = new(std::nothrow) rebar_band_info(id, width);
+	auto  item = new(std::nothrow) rebar_band_info(id, width);
 	if (item)
 	{
 		item->rbbs_break = new_line;
@@ -371,7 +371,7 @@ void rebar_info::insert_band(unsigned idx,const GUID & id, unsigned width, bool 
 {
 	if (idx <= get_count())
 	{
-		rebar_band_info * item = new(std::nothrow) rebar_band_info(id, width);
+		auto  item = new(std::nothrow) rebar_band_info(id, width);
 		if (item)
 		{
 			item->rbbs_break = new_line;
@@ -445,7 +445,7 @@ void cfg_rebar::get_rebar_info(rebar_info & out)
 	unsigned n, count = entries.get_count();
 	for (n=0; n<count; n++)
 	{
-		rebar_band_info * item = new(std::nothrow) rebar_band_info(pfc::guid_null,100);
+		auto  item = new(std::nothrow) rebar_band_info(pfc::guid_null,100);
 		if (item)
 		{
 			entries[n]->copy(*item);
@@ -459,7 +459,7 @@ void cfg_rebar::set_rebar_info(rebar_info & in)
 	unsigned n, count = in.get_count();
 	for (n=0; n<count; n++)
 	{
-		rebar_band_info * item = new(std::nothrow) rebar_band_info(pfc::guid_null,100);
+		auto  item = new(std::nothrow) rebar_band_info(pfc::guid_null,100);
 		if (item)
 		{
 			in[n]->copy(*item);

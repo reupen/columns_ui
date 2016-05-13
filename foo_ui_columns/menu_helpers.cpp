@@ -76,7 +76,7 @@ menu_item_cache::menu_item_cache()
 				}
 				else*/
 				{
-					menu_item_info * p_info = new menu_item_info(info);
+					auto  p_info = new menu_item_info(info);
 					ptr->get_description(p_service_item_index, p_info->m_desc);
 					p_info->m_name = full;
 

@@ -212,7 +212,7 @@ void splitter_window_impl::panel::set_from_splitter_item(const uie::splitter_ite
 
 uie::splitter_item_full_v2_t * splitter_window_impl::panel::create_splitter_item(bool b_set_ptr /*= true*/)
 {
-	uie::splitter_item_full_v2_impl_t * ret = new uie::splitter_item_full_v2_impl_t;
+	auto  ret = new uie::splitter_item_full_v2_impl_t;
 	ret->m_autohide = m_autohide;
 	ret->m_caption_orientation = m_caption_orientation;
 	ret->m_locked = m_locked;

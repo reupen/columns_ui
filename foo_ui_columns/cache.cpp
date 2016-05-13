@@ -61,7 +61,7 @@ colourinfo * cache_manager::add_colour(/*COLORREF text, COLORREF text_sel, COLOR
 			return item;
 		}
 	}
-	colourinfo * new_colourinfo =  new(std::nothrow) colourinfo(colour_add);
+	auto  new_colourinfo =  new(std::nothrow) colourinfo(colour_add);
 	
 	unsigned i = colours.add_item(new_colourinfo);
 //	console::info(pfc::string_printf("colour count: %u",i+1));

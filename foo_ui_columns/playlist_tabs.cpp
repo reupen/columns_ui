@@ -606,7 +606,7 @@ void playlists_tabs_extension::import_config(stream_reader * p_reader, t_size p_
 
 uie::splitter_item_t * playlists_tabs_extension::get_panel(unsigned index) const
 {
-	uie::splitter_item_simple_t * ptr = new uie::splitter_item_simple_t;
+	auto  ptr = new uie::splitter_item_simple_t;
 	ptr->set_panel_guid(m_child_guid);
 	ptr->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 	if (index == 0 && m_child_guid != pfc::guid_null)

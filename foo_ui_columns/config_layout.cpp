@@ -9,7 +9,7 @@ uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
 	uie::splitter_item_t * ret = nullptr;
 	if (p_source->query(ptr))
 	{
-		uie::splitter_item_full_v2_impl_t * full = new uie::splitter_item_full_v2_impl_t;
+		auto  full = new uie::splitter_item_full_v2_impl_t;
 		ret = full;
 		full->m_autohide = ptr->m_autohide;
 		full->m_caption_orientation = ptr->m_caption_orientation;
