@@ -983,21 +983,21 @@ void g_on_tabs_font_change()
 class font_client_switcher_tabs : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_playlist_switcher_tabs_font;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Playlist Tabs";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_labels;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		playlists_tabs_extension::on_font_change();
 	}

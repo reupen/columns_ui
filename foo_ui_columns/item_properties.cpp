@@ -610,21 +610,21 @@ void selection_properties_t::on_tracking_mode_change()
 class font_client_selection_properties : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_selection_properties_items_font_client;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Item Properties: Items";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_items;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		selection_properties_t::g_on_font_items_change();
 
@@ -634,21 +634,21 @@ public:
 class font_header_client_selection_properties : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_selection_properties_header_font_client;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Item Properties: Column Titles";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_items;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		selection_properties_t::g_on_font_header_change();
 
@@ -658,21 +658,21 @@ public:
 class font_group_client_selection_properties : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_selection_properties_group_font_client;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Item Properties: Group Titles";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_items;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		selection_properties_t::g_on_font_groups_change();
 

@@ -20,22 +20,22 @@ class export_colours : public cui::fcl::dataset
 		identifier_vertical_item_padding,
 		identifier_vertical_item_padding_dpi,
 	};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Colours";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::colours_and_fonts;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {1D5291B1-392D-4469-B905-91202B80EB7B}
 		static const GUID guid = 
 		{ 0x1d5291b1, 0x392d, 0x4469, { 0xb9, 0x5, 0x91, 0x20, 0x2b, 0x80, 0xeb, 0x7b } };
 		return guid;
 	}
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 		/*out.write_item(colours_pview_mode, cfg_pv_use_custom_colours);
@@ -51,7 +51,7 @@ class export_colours : public cui::fcl::dataset
 		out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.getRawValue().value);
 		out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.getRawValue().dpi);
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
@@ -148,22 +148,22 @@ class export_colours_switcher : public cui::fcl::dataset
 		identifier_item_height,
 		identifier_item_height_dpi
 	};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Colours";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::colours_and_fonts;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {1DE0CF38-5E8E-439c-8F01-B8999975AC0D}
 		static const GUID guid = 
 		{ 0x1de0cf38, 0x5e8e, 0x439c, { 0x8f, 0x1, 0xb8, 0x99, 0x99, 0x75, 0xac, 0xd } };
 		return guid;
 	}
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 		/*out.write_item(colours_switcher_background, cfg_plist_bk);
@@ -177,7 +177,7 @@ class export_colours_switcher : public cui::fcl::dataset
 		out.write_item(identifier_item_height, settings::playlist_switcher_item_padding.getRawValue().value);
 		out.write_item(identifier_item_height_dpi, settings::playlist_switcher_item_padding.getRawValue().dpi);
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
@@ -253,27 +253,27 @@ class export_misc_fonts : public cui::fcl::dataset
 	{
 		font_status,
 	};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Misc fonts";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::colours_and_fonts;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {0A297BE7-DE43-49da-8D8E-C8D888CF1014}
 		static const GUID guid = 
 		{ 0xa297be7, 0xde43, 0x49da, { 0x8d, 0x8e, 0xc8, 0xd8, 0x88, 0xcf, 0x10, 0x14 } };
 		return guid;
 	}
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 		//out.write_item(font_status, cfg_status_font);
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;

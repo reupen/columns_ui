@@ -12,21 +12,21 @@ const GUID g_guid_playlist_switcher_font =
 class font_client_switcher : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_playlist_switcher_font;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Playlist Switcher";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_items;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		playlist_switcher_t::g_on_font_items_change();
 	}

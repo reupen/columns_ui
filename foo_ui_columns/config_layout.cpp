@@ -65,7 +65,7 @@ class tab_layout_new : public preferences_tab
 		uie::window_ptr m_window;
 		service_ptr_t<uie::splitter_window> m_splitter;
 		pfc::list_t<ptr> m_children;
-		~node()
+		~node() override
 		{
 			m_children.remove_all();
 			//m_item.release();
@@ -1220,9 +1220,9 @@ class tab_layout_new : public preferences_tab
 		return 0;
 	}
 public:
-	virtual HWND create(HWND wnd) {return uCreateDialog(IDD_LAYOUT,wnd,ConfigProc);}
-	virtual const char * get_name() {return "Layout";}
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override {return uCreateDialog(IDD_LAYOUT,wnd,ConfigProc);}
+	const char * get_name() override {return "Layout";}
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:layout";
 		return true;

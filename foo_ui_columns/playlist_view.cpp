@@ -461,7 +461,7 @@ class playlist_callback_playlist : public playlist_callback_static
 {
 public:
 
-	virtual void on_items_added(unsigned p_index,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection)//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
+	void on_items_added(unsigned p_index,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
 	{
 		//		console::info(pfc::string_printf("on_items_added: %i %i",p_index,start));
 		if (playlist_view::g_get_cache().is_active())
@@ -486,7 +486,7 @@ public:
 			}
 		}
 	}
-	virtual void on_items_reordered(unsigned p_index,const unsigned * order,unsigned count)
+	void on_items_reordered(unsigned p_index,const unsigned * order,unsigned count) override
 	{
 		//		console::info(pfc::string_printf("on_items_reorder: %i",p_index));
 		if (playlist_view::g_get_cache().is_active())
@@ -521,8 +521,8 @@ public:
 		}
 	}
 	//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
-	virtual void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};//called before actually removing them
-	virtual void FB2KAPI on_items_removed(unsigned p_index,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
+	void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};//called before actually removing them
+	void FB2KAPI on_items_removed(unsigned p_index,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
 	{
 		//		console::info(pfc::string_printf("on_items_removed: %i",p_index));
 		if (playlist_view::g_get_cache().is_active())
@@ -548,7 +548,7 @@ public:
 		}
 	}
 
-	virtual void on_items_selection_change(unsigned p_index,const bit_array & affected,const bit_array & state)
+	void on_items_selection_change(unsigned p_index,const bit_array & affected,const bit_array & state) override
 	{
 		//		console::info(pfc::string_printf("on_items_selection_change: %i",p_index));
 		//		if (playlist_view::g_get_cache().is_active())
@@ -581,7 +581,7 @@ public:
 			}
 		}
 	}
-	virtual void on_item_focus_change(unsigned p_index,unsigned from,unsigned to)
+	void on_item_focus_change(unsigned p_index,unsigned from,unsigned to) override
 	{
 		//		console::info(pfc::string_printf("on_item_focus_change: %i",p_index));
 		if (playlist_view::g_get_cache().is_active())
@@ -602,12 +602,12 @@ public:
 		}
 	}
 
-	virtual void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level)
+	void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) override
 	{
 		on_items_modified(p_playlist, p_mask, true, p_level);
 	}
 
-	virtual void on_items_modified(unsigned p_index,const bit_array & p_mask)
+	void on_items_modified(unsigned p_index,const bit_array & p_mask) override
 	{
 		on_items_modified(p_index, p_mask, false);
 	}
@@ -653,13 +653,13 @@ public:
 		}
 	}
 
-	virtual void on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data)
+	void on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override
 	{
 		//		console::info(pfc::string_printf("on_items_replaced: %i",p_playlist));
 		on_items_modified(p_playlist, p_mask);
 	}
 
-	virtual void on_item_ensure_visible(unsigned p_index,unsigned idx)
+	void on_item_ensure_visible(unsigned p_index,unsigned idx) override
 	{
 		//		console::info(pfc::string_printf("on_item_item_visible: %i",p_index));
 		if (playlist_view::g_get_cache().is_active())
@@ -679,7 +679,7 @@ public:
 		}
 	}
 
-	virtual void on_playlist_activate(unsigned p_old,unsigned p_new)
+	void on_playlist_activate(unsigned p_old,unsigned p_new) override
 	{
 		//		console::info(pfc::string_printf("on_playlist_activate: %i",p_new));
 		if (playlist_view::g_get_cache().is_active())
@@ -691,24 +691,24 @@ public:
 				playlist_view::g_update_sort();
 		}
 	};
-	virtual void on_playlist_created(unsigned p_index,const char * p_name,unsigned p_name_len)
+	void on_playlist_created(unsigned p_index,const char * p_name,unsigned p_name_len) override
 	{
 		//		console::info(pfc::string_printf("on_playlist_created: %i",p_index));
 		if (playlist_view::g_get_cache().is_active())
 			playlist_view::g_get_cache().on_playlist_created(p_index, p_name, p_name_len);
 	};
-	virtual void on_playlists_reorder(const unsigned * p_order,unsigned p_count)
+	void on_playlists_reorder(const unsigned * p_order,unsigned p_count) override
 	{
 		if (playlist_view::g_get_cache().is_active())
 		{
 			playlist_view::g_get_cache().on_playlists_reorder(p_order, p_count);
 		}
 	};
-	virtual void on_playlists_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
+	void on_playlists_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
 	{
 		//		console::info(pfc::string_printf("on_playlist_removing"));
 	};
-	virtual void on_playlists_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
+	void on_playlists_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
 	{
 		//		console::info(pfc::string_printf("on_playlist_removed:"));
 		if (playlist_view::g_get_cache().is_active())
@@ -716,7 +716,7 @@ public:
 			playlist_view::g_get_cache().on_playlists_removed(p_mask, p_old_count, p_new_count);
 		}
 	};
-	virtual void on_playlist_renamed(unsigned p_index,const char * p_new_name,unsigned p_new_name_len)
+	void on_playlist_renamed(unsigned p_index,const char * p_new_name,unsigned p_new_name_len) override
 	{
 		//		console::info(pfc::string_printf("on_playlist_renamed: %i",p_index));
 		if (playlist_view::g_get_cache().is_active())
@@ -727,20 +727,20 @@ public:
 		}
 	};
 
-	virtual void on_default_format_changed()
+	void on_default_format_changed() override
 	{
 		//		console::info(pfc::string_printf("on_default_format_changed:"));
 	};
-	virtual void on_playback_order_changed(unsigned p_new_index)
+	void on_playback_order_changed(unsigned p_new_index) override
 	{
 		//		console::info(pfc::string_printf("on_playback_order_changed: %i",p_new_index));
 	};
-	virtual void on_playlist_locked(unsigned p_playlist,bool p_locked)
+	void on_playlist_locked(unsigned p_playlist,bool p_locked) override
 	{
 		//		console::info(pfc::string_printf("on_playlist_locked: %i",p_playlist));
 	};
 
-	unsigned get_flags() { return playlist_callback::flag_all;}
+	unsigned get_flags() override { return playlist_callback::flag_all;}
 
 };
 

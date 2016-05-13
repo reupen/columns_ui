@@ -63,29 +63,29 @@ public:
 
 	static const GUID extension_guid;
 
-	virtual const GUID & get_extension_guid() const
+	const GUID & get_extension_guid() const override
 	{
 		return extension_guid;
 	}
 
-	virtual void get_name(pfc::string_base & out)const;
+	void get_name(pfc::string_base & out)const override;
 
 
-	virtual void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort);
-	virtual void enable( const ui_extension::visualisation_host_ptr & p_host);
-	virtual void paint_background(HDC dc, const RECT * rc_client);
-	virtual void disable(); 
+	void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
+	void enable( const ui_extension::visualisation_host_ptr & p_host) override;
+	void paint_background(HDC dc, const RECT * rc_client) override;
+	void disable() override; 
 
 	inline void clear()
 	{
 		refresh(nullptr);
 	}
 
-	virtual bool have_config_popup()const{return true;}
+	bool have_config_popup()const override{return true;}
 
-	virtual bool show_config_popup(HWND wnd_parent);
+	bool show_config_popup(HWND wnd_parent) override;
 
-	void get_config(stream_writer * data, abort_callback & p_abort) const;
+	void get_config(stream_writer * data, abort_callback & p_abort) const override;
 
 	static pfc::ptr_list_t<spectrum_extension> g_visualisations;
 
@@ -154,30 +154,30 @@ private:
 		}
 	}
 
-	virtual void FB2KAPI on_playback_starting(play_control::t_track_command p_command,bool p_paused)
+	void FB2KAPI on_playback_starting(play_control::t_track_command p_command,bool p_paused) override
 	{
 	};
-	virtual void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track)
+	void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override
 	{
 		g_register_stream(this);
 	};
-	virtual void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason)
+	void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason) override
 	{
 		g_deregister_stream(this, p_reason == play_control::stop_reason_shutting_down);
 	};
-	virtual void FB2KAPI on_playback_seek(double p_time){};
-	virtual void FB2KAPI on_playback_pause(bool p_state)
+	void FB2KAPI on_playback_seek(double p_time) override{};
+	void FB2KAPI on_playback_pause(bool p_state) override
 	{
 		if (p_state)
 			g_deregister_stream(this, true);
 		else
 			g_register_stream(this);
 	};
-	virtual void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) {};
-	virtual void FB2KAPI on_playback_dynamic_info(const file_info & p_info) {};
-	virtual void FB2KAPI on_playback_dynamic_info_track(const file_info & p_info) {};
-	virtual void FB2KAPI on_playback_time(double p_time) {};
-	virtual void FB2KAPI on_volume_change(float p_new_val) {};
+	void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override {};
+	void FB2KAPI on_playback_dynamic_info(const file_info & p_info) override {};
+	void FB2KAPI on_playback_dynamic_info_track(const file_info & p_info) override {};
+	void FB2KAPI on_playback_time(double p_time) override {};
+	void FB2KAPI on_volume_change(float p_new_val) override {};
 };
 
 UINT_PTR spectrum_extension::g_timer = NULL;
@@ -663,19 +663,19 @@ ui_extension::visualisation_factory<spectrum_extension> blah;
 
 class window_visualisation_spectrum : public window_visualisation
 {
-	virtual const GUID & get_visualisation_guid() const
+	const GUID & get_visualisation_guid() const override
 	{
 		return spectrum_extension::extension_guid;
 	}
-	virtual const GUID & get_extension_guid() const
+	const GUID & get_extension_guid() const override
 	{
 		return spectrum_extension::extension_guid;
 	}
-	virtual void get_menu_items (ui_extension::menu_hook_t & p_hook)
+	void get_menu_items (ui_extension::menu_hook_t & p_hook) override
 	{
 		p_hook.add_node(uie::menu_node_ptr(new(std::nothrow) uie::menu_node_configure(this)));
 	};
-	virtual void set_config(stream_reader * r, t_size p_size, abort_callback & p_abort)
+	void set_config(stream_reader * r, t_size p_size, abort_callback & p_abort) override
 	{
 		if (p_size)
 		{
@@ -692,7 +692,7 @@ class window_visualisation_spectrum : public window_visualisation
 			}
 		}
 	}
-	void get_config(stream_writer * data, abort_callback & p_abort) const
+	void get_config(stream_writer * data, abort_callback & p_abort) const override
 	{
 		pfc::array_t<t_uint8> m_data;
 		data->write_lendian_t(get_frame_style(), p_abort);
@@ -700,8 +700,8 @@ class window_visualisation_spectrum : public window_visualisation
 		data->write_lendian_t(m_data.get_size(), p_abort);
 		data->write(m_data.get_ptr(), m_data.get_size(), p_abort);
 	}
-	virtual bool have_config_popup()const{return true;}
-	virtual bool show_config_popup(HWND wnd_parent)
+	bool have_config_popup()const override{return true;}
+	bool show_config_popup(HWND wnd_parent) override
 	{
 		uie::visualisation_ptr p_vis;
 		service_ptr_t<spectrum_extension> p_this;

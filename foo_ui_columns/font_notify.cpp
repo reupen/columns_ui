@@ -16,21 +16,21 @@ static const GUID font_client_cp_guid =
 class font_client_cp : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return font_client_cp_guid;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Columns Playlist: Items";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_items;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		on_playlist_font_change();
 	}
@@ -136,21 +136,21 @@ static const GUID font_client_status_guid =
 class font_client_status : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return font_client_status_guid;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Status Bar";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_labels;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		on_status_font_change();
 	}
@@ -207,21 +207,21 @@ static const GUID font_client_cph_guid =
 class font_client_cph : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return font_client_cph_guid;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Columns Playlist: Column Titles";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_items;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		on_header_font_change();
 	}

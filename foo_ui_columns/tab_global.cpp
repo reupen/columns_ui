@@ -199,9 +199,9 @@ public:
 		}
 		return 0;
 	}
-	virtual HWND create(HWND wnd) { return uCreateDialog(IDD_GLOBAL, wnd, ConfigProc); }
-	virtual const char * get_name() { return "Globals"; }
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override { return uCreateDialog(IDD_GLOBAL, wnd, ConfigProc); }
+	const char * get_name() override { return "Globals"; }
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:globals";
 		return true;

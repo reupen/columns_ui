@@ -22,13 +22,13 @@
 class appearance_message_window_t : public ui_helpers::container_window_autorelease_t
 {
 public:
-	virtual class_data & get_class_data() const 
+	class_data & get_class_data() const override 
 	{
 		__implement_get_class_data_ex(_T("{BDCEC7A3-7230-4671-A5F7-B19A989DCA81}"), _T(""), false, 0, 0, 0, 0);
 	}
 	static void g_initialise();
 	static bool g_initialised;
-	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 };
 bool appearance_message_window_t::g_initialised = false;
 //pfc::rcptr_t<appearance_message_window_t> g_appearance_message_window;
@@ -57,7 +57,7 @@ public:
 		g_colours_manager_data.find_by_guid(p_client_guid, m_entry);
 		g_colours_manager_data.find_by_guid(pfc::guid_null, m_global_entry);
 	}
-	virtual COLORREF get_colour(const cui::colours::colour_identifier_t & p_identifier) const
+	COLORREF get_colour(const cui::colours::colour_identifier_t & p_identifier) const override
 	{
 		appearance_message_window_t::g_initialise();
 		colours_manager_data::entry_ptr_t p_entry = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
@@ -83,7 +83,7 @@ public:
 			return 0;
 		}
 	}
-	virtual bool get_bool(const cui::colours::bool_identifier_t & p_identifier) const
+	bool get_bool(const cui::colours::bool_identifier_t & p_identifier) const override
 	{
 		colours_manager_data::entry_ptr_t p_entry = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
 		switch (p_identifier)
@@ -94,7 +94,7 @@ public:
 			return false;
 		}
 	}
-	virtual bool get_themed() const 
+	bool get_themed() const override 
 	{
 		return m_entry->colour_mode == cui::colours::colour_mode_themed
 			|| (m_entry->colour_mode == cui::colours::colour_mode_global && m_global_entry->colour_mode == cui::colours::colour_mode_themed);
@@ -107,15 +107,15 @@ private:
 class colours_manager_impl : public cui::colours::manager
 {
 public:
-	virtual void create_instance (const GUID & p_client_guid, cui::colours::manager_instance::ptr & p_out)
+	void create_instance (const GUID & p_client_guid, cui::colours::manager_instance::ptr & p_out) override
 	{
 		p_out = new service_impl_t<colours_manager_instance_impl>(p_client_guid);
 	}
-	virtual void register_common_callback (cui::colours::common_callback * p_callback) 
+	void register_common_callback (cui::colours::common_callback * p_callback) override 
 	{
 		g_colours_manager_data.register_common_callback(p_callback);
 	};
-	virtual void deregister_common_callback (cui::colours::common_callback * p_callback) 
+	void deregister_common_callback (cui::colours::common_callback * p_callback) override 
 	{
 		g_colours_manager_data.deregister_common_callback(p_callback);
 	};
@@ -125,7 +125,7 @@ private:
 class fonts_manager_impl : public cui::fonts::manager
 {
 public:
-	virtual void get_font(const GUID & p_guid, LOGFONT & p_out) const
+	void get_font(const GUID & p_guid, LOGFONT & p_out) const override
 	{
 		appearance_message_window_t::g_initialise();
 		fonts_manager_data::entry_ptr_t p_entry;
@@ -139,7 +139,7 @@ public:
 			p_out = p_entry->font;
 		}
 	}
-	virtual void get_font(const cui::fonts::font_type_t p_type, LOGFONT & p_out) const
+	void get_font(const cui::fonts::font_type_t p_type, LOGFONT & p_out) const override
 	{
 		fonts_manager_data::entry_ptr_t p_entry;
 		if (p_type == cui::fonts::font_type_items)
@@ -159,7 +159,7 @@ public:
 			p_out = p_entry->font;
 		}
 	}
-	virtual void set_font(const GUID & p_guid, const LOGFONT & p_font)
+	void set_font(const GUID & p_guid, const LOGFONT & p_font) override
 	{
 		fonts_manager_data::entry_ptr_t p_entry;
 		g_fonts_manager_data.find_by_guid(p_guid, p_entry);
@@ -169,11 +169,11 @@ public:
 		if (cui::fonts::client::create_by_guid(p_guid, ptr))
 			ptr->on_font_changed();
 	}
-	virtual void register_common_callback (cui::fonts::common_callback * p_callback) 
+	void register_common_callback (cui::fonts::common_callback * p_callback) override 
 	{
 		g_fonts_manager_data.register_common_callback(p_callback);
 	};
-	virtual void deregister_common_callback (cui::fonts::common_callback * p_callback) 
+	void deregister_common_callback (cui::fonts::common_callback * p_callback) override 
 	{
 		g_fonts_manager_data.deregister_common_callback(p_callback);
 	};
@@ -349,15 +349,15 @@ static service_factory_single_t<config_host_generic> g_config_tabs("Colours and 
 class fcl_colours_t : public cui::fcl::dataset
 {
 	enum {stream_version=0};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Colours (unified)";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::colours_and_fonts;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {165946E7-6165-4680-A08E-84B5768458E8}
 		static const GUID guid = 
@@ -370,7 +370,7 @@ class fcl_colours_t : public cui::fcl::dataset
 		identifier_client_entries,
 		identifier_client_entry=0,
 	};
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 		//p_writer->write_lendian_t(stream_version, p_abort);
@@ -393,7 +393,7 @@ class fcl_colours_t : public cui::fcl::dataset
 			out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
 		}
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
@@ -473,15 +473,15 @@ service_factory_t<fcl_colours_t> g_fcl_colours_t;
 class fcl_fonts_t : public cui::fcl::dataset
 {
 	enum {stream_version=0};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Fonts (unified)";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::colours_and_fonts;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {A806A9CD-4117-43da-805E-FE4EB348C90C}
 		static const GUID guid = 
@@ -495,7 +495,7 @@ class fcl_fonts_t : public cui::fcl::dataset
 		identifier_client_entries,
 		identifier_client_entry=0,
 	};
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 		//p_writer->write_lendian_t(stream_version, p_abort);
@@ -523,7 +523,7 @@ class fcl_fonts_t : public cui::fcl::dataset
 			out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
 		}
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;

@@ -166,7 +166,7 @@ public:
 	service_ptr_t<mainmenu_manager> p_manager;
 	service_ptr_t<ui_status_text_override> m_status_override;
 
-	virtual class_data & get_class_data()const  override
+	class_data & get_class_data()const  override
 	{
 		__implement_get_class_data_child_ex(class_name, true, false);
 	}
@@ -179,7 +179,7 @@ public:
 	static LRESULT WINAPI main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
 	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
-	virtual bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
+	bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
 
 	void make_menu(unsigned idx);
 
@@ -205,19 +205,19 @@ public:
 		return extension_guid;
 	}
 
-	virtual void get_name(pfc::string_base & out) const override;
-	virtual void get_category(pfc::string_base & out) const override;
+	void get_name(pfc::string_base & out) const override;
+	void get_category(pfc::string_base & out) const override;
 
-	virtual void set_focus() override;
-	virtual void show_accelerators() override;
-	virtual void hide_accelerators() override;
+	void set_focus() override;
+	void show_accelerators() override;
+	void hide_accelerators() override;
 
-	virtual bool on_menuchar(unsigned short chr);
+	bool on_menuchar(unsigned short chr) override;
 
-	virtual unsigned get_type () const override {return ui_extension::type_toolbar;};
+	unsigned get_type () const override {return ui_extension::type_toolbar;};
 
-	virtual bool is_menu_focused()const override;
-	virtual HWND get_previous_focus_window() const override;
+	bool is_menu_focused()const override;
+	HWND get_previous_focus_window() const override;
 
 	menu_extension();
 	~menu_extension();

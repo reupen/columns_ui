@@ -181,21 +181,21 @@ void g_parse_font_format_string(const char * str, t_size len, font_data_t & p_ou
 class font_client_item_details : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_item_details_font_client;
 	}
-	virtual void get_name(pfc::string_base & p_out) const
+	void get_name(pfc::string_base & p_out) const override
 	{
 		p_out = "Item Details";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_items;
 	}
 
-	virtual void on_font_changed() const
+	void on_font_changed() const override
 	{
 		item_details_t::g_on_font_change();
 
@@ -205,22 +205,22 @@ public:
 class colour_client_item_details : public cui::colours::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_item_details_colour_client;
 	}
-	virtual void get_name(pfc::string_base & p_out) const
+	void get_name(pfc::string_base & p_out) const override
 	{
 		p_out = "Item Details";
 	}
 
-	virtual t_size get_supported_colours() const { return cui::colours::colour_flag_background | cui::colours::colour_flag_text; }; //bit-mask
-	virtual t_size get_supported_bools() const { return 0; }; //bit-mask
+	t_size get_supported_colours() const override { return cui::colours::colour_flag_background | cui::colours::colour_flag_text; }; //bit-mask
+	t_size get_supported_bools() const override { return 0; }; //bit-mask
 
-	virtual bool get_themes_supported() const { return false; };
+	bool get_themes_supported() const override { return false; };
 
-	virtual void on_bool_changed(t_size mask) const {};
-	virtual void on_colour_changed(t_size mask) const
+	void on_bool_changed(t_size mask) const override {};
+	void on_colour_changed(t_size mask) const override
 	{
 		item_details_t::g_on_colours_change();
 	};

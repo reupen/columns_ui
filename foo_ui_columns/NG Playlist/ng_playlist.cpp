@@ -1246,21 +1246,21 @@ namespace pvt {
 	class font_client_ngpv : public cui::fonts::client
 	{
 	public:
-		virtual const GUID & get_client_guid() const
+		const GUID & get_client_guid() const override
 		{
 			return g_guid_items_font;
 		}
-		virtual void get_name (pfc::string_base & p_out) const
+		void get_name (pfc::string_base & p_out) const override
 		{
 			p_out = "NG Playlist: Items";
 		}
 
-		virtual cui::fonts::font_type_t get_default_font_type() const
+		cui::fonts::font_type_t get_default_font_type() const override
 		{
 			return cui::fonts::font_type_items;
 		}
 
-		virtual void on_font_changed() const 
+		void on_font_changed() const override 
 		{
 			ng_playlist_view_t::g_on_font_change();
 			
@@ -1270,21 +1270,21 @@ namespace pvt {
 	class font_header_client_ngpv : public cui::fonts::client
 	{
 	public:
-		virtual const GUID & get_client_guid() const
+		const GUID & get_client_guid() const override
 		{
 			return g_guid_header_font;
 		}
-		virtual void get_name (pfc::string_base & p_out) const
+		void get_name (pfc::string_base & p_out) const override
 		{
 			p_out = "NG Playlist: Column Titles";
 		}
 
-		virtual cui::fonts::font_type_t get_default_font_type() const
+		cui::fonts::font_type_t get_default_font_type() const override
 		{
 			return cui::fonts::font_type_items;
 		}
 
-		virtual void on_font_changed() const 
+		void on_font_changed() const override 
 		{
 			ng_playlist_view_t::g_on_header_font_change();
 			
@@ -1294,21 +1294,21 @@ namespace pvt {
 	class font_group_header_client_ngpv : public cui::fonts::client
 	{
 	public:
-		virtual const GUID & get_client_guid() const
+		const GUID & get_client_guid() const override
 		{
 			return g_guid_group_header_font;
 		}
-		virtual void get_name (pfc::string_base & p_out) const
+		void get_name (pfc::string_base & p_out) const override
 		{
 			p_out = "NG Playlist: Group Titles";
 		}
 
-		virtual cui::fonts::font_type_t get_default_font_type() const
+		cui::fonts::font_type_t get_default_font_type() const override
 		{
 			return cui::fonts::font_type_items;
 		}
 
-		virtual void on_font_changed() const 
+		void on_font_changed() const override 
 		{
 			ng_playlist_view_t::g_on_group_header_font_change();
 			

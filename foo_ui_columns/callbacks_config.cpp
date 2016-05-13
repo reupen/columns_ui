@@ -3,15 +3,15 @@
 
 class config_object_notify_columns : public config_object_notify
 {
-	virtual unsigned get_watched_object_count()
+	unsigned get_watched_object_count() override
 	{
 		return 1;
 	}
-	virtual GUID get_watched_object(unsigned p_index)
+	GUID get_watched_object(unsigned p_index) override
 	{
 		return standard_config_objects::bool_ui_always_on_top;
 	};
-	virtual void on_watched_object_changed(const service_ptr_t<config_object> & p_object)
+	void on_watched_object_changed(const service_ptr_t<config_object> & p_object) override
 	{
 		if (g_main_window)
 		{

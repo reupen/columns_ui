@@ -32,9 +32,9 @@ public:
 class edit_column_window_options : public column_tab
 {
 public:
-	virtual void get_column(column_t::ptr & p_out){p_out=m_column;};
+	void get_column(column_t::ptr & p_out) override{p_out=m_column;};
 	typedef edit_column_window_options self_t;
-	virtual HWND create(HWND wnd)
+	HWND create(HWND wnd) override
 	{
 		return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this);
 	}
@@ -100,7 +100,7 @@ public:
 
 	}
 
-	virtual void set_column(const column_t::ptr & column)
+	void set_column(const column_t::ptr & column) override
 	{
 		if (m_column.get_ptr() != column.get_ptr())
 		{
@@ -242,8 +242,8 @@ class edit_column_window_scripts : public column_tab
 {
 public:
 	typedef edit_column_window_scripts self_t;
-	virtual void get_column(column_t::ptr & p_out){p_out=m_column;};
-	virtual HWND create(HWND wnd)
+	void get_column(column_t::ptr & p_out) override{p_out=m_column;};
+	HWND create(HWND wnd) override
 	{
 		return uCreateDialog(IDD_COLUMN_SCRIPTS, wnd, g_on_message, (LPARAM)this);
 	}
@@ -289,7 +289,7 @@ public:
 
 	}
 
-	virtual void set_column(const column_t::ptr & column)
+	void set_column(const column_t::ptr & column) override
 	{
 		if (m_column.get_ptr() != column.get_ptr())
 		{
@@ -949,9 +949,9 @@ public:
 		refresh_all_playlist_views();
 		pvt::ng_playlist_view_t::g_on_columns_change();
 	}
-	virtual HWND create(HWND wnd) {return uCreateDialog(IDD_COLUMNS_V4,wnd,g_on_message, (LPARAM)this);}
-	virtual const char * get_name() {return "Columns";}
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override {return uCreateDialog(IDD_COLUMNS_V4,wnd,g_on_message, (LPARAM)this);}
+	const char * get_name() override {return "Columns";}
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:columns";
 		return true;

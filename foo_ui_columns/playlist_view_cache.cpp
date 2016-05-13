@@ -591,7 +591,7 @@ struct sort_info
 template<class T>
 class asc_sort_callback : public pfc::list_base_t<T>::sort_callback
 {
-	virtual int compare(const T& p_item1,const T& p_item2)
+	int compare(const T& p_item1,const T& p_item2) override
 	{
 		int temp = uSortStringCompare(p_item1->text,p_item2->text);
 		if (temp==0) temp = (p_item1->index > p_item2->index ? 1 : -1);
@@ -602,7 +602,7 @@ class asc_sort_callback : public pfc::list_base_t<T>::sort_callback
 template<class T>
 class desc_sort_callback : public pfc::list_base_t<T>::sort_callback
 {
-	virtual int compare(const T &elem1, const T &elem2 )
+	int compare(const T &elem1, const T &elem2 ) override
 	{
 		int temp = uSortStringCompare(elem1->text,elem2->text)*-1;
 		if (temp==0) temp = (elem1->index > elem2->index ? 1 : -1); //we could swap -1 and 1 for desc, but then, apart from not making any sense, same sort repeated would yield diff results

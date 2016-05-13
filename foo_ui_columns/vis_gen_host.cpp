@@ -11,12 +11,12 @@ public:
 		HGDIOBJ m_gdiobj;
 		service_ptr_t<window_visualisation> m_wnd;
 	public:
-		virtual HDC get_device_context() const
+		HDC get_device_context() const override
 		{
 			return m_dc;
 		};
 
-		virtual const RECT* get_area() const
+		const RECT* get_area() const override
 		{
 			return &m_rect;
 		};
@@ -31,7 +31,7 @@ public:
 			m_rect = *p_wnd->get_rect_client();
 		}
 
-		~painter_impl()
+		~painter_impl() override
 		{
 			HWND wnd = m_wnd->get_wnd();
 			HDC dc = GetDC(wnd);
@@ -42,7 +42,7 @@ public:
 		};
 	};
 
-	virtual void create_painter(painter_ptr& p_out)
+	void create_painter(painter_ptr& p_out) override
 	{
 		if (p_wnd->get_wnd()) {
 			p_out = new painter_impl(p_wnd.get_ptr());

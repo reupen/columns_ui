@@ -19,7 +19,7 @@ private:
 
 public:
 	// This could probably be improved...
-	virtual result on_token(const char * token)
+	result on_token(const char * token) override
 	{
 		if (!stricmp_utf8_partial(token,"/columnsui:"))
 		{

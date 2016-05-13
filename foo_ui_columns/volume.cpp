@@ -14,7 +14,7 @@ public:
 
 class volume_control_panel : public volume_control_t<false, false, volume_panel_class_name, uie::container_ui_extension_t<> >
 {
-	virtual const GUID & get_extension_guid() const
+	const GUID & get_extension_guid() const override
 	{
 		// {B3259290-CB68-4d37-B0F1-8094862A9524}
 		static const GUID ret = 
@@ -22,16 +22,16 @@ class volume_control_panel : public volume_control_t<false, false, volume_panel_
 		return ret;
 	};
 
-	virtual void get_name(pfc::string_base & out)const
+	void get_name(pfc::string_base & out)const override
 	{
 		out = "Volume";
 	}
-	virtual void get_category(pfc::string_base & out)const
+	void get_category(pfc::string_base & out)const override
 	{
 		out = "Toolbars";
 	}
 
-	virtual unsigned get_type  () const
+	unsigned get_type  () const override
 	{
 		return uie::type_toolbar;
 	}

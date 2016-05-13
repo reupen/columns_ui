@@ -30,22 +30,22 @@ class export_columns : public cui::fcl::dataset
 		identifier_width_dpi
 
 	};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Columns";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::titles_playlist_view;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {2415AAE7-7F5E-4ad8-94E2-1E730A2139EF}
 		static const GUID guid = 
 		{ 0x2415aae7, 0x7f5e, 0x4ad8, { 0x94, 0xe2, 0x1e, 0x73, 0xa, 0x21, 0x39, 0xef } };
 		return guid;
 	}
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 		t_size count = g_columns.get_count(), i;
@@ -74,7 +74,7 @@ class export_columns : public cui::fcl::dataset
 			out.write_item(identifier_column, sw.m_data.get_ptr(), sw.m_data.get_size());
 		}
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_size i, count;
@@ -199,22 +199,22 @@ class export_groups : public cui::fcl::dataset
 		identifier_playlist_filter_string,
 
 	};
-	virtual void get_name(pfc::string_base & p_out) const
+	void get_name(pfc::string_base & p_out) const override
 	{
 		p_out = "Groups";
 	}
-	virtual const GUID & get_group() const
+	const GUID & get_group() const override
 	{
 		return cui::fcl::groups::titles_playlist_view;
 	}
-	virtual const GUID & get_guid() const
+	const GUID & get_guid() const override
 	{
 		// {A89F68C6-B40A-4200-BA2A-68999F704FFD}
 		static const GUID guid =
 		{ 0xa89f68c6, 0xb40a, 0x4200, { 0xba, 0x2a, 0x68, 0x99, 0x9f, 0x70, 0x4f, 0xfd } };
 		return guid;
 	}
-	virtual void get_data(stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data(stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 
@@ -247,7 +247,7 @@ class export_groups : public cui::fcl::dataset
 
 		out.write_item(identifier_groups, groups_sw.m_data.get_ptr(), groups_sw.m_data.get_size());
 	}
-	virtual void set_data(stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data(stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 
@@ -355,22 +355,22 @@ class export_pview : public cui::fcl::dataset
 		identifier_use_dates,
 		identifier_use_globals,
 	};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Colours";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::titles_playlist_view;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {190F4811-899A-4366-A181-FF5161FC1C77}
 		static const GUID guid = 
 		{ 0x190f4811, 0x899a, 0x4366, { 0xa1, 0x81, 0xff, 0x51, 0x61, 0xfc, 0x1c, 0x77 } };
 		return guid;
 	}
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 
@@ -382,7 +382,7 @@ class export_pview : public cui::fcl::dataset
 		out.write_item(identifier_use_dates, cfg_playlist_date);
 		out.write_item(identifier_use_globals, cfg_global);
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
@@ -442,22 +442,22 @@ class export_titles : public cui::fcl::dataset
 		identifier_copy_command,
 		identifier_playlist,
 	};
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Titles";
 	}
-	virtual const GUID & get_group () const
+	const GUID & get_group () const override
 	{
 		return cui::fcl::groups::titles_common;
 	}
-	virtual const GUID & get_guid () const
+	const GUID & get_guid () const override
 	{
 		// {9AF6A28B-3EFF-4d1a-AD81-FA1759F1D66C}
 		static const GUID guid = 
 		{ 0x9af6a28b, 0x3eff, 0x4d1a, { 0xad, 0x81, 0xfa, 0x17, 0x59, 0xf1, 0xd6, 0x6c } };
 		return guid;
 	}
-	virtual void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const
+	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
 		fcl::writer out(p_writer, p_abort);
 
@@ -465,7 +465,7 @@ class export_titles : public cui::fcl::dataset
 		out.write_item(identifier_notification_icon_tooltip, main_window::config_notification_icon_script.get());
 		out.write_item(identifier_main_window_title, main_window::config_main_window_title_script.get());
 	}
-	virtual void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort)
+	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
 		fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;

@@ -309,7 +309,7 @@ void g_import_layout(HWND wnd, const char * path, bool quiet)
 	class t_import_feedback_impl : public cui::fcl::t_import_feedback, public pfc::list_t<GUID>
 	{
 	public:
-		virtual void add_required_panel(const char * name, const GUID & guid)
+		void add_required_panel(const char * name, const GUID & guid) override
 		{
 			add_item(guid);
 		}
@@ -448,7 +448,7 @@ void g_import_layout(HWND wnd)
 	class t_export_feedback_impl : public cui::fcl::t_export_feedback, public pfc::list_t<GUID>
 	{
 	public:
-		virtual void add_required_panels(const pfc::list_base_const_t<GUID> & panels)
+		void add_required_panels(const pfc::list_base_const_t<GUID> & panels) override
 		{
 			add_items(panels);
 		}

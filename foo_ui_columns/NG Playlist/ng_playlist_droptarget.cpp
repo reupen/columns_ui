@@ -285,7 +285,7 @@ namespace pvt
 						playlist_position_reference_tracker m_insertIndexTracker;
 						service_ptr_t<ng_playlist_view_t> p_playlist;
 
-						virtual void on_completion(const pfc::list_base_const_t<metadb_handle_ptr> & p_items)
+						void on_completion(const pfc::list_base_const_t<metadb_handle_ptr> & p_items) override
 						{
 							static_api_ptr_t<playlist_manager> playlist_api;
 							if (m_insertIndexTracker.m_playlist != pfc_infinite && p_items.get_count())
@@ -301,7 +301,7 @@ namespace pvt
 									p_playlist->enable_redrawing();
 							}
 						}
-						virtual void on_aborted()
+						void on_aborted() override
 						{
 						}
 					};

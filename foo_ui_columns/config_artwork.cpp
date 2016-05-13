@@ -85,7 +85,7 @@ public:
 		t_size m_edit_index, m_edit_subindex, m_edit_combined_index;
 		t_list_view_artwork() : m_edit_index(pfc_infinite), m_edit_subindex(pfc_infinite), m_edit_combined_index(pfc_infinite), m_changed(false) {};
 
-		virtual void notify_on_create()
+		void notify_on_create() override
 		{
 			set_single_selection(true);
 			set_group_count(1);
@@ -97,13 +97,13 @@ public:
 			columns[0].m_size = 100;
 			t_list_view::set_columns(columns);
 		};
-		virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) 
+		bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override 
 		{
 			if (column == 0 && indices.get_count() ==1)
 				return true;
 			return false;
 		};
-		virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) 
+		bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override 
 		{
 			
 			t_size indices_count = indices.get_count();
@@ -123,7 +123,7 @@ public:
 			}
 			return false;
 		};
-		virtual void notify_save_inline_edit(const char * value) 
+		void notify_save_inline_edit(const char * value) override 
 		{
 			
 			if (m_edit_index < tabsize(g_artwork_sources) && m_edit_subindex < g_artwork_sources[m_edit_index].m_scripts->get_count() )
@@ -148,11 +148,11 @@ public:
 			m_edit_index = pfc_infinite;
 			m_edit_combined_index = pfc_infinite;
 		}
-		virtual void notify_on_kill_focus(HWND wnd_receiving) 
+		void notify_on_kill_focus(HWND wnd_receiving) override 
 		{
 			on_scripts_change();
 		};
-		virtual void execute_default_action (t_size index, t_size column, bool b_keyboard, bool b_ctrl) 
+		void execute_default_action (t_size index, t_size column, bool b_keyboard, bool b_ctrl) override 
 		{
 			if (!b_keyboard)
 				activate_inline_editing();
@@ -425,9 +425,9 @@ public:
 	void apply()
 	{
 	}
-	virtual HWND create(HWND wnd) {return uCreateDialog(IDD_ARTWORK,wnd,g_on_message, (LPARAM)this);}
-	virtual const char * get_name() {return "Artwork";}
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override {return uCreateDialog(IDD_ARTWORK,wnd,g_on_message, (LPARAM)this);}
+	const char * get_name() override {return "Artwork";}
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:artwork";
 		return true;

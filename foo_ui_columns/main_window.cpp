@@ -165,54 +165,54 @@ class playlist_callback_single_columns : public playlist_callback_single_static
 {
 public:
 
-	virtual void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection)//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
+	void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
 	{
 		if (g_main_window) 
 		{
 			status_bar::set_part_sizes(status_bar::t_part_length);
 		}
 	}
-	virtual void on_items_reordered(const unsigned * order,unsigned count){};//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
-	virtual void FB2KAPI on_items_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};//called before actually removing them
-	virtual void FB2KAPI on_items_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
+	void on_items_reordered(const unsigned * order,unsigned count) override{};//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
+	void FB2KAPI on_items_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};//called before actually removing them
+	void FB2KAPI on_items_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
 	{
 		if (g_main_window) 
 		{
 			status_bar::set_part_sizes(status_bar::t_part_length);
 		}
 	};
-	virtual void on_items_selection_change(const bit_array & affected,const bit_array & state)
+	void on_items_selection_change(const bit_array & affected,const bit_array & state) override
 	{
 		if (g_main_window) 
 		{
 			status_bar::set_part_sizes(status_bar::t_part_length);
 		}
 	}
-	virtual void on_item_focus_change(unsigned from,unsigned to){};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-	virtual void FB2KAPI on_items_modified(const bit_array & p_mask){;}
-	virtual void FB2KAPI on_items_modified_fromplayback(const bit_array & p_mask,play_control::t_display_level p_level){};
-	virtual void on_items_replaced(const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data){};
-	virtual void on_item_ensure_visible(unsigned idx){};
+	void on_item_focus_change(unsigned from,unsigned to) override{};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
+	void FB2KAPI on_items_modified(const bit_array & p_mask) override{;}
+	void FB2KAPI on_items_modified_fromplayback(const bit_array & p_mask,play_control::t_display_level p_level) override{};
+	void on_items_replaced(const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data) override{};
+	void on_item_ensure_visible(unsigned idx) override{};
 
-	virtual void on_playlist_switch() 
+	void on_playlist_switch() override 
 	{
 		if (g_main_window) 
 		{
 			status_bar::set_part_sizes(status_bar::t_parts_all);
 		}
 	};
-	virtual void on_playlist_renamed(const char * p_new_name,unsigned p_new_name_len) {};
-	virtual void on_playlist_locked(bool p_locked) 
+	void on_playlist_renamed(const char * p_new_name,unsigned p_new_name_len) override {};
+	void on_playlist_locked(bool p_locked) override 
 	{
 		if (g_main_window)
 			if (g_status && main_window::config_get_status_show_lock())
 				status_bar::set_part_sizes(status_bar::t_parts_all);
 	};
 
-	virtual void on_default_format_changed() {};
-	virtual void on_playback_order_changed(unsigned p_new_index) {};
+	void on_default_format_changed() override {};
+	void on_playback_order_changed(unsigned p_new_index) override {};
 
-	unsigned get_flags() {return playlist_callback_single::flag_all;}
+	unsigned get_flags() override {return playlist_callback_single::flag_all;}
 
 };
 static service_factory_single_t<playlist_callback_single_columns> asdf2;
@@ -507,7 +507,7 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
 class control_impl : public columns_ui::control
 {
 public:
-	virtual bool get_string(const GUID & p_guid, pfc::string_base & p_out) const
+	bool get_string(const GUID & p_guid, pfc::string_base & p_out) const override
 	{
 		if (p_guid == columns_ui::strings::guid_global_variables)
 		{

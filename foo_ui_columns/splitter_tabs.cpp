@@ -9,7 +9,7 @@ class splitter_window_tabs_impl::splitter_host_impl : public ui_extension::windo
 {
 	service_ptr_t<splitter_window_tabs_impl > m_this;
 public:
-	virtual const GUID & get_host_guid()const
+	const GUID & get_host_guid()const override
 	{
 		// {B5C88724-EDCD-46a1-90B9-C298309FDFB7}
 		static const GUID rv = 
@@ -17,12 +17,12 @@ public:
 		return rv;
 	}
 
-	virtual bool get_keyboard_shortcuts_enabled()const
+	bool get_keyboard_shortcuts_enabled()const override
 	{
 		return m_this->get_host()->get_keyboard_shortcuts_enabled();
 	}
 
-	virtual void on_size_limit_change(HWND wnd, unsigned flags)
+	void on_size_limit_change(HWND wnd, unsigned flags) override
 	{
 		unsigned index;
 		if (m_this->m_panels.find_by_wnd(wnd, index))
@@ -46,22 +46,22 @@ public:
 		}
 	};
 
-	virtual unsigned is_resize_supported(HWND wnd)const
+	unsigned is_resize_supported(HWND wnd)const override
 	{
 		return false;
 	}
 
-	virtual bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height)
+	bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height) override
 	{
 		return false;
 	}
 
-	virtual bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out)
+	bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out) override
 	{
 		return m_this->get_host()->override_status_text_create(p_out);
 	}
 
-	virtual bool is_visible(HWND wnd) const
+	bool is_visible(HWND wnd) const override
 	{
 		bool rv = false;
 
@@ -76,7 +76,7 @@ public:
 		return  rv;
 	}
 
-	virtual bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const
+	bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override
 	{
 		bool rv = false;
 
@@ -93,7 +93,7 @@ public:
 		}
 		return  rv;
 	}
-	virtual bool set_window_visibility(HWND wnd, bool visibility)
+	bool set_window_visibility(HWND wnd, bool visibility) override
 	{
 		bool rv = false, b_usvisible=true;
 		if (!m_this->get_host()->is_visible(m_this->get_wnd()))
@@ -123,7 +123,7 @@ public:
 		m_this = p_ptr;
 	}
 
-	virtual void relinquish_ownership(HWND wnd)
+	void relinquish_ownership(HWND wnd) override
 	{
 		unsigned index;
 		if (m_this->m_active_panels.find_by_wnd(wnd, index))
@@ -1095,21 +1095,21 @@ LRESULT WINAPI splitter_window_tabs_impl::on_hooked_message(HWND wnd,UINT msg,WP
 class font_client_splitter_tabs : public cui::fonts::client
 {
 public:
-	virtual const GUID & get_client_guid() const
+	const GUID & get_client_guid() const override
 	{
 		return g_guid_splitter_tabs;
 	}
-	virtual void get_name (pfc::string_base & p_out) const
+	void get_name (pfc::string_base & p_out) const override
 	{
 		p_out = "Tab Stack";
 	}
 
-	virtual cui::fonts::font_type_t get_default_font_type() const
+	cui::fonts::font_type_t get_default_font_type() const override
 	{
 		return cui::fonts::font_type_labels;
 	}
 
-	virtual void on_font_changed() const 
+	void on_font_changed() const override 
 	{
 		splitter_window_tabs_impl::g_on_font_change();
 	}

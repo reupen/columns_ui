@@ -11,9 +11,9 @@ class ui_test : public user_interface
 {
 public:
 
-	virtual const char * get_name() { return "Columns UI"; }
+	const char * get_name() override { return "Columns UI"; }
 
-	virtual HWND init(HookProc_t hook)
+	HWND init(HookProc_t hook) override
 	{
 		{
 			OSVERSIONINFOEX osvi;
@@ -119,7 +119,7 @@ public:
 		return g_main_window;
 	}
 
-	GUID get_guid()
+	GUID get_guid() override
 	{
 		// {F12D0A24-A8A4-4618-9659-6F66DE067524}
 		static const GUID guid_columns =
@@ -128,12 +128,12 @@ public:
 		return guid_columns;
 	}
 
-	virtual void show_now_playing()
+	void show_now_playing() override
 	{
 		static_api_ptr_t<play_control> play_api;
 		update_systray(true, play_api->is_paused() ? 2 : 0, true);
 	}
-	virtual void shutdown()
+	void shutdown() override
 	{
 
 		//if (!endsession) 
@@ -152,7 +152,7 @@ public:
 		font_cleanup();
 	}
 
-	virtual void activate()
+	void activate() override
 	{
 		if (g_main_window)
 		{
@@ -170,7 +170,7 @@ public:
 			SetForegroundWindow(g_main_window);
 		}
 	}
-	virtual void hide()
+	void hide() override
 	{
 		if (g_main_window)
 		{
@@ -178,7 +178,7 @@ public:
 			ShowWindow(g_main_window, SW_MINIMIZE);
 		}
 	}
-	virtual bool is_visible()
+	bool is_visible() override
 	{
 		bool rv = false;
 		if (g_main_window)
@@ -187,13 +187,13 @@ public:
 		}
 		return rv;
 	}
-	virtual void override_statusbar_text(const char * p_text)
+	void override_statusbar_text(const char * p_text) override
 	{
 		status_bar::menudesc = p_text;
 		status_set_menu(true);
 		g_status_pane.enter_menu_mode(p_text);
 	};
-	virtual void revert_statusbar_text()
+	void revert_statusbar_text() override
 	{
 		status_set_menu(false);
 		g_status_pane.exit_menu_mode();

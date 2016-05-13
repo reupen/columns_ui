@@ -14,9 +14,9 @@
 class config_object_notify_pfc : public config_object_notify
 {
 public:
-	virtual t_size get_watched_object_count() {return 1;}
-	virtual GUID get_watched_object(t_size p_index) {return standard_config_objects::bool_playback_follows_cursor;}
-	virtual void on_watched_object_changed(const service_ptr_t<config_object> & p_object)
+	t_size get_watched_object_count() override {return 1;}
+	GUID get_watched_object(t_size p_index) override {return standard_config_objects::bool_playback_follows_cursor;}
+	void on_watched_object_changed(const service_ptr_t<config_object> & p_object) override
 	{
 		bool val = p_object->get_data_bool_simple(false);
 		playlist_view::g_on_playback_follows_cursor_change(val);
@@ -31,8 +31,8 @@ class play_callback_ui : public play_callback_static
 public:
 	enum {flags = flag_on_playback_all|flag_on_volume_change};
 
-	unsigned get_flags() {return flags;}
-	virtual void FB2KAPI on_playback_starting(play_control::t_track_command p_command,bool p_paused)
+	unsigned get_flags() override {return flags;}
+	void FB2KAPI on_playback_starting(play_control::t_track_command p_command,bool p_paused) override
 	{
 		if (g_status) 
 		{
@@ -40,7 +40,7 @@ public:
 			status_update_main(false);
 		}
 	}
-	virtual void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track)
+	void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override
 	{
 		g_playing = true;
 		if (g_main_window) 
@@ -56,7 +56,7 @@ public:
 		seek_bar_extension::update_seek_timer();
 	}
 
-	virtual void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason)
+	void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason) override
 	{
 		g_playing = false;
 		seek_bar_extension::update_seek_timer();
@@ -72,7 +72,7 @@ public:
 		if (p_reason != play_control::stop_reason_shutting_down)
 			seek_bar_extension::update_seekbars();
 	}
-	virtual void FB2KAPI on_playback_seek(double p_time)
+	void FB2KAPI on_playback_seek(double p_time) override
 	{
 		if (g_main_window)
 		{
@@ -81,7 +81,7 @@ public:
 		}
 		seek_bar_extension::update_seekbars(true);
 	}
-	virtual void FB2KAPI on_playback_pause(bool b_state)
+	void FB2KAPI on_playback_pause(bool b_state) override
 	{
 		g_playing = (b_state == 0);
 		seek_bar_extension::update_seek_timer();
@@ -94,7 +94,7 @@ public:
 		}
 	}
 
-	virtual void FB2KAPI on_playback_edited(metadb_handle_ptr p_track)
+	void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override
 	{
 		if (g_main_window)
 		{
@@ -103,7 +103,7 @@ public:
 		}
 	}
 
-	virtual void FB2KAPI on_playback_dynamic_info(const file_info & p_info)
+	void FB2KAPI on_playback_dynamic_info(const file_info & p_info) override
 	{
 		if (g_main_window)
 		{
@@ -111,7 +111,7 @@ public:
 			update_status();			
 		}
 	}
-	virtual void FB2KAPI on_playback_dynamic_info_track(const file_info & p_info)
+	void FB2KAPI on_playback_dynamic_info_track(const file_info & p_info) override
 	{
 		if (g_main_window)
 		{
@@ -120,7 +120,7 @@ public:
 			update_status();
 		}
 	}
-	virtual void FB2KAPI on_playback_time(double p_time)
+	void FB2KAPI on_playback_time(double p_time) override
 	{
 		if (g_main_window)
 		{
@@ -129,7 +129,7 @@ public:
 //			update_seek();
 		}
 	}
-	virtual void FB2KAPI on_volume_change(float p_new_val)
+	void FB2KAPI on_volume_change(float p_new_val) override
 	{
 		if (g_main_window && g_status)
 			status_bar::set_part_sizes(status_bar::t_part_volume);
@@ -146,24 +146,24 @@ static play_callback_static_factory_t<play_callback_ui> blah;
 
 class playlist_callback_columns : public playlist_callback_static
 {
-	virtual unsigned get_flags() {return playlist_callback::flag_all;}
+	unsigned get_flags() override {return playlist_callback::flag_all;}
 
-	virtual void FB2KAPI on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection)
+	void FB2KAPI on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override
 	{
 	};//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
-	virtual void FB2KAPI on_items_reordered(unsigned p_playlist,const unsigned * order,unsigned count){};//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
+	void FB2KAPI on_items_reordered(unsigned p_playlist,const unsigned * order,unsigned count) override{};//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
 
-	virtual void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};//called before actually removing them
-	virtual void FB2KAPI on_items_removed(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};
+	void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};//called before actually removing them
+	void FB2KAPI on_items_removed(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};
 
-	virtual void FB2KAPI on_items_selection_change(unsigned p_playlist,const bit_array & affected,const bit_array & state){};
-	virtual void FB2KAPI on_item_focus_change(unsigned p_playlist,unsigned from,unsigned to){};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-	virtual void FB2KAPI on_items_modified(unsigned p_playlist,const bit_array & p_mask){};
-	virtual void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level){};
-	virtual void FB2KAPI on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data){};
-	virtual void FB2KAPI on_item_ensure_visible(unsigned p_playlist,unsigned idx){};
+	void FB2KAPI on_items_selection_change(unsigned p_playlist,const bit_array & affected,const bit_array & state) override{};
+	void FB2KAPI on_item_focus_change(unsigned p_playlist,unsigned from,unsigned to) override{};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
+	void FB2KAPI on_items_modified(unsigned p_playlist,const bit_array & p_mask) override{};
+	void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) override{};
+	void FB2KAPI on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override{};
+	void FB2KAPI on_item_ensure_visible(unsigned p_playlist,unsigned idx) override{};
 
-	virtual void FB2KAPI on_playlist_activate(unsigned p_old,unsigned p_new)
+	void FB2KAPI on_playlist_activate(unsigned p_old,unsigned p_new) override
 	{
 		if (g_main_window)
 		{
@@ -172,28 +172,28 @@ class playlist_callback_columns : public playlist_callback_static
 		}
 	};
 
-	virtual void on_playlist_created(unsigned p_index,const char * p_name,unsigned p_name_len)
+	void on_playlist_created(unsigned p_index,const char * p_name,unsigned p_name_len) override
 	{
 		if (g_main_window)
 		{
 		}
 
 	};
-	virtual void on_playlists_reorder(const unsigned * p_order,unsigned p_count)
+	void on_playlists_reorder(const unsigned * p_order,unsigned p_count) override
 	{
 		if (g_main_window)
 		{
 		}	
 	};
-	virtual void on_playlists_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};
-	virtual void on_playlists_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
+	void on_playlists_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};
+	void on_playlists_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
 	{
 		if (g_main_window)
 		{
 		}
 
 	};
-	virtual void on_playlist_renamed(unsigned p_index,const char * p_new_name,unsigned p_new_name_len)
+	void on_playlist_renamed(unsigned p_index,const char * p_new_name,unsigned p_new_name_len) override
 	{
 		if (g_main_window)
 		{
@@ -201,9 +201,9 @@ class playlist_callback_columns : public playlist_callback_static
 	}
 	;
 
-	virtual void on_default_format_changed(){};
-	virtual void on_playback_order_changed(unsigned p_new_index){};
-	virtual void on_playlist_locked(unsigned p_playlist,bool p_locked)
+	void on_default_format_changed() override{};
+	void on_playback_order_changed(unsigned p_new_index) override{};
+	void on_playlist_locked(unsigned p_playlist,bool p_locked) override
 	{
 		if (g_main_window)
 		{

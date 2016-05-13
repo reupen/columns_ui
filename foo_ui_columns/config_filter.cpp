@@ -8,11 +8,11 @@ public:
 	t_size m_edit_index, m_edit_column;
 	t_list_view_filter() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite) {};
 
-	virtual void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
+	void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl) override
 	{
 		activate_inline_editing(index, column);
 	}
-	virtual void notify_on_create()
+	void notify_on_create() override
 	{
 		set_single_selection(true);
 		pfc::list_t<t_column> columns;
@@ -23,13 +23,13 @@ public:
 		columns[1].m_size = 250;
 		t_list_view::set_columns(columns);
 	};
-	virtual bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse)
+	bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override
 	{
 		if (column <= 1 && indices.get_count() == 1)
 			return true;
 		return false;
 	};
-	virtual bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries)
+	bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override
 	{
 		t_size indices_count = indices.get_count();
 		if (indices_count == 1 && indices[0] < filter_panel::cfg_field_list.get_count()) {
@@ -42,7 +42,7 @@ public:
 		}
 		return false;
 	};
-	virtual void notify_save_inline_edit(const char * value)
+	void notify_save_inline_edit(const char * value) override
 	{
 		if (m_edit_index < filter_panel::cfg_field_list.get_count()) {
 			pfc::string8 & dest = m_edit_column ? filter_panel::cfg_field_list[m_edit_index].m_field : filter_panel::cfg_field_list[m_edit_index].m_name;
@@ -242,9 +242,9 @@ public:
 	void apply()
 	{
 	}
-	virtual HWND create(HWND wnd) {return uCreateDialog(IDD_FILTER_FIELDS,wnd,g_on_message, (LPARAM)this);}
-	virtual const char * get_name() {return "Fields";}
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override {return uCreateDialog(IDD_FILTER_FIELDS,wnd,g_on_message, (LPARAM)this);}
+	const char * get_name() override {return "Fields";}
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:filter";
 		return true;
@@ -387,9 +387,9 @@ public:
 	void apply()
 	{
 	}
-	virtual HWND create(HWND wnd) { return uCreateDialog(IDD_FILTER_MISC, wnd, g_on_message, (LPARAM)this); }
-	virtual const char * get_name() { return "General"; }
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override { return uCreateDialog(IDD_FILTER_MISC, wnd, g_on_message, (LPARAM)this); }
+	const char * get_name() override { return "General"; }
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:filter";
 		return true;

@@ -142,44 +142,44 @@ template <typename t_commands>
 class mainmenu_commands_t : public mainmenu_commands
 {
 
-	virtual t_uint32 get_command_count()
+	t_uint32 get_command_count() override
 	{
 		return t_commands::get_size();
 	}
-	virtual GUID get_command(t_uint32 p_index)
+	GUID get_command(t_uint32 p_index) override
 	{
 		if (p_index < t_commands::get_size())
 			return t_commands::get_ptr()[p_index]->get_guid();
 		return pfc::guid_null;
 	}
-	virtual void get_name(t_uint32 p_index,pfc::string_base & p_out)
+	void get_name(t_uint32 p_index,pfc::string_base & p_out) override
 	{
 		if (p_index < t_commands::get_size())
 			t_commands::get_ptr()[p_index]->get_name(p_out);
 	}
-	virtual bool get_description(t_uint32 p_index,pfc::string_base & p_out)
+	bool get_description(t_uint32 p_index,pfc::string_base & p_out) override
 	{
 		if (p_index < t_commands::get_size())
 			return t_commands::get_ptr()[p_index]->get_description(p_out);
 		return false;
 	}
-	virtual bool get_display(t_uint32 p_index,pfc::string_base & p_text,t_uint32 & p_flags)
+	bool get_display(t_uint32 p_index,pfc::string_base & p_text,t_uint32 & p_flags) override
 	{
 		if (p_index < t_commands::get_size())
 			return t_commands::get_ptr()[p_index]->get_display(p_text, p_flags);
 		return false;
 	}
-	virtual void execute(t_uint32 p_index,service_ptr_t<service_base> p_callback)
+	void execute(t_uint32 p_index,service_ptr_t<service_base> p_callback) override
 	{
 		if (p_index < t_commands::get_size())
 			t_commands::get_ptr()[p_index]->execute(p_callback);
 	}
 
-	virtual GUID get_parent()
+	GUID get_parent() override
 	{
 		return t_commands::get_parent();
 	}
-	virtual t_uint32 get_sort_priority() 
+	t_uint32 get_sort_priority() override 
 	{
 		return t_commands::get_sort_priority();
 	}
@@ -193,23 +193,23 @@ mainmenu_commands_factory_t<mainmenu_commands_t<mainmenu_command_list_view_layou
 class mainmenu_commands_layout : public mainmenu_commands
 {
 
-	virtual t_uint32 get_command_count()
+	t_uint32 get_command_count() override
 	{
 		return cfg_layout.get_presets().get_count();
 	}
-	virtual GUID get_command(t_uint32 p_index)
+	GUID get_command(t_uint32 p_index) override
 	{
 		pfc::string8 name, buff;
 		get_name(p_index, name);
 		buff << "[View/Layout] " << name;
 		return static_api_ptr_t<hasher_md5>()->process_single_guid(buff.get_ptr(), buff.get_length());
 	}
-	virtual void get_name(t_uint32 p_index,pfc::string_base & p_out)
+	void get_name(t_uint32 p_index,pfc::string_base & p_out) override
 	{
 		if (p_index < cfg_layout.get_presets().get_count())
 			p_out = cfg_layout.get_presets()[p_index].m_name;
 	}
-	virtual bool get_description(t_uint32 p_index,pfc::string_base & p_out)
+	bool get_description(t_uint32 p_index,pfc::string_base & p_out) override
 	{
 		if (p_index < cfg_layout.get_presets().get_count())
 		{
@@ -220,7 +220,7 @@ class mainmenu_commands_layout : public mainmenu_commands
 		}
 		return false;
 	}
-	virtual bool get_display(t_uint32 p_index,pfc::string_base & p_text,t_uint32 & p_flags)
+	bool get_display(t_uint32 p_index,pfc::string_base & p_text,t_uint32 & p_flags) override
 	{
 		if (g_layout_window.get_wnd())
 		{
@@ -230,7 +230,7 @@ class mainmenu_commands_layout : public mainmenu_commands
 		}
 		return false;
 	}
-	virtual void execute(t_uint32 p_index,service_ptr_t<service_base> p_callback)
+	void execute(t_uint32 p_index,service_ptr_t<service_base> p_callback) override
 	{
 		if (p_index < cfg_layout.get_presets().get_count())
 		{
@@ -239,11 +239,11 @@ class mainmenu_commands_layout : public mainmenu_commands
 		}
 	}
 
-	virtual GUID get_parent()
+	GUID get_parent() override
 	{
 		return mainmenu_groups_columns::view_layout_presets;
 	}
-	virtual t_uint32 get_sort_priority() 
+	t_uint32 get_sort_priority() override 
 	{
 		return mainmenu_commands::sort_priority_dontcare;
 	}
@@ -252,23 +252,23 @@ mainmenu_commands_factory_t<mainmenu_commands_layout > g_mainmenu_commands_layou
 
 class live_layout_editing_button_t : public uie::button
 {
-	virtual const GUID & get_item_guid() const
+	const GUID & get_item_guid() const override
 	{
 		return mainmenu_layout_live_edit_t::g_guid;
 	}
-	virtual HBITMAP get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, uie::t_mask & p_mask_type, COLORREF & cr_mask, HBITMAP & bm_mask) const
+	HBITMAP get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, uie::t_mask & p_mask_type, COLORREF & cr_mask, HBITMAP & bm_mask) const override
 	{
 		return nullptr;
 	}
-	virtual unsigned get_button_state() const
+	unsigned get_button_state() const override
 	{
 		return g_layout_window.get_layout_editing_active() ? uie::BUTTON_STATE_PRESSED|uie::BUTTON_STATE_ENABLED : uie::BUTTON_STATE_DEFAULT;
 	}
-	virtual void register_callback(uie::button_callback & p_callback)
+	void register_callback(uie::button_callback & p_callback) override
 	{
 		m_callbacks.add_item(&p_callback);
 	};
-	virtual void deregister_callback(uie::button_callback & p_callback)
+	void deregister_callback(uie::button_callback & p_callback) override
 	{
 		m_callbacks.remove_item(&p_callback);
 	};

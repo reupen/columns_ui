@@ -620,18 +620,18 @@ namespace artwork_panel
 	public:
 		static const GUID g_guid;
 
-		virtual const GUID & get_client_guid() const { return g_guid_colour_client; };
-		virtual void get_name(pfc::string_base & p_out) const { p_out = "Artwork View"; };
+		const GUID & get_client_guid() const override { return g_guid_colour_client; };
+		void get_name(pfc::string_base & p_out) const override { p_out = "Artwork View"; };
 
-		virtual t_size get_supported_colours() const { return cui::colours::colour_flag_background; }; //bit-mask
-		virtual t_size get_supported_bools() const { return 0; }; //bit-mask
-		virtual bool get_themes_supported() const { return false; };
+		t_size get_supported_colours() const override { return cui::colours::colour_flag_background; }; //bit-mask
+		t_size get_supported_bools() const override { return 0; }; //bit-mask
+		bool get_themes_supported() const override { return false; };
 
-		virtual void on_colour_changed(t_size mask) const
+		void on_colour_changed(t_size mask) const override
 		{
 			artwork_panel_t::g_on_colours_change();
 		};
-		virtual void on_bool_changed(t_size mask) const {};
+		void on_bool_changed(t_size mask) const override {};
 	};
 
 	namespace {

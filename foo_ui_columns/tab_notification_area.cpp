@@ -109,9 +109,9 @@ public:
 		}
 		return 0;
 	}
-	virtual HWND create(HWND wnd) { return uCreateDialog(IDD_SYS, wnd, ConfigProc); }
-	virtual const char * get_name() { return "Notification area"; }
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override { return uCreateDialog(IDD_SYS, wnd, ConfigProc); }
+	const char * get_name() override { return "Notification area"; }
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:notification_area";
 		return true;

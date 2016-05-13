@@ -412,7 +412,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 						bool m_new_playlist;
 						pfc::string8 m_playlist_name;
 
-						virtual void on_completion(const pfc::list_base_const_t<metadb_handle_ptr> & p_items)
+						void on_completion(const pfc::list_base_const_t<metadb_handle_ptr> & p_items) override
 						{
 							static_api_ptr_t<playlist_manager_v4> playlist_api;
 							if ((m_new_playlist || m_insertIndexTracker.m_playlist != pfc_infinite) && p_items.get_count())
@@ -437,7 +437,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 									playlist_api->set_active_playlist(m_insertIndexTracker.m_playlist);
 							}
 						}
-						virtual void on_aborted()
+						void on_aborted() override
 						{
 						}
 

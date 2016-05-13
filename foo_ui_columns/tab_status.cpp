@@ -105,9 +105,9 @@ public:
 		}
 		return 0;
 	}
-	virtual HWND create(HWND wnd) { return uCreateDialog(IDD_STATUS, wnd, ConfigProc); }
-	virtual const char * get_name() { return "Status bar"; }
-	bool get_help_url(pfc::string_base & p_out)
+	HWND create(HWND wnd) override { return uCreateDialog(IDD_STATUS, wnd, ConfigProc); }
+	const char * get_name() override { return "Status bar"; }
+	bool get_help_url(pfc::string_base & p_out) override
 	{
 		p_out = "http://yuo.be/wiki/columns_ui:config:status_bar";
 		return true;

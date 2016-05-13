@@ -95,7 +95,7 @@ namespace pvt
 	class artwork_reader_notification_t : public main_thread_callback
 	{
 	public:
-		virtual void callback_run()
+		void callback_run() override
 		{
 			if (m_aborted)
 				m_manager->on_reader_abort(m_reader);

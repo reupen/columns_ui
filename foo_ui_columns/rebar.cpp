@@ -501,22 +501,22 @@ class ui_ext_host_rebar : public ui_extension::window_host_with_control
 {
 public:
 
-	virtual void get_name(pfc::string_base & out)const
+	void get_name(pfc::string_base & out)const override
 	{
 		out.set_string("Columns UI/Toolbars");
 	};
 
-	virtual bool is_available()const
+	bool is_available()const override
 	{
 		return g_rebar_window != nullptr;
 	}
 
-	virtual unsigned get_supported_types()const
+	unsigned get_supported_types()const override
 	{
 		return ui_extension::type_toolbar;
 	}
 
-	virtual void insert_extension (const GUID & in, unsigned height, unsigned width)
+	void insert_extension (const GUID & in, unsigned height, unsigned width) override
 	{
 		if (g_rebar_window)
 		{
@@ -524,7 +524,7 @@ public:
 		}
 	};
 
-	virtual void insert_extension (ui_extension::window_ptr & p_ext, unsigned height, unsigned width)
+	void insert_extension (ui_extension::window_ptr & p_ext, unsigned height, unsigned width) override
 	{
 		if (g_rebar_window)
 		{
@@ -532,12 +532,12 @@ public:
 		}
 	};
 
-	virtual unsigned is_resize_supported(HWND wnd)const
+	unsigned is_resize_supported(HWND wnd)const override
 	{
 		return ui_extension::size_width;
 	}
 
-	virtual bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height)
+	bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height) override
 	{
 		if ((flags & ui_extension::size_width) && !(flags & ui_extension::size_height) && g_rebar_window)
 		{
@@ -558,20 +558,20 @@ public:
 		}
 		return false;
 	}
-	virtual bool is_visible(HWND wnd)const
+	bool is_visible(HWND wnd)const override
 	{
 		return true;
 	}
-	virtual bool is_visibility_modifiable(HWND wnd, bool desired_visibility)const
+	bool is_visibility_modifiable(HWND wnd, bool desired_visibility)const override
 	{
 		return false;
 	}
-	virtual bool set_window_visibility(HWND wnd, bool visibility)
+	bool set_window_visibility(HWND wnd, bool visibility) override
 	{
 		return false;
 	}
 
-	virtual void on_size_limit_change(HWND wnd, unsigned flags)
+	void on_size_limit_change(HWND wnd, unsigned flags) override
 	{
 		if (g_rebar_window)
 		{
@@ -583,9 +583,9 @@ public:
 		}
 	};
 
-	virtual const GUID & get_host_guid()const{return rebar_guid;}
+	const GUID & get_host_guid()const override{return rebar_guid;}
 
-	virtual bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out)
+	bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out) override
 	{
 		static_api_ptr_t<ui_control> api;
 		return api->override_status_text_create(p_out);
@@ -596,7 +596,7 @@ public:
 		return process_keydown(msg, lp, wp, false, process_keyboard_shortcuts);
 	};
 
-	virtual void relinquish_ownership(HWND wnd)
+	void relinquish_ownership(HWND wnd) override
 	{
 		if (g_rebar_window)
 		{

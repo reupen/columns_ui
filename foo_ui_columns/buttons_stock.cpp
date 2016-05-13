@@ -57,12 +57,12 @@ __DEFINE_MENU_BUTTON(d, standard_commands::guid_main_always_on_top, standard_con
 template <const GUID & MenutItemID, INT IconID>
 class button_menu_item_with_bitmap : public uie::button_v2
 {
-	virtual const GUID & get_item_guid()const
+	const GUID & get_item_guid()const override
 	{
 		return MenutItemID;
 	}
 
-	virtual HANDLE get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, unsigned cx_hint, unsigned cy_hint, unsigned & handle_type) const
+	HANDLE get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, unsigned cx_hint, unsigned cy_hint, unsigned & handle_type) const override
 	{
 		HICON icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IconID), IMAGE_ICON, cx_hint, cy_hint, NULL);
 		handle_type = uie::button_v2::handle_type_icon;
@@ -82,14 +82,14 @@ uie::button_factory< button_menu_item_with_bitmap<standard_commands::guid_main_r
 
 class button_blank : public ui_extension::custom_button
 {
-	virtual const GUID & get_item_guid ()const
+	const GUID & get_item_guid ()const override
 	{
 		// {A8FE61BA-A055-4a53-A588-9DDA92ED7312}
 		static const GUID guid = 
 		{ 0xa8fe61ba, 0xa055, 0x4a53, { 0xa5, 0x88, 0x9d, 0xda, 0x92, 0xed, 0x73, 0x12 } };
 		return guid;
 	}
-	virtual HBITMAP get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, uie::t_mask & p_mask_type, COLORREF & cr_mask, HBITMAP & bm_mask) const
+	HBITMAP get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, uie::t_mask & p_mask_type, COLORREF & cr_mask, HBITMAP & bm_mask) const override
 	{
 		COLORMAP map;
 		map.from = 0x0;
@@ -101,16 +101,16 @@ class button_blank : public ui_extension::custom_button
 			bm_mask = (HBITMAP)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDB_BLANK), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE|LR_MONOCHROME); 
 		return bm;
 	}
-	virtual void get_name(pfc::string_base & p_out) const
+	void get_name(pfc::string_base & p_out) const override
 	{
 		p_out = "Blanking button";
 	}
-	virtual unsigned get_button_state() const
+	unsigned get_button_state() const override
 	{
 		return NULL;
 	}
-	void execute(const pfc::list_base_const_t<metadb_handle_ptr> & p_items) {};
-	virtual uie::t_button_guid get_guid_type() const
+	void execute(const pfc::list_base_const_t<metadb_handle_ptr> & p_items) override {};
+	uie::t_button_guid get_guid_type() const override
 	{
 		return uie::BUTTON_GUID_BUTTON;
 	}

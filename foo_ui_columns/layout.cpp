@@ -14,7 +14,7 @@ class window_host_layout : public ui_extension::window_host
 {
 public:
 
-	virtual const GUID & get_host_guid()const
+	const GUID & get_host_guid()const override
 	{
 		// {DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}
 		static const GUID ret = 
@@ -22,44 +22,44 @@ public:
 		return ret;
 	}
 
-	virtual void on_size_limit_change(HWND wnd, unsigned flags)
+	void on_size_limit_change(HWND wnd, unsigned flags) override
 	{
 	};
 
 	
-	virtual bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out)
+	bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out) override
 	{
 		static_api_ptr_t<ui_control> api;
 		return api->override_status_text_create(p_out);
 	}
 
-	virtual unsigned is_resize_supported(HWND wnd)const
+	unsigned is_resize_supported(HWND wnd)const override
 	{
 		return false;
 	}
 
-	virtual bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height)
+	bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height) override
 	{
 		bool rv = false;
 		return rv;
 	}
-	virtual bool is_visible(HWND wnd) const
+	bool is_visible(HWND wnd) const override
 	{
 		bool rv = IsWindowVisible(g_layout_window.get_wnd()) != 0;
 		return  rv;
 	}
-	virtual bool is_visibility_modifiable(HWND wnd, bool desired_visibility)const
+	bool is_visibility_modifiable(HWND wnd, bool desired_visibility)const override
 	{
 		bool rv = false;
 		return  rv;
 	}
-	virtual bool set_window_visibility(HWND wnd, bool visibility)
+	bool set_window_visibility(HWND wnd, bool visibility) override
 	{
 		bool rv = false;
 		return rv;
 	}
 
-	virtual void relinquish_ownership(HWND wnd)
+	void relinquish_ownership(HWND wnd) override
 	{
 		g_layout_window.relinquish_child();
 	}
