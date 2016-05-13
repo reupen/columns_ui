@@ -102,7 +102,7 @@ public:
 
 	bool m_initialising;
 	static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-	selection_properties_config_t(const pfc::list_t<field_t> & p_fields, t_size edge_style,
+	selection_properties_config_t(pfc::list_t<field_t>  p_fields, t_size edge_style,
 		t_uint32 info_sections_mask, bool b_show_columns, bool b_show_groups);;
 
 	bool run_modal(HWND wnd);

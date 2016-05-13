@@ -41,7 +41,7 @@ public:
 		HTREEITEM item;
 		cui::fcl::group_ptr group;
 		bool checked;
-		t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : group(ptr), item(pitem), checked(true)
+		t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : group(std::move(ptr)), item(pitem), checked(true)
 		{};
 		t_node() : item(nullptr), checked(true) {};
 	};
@@ -240,7 +240,7 @@ class t_import_results_data
 public:
 	panel_info_list m_items;
 	bool m_aborted;
-	t_import_results_data(const panel_info_list& items, bool baborted) : m_items(items), m_aborted(baborted)
+	t_import_results_data(panel_info_list  items, bool baborted) : m_items(std::move(items)), m_aborted(baborted)
 	{};
 };
 

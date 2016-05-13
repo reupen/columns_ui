@@ -39,7 +39,7 @@ public:
 		return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this);
 	}
 	//virtual const char * get_name()=0;
-	edit_column_window_options(const column_t::ptr & column) : initialising(false), editproc(nullptr), m_column(column),m_wnd(nullptr) {};
+	edit_column_window_options(column_t::ptr  column) : initialising(false), editproc(nullptr), m_column(std::move(column)),m_wnd(nullptr) {};
 
 	bool initialising;
 	WNDPROC editproc;
@@ -248,7 +248,7 @@ public:
 		return uCreateDialog(IDD_COLUMN_SCRIPTS, wnd, g_on_message, (LPARAM)this);
 	}
 	//virtual const char * get_name()=0;
-	edit_column_window_scripts(const column_t::ptr & col) : initialising(false), editproc(nullptr), m_column(col), m_wnd(nullptr) {};
+	edit_column_window_scripts(column_t::ptr  col) : initialising(false), editproc(nullptr), m_column(std::move(col)), m_wnd(nullptr) {};
 
 	HWND m_wnd;
 
