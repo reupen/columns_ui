@@ -376,13 +376,13 @@ namespace pvt
 
 		static void g_on_groups_change();
 		static void g_on_columns_change();
-		static void g_on_column_widths_change(const ng_playlist_view_t * p_skip = NULL);
+		static void g_on_column_widths_change(const ng_playlist_view_t * p_skip = nullptr);
 		static void g_update_all_items();
 		static void g_on_autosize_change();
 		static void g_on_show_artwork_change();
 		static void g_on_alternate_selection_change();
-		static void g_on_artwork_width_change(const ng_playlist_view_t * p_skip = NULL);
-		static void g_flush_artwork(bool b_redraw = false, const ng_playlist_view_t * p_skip = NULL);
+		static void g_on_artwork_width_change(const ng_playlist_view_t * p_skip = nullptr);
+		static void g_flush_artwork(bool b_redraw = false, const ng_playlist_view_t * p_skip = nullptr);
 		static void g_on_artwork_repositories_change();
 		static void g_on_vertical_item_padding_change();
 		static void g_on_show_header_change();
@@ -465,7 +465,7 @@ namespace pvt
 		{
 			cfg_artwork_width = new_width;
 			//flush_artwork_images();
-			g_on_artwork_width_change(NULL/*this*/);
+			g_on_artwork_width_change(nullptr/*this*/);
 		}
 		void on_artwork_read_complete(const item_group_ng_t::ptr & p_group, const pfc::rcptr_t<artwork_reader_ng_t> & p_reader)
 		{
@@ -645,7 +645,7 @@ namespace pvt
 			SYSTEMTIME st;
 			GetLocalTime(&st);
 			unsigned ms=/*24**/60*60*1000 - (st.wMilliseconds + ((/*st.wHour*60 + */st.wMinute)*60 + st.wSecond)*1000) ;
-			SetTimer(get_wnd(), timer_date_change, ms,  0);
+			SetTimer(get_wnd(), timer_date_change, ms,  nullptr);
 			m_day_timer_active = true;
 		}
 
@@ -653,7 +653,7 @@ namespace pvt
 		t_size storage_get_focus_item() override;
 		void storage_set_focus_item(t_size index) override;
 		void storage_get_selection_state(bit_array_var & out) override;
-		bool storage_set_selection_state(const bit_array & p_affected,const bit_array & p_status, bit_array_var * p_changed = NULL) override;
+		bool storage_set_selection_state(const bit_array & p_affected,const bit_array & p_status, bit_array_var * p_changed = nullptr) override;
 		bool storage_get_item_selected(t_size index) override;
 		t_size storage_get_selection_count(t_size max) override;
 

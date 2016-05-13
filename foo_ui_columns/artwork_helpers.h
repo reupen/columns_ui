@@ -65,7 +65,7 @@ namespace artwork_panel
 		bool IsReady();
 
 		//! Completion notify code is 1 when content has changed, 0 when content is the same as before the request (like, advanced to another track with the same album art data).
-		void Request(const metadb_handle_ptr & p_handle, completion_notify_ptr p_notify = NULL);
+		void Request(const metadb_handle_ptr & p_handle, completion_notify_ptr p_notify = nullptr);
 
 		bool Query(const GUID & p_what, album_art_data_ptr & p_data);
 

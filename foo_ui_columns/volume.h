@@ -111,7 +111,7 @@ class volume_control_t : public t_base, private play_callback
 					HPEN pn_shadow = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_3DSHADOW));
 
 					HPEN pn_old = SelectPen(dc, pn_shadow);
-					MoveToEx(dc, rc->left, rc->bottom-1, 0);
+					MoveToEx(dc, rc->left, rc->bottom-1, nullptr);
 					LineTo(dc, rc->right, rc->top);
 
 					SelectPen(dc, pn_light);
@@ -186,7 +186,7 @@ public:
 					try
 					{
 						Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-						if (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_Gdiplus_token, &gdiplusStartupInput, NULL))
+						if (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_Gdiplus_token, &gdiplusStartupInput, nullptr))
 							m_using_gdiplus = true;
 					}
 					catch (const exception_delayload &)
@@ -233,11 +233,11 @@ public:
 					const int y = 0;
 					const int cx = LOWORD(lp)-(b_vertical?size_caption:sz.cx);
 					const int cy = HIWORD(lp);
-					SetWindowPos(wnd_trackbar, 0, x, y, cx, cy, SWP_NOZORDER);
-					RedrawWindow(wnd, NULL, NULL, RDW_INVALIDATE|RDW_ERASE);
+					SetWindowPos(wnd_trackbar, nullptr, x, y, cx, cy, SWP_NOZORDER);
+					RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE|RDW_ERASE);
 				}
 				else
-					SetWindowPos(wnd_trackbar, 0, 0, 0, LOWORD(lp), HIWORD(lp), SWP_NOZORDER);
+					SetWindowPos(wnd_trackbar, nullptr, 0, 0, LOWORD(lp), HIWORD(lp), SWP_NOZORDER);
 			}
 			break;
 		case WM_GETMINMAXINFO:
@@ -266,7 +266,7 @@ public:
 						MapWindowPoints(wnd, wnd_parent, &pt, 1);
 						OffsetWindowOrgEx(dc, pt.x, pt.y, &pt_old);
 						SendMessage(wnd_parent, msg, wp, lp);
-						SetWindowOrgEx(dc, pt_old.x, pt_old.y, 0);
+						SetWindowOrgEx(dc, pt_old.x, pt_old.y, nullptr);
 					}
 				}
 			}
@@ -344,7 +344,7 @@ public:
 		return DefWindowProc(wnd, msg, wp, lp);
 	}
 
-	volume_control_t() : m_child(this), m_track_bar_host(this), wnd_trackbar(NULL), m_Gdiplus_token(NULL), m_using_gdiplus(false) {};
+	volume_control_t() : m_child(this), m_track_bar_host(this), wnd_trackbar(nullptr), m_Gdiplus_token(NULL), m_using_gdiplus(false) {};
 	~volume_control_t() {};
 
 	ui_helpers::container_window::class_data & get_class_data()const override

@@ -373,7 +373,7 @@ namespace filter_panel {
 		void on_search_editbox_change();
 		void commit_search_results(const char * str, bool b_force_autosend = false, bool b_stream_update = false);
 
-		void update_favourite_icon(const char * p_new = NULL);
+		void update_favourite_icon(const char * p_new = nullptr);
 
 		LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 		void create_edit();

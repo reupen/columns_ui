@@ -141,9 +141,9 @@ public:
 		return ensure_visible(idx, true);
 	}
 
-	static void g_on_columns_size_change(const playlist_view * p_skip = NULL);
+	static void g_on_columns_size_change(const playlist_view * p_skip = nullptr);
 
-	static void update_all_windows(HWND wnd_header_skip = 0);
+	static void update_all_windows(HWND wnd_header_skip = nullptr);
 
 	static void g_on_playback_follows_cursor_change(bool b_val);
 	

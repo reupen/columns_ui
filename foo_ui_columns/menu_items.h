@@ -31,7 +31,7 @@ public:
 	{
 		p_flags = 0;
 		get_name(p_text);
-		return g_main_window != 0;
+		return g_main_window != nullptr;
 	}
 
 	virtual void execute(service_ptr_t<service_base> p_callback) const = 0;
@@ -119,7 +119,7 @@ public:
 	{
 		p_flags = cfg_status != 0 ? mainmenu_commands::flag_checked : 0;
 		get_name(p_text);
-		return (g_main_window != 0);
+		return (g_main_window != nullptr);
 	}
 
 	void execute(service_ptr_t<service_base> p_callback) const override
@@ -153,7 +153,7 @@ public:
 	{
 		p_flags = settings::show_status_pane ? mainmenu_commands::flag_checked : 0;
 		get_name(p_text);
-		return (g_main_window != 0);
+		return (g_main_window != nullptr);
 	}
 
 	void execute(service_ptr_t<service_base> p_callback) const override
@@ -187,7 +187,7 @@ public:
 	{
 		p_flags = cfg_toolbars != 0 ? mainmenu_commands::flag_checked : 0;
 		get_name(p_text);
-		return (g_main_window != 0);
+		return (g_main_window != nullptr);
 	}
 
 	void execute(service_ptr_t<service_base> p_callback) const override
@@ -247,7 +247,7 @@ public:
 	{
 		p_flags = 0;
 		get_name(p_text);
-		return (g_main_window != 0);
+		return (g_main_window != nullptr);
 	}
 
 	void execute(service_ptr_t<service_base> p_callback) const override
@@ -280,7 +280,7 @@ public:
 	{
 		p_flags = 0;
 		get_name(p_text);
-		return (g_main_window != 0);
+		return (g_main_window != nullptr);
 	}
 
 	void execute(service_ptr_t<service_base> p_callback) const override
@@ -313,7 +313,7 @@ public:
 	{
 		p_flags = 0 | (g_layout_window.get_layout_editing_active() ? mainmenu_commands::flag_checked : 0);
 		get_name(p_text);
-		return (g_main_window != 0);
+		return (g_main_window != nullptr);
 	}
 
 	void execute(service_ptr_t<service_base> p_callback) const override;

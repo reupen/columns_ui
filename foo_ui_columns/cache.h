@@ -106,7 +106,7 @@ public:
 	COLORREF get_colour(colour_type type);
 	void get_colour(colourinfo & out);
 	void set_colour(/*COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF back_sel_nofocus*/colourinfo & colour_add);
-	display_info() : colours(0) {};
+	display_info() : colours(nullptr) {};
 	~display_info()
 	{
 		if (colours) 
@@ -153,7 +153,7 @@ public:
 			if (!stricmp_utf8_ex(p_name,length,ptr,pfc_infinite))
 				return get_item(n)->get_value();
 		}
-		return 0;
+		return nullptr;
 	}
 	void add_item(const char * p_name,unsigned p_name_length,const char * p_value,unsigned p_value_length)
 	{
@@ -183,7 +183,7 @@ class titleformat_hook_date : public titleformat_hook
 public:
 	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
 	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override;
-	inline titleformat_hook_date(const SYSTEMTIME * st = 0) : p_st(st)
+	inline titleformat_hook_date(const SYSTEMTIME * st = nullptr) : p_st(st)
 	{
 	};
 };
@@ -191,7 +191,7 @@ public:
 class titleformat_hook_splitter_pt3 : public titleformat_hook
 {
 public:
-	inline titleformat_hook_splitter_pt3(titleformat_hook * p_hook1,titleformat_hook * p_hook2,titleformat_hook * p_hook3,titleformat_hook * p_hook4 = NULL) : m_hook1(p_hook1), m_hook2(p_hook2), m_hook3(p_hook3), m_hook4(p_hook4) {};
+	inline titleformat_hook_splitter_pt3(titleformat_hook * p_hook1,titleformat_hook * p_hook2,titleformat_hook * p_hook3,titleformat_hook * p_hook4 = nullptr) : m_hook1(p_hook1), m_hook2(p_hook2), m_hook3(p_hook3), m_hook4(p_hook4) {};
 	bool process_field(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,bool & p_found_flag) override;
 	bool process_function(titleformat_text_out * p_out,const char * p_name,unsigned p_name_length,titleformat_hook_function_params * p_params,bool & p_found_flag) override;
 private:
@@ -203,7 +203,7 @@ class playlist_cache : private 	pfc::ptr_list_t<playlist_entry_ui>
 public:
 	inline void add_item(int idx)
 	{
-		insert_item((playlist_entry_ui*)NULL, idx);
+		insert_item((playlist_entry_ui*)nullptr, idx);
 	}
 
 	void delete_all();
@@ -308,12 +308,12 @@ public:
 	}
 	void on_playlist_renamed(unsigned p_index,const char * p_new_name,unsigned p_new_name_len);
 
-	inline void active_make_extra(unsigned idx, global_variable_list & p_out, const SYSTEMTIME * st = 0, bool b_legacy = false) const
+	inline void active_make_extra(unsigned idx, global_variable_list & p_out, const SYSTEMTIME * st = nullptr, bool b_legacy = false) const
 	{
 		assert (active_playlist != pfc_infinite);
 		return make_extra(active_playlist, idx, p_out, st, b_legacy);
 	}
-	inline void make_extra(unsigned playlist, unsigned idx, global_variable_list & p_out, const SYSTEMTIME * st = 0, bool b_legacy = false) const;
+	inline void make_extra(unsigned playlist, unsigned idx, global_variable_list & p_out, const SYSTEMTIME * st = nullptr, bool b_legacy = false) const;
 
 	void get_display_name(unsigned playlist, unsigned idx, int col, pfc::string_base & out);
 	COLORREF get_colour(unsigned playlist, unsigned idx, int col, colour_type colour);
@@ -388,7 +388,7 @@ public:
 	void flush_columns(unsigned playlist);
 	void flush_sort(unsigned playlist);
 
-	bool get_playlist_sort(unsigned playlist, unsigned & idx, bool * p_descending = 0);
+	bool get_playlist_sort(unsigned playlist, unsigned & idx, bool * p_descending = nullptr);
 	void set_playlist_sort(unsigned playlist, unsigned column, bool descending);
 
 	inline bool is_active_playlist_valid()
@@ -403,7 +403,7 @@ public:
 //		else console::error("No active playlist!");
 	}
 
-	inline bool active_get_playlist_sort(unsigned & idx, bool * p_descending = 0)
+	inline bool active_get_playlist_sort(unsigned & idx, bool * p_descending = nullptr)
 	{
 		if (is_active_playlist_valid())
 			return get_playlist_sort(active_playlist, idx, p_descending);

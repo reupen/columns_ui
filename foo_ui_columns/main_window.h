@@ -149,7 +149,7 @@ namespace cui
 		void initialise()
 		{
 			Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, NULL));
+			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
 		}
 		void deinitialise()
 		{

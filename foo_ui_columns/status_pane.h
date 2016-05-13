@@ -119,7 +119,7 @@ class status_pane : public ui_helpers::container_window, private playlist_callba
 	/** PRIVATE FUNCTIONS */
 	void update_playlist_data() {get_length_data(m_selection, m_item_count, m_length_text);}
 	void on_playlist_change() {update_playlist_data(); invalidate_all();}
-	void invalidate_all(bool b_update = true) {RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE|(b_update?RDW_UPDATENOW:NULL));}
+	void invalidate_all(bool b_update = true) {RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE|(b_update?RDW_UPDATENOW:NULL));}
 	void render_background (HDC dc, const RECT & rc);
 
 	void set_track_label (bool b_playing, bool b_paused)
@@ -136,7 +136,7 @@ class status_pane : public ui_helpers::container_window, private playlist_callba
 
 			service_ptr_t<titleformat_object> to_status;
 			static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
-			play_api->playback_format_title_ex(track, nullptr, playing1, to_status, NULL, play_control::display_level_all);
+			play_api->playback_format_title_ex(track, nullptr, playing1, to_status, nullptr, play_control::display_level_all);
 
 			track.release();
 		} 
@@ -147,7 +147,7 @@ class status_pane : public ui_helpers::container_window, private playlist_callba
 	}
 	void get_length_data(bool & p_selection, t_size & p_count, pfc::string_base & p_out);
 public:
-	status_pane() : m_selection(false), m_item_count(0), m_menu_active(false), m_theme(NULL) {};
+	status_pane() : m_selection(false), m_item_count(0), m_menu_active(false), m_theme(nullptr) {};
 	t_size get_ideal_height() { return uGetFontHeight(m_font)*2 + 6 + 6; }
 	void enter_menu_mode(const char * p_text)
 	{

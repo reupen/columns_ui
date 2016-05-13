@@ -76,7 +76,7 @@ public:
 				destroy_switch_timer();
 				m_switch_playlist = pfc::rcnew_t<playlist_position_reference_tracker>(false);
 				m_switch_playlist->m_playlist = index;
-				SetTimer(get_wnd(), TIMER_SWITCH, cfg_autoswitch_delay, NULL);
+				SetTimer(get_wnd(), TIMER_SWITCH, cfg_autoswitch_delay, nullptr);
 				m_switch_timer_active = true;
 			}
 		}

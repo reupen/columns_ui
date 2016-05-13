@@ -36,7 +36,7 @@ public:
 	~window_visualisation();
 
 	void flush_bitmap();
-	void make_bitmap(HDC hdc=0);
+	void make_bitmap(HDC hdc=nullptr);
 
 	void get_name(pfc::string_base & out)const override;
 	void get_category(pfc::string_base & out)const override;
