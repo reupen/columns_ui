@@ -57,7 +57,7 @@ namespace pvt
 			/*(if (p_playlist == 0)*/
 			if (!m_ignore_callback)
 			{
-				RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE|RDW_UPDATENOW);
+				RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE|RDW_UPDATENOW);
 			}
 		};
 		void ng_playlist_view_t::on_item_focus_change(/*t_size p_playlist, */t_size p_from,t_size p_to)

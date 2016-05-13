@@ -88,8 +88,8 @@ void playlist_view::update_scrollbar(bool redraw)
 		{
 			RECT playlist, rc_redraw;
 			get_playlist_rect(&playlist);
-			ScrollWindowEx(wnd_playlist, 0, (old_vert_pos - scroll_item_offset) * get_item_height(), &playlist, &playlist, 0, &rc_redraw, 0);
-			RedrawWindow(wnd_playlist, &rc_redraw, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+			ScrollWindowEx(wnd_playlist, 0, (old_vert_pos - scroll_item_offset) * get_item_height(), &playlist, &playlist, nullptr, &rc_redraw, 0);
+			RedrawWindow(wnd_playlist, &rc_redraw, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 		}
 
 	}
@@ -144,7 +144,7 @@ void playlist_view::scroll(t_scroll_direction p_direction, t_scroll_type p_type,
 	{
 
 		//evil mouse driver send WM_VSCROLL not WM_MOUSEWHEEL!!!!
-		if (g_tooltip) { DestroyWindow(g_tooltip); g_tooltip = 0; last_idx = -1; last_column = -1; }
+		if (g_tooltip) { DestroyWindow(g_tooltip); g_tooltip = nullptr; last_idx = -1; last_column = -1; }
 
 		SCROLLINFO scroll2;
 		memset(&scroll2, 0, sizeof(SCROLLINFO));
@@ -165,8 +165,8 @@ void playlist_view::scroll(t_scroll_direction p_direction, t_scroll_type p_type,
 			get_playlist_rect(&playlist);
 			int dx = (p_direction == scroll_horizontally) ? (old_pos - position) : 0;
 			int dy = (p_direction == scroll_vertically) ? (old_pos - position) * get_item_height() : 0;
-			ScrollWindowEx(wnd_playlist, dx, dy, &playlist, &playlist, 0, 0, SW_INVALIDATE);
-			RedrawWindow(wnd_playlist, 0, 0, RDW_UPDATENOW);
+			ScrollWindowEx(wnd_playlist, dx, dy, &playlist, &playlist, nullptr, nullptr, SW_INVALIDATE);
+			RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_UPDATENOW);
 		}
 	}
 }

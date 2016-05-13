@@ -78,7 +78,7 @@ namespace pvt
 				{
 					if (IsThemeBackgroundPartiallyTransparent(get_theme(), LVP_LISTITEM, theme_state))
 						DrawThemeParentBackground(get_wnd(), dc, rc);
-					DrawThemeBackground(get_theme(), dc, LVP_LISTITEM, theme_state, rc, NULL);
+					DrawThemeBackground(get_theme(), dc, LVP_LISTITEM, theme_state, rc, nullptr);
 				}
 			}
 
@@ -112,7 +112,7 @@ namespace pvt
 					HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_left);
 					HPEN pen_old = (HPEN)SelectObject(dc, pen);
 
-					MoveToEx(dc, rc_subitem.left, rc_subitem.top, 0);
+					MoveToEx(dc, rc_subitem.left, rc_subitem.top, nullptr);
 					LineTo(dc, rc_subitem.left, rc_subitem.bottom);
 					SelectObject(dc, pen_old);
 					DeleteObject(pen);
@@ -122,7 +122,7 @@ namespace pvt
 					HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_top);
 					HPEN pen_old = (HPEN)SelectObject(dc, pen);
 
-					MoveToEx(dc, rc_subitem.left, rc_subitem.top, 0);
+					MoveToEx(dc, rc_subitem.left, rc_subitem.top, nullptr);
 					LineTo(dc, rc_subitem.right, rc_subitem.top);
 					SelectObject(dc, pen_old);
 					DeleteObject(pen);
@@ -132,7 +132,7 @@ namespace pvt
 					HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_right);
 					HPEN pen_old = (HPEN)SelectObject(dc, pen);
 
-					MoveToEx(dc, rc_subitem.right-1, rc_subitem.top, 0);
+					MoveToEx(dc, rc_subitem.right-1, rc_subitem.top, nullptr);
 					LineTo(dc, rc_subitem.right-1, rc_subitem.bottom);
 					SelectObject(dc, pen_old);
 					DeleteObject(pen);
@@ -142,7 +142,7 @@ namespace pvt
 					HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_bottom);
 					HPEN pen_old = (HPEN)SelectObject(dc, pen);
 
-					MoveToEx(dc, rc_subitem.right-1, rc_subitem.bottom-1, 0);
+					MoveToEx(dc, rc_subitem.right-1, rc_subitem.bottom-1, nullptr);
 					LineTo(dc, rc_subitem.left-1, rc_subitem.bottom-1);
 					SelectObject(dc, pen_old);
 					DeleteObject(pen);
@@ -186,7 +186,7 @@ namespace pvt
 				FillRect(dc, &rc, br);
 			}
 
-			ui_helpers::text_out_colours_tab(dc, text, strlen(text), 2 + indentation*level, 2, &rc, false, cr, true, true, true, ui_helpers::ALIGN_LEFT, NULL, true, true, &text_width);
+			ui_helpers::text_out_colours_tab(dc, text, strlen(text), 2 + indentation*level, 2, &rc, false, cr, true, true, true, ui_helpers::ALIGN_LEFT, nullptr, true, true, &text_width);
 
 			LONG cx = (LONG)min(text_width, MAXLONG);
 
@@ -194,7 +194,7 @@ namespace pvt
 
 			if (rc_line.right > rc_line.left)
 			{
-				if (b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_GROUPHEADERLINE, NULL) && SUCCEEDED(DrawThemeBackground(get_theme(), dc, LVP_GROUPHEADERLINE, LVGH_OPEN, &rc_line, NULL)))
+				if (b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_GROUPHEADERLINE, NULL) && SUCCEEDED(DrawThemeBackground(get_theme(), dc, LVP_GROUPHEADERLINE, LVGH_OPEN, &rc_line, nullptr)))
 				{
 				}
 				else
@@ -204,7 +204,7 @@ namespace pvt
 						cr = item->m_style_data->text_colour;
 					gdi_object_t<HPEN>::ptr_t pen = CreatePen(PS_SOLID, 1, cr);
 					HPEN pen_old = SelectPen(dc, pen);
-					MoveToEx(dc, rc_line.left, rc_line.top, NULL);
+					MoveToEx(dc, rc_line.left, rc_line.top, nullptr);
 					LineTo(dc, rc_line.right, rc_line.top);
 					SelectPen(dc, pen_old);
 				}

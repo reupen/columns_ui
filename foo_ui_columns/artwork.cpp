@@ -138,7 +138,7 @@ namespace artwork_panel
 				if (cfg_edge_style == 1) flags |= WS_EX_CLIENTEDGE;
 				if (cfg_edge_style == 2) flags |= WS_EX_STATICEDGE;
 				SetWindowLongPtr(wnd, GWL_EXSTYLE, flags);
-				SetWindowPos(wnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+				SetWindowPos(wnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 			}
 		}
 	}
@@ -183,7 +183,7 @@ namespace artwork_panel
 		case WM_CREATE:
 		{
 			Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, NULL));
+			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
 			m_artwork_loader = new artwork_reader_manager_t;//pfc::rcnew_t<artwork_reader_t>();
 			//		m_nowplaying_artwork_loader.initialise(this);
 			t_size i, count = tabsize(g_artwork_types);
@@ -222,7 +222,7 @@ namespace artwork_panel
 			if (!(lpwp->flags & SWP_NOSIZE))
 			{
 				flush_cached_bitmap();
-				RedrawWindow(wnd, NULL, NULL, RDW_INVALIDATE);
+				RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
 			}
 		}
 		break;
@@ -291,7 +291,7 @@ namespace artwork_panel
 	bool g_check_process_on_selection_changed()
 	{
 		HWND wnd_focus = GetFocus();
-		if (wnd_focus == NULL)
+		if (wnd_focus == nullptr)
 			return false;
 
 		DWORD processid = NULL;
@@ -319,7 +319,7 @@ namespace artwork_panel
 				else
 				{
 					flush_image();
-					RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+					RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 					if (m_artwork_loader.is_valid())
 						m_artwork_loader->Reset();
 				}
@@ -352,7 +352,7 @@ namespace artwork_panel
 			if (!b_set)
 			{
 				flush_image();
-				RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+				RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 				if (m_artwork_loader.is_valid())
 					m_artwork_loader->Reset();
 			}
@@ -390,7 +390,7 @@ namespace artwork_panel
 		else
 		{
 			flush_image();
-			RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+			RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 			if (m_artwork_loader.is_valid())
 				m_artwork_loader->Reset();
 		}
@@ -409,7 +409,7 @@ namespace artwork_panel
 			else
 			{
 				flush_image();
-				RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+				RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 				if (m_artwork_loader.is_valid())
 					m_artwork_loader->Reset();
 			}
@@ -428,7 +428,7 @@ namespace artwork_panel
 			else
 			{
 				flush_image();
-				RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+				RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 				if (m_artwork_loader.is_valid())
 					m_artwork_loader->Reset();
 			}
@@ -475,14 +475,14 @@ namespace artwork_panel
 					if (m_image->GetLastStatus() == Gdiplus::Ok)
 					{
 						flush_cached_bitmap();
-						RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+						RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 					}
 				}
 			}
 			else
 			{
 				flush_image();
-				RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+				RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 			}
 		}
 	}
@@ -504,7 +504,7 @@ namespace artwork_panel
 					if (m_image->GetLastStatus() == Gdiplus::Ok)
 					{
 						flush_cached_bitmap();
-						RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+						RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 						return true;
 					}
 				}
@@ -527,7 +527,7 @@ namespace artwork_panel
 		GetClientRect(get_wnd(), &rc);
 		if (RECT_CX(rc) && RECT_CY(rc) && m_image.is_valid())
 		{
-			HDC dc = NULL, dcc = NULL;
+			HDC dc = nullptr, dcc = nullptr;
 			dc = GetDC(get_wnd());
 			dcc = CreateCompatibleDC(dc);
 
@@ -594,7 +594,7 @@ namespace artwork_panel
 		for (i = 0; i < count; i++)
 		{
 			g_windows[i]->flush_cached_bitmap();
-			RedrawWindow(g_windows[i]->get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+			RedrawWindow(g_windows[i]->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 		}
 	}
 
@@ -939,7 +939,7 @@ namespace artwork_panel
 		p_this->m_preserve_aspect_ratio = !p_this->m_preserve_aspect_ratio;
 		cfg_preserve_aspect_ratio = p_this->m_preserve_aspect_ratio;
 		p_this->flush_cached_bitmap();
-		RedrawWindow(p_this->get_wnd(), NULL, NULL, RDW_INVALIDATE | RDW_INVALIDATE);
+		RedrawWindow(p_this->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 	}
 
 	bool artwork_panel_t::menu_node_preserve_aspect_ratio::get_description(pfc::string_base & p_out) const

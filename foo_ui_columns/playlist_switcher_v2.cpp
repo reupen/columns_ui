@@ -103,7 +103,7 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 	{
 		t_size i, count = g_windows.get_count();
 		for (i=0; i<count; i++)
-			RedrawWindow(g_windows[i]->get_wnd(), NULL, NULL, RDW_UPDATENOW|RDW_INVALIDATE);
+			RedrawWindow(g_windows[i]->get_wnd(), nullptr, nullptr, RDW_UPDATENOW|RDW_INVALIDATE);
 	}
 	void playlist_switcher_t::g_refresh_all_items()
 	{

@@ -67,7 +67,7 @@ void g_compare_file_with_bytes(const service_ptr_t<file> & p1, const pfc::array_
 
 HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
 {
-	HBITMAP rv = 0;
+	HBITMAP rv = nullptr;
 	HRSRC rs = FindResource(core_api::get_my_instance(), MAKEINTRESOURCE(uid), RT_BITMAP);
 	HGLOBAL glb = LoadResource(core_api::get_my_instance(), rs);
 	void * p_res = LockResource(glb);
@@ -97,9 +97,9 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
 
 		void * p_bits = &p_bih->bmiColors[num_colours];
 
-		HDC dc = GetDC(0);
+		HDC dc = GetDC(nullptr);
 		rv = CreateDIBitmap(dc, &lpbi->bmiHeader, CBM_INIT, p_bits, lpbi, DIB_RGB_COLORS);
-		ReleaseDC(0, dc);
+		ReleaseDC(nullptr, dc);
 	}
 	return rv;
 }

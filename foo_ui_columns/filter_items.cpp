@@ -777,7 +777,7 @@ namespace filter_panel {
 				t_size i, k = 0;
 				for (i = 0; i<count; i++)
 				{
-					p_handles[i]->format_title(NULL, buffer, to, NULL);
+					p_handles[i]->format_title(nullptr, buffer, to, nullptr);
 					if (b_show_empty || pfc::strlen_max(buffer, 1))
 					{
 						pp_out[k].m_handle = p_handles[i];

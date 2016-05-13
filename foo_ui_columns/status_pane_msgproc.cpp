@@ -11,7 +11,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			ShowWindow(m_volume_control.create(wnd), SW_SHOWNORMAL);
 
 			m_font = cui::fonts::helper(g_guid_font).get_font();
-			m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : NULL;
+			m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
 
 			update_playlist_data();
 			static_api_ptr_t<playback_control> play_api;
@@ -30,13 +30,13 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		if (m_theme)
 		{
 			CloseThemeData(m_theme);
-			m_theme = NULL;
+			m_theme = nullptr;
 		}
 		break;
 	case WM_THEMECHANGED:
 		{
 			if (m_theme) CloseThemeData(m_theme);
-			m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : 0;
+			m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
 		}
 		break;
 	case WM_ERASEBKGND:
@@ -47,7 +47,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			if (!(lpwp->flags & SWP_NOSIZE))
 			{
 				t_size vol_cy = GetSystemMetrics(SM_CYSMICON)*3/2, vol_cx = vol_cy * 4;
-				SetWindowPos(m_volume_control.get_wnd(), NULL, lpwp->cx - vol_cx - 4, 2+(lpwp->cy-vol_cy)/2, vol_cx, vol_cy, SWP_NOZORDER);
+				SetWindowPos(m_volume_control.get_wnd(), nullptr, lpwp->cx - vol_cx - 4, 2+(lpwp->cy-vol_cy)/2, vol_cx, vol_cy, SWP_NOZORDER);
 				//on_size(lpwp->cx, lpwp->cy);
 			}
 		}				
@@ -106,7 +106,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			{
 				{
 					RECT rc_item = rc_top;
-					ui_helpers::text_out_colours_tab(dc, m_menu_text, -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, NULL, true, true, NULL);
+					ui_helpers::text_out_colours_tab(dc, m_menu_text, -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, nullptr, true, true, nullptr);
 				}
 			}
 			else
@@ -119,7 +119,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 					RECT rc_item = rc_top;
 					//rc_item.right = 4 + placeholder_len + placeholder2_len;
 					pfc::string_formatter formatter;
-					ui_helpers::text_out_colours_tab(dc, formatter << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, NULL, true, true, NULL);
+					ui_helpers::text_out_colours_tab(dc, formatter << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, nullptr, true, true, nullptr);
 				}
 				if (playing1.get_length())
 				{

@@ -11,7 +11,7 @@ const char * strchr_n(const char * src, char c, unsigned len)
 		if (*ptr == c) return ptr;
 		ptr++;
 	}
-	return NULL;
+	return nullptr;
 }
 
 void colour::set(COLORREF new_colour)
@@ -139,12 +139,12 @@ string_pn::string_pn(metadb_handle_list_cref handles, const char * format, const
 		{
 			if (n == 0)
 			{
-				handles[0]->format_title(0, a, to_temp, 0);
+				handles[0]->format_title(nullptr, a, to_temp, nullptr);
 				use = true;
 			}
 			else
 			{
-				handles[n]->format_title(0, b, to_temp, 0);
+				handles[n]->format_title(nullptr, b, to_temp, nullptr);
 				if (strcmp(a, b))
 				{
 					use = false;
@@ -188,7 +188,7 @@ void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr> &
 			n++;
 		}
 	}
-	if (uGetOpenFileName(wnd, ext, def_index, "fpl", "Save playlist...", NULL, name, TRUE))
+	if (uGetOpenFileName(wnd, ext, def_index, "fpl", "Save playlist...", nullptr, name, TRUE))
 	{
 		try{
 			abort_callback_dummy p_abort;

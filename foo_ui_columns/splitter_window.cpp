@@ -55,9 +55,9 @@ void splitter_window_impl::destroy_children()
 			//			stream_writer_memblock_ref blah(pal->m_child_data);
 			//			pal->m_child->get_config(&blah);
 			pal->m_child->destroy_window();
-			pal->m_wnd_child = NULL;
+			pal->m_wnd_child = nullptr;
 			DestroyWindow(pal->m_wnd);
-			pal->m_wnd = NULL;
+			pal->m_wnd = nullptr;
 			pal->m_child.release();
 			pal->m_interface.release();
 			//pal->m_container.m_this.release();
@@ -185,7 +185,7 @@ void splitter_window_impl::refresh_children()
 			}
 		}
 		get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
-		RedrawWindow(get_wnd(), 0, 0, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
 	}
 }
 
@@ -197,7 +197,7 @@ void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
 	get_panels_sizes(width, height, sizes);
 	unsigned count = m_panels.get_count();
 
-	RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE);
+	RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 
 	HDWP dwp = BeginDeferWindowPos(m_panels.get_count());
 	if (dwp)
@@ -215,7 +215,7 @@ void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
 				unsigned cy = get_orientation() == horizontal ? height : size - get_panel_divider_size(n);
 
 				dwp = DeferWindowPos(dwp, m_panels[n]->m_wnd,
-					0,
+					nullptr,
 					x,
 					y,
 					cx,
@@ -227,7 +227,7 @@ void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
 		}
 		EndDeferWindowPos(dwp);
 	}
-	RedrawWindow(get_wnd(), NULL, NULL, RDW_UPDATENOW);
+	RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW);
 }
 
 void splitter_window_impl::on_size_changed()
@@ -776,7 +776,7 @@ bool splitter_window_impl::is_point_ours(HWND wnd_point, const POINT & pt_screen
 	return false;
 };
 
-splitter_window_impl::splitter_window_impl() : m_wnd(NULL), m_last_position(NULL),
+splitter_window_impl::splitter_window_impl() : m_wnd(nullptr), m_last_position(NULL),
 m_panel_dragging(NULL), m_panel_dragging_valid(false)
 {
 
@@ -1084,7 +1084,7 @@ uie::splitter_item_t * splitter_window_impl::get_panel(unsigned index) const
 	{
 		return m_panels[index]->create_splitter_item();
 	}
-	return NULL;
+	return nullptr;
 }
 
 unsigned splitter_window_impl::get_panel_count() const
@@ -1136,7 +1136,7 @@ void splitter_window_impl::splitter_host_impl::relinquish_ownership(HWND wnd)
 			}
 
 			DestroyWindow(p_ext->m_wnd);
-			p_ext->m_wnd = 0;
+			p_ext->m_wnd = nullptr;
 			p_ext->m_child.release();
 			m_this->m_panels.remove_by_idx(index);
 			m_this->on_size_changed();

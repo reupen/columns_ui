@@ -516,13 +516,13 @@ namespace pvt {
 
 						if (extra) {
 							titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items, false);
-							titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+							titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
 							pfc::string8 output;
 							m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
 						}
 
 						titleformat_hook_set_global<false, true> tf_hook_get_global(extra_items, false);
-						titleformat_hook_splitter_pt3 tf_hook(&extra ? &tf_hook_get_global : 0, date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+						titleformat_hook_splitter_pt3 tf_hook(&extra ? &tf_hook_get_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
 						m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp, m_column_data[index].m_sort_script, nullptr, play_control::display_level_none);
 					}
 
@@ -601,7 +601,7 @@ namespace pvt {
 		set_allow_header_rearrange(true);
 		
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, NULL));
+		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
 		m_artwork_manager = new artwork_reader_manager_ng_t;
 		m_artwork_manager->initialise();
 		m_artwork_manager->add_type(album_art_ids::cover_front);
@@ -626,7 +626,7 @@ namespace pvt {
 		RegisterDragDrop(get_wnd(), IDT_playlist.get_ptr());
 
 		if (g_windows.get_count() == 0)
-			g_global_mesage_window.create(NULL);
+			g_global_mesage_window.create(nullptr);
 		g_windows.add_item(this);
 
 		if (cfg_playlist_date)
@@ -750,7 +750,7 @@ namespace pvt {
 
 		menu_helpers::win32_auto_mnemonics(menu);
 
-		int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,get_wnd(),0);
+		int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,get_wnd(),nullptr);
 		DestroyMenu(menu);
 
 		if (cmd == IDM_ASC)
@@ -873,7 +873,7 @@ namespace pvt {
 			AppendMenu(menu,MF_STRING,ID_COPY,L"Copy");
 			if (playlist_utils::check_clipboard())
 				AppendMenu(menu,MF_STRING,ID_PASTE,L"Paste");
-			AppendMenu(menu,MF_SEPARATOR,0,NULL);
+			AppendMenu(menu,MF_SEPARATOR,0,nullptr);
 			if (p_manager_context.is_valid())
 			{
 				const keyboard_shortcut_manager::shortcut_type shortcuts[] = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
@@ -889,7 +889,7 @@ namespace pvt {
 			m_mainmenu_manager = p_manager_selection;
 			m_contextmenu_manager = p_manager_context;
 
-			int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,get_wnd(),0);
+			int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,get_wnd(),nullptr);
 			
 			m_status_text_override.release();
 
@@ -951,7 +951,7 @@ namespace pvt {
 
 		if (b_global) {
 			titleformat_hook_set_global<true, false> tf_hook_set_global(globals, false);
-			titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : 0, &tf_hook_date);
+			titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : nullptr, &tf_hook_date);
 			m_playlist_api->activeplaylist_item_format_title(index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
 		}
 
@@ -974,8 +974,8 @@ namespace pvt {
 			style_data_cell_info_t style_data_group = style_data_cell_info_t::g_create_default();
 			if (ptr.is_valid() && m_script_global_style.is_valid()) {
 				titleformat_hook_style_v2 tf_hook_style(style_data_group, item_index - i - 1, true);
-				titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
-				ptr->format_title(&tf_hook, temp, m_script_global_style, NULL);
+				titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+				ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
 			}
 			//count_display_groups > 0 => count_groups > 0
 			style_cache_manager::g_add_object(style_data_group, p_item->get_group(count_groups-i-1)->m_style_data);
@@ -984,8 +984,8 @@ namespace pvt {
 		for (i=0;i<count;i++)
 		{
 			{
-				titleformat_hook_splitter_pt3 tf_hook(b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
-				m_playlist_api->activeplaylist_item_format_title(index, &tf_hook, temp, m_column_data[i].m_display_script, NULL, playback_control::display_level_all);
+				titleformat_hook_splitter_pt3 tf_hook(b_global ? &tf_hook_get_global : nullptr, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+				m_playlist_api->activeplaylist_item_format_title(index, &tf_hook, temp, m_column_data[i].m_display_script, nullptr, playback_control::display_level_all);
 				p_out[i] = temp;
 			}
 
@@ -998,9 +998,9 @@ namespace pvt {
 				{
 					if (m_script_global_style.is_valid()) {
 						titleformat_hook_style_v2 tf_hook_style(style_data_item, item_index);
-						titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+						titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
 						m_playlist_api->activeplaylist_item_format_title(index,
-							&tf_hook, temp, m_script_global_style, 0, play_control::display_level_all);
+							&tf_hook, temp, m_script_global_style, nullptr, play_control::display_level_all);
 					}
 
 					colour_global_av = true;
@@ -1011,7 +1011,7 @@ namespace pvt {
 			{
 				if (m_column_data[i].m_style_script.is_valid()) {
 					titleformat_hook_style_v2 tf_hook_style(style_temp, item_index);
-					titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : 0, b_date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+					titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
 					m_playlist_api->activeplaylist_item_format_title(index, &tf_hook, temp, m_column_data[i].m_style_script, 
 						nullptr, play_control::display_level_all);
 				}
@@ -1058,7 +1058,7 @@ namespace pvt {
 			{
 				metadb_handle_ptr ptr;
 				if (m_playlist_api->activeplaylist_get_item_handle(ptr, i+start))
-					ptr->format_title(NULL, temp, m_scripts[j], NULL);
+					ptr->format_title(nullptr, temp, m_scripts[j], nullptr);
 
 				items[i].m_groups[j]=temp;
 			}

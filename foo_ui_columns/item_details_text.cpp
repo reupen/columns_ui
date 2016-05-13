@@ -74,7 +74,7 @@ void g_get_text_font_info(const font_change_data_list_t & p_data, font_change_in
 		//p_info.m_fonts.set_count (count);
 		p_info.m_font_changes.set_count(count);
 
-		HDC dc = GetDC(NULL);
+		HDC dc = GetDC(nullptr);
 		LOGFONT lf_base;
 		memset(&lf_base, 0, sizeof(lf_base));
 
@@ -122,7 +122,7 @@ void g_get_text_font_info(const font_change_data_list_t & p_data, font_change_in
 		}
 		p_info.m_fonts.remove_mask(bit_array_not(bit_array_table(maskKeepFonts.get_ptr(), maskKeepFonts.get_count(), true)));
 
-		ReleaseDC(NULL, dc);
+		ReleaseDC(nullptr, dc);
 	}
 }
 
@@ -358,7 +358,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
 		t_size fontChangesCount = p_font_data.m_font_changes.get_count();
 		t_size fontPtr = 0;
 		bool b_fontChanged = false;
-		HFONT fnt_old = NULL;
+		HFONT fnt_old = nullptr;
 
 		pfc::string8 text = text_new;
 		text_new.reset();
@@ -417,7 +417,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
 
 				character_extents.increase_size(length_chars_no_colours);
 				//widths.set_size(length_chars_no_colours);
-				pGetTextExtentExPoint.run(dc, &text[ptr], ptrThisCount, ptrTextWidth > max_width ? 0 : max_width - ptrTextWidth, b_word_wrapping ? &max_chars : NULL, character_extents.get_ptr() + ptrCharacterExtent, &sz2, NULL, false);
+				pGetTextExtentExPoint.run(dc, &text[ptr], ptrThisCount, ptrTextWidth > max_width ? 0 : max_width - ptrTextWidth, b_word_wrapping ? &max_chars : nullptr, character_extents.get_ptr() + ptrCharacterExtent, &sz2, nullptr, false);
 
 				if ((unsigned)max_chars < length_chars_no_colours)
 				{
@@ -455,7 +455,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
 
 				character_extents.increase_size(length_chars_no_colours);
 				character_extents.fill_null();
-				pGetTextExtentExPoint.run(dc, &text[ptr], ptrThisCount, ptrTextWidth > max_width ? 0 : max_width - ptrTextWidth, b_word_wrapping ? &max_chars : NULL, character_extents.get_ptr() + ptrCharacterExtent, &sz2, NULL, false);
+				pGetTextExtentExPoint.run(dc, &text[ptr], ptrThisCount, ptrTextWidth > max_width ? 0 : max_width - ptrTextWidth, b_word_wrapping ? &max_chars : nullptr, character_extents.get_ptr() + ptrCharacterExtent, &sz2, nullptr, false);
 
 #if 0
 				{
@@ -746,7 +746,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 		}
 	}
 	bool b_fontChanged = false;
-	HFONT fnt_old = NULL;
+	HFONT fnt_old = nullptr;
 
 
 	if (fontPtr)
@@ -772,7 +772,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 					do { ptrC--; } while (ptrC >= rawText && *ptrC != '\x3');
 					if (ptrC >= rawText &&  *ptrC == '\x3')
 					{
-						ui_helpers::text_out_colours_tab(dc, ptrC, ptrCEnd - ptrC + 1, 0, 0, &rc_line, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, NULL, false, false);
+						ui_helpers::text_out_colours_tab(dc, ptrC, ptrCEnd - ptrC + 1, 0, 0, &rc_line, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, nullptr, false, false);
 					}
 					break;
 				}
@@ -836,7 +836,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 			RECT rc_font = rc_line;
 			int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
 			rc_font.bottom -= 2;//extra/4;
-			BOOL ret = ui_helpers::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, NULL, false, false, &width);
+			BOOL ret = ui_helpers::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, nullptr, false, false, &width);
 			rc_line.left = width; //width == position actually!!
 			ptr += ptrThisCount;
 			ptrRemaining -= ptrThisCount;
@@ -847,7 +847,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 			RECT rc_font = rc_line;
 			int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
 			rc_font.bottom -= 2;
-			ui_helpers::text_out_colours_tab(dc, ptr, ptrRemaining, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, NULL, false, false);
+			ui_helpers::text_out_colours_tab(dc, ptr, ptrRemaining, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, nullptr, false, false);
 		}
 
 #if 0

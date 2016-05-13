@@ -3,8 +3,8 @@
 
 HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)
 {
-	if (ppvObject == NULL) return E_INVALIDARG;
-	*ppvObject = NULL;
+	if (ppvObject == nullptr) return E_INVALIDARG;
+	*ppvObject = nullptr;
 	if (riid == IID_IUnknown) { AddRef(); *ppvObject = (IUnknown*)this; return S_OK; }
 	else if (riid == IID_IDropTarget) { AddRef(); *ppvObject = (IDropTarget*)this; return S_OK; }
 	else return E_NOINTERFACE;
@@ -186,10 +186,10 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
 			uAppendMenu(menu, (MF_STRING), ID_DROP, "&Add files here");
 			uAppendMenu(menu, (MF_STRING), ID_NEW_PLAYLIST, "&Add files to new playlist");
-			uAppendMenu(menu, MF_SEPARATOR, 0, 0);
+			uAppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 			uAppendMenu(menu, MF_STRING, ID_CANCEL, "&Cancel");
 
-			int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, p_list->get_wnd(), 0);
+			int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, p_list->get_wnd(), nullptr);
 			DestroyMenu(menu);
 
 			if (cmd)
@@ -266,7 +266,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 					//					memset(&sm, 0, sizeof(0));
 
 					fe.cfFormat = CF_HDROP;
-					fe.ptd = NULL;
+					fe.ptd = nullptr;
 					fe.dwAspect = DVASPECT_CONTENT;
 					fe.lindex = -1;
 					fe.tymed = TYMED_HGLOBAL;
@@ -351,5 +351,5 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 playlists_tabs_extension::playlists_tabs_drop_target::playlists_tabs_drop_target(playlists_tabs_extension * p_wnd) : drop_ref_count(0), p_list(p_wnd), m_last_rmb(false), m_is_accepted_type(false)
 {
 	last_over.x = 0; last_over.y = 0;
-	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC);
+	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC);
 }

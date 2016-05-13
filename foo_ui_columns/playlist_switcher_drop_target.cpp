@@ -6,7 +6,7 @@ bool g_query_dataobj_supports_format(CLIPFORMAT cf, IDataObject * pDataObj )
 	FORMATETC   fe;
 
 	fe.cfFormat = cf;
-	fe.ptd = NULL;
+	fe.ptd = nullptr;
 	fe.dwAspect = DVASPECT_CONTENT;  
 	fe.lindex = -1;
 	fe.tymed = TYMED_HGLOBAL; 
@@ -24,7 +24,7 @@ bool g_get_folder_name( IDataObject * pDataObj, pfc::string8 & p_out)
 	//memset(&sm, 0, sizeof(0));
 
 	fe.cfFormat = CF_HDROP;
-	fe.ptd = NULL;
+	fe.ptd = nullptr;
 	fe.dwAspect = DVASPECT_CONTENT;  
 	fe.lindex = -1;
 	fe.tymed = TYMED_HGLOBAL;       
@@ -65,8 +65,8 @@ bool g_get_folder_name( IDataObject * pDataObj, pfc::string8 & p_out)
 
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)
 {
-	if (ppvObject == NULL) return E_INVALIDARG;
-	*ppvObject = NULL;
+	if (ppvObject == nullptr) return E_INVALIDARG;
+	*ppvObject = nullptr;
 	if (riid == IID_IUnknown) {AddRef();*ppvObject = (IUnknown*)this;return S_OK;}
 	else if (riid == IID_IDropTarget) {AddRef();*ppvObject = (IDropTarget*)this;return S_OK;}
 	else return E_NOINTERFACE;
@@ -474,5 +474,5 @@ m_last_rmb(false), m_window(p_window), m_is_playlists(false), m_is_accepted_type
 		m_playlist_api = standard_api_create_t<playlist_manager_v4>();
 	}
 	catch (exception_service_extension_not_found const &) {};
-	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER);
+	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 }

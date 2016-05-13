@@ -290,7 +290,7 @@ album_art_extractor_instance_ptr artwork_panel::g_get_album_art_extractor_instan
 	album_art_extractor::ptr api;
 	if (artwork_panel::g_get_album_art_extractor_interface(api, path))
 	{
-		return api->open(NULL, path, p_abort);
+		return api->open(nullptr, path, p_abort);
 	}
 	throw exception_album_art_not_found();
 }
@@ -321,7 +321,7 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
 					for (i = 0; i<count && !b_found; i++)
 					{
 						pfc::string8 path;
-						if (m_handle->format_title_legacy(NULL, path, to[i], NULL))
+						if (m_handle->format_title_legacy(nullptr, path, to[i], nullptr))
 						{
 							const char * image_extensions[] = { "jpg", "jpeg", "gif", "bmp", "png" };
 

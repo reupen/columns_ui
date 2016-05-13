@@ -33,7 +33,7 @@ void g_get_panel_list(uie::window_info_list_simple & p_out, uie::window_host_ptr
 
 void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple & panels, UINT base)
 {
-	HMENU popup = 0;
+	HMENU popup = nullptr;
 	unsigned n, count=panels.get_count();
 	for(n=0;n<count;n++)
 	{
@@ -63,7 +63,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 	//console::print("g_run_live_edit_contextmenu");
 	//if (!m_trans_fill.get_wnd())
 	{
-		HWND wnd_over = p_overlay.create(wnd, 0, ui_helpers::window_position_t(rc_overlay));
+		HWND wnd_over = p_overlay.create(wnd, nullptr, ui_helpers::window_position_t(rc_overlay));
 		HWND wnd_root = (GetAncestor(wnd, GA_ROOT));
 		//HWND wnd_next = GetWindow(wnd_root, GW_HWNDNEXT);
 		WindowEnum_t WindowEnum(wnd_root);
@@ -116,7 +116,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 
 		if (p_container->get_panel_count() < p_container->get_maximum_panel_count())
 		{
-			uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, NULL);
+			uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, nullptr);
 			p_container->get_name(temp);
 			uAppendMenu(menu, MF_STRING|MF_GRAYED, (UINT_PTR)0, temp);
 
@@ -124,7 +124,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 			g_append_menu_panels(menu_add, panels, ID_PARENT_ADD_BASE);
 			AppendMenu(menu, MF_STRING|MF_POPUP, (UINT_PTR)menu_add, L"Add panel");
 		}
-		unsigned cmd = (unsigned)TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,wnd,0);
+		unsigned cmd = (unsigned)TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,wnd,nullptr);
 		p_overlay.destroy();
 		{
 			{
@@ -237,7 +237,7 @@ BOOL uDrawPanelTitle(HDC dc, const RECT * rc_clip, const char * text, int len, b
 		*/
 		//		HFONT old = SelectFont(dc, fnt_menu);
 
-		uExtTextOut(dc, 5+rc_clip->left, extra, ETO_CLIPPED, rc_clip, text, len, 0);
+		uExtTextOut(dc, 5+rc_clip->left, extra, ETO_CLIPPED, rc_clip, text, len, nullptr);
 		//		SelectFont(dc, old);
 
 		return TRUE;

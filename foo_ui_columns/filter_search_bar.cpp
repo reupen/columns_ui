@@ -35,7 +35,7 @@ namespace filter_panel {
 			service_ptr_t<titleformat_object> to;
 			static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
 			{
-				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(handles, to, NULL);
+				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(handles, to, nullptr);
 			}
 		}
 		playlist_api->playlist_add_items(index, handles, bit_array_false());
@@ -68,9 +68,9 @@ namespace filter_panel {
 		p_this->on_show_clear_button_change();
 	}
 
-	filter_search_bar::filter_search_bar() : m_search_editbox(NULL), m_favourite_state(false),
-		m_query_timer_active(false), m_show_clear_button(cfg_showsearchclearbutton), m_wnd_last_focused(NULL),
-		m_imagelist(NULL), m_combo_cx(0), m_combo_cy(0), m_toolbar_cx(0), m_toolbar_cy(0),
+	filter_search_bar::filter_search_bar() : m_search_editbox(nullptr), m_favourite_state(false),
+		m_query_timer_active(false), m_show_clear_button(cfg_showsearchclearbutton), m_wnd_last_focused(nullptr),
+		m_imagelist(nullptr), m_combo_cx(0), m_combo_cy(0), m_toolbar_cx(0), m_toolbar_cy(0),
 		m_wnd_toolbar(nullptr), m_proc_search_edit(nullptr) {};
 
 	void g_get_search_bar_sibling_streams(filter_search_bar const * p_serach_bar, pfc::list_t<filter_panel_t::filter_stream_t::ptr> & p_out)
@@ -196,14 +196,14 @@ namespace filter_panel {
 	{
 		//RECT rc_tbb = {0};
 		//SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 0, (LPARAM)(&rc_tbb));
-		SetWindowPos(m_search_editbox, NULL, 0, 0, cx - m_toolbar_cx, 200, SWP_NOZORDER);
-		SetWindowPos(m_wnd_toolbar, NULL, cx - m_toolbar_cx, 0, m_toolbar_cx, cy, SWP_NOZORDER);
+		SetWindowPos(m_search_editbox, nullptr, 0, 0, cx - m_toolbar_cx, 200, SWP_NOZORDER);
+		SetWindowPos(m_wnd_toolbar, nullptr, cx - m_toolbar_cx, 0, m_toolbar_cx, cy, SWP_NOZORDER);
 	}
 	void filter_search_bar::on_search_editbox_change()
 	{
 		if (m_query_timer_active)
 			KillTimer(get_wnd(), TIMER_QUERY);
-		SetTimer(get_wnd(), TIMER_QUERY, 500, NULL);
+		SetTimer(get_wnd(), TIMER_QUERY, 500, nullptr);
 		m_query_timer_active = true;
 		update_favourite_icon();
 	}
@@ -298,7 +298,7 @@ namespace filter_panel {
 			if (m_imagelist)
 			{
 				ImageList_Destroy(m_imagelist);
-				m_imagelist = NULL;
+				m_imagelist = nullptr;
 			}
 			break;
 		case WM_TIMER:
@@ -399,7 +399,7 @@ namespace filter_panel {
 					PostMessage(m_search_editbox, CB_SETEDITSEL, 0, MAKELPARAM(0, -1));
 					break;
 				case CBN_KILLFOCUS:
-					m_wnd_last_focused = NULL;
+					m_wnd_last_focused = nullptr;
 					break;
 				}
 				break;
@@ -467,13 +467,13 @@ namespace filter_panel {
 
 		m_search_editbox = CreateWindowEx(WS_EX_CLIENTEDGE, WC_COMBOBOX, L"" /*pfc::stringcvt::string_os_from_utf8("").get_ptr()*/, WS_CHILD | WS_CLIPSIBLINGS | ES_LEFT |
 			WS_VISIBLE | WS_CLIPCHILDREN | CBS_DROPDOWN | CBS_AUTOHSCROLL | WS_TABSTOP | WS_VSCROLL, 0,
-			0, 100, 200, get_wnd(), HMENU(id_edit), core_api::get_my_instance(), 0);
+			0, 100, 200, get_wnd(), HMENU(id_edit), core_api::get_my_instance(), nullptr);
 
 		ComboBox_SetMinVisible(m_search_editbox, 25);
 
-		m_wnd_toolbar = CreateWindowEx(WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, 0,
+		m_wnd_toolbar = CreateWindowEx(WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, nullptr,
 			WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TBSTYLE_FLAT | TBSTYLE_LIST | TBSTYLE_TRANSPARENT | TBSTYLE_TOOLTIPS | CCS_NORESIZE | CCS_NOPARENTALIGN | CCS_NODIVIDER,
-			0, 0, 0, 0, get_wnd(), (HMENU)id_toolbar, core_api::get_my_instance(), NULL);
+			0, 0, 0, 0, get_wnd(), (HMENU)id_toolbar, core_api::get_my_instance(), nullptr);
 		//SetWindowTheme(m_wnd_toolbar, L"SearchButton", NULL);
 
 		const unsigned cx = GetSystemMetrics(SM_CXSMICON), cy = GetSystemMetrics(SM_CYSMICON);

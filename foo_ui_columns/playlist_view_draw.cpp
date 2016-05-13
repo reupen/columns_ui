@@ -65,15 +65,15 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 
 	static_api_ptr_t<playlist_manager> playlist_api;
 
-	HDC hdc_mem = 0;
+	HDC hdc_mem = nullptr;
 	RECT rect, item, item_area, bk, draw/*,text*/;
 	GetClientRect(wnd_playlist, &rect);
 	rect.top += get_header_height();
 
 	int item_height = get_item_height();
 
-	HBRUSH br = 0;
-	HBITMAP hbm_mem = 0, hbm_old = 0;
+	HBRUSH br = nullptr;
+	HBITMAP hbm_mem = nullptr, hbm_old = nullptr;
 
 	pfc::array_t<int, pfc::alloc_fast_aggressive> widths;
 	int total_width = get_column_widths(widths);
@@ -162,7 +162,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 		{
 			if (IsThemeBackgroundPartiallyTransparent(m_theme, LVP_LISTITEM, theme_state))
 				DrawThemeParentBackground(get_wnd(), hdc_mem, &item);
-			DrawThemeBackground(m_theme, hdc_mem, LVP_LISTITEM, theme_state, &item, NULL);
+			DrawThemeBackground(m_theme, hdc_mem, LVP_LISTITEM, theme_state, &item, nullptr);
 		}
 
 		//int total = playlist_api->activeplaylist_get_item_count();
@@ -230,7 +230,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 				}
 
 
-				if (br) { DeleteObject(br); br = 0; }
+				if (br) { DeleteObject(br); br = nullptr; }
 
 				//render text
 				//if (b_themed)
@@ -244,7 +244,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 					HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_left);
 					HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
-					MoveToEx(hdc_mem, draw.left, draw.top, 0);
+					MoveToEx(hdc_mem, draw.left, draw.top, nullptr);
 					LineTo(hdc_mem, draw.left, draw.bottom);
 					SelectObject(hdc_mem, pen_old);
 					DeleteObject(pen);
@@ -254,7 +254,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 					HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_top);
 					HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
-					MoveToEx(hdc_mem, draw.left, draw.top, 0);
+					MoveToEx(hdc_mem, draw.left, draw.top, nullptr);
 					LineTo(hdc_mem, draw.right, draw.top);
 					SelectObject(hdc_mem, pen_old);
 					DeleteObject(pen);
@@ -264,7 +264,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 					HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_right);
 					HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
-					MoveToEx(hdc_mem, draw.right - 1, draw.top, 0);
+					MoveToEx(hdc_mem, draw.right - 1, draw.top, nullptr);
 					LineTo(hdc_mem, draw.right - 1, draw.bottom);
 					SelectObject(hdc_mem, pen_old);
 					DeleteObject(pen);
@@ -274,7 +274,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 					HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_bottom);
 					HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
-					MoveToEx(hdc_mem, draw.right - 1, draw.bottom - 1, 0);
+					MoveToEx(hdc_mem, draw.right - 1, draw.bottom - 1, nullptr);
 					LineTo(hdc_mem, draw.left - 1, draw.bottom - 1);
 					SelectObject(hdc_mem, pen_old);
 					DeleteObject(pen);

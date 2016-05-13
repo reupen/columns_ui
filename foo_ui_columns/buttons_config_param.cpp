@@ -140,8 +140,8 @@ void toolbar_extension::config_param::import_from_file(const char * p_path, bool
 
 void toolbar_extension::config_param::on_selection_change(t_size index)
 {
-	m_selection = index != pfc_infinite && index < m_buttons.get_count() ? &m_buttons[index] : NULL;
-	m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : 0;
+	m_selection = index != pfc_infinite && index < m_buttons.get_count() ? &m_buttons[index] : nullptr;
+	m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
 	pfc::string8 temp;
 	if (m_selection)
 	{
@@ -198,7 +198,7 @@ void toolbar_extension::config_param::refresh_buttons_list_items(t_size index, t
 
 BOOL CALLBACK toolbar_extension::config_param::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	config_param * ptr = NULL;
+	config_param * ptr = nullptr;
 	switch (msg)
 	{
 	case WM_INITDIALOG:
@@ -261,7 +261,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 			}
 		}
 
-		SetWindowPos(m_child, 0, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, SWP_NOZORDER);
+		SetWindowPos(m_child, nullptr, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, SWP_NOZORDER);
 		//SetWindowPos(wnd_tab,HWND_BOTTOM,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 
 		ShowWindow(m_child, SW_NORMAL);
@@ -437,12 +437,12 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 			AppendMenu(menu, MF_STRING, IDM_EXPORT, _T("Save to file (embed images)..."));
 			AppendMenu(menu, MF_STRING, IDM_SAVE, _T("Save to file (store image paths)..."));
 
-			int cmd = TrackPopupMenu(menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, 0);
+			int cmd = TrackPopupMenu(menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
 			DestroyMenu(menu);
 			if (cmd == IDM_SAVE)
 			{
 				pfc::string8 path;
-				if (uGetOpenFileName(wnd, "fcb files (*.fcb)|*.fcb|All files (*.*)|*.*", 0, "fcb", "Save as", NULL, path, TRUE))
+				if (uGetOpenFileName(wnd, "fcb files (*.fcb)|*.fcb|All files (*.*)|*.*", 0, "fcb", "Save as", nullptr, path, TRUE))
 				{
 					export_to_file(path, true);
 				}
@@ -450,7 +450,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 			else if (cmd == IDM_EXPORT)
 			{
 				pfc::string8 path;
-				if (uGetOpenFileName(wnd, "fcb files (*.fcb)|*.fcb|All files (*.*)|*.*", 0, "fcb", "Save as", NULL, path, TRUE))
+				if (uGetOpenFileName(wnd, "fcb files (*.fcb)|*.fcb|All files (*.*)|*.*", 0, "fcb", "Save as", nullptr, path, TRUE))
 				{
 					export_to_file(path);
 				}
@@ -458,7 +458,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 			else if (cmd == IDM_LOAD || cmd == IDM_ADD)
 			{
 				pfc::string8 path;
-				if (uGetOpenFileName(wnd, "fcb Files (*.fcb)|*.fcb|All Files (*.*)|*.*", 0, "fcb", "Open file", NULL, path, FALSE))
+				if (uGetOpenFileName(wnd, "fcb Files (*.fcb)|*.fcb|All Files (*.*)|*.*", 0, "fcb", "Open file", nullptr, path, FALSE))
 				{
 					m_button_list.remove_items(bit_array_true(), false);
 
@@ -546,7 +546,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 			case TCN_SELCHANGE:
 			{
 				m_active = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB));
-				m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : 0;
+				m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
 				SendMessage(m_child, MSG_BUTTON_CHANGE, 0, 0);
 			}
 			break;

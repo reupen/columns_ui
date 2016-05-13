@@ -42,7 +42,7 @@ void playlist_view::process_keydown(int offset, bool alt_down, bool prevent_redr
 	if (prevent_redrawing)
 	{
 		SendMessage(wnd_playlist, WM_SETREDRAW, TRUE, 0);
-		RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 }
 

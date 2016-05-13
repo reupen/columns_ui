@@ -30,8 +30,8 @@ public:
 					else
 						message << "Service Pack " << osvi.wServicePackMajor;
 					message << " is not supported by Columns UI. Please upgrade to Service Pack 1 or newer and try again.\n\nOtherwise, uninstall the Columns UI component to return to the Default User Interface.",
-						MessageBox(NULL, uT(message), _T("Columns UI - Unsupported operating system"), MB_OK | MB_ICONEXCLAMATION);
-					return NULL;
+						MessageBox(nullptr, uT(message), _T("Columns UI - Unsupported operating system"), MB_OK | MB_ICONEXCLAMATION);
+					return nullptr;
 
 				}
 			}
@@ -55,7 +55,7 @@ public:
 		wc.style = CS_DBLCLKS;
 		wc.hInstance = core_api::get_my_instance();
 		wc.hIcon = static_api_ptr_t<ui_control>()->get_main_icon();//g_main_icon;
-		wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+		wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wc.hbrBackground = (HBRUSH)(COLOR_BTNFACE + 1);
 		wc.lpszClassName = main_window_class_name;
 
@@ -83,7 +83,7 @@ public:
 		g_colours_fonts_imported = true;
 
 		g_main_window = CreateWindowEx(main_window::config_get_transparency_enabled() ? WS_EX_LAYERED : 0 /*WS_EX_TOOLWINDOW*/, main_window_class_name, _T("foobar2000"), WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
-			WS_THICKFRAME, left, top, cx, cy, 0, 0, core_api::get_my_instance(), NULL);
+			WS_THICKFRAME, left, top, cx, cy, nullptr, nullptr, core_api::get_my_instance(), nullptr);
 
 		main_window::on_transparency_enabled_change();
 
@@ -109,7 +109,7 @@ public:
 		if (g_status_pane.get_wnd()) ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
 		g_layout_window.show_window();
 
-		RedrawWindow(g_main_window, 0, 0, RDW_UPDATENOW | RDW_ALLCHILDREN);
+		RedrawWindow(g_main_window, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
 
 		if (main_window::config_get_is_first_run())
 			SendMessage(g_main_window, MSG_RUN_INITIAL_SETUP, NULL, NULL);
@@ -143,10 +143,10 @@ public:
 			UnregisterClass(main_window_class_name, core_api::get_my_instance());
 			status_bar::volume_popup_window.class_release();
 		}
-		g_main_window = 0;
-		g_status = 0;
-		if (g_imagelist) { ImageList_Destroy(g_imagelist); g_imagelist = 0; }
-		if (g_icon) DestroyIcon(g_icon); g_icon = 0;
+		g_main_window = nullptr;
+		g_status = nullptr;
+		if (g_imagelist) { ImageList_Destroy(g_imagelist); g_imagelist = nullptr; }
+		if (g_icon) DestroyIcon(g_icon); g_icon = nullptr;
 		status_bar::destroy_icon();
 
 		font_cleanup();
@@ -163,8 +163,8 @@ public:
 				ShowWindow(g_main_window, SW_RESTORE);
 				if ((GetWindowLong(g_main_window, GWL_EXSTYLE) & WS_EX_LAYERED))
 					RedrawWindow(g_main_window,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW);
 			}
 			SetForegroundWindow(g_main_window);

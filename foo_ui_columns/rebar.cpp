@@ -24,8 +24,8 @@ void destroy_rebar(bool save_config)
 			cfg_band_cache.set_band_cache(g_rebar_window->cache);
 		}
 		delete g_rebar_window;
-		g_rebar_window = 0;
-		g_rebar = 0;
+		g_rebar_window = nullptr;
+		g_rebar = nullptr;
 	}
 }
 
@@ -45,7 +45,7 @@ void create_rebar()
 				if (!g_rebar)
 				{
 					delete g_rebar_window;
-					g_rebar_window = 0;
+					g_rebar_window = nullptr;
 				}
 			}
 		}
@@ -197,7 +197,7 @@ void cfg_band_cache_t::reset()
 	entries.remove_all();
 }
 
-rebar_band_info::rebar_band_info(GUID id, unsigned h) : guid(id), /*guid2(id), */wnd(0), p_ext(0), width(h), rbbs_break(0) {};
+rebar_band_info::rebar_band_info(GUID id, unsigned h) : guid(id), /*guid2(id), */wnd(nullptr), p_ext(nullptr), width(h), rbbs_break(0) {};
 
 
 void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback & p_abort)
@@ -339,7 +339,7 @@ void rebar_info::set_rebar_info(rebar_info & in)
 rebar_band_info * rebar_info::find_by_wnd(HWND wnd)
 {
 	unsigned count = get_count(),n;
-	rebar_band_info * rv = 0;
+	rebar_band_info * rv = nullptr;
 	for (n=0; n<count;n++)
 	{
 		if (wnd == get_item(n)->wnd) {rv = get_item(n); break;}
@@ -508,7 +508,7 @@ public:
 
 	virtual bool is_available()const
 	{
-		return g_rebar_window != 0;
+		return g_rebar_window != nullptr;
 	}
 
 	virtual unsigned get_supported_types()const
@@ -609,21 +609,21 @@ public:
 ui_extension::window_host_factory_single<ui_ext_host_rebar> g_ui_ext_host_rebar;
 
 
-rebar_window::rebar_window() : wnd_rebar(0) {};
+rebar_window::rebar_window() : wnd_rebar(nullptr) {};
 rebar_window::~rebar_window() {};
 
 HWND rebar_window::init(rebar_info & new_bands)
 {
-	HWND rv = 0;
+	HWND rv = nullptr;
 	
 	bands.set_rebar_info(new_bands);
 	
 	if (!wnd_rebar) 
 	{
-		rv = wnd_rebar = CreateWindowEx( WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT, REBARCLASSNAME, NULL, WS_BORDER |  WS_CHILD | 
+		rv = wnd_rebar = CreateWindowEx( WS_EX_TOOLWINDOW|WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr, WS_BORDER |  WS_CHILD | 
 			WS_CLIPCHILDREN |  WS_CLIPSIBLINGS |  RBS_VARHEIGHT |  RBS_DBLCLKTOGGLE | RBS_AUTOSIZE |
 			RBS_BANDBORDERS |  CCS_NODIVIDER |  CCS_NOPARENTALIGN | 0, 0, 0, 0, 0, 
-			g_main_window,  (HMENU)ID_REBAR,  core_api::get_my_instance(),  NULL);
+			g_main_window,  (HMENU)ID_REBAR,  core_api::get_my_instance(),  nullptr);
 		//SetWindowTheme(wnd_rebar, L"Default", NULL);
 	}
 
@@ -774,8 +774,8 @@ bool rebar_window::set_menu_focus()
 
 void rebar_window::on_themechanged()
 {
-	SetWindowPos(wnd_rebar, 0, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
-	RedrawWindow(wnd_rebar, 0, 0, RDW_INVALIDATE|RDW_FRAME|RDW_ALLCHILDREN);
+	SetWindowPos(wnd_rebar, nullptr, 0, 0, 0, 0, SWP_NOMOVE|SWP_NOZORDER|SWP_NOSIZE|SWP_FRAMECHANGED);
+	RedrawWindow(wnd_rebar, nullptr, nullptr, RDW_INVALIDATE|RDW_FRAME|RDW_ALLCHILDREN);
 }
 
 void rebar_window::save_bands()
@@ -878,7 +878,7 @@ void rebar_window::destroy_bands()
 				}
 				catch (const pfc::exception &) {};
 				p_ext->destroy_window();
-				bands[n]->wnd=0;
+				bands[n]->wnd=nullptr;
 				p_ext.release();
 			}
 		}
@@ -889,7 +889,7 @@ void rebar_window::destroy()
 {
 	destroy_bands();
 	DestroyWindow(wnd_rebar);
-	wnd_rebar=0;
+	wnd_rebar=nullptr;
 }
 
 void rebar_window::update_bands()

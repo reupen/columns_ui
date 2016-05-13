@@ -20,7 +20,7 @@ void toolbar_extension::button::custom_image::get_path(pfc::string8 & p_out) con
 	bool b_relative_to_drive = !b_absolute && m_path.get_ptr()[0] == '\\';
 
 	pfc::string8 fb2kexe;
-	uGetModuleFileName(NULL, fb2kexe);
+	uGetModuleFileName(nullptr, fb2kexe);
 	//pfc::string8 fullPath;
 
 	if (b_relative_to_drive)

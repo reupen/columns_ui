@@ -180,7 +180,7 @@ class tab_layout_new : public preferences_tab
 		else
 			sz_text = "<unknown>";
 
-		HTREEITEM ti_item = NULL;
+		HTREEITEM ti_item = nullptr;
 
 		if (ti_item = insert_item_in_tree_view(wnd_tree, sz_text, (LPARAM)p_node.get_ptr(), ti_parent, ti_after))
 		{
@@ -448,7 +448,7 @@ class tab_layout_new : public preferences_tab
 		{
 			{
 				node * p_node = (node*)item.lParam;
-				node * p_parent_node = NULL;
+				node * p_parent_node = nullptr;
 				if (ti_parent && TreeView_GetItem(wnd_tv,&itemparent))
 					p_parent_node = (node*)itemparent.lParam;
 
@@ -965,7 +965,7 @@ class tab_layout_new : public preferences_tab
 						if (param->itemNew.hItem)
 						{
 							node * p_node = (node*)param->itemNew.lParam;
-							node * p_parent_node = NULL;
+							node * p_parent_node = nullptr;
 
 							HTREEITEM ti_parent = TreeView_GetParent(param->hdr.hwndFrom, param->itemNew.hItem);
 
@@ -1079,7 +1079,7 @@ class tab_layout_new : public preferences_tab
 							unsigned index = tree_view_get_child_index(wnd_tv, ti.hItem);
 
 							node * p_node = (node*)item.lParam;
-							node * p_parent_node = NULL;
+							node * p_parent_node = nullptr;
 
 							service_ptr_t<uie::splitter_window> p_splitter;
 							if (p_node->m_window.is_valid())
@@ -1103,7 +1103,7 @@ class tab_layout_new : public preferences_tab
 							if (!ti_parent)
 							{
 								HMENU menu_change_base = CreatePopupMenu();
-								HMENU popup = 0;
+								HMENU popup = nullptr;
 								unsigned n, count=panels.get_count();
 								for(n=0;n<count;n++)
 								{
@@ -1122,7 +1122,7 @@ class tab_layout_new : public preferences_tab
 							if (p_splitter.is_valid() && p_node->m_children.get_count() < p_splitter->get_maximum_panel_count())
 							{
 								HMENU menu_change_base = CreatePopupMenu();
-								HMENU popup = 0;
+								HMENU popup = nullptr;
 								unsigned n, count=panels.get_count(),last=0;
 								for(n=0;n<count;n++)
 								{
@@ -1157,7 +1157,7 @@ class tab_layout_new : public preferences_tab
 							if (ti_parent)
 							{
 								if (GetMenuItemCount(menu))
-									AppendMenu(menu,MF_SEPARATOR,0,0);
+									AppendMenu(menu,MF_SEPARATOR,0,nullptr);
 								if (p_parent_node && index)
 									AppendMenu(menu,MF_STRING,ID_MOVE_UP,_T("Move up"));
 								if (p_parent_node && index +1 < p_parent_node->m_splitter->get_panel_count())
@@ -1171,7 +1171,7 @@ class tab_layout_new : public preferences_tab
 
 							menu_helpers::win32_auto_mnemonics(menu);
 
-							unsigned cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,wnd,0);
+							unsigned cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,wnd,nullptr);
 							DestroyMenu(menu);
 								
 							if (cmd)

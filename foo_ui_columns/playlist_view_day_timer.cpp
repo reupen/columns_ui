@@ -15,7 +15,7 @@ VOID CALLBACK on_day_change()
 	{
 		playlist_view * p_playlist = playlist_view::list_playlist.get_item(m);
 		if (p_playlist->wnd_playlist)
-			RedrawWindow(p_playlist->wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+			RedrawWindow(p_playlist->wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 
 	set_day_timer();
@@ -42,6 +42,6 @@ void set_day_timer()
 		//	unsigned ms=st.wMilliseconds + st.wMinute*60*1000 + st.wSecond*1000 + st.wHour*60*60*1000;
 		unsigned ms =/*24**/60 * 60 * 1000 - (st.wMilliseconds + ((/*st.wHour*60 + */st.wMinute) * 60 + st.wSecond) * 1000);
 
-		SetTimer(wnd, DAY_TIMER_ID, ms, 0);
+		SetTimer(wnd, DAY_TIMER_ID, ms, nullptr);
 	}
 }

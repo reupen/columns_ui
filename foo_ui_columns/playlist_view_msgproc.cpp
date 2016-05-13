@@ -20,8 +20,8 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		RegisterDragDrop(wnd, IDT_playlist.get_ptr());
 		if (true)
 		{
-			m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"ListView") : NULL;
-			SetWindowTheme(wnd, L"Explorer", NULL);
+			m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"ListView") : nullptr;
+			SetWindowTheme(wnd, L"Explorer", nullptr);
 		}
 		m_always_show_focus = config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false);
 		on_playlist_font_change();
@@ -39,13 +39,13 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		SendMessage(wnd_header, WM_SETFONT, 0, 0);
 		{
 			if (m_theme) CloseThemeData(m_theme);
-			m_theme = NULL;
+			m_theme = nullptr;
 		}
 		m_selection_holder.release();
 		break;
 	case WM_NCDESTROY:
 		g_playlist_message_window.release();
-		wnd_playlist = 0;
+		wnd_playlist = nullptr;
 		initialised = false;
 		list_playlist.remove_item(this);
 		m_shown = false;
@@ -57,7 +57,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	case WM_THEMECHANGED:
 	{
 		if (m_theme) CloseThemeData(m_theme);
-		m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"ListView") : 0;
+		m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"ListView") : nullptr;
 	}
 	break;
 	case WM_SHOWWINDOW:
@@ -115,16 +115,16 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			m_no_next_edit = true;
 		return MA_ACTIVATE;
 	case WM_UPDATEUISTATE:
-		RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE);
+		RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE);
 		break;
 	case WM_KILLFOCUS:
-		RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 		m_selection_holder.release();
 		break;
 	case WM_SETFOCUS:
 		//if (msg == WM_SETFOCUS && (HWND)wp != wnd)
 		//m_no_next_edit = true;
-		RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 		m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
 		m_selection_holder->set_playlist_selection_tracking();
 		break;
@@ -211,7 +211,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				process_keydown(offset, ((HIWORD(lp) & KF_ALTDOWN) != 0), drawing_enabled, (HIWORD(lp) & KF_REPEAT) != 0);
 				drawing_enabled = true;
 
-				RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+				RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
 				return 0;
 			}
@@ -534,7 +534,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 								m_edit_column = hittest_column(GET_X_LPARAM(lp), width);
 								if (m_edit_column >= 0 && !g_get_columns()[g_get_cache().active_column_active_to_actual(m_edit_column)]->edit_field.is_empty())
 								{
-									m_edit_timer = (SetTimer(wnd, EDIT_TIMER_ID, GetDoubleClickTime(), 0) != 0);
+									m_edit_timer = (SetTimer(wnd, EDIT_TIMER_ID, GetDoubleClickTime(), nullptr) != 0);
 								}
 							}
 						}
@@ -585,7 +585,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				{
 					//RegisterClipboardFormat(_T("foo_ui_columns");
 
-					if (g_tooltip) { DestroyWindow(g_tooltip); g_tooltip = 0; last_idx = -1; last_column = -1; }
+					if (g_tooltip) { DestroyWindow(g_tooltip); g_tooltip = nullptr; last_idx = -1; last_column = -1; }
 					DWORD blah;
 					{
 						pfc::com_ptr_t<IDropSource_playlist> p_IDropSource_playlist = new IDropSource_playlist(this);
@@ -631,7 +631,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						temp.replace_char(9, 0x20);
 						CreateToolTip(temp);
 					}
-					else { DestroyWindow(g_tooltip); g_tooltip = 0; last_idx = -1; last_column = -1; }
+					else { DestroyWindow(g_tooltip); g_tooltip = nullptr; last_idx = -1; last_column = -1; }
 
 					POINT a;
 					a.x = cx + 3;
@@ -647,7 +647,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				last_idx = idx;
 				last_column = column;
 			}
-			else { DestroyWindow(g_tooltip); g_tooltip = 0; last_idx = -1; last_column = -1; }
+			else { DestroyWindow(g_tooltip); g_tooltip = nullptr; last_idx = -1; last_column = -1; }
 		}
 
 
@@ -712,7 +712,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						need_redrawing = true;
 
 					}
-					if (need_redrawing) RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+					if (need_redrawing) RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
 
 				}
@@ -745,7 +745,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 							set_sel_range(dragstartitem, scroll_item_offset, false);
 							playlist_api->activeplaylist_set_focus_item(scroll_item_offset);
-							RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+							RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 						}
 
 						dragitem = scroll_item_offset;
@@ -753,7 +753,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						need_redrawing = true;
 					}
 
-					if (need_redrawing) RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+					if (need_redrawing) RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
 
 				}
@@ -771,7 +771,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 							set_sel_range(dragstartitem, valid_idx, false);
 							playlist_api->activeplaylist_set_focus_item(valid_idx);
 							drawing_enabled = true;
-							RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+							RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 						}
 
 					}
@@ -1092,7 +1092,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 			menu_helpers::win32_auto_mnemonics(menu);
 
-			int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+			int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 			DestroyMenu(menu);
 
 			if (cmd == IDM_ASC)
@@ -1200,7 +1200,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
 				if (playlist_utils::check_clipboard())
 					AppendMenu(menu, MF_STRING, ID_PASTE, L"Paste");
-				AppendMenu(menu, MF_SEPARATOR, 0, NULL);
+				AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 				if (p_manager_context.is_valid())
 				{
 					const keyboard_shortcut_manager::shortcut_type shortcuts[] = { keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT };
@@ -1216,7 +1216,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				g_main_menu_a = p_manager_selection;
 				g_main_menu_b = p_manager_context;
 
-				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 				if (m_status_override.is_valid())
 				{
 					m_status_override.release();
@@ -1267,7 +1267,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
 		if (wp == WM_DESTROY)
 		{
-			if (m_wnd_edit && (HWND)lp == m_wnd_edit) m_wnd_edit = 0;
+			if (m_wnd_edit && (HWND)lp == m_wnd_edit) m_wnd_edit = nullptr;
 		}
 	}
 	break;
@@ -1327,7 +1327,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 
 				SetWindowPos(g_tooltip,
-					NULL,
+					nullptr,
 					rc.left, rc.top,
 					0, 0,
 					SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);

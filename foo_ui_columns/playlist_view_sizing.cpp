@@ -17,11 +17,11 @@ void playlist_view::on_size(unsigned cx, unsigned cy)
 			rc_header.bottom - rc_header.top != header_height)
 		{
 			SendMessage(wnd_header, WM_SETREDRAW, FALSE, 0);
-			SetWindowPos(wnd_header, 0, 0 - horizontal_offset, 0, rc_playlist.right - rc_playlist.left + horizontal_offset, header_height, SWP_NOZORDER);
+			SetWindowPos(wnd_header, nullptr, 0 - horizontal_offset, 0, rc_playlist.right - rc_playlist.left + horizontal_offset, header_height, SWP_NOZORDER);
 			if (cfg_nohscroll) rebuild_header(false);
 			SendMessage(wnd_header, WM_SETREDRAW, TRUE, 0);
-			RedrawWindow(wnd_header, 0, 0, RDW_UPDATENOW | RDW_INVALIDATE);
-			if (rc_header.bottom - rc_header.top != header_height) RedrawWindow(wnd_playlist, 0, 0, RDW_UPDATENOW | RDW_INVALIDATE);
+			RedrawWindow(wnd_header, nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
+			if (rc_header.bottom - rc_header.top != header_height) RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 		}
 	}
 	//if (m_searcher.get_wnd())

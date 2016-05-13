@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-toolbar_extension::button_image::button_image() : m_bm(0), m_mask_type(uie::MASK_NONE), m_bm_mask(0), m_mask_colour(0), m_icon(0)
+toolbar_extension::button_image::button_image() : m_bm(nullptr), m_mask_type(uie::MASK_NONE), m_bm_mask(nullptr), m_mask_colour(0), m_icon(nullptr)
 {
 	;
 }
@@ -15,7 +15,7 @@ toolbar_extension::button_image::~button_image()
 	if (m_icon)
 		DestroyIcon(m_icon);
 }
-bool toolbar_extension::button_image::is_valid() { return m_bm != 0; }
+bool toolbar_extension::button_image::is_valid() { return m_bm != nullptr; }
 void toolbar_extension::button_image::load(const button::custom_image & p_image)
 {
 	m_mask_type = p_image.m_mask_type;
@@ -30,7 +30,7 @@ void toolbar_extension::button_image::load(const button::custom_image & p_image)
 		m_icon = (HICON)uLoadImage(core_api::get_my_instance(), fullPath, IMAGE_ICON, GetSystemMetrics(SM_CXSMICON), GetSystemMetrics(SM_CYSMICON), LR_LOADFROMFILE);
 	else
 	{
-		m_bm = g_load_png_gdiplus(0, fullPath);
+		m_bm = g_load_png_gdiplus(nullptr, fullPath);
 		//g_load_png_wic(0, p_image.m_path);
 		//read_png(0, p_image.m_path);
 	}
@@ -88,7 +88,7 @@ unsigned toolbar_extension::button_image::add_to_imagelist(HIMAGELIST iml)
 		switch (m_mask_type)
 		{
 		default:
-			rv = ImageList_Add(iml, m_bm, 0);
+			rv = ImageList_Add(iml, m_bm, nullptr);
 			break;
 		case ui_extension::MASK_COLOUR:
 			rv = ImageList_AddMasked(iml, m_bm, m_mask_colour);

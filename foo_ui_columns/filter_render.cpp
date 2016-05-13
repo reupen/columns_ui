@@ -31,7 +31,7 @@ namespace filter_panel {
 			{
 				if (IsThemeBackgroundPartiallyTransparent(get_theme(), LVP_LISTITEM, theme_state))
 					DrawThemeParentBackground(get_wnd(), dc, rc);
-				DrawThemeBackground(get_theme(), dc, LVP_LISTITEM, theme_state, rc, NULL);
+				DrawThemeBackground(get_theme(), dc, LVP_LISTITEM, theme_state, rc, nullptr);
 			}
 		}
 

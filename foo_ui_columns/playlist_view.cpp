@@ -24,16 +24,16 @@ column_list_t playlist_view::columns;
 pfc::ptr_list_t<playlist_view> playlist_view::list_playlist;
 
 playlist_view::playlist_view()
-	: wnd_playlist(0), wnd_header(0),
+	: wnd_playlist(nullptr), wnd_header(nullptr),
 	initialised(false), drawing_enabled(false), dragged(true), drag_type(0),
 	dragitem(0), dragstartitem(0), last_idx(-1), last_column(-1), g_shift_item_start(0), 
 	scroll_item_offset(0), horizontal_offset(0),	g_dragging(false),	g_drag_lmb(false),
 	g_dragging1(false), MENU_A_BASE(1), MENU_B_BASE(0), m_shown(false), m_edit_changed(false)
 //#ifdef INLINE_EDIT
-	, m_wnd_edit(NULL),	m_edit_index(-1), m_edit_column(-1),
+	, m_wnd_edit(nullptr),	m_edit_index(-1), m_edit_column(-1),
 	m_prev_sel(false),
 	m_no_next_edit(false),
-	m_edit_timer(false), m_inline_edit_proc(NULL), m_edit_save(true), m_edit_saving(false), m_theme(NULL),
+	m_edit_timer(false), m_inline_edit_proc(nullptr), m_edit_save(true), m_edit_saving(false), m_theme(nullptr),
 	m_always_show_focus(false), m_prevent_wm_char_processing(false)
 //#endif
 {
@@ -125,7 +125,7 @@ bool playlist_view::ensure_visible(int idx, bool check)
 		scroll.cbSize = sizeof(SCROLLINFO);
 		scroll_item_offset = SetScrollInfo(wnd_playlist, SB_VERT, &scroll, true);
 
-		RedrawWindow(wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
+		RedrawWindow(wnd_playlist,nullptr,nullptr,RDW_INVALIDATE|RDW_UPDATENOW);
 	}
 
 	return rv;
@@ -168,13 +168,13 @@ int playlist_view::get_item_height()
 
 LRESULT playlist_view::CreateToolTip(const char * text)
 {
-	if (g_tooltip) {DestroyWindow(g_tooltip); g_tooltip=0;}
+	if (g_tooltip) {DestroyWindow(g_tooltip); g_tooltip=nullptr;}
 
 	DLLVERSIONINFO2 dvi;
 	bool b_comctl_6 = SUCCEEDED(uih::GetComCtl32Version(dvi)) && dvi.info1.dwMajorVersion >= 6;
 
-	g_tooltip = CreateWindowEx(b_comctl_6?WS_EX_TRANSPARENT:0, TOOLTIPS_CLASS, NULL, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_NOPREFIX ,		
-		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, wnd_playlist, 0, core_api::get_my_instance(), NULL);
+	g_tooltip = CreateWindowEx(b_comctl_6?WS_EX_TRANSPARENT:0, TOOLTIPS_CLASS, nullptr, WS_POPUP | TTS_NOPREFIX | TTS_ALWAYSTIP | TTS_NOPREFIX ,		
+		CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, wnd_playlist, nullptr, core_api::get_my_instance(), nullptr);
 
 	//	toolproc = (WNDPROC)SetWindowLongPtr(g_tooltip,GWLP_WNDPROC,(LPARAM)(TooltipHook));
 
@@ -423,7 +423,7 @@ void playlist_view::on_playlist_activate(unsigned p_old,unsigned p_new)
 	{
 		playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
 
-		t_local_cache::t_local_cache_entry * p_cache = NULL; 
+		t_local_cache::t_local_cache_entry * p_cache = nullptr; 
 		if (p_playlist->m_cache.get_entry(p_old, p_cache))
 		{
 			p_cache->set_last_position(p_playlist->scroll_item_offset);
@@ -453,7 +453,7 @@ void playlist_view::on_playlist_activate(unsigned p_old,unsigned p_new)
 		}
 
 		SendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, TRUE, 0);		
-		RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
+		RedrawWindow(p_playlist->wnd_playlist,nullptr,nullptr,RDW_INVALIDATE|RDW_UPDATENOW);
 	}
 }
 
@@ -480,7 +480,7 @@ public:
 					{
 						//					g_playlist_entries.rebuild_all();
 						p_playlist->update_scrollbar();
-						if (p_playlist->drawing_enabled) RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
+						if (p_playlist->drawing_enabled) RedrawWindow(p_playlist->wnd_playlist,nullptr,nullptr,RDW_INVALIDATE|RDW_UPDATENOW);
 					}
 				}
 			}
@@ -541,7 +541,7 @@ public:
 					{
 						//					g_playlist_entries.rebuild_all();
 						p_playlist->update_scrollbar();
-						if (p_playlist->drawing_enabled) RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
+						if (p_playlist->drawing_enabled) RedrawWindow(p_playlist->wnd_playlist,nullptr,nullptr,RDW_INVALIDATE|RDW_UPDATENOW);
 					}
 				}
 			}
@@ -772,7 +772,7 @@ void playlist_view::g_on_playback_follows_cursor_change(bool b_val)
 	{
 		playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
 		p_playlist->m_always_show_focus = b_val;
-		RedrawWindow(p_playlist->wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(p_playlist->wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 }
 
@@ -787,7 +787,7 @@ void playlist_view::update_all_windows(HWND wnd_header_skip /*= 0*/)
 			p_playlist->rebuild_header();
 		}
 		p_playlist->update_scrollbar(true);
-		RedrawWindow(p_playlist->wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(p_playlist->wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 }
 
@@ -803,7 +803,7 @@ void playlist_view::g_on_columns_size_change(const playlist_view * p_skip /*= NU
 		{
 			p_playlist->rebuild_header();
 		}
-		RedrawWindow(p_playlist->wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(p_playlist->wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 }
 

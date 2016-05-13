@@ -61,19 +61,19 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 		break;
 	case WM_CREATE:
 	{
-		m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Rebar") : NULL;
+		m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Rebar") : nullptr;
 	}
 	break;
 	case WM_THEMECHANGED:
 	{
 		if (m_theme) CloseThemeData(m_theme);
-		m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Rebar") : 0;
+		m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Rebar") : nullptr;
 	}
 	break;
 	case WM_DESTROY:
 	{
 		if (m_theme) CloseThemeData(m_theme);
-		m_theme = NULL;
+		m_theme = nullptr;
 	}
 	m_this.release();
 	break;
@@ -101,7 +101,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 			if (!m_timer_active)
 			{
 				m_timer_active = true;
-				SetTimer(wnd, HOST_AUTOHIDE_TIMER_ID, cfg_sidebar_hide_delay, 0);
+				SetTimer(wnd, HOST_AUTOHIDE_TIMER_ID, cfg_sidebar_hide_delay, nullptr);
 			}
 		}
 		return 0;
@@ -149,7 +149,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 					{
 #if 1
 						if (m_theme)
-							DrawThemeBackground(m_theme, dc, 0, 0, &rc_caption, 0);
+							DrawThemeBackground(m_theme, dc, 0, 0, &rc_caption, nullptr);
 						else
 							FillRect(dc, &rc_caption, GetSysColorBrush(COLOR_BTNFACE));
 #endif
@@ -333,7 +333,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 					//				p_ext->build_menu(menu, IDM_EXT_BASE, pt, true, user_data); 
 					p_panel->m_child->get_menu_items(*extension_menu_nodes.get_ptr());
 					if (extension_menu_nodes->get_children_count() > 0)
-						AppendMenu(menu, MF_SEPARATOR, 0, 0);
+						AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
 					extension_menu_nodes->win32_build_menu(menu, IDM_EXT_BASE, pfc_infinite - IDM_EXT_BASE);
 				}
@@ -341,7 +341,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 
 				//			menu_ext_base = IDM_EXT_BASE;
 
-				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 
 				//			menu_ext_base=0;
 
@@ -421,7 +421,7 @@ splitter_window_impl::panel::panel_container::~panel_container()
 
 }
 
-splitter_window_impl::panel::panel_container::panel_container(panel * p_panel) : m_theme(NULL), m_panel(p_panel), m_hook_active(false), m_timer_active(false)
+splitter_window_impl::panel::panel_container::panel_container(panel * p_panel) : m_theme(nullptr), m_panel(p_panel), m_hook_active(false), m_timer_active(false)
 {
 
 }

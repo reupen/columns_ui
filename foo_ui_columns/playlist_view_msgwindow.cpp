@@ -27,8 +27,8 @@ LRESULT playlist_message_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
 	case WM_THEMECHANGED:
 		break;
 	case WM_DESTROY:
-		if (g_font) DeleteObject(g_font); g_font = 0;
-		if (g_header_font) DeleteObject(g_header_font); g_header_font = 0;
+		if (g_font) DeleteObject(g_font); g_font = nullptr;
+		if (g_header_font) DeleteObject(g_header_font); g_header_font = nullptr;
 		g_to_global.release();
 		g_to_global_colour.release();
 		kill_day_timer();
@@ -44,7 +44,7 @@ void playlist_message_window::add_ref()
 {
 	if (!ref_count++)
 	{
-		create(0);
+		create(nullptr);
 	}
 }
 

@@ -386,7 +386,7 @@ void layout_window::set_child (const uie::splitter_item_t * item)
 		create_child();
 		show_window();
 		SendMessage(get_wnd(), WM_SETREDRAW, TRUE, 0);
-		RedrawWindow(get_wnd(), 0, 0, RDW_INVALIDATE|RDW_UPDATENOW|RDW_ALLCHILDREN|RDW_FRAME|RDW_ERASE);
+		RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE|RDW_UPDATENOW|RDW_ALLCHILDREN|RDW_FRAME|RDW_ERASE);
 	}
 }
 
@@ -581,7 +581,7 @@ void layout_window::destroy_child()
 
 void layout_window::relinquish_child()
 {
-	m_child_wnd = NULL;
+	m_child_wnd = nullptr;
 	m_child.release();
 	m_child_data.set_size(0);
 }
@@ -622,7 +622,7 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 	{
 		RECT rc;
 		GetRelativeRect(m_child_wnd, HWND_DESKTOP, &rc);
-		HWND wnd_over = m_trans_fill.create(get_wnd(), 0, ui_helpers::window_position_t(rc));
+		HWND wnd_over = m_trans_fill.create(get_wnd(), nullptr, ui_helpers::window_position_t(rc));
 		WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
 		WindowEnum.run();
 		t_size count_owned = WindowEnum.m_wnd_list.get_count();
@@ -646,7 +646,7 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 		if (m_child.is_valid())
 			m_child->get_name(temp);
 		uAppendMenu(menu, MF_STRING|MF_GRAYED, (UINT_PTR)0, temp);
-		uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, NULL);
+		uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, nullptr);
 
 		const UINT_PTR ID_ADD_BASE = ID_CHANGE_BASE + panels.get_count();
 		const UINT_PTR ID_CHANGE_SPLITTER_BASE = ID_ADD_BASE + panels.get_count();
@@ -665,7 +665,7 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 
 		AppendMenu(menu, MF_STRING|MF_POPUP, (UINT_PTR)menu_change, L"Change panel");
 
-		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,get_wnd(),0);
+		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,get_wnd(),nullptr);
 		m_trans_fill.destroy();
 		{
 			{
@@ -784,7 +784,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 
 		RECT rc;
 		GetRelativeRect(p_window->get_wnd(), HWND_DESKTOP, &rc);
-		HWND wnd_over = m_trans_fill.create(get_wnd(), 0, ui_helpers::window_position_t(rc));
+		HWND wnd_over = m_trans_fill.create(get_wnd(), nullptr, ui_helpers::window_position_t(rc));
 		WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
 		WindowEnum.run();
 		t_size count_owned = WindowEnum.m_wnd_list.get_count();
@@ -869,7 +869,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 				}
 				AppendMenu(menu, MF_STRING, ID_CLOSE, L"Close");
 			}
-			uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, NULL);
+			uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, nullptr);
 			p_container->get_name(temp);
 			uAppendMenu(menu, MF_STRING|MF_GRAYED, (UINT_PTR)0, temp);
 			if (p_container->get_panel_count() < p_container->get_maximum_panel_count())
@@ -881,7 +881,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 		}
 
 
-		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,p_data.m_point.x,p_data.m_point.y,0,get_wnd(),0);
+		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,p_data.m_point.x,p_data.m_point.y,0,get_wnd(),nullptr);
 		m_trans_fill.destroy();
 		{
 			{
@@ -1021,7 +1021,7 @@ bool layout_window::on_hooked_message(message_hook_manager::t_message_hook_type 
 					{
 						if (!sw2.is_valid())
 							hierarchy.add_item(m_child);
-						HWND wnd_panel = NULL;
+						HWND wnd_panel = nullptr;
 						if (hierarchy.get_count())
 						{
 							wnd_panel = hierarchy[hierarchy.get_count()-1]->get_wnd();
@@ -1035,7 +1035,7 @@ bool layout_window::on_hooked_message(message_hook_manager::t_message_hook_type 
 						lpmsg->message = WM_NULL;
 						lpmsg->lParam = NULL;
 						lpmsg->wParam = NULL;
-						lpmsg->hwnd = NULL;
+						lpmsg->hwnd = nullptr;
 					}
 				}
 			}
@@ -1093,7 +1093,7 @@ LRESULT layout_window::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			if (!(lpwp->flags & SWP_NOSIZE))
 			{
 				if (m_child_wnd)
-					SetWindowPos(m_child_wnd, NULL, 0, 0, lpwp->cx, lpwp->cy, SWP_NOZORDER);
+					SetWindowPos(m_child_wnd, nullptr, 0, 0, lpwp->cx, lpwp->cy, SWP_NOZORDER);
 			}
 		}
 		break;

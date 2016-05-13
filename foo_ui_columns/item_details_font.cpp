@@ -26,9 +26,9 @@ bool font_change_info_t::find_font(const font_data_t & p_font, t_size & index)
 
 titleformat_hook_change_font::titleformat_hook_change_font(const LOGFONT & lf)
 {
-	HDC dc = GetDC(0);
+	HDC dc = GetDC(nullptr);
 	m_default_font_size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
-	ReleaseDC(0, dc);
+	ReleaseDC(nullptr, dc);
 
 	m_default_font_face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, tabsize(lf.lfFaceName));
 }
@@ -116,9 +116,9 @@ void font_code_generator_t::run(HWND parent, UINT edit)
 font_code_generator_t::string_font_code::string_font_code(const LOGFONT & lf)
 {
 	prealloc(64);
-	HDC dc = GetDC(0);
+	HDC dc = GetDC(nullptr);
 	unsigned pt = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
-	ReleaseDC(0, dc);
+	ReleaseDC(nullptr, dc);
 
 	add_string("$set_font(");
 	add_string(pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, tabsize(lf.lfFaceName)));

@@ -206,7 +206,7 @@ public:
 
 							SetWindowLongPtr(p_playlist->wnd_playlist, GWL_EXSTYLE, flags);
 
-							SetWindowPos(p_playlist->wnd_playlist, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+							SetWindowPos(p_playlist->wnd_playlist, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 							//					move_window_controls();
 							//					RedrawWindow(g_test, 0, 0, RDW_INVALIDATE|RDW_UPDATENOW);
 						}
@@ -233,7 +233,7 @@ public:
 	}
 } g_tab_display2;
 
-menu_item_cache * tab_display2::p_menu_cache = 0;
+menu_item_cache * tab_display2::p_menu_cache = nullptr;
 bool tab_display2::initialised = 0;
 
 preferences_tab * g_get_tab_display2()

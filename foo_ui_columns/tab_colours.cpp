@@ -6,7 +6,7 @@
 
 bool tab_appearance::is_active()
 {
-	return m_wnd != 0;
+	return m_wnd != nullptr;
 }
 
 bool tab_appearance::get_help_url(pfc::string_base & p_out)
@@ -79,7 +79,7 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 		m_element_guid = pfc::guid_null;
 		m_element_ptr.release();
 		m_element_api.release();
-		m_wnd = NULL;
+		m_wnd = nullptr;
 	}
 	break;
 	case WM_COMMAND:
@@ -272,7 +272,7 @@ void tab_appearance::update_fills()
 
 BOOL CALLBACK tab_appearance::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	tab_appearance * p_data = NULL;
+	tab_appearance * p_data = nullptr;
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<tab_appearance*>(lp);
@@ -290,8 +290,8 @@ void tab_appearance::refresh_me(HWND wnd)
 }
 
 tab_appearance::tab_appearance() 
-	: initialising(false), m_wnd_colours_mode(NULL), m_element_guid(pfc::guid_null),
-	m_wnd(NULL), m_wnd_colours_element(nullptr)
+	: initialising(false), m_wnd_colours_mode(nullptr), m_element_guid(pfc::guid_null),
+	m_wnd(nullptr), m_wnd_colours_element(nullptr)
 {
 
 }

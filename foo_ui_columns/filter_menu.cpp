@@ -28,7 +28,7 @@ namespace filter_panel {
 				//console::formatter() << (t_uint32)GetLastError();
 			}
 		}
-		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), 0);
+		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr);
 		DestroyMenu(menu);
 		if (cmd)
 		{
@@ -138,7 +138,7 @@ namespace filter_panel {
 				mii.fState |= MFS_DEFAULT;
 			InsertMenuItem(menu, 6, TRUE, &mii);
 		}
-		AppendMenu(menu, MF_SEPARATOR, NULL, NULL);
+		AppendMenu(menu, MF_SEPARATOR, NULL, nullptr);
 		service_ptr_t<contextmenu_manager> manager;
 		contextmenu_manager::g_create(manager);
 		manager->init_context(handles, 0);
@@ -146,7 +146,7 @@ namespace filter_panel {
 		menu_helpers::win32_auto_mnemonics(menu);
 		m_contextmenu_manager = manager;
 		m_contextmenu_manager_base = ID_BASE;
-		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), 0);
+		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr);
 		DestroyMenu(menu);
 		m_contextmenu_manager.release();
 		m_contextmenu_manager_base = NULL;

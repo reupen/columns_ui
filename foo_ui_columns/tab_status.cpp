@@ -42,7 +42,7 @@ public:
 		case WM_DESTROY:
 		{
 			delete p_cache;
-			p_cache = 0;
+			p_cache = nullptr;
 			//				status_items.free_all();
 			initialised = false;
 		}
@@ -114,7 +114,7 @@ public:
 	}
 } g_tab_status;
 
-menu_item_cache * tab_status::p_cache = 0;
+menu_item_cache * tab_status::p_cache = nullptr;
 bool tab_status::initialised = 0;
 
 preferences_tab * g_get_tab_status()

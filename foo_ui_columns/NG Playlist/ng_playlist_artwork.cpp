@@ -23,7 +23,7 @@ namespace pvt
 		album_art_extractor_instance_v2::ptr p_extractor = static_api_ptr_t<album_art_manager_v2>()->open_stub(p_abort);
 
 		album_art_data_ptr data;
-		HBITMAP ret = NULL;
+		HBITMAP ret = nullptr;
 		try
 		{
 			// FIXME: hardcoded to front cover
@@ -180,7 +180,7 @@ namespace pvt
 						t_size i, count = to.get_count();
 						for (i=0; i<count && !b_found; i++)
 						{
-							if (m_handle->format_title_legacy(NULL, path, to[i], NULL))
+							if (m_handle->format_title_legacy(nullptr, path, to[i], nullptr))
 							{
 								const char * image_extensions[] = {"jpg", "jpeg", "gif", "bmp", "png"};
 
@@ -361,8 +361,8 @@ namespace pvt
 
 	HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap & bm, t_size & cx, t_size & cy, COLORREF cr_back, bool b_reflection)
 	{
-		HDC dc=NULL, dcc=NULL;
-		dc = GetDC(NULL);
+		HDC dc=nullptr, dcc=nullptr;
+		dc = GetDC(nullptr);
 		dcc = CreateCompatibleDC(dc);
 		//cy = bm.GetHeight();
 		if (b_reflection)
@@ -423,7 +423,7 @@ namespace pvt
 			}
 
 			{
-				Gdiplus::Bitmap scaled(bitmap, NULL);
+				Gdiplus::Bitmap scaled(bitmap, nullptr);
 				if (reflect_cy)
 				{
 
@@ -461,14 +461,14 @@ namespace pvt
 		SelectBitmap(dcc, bm_old);
 
 		DeleteDC(dcc);
-		ReleaseDC(NULL, dc);
+		ReleaseDC(nullptr, dc);
 
 		return bitmap;
 	}
 
 	HBITMAP g_create_hbitmap_from_data(const album_art_data_ptr & data, t_size & cx, t_size & cy, COLORREF cr_back, bool b_reflection)
 	{
-		HBITMAP ret = NULL;
+		HBITMAP ret = nullptr;
 		pfc::com_ptr_t<mmh::win32::IStream_memblock> pStream = new mmh::win32::IStream_memblock((const t_uint8*)data->get_ptr(), data->get_size());
 		//m_image.release();
 		//flush_cached_bitmap();
@@ -486,7 +486,7 @@ namespace pvt
 	HBITMAP ng_playlist_view_t:: request_group_artwork(t_size index_item, t_size item_group_count)
 	{
 		t_size group_count=m_scripts.get_count();
-		HBITMAP ret = NULL;
+		HBITMAP ret = nullptr;
 		if (group_count)
 		{
 			item_ng_t * item = static_cast<item_ng_t*>(get_item(index_item));

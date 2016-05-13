@@ -128,9 +128,9 @@ public:
 
 };
 
-HFONT order_extension::font_icon = 0;
+HFONT order_extension::font_icon = nullptr;
 
-order_extension::order_extension() : wnd_combo(0), orderproc(0), min_width(0), height(0), initialised(false), m_mousewheel_delta(0)
+order_extension::order_extension() : wnd_combo(nullptr), orderproc(nullptr), min_width(0), height(0), initialised(false), m_mousewheel_delta(0)
 {
 };
 
@@ -159,8 +159,8 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		if (!font_icon)
 			font_icon = uCreateIconFont();
 		
-		wnd_combo = CreateWindowEx(0, WC_COMBOBOX, 0, CBS_DROPDOWNLIST|CBS_SORT|WS_CHILD|WS_VISIBLE|WS_TABSTOP ,
-			0,0,100,300, wnd, (HMENU)ID_ORDER, core_api::get_my_instance(), NULL);
+		wnd_combo = CreateWindowEx(0, WC_COMBOBOX, nullptr, CBS_DROPDOWNLIST|CBS_SORT|WS_CHILD|WS_VISIBLE|WS_TABSTOP ,
+			0,0,100,300, wnd, (HMENU)ID_ORDER, core_api::get_my_instance(), nullptr);
 
 		initialised = true;
 
@@ -216,7 +216,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
 		if (!(lpwp->flags & SWP_NOSIZE))
 		{
-			SetWindowPos(wnd_combo, 0, 0, 0, lpwp->cx, 300, SWP_NOZORDER);
+			SetWindowPos(wnd_combo, nullptr, 0, 0, lpwp->cx, 300, SWP_NOZORDER);
 		}
 	}
 
@@ -257,7 +257,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		if (count == 1)
 		{
 			DeleteFont(font_icon);
-			font_icon=0;
+			font_icon=nullptr;
 		}
 	}
 
@@ -284,7 +284,7 @@ LRESULT WINAPI order_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp)) return 0;
 		break;
 	case WM_UPDATEUISTATE:
-		RedrawWindow(wnd, NULL, NULL, RDW_INVALIDATE);
+		RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
 		break;
 	case WM_MOUSEWHEEL:
 		//unsigned scroll_lines = GetNumScrollLines();

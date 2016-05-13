@@ -7,7 +7,7 @@ bool g_last_rmb = false;
 drop_handler_interface::drop_handler_interface() : drop_ref_count(0)
 {
 	last_over.x = 0; last_over.y = 0;
-	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER);
+	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 }
 
 bool drop_handler_interface::check_window_allowed(HWND wnd)
@@ -39,10 +39,10 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DW
 		HMENU menu = CreatePopupMenu();
 
 		uAppendMenu(menu, (MF_STRING), ID_DROP, "&Add files here");
-		uAppendMenu(menu, MF_SEPARATOR, 0, 0);
+		uAppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 		uAppendMenu(menu, MF_STRING, ID_CANCEL, "&Cancel");
 
-		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, g_main_window, 0);
+		int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, g_main_window, nullptr);
 		DestroyMenu(menu);
 
 		if (cmd)
@@ -181,8 +181,8 @@ ULONG STDMETHODCALLTYPE drop_handler_interface::AddRef()
 
 HRESULT STDMETHODCALLTYPE drop_handler_interface::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)
 {
-	if (ppvObject == NULL) return E_INVALIDARG;
-	*ppvObject = NULL;
+	if (ppvObject == nullptr) return E_INVALIDARG;
+	*ppvObject = nullptr;
 	if (riid == IID_IUnknown) { AddRef(); *ppvObject = (IUnknown*)this; return S_OK; }
 	else if (riid == IID_IDropTarget) { AddRef(); *ppvObject = (IDropTarget*)this; return S_OK; }
 	else return E_NOINTERFACE;

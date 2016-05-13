@@ -68,28 +68,28 @@ void playlist_view::move_header(bool redraw, bool update)
 		{
 			RECT playlist, redraw;
 			get_playlist_rect(&playlist);
-			ScrollWindowEx(wnd_playlist, 0, (header_height - rc_header.bottom), &playlist, &playlist, 0, &redraw, 0);
+			ScrollWindowEx(wnd_playlist, 0, (header_height - rc_header.bottom), &playlist, &playlist, nullptr, &redraw, 0);
 			//			RedrawWindow(wnd_playlist,&redraw,0,RDW_INVALIDATE|RDW_UPDATENOW);
 		}
-		SetWindowPos(wnd_header, 0, 0 - horizontal_offset, 0, rc_playlist.right - rc_playlist.left + horizontal_offset, header_height, SWP_NOZORDER);
+		SetWindowPos(wnd_header, nullptr, 0 - horizontal_offset, 0, rc_playlist.right - rc_playlist.left + horizontal_offset, header_height, SWP_NOZORDER);
 		if (cfg_nohscroll && update) rebuild_header(false);
 		SendMessage(wnd_header, WM_SETREDRAW, TRUE, 0);
-		if (redraw) RedrawWindow(wnd_header, 0, 0, RDW_UPDATENOW | RDW_INVALIDATE);
+		if (redraw) RedrawWindow(wnd_header, nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 	}
 
 }
 
 void playlist_view::create_header(bool visible)
 {
-	if (wnd_header) { DestroyWindow(wnd_header); wnd_header = 0; }
+	if (wnd_header) { DestroyWindow(wnd_header); wnd_header = nullptr; }
 	if (cfg_header)
 	{
 		wnd_header = CreateWindowEx(0, WC_HEADER, _T("Playlist display column titles"),
 			WS_CHILD | (visible ? WS_VISIBLE : 0) | HDS_HOTTRACK | HDS_DRAGDROP | HDS_HORZ | (/*nohscroll ? 0 : */HDS_FULLDRAG) | (cfg_header_hottrack ? HDS_BUTTONS : 0),
-			0, 0, 0, 0, wnd_playlist, HMENU(5001), core_api::get_my_instance(), NULL);
+			0, 0, 0, 0, wnd_playlist, HMENU(5001), core_api::get_my_instance(), nullptr);
 
 		on_header_font_change();
 		rebuild_header();
 	}
-	if (visible) RedrawWindow(wnd_playlist, 0, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+	if (visible) RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 }

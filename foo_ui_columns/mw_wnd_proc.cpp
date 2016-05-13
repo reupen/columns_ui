@@ -315,7 +315,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 					menu_helpers::win32_auto_mnemonics(menu);
 
-					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 					DestroyMenu(menu);
 					statusbar_contextmenus::g_main_nowplaying.release();
 
@@ -387,7 +387,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					moo.sort();
 
 					unsigned count_exts = moo.get_count();
-					HMENU popup = NULL;
+					HMENU popup = nullptr;
 					for (n = 0; n < count_exts; n++) {
 						if (!n || uStringCompare(moo[n - 1].category, moo[n].category)) {
 							if (n)
@@ -408,14 +408,14 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					if (p_ext.is_valid()) {
 						p_ext->get_menu_items(*extension_menu_nodes.get_ptr());
 						if (extension_menu_nodes->get_children_count() > 0)
-							uAppendMenu(menu, MF_SEPARATOR, 0, 0);
+							uAppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
 						extension_menu_nodes->win32_build_menu(menu, IDM_EXT_BASE, pfc_infinite - IDM_EXT_BASE);
 					}
 
 					menu_helpers::win32_auto_mnemonics(menu);
 
-					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 
 					if (g_rebar_window) {
 
@@ -598,7 +598,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					GetCursorPos(&pt);
 
 					HMENU menu = CreatePopupMenu();
-					HMENU menu_now_playing = 0;
+					HMENU menu_now_playing = nullptr;
 
 					service_ptr_t<contextmenu_manager> p_manager_selection;
 
@@ -655,7 +655,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						p_manager_playback->instantiate(mainmenu_groups::playback_controls);
 						p_manager_playback->generate_menu_win32(menu, systray_contextmenus::ID_BASE_PLAYBACK, pfc_infinite, b_shortcuts ? mainmenu_manager::flag_show_shortcuts_global : 0);
 
-						AppendMenu(menu, MF_SEPARATOR, 0, 0);
+						AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 					}
 					if (p_manager_context.is_valid()) {
 
@@ -663,7 +663,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						p_manager_context->generate_menu_win32(menu, systray_contextmenus::ID_BASE_FILE_PREFS, systray_contextmenus::ID_BASE_FILE_EXIT - 1, b_shortcuts ? mainmenu_manager::flag_show_shortcuts_global : 0);
 					}
 
-					AppendMenu(menu, MF_SEPARATOR, 0, 0);
+					AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 					t_size insert_point = GetMenuItemCount(menu);
 					if (systray_contextmenus::g_menu_file_exit.is_valid()) {
 
@@ -687,7 +687,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 					mi.fState = MFS_DEFAULT;
 
 					SetMenuItemInfo(menu, systray_contextmenus::ID_ACTIVATE, FALSE, &mi);
-					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 
 
 					DestroyMenu(menu);
@@ -809,7 +809,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 											}
 										}
 
-										SetWindowPos(wndvol, 0, x, y, cx, cy, SWP_NOZORDER);
+										SetWindowPos(wndvol, nullptr, x, y, cx, cy, SWP_NOZORDER);
 										ShowWindow(wndvol, SW_SHOWNORMAL);
 									}
 									return TRUE;

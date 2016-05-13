@@ -225,9 +225,9 @@ public:
 
 bool menu_extension::hooked = false;
 
-menu_extension::menu_extension() : wnd_menu(0), menuproc(0), 
+menu_extension::menu_extension() : wnd_menu(nullptr), menuproc(nullptr), 
 	redrop(true), is_submenu(false), active_item(0), sub_menu_ref_count(-1), /*hooked(false), */
-	actual_active(0), initialised(false), p_manager(0), wnd_prev_focus(nullptr), m_menu_key_pressed(false)
+	actual_active(0), initialised(false), p_manager(nullptr), wnd_prev_focus(nullptr), m_menu_key_pressed(false)
 {
 };
 
@@ -275,9 +275,9 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			tbb.set_size(button_count);
 			memset(tbb.get_ptr(), 0, tbb.get_size() * sizeof(TBBUTTON));
 
-			wnd_menu = CreateWindowEx(/*TBSTYLE_EX_MIXEDBUTTONS|*/WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, NULL,
+			wnd_menu = CreateWindowEx(/*TBSTYLE_EX_MIXEDBUTTONS|*/WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, nullptr,
 				WS_CHILD | WS_VISIBLE | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TBSTYLE_FLAT | TBSTYLE_TRANSPARENT | TBSTYLE_LIST | CCS_NORESIZE | CCS_NOPARENTALIGN | CCS_NODIVIDER,
-				0, 0, 0, 25, wnd, (HMENU)ID_MENU, core_api::get_my_instance(), NULL);
+				0, 0, 0, 25, wnd, (HMENU)ID_MENU, core_api::get_my_instance(), nullptr);
 
 			if (wnd_menu)
 			{
@@ -338,8 +338,8 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 					cy = min(cy, rc.bottom);
 					extra = (lpwp->cy - rc.bottom) / 2;
 				}
-				SetWindowPos(wnd_menu, 0, 0, extra, cx, cy, SWP_NOZORDER);
-				RedrawWindow(wnd, 0, 0, RDW_ERASE | RDW_INVALIDATE);
+				SetWindowPos(wnd_menu, nullptr, 0, extra, cx, cy, SWP_NOZORDER);
+				RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
 			}
 			break;
 		}
@@ -480,7 +480,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		case WM_DESTROY:
 		{
 			DestroyWindow(wnd_menu);
-			wnd_menu = NULL;
+			wnd_menu = nullptr;
 			m_buttons.remove_all();
 			initialised = false;
 			break;

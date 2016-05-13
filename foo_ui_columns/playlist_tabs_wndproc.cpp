@@ -72,20 +72,20 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 		RevokeDragDrop(wnd);
 		if (wnd_tabs)
 			DestroyWindow(wnd_tabs);
-		wnd_tabs = 0;
+		wnd_tabs = nullptr;
 		list_wnd.remove_item(this);
 		if (!list_wnd.get_count())
 		{
 			SendMessage(wnd, WM_SETFONT, 0, 0);
 			if (g_font) DeleteObject(g_font);
-			g_font = 0;
+			g_font = nullptr;
 		}
 		initialised = false;
 	}
 	break;
 	case WM_NCDESTROY:
 	{
-		m_host_wnd = 0;
+		m_host_wnd = nullptr;
 	}
 	break;
 	case WM_LBUTTONDBLCLK:
@@ -251,7 +251,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 				m_child->get_menu_items(*menu_hook_t.get_ptr());
 				HMENU menu = CreatePopupMenu();
 				menu_hook_t->win32_build_menu(menu, 1, pfc_infinite);
-				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 				menu_hook_t->execute_by_id(cmd);
 				DestroyMenu(menu);
 			}
@@ -313,7 +313,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 						AppendMenu(menu, MF_STRING, ID_DOWN, _T("Move right"));
 					if (autoplaylist.is_valid() && autoplaylist->show_ui_available())
 					{
-						AppendMenu(menu, MF_SEPARATOR, 0, 0);
+						AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
 						pfc::string8 name;
 						autoplaylist->get_display_name(name);
@@ -321,13 +321,13 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 
 						AppendMenu(menu, MF_STRING, ID_AUTOPLAYLIST, uT(name));
 					}
-					AppendMenu(menu, MF_SEPARATOR, 0, 0);
+					AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
 					AppendMenu(menu, MF_STRING, ID_CUT, L"Cut");
 					AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
 					if (playlist_manager_utils::check_clipboard())
 						AppendMenu(menu, MF_STRING, ID_PASTE, L"Paste");
-					AppendMenu(menu, MF_SEPARATOR, 0, NULL);
+					AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 				}
 
 				AppendMenu(menu, MF_STRING, ID_NEW, _T("New"));
@@ -354,7 +354,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 							recycler_ids[i] = playlist_api->recycler_get_id(i); //Menu Message Loop !
 							uAppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_BASE + i, temp);
 						}
-						AppendMenu(recycler_popup, MF_SEPARATOR, 0, 0);
+						AppendMenu(recycler_popup, MF_SEPARATOR, 0, nullptr);
 						AppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_CLEAR, _T("Clear"));
 						AppendMenu(menu, MF_POPUP, (UINT_PTR)recycler_popup, _T("History"));
 					}
@@ -378,7 +378,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 
 				if (data.get_count() >0)
 				{
-					uAppendMenu(menu, MF_SEPARATOR, 0, 0);
+					uAppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
 					HMENU submenu = CreatePopupMenu();
 
@@ -393,7 +393,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 				}
 				menu_helpers::win32_auto_mnemonics(menu);
 
-				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, 0);
+				int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 
 				m_status_override.release();
 

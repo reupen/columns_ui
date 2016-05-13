@@ -708,7 +708,7 @@ bool g_import(const char * path)
 void import(HWND wnd)
 {
 	pfc::string8 path = cfg_import;
-	if (uGetOpenFileName(wnd, "Columns UI Settings (*.fcs)|*.fcs|All Files (*.*)|*.*", 0, "fcs", "Import from", NULL, path, FALSE))
+	if (uGetOpenFileName(wnd, "Columns UI Settings (*.fcs)|*.fcs|All Files (*.*)|*.*", 0, "fcs", "Import from", nullptr, path, FALSE))
 	{
 /*		unsigned stress = 0;
 		for (stress = 0; stress < 1000000; stress++)

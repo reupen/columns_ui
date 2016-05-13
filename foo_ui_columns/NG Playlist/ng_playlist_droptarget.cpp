@@ -5,8 +5,8 @@ namespace pvt
 {
 	HRESULT STDMETHODCALLTYPE IDropTarget_playlist::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)
 	{
-		if (ppvObject == NULL) return E_INVALIDARG;
-		*ppvObject = NULL;
+		if (ppvObject == nullptr) return E_INVALIDARG;
+		*ppvObject = nullptr;
 		if (riid == IID_IUnknown) {AddRef();*ppvObject = (IUnknown*)this;return S_OK;}
 		else if (riid == IID_IDropTarget) {AddRef();*ppvObject = (IDropTarget*)this;return S_OK;}
 		else return E_NOINTERFACE;
@@ -321,13 +321,13 @@ namespace pvt
 	}
 	IDropTarget_playlist::IDropTarget_playlist(ng_playlist_view_t * playlist) : drop_ref_count(0), last_rmb(false), p_playlist(playlist), m_is_accepted_type(false)
 	{
-		m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER);
+		m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 	}
 	HRESULT IDropTarget_playlist::UpdateDropDescription(IDataObject * pDataObj, DWORD pdwEffect)
 	{
 		static_api_ptr_t<playlist_manager> playlist_api;
 		DROPIMAGETYPE dit = DROPIMAGE_INVALID;
-		const char * message = NULL;
+		const char * message = nullptr;
 		pfc::string8 insertText;
 
 		if (pdwEffect == DROPEFFECT_MOVE)

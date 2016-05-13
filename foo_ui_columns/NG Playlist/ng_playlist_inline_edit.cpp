@@ -87,7 +87,7 @@ namespace pvt
 
 			{
 				service_ptr_t<file_info_filter_impl>  filter = new service_impl_t<file_info_filter_impl>(ptrs, infos_ptr);
-				tagger_api->update_info_async(ptrs, filter, GetAncestor(get_wnd(), GA_ROOT), metadb_io_v2::op_flag_no_errors|metadb_io_v2::op_flag_background|metadb_io_v2::op_flag_delay_ui, NULL);
+				tagger_api->update_info_async(ptrs, filter, GetAncestor(get_wnd(), GA_ROOT), metadb_io_v2::op_flag_no_errors|metadb_io_v2::op_flag_background|metadb_io_v2::op_flag_delay_ui, nullptr);
 			}
 		}
 	};

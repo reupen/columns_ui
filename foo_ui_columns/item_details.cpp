@@ -375,9 +375,9 @@ void item_details_t::refresh_contents(bool b_new_track)
 		temp.prealloc(2048);
 		temp2.prealloc(2048);
 		if (m_nowplaying_active)
-			static_api_ptr_t<playback_control>()->playback_format_title(&tf_hook, temp, m_to, NULL, playback_control::display_level_all);
+			static_api_ptr_t<playback_control>()->playback_format_title(&tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
 		else
-			m_handles[0]->format_title(&tf_hook, temp, m_to, NULL);
+			m_handles[0]->format_title(&tf_hook, temp, m_to, nullptr);
 
 		if (strcmp(temp, m_current_text_raw))
 		{
@@ -563,7 +563,7 @@ void item_details_t::on_changed_sorted(metadb_handle_list_cref p_items_sorted, b
 bool item_details_t::check_process_on_selection_changed()
 {
 	HWND wnd_focus = GetFocus();
-	if (wnd_focus == NULL)
+	if (wnd_focus == nullptr)
 		return false ;
 
 	DWORD processid = NULL;
@@ -627,12 +627,12 @@ void item_details_t::on_tracking_mode_change()
 
 void item_details_t::update_now()
 {
-	RedrawWindow(get_wnd(), NULL, NULL, RDW_UPDATENOW);
+	RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW);
 }
 
 void item_details_t::invalidate_all(bool b_update)
 {
-	RedrawWindow(get_wnd(), NULL, NULL, RDW_INVALIDATE|(b_update?RDW_UPDATENOW:NULL));
+	RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE|(b_update?RDW_UPDATENOW:NULL));
 }
 
 void item_details_t::on_size ()
@@ -702,8 +702,8 @@ void item_details_t::scroll(INT SB, int position, bool b_absolute)
 		GetClientRect(get_wnd(), &rc);
 		int dy = SB == SB_VERT ? si.nPos - new_pos : 0;
 		int dx = SB == SB_HORZ ? si.nPos - new_pos : 0;
-		ScrollWindowEx(get_wnd(), dx, dy, &rc, &rc, 0, 0, SW_INVALIDATE);
-		RedrawWindow(get_wnd(),0,0,RDW_UPDATENOW);
+		ScrollWindowEx(get_wnd(), dx, dy, &rc, &rc, nullptr, nullptr, SW_INVALIDATE);
+		RedrawWindow(get_wnd(),nullptr,nullptr,RDW_UPDATENOW);
 	}
 
 }
@@ -725,7 +725,7 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 
 			if (0 == g_windows.add_item(this))
-				g_message_window.create(NULL);
+				g_message_window.create(nullptr);
 
 			LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lp;
 
@@ -873,8 +873,8 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				GetClientRect(get_wnd(), &rc);
 				int dy = SB == SB_VERT ? si.nPos - new_pos : 0;
 				int dx = SB == SB_HORZ ? si.nPos - new_pos : 0;
-				ScrollWindowEx(get_wnd(), dx, dy, &rc, &rc, 0, 0, SW_INVALIDATE);
-				RedrawWindow(get_wnd(),0,0,RDW_UPDATENOW);
+				ScrollWindowEx(get_wnd(), dx, dy, &rc, &rc, nullptr, nullptr, SW_INVALIDATE);
+				RedrawWindow(get_wnd(),nullptr,nullptr,RDW_UPDATENOW);
 			}
 
 		}
@@ -900,7 +900,7 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			HBITMAP bm_mem = CreateCompatibleBitmap(ps.hdc, RECT_CX(rc), RECT_CY(rc));
 			HBITMAP bm_old = SelectBitmap(dc_mem, bm_mem);
 
-			OffsetWindowOrgEx(dc_mem, +rc.left, +rc.top, NULL);
+			OffsetWindowOrgEx(dc_mem, +rc.left, +rc.top, nullptr);
 
 			cui::colours::helper p_helper(g_guid_item_details_colour_client);
 
@@ -988,7 +988,7 @@ m_script(cfg_item_details_script), m_horizontal_alignment(cfg_item_details_horiz
 m_nowplaying_active(false), m_word_wrapping(cfg_item_details_word_wrapping), m_font_change_info_valid(false),
 m_display_info_valid(false), m_edge_style(cfg_item_details_edge_style),
 m_vertical_alignment(cfg_item_details_vertical_alignment),
-m_wnd_config(NULL)
+m_wnd_config(nullptr)
 //, m_update_scrollbar_range_in_progress(false)
 //m_library_richedit(NULL), m_wnd_richedit(NULL)
 {
@@ -1021,7 +1021,7 @@ void item_details_t::on_edge_style_change()
 	if (m_edge_style == 1) flags |= WS_EX_CLIENTEDGE;
 	if (m_edge_style == 2) flags |= WS_EX_STATICEDGE;
 	SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, flags);
-	SetWindowPos(get_wnd(), 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+	SetWindowPos(get_wnd(), nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 }
 
 void item_details_t::set_edge_style(t_size edge_style)

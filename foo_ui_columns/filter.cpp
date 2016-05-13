@@ -239,7 +239,7 @@ namespace filter_panel {
 	{
 		t_size i, count = g_windows.get_count();
 		for (i = 0; i<count; i++)
-			RedrawWindow(g_windows[i]->get_wnd(), NULL, NULL, RDW_UPDATENOW | RDW_INVALIDATE);
+			RedrawWindow(g_windows[i]->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 	}
 	void filter_panel_t::g_on_new_field(const field_t & field)
 	{
@@ -593,7 +593,7 @@ namespace filter_panel {
 			{
 				service_ptr_t<titleformat_object> to;
 				static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(data, to, NULL);
+				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(data, to, nullptr);
 			}
 			static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
 			IDataObject * pDataObject = incoming_api->create_dataobject(data);
@@ -730,7 +730,7 @@ namespace filter_panel {
 		{
 			service_ptr_t<titleformat_object> to;
 			static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-			mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(handles, to, NULL);
+			mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(handles, to, nullptr);
 		}
 		if (action != action_add_to_active)
 			playlist_api->playlist_add_items(index, handles, bit_array_false());
@@ -805,7 +805,7 @@ namespace filter_panel {
 			service_ptr_t<titleformat_object> to;
 			static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
 			{
-				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(handles, to, NULL);
+				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(handles, to, nullptr);
 			}
 		}
 		playlist_api->playlist_add_items(index, handles, bit_array_false());
@@ -879,7 +879,7 @@ namespace filter_panel {
 			{
 				service_ptr_t<titleformat_object> to;
 				static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(m_handles, to, NULL);
+				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(m_handles, to, nullptr);
 			}
 			m_handles_sorted = true;
 		}

@@ -24,7 +24,7 @@ void preview_to_console(const char * spec, bool extra)
 		if (b_date) GetLocalTime(&st);
 
 		global_variable_list extra_items;
-		playlist_view::g_get_cache().active_make_extra(idx, extra_items, b_date ? &st : 0, b_legacy);
+		playlist_view::g_get_cache().active_make_extra(idx, extra_items, b_date ? &st : nullptr, b_legacy);
 		service_ptr_t<titleformat_object> to_temp;
 		static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, spec);
 
@@ -34,7 +34,7 @@ void preview_to_console(const char * spec, bool extra)
 		titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : nullptr);
 
 		//0.9 fallout
-		playlist_api->activeplaylist_item_format_title(idx, &tf_hook, temp, to_temp, 0, play_control::display_level_all);
+		playlist_api->activeplaylist_item_format_title(idx, &tf_hook, temp, to_temp, nullptr, play_control::display_level_all);
 		//	if (map) temp.replace_char(6, 3);
 		pfc::string_formatter formatter;
 		popup_message::g_show(temp, formatter << "Preview of track " << (idx + 1));
@@ -167,7 +167,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_ite
 		if (insert_none && idx <= idx_none) idx_none++;
 	}
 
-	uSendMessageText(wnd_combo, CB_SETCURSEL, sel == -1 && insert_none ? idx_none : sel, 0);
+	uSendMessageText(wnd_combo, CB_SETCURSEL, sel == -1 && insert_none ? idx_none : sel, nullptr);
 
 	//menu_helpers::get_description(menu_item::TYPE_MAIN, item, desc);
 	uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0, desc);

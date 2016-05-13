@@ -220,7 +220,7 @@ public:
 
 	static BOOL CALLBACK g_on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
-		tab_artwork * p_data = NULL;
+		tab_artwork * p_data = nullptr;
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<tab_artwork*>(lp);
@@ -303,7 +303,7 @@ public:
 						AppendMenuW(menu,(MF_STRING),index+1,pfc::stringcvt::string_wide_from_utf8(g_artwork_sources[index].m_name));
 					}
 								
-					int cmd = TrackPopupMenu(menu,TPM_LEFTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,rc.left,rc.bottom,0,wnd,0);
+					int cmd = TrackPopupMenu(menu,TPM_LEFTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,rc.left,rc.bottom,0,wnd,nullptr);
 					DestroyMenu(menu);
 					if (cmd>0 && (t_size)cmd <= indexcount)
 					{

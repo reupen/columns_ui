@@ -2,8 +2,8 @@
 #include "splitter.h"
 
 
-splitter_window_impl::panel::panel() : m_hidden(false), m_guid(pfc::guid_null), m_locked(false), m_wnd(NULL),
-m_wnd_child(NULL), m_show_caption(true), m_caption_orientation(NULL),
+splitter_window_impl::panel::panel() : m_hidden(false), m_guid(pfc::guid_null), m_locked(false), m_wnd(nullptr),
+m_wnd_child(nullptr), m_show_caption(true), m_caption_orientation(NULL),
 m_autohide(false), m_container(this), m_size(150), m_show_toggle_area(false),
 m_use_custom_title(false)
 {
@@ -18,9 +18,9 @@ void splitter_window_impl::panel::destroy()
 		//			stream_writer_memblock_ref blah(pal.m_child_data);
 		//			pal.m_child->get_config(&blah);
 		m_child->destroy_window();
-		m_wnd_child = NULL;
+		m_wnd_child = nullptr;
 		DestroyWindow(m_wnd);
-		m_wnd = NULL;
+		m_wnd = nullptr;
 		m_child.release();
 	}
 	if (m_container.get_wnd())
@@ -38,14 +38,14 @@ void splitter_window_impl::panel::on_size(unsigned cx, unsigned cy)
 	if (m_show_toggle_area && !m_autohide) x++;
 
 	if (m_wnd_child)
-		SetWindowPos(m_wnd_child, 0, x, y, cx - x, cy - y, SWP_NOZORDER);
+		SetWindowPos(m_wnd_child, nullptr, x, y, cx - x, cy - y, SWP_NOZORDER);
 	if (caption_size /*&& (m_caption_orientation == vertical || (m_container.m_uxtheme.is_valid() && m_container.m_theme))*/)
 	{
 		int caption_cx = min(m_caption_orientation == vertical ? caption_size : (cx), MAXLONG);
 		int caption_cy = min(m_caption_orientation == vertical ? cy : caption_size, MAXLONG);
 
 		RECT rc_caption = { 0, 0, caption_cx, caption_cy };
-		RedrawWindow(m_wnd, &rc_caption, 0, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(m_wnd, &rc_caption, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 }
 

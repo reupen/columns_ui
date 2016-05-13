@@ -36,7 +36,7 @@ void update_status()
 
 		service_ptr_t<titleformat_object> to_status;
 		static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
-		play_api->playback_format_title_ex(track, 0, statusbartext, to_status, NULL, play_control::display_level_all);
+		play_api->playback_format_title_ex(track, nullptr, statusbartext, to_status, nullptr, play_control::display_level_all);
 
 		track.release();
 	}
@@ -47,7 +47,7 @@ void update_status()
 	status_update_main(false);
 }
 
-WNDPROC status_proc = NULL;
+WNDPROC status_proc = nullptr;
 
 LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -93,8 +93,8 @@ namespace status_bar {
 	unsigned u_length_pos = 0;
 	unsigned u_lock_pos = 0;
 	unsigned u_vol_pos = 0;
-	HICON icon_lock = 0;
-	HTHEME thm_status = NULL;
+	HICON icon_lock = nullptr;
+	HTHEME thm_status = nullptr;
 	HICON get_icon()
 	{
 		if (!icon_lock)
@@ -108,7 +108,7 @@ namespace status_bar {
 		if (icon_lock)
 		{
 			DeleteObject(icon_lock);
-			icon_lock = 0;
+			icon_lock = nullptr;
 		}
 	}
 	void destroy_theme_handle()
@@ -117,7 +117,7 @@ namespace status_bar {
 			if (status_bar::thm_status)
 			{
 				CloseThemeData(status_bar::thm_status);
-				status_bar::thm_status = NULL;
+				status_bar::thm_status = nullptr;
 			}
 		}
 	}
@@ -125,7 +125,7 @@ namespace status_bar {
 	{
 		if (!status_bar::thm_status)
 		{
-			status_bar::thm_status = IsThemeActive() && IsAppThemed() ? OpenThemeData(g_status, L"Status") : NULL;
+			status_bar::thm_status = IsThemeActive() && IsAppThemed() ? OpenThemeData(g_status, L"Status") : nullptr;
 		}
 	}
 	void destroy_status_window()
@@ -134,7 +134,7 @@ namespace status_bar {
 		if (g_status)
 		{
 			DestroyWindow(g_status);
-			g_status = NULL;
+			g_status = nullptr;
 		}
 	}
 };
@@ -308,9 +308,9 @@ void create_status()
 {
 	if (cfg_status && !g_status)
 	{
-		g_status = CreateWindowEx(0, STATUSCLASSNAME, 0,
+		g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr,
 			WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0, g_main_window, (HMENU)ID_STATUS,
-			core_api::get_my_instance(), NULL);
+			core_api::get_my_instance(), nullptr);
 
 		status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWLP_WNDPROC, (LPARAM)(g_status_hook));
 

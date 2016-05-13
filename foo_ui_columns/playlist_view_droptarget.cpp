@@ -3,8 +3,8 @@
 
 HRESULT STDMETHODCALLTYPE IDropTarget_playlist::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)
 {
-	if (ppvObject == NULL) return E_INVALIDARG;
-	*ppvObject = NULL;
+	if (ppvObject == nullptr) return E_INVALIDARG;
+	*ppvObject = nullptr;
 	if (riid == IID_IUnknown) 
 	{
 		AddRef();
@@ -84,10 +84,10 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::Drop(IDataObject *pDataObj, DWOR
 			HMENU menu = CreatePopupMenu();
 
 			uAppendMenu(menu, (MF_STRING), ID_DROP, "&Add files here");
-			uAppendMenu(menu, MF_SEPARATOR, 0, 0);
+			uAppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 			uAppendMenu(menu, MF_STRING, ID_CANCEL, "&Cancel");
 
-			int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, p_playlist->wnd_playlist, 0);
+			int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, p_playlist->wnd_playlist, nullptr);
 			DestroyMenu(menu);
 
 			if (cmd)

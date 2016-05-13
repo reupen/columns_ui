@@ -11,19 +11,19 @@
 
 #include "main_window.h"
 
-rebar_window * g_rebar_window = 0;
+rebar_window * g_rebar_window = nullptr;
 layout_window g_layout_window;
 cui::main_window_t cui::g_main_window;
 user_interface::HookProc_t main_window::g_hookproc;
 status_pane g_status_pane;
 mmh::comptr_t<ITaskbarList3> main_window::g_ITaskbarList3;
 
-HIMAGELIST  g_imagelist = NULL;
+HIMAGELIST  g_imagelist = nullptr;
 
-HWND g_main_window=0,
-	g_tooltip=0,
-	g_rebar=0,
-	g_status=0;
+HWND g_main_window=nullptr,
+	g_tooltip=nullptr,
+	g_rebar=nullptr,
+	g_status=nullptr;
 
 bool ui_initialising=false,
 	g_minimised = false
@@ -31,13 +31,13 @@ bool ui_initialising=false,
 
 bool g_playing = false;
 
-HICON g_icon=0;
+HICON g_icon=nullptr;
 
 pfc::string8
 	statusbartext,
 	windowtext;
 
-HFONT g_font=0;
+HFONT g_font=nullptr;
 
 bool remember_window_pos()
 {
@@ -134,7 +134,7 @@ void destroy_systray_icon()
 {
 	if (g_icon_created)
 	{
-		uShellNotifyIcon(NIM_DELETE, g_main_window, 1, MSG_NOTICATION_ICON, 0, 0);
+		uShellNotifyIcon(NIM_DELETE, g_main_window, 1, MSG_NOTICATION_ICON, nullptr, nullptr);
 		g_icon_created = false;
 	}
 }
@@ -152,7 +152,7 @@ void create_icon_handle()
 {
 	const unsigned cx = GetSystemMetrics(SM_CXSMICON);
 	const unsigned cy = GetSystemMetrics(SM_CYSMICON);
-	if (g_icon) { DestroyIcon(g_icon); g_icon = 0; }
+	if (g_icon) { DestroyIcon(g_icon); g_icon = nullptr; }
 	if (cfg_custom_icon)
 		g_icon = (HICON)uLoadImage(core_api::get_my_instance(), cfg_tray_icon_path, IMAGE_ICON, cx, cy, LR_LOADFROMFILE);
 	if (!g_icon)
@@ -283,8 +283,8 @@ void size_windows()
 			if (g_status_pane.get_wnd()) 
 			{
 				int cy = g_status_pane.get_ideal_height();
-				RedrawWindow(g_status_pane.get_wnd(), 0, 0, RDW_INVALIDATE);
-				dwp = DeferWindowPos(dwp, g_status_pane.get_wnd(), 0, 0, rc_main_client.bottom-status_height-cy, rc_main_client.right-rc_main_client.left, cy, SWP_NOZORDER);
+				RedrawWindow(g_status_pane.get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+				dwp = DeferWindowPos(dwp, g_status_pane.get_wnd(), nullptr, 0, rc_main_client.bottom-status_height-cy, rc_main_client.right-rc_main_client.left, cy, SWP_NOZORDER);
 				status_height += cy;
 			}
 			int rebar_height=0;
@@ -296,10 +296,10 @@ void size_windows()
 				rebar_height = rc_rebar.bottom-rc_rebar.top;
 			}
 			if (g_layout_window.get_wnd())
-				dwp = DeferWindowPos(dwp, g_layout_window.get_wnd(), 0, 0, rebar_height, rc_main_client.right-rc_main_client.left, rc_main_client.bottom-rc_main_client.top-rebar_height-status_height, SWP_NOZORDER);
+				dwp = DeferWindowPos(dwp, g_layout_window.get_wnd(), nullptr, 0, rebar_height, rc_main_client.right-rc_main_client.left, rc_main_client.bottom-rc_main_client.top-rebar_height-status_height, SWP_NOZORDER);
 			if (g_rebar) 
 			{
-				dwp = DeferWindowPos(dwp, g_rebar, 0, 0, 0, rc_main_client.right-rc_main_client.left, rebar_height, SWP_NOZORDER);
+				dwp = DeferWindowPos(dwp, g_rebar, nullptr, 0, 0, rc_main_client.right-rc_main_client.left, rebar_height, SWP_NOZORDER);
 			}
 			
 			EndDeferWindowPos(dwp);
@@ -453,7 +453,7 @@ void update_titlebar()
 		pfc::string8 title;
 		service_ptr_t<titleformat_object> to_wtitle;
 		static_api_ptr_t<titleformat_compiler>()->compile_safe(to_wtitle, main_window::config_main_window_title_script.get());
-		play_api->playback_format_title_ex(track, 0, title, to_wtitle, NULL, play_control::display_level_all);
+		play_api->playback_format_title_ex(track, nullptr, title, to_wtitle, nullptr, play_control::display_level_all);
 		set_main_window_text(title);
 		track.release();
 	}
@@ -479,7 +479,7 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
 			
 			service_ptr_t<titleformat_object> to_systray;
 			static_api_ptr_t<titleformat_compiler>()->compile_safe(to_systray, main_window::config_notification_icon_script.get());
-			play_api->playback_format_title_ex(track, 0, title, to_systray, 0, play_control::display_level_titles);
+			play_api->playback_format_title_ex(track, nullptr, title, to_systray, nullptr, play_control::display_level_titles);
 			
 			track.release();
 			

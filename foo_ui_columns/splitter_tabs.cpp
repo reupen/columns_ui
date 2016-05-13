@@ -137,7 +137,7 @@ public:
 				SetParent(wnd, core_api::get_main_window());
 				}*/
 
-				p_ext->m_wnd=0;
+				p_ext->m_wnd=nullptr;
 				p_ext->m_child.release();
 				m_this->m_active_panels.remove_by_idx(index);
 				m_this->m_panels.remove_item(p_ext);
@@ -183,7 +183,7 @@ bool splitter_window_tabs_impl::panel_list::find_by_wnd(HWND wnd, unsigned & p_o
 	return false;
 }
 splitter_window_tabs_impl::panel::panel()
-: m_wnd(NULL), m_use_custom_title(false)
+: m_wnd(nullptr), m_use_custom_title(false)
 {};
 
 splitter_window_tabs_impl::panel::~panel()
@@ -214,7 +214,7 @@ uie::splitter_item_full_v2_t * splitter_window_tabs_impl::panel::create_splitter
 void splitter_window_tabs_impl::panel::set_from_splitter_item(const uie::splitter_item_t * p_source)
 {
 	if (m_wnd) destroy();
-	const uie::splitter_item_full_t * ptr = NULL;
+	const uie::splitter_item_full_t * ptr = nullptr;
 	if (p_source->query(ptr))
 	{
 		m_use_custom_title = ptr->m_custom_title;
@@ -230,7 +230,7 @@ void splitter_window_tabs_impl::panel::destroy()
 	if (m_child.is_valid())
 	{
 		m_child->destroy_window();
-		m_wnd = NULL;
+		m_wnd = nullptr;
 		m_child.release();
 	}
 	m_this.release();
@@ -337,7 +337,7 @@ uie::splitter_item_t * splitter_window_tabs_impl::get_panel(unsigned index)const
 	{
 		return m_panels[index]->create_splitter_item();
 	}
-	return NULL;
+	return nullptr;
 };
 
 bool splitter_window_tabs_impl::get_config_item_supported(unsigned index, const GUID & p_type) const
@@ -668,7 +668,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
 					}
 					menu_helpers::win32_auto_mnemonics(menu);
 
-					unsigned cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,wnd,0);
+					unsigned cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,wnd,nullptr);
 
 					if (cmd >= IDM_EXT_BASE)
 					{
@@ -694,7 +694,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
 					on_active_tab_changed(TabCtrl_GetCurSel(m_wnd_tabs));
 					if (m_active_tab != pfc_infinite && m_active_tab < m_active_panels.get_count() && GetFocus() != m_wnd_tabs)
 					{
-						HWND wnd_root = GetAncestor(m_wnd_tabs, GA_ROOT), wnd_focus = NULL;
+						HWND wnd_root = GetAncestor(m_wnd_tabs, GA_ROOT), wnd_focus = nullptr;
 						if (wnd_root)
 						{
 
@@ -704,7 +704,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
 							if (wnd_focus && ( IsChild(m_active_panels[m_active_tab]->m_wnd, wnd_focus) || m_active_panels[m_active_tab]->m_wnd == wnd_focus))
 								SetFocus(wnd_focus);
 							else
-								wnd_focus = NULL;
+								wnd_focus = nullptr;
 						}
 						if (!wnd_focus)
 							SetFocus(m_wnd_tabs);
@@ -906,7 +906,7 @@ void splitter_window_tabs_impl::create_tabs()
 	DWORD flags = WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | (1 ? WS_VISIBLE : 0); //TCS_MULTILINE hack to prevent BS.
 	m_wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Tab stack"),
 		flags, 0, 0, rc.right, rc.bottom,
-		get_wnd(), HMENU(2345), core_api::get_my_instance(), NULL);
+		get_wnd(), HMENU(2345), core_api::get_my_instance(), nullptr);
 	SetWindowLongPtr(m_wnd_tabs,GWLP_USERDATA,(LPARAM)(this));
 	m_tab_proc = (WNDPROC)SetWindowLongPtr(m_wnd_tabs,GWLP_WNDPROC,(LPARAM)g_hook_proc);
 	//SetWindowTheme(m_wnd_tabs, L"BrowserTab", NULL);
@@ -915,7 +915,7 @@ void splitter_window_tabs_impl::create_tabs()
 void splitter_window_tabs_impl::destroy_tabs()
 {
 	DestroyWindow(m_wnd_tabs);
-	m_wnd_tabs = NULL;
+	m_wnd_tabs = nullptr;
 	g_font.release();
 }
 uie::window_factory<splitter_window_tabs_impl> g_splitter_window_tabs;
@@ -954,7 +954,7 @@ void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
 {
 	HDWP dwp = BeginDeferWindowPos(m_active_panels.get_count() +1);
 	if (m_wnd_tabs)
-		dwp = DeferWindowPos(dwp, m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
+		dwp = DeferWindowPos(dwp, m_wnd_tabs, nullptr, 0, 0, width, height, SWP_NOZORDER);
 	//SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 	
 	t_size i, count = m_active_panels.get_count();
@@ -963,7 +963,7 @@ void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
 	for (i=0; i<count; i++)
 	{
 		if (m_active_panels[i]->m_wnd)
-			dwp = DeferWindowPos(dwp, m_active_panels[i]->m_wnd, NULL, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, SWP_NOZORDER);
+			dwp = DeferWindowPos(dwp, m_active_panels[i]->m_wnd, nullptr, rc.left, rc.top, rc.right-rc.left, rc.bottom-rc.top, SWP_NOZORDER);
 		//SetWindowPos(m_active_panels[i]->m_wnd, NULL, rc.left, rc.top, RECT_CX(rc), RECT_CY(rc), SWP_NOZORDER);
 	}
 	EndDeferWindowPos(dwp);
@@ -997,7 +997,7 @@ void splitter_window_tabs_impl::on_active_tab_changed(t_size index_to)
 		m_active_tab = pfc_infinite;
 };
 splitter_window_tabs_impl::splitter_window_tabs_impl()
-: m_wnd_tabs(NULL), m_active_tab(pfc_infinite), m_tab_proc(NULL), m_mousewheel_delta(NULL)
+: m_wnd_tabs(nullptr), m_active_tab(pfc_infinite), m_tab_proc(nullptr), m_mousewheel_delta(NULL)
 {};
 
 LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)

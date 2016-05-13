@@ -203,7 +203,7 @@ m_info_sections_mask(info_sections_mask), m_show_columns(b_show_columns), m_show
 
 BOOL CALLBACK selection_properties_config_t::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	selection_properties_config_t * p_data = NULL;
+	selection_properties_config_t * p_data = nullptr;
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<selection_properties_config_t*>(lp);

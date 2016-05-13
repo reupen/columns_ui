@@ -145,7 +145,7 @@ public:
 				uAppendMenu(menu, (MF_STRING), IDM_RESETSTYLE, "&Reset style string");
 
 
-				int cmd = TrackPopupMenu(menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, 0);
+				int cmd = TrackPopupMenu(menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
 				DestroyMenu(menu);
 				if (cmd == IDM_TFHELP)
 				{
@@ -209,7 +209,7 @@ public:
 
 } g_tab_global;
 
-WNDPROC tab_global::editproc = 0;
+WNDPROC tab_global::editproc = nullptr;
 
 preferences_tab * g_get_tab_global()
 {

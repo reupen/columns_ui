@@ -258,7 +258,7 @@ class live_layout_editing_button_t : public uie::button
 	}
 	virtual HBITMAP get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, uie::t_mask & p_mask_type, COLORREF & cr_mask, HBITMAP & bm_mask) const
 	{
-		return NULL;
+		return nullptr;
 	}
 	virtual unsigned get_button_state() const
 	{

@@ -39,7 +39,7 @@ public:
 		return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this);
 	}
 	//virtual const char * get_name()=0;
-	edit_column_window_options(const column_t::ptr & column) : initialising(false), editproc(NULL), m_column(column),m_wnd(NULL) {};
+	edit_column_window_options(const column_t::ptr & column) : initialising(false), editproc(nullptr), m_column(column),m_wnd(nullptr) {};
 
 	bool initialising;
 	WNDPROC editproc;
@@ -110,7 +110,7 @@ public:
 	}
 	static BOOL CALLBACK g_on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
-		self_t * p_data = NULL;
+		self_t * p_data = nullptr;
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<self_t*>(lp);
@@ -146,7 +146,7 @@ public:
 
 			break;
 		case WM_DESTROY:
-			m_wnd = NULL;
+			m_wnd = nullptr;
 			break;
 
 
@@ -194,7 +194,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						m_column->width =(GetDlgItemInt(wnd, IDC_WIDTH, 0, false));
+						m_column->width =(GetDlgItemInt(wnd, IDC_WIDTH, nullptr, false));
 					}
 				}
 				break;
@@ -202,7 +202,7 @@ public:
 				{
 					if (!initialising && m_column.is_valid()) 
 					{
-						m_column->parts = (GetDlgItemInt(wnd, IDC_PARTS, 0, false));
+						m_column->parts = (GetDlgItemInt(wnd, IDC_PARTS, nullptr, false));
 					}
 				}
 				break;
@@ -248,7 +248,7 @@ public:
 		return uCreateDialog(IDD_COLUMN_SCRIPTS, wnd, g_on_message, (LPARAM)this);
 	}
 	//virtual const char * get_name()=0;
-	edit_column_window_scripts(const column_t::ptr & col) : initialising(false), editproc(NULL), m_column(col), m_wnd(NULL) {};
+	edit_column_window_scripts(const column_t::ptr & col) : initialising(false), editproc(nullptr), m_column(col), m_wnd(nullptr) {};
 
 	HWND m_wnd;
 
@@ -338,7 +338,7 @@ public:
 
 	static LRESULT WINAPI g_EditHook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
-		self_t * p_data = NULL;
+		self_t * p_data = nullptr;
 		p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 		return p_data ? p_data->EditHook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 	}
@@ -360,7 +360,7 @@ public:
 
 	static BOOL CALLBACK g_on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
-		self_t * p_data = NULL;
+		self_t * p_data = nullptr;
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<self_t*>(lp);
@@ -409,7 +409,7 @@ public:
 
 		case WM_DESTROY:
 			{
-				m_wnd = NULL;
+				m_wnd = nullptr;
 				g_editor_font_notify.release();
 			}
 			break;
@@ -469,7 +469,7 @@ public:
 					uAppendMenu(menu,(MF_STRING),IDM_EDITORFONT,"Change editor &font");
 
 
-					int cmd = TrackPopupMenu(menu,TPM_LEFTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,rc.left,rc.bottom,0,wnd,0);
+					int cmd = TrackPopupMenu(menu,TPM_LEFTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,rc.left,rc.bottom,0,wnd,nullptr);
 					DestroyMenu(menu);
 					if (cmd == IDM_TFHELP)
 					{
@@ -534,7 +534,7 @@ public:
 		{
 			ShowWindow(m_wnd_child, SW_HIDE);
 			DestroyWindow(m_wnd_child);
-			m_wnd_child=NULL;
+			m_wnd_child=nullptr;
 			m_child.release();
 		}
 
@@ -609,7 +609,7 @@ public:
 
 	static BOOL CALLBACK g_on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
-		tab_columns_v3 * p_data = NULL;
+		tab_columns_v3 * p_data = nullptr;
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<tab_columns_v3*>(lp);
@@ -662,12 +662,12 @@ public:
 					if (item != -1)
 						AppendMenu(menu, MF_STRING, ID_REMOVE, L"&Remove");
 					if (item != -1 && m_columns.get_count()>1)
-						AppendMenu(menu, MF_SEPARATOR, NULL, NULL);
+						AppendMenu(menu, MF_SEPARATOR, NULL, nullptr);
 					if (item>0)
 						AppendMenu(menu, MF_STRING, ID_UP, L"Move &up");
 					if (item >=0 && (t_size(item+1)) < m_columns.get_count())
 						AppendMenu(menu, MF_STRING, ID_DOWN, L"Move &down");
-					int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,wnd,0);
+					int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,wnd,nullptr);
 					DestroyMenu(menu);
 					if (cmd)
 					{
@@ -736,11 +736,11 @@ public:
 
 				apply();
 				m_columns.remove_all();
-				m_wnd = NULL;
+				m_wnd = nullptr;
 				if (m_wnd_child)
 				{
 					DestroyWindow(m_wnd_child);
-					m_wnd_child=NULL;
+					m_wnd_child=nullptr;
 					m_child.release();
 				}
 			}
@@ -816,7 +816,7 @@ public:
 				{
 					if (m_wnd_child && (HWND)lp == m_wnd_child)
 					{
-						m_wnd_child = NULL;
+						m_wnd_child = nullptr;
 						//m_child.release();
 					}
 				}

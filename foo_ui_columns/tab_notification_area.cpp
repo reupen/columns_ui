@@ -64,7 +64,7 @@ public:
 			case IDC_BROWSE_ICON:
 			{
 				pfc::string8 path = cfg_tray_icon_path;
-				if (uGetOpenFileName(wnd, "Icon Files (*.ico)|*.ico|All Files (*.*)|*.*", 0, "ico", "Choose Icon", NULL, path, FALSE))
+				if (uGetOpenFileName(wnd, "Icon Files (*.ico)|*.ico|All Files (*.*)|*.*", 0, "ico", "Choose Icon", nullptr, path, FALSE))
 				{
 					cfg_tray_icon_path = path;
 					if (cfg_custom_icon) { create_icon_handle(); create_systray_icon(); }

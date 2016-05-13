@@ -104,7 +104,7 @@ public:
 
 	static BOOL CALLBACK g_on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
-		tab_filter_fields * p_data = NULL;
+		tab_filter_fields * p_data = nullptr;
 		if (msg == WM_INITDIALOG)
 		{
 			p_data = reinterpret_cast<tab_filter_fields*>(lp);
@@ -283,7 +283,7 @@ public:
 
 	static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	{
-		tab_filter_misc * p_data = NULL;
+		tab_filter_misc * p_data = nullptr;
 		if (msg == WM_INITDIALOG) {
 			p_data = reinterpret_cast<tab_filter_misc*>(lp);
 			SetWindowLongPtr(wnd, DWLP_USER, lp);
@@ -320,11 +320,11 @@ public:
 						uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_ADDSTRING, 0, "None");
 						uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_ADDSTRING, 0, "Sunken");
 						uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_ADDSTRING, 0, "Grey");
-						uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_SETCURSEL, filter_panel::cfg_edgestyle, 0);
+						uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_SETCURSEL, filter_panel::cfg_edgestyle, nullptr);
 
 						uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_ADDSTRING, 0, "By position in splitter");
 						uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_ADDSTRING, 0, "By field list above");
-						uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_SETCURSEL, filter_panel::cfg_orderedbysplitters ? 0 : 1, 0);
+						uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_SETCURSEL, filter_panel::cfg_orderedbysplitters ? 0 : 1, nullptr);
 
 						SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETRANGE32, -100, 100);
 					}
@@ -362,7 +362,7 @@ public:
 						break;
 					case (EN_CHANGE << 16) | IDC_PADDING:
 						if (!initialising) {
-							filter_panel::cfg_vertical_item_padding = strtol(string_utf8_from_window((HWND)lp).get_ptr(), NULL, 10);
+							filter_panel::cfg_vertical_item_padding = strtol(string_utf8_from_window((HWND)lp).get_ptr(), nullptr, 10);
 							filter_panel::filter_panel_t::g_on_vertical_item_padding_change();
 						}
 						break;

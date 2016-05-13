@@ -25,7 +25,7 @@ void playlist_view::exit_inline_edit()
 	if (m_wnd_edit)
 	{
 		DestroyWindow(m_wnd_edit);
-		m_wnd_edit = 0;
+		m_wnd_edit = nullptr;
 	}
 
 	if (m_edit_timer)
@@ -155,7 +155,7 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
 			exit_inline_edit();
 			return;
 			//mask[i]=false;
-			ptrs.add_item((const char *)NULL);
+			ptrs.add_item((const char *)nullptr);
 		}
 		//exit_inline_edit();
 		if (matching && i>0 && ((ptrs[i] && ptrs[i - 1] && strcmp(ptrs[i], ptrs[i - 1])) || ((!ptrs[i] || !ptrs[i - 1]) && (ptrs[i] != ptrs[i - 1]))))
@@ -172,7 +172,7 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
 			ES_AUTOHSCROLL | ES_MULTILINE | ES_AUTOVSCROLL | WS_BORDER | WS_CLIPCHILDREN, x,
 			y,
 			cx, cy, wnd_playlist, HMENU(667),
-			core_api::get_my_instance(), 0);
+			core_api::get_my_instance(), nullptr);
 
 		SetWindowLongPtr(m_wnd_edit, GWLP_USERDATA, (LPARAM)(this));
 		m_inline_edit_proc = (WNDPROC)SetWindowLongPtr(m_wnd_edit, GWLP_WNDPROC, (LPARAM)(g_inline_edit_hook_v2));
@@ -183,7 +183,7 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
 	else
 	{
 		SendMessage(m_wnd_edit, WM_SETTEXT, 0, (LPARAM)_T(""));
-		SetWindowPos(m_wnd_edit, NULL, x,
+		SetWindowPos(m_wnd_edit, nullptr, x,
 			y,
 			cx, cy, SWP_NOZORDER);
 		//if (ptr)

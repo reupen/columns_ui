@@ -28,7 +28,7 @@ void config_host_generic::make_child(HWND wnd)
 		EnableThemeDialogTexture(m_child, ETDT_ENABLETAB);
 	}
 
-	SetWindowPos(m_child, 0, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, SWP_NOZORDER);
+	SetWindowPos(m_child, nullptr, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, SWP_NOZORDER);
 	SetWindowPos(wnd_tab, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 	ShowWindow(m_child, SW_SHOWNORMAL);
@@ -96,7 +96,7 @@ BOOL config_host_generic::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				case WM_DESTROY:
 					{
 						if (m_child && (HWND)lp == m_child)
-							m_child = 0;
+							m_child = nullptr;
 					}
 					break;
 			}

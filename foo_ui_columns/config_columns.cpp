@@ -240,7 +240,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 							titleformat_hook_date tf_hook_date(&st);
 							titleformat_hook_impl_splitter tf_hook(b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
 
-							playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, times_columns[n].to_display, 0, play_control::display_level_all);
+							playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, times_columns[n].to_display, nullptr, play_control::display_level_all);
 							time_temp += timer.query();
 						}
 					}
@@ -277,7 +277,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 								titleformat_hook_date tf_hook_date(&st);
 								titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
 
-								playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, times_columns[n].to_colour, 0, play_control::display_level_all);
+								playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp, times_columns[n].to_colour, nullptr, play_control::display_level_all);
 								time_temp += timer.query();
 							}
 						}

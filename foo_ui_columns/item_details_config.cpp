@@ -61,10 +61,10 @@ BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
 		if (m_timer_active)
 			on_timer();
 		if (!m_modal)
-			m_this->set_config_wnd(NULL);
+			m_this->set_config_wnd(nullptr);
 		break;
 	case WM_NCDESTROY:
-		m_wnd = NULL;
+		m_wnd = nullptr;
 		if (!m_modal)
 		{
 			modeless_dialog_manager::g_remove(wnd);
@@ -178,7 +178,7 @@ void item_details_config_t::start_timer()
 {
 	kill_timer();
 
-	SetTimer(m_wnd, timer_id, 667, NULL);
+	SetTimer(m_wnd, timer_id, 667, nullptr);
 	m_timer_active = true;
 }
 
@@ -202,14 +202,14 @@ bool item_details_config_t::run_modal(HWND wnd)
 }
 
 item_details_config_t::item_details_config_t(const char * p_text, t_size edge_style, t_size halign, t_size valign) : m_script(p_text), m_edge_style(edge_style), m_horizontal_alignment(halign),
-m_vertical_alignment(valign), m_modal(true), m_timer_active(false), m_wnd(NULL)
+m_vertical_alignment(valign), m_modal(true), m_timer_active(false), m_wnd(nullptr)
 {
 
 }
 
 BOOL CALLBACK item_details_config_t::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	item_details_config_t * p_data = NULL;
+	item_details_config_t * p_data = nullptr;
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<item_details_config_t*>(lp);

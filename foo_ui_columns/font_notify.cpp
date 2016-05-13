@@ -4,10 +4,10 @@
 #include "status_pane.h"
 #include "font_notify.h"
 
-HFONT g_status_font = 0;
-HFONT g_tab_font = 0;
-HFONT g_header_font = 0;
-HFONT g_plist_font = 0;
+HFONT g_status_font = nullptr;
+HFONT g_tab_font = nullptr;
+HFONT g_header_font = nullptr;
+HFONT g_plist_font = nullptr;
 
 // {82196D79-69BC-4041-8E2A-E3B4406BB6FC}
 static const GUID font_client_cp_guid = 
@@ -44,7 +44,7 @@ void on_playlist_font_change()
 		if (g_font)
 		{
 			DeleteObject(g_font);
-			g_font =0;
+			g_font =nullptr;
 		}
 		
 		unsigned m, pcount = playlist_view::list_playlist.get_count();
@@ -55,7 +55,7 @@ void on_playlist_font_change()
 			{
 				if (!g_font) g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(font_client_cp_guid);
 				p_playlist->update_scrollbar(true);
-				RedrawWindow(p_playlist->wnd_playlist,0,0,RDW_INVALIDATE|RDW_UPDATENOW);
+				RedrawWindow(p_playlist->wnd_playlist,nullptr,nullptr,RDW_INVALIDATE|RDW_UPDATENOW);
 			}
 		}
 	}
@@ -66,12 +66,12 @@ void font_cleanup()
 	if (g_status_font)
 	{
 		DeleteObject(g_status_font);
-		g_status_font=0;
+		g_status_font=nullptr;
 	}
 	if (g_tab_font)
 	{
 		DeleteObject(g_tab_font);
-		g_tab_font=0;
+		g_tab_font=nullptr;
 	}
 }
 
@@ -113,7 +113,7 @@ void on_show_status_pane_change()
 	{
 		if (g_main_window)
 		{
-			if (settings::show_status_pane != (g_status_pane.get_wnd() !=0) )
+			if (settings::show_status_pane != (g_status_pane.get_wnd() !=nullptr) )
 			{
 				if (settings::show_status_pane) 
 				{
@@ -161,11 +161,11 @@ font_client_status::factory<font_client_status> g_font_client_status;
 void on_status_font_change()
 {
 	{
-		if (g_status_font!=0)
+		if (g_status_font!=nullptr)
 		{
 			if (g_status) SendMessage(g_status,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 			DeleteObject(g_status_font);
-			g_status_font=0;
+			g_status_font=nullptr;
 		}
 		
 		if (g_status) 
@@ -232,7 +232,7 @@ font_client_cph::factory<font_client_cph> g_font_client_cph;
 void on_header_font_change()
 {
 	{
-		if (g_header_font!=0)
+		if (g_header_font!=nullptr)
 		{
 			
 			unsigned n, count = playlist_view::list_playlist.get_count();
@@ -246,7 +246,7 @@ void on_header_font_change()
 			}
 			
 			DeleteObject(g_header_font);
-			g_header_font = 0;
+			g_header_font = nullptr;
 			
 		}
 		
@@ -302,7 +302,7 @@ void g_get_font_size_next_step (LOGFONT & p_lf, bool up)
 	LOGFONT lf = p_lf;
 	
 	{
-		HDC dc = GetDC(0);
+		HDC dc = GetDC(nullptr);
 		
 		fontsizeinfo size;
 		
@@ -316,7 +316,7 @@ void g_get_font_size_next_step (LOGFONT & p_lf, bool up)
 		if (size.changed)
 			lf.lfHeight = -MulDiv(size.new_size, size.caps, 72);
 
-		ReleaseDC(0, dc);
+		ReleaseDC(nullptr, dc);
 		
 		if (lf.lfHeight)
 			p_lf = lf;

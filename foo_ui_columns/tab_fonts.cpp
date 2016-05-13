@@ -4,7 +4,7 @@
 
 bool tab_appearance_fonts::is_active()
 {
-	return m_wnd != 0;
+	return m_wnd != nullptr;
 }
 
 bool tab_appearance_fonts::get_help_url(pfc::string_base & p_out)
@@ -59,7 +59,7 @@ BOOL CALLBACK tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LP
 	break;
 	case WM_DESTROY:
 	{
-		m_wnd = NULL;
+		m_wnd = nullptr;
 		m_fonts_client_list.remove_all();
 		m_element_ptr.release();
 		m_element_api.release();
@@ -191,7 +191,7 @@ void tab_appearance_fonts::update_mode_combobox()
 
 BOOL CALLBACK tab_appearance_fonts::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	tab_appearance_fonts * p_data = NULL;
+	tab_appearance_fonts * p_data = nullptr;
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<tab_appearance_fonts*>(lp);
@@ -208,7 +208,7 @@ void tab_appearance_fonts::refresh_me(HWND wnd)
 	initialising = false;
 }
 
-tab_appearance_fonts::tab_appearance_fonts() : initialising(false), m_wnd_colours_mode(NULL), m_wnd_colours_element(NULL), m_wnd(NULL)
+tab_appearance_fonts::tab_appearance_fonts() : initialising(false), m_wnd_colours_mode(nullptr), m_wnd_colours_element(nullptr), m_wnd(nullptr)
 {
 
 }

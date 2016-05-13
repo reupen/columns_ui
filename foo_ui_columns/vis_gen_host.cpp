@@ -24,7 +24,7 @@ public:
 		painter_impl(window_visualisation* p_wnd)
 			: m_wnd(p_wnd), m_gdiobj(nullptr)
 		{
-			m_dc = CreateCompatibleDC(0);
+			m_dc = CreateCompatibleDC(nullptr);
 			if (!p_wnd->get_bitmap())
 				p_wnd->make_bitmap();
 			m_gdiobj = SelectObject(m_dc, p_wnd->get_bitmap());
@@ -66,7 +66,7 @@ TCHAR* window_visualisation::class_name = _T("{ED4F644F-26AB-4aa0-809D-0D8F25352
 pfc::ptr_list_t<window_visualisation> window_visualisation::list_vis;
 
 
-window_visualisation::window_visualisation() : initialised(false), m_frame(cfg_vis_edge), bm_display(0), m_wnd(0)
+window_visualisation::window_visualisation() : initialised(false), m_frame(cfg_vis_edge), bm_display(nullptr), m_wnd(nullptr)
 {
 	memset(&rc_client, 0, sizeof(RECT));
 };
@@ -85,7 +85,7 @@ void window_visualisation::set_frame_style(unsigned p_type)
 			flags |= WS_EX_STATICEDGE;
 
 		SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, flags);
-		SetWindowPos(get_wnd(), 0, 0, 0, 0, 0,SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+		SetWindowPos(get_wnd(), nullptr, 0, 0, 0, 0,SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 	}
 }
 
@@ -98,7 +98,7 @@ void window_visualisation::make_bitmap(HDC hdc)
 		HWND wnd_vis = get_wnd();
 		HDC dc = hdc ? hdc : GetDC(wnd_vis);
 		bm_display = CreateCompatibleBitmap(dc, rc_client.right, rc_client.bottom);
-		HDC dcm = CreateCompatibleDC(0);
+		HDC dcm = CreateCompatibleDC(nullptr);
 		HGDIOBJ meh = SelectObject(dcm, bm_display);
 		p_vis->paint_background(dcm, &rc_client);
 		SelectObject(dcm, meh);
@@ -113,7 +113,7 @@ void window_visualisation::flush_bitmap()
 {
 	if (bm_display) {
 		DeleteObject(bm_display);
-		bm_display = 0;
+		bm_display = nullptr;
 	}
 }
 
@@ -132,7 +132,7 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 					flags |= WS_EX_STATICEDGE;
 
 				SetWindowLongPtr(wnd, GWL_EXSTYLE, flags);
-				SetWindowPos(wnd, 0, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+				SetWindowPos(wnd, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 
 				list_vis.add_item(this);
 				initialised = true;
@@ -158,7 +158,7 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				m_interface.release();
 				initialised = false;
 				list_vis.remove_item(this);
-				m_wnd = 0;
+				m_wnd = nullptr;
 				break;
 			}
 		case WM_PAINT:
@@ -169,7 +169,7 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 						rc_paint = rc_client;
 					}
 					HDC dc = GetDC(wnd);
-					HDC dc_bmp = CreateCompatibleDC(0);
+					HDC dc_bmp = CreateCompatibleDC(nullptr);
 					if (!bm_display)
 						make_bitmap(dc);
 					HGDIOBJ meh = SelectObject(dc_bmp, bm_display);

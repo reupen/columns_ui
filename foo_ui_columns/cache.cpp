@@ -133,7 +133,7 @@ void playlist_entry_ui::add_display_items(unsigned count)
 {
 //	display_info * display = new(std::nothrow) display_info;
 //	display_data.add_item(display);
-	if (display_data) {delete[] display_data; display_data=0;}
+	if (display_data) {delete[] display_data; display_data=nullptr;}
 	display_data = new(std::nothrow) display_info[count];
 }
 void playlist_entry_ui::set_display_item(int column, const char * data, colourinfo & colour_add)
@@ -155,7 +155,7 @@ playlist_entry_ui::~playlist_entry_ui()
 	if (display_data) delete[] display_data;
 	//display_data.delete_all();
 }
-playlist_entry_ui::playlist_entry_ui() : display_data(0) {};
+playlist_entry_ui::playlist_entry_ui() : display_data(nullptr) {};
 
 void process_colour_string(const char * src, colourinfo & out)
 {
@@ -168,7 +168,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start) 
 	{
-		out.text_colour.set(strtoul(start, 0, 16));
+		out.text_colour.set(strtoul(start, nullptr, 16));
 	}
 	if (*ptr && *ptr ==3) ptr++;
 	if (*ptr && *ptr =='|') ptr++;
@@ -178,7 +178,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start) 
 	{
-		out.selected_text_colour.set(strtoul(start, 0, 16));
+		out.selected_text_colour.set(strtoul(start, nullptr, 16));
 		out.selected_text_colour_non_focus.set(out.selected_text_colour);
 	}
 	if (*ptr && *ptr ==3) ptr++;
@@ -189,7 +189,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start) 
 	{
-		out.background_colour.set(strtoul(start, 0, 16));
+		out.background_colour.set(strtoul(start, nullptr, 16));
 	}
 	
 
@@ -203,7 +203,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	if (ptr>start) 
 	{
 		b_back = true;
-		out.selected_background_colour.set(strtoul(start, 0, 16));
+		out.selected_background_colour.set(strtoul(start, nullptr, 16));
 	}
 
 
@@ -214,7 +214,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	start = ptr;
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start)
-		out.selected_background_colour_non_focus.set(strtoul(start, 0, 16));
+		out.selected_background_colour_non_focus.set(strtoul(start, nullptr, 16));
 	else if (b_back)
 		out.selected_background_colour_non_focus.set(out.selected_background_colour);
 
@@ -226,7 +226,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start) 
 	{
-		out.frame_left.set(strtoul(start, 0, 16));
+		out.frame_left.set(strtoul(start, nullptr, 16));
 		out.use_frame_left = true;
 	}
 	//else
@@ -241,7 +241,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start) 
 	{
-		out.frame_top.set(strtoul(start, 0, 16));
+		out.frame_top.set(strtoul(start, nullptr, 16));
 		out.use_frame_top = true;
 	}
 	//else
@@ -255,7 +255,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start) 
 	{
-		out.frame_right.set(strtoul(start, 0, 16));
+		out.frame_right.set(strtoul(start, nullptr, 16));
 		out.use_frame_right = true;
 	}
 	//else
@@ -269,7 +269,7 @@ void process_colour_string(const char * src, colourinfo & out)
 	while (*ptr && *ptr!=3 && *ptr !='|') ptr++;
 	if (ptr>start) 
 	{
-		out.frame_bottom.set(strtoul(start, 0, 16));
+		out.frame_bottom.set(strtoul(start, nullptr, 16));
 		out.use_frame_bottom = true;
 	}
 	//else

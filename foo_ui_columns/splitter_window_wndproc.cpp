@@ -27,7 +27,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 		break;
 	case WM_NCDESTROY:
 		g_instances.remove_item(this);
-		m_wnd = NULL;
+		m_wnd = nullptr;
 		break;
 	case WM_SHOWWINDOW:
 		if (wp == TRUE && lp == 0)
@@ -38,7 +38,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				ShowWindow(m_panels[n]->m_wnd_child, SW_SHOWNORMAL);
 				ShowWindow(m_panels[n]->m_wnd, SW_SHOWNORMAL);
 			}
-			RedrawWindow(wnd, 0, 0, RDW_UPDATENOW | RDW_ALLCHILDREN);
+			RedrawWindow(wnd, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
 
 		}
 		break;
@@ -270,7 +270,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 
 				if (b_on_divider && is_index_valid(p_panel) && can_resize_divider(p_panel))
 				{
-					SetCursor(LoadCursor(0, get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS));
+					SetCursor(LoadCursor(nullptr, get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS));
 
 					if (msg == WM_LBUTTONDOWN)
 					{
@@ -285,7 +285,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				}
 				else
 				{
-					if (!(wp & MK_LBUTTON)) SetCursor(LoadCursor(0, IDC_ARROW));
+					if (!(wp & MK_LBUTTON)) SetCursor(LoadCursor(nullptr, IDC_ARROW));
 					m_panel_dragging_valid = false;
 				}
 			}

@@ -78,7 +78,7 @@ public:
 
 	inline void clear()
 	{
-		refresh(NULL);
+		refresh(nullptr);
 	}
 
 	virtual bool have_config_popup()const{return true;}
@@ -140,7 +140,7 @@ private:
 	{
 		if (!g_timer)
 		{
-			g_timer = SetTimer(NULL, NULL, 25, g_timer_proc);
+			g_timer = SetTimer(nullptr, NULL, 25, g_timer_proc);
 			g_refresh_all();
 		}
 	}
@@ -149,7 +149,7 @@ private:
 	{
 		if (g_timer)
 		{
-			KillTimer(NULL, g_timer);
+			KillTimer(nullptr, g_timer);
 			g_timer = NULL;
 		}
 	}
@@ -189,7 +189,7 @@ pfc::ptr_list_t<spectrum_extension> spectrum_extension::g_visualisations;
 
 
 spectrum_extension::spectrum_extension()
-	: br_foreground(0), br_background(0), cr_fore(cfg_vis2), cr_back(cfg_vis), b_active(false), 
+	: br_foreground(nullptr), br_background(nullptr), cr_fore(cfg_vis2), cr_back(cfg_vis), b_active(false), 
 	mode(cfg_vis_mode), m_scale(cfg_scale), m_vertical_scale(cfg_vertical_scale), m_bar_width(3),
 	m_bar_gap(1)
 {
@@ -204,12 +204,12 @@ void spectrum_extension::flush_brushes()
 	if (br_background)
 	{
 		DeleteObject(br_background);
-		br_background=0;
+		br_background=nullptr;
 	}
 	if (br_foreground)
 	{
 		DeleteObject(br_foreground); 
-		br_foreground=0; 
+		br_foreground=nullptr; 
 	}
 }
 
@@ -276,18 +276,18 @@ public:
 	{
 		if (br_back) {
 			DeleteObject(br_back);
-			br_back = 0;
+			br_back = nullptr;
 		}
 	}
 	void flush_fore()
 	{
 		if (br_fore){
 			DeleteObject(br_fore);
-			br_fore = 0;
+			br_fore = nullptr;
 		}
 	}
 	spec_param(COLORREF fore, COLORREF back, unsigned p_mode, t_size scale, t_size vertical_scale, spectrum_extension * p_spec, bool p_show_frame = false, unsigned p_frame = 0)
-		: cr_fore(fore), cr_back(back), mode(p_mode), m_scale(scale), m_vertical_scale(vertical_scale), ptr(p_spec), br_fore(0), br_back(0), frame(p_frame), b_show_frame(p_show_frame)
+		: cr_fore(fore), cr_back(back), mode(p_mode), m_scale(scale), m_vertical_scale(vertical_scale), ptr(p_spec), br_fore(nullptr), br_back(nullptr), frame(p_frame), b_show_frame(p_show_frame)
 	{};
 	~spec_param() {
 		flush_back();
@@ -370,7 +370,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				{
 					ptr->cr_back = COLOR;
 					ptr->flush_back();
-					RedrawWindow(GetDlgItem(wnd, IDC_PATCH_BACK), 0, 0, RDW_INVALIDATE|RDW_UPDATENOW);
+					RedrawWindow(GetDlgItem(wnd, IDC_PATCH_BACK), nullptr, nullptr, RDW_INVALIDATE|RDW_UPDATENOW);
 				}
 			}
 			break;
@@ -383,7 +383,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				{
 					ptr->cr_fore = COLOR;
 					ptr->flush_fore();
-					RedrawWindow(GetDlgItem(wnd, IDC_PATCH_FORE), 0, 0, RDW_INVALIDATE|RDW_UPDATENOW);
+					RedrawWindow(GetDlgItem(wnd, IDC_PATCH_FORE), nullptr, nullptr, RDW_INVALIDATE|RDW_UPDATENOW);
 				}
 			}
 			break;

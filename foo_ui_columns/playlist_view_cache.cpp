@@ -88,7 +88,7 @@ void playlist_view_cache::on_items_change(unsigned p_playlist, const bit_array &
 			if (entry) 
 			{
 				delete entry;
-				p_cache->replace_item(n, 0);
+				p_cache->replace_item(n, nullptr);
 			}
 		}
 	}
@@ -289,7 +289,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
 
 		if (global)
 		{
-			make_extra(playlist, idx, p_vars, date ? &st : 0, b_legacy);
+			make_extra(playlist, idx, p_vars, date ? &st : nullptr, b_legacy);
 		}
 	
 		int s,e=columns.get_count(),i=0;
@@ -363,7 +363,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
 							);
 
 							playlist_api->playlist_item_format_title(playlist, idx, &tf_hook, colour, 
-								to_global_style, 0, play_control::display_level_all);
+								to_global_style, nullptr, play_control::display_level_all);
 						}
 
 						if (cfg_oldglobal && !colour.is_empty())
@@ -703,7 +703,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 				if (extra)
 				{
 					extra_items.delete_all();
-					g_cache.active_make_extra(n, extra_items, date ? &st : 0, b_legacy);
+					g_cache.active_make_extra(n, extra_items, date ? &st : nullptr, b_legacy);
 				}
 
 		//		g_oper->format_title(n, temp,spec,(extra ? extra_items.get_ptr() : 0));
@@ -711,9 +711,9 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 				titleformat_hook_playlist_name tf_hook_playlist_name;
 				titleformat_hook_date tf_hook_date(&st);
 
-				titleformat_hook_splitter_pt3 tf_hook(extra ? &tf_hook_set_global : 0, date ? &tf_hook_date : 0, &tf_hook_playlist_name);
+				titleformat_hook_splitter_pt3 tf_hook(extra ? &tf_hook_set_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
 
-				playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp, to_sort, 0, play_control::display_level_none);
+				playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp, to_sort, nullptr, play_control::display_level_none);
 				}
 		/*		else
 				{
@@ -774,7 +774,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
 		{
 			playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
 			SendMessage(p_playlist->wnd_playlist, WM_SETREDRAW, TRUE, 0);
-			RedrawWindow(p_playlist->wnd_playlist, 0, 0, RDW_INVALIDATE|RDW_UPDATENOW);
+			RedrawWindow(p_playlist->wnd_playlist, nullptr, nullptr, RDW_INVALIDATE|RDW_UPDATENOW);
 		}
 		if (!selection_only)
 		{

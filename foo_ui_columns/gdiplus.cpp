@@ -77,8 +77,8 @@ HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData & pB
 
 	bi.bmiHeader = bmi;
 
-	void * data = 0;
-	HBITMAP bm = CreateDIBSection(0, &bi, DIB_RGB_COLORS, &data, 0, 0);
+	void * data = nullptr;
+	HBITMAP bm = CreateDIBSection(nullptr, &bi, DIB_RGB_COLORS, &data, nullptr, 0);
 
 	if (data)
 	{
@@ -95,7 +95,7 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
 {
 	//FIXME m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
 	pfc::string8 canPath;
-	HBITMAP bm = 0;
+	HBITMAP bm = nullptr;
 
 	abort_callback_dummy p_abort;
 	file::ptr p_file;
@@ -106,12 +106,12 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
 	p_file->read(buffer.get_ptr(), fsize, p_abort);
 	p_file.release();
 
-	IStream *pStream = NULL;
+	IStream *pStream = nullptr;
 	HGLOBAL gd = GlobalAlloc(GMEM_FIXED | GMEM_MOVEABLE, buffer.get_size());
-	if (gd == NULL)
+	if (gd == nullptr)
 		throw exception_win32(GetLastError());
 	void * p_data = GlobalLock(gd);
-	if (p_data == NULL)
+	if (p_data == nullptr)
 	{
 		GlobalFree(gd);
 		throw exception_win32(GetLastError());
@@ -173,6 +173,6 @@ HBITMAP g_load_png_gdiplus(HDC dc, const char * fn, unsigned target_cx, unsigned
 	{
 		console::formatter formatter;
 		formatter << "Columns UI: Error loading image \"" << fn << "\" - " << ex.what();
-		return 0;
+		return nullptr;
 	}
 }

@@ -4,7 +4,7 @@
 
 BOOL CALLBACK setup_dialog_t::g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-	setup_dialog_t * p_data = NULL;
+	setup_dialog_t * p_data = nullptr;
 	if (msg == WM_INITDIALOG)
 	{
 		p_data = reinterpret_cast<setup_dialog_t*>(lp);
@@ -40,7 +40,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 		unsigned left = (rc_work.right - rc_work.left - cx) / 2;
 		unsigned top = (rc_work.bottom - rc_work.top - cy) / 2;
 
-		SetWindowPos(wnd, NULL, left, top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+		SetWindowPos(wnd, nullptr, left, top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
 
 		ListView_SetExtendedListViewStyleEx(wnd_lv, LVS_EX_FULLROWSELECT | 0x10000000, LVS_EX_FULLROWSELECT | 0x10000000);
 
@@ -93,7 +93,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 		//ListView_SetItemState(wnd_lv, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
 		SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
-		RedrawWindow(wnd_lv, NULL, NULL, RDW_INVALIDATE | RDW_UPDATENOW);
+		RedrawWindow(wnd_lv, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 	}
 	return TRUE;
 	case WM_CTLCOLORSTATIC:

@@ -26,7 +26,7 @@ ui_extension::window_factory<playlists_tabs_extension> blah;
 ui_extension::window_host_factory<playlists_tabs_extension::window_host_impl> g_tab_host;
 
 HFONT playlists_tabs_extension::g_font
- = 0;
+ = nullptr;
 
 void playlists_tabs_extension::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported)
 {
@@ -80,7 +80,7 @@ bool playlists_tabs_extension::is_point_ours(HWND wnd_point, const POINT & pt_sc
 
 void playlists_tabs_extension::on_font_change()
 {
-	if (g_font!=0)
+	if (g_font!=nullptr)
 	{
 		unsigned n, count = list_wnd.get_count();
 		for (n=0; n<count; n++)
@@ -129,14 +129,14 @@ void playlists_tabs_extension::switch_to_playlist_delayed2(unsigned idx)
 		if (m_switch_timer) kill_switch_timer();
 		m_switch_playlist = idx;
 		m_playlist_switched = false;
-		m_switch_timer = (SetTimer(get_wnd(), SWITCH_TIMER_ID, cfg_autoswitch_delay, 0) !=0);
+		m_switch_timer = (SetTimer(get_wnd(), SWITCH_TIMER_ID, cfg_autoswitch_delay, nullptr) !=0);
 	}
 }
 
 
 playlists_tabs_extension::playlists_tabs_extension() : m_dragging(false), m_dragging_idx(0), m_playlist_switched(false),
-m_switch_timer(false), m_switch_playlist(0), initialised(false), wnd_tabs(0),
-m_child_guid(/*cfg_default_playlist*/pfc::guid_null), m_child_wnd(0), m_host_wnd(0), m_child_top(0),
+m_switch_timer(false), m_switch_playlist(0), initialised(false), wnd_tabs(nullptr),
+m_child_guid(/*cfg_default_playlist*/pfc::guid_null), m_child_wnd(nullptr), m_host_wnd(nullptr), m_child_top(0),
 ID_CUSTOM_BASE(NULL), m_mousewheel_delta(0), tabproc(nullptr)
 {
 	//reset_size_limits();
@@ -200,7 +200,7 @@ void playlists_tabs_extension::destroy_child()
 	if (m_child.is_valid())
 	{
 		m_child->destroy_window();
-		m_child_wnd=0;
+		m_child_wnd=nullptr;
 		m_child.release();
 		reset_size_limits();
 		if (IsWindowVisible(get_wnd()))
@@ -220,7 +220,7 @@ bool playlists_tabs_extension::create_tabs()
 		force_close = (playlist_api->get_playlist_count() <= 1);
 	}
 
-	if (wnd_tabs && force_close) {DestroyWindow(wnd_tabs); wnd_tabs = 0; rv = true;}
+	if (wnd_tabs && force_close) {DestroyWindow(wnd_tabs); wnd_tabs = nullptr; rv = true;}
 	else if (!wnd_tabs && !force_close) 
 	{
 		int i, t = playlist_api->get_playlist_count();
@@ -233,7 +233,7 @@ bool playlists_tabs_extension::create_tabs()
 
 		wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Playlist switcher"),
 			WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | (t>1 ? TCS_MULTILINE : 0) | (1 ? WS_VISIBLE : 0), x, y, cx, cy,
-			m_host_wnd, HMENU(5002), core_api::get_my_instance(), NULL);
+			m_host_wnd, HMENU(5002), core_api::get_my_instance(), nullptr);
 
 		if (wnd_tabs)
 		{
@@ -688,11 +688,11 @@ void playlists_tabs_extension::on_size(unsigned cx, unsigned cy)
 {
 	if (wnd_tabs)
 	{
-		SetWindowPos(wnd_tabs, 0, 0, 0, cx, cy, SWP_NOZORDER);
+		SetWindowPos(wnd_tabs, nullptr, 0, 0, cx, cy, SWP_NOZORDER);
 		RECT rc = { 0, 0, cx, cy };
 		adjust_rect(FALSE, &rc);
 		if (m_child_wnd)
-			SetWindowPos(m_child_wnd, 0, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);
+			SetWindowPos(m_child_wnd, nullptr, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);
 		unsigned old_top = m_child_top; //prevent braindead (partial) recursion
 		m_child_top = rc.top;
 		if (rc.top != old_top)
@@ -704,7 +704,7 @@ void playlists_tabs_extension::on_size(unsigned cx, unsigned cy)
 	}
 	else if (m_child_wnd)
 	{
-		SetWindowPos(m_child_wnd, 0, 0, 0, cx, cy, SWP_NOZORDER);
+		SetWindowPos(m_child_wnd, nullptr, 0, 0, cx, cy, SWP_NOZORDER);
 	}
 }
 
@@ -1012,7 +1012,7 @@ void playlists_tabs_extension::window_host_impl::set_this(playlists_tabs_extensi
 
 void playlists_tabs_extension::window_host_impl::relinquish_ownership(HWND wnd)
 {
-	m_this->m_child_wnd = 0;
+	m_this->m_child_wnd = nullptr;
 	m_this->m_host.release();
 	m_this->m_child.release();
 	m_this->reset_size_limits();

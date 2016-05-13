@@ -31,11 +31,11 @@ unsigned toolbar_extension::get_type() const{ return ui_extension::type_toolbar;
 void toolbar_extension::import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort)
 {
 	toolbar_extension::config_param param;
-	param.m_selection = 0;
+	param.m_selection = nullptr;
 	param.m_buttons = m_buttons_config;
-	param.m_child = 0;
+	param.m_child = nullptr;
 	param.m_active = 0;
-	param.m_image = 0;
+	param.m_image = nullptr;
 	param.m_text_below = m_text_below;
 	param.m_appearance = m_appearance;
 	param.import_from_stream(p_reader, false, p_abort);
@@ -54,11 +54,11 @@ void toolbar_extension::import_config(stream_reader * p_reader, t_size p_size, a
 void toolbar_extension::export_config(stream_writer * p_writer, abort_callback & p_abort) const
 {
 	config_param param;
-	param.m_selection = 0;
+	param.m_selection = nullptr;
 	param.m_buttons = m_buttons_config;
-	param.m_child = 0;
+	param.m_child = nullptr;
 	param.m_active = 0;
-	param.m_image = 0;
+	param.m_image = nullptr;
 	param.m_text_below = m_text_below;
 	param.m_appearance = m_appearance;
 	param.export_to_stream(p_writer, false, p_abort);
@@ -101,7 +101,7 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button> & p_buttons)
 }
 
 toolbar_extension::toolbar_extension() :  width(0), height(0), menuproc(nullptr), initialised(false),
-m_gdiplus_initialised(false), wnd_toolbar(0), wnd_host(0), m_text_below(false), m_appearance(APPEARANCE_NORMAL)
+m_gdiplus_initialised(false), wnd_toolbar(nullptr), wnd_host(nullptr), m_text_below(false), m_appearance(APPEARANCE_NORMAL)
 {
 	reset_buttons(m_buttons_config);
 	memset(&m_gdiplus_instance, 0, sizeof(m_gdiplus_instance));
@@ -131,9 +131,9 @@ void toolbar_extension::create_toolbar()
 	RECT rc;
 	GetClientRect(wnd_host, &rc);
 
-	wnd_toolbar = CreateWindowEx(WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, 0, 
+	wnd_toolbar = CreateWindowEx(WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, nullptr, 
 		WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TBSTYLE_FLAT | (!m_text_below && m_appearance != APPEARANCE_NOEDGE ? TBSTYLE_LIST : 0) | TBSTYLE_TRANSPARENT |TBSTYLE_TOOLTIPS | CCS_NORESIZE| CCS_NOPARENTALIGN| CCS_NODIVIDER, 
-		0, 0, rc.right, rc.bottom, wnd_host, (HMENU) ID_BUTTONS, core_api::get_my_instance(), NULL); 
+		0, 0, rc.right, rc.bottom, wnd_host, (HMENU) ID_BUTTONS, core_api::get_my_instance(), nullptr); 
 
 	COLORREF colour_3dface = GetSysColor(COLOR_3DFACE);
 	COLORREF colour_btntext = GetSysColor(COLOR_BTNTEXT);
@@ -142,8 +142,8 @@ void toolbar_extension::create_toolbar()
 	{
 		//			SetWindowLongPtr(p_this->wnd_toolbar,GWLP_USERDATA,(LPARAM)(p_this));
 
-		HIMAGELIST il = 0;
-		HIMAGELIST iml_hot = 0;
+		HIMAGELIST il = nullptr;
+		HIMAGELIST iml_hot = nullptr;
 
 		//libpng_handle::g_create(p_libpng);
 
@@ -348,7 +348,7 @@ void toolbar_extension::destroy_toolbar()
 	HIMAGELIST iml = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETIMAGELIST, (WPARAM) 0, (LPARAM) 0);
 	HIMAGELIST iml_hot = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETHOTIMAGELIST, (WPARAM) 0, (LPARAM) 0);
 	DestroyWindow(wnd_toolbar);
-	wnd_toolbar=0;
+	wnd_toolbar=nullptr;
 	if (iml)
 		ImageList_Destroy(iml);
 	if (iml_hot)
@@ -362,7 +362,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
 		wnd_host=wnd;
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, NULL));
+		m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
 		initialised=true;
 		create_toolbar();
 
@@ -370,7 +370,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	else if (msg == WM_DESTROY)
 	{
 		destroy_toolbar();
-		wnd_host=0;
+		wnd_host=nullptr;
 		initialised=false;
 		if (m_gdiplus_initialised)
 		{
@@ -397,7 +397,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				cy = min(cy, rc.bottom);
 				extra = (lpwp->cy - rc.bottom)/2;
 			}
-			SetWindowPos(wnd_toolbar, 0, 0, extra, cx, cy, SWP_NOZORDER);
+			SetWindowPos(wnd_toolbar, nullptr, 0, extra, cx, cy, SWP_NOZORDER);
 		}
 	}
 	else if (msg==WM_SIZE)
@@ -464,7 +464,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				menu_items->win32_build_menu(menu, 1, pfc_infinite);
 				POINT pt = {lpnmtb->rcButton.left, lpnmtb->rcButton.bottom};
 				MapWindowPoints(lpnmtb->hdr.hwndFrom, HWND_DESKTOP, &pt, 1);
-				int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON|TPM_RETURNCMD, pt.x, pt.y, wnd, 0);
+				int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON|TPM_RETURNCMD, pt.x, pt.y, wnd, nullptr);
 				if (cmd)
 					menu_items->execute_by_id(cmd);
 				DestroyMenu(menu);
@@ -593,7 +593,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 					{
 						HMENU menu = CreatePopupMenu();
 						menu_items->win32_build_menu(menu, 1, pfc_infinite);
-						int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON|TPM_RETURNCMD, pts.x, pts.y, wnd, 0);
+						int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON|TPM_RETURNCMD, pts.x, pts.y, wnd, nullptr);
 						if (cmd)
 							menu_items->execute_by_id(cmd);
 						DestroyMenu(menu);
@@ -766,7 +766,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 					if (!uGetFullPathName(ptr->m_selection->m_custom_image.m_path, temp) || (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY))
 						temp.reset();
 
-					if (uGetOpenFileName(wnd, "Image Files (*.bmp;*.png;*.gif;*.tiff;*.ico)|*.bmp;*.png;*.gif;*.tiff;*.ico|All Files (*.*)|*.*", 0, "png", "Choose image", NULL, temp, FALSE))
+					if (uGetOpenFileName(wnd, "Image Files (*.bmp;*.png;*.gif;*.tiff;*.ico)|*.bmp;*.png;*.gif;*.tiff;*.ico|All Files (*.*)|*.*", 0, "png", "Choose image", nullptr, temp, FALSE))
 					{
 						ptr->m_image->m_path = temp;
 						uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (1) ? ptr->m_image->m_path : "");
@@ -787,11 +787,11 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 bool toolbar_extension::show_config_popup(HWND wnd_parent)
 {
 	config_param param;
-	param.m_selection = 0;
+	param.m_selection = nullptr;
 	param.m_buttons = m_buttons_config;
-	param.m_child = 0;
+	param.m_child = nullptr;
 	param.m_active = 0;
-	param.m_image = 0;
+	param.m_image = nullptr;
 	param.m_text_below = m_text_below;
 	param.m_appearance = m_appearance;
 	bool rv = !!uDialogBox(IDD_BUTTONS,wnd_parent,config_param::g_ConfigPopupProc,reinterpret_cast<LPARAM>(&param));

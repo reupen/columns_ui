@@ -4,8 +4,8 @@
 
 HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::QueryInterface(REFIID riid, LPVOID FAR *ppvObject)
 {
-	if (ppvObject == NULL) return E_INVALIDARG;
-	*ppvObject = NULL;
+	if (ppvObject == nullptr) return E_INVALIDARG;
+	*ppvObject = nullptr;
 	if (riid == IID_IUnknown) { AddRef(); *ppvObject = (IUnknown*)this; return S_OK; }
 	else if (riid == IID_IDropTarget) { AddRef(); *ppvObject = (IDropTarget*)this; return S_OK; }
 	else return E_NOINTERFACE;
@@ -177,7 +177,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
 }
 toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::IDropTarget_buttons_list(toolbar_extension::config_param::t_button_list_view * p_blv) : drop_ref_count(0), last_rmb(false), m_button_list_view(p_blv)
 {
-	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, NULL, CLSCTX_INPROC_SERVER);
+	m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 }
 
 

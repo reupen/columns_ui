@@ -123,8 +123,8 @@ namespace main_window
 					GWL_EXSTYLE,
 					current_style ^ WS_EX_LAYERED);
 				RedrawWindow(g_main_window,
-					NULL,
-					NULL,
+					nullptr,
+					nullptr,
 					RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW);
 			}
 		}

@@ -5,7 +5,7 @@ namespace win32_helpers
 {
 	unsigned status_bar_get_text_width (HWND wnd, HTHEME thm, const char * p_text, bool b_customfont)
 	{
-		HFONT fnt = NULL;
+		HFONT fnt = nullptr;
 		bool b_release_fnt = false;
 		unsigned rv = NULL;
 
@@ -13,7 +13,7 @@ namespace win32_helpers
 
 		//uxtheme_api_ptr p_uxtheme;
 
-		bool b_themed = thm != NULL;//p_uxtheme->IsThemeActive() && p_uxtheme->IsAppThemed();
+		bool b_themed = thm != nullptr;//p_uxtheme->IsThemeActive() && p_uxtheme->IsAppThemed();
 
 		HRESULT hr = uih::GetComCtl32Version(dvi);
 
@@ -33,7 +33,7 @@ namespace win32_helpers
 
 			//bool b_got_theme_font = false;
 
-			if (b_themed && SUCCEEDED(GetThemeFont(thm, NULL, NULL, NULL, TMT_FONT, &lf)))
+			if (b_themed && SUCCEEDED(GetThemeFont(thm, nullptr, NULL, NULL, TMT_FONT, &lf)))
 			{
 				fnt = CreateFontIndirect(&lf);
 				b_release_fnt = true;

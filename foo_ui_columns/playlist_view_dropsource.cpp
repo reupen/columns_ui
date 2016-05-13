@@ -4,8 +4,8 @@
 
 HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryInterface(REFIID iid, void ** ppvObject)
 {
-	if (ppvObject == NULL) return E_INVALIDARG;
-	*ppvObject = NULL;
+	if (ppvObject == nullptr) return E_INVALIDARG;
+	*ppvObject = nullptr;
 	if (iid == IID_IUnknown) { AddRef(); *ppvObject = (IUnknown*)this; return S_OK; }
 	else if (iid == IID_IDropSource) { AddRef(); *ppvObject = (IDropSource*)this; return S_OK; }
 	else return E_NOINTERFACE;

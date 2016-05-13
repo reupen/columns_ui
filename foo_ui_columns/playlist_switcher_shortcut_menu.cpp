@@ -45,7 +45,7 @@
 				AppendMenu(menu,MF_STRING,ID_DOWN,_T("Move down"));*/
 			if (autoplaylist.is_valid() && autoplaylist->show_ui_available())
 			{
-				AppendMenu(menu,MF_SEPARATOR,0,0);
+				AppendMenu(menu,MF_SEPARATOR,0,nullptr);
 
 				pfc::string8 name;
 				autoplaylist->get_display_name(name);
@@ -53,13 +53,13 @@
 
 				AppendMenu(menu,MF_STRING,ID_AUTOPLAYLIST,uT(name));
 			}
-			AppendMenu(menu,MF_SEPARATOR,0,0);
+			AppendMenu(menu,MF_SEPARATOR,0,nullptr);
 
 			AppendMenu(menu,MF_STRING,ID_CUT,L"Cut");
 			AppendMenu(menu,MF_STRING,ID_COPY,L"Copy");
 			if (playlist_manager_utils::check_clipboard())
 				AppendMenu(menu,MF_STRING,ID_PASTE,L"Paste");
-			AppendMenu(menu,MF_SEPARATOR,0,NULL);
+			AppendMenu(menu,MF_SEPARATOR,0,nullptr);
 		}
 
 		AppendMenu(menu,MF_STRING,ID_NEW,_T("New"));
@@ -86,7 +86,7 @@
 					recycler_ids[i] = m_playlist_api->recycler_get_id(i); //Menu Message Loop !
 					uAppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_BASE+i, temp);
 				}
-				AppendMenu(recycler_popup,MF_SEPARATOR,0,0);
+				AppendMenu(recycler_popup,MF_SEPARATOR,0,nullptr);
 				AppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_CLEAR, _T("Clear"));
 				AppendMenu(menu, MF_POPUP, (UINT_PTR)recycler_popup, _T("History"));
 			}
@@ -108,7 +108,7 @@
 
 		if (data.get_count() >0)
 		{
-			AppendMenu(menu,MF_SEPARATOR,0,0);
+			AppendMenu(menu,MF_SEPARATOR,0,nullptr);
 
 			HMENU submenu = CreatePopupMenu();
 
@@ -125,7 +125,7 @@
 		menu_helpers::win32_auto_mnemonics(menu);
 
 
-		int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,get_wnd(),0);
+		int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,get_wnd(),nullptr);
 		m_status_text_override.release();
 
 		DestroyMenu(menu);

@@ -41,17 +41,17 @@ void seek_bar_extension::update_seek_timer()
 {
 	if (windows.get_count() && g_playing) {
 		if (!g_seek_timer) {
-			g_seek_timer = SetTimer(0, NULL, 150, (TIMERPROC)SeekTimerProc);
+			g_seek_timer = SetTimer(nullptr, NULL, 150, (TIMERPROC)SeekTimerProc);
 		}
 	} else if (g_seek_timer) {
-		KillTimer(0, g_seek_timer);
+		KillTimer(nullptr, g_seek_timer);
 		g_seek_timer = 0;
 	}
 }
 
 void seek_bar_extension::update_seek_pos()
 {
-	if (wnd_seekbar == 0)
+	if (wnd_seekbar == nullptr)
 		return;
 
 	static_api_ptr_t<play_control> play_api;
@@ -86,7 +86,7 @@ void seek_bar_extension::disable_seek()
 
 void seek_bar_extension::update_seek()
 {
-	if (wnd_seekbar == 0)
+	if (wnd_seekbar == nullptr)
 		return;
 
 	static_api_ptr_t<play_control> play_api;
@@ -117,7 +117,7 @@ void seek_bar_extension::update_seek()
 }
 
 
-seek_bar_extension::seek_bar_extension() : wnd_seekbar(0), initialised(0) {};
+seek_bar_extension::seek_bar_extension() : wnd_seekbar(nullptr), initialised(0) {};
 
 seek_bar_extension::~seek_bar_extension()
 {
@@ -157,7 +157,7 @@ LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			{
 				LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
 				if (!(lpwp->flags & SWP_NOSIZE)) {
-					SetWindowPos(wnd_seekbar, 0, 0, 0, lpwp->cx, lpwp->cy, SWP_NOZORDER);
+					SetWindowPos(wnd_seekbar, nullptr, 0, 0, lpwp->cx, lpwp->cy, SWP_NOZORDER);
 				}
 				break;
 			}

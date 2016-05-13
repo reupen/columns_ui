@@ -43,7 +43,7 @@ public:
 		bool checked;
 		t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : group(ptr), item(pitem), checked(true)
 		{};
-		t_node() : item(NULL), checked(true) {};
+		t_node() : item(nullptr), checked(true) {};
 	};
 	//cui::fcl::group_list m_groups;
 	pfc::list_t<t_node> m_nodes;
@@ -64,7 +64,7 @@ public:
 	}
 	static BOOL CALLBACK g_FCLDialogProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 	{
-		FCLDialog * p_this = NULL;
+		FCLDialog * p_this = nullptr;
 		switch(msg)
 		{
 		case WM_INITDIALOG:
@@ -89,7 +89,7 @@ public:
 				if (m_import)
 					SetWindowText(wnd, _T("Select settings to import"));
 				HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
-				HWND wnd_combo = m_import ? NULL : GetDlgItem(wnd, IDC_DEST);
+				HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
 				SetWindowLongPtr(wnd_tree, GWL_STYLE, GetWindowLongPtr(wnd_tree, GWL_STYLE)|TVS_CHECKBOXES);
 
 				uih::SetTreeViewWindowExplorerTheme(wnd_tree);
@@ -140,7 +140,7 @@ public:
 				g_populate_tree(wnd_tree, m_groups, filtered);
 
 				SendMessage(wnd_tree, WM_SETREDRAW, TRUE, 0);
-				RedrawWindow(wnd_tree,NULL,NULL,RDW_INVALIDATE|RDW_UPDATENOW);
+				RedrawWindow(wnd_tree,nullptr,nullptr,RDW_INVALIDATE|RDW_UPDATENOW);
 			}
 			return TRUE;
 		case WM_COMMAND:
@@ -154,7 +154,7 @@ public:
 					{
 						m_nodes[i].checked = 0 != TreeView_GetCheckState(wnd_tree, m_nodes[i].item);
 					}
-					HWND wnd_combo = m_import ? NULL : GetDlgItem(wnd, IDC_DEST);
+					HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
 					if (wnd_combo)
 					{
 						m_mode = ComboBox_GetCurSel(wnd_combo);
@@ -280,7 +280,7 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 				uih::ListView_InsertItemText(wnd_lv, i, 1, pfc::print_guid(p_data->m_items[i].guid), true);
 			}
 			SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
-			RedrawWindow(wnd_lv,NULL,NULL,RDW_INVALIDATE|RDW_UPDATENOW);
+			RedrawWindow(wnd_lv,nullptr,nullptr,RDW_INVALIDATE|RDW_UPDATENOW);
 		}
 		break;
 	case WM_COMMAND:
@@ -439,7 +439,7 @@ void g_import_layout(HWND wnd, const char * path, bool quiet)
 void g_import_layout(HWND wnd)
 {
 	pfc::string8 path;
-	if (uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Import from", NULL, path, FALSE))
+	if (uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Import from", nullptr, path, FALSE))
 	{
 		g_import_layout(wnd, path, false);
 	}
@@ -465,7 +465,7 @@ void g_export_layout(HWND wnd)
 {
 	pfc::string8 path;
 	FCLDialog pFCLDialog;
-	if (/*MessageBox(wnd, _T("Layout setting exporting is available for testing purposes only. FCL files produced will not work with the release version of Columns UI."), _T("Warning"), MB_OK) == IDOK && */uDialogBox (IDD_FCL1, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog) && uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", NULL, path, TRUE))
+	if (/*MessageBox(wnd, _T("Layout setting exporting is available for testing purposes only. FCL files produced will not work with the release version of Columns UI."), _T("Warning"), MB_OK) == IDOK && */uDialogBox (IDD_FCL1, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog) && uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", nullptr, path, TRUE))
 	{
 		t_export_feedback_impl feedback;
 		pfc::list_t<GUID> groups;
