@@ -157,7 +157,7 @@ public:
 	}
 	void add_item(const char * p_name,unsigned p_name_length,const char * p_value,unsigned p_value_length)
 	{
-		global_variable * var = new global_variable(p_name,p_name_length,p_value,p_value_length);
+		auto  var = new global_variable(p_name,p_name_length,p_value,p_value_length);
 		pfc::ptr_list_t<global_variable>::add_item(var);
 	}
 	~global_variable_list() {delete_all();}
