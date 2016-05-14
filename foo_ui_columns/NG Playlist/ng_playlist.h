@@ -133,8 +133,7 @@ namespace pvt
 		};
 
 		~artwork_reader_ng_t() override
-		{
-		};
+		= default;;
 
 		void initialise(const pfc::chain_list_v2_t<GUID> & p_requestIds,
 			const pfc::map_t<GUID, pfc::list_t<pfc::string8> > & p_repositories,

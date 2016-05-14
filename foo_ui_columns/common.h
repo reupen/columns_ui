@@ -82,7 +82,7 @@ public:
 	t_guid(const GUID & p_guid)
 		: GUID(p_guid) {}
 	t_guid(const t_guid & p_guid)
-		: GUID(p_guid) {}
+		= default;
 };
 }
 

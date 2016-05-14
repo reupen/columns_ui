@@ -26,7 +26,7 @@ class menu_item_identifier
 public:
 	types::t_guid m_command;
 	types::t_guid m_subcommand;
-	inline const menu_item_identifier & operator=(const menu_item_identifier & p_source) { m_command = p_source.m_command; m_subcommand = p_source.m_subcommand; return *this; }
+	inline const menu_item_identifier & operator=(const menu_item_identifier & p_source) = default;
 	menu_item_identifier(){};
 	menu_item_identifier(const GUID & p_val, const GUID & psub = pfc::guid_null)
 		: m_command(p_val), m_subcommand(psub){};

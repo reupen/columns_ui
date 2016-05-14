@@ -111,7 +111,7 @@ namespace filter_panel {
 
 		filter_panel_t();;
 
-		~filter_panel_t() {};
+		~filter_panel_t() = default;;
 
 		static pfc::list_t<filter_stream_t::ptr> g_streams;
 		filter_stream_t::ptr m_stream;
