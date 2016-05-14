@@ -299,6 +299,7 @@ void size_windows()
 				dwp = DeferWindowPos(dwp, g_layout_window.get_wnd(), nullptr, 0, rebar_height, rc_main_client.right-rc_main_client.left, rc_main_client.bottom-rc_main_client.top-rebar_height-status_height, SWP_NOZORDER);
 			if (g_rebar) 
 			{
+				RedrawWindow(g_rebar, nullptr, nullptr, RDW_INVALIDATE);
 				dwp = DeferWindowPos(dwp, g_rebar, nullptr, 0, 0, rc_main_client.right-rc_main_client.left, rebar_height, SWP_NOZORDER);
 			}
 			
