@@ -115,7 +115,7 @@ namespace pvt
 		//style_data_cell_t() : use_frame_left(false), use_frame_top(false), use_frame_bottom(false), use_frame_right(false) {};
 
 
-		~style_data_cell_t();
+		~style_data_cell_t() override;
 	};
 
 	namespace style_cache_manager

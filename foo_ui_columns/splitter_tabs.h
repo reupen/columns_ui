@@ -103,7 +103,7 @@ public:
 		}
 
 		panel();
-		~panel();
+		~panel() override;
 
 		uie::splitter_item_full_v2_t * create_splitter_item();
 

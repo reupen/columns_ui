@@ -271,7 +271,7 @@ namespace filter_panel {
 		void notify_on_set_focus(HWND wnd_lost) override;
 		void notify_on_kill_focus(HWND wnd_receiving) override;
 
-		virtual t_size get_drag_item_count() override {return m_drag_item_count;}
+		t_size get_drag_item_count() override {return m_drag_item_count;}
 
 		ui_selection_holder::ptr m_selection_holder;
 

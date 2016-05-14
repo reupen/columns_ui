@@ -132,7 +132,7 @@ namespace pvt
 		{
 		};
 
-		~artwork_reader_ng_t()
+		~artwork_reader_ng_t() override
 		{
 		};
 
