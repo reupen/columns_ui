@@ -67,47 +67,8 @@ void set_sel_range(int start, int end, bool keep, bool deselect)
 
 UINT GetNumScrollLines()
 {
-	HWND hdlMsWheel;
 	UINT ucNumLines = 3;  // 3 is the default
-	OSVERSIONINFO osversion;
-	UINT uiMsh_MsgScrollLines;
-
-
-	memset(&osversion, 0, sizeof(osversion));
-	osversion.dwOSVersionInfoSize = sizeof(osversion);
-	GetVersionEx(&osversion);
-
-	// In Windows 9x & Windows NT 3.51, query MSWheel for the
-	// number of scroll lines. In Windows NT 4.0 and later,
-	// use SystemParametersInfo. 
-
-	if ((osversion.dwPlatformId ==
-		VER_PLATFORM_WIN32_WINDOWS) ||
-		((osversion.dwPlatformId ==
-		VER_PLATFORM_WIN32_NT) &&
-		(osversion.dwMajorVersion < 4)))
-	{
-		hdlMsWheel = FindWindow(MSH_WHEELMODULE_CLASS,
-			MSH_WHEELMODULE_TITLE);
-		if (hdlMsWheel)
-		{
-			uiMsh_MsgScrollLines = RegisterWindowMessage
-				(MSH_SCROLL_LINES);
-			if (uiMsh_MsgScrollLines)
-				ucNumLines = (int)SendMessage(hdlMsWheel,
-				uiMsh_MsgScrollLines,
-				0,
-				0);
-		}
-	}
-	else if ((osversion.dwPlatformId ==
-		VER_PLATFORM_WIN32_NT) &&
-		(osversion.dwMajorVersion >= 4))
-	{
-		SystemParametersInfo(SPI_GETWHEELSCROLLLINES,
-			0,
-			&ucNumLines, 0);
-	}
+	SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &ucNumLines, 0);
 	return(ucNumLines);
 }
 

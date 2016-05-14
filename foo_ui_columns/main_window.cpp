@@ -330,7 +330,9 @@ static BOOL CALLBACK RenameProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		{
 			rename_param * ptr = (rename_param *)lp;
 			ptr->m_scope.initialize(FindOwningPopup(wnd));
-			uSetWindowText(wnd,uStringPrintf("Rename playlist: \"%s\"",ptr->m_text->get_ptr()));
+			pfc::string_formatter formatter;
+			formatter << R"(Rename playlist: ")" << *ptr->m_text << R"(")";
+			uSetWindowText(wnd, formatter);
 			uSetDlgItemText(wnd,IDC_EDIT,ptr->m_text->get_ptr());
 		}
 		return 1;

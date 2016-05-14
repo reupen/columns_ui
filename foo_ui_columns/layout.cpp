@@ -760,7 +760,7 @@ void g_get_panels_info(const pfc::list_t<uie::window::ptr> & p_panels, uie::wind
 			p_out.add_item(info);
 	}
 
-	p_out.sort();
+	p_out.sort_by_category_and_name();
 }
 
 void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)

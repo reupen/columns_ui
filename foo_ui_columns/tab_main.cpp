@@ -189,21 +189,22 @@ public:
 				pfc::string8 path;
 				HRESULT hr = uih::GetComCtl32Version(dvi, &path);
 
-				pfc::string8 temp;
+				pfc::string_formatter temp;
 
 				if (FAILED(hr))
 					temp = "4.70";
 				else if (dvi.info1.cbSize == sizeof(DLLVERSIONINFO2))
 				{
 					unsigned short * p_ver = (unsigned short *)&dvi.ullVersion;
-					temp = uStringPrintf("%u.%u.%u.%u", p_ver[3], p_ver[2], p_ver[1], p_ver[0]);
+					temp << p_ver[3] << "." << p_ver[2] << "." << p_ver[1] << "." << p_ver[0];
 				}
 				else
-					temp = uStringPrintf("%u.%u.%u", dvi.info1.dwMajorVersion, dvi.info1.dwMinorVersion, dvi.info1.dwBuildNumber);
+					temp << dvi.info1.dwMajorVersion << "." << dvi.info1.dwMinorVersion << "." << dvi.info1.dwBuildNumber;
 
 				listview_helper::insert_item(wnd_lv, 0, "comctl32", 0);
 				listview_helper::set_item_text(wnd_lv, 0, 1, temp);
-				listview_helper::set_item_text(wnd_lv, 0, 2, uStringPrintf("Path: %s", path.get_ptr()));
+				pfc::string_formatter formatter;
+				listview_helper::set_item_text(wnd_lv, 0, 2, formatter << "Path: " << path);
 			}
 
 

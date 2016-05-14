@@ -125,7 +125,7 @@ class tab_layout_new : public preferences_tab
 			}
 			while (e.next(l));
 
-		p_out.sort();
+		p_out.sort_by_category_and_name();
 	}
 	static HTREEITEM tree_view_get_child_by_index(HWND wnd_tv, HTREEITEM ti, unsigned index)
 	{

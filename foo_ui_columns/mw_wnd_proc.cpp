@@ -384,7 +384,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						}
 						while (e.next(l));
 
-					moo.sort();
+					moo.sort_by_category_and_name();
 
 					unsigned count_exts = moo.get_count();
 					HMENU popup = nullptr;
@@ -631,7 +631,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 								}
 
 								title.prealloc(14 + 25);
-								title.set_string(uStringPrintf("Now Playing: %s", title2.get_ptr()));
+								title << "Now Playing: %s" << title2;
 								//			play_control::get()->playback_format_title_ex(track, title, "$puts(title,Now Playing: %title%)$ifgreater($len($get(title)),25,$cut($get(title),24)..,$get(title))",0,0,true);
 								track.release();
 								uFixAmpersandChars_v2(title, name);

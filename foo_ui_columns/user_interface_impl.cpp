@@ -16,24 +16,13 @@ public:
 	HWND init(HookProc_t hook) override
 	{
 		{
-			OSVERSIONINFOEX osvi;
-			memset(&osvi, 0, sizeof(osvi));
-			osvi.dwOSVersionInfoSize = sizeof(osvi);
-			if (GetVersionEx((LPOSVERSIONINFO)&osvi))
+			if (!IsWindowsXPSP2OrGreater())
 			{
-				if (osvi.dwMajorVersion == 5 && osvi.dwMinorVersion == 1 && osvi.wServicePackMajor == 0)
-				{
-					pfc::string_formatter message;
-					message << "Sorry, your operating system Windows XP ";
-					if (!osvi.wServicePackMajor)
-						message << "(no service pack installed)";
-					else
-						message << "Service Pack " << osvi.wServicePackMajor;
-					message << " is not supported by Columns UI. Please upgrade to Service Pack 1 or newer and try again.\n\nOtherwise, uninstall the Columns UI component to return to the Default User Interface.",
-						MessageBox(nullptr, uT(message), _T("Columns UI - Unsupported operating system"), MB_OK | MB_ICONEXCLAMATION);
-					return nullptr;
-
-				}
+				pfc::string_formatter message;
+				message << "Sorry, your operating system version is not supported by Columns UI. Please upgrade to Windows XP Service Pack 2 or newer and try again.\n\n"
+					"Otherwise, uninstall the Columns UI component to return to the Default User Interface.",
+					MessageBox(nullptr, uT(message), _T("Columns UI - Unsupported operating system"), MB_OK | MB_ICONEXCLAMATION);
+				return nullptr;
 			}
 		}
 		//		performance_counter startup;

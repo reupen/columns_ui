@@ -625,7 +625,10 @@ bool g_import(const char * path)
 	{
 
 		filesystem::g_open_read(p_file, path, p_abort);
-		if (!p_file.is_valid()) console::error(uStringPrintf("Unable to open file: \"%s\"",path));
+		if (!p_file.is_valid()) {
+			pfc::string_formatter formatter;
+			console::error(formatter << R"(Unable to open file: ")" << path << R"(")");
+		}
 		else
 		{
 			GUID temp;
