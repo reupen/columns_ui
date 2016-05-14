@@ -64,11 +64,11 @@ class editor_font_notify
 	}
 	void _release()
 	{
-		if (g_edit_font!=0)
+		if (g_edit_font!=nullptr)
 		{
 			if (wnd) SendMessage(wnd,WM_SETFONT,(WPARAM)0,MAKELPARAM(0,0));
 			DeleteObject(g_edit_font);
-			g_edit_font=0;
+			g_edit_font=nullptr;
 		}
 	}
 public:
@@ -85,7 +85,7 @@ public:
 	}
 	void release()
 	{
-		wnd=0;
+		wnd=nullptr;
 		_release();
 	}
 	
@@ -93,7 +93,7 @@ public:
 	editor_font_notify() : g_edit_font(nullptr), wnd(nullptr) {};
 	~editor_font_notify()
 	{
-		if (g_edit_font) {DeleteObject(g_edit_font);g_edit_font=0;}
+		if (g_edit_font) {DeleteObject(g_edit_font);g_edit_font=nullptr;}
 	}
 };
 void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_date);
@@ -116,9 +116,9 @@ public:
 	string_font_desc(const LOGFONT & lf)
 	{
 		prealloc(64);
-		HDC dc = GetDC(0);		
+		HDC dc = GetDC(nullptr);		
 		unsigned pt = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
-		ReleaseDC(0, dc);
+		ReleaseDC(nullptr, dc);
 
 		add_string(pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, tabsize(lf.lfFaceName)));
 		add_byte(' ');
