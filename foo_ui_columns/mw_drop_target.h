@@ -21,7 +21,7 @@ public:
 
 	HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
 
-	HRESULT STDMETHODCALLTYPE DragLeave(void) override;
+	HRESULT STDMETHODCALLTYPE DragLeave() override;
 
 	HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL ptl, DWORD *pdwEffect) override;
 	drop_handler_interface();

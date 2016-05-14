@@ -82,7 +82,7 @@ public:
 		ULONG STDMETHODCALLTYPE   Release() override;
 		HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
 		HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
-		HRESULT STDMETHODCALLTYPE DragLeave(void) override;
+		HRESULT STDMETHODCALLTYPE DragLeave() override;
 		HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
 		playlists_tabs_drop_target(playlists_tabs_extension * p_wnd);
 	private:
@@ -114,7 +114,7 @@ public:
 	void on_items_replaced(unsigned int, const bit_array &, const pfc::list_base_const_t<t_on_items_replaced_entry> &) override;;
 	void on_item_ensure_visible(unsigned int, unsigned int) override;;
 	void on_playlists_removing(const bit_array &, unsigned int, unsigned int) override;;
-	void on_default_format_changed(void) override;;
+	void on_default_format_changed() override;;
 	void on_playback_order_changed(unsigned int) override;;
 	void on_playlist_locked(unsigned int, bool) override;;
 

@@ -72,7 +72,7 @@ public:
 	ULONG STDMETHODCALLTYPE   Release() override;
 	HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
 	HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
-	HRESULT STDMETHODCALLTYPE DragLeave( void) override;
+	HRESULT STDMETHODCALLTYPE DragLeave( ) override;
 	HRESULT STDMETHODCALLTYPE Drop( IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
 	IDropTarget_playlist(playlist_view * playlist);
 	
