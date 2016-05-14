@@ -945,57 +945,6 @@ bool splitter_window_impl::is_index_valid(unsigned index) const
 	return index < m_panels.get_count();
 }
 
-bool splitter_window_impl::show_config_popup(HWND wnd, unsigned index)
-{
-	if (is_index_valid(index))
-	{
-		uie::window_ptr p_panel = m_panels[index]->m_child;
-
-		if (!p_panel.is_valid())
-		{
-			uie::window::create_by_guid(m_panels[index]->m_guid, p_panel);
-			if (p_panel.is_valid())
-			{
-				try{
-					abort_callback_dummy p_abort;
-					p_panel->set_config_from_ptr(&m_panels[index]->m_child_data, m_panels[index]->m_child_data.get_size(), p_abort);
-				}
-				catch (const exception_io & e)
-				{
-					console::formatter formatter;
-					formatter << "Error setting panel config: " << e.what();
-				}
-			}
-		}
-		if (p_panel.is_valid())
-		{
-			if (p_panel->show_config_popup(wnd))
-			{
-				abort_callback_dummy p_abort;
-				p_panel->get_config_to_array(m_panels[index]->m_child_data, p_abort, true);
-				return true;
-			}
-		}
-	}
-	return false;
-}
-
-bool splitter_window_impl::have_config_popup(unsigned index) const
-{
-	if (is_index_valid(index))
-	{
-		uie::window_ptr p_panel = m_panels[index]->m_child;
-
-		if (!p_panel.is_valid())
-		{
-			uie::window::create_by_guid(m_panels[index]->m_guid, p_panel);
-		}
-		if (p_panel.is_valid())
-			return p_panel->have_config_popup();
-	}
-	return false;
-}
-
 void splitter_window_impl::get_config(stream_writer * out, abort_callback & p_abort) const
 {
 	write_config(out, false, p_abort);

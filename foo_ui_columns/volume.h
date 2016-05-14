@@ -174,7 +174,7 @@ class volume_control_t : public t_base, private play_callback
 public:
 	bool get_using_gdiplus() {return m_using_gdiplus;}
 	HWND wnd_trackbar;
-	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
+	LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override
 	{
 		switch (msg)
 		{
@@ -390,11 +390,11 @@ private:
 	}
 	bool get_caption_extent(SIZE & p_out) const
 	{
-		HDC dc = GetDC(get_wnd());
+		HDC dc = GetDC(this->get_wnd());
 		HFONT old = SelectFont(dc, m_font_caption);
 		bool ret = uGetTextExtentPoint32(dc, "Volume", 6, &p_out) != 0;
 		SelectFont(dc, old);
-		ReleaseDC(get_wnd(), dc);
+		ReleaseDC(this->get_wnd(), dc);
 		return ret;
 	}
 

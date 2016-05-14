@@ -231,9 +231,8 @@ public:
 		config_param();
 	};
 
-	//static BOOL CALLBACK toolbar_extension::ConfigPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
-	static BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-	static BOOL CALLBACK toolbar_extension::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	static BOOL CALLBACK ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+	static BOOL CALLBACK ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 	bool have_config_popup()const override
 	{ return true; }

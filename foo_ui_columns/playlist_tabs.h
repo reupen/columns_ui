@@ -165,10 +165,6 @@ public:
 
 	void get_config(stream_writer * out, abort_callback & p_abort) const override;;
 
-	virtual bool have_config_popup(unsigned p_index) const;
-
-	virtual bool show_config_popup(unsigned p_index, HWND wnd_parent);
-
 	void on_child_position_change();
 
 private:

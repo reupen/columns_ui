@@ -1,5 +1,4 @@
-#ifndef _PVT_MAIN_H_
-#define _PVT_MAIN_H_
+#pragma once
 
 #include "ng_playlist_style.h"
 #include "..\playlist_view.h"
@@ -765,5 +764,3 @@ namespace playlist_utils
 	bool copy();
 	bool paste(HWND wnd);
 }
-
-#endif _PVT_MAIN_H_

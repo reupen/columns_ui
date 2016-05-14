@@ -56,7 +56,7 @@ enum {
 
 namespace status_bar
 {
-	enum t_parts
+	enum t_parts : uint32_t
 	{
 		t_parts_none = 0,
 		t_parts_all = 0xffffffff,

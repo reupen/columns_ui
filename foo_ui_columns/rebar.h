@@ -62,23 +62,23 @@ public:
 	bool rbbs_break;
 
 	rebar_band_info(GUID id = pfc::guid_null, unsigned h = 100);
-	void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback & p_abort);
-	void rebar_band_info::import(stream_reader * p_reader, t_uint32 type, abort_callback & p_abort);
-	void rebar_band_info::write(stream_writer * out, abort_callback & p_abort);
-	void rebar_band_info::read(stream_reader * p_reader, abort_callback & p_abort);
-	void rebar_band_info::write_extra(stream_writer * out, abort_callback & p_abort);
-	void rebar_band_info::read_extra(stream_reader * p_reader, abort_callback & p_abort);
-	void rebar_band_info::copy(rebar_band_info & out);
+	void _export(stream_writer * out, t_uint32 type, abort_callback & p_abort);
+	void import(stream_reader * p_reader, t_uint32 type, abort_callback & p_abort);
+	void write(stream_writer * out, abort_callback & p_abort);
+	void read(stream_reader * p_reader, abort_callback & p_abort);
+	void write_extra(stream_writer * out, abort_callback & p_abort);
+	void read_extra(stream_reader * p_reader, abort_callback & p_abort);
+	void copy(rebar_band_info & out);
 };
 
 class rebar_info : public ptr_list_autodel_t<rebar_band_info>
 {
 public:
-	void rebar_info::set_rebar_info(rebar_info & in);
+	void set_rebar_info(rebar_info & in);
 	rebar_band_info * find_by_wnd(HWND wnd);
 	unsigned find_by_wnd_n(HWND wnd);
-	void rebar_info::add_band(const GUID & id, unsigned width = 125, bool new_line = false, const ui_extension::window_ptr & p_ext = uie::window_ptr_null);
-	void rebar_info::insert_band(unsigned idx, const GUID & id, unsigned width = 125, bool new_line = false, const ui_extension::window_ptr & p_ext = uie::window_ptr_null);
+	void add_band(const GUID & id, unsigned width = 125, bool new_line = false, const ui_extension::window_ptr & p_ext = uie::window_ptr_null);
+	void insert_band(unsigned idx, const GUID & id, unsigned width = 125, bool new_line = false, const ui_extension::window_ptr & p_ext = uie::window_ptr_null);
 };
 
 class cfg_rebar : public cfg_var
@@ -92,17 +92,17 @@ private:
 
 	rebar_info entries;
 
-	void cfg_rebar::get_data_raw(stream_writer * out, abort_callback & p_abort) override;
-	void cfg_rebar::set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort) override;
+	void get_data_raw(stream_writer * out, abort_callback & p_abort) override;
+	void set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort) override;
 	
 public:
 	void export_config(stream_writer * p_out, t_uint32 mode, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort);
 	void import_config(stream_reader * p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID> & panels, abort_callback & p_abort);
 
-	explicit inline cfg_rebar::cfg_rebar(const GUID & p_guid) : cfg_var(p_guid) {reset();};
-	void cfg_rebar::get_rebar_info(rebar_info & out);
-	void cfg_rebar::set_rebar_info(rebar_info & in);
-	void cfg_rebar::reset();
+	explicit inline cfg_rebar(const GUID & p_guid) : cfg_var(p_guid) {reset();};
+	void get_rebar_info(rebar_info & out);
+	void set_rebar_info(rebar_info & in);
+	void reset();
 };
 
 class rebar_window

@@ -18,7 +18,7 @@ class ptr_list_autodel_t : public pfc::ptr_list_t < type_t >
 public:
 	~ptr_list_autodel_t()
 	{
-		delete_all();
+		this->delete_all();
 	}
 };
 

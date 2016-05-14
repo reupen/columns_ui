@@ -485,44 +485,6 @@ void playlists_tabs_extension::on_child_position_change()
 	//on_size();
 }
 
-bool playlists_tabs_extension::show_config_popup(unsigned p_index, HWND wnd_parent)
-{
-	if (p_index == 0 && m_child_guid != pfc::guid_null)
-	{
-		abort_callback_dummy abortCallback;
-		uie::window_ptr p_window = m_child;
-		if (!p_window.is_valid())
-		{
-			if (uie::window::create_by_guid(m_child_guid, p_window))
-			{
-				p_window->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
-			}
-		}
-		if (p_window.is_valid())
-		{
-			bool rv = p_window->show_config_popup(wnd_parent);
-			if (rv)
-			{
-				p_window->get_config_to_array(m_child_data, abortCallback, true);
-			}
-		}
-	}
-	return false;
-}
-
-bool playlists_tabs_extension::have_config_popup(unsigned p_index) const
-{
-	if (p_index == 0 && m_child_guid != pfc::guid_null)
-	{
-		uie::window_ptr p_window = m_child;
-		if (!p_window.is_valid())
-			uie::window::create_by_guid(m_child_guid, p_window);
-		if (p_window.is_valid())
-			return p_window->have_config_popup();
-	}
-	return false;
-}
-
 void playlists_tabs_extension::get_config(stream_writer * out, abort_callback & p_abort) const
 {
 	out->write_lendian_t(m_child_guid, p_abort);

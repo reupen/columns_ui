@@ -31,10 +31,6 @@ public:
 
 	void get_config(stream_writer * out, abort_callback & p_abort) const override;;
 
-	virtual bool have_config_popup(unsigned index) const;
-
-	virtual bool show_config_popup(HWND wnd, unsigned index);
-
 	bool is_index_valid(unsigned index) const;
 
 	bool get_config_item_supported(unsigned index, const GUID & p_type) const override;

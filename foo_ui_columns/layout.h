@@ -1,5 +1,4 @@
-#ifndef _FOO_UI_COLUMNS_LAYOUT_H_
-#define _FOO_UI_COLUMNS_LAYOUT_H_
+#pragma once
 
 /*!
  * \file layout.h
@@ -142,5 +141,3 @@ private:
 
 extern layout_window g_layout_window;
 extern cfg_layout_t cfg_layout;
-
-#endif _FOO_UI_COLUMNS_LAYOUT_H_

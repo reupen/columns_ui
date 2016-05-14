@@ -313,7 +313,7 @@ public:
 		assert (active_playlist != pfc_infinite);
 		return make_extra(active_playlist, idx, p_out, st, b_legacy);
 	}
-	inline void make_extra(unsigned playlist, unsigned idx, global_variable_list & p_out, const SYSTEMTIME * st = nullptr, bool b_legacy = false) const;
+	void make_extra(unsigned playlist, unsigned idx, global_variable_list & p_out, const SYSTEMTIME * st = nullptr, bool b_legacy = false) const;
 
 	void get_display_name(unsigned playlist, unsigned idx, int col, pfc::string_base & out);
 	COLORREF get_colour(unsigned playlist, unsigned idx, int col, colour_type colour);
