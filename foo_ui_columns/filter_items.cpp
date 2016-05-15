@@ -651,5 +651,21 @@ namespace filter_panel {
 		insert_items(0, items.get_count(), items.get_ptr());
 	}
 
+	void filter_panel_t::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
+	{
+		auto node_count = m_nodes.get_count();
+		if (node_count > 2) {
+			mmh::permutation_t sort_permuation(node_count - 1);
+			const auto * nodes = m_nodes.get_ptr();
+			++nodes;
+			mmh::g_sort_get_permutation_qsort_v2(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending);
+
+			m_nodes.reorder_partial(1, sort_permuation.get_ptr(), node_count - 1);
+
+			reorder_items_partial(1, sort_permuation.get_ptr(), node_count - 1);
+
+			// TODO: Persistent sort state
+		}
+	}
 
 }

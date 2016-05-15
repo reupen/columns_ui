@@ -899,10 +899,10 @@ namespace filter_panel {
 		return StrCmpLogicalW(i1->m_value, i2);
 	}
 
-
-
-
-
+	int filter_panel_t::node_t::g_compare_ptr_with_node(const node_t & i1, const node_t & i2)
+	{
+		return StrCmpLogicalW(i1.m_value, i2.m_value);
+	}
 
 
 	void filter_panel_t::refresh_stream()
@@ -981,6 +981,7 @@ namespace filter_panel {
 		set_autosize(true);
 		set_vertical_item_padding(cfg_vertical_item_padding);
 		set_show_header(cfg_show_column_titles);
+		set_sorting_enabled(true); // TODO: Add setting to control this
 
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);

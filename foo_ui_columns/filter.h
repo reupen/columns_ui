@@ -234,6 +234,8 @@ namespace filter_panel {
 		void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 		bool notify_on_contextmenu(const POINT & pt) override;
 
+		void notify_sort_column(t_size index, bool b_descending, bool b_selection_only) override;
+
 		bool do_drag_drop(WPARAM wp) override;
 
 		bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed) override;
@@ -306,6 +308,7 @@ namespace filter_panel {
 
 			static int g_compare(const node_t & i1, const WCHAR * i2);
 			static int g_compare_ptr(const node_t * i1, const WCHAR * i2);
+			static int g_compare_ptr_with_node(const node_t & i1, const node_t & i2);
 		};
 		//metadb_handle_list m_handles;
 		//t_string_list_fast m_strings;
