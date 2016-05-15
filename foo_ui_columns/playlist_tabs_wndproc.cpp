@@ -55,9 +55,9 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 		}
 	}
 	break;
-	/*case WM_USER+3:
-	on_child_position_change();
-	break;*/
+	case MSG_RESET_SIZE_LIMITS:
+		on_child_position_change();
+		break;
 	case WM_GETMINMAXINFO:
 	{
 		LPMINMAXINFO lpmmi = LPMINMAXINFO(lp);

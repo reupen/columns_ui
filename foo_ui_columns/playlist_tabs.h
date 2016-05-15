@@ -13,7 +13,9 @@ void remove_playlist_helper(t_size index);
 class playlists_tabs_extension : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2>, public playlist_callback
 {
 public:
-	//enum { MSG_EDIT_PANEL =  WM_USER+2};
+	enum : uint32_t {
+		MSG_RESET_SIZE_LIMITS =  WM_USER+3
+	};
 	class window_host_impl : public ui_extension::window_host
 	{
 	public:

@@ -658,9 +658,8 @@ void playlists_tabs_extension::on_size(unsigned cx, unsigned cy)
 		m_child_top = rc.top;
 		if (rc.top != old_top)
 		{
-			//PostMessage(get_wnd(), WM_USER+3,0,0);
-			on_child_position_change();
-			//console::formatter() << "old top: " << old_top << " new top: " << rc.top;
+			// Avoid causing the host to trigger a sequence of resizes within another sequence of resizes.
+			PostMessage(get_wnd(), MSG_RESET_SIZE_LIMITS, 0, 0);
 		}
 	}
 	else if (m_child_wnd)
