@@ -16,6 +16,18 @@ Improved the appearance of Filter search bar icons at some DPI settings.
 
 Corrected truncated 'Size weight' label in Columns tab in Playlist View preferences page at some DPI settings.
 
+Added option to control whether locked panels can be manually resized in the standard splitters.
+
+Added option to control whether column titles are shown in Filters.
+
+Reworked Filter preferences and moved them to a separate page.
+
+Corrected some misbehaviours of the 'active item frame' option in the Colours and Fonts preferences page.
+
+Fixed minor rendering glitches in the toolbars when resizing the main window on some versions of Windows.
+
+Fixed potentially incorrect sizing of panels when resizing the main window and using Playlist tabs without a child panel.
+
 Compiled with Visual Studio 2015 Update 2.
 
 ## 0.4.0
