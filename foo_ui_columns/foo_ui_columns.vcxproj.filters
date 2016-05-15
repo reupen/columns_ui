@@ -623,6 +623,9 @@
     <ClInclude Include="config_host.h">
       <Filter>Prefs UI</Filter>
     </ClInclude>
+    <ClInclude Include="filter_search_bar.h">
+      <Filter>Panels\Filter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">
