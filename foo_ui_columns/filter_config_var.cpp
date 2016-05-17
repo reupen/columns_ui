@@ -7,7 +7,7 @@ namespace filter_panel {
 	{
 		t_uint32 version;
 		p_stream->read_lendian_t(version, p_abort);
-		if (version <= stream_version)
+		if (version <= stream_version_current)
 		{
 			t_uint32 count, i;
 			p_stream->read_lendian_t(count, p_abort);
@@ -17,17 +17,49 @@ namespace filter_panel {
 				p_stream->read_string((*this)[i].m_name, p_abort);
 				p_stream->read_string((*this)[i].m_field, p_abort);
 			}
+
+			uint32_t sub_stream_version;
+			bool sub_stream_version_read = false;
+			try {
+				p_stream->read_lendian_t(sub_stream_version, p_abort);
+				sub_stream_version_read = true;
+			} catch (const exception_io_data_truncation&) {}
+
+			if (sub_stream_version_read && sub_stream_version <= sub_stream_version_current) {
+				for (i = 0; i < count; i++) {
+					uint32_t extra_data_size;
+					p_stream->read_lendian_t(extra_data_size, p_abort);
+					
+					pfc::array_staticsize_t<t_uint8> column_extra_data(extra_data_size);
+					p_stream->read(column_extra_data.get_ptr(), column_extra_data.get_size(), p_abort);
+
+					stream_reader_memblock_ref column_reader(column_extra_data);
+					column_reader.read_lendian_t((*this)[i].m_last_sort_direction, p_abort);
+				}
+			}
 		}
 	}
 	void cfg_fields_t::get_data_raw(stream_writer * p_stream, abort_callback & p_abort)
 	{
-		p_stream->write_lendian_t((t_uint32)stream_version, p_abort);
-		t_uint32 i, count = get_count();
-		p_stream->write_lendian_t((t_uint32)count, p_abort);
+		p_stream->write_lendian_t((t_uint32)stream_version_current, p_abort);
+		t_uint32 i, count = pfc::downcast_guarded<uint32_t>(get_count());
+		p_stream->write_lendian_t(count, p_abort);
 		for (i = 0; i<count; i++)
 		{
-			p_stream->write_string((*this)[i].m_name, p_abort);
-			p_stream->write_string((*this)[i].m_field, p_abort);
+			const auto & field = (*this)[i];
+			p_stream->write_string(field.m_name, p_abort);
+			p_stream->write_string(field.m_field, p_abort);
+		}
+
+		p_stream->write_lendian_t(static_cast<uint32_t>(sub_stream_version_current), p_abort);
+		for (i = 0; i<count; i++) {
+			const auto & field = (*this)[i];
+			stream_writer_memblock field_writer;
+			field_writer.write_lendian_t(field.m_last_sort_direction, p_abort);
+
+			uint32_t extra_size = field_writer.m_data.get_size();
+			p_stream->write_lendian_t(extra_size, p_abort);
+			p_stream->write(field_writer.m_data.get_ptr(), field_writer.m_data.get_size(), p_abort);
 		}
 	}
 	void cfg_fields_t::reset()

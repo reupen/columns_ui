@@ -43,12 +43,16 @@ namespace filter_panel {
 	{
 	public:
 		pfc::string8 m_name, m_field;
+		bool m_last_sort_direction;
+
+		field_t() : m_last_sort_direction(false) {}
 	};
 
 	class cfg_fields_t : public cfg_var, public pfc::list_t<field_t>
 	{
 	public:
-		enum {stream_version=0};
+		enum { stream_version_current = 0 };
+		enum { sub_stream_version_current = 0 };
 
 		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
 		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
