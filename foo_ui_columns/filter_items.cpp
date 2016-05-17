@@ -663,6 +663,7 @@ namespace filter_panel {
 			m_nodes.reorder_partial(1, sort_permuation.get_ptr(), node_count - 1);
 
 			reorder_items_partial(1, sort_permuation.get_ptr(), node_count - 1);
+			ensure_visible(get_focus_item());
 
 			// TODO: Persistent sort state
 		}
