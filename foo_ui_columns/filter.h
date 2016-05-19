@@ -57,9 +57,12 @@ namespace filter_panel {
 		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
 		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
 		void reset();
+
+		bool find_by_name(const char * p_name, size_t & p_index);
 		bool have_name(const char * p_name);
 		void fix_name(const char * p_name, pfc::string8 & p_out);
 		void fix_name(pfc::string8 & p_name);
+		
 		cfg_fields_t(const GUID & p_guid) : cfg_var(p_guid) {reset();}
 	};
 
@@ -162,11 +165,11 @@ namespace filter_panel {
 		class field_data_t
 		{
 		public:
-			bool m_use_script;
+			bool m_use_script, m_last_sort_direction;
 			pfc::string8 m_script, m_name;
 			pfc::list_t<pfc::string8> m_fields;
 
-			field_data_t() : m_use_script(false) {};
+			field_data_t() : m_use_script(false), m_last_sort_direction(false) {};
 
 			bool is_empty() { return !m_use_script && !m_fields.get_count(); }
 			void reset() { *this = field_data_t(); }
@@ -320,5 +323,6 @@ namespace filter_panel {
 		//t_string_list_fast m_strings;
 		pfc::list_t<node_t> m_nodes;
 		//static int g_compare_node();
+		bool m_pending_sort_direction;
 	};
 };

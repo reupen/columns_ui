@@ -37,7 +37,7 @@ namespace filter_panel {
 				for (i = 0; i<count; i++)
 				{
 					t_size index;
-					if (mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, previous_nodes[i].get_ptr(), 1, index))
+					if (mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, previous_nodes[i].get_ptr(), 1, index, get_sort_direction()))
 					{
 						new_selection[index] = true;
 						b_found = true;
@@ -100,7 +100,7 @@ namespace filter_panel {
 			get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
 			mmh::permutation_t permutation(data0.get_count());
-			mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, false);
+			mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
 
 			pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
 			pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -120,7 +120,7 @@ namespace filter_panel {
 					t_size i, count = data.get_count(), counter = 0;
 
 					for (i = 0; i<count; i++)
-						if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
+						if (i + 1 == count || !((p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr()))))
 							counter++;
 
 					for (i = 0; i<count; i++)
@@ -131,7 +131,8 @@ namespace filter_panel {
 						t_size handles_count = 1 + i - start, k;
 
 						t_size index_item;
-						bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[perm[start]].m_text.get_ptr(), 1, index_item);
+						bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
+							p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
 						if (b_exact)
 						{
 							t_size current_count = m_nodes[index_item].m_handles.get_count();
@@ -198,7 +199,7 @@ namespace filter_panel {
 			get_data_entries_v2(handles, data0, g_showemptyitems);
 
 			mmh::permutation_t permutation(data0.get_count());
-			mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, false);
+			mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
 
 			pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
 			pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -214,7 +215,7 @@ namespace filter_panel {
 					t_size i, count = data.get_count(), counter = 0;
 
 					for (i = 0; i<count; i++)
-						if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
+						if (i + 1 == count || !((p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr()))))
 							counter++;
 
 					pfc::array_t<bool> mask0;
@@ -230,7 +231,9 @@ namespace filter_panel {
 						t_size handles_count = 1 + i - start;
 
 						t_size index_item;
-						bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[perm[start]].m_text.get_ptr(), 1, index_item);
+						bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
+							p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
+
 						if (b_exact)
 						{
 							//t_size current_count = m_nodes[index_item].m_handles.get_count();
@@ -333,7 +336,7 @@ namespace filter_panel {
 		get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
 		mmh::permutation_t permutation(data0.get_count());
-		mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, false);
+		mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
 
 		pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
 		pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -378,7 +381,7 @@ namespace filter_panel {
 					t_size handles_count = 1 + i - start, k;
 
 					t_size index_item;
-					bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[perm[start]].m_text.get_ptr(), 1, index_item);
+					bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
 					if (b_exact)
 					{
 						t_size current_count = m_nodes[index_item].m_handles.get_count();
@@ -589,7 +592,7 @@ namespace filter_panel {
 		{
 			pfc::hires_timer timer;
 			timer.start();
-			mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, false);
+			mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
 			//	console::formatter() << "g_sort_get_permutation_qsort_v2: " << timer.query() << " s";
 		}
 
@@ -665,7 +668,10 @@ namespace filter_panel {
 			reorder_items_partial(1, sort_permuation.get_ptr(), node_count - 1);
 			ensure_visible(get_focus_item());
 
-			// TODO: Persistent sort state
+			size_t field_index;
+			if (cfg_field_list.find_by_name(m_field_data.m_name, field_index)) {
+				cfg_field_list[field_index].m_last_sort_direction = b_descending;
+			}
 		}
 	}
 

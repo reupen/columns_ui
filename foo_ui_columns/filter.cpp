@@ -51,6 +51,11 @@ namespace filter_panel {
 				if (version >= 1)
 				{
 					p_reader->read_lendian_t(m_show_search, p_abort);
+					try {
+						p_reader->read_lendian_t(m_pending_sort_direction, p_abort);
+					} catch (const exception_io_data_truncation &) {
+						
+					}
 				}
 			}
 		}
@@ -60,6 +65,7 @@ namespace filter_panel {
 		p_writer->write_lendian_t(t_size(config_version_current), p_abort);
 		p_writer->write_string(m_field_data.m_name, p_abort);
 		p_writer->write_lendian_t(m_show_search, p_abort);
+		p_writer->write_lendian_t(get_sort_direction(), p_abort);
 		/*p_writer->write_lendian_t(m_field_data.m_use_script, p_abort);
 		p_writer->write_string(m_field_data.m_script, p_abort);
 		t_uint32 count=m_field_data.m_fields.get_count(), i;
@@ -384,12 +390,13 @@ namespace filter_panel {
 
 	void filter_panel_t::g_create_field_data(const field_t & field, field_data_t & p_out)
 	{
+		p_out.m_name = field.m_name;
+		p_out.m_last_sort_direction = field.m_last_sort_direction;
 		if (strchr(field.m_field, '$') || strchr(field.m_field, '%'))
 		{
 			p_out.m_use_script = true;
 			p_out.m_script = field.m_field;
 			p_out.m_fields.remove_all();
-			p_out.m_name = field.m_name;
 		}
 		else
 		{
@@ -406,7 +413,6 @@ namespace filter_panel {
 					p_out.m_fields.add_item(pfc::string8(start, ptr - start));
 				while (*ptr == ';') ptr++;
 			}
-			p_out.m_name = field.m_name;
 		}
 	}
 
@@ -492,6 +498,8 @@ namespace filter_panel {
 	{
 		if (b_force || stricmp_utf8(field.m_name, m_field_data.m_name))
 		{
+			m_pending_sort_direction = field.m_last_sort_direction;
+
 			pfc::ptr_list_t<filter_panel_t> windows_before;
 			get_windows(windows_before);
 			t_size pos_before = windows_before.find_item(this);
@@ -963,6 +971,7 @@ namespace filter_panel {
 	void filter_panel_t::refresh_columns()
 	{
 		set_columns(pfc::list_single_ref_t<t_column>(t_column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name, 200)));
+		set_sort_column(0, m_pending_sort_direction);
 	}
 	/*void filter_panel_t::on_groups_change()
 	{
@@ -1011,6 +1020,8 @@ namespace filter_panel {
 		if (field_index == pfc_infinite)
 			//if (m_field_data.is_empty())
 		{
+			m_pending_sort_direction = false;
+
 			pfc::array_t<bool> used;
 			t_size field_count = g_field_data.get_count();
 			used.set_count(field_count);
@@ -1031,20 +1042,17 @@ namespace filter_panel {
 					if (!used[i])
 					{
 						m_field_data = g_field_data[i];
+						field_index = i;
 						break;
 					}
 				}
 			}
 		}
-		//else
-		field_index = get_field_index();
-		{
-			if (field_index == pfc_infinite)
-				m_field_data.reset();
-			else
-				m_field_data = g_field_data[field_index];
-		}
 
+		if (field_index == pfc_infinite)
+			m_field_data.reset();
+		else
+			m_field_data = g_field_data[field_index];
 	}
 
 
@@ -1147,7 +1155,7 @@ namespace filter_panel {
 #ifdef FILTER_OLD_SEARCH
 		m_query_active(false), m_query_timer_active(false),
 #endif
-		m_drag_item_count(0), m_show_search(false), m_contextmenu_manager_base(NULL)
+		m_drag_item_count(0), m_show_search(false), m_contextmenu_manager_base(NULL), m_pending_sort_direction(false)
 	{
 
 	}

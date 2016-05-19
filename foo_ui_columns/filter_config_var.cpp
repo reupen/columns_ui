@@ -73,6 +73,7 @@ namespace filter_panel {
 		i++;
 		(*this)[i].m_name = ((*this)[i].m_field = "Album");
 	}
+
 	bool cfg_fields_t::have_name(const char * p_name)
 	{
 		t_size i, count = get_count();
@@ -81,6 +82,18 @@ namespace filter_panel {
 				return true;
 		return false;
 	}
+
+	bool cfg_fields_t::find_by_name(const char * p_name, size_t & p_index)
+	{
+		t_size i, count = get_count();
+		for (i = 0; i<count; i++)
+			if (!stricmp_utf8(p_name, (*this)[i].m_name)) {
+				p_index = i;
+				return true;
+			}
+		return false;
+	}
+
 	void cfg_fields_t::fix_name(const char * p_name, pfc::string8 & p_out)
 	{
 		t_size i = 0;
