@@ -2,33 +2,39 @@
 
 ## 0.5.0 (upcoming release)
 
-A duplicate preset button has been added to the layout configuration page. 
+## Layout and toolbars
 
-When the main window is deactivated with the menu bar focused, the focus is now restored to the window that had the keyboard focus before the menu bar did when the main window is reactivated. (Previously, the focus was incorrectly returned to the menu bar.)
+* A duplicate preset button has been added to the layout configuration page. 
 
-The minimum width of toolbars without an explicit minimum width has been reduced to be the same as the minimum height (21 pixels at 100% DPI).
+* When the main window is deactivated with the menu bar focused, the focus is now restored to the window that had the keyboard focus before the menu bar did when the main window is reactivated. (Previously, the focus was incorrectly returned to the menu bar.)
 
-Improved preferences behaviour when importing FCL files and switching between pages; previously preferences may have shown old values after importing an FCL file.
+* The minimum width of toolbars without an explicit minimum width has been reduced to be the same as the minimum height (21 pixels at 100% DPI).
 
-Panel sizes are now DPI-aware in the standard splitters, and non-auto-size columns. In particular, this affects the quick setup presets, FCL files and layouts after the system DPI setting has been changed.
+* Improved preferences behaviour when importing FCL files and switching between pages; previously preferences may have shown old values after importing an FCL file.
 
-Improved the appearance of Filter search bar icons at some DPI settings.
+* Panel sizes are now DPI-aware in the standard splitters, and non-auto-size columns. In particular, this affects the quick setup presets, FCL files and layouts after the system DPI setting has been changed.
 
-Corrected truncated 'Size weight' label in Columns tab in Playlist View preferences page at some DPI settings.
+* Added option to control whether locked panels can be manually resized in the standard splitters.
 
-Added option to control whether locked panels can be manually resized in the standard splitters.
+* Fixed minor rendering glitches in the toolbars when resizing the main window on some versions of Windows.
 
-Added option to control whether column titles are shown in Filters.
+* Fixed potentially incorrect sizing of panels when resizing the main window and using Playlist tabs without a child panel.
 
-Reworked Filter preferences and moved them to a separate page.
+## Filters
 
-Corrected some misbehaviours of the 'active item frame' option in the Colours and Fonts preferences page.
+* Improved the appearance of Filter search bar icons at some DPI settings.
 
-Fixed minor rendering glitches in the toolbars when resizing the main window on some versions of Windows.
+* Added option to control whether column titles are shown in Filters.
 
-Fixed potentially incorrect sizing of panels when resizing the main window and using Playlist tabs without a child panel.
+* Reworked Filter preferences and moved them to a separate page.
 
-Compiled with Visual Studio 2015 Update 2.
+## Other changes
+
+* Corrected truncated 'Size weight' label in Columns tab in Playlist View preferences page at some DPI settings.
+
+* Corrected some misbehaviours of the 'active item frame' option in the Colours and Fonts preferences page.
+
+* Compiled with Visual Studio 2015 Update 2.
 
 ## 0.4.0
 
