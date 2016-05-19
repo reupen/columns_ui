@@ -133,6 +133,7 @@
 #define IDC_EXPORT                      1018
 #define IDC_MAP_COLOUR_CODES            1018
 #define IDC_VALUE                       1018
+#define IDC_FILTERS_ALLOW_SORTING       1018
 #define IDC_PLAYLIST_FILTER_STRING      1019
 #define IDC_SPIN1                       1019
 #define IDC_FCL_EXPORT                  1019

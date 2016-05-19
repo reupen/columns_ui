@@ -19,6 +19,7 @@ namespace filter_panel {
 	extern const GUID g_guid_favouritequeries;
 	extern const GUID g_guid_showsearchclearbutton;
 	extern const GUID g_guid_show_column_titles;
+	extern const GUID g_guid_allow_sorting;
 
 	class appearance_client_filter_impl : public cui::colours::client {
 	public:
@@ -42,19 +43,26 @@ namespace filter_panel {
 	{
 	public:
 		pfc::string8 m_name, m_field;
+		bool m_last_sort_direction;
+
+		field_t() : m_last_sort_direction(false) {}
 	};
 
 	class cfg_fields_t : public cfg_var, public pfc::list_t<field_t>
 	{
 	public:
-		enum {stream_version=0};
+		enum { stream_version_current = 0 };
+		enum { sub_stream_version_current = 0 };
 
 		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
 		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
 		void reset();
+
+		bool find_by_name(const char * p_name, size_t & p_index);
 		bool have_name(const char * p_name);
 		void fix_name(const char * p_name, pfc::string8 & p_out);
 		void fix_name(pfc::string8 & p_name);
+		
 		cfg_fields_t(const GUID & p_guid) : cfg_var(p_guid) {reset();}
 	};
 
@@ -81,7 +89,7 @@ namespace filter_panel {
 	extern cfg_fields_t cfg_field_list;
 
 	extern uih::ConfigInt32DpiAware cfg_vertical_item_padding;
-	extern uih::ConfigBool cfg_show_column_titles;
+	extern uih::ConfigBool cfg_show_column_titles, cfg_allow_sorting;
 
 	class filter_panel_t :
 		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_filter_impl>, uie::window>,
@@ -136,6 +144,7 @@ namespace filter_panel {
 		static void g_on_field_title_change(const char * p_old, const char * p_new);
 		static void g_on_vertical_item_padding_change();
 		static void g_on_show_column_titles_change();
+		static void g_on_allow_sorting_change();
 
 		static void g_on_field_query_change(const field_t & field);
 		static void g_on_showemptyitems_change(bool b_val);
@@ -156,11 +165,11 @@ namespace filter_panel {
 		class field_data_t
 		{
 		public:
-			bool m_use_script;
+			bool m_use_script, m_last_sort_direction;
 			pfc::string8 m_script, m_name;
 			pfc::list_t<pfc::string8> m_fields;
 
-			field_data_t() : m_use_script(false) {};
+			field_data_t() : m_use_script(false), m_last_sort_direction(false) {};
 
 			bool is_empty() { return !m_use_script && !m_fields.get_count(); }
 			void reset() { *this = field_data_t(); }
@@ -234,6 +243,8 @@ namespace filter_panel {
 		void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 		bool notify_on_contextmenu(const POINT & pt) override;
 
+		void notify_sort_column(t_size index, bool b_descending, bool b_selection_only) override;
+
 		bool do_drag_drop(WPARAM wp) override;
 
 		bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed) override;
@@ -306,102 +317,12 @@ namespace filter_panel {
 
 			static int g_compare(const node_t & i1, const WCHAR * i2);
 			static int g_compare_ptr(const node_t * i1, const WCHAR * i2);
+			static int g_compare_ptr_with_node(const node_t & i1, const node_t & i2);
 		};
 		//metadb_handle_list m_handles;
 		//t_string_list_fast m_strings;
 		pfc::list_t<node_t> m_nodes;
 		//static int g_compare_node();
+		bool m_pending_sort_direction;
 	};
-
-
-	class filter_search_bar :
-		public uie::container_uie_window_v2
-	{
-		class menu_node_show_clear_button : public ui_extension::menu_node_command_t
-		{
-			service_ptr_t<filter_search_bar> p_this;
-		public:
-			bool get_display_data(pfc::string_base & p_out, unsigned & p_displayflags) const override;
-			bool get_description(pfc::string_base & p_out) const override;
-			void execute() override;
-			menu_node_show_clear_button(filter_search_bar * wnd) : p_this(wnd) {};
-		};
-	public:
-		static bool g_activate();
-		//static void g_on_orderedbysplitters_change();
-		static bool g_filter_search_bar_has_stream(filter_search_bar const* p_seach_bar, const filter_panel_t::filter_stream_t * p_stream);
-
-		template <class TStream>
-		static void g_initialise_filter_stream(const TStream & p_stream)
-		{
-			for (t_size i = 0, count = g_active_instances.get_count(); i<count; i++)
-			{
-
-				if (!cfg_orderedbysplitters || g_filter_search_bar_has_stream(g_active_instances[i], p_stream.get_ptr()))
-				{
-					if (!g_active_instances[i]->m_active_search_string.is_empty())
-					{
-						p_stream->m_source_overriden = true;
-						p_stream->m_source_handles = g_active_instances[i]->m_active_handles;
-						break;
-					}
-				}
-			}
-		}
-
-
-		void get_name(pfc::string_base & out) const override { out = "Filter search"; }
-
-		const GUID & get_extension_guid() const override { return cui::toolbars::guid_filter_search_bar; }
-
-		void get_category(pfc::string_base & out) const override { out = "Toolbars"; }
-
-		unsigned get_type() const override { return uie::type_toolbar; }
-		//virtual HBRUSH get_class_background() const {return HBRUSH(COLOR_WINDOW+1);}
-		t_uint32 get_flags() const override { return flag_default_flags_plus_transparent_background; }
-
-		filter_search_bar();
-
-	private:
-		const GUID & get_class_guid() override { return cui::toolbars::guid_filter_search_bar; }
-
-		void set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
-		void get_config(stream_writer * p_writer, abort_callback & p_abort) const override;
-		void get_menu_items(uie::menu_hook_t & p_hook) override;
-
-		void on_show_clear_button_change();
-		void on_search_editbox_change();
-		void commit_search_results(const char * str, bool b_force_autosend = false, bool b_stream_update = false);
-
-		void update_favourite_icon(const char * p_new = nullptr);
-
-		LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-		void create_edit();
-		void on_size(t_size cx, t_size cy) override;
-		void activate();
-
-		static LRESULT WINAPI g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-		LRESULT on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
-		using uie::container_uie_window_v2::on_size;
-
-		enum { id_edit = 668, id_toolbar };
-		enum { TIMER_QUERY = 1001 };
-		enum { idc_clear = 1001, idc_favourite = 1002, msg_favourite_selected = WM_USER + 2 };
-		enum { config_version_current = 0 };
-
-		HWND m_search_editbox, m_wnd_toolbar;
-		gdi_object_t<HFONT>::ptr_t m_font;
-		WNDPROC m_proc_search_edit;
-		bool m_favourite_state, m_query_timer_active, m_show_clear_button;
-		pfc::string8 m_active_search_string;
-		metadb_handle_list m_active_handles;
-		HWND m_wnd_last_focused;
-		HIMAGELIST m_imagelist;
-
-		int m_combo_cx, m_combo_cy, m_toolbar_cx, m_toolbar_cy;
-
-		static pfc::ptr_list_t<filter_search_bar> g_active_instances;
-	};
-
 };

@@ -540,6 +540,7 @@
     <ClInclude Include=".\helpers.h" />
     <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
     <ClInclude Include="config_host.h" />
+    <ClInclude Include="filter_search_bar.h" />
     <ClInclude Include="list_view_panel.h" />
   </ItemGroup>
   <ItemGroup>
