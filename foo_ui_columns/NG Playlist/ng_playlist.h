@@ -63,20 +63,20 @@ namespace pvt
 	{
 		void on_playlist_created(t_size p_index,const char * p_name,t_size p_name_len) override
 		{
-			insert_item(item_t(), p_index);
+			this->insert_item(item_t(), p_index);
 		}
 		void on_playlists_reorder(const t_size * p_order,t_size p_count) override
 		{
-			reorder(p_order);
+			this->reorder(p_order);
 		}
 		void on_playlists_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override
 		{
-			remove_mask(p_mask);
+			this->remove_mask(p_mask);
 		}
 	public:
 		void initialise_playlist_callback()
 		{
-			set_count(static_api_ptr_t<playlist_manager>()->get_playlist_count());
+			this->set_count(static_api_ptr_t<playlist_manager>()->get_playlist_count());
 			playlist_callback_base::initialise_playlist_callback();
 		}
 		using playlist_callback_base::deinitialise_playlist_callback;

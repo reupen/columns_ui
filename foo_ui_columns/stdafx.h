@@ -19,12 +19,12 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
-#include <shlwapi.H>
+#include <shlwapi.h>
 #include <winuser.h>
 #include <gdiplus.h>
 #include <zmouse.h>
 #include <uxtheme.h>
-#include <Wincodec.h>
+#include <wincodec.h>
 #include <strsafe.h>
 
 #include "../foobar2000/SDK/foobar2000.h"
