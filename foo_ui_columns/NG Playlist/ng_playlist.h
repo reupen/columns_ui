@@ -1,10 +1,10 @@
 #pragma once
 
 #include "ng_playlist_style.h"
-#include "..\playlist_view.h"
-#include "..\artwork.h"
-#include "..\config.h"
-#include "..\list_view_panel.h"
+#include "../playlist_view.h"
+#include "../artwork.h"
+#include "../config.h"
+#include "../list_view_panel.h"
 
 namespace pvt 
 {
