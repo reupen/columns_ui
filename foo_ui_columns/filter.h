@@ -20,6 +20,7 @@ namespace filter_panel {
 	extern const GUID g_guid_showsearchclearbutton;
 	extern const GUID g_guid_show_column_titles;
 	extern const GUID g_guid_allow_sorting;
+	extern const GUID g_guid_show_sort_indicators;
 
 	class appearance_client_filter_impl : public cui::colours::client {
 	public:
@@ -89,7 +90,7 @@ namespace filter_panel {
 	extern cfg_fields_t cfg_field_list;
 
 	extern uih::ConfigInt32DpiAware cfg_vertical_item_padding;
-	extern uih::ConfigBool cfg_show_column_titles, cfg_allow_sorting;
+	extern uih::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators;
 
 	class filter_panel_t :
 		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_filter_impl>, uie::window>,
@@ -145,6 +146,7 @@ namespace filter_panel {
 		static void g_on_vertical_item_padding_change();
 		static void g_on_show_column_titles_change();
 		static void g_on_allow_sorting_change();
+		static void g_on_show_sort_indicators_change();
 
 		static void g_on_field_query_change(const field_t & field);
 		static void g_on_showemptyitems_change(bool b_val);

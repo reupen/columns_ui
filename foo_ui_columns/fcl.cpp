@@ -405,7 +405,7 @@ void g_import_layout(HWND wnd, const char * path, bool quiet)
 					datasetsguids.add_item(datasets[i].guid);
 				FCLDialog pFCLDialog(true, datasetsguids);
 				if (!quiet) {
-					if (!uDialogBox(IDD_FCL, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
+					if (!uDialogBox(IDD_FCL_IMPORT, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
 						throw exception_aborted();
 				}
 				ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
@@ -465,7 +465,8 @@ void g_export_layout(HWND wnd)
 {
 	pfc::string8 path;
 	FCLDialog pFCLDialog;
-	if (/*MessageBox(wnd, _T("Layout setting exporting is available for testing purposes only. FCL files produced will not work with the release version of Columns UI."), _T("Warning"), MB_OK) == IDOK && */uDialogBox (IDD_FCL1, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog) && uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", nullptr, path, TRUE))
+	if (uDialogBox (IDD_FCL_EXPORT, wnd, FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog))
+		&& uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", nullptr, path, TRUE))
 	{
 		t_export_feedback_impl feedback;
 		pfc::list_t<GUID> groups;

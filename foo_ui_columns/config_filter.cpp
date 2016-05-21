@@ -269,11 +269,13 @@ public:
 		HWND wnd_showempty = GetDlgItem(wnd, IDC_SHOWEMPTY);
 		const auto wnd_show_column_titles = GetDlgItem(wnd, IDC_FILTERS_SHOW_COLUMN_TITLES);
 		const auto wnd_allow_sorting = GetDlgItem(wnd, IDC_FILTERS_ALLOW_SORTING);
+		const auto wnd_show_sort_indicators = GetDlgItem(wnd, IDC_FILTERS_SHOW_SORT_INDICATORS);
 		uSetWindowText(wnd_sort_string, filter_panel::cfg_sort_string);
 		Button_SetCheck(wnd_sort, filter_panel::cfg_sort ? BST_CHECKED : BST_UNCHECKED);
 		Button_SetCheck(wnd_showempty, filter_panel::cfg_showemptyitems ? BST_CHECKED : BST_UNCHECKED);
 		Button_SetCheck(wnd_show_column_titles, filter_panel::cfg_show_column_titles ? BST_CHECKED : BST_UNCHECKED);
 		Button_SetCheck(wnd_allow_sorting, filter_panel::cfg_allow_sorting ? BST_CHECKED : BST_UNCHECKED);
+		Button_SetCheck(wnd_show_sort_indicators, filter_panel::cfg_show_sort_indicators ? BST_CHECKED : BST_UNCHECKED);
 
 		Button_SetCheck(wnd_autosend, filter_panel::cfg_autosend ? BST_CHECKED : BST_UNCHECKED);
 
@@ -356,6 +358,10 @@ public:
 					case IDC_FILTERS_ALLOW_SORTING:
 						filter_panel::cfg_allow_sorting = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
 						filter_panel::filter_panel_t::g_on_allow_sorting_change();
+						break;
+					case IDC_FILTERS_SHOW_SORT_INDICATORS:
+						filter_panel::cfg_show_sort_indicators = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
+						filter_panel::filter_panel_t::g_on_show_sort_indicators_change();
 						break;
 					case IDC_SHOWEMPTY:
 						filter_panel::cfg_showemptyitems = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);

@@ -224,7 +224,7 @@ public:
 		}
 		return 0;
 	}
-	HWND create(HWND wnd) override { return uCreateDialog(IDD_DISPLAY2, wnd, ConfigProc); }
+	HWND create(HWND wnd) override { return uCreateDialog(IDD_PVIEW_GENERAL, wnd, ConfigProc); }
 	const char * get_name() override { return "General"; }
 	bool get_help_url(pfc::string_base & p_out) override
 	{

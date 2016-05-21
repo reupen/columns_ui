@@ -20,6 +20,7 @@ namespace filter_panel {
 	uih::ConfigInt32DpiAware cfg_vertical_item_padding(g_guid_itempadding, 4);
 	uih::ConfigBool cfg_show_column_titles(g_guid_show_column_titles, true);
 	uih::ConfigBool cfg_allow_sorting(g_guid_allow_sorting, true);
+	uih::ConfigBool cfg_show_sort_indicators(g_guid_show_sort_indicators, true);
 
 	cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 
@@ -171,6 +172,14 @@ namespace filter_panel {
 		t_size i, count = g_windows.get_count();
 		for (i = 0; i < count; i++) {
 			g_windows[i]->set_sorting_enabled(cfg_allow_sorting);
+		}
+	}
+
+	void filter_panel_t::g_on_show_sort_indicators_change()
+	{
+		t_size i, count = g_windows.get_count();
+		for (i = 0; i < count; i++) {
+			g_windows[i]->set_show_sort_indicators(cfg_show_sort_indicators);
 		}
 	}
 
@@ -1000,6 +1009,7 @@ namespace filter_panel {
 		set_vertical_item_padding(cfg_vertical_item_padding);
 		set_show_header(cfg_show_column_titles);
 		set_sorting_enabled(cfg_allow_sorting);
+		set_show_sort_indicators(cfg_show_sort_indicators);
 
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
