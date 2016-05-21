@@ -542,6 +542,21 @@ namespace pvt
 
 		void on_playlist_locked(bool p_locked) override {};
 
+		// Temp fix to avoid playlist_callback virtual functions being hidden by those of 
+		// playlist_callback_single
+		using playlist_callback_base::on_items_added;
+		using playlist_callback_base::on_items_reordered;
+		using playlist_callback_base::on_items_removing;
+		using playlist_callback_base::on_items_removed;
+		using playlist_callback_base::on_items_selection_change;
+		using playlist_callback_base::on_item_focus_change;
+		using playlist_callback_base::on_items_modified;
+		using playlist_callback_base::on_items_modified_fromplayback;
+		using playlist_callback_base::on_items_replaced;
+		using playlist_callback_base::on_item_ensure_visible;
+		using playlist_callback_base::on_playlist_renamed;
+		using playlist_callback_base::on_playlist_locked;
+
 		void on_playlist_activate(t_size p_old,t_size p_new) override
 		{
 			if (p_old != pfc_infinite)
