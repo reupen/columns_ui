@@ -10,6 +10,7 @@
 
 #include "ng_playlist.h"
 #include "ng_playlist_groups.h"
+#include "../config_columns_v2.h"
 
 namespace artwork_panel
 {
@@ -772,9 +773,7 @@ namespace pvt {
 		}
 		else if (cmd == IDM_EDIT_COLUMN)
 		{
-			g_set_tab("Columns");
-			cfg_cur_prefs_col =  column_index_display_to_actual(index); //get_idx
-			static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
+			tab_columns_v3::get_instance().show_column(column_index_display_to_actual(index));
 		}
 		else if (cmd == IDM_AUTOSIZE)
 		{

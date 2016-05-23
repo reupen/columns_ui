@@ -4,6 +4,7 @@
 #include "config_host.h"
 
 #include "config.h"
+#include "config_columns_v2.h"
 
 cfg_struct_t<LOGFONT> cfg_editor_font(create_guid(0xd429d322, 0xd236, 0x7356, 0x33, 0x25, 0x4b, 0x67, 0xc5, 0xd4, 0x50, 0x3e), get_menu_font());
 cfg_int cfg_import_titles(create_guid(0xcd062463, 0x488f, 0xc7ec, 0x56, 0xf2, 0x90, 0x7f, 0x0a, 0xfe, 0x77, 0xda), 1);
@@ -48,7 +49,7 @@ static preferences_tab* g_tabs_playlist_view[] =
 {
 	g_get_tab_display2(),
 	&g_tab_grouping,
-	g_get_tab_columns_v3(),
+	&tab_columns_v3::get_instance(),
 	g_get_tab_global(),
 };
 

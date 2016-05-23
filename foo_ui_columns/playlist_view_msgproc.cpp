@@ -2,6 +2,7 @@
 #include "NG Playlist/ng_playlist.h"
 #include "playlist_view.h"
 #include "font_notify.h"
+#include "config_columns_v2.h"
 
 
 LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -1114,9 +1115,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 			}
 			else if (cmd == IDM_EDIT_COLUMN)
 			{
-				g_set_tab("Columns");
-				cfg_cur_prefs_col = g_cache.active_column_active_to_actual(hittest.iItem); //get_idx
-				static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
+				tab_columns_v3::get_instance().show_column(g_cache.active_column_active_to_actual(hittest.iItem));
 			}
 			else if (cmd == IDM_AUTOSIZE)
 			{

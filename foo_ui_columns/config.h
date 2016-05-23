@@ -27,7 +27,6 @@ public:
 };
 
 preferences_tab * g_get_tab_layout();
-preferences_tab * g_get_tab_columns_v3();
 preferences_tab * g_get_tab_artwork();
 preferences_tab * g_get_tab_display2();
 preferences_tab * g_get_tab_sys();

@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "NG Playlist/ng_playlist.h"
 #include "config.h"
+#include "config_columns_v2.h"
 
 extern cfg_int g_cur_tab;
 extern cfg_int g_last_colour;
@@ -14,19 +15,6 @@ struct column_times
 	double time_colour_compile;
 	double time_display;
 	double time_colour;
-};
-
-class column_tab : public pfc::refcounted_object_root
-{
-public:
-	typedef column_tab self_t;
-	typedef pfc::refcounted_object_ptr_t<self_t> ptr;
-	virtual HWND create(HWND wnd)=0;
-	//virtual void destroy(HWND wnd)=0;
-	//virtual const char * get_name()=0;
-	virtual void set_column(const column_t::ptr & column)=0;
-	virtual void get_column(column_t::ptr & p_out)=0;
-
 };
 
 class edit_column_window_options : public column_tab
@@ -516,123 +504,108 @@ const GUID g_guid_cfg_child_column =
 
 cfg_uint cfg_child_column(g_guid_cfg_child_column, 0);
 
-static class tab_columns_v3 : public preferences_tab
+
+
+void tab_columns_v3::make_child()
 {
-private:
-	HWND m_wnd_child;
-	HWND m_wnd;
-	column_tab::ptr m_child;
-	//edit_column_window_options m_tab_options;
-	//edit_column_window_scripts m_tab_scripts;
-public:
-	tab_columns_v3() : m_wnd_child(nullptr), m_wnd(nullptr), initialising(false) {};
-
-	void make_child()
-	{
-		//HWND wnd_destroy = child;
-		if (m_wnd_child)
-		{
-			ShowWindow(m_wnd_child, SW_HIDE);
-			DestroyWindow(m_wnd_child);
-			m_wnd_child=nullptr;
-			m_child.release();
-		}
-
-		HWND wnd_tab = GetDlgItem(m_wnd, IDC_TAB1);
-		
-		RECT tab;
-		
-		GetWindowRect(wnd_tab,&tab);
-		MapWindowPoints(HWND_DESKTOP, m_wnd, (LPPOINT)&tab, 2);
-		
-		TabCtrl_AdjustRect(wnd_tab,FALSE,&tab);
-		
-		unsigned count = 2;
-		if (cfg_child_column >= count) cfg_child_column = 0;
-
-		if (cfg_child_column < count && cfg_child_column >= 0)
-		{
-			int item = ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED);
-
-			column_t::ptr column;
-			if (item != -1)
-				column = m_columns[item];
-
-			if (cfg_child_column == 0)
-				m_child = new edit_column_window_options(column);
-			else
-				m_child = new edit_column_window_scripts(column);
-			m_wnd_child = m_child->create(m_wnd);
-		}
-
-		if (m_wnd_child) 
-		{
-			EnableThemeDialogTexture(m_wnd_child, ETDT_ENABLETAB);
-			SetWindowPos(m_wnd_child, HWND_TOP, tab.left, tab.top, tab.right-tab.left, tab.bottom-tab.top, NULL);
-			ShowWindow(m_wnd_child, SW_SHOWNORMAL);
-		}
-
-		//SetWindowPos(wnd_tab,GetDlgItem(m_wnd, IDC_GROUPBOX),0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
-		
+	//HWND wnd_destroy = child;
+	if (m_wnd_child) {
+		ShowWindow(m_wnd_child, SW_HIDE);
+		DestroyWindow(m_wnd_child);
+		m_wnd_child = nullptr;
+		m_child.release();
 	}
 
-	void refresh_me(HWND wnd, bool init = false)
-	{
-		initialising = true;	
-		HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+	HWND wnd_tab = GetDlgItem(m_wnd, IDC_TAB1);
 
-		SendDlgItemMessage(wnd,IDC_COLUMNS,WM_SETREDRAW,false,0);
-		int idx =(init ?  cfg_cur_prefs_col : ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED));
-		ListView_DeleteAllItems(wnd_lv);
+	RECT tab;
 
-		pfc::string8 temp;
+	GetWindowRect(wnd_tab, &tab);
+	MapWindowPoints(HWND_DESKTOP, m_wnd, (LPPOINT)&tab, 2);
 
-		int i, t = m_columns.get_count();
-		for (i = 0; i < t; i++)
-		{
-			uih::ListView_InsertItemText(wnd_lv, i, 0 ,m_columns[i]->name);
-		}
+	TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
 
-		SendDlgItemMessage(wnd,IDC_COLUMNS,WM_SETREDRAW,true,0);
-		initialising = false;
+	unsigned count = 2;
+	if (cfg_child_column >= count) cfg_child_column = 0;
 
-		if (idx>=0 && idx < (int)m_columns.get_count())
-		{
-			ListView_SetItemState(wnd_lv, idx, LVIS_SELECTED, LVIS_SELECTED);
-		}
+	if (cfg_child_column < count && cfg_child_column >= 0) {
+		int item = ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED);
 
-		RECT rc_lv;
-		GetClientRect(wnd_lv, &rc_lv);
-		ListView_SetColumnWidth(wnd_lv, 0, RECT_CX(rc_lv));
-	}
+		column_t::ptr column;
+		if (item != -1)
+			column = m_columns[item];
 
-
-	static BOOL CALLBACK g_on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
-		tab_columns_v3 * p_data = nullptr;
-		if (msg == WM_INITDIALOG)
-		{
-			p_data = reinterpret_cast<tab_columns_v3*>(lp);
-			SetWindowLongPtr(wnd, DWLP_USER, lp);
-		}
+		if (cfg_child_column == 0)
+			m_child = new edit_column_window_options(column);
 		else
-			p_data = reinterpret_cast<tab_columns_v3*>(GetWindowLongPtr(wnd, DWLP_USER));
-		return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+			m_child = new edit_column_window_scripts(column);
+		m_wnd_child = m_child->create(m_wnd);
 	}
 
-	BOOL CALLBACK on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
-	{
+	if (m_wnd_child) {
+		EnableThemeDialogTexture(m_wnd_child, ETDT_ENABLETAB);
+		SetWindowPos(m_wnd_child, HWND_TOP, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, NULL);
+		ShowWindow(m_wnd_child, SW_SHOWNORMAL);
+	}
 
-		switch(msg)
-		{
+	//SetWindowPos(wnd_tab,GetDlgItem(m_wnd, IDC_GROUPBOX),0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
+
+}
+
+void tab_columns_v3::refresh_me(HWND wnd, bool init)
+{
+	initialising = true;
+	HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+
+	SendDlgItemMessage(wnd, IDC_COLUMNS, WM_SETREDRAW, false, 0);
+	int idx = (init ? cfg_cur_prefs_col : ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED));
+	ListView_DeleteAllItems(wnd_lv);
+
+	pfc::string8 temp;
+
+	int i, t = m_columns.get_count();
+	for (i = 0; i < t; i++) {
+		uih::ListView_InsertItemText(wnd_lv, i, 0, m_columns[i]->name);
+	}
+
+	SendDlgItemMessage(wnd, IDC_COLUMNS, WM_SETREDRAW, true, 0);
+	initialising = false;
+
+	if (idx >= 0 && idx < (int)m_columns.get_count()) {
+		ListView_SetItemState(wnd_lv, idx, LVIS_SELECTED, LVIS_SELECTED);
+		ListView_EnsureVisible(wnd_lv, idx, FALSE);
+	}
+
+	RECT rc_lv;
+	GetClientRect(wnd_lv, &rc_lv);
+	ListView_SetColumnWidth(wnd_lv, 0, RECT_CX(rc_lv));
+}
+
+
+BOOL CALLBACK tab_columns_v3::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+	tab_columns_v3 * p_data = nullptr;
+	if (msg == WM_INITDIALOG) {
+		p_data = reinterpret_cast<tab_columns_v3*>(lp);
+		SetWindowLongPtr(wnd, DWLP_USER, lp);
+	}
+	else
+		p_data = reinterpret_cast<tab_columns_v3*>(GetWindowLongPtr(wnd, DWLP_USER));
+	return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+}
+
+BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+
+	switch (msg) {
 		case WM_INITDIALOG:
 			{
 				m_wnd = wnd;
 				//if (g_main_window && !cfg_nohscroll ) playlist_view::g_save_columns();
-				HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
-				uih::SetListViewWindowExplorerTheme(wnd_lv);
-				ListView_SetExtendedListViewStyleEx(wnd_lv, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
-				uih::ListView_InsertColumnText(wnd_lv, 0, L"Column", 50);
+				m_wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+				uih::SetListViewWindowExplorerTheme(m_wnd_lv);
+				ListView_SetExtendedListViewStyleEx(m_wnd_lv, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
+				uih::ListView_InsertColumnText(m_wnd_lv, 0, L"Column", 50);
 
 				m_columns.set_entries_copy(g_columns);
 
@@ -641,19 +614,18 @@ public:
 				HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
 				uTabCtrl_InsertItemText(wnd_tab, 0, "Options");
 				uTabCtrl_InsertItemText(wnd_tab, 1, "Scripts");
-				
+
 				TabCtrl_SetCurSel(wnd_tab, cfg_child_column);
-				
+
 				make_child();
 
 			}
 
 			break;
 		case WM_CONTEXTMENU:
-			if (HWND(wp) == GetDlgItem(wnd, IDC_COLUMNS))
-			{
-				enum {ID_REMOVE=1, ID_UP, ID_DOWN, ID_NEW};
-				POINT pt = {GET_X_LPARAM(lp),GET_Y_LPARAM(lp)};
+			if (HWND(wp) == GetDlgItem(wnd, IDC_COLUMNS)) {
+				enum { ID_REMOVE = 1, ID_UP, ID_DOWN, ID_NEW };
+				POINT pt = { GET_X_LPARAM(lp),GET_Y_LPARAM(lp) };
 				int item = ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED);
 				//if (item != -1 && item >= 0)
 				{
@@ -665,56 +637,48 @@ public:
 						AppendMenu(menu, MF_SEPARATOR, NULL, nullptr);
 					if (item>0)
 						AppendMenu(menu, MF_STRING, ID_UP, L"Move &up");
-					if (item >=0 && (t_size(item+1)) < m_columns.get_count())
+					if (item >= 0 && (t_size(item + 1)) < m_columns.get_count())
 						AppendMenu(menu, MF_STRING, ID_DOWN, L"Move &down");
-					int cmd = TrackPopupMenu(menu,TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt.x,pt.y,0,wnd,nullptr);
+					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 					DestroyMenu(menu);
-					if (cmd)
-					{
+					if (cmd) {
 						int & idx = item;
 						HWND wnd_lv = HWND(wp);
-						if (cmd == ID_NEW)
-						{
+						if (cmd == ID_NEW) {
 							column_t::ptr temp = new column_t;
 							temp->name = "New Column";
-							t_size insert = m_columns.insert_item(temp, idx>=0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
+							t_size insert = m_columns.insert_item(temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
 							uih::ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
 							ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
 							ListView_EnsureVisible(wnd_lv, insert, FALSE);
 						}
-						else if (idx >= 0 && (t_size)idx < m_columns.get_count()) 
-						{
-							if (cmd == ID_REMOVE)
-							{
+						else if (idx >= 0 && (t_size)idx < m_columns.get_count()) {
+							if (cmd == ID_REMOVE) {
 								m_columns.remove_by_idx(idx);
 								t_size new_count = m_columns.get_count();
 								ListView_DeleteItem(wnd_lv, idx);
 
 								if (idx > 0 && (t_size)idx == new_count) idx--;
-								if (idx >=0 && (t_size)idx < new_count)
+								if (idx >= 0 && (t_size)idx < new_count)
 									ListView_SetItemState(wnd_lv, idx, LVIS_SELECTED, LVIS_SELECTED);
 								if (new_count == 0)
 									SendMessage(wnd, MSG_SELECTION_CHANGED, NULL, NULL);
-							
+
 							}
-							else if (cmd == ID_UP)
-							{
-								if (idx > 0 && m_columns.move_up(idx)) 
-								{
+							else if (cmd == ID_UP) {
+								if (idx > 0 && m_columns.move_up(idx)) {
 									uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-									uih::ListView_InsertItemText(wnd_lv, idx-1, 0, m_columns[idx-1]->name, true);
-									ListView_SetItemState(wnd_lv, idx-1, LVIS_SELECTED, LVIS_SELECTED);
-									ListView_EnsureVisible(wnd_lv, idx-1, FALSE);
+									uih::ListView_InsertItemText(wnd_lv, idx - 1, 0, m_columns[idx - 1]->name, true);
+									ListView_SetItemState(wnd_lv, idx - 1, LVIS_SELECTED, LVIS_SELECTED);
+									ListView_EnsureVisible(wnd_lv, idx - 1, FALSE);
 								}
 							}
-							else if (cmd == ID_DOWN)
-							{
-								if ((t_size)(idx +1) < m_columns.get_count() && m_columns.move_down(idx)) 
-								{
+							else if (cmd == ID_DOWN) {
+								if ((t_size)(idx + 1) < m_columns.get_count() && m_columns.move_down(idx)) {
 									uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-									uih::ListView_InsertItemText(wnd_lv, idx+1, 0, m_columns[idx+1]->name, true);
-									ListView_SetItemState(wnd_lv, idx+1, LVIS_SELECTED, LVIS_SELECTED);
-									ListView_EnsureVisible(wnd_lv, idx+1, FALSE);
+									uih::ListView_InsertItemText(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
+									ListView_SetItemState(wnd_lv, idx + 1, LVIS_SELECTED, LVIS_SELECTED);
+									ListView_EnsureVisible(wnd_lv, idx + 1, FALSE);
 								}
 							}
 						}
@@ -727,20 +691,18 @@ public:
 
 		case WM_DESTROY:
 			{
-				HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
-				int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-				if (idx>=0 && idx < (int)m_columns.get_count())
-				{
+				int idx = ListView_GetNextItem(m_wnd_lv, -1, LVNI_SELECTED);
+				if (idx >= 0 && idx < (int)m_columns.get_count()) {
 					cfg_cur_prefs_col = idx;
 				}
 
 				apply();
 				m_columns.remove_all();
 				m_wnd = nullptr;
-				if (m_wnd_child)
-				{
+				m_wnd_lv = nullptr;
+				if (m_wnd_child) {
 					DestroyWindow(m_wnd_child);
-					m_wnd_child=nullptr;
+					m_wnd_child = nullptr;
 					m_child.release();
 				}
 			}
@@ -748,7 +710,7 @@ public:
 		case MSG_SELECTION_CHANGED:
 			{
 				int item = (ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED));
-				m_child->set_column(item != -1 && item >=0 && (t_size)item < m_columns.get_count() ? m_columns[item] : column_t::ptr());
+				m_child->set_column(item != -1 && item >= 0 && (t_size)item < m_columns.get_count() ? m_columns[item] : column_t::ptr());
 			}
 			return 0;
 		case MSG_COLUMN_NAME_CHANGED:
@@ -762,207 +724,198 @@ public:
 		case WM_NOTIFY:
 			{
 				LPNMHDR lpnm = (LPNMHDR)lp;
-				switch (lpnm->idFrom)
-				{
-				case IDC_COLUMNS:
-					{
-						switch (lpnm->code)
+				switch (lpnm->idFrom) {
+					case IDC_COLUMNS:
 						{
-						case LVN_ITEMCHANGED:
-							{
-								LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
-								if (m_child.is_valid())
-								{
-									//console::formatter() << (int)lpnmlv->iItem;
-									if (lpnmlv->iItem != -1 && lpnmlv->iItem >=0 && (t_size)lpnmlv->iItem < m_columns.get_count())
+							switch (lpnm->code) {
+								case LVN_ITEMCHANGED:
 									{
-										/*if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED))
-										{
-											m_child->set_column(m_columns[lpnmlv->iItem]);
-										}
-										else if (!(lpnmlv->uNewState & LVIS_SELECTED) && (lpnmlv->uOldState & LVIS_SELECTED))
-										{
-											if (ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED) == -1)
+										LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
+										if (m_child.is_valid()) {
+											//console::formatter() << (int)lpnmlv->iItem;
+											if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (t_size)lpnmlv->iItem < m_columns.get_count()) {
+												/*if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED))
+												{
+												m_child->set_column(m_columns[lpnmlv->iItem]);
+												}
+												else if (!(lpnmlv->uNewState & LVIS_SELECTED) && (lpnmlv->uOldState & LVIS_SELECTED))
+												{
+												if (ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED) == -1)
 												m_child->set_column(NULL);
-										}*/
-										if ((lpnmlv->uNewState & LVIS_SELECTED) != (lpnmlv->uOldState & LVIS_SELECTED))
-											PostMessage(wnd, MSG_SELECTION_CHANGED, NULL, NULL);
+												}*/
+												if ((lpnmlv->uNewState & LVIS_SELECTED) != (lpnmlv->uOldState & LVIS_SELECTED))
+													PostMessage(wnd, MSG_SELECTION_CHANGED, NULL, NULL);
+											}
+										}
 									}
-								}
-							}
-							return 0;
-						};
-					}
-					break;
-				case IDC_TAB1:
-					switch (((LPNMHDR)lp)->code)
-					{
-					case TCN_SELCHANGE:
-						{
-							cfg_child_column = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-							make_child();
+									return 0;
+							};
 						}
 						break;
-					}
-					break;
+					case IDC_TAB1:
+						switch (((LPNMHDR)lp)->code) {
+							case TCN_SELCHANGE:
+								{
+									cfg_child_column = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
+									make_child();
+								}
+								break;
+						}
+						break;
 				}
 				break;
 			}
 			break;
 		case WM_PARENTNOTIFY:
-			switch(wp)
-			{
-			case WM_DESTROY:
-				{
-					if (m_wnd_child && (HWND)lp == m_wnd_child)
+			switch (wp) {
+				case WM_DESTROY:
 					{
-						m_wnd_child = nullptr;
-						//m_child.release();
+						if (m_wnd_child && (HWND)lp == m_wnd_child) {
+							m_wnd_child = nullptr;
+							//m_child.release();
+						}
 					}
-				}
-				break;	
+					break;
 			}
 			break;
 		case WM_COMMAND:
-			switch(wp)
-			{
-			case IDC_APPLY:
-				apply();
-				break;
-			case IDC_UP:
-				{
-					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
-					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-					if (idx >= 0 && idx>0 && m_columns.move_up(idx)) 
+			switch (wp) {
+				case IDC_APPLY:
+					apply();
+					break;
+				case IDC_UP:
 					{
-						uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-						uih::ListView_InsertItemText(wnd_lv, idx-1, 0, m_columns[idx-1]->name, true);
-						ListView_SetItemState(wnd_lv, idx-1, LVIS_SELECTED, LVIS_SELECTED);
-						ListView_EnsureVisible(wnd_lv, idx-1, FALSE);
+						HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+						int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
+						if (idx >= 0 && idx>0 && m_columns.move_up(idx)) {
+							uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
+							uih::ListView_InsertItemText(wnd_lv, idx - 1, 0, m_columns[idx - 1]->name, true);
+							ListView_SetItemState(wnd_lv, idx - 1, LVIS_SELECTED, LVIS_SELECTED);
+							ListView_EnsureVisible(wnd_lv, idx - 1, FALSE);
+						}
+						//apply();
 					}
-					//apply();
-				}
-				break;
-			case IDC_DOWN:
-				{
-					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
-					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-					if (idx >= 0 && (t_size(idx+1)) < m_columns.get_count() && m_columns.move_down(idx)) 
+					break;
+				case IDC_DOWN:
 					{
-						uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-						uih::ListView_InsertItemText(wnd_lv, idx+1, 0, m_columns[idx+1]->name, true);
-						ListView_SetItemState(wnd_lv, idx+1, LVIS_SELECTED, LVIS_SELECTED);
-						ListView_EnsureVisible(wnd_lv, idx+1, FALSE);
+						HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+						int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
+						if (idx >= 0 && (t_size(idx + 1)) < m_columns.get_count() && m_columns.move_down(idx)) {
+							uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
+							uih::ListView_InsertItemText(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
+							ListView_SetItemState(wnd_lv, idx + 1, LVIS_SELECTED, LVIS_SELECTED);
+							ListView_EnsureVisible(wnd_lv, idx + 1, FALSE);
+						}
+						//apply();
 					}
-					//apply();
-				}
-				break;
-			case IDC_NEW:
-				{
-					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
-					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-					//if (true) 
+					break;
+				case IDC_NEW:
 					{
-						column_t::ptr temp = new column_t;
-						temp->name = "New Column";
-						t_size insert = m_columns.insert_item(temp, idx>=0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
-						uih::ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
-						ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
-						ListView_EnsureVisible(wnd_lv, insert, FALSE);
+						HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+						int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
+						//if (true) 
+						{
+							column_t::ptr temp = new column_t;
+							temp->name = "New Column";
+							t_size insert = m_columns.insert_item(temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
+							uih::ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
+							ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
+							ListView_EnsureVisible(wnd_lv, insert, FALSE);
+						}
+						//apply();
 					}
-					//apply();
-				}
-				break;
+					break;
 #if 0
-			case IDC_REMOVE:
-				{
-					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
-					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-					if (idx >= 0) 
+				case IDC_REMOVE:
 					{
-						m_columns.remove_by_idx(idx);
-						ListView_DeleteItem(wnd_lv, idx);
+						HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+						int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
+						if (idx >= 0) {
+							m_columns.remove_by_idx(idx);
+							ListView_DeleteItem(wnd_lv, idx);
 
-						if ((unsigned)idx == m_columns.get_count()) idx--;
-						if (idx >=0)
-							ListView_SetItemState(wnd_lv, idx, LVIS_SELECTED, LVIS_SELECTED);
-					}
-					apply();
-				}
-				break;
-			case IDC_COPY:
-				{
-					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
-					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-					if (idx >= 0 && m_columns.copy_item(idx)) 
-					{
-						int new_idx = m_columns.get_count() -1;
-
-						pfc::string8 temp;
-						m_columns.get_string(new_idx, temp, STRING_NAME);
-
-						if (uih::ListView_InsertItemText(wnd_lv, new_idx, 0, "New Column") == -1)
-							m_columns.delete_item(new_idx);
-						else
-						{
-							ListView_SetItemState(wnd_lv, new_idx, LVIS_SELECTED, LVIS_SELECTED);
-							ListView_EnsureVisible(wnd_lv, new_idx, FALSE);
+							if ((unsigned)idx == m_columns.get_count()) idx--;
+							if (idx >= 0)
+								ListView_SetItemState(wnd_lv, idx, LVIS_SELECTED, LVIS_SELECTED);
 						}
+						apply();
 					}
-					apply();
-				}
-				break;
-			case IDC_INSERT:
-				{
-					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
-					int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-					if (idx >= 0 && m_columns.insert_item(idx, "New Column", "", false, "", false, "", 100, ALIGN_LEFT, FILTER_NONE, "", 100, true, ""))
+					break;
+				case IDC_COPY:
 					{
-						if (uih::ListView_InsertItemText(wnd_lv, idx, 0, "New Column") == -1)
-						{
-							m_columns.delete_item(idx);
+						HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+						int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
+						if (idx >= 0 && m_columns.copy_item(idx)) {
+							int new_idx = m_columns.get_count() - 1;
+
+							pfc::string8 temp;
+							m_columns.get_string(new_idx, temp, STRING_NAME);
+
+							if (uih::ListView_InsertItemText(wnd_lv, new_idx, 0, "New Column") == -1)
+								m_columns.delete_item(new_idx);
+							else {
+								ListView_SetItemState(wnd_lv, new_idx, LVIS_SELECTED, LVIS_SELECTED);
+								ListView_EnsureVisible(wnd_lv, new_idx, FALSE);
+							}
 						}
+						apply();
 					}
-					apply();
-				}
-				break;
-			case IDC_SAVE_NEW:
-				{
-					HWND wnd_lv= GetDlgItem(wnd, IDC_COLUMNS);
-					column_info * temp = new column_info;
-					temp->set_string(STRING_NAME, "New Column");
-					uih::ListView_InsertItemText(wnd_lv, m_columns.get_count(), 0, "New Column");
-					ListView_SetItemState(wnd_lv, m_columns.get_count(), LVIS_SELECTED, LVIS_SELECTED);
-					ListView_EnsureVisible(wnd_lv, m_columns.get_count(), FALSE);
-					m_columns.add_item(temp);
-					apply();
-				}
-				break;
+					break;
+				case IDC_INSERT:
+					{
+						HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+						int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
+						if (idx >= 0 && m_columns.insert_item(idx, "New Column", "", false, "", false, "", 100, ALIGN_LEFT, FILTER_NONE, "", 100, true, "")) {
+							if (uih::ListView_InsertItemText(wnd_lv, idx, 0, "New Column") == -1) {
+								m_columns.delete_item(idx);
+							}
+						}
+						apply();
+					}
+					break;
+				case IDC_SAVE_NEW:
+					{
+						HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
+						column_info * temp = new column_info;
+						temp->set_string(STRING_NAME, "New Column");
+						uih::ListView_InsertItemText(wnd_lv, m_columns.get_count(), 0, "New Column");
+						ListView_SetItemState(wnd_lv, m_columns.get_count(), LVIS_SELECTED, LVIS_SELECTED);
+						ListView_EnsureVisible(wnd_lv, m_columns.get_count(), FALSE);
+						m_columns.add_item(temp);
+						apply();
+					}
+					break;
 #endif
 			}
-		}
-		return 0;
 	}
-	void apply()
-	{
-		g_columns.set_entries_copy(m_columns);
-		refresh_all_playlist_views();
-		pvt::ng_playlist_view_t::g_on_columns_change();
-	}
-	HWND create(HWND wnd) override {return uCreateDialog(IDD_COLUMNS_V4,wnd,g_on_message, (LPARAM)this);}
-	const char * get_name() override {return "Columns";}
-	bool get_help_url(pfc::string_base & p_out) override
-	{
-		p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:columns";
-		return true;
-	}
+	return 0;
+}
 
-private:
-	column_list_t m_columns;
-	bool initialising;
-} g_tab_columns_v3;	
-
-preferences_tab * g_get_tab_columns_v3()
+void tab_columns_v3::apply()
 {
-	return &g_tab_columns_v3;
+	g_columns.set_entries_copy(m_columns);
+	refresh_all_playlist_views();
+	pvt::ng_playlist_view_t::g_on_columns_change();
+}
+
+void tab_columns_v3::show_column(size_t index)
+{
+	if (m_wnd_lv) {
+		const auto column_count = m_columns.get_count();
+		if (column_count) {
+			// FIXME: If the columns have been modified, this could select the wrong column.
+			// We could fix this by keeping a column_t::ptr in the config tab's copy and
+			// then looking up the correct one.
+			// FIXME: If another tab is currently active, we need to switch to this one.
+			if (index >= column_count) {
+				index = column_count - 1;
+			}
+			ListView_SetItemState(m_wnd_lv, index, LVIS_SELECTED, LVIS_SELECTED);
+			ListView_EnsureVisible(m_wnd_lv, index, FALSE);
+		}
+	} else {
+		g_set_tab("Columns");
+		cfg_cur_prefs_col = index;
+		static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
+	}
 }
