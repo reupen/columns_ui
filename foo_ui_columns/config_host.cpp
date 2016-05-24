@@ -2,24 +2,22 @@
 
 #include "config_host.h"
 
-void config_host_generic::make_child(HWND wnd)
+void config_host_generic::make_child()
 {
 	destroy_child();
 
-	HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
-
 	RECT tab;
 
-	GetWindowRect(wnd_tab, &tab);
-	MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)&tab, 2);
+	GetWindowRect(m_wnd_tabs, &tab);
+	MapWindowPoints(HWND_DESKTOP, m_wnd, (LPPOINT)&tab, 2);
 
-	TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
+	TabCtrl_AdjustRect(m_wnd_tabs, FALSE, &tab);
 
 	if (m_active_tab >= (int)m_tab_count)
 		m_active_tab = 0;
 
 	if (m_active_tab < (int)m_tab_count && m_active_tab >= 0) {
-		m_child = m_tabs[m_active_tab]->create(wnd);
+		m_child = m_tabs[m_active_tab]->create(m_wnd);
 	}
 
 	//SetWindowPos(wnd_tab,HWND_TOP,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
@@ -29,7 +27,7 @@ void config_host_generic::make_child(HWND wnd)
 	}
 
 	SetWindowPos(m_child, nullptr, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, SWP_NOZORDER);
-	SetWindowPos(wnd_tab, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+	SetWindowPos(m_wnd_tabs, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
 	ShowWindow(m_child, SW_SHOWNORMAL);
 	//UpdateWindow(child);
@@ -46,22 +44,43 @@ BOOL config_host_generic::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 	return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
 }
 
+void config_host_generic::show_tab(const char * tab_name)
+{
+	for (size_t n = 0; n < m_tab_count; n++) {
+		if (!strcmp(m_tabs[n]->get_name(), tab_name)) {
+			m_active_tab = n;
+			break;
+		}
+	}
+	
+	if (m_wnd_tabs) {
+		TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);
+		make_child();
+	}
+	else {
+		static_api_ptr_t<ui_control>()->show_preferences(get_guid());
+	}
+}
+
 BOOL config_host_generic::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
 	switch (msg) {
 		case WM_INITDIALOG:
 			{
-				HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
+				m_wnd = wnd;
+				m_wnd_tabs = GetDlgItem(wnd, IDC_TAB1);
 				//SendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
 				unsigned n, count = m_tab_count;
 				for (n = 0; n < count; n++) {
-					uTabCtrl_InsertItemText(wnd_tab, n, m_tabs[n]->get_name());
+					uTabCtrl_InsertItemText(m_wnd_tabs, n, m_tabs[n]->get_name());
 				}
-				TabCtrl_SetCurSel(wnd_tab, m_active_tab);
-				make_child(wnd);
+				TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);
+				make_child();
 			}
 			break;
 		case WM_DESTROY:
+			m_wnd_tabs = nullptr;
+			m_wnd = nullptr;
 			break;
 		case WM_WINDOWPOSCHANGED:
 			{
@@ -71,7 +90,7 @@ BOOL config_host_generic::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 				if (lpwp->flags & SWP_HIDEWINDOW) {
 					destroy_child();
 				} else if (lpwp->flags & SWP_SHOWWINDOW && !m_child) {
-					make_child(wnd);
+					make_child();
 				}
 			}
 			break;
@@ -82,7 +101,7 @@ BOOL config_host_generic::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 						case TCN_SELCHANGE:
 							{
 								m_active_tab = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-								make_child(wnd);
+								make_child();
 							}
 							break;
 					}

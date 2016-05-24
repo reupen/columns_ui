@@ -1,11 +1,19 @@
 #pragma once
 
-#include "config.h"
+class preferences_tab
+{
+public:
+	virtual HWND create(HWND wnd) = 0;
+	virtual const char * get_name() = 0;
+	virtual bool get_help_url(pfc::string_base & p_out) = 0;
+};
 
 class config_host_generic : public preferences_page {
 public:
-	config_host_generic(const char* p_name, preferences_tab*const * const p_tabs, size_t p_tab_count, const GUID& p_guid, const GUID& p_parent_guid, cfg_int* const p_active_tab)
-		: m_child(nullptr), m_name(p_name), m_guid(p_guid), m_parent_guid(p_parent_guid), m_tabs(p_tabs), m_tab_count(p_tab_count), m_active_tab(*p_active_tab) {}
+	config_host_generic(const char* p_name, preferences_tab*const * const p_tabs, size_t p_tab_count, const GUID& p_guid, 
+		const GUID& p_parent_guid, cfg_int* const p_active_tab)
+		: m_child(nullptr), m_name(p_name), m_guid(p_guid), m_parent_guid(p_parent_guid), m_tabs(p_tabs), 
+		m_tab_count(p_tab_count), m_active_tab(*p_active_tab), m_wnd(nullptr), m_wnd_tabs(nullptr) {}
 
 	HWND create(HWND parent) override
 	{
@@ -41,6 +49,8 @@ public:
 		return true;
 	}
 
+	void show_tab(const char * tab_name);
+
 private:
 	void destroy_child()
 	{
@@ -51,7 +61,7 @@ private:
 		}
 	}
 
-	void make_child(HWND wnd);
+	void make_child();
 
 	static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -63,4 +73,5 @@ private:
 	preferences_tab*const * const m_tabs;
 	const size_t m_tab_count;
 	cfg_int& m_active_tab;
+	HWND m_wnd, m_wnd_tabs;
 };

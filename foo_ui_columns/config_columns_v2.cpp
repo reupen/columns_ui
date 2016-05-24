@@ -906,7 +906,6 @@ void tab_columns_v3::show_column(size_t index)
 			// FIXME: If the columns have been modified, this could select the wrong column.
 			// We could fix this by keeping a column_t::ptr in the config tab's copy and
 			// then looking up the correct one.
-			// FIXME: If another tab is currently active, we need to switch to this one.
 			if (index >= column_count) {
 				index = column_count - 1;
 			}
@@ -914,8 +913,7 @@ void tab_columns_v3::show_column(size_t index)
 			ListView_EnsureVisible(m_wnd_lv, index, FALSE);
 		}
 	} else {
-		g_set_tab("Columns");
 		cfg_cur_prefs_col = index;
-		static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
+		cui::preferences::page_playlist_view.get_static_instance().show_tab("Columns");
 	}
 }

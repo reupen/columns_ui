@@ -1,9 +1,10 @@
-#ifndef _COLUMNS_CONFIG_H_
-#define _COLUMNS_CONFIG_H_
+#pragma once
 
 #include "columns_v2.h"
+#include "config_host.h"
 
-#define COLOUR_HELP "Style string - $set_style(text,<text colour>,<selected text colour>)\r\n$set_style(back,<background colour>,<selected background colour>[,<selected background colour no focus>])\r\n\r\n"\
+#define COLOUR_HELP "Style string - $set_style(text,<text colour>,<selected text colour>)\r\n"\
+					"$set_style(back,<background colour>,<selected background colour>[,<selected background colour no focus>])\r\n\r\n"\
 					"Square brackets denote an optional parameter."
 
 extern cfg_int cfg_import_titles,
@@ -15,16 +16,7 @@ namespace columns
 	const GUID & config_get_main_guid();
 }
 
-void g_set_tab(const char * name);
 void g_show_artwork_settings();
-
-class preferences_tab
-{
-public:
-	virtual HWND create(HWND wnd)=0;
-	virtual const char * get_name()=0;
-	virtual bool get_help_url(pfc::string_base & p_out)=0;
-};
 
 preferences_tab * g_get_tab_layout();
 preferences_tab * g_get_tab_artwork();
@@ -130,4 +122,11 @@ public:
 	}
 };
 
-#endif
+namespace cui {
+	namespace preferences {
+		extern service_factory_single_t<config_host_generic> page_main;
+		extern service_factory_single_t<config_host_generic> page_playlist_view;
+		extern service_factory_single_t<config_host_generic> page_playlist_switcher;
+		extern service_factory_single_t<config_host_generic> page_filters;
+	}
+}

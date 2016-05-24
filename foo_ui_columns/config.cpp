@@ -87,21 +87,11 @@ namespace columns {
 	}
 };
 
-
-static service_factory_single_t<config_host_generic> main_page("Columns UI", g_tabs, tabsize(g_tabs), g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
-static service_factory_single_t<config_host_generic> playlist_view_page("Playlist view", g_tabs_playlist_view, tabsize(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
-static service_factory_single_t<config_host_generic> playlist_switcher_page("Playlist switcher", g_tabs_panels, tabsize(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
-static service_factory_single_t<config_host_generic> filters_page("Filters", g_tabs_filters, tabsize(g_tabs_filters), guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);
-
-
-void g_set_tab(const char* name)
-{
-	unsigned n, count = tabsize(g_tabs_playlist_view);
-
-	for (n = 0; n < count; n++) {
-		if (!strcmp(g_tabs_playlist_view[n]->get_name(), name)) {
-			cfg_child_playlist = n;
-			break;
-		}
+namespace cui {
+	namespace preferences {
+		service_factory_single_t<config_host_generic> page_main("Columns UI", g_tabs, tabsize(g_tabs), g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
+		service_factory_single_t<config_host_generic> page_playlist_view("Playlist view", g_tabs_playlist_view, tabsize(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
+		service_factory_single_t<config_host_generic> page_playlist_switcher("Playlist switcher", g_tabs_panels, tabsize(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
+		service_factory_single_t<config_host_generic> page_filters("Filters", g_tabs_filters, tabsize(g_tabs_filters), guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);
 	}
 }
