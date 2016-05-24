@@ -607,7 +607,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				ListView_SetExtendedListViewStyleEx(m_wnd_lv, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
 				uih::ListView_InsertColumnText(m_wnd_lv, 0, L"Column", 50);
 
-				m_columns.set_entries_copy(g_columns);
+				m_columns.set_entries_copy(g_columns, true);
 
 				refresh_me(wnd, true);
 
@@ -618,7 +618,6 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 				TabCtrl_SetCurSel(wnd_tab, cfg_child_column);
 
 				make_child();
-
 			}
 
 			break;
@@ -639,8 +638,10 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 						AppendMenu(menu, MF_STRING, ID_UP, L"Move &up");
 					if (item >= 0 && (t_size(item + 1)) < m_columns.get_count())
 						AppendMenu(menu, MF_STRING, ID_DOWN, L"Move &down");
+					
 					int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
 					DestroyMenu(menu);
+
 					if (cmd) {
 						int & idx = item;
 						HWND wnd_lv = HWND(wp);
@@ -732,17 +733,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 									{
 										LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
 										if (m_child.is_valid()) {
-											//console::formatter() << (int)lpnmlv->iItem;
 											if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (t_size)lpnmlv->iItem < m_columns.get_count()) {
-												/*if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED))
-												{
-												m_child->set_column(m_columns[lpnmlv->iItem]);
-												}
-												else if (!(lpnmlv->uNewState & LVIS_SELECTED) && (lpnmlv->uOldState & LVIS_SELECTED))
-												{
-												if (ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED) == -1)
-												m_child->set_column(NULL);
-												}*/
 												if ((lpnmlv->uNewState & LVIS_SELECTED) != (lpnmlv->uOldState & LVIS_SELECTED))
 													PostMessage(wnd, MSG_SELECTION_CHANGED, NULL, NULL);
 											}
@@ -894,6 +885,8 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 void tab_columns_v3::apply()
 {
 	g_columns.set_entries_copy(m_columns);
+	for (size_t i = 0, count = m_columns.get_count(); i < count; i++)
+		m_columns[i]->source_item = g_columns[i];
 	refresh_all_playlist_views();
 	pvt::ng_playlist_view_t::g_on_columns_change();
 }
@@ -901,17 +894,15 @@ void tab_columns_v3::apply()
 void tab_columns_v3::show_column(size_t index)
 {
 	if (m_wnd_lv) {
-		const auto column_count = m_columns.get_count();
-		if (column_count) {
-			// FIXME: If the columns have been modified, this could select the wrong column.
-			// We could fix this by keeping a column_t::ptr in the config tab's copy and
-			// then looking up the correct one.
-			if (index >= column_count) {
-				index = column_count - 1;
+		const auto & column_to_activate = g_columns[index];
+		for (size_t i = 0; i < m_columns.get_count(); i++) {
+			if (column_to_activate == m_columns[i]->source_item) {
+				ListView_SetItemState(m_wnd_lv, i, LVIS_SELECTED, LVIS_SELECTED);
+				ListView_EnsureVisible(m_wnd_lv, i, FALSE);
+				break;
 			}
-			ListView_SetItemState(m_wnd_lv, index, LVIS_SELECTED, LVIS_SELECTED);
-			ListView_EnsureVisible(m_wnd_lv, index, FALSE);
 		}
+		standard_commands::main_preferences();
 	} else {
 		cfg_cur_prefs_col = index;
 		cui::preferences::page_playlist_view.get_static_instance().show_tab("Columns");

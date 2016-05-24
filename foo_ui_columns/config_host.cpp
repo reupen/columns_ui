@@ -56,6 +56,7 @@ void config_host_generic::show_tab(const char * tab_name)
 	if (m_wnd_tabs) {
 		TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);
 		make_child();
+		standard_commands::main_preferences();
 	}
 	else {
 		static_api_ptr_t<ui_control>()->show_preferences(get_guid());
