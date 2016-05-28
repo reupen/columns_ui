@@ -183,17 +183,9 @@ public:
 			{
 				if (!b_popup)
 				{
-					try
-					{
-						Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-						if (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_Gdiplus_token, &gdiplusStartupInput, nullptr))
-							m_using_gdiplus = true;
-					}
-					catch (const exception_delayload &)
-					{
-						m_using_gdiplus = false;
-						m_Gdiplus_token = NULL;
-					}
+					Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+					if (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_Gdiplus_token, &gdiplusStartupInput, nullptr))
+						m_using_gdiplus = true;
 				}
 				if (t_attributes::get_show_caption())
 					m_font_caption = uCreateMenuFont(b_vertical);
@@ -325,17 +317,9 @@ public:
 
 				if (!b_popup && m_using_gdiplus)
 				{
-					try
-					{
-						Gdiplus::GdiplusShutdown(m_Gdiplus_token);
-						m_using_gdiplus = false;
-						m_Gdiplus_token = NULL;
-					}
-					catch (const exception_delayload &)
-					{
-						m_using_gdiplus = false;
-						m_Gdiplus_token=NULL;
-					}
+					Gdiplus::GdiplusShutdown(m_Gdiplus_token);
+					m_using_gdiplus = false;
+					m_Gdiplus_token = NULL;
 				}
 			}
 			break;

@@ -53,21 +53,6 @@ private:
 };
 
 
-class exception_delayload : public pfc::exception {
-public:
-	exception_delayload(PDelayLoadInfo pdli) : pfc::exception(format_win32_delayload_error(pdli)) {}
-};
-
-class exception_delayload_module_not_found : public exception_delayload {
-public:
-	exception_delayload_module_not_found(PDelayLoadInfo pdli) : exception_delayload(pdli) {}
-};
-
-class exception_delayload_procedure_not_found : public exception_delayload {
-public:
-	exception_delayload_procedure_not_found(PDelayLoadInfo pdli) : exception_delayload(pdli) {}
-};
-
 namespace types
 {
 struct t_guid : public GUID
