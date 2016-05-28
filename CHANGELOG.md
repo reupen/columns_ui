@@ -1,8 +1,8 @@
 # Change log
 
-## 0.5.0 (upcoming release)
+## 0.5.0 (beta)
 
-## Layout and toolbars
+### Layout and toolbars
 
 * A duplicate preset button has been added to the layout configuration page. 
 
@@ -12,23 +12,29 @@
 
 * Improved preferences behaviour when importing FCL files and switching between pages; previously preferences may have shown old values after importing an FCL file.
 
-* Panel sizes are now DPI-aware in the standard splitters, and non-auto-size columns. In particular, this affects the quick setup presets, FCL files and layouts after the system DPI setting has been changed.
+* Panel sizes are now DPI-aware in the standard splitters, and non-auto-size columns. In particular, this affects the quick setup presets, FCL files, and layouts after the system DPI setting has been changed.
 
-* Added option to control whether locked panels can be manually resized in the standard splitters.
+* Added an option to control whether locked panels can be manually resized in the standard splitters.
 
 * Fixed minor rendering glitches in the toolbars when resizing the main window on some versions of Windows.
 
 * Fixed potentially incorrect sizing of panels when resizing the main window and using Playlist tabs without a child panel.
 
-## Filters
+### Filters
 
 * Improved the appearance of Filter search bar icons at some DPI settings.
 
-* Added option to control whether column titles are shown in Filters.
+* Added an option to control whether column titles are shown in Filters.
 
 * Reworked Filter preferences and moved them to a separate page.
 
-## Other changes
+### Playlist view
+
+* The performance of NG playlist grouping for large playlists has been improved on multi-core systems.
+
+* The 'Edit this column' command in the context menu of column titles now scrolls to the column in preferences if it is out of view. The command also now behaves correctly if the preferences window is already open.
+
+### Other changes
 
 * Corrected truncated 'Size weight' label in Columns tab in Playlist View preferences page at some DPI settings.
 
