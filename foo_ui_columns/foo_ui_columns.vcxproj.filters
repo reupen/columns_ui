@@ -555,7 +555,6 @@
     <ClInclude Include=".\helpers.h">
       <Filter>Helpers</Filter>
     </ClInclude>
-    <ClInclude Include="C:\Program Files\Microsoft SDKs\Windows\v7.0\Include\ntstatus.h" />
     <ClInclude Include=".\get_msg_hook.h">
       <Filter>Main Window</Filter>
     </ClInclude>
