@@ -339,8 +339,7 @@ namespace pvt
 		private playlist_callback_single,
 		private playlist_callback_base
 	{
-		//friend class
-		//	artwork_reader_manager_ng_t;
+		friend class NgTfThread;
 
 		class ng_global_mesage_window : public ui_helpers::container_window
 		{
@@ -407,6 +406,8 @@ namespace pvt
 		bool m_dragging;
 		pfc::com_ptr_t<IDataObject> m_DataObject;
 		t_size m_dragging_initial_playlist;
+	protected:
+		using InsertItemsContainer = pfc::array_t<t_item_insert>;
 	private:
 		static const GUID g_extension_guid;
 		enum {timer_date_change = TIMER_BASE};
@@ -518,7 +519,7 @@ namespace pvt
 		void notify_update_item_data(t_size index) override;
 
 		const style_data_t & get_style_data(t_size index);
-		void get_insert_items(t_size start, t_size count, pfc::list_t<t_list_view::t_item_insert, pfc::alloc_fast_aggressive> & items);
+		void get_insert_items(t_size start, t_size count, InsertItemsContainer & items);
 		void flush_items();
 		void reset_items();
 

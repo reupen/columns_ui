@@ -8,7 +8,7 @@ namespace pvt
 			/*(if (p_playlist == 0)*/
 			{
 				clear_sort_column();
-				pfc::list_t<t_list_view::t_item_insert, pfc::alloc_fast_aggressive> items;
+				InsertItemsContainer items;
 				get_insert_items(start, p_data.get_count(), items);
 				insert_items(start, items.get_count(), items.get_ptr(), false);
 				refresh_all_items_text(false);
@@ -33,7 +33,7 @@ namespace pvt
 					}
 					if (i>start)
 					{
-						pfc::list_t<t_list_view::t_item_insert, pfc::alloc_fast_aggressive> items;
+						InsertItemsContainer items;
 						get_insert_items(start, i-start, items);
 						replace_items(start, items);
 					}
@@ -85,7 +85,7 @@ namespace pvt
 					}
 					if (i>start)
 					{
-						pfc::list_t<t_list_view::t_item_insert, pfc::alloc_fast_aggressive> items;
+						InsertItemsContainer items;
 						get_insert_items(start, i-start, items);
 						replace_items(start, items);
 					}

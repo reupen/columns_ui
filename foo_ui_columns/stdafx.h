@@ -8,6 +8,7 @@
 #include <crtdbg.h>
 #endif
 
+#include <atomic>
 #include <vector>
 #include <memory>
 #include <complex>

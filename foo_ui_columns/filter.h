@@ -321,10 +321,7 @@ namespace filter_panel {
 			static int g_compare_ptr(const node_t * i1, const WCHAR * i2);
 			static int g_compare_ptr_with_node(const node_t & i1, const node_t & i2);
 		};
-		//metadb_handle_list m_handles;
-		//t_string_list_fast m_strings;
 		pfc::list_t<node_t> m_nodes;
-		//static int g_compare_node();
 		bool m_pending_sort_direction;
 	};
 };

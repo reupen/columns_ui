@@ -52,11 +52,11 @@ public:
 				if (m_edit_column == 0)
 					filter_panel::cfg_field_list.fix_name(valueReal);
 				dest = valueReal;
-				pfc::list_t<t_list_view::t_item_insert> items;
+				pfc::list_t<t_list_view::t_item_insert_sized<2, 0>> items;
 				items.set_count(1);
 				{
-					items[0].m_subitems.add_item(filter_panel::cfg_field_list[m_edit_index].m_name);
-					items[0].m_subitems.add_item(filter_panel::cfg_field_list[m_edit_index].m_field);
+					items[0].m_subitems[0] = filter_panel::cfg_field_list[m_edit_index].m_name;
+					items[0].m_subitems[1] = filter_panel::cfg_field_list[m_edit_index].m_field;
 				}
 				replace_items(m_edit_index, items);
 				if (m_edit_column == 0)
@@ -83,8 +83,9 @@ public:
 		items.set_count(count);
 		for (i=0; i<count; i++)
 		{
-			items[i].m_subitems.add_item(filter_panel::cfg_field_list[base+i].m_name);
-			items[i].m_subitems.add_item(filter_panel::cfg_field_list[base+i].m_field);
+			items[i].m_subitems.set_size(2);
+			items[i].m_subitems[0] = filter_panel::cfg_field_list[base+i].m_name;
+			items[i].m_subitems[1] = filter_panel::cfg_field_list[base+i].m_field;
 		}
 	}
 

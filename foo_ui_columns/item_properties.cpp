@@ -439,9 +439,9 @@ void selection_properties_t::refresh_contents()
 		count = metadata_aggregator.m_fields.get_count();
 		for (i=0; i<count; i++)
 		{
-			t_list_view::t_item_insert item;
+			t_list_view::t_item_insert item(2, 1);
 			pfc::string8 temp;
-			item.m_subitems.add_item(m_fields[i].m_name_friendly);
+			item.m_subitems[0] = m_fields[i].m_name_friendly;
 			temp.reset();
 			t_size j, count_values=metadata_aggregator.m_fields[i].m_values.get_count();
 			for (j=0; j<count_values; j++)
@@ -452,8 +452,8 @@ void selection_properties_t::refresh_contents()
 			}
 			if (metadata_aggregator.m_fields[i].m_truncated)
 				temp << "; " "\xe2\x80\xa6";
-			item.m_subitems.add_item(temp);
-			item.m_groups.add_item("Metadata");
+			item.m_subitems[1] = temp;
+			item.m_groups[0] = "Metadata";
 			items.add_item(item);
 		}
 	}
@@ -476,10 +476,10 @@ void selection_properties_t::refresh_contents()
 			{
 				if (m_info_sections_mask & (1<<(g_info_sections[index_group].id)) )
 				{
-					t_list_view::t_item_insert item;
-					item.m_subitems.add_item(props.m_values[index_group][index_field].m_name);
-					item.m_subitems.add_item(props.m_values[index_group][index_field].m_value);
-					item.m_groups.add_item(g_info_sections[index_group].name);
+					t_list_view::t_item_insert item(2, 1);
+					item.m_subitems[0] = props.m_values[index_group][index_field].m_name;
+					item.m_subitems[1] = props.m_values[index_group][index_field].m_value;
+					item.m_groups[0] = g_info_sections[index_group].name;
 					items.add_item(item);
 				}
 			}

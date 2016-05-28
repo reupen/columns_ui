@@ -535,7 +535,10 @@ namespace filter_panel {
 
 	void filter_panel_t::notify_update_item_data(t_size index)
 	{
-		get_item_subitems(index).add_item(pfc::string8_fast_aggressive(pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value)));
+		auto & subitems = get_item_subitems(index);
+		subitems.set_size(1);
+
+		subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value);
 	}
 
 

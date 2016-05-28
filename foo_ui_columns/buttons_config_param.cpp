@@ -169,10 +169,11 @@ void toolbar_extension::config_param::populate_buttons_list()
 	pfc::array_staticsize_t<t_list_view::t_item_insert> items(count);
 	for (n = 0; n<count; n++)
 	{
+		items[n].m_subitems.set_size(2);
 		m_buttons[n].get_name_name(name);
-		items[n].m_subitems.add_item(name);
+		items[n].m_subitems[0] = name;
 		m_buttons[n].get_name_type(name);
-		items[n].m_subitems.add_item(name);
+		items[n].m_subitems[1] = name;
 	}
 	m_button_list.insert_items(0, count, items.get_ptr());
 }
@@ -188,10 +189,11 @@ void toolbar_extension::config_param::refresh_buttons_list_items(t_size index, t
 	items.set_count(count);
 	for (n = index; n<index + count; n++)
 	{
+		items[n - index].m_subitems.set_size(2);
 		m_buttons[n].get_name_name(name);
-		items[n - index].m_subitems.add_item(name);
+		items[n - index].m_subitems[0] = name;
 		m_buttons[n].get_name_type(name);
-		items[n - index].m_subitems.add_item(name);
+		items[n - index].m_subitems[1] = name;
 	}
 	m_button_list.replace_items(index, items, b_update_display);
 }
@@ -352,10 +354,11 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 				//unsigned idx = uSendDlgItemMessageText(wnd, IDC_BUTTON_LIST, LB_ADDSTRING, 0, name);
 
 				t_list_view::t_item_insert item;
+				item.m_subitems.set_size(2);
 				m_buttons[index].get_name_name(name);
-				item.m_subitems.add_item(name);
+				item.m_subitems[0] = name;
 				m_buttons[index].get_name_type(name);
-				item.m_subitems.add_item(name);
+				item.m_subitems[1] = name;
 				t_size index_list = m_button_list.get_item_count();
 				m_button_list.insert_items(index_list, 1, &item);
 				m_button_list.set_item_selected_single(index_list);

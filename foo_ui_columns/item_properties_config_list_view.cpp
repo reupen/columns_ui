@@ -6,10 +6,10 @@ void fields_list_view_t::notify_save_inline_edit(const char * value)
 	if (m_edit_index < m_fields.get_count())
 	{
 		(m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
-		pfc::list_t<t_list_view::t_item_insert> items;
+		pfc::list_t<t_list_view::t_item_insert_sized<2, 0>> items;
 		items.set_count(1);
-		items[0].m_subitems.add_item(m_fields[m_edit_index].m_name_friendly);
-		items[0].m_subitems.add_item(m_fields[m_edit_index].m_name);
+		items[0].m_subitems[0] = m_fields[m_edit_index].m_name_friendly;
+		items[0].m_subitems[1] = m_fields[m_edit_index].m_name;
 		replace_items(m_edit_index, items);
 	}
 	m_edit_column = pfc_infinite;
@@ -64,8 +64,9 @@ void fields_list_view_t::get_insert_items(t_size base, t_size count, pfc::list_t
 	items.set_count(count);
 	for (i = 0; i < count; i++)
 	{
-		items[i].m_subitems.add_item(m_fields[base + i].m_name_friendly);
-		items[i].m_subitems.add_item(m_fields[base + i].m_name);
+		items[i].m_subitems.set_size(2);
+		items[i].m_subitems[0] = m_fields[base + i].m_name_friendly;
+		items[i].m_subitems[1] = m_fields[base + i].m_name;
 	}
 }
 

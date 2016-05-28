@@ -135,8 +135,11 @@ public:
 					pfc::list_t<t_list_view::t_item_insert> items;
 					items.set_count(1);
 					{
-						items[0].m_groups.add_item(g_artwork_sources[m_edit_index].m_name);
-						items[0].m_subitems.add_item(dest);
+						items[0].m_groups.set_size(1);
+						items[0].m_subitems.set_size(1);
+
+						items[0].m_groups[0] = g_artwork_sources[m_edit_index].m_name;
+						items[0].m_subitems[0] = dest;
 					}
 					replace_items(m_edit_combined_index, items);
 
@@ -196,8 +199,10 @@ public:
 			items.set_count(subindexcount);
 			for (subindex=0; subindex<subindexcount; subindex++)
 			{
-				items[subindex].m_groups.add_item(g_artwork_sources[index].m_name);
-				items[subindex].m_subitems.add_item((*g_artwork_sources[index].m_scripts)[subindex]);
+				items[subindex].m_groups.set_size(1);
+				items[subindex].m_subitems.set_size(1);
+				items[subindex].m_groups[0] = g_artwork_sources[index].m_name;
+				items[subindex].m_subitems[0] = (*g_artwork_sources[index].m_scripts)[subindex];
 			}
 			m_source_list.insert_items(m_source_list.get_item_count(), items.get_count(), items.get_ptr());
 		}
@@ -312,9 +317,9 @@ public:
 
 						t_size combined_index = get_combined_index(index, subindex);
 
-						t_list_view::t_item_insert item;
-						item.m_groups.add_item(g_artwork_sources[index].m_name);
-						item.m_subitems.add_item("<enter script>");
+						t_list_view::t_item_insert item(1, 1);
+						item.m_groups[0] = g_artwork_sources[index].m_name;
+						item.m_subitems[0] = "<enter script>";
 						m_source_list.insert_items(combined_index, 1, &item);
 						SetFocus(m_source_list.get_wnd());
 						m_source_list.set_item_selected_single(combined_index);
@@ -372,13 +377,13 @@ public:
 						{
 							g_artwork_sources[index].m_scripts->swap_items(subindex, subindex-1);
 
-							pfc::list_t<t_list_view::t_item_insert> items;
+							pfc::list_t<t_list_view::t_item_insert_sized<1,1>> items;
 							items.set_count(2);
 
-							items[0].m_groups.add_item(g_artwork_sources[index].m_name);
-							items[1].m_groups.add_item(g_artwork_sources[index].m_name);
-							items[0].m_subitems.add_item((*g_artwork_sources[index].m_scripts)[subindex-1]);
-							items[1].m_subitems.add_item((*g_artwork_sources[index].m_scripts)[subindex]);
+							items[0].m_groups[0] = g_artwork_sources[index].m_name;
+							items[1].m_groups[0] = g_artwork_sources[index].m_name;
+							items[0].m_subitems[0] = (*g_artwork_sources[index].m_scripts)[subindex-1];
+							items[1].m_subitems[0] = (*g_artwork_sources[index].m_scripts)[subindex];
 							m_source_list.replace_items(combined_index-1, items);
 							m_source_list.set_item_selected_single(combined_index-1);
 							m_source_list.m_changed = true;
@@ -403,13 +408,13 @@ public:
 						if (subindex + 1 < count)
 						{
 							g_artwork_sources[index].m_scripts->swap_items(subindex, subindex+1);
-							pfc::list_t<t_list_view::t_item_insert> items;
+							pfc::list_t<t_list_view::t_item_insert_sized<1,1>> items;
 							items.set_count(2);
 
-							items[0].m_groups.add_item(g_artwork_sources[index].m_name);
-							items[1].m_groups.add_item(g_artwork_sources[index].m_name);
-							items[0].m_subitems.add_item((*g_artwork_sources[index].m_scripts)[subindex]);
-							items[1].m_subitems.add_item((*g_artwork_sources[index].m_scripts)[subindex+1]);
+							items[0].m_groups[0] = g_artwork_sources[index].m_name;
+							items[1].m_groups[0] = g_artwork_sources[index].m_name;
+							items[0].m_subitems[0] = (*g_artwork_sources[index].m_scripts)[subindex];
+							items[1].m_subitems[0] = (*g_artwork_sources[index].m_scripts)[subindex+1];
 
 							m_source_list.replace_items(combined_index, items);
 							m_source_list.set_item_selected_single(combined_index+1);
