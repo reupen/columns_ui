@@ -631,7 +631,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 								}
 
 								title.prealloc(14 + 25);
-								title << "Now Playing: %s" << title2;
+								title << "Now Playing: " << title2;
 								//			play_control::get()->playback_format_title_ex(track, title, "$puts(title,Now Playing: %title%)$ifgreater($len($get(title)),25,$cut($get(title),24)..,$get(title))",0,0,true);
 								track.release();
 								uFixAmpersandChars_v2(title, name);
