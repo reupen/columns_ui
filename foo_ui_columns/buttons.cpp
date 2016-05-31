@@ -735,13 +735,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
 						b_custom = idx == 1;
 						EnableWindow(GetDlgItem(wnd, IDC_IMAGE_PATH), b_custom);
 						EnableWindow(GetDlgItem(wnd, IDC_BROWSE), b_custom);
-						EnableWindow(GetDlgItem(wnd, IDC_MASK_TYPE), b_custom);
-						EnableWindow(GetDlgItem(wnd, IDC_IMAGE_MASK_PATH), b_custom && ptr->m_image->m_mask_type == ui_extension::MASK_BITMAP);
-						EnableWindow(GetDlgItem(wnd, IDC_BROWSE_MASK), b_custom && ptr->m_image->m_mask_type == ui_extension::MASK_BITMAP);
-						EnableWindow(GetDlgItem(wnd, IDC_CHANGE_MASK_COLOUR), b_custom && ptr->m_image->m_mask_type == ui_extension::MASK_COLOUR);
 						uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (ptr->m_selection && b_custom) ? ptr->m_image->m_path : "");
-						uSendDlgItemMessageText(wnd, IDC_IMAGE_MASK_PATH, WM_SETTEXT, 0, (ptr->m_selection && b_custom && ptr->m_image->m_mask_type==ui_extension::MASK_BITMAP) ? ptr->m_image->m_mask_path : "");
-						SendDlgItemMessage(wnd,IDC_MASK_TYPE,CB_SETCURSEL,(ptr->m_selection && b_custom)?(unsigned)ptr->m_image->m_mask_type:pfc_infinite,0);
 					}
 				}
 			}

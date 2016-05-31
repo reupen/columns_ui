@@ -72,7 +72,6 @@ public:
 
 			TabCtrl_SetCurSel(wnd_tab, g_cur_tab2);
 
-			uSendDlgItemMessageText(wnd, IDC_CHAR7, WM_SETTEXT, 0, "\x07");
 			colour_code_gen(wnd, IDC_COLOUR, false, true);
 
 			SendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);

@@ -749,9 +749,7 @@ class tab_layout_new : public preferences_tab
 				SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
 				SendDlgItemMessage(wnd, IDC_HIDE_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
 
-				HWND wnd_custom_divider_width = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH);
 				HWND wnd_custom_divider_width_spin = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN);
-				HWND wnd_use_custom_divider_width = GetDlgItem(wnd, IDC_USE_CUSTOM_DIVIDER_WIDTH);
 
 				SetDlgItemInt(wnd, IDC_CUSTOM_DIVIDER_WIDTH, settings::custom_splitter_divider_width, FALSE);
 				SendMessage(wnd_custom_divider_width_spin, UDM_SETRANGE32, 0, 20);

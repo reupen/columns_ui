@@ -61,16 +61,6 @@ public:
 				on_menu_combo_change(wnd, lp, cfg_statusdbl, *p_cache, IDC_MENU_DESC);
 			}
 			break;
-			case IDC_STATUS_FONT:
-			{
-				LOGFONT temp = cfg_status_font;
-				if (font_picker(temp, wnd))
-				{
-					cfg_status_font = temp;
-					on_status_font_change();
-				}
-			}
-			break;
 			case IDC_SHOW_LOCK:
 			{
 				main_window::config_set_status_show_lock(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
