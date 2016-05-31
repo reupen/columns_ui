@@ -4,17 +4,17 @@
 
 ### Layout and toolbars
 
-* A duplicate preset button has been added to the layout configuration page. 
+* A duplicate preset button has been added to the layout configuration page.  [[#14](https://github.com/reupen/columns_ui/issues/14)]
 
-* When the main window is deactivated with the menu bar focused, the focus is now restored to the window that had the keyboard focus before the menu bar did when the main window is reactivated. (Previously, the focus was incorrectly returned to the menu bar.)
+* When the main window is deactivated with the menu bar focused, the focus is now restored to the window that had the keyboard focus before the menu bar did when the main window is reactivated. (Previously, the focus was incorrectly returned to the menu bar.)  [[#18](https://github.com/reupen/columns_ui/issues/18)]
 
 * The minimum width of toolbars without an explicit minimum width has been reduced to be the same as the minimum height (21 pixels at 100% DPI).
 
-* Improved preferences behaviour when importing FCL files and switching between pages; previously preferences may have shown old values after importing an FCL file.
+* Improved preferences behaviour when importing FCL files and switching between pages; previously preferences may have shown old values after importing an FCL file. [[#23](https://github.com/reupen/columns_ui/issues/23)]
 
-* Panel sizes are now DPI-aware in the standard splitters, and non-auto-size columns. In particular, this affects the quick setup presets, FCL files, and layouts after the system DPI setting has been changed.
+* Panel sizes are now DPI-aware in the standard splitters, and non-auto-size columns. In particular, this affects the quick setup presets, FCL files, and layouts after the system DPI setting has been changed. [[#22](https://github.com/reupen/columns_ui/issues/22)] [[#21](https://github.com/reupen/columns_ui/issues/21)]
 
-* Added an option to control whether locked panels can be manually resized in the standard splitters.
+* Added an option to control whether locked panels can be manually resized in the standard splitters. [[#24](https://github.com/reupen/columns_ui/issues/24)]
 
 * Fixed minor rendering glitches in the toolbars when resizing the main window on some versions of Windows.
 
@@ -24,7 +24,9 @@
 
 * Improved the appearance of Filter search bar icons at some DPI settings.
 
-* Added an option to control whether column titles are shown in Filters.
+* Added an option to control whether column titles are shown in Filters. [[#28](https://github.com/reupen/columns_ui/issues/28)]
+
+* Made Filter panels sortable (can be disabled in preferences). [[#28](https://github.com/reupen/columns_ui/issues/28)]
 
 * Reworked Filter preferences and moved them to a separate page.
 
@@ -51,7 +53,7 @@ Using a linear y-axis is no longer particularly useful and it's recommended that
 
 ### Improved drag and drop behaviour
 
-All standard panels now implement drag images, labels and drop descriptions when a drag and drop operation is started from them. Currently, the drag image is the default image provided by the shell, but this may include artwork in the future.
+All standard panels now implement drag images, labels and drop descriptions when a drag and drop operation is started from them. Currently, the drag image is the default image provided by the shell, but this may include artwork in the future. [[#11](https://github.com/reupen/columns_ui/issues/11)]
 
 You can no longer drop files on panels in the layout area that do not implement drop handlers (e.g. Console panel and Album list panel).
 
@@ -71,13 +73,17 @@ Fixed a bug where dragging a file from Windows Explorer to foobar2000 near the r
 
 If a drag-and-drop operation is started from a auto-hide panel, or a panel in an auto-hide splitter, it no longer immediately hides itself. In particular, this allows things like reordering playlists in an auto-hide playlist switcher.
 
-Resizing a hidden auto-hide panel would sometimes cause it to get stuck open. This has been fixed.
+Resizing a hidden auto-hide panel would sometimes cause it to get stuck open. This has been fixed. [[#8](https://github.com/reupen/columns_ui/issues/8)]
 
 ### Splitter divider width is now configurable
+
+[[#10](https://github.com/reupen/columns_ui/issues/10)]
 
 The setting is on the Layout preferences page.
 
 ### Improved high-DPI behaviour
+
+[[#16](https://github.com/reupen/columns_ui/issues/16)] [[#9](https://github.com/reupen/columns_ui/issues/9)]
 
 The default values of the following are now DPI-aware:
 
@@ -99,14 +105,14 @@ Similar changes will be made for other settings in an upcoming version.
 * Added a workaround for an OS bug that could cause the main menu to be incorrectly activated when foobar2000 was alt-tabbed out of and a global keyboard shortcut using Ctrl+Alt was used to activate the foobar2000 window.
 * When the main menu is focused (by pressing Alt or F10), F10 can now correctly be used to deactivate the menu.
 * Fixed a bug where if foobar2000 was minimised to a notification icon, and you then hid the notification icon in preferences, you would be left with no notification icon and no visible window.
-* Fixed odd behaviour of centre- and right-alignment in Item details when word wrapping was off.
+* Fixed odd behaviour of centre- and right-alignment in Item details when word wrapping was off. [[#17](https://github.com/reupen/columns_ui/issues/17)]
 * Fixed incorrect inclusion of trailing spaces on lines in Item details when word wrapping was on.
 
 ## 0.3.9.x
 
 ### 0.3.9.2
-*  Updated to latest foobar2000 SDK; foobar2000 1.3+ now required
-*  Disabled a compiler option causing problems on XP/Wine
+*  Updated to latest foobar2000 SDK; foobar2000 1.3+ now required [[#1](https://github.com/reupen/columns_ui/issues/1)]
+*  Disabled a compiler option causing problems on XP/Wine [[#6](https://github.com/reupen/columns_ui/issues/6)]
 *  Compiled with Visual Studio 2015 Update 1
 *  New /columnsui:import-quiet CLI command to import FCLs with fewer prompts than /columnsui:import
 
@@ -116,7 +122,7 @@ Similar changes will be made for other settings in an upcoming version.
 ### 0.3.9.0
 *  Fixed notification area icon scaling in high-DPI mode
 *  Fixed spectrum analyser bars mode scaling in high-DPI mode
-*  Added NG Playlist groups to FCLs
+*  Added NG Playlist groups to FCLs [[#2](https://github.com/reupen/columns_ui/issues/2)]
 *  Compiled with Visual Studio 2015
 
 ## 0.3.8.x
