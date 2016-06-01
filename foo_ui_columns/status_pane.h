@@ -136,7 +136,8 @@ class status_pane : public ui_helpers::container_window, private playlist_callba
 
 			service_ptr_t<titleformat_object> to_status;
 			static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
-			play_api->playback_format_title_ex(track, nullptr, playing1, to_status, nullptr, play_control::display_level_all);
+			titleformat_hook_impl tf_hook;
+			play_api->playback_format_title_ex(track, &tf_hook, playing1, to_status, nullptr, play_control::display_level_all);
 
 			track.release();
 		} 
