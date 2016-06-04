@@ -259,6 +259,10 @@
 #define IDC_GEN_FONT                    1165
 #define IDC_COLOUR_CODE                 1166
 
+#ifndef IDC_STATIC
+#define IDC_STATIC				        -1
+#endif
+
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
