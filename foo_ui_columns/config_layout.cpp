@@ -139,7 +139,7 @@ class tab_layout_new : public preferences_tab
 	{
 		HTREEITEM item = ti;
 		unsigned n=0;
-		while (item = TreeView_GetPrevSibling(wnd_tv, item))
+		while ((item = TreeView_GetPrevSibling(wnd_tv, item)))
 			n++;
 		return n;
 	}
@@ -182,7 +182,7 @@ class tab_layout_new : public preferences_tab
 
 		HTREEITEM ti_item = nullptr;
 
-		if (ti_item = insert_item_in_tree_view(wnd_tree, sz_text, (LPARAM)p_node.get_ptr(), ti_parent, ti_after))
+		if ((ti_item = insert_item_in_tree_view(wnd_tree, sz_text, (LPARAM)p_node.get_ptr(), ti_parent, ti_after)))
 		{
 			p_node->m_window = p_wnd;
 
@@ -216,7 +216,7 @@ class tab_layout_new : public preferences_tab
 			item.hItem = ti_parent;
 			if (TreeView_GetItem(wnd_tv,&item))
 			{
-				node * p_parent_node = (node*)item.lParam;
+				node::ptr p_parent_node = reinterpret_cast<node*>(item.lParam);
 				unsigned index = tree_view_get_child_index(wnd_tv, ti);
 				if (index < p_parent_node->m_children.get_count())
 				{
@@ -242,7 +242,7 @@ class tab_layout_new : public preferences_tab
 			node_ptr p_node = new node;
 			*p_node->m_item = new uie::splitter_item_simple_t;
 			p_node->m_item->get_ptr()->set_panel_guid(p_guid);
-			node * p_parent = (node*)item.lParam;
+			node::ptr p_parent = reinterpret_cast<node*>(item.lParam);
 			service_ptr_t<uie::splitter_window> p_splitter;
 			if (p_parent->m_window.is_valid() && p_parent->m_window->service_query_t(p_splitter))
 			{
@@ -267,7 +267,7 @@ class tab_layout_new : public preferences_tab
 
 		if (TreeView_GetItem(wnd_tv,&item))
 		{
-			node * p_node = (node*)item.lParam;
+			node::ptr p_node = reinterpret_cast<node*>(item.lParam);
 			g_node_clipboard = copy_splitter_item(p_node->m_item->get_ptr());
 		}
 	}
@@ -370,7 +370,7 @@ class tab_layout_new : public preferences_tab
 		{
 			//*p_node->m_item = copy_splitter_item(g_node_clipboard.get_ptr());
 			//p_node->m_item->get_ptr()->set(*g_node_clipboard.get_ptr());
-			node * p_parent = (node*)item.lParam;
+			node::ptr p_parent = reinterpret_cast<node*>(item.lParam);
 			service_ptr_t<uie::splitter_window> p_splitter;
 			if (p_parent->m_window.is_valid() && p_parent->m_window->service_query_t(p_splitter))
 			{
@@ -398,8 +398,7 @@ class tab_layout_new : public preferences_tab
 
 		if (TreeView_GetItem(wnd_tv,&item) && ti_parent && TreeView_GetItem(wnd_tv,&itemparent))
 		{
-			node * p_node = (node*)item.lParam;
-			node * p_parent_node = (node*)itemparent.lParam;
+			node::ptr p_parent_node = reinterpret_cast<node*>(itemparent.lParam);
 			unsigned index = tree_view_get_child_index(wnd_tv, ti);
 			if (up)
 			{
@@ -447,10 +446,10 @@ class tab_layout_new : public preferences_tab
 		if (TreeView_GetItem(wnd_tv,&item))
 		{
 			{
-				node * p_node = (node*)item.lParam;
-				node * p_parent_node = nullptr;
+				node::ptr p_node = reinterpret_cast<node*>(item.lParam);
+				node::ptr p_parent_node;
 				if (ti_parent && TreeView_GetItem(wnd_tv,&itemparent))
-					p_parent_node = (node*)itemparent.lParam;
+					p_parent_node = reinterpret_cast<node*>(itemparent.lParam);
 
 				uie::window_ptr window;
 				service_ptr_t<uie::splitter_window> splitter;
@@ -474,7 +473,7 @@ class tab_layout_new : public preferences_tab
 						p_node->m_children.remove_all();
 
 						unsigned index = tree_view_get_child_index(wnd_tv, ti);
-						if (p_parent_node)
+						if (p_parent_node.is_valid())
 						{
 							if (index < p_parent_node->m_children.get_count())
 								p_parent_node->m_splitter->replace_panel(index, p_parent_node->m_children[index]->m_item->get_ptr());
@@ -485,7 +484,7 @@ class tab_layout_new : public preferences_tab
 							populate_tree(wnd, p_node->m_item->get_ptr(), p_node, ti_parent, ti_prev);
 							save_item(wnd, ti_parent);
 						}
-						else if (!p_parent_node)
+						else
 						{
 							TreeView_DeleteItem(wnd_tv, ti);
 							populate_tree(wnd, p_node->m_item->get_ptr(), p_node);
@@ -517,7 +516,7 @@ class tab_layout_new : public preferences_tab
 		item.hItem = ti;
 		if (TreeView_GetItem(wnd_tv,&item))
 		{
-			node * p_node = (node*)item.lParam;
+			node::ptr p_node = reinterpret_cast<node*>(item.lParam);
 			if (p_node->m_window.is_valid())
 			{
 				stream_writer_memblock conf;
@@ -533,7 +532,7 @@ class tab_layout_new : public preferences_tab
 				item.hItem = parent;
 				if (TreeView_GetItem(wnd_tv,&item))
 				{
-					node * p_parent_node = (node*)item.lParam;
+					node::ptr p_parent_node = reinterpret_cast<node*>(item.lParam);
 					service_ptr_t<uie::splitter_window> p_splitter;
 					if (p_parent_node->m_window.is_valid() && p_parent_node->m_window->service_query_t(p_splitter))
 					{
@@ -571,8 +570,8 @@ class tab_layout_new : public preferences_tab
 				item.hItem = ti;
 				if (TreeView_GetItem(wnd_tv, &item) && TreeView_GetItem(wnd_tv, &itemparent))
 				{
-					node * p_node = (node*)item.lParam;
-					node * p_node_parent = (node*)itemparent.lParam;
+					node::ptr p_node = reinterpret_cast<node*>(item.lParam);
+					node::ptr p_node_parent = reinterpret_cast<node*>(itemparent.lParam);
 					unsigned index = tree_view_get_child_index(wnd_tv, ti);
 					if (index < p_node_parent->m_splitter->get_panel_count())
 					{
@@ -614,8 +613,8 @@ class tab_layout_new : public preferences_tab
 				item.hItem = ti;
 				if (TreeView_GetItem(wnd_tv, &item) && TreeView_GetItem(wnd_tv, &itemparent))
 				{
-					node * p_node = (node*)item.lParam;
-					node * p_node_parent = (node*)itemparent.lParam;
+					node::ptr p_node = reinterpret_cast<node*>(item.lParam);
+					node::ptr p_node_parent = reinterpret_cast<node*>(itemparent.lParam);
 					unsigned index = tree_view_get_child_index(wnd_tv, ti);
 					if (index < p_node_parent->m_splitter->get_panel_count())
 					{
@@ -939,6 +938,8 @@ class tab_layout_new : public preferences_tab
 				case IDC_TREE:
 					if (hdr->code == TVN_SELCHANGED)
 					{
+						TRACK_CALL_TEXT("tab_layout::TVN_SELCHANGED");
+
 						bool hidden = false;
 						bool locked = false;
 						bool orientation = false;
@@ -954,7 +955,6 @@ class tab_layout_new : public preferences_tab
 						unsigned orientation_val = 0;
 						bool caption_val = false;
 						bool autohide_val = false;
-						bool configure_val = false;
 						bool toggle_val = false;
 						bool use_custom_title_val = false;
 						pfc::string8 custom_title_val;
@@ -962,8 +962,8 @@ class tab_layout_new : public preferences_tab
 						LPNMTREEVIEW param = (LPNMTREEVIEW)hdr;
 						if (param->itemNew.hItem)
 						{
-							node * p_node = (node*)param->itemNew.lParam;
-							node * p_parent_node = nullptr;
+							node::ptr p_node = reinterpret_cast<node*>(param->itemNew.lParam);
+							node::ptr p_parent_node = nullptr;
 
 							HTREEITEM ti_parent = TreeView_GetParent(param->hdr.hwndFrom, param->itemNew.hItem);
 
@@ -974,13 +974,13 @@ class tab_layout_new : public preferences_tab
 								item.mask = TVIF_PARAM|TVIF_HANDLE;
 								item.hItem = ti_parent;
 								if (TreeView_GetItem(param->hdr.hwndFrom,&item))
-									p_parent_node = (node*)item.lParam;
+									p_parent_node = reinterpret_cast<node*>(item.lParam);
 							}
 							unsigned index = tree_view_get_child_index(param->hdr.hwndFrom, param->itemNew.hItem);
 
 							configure = p_node->m_window.is_valid() && p_node->m_window->have_config_popup();
 
-							if (p_parent_node && index<p_parent_node->m_splitter->get_panel_count())
+							if (p_parent_node.is_valid() && index<p_parent_node->m_splitter->get_panel_count())
 							{
 								hidden = p_parent_node->m_splitter->get_config_item_supported(index, uie::splitter_window::bool_hidden);
 								locked = p_parent_node->m_splitter->get_config_item_supported(index, uie::splitter_window::bool_locked);
@@ -1038,6 +1038,8 @@ class tab_layout_new : public preferences_tab
 			{
 				if ((HWND)wp == GetDlgItem(wnd, IDC_TREE))
 				{
+					TRACK_CALL_TEXT("tab_layout::WM_CONTEXTMENU");
+
 					HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
 					POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
 					HTREEITEM treeitem = TreeView_GetSelection(wnd_tv);
@@ -1076,8 +1078,8 @@ class tab_layout_new : public preferences_tab
 
 							unsigned index = tree_view_get_child_index(wnd_tv, ti.hItem);
 
-							node * p_node = (node*)item.lParam;
-							node * p_parent_node = nullptr;
+							node::ptr p_node = reinterpret_cast<node*>(item.lParam);
+							node::ptr p_parent_node;
 
 							service_ptr_t<uie::splitter_window> p_splitter;
 							if (p_node->m_window.is_valid())
@@ -1094,7 +1096,7 @@ class tab_layout_new : public preferences_tab
 								item.lParam = NULL;
 								if (TreeView_GetItem(wnd_tv,&item))
 								{
-									p_parent_node = (node*)item.lParam;
+									p_parent_node = reinterpret_cast<node*>(item.lParam);
 								}
 							}
 
@@ -1156,9 +1158,9 @@ class tab_layout_new : public preferences_tab
 							{
 								if (GetMenuItemCount(menu))
 									AppendMenu(menu,MF_SEPARATOR,0,nullptr);
-								if (p_parent_node && index)
+								if (p_parent_node.is_valid() && index)
 									AppendMenu(menu,MF_STRING,ID_MOVE_UP,_T("Move up"));
-								if (p_parent_node && index +1 < p_parent_node->m_splitter->get_panel_count())
+								if (p_parent_node.is_valid() && index +1 < p_parent_node->m_splitter->get_panel_count())
 									AppendMenu(menu,MF_STRING,ID_MOVE_DOWN,_T("Move down"));
 								AppendMenu(menu,MF_STRING,ID_REMOVE,_T("Remove panel"));
 							}
