@@ -1,9 +1,5 @@
 /**
-* \file main.cpp
-*
-* \brief Example panel component
-*
-* This component is an example of a very simple multiple instance panel that does not take keyboard input
+* \file ng_playlist.cpp
 */
 
 #include "../stdafx.h"
@@ -44,7 +40,7 @@ namespace pvt {
 	const GUID g_guid_grouping = 
 	{ 0xa28cc736, 0x2b8b, 0x484c, { 0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57 } };
 
-	pfc::ptr_list_t<ng_playlist_view_t> ng_playlist_view_t::g_windows;
+	std::set<ng_playlist_view_t *> ng_playlist_view_t::g_windows;
 	ng_playlist_view_t::ng_global_mesage_window ng_playlist_view_t::g_global_mesage_window;
 
 	cfg_groups_t g_groups(g_groups_guid);
@@ -186,10 +182,9 @@ namespace pvt {
 
 	void ng_playlist_view_t::g_on_column_widths_change(const ng_playlist_view_t * p_skip)
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			if (g_windows[i] != p_skip)
-				g_windows[i]->on_column_widths_change();
+		for (auto & window: g_windows)
+			if (window != p_skip)
+				window->on_column_widths_change();
 	}
 	void ng_playlist_view_t::refresh_columns()
 	{
@@ -258,9 +253,8 @@ namespace pvt {
 	}
 	void ng_playlist_view_t::g_on_groups_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->on_groups_change();
+		for (auto & window : g_windows)
+			window->on_groups_change();
 	}
 	void ng_playlist_view_t::on_groups_change()
 	{
@@ -305,132 +299,109 @@ namespace pvt {
 	}
 	void ng_playlist_view_t::g_on_autosize_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_autosize(cfg_nohscroll!=0);
+		for (auto & window : g_windows)
+			window->set_autosize(cfg_nohscroll!=0);
 	}
 	void ng_playlist_view_t::g_on_show_artwork_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_show_group_info_area(cfg_show_artwork);
+		for (auto & window : g_windows)
+			window->set_show_group_info_area(cfg_show_artwork);
 	}
 	void ng_playlist_view_t::g_on_alternate_selection_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_alternate_selection_model(cfg_alternative_sel != 0);
+		for (auto & window : g_windows)
+			window->set_alternate_selection_model(cfg_alternative_sel != 0);
 	}
 	void ng_playlist_view_t::g_on_artwork_width_change(const ng_playlist_view_t * p_skip)
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-		{
-			ng_playlist_view_t * p_window = g_windows[i];
-			if (p_window != p_skip)
+		for (auto & window : g_windows) {
+			if (window != p_skip)
 			{
-				p_window->flush_artwork_images();
-				p_window->set_group_info_area_size(cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width*3)/11 : 0) );
+				window->flush_artwork_images();
+				window->set_group_info_area_size(cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width*3)/11 : 0) );
 			}
 		}
 	}
 	void ng_playlist_view_t::g_flush_artwork(bool b_redraw, const ng_playlist_view_t * p_skip)
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-		{
-			ng_playlist_view_t * p_window = g_windows[i];
-			if (p_window != p_skip)
+		for (auto & window : g_windows) {
+			if (window != p_skip)
 			{
-				p_window->flush_artwork_images();
+				window->flush_artwork_images();
 				if (b_redraw)
-					p_window->invalidate_all();
+					window->invalidate_all();
 			}
 		}
 	}
 	void ng_playlist_view_t::g_on_artwork_repositories_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-		{
-			ng_playlist_view_t * p_window = g_windows[i];
-			if (p_window->m_artwork_manager.is_valid())
+		for (auto & window : g_windows) {
+			if (window->m_artwork_manager.is_valid())
 			{
-				p_window->m_artwork_manager->set_script(album_art_ids::cover_front, artwork_panel::cfg_front_scripts);
+				window->m_artwork_manager->set_script(album_art_ids::cover_front, artwork_panel::cfg_front_scripts);
 			}
 		}
 	}
 	void ng_playlist_view_t::g_on_vertical_item_padding_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_vertical_item_padding(settings::playlist_view_item_padding);
+		for (auto & window : g_windows)
+			window->set_vertical_item_padding(settings::playlist_view_item_padding);
 	} 
 	void ng_playlist_view_t::g_on_font_change()
 	{
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_items_font, lf);
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_font(&lf);
+		for (auto & window : g_windows)
+			window->set_font(&lf);
 	} 
 	void ng_playlist_view_t::g_on_header_font_change()
 	{
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_header_font, lf);
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_header_font(&lf);
+		for (auto & window : g_windows)
+			window->set_header_font(&lf);
 	} 
 	void ng_playlist_view_t::g_on_group_header_font_change()
 	{
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_group_header_font, lf);
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_group_font(&lf);
+		for (auto & window : g_windows)
+			window->set_group_font(&lf);
 	} 
 	void ng_playlist_view_t::g_update_all_items()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->update_all_items();
+		for (auto & window : g_windows)
+			window->update_all_items();
 	}
 	void ng_playlist_view_t::g_on_show_header_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_show_header(cfg_header!=0);
+		for (auto & window : g_windows)
+			window->set_show_header(cfg_header!=0);
 	}
 	void ng_playlist_view_t::g_on_sorting_enabled_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_sorting_enabled(cfg_header_hottrack!=0);
+		for (auto & window : g_windows)
+			window->set_sorting_enabled(cfg_header_hottrack!=0);
 	}
 	void ng_playlist_view_t::g_on_show_sort_indicators_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_show_sort_indicators(cfg_show_sort_arrows!=0);
+		for (auto & window : g_windows)
+			window->set_show_sort_indicators(cfg_show_sort_arrows!=0);
 	}
 	void ng_playlist_view_t::g_on_edge_style_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_edge_style(cfg_frame);
+		for (auto & window : g_windows)
+			window->set_edge_style(cfg_frame);
 	}
 	void ng_playlist_view_t::g_on_use_date_info_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->on_use_date_info_change();
+		for (auto & window : g_windows)
+			window->on_use_date_info_change();
 	}
 	void ng_playlist_view_t::g_on_time_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->on_time_change();
+		for (auto & window : g_windows)
+			window->on_time_change();
 	}
 	void ng_playlist_view_t::on_use_date_info_change()
 	{
@@ -442,24 +413,21 @@ namespace pvt {
 	}
 	void ng_playlist_view_t::g_on_show_tooltips_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->set_show_tooltips(cfg_tooltip!=0);
-			g_windows[i]->set_limit_tooltips_to_clipped_items(cfg_tooltips_clipped!=0);
+			window->set_show_tooltips(cfg_tooltip!=0);
+			window->set_limit_tooltips_to_clipped_items(cfg_tooltips_clipped!=0);
 		}
 	}
 	void ng_playlist_view_t::g_on_playback_follows_cursor_change(bool b_val)
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->set_always_show_focus(b_val);
+		for (auto & window : g_windows)
+			window->set_always_show_focus(b_val);
 	}
 	void ng_playlist_view_t::g_on_columns_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->on_columns_change();
+		for (auto & window : g_windows)
+			window->on_columns_change();
 	}
 	void ng_playlist_view_t::on_columns_change()
 	{
@@ -626,9 +594,9 @@ namespace pvt {
 		pfc::com_ptr_t<IDropTarget_playlist> IDT_playlist = new IDropTarget_playlist(this);
 		RegisterDragDrop(get_wnd(), IDT_playlist.get_ptr());
 
-		if (g_windows.get_count() == 0)
+		if (g_windows.size() == 0)
 			g_global_mesage_window.create(nullptr);
-		g_windows.add_item(this);
+		g_windows.insert(this);
 
 		if (cfg_playlist_date)
 			set_day_timer();
@@ -637,8 +605,8 @@ namespace pvt {
 
 	void ng_playlist_view_t::notify_on_destroy()
 	{
-		g_windows.remove_item(this);
-		if (g_windows.get_count() == 0)
+		g_windows.erase(this);
+		if (g_windows.size() == 0)
 			g_global_mesage_window.destroy();
 
 		RevokeDragDrop(get_wnd());

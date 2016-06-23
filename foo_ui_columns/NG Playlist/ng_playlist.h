@@ -368,7 +368,7 @@ namespace pvt
 		ng_playlist_view_t();
 		~ng_playlist_view_t();
 
-		static pfc::ptr_list_t<ng_playlist_view_t> g_windows;
+		static std::set<ng_playlist_view_t *> g_windows;
 		static ng_global_mesage_window g_global_mesage_window;
 
 		static void g_on_groups_change();

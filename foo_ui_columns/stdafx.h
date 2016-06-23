@@ -10,6 +10,7 @@
 
 #include <atomic>
 #include <vector>
+#include <set>
 #include <memory>
 #include <complex>
 #include <iostream>
