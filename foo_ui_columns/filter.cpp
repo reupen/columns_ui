@@ -90,14 +90,13 @@ namespace filter_panel {
 	void filter_panel_t::g_on_orderedbysplitters_change()
 	{
 		g_streams.remove_all();
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->refresh_stream();
+			window->refresh_stream();
 		}
 		//filter_search_bar::g_on_orderedbysplitters_change();
-		count = g_streams.get_count();
-		for (i = 0; i<count; i++)
+		t_size count = g_streams.get_count();
+		for (t_size i = 0; i<count; i++)
 		{
 			if (g_streams[i]->m_windows.get_count())
 			{
@@ -114,11 +113,10 @@ namespace filter_panel {
 	void filter_panel_t::g_on_fields_change()
 	{
 		g_load_fields();
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			t_size field_index = g_windows[i]->get_field_index();
-			g_windows[i]->set_field(field_index == pfc_infinite ? field_data_t() : g_field_data[field_index], true);
+			t_size field_index = window->get_field_index();
+			window->set_field(field_index == pfc_infinite ? field_data_t() : g_field_data[field_index], true);
 		}
 	}
 	t_size filter_panel_t::g_get_field_index_by_name(const char * p_name)
@@ -137,14 +135,13 @@ namespace filter_panel {
 		t_size field_index = g_get_field_index_by_name(p_old);
 		if (field_index != pfc_infinite)
 		{
-			t_size i, count = g_windows.get_count();
-			for (i = 0; i<count; i++)
+			for (auto & window : g_windows)
 			{
-				if (g_windows[i]->get_field_index() == field_index)
+				if (window->get_field_index() == field_index)
 				{
-					g_windows[i]->m_field_data.m_name = p_new;
-					g_windows[i]->refresh_columns();
-					g_windows[i]->update_first_node_text(true);
+					window->m_field_data.m_name = p_new;
+					window->refresh_columns();
+					window->update_first_node_text(true);
 				}
 			}
 			g_field_data[field_index].m_name = p_new;
@@ -153,34 +150,26 @@ namespace filter_panel {
 
 	void filter_panel_t::g_on_vertical_item_padding_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++) {
-			g_windows[i]->set_vertical_item_padding(cfg_vertical_item_padding);
-		}
+		for (auto & window : g_windows)
+			window->set_vertical_item_padding(cfg_vertical_item_padding);
 	}
 
 	void filter_panel_t::g_on_show_column_titles_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i < count; i++) {
-			g_windows[i]->set_show_header(cfg_show_column_titles);
-		}
+		for (auto & window : g_windows)
+			window->set_show_header(cfg_show_column_titles);
 	}
 
 	void filter_panel_t::g_on_allow_sorting_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i < count; i++) {
-			g_windows[i]->set_sorting_enabled(cfg_allow_sorting);
-		}
+		for (auto & window : g_windows)
+			window->set_sorting_enabled(cfg_allow_sorting);
 	}
 
 	void filter_panel_t::g_on_show_sort_indicators_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i < count; i++) {
-			g_windows[i]->set_show_sort_indicators(cfg_show_sort_indicators);
-		}
+		for (auto & window : g_windows)
+			window->set_show_sort_indicators(cfg_show_sort_indicators);
 	}
 
 	void filter_panel_t::g_on_field_query_change(const field_t & field)
@@ -212,7 +201,7 @@ namespace filter_panel {
 	}
 	void filter_panel_t::g_on_showemptyitems_change(bool b_val)
 	{
-		if (g_windows.get_count())
+		if (g_windows.size())
 		{
 			g_showemptyitems = b_val;
 			t_size i, count = g_streams.get_count();
@@ -232,20 +221,18 @@ namespace filter_panel {
 	}
 	void filter_panel_t::g_on_edgestyle_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->set_edge_style(cfg_edgestyle);
+			window->set_edge_style(cfg_edgestyle);
 		}
 	}
 	void filter_panel_t::g_on_font_items_change()
 	{
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->set_font(&lf);
+			window->set_font(&lf);
 		}
 	}
 
@@ -254,21 +241,19 @@ namespace filter_panel {
 	{
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->set_header_font(&lf);
+			window->set_header_font(&lf);
 		}
 	}
 	void filter_panel_t::g_redraw_all()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i<count; i++)
-			RedrawWindow(g_windows[i]->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
+		for (auto & window : g_windows)
+			RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 	}
 	void filter_panel_t::g_on_new_field(const field_t & field)
 	{
-		if (g_windows.get_count())
+		if (g_windows.size())
 		{
 			t_size index = g_field_data.get_count();
 			g_field_data.set_count(index + 1);
@@ -1020,7 +1005,7 @@ namespace filter_panel {
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
 		set_header_font(&lf);
 
-		t_size index = g_windows.get_count();
+		t_size index = g_windows.size();
 		if (index == 0)
 		{
 			g_showemptyitems = cfg_showemptyitems;
@@ -1100,7 +1085,7 @@ namespace filter_panel {
 		console::formatter formatter;
 		formatter << "Filter Panel - " << m_field_data.m_name << ": initialised in " << pfc::format_float(time, 0, 3) <<" s";
 
-		g_windows.add_item(this);
+		g_windows.push_back(this);
 		mmh::fb2k::library_callback_manager::g_register_callback(this);
 
 	}
@@ -1117,8 +1102,8 @@ namespace filter_panel {
 			g_streams.remove_item(m_stream);
 		m_stream.release();
 
-		g_windows.remove_item(this);
-		if (g_windows.get_count() == 0)
+		g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+		if (g_windows.size() == 0)
 			g_field_data.remove_all();
 		m_nodes.remove_all();
 	}
@@ -1145,7 +1130,7 @@ namespace filter_panel {
 
 	uie::window_factory<filter_panel_t> g_filter;
 
-	pfc::ptr_list_t<filter_panel_t> filter_panel_t::g_windows;
+	std::vector<filter_panel_t *> filter_panel_t::g_windows;
 	bool filter_panel_t::g_showemptyitems = false;
 
 	pfc::list_t<filter_panel_t::field_data_t> filter_panel_t::g_field_data;

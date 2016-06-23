@@ -125,7 +125,7 @@ namespace filter_panel {
 		static pfc::list_t<filter_stream_t::ptr> g_streams;
 		filter_stream_t::ptr m_stream;
 
-		static pfc::ptr_list_t<filter_panel_t> g_windows;
+		static std::vector<filter_panel_t *> g_windows;
 
 		const GUID & get_extension_guid() const override;
 		void get_name(pfc::string_base & out)const override;
