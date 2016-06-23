@@ -128,10 +128,9 @@ namespace artwork_panel
 
 	void artwork_panel_t::g_on_edge_style_change()
 	{
-		unsigned i, count = g_windows.get_count();
-		for (i = 0; i < count; i++)
+		for (auto & window : g_windows)
 		{
-			HWND wnd = g_windows[i]->get_wnd();
+			HWND wnd = window->get_wnd();
 			if (wnd)
 			{
 				long flags = 0;
@@ -195,11 +194,11 @@ namespace artwork_panel
 			static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
 			g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
 			force_reload_artwork();
-			g_windows.add_item(this);
+			g_windows.insert(this);
 		}
 		break;
 		case WM_DESTROY:
-			g_windows.remove_item(this);
+			g_windows.erase(this);
 			static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
 			static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
 			static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
@@ -590,11 +589,10 @@ namespace artwork_panel
 
 	void artwork_panel_t::g_on_colours_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i < count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->flush_cached_bitmap();
-			RedrawWindow(g_windows[i]->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+			window->flush_cached_bitmap();
+			RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 		}
 	}
 
@@ -604,14 +602,13 @@ namespace artwork_panel
 	}
 	void artwork_panel_t::g_on_repository_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i = 0; i < count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->on_repository_change();
+			window->on_repository_change();
 		}
 	}
 
-	pfc::ptr_list_t<artwork_panel_t> artwork_panel_t::g_windows;
+	std::set<artwork_panel_t *> artwork_panel_t::g_windows;
 
 	uie::window_factory<artwork_panel_t> g_artwork_panel;
 
