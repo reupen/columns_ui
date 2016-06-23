@@ -40,7 +40,7 @@ namespace pvt {
 	const GUID g_guid_grouping = 
 	{ 0xa28cc736, 0x2b8b, 0x484c, { 0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57 } };
 
-	std::set<ng_playlist_view_t *> ng_playlist_view_t::g_windows;
+	std::vector<ng_playlist_view_t *> ng_playlist_view_t::g_windows;
 	ng_playlist_view_t::ng_global_mesage_window ng_playlist_view_t::g_global_mesage_window;
 
 	cfg_groups_t g_groups(g_groups_guid);
@@ -596,7 +596,7 @@ namespace pvt {
 
 		if (g_windows.size() == 0)
 			g_global_mesage_window.create(nullptr);
-		g_windows.insert(this);
+		g_windows.push_back(this);
 
 		if (cfg_playlist_date)
 			set_day_timer();
@@ -605,7 +605,7 @@ namespace pvt {
 
 	void ng_playlist_view_t::notify_on_destroy()
 	{
-		g_windows.erase(this);
+		g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
 		if (g_windows.size() == 0)
 			g_global_mesage_window.destroy();
 

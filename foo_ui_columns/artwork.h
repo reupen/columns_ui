@@ -184,7 +184,7 @@ namespace artwork_panel
 		bool m_preserve_aspect_ratio, m_lock_type;
 		metadb_handle_list m_selection_handles;
 
-		static std::set<artwork_panel_t *> g_windows;
+		static std::vector<artwork_panel_t *> g_windows;
 	};
 
 

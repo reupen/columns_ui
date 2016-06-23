@@ -194,11 +194,11 @@ namespace artwork_panel
 			static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
 			g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
 			force_reload_artwork();
-			g_windows.insert(this);
+			g_windows.push_back(this);
 		}
 		break;
 		case WM_DESTROY:
-			g_windows.erase(this);
+			g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
 			static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
 			static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
 			static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
@@ -608,7 +608,7 @@ namespace artwork_panel
 		}
 	}
 
-	std::set<artwork_panel_t *> artwork_panel_t::g_windows;
+	std::vector<artwork_panel_t *> artwork_panel_t::g_windows;
 
 	uie::window_factory<artwork_panel_t> g_artwork_panel;
 
