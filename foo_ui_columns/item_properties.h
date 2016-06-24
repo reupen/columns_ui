@@ -231,7 +231,7 @@ private:
 	void on_tracking_mode_change();
 	bool check_process_on_selection_changed();
 
-	static pfc::ptr_list_t<selection_properties_t> g_windows;
+	static std::vector<selection_properties_t*> g_windows;
 
 	ui_selection_holder::ptr m_selection_holder;
 	metadb_handle_list m_handles, m_selection_handles;

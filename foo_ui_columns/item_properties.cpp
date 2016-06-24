@@ -94,7 +94,7 @@ public:
 
 selection_properties_t::message_window_t selection_properties_t::g_message_window;
 
-pfc::ptr_list_t<selection_properties_t> selection_properties_t::g_windows;
+std::vector<selection_properties_t*> selection_properties_t::g_windows;
 
 // {862F8A37-16E0-4a74-B27E-2B73DB567D0F}
 const GUID appearance_client_selection_properties_impl::g_guid = 
@@ -106,9 +106,8 @@ namespace {
 
 void selection_properties_t::g_redraw_all()
 {
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
-		g_windows[i]->invalidate_all();
+	for (auto & window : g_windows)
+		window->invalidate_all();
 }
 
 selection_properties_t::message_window_t::class_data & selection_properties_t::message_window_t::get_class_data() const 
@@ -134,9 +133,8 @@ LRESULT selection_properties_t::message_window_t::on_message(HWND wnd,UINT msg,W
 
 void selection_properties_t::g_on_app_activate(bool b_activated)
 {
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
-		g_windows[i]->on_app_activate(b_activated);
+	for (auto & window : g_windows)
+		window->on_app_activate(b_activated);
 }
 void selection_properties_t::on_app_activate(bool b_activated)
 {
@@ -241,13 +239,14 @@ void selection_properties_t::notify_on_create()
 	static_api_ptr_t<metadb_io_v3>()->register_callback(this);
 	refresh_contents();
 
-	if (0 == g_windows.add_item(this))
+	if (0 == g_windows.size())
 		g_message_window.create(nullptr);
+	g_windows.push_back(this);
 }
 void selection_properties_t::notify_on_destroy()
 {
-	g_windows.remove_item(this);
-	if (g_windows.get_count() == 0)
+	g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+	if (g_windows.size() == 0)
 		g_message_window.destroy();
 
 	static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
@@ -682,10 +681,9 @@ void selection_properties_t::g_on_font_items_change()
 {
 	LOGFONT lf;
 	static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
+	for (auto & window : g_windows)
 	{
-		g_windows[i]->set_font(&lf);
+		window->set_font(&lf);
 	}
 }
 
@@ -693,10 +691,9 @@ void selection_properties_t::g_on_font_groups_change()
 {
 	LOGFONT lf;
 	static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
+	for (auto & window : g_windows)
 	{
-		g_windows[i]->set_group_font(&lf);
+		window->set_group_font(&lf);
 	}
 }
 
@@ -704,10 +701,9 @@ void selection_properties_t::g_on_font_header_change()
 {
 	LOGFONT lf;
 	static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
+	for (auto & window : g_windows)
 	{
-		g_windows[i]->set_header_font(&lf);
+		window->set_header_font(&lf);
 	}
 }
 
