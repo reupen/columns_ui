@@ -373,7 +373,7 @@ private:
 	void on_font_change();
 	void on_colours_change();
 
-	static pfc::ptr_list_t<item_details_t> g_windows;
+	static std::vector<item_details_t*> g_windows;
 
 	ui_selection_holder::ptr m_selection_holder;
 	metadb_handle_list m_handles, m_selection_handles;

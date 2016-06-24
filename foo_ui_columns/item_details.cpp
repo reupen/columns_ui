@@ -166,7 +166,7 @@ void item_details_t::get_menu_items (ui_extension::menu_hook_t & p_hook)
 
 item_details_t::message_window_t item_details_t::g_message_window;
 
-pfc::ptr_list_t<item_details_t> item_details_t::g_windows;
+std::vector<item_details_t*> item_details_t::g_windows;
 
 item_details_t::message_window_t::class_data & item_details_t::message_window_t::get_class_data() const 
 {
@@ -191,9 +191,8 @@ LRESULT item_details_t::message_window_t::on_message(HWND wnd,UINT msg,WPARAM wp
 
 void item_details_t::g_on_app_activate(bool b_activated)
 {
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
-		g_windows[i]->on_app_activate(b_activated);
+	for (auto & window : g_windows)
+		window->on_app_activate(b_activated);
 }
 void item_details_t::on_app_activate(bool b_activated)
 {
@@ -723,9 +722,9 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 			m_font_change_info.m_default_font->m_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
 			m_font_change_info.m_default_font->m_height = uGetFontHeight (m_font_change_info.m_default_font->m_font);
 
-
-			if (0 == g_windows.add_item(this))
+			if (0 == g_windows.size())
 				g_message_window.create(nullptr);
+			g_windows.push_back(this);
 
 			LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lp;
 
@@ -742,8 +741,8 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 		break;
 	case WM_DESTROY:
 		{
-			g_windows.remove_item(this);
-			if (g_windows.get_count() == 0)
+			g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+			if (g_windows.size() == 0)
 				g_message_window.destroy();
 
 			m_font_change_info.m_default_font.release();
@@ -952,19 +951,17 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 
 void item_details_t::g_on_font_change()
 {
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
+	for (auto & window : g_windows)
 	{
-		g_windows[i]->on_font_change();
+		window->on_font_change();
 	}
 }
 
 void item_details_t::g_on_colours_change()
 {
-	t_size i, count = g_windows.get_count();
-	for (i=0; i<count; i++)
+	for (auto & window : g_windows)
 	{
-		g_windows[i]->on_colours_change();
+		window->on_colours_change();
 	}
 }
 
