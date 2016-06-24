@@ -143,7 +143,7 @@ public:
 	panel_list m_active_panels;
 	HWND m_wnd_tabs;
 	t_size m_active_tab;
-	static service_list_t <t_self> g_windows;
+	static std::vector<service_ptr_t<t_self>> g_windows;
 	uie::size_limit_t m_size_limits;
 	t_int32 m_mousewheel_delta;
 

@@ -558,7 +558,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
 			update_size_limits();
 			on_size_changed();
 			//ShowWindow(m_wnd_tabs, SW_SHOWNORMAL);
-			g_windows.add_item(this);
+			g_windows.emplace_back(this);
 		}
 		break;
 	case WM_KEYDOWN:
@@ -576,7 +576,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
 		if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp)) return 0;
 		break;
 	case WM_DESTROY:
-		g_windows.remove_item(this);
+		g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
 		destroy_children();
 		destroy_tabs();
 		break;
@@ -918,14 +918,13 @@ void splitter_window_tabs_impl::destroy_tabs()
 	g_font.release();
 }
 uie::window_factory<splitter_window_tabs_impl> g_splitter_window_tabs;
-service_list_t<splitter_window_tabs_impl> splitter_window_tabs_impl::g_windows;
+std::vector<service_ptr_t<splitter_window_tabs_impl::t_self>> splitter_window_tabs_impl::g_windows;
 
 void splitter_window_tabs_impl::g_on_font_change()
 {
-	t_size n, count = g_windows.get_count();
-	for (n=0; n<count; n++)
+	for (auto & window : g_windows)
 	{
-		g_windows[n]->on_font_change();
+		window->on_font_change();
 	}
 }
 
