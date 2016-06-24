@@ -5,7 +5,7 @@
 const GUID playlist_switcher_t::g_guid_font = 
 { 0x70a5c273, 0x67ab, 0x4bb6, { 0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd } };
 
-pfc::ptr_list_t<playlist_switcher_t> playlist_switcher_t::g_windows;
+std::vector<playlist_switcher_t*> playlist_switcher_t::g_windows;
 
 void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & p_out)
 	{
@@ -85,40 +85,35 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 	}
 	void playlist_switcher_t::g_on_edgestyle_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->set_edge_style(cfg_plistframe);
+			window->set_edge_style(cfg_plistframe);
 		}
 	}
 	void playlist_switcher_t::g_on_vertical_item_padding_change()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->set_vertical_item_padding(settings::playlist_switcher_item_padding);
+			window->set_vertical_item_padding(settings::playlist_switcher_item_padding);
 		}
 	}
 	void playlist_switcher_t::g_redraw_all()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			RedrawWindow(g_windows[i]->get_wnd(), nullptr, nullptr, RDW_UPDATENOW|RDW_INVALIDATE);
+		for (auto & window : g_windows)
+			RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_UPDATENOW|RDW_INVALIDATE);
 	}
 	void playlist_switcher_t::g_refresh_all_items()
 	{
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
-			g_windows[i]->refresh_all_items();
+		for (auto & window : g_windows)
+			window->refresh_all_items();
 	}
 	void playlist_switcher_t::g_on_font_items_change()
 	{
 		LOGFONT lf;
 		static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_font, lf);
-		t_size i, count = g_windows.get_count();
-		for (i=0; i<count; i++)
+		for (auto & window : g_windows)
 		{
-			g_windows[i]->set_font(&lf);
+			window->set_font(&lf);
 		}
 	}
 	void playlist_switcher_t::notify_on_initialisation() 
@@ -150,13 +145,13 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 		pfc::com_ptr_t<IDropTarget_t> drop_target = new IDropTarget_t(this);
 		RegisterDragDrop(get_wnd(), drop_target.get_ptr());
 
-		g_windows.add_item(this);
+		g_windows.push_back(this);
 	}
 	void playlist_switcher_t::notify_on_destroy()
 	{
 		m_selection_holder.release();
 
-		g_windows.remove_item(this);
+		g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
 
 		RevokeDragDrop(get_wnd());
 

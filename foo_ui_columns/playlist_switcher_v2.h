@@ -329,5 +329,5 @@ private:
 	service_ptr_t<playback_control> m_playback_api;
 
 	static const GUID g_guid_font;
-	static pfc::ptr_list_t<playlist_switcher_t> g_windows;
+	static std::vector<playlist_switcher_t*> g_windows;
 };
