@@ -93,7 +93,7 @@ private:
 	public:
 		class panel_container :
 			public ui_helpers::container_window,
-			private message_hook_manager::message_hook
+			private uih::LowLevelMouseHookManager::HookCallback
 		{
 		public:
 			enum { MSG_AUTOHIDE_END = WM_USER + 2 };
@@ -105,7 +105,7 @@ private:
 			//private:
 			class_data & get_class_data()const override;
 			LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-			bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
+			void on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs) override;
 			service_ptr_t< splitter_window_impl > m_this;
 
 			HTHEME m_theme;

@@ -9,48 +9,33 @@ bool splitter_window_impl::panel::panel_container::test_autohide_window(HWND wnd
 	return IsChild(get_wnd(), wnd) || wnd == get_wnd() || wnd == m_this->get_wnd();
 }
 
-bool splitter_window_impl::panel::panel_container::on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp)
+void splitter_window_impl::panel::panel_container::on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs)
 {
-	if (p_type == message_hook_manager::type_mouse_low_level)
-	{
-		MSLLHOOKSTRUCT * lpmhs = (LPMSLLHOOKSTRUCT)lp;
-		if (wp == WM_MOUSEMOVE)
-		{
-			if (MonitorFromPoint(lpmhs->pt, MONITOR_DEFAULTTONULL))
-				if (m_this.is_valid())
-				{
-					unsigned index = m_this->m_panels.find_item(m_panel);
-					if (index != pfc_infinite)
-					{
-						HWND wnd_capture = GetCapture(),
-							wnd_pt = WindowFromPoint(lpmhs->pt);
-						POINT pt = lpmhs->pt;
-						ScreenToClient(m_this->get_wnd(), &pt);
-						//if (!hwnd)
-						//hwnd = uRecursiveChildWindowFromPointv2(m_this->get_wnd(), pt);
-						//console::printf("pts: (%u, %u) pt: (%i, %i)  window: %x", lpmhs->pt, pt.x, pt.y, hwnd);
+	if (msg == WM_MOUSEMOVE && m_this.is_valid() && MonitorFromPoint(mllhs.pt, MONITOR_DEFAULTTONULL)) {
+		unsigned index = m_this->m_panels.find_item(m_panel);
+		if (index != pfc_infinite) {
+			HWND wnd_capture = GetCapture(),
+				wnd_pt = WindowFromPoint(mllhs.pt);
+			POINT pt = mllhs.pt;
+			ScreenToClient(m_this->get_wnd(), &pt);
+			//if (!hwnd)
+			//hwnd = uRecursiveChildWindowFromPointv2(m_this->get_wnd(), pt);
+			//console::printf("pts: (%u, %u) pt: (%i, %i)  window: %x", mllhs.pt, pt.x, pt.y, hwnd);
 
-						// We need to test wnd_pt when wnd_capture is non-NULL because during drag-and-drop operations wnd_capture is an OLE window. 
-						// Alternative fixes are checking the window with the keyboard focus (has side-effects) and checking the window class of wnd_capture (a hack).
-						// (For future reference: the class of wnd_capture during drag-and-drop operations is CLIPBRDWNDCLASS.)
-						if (!(wnd_capture && test_autohide_window(wnd_capture)) && !(wnd_pt && test_autohide_window(wnd_pt)) && !m_this->test_divider_pt(pt, index))
-						{
-							if (!m_timer_active)
-								PostMessage(get_wnd(), MSG_AUTOHIDE_END, 0, 0);
-						}
-						else
-						{
-							if (m_timer_active)
-							{
-								KillTimer(get_wnd(), HOST_AUTOHIDE_TIMER_ID);
-								m_timer_active = false;
-							}
-						}
-					}
+			// We need to test wnd_pt when wnd_capture is non-NULL because during drag-and-drop operations wnd_capture is an OLE window. 
+			// Alternative fixes are checking the window with the keyboard focus (has side-effects) and checking the window class of wnd_capture (a hack).
+			// (For future reference: the class of wnd_capture during drag-and-drop operations is CLIPBRDWNDCLASS.)
+			if (!(wnd_capture && test_autohide_window(wnd_capture)) && !(wnd_pt && test_autohide_window(wnd_pt)) && !m_this->test_divider_pt(pt, index)) {
+				if (!m_timer_active)
+					PostMessage(get_wnd(), MSG_AUTOHIDE_END, 0, 0);
+			} else {
+				if (m_timer_active) {
+					KillTimer(get_wnd(), HOST_AUTOHIDE_TIMER_ID);
+					m_timer_active = false;
 				}
+			}
 		}
 	}
-	return false;
 }
 
 LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -79,7 +64,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 	break;
 	case WM_NCDESTROY:
 		if (m_hook_active)
-			message_hook_manager::deregister_hook(message_hook_manager::type_mouse_low_level, this);
+			uih::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
 		break;
 	case MSG_AUTOHIDE_END:
 		if (!cfg_sidebar_hide_delay)
@@ -91,7 +76,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 				m_this->on_size_changed();
 				if (m_hook_active)
 				{
-					message_hook_manager::deregister_hook(message_hook_manager::type_mouse_low_level, this);
+					uih::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
 					m_hook_active = false;
 				}
 			}
@@ -116,7 +101,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 				m_this->on_size_changed();
 				if (m_hook_active)
 				{
-					message_hook_manager::deregister_hook(message_hook_manager::type_mouse_low_level, this);
+					uih::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
 					m_hook_active = false;
 				}
 			}
@@ -406,7 +391,7 @@ void splitter_window_impl::panel::panel_container::enter_autohide_hook()
 {
 	if (!m_hook_active)
 	{
-		message_hook_manager::register_hook(message_hook_manager::type_mouse_low_level, this);
+		uih::LowLevelMouseHookManager::s_get_instance().register_hook(this);
 		m_hook_active = true;
 	}
 }
