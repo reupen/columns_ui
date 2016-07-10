@@ -457,6 +457,9 @@
     <ClCompile Include="config_host.cpp">
       <Filter>Prefs UI</Filter>
     </ClCompile>
+    <ClCompile Include="filter_statistics.cpp">
+      <Filter>Panels\Filter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -627,6 +630,9 @@
     </ClInclude>
     <ClInclude Include="config_columns_v2.h">
       <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include="filter_statistics.h">
+      <Filter>Panels\Filter</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

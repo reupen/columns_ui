@@ -225,7 +225,7 @@ namespace filter_panel {
 		//virtual void on_groups_change();
 		//virtual void on_columns_change();
 
-		bool is_visible() { RECT rc; return get_wnd() && IsWindowVisible(get_wnd()) && GetClientRect(get_wnd(), &rc) && RECT_CY(rc) > 0; }
+		bool is_visible() const { RECT rc; return get_wnd() && IsWindowVisible(get_wnd()) && GetClientRect(get_wnd(), &rc) && RECT_CY(rc) > 0; }
 
 		void notify_on_create() override;
 		void notify_on_initialisation() override;

@@ -436,6 +436,7 @@
     <ClCompile Include=".\status_pane_msgproc.cpp" />
     <ClCompile Include=".\helpers.cpp" />
     <ClCompile Include="config_host.cpp" />
+    <ClCompile Include="filter_statistics.cpp" />
     <ClCompile Include="list_view_panel.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -495,6 +496,7 @@
     <ClInclude Include="config_columns_v2.h" />
     <ClInclude Include="config_host.h" />
     <ClInclude Include="filter_search_bar.h" />
+    <ClInclude Include="filter_statistics.h" />
     <ClInclude Include="list_view_panel.h" />
   </ItemGroup>
   <ItemGroup>
