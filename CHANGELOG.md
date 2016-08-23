@@ -1,5 +1,13 @@
 # Change log
 
+## Next release
+
+### NG playlist
+
+* Fixed a bug which caused some columns to be hidden when fully scrolled right with the artwork column active.
+
+* Fixed a bug which caused group heading lines to not be rendered correctly after scrolling right.
+
 ## 0.5.0
 
 ### Layout and toolbars
