@@ -41,7 +41,7 @@ msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc14\columns_ui
 
 ### Using the Clang compiler (experimental)
 
-If you're feeling adventurous, you can compile Columns UI using a recent Clang 3.9.0 snapshot build and MSBuild. Download and install a snapshot build from the [LLVM website](http://llvm.org/builds/) ([older builds](http://llvm.org/pre-releases/win-snapshots/?C=M;O=A)). In a VS2015 Native Tools x86 command prompt, run:
+If you're feeling adventurous, you can compile Columns UI using Clang 3.9.0 or newer and MSBuild. Download and install a [release build](http://llvm.org/releases/download.html) or a [snapshot build](http://llvm.org/builds/) ([older snapshot builds](http://llvm.org/pre-releases/win-snapshots/?C=M;O=A)) from the LLVM website. In a VS2015 Native Tools x86 command prompt, run:
 
 ```
 msbuild /m /p:PlatformToolset=LLVM-vs2014 /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc14\columns_ui-public.sln
