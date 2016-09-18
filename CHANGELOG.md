@@ -8,7 +8,13 @@
 
 * Fixed a bug which caused group heading lines to not be rendered correctly after scrolling right. [[#38](https://github.com/reupen/columns_ui/issues/38)]
 
-* Changed the colour of the insertion marker for drag-and-drop operations in NG playlist. It now uses the text colour (previously was always black). [[#39](https://github.com/reupen/columns_ui/issues/39)]
+* Changed the colour of the insertion marker for drag-and-drop operations in NG playlist. It now uses the text colour (previously, it was always black). [[#39](https://github.com/reupen/columns_ui/issues/39)]
+
+### Other changes
+
+* Fixed a problem where auto-hide panels would get stuck open following long operations in the UI thread [[#35](https://github.com/reupen/columns_ui/issues/35)]
+
+* Fixed clipped 'Selected item:' text on the Colours tab in the Colours and Fonts preferences page.
 
 * Compiled with Visual Studio 2015 Update 3.
 
