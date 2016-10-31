@@ -16,7 +16,7 @@
 
 * Fixed clipped 'Selected item:' text on the Colours tab in the Colours and Fonts preferences page.
 
-* Fixed a problem in the NG playlist, playlist switcher and filter panels where when a negative vertical item padding was in use, a text cursor would not appear when using inline editing. This was fixed by making the text box at least as tall as the font.
+* Fixed a problem in the NG playlist, playlist switcher and filter panels where when a negative vertical item padding was in use, a text cursor would not appear when using inline editing. This was fixed by making the text box at least as tall as the font. [[#45](https://github.com/reupen/columns_ui/issues/45)]
 
 * Compiled with Visual Studio 2015 Update 3.
 
