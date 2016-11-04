@@ -813,7 +813,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 
 		while (thisFontChangeCount)
 		{
-			unsigned width = NULL;
+			int width = NULL;
 			t_size ptrThisCount = ptrRemaining;
 			if (ptr - rawText < p_font_data.m_font_changes[fontPtr].m_text_index)
 				ptrThisCount = p_font_data.m_font_changes[fontPtr].m_text_index - (ptr - rawText);

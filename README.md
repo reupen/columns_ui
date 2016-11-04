@@ -14,12 +14,12 @@ This repo makes use of Git submodules. If you're not familiar with them, [check 
 
 ## Build instructions
 
-Visual Studio 2015 Update 2 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx). (If you don't want to install the IDE, you can use the [Visual C++ Build Tools](http://go.microsoft.com/fwlink/?LinkId=691126) and skip to the MSBuild section below.)
+Visual Studio 2015 Update 3 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/en-us/downloads/download-visual-studio-vs.aspx). (If you don't want to install the IDE, you can use the [Visual C++ Build Tools](http://go.microsoft.com/fwlink/?LinkId=691126) and skip to the MSBuild section below.)
 
 You'll need the Windows SDK for Windows 8.1 (installed by default with Visual Studio 2015.)
 
 ### Using the Visual Studio IDE
-Open `vc14/columns_ui-public.sln` in Visual Studio 2015 Update 2. 
+Open `vc14/columns_ui-public.sln` in Visual Studio 2015 Update 3. 
 Select the Release configuration and the Win32 platform, and build the solution. 
 If the build is successful, `foo_ui_columns.dll` will be output in `vc14\Release`.
 
@@ -41,7 +41,7 @@ msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc14\columns_ui
 
 ### Using the Clang compiler (experimental)
 
-If you're feeling adventurous, you can compile Columns UI using a recent Clang 3.9.0 snapshot build and MSBuild. Download and install a snapshot build from the [LLVM website](http://llvm.org/builds/) ([older builds](http://llvm.org/pre-releases/win-snapshots/?C=M;O=A)). In a VS2015 Native Tools x86 command prompt, run:
+If you're feeling adventurous, you can compile Columns UI using Clang 3.9.0 or newer and MSBuild. Download and install a [release build](http://llvm.org/releases/download.html) or a [snapshot build](http://llvm.org/builds/) ([older snapshot builds](http://llvm.org/pre-releases/win-snapshots/?C=M;O=A)) from the LLVM website. In a VS2015 Native Tools x86 command prompt, run:
 
 ```
 msbuild /m /p:PlatformToolset=LLVM-vs2014 /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc14\columns_ui-public.sln

@@ -171,7 +171,7 @@ namespace pvt
 			cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
 			bool b_theme_enabled = p_helper.get_themed();
 
-			unsigned text_width = NULL;
+			int text_width = NULL;
 
 			item_group_ng_t * item = get_item(index)->get_group(group);
 			if (!item->m_style_data.is_valid())
@@ -190,7 +190,7 @@ namespace pvt
 
 			LONG cx = (LONG)min(text_width, MAXLONG);
 
-			RECT rc_line = {cx+7, rc.top+RECT_CY(rc)/2, rc.right-4, rc.top+RECT_CY(rc)/2+1};
+			RECT rc_line = { cx + 7, rc.top + RECT_CY(rc) / 2, rc.right - 4, rc.top + RECT_CY(rc) / 2 + 1 };
 
 			if (rc_line.right > rc_line.left)
 			{

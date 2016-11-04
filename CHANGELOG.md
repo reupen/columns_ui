@@ -1,5 +1,25 @@
 # Change log
 
+## 0.5.1
+
+### NG playlist
+
+* Fixed a bug which caused some columns to be hidden when fully scrolled right with the artwork column active. [[#38](https://github.com/reupen/columns_ui/issues/38)]
+
+* Fixed a bug which caused group heading lines to not be rendered correctly after scrolling right. [[#38](https://github.com/reupen/columns_ui/issues/38)]
+
+* Changed the colour of the insertion marker for drag-and-drop operations in NG playlist. It now uses the text colour (previously, it was always black). [[#39](https://github.com/reupen/columns_ui/issues/39)]
+
+### Other changes
+
+* Fixed a problem where auto-hide panels would get stuck open following long operations in the UI thread [[#35](https://github.com/reupen/columns_ui/issues/35)]
+
+* Fixed clipped 'Selected item:' text on the Colours tab in the Colours and Fonts preferences page.
+
+* Fixed a problem in the NG playlist, playlist switcher and filter panels where when a negative vertical item padding was in use, a text cursor would not appear when using inline editing. This was fixed by making the text box at least as tall as the font. [[#45](https://github.com/reupen/columns_ui/issues/45)]
+
+* Compiled with Visual Studio 2015 Update 3.
+
 ## 0.5.0
 
 ### Layout and toolbars
