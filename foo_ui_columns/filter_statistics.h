@@ -5,19 +5,19 @@ namespace filter_panel {
 	public:
 		pfc::string8 name;
 		pfc::string8 script;
+
+		void write(stream_writer * p_stream, abort_callback & p_abort) const;
+		void read(stream_reader * p_stream, abort_callback & p_abort);
 	};
 
-	class CfgSummaryFields : public cfg_var {
+	class CfgSummaryFields : public cfg_var, public std::vector<SummaryField> {
 	public:
 		enum class StreamVersion {
-			Current = 0
+			StreamVersion0 = 0,
+			Current = StreamVersion0
 		};
 
 		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
 		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
-
-	private:
-		pfc::list_t<SummaryField> m_data;
-
 	};
 }
