@@ -14,8 +14,9 @@ namespace filter_panel {
 	}
 	void CfgSummaryFields::set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort)
 	{
-		StreamVersion stream_version;
-		p_stream->read_lendian_t(stream_version, p_abort);
+		uint32_t streamVersion_;
+		p_stream->read_lendian_t(streamVersion_, p_abort);
+		StreamVersion stream_version = static_cast<StreamVersion>(streamVersion_);
 
 		if (stream_version <= StreamVersion::Current) {
 			uint32_t entry_count;
@@ -36,7 +37,7 @@ namespace filter_panel {
 	}
 	void CfgSummaryFields::get_data_raw(stream_writer * p_stream, abort_callback & p_abort)
 	{
-		p_stream->write_lendian_t(StreamVersion::StreamVersion0, p_abort);
+		p_stream->write_lendian_t(static_cast<uint32_t>(StreamVersion::StreamVersion0), p_abort);
 		p_stream->write_lendian_t(pfc::downcast_guarded<uint32_t>(size()), p_abort);
 		for (const auto& entry : *this) {
 			stream_writer_memblock entry_data;
