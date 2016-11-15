@@ -189,20 +189,6 @@ namespace pvt
 					}
 				}
 				break;
-				/*case IDC_GROUP_RESET:
-				{
-				cfg_view_list.reset();
-				HWND list = uGetDlgItem(wnd,IDC_GROUPS);
-				SendMessage(list,LB_RESETCONTENT,0,0);
-				unsigned n,m = cfg_view_list.get_count();
-				string8_fastalloc temp;
-				for(n=0;n<m;n++)
-				{
-				cfg_view_list.format_display(n,temp);
-				uSendMessageText(list,LB_ADDSTRING,0,temp);
-				}
-				}
-				break;*/
 			}
 			break;
 		case WM_DESTROY:
