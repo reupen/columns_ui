@@ -93,29 +93,30 @@ namespace filter_panel {
 	extern uih::ConfigInt32DpiAware cfg_vertical_item_padding;
 	extern uih::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators;
 
+	class filter_stream_t : public pfc::refcounted_object_root
+	{
+	public:
+		typedef filter_stream_t self_t;
+		typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+		/** Unordered */
+		pfc::ptr_list_t<filter_panel_t> m_windows;
+		//bool m_ordered_by_splitter;
+
+		bool m_source_overriden;
+		metadb_handle_list m_source_handles;
+
+		bool is_visible();
+
+		filter_stream_t();
+	};
+
 	class filter_panel_t :
 		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_filter_impl>, uie::window>,
 		private mmh::fb2k::library_callback_t
 	{
 	public:
-		class filter_stream_t : public pfc::refcounted_object_root
-		{
-		public:
-			typedef filter_stream_t self_t;
-			typedef pfc::refcounted_object_ptr_t<self_t> ptr;
-			/** Unordered */
-			pfc::ptr_list_t<filter_panel_t> m_windows;
-			//bool m_ordered_by_splitter;
-
-			bool m_source_overriden;
-			metadb_handle_list m_source_handles;
-
-			bool is_visible();
-
-			filter_stream_t();
-		};
-
 		friend class filter_search_bar;
+		friend class filter_stream_t;
 
 		enum { TIMER_QUERY = TIMER_BASE };
 

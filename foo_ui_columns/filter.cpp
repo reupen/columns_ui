@@ -31,14 +31,14 @@ namespace filter_panel {
 
 
 
-	bool filter_panel_t::filter_stream_t::is_visible()
+	bool filter_stream_t::is_visible()
 	{
 		for (t_size i = 0, count = m_windows.get_count(); i<count; i++)
 			if (!m_windows[i]->is_visible()) return false;
 		return true;
 	}
 
-	filter_panel_t::filter_stream_t::filter_stream_t() : m_source_overriden(false)
+	filter_stream_t::filter_stream_t() : m_source_overriden(false)
 	{
 		/*filter_search_bar::g_initialise_filter_stream(this);*/
 	}
@@ -1138,7 +1138,7 @@ namespace filter_panel {
 
 	pfc::list_t<filter_panel_t::field_data_t> filter_panel_t::g_field_data;
 
-	pfc::list_t<filter_panel_t::filter_stream_t::ptr> filter_panel_t::g_streams;
+	pfc::list_t<filter_stream_t::ptr> filter_panel_t::g_streams;
 
 	// {4D6774AF-C292-44ac-8A8F-3B0855DCBDF4}
 	const GUID appearance_client_filter_impl::g_guid =

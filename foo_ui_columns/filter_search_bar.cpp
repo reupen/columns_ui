@@ -74,7 +74,7 @@ namespace filter_panel {
 		m_show_clear_button(cfg_showsearchclearbutton), m_wnd_last_focused(nullptr), m_imagelist(nullptr), m_combo_cx(0), m_combo_cy(0),
 		m_toolbar_cx(0), m_toolbar_cy(0) {};
 
-	void g_get_search_bar_sibling_streams(filter_search_bar const * p_serach_bar, pfc::list_t<filter_panel_t::filter_stream_t::ptr> & p_out)
+	void g_get_search_bar_sibling_streams(filter_search_bar const * p_serach_bar, pfc::list_t<filter_stream_t::ptr> & p_out)
 	{
 		if (cfg_orderedbysplitters && p_serach_bar->get_wnd() && p_serach_bar->get_host().is_valid())
 		{
@@ -180,11 +180,11 @@ namespace filter_panel {
 		return false;
 	}
 
-	bool filter_search_bar::g_filter_search_bar_has_stream(filter_search_bar const* p_seach_bar, const filter_panel_t::filter_stream_t * p_stream)
+	bool filter_search_bar::g_filter_search_bar_has_stream(filter_search_bar const* p_seach_bar, const filter_stream_t * p_stream)
 	{
-		pfc::list_t<filter_panel_t::filter_stream_t::ptr> p_streams;
+		pfc::list_t<filter_stream_t::ptr> p_streams;
 		g_get_search_bar_sibling_streams(p_seach_bar, p_streams);
-		return p_streams.have_item(const_cast<filter_panel_t::filter_stream_t *>(p_stream)); //meh
+		return p_streams.have_item(const_cast<filter_stream_t *>(p_stream)); //meh
 	}
 
 	void filter_search_bar::activate()
@@ -210,7 +210,7 @@ namespace filter_panel {
 	}
 	void filter_search_bar::commit_search_results(const char * str, bool b_force_autosend, bool b_stream_update)
 	{
-		pfc::list_t<filter_panel_t::filter_stream_t::ptr> p_streams;
+		pfc::list_t<filter_stream_t::ptr> p_streams;
 		g_get_search_bar_sibling_streams(this, p_streams);
 		if (p_streams.get_count() == 0)
 			p_streams = filter_panel_t::g_streams;
@@ -248,7 +248,7 @@ namespace filter_panel {
 			bool b_autosent = false;
 			for (t_size i = 0; i< stream_count; i++)
 			{
-				filter_panel_t::filter_stream_t::ptr p_stream = p_streams[i];
+				filter_stream_t::ptr p_stream = p_streams[i];
 
 				p_stream->m_source_overriden = !b_reset;
 				p_stream->m_source_handles = m_active_handles;
