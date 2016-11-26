@@ -19,5 +19,7 @@ namespace filter_panel {
 
 		void set_data_raw(stream_reader * p_stream, t_size p_sizehint, abort_callback & p_abort) override;
 		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
+
+		CfgSummaryFields(const GUID & guid): cfg_var(guid) {}
 	};
 }

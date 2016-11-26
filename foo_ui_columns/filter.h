@@ -21,6 +21,7 @@ namespace filter_panel {
 	extern const GUID g_guid_show_column_titles;
 	extern const GUID g_guid_allow_sorting;
 	extern const GUID g_guid_show_sort_indicators;
+	extern const GUID g_guid_cfg_summary_fields;
 
 	class appearance_client_filter_impl : public cui::colours::client {
 	public:

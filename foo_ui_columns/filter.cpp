@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "filter.h"
 #include "filter_search_bar.h"
+#include "filter_statistics.h"
 
 HRESULT g_get_comctl32_vresion(DLLVERSIONINFO2 & p_dvi);
 
@@ -25,6 +26,8 @@ namespace filter_panel {
 	cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 
 	cfg_favouriteslist cfg_favourites(g_guid_favouritequeries);
+
+	CfgSummaryFields cfg_summary_fields(g_guid_cfg_summary_fields);
 
 
 
