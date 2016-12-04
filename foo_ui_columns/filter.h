@@ -1,6 +1,7 @@
 #pragma once
 
 #include "list_view_panel.h"
+#include "filter_statistics.h"
 
 namespace filter_panel {
 
@@ -133,7 +134,6 @@ namespace filter_panel {
 		void get_name(pfc::string_base & out)const override;
 		void get_category(pfc::string_base & out)const override;
 		unsigned get_type() const override;
-
 
 		enum { config_version_current = 1 };
 
@@ -304,6 +304,7 @@ namespace filter_panel {
 		contextmenu_manager::ptr m_contextmenu_manager;
 		UINT_PTR m_contextmenu_manager_base;
 		ui_status_text_override::ptr m_status_text_override;
+		std::vector<std::shared_ptr<SummaryField>> m_summary_fields;
 
 		static bool g_showemptyitems;
 		static bool g_showallnode;

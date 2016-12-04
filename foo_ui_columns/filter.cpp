@@ -524,9 +524,25 @@ namespace filter_panel {
 	void filter_panel_t::notify_update_item_data(t_size index)
 	{
 		auto & subitems = get_item_subitems(index);
-		subitems.set_size(1);
+		size_t summary_field_count = m_summary_fields.size();
+		subitems.set_size(1 + summary_field_count);
 
 		subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value);
+
+		if (summary_field_count) {
+			pfc::string8_fast_aggressive buffer;
+			TitleformatHookSummaryFields tf_hook(m_nodes[index].m_handles.get_count());
+			service_ptr_t<titleformat_object> to_temp;
+
+			size_t subindex = 0;
+			for (auto& summary_field : m_summary_fields) {
+				// FIXME: Cache compiled scripts
+				static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, summary_field->script);
+				to_temp->run(&tf_hook, buffer, nullptr);
+
+				subitems[++subindex] = buffer;
+			}
+		}
 	}
 
 
@@ -970,6 +986,12 @@ namespace filter_panel {
 
 	void filter_panel_t::refresh_columns()
 	{
+		pfc::list_t<t_column> columns;
+		// FIXME: Column widths should be saved
+		columns.add_item(t_column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name, 200));
+		for (auto & summary_column : m_summary_fields) {
+			columns.add_item(t_column(summary_column->name, 100));
+		}
 		set_columns(pfc::list_single_ref_t<t_column>(t_column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name, 200)));
 		set_sort_column(0, m_pending_sort_direction);
 	}
