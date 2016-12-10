@@ -15,7 +15,7 @@ namespace filter_panel {
 			: guid(guid_), name(name_), script(script_) {}
 	};
 
-	class CfgSummaryFields : public cfg_var, public std::vector<std::shared_ptr<SummaryField>> {
+	class CfgSummaryFields : public cfg_var {
 	public:
 		enum class StreamVersion {
 			StreamVersion0 = 0,
@@ -28,6 +28,14 @@ namespace filter_panel {
 		void get_data_raw(stream_writer * p_stream, abort_callback & p_abort) override;
 
 		void reset();
+
+		auto begin() { return m_data.begin(); }
+		auto begin() const { return m_data.begin(); }
+		auto end() { return m_data.end(); }
+		auto end() const { return m_data.end(); }
+
+	private:
+		std::vector<std::shared_ptr<SummaryField>> m_data;
 	};
 
 	class TitleformatHookSummaryFields : public titleformat_hook {

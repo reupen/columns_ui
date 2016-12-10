@@ -121,7 +121,7 @@ namespace filter_panel {
 
 		enum { TIMER_QUERY = TIMER_BASE };
 
-		filter_panel_t();;
+		filter_panel_t();
 
 		~filter_panel_t() = default;;
 

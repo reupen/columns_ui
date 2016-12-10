@@ -60,6 +60,9 @@ namespace filter_panel {
 					} catch (const exception_io_data_truncation &) {
 						
 					}
+
+					// FIXME: Save and load summary fields
+					m_summary_fields.insert(m_summary_fields.end(), cfg_summary_fields.begin(), cfg_summary_fields.end());
 				}
 			}
 		}
@@ -992,7 +995,7 @@ namespace filter_panel {
 		for (auto & summary_column : m_summary_fields) {
 			columns.add_item(t_column(summary_column->name, 100));
 		}
-		set_columns(pfc::list_single_ref_t<t_column>(t_column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name, 200)));
+		set_columns(columns);
 		set_sort_column(0, m_pending_sort_direction);
 	}
 	/*void filter_panel_t::on_groups_change()

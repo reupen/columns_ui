@@ -16,35 +16,46 @@ namespace filter_panel {
 		p_stream->read_string(script, p_abort);
 	}
 
+	namespace default_guids {
+		// {B39BB41D-CD8D-4EE6-8E48-FCE072EEA26C}
+		static const GUID items =
+		{ 0xb39bb41d, 0xcd8d, 0x4ee6,{ 0x8e, 0x48, 0xfc, 0xe0, 0x72, 0xee, 0xa2, 0x6c } };
+	}
+
+
 	void CfgSummaryFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 	{
-		clear();
-		uint32_t streamVersion_;
-		p_stream->read_lendian_t(streamVersion_, p_abort);
-		StreamVersion stream_version = static_cast<StreamVersion>(streamVersion_);
+		if (p_sizehint == 0) {
+			reset();
+		} else {
+			m_data.clear();
+			uint32_t streamVersion_;
+			p_stream->read_lendian_t(streamVersion_, p_abort);
+			StreamVersion stream_version = static_cast<StreamVersion>(streamVersion_);
 
-		if (stream_version <= StreamVersion::Current) {
-			uint32_t entry_count;
-			p_stream->read_lendian_t(entry_count, p_abort);
+			if (stream_version <= StreamVersion::Current) {
+				uint32_t entry_count;
+				p_stream->read_lendian_t(entry_count, p_abort);
 
-			for (uint32_t entry_index = 0; entry_index < entry_count; entry_index++) {
-				std::shared_ptr<SummaryField> entry = std::make_shared<SummaryField>();
-				uint32_t entry_data_size;
-				p_stream->read_lendian_t(entry_data_size, p_abort);
-				pfc::array_staticsize_t<t_uint8> entry_data(entry_data_size);
-				p_stream->read(entry_data.get_ptr(), entry_data_size, p_abort);
-				stream_reader_memblock_ref entry_reader(entry_data);
-				entry->read(&entry_reader, p_abort);
-				emplace_back(entry);
+				for (uint32_t entry_index = 0; entry_index < entry_count; entry_index++) {
+					std::shared_ptr<SummaryField> entry = std::make_shared<SummaryField>();
+					uint32_t entry_data_size;
+					p_stream->read_lendian_t(entry_data_size, p_abort);
+					pfc::array_staticsize_t<t_uint8> entry_data(entry_data_size);
+					p_stream->read(entry_data.get_ptr(), entry_data_size, p_abort);
+					stream_reader_memblock_ref entry_reader(entry_data);
+					entry->read(&entry_reader, p_abort);
+					m_data.emplace_back(entry);
+				}
+
 			}
-
 		}
 	}
 
 	void CfgSummaryFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 	{
 		p_stream->write_lendian_t(static_cast<uint32_t>(StreamVersion::StreamVersion0), p_abort);
-		p_stream->write_lendian_t(pfc::downcast_guarded<uint32_t>(size()), p_abort);
+		p_stream->write_lendian_t(pfc::downcast_guarded<uint32_t>(m_data.size()), p_abort);
 		for (const auto& entry : *this) {
 			stream_writer_memblock entry_data;
 			entry->write(&entry_data, p_abort);
@@ -55,8 +66,8 @@ namespace filter_panel {
 
 	void CfgSummaryFields::reset()
 	{
-		clear();
-		emplace_back(std::make_shared<SummaryField>( pfc::guid_null, "Size", "%size%" ));
+		m_data.clear();
+		m_data.emplace_back(std::make_shared<SummaryField>(default_guids::items, "Items", "%size%" ));
 	}
 
 	TitleformatHookSummaryFields::TitleformatHookSummaryFields(size_t size)
@@ -82,7 +93,7 @@ namespace filter_panel {
 	bool TitleformatHookSummaryFields::process_size(titleformat_text_out * p_out, bool & p_found_flag)
 	{
 		p_found_flag = true;
-		p_out->write_int(titleformat_inputtypes::unknown, 0);
-		return false;
+		p_out->write_int(titleformat_inputtypes::unknown, m_size);
+		return true;
 	}
 }
