@@ -40,14 +40,17 @@ namespace filter_panel {
 
 	class TitleformatHookSummaryFields : public titleformat_hook {
 	public:
-		TitleformatHookSummaryFields(size_t size);
+		TitleformatHookSummaryFields(metadb_handle_list_cref handles);
 
 		bool process_field(titleformat_text_out* p_out, const char* p_name, t_size p_name_length, bool& p_found_flag) override;
 		bool process_function(titleformat_text_out* p_out, const char* p_name, t_size p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 	private:
-		bool process_size(titleformat_text_out* p_out, bool& p_found_flag);
+		bool process_size(titleformat_text_out* p_out, bool& p_found_flag) const;
+		bool process_length(titleformat_text_out* p_out, bool& p_found_flag) const;
+		bool process_file_size(titleformat_text_out* p_out, bool& p_found_flag) const;
+		bool process_bit_rate(titleformat_text_out* p_out, bool& p_found_flag);
 
 		/** Item count */
-		size_t m_size;
+		metadb_handle_list_cref m_handles;
 	};
 }

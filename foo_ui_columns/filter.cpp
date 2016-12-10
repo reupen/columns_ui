@@ -534,7 +534,7 @@ namespace filter_panel {
 
 		if (summary_field_count) {
 			pfc::string8_fast_aggressive buffer;
-			TitleformatHookSummaryFields tf_hook(m_nodes[index].m_handles.get_count());
+			TitleformatHookSummaryFields tf_hook(m_nodes[index].m_handles);
 			service_ptr_t<titleformat_object> to_temp;
 
 			size_t subindex = 0;

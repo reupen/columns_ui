@@ -18,8 +18,16 @@ namespace filter_panel {
 
 	namespace default_guids {
 		// {B39BB41D-CD8D-4EE6-8E48-FCE072EEA26C}
-		static const GUID items =
+		static const GUID size =
 		{ 0xb39bb41d, 0xcd8d, 0x4ee6,{ 0x8e, 0x48, 0xfc, 0xe0, 0x72, 0xee, 0xa2, 0x6c } };
+
+		// {B4E11056-5016-4EC3-8690-3CD878EAB38C}
+		static const GUID file_size =
+		{ 0xb4e11056, 0x5016, 0x4ec3,{ 0x86, 0x90, 0x3c, 0xd8, 0x78, 0xea, 0xb3, 0x8c } };
+
+		// {000A4BDC-FB5E-400A-BA95-4195380B0FB1}
+		static const GUID length =
+		{ 0xa4bdc, 0xfb5e, 0x400a,{ 0xba, 0x95, 0x41, 0x95, 0x38, 0xb, 0xf, 0xb1 } };
 	}
 
 
@@ -67,11 +75,13 @@ namespace filter_panel {
 	void CfgSummaryFields::reset()
 	{
 		m_data.clear();
-		m_data.emplace_back(std::make_shared<SummaryField>(default_guids::items, "Items", "%size%" ));
+		m_data.emplace_back(std::make_shared<SummaryField>(default_guids::size, "Items", "%size%"));
+		m_data.emplace_back(std::make_shared<SummaryField>(default_guids::file_size, "File size", "%filesize%"));
+		m_data.emplace_back(std::make_shared<SummaryField>(default_guids::length, "Duration", "%length%"));
 	}
 
-	TitleformatHookSummaryFields::TitleformatHookSummaryFields(size_t size)
-		: m_size(size)
+	TitleformatHookSummaryFields::TitleformatHookSummaryFields(metadb_handle_list_cref handles)
+		: m_handles(handles)
 	{
 	}
 
@@ -81,6 +91,13 @@ namespace filter_panel {
 		if (!stricmp_utf8_ex(p_name, p_name_length, "size", pfc_infinite)) {
 			return process_size(p_out, p_found_flag);
 		}
+		if (!stricmp_utf8_ex(p_name, p_name_length, "length", pfc_infinite)) {
+			return process_length(p_out, p_found_flag);
+		}
+		if (!stricmp_utf8_ex(p_name, p_name_length, "filesize", pfc_infinite)) {
+			return process_file_size(p_out, p_found_flag);
+		}
+
 		return false;
 	}
 
@@ -90,10 +107,30 @@ namespace filter_panel {
 		return false;
 	}
 
-	bool TitleformatHookSummaryFields::process_size(titleformat_text_out * p_out, bool & p_found_flag)
+	bool TitleformatHookSummaryFields::process_size(titleformat_text_out * p_out, bool & p_found_flag) const
 	{
 		p_found_flag = true;
-		p_out->write_int(titleformat_inputtypes::unknown, m_size);
+		p_out->write_int(titleformat_inputtypes::unknown, m_handles.get_count());
+		return true;
+	}
+
+	bool TitleformatHookSummaryFields::process_length(titleformat_text_out * p_out, bool & p_found_flag) const
+	{
+		p_found_flag = true;
+		// TODO: Cache?
+		double total_duration = metadb_handle_list_helper::calc_total_duration(m_handles);
+		pfc::format_time_ex formatted_time(total_duration, 0);
+		p_out->write(titleformat_inputtypes::unknown, formatted_time);
+		return true;
+	}
+
+	bool TitleformatHookSummaryFields::process_file_size(::titleformat_text_out* p_out, bool& p_found_flag) const
+	{
+		p_found_flag = true;
+		// TODO: Cache?
+		t_filesize total_size = metadb_handle_list_helper::calc_total_size(m_handles);
+		mmh::format_file_size formatted_total_size(total_size);
+		p_out->write(titleformat_inputtypes::unknown, formatted_total_size);
 		return true;
 	}
 }
