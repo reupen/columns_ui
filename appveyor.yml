@@ -2,14 +2,24 @@ version: 1.0.{build}
 environment:
   Platform: Win32
   matrix:
-  - PlatformToolset: Default
+  - PlatformToolset: vc141
     Configuration: Release
-  - PlatformToolset: Default
+	image: Visual Studio 2017
+  - PlatformToolset: vc141
     Configuration: Debug
+	image: Visual Studio 2017
+  - PlatformToolset: vc140
+    Configuration: Release
+	image: Visual Studio 2015
+  - PlatformToolset: vc140
+    Configuration: Debug
+	image: Visual Studio 2015
   - PlatformToolset: LLVM-vs2014
     Configuration: Release
+	image: Visual Studio 2015
   - PlatformToolset: LLVM-vs2014
     Configuration: Debug
+	image: Visual Studio 2015
 matrix:
   allow_failures:
     - PlatformToolset: LLVM-vs2014
@@ -17,9 +27,7 @@ install:
 - cmd: git submodule update --init --recursive
 build_script:
 - ps: >-
-    $toolset = If ($Env:PlatformToolset -ne "Default") {"/p:PlatformToolset=" + $Env:PlatformToolset} Else {""}
-
-    $command = 'msbuild "vc14/columns_ui-public.sln" /m /verbosity:normal ' + $toolset +' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
+    $command = 'msbuild "vc14/columns_ui-public.sln" /m /verbosity:normal /p:PlatformToolset=' + $Env:PlatformToolset + ' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
 
     iex $command
 
