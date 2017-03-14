@@ -5,13 +5,13 @@ image:
 environment:
   Platform: Win32
   matrix:
-  - PlatformToolset: vc141
+  - PlatformToolset: v141
     Configuration: Release
-  - PlatformToolset: vc141
+  - PlatformToolset: v141
     Configuration: Debug
-  - PlatformToolset: vc140
+  - PlatformToolset: v140
     Configuration: Release
-  - PlatformToolset: vc140
+  - PlatformToolset: v140
     Configuration: Debug
   - PlatformToolset: LLVM-vs2014
     Configuration: Release
