@@ -16,13 +16,9 @@ namespace settings
 		// {92416F05-BD93-4F50-93BD-5577C37CF14D}
 		static const GUID custom_splitter_divider_width =
 		{ 0x92416f05, 0xbd93, 0x4f50,{ 0x93, 0xbd, 0x55, 0x77, 0xc3, 0x7c, 0xf1, 0x4d } };
-
-		// {3A0EF00A-D538-4470-9A18-DCF822CC9673}
-		static const GUID allow_locked_panel_reszing =
-		{ 0x3a0ef00a, 0xd538, 0x4470,{ 0x9a, 0x18, 0xdc, 0xf8, 0x22, 0xcc, 0x96, 0x73 } };
 	}
 
-	uih::ConfigBool allow_locked_panel_resizing(guids::allow_locked_panel_reszing, true);
+	ConfigObjectBoolFactory<> allow_locked_panel_resizing(cui::config_objects::guid_bool_locked_panel_resizing_allowed, true);
 	uih::ConfigUint32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
 
 	uih::ConfigInt32DpiAware playlist_switcher_item_padding(create_guid(0xc8f7e065, 0xeb66, 0xe282, 0xbd, 0xe3, 0x70, 0xaa, 0xf4, 0x3a, 0x10, 0x97), 2),
