@@ -157,7 +157,7 @@ class export_layout_misc : public cui::fcl::dataset
 				reader.read_item(settings::show_status_pane);
 				break;
 			case identifier_allow_locked_panel_resizing:
-				reader.read_item_indirect<bool>(settings::allow_locked_panel_resizing);
+				settings::allow_locked_panel_resizing = reader.read_raw_item<bool>();
 				break;
 			default:
 				reader.skip(element_size);
