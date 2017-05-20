@@ -490,6 +490,7 @@
     <ClInclude Include=".\helpers.h" />
     <ClInclude Include="config_columns_v2.h" />
     <ClInclude Include="config_host.h" />
+    <ClInclude Include="config_object.h" />
     <ClInclude Include="filter_search_bar.h" />
     <ClInclude Include="list_view_panel.h" />
   </ItemGroup>

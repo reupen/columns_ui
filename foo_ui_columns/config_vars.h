@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config_object.h"
 #include "menu_helpers.h"
 
 class cfg_window_placement_t : public cfg_struct_t < WINDOWPLACEMENT >
@@ -30,7 +31,7 @@ namespace settings
 {
 	extern cfg_bool show_status_pane;
 
-	extern uih::ConfigBool allow_locked_panel_resizing;
+	extern ConfigObjectBoolFactory<> allow_locked_panel_resizing;
 	extern uih::ConfigUint32DpiAware custom_splitter_divider_width;
 
 	extern uih::ConfigInt32DpiAware playlist_switcher_item_padding,
