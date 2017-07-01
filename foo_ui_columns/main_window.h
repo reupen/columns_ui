@@ -15,16 +15,16 @@
 
 namespace colours
 {
-	enum t_colours
-	{
-		COLOUR_TEXT,
-		COLOUR_SELECTED_TEXT,
-		COLOUR_BACK,
-		COLOUR_SELECTED_BACK,
-		COLOUR_SELECTED_BACK_NO_FOCUS,
-		COLOUR_SELECTED_TEXT_NO_FOCUS,
-		COLOUR_FRAME,
-	};
+    enum t_colours
+    {
+        COLOUR_TEXT,
+        COLOUR_SELECTED_TEXT,
+        COLOUR_BACK,
+        COLOUR_SELECTED_BACK,
+        COLOUR_SELECTED_BACK_NO_FOCUS,
+        COLOUR_SELECTED_TEXT_NO_FOCUS,
+        COLOUR_FRAME,
+    };
 };
 
 COLORREF get_default_colour(colours::t_colours index, bool themed = false);
@@ -34,39 +34,39 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 
 /** Main window UI control IDs */
-#define ID_REBAR	2100
-#define ID_STATUS	2002
+#define ID_REBAR    2100
+#define ID_STATUS    2002
 
-#define ID_PLAYLIST_TOOLTIP	50
+#define ID_PLAYLIST_TOOLTIP    50
 
 /** Main window custom message numbers */
 enum {
-	MSG_SET_AOT = WM_USER + 3,
-	MSG_UPDATE_STATUS,
-	MSG_UPDATE_TITLE,
-	MSG_KILL_TIMER,
-	MSG_SWITCH_PLAYLIST,
-	MSG_SIZE,
-	MSG_HIDE_SIDEBAR,
-	MSG_SET_FOCUS,
-	MSG_RUN_INITIAL_SETUP,
-	MSG_UPDATE_THUMBBAR,
-	MSG_NOTICATION_ICON
+    MSG_SET_AOT = WM_USER + 3,
+    MSG_UPDATE_STATUS,
+    MSG_UPDATE_TITLE,
+    MSG_KILL_TIMER,
+    MSG_SWITCH_PLAYLIST,
+    MSG_SIZE,
+    MSG_HIDE_SIDEBAR,
+    MSG_SET_FOCUS,
+    MSG_RUN_INITIAL_SETUP,
+    MSG_UPDATE_THUMBBAR,
+    MSG_NOTICATION_ICON
 };
 
 namespace status_bar
 {
-	enum t_parts : uint32_t
-	{
-		t_parts_none = 0,
-		t_parts_all = 0xffffffff,
-		t_part_main = 1 << 0,
-		t_part_lock = 1 << 1,
-		t_part_length = 1 << 2,
-		t_part_volume = 1 << 3
-	};
+    enum t_parts : uint32_t
+    {
+        t_parts_none = 0,
+        t_parts_all = 0xffffffff,
+        t_part_main = 1 << 0,
+        t_part_lock = 1 << 1,
+        t_part_length = 1 << 2,
+        t_part_volume = 1 << 3
+    };
 
-	void set_part_sizes(unsigned p_parts = t_parts_none);
+    void set_part_sizes(unsigned p_parts = t_parts_none);
 };
 
 bool remember_window_pos();
@@ -111,60 +111,60 @@ typedef void(*pma_action)(bool on_on_item, unsigned idx);
 
 struct pma
 {
-	const char * name;
-	unsigned id;
-	pma_action p_run;
+    const char * name;
+    unsigned id;
+    pma_action p_run;
 };
 
 
 class playlist_mclick_actions
 {
 public:
-	static pma g_pma_actions[];
-	static unsigned id_to_idx(unsigned id);
-	inline static bool run(unsigned id, bool on_item, unsigned idx)
-	{
-		g_pma_actions[id_to_idx(id)].p_run(on_item, idx);
-		return true;
-	}
-	static unsigned get_count();
+    static pma g_pma_actions[];
+    static unsigned id_to_idx(unsigned id);
+    inline static bool run(unsigned id, bool on_item, unsigned idx)
+    {
+        g_pma_actions[id_to_idx(id)].p_run(on_item, idx);
+        return true;
+    }
+    static unsigned get_count();
 };
 
 
 namespace main_window
 {
-	extern user_interface::HookProc_t g_hookproc;
-	extern mmh::comptr_t<ITaskbarList3> g_ITaskbarList3;
+    extern user_interface::HookProc_t g_hookproc;
+    extern mmh::comptr_t<ITaskbarList3> g_ITaskbarList3;
 };
 
 namespace taskbar_buttons {
-	enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };
+    enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };
 }
 
 namespace cui
 {
-	class main_window_t
-	{
-	public:
-		void initialise()
-		{
-			Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-			m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
-		}
-		void deinitialise()
-		{
-			if (m_gdiplus_initialised)
-				Gdiplus::GdiplusShutdown(m_gdiplus_instance);
-			m_gdiplus_initialised = false;
-		}
+    class main_window_t
+    {
+    public:
+        void initialise()
+        {
+            Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+            m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
+        }
+        void deinitialise()
+        {
+            if (m_gdiplus_initialised)
+                Gdiplus::GdiplusShutdown(m_gdiplus_instance);
+            m_gdiplus_initialised = false;
+        }
 
-		main_window_t() : m_gdiplus_instance(NULL), m_gdiplus_initialised(false) {};
-	private:
-		ULONG_PTR m_gdiplus_instance;
-		bool m_gdiplus_initialised;
-	};
+        main_window_t() : m_gdiplus_instance(NULL), m_gdiplus_initialised(false) {};
+    private:
+        ULONG_PTR m_gdiplus_instance;
+        bool m_gdiplus_initialised;
+    };
 
-	extern main_window_t g_main_window;
+    extern main_window_t g_main_window;
 }
 
 

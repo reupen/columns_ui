@@ -23,34 +23,34 @@ pvt::preferences_tab_impl g_tab_grouping;
 
 static preferences_tab* g_tabs[] =
 {
-	g_get_tab_main(),
-	//&g_tab_layout,
-	g_get_tab_layout(),
-	//&g_tab_display,
-	g_get_tab_status(),
-	g_get_tab_sys(),
-	g_get_tab_artwork(),
+    g_get_tab_main(),
+    //&g_tab_layout,
+    g_get_tab_layout(),
+    //&g_tab_display,
+    g_get_tab_status(),
+    g_get_tab_sys(),
+    g_get_tab_artwork(),
 };
 
 static preferences_tab* g_tabs_filters[] =
 {
-	g_tab_filter_misc,
-	g_tab_filter_fields
+    g_tab_filter_misc,
+    g_tab_filter_fields
 };
 
 static preferences_tab* g_tabs_panels[] =
 {
-	g_get_tab_playlist(),
-	//&g_tab_playlist_colours,
-	g_get_tab_playlist_dd(),
+    g_get_tab_playlist(),
+    //&g_tab_playlist_colours,
+    g_get_tab_playlist_dd(),
 };
 
 static preferences_tab* g_tabs_playlist_view[] =
 {
-	g_get_tab_display2(),
-	&g_tab_grouping,
-	&tab_columns_v3::get_instance(),
-	g_get_tab_global(),
+    g_get_tab_display2(),
+    &g_tab_grouping,
+    &tab_columns_v3::get_instance(),
+    g_get_tab_global(),
 };
 
 // {DF6B9443-DCC5-4647-8F8C-D685BF25BD09}
@@ -59,8 +59,8 @@ const GUID g_guid_columns_ui_preferences_page =
 
 void g_show_artwork_settings()
 {
-	cfg_child = 5;
-	static_api_ptr_t<ui_control>()->show_preferences(g_guid_columns_ui_preferences_page);
+    cfg_child = 5;
+    static_api_ptr_t<ui_control>()->show_preferences(g_guid_columns_ui_preferences_page);
 }
 
 // {779F2FA6-3B76-4829-9E02-2E579CA510BF}
@@ -76,22 +76,22 @@ static const GUID guid_filters_page =
 {0x71a480e2, 0x9007, 0x4315,{0x8d, 0xf3, 0x81, 0x63, 0x6c, 0x74, 0xa, 0xad}};
 
 namespace columns {
-	const GUID& config_get_playlist_view_guid()
-	{
-		return guid_playlist_view_page;
-	}
+    const GUID& config_get_playlist_view_guid()
+    {
+        return guid_playlist_view_page;
+    }
 
-	const GUID& config_get_main_guid()
-	{
-		return g_guid_columns_ui_preferences_page;
-	}
+    const GUID& config_get_main_guid()
+    {
+        return g_guid_columns_ui_preferences_page;
+    }
 };
 
 namespace cui {
-	namespace preferences {
-		service_factory_single_t<config_host_generic> page_main("Columns UI", g_tabs, tabsize(g_tabs), g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
-		service_factory_single_t<config_host_generic> page_playlist_view("Playlist view", g_tabs_playlist_view, tabsize(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
-		service_factory_single_t<config_host_generic> page_playlist_switcher("Playlist switcher", g_tabs_panels, tabsize(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
-		service_factory_single_t<config_host_generic> page_filters("Filters", g_tabs_filters, tabsize(g_tabs_filters), guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);
-	}
+    namespace preferences {
+        service_factory_single_t<config_host_generic> page_main("Columns UI", g_tabs, tabsize(g_tabs), g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
+        service_factory_single_t<config_host_generic> page_playlist_view("Playlist view", g_tabs_playlist_view, tabsize(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
+        service_factory_single_t<config_host_generic> page_playlist_switcher("Playlist switcher", g_tabs_panels, tabsize(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
+        service_factory_single_t<config_host_generic> page_filters("Filters", g_tabs_filters, tabsize(g_tabs_filters), guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);
+    }
 }

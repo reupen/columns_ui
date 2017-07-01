@@ -14,8 +14,8 @@
 class CheckGdiplusStatus
 {
 public:
-	static void g_CheckGdiplusStatus(Gdiplus::Status pStatus);
-	void operator << (const Gdiplus::Status pStatus) { g_CheckGdiplusStatus(pStatus); }
+    static void g_CheckGdiplusStatus(Gdiplus::Status pStatus);
+    void operator << (const Gdiplus::Status pStatus) { g_CheckGdiplusStatus(pStatus); }
 };
 
 HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData & pBitmapData);

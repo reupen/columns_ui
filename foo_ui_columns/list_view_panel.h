@@ -34,25 +34,25 @@ public:
     const uie::window_host_ptr& get_host() const { return m_window_host; }
 
 protected:
-	const char * get_drag_unit_plural() const override { return "tracks"; }
-	const char * get_drag_unit_singular() const override { return "track"; }
-	bool should_show_drag_text(t_size selection_count) override { return true; }
-	void render_get_colour_data(colour_data_t & p_out) override
-	{
-		cui::colours::helper p_helper(t_appearance_client::g_guid);
-		p_out.m_themed = p_helper.get_themed();
-		p_out.m_use_custom_active_item_frame = p_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
-		p_out.m_text = p_helper.get_colour(cui::colours::colour_text);
-		p_out.m_selection_text = p_helper.get_colour(cui::colours::colour_selection_text);
-		p_out.m_background = p_helper.get_colour(cui::colours::colour_background);
-		p_out.m_selection_background = p_helper.get_colour(cui::colours::colour_selection_background);
-		p_out.m_inactive_selection_text = p_helper.get_colour(cui::colours::colour_inactive_selection_text);
-		p_out.m_inactive_selection_background = p_helper.get_colour(cui::colours::colour_inactive_selection_background);
-		p_out.m_active_item_frame = p_helper.get_colour(cui::colours::colour_active_item_frame);
-		if (!p_out.m_themed || !get_group_text_colour_default(p_out.m_group_text))
-			p_out.m_group_text = p_out.m_text;
-		p_out.m_group_background = p_out.m_background;
-	}
+    const char * get_drag_unit_plural() const override { return "tracks"; }
+    const char * get_drag_unit_singular() const override { return "track"; }
+    bool should_show_drag_text(t_size selection_count) override { return true; }
+    void render_get_colour_data(colour_data_t & p_out) override
+    {
+        cui::colours::helper p_helper(t_appearance_client::g_guid);
+        p_out.m_themed = p_helper.get_themed();
+        p_out.m_use_custom_active_item_frame = p_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
+        p_out.m_text = p_helper.get_colour(cui::colours::colour_text);
+        p_out.m_selection_text = p_helper.get_colour(cui::colours::colour_selection_text);
+        p_out.m_background = p_helper.get_colour(cui::colours::colour_background);
+        p_out.m_selection_background = p_helper.get_colour(cui::colours::colour_selection_background);
+        p_out.m_inactive_selection_text = p_helper.get_colour(cui::colours::colour_inactive_selection_text);
+        p_out.m_inactive_selection_background = p_helper.get_colour(cui::colours::colour_inactive_selection_background);
+        p_out.m_active_item_frame = p_helper.get_colour(cui::colours::colour_active_item_frame);
+        if (!p_out.m_themed || !get_group_text_colour_default(p_out.m_group_text))
+            p_out.m_group_text = p_out.m_text;
+        p_out.m_group_background = p_out.m_background;
+    }
 private:
     uie::window_host_ptr m_window_host;
 };
