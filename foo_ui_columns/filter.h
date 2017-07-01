@@ -89,12 +89,12 @@ namespace filter_panel {
 	extern cfg_int cfg_doubleclickaction, cfg_middleclickaction, cfg_edgestyle;
 	extern cfg_fields_t cfg_field_list;
 
-	extern uih::ConfigInt32DpiAware cfg_vertical_item_padding;
-	extern uih::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators;
+	extern fbh::ConfigInt32DpiAware cfg_vertical_item_padding;
+	extern fbh::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators;
 
 	class filter_panel_t :
-		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_filter_impl>, uie::window>,
-		private mmh::fb2k::library_callback_t
+		public t_list_view_panel<appearance_client_filter_impl, uie::window>,
+		fbh::library_callback_t
 	{
 	public:
 		class filter_stream_t : public pfc::refcounted_object_root

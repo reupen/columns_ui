@@ -124,7 +124,7 @@ public:
 		case WM_INITDIALOG:
 			{
 				{
-					HWND wnd_fields = m_field_list.create_in_dialog_units(wnd, ui_helpers::window_position_t(20,17,278,180));
+					HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(20,17,278,180), true);
 					SetWindowPos(wnd_fields, HWND_TOP, 0,0,0,0,SWP_NOSIZE|SWP_NOMOVE);
 					ShowWindow(wnd_fields, SW_SHOWNORMAL);
 

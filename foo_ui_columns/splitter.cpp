@@ -63,7 +63,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, window_transparent_fil
 	//console::print("g_run_live_edit_contextmenu");
 	//if (!m_trans_fill.get_wnd())
 	{
-		HWND wnd_over = p_overlay.create(wnd, nullptr, ui_helpers::window_position_t(rc_overlay));
+		HWND wnd_over = p_overlay.create(wnd, uih::WindowPosition(rc_overlay));
 		HWND wnd_root = (GetAncestor(wnd, GA_ROOT));
 		//HWND wnd_next = GetWindow(wnd_root, GW_HWNDNEXT);
 		WindowEnum_t WindowEnum(wnd_root);

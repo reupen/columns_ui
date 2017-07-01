@@ -1,7 +1,38 @@
 #pragma once
 
-template<typename t_appearance_client>
-class t_list_view_panel : public t_list_view {
+template<typename t_appearance_client, typename t_window = uie::window>
+class t_list_view_panel : public t_list_view, public t_window {
+public:
+    HWND create_or_transfer_window(HWND parent, const uie::window_host_ptr& host, const ui_helpers::window_position_t& p_position) override
+    {
+        if (get_wnd())
+        {
+            ShowWindow(get_wnd(), SW_HIDE);
+            SetParent(get_wnd(), parent);
+            m_window_host->relinquish_ownership(get_wnd());
+            m_window_host = host;
+
+            SetWindowPos(get_wnd(), nullptr, p_position.x, p_position.y, p_position.cx, p_position.cy, SWP_NOZORDER);
+        }
+        else
+        {
+            m_window_host = host;
+            this->create(parent, {p_position.x, p_position.y, static_cast<int>(p_position.cx), static_cast<int>(p_position.cy)});
+        }
+
+        return get_wnd();
+    }
+    void destroy_window() override
+    {
+        destroy();
+        m_window_host.release();
+    }
+
+    bool is_available(const uie::window_host_ptr&) const override { return true; }
+    HWND get_wnd() const override { return t_list_view::get_wnd(); }
+
+    const uie::window_host_ptr& get_host() const { return m_window_host; }
+
 protected:
 	const char * get_drag_unit_plural() const override { return "tracks"; }
 	const char * get_drag_unit_singular() const override { return "track"; }
@@ -23,4 +54,5 @@ protected:
 		p_out.m_group_background = p_out.m_background;
 	}
 private:
+    uie::window_host_ptr m_window_host;
 };

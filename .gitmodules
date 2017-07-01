@@ -13,3 +13,6 @@
 [submodule "columns_ui-sdk"]
 	path = columns_ui-sdk
 	url = https://github.com/reupen/columns_ui-sdk.git
+[submodule "fbh"]
+	path = fbh
+	url = http://github.com/reupen/fbh.git

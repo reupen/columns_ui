@@ -36,6 +36,7 @@
 #include "../columns_ui-sdk/ui_extension.h"
 #include "../ui_helpers/stdafx.h"
 #include "../mmh/stdafx.h"
+#include "../fbh/stdafx.h"
 
 #include "resource.h"
 #include "utf8api.h"

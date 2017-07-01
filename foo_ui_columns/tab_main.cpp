@@ -34,14 +34,6 @@ public:
 		{
 		case WM_INITDIALOG:
 		{
-			HWND wnd_lv = GetDlgItem(wnd, IDC_LIBRARIES);
-			uih::SetListViewWindowExplorerTheme(wnd_lv);
-			//SetWindowLongPtr(wnd_lv, GWL_EXSTYLE, GetWindowLongPtr(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
-
-			listview_helper::insert_column(wnd_lv, 0, "Library", 50);
-			listview_helper::insert_column(wnd_lv, 1, "Version", 70);
-			listview_helper::insert_column(wnd_lv, 2, "Extended Info", 150);
-
 			SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
 
 			refresh_me(wnd);
@@ -64,14 +56,6 @@ public:
 			case IDC_QUICKSETUP:
 				SendMessage(g_main_window, MSG_RUN_INITIAL_SETUP, NULL, NULL);
 				break;
-
-
-			case IDC_POPULATE:
-			{
-				HWND wndlib = uCreateDialog(IDD_LIBRARIES, wnd, LibrariesProc);
-				ShowWindow(wndlib, SW_SHOWNORMAL);
-			}
-			break;
 
 			/*case IDC_EXPORT:
 			{
@@ -151,65 +135,6 @@ public:
 				  }
 				  break;*/
 			}
-		}
-		return 0;
-	}
-	static BOOL CALLBACK LibrariesProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-	{
-
-		switch (msg)
-		{
-		case WM_DESTROY:
-			modeless_dialog_manager::g_remove(wnd);
-			break;
-		case WM_COMMAND:
-			switch (wp)
-			{
-			case IDOK:
-			case IDCANCEL:
-			{
-				DestroyWindow(wnd);
-			}
-			break;
-			}
-		case WM_INITDIALOG:
-		{
-			modeless_dialog_manager::g_add(wnd);
-			HWND wnd_lv = GetDlgItem(wnd, IDC_LIBRARIES);
-			uih::SetListViewWindowExplorerTheme(wnd_lv);
-			//SetWindowLongPtr(wnd_lv, GWL_EXSTYLE, GetWindowLongPtr(wnd_lv, GWL_EXSTYLE)|LVS_EX_INFOTIP );
-
-			listview_helper::insert_column(wnd_lv, 0, "Library", 50);
-			listview_helper::insert_column(wnd_lv, 1, "Version", 70);
-			listview_helper::insert_column(wnd_lv, 2, "Extended Info", 150);
-
-
-			{
-				DLLVERSIONINFO2 dvi;
-				pfc::string8 path;
-				HRESULT hr = uih::GetComCtl32Version(dvi, &path);
-
-				pfc::string_formatter temp;
-
-				if (FAILED(hr))
-					temp = "4.70";
-				else if (dvi.info1.cbSize == sizeof(DLLVERSIONINFO2))
-				{
-					unsigned short * p_ver = (unsigned short *)&dvi.ullVersion;
-					temp << p_ver[3] << "." << p_ver[2] << "." << p_ver[1] << "." << p_ver[0];
-				}
-				else
-					temp << dvi.info1.dwMajorVersion << "." << dvi.info1.dwMinorVersion << "." << dvi.info1.dwBuildNumber;
-
-				listview_helper::insert_item(wnd_lv, 0, "comctl32", 0);
-				listview_helper::set_item_text(wnd_lv, 0, 1, temp);
-				pfc::string_formatter formatter;
-				listview_helper::set_item_text(wnd_lv, 0, 2, formatter << "Path: " << path);
-			}
-
-
-		}
-		break;
 		}
 		return 0;
 	}

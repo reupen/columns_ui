@@ -83,7 +83,7 @@ bool colour_picker(HWND wnd, COLORREF & out, COLORREF custom)
 	return rv;
 }
 
-bool colour_picker2(HWND wnd, config_item_t<COLORREF> & p_out, COLORREF custom)
+bool colour_picker2(HWND wnd, fbh::config_item_t<COLORREF> & p_out, COLORREF custom)
 {
 	bool rv = false;
 	COLORREF COLOR = p_out.get();

@@ -13,7 +13,7 @@ namespace pvt
 		g_guid_group_header_font;
 
 	extern cfg_bool cfg_show_artwork, cfg_artwork_reflection, cfg_artwork_lowpriority, cfg_grouping;
-	extern uih::ConfigUint32DpiAware cfg_artwork_width;
+	extern fbh::ConfigUint32DpiAware cfg_artwork_width;
 
 	HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap & bm, t_size & cx, t_size & cy, COLORREF cr_back, bool b_reflection);
 	HBITMAP g_create_hbitmap_from_data(const album_art_data_ptr & data, t_size & cx, t_size & cy, COLORREF cr_back, bool b_reflection);
@@ -334,10 +334,9 @@ namespace pvt
 	};
 
 	class ng_playlist_view_t : 
-		public uie::container_ui_extension_t<t_list_view_panel<appearance_client_ngpv_impl>, 
-		uie::playlist_window>,
-		private playlist_callback_single,
-		private playlist_callback_base
+		public t_list_view_panel<appearance_client_ngpv_impl,  uie::playlist_window>,
+		playlist_callback_single,
+		playlist_callback_base
 	{
 		friend class NgTfThread;
 

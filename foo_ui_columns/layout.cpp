@@ -622,7 +622,7 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 	{
 		RECT rc;
 		GetRelativeRect(m_child_wnd, HWND_DESKTOP, &rc);
-		HWND wnd_over = m_trans_fill.create(get_wnd(), nullptr, ui_helpers::window_position_t(rc));
+		HWND wnd_over = m_trans_fill.create(get_wnd(), uih::WindowPosition(rc));
 		WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
 		WindowEnum.run();
 		t_size count_owned = WindowEnum.m_wnd_list.get_count();
@@ -784,7 +784,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
 
 		RECT rc;
 		GetRelativeRect(p_window->get_wnd(), HWND_DESKTOP, &rc);
-		HWND wnd_over = m_trans_fill.create(get_wnd(), nullptr, ui_helpers::window_position_t(rc));
+		HWND wnd_over = m_trans_fill.create(get_wnd(), uih::WindowPosition(rc));
 		WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
 		WindowEnum.run();
 		t_size count_owned = WindowEnum.m_wnd_list.get_count();

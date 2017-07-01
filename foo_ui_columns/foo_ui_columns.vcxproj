@@ -540,6 +540,9 @@
     <ProjectReference Include="..\columns_ui-sdk\columns_ui-sdk.vcxproj">
       <Project>{93ec0ede-01cd-4fb0-b8e8-4f2a027e026e}</Project>
     </ProjectReference>
+    <ProjectReference Include="..\fbh\fbh.vcxproj">
+      <Project>{84d30275-d3d7-4867-82d2-8031a53dce20}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\foobar2000\foobar2000_component_client\foobar2000_component_client.vcxproj">
       <Project>{71ad2674-065b-48f5-b8b0-e1f9d3892081}</Project>
     </ProjectReference>

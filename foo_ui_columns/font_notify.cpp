@@ -312,7 +312,7 @@ void g_get_font_size_next_step (LOGFONT & p_lf, bool up)
 		size.new_size = up ? size.size : 0;
 		size.changed = false;
 		
-		EnumFontFamiliesEx(dc, &lf, FontSizesProc, (LPARAM)&size, 0);
+		EnumFontFamiliesEx(dc, &lf, FontSizesProc, reinterpret_cast<LPARAM>(&size), 0);
 		if (size.changed)
 			lf.lfHeight = -MulDiv(size.new_size, size.caps, 72);
 

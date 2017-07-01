@@ -232,7 +232,6 @@ BEGIN
     GROUPBOX        "FCL importing and exporting",IDC_STATIC,170,4,142,118
     PUSHBUTTON      "Import...",IDC_FCL_IMPORT,214,39,51,14
     PUSHBUTTON      "Export...",IDC_FCL_EXPORT,214,68,51,14
-    PUSHBUTTON      "Libraries info",IDC_POPULATE,238,167,63,14
     EDITTEXT        IDC_STRING,15,203,287,49,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
     LTEXT           "Main window title format script:",IDC_STATIC,16,190,287,8
     PUSHBUTTON      "Quick setup",IDC_QUICKSETUP,45,18,59,14

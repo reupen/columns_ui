@@ -9,7 +9,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
 	{
 		pfc::vartoggle_t<bool> init(m_initialising, true);
 
-		HWND wnd_fields = m_field_list.create_in_dialog_units(wnd, ui_helpers::window_position_t(21, 17, 226, 150));
+		HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(21, 17, 226, 150), true);
 		SetWindowPos(wnd_fields, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 		ShowWindow(wnd_fields, SW_SHOWNORMAL);
 

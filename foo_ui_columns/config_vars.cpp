@@ -19,9 +19,9 @@ namespace settings
 	}
 
 	ConfigObjectBoolFactory<> allow_locked_panel_resizing(cui::config_objects::guid_bool_locked_panel_resizing_allowed, true);
-	uih::ConfigUint32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
+	fbh::ConfigUint32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
 
-	uih::ConfigInt32DpiAware playlist_switcher_item_padding(create_guid(0xc8f7e065, 0xeb66, 0xe282, 0xbd, 0xe3, 0x70, 0xaa, 0xf4, 0x3a, 0x10, 0x97), 2),
+	fbh::ConfigInt32DpiAware playlist_switcher_item_padding(create_guid(0xc8f7e065, 0xeb66, 0xe282, 0xbd, 0xe3, 0x70, 0xaa, 0xf4, 0x3a, 0x10, 0x97), 2),
 			playlist_view_item_padding(create_guid(0x032abfcb, 0x6cab, 0x25ee, 0x9d, 0xe8, 0x27, 0x89, 0xa9, 0x0a, 0x72, 0x36), 2);
 
 	cfg_bool show_status_pane(guids::show_status_pane, true);

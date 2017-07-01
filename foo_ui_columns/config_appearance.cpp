@@ -372,7 +372,7 @@ class fcl_colours_t : public cui::fcl::dataset
 	};
 	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
-		fcl::writer out(p_writer, p_abort);
+	    fbh::fcl::writer out(p_writer, p_abort);
 		//p_writer->write_lendian_t(stream_version, p_abort);
 		{
 			stream_writer_memblock mem;
@@ -381,7 +381,7 @@ class fcl_colours_t : public cui::fcl::dataset
 		}
 		{
 			stream_writer_memblock mem;
-			fcl::writer out2(&mem, p_abort);
+		    fbh::fcl::writer out2(&mem, p_abort);
 			t_size i, count = g_colours_manager_data.m_entries.get_count();
 			mem.write_lendian_t(count, p_abort);
 			for (i=0; i<count; i++)
@@ -395,7 +395,7 @@ class fcl_colours_t : public cui::fcl::dataset
 	}
 	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
-		fcl::reader reader(p_reader, stream_size, p_abort);
+	    fbh::fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
 		t_uint32 element_size;
 
@@ -420,7 +420,7 @@ class fcl_colours_t : public cui::fcl::dataset
 			case identifier_client_entries:
 				{
 					stream_reader_memblock_ref stream2(data);
-					fcl::reader reader2(&stream2, data.get_size(), p_abort);
+                    fbh::fcl::reader reader2(&stream2, data.get_size(), p_abort);
 
 					t_size count, i;
 					reader2.read_item(count);
@@ -497,7 +497,7 @@ class fcl_fonts_t : public cui::fcl::dataset
 	};
 	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
-		fcl::writer out(p_writer, p_abort);
+	    fbh::fcl::writer out(p_writer, p_abort);
 		//p_writer->write_lendian_t(stream_version, p_abort);
 		{
 			stream_writer_memblock mem;
@@ -511,7 +511,7 @@ class fcl_fonts_t : public cui::fcl::dataset
 		}
 		{
 			stream_writer_memblock mem;
-			fcl::writer out2(&mem, p_abort);
+		    fbh::fcl::writer out2(&mem, p_abort);
 			t_size i, count = g_fonts_manager_data.m_entries.get_count();
 			mem.write_lendian_t(count, p_abort);
 			for (i=0; i<count; i++)
@@ -525,7 +525,7 @@ class fcl_fonts_t : public cui::fcl::dataset
 	}
 	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
-		fcl::reader reader(p_reader, stream_size, p_abort);
+	    fbh::fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
 		t_uint32 element_size;
 
@@ -550,7 +550,7 @@ class fcl_fonts_t : public cui::fcl::dataset
 				break;
 			case identifier_client_entries:
 				{
-					fcl::reader reader2(&data_reader, data.get_size(), p_abort);
+                    fbh::fcl::reader reader2(&data_reader, data.get_size(), p_abort);
 
 					t_size count, i;
 					reader2.read_item(count);

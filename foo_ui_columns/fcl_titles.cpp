@@ -47,7 +47,7 @@ class export_columns : public cui::fcl::dataset
 	}
 	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
-		fcl::writer out(p_writer, p_abort);
+	    fbh::fcl::writer out(p_writer, p_abort);
 		t_size count = g_columns.get_count(), i;
 		pfc::string8 temp;
 		out.write_raw(count);
@@ -55,7 +55,7 @@ class export_columns : public cui::fcl::dataset
 		for (i=0; i<count; i++)
 		{
 			stream_writer_memblock sw;
-			fcl::writer w(&sw, p_abort);
+		    fbh::fcl::writer w(&sw, p_abort);
 			w.write_item(identifier_name, g_columns[i]->name);
 			w.write_item(identifier_display, g_columns[i]->spec);
 			w.write_item(identifier_style, g_columns[i]->colour_spec);
@@ -76,7 +76,7 @@ class export_columns : public cui::fcl::dataset
 	}
 	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
-		fcl::reader reader(p_reader, stream_size, p_abort);
+	    fbh::fcl::reader reader(p_reader, stream_size, p_abort);
 		t_size i, count;
 		reader.read_item(count);
 		column_list_t newcolumns;
@@ -90,7 +90,7 @@ class export_columns : public cui::fcl::dataset
 
 			column_t::ptr item = new column_t;
 
-			fcl::reader reader2(reader, column_size, p_abort);
+		    fbh::fcl::reader reader2(reader, column_size, p_abort);
 
 			t_uint32 element_id;
 			t_uint32 element_size;
@@ -216,7 +216,7 @@ class export_groups : public cui::fcl::dataset
 	}
 	void get_data(stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
-		fcl::writer out(p_writer, p_abort);
+	    fbh::fcl::writer out(p_writer, p_abort);
 
 		out.write_item(identifier_show_groups, pvt::cfg_grouping);
 		//out.write_item(identifier_show_artwork, pvt::cfg_show_artwork);
@@ -224,7 +224,7 @@ class export_groups : public cui::fcl::dataset
 		//out.write_item(identifier_artwork_reflection, pvt::cfg_artwork_reflection);
 
 		stream_writer_memblock groups_sw;
-		fcl::writer groups_writer(&groups_sw, p_abort);
+	    fbh::fcl::writer groups_writer(&groups_sw, p_abort);
 
 		const pfc::list_base_const_t<pvt::group_t> & groups = pvt::g_groups.get_groups();
 		t_size count = groups.get_count(), i;
@@ -237,7 +237,7 @@ class export_groups : public cui::fcl::dataset
 		{
 			const pvt::group_t & group = groups[i];
 			stream_writer_memblock sw;
-			fcl::writer w(&sw, p_abort);
+		    fbh::fcl::writer w(&sw, p_abort);
 			w.write_item(identifier_script, group.string);
 			w.write_item(identifier_playlist_filter_mode, (t_uint32)group.filter_type);
 			w.write_item(identifier_playlist_filter_string, group.filter_playlists);
@@ -249,7 +249,7 @@ class export_groups : public cui::fcl::dataset
 	}
 	void set_data(stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
-		fcl::reader reader(p_reader, stream_size, p_abort);
+	    fbh::fcl::reader reader(p_reader, stream_size, p_abort);
 
 		t_uint32 element_id;
 		t_uint32 element_size;
@@ -290,7 +290,7 @@ class export_groups : public cui::fcl::dataset
 
 					pvt::group_t item;
 
-					fcl::reader reader2(reader, group_size, p_abort);
+				    fbh::fcl::reader reader2(reader, group_size, p_abort);
 
 					t_uint32 group_element_id;
 					t_uint32 group_element_size;
@@ -372,7 +372,7 @@ class export_pview : public cui::fcl::dataset
 	}
 	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
-		fcl::writer out(p_writer, p_abort);
+	    fbh::fcl::writer out(p_writer, p_abort);
 
 		out.write_item(identifier_global_script, cfg_globalstring);
 		out.write_item(identifier_style_script, cfg_colour);
@@ -384,7 +384,7 @@ class export_pview : public cui::fcl::dataset
 	}
 	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
-		fcl::reader reader(p_reader, stream_size, p_abort);
+	    fbh::fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
 		t_uint32 element_size;
 
@@ -459,7 +459,7 @@ class export_titles : public cui::fcl::dataset
 	}
 	void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
 	{
-		fcl::writer out(p_writer, p_abort);
+	    fbh::fcl::writer out(p_writer, p_abort);
 
 		out.write_item(identifier_status_bar, main_window::config_status_bar_script.get());
 		out.write_item(identifier_notification_icon_tooltip, main_window::config_notification_icon_script.get());
@@ -467,7 +467,7 @@ class export_titles : public cui::fcl::dataset
 	}
 	void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
 	{
-		fcl::reader reader(p_reader, stream_size, p_abort);
+	    fbh::fcl::reader reader(p_reader, stream_size, p_abort);
 		t_uint32 element_id;
 		t_uint32 element_size;
 

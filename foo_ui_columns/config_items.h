@@ -22,7 +22,7 @@ namespace main_window
 	extern config_inline_metafield_edit_mode_t config_inline_metafield_edit_mode;
 #endif
 
-	class config_status_bar_script_t : public config_item_t < pfc::string8 >
+	class config_status_bar_script_t : public fbh::config_item_t < pfc::string8 >
 	{
 	public:
 		const char * get_default_value() override;
@@ -31,7 +31,7 @@ namespace main_window
 		config_status_bar_script_t();;
 	};
 
-	class config_notification_icon_script_t : public config_item_t < pfc::string8 >
+	class config_notification_icon_script_t : public fbh::config_item_t < pfc::string8 >
 	{
 	public:
 		const char * get_default_value() override;
@@ -40,7 +40,7 @@ namespace main_window
 		config_notification_icon_script_t();;
 	};
 
-	class config_main_window_title_script_t : public config_item_t < pfc::string8 >
+	class config_main_window_title_script_t : public fbh::config_item_t < pfc::string8 >
 	{
 	public:
 		const char * get_default_value() override;

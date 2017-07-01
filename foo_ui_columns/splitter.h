@@ -93,7 +93,7 @@ private:
 	public:
 		class panel_container :
 			public ui_helpers::container_window,
-			private uih::LowLevelMouseHookManager::HookCallback
+			private fbh::LowLevelMouseHookManager::HookCallback
 		{
 		public:
 			enum { MSG_AUTOHIDE_END = WM_USER + 2 };

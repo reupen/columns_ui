@@ -22,7 +22,7 @@ namespace playlist_switcher
 
 	namespace colours 
 	{
-		class config_inactive_selection_text_t : public config_item_t<COLORREF>
+		class config_inactive_selection_text_t : public fbh::config_item_t<COLORREF>
 		{
 		public:
 			COLORREF get_default_value () override;

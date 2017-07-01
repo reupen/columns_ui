@@ -64,7 +64,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 	break;
 	case WM_NCDESTROY:
 		if (m_hook_active)
-			uih::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
+			fbh::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
 		break;
 	case MSG_AUTOHIDE_END:
 		if (!cfg_sidebar_hide_delay)
@@ -76,7 +76,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 				m_this->on_size_changed();
 				if (m_hook_active)
 				{
-					uih::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
+					fbh::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
 					m_hook_active = false;
 				}
 			}
@@ -101,7 +101,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 				m_this->on_size_changed();
 				if (m_hook_active)
 				{
-					uih::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
+					fbh::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
 					m_hook_active = false;
 				}
 			}
@@ -391,7 +391,7 @@ void splitter_window_impl::panel::panel_container::enter_autohide_hook()
 {
 	if (!m_hook_active)
 	{
-		uih::LowLevelMouseHookManager::s_get_instance().register_hook(this);
+		fbh::LowLevelMouseHookManager::s_get_instance().register_hook(this);
 		m_hook_active = true;
 	}
 }

@@ -36,7 +36,7 @@ namespace filter_panel {
 			service_ptr_t<titleformat_object> to;
 			static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
 			{
-				mmh::fb2k::g_sort_metadb_handle_list_by_format_v2(handles, to, nullptr);
+				fbh::g_sort_metadb_handle_list_by_format_v2(handles, to, nullptr);
 			}
 		}
 		playlist_api->playlist_add_items(index, handles, bit_array_false());

@@ -272,7 +272,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
 		SendMessage(wnd_text, CB_SETCURSEL, m_text_below ? 1 : 0, 0);
 		SendMessage(wnd_app, CB_SETCURSEL, m_appearance, 0);
 
-		HWND wnd_button_list = m_button_list.create_in_dialog_units(wnd, ui_helpers::window_position_t(14, 16, 310, 106));
+		HWND wnd_button_list = m_button_list.create(wnd, uih::WindowPosition(14, 16, 310, 106), true);
 		populate_buttons_list();
 		ShowWindow(wnd_button_list, SW_SHOWNORMAL);
 

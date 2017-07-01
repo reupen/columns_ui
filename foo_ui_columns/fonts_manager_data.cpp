@@ -58,6 +58,7 @@ void fonts_manager_data::find_by_guid(const GUID & p_guid, entry_ptr_t & p_out)
 void fonts_manager_data::g_read_font(stream_reader * p_reader, LOGFONT & lf_out, abort_callback & p_abort)
 {
 	LOGFONT lf;
+	memset(&lf, 0, sizeof (LOGFONT));
 
 	p_reader->read_lendian_t(lf.lfHeight, p_abort);
 	p_reader->read_lendian_t(lf.lfWidth, p_abort);
@@ -151,7 +152,7 @@ void fonts_manager_data::entry_t::reset_fonts()
 
 void fonts_manager_data::entry_t::import(stream_reader * p_reader, t_size stream_size, t_uint32 type, abort_callback & p_abort)
 {
-	fcl::reader reader(p_reader, stream_size, p_abort);
+	fbh::fcl::reader reader(p_reader, stream_size, p_abort);
 	t_uint32 element_id;
 	t_uint32 element_size;
 
@@ -180,7 +181,7 @@ void fonts_manager_data::entry_t::import(stream_reader * p_reader, t_size stream
 
 void fonts_manager_data::entry_t::_export(stream_writer * p_stream, abort_callback & p_abort)
 {
-	fcl::writer out(p_stream, p_abort);
+    fbh::fcl::writer out(p_stream, p_abort);
 	out.write_item(identifier_guid, guid);
 	out.write_item(identifier_mode, (t_uint32)font_mode);
 	if (font_mode == cui::fonts::font_mode_custom)

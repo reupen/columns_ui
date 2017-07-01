@@ -5,7 +5,7 @@
 #include "list_view_panel.h"
 
 class playlist_switcher_t : 
-	public uie::container_ui_extension_t<t_list_view_panel<appearance_client_ps_impl>, uie::window>,
+	public t_list_view_panel<appearance_client_ps_impl, uie::window>,
 	private playlist_callback,
 	private play_callback
 {

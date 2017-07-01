@@ -116,7 +116,7 @@ private:
 };
 
 class selection_properties_t :
-	public uie::container_ui_extension_t<t_list_view_panel<appearance_client_selection_properties_impl>, uie::window>,
+	public t_list_view_panel<appearance_client_selection_properties_impl, uie::window>,
 	public ui_selection_callback,
 	public play_callback,
 	public metadb_io_callback_dynamic

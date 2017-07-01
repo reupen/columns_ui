@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{5CE500DE-1CE0-4222-9433-DCE0A3364124}"
 EndProject
@@ -39,6 +39,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\COPYRIGHT = ..\COPYRIGHT
 		..\README.md = ..\README.md
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fbh", "..\fbh\fbh.vcxproj", "{84D30275-D3D7-4867-82D2-8031A53DCE20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -130,6 +132,16 @@ Global
 		{C90A19C3-554D-4037-B4D3-BD12C1F1AD86}.Release|Win32.Build.0 = Release|Win32
 		{C90A19C3-554D-4037-B4D3-BD12C1F1AD86}.Release|x64.ActiveCfg = Release|x64
 		{C90A19C3-554D-4037-B4D3-BD12C1F1AD86}.Release|x64.Build.0 = Release|x64
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Debug|Itanium.ActiveCfg = Debug|Win32
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Debug|Win32.ActiveCfg = Debug|Win32
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Debug|Win32.Build.0 = Debug|Win32
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Debug|x64.ActiveCfg = Debug|x64
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Debug|x64.Build.0 = Debug|x64
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Release|Itanium.ActiveCfg = Release|Win32
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Release|Win32.ActiveCfg = Release|Win32
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Release|Win32.Build.0 = Release|Win32
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Release|x64.ActiveCfg = Release|x64
+		{84D30275-D3D7-4867-82D2-8031A53DCE20}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
