@@ -628,9 +628,6 @@
     <ClInclude Include="config_columns_v2.h">
       <Filter>Prefs UI</Filter>
     </ClInclude>
-    <ClInclude Include="config_object.h">
-      <Filter>Config storage</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">

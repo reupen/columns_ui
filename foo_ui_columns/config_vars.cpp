@@ -18,7 +18,7 @@ namespace settings
         { 0x92416f05, 0xbd93, 0x4f50,{ 0x93, 0xbd, 0x55, 0x77, 0xc3, 0x7c, 0xf1, 0x4d } };
     }
 
-    ConfigObjectBoolFactory<> allow_locked_panel_resizing(cui::config_objects::guid_bool_locked_panel_resizing_allowed, true);
+    fbh::ConfigObjectBoolFactory<> allow_locked_panel_resizing(cui::config_objects::guid_bool_locked_panel_resizing_allowed, true);
     fbh::ConfigUint32DpiAware custom_splitter_divider_width(guids::custom_splitter_divider_width, 2);
 
     fbh::ConfigInt32DpiAware playlist_switcher_item_padding(create_guid(0xc8f7e065, 0xeb66, 0xe282, 0xbd, 0xe3, 0x70, 0xaa, 0xf4, 0x3a, 0x10, 0x97), 2),
