@@ -148,7 +148,7 @@ public:
                         "You can use either enter field names (for remappings, separate multiple field names by a semi-colon) or titleformatting scripts to specify fields. "
                         "For example, \"Album Artist;Artist\" or \"%album artist%\".\r\n\r\n"
                         "Only the former format supports multiple values per field and is compatible with inline metadata editing.";
-                    message_window_t::g_run(wnd, "Filter Field Help", text);
+                    fbh::show_info_box(wnd, "Filter Field Help", text);
                 }
                 break;
             case IDC_UP:
