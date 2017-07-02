@@ -37,7 +37,7 @@ class export_colours : public cui::fcl::dataset
     }
     void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
     {
-        fbh::fcl::writer out(p_writer, p_abort);
+        fbh::fcl::Writer out(p_writer, p_abort);
         /*out.write_item(colours_pview_mode, cfg_pv_use_custom_colours);
         out.write_item(colours_pview_background, cfg_back);
         out.write_item(colours_pview_selection_background, cfg_pv_selected_back);
@@ -53,7 +53,7 @@ class export_colours : public cui::fcl::dataset
     }
     void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
     {
-        fbh::fcl::reader reader(p_reader, stream_size, p_abort);
+        fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;
         t_uint32 element_size;
         bool b_font_read = false, b_colour_read=false;
@@ -165,7 +165,7 @@ class export_colours_switcher : public cui::fcl::dataset
     }
     void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
     {
-        fbh::fcl::writer out(p_writer, p_abort);
+        fbh::fcl::Writer out(p_writer, p_abort);
         /*out.write_item(colours_switcher_background, cfg_plist_bk);
         out.write_item(colours_switcher_selection_background, cfg_plist_selected_back);
         out.write_item(colours_switcher_inactive_selection_background, cfg_plist_selected_back_no_focus);
@@ -179,7 +179,7 @@ class export_colours_switcher : public cui::fcl::dataset
     }
     void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
     {
-        fbh::fcl::reader reader(p_reader, stream_size, p_abort);
+        fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;
         t_uint32 element_size;
         bool b_font_read = false;
@@ -270,12 +270,12 @@ class export_misc_fonts : public cui::fcl::dataset
     }
     void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
     {
-        fbh::fcl::writer out(p_writer, p_abort);
+        fbh::fcl::Writer out(p_writer, p_abort);
         //out.write_item(font_status, cfg_status_font);
     }
     void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
     {
-        fbh::fcl::reader reader(p_reader, stream_size, p_abort);
+        fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;
         t_uint32 element_size;
         bool b_font_read = false;

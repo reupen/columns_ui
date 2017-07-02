@@ -130,7 +130,7 @@ void colours_manager_data::entry_t::read(t_uint32 version, stream_reader * p_str
 
 void colours_manager_data::entry_t::import(stream_reader * p_reader, t_size stream_size, t_uint32 type, abort_callback & p_abort)
 {
-    fbh::fcl::reader reader(p_reader, stream_size, p_abort);
+    fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
     t_uint32 element_id;
     t_uint32 element_size;
 
@@ -180,7 +180,7 @@ void colours_manager_data::entry_t::import(stream_reader * p_reader, t_size stre
 
 void colours_manager_data::entry_t::_export(stream_writer * p_stream, abort_callback & p_abort)
 {
-    fbh::fcl::writer out(p_stream, p_abort);
+    fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
     out.write_item(identifier_mode, (t_uint32)colour_mode);
     if (colour_mode == cui::colours::colour_mode_custom)
