@@ -4,8 +4,6 @@
 namespace filter_panel {
     void filter_panel_t::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast> & handles, bool b_last_in_chain)
     {
-        //pfc::hires_timer t0;
-        //t0.start();
         //SendMessage(get_wnd(), WM_SETREDRAW, FALSE, NULL);
         bool b_redraw = disable_redrawing();
         pfc::list_t<pfc::string_simple_t<WCHAR> > previous_nodes;
@@ -100,7 +98,7 @@ namespace filter_panel {
             get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
             mmh::permutation_t permutation(data0.get_count());
-            mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
+            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
 
             pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
             pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -199,7 +197,7 @@ namespace filter_panel {
             get_data_entries_v2(handles, data0, g_showemptyitems);
 
             mmh::permutation_t permutation(data0.get_count());
-            mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
+            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
 
             pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
             pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -336,7 +334,7 @@ namespace filter_panel {
         get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
         mmh::permutation_t permutation(data0.get_count());
-        mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
+        mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
 
         pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
         pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -443,9 +441,6 @@ namespace filter_panel {
 
     void filter_panel_t::on_items_modified(const pfc::list_base_const_t<metadb_handle_ptr> & handles)
     {
-        //pfc::hires_timer timer;
-        //timer.start();
-
         pfc::ptr_list_t<filter_panel_t> windows;
         get_windows(windows);
         t_size index = windows.find_item(this);
@@ -454,8 +449,6 @@ namespace filter_panel {
             metadb_handle_list_t<pfc::alloc_fast_aggressive> actualHandles = handles;
             _on_items_modified(actualHandles);
         }
-
-        //console::formatter() << "filter_panel_t::on_items_modified() " << timer.query() << " s";
     }
 
     void filter_panel_t::get_data_entries_v2(const pfc::list_base_const_t<metadb_handle_ptr> & handles, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty)
@@ -582,18 +575,12 @@ namespace filter_panel {
 #endif
 
         {
-            //pfc::hires_timer timer;
-            //timer.start();
             get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_size(), data0, g_showemptyitems);
-            //    console::formatter() << "get_data_entries_v2: " << timer.query() << " s";
         }
 
         mmh::permutation_t permutation(data0.get_count());
         {
-            pfc::hires_timer timer;
-            timer.start();
-            mmh::g_sort_get_permutation_qsort_v2(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
-            //    console::formatter() << "g_sort_get_permutation_qsort_v2: " << timer.query() << " s";
+            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
         }
 
         //data.reorder(permutation.get_ptr());
@@ -606,8 +593,6 @@ namespace filter_panel {
             {
                 data_entry_t * p_data = data0.get_ptr();
                 t_size * perm = permutation.get_ptr();
-                //pfc::hires_timer timer;
-                //timer.start();
                 t_size i, count = data.get_count(), j;
                 t_size counter = 0;
                 for (i = 0; i<count; i++)
@@ -661,7 +646,7 @@ namespace filter_panel {
             mmh::permutation_t sort_permuation(node_count - 1);
             const auto * nodes = m_nodes.get_ptr();
             ++nodes;
-            mmh::g_sort_get_permutation_qsort_v2(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending);
+            mmh::sort_get_permuation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending);
 
             m_nodes.reorder_partial(1, sort_permuation.get_ptr(), node_count - 1);
 

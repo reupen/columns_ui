@@ -377,7 +377,7 @@ namespace filter_panel {
                 }
             }
             mmh::permutation_t permutation(windows.get_count());
-            mmh::g_sort_get_permutation_qsort_v2(indices.get_ptr(), permutation, (pfc::compare_t<t_size, t_size>), true, false);
+            mmh::sort_get_permuation(indices.get_ptr(), permutation, (pfc::compare_t<t_size, t_size>), true, false);
             windows.reorder(permutation.get_ptr());
         }
     }
