@@ -48,8 +48,8 @@ class export_colours : public cui::fcl::dataset
         out.write_item(colours_pview_list_font, cfg_font);
         out.write_item(colours_pview_header_font, cfg_header_font);*/
         //out.write_item(colours_pview_use_system_focus_frame, cfg_pv_use_system_frame);
-        out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.getRawValue().value);
-        out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.getRawValue().dpi);
+        out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.get_raw_value().value);
+        out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.get_raw_value().dpi);
     }
     void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
     {
@@ -174,8 +174,8 @@ class export_colours_switcher : public cui::fcl::dataset
         out.write_item_config(colours_switcher_inactive_selection_text, playlist_switcher::colours::config_inactive_selection_text);
         out.write_item(colours_switcher_font_tabs, cfg_tab_font);
         out.write_item(colours_switcher_font_list, cfg_plist_font);*/
-        out.write_item(identifier_item_height, settings::playlist_switcher_item_padding.getRawValue().value);
-        out.write_item(identifier_item_height_dpi, settings::playlist_switcher_item_padding.getRawValue().dpi);
+        out.write_item(identifier_item_height, settings::playlist_switcher_item_padding.get_raw_value().value);
+        out.write_item(identifier_item_height_dpi, settings::playlist_switcher_item_padding.get_raw_value().dpi);
     }
     void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
     {
