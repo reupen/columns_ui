@@ -51,7 +51,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     *pdwEffect = DROPEFFECT_NONE;
     if (check_do(pDataObj/*, pdwEffect*/))
     {
-        mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_MOVE, "Move", "");
+        uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_MOVE, "Move", "");
         *pdwEffect = DROPEFFECT_MOVE;
     }
     return S_OK;
@@ -71,7 +71,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     if (check_do(m_DataObject/*, pdwEffect*/))
     {
         *pdwEffect = DROPEFFECT_MOVE;
-        HRESULT hr = mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_MOVE, "Move", "");
+        HRESULT hr = uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_MOVE, "Move", "");
         //console::formatter() << pfc::format_hex(hr);
 
     }
@@ -117,7 +117,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
 {
     //console::formatter() << "DragLeave";
     if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
-    mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
     m_button_list_view->remove_insert_mark();
     m_button_list_view->destroy_timer_scroll_up();
     m_button_list_view->destroy_timer_scroll_down();

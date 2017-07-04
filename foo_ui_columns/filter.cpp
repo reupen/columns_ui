@@ -616,7 +616,7 @@ namespace filter_panel {
             {
                 m_drag_item_count = data.get_count();
                 DWORD blah = DROPEFFECT_NONE;
-                HRESULT hr = mmh::ole::DoDragDrop(get_wnd(), wp, pDataObject, DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
+                HRESULT hr = uih::ole::DoDragDrop(get_wnd(), wp, pDataObject, DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
                 pDataObject->Release();
                 m_drag_item_count = 0;
             }

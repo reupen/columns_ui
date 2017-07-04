@@ -145,7 +145,7 @@ public:
 
 
 
-class menu_extension : public ui_extension::containter_uie_window_t<uie::menu_window_v2>, message_hook_manager::message_hook
+class menu_extension : public ui_extension::containter_uie_window_t<uie::menu_window_v2>, uih::MessageHook
 {
     static const TCHAR * class_name;
 
@@ -179,7 +179,7 @@ public:
     static LRESULT WINAPI main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
     LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
-    bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
+    bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 
     void make_menu(unsigned idx);
 
@@ -575,7 +575,7 @@ void menu_extension::make_menu(unsigned idx)
 
     hooked = true;
 //    p_hooked_menu = this;
-    message_hook_manager::register_hook(message_hook_manager::type_message_filter, this);
+    uih::register_message_hook(uih::MessageHookType::type_message_filter, this);
     //msghook = uSetWindowsHookEx(WH_MSGFILTER, menu_hook_t_proc, 0, GetCurrentThreadId());
     service_ptr_t<mainmenu_manager> p_menu = standard_api_create_t<mainmenu_manager>();
 
@@ -662,14 +662,14 @@ void menu_extension::make_menu(unsigned idx)
     }
 
     //UnhookWindowsHookEx(msghook); // hook may not be freed instantly, so dont make msghook = 0
-    message_hook_manager::deregister_hook(message_hook_manager::type_message_filter, this);
+    uih::deregister_message_hook(uih::MessageHookType::type_message_filter, this);
     hooked = false;
     //p_hooked_menu=0;
 
     actual_active = 0;
 }
 
-bool menu_extension::on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp)
+bool menu_extension::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
 {
     static POINT last_pt;
 

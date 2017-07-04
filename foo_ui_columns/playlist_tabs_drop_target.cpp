@@ -70,7 +70,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
         if (!m_is_accepted_type)
         {
             *pdwEffect = DROPEFFECT_NONE;
-            mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
             return S_OK;
         }
 
@@ -112,13 +112,13 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
                 {
                     pfc::string8 name;
                     static_api_ptr_t<playlist_manager>()->playlist_get_name(idx, name);
-                    mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
+                    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
                 }
                 else
-                    mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+                    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
             }
             else
-                mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+                uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
 
         }
         if ((!p_list->wnd_tabs || wnd != p_list->wnd_tabs))  p_list->kill_switch_timer();
@@ -136,7 +136,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
     last_over.x = 0;
     last_over.y = 0;
     p_list->kill_switch_timer();
-    mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
     m_DataObject.release();
 
     return S_OK;
@@ -155,7 +155,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
     if (!m_is_accepted_type)
     {
-        mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+        uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
         return S_OK;
     }
 

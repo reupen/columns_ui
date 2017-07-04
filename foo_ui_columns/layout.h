@@ -63,7 +63,7 @@ private:
 
 class layout_window : 
     public ui_helpers::container_window,
-    private message_hook_manager::message_hook
+    private uih::MessageHook
 {
 public:
     enum {MSG_LAYOUT_SET_FOCUS=WM_USER+2,MSG_EDIT_PANEL,MSG_EDIT_PANEL_V2};
@@ -111,7 +111,7 @@ private:
     void run_live_edit_base_delayed(POINT pt_menu);
     void run_live_edit_base_delayed_v2(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr> & p_hierarchy);
     void run_live_edit_base_v2(const live_edit_data_t & p_data);
-    bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
+    bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 
     class_data & get_class_data()const override
     {

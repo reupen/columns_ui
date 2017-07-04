@@ -245,16 +245,16 @@ void layout_window::enter_layout_editing_mode()
 {
     if (get_wnd())
     {
-        message_hook_manager::register_hook(message_hook_manager::type_get_message, this);
-        message_hook_manager::register_hook(message_hook_manager::type_mouse, this);
+        uih::register_message_hook(uih::MessageHookType::type_get_message, this);
+        uih::register_message_hook(uih::MessageHookType::type_mouse, this);
     }
     //__enter_layout_editing_mode_recur(m_child);
 }
 
 void layout_window::exit_layout_editing_mode()
 {
-    message_hook_manager::deregister_hook(message_hook_manager::type_get_message, this);
-    message_hook_manager::deregister_hook(message_hook_manager::type_mouse, this);
+    uih::deregister_message_hook(uih::MessageHookType::type_get_message, this);
+    uih::deregister_message_hook(uih::MessageHookType::type_mouse, this);
     //__exit_layout_editing_mode_recur(m_child);
 }
 
@@ -997,9 +997,9 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
     }
 }
 
-bool layout_window::on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp)
+bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
 {
-    if (p_type == message_hook_manager::type_get_message)
+    if (p_type == uih::MessageHookType::type_get_message)
     {
         MSG * lpmsg = (LPMSG)lp;
         if (lpmsg->message == WM_CONTEXTMENU)
@@ -1043,7 +1043,7 @@ bool layout_window::on_hooked_message(message_hook_manager::t_message_hook_type 
         return false;
     }
     else
-        if (p_type == message_hook_manager::type_mouse)
+        if (p_type == uih::MessageHookType::type_mouse)
         {
             MOUSEHOOKSTRUCT * lpmhs = (LPMOUSEHOOKSTRUCT)lp;
             if (lpmhs->hwnd == get_wnd() || IsChild(get_wnd(), lpmhs->hwnd))
@@ -1138,8 +1138,8 @@ LRESULT layout_window::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
 #endif
     case WM_DESTROY:
         destroy_child();
-        message_hook_manager::deregister_hook(message_hook_manager::type_get_message, this);
-        message_hook_manager::deregister_hook(message_hook_manager::type_mouse, this);
+        uih::deregister_message_hook(uih::MessageHookType::type_get_message, this);
+        uih::deregister_message_hook(uih::MessageHookType::type_mouse, this);
         break;
     }
     return DefWindowProc(wnd, msg, wp, lp);

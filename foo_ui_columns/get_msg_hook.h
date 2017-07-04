@@ -9,9 +9,9 @@
  * Class used for hooking message loops
  */
 
-class get_msg_hook_t : public message_hook_manager::message_hook
+class get_msg_hook_t : public uih::MessageHook
 {
-    bool on_hooked_message(message_hook_manager::t_message_hook_type p_type, int code, WPARAM wp, LPARAM lp) override;
+    bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 public:
     void register_hook();
     void deregister_hook();

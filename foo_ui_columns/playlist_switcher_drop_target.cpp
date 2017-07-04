@@ -111,7 +111,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragEnter(IDataObj
     if (!m_is_accepted_type)
     {
         *pdwEffect = DROPEFFECT_NONE;
-        mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+        uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
     }
     return S_OK;     
 }
@@ -128,7 +128,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
     if (!m_is_accepted_type)
     {
         *pdwEffect = DROPEFFECT_NONE;
-        mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+        uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
         return S_OK;
     }
 
@@ -186,7 +186,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
                     {
                         m_window->set_insert_mark(hi.insertion_index);
                         m_window->destroy_switch_timer();
-                        mmh::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, *pdwEffect == DROPEFFECT_MOVE ? "Move here" : "Copy here", "");
+                        uih::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, *pdwEffect == DROPEFFECT_MOVE ? "Move here" : "Copy here", "");
                     }
                     else
                     {
@@ -196,7 +196,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
                             m_window->set_insert_mark(hi.insertion_index);
                             m_window->destroy_switch_timer();
                             m_window->remove_highlight_item();
-                            mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+                            uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
                         }
                         else
                         {
@@ -206,7 +206,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
                                 m_window->set_switch_timer(hi.index);
                             pfc::string8 name;
                             static_api_ptr_t<playlist_manager>()->playlist_get_name(hi.index, name);
-                            mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
+                            uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
                         }
                     }
                 }
@@ -223,14 +223,14 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
                     else
                         message = "Add to new playlist";
 
-                    mmh::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, message, "");
+                    uih::ole::SetDropDescription(m_DataObject.get_ptr(), *pdwEffect == DROPEFFECT_MOVE ? DROPIMAGE_MOVE : DROPIMAGE_COPY, message, "");
                 }
                 else
                 {
                     m_window->remove_insert_mark();
                     m_window->remove_highlight_item();
                     m_window->destroy_switch_timer();
-                    mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+                    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
                 }
             }
         }
@@ -253,7 +253,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave( )
     m_is_playlists = false;
     m_is_accepted_type = false;
 
-    mmh::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
 
     m_DataObject.release();
 
@@ -458,7 +458,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 
     m_window->remove_insert_mark();
     m_window->remove_highlight_item();
-    mmh::ole::SetDropDescription(pDataObj, DROPIMAGE_INVALID, "", "");
+    uih::ole::SetDropDescription(pDataObj, DROPIMAGE_INVALID, "", "");
 
     m_is_playlists = false;
     m_is_accepted_type = false;
