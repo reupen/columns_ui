@@ -332,7 +332,7 @@ void splitter_window_impl::get_panels_sizes(unsigned client_width, unsigned clie
         {
             unsigned panel_divider_size = get_panel_divider_size(n);;
 
-            unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size.getScaledValue();
+            unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size.get_scaled_value();
             if (height>MAXLONG) height = MAXLONG;
             if (available_height > (-MAXLONG + (int)height))
                 available_height -= height;
@@ -510,7 +510,7 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
                 //minmax[n].caption_height = caption_height;
                 minmax[n].min_height = min_height;
                 minmax[n].max_height = max_height;
-                minmax[n].height = m_panels[n]->m_hidden ? caption_height : m_panels[n]->m_size.getScaledValue();
+                minmax[n].height = m_panels[n]->m_hidden ? caption_height : m_panels[n]->m_size.get_scaled_value();
             }
 
             bool is_up = delta < 0;//new_height < m_panels[panel].height;
@@ -892,7 +892,7 @@ bool splitter_window_impl::get_config_item(unsigned index, const GUID & p_type, 
             return true;
         }
         else if (p_type == uie::splitter_window::uint32_size) {
-            p_out->write_object_t(m_panels[index]->m_size.getScaledValue(), p_abort);
+            p_out->write_object_t(m_panels[index]->m_size.get_scaled_value(), p_abort);
             return true;
         }
         else if (p_type == uie::splitter_window::size_and_dpi) {

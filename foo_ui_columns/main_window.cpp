@@ -144,7 +144,7 @@ void create_systray_icon()
     uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, "foobar2000"/*core_version_info::g_get_version_string()*/);
     /* There was some misbehaviour with the newer messages. So we don't use them. */
     //    if (!g_icon_created)
-    //        uih::ShellNotifyIcon(NIM_SETVERSION, g_main_window, 1, NOTIFYICON_VERSION, MSG_NOTICATION_ICON, g_icon, "foobar2000"/*core_version_info::g_get_version_string()*/);
+    //        uih::shell_notify_icon(NIM_SETVERSION, g_main_window, 1, NOTIFYICON_VERSION, MSG_NOTICATION_ICON, g_icon, "foobar2000"/*core_version_info::g_get_version_string()*/);
     g_icon_created = true;
 }
 

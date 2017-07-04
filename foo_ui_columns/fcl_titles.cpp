@@ -163,7 +163,7 @@ class export_columns : public cui::fcl::dataset
                 };
             }
             if (!dpiRead)
-                item->width.dpi = uih::GetSystemDpiCached().cx;
+                item->width.dpi = uih::get_system_dpi_cached().cx;
             newcolumns.add_item(item);
         }
 

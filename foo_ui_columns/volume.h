@@ -239,8 +239,8 @@ public:
                 if (!b_popup)
                 {
                     if (!b_vertical)
-                        mmi->ptMinTrackSize.y = uih::ScaleDpiValue(21);
-                    mmi->ptMinTrackSize.x = uih::ScaleDpiValue(50);
+                        mmi->ptMinTrackSize.y = uih::scale_dpi_value(21);
+                    mmi->ptMinTrackSize.x = uih::scale_dpi_value(50);
                     //mmi->ptMaxTrackSize.y = 20;
                 }
 

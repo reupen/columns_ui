@@ -138,7 +138,7 @@ class button_stop : public ui_extension::button//, play_callback
         HBITMAP bm = NULL;
 
         DLLVERSIONINFO2 dvi;
-        if (SUCCEEDED(uih::GetComCtl32Version(dvi)) && dvi.info1.dwMajorVersion >= 6)
+        if (SUCCEEDED(uih::get_comctl32_version(dvi)) && dvi.info1.dwMajorVersion >= 6)
         {
             p_mask_type = uie::MASK_NONE;
             bm = (HBITMAP)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDB_STOP32), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE | LR_CREATEDIBSECTION);
@@ -210,7 +210,7 @@ class button_next : public ui_extension::button
         HBITMAP bm = NULL;
 
         DLLVERSIONINFO2 dvi;
-        if (SUCCEEDED(uih::GetComCtl32Version(dvi)) && dvi.info1.dwMajorVersion >= 6)
+        if (SUCCEEDED(uih::get_comctl32_version(dvi)) && dvi.info1.dwMajorVersion >= 6)
         {
             p_mask_type = uie::MASK_NONE;
             bm = (HBITMAP)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDB_NEXT32), IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE | LR_CREATEDIBSECTION);

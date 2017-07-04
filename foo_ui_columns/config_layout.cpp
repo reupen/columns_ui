@@ -29,7 +29,7 @@ uie::splitter_item_t * copy_splitter_item(const uie::splitter_item_t * p_source)
             full->m_size_v2_dpi = ptr_v2->m_size_v2_dpi;
         } else {
             full->m_size_v2 = full->m_size;
-            full->m_size_v2_dpi = uih::GetSystemDpiCached().cx;
+            full->m_size_v2_dpi = uih::get_system_dpi_cached().cx;
         }
     }
     else
@@ -721,7 +721,7 @@ class tab_layout_new : public preferences_tab
         {
         case WM_INITDIALOG:
             {
-                uih::SetTreeViewWindowExplorerTheme(GetDlgItem(wnd, IDC_TREE));
+                uih::tree_view_set_explorer_theme(GetDlgItem(wnd, IDC_TREE));
                 cfg_layout.save_active_preset();
                 if (!cfg_layout.get_presets().get_count())
                     cfg_layout.reset_presets();

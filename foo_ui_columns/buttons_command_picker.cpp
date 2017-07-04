@@ -308,7 +308,7 @@ BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
         return TRUE;
     case WM_PAINT:
-        uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDOK));
+        uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
         return TRUE;
     case WM_CTLCOLORSTATIC:
         SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));

@@ -298,7 +298,7 @@ void toolbar_extension::create_toolbar()
         {
             SendMessage(wnd_toolbar, TB_SETPADDING, (WPARAM) 0, MAKELPARAM(0,0));
             DLLVERSIONINFO2 dvi;
-            HRESULT hr = uih::GetComCtl32Version(dvi);
+            HRESULT hr = uih::get_comctl32_version(dvi);
             if (SUCCEEDED(hr) && dvi.info1.dwMajorVersion >= 6)
             {
                 /*
@@ -482,7 +482,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
                         if (m_appearance != APPEARANCE_NOEDGE && !m_text_below && lptbcd->nmcd.dwItemSpec >= 0 && lptbcd->nmcd.dwItemSpec<m_buttons.get_count() && m_buttons[lptbcd->nmcd.dwItemSpec].m_show == SHOW_TEXT)
                         {
                             DLLVERSIONINFO2 dvi;
-                            HRESULT hr = uih::GetComCtl32Version(dvi);
+                            HRESULT hr = uih::get_comctl32_version(dvi);
                             if (SUCCEEDED(hr) && dvi.info1.dwMajorVersion >= 6)
                                 lptbcd->rcText.left-=LOWORD(SendMessage(wnd_toolbar, TB_GETPADDING, (WPARAM) 0, 0)) + 2;  //Hack for commctrl6
                         }

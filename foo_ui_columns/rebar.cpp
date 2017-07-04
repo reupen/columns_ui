@@ -221,7 +221,7 @@ void rebar_band_info::_export(stream_writer * out, t_uint32 type, abort_callback
     else
         ptr->get_config(&w, p_abort);
     out->write_lendian_t(guid, p_abort);
-    out->write_lendian_t(width.getScaledValue(), p_abort);
+    out->write_lendian_t(width.get_scaled_value(), p_abort);
     out->write_lendian_t(rbbs_break, p_abort);
     DWORD size = w.m_data.get_size();
     out->write_lendian_t(size, p_abort);
@@ -265,7 +265,7 @@ void rebar_band_info::import(stream_reader * r, t_uint32 type, abort_callback & 
 void rebar_band_info::write(stream_writer * out, abort_callback & p_abort)
 {
         out->write_lendian_t(guid, p_abort);
-        out->write_lendian_t(width.getScaledValue(), p_abort);
+        out->write_lendian_t(width.get_scaled_value(), p_abort);
         out->write_lendian_t(rbbs_break, p_abort);
         DWORD size = config.get_size();
         out->write_lendian_t(size, p_abort);
@@ -895,7 +895,7 @@ void rebar_window::destroy()
 void rebar_window::update_bands()
 {
     refresh_bands(false);
-    uih::Rebar_ShowAllBands(wnd_rebar);
+    uih::rebar_show_all_bands(wnd_rebar);
 }
 
 void rebar_window::delete_band(unsigned n)
@@ -986,9 +986,9 @@ void rebar_window::update_band(unsigned n, bool size/*, bool min_height, bool ma
         if (mmi.ptMaxTrackSize.y < 0)
             mmi.ptMaxTrackSize.y = 0;
         if (mmi.ptMinTrackSize.y <= 0)
-            mmi.ptMinTrackSize.y = min(uih::ScaleDpiValue(default_toolbar_height), mmi.ptMaxTrackSize.y);
+            mmi.ptMinTrackSize.y = min(uih::scale_dpi_value(default_toolbar_height), mmi.ptMaxTrackSize.y);
         if (mmi.ptMinTrackSize.x <= 0)
-            mmi.ptMinTrackSize.x = uih::ScaleDpiValue(default_toolbar_width);
+            mmi.ptMinTrackSize.x = uih::scale_dpi_value(default_toolbar_width);
 
         rbbi.cyMinChild = mmi.ptMinTrackSize.y;
         rbbi.cyMaxChild = mmi.ptMaxTrackSize.y;
@@ -1068,9 +1068,9 @@ void rebar_window::refresh_bands(bool force_destroy_bands, bool save)
                     if (mmi.ptMaxTrackSize.y < 0)
                         mmi.ptMaxTrackSize.y = 0;
                     if (mmi.ptMinTrackSize.y <= 0)
-                        mmi.ptMinTrackSize.y = min(uih::ScaleDpiValue(default_toolbar_height), mmi.ptMaxTrackSize.y);
+                        mmi.ptMinTrackSize.y = min(uih::scale_dpi_value(default_toolbar_height), mmi.ptMaxTrackSize.y);
                     if (mmi.ptMinTrackSize.x <= 0)
-                        mmi.ptMinTrackSize.x = uih::ScaleDpiValue(default_toolbar_width);
+                        mmi.ptMinTrackSize.x = uih::scale_dpi_value(default_toolbar_width);
 
                     rbbi.cyMinChild   = mmi.ptMinTrackSize.y;
                     rbbi.cyMaxChild   = mmi.ptMaxTrackSize.y;

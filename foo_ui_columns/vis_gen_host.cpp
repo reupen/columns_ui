@@ -184,7 +184,7 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         case WM_GETMINMAXINFO:
             {
                 LPMINMAXINFO mmi = LPMINMAXINFO(lp);
-                mmi->ptMinTrackSize.x = uih::ScaleDpiValue(50);
+                mmi->ptMinTrackSize.x = uih::scale_dpi_value(50);
 
                 return 0;
             }

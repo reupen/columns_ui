@@ -565,7 +565,7 @@ void tab_columns_v3::refresh_me(HWND wnd, bool init)
 
     int i, t = m_columns.get_count();
     for (i = 0; i < t; i++) {
-        uih::ListView_InsertItemText(wnd_lv, i, 0, m_columns[i]->name);
+        uih::list_view_insert_item_text(wnd_lv, i, 0, m_columns[i]->name);
     }
 
     SendDlgItemMessage(wnd, IDC_COLUMNS, WM_SETREDRAW, true, 0);
@@ -603,9 +603,9 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                 m_wnd = wnd;
                 //if (g_main_window && !cfg_nohscroll ) playlist_view::g_save_columns();
                 m_wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
-                uih::SetListViewWindowExplorerTheme(m_wnd_lv);
+                uih::list_view_set_explorer_theme(m_wnd_lv);
                 ListView_SetExtendedListViewStyleEx(m_wnd_lv, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
-                uih::ListView_InsertColumnText(m_wnd_lv, 0, L"Column", 50);
+                uih::list_view_insert_column_text(m_wnd_lv, 0, L"Column", 50);
 
                 m_columns.set_entries_copy(g_columns, true);
 
@@ -649,7 +649,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                             column_t::ptr temp = new column_t;
                             temp->name = "New Column";
                             t_size insert = m_columns.insert_item(temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
-                            uih::ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
+                            uih::list_view_insert_item_text(wnd_lv, insert, 0, "New Column");
                             ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
                             ListView_EnsureVisible(wnd_lv, insert, FALSE);
                         }
@@ -668,16 +668,16 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                             }
                             else if (cmd == ID_UP) {
                                 if (idx > 0 && m_columns.move_up(idx)) {
-                                    uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-                                    uih::ListView_InsertItemText(wnd_lv, idx - 1, 0, m_columns[idx - 1]->name, true);
+                                    uih::list_view_insert_item_text(wnd_lv, idx, 0, m_columns[idx]->name, true);
+                                    uih::list_view_insert_item_text(wnd_lv, idx - 1, 0, m_columns[idx - 1]->name, true);
                                     ListView_SetItemState(wnd_lv, idx - 1, LVIS_SELECTED, LVIS_SELECTED);
                                     ListView_EnsureVisible(wnd_lv, idx - 1, FALSE);
                                 }
                             }
                             else if (cmd == ID_DOWN) {
                                 if ((t_size)(idx + 1) < m_columns.get_count() && m_columns.move_down(idx)) {
-                                    uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-                                    uih::ListView_InsertItemText(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
+                                    uih::list_view_insert_item_text(wnd_lv, idx, 0, m_columns[idx]->name, true);
+                                    uih::list_view_insert_item_text(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
                                     ListView_SetItemState(wnd_lv, idx + 1, LVIS_SELECTED, LVIS_SELECTED);
                                     ListView_EnsureVisible(wnd_lv, idx + 1, FALSE);
                                 }
@@ -719,7 +719,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                 HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
                 int item = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
                 if (item >= 0 && (unsigned)item < m_columns.get_count())
-                    uih::ListView_InsertItemText(wnd_lv, item, 0, m_columns[item]->name, true);
+                    uih::list_view_insert_item_text(wnd_lv, item, 0, m_columns[item]->name, true);
             }
             return 0;
         case WM_NOTIFY:
@@ -779,8 +779,8 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                         HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
                         int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
                         if (idx >= 0 && idx>0 && m_columns.move_up(idx)) {
-                            uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-                            uih::ListView_InsertItemText(wnd_lv, idx - 1, 0, m_columns[idx - 1]->name, true);
+                            uih::list_view_insert_item_text(wnd_lv, idx, 0, m_columns[idx]->name, true);
+                            uih::list_view_insert_item_text(wnd_lv, idx - 1, 0, m_columns[idx - 1]->name, true);
                             ListView_SetItemState(wnd_lv, idx - 1, LVIS_SELECTED, LVIS_SELECTED);
                             ListView_EnsureVisible(wnd_lv, idx - 1, FALSE);
                         }
@@ -792,8 +792,8 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                         HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
                         int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
                         if (idx >= 0 && (t_size(idx + 1)) < m_columns.get_count() && m_columns.move_down(idx)) {
-                            uih::ListView_InsertItemText(wnd_lv, idx, 0, m_columns[idx]->name, true);
-                            uih::ListView_InsertItemText(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
+                            uih::list_view_insert_item_text(wnd_lv, idx, 0, m_columns[idx]->name, true);
+                            uih::list_view_insert_item_text(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
                             ListView_SetItemState(wnd_lv, idx + 1, LVIS_SELECTED, LVIS_SELECTED);
                             ListView_EnsureVisible(wnd_lv, idx + 1, FALSE);
                         }
@@ -809,7 +809,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                             column_t::ptr temp = new column_t;
                             temp->name = "New Column";
                             t_size insert = m_columns.insert_item(temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
-                            uih::ListView_InsertItemText(wnd_lv, insert, 0, "New Column");
+                            uih::list_view_insert_item_text(wnd_lv, insert, 0, "New Column");
                             ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
                             ListView_EnsureVisible(wnd_lv, insert, FALSE);
                         }
@@ -842,7 +842,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                             pfc::string8 temp;
                             m_columns.get_string(new_idx, temp, STRING_NAME);
 
-                            if (uih::ListView_InsertItemText(wnd_lv, new_idx, 0, "New Column") == -1)
+                            if (uih::list_view_insert_item_text(wnd_lv, new_idx, 0, "New Column") == -1)
                                 m_columns.delete_item(new_idx);
                             else {
                                 ListView_SetItemState(wnd_lv, new_idx, LVIS_SELECTED, LVIS_SELECTED);
@@ -857,7 +857,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                         HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
                         int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
                         if (idx >= 0 && m_columns.insert_item(idx, "New Column", "", false, "", false, "", 100, ALIGN_LEFT, FILTER_NONE, "", 100, true, "")) {
-                            if (uih::ListView_InsertItemText(wnd_lv, idx, 0, "New Column") == -1) {
+                            if (uih::list_view_insert_item_text(wnd_lv, idx, 0, "New Column") == -1) {
                                 m_columns.delete_item(idx);
                             }
                         }
@@ -869,7 +869,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                         HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
                         column_info * temp = new column_info;
                         temp->set_string(STRING_NAME, "New Column");
-                        uih::ListView_InsertItemText(wnd_lv, m_columns.get_count(), 0, "New Column");
+                        uih::list_view_insert_item_text(wnd_lv, m_columns.get_count(), 0, "New Column");
                         ListView_SetItemState(wnd_lv, m_columns.get_count(), LVIS_SELECTED, LVIS_SELECTED);
                         ListView_EnsureVisible(wnd_lv, m_columns.get_count(), FALSE);
                         m_columns.add_item(temp);

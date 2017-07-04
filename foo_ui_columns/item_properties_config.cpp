@@ -15,16 +15,16 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
 
         HWND wnd_lv = GetDlgItem(wnd, IDC_INFOSECTIONS);
         ListView_SetExtendedListViewStyleEx(wnd_lv, LVS_EX_CHECKBOXES, LVS_EX_CHECKBOXES);
-        uih::SetListViewWindowExplorerTheme(wnd_lv);
+        uih::list_view_set_explorer_theme(wnd_lv);
 
         RECT rc;
         GetClientRect(wnd_lv, &rc);
-        uih::ListView_InsertColumnText(wnd_lv, 0, L"", RECT_CX(rc));
+        uih::list_view_insert_column_text(wnd_lv, 0, L"", RECT_CX(rc));
 
         t_size i, count = tabsize(g_info_sections);
         for (i = 0; i < count; i++)
         {
-            uih::ListView_InsertItemText(wnd_lv, i, 0, g_info_sections[i].name);
+            uih::list_view_insert_item_text(wnd_lv, i, 0, g_info_sections[i].name);
             ListView_SetCheckState(wnd_lv, i, (m_info_sections_mask & (1 << g_info_sections[i].id)) ? TRUE : FALSE);
         }
 
@@ -47,7 +47,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
         SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
         return TRUE;
     case WM_PAINT:
-        uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDOK));
+        uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
         return TRUE;
     case WM_CTLCOLORSTATIC:
         SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));

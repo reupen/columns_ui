@@ -4,7 +4,7 @@
 
 void column_t::read(stream_reader* reader, abort_callback& abortCallback)
 {
-    width.dpi = uih::GetSystemDpiCached().cx;
+    width.dpi = uih::get_system_dpi_cached().cx;
     reader->read_string(name, abortCallback);
     reader->read_string(spec, abortCallback);
     reader->read_lendian_t(use_custom_colour, abortCallback);

@@ -225,8 +225,8 @@ void spectrum_extension::enable( const ui_extension::visualisation_host_ptr & p_
     p_host = p_vis_host;
     b_active = true;
 
-    m_bar_width = uih::ScaleDpiValue(3);
-    m_bar_gap = uih::ScaleDpiValue(1);
+    m_bar_width = uih::scale_dpi_value(3);
+    m_bar_gap = uih::scale_dpi_value(1);
     
     if (list_vis.add_item(this) == 0)
     {
@@ -328,7 +328,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
         return TRUE;
     case WM_PAINT:
-        uih::HandleModernBackgroundPaint(wnd, GetDlgItem(wnd, IDOK));
+        uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
         return TRUE;
     case WM_CTLCOLORSTATIC:
         {

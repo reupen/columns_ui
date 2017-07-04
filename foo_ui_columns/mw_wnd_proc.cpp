@@ -122,7 +122,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
                 WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
 
-                uih::RegisterShellHookWindowHelper(wnd);
+                RegisterShellHookWindow(wnd);
 
                 INITCOMMONCONTROLSEX icex;
                 icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -133,7 +133,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 //g_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&g_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
 
-                if (!uih::GetKeyboardCuesEnabled())
+                if (!uih::are_keyboard_cues_enabled())
                 SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
                 g_main_window = wnd;
@@ -167,7 +167,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             {
                 g_get_msg_hook.deregister_hook();
                 g_layout_window.destroy();
-                uih::DeregisterShellHookWindowHelper(wnd);
+                DeregisterShellHookWindow(wnd);
 
 
                 destroy_rebar(false);
@@ -247,7 +247,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_ACTIVATE:
             {
                 if ((LOWORD(wp) == WA_INACTIVE)) {
-                    if (!uih::GetKeyboardCuesEnabled())
+                    if (!uih::are_keyboard_cues_enabled())
                     SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
                     wnd_last = GetFocus();
                     if (!g_rebar_window || !g_rebar_window->get_previous_menu_focus_window(g_wnd_focused_before_menu))
@@ -526,7 +526,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         case WM_SETTINGCHANGE:
             if (wp == SPI_SETNONCLIENTMETRICS) { } else if (wp == SPI_SETKEYBOARDCUES) {
-                bool cues = uih::GetKeyboardCuesEnabled();
+                bool cues = uih::are_keyboard_cues_enabled();
                 SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(cues ? UIS_CLEAR : UIS_SET, UISF_HIDEFOCUS), NULL);
                 //SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(cues ? UIS_CLEAR : UIS_SET, UISF_HIDEFOCUS), NULL);
                 //return 0;

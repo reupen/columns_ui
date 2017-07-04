@@ -164,7 +164,7 @@ LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case WM_GETMINMAXINFO:
             {
                 LPMINMAXINFO mmi = LPMINMAXINFO(lp);
-                mmi->ptMinTrackSize.y = uih::ScaleDpiValue(21);
+                mmi->ptMinTrackSize.y = uih::scale_dpi_value(21);
 
                 return 0;
             }

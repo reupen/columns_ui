@@ -148,7 +148,7 @@ void splitter_window_impl::panel::write(stream_writer * out, abort_callback & p_
     out->write_lendian_t(m_hidden, p_abort);
     out->write_lendian_t(m_show_caption, p_abort);
     out->write_lendian_t(m_autohide, p_abort);
-    out->write_lendian_t(m_size.getScaledValue(), p_abort);
+    out->write_lendian_t(m_size.get_scaled_value(), p_abort);
     out->write_lendian_t(m_show_toggle_area, p_abort);
     out->write_lendian_t(m_child_data.get_size(), p_abort);
     out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
@@ -178,7 +178,7 @@ void splitter_window_impl::panel::_export(stream_writer * out, abort_callback & 
             out->write_lendian_t(m_hidden, p_abort);
             out->write_lendian_t(m_show_caption, p_abort);
             out->write_lendian_t(m_autohide, p_abort);
-            out->write_lendian_t(m_size.getScaledValue(), p_abort);
+            out->write_lendian_t(m_size.get_scaled_value(), p_abort);
             out->write_lendian_t(m_show_toggle_area, p_abort);
             out->write_lendian_t(child_exported_data.m_data.get_size(), p_abort);
             out->write(child_exported_data.m_data.get_ptr(), child_exported_data.m_data.get_size(), p_abort);

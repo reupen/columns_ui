@@ -59,7 +59,7 @@ class export_colours : public cui::fcl::dataset
         bool b_font_read = false, b_colour_read=false;
 
         bool item_padding_read = false;
-        uih::IntegerAndDpi<int32_t> item_padding(0, uih::GetSystemDpiCached().cx);
+        uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
 
         while (reader.get_remaining())
         {
@@ -185,7 +185,7 @@ class export_colours_switcher : public cui::fcl::dataset
         bool b_font_read = false;
 
         bool item_padding_read = false;
-        uih::IntegerAndDpi<int32_t> item_padding(0, uih::GetSystemDpiCached().cx);
+        uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
 
         while (reader.get_remaining())
         {
