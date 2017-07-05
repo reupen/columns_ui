@@ -21,7 +21,7 @@ namespace pvt
                     m_dragging = true;
                     m_DataObject = pDataObject;
                     m_dragging_initial_playlist = m_playlist_api->get_active_playlist();
-                    HRESULT hr = uih::ole::DoDragDrop(get_wnd(), wp, pDataObject,DROPEFFECT_COPY|DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
+                    HRESULT hr = uih::ole::do_drag_drop(get_wnd(), wp, pDataObject,DROPEFFECT_COPY|DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
 
                     m_dragging=false;
                     m_DataObject.release();

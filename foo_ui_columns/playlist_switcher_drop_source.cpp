@@ -19,7 +19,7 @@ bool playlist_switcher_t::do_drag_drop(WPARAM wp)
             DWORD blah = DROPEFFECT_NONE;
             m_dragging = true;
             m_DataObject = pDataObject;
-            HRESULT hr = uih::ole::DoDragDrop(get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
+            HRESULT hr = uih::ole::do_drag_drop(get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
             m_DataObject.release();
             m_dragging = false;
         }

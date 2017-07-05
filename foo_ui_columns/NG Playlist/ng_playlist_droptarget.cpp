@@ -48,7 +48,7 @@ namespace pvt
             else
             {
                 *pdwEffect = DROPEFFECT_NONE;
-                uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+                uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
             }
         }
         return S_OK;
@@ -67,7 +67,7 @@ namespace pvt
         if (!m_is_accepted_type)
         {
             *pdwEffect = DROPEFFECT_NONE;
-            uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
             return S_OK;
         }
 
@@ -122,7 +122,7 @@ namespace pvt
     HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave( )
     {
         if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
-        uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+        uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
         p_playlist->remove_insert_mark();
         p_playlist->destroy_timer_scroll_up();
         p_playlist->destroy_timer_scroll_down();
@@ -351,6 +351,6 @@ namespace pvt
             playlist_api->activeplaylist_get_name(insertText);
 
         }
-        return uih::ole::SetDropDescription(pDataObj, dit, message, insertText);
+        return uih::ole::set_drop_description(pDataObj, dit, message, insertText);
     }
 }

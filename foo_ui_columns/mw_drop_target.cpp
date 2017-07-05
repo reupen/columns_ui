@@ -75,7 +75,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DW
 
 
     if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
-    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
 
     m_DataObject.release();
 
@@ -85,7 +85,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DW
 HRESULT STDMETHODCALLTYPE drop_handler_interface::DragLeave()
 {
     if (m_DropTargetHelper.is_valid()) m_DropTargetHelper->DragLeave();
-    uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
 
     last_over.x = 0;
     last_over.y = 0;
@@ -113,12 +113,12 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragOver(DWORD grfKeyState, PO
 
             pfc::string8 name;
             static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-            uih::ole::SetDropDescription(m_DataObject, DROPIMAGE_COPY, "Add to %1", name);
+            uih::ole::set_drop_description(m_DataObject, DROPIMAGE_COPY, "Add to %1", name);
         }
         else
         {
             *pdwEffect = DROPEFFECT_NONE;
-            uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
         }
     }
 
@@ -150,12 +150,12 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragEnter(IDataObject *pDataOb
             *pdwEffect = DROPEFFECT_COPY;
             pfc::string8 name;
             static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-            uih::ole::SetDropDescription(pDataObj, DROPIMAGE_COPY, "Add to %1", name);
+            uih::ole::set_drop_description(pDataObj, DROPIMAGE_COPY, "Add to %1", name);
         }
         else
         {
             *pdwEffect = DROPEFFECT_NONE;
-            uih::ole::SetDropDescription(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
         }
     }
     return S_OK; //??
