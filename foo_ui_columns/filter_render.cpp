@@ -57,7 +57,7 @@ namespace filter_panel {
 
                 FillRect(dc, &rc_subitem, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cr_back)));
             }
-            ui_helpers::text_out_colours_tab(dc, get_item_text(index, k), strlen(get_item_text(index, k)), 1 + (k == 0 ? indentation : 0), 3, &rc_subitem, b_selected, cr_text, true, true, (cfg_ellipsis != 0), get_column_alignment(k));
+            uih::text_out_colours_tab(dc, get_item_text(index, k), strlen(get_item_text(index, k)), 1 + (k == 0 ? indentation : 0), 3, &rc_subitem, b_selected, cr_text, true, true, (cfg_ellipsis != 0), get_column_alignment(k));
 
             rc_subitem.left = rc_subitem.right;
         }

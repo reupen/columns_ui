@@ -236,7 +236,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
                 //if (b_themed)
                 //    DrawThemeText(m_theme, hdc_mem, LVP_LISTITEM, sel ? (GetFocus() == wnd_playlist ? LIS_SELECTED : LIS_SELECTEDNOTFOCUS) : LIS_NORMAL, L"test", 4, 0, 0, &draw);
                 //else
-                ui_helpers::text_out_colours_tab(hdc_mem, temp, temp.length(), 2, 1, &draw, sel, colourfore, TRUE, true, (cfg_ellipsis != 0), (ui_helpers::alignment)columns[c]->align);
+                uih::text_out_colours_tab(hdc_mem, temp, temp.length(), 2, 1, &draw, sel, colourfore, TRUE, true, (cfg_ellipsis != 0), (uih::alignment)columns[c]->align);
 
 
                 if (colours.use_frame_left)

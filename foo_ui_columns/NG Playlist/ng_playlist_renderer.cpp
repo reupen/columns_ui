@@ -105,7 +105,7 @@ namespace pvt
 
                     FillRect(dc, &rc_subitem, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cr_back)));
                 }
-                ui_helpers::text_out_colours_tab(dc, get_item_text(index,k), strlen(get_item_text(index,k)), 1, 3, &rc_subitem, b_selected, cr_text, true, true, (cfg_ellipsis != 0), get_column_alignment(k));
+                uih::text_out_colours_tab(dc, get_item_text(index,k), strlen(get_item_text(index,k)), 1, 3, &rc_subitem, b_selected, cr_text, true, true, (cfg_ellipsis != 0), get_column_alignment(k));
 
                 if (style_data[k]->use_frame_left)
                 {
@@ -186,7 +186,7 @@ namespace pvt
                 FillRect(dc, &rc, br);
             }
 
-            ui_helpers::text_out_colours_tab(dc, text, strlen(text), 2 + indentation*level, 2, &rc, false, cr, true, true, true, ui_helpers::ALIGN_LEFT, nullptr, true, true, &text_width);
+            uih::text_out_colours_tab(dc, text, strlen(text), 2 + indentation*level, 2, &rc, false, cr, true, true, true, uih::ALIGN_LEFT, nullptr, true, true, &text_width);
 
             LONG cx = (LONG)min(text_width, MAXLONG);
 

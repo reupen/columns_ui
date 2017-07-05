@@ -51,8 +51,8 @@ cfg_string cfg_item_details_script(g_guid_item_details_script, "[%artist%]$crlf(
 pfc::string8 cfg_item_details_script = "$set_font(%default_font_face%,$add(%default_font_size%,4),)[%artist%]$crlf()[%title%]$crlf()[%album%][$crlf()$crlf()%lyrics%]";
 #endif
 cfg_bool cfg_item_details_hscroll(g_guid_item_details_hscroll, false);
-cfg_uint cfg_item_details_horizontal_alignment(g_guid_item_details_horizontal_alignment, ui_helpers::ALIGN_CENTRE);
-cfg_uint cfg_item_details_vertical_alignment(g_guid_item_details_vertical_alignment, ui_helpers::ALIGN_CENTRE);
+cfg_uint cfg_item_details_horizontal_alignment(g_guid_item_details_horizontal_alignment, uih::ALIGN_CENTRE);
+cfg_uint cfg_item_details_vertical_alignment(g_guid_item_details_vertical_alignment, uih::ALIGN_CENTRE);
 cfg_bool cfg_item_details_word_wrapping(g_guid_item_details_word_wrapping, true);
 
 
@@ -317,9 +317,9 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
 
     if (b_set_pos)
     {
-        if (m_horizontal_alignment == ui_helpers::ALIGN_RIGHT)
+        if (m_horizontal_alignment == uih::ALIGN_RIGHT)
             si.nPos = si.nMax - (si.nPage ? si.nPage - 1 : 0);
-        else if (m_horizontal_alignment == ui_helpers::ALIGN_CENTRE)
+        else if (m_horizontal_alignment == uih::ALIGN_CENTRE)
             si.nPos = (si.nMax - (si.nPage ? si.nPage - 1 : 0))/2;
         else
             si.fMask &= ~SIF_POS;
@@ -924,15 +924,15 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             if (m_display_sz.cy < client_height)
             {
                 int extra = client_height - m_display_sz.cy;
-                if (m_vertical_alignment == ui_helpers::ALIGN_CENTRE)
+                if (m_vertical_alignment == uih::ALIGN_CENTRE)
                     rc_client.top += extra/2;
-                else if (m_vertical_alignment == ui_helpers::ALIGN_RIGHT)
+                else if (m_vertical_alignment == uih::ALIGN_RIGHT)
                     rc_client.top += extra;
             }
 
-            //ui_helpers::text_out_colours_tab(dc_mem, m_current_text, m_current_text.get_length(), 0, 2, &rc, NULL, p_helper.get_colour(cui::colours::colour_text), true, true, false, ui_helpers::ALIGN_LEFT);
-            //text_out_multiline(dc_mem, rc_client, line_height, m_current_text, p_helper.get_colour(cui::colours::colour_text), (ui_helpers::alignment)m_alignment, m_hscroll, m_word_wrapping);
-            g_text_out_multiline_font(dc_mem, rc_client, line_height, m_current_text, m_font_change_info, m_display_line_info, m_display_sz, p_helper.get_colour(cui::colours::colour_text), (ui_helpers::alignment)m_horizontal_alignment, m_hscroll, m_word_wrapping);
+            //uih::text_out_colours_tab(dc_mem, m_current_text, m_current_text.get_length(), 0, 2, &rc, NULL, p_helper.get_colour(cui::colours::colour_text), true, true, false, uih::ALIGN_LEFT);
+            //text_out_multiline(dc_mem, rc_client, line_height, m_current_text, p_helper.get_colour(cui::colours::colour_text), (uih::alignment)m_alignment, m_hscroll, m_word_wrapping);
+            g_text_out_multiline_font(dc_mem, rc_client, line_height, m_current_text, m_font_change_info, m_display_line_info, m_display_sz, p_helper.get_colour(cui::colours::colour_text), (uih::alignment)m_horizontal_alignment, m_hscroll, m_word_wrapping);
             SelectFont(dc_mem, fnt_old);
 
             BitBlt(ps.hdc,    rc.left, rc.top, RECT_CX(rc), RECT_CY(rc), dc_mem, rc.left, rc.top, SRCCOPY);

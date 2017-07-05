@@ -70,8 +70,8 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         break;
     case WM_PAINT:
         {
-            ui_helpers::PaintScope ps(wnd);
-            ui_helpers::MemoryDC dc(ps);
+            uih::PaintScope ps(wnd);
+            uih::MemoryDC dc(ps);
 
             RECT rc, rc_volume;
             GetClientRect(wnd, &rc);
@@ -90,36 +90,36 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             HFONT fnt_old = SelectFont(dc, m_font);
 
             const char * placeholder = "999999999 items selected";
-            t_size placeholder_len = ui_helpers::get_text_width(dc, placeholder, strlen(placeholder)) + 20;
+            t_size placeholder_len = uih::get_text_width(dc, placeholder, strlen(placeholder)) + 20;
 
             pfc::string8 items_text; items_text<< m_item_count << " item";
             if (m_item_count != 1) items_text << "s";
             if (m_selection) items_text << " selected";
 
-            ui_helpers::text_out_colours_tab(dc, items_text, -1, 4, 2, &rc_top, false, 0, false, false, false, ui_helpers::ALIGN_LEFT);
+            uih::text_out_colours_tab(dc, items_text, -1, 4, 2, &rc_top, false, 0, false, false, false, uih::ALIGN_LEFT);
             if (m_item_count) {
                 pfc::string_formatter formatter;
-                ui_helpers::text_out_colours_tab(dc, formatter << "Length: " << m_length_text, -1, 4, 2, &rc_bottom, false, 0, false, false, false, ui_helpers::ALIGN_LEFT);
+                uih::text_out_colours_tab(dc, formatter << "Length: " << m_length_text, -1, 4, 2, &rc_bottom, false, 0, false, false, false, uih::ALIGN_LEFT);
             }
 
             if (m_menu_active)
             {
                 {
                     RECT rc_item = rc_top;
-                    ui_helpers::text_out_colours_tab(dc, m_menu_text, -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, nullptr, true, true, nullptr);
+                    uih::text_out_colours_tab(dc, m_menu_text, -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
                 }
             }
             else
             {
                 placeholder = "Playing:  ";
-                t_size placeholder2_len = ui_helpers::get_text_width(dc, placeholder, strlen(placeholder));
+                t_size placeholder2_len = uih::get_text_width(dc, placeholder, strlen(placeholder));
 
                 t_size now_playing_x_end = 4 + placeholder_len + placeholder2_len;
                 {
                     RECT rc_item = rc_top;
                     //rc_item.right = 4 + placeholder_len + placeholder2_len;
                     pfc::string_formatter formatter;
-                    ui_helpers::text_out_colours_tab(dc, formatter << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, ui_helpers::ALIGN_LEFT, nullptr, true, true, nullptr);
+                    uih::text_out_colours_tab(dc, formatter << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, 0, false, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
                 }
                 if (playing1.get_length())
                 {
@@ -127,9 +127,9 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
                     g_split_string_by_crlf(playing1.get_ptr(), playingstrings);
                     t_size lines = playingstrings.get_count();
                     if (lines)
-                        ui_helpers::text_out_colours_tab(dc, playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_top, false, 0, true, true, false, ui_helpers::ALIGN_LEFT);
+                        uih::text_out_colours_tab(dc, playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_top, false, 0, true, true, false, uih::ALIGN_LEFT);
                     if (lines > 1)
-                        ui_helpers::text_out_colours_tab(dc, playingstrings[1], pfc_infinite, now_playing_x_end, 0, &rc_bottom, false, 0, true, true, false, ui_helpers::ALIGN_LEFT);
+                        uih::text_out_colours_tab(dc, playingstrings[1], pfc_infinite, now_playing_x_end, 0, &rc_bottom, false, 0, true, true, false, uih::ALIGN_LEFT);
                 }
             }
 

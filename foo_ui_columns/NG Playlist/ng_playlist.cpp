@@ -236,7 +236,7 @@ namespace pvt {
             if (b_valid)
             {
                 column_data_t temp;
-                columns.add_item(t_column(source->name, source->width, source->parts, (ui_helpers::alignment)source->align));
+                columns.add_item(t_column(source->name, source->width, source->parts, (uih::alignment)source->align));
                 p_compiler->compile_safe(temp.m_display_script, source->spec);
                 if (source->use_custom_colour)
                     p_compiler->compile_safe(temp.m_style_script, source->colour_spec);

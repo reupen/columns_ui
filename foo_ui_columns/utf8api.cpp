@@ -60,7 +60,7 @@ namespace win32_helpers
 
         HDC dc = GetDC(wnd);
         HFONT fnt_old = SelectFont(dc, fnt);
-        rv = (unsigned)ui_helpers::get_text_width(dc, p_text, strlen(p_text));
+        rv = (unsigned)uih::get_text_width(dc, p_text, strlen(p_text));
         SelectFont(dc, fnt_old);
         ReleaseDC(wnd, dc);
 

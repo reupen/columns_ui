@@ -363,7 +363,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
         pfc::string8 text = text_new;
         text_new.reset();
 
-        ui_helpers::uGetTextExtentExPoint_helper pGetTextExtentExPoint;
+        uih::uGetTextExtentExPoint_helper pGetTextExtentExPoint;
         pfc::array_t<INT, pfc::alloc_fast_aggressive> widths;
 
         for (i = 0; i<count; i++)
@@ -541,14 +541,14 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
                 }
 
                 //if (wrapByte > (ptr - ptrStart))
-                //    widthCuml += ui_helpers::get_text_width_color(dc, &text[ptr], wrapByte - (ptr - ptrStart));// widths[wrapChar-1];
+                //    widthCuml += uih::get_text_width_color(dc, &text[ptr], wrapByte - (ptr - ptrStart));// widths[wrapChar-1];
 
                 t_size widthChar = min(textWrappedPtr ? textWrappedPtr - 1 : 0, wrapChar);
                 if (b_skipped && widthChar) widthChar--;
                 if (widthChar < character_extents.get_size())
                     widthCuml = character_extents[widthChar];
 
-                //max(sz.cx, ui_helpers::get_text_width_color(dc, text + ptr, wrapByte));
+                //max(sz.cx, uih::get_text_width_color(dc, text + ptr, wrapByte));
 
                 //if (b_skipped) 
                 //    wrapByte++;
@@ -596,7 +596,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
     {
     for (i=0; i<count; i++)
     {
-    sz.cx = max(sz.cx, ui_helpers::get_text_width_color(dc, &text_new[ptr], displayLines[i].m_byte_count));
+    sz.cx = max(sz.cx, uih::get_text_width_color(dc, &text_new[ptr], displayLines[i].m_byte_count));
     ptr += displayLines[i].m_byte_count;
     }
     }*/
@@ -619,7 +619,7 @@ void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text_n
     {
         pfc::string8 text = text_new;
         text_new.reset();
-        ui_helpers::uGetTextExtentExPoint_helper pGetTextExtentExPoint;
+        uih::uGetTextExtentExPoint_helper pGetTextExtentExPoint;
         pfc::array_t<INT, pfc::alloc_fast_aggressive> widths;
         for (i = 0; i<count; i++)
         {
@@ -649,7 +649,7 @@ void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text_n
                 else
                     text_new.add_string(text + ptr, wrapByte);
 
-                sz.cx = max(sz.cx, ui_helpers::get_text_width_color(dc, text + ptr, wrapByte));
+                sz.cx = max(sz.cx, uih::get_text_width_color(dc, text + ptr, wrapByte));
 
                 t_size inc = wrapByte;//increase_text_ptr_colour (&text[ptr], indices[i], wrapChar);
                 ptr += inc;
@@ -674,7 +674,7 @@ void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text_n
     {
         for (i = 0; i<count; i++)
         {
-            sz.cx = max(sz.cx, ui_helpers::get_text_width_color(dc, &text_new[ptr], displayLines[i].m_byte_count));
+            sz.cx = max(sz.cx, uih::get_text_width_color(dc, &text_new[ptr], displayLines[i].m_byte_count));
             ptr += displayLines[i].m_byte_count;
         }
     }
@@ -698,7 +698,7 @@ void g_get_multiline_text_dimensions_const(HDC dc, const char * text, const line
     g_get_multiline_text_dimensions(dc, rawText, newLineData, newLineDataWrapped, p_font_data, line_height, sz, b_word_wrapping, width);
 }
 
-void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_height, const char * text, const font_change_info_t & p_font_data, const display_line_info_list_t & newLineDataWrapped, const SIZE & sz, COLORREF cr_text, ui_helpers::alignment align, bool b_hscroll, bool word_wrapping)
+void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_height, const char * text, const font_change_info_t & p_font_data, const display_line_info_list_t & newLineDataWrapped, const SIZE & sz, COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping)
 {
     pfc::string8_fast_aggressive rawText = text;
 
@@ -772,7 +772,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
                     do { ptrC--; } while (ptrC >= rawText && *ptrC != '\x3');
                     if (ptrC >= rawText &&  *ptrC == '\x3')
                     {
-                        ui_helpers::text_out_colours_tab(dc, ptrC, ptrCEnd - ptrC + 1, 0, 0, &rc_line, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, nullptr, false, false);
+                        uih::text_out_colours_tab(dc, ptrC, ptrCEnd - ptrC + 1, 0, 0, &rc_line, false, cr_text, false, false, false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
                     }
                     break;
                 }
@@ -805,9 +805,9 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 
         if (widthLineText < widthLine)
         {
-            if (align == ui_helpers::ALIGN_CENTRE)
+            if (align == uih::ALIGN_CENTRE)
                 rc_line.left += (widthLine - widthLineText) / 2;
-            else if (align == ui_helpers::ALIGN_RIGHT)
+            else if (align == uih::ALIGN_RIGHT)
                 rc_line.left += (widthLine - widthLineText);
         }
 
@@ -836,7 +836,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
             RECT rc_font = rc_line;
             int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
             rc_font.bottom -= 2;//extra/4;
-            BOOL ret = ui_helpers::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, nullptr, false, false, &width);
+            BOOL ret = uih::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, &width);
             rc_line.left = width; //width == position actually!!
             ptr += ptrThisCount;
             ptrRemaining -= ptrThisCount;
@@ -847,7 +847,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
             RECT rc_font = rc_line;
             int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
             rc_font.bottom -= 2;
-            ui_helpers::text_out_colours_tab(dc, ptr, ptrRemaining, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, ui_helpers::ALIGN_LEFT, nullptr, false, false);
+            uih::text_out_colours_tab(dc, ptr, ptrRemaining, 0, 0, &rc_font, false, cr_text, false, false, false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
         }
 
 #if 0
@@ -868,7 +868,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
                         b_fontChanged = true;
                     }
                 }
-                ui_helpers::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, &width, false);
+                uih::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, &width, false);
                 rc_line.left += width;
                 if (fontPtr < fontChangesCount && (ptr - rawText) >= p_font_data.m_font_changes[fontPtr].m_text_index)
                     fontPtr++;
@@ -878,7 +878,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 
         }
         else
-            ui_helpers::text_out_colours_tab(dc, ptr, newLinePositions[i], 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, NULL, false);
+            uih::text_out_colours_tab(dc, ptr, newLinePositions[i], 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, NULL, false);
 #endif
 
         if (i < count)
@@ -894,7 +894,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
 }
 
 #if 0
-void text_out_multiline(HDC dc, const RECT & rc_topleft, t_size line_height, const char * text, COLORREF cr_text, ui_helpers::alignment align, bool b_hscroll, bool word_wrapping)
+void text_out_multiline(HDC dc, const RECT & rc_topleft, t_size line_height, const char * text, COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping)
 {
     pfc::string8_fast_aggressive rawText;
     pfc::list_t<t_size, pfc::alloc_fast_aggressive> newLinePositions;
@@ -929,7 +929,7 @@ void text_out_multiline(HDC dc, const RECT & rc_topleft, t_size line_height, con
 
         if (rc_line.top > rc_topleft.bottom) break;
 
-        ui_helpers::text_out_colours_tab(dc, ptr, i<count ? newLinePositions[i] : strlen(ptr), 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, NULL, false);
+        uih::text_out_colours_tab(dc, ptr, i<count ? newLinePositions[i] : strlen(ptr), 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, NULL, false);
         if (i < count)
             ptr += newLinePositions[i];
     }

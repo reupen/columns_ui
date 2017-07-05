@@ -126,7 +126,7 @@ void g_parse_font_format_string(const char * str, t_size len, font_data_t & p_ou
 void g_get_text_font_data(const char * p_text, pfc::string8_fast_aggressive & p_new_text, font_change_data_list_t & p_out);
 void g_get_text_font_info(const font_change_data_list_t & p_data, font_change_info_t & p_info);
 
-void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_height, const char * text, const font_change_info_t & p_font_data, const display_line_info_list_t & newLineDataWrapped, const SIZE & sz, COLORREF cr_text, ui_helpers::alignment align, bool b_hscroll, bool word_wrapping);
+void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_height, const char * text, const font_change_info_t & p_font_data, const display_line_info_list_t & newLineDataWrapped, const SIZE & sz, COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping);
 
 class titleformat_hook_change_font : public titleformat_hook
 {

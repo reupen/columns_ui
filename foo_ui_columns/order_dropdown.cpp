@@ -179,7 +179,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             {
                 const char * item = playlist_api->playback_order_get_name(n);
                 uSendMessageText(wnd_combo, CB_ADDSTRING, 0, item);
-                t_size cx = ui_helpers::get_text_width(dc, item, strlen(item));
+                t_size cx = uih::get_text_width(dc, item, strlen(item));
                 min_width = max (min_width, cx);
             }
             SelectFont(dc, font_old);

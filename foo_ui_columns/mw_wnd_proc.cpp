@@ -491,9 +491,9 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                     if (lpdis->itemData) {
                         pfc::string8& text = *reinterpret_cast<pfc::string8 *>(lpdis->itemData);
-                        ui_helpers::text_out_colours_tab(lpdis->hDC, text,
-                                                         text.length(), 2, 0, &rc, FALSE, GetSysColor(COLOR_MENUTEXT),
-                                                         TRUE, true, false, ui_helpers::ALIGN_LEFT);
+                        uih::text_out_colours_tab(lpdis->hDC, text, text.length(), 2, 0, &rc, 
+                                                  FALSE, GetSysColor(COLOR_MENUTEXT), TRUE,
+                                                  true, false, uih::ALIGN_LEFT);
                     }
 
                     return TRUE;

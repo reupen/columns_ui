@@ -408,7 +408,7 @@ void g_import_layout(HWND wnd, const char * path, bool quiet)
                     if (!uDialogBox(IDD_FCL_IMPORT, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
                         throw exception_aborted();
                 }
-                ui_helpers::DisableRedrawScope p_NoRedraw(g_main_window);
+                uih::DisableRedrawScope p_NoRedraw(g_main_window);
                 for (i = 0; i<count; i++)
                 {
                     cui::fcl::dataset_ptr ptr;
