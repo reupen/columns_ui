@@ -137,7 +137,7 @@ public:
             case (EN_CHANGE << 16) | IDC_ARTWORKWIDTH:
                 if (initialised)
                 {
-                    pvt::cfg_artwork_width = strtoul_n(string_utf8_from_window((HWND)lp), pfc_infinite);
+                    pvt::cfg_artwork_width = mmh::strtoul_n(string_utf8_from_window((HWND)lp).get_ptr(), pfc_infinite);
                     pvt::ng_playlist_view_t::g_on_artwork_width_change();
                 }
                 break;

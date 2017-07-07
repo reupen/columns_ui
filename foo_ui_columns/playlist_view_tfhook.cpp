@@ -145,12 +145,12 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                         value++;
                         value_length--;
                     }
-                    p_colours.text_colour.set(strtoul_n(value, value_length, 0x10));
+                    p_colours.text_colour.set(mmh::strtoul_n(value, value_length, 0x10));
                     if (value_length == 6 * 2 + 2 && value[6] == '|')
                     {
                         value += 7;
                         value_length -= 7;
-                        p_colours.selected_text_colour.set(strtoul_n(value, value_length, 0x10));
+                        p_colours.selected_text_colour.set(mmh::strtoul_n(value, value_length, 0x10));
                     }
                     else
                         p_colours.selected_text_colour.set(0xffffff - p_colours.text_colour);
@@ -166,7 +166,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                             value++;
                             value_length--;
                         }
-                        p_colours.selected_text_colour.set(strtoul_n(value, value_length, 0x10));
+                        p_colours.selected_text_colour.set(mmh::strtoul_n(value, value_length, 0x10));
                     }
                 }
                 if (p_params->get_param_count() >= 4)
@@ -179,7 +179,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                         value++;
                         value_length--;
                     }
-                    p_colours.selected_text_colour_non_focus.set(strtoul_n(value, value_length, 0x10));
+                    p_colours.selected_text_colour_non_focus.set(mmh::strtoul_n(value, value_length, 0x10));
                 }
                 else p_colours.selected_text_colour_non_focus.set(p_colours.selected_text_colour);
             }
@@ -194,13 +194,13 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                         value++;
                         value_length--;
                     }
-                    p_colours.background_colour.set(strtoul_n(value, value_length, 0x10));
+                    p_colours.background_colour.set(mmh::strtoul_n(value, value_length, 0x10));
 
                     if (value_length == 6 * 2 + 2 && value[6] == '|')
                     {
                         value += 7;
                         value_length -= 7;
-                        p_colours.selected_background_colour.set(strtoul_n(value, value_length, 0x10));
+                        p_colours.selected_background_colour.set(mmh::strtoul_n(value, value_length, 0x10));
                     }
                     else
                         p_colours.selected_background_colour.set(0xffffff - p_colours.background_colour);
@@ -216,7 +216,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                             value++;
                             value_length--;
                         }
-                        p_colours.selected_background_colour.set(strtoul_n(value, value_length, 0x10));
+                        p_colours.selected_background_colour.set(mmh::strtoul_n(value, value_length, 0x10));
                     }
                     if (p_params->get_param_count() >= 4)
                     {
@@ -228,7 +228,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                             value++;
                             value_length--;
                         }
-                        p_colours.selected_background_colour_non_focus.set(strtoul_n(value, value_length, 0x10));
+                        p_colours.selected_background_colour_non_focus.set(mmh::strtoul_n(value, value_length, 0x10));
                     }
                     else p_colours.selected_background_colour_non_focus.set(p_colours.selected_background_colour);
                 }
@@ -255,7 +255,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                                 value++;
                                 value_length--;
                             }
-                            p_colours.frame_left.set(strtoul_n(value, value_length, 0x10));
+                            p_colours.frame_left.set(mmh::strtoul_n(value, value_length, 0x10));
                         }
                     }
                 }
@@ -276,7 +276,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                                 value++;
                                 value_length--;
                             }
-                            p_colours.frame_top.set(strtoul_n(value, value_length, 0x10));
+                            p_colours.frame_top.set(mmh::strtoul_n(value, value_length, 0x10));
                         }
                     }
                 }
@@ -297,7 +297,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                                 value++;
                                 value_length--;
                             }
-                            p_colours.frame_right.set(strtoul_n(value, value_length, 0x10));
+                            p_colours.frame_right.set(mmh::strtoul_n(value, value_length, 0x10));
                         }
                     }
                 }
@@ -318,7 +318,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
                                 value++;
                                 value_length--;
                             }
-                            p_colours.frame_bottom.set(strtoul_n(value, value_length, 0x10));
+                            p_colours.frame_bottom.set(mmh::strtoul_n(value, value_length, 0x10));
                         }
                     }
                 }
@@ -335,7 +335,7 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
             unsigned p_val_length;
             p_params->get_param(0, p_val, p_val_length);
 
-            int colour = strtoul_n(p_val, p_val_length, 0x10);
+            int colour = mmh::strtoul_n(p_val, p_val_length, 0x10);
             int total = (colour & 0xff)
                 + ((colour & 0xff00) >> 8)
                 + ((colour & 0xff0000) >> 16);
@@ -357,9 +357,9 @@ bool titleformat_hook_style::process_function(titleformat_text_out * p_out, cons
             const char * p_val, *p_val2;
             unsigned p_val_length, p_val2_length;
             p_params->get_param(0, p_val, p_val_length);
-            int colour = strtoul_n(p_val, p_val_length, 0x10);
+            int colour = mmh::strtoul_n(p_val, p_val_length, 0x10);
             p_params->get_param(1, p_val2, p_val2_length);
-            int target = strtoul_n(p_val2, p_val2_length, 0x10);
+            int target = mmh::strtoul_n(p_val2, p_val2_length, 0x10);
             int amount = p_params->get_param_uint(2);
 
             int rdiff = (target & 0xff) - (colour & 0xff);

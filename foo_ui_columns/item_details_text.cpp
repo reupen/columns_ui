@@ -34,7 +34,7 @@ void g_get_text_font_data(const char * p_text, pfc::string8_fast_aggressive & p_
                     while (*ptr && *ptr != '\x7' && *ptr != '\t') ptr++;
                     t_size sizeLen = ptr - pSizeStart;
 
-                    temp.m_font_data.m_point = strtoul_n(pSizeStart, sizeLen);
+                    temp.m_font_data.m_point = mmh::strtoul_n(pSizeStart, sizeLen);
                     if ((b_tab = *ptr == '\t') || *ptr == '\x7') ptr++;
 
                     if (b_tab)
