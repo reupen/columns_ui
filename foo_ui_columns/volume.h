@@ -17,11 +17,11 @@
 template <bool b_vertical, bool b_popup, typename t_attributes, class t_base = ui_helpers::container_window>
 class volume_control_t : public t_base, private play_callback
 {
-    class track_bar_volume : public track_bar_impl
+    class track_bar_volume : public uih::Trackbar
     {
         void get_channel_rect(RECT * rc) const override
         {
-            if (b_popup) track_bar_impl::get_channel_rect(rc);
+            if (b_popup) uih::Trackbar::get_channel_rect(rc);
             else 
             {
                 RECT rc_client;
@@ -39,7 +39,7 @@ class volume_control_t : public t_base, private play_callback
         {
             if (t_attributes::get_background_colour() != -1)
                 FillRect(dc, rc, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(t_attributes::get_background_colour())));
-            else track_bar_impl::draw_background(dc, rc);
+            else uih::Trackbar::draw_background(dc, rc);
 
         }
         /*void draw_thumb (HDC dc, const RECT * rc) const
@@ -49,11 +49,11 @@ class volume_control_t : public t_base, private play_callback
                 get_uxtheme_ptr()->DrawThemeBackground(get_theme_handle(), dc, get_orientation() ? TKP_THUMBVERT : TKP_THUMBBOTTOM, get_enabled() ? (get_tracking() ? TUS_PRESSED : (get_hot() ? TUS_HOT : TUS_NORMAL)) : TUS_DISABLED, rc, 0);
             }
             else 
-                track_bar_impl::draw_thumb(dc, rc);
+                uih::Trackbar::draw_thumb(dc, rc);
         }*/
         void draw_channel (HDC dc, const RECT * rc) const override
         {
-            if (b_popup) track_bar_impl::draw_channel(dc,rc);
+            if (b_popup) uih::Trackbar::draw_channel(dc,rc);
             else
             {
                 if (m_this->get_using_gdiplus())
@@ -131,7 +131,7 @@ class volume_control_t : public t_base, private play_callback
     }
     m_child;
 
-    class track_bar_host_impl : public track_bar_host
+    class track_bar_host_impl : public uih::TrackbarCallback
     {
         void on_position_change(unsigned pos, bool b_tracking) override
         {
@@ -146,7 +146,7 @@ class volume_control_t : public t_base, private play_callback
 
             static_api_ptr_t<playback_control>()->set_volume(float(vol));
         }
-        void get_tooltip_text(unsigned pos, track_bar_string & out) override
+        void get_tooltip_text(unsigned pos, uih::TrackbarString & out) override
         {
             double scaled = pos / 1000.0;
             double offset = pow (10, -5.0/3.0);

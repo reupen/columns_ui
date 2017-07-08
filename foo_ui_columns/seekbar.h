@@ -10,12 +10,12 @@
 class seek_bar_extension : public ui_extension::container_ui_extension
 {
     bool initialised;
-    track_bar_impl m_child;
+    uih::Trackbar m_child;
 
-    class track_bar_host_impl : public track_bar_host
+    class track_bar_host_impl : public uih::TrackbarCallback
     {
         void on_position_change(unsigned pos, bool b_tracking) override;
-        void get_tooltip_text(unsigned pos, track_bar_string & out) override;
+        void get_tooltip_text(unsigned pos, uih::TrackbarString & out) override;
     } m_track_bar_host;
 
 public:

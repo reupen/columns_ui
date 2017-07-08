@@ -86,7 +86,7 @@ bool playlist_view::is_item_clipped(int idx, int col)
     pfc::string8 text;
     g_cache.active_get_display_name(idx, col,text);
     SelectObject(hdc, g_font);
-    int width = uih::get_text_width_color(hdc, text, text.length());
+    int width = uih::get_text_width_colour(hdc, text, text.length());
     ReleaseDC(wnd_playlist, hdc);
     unsigned col_width = get_column_width(col);
 

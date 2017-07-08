@@ -1387,7 +1387,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     {
                         //    playlist_api->format_title(n, text, g_playlist_entries.get_display_spec(((LPNMHEADER)lp)->iItem), NULL);
                         g_cache.active_get_display_name(n, ((LPNMHEADER)lp)->iItem, text);
-                        size = uih::get_text_width_color(hdc, text, text.length());
+                        size = uih::get_text_width_colour(hdc, text, text.length());
                         if (size > w) w = size;
                     }
 

@@ -363,7 +363,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
         pfc::string8 text = text_new;
         text_new.reset();
 
-        uih::uGetTextExtentExPoint_helper pGetTextExtentExPoint;
+        uih::CharacterExtentsCalculator pGetTextExtentExPoint;
         pfc::array_t<INT, pfc::alloc_fast_aggressive> widths;
 
         for (i = 0; i<count; i++)
@@ -541,14 +541,14 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
                 }
 
                 //if (wrapByte > (ptr - ptrStart))
-                //    widthCuml += uih::get_text_width_color(dc, &text[ptr], wrapByte - (ptr - ptrStart));// widths[wrapChar-1];
+                //    widthCuml += uih::get_text_width_colour(dc, &text[ptr], wrapByte - (ptr - ptrStart));// widths[wrapChar-1];
 
                 t_size widthChar = min(textWrappedPtr ? textWrappedPtr - 1 : 0, wrapChar);
                 if (b_skipped && widthChar) widthChar--;
                 if (widthChar < character_extents.get_size())
                     widthCuml = character_extents[widthChar];
 
-                //max(sz.cx, uih::get_text_width_color(dc, text + ptr, wrapByte));
+                //max(sz.cx, uih::get_text_width_colour(dc, text + ptr, wrapByte));
 
                 //if (b_skipped) 
                 //    wrapByte++;
@@ -596,7 +596,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
     {
     for (i=0; i<count; i++)
     {
-    sz.cx = max(sz.cx, uih::get_text_width_color(dc, &text_new[ptr], displayLines[i].m_byte_count));
+    sz.cx = max(sz.cx, uih::get_text_width_colour(dc, &text_new[ptr], displayLines[i].m_byte_count));
     ptr += displayLines[i].m_byte_count;
     }
     }*/
@@ -619,7 +619,7 @@ void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text_n
     {
         pfc::string8 text = text_new;
         text_new.reset();
-        uih::uGetTextExtentExPoint_helper pGetTextExtentExPoint;
+        uih::CharacterExtentsCalculator pGetTextExtentExPoint;
         pfc::array_t<INT, pfc::alloc_fast_aggressive> widths;
         for (i = 0; i<count; i++)
         {
@@ -649,7 +649,7 @@ void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text_n
                 else
                     text_new.add_string(text + ptr, wrapByte);
 
-                sz.cx = max(sz.cx, uih::get_text_width_color(dc, text + ptr, wrapByte));
+                sz.cx = max(sz.cx, uih::get_text_width_colour(dc, text + ptr, wrapByte));
 
                 t_size inc = wrapByte;//increase_text_ptr_colour (&text[ptr], indices[i], wrapChar);
                 ptr += inc;
@@ -674,7 +674,7 @@ void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text_n
     {
         for (i = 0; i<count; i++)
         {
-            sz.cx = max(sz.cx, uih::get_text_width_color(dc, &text_new[ptr], displayLines[i].m_byte_count));
+            sz.cx = max(sz.cx, uih::get_text_width_colour(dc, &text_new[ptr], displayLines[i].m_byte_count));
             ptr += displayLines[i].m_byte_count;
         }
     }

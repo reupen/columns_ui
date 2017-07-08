@@ -16,7 +16,7 @@ void seek_bar_extension::track_bar_host_impl::on_position_change(unsigned pos, b
         static_api_ptr_t<play_control>()->playback_seek(pos / 10.0);
 }
 
-void seek_bar_extension::track_bar_host_impl::get_tooltip_text(unsigned pos, track_bar_string& out)
+void seek_bar_extension::track_bar_host_impl::get_tooltip_text(unsigned pos, uih::TrackbarString& out)
 {
     out = pfc::stringcvt::string_os_from_utf8(pfc::format_time_ex(pos / 10.0, 1));
 };
