@@ -608,7 +608,7 @@ namespace filter_panel {
             {
                 service_ptr_t<titleformat_object> to;
                 static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-                fbh::g_sort_metadb_handle_list_by_format_v2(data, to, nullptr);
+                fbh::sort_metadb_handle_list_by_format(data, to, nullptr);
             }
             static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
             IDataObject * pDataObject = incoming_api->create_dataobject(data);
@@ -634,7 +634,6 @@ namespace filter_panel {
 
     void filter_panel_t::get_selection_handles(metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_out, bool fallback , bool b_sort )
     {
-        //pfc::hires_timer timer;
         bool b_found = false;
         t_size i, count = m_nodes.get_count();
         if (count)
@@ -660,10 +659,7 @@ namespace filter_panel {
         }
         else
         {
-            //timer.start();
-            //p_out.remove_duplicates();
-            fbh::g_metadb_handle_list_remove_duplicates(p_out);
-            //console::formatter() << "remove_duplicates: " << timer.query() << " s";
+            fbh::metadb_handle_list_remove_duplicates(p_out);
         }
     }
 
@@ -688,7 +684,7 @@ namespace filter_panel {
         if (!handles.get_count())
             return;
 
-        fbh::g_metadb_handle_list_remove_duplicates(handles);
+        fbh::metadb_handle_list_remove_duplicates(handles);
 
         static_api_ptr_t<playlist_manager_v3> playlist_api;
         static_api_ptr_t<play_control> playback_api;
@@ -745,7 +741,7 @@ namespace filter_panel {
         {
             service_ptr_t<titleformat_object> to;
             static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-            fbh::g_sort_metadb_handle_list_by_format_v2(handles, to, nullptr);
+            fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
         }
         if (action != action_add_to_active)
             playlist_api->playlist_add_items(index, handles, bit_array_false());
@@ -820,7 +816,7 @@ namespace filter_panel {
             service_ptr_t<titleformat_object> to;
             static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
             {
-                fbh::g_sort_metadb_handle_list_by_format_v2(handles, to, nullptr);
+                fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
             }
         }
         playlist_api->playlist_add_items(index, handles, bit_array_false());
@@ -894,7 +890,7 @@ namespace filter_panel {
             {
                 service_ptr_t<titleformat_object> to;
                 static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-                fbh::g_sort_metadb_handle_list_by_format_v2(m_handles, to, nullptr);
+                fbh::sort_metadb_handle_list_by_format(m_handles, to, nullptr);
             }
             m_handles_sorted = true;
         }

@@ -525,7 +525,7 @@ namespace pvt {
             }*/
 
             mmh::permutation_t order(data.get_count());
-            sort_get_permuation(data.get_ptr(), order, g_compare_wchar, true, b_descending);
+            sort_get_permuation(data.get_ptr(), order, g_compare_wchar, true, b_descending, true);
 
             m_playlist_api->activeplaylist_undo_backup();
             if (b_selection_only)
@@ -1008,54 +1008,8 @@ namespace pvt {
         return false;
     }
 
-    class NgTfThread : public pfc::thread {
-    public:
-        using Counter = std::atomic<size_t>;
-
-        NgTfThread(Counter & counter, t_size count, metadb_handle_list_t<pfc::alloc_fast_aggressive> & handles,
-            ng_playlist_view_t::InsertItemsContainer & out, service_list_t<titleformat_object> & scripts) 
-            : m_counter(counter), m_count(count), m_handles(handles), m_out(out), m_scripts(scripts)
-        {}
-
-        ~NgTfThread()
-        {
-            waitTillDone();
-        }
-
-        void threadProc() override {
-            TRACK_CALL_TEXT("NG playlist group title formatting thread");
-
-            const auto group_count = m_scripts.get_count();
-            pfc::string8_fast_aggressive temp;
-            temp.prealloc(256);
-
-            for (;;) {
-                const t_size index = m_counter++;
-                if (index >= m_count) break;
-
-                m_out[index].m_groups.set_size(group_count);
-                for (size_t i = 0; i < group_count; i++) {
-                    m_handles[index]->format_title(nullptr, temp, m_scripts[i], nullptr);
-                    m_out[index].m_groups[i] = temp;
-                }
-            }
-        }
-    private:
-        Counter & m_counter;
-        t_size m_count;
-        metadb_handle_list_t<pfc::alloc_fast_aggressive> & m_handles;
-        ng_playlist_view_t::InsertItemsContainer & m_out;
-        service_list_t<titleformat_object> & m_scripts;
-    };
-
     void ng_playlist_view_t::get_insert_items(/*t_size p_playlist, */ t_size start, t_size count, InsertItemsContainer & items)
     {
-        // I've generally observed on an i7-6700K that performance gets worse here if more than 
-        // four threads are used (irrespective of the number of tracks being formatted). Hence, 
-        // the number of physical cores is being used as an upper bound for the number of threads, 
-        // rather than the number of logical processors.
-        const auto cpu_core_count = mmh::get_cpu_core_count();
-
         items.set_count(count);
 
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
@@ -1064,21 +1018,17 @@ namespace pvt {
         bit_array_range bit_table(start, count);
         m_playlist_api->activeplaylist_get_items(handles, bit_table);
 
-        const t_size thread_count = max(min(uint64_t(count) * m_scripts.get_count() / 512, cpu_core_count), 1);
-        NgTfThread::Counter counter(0);
-        pfc::array_staticsize_t<std::unique_ptr<NgTfThread> > threads(thread_count);
+        const auto group_count = m_scripts.get_count();
 
-        for (t_size thread_index = 0; thread_index < thread_count; ++thread_index) {
-            threads[thread_index] = std::make_unique<NgTfThread>(counter, count, handles, items, m_scripts);
-        }
-
-        for (t_size thread_index = 1; thread_index < thread_count; ++thread_index)
-            threads[thread_index]->start();
-
-        threads[0]->threadProc();
-
-        for (t_size thread_index = 1; thread_index < thread_count; ++thread_index)
-            threads[thread_index]->waitTillDone();
+        concurrency::parallel_for(size_t{0}, count, [&](size_t index)
+        {
+            pfc::string8_fast_aggressive temp;
+            items[index].m_groups.set_size(group_count);
+            for (size_t i = 0; i < group_count; i++) {
+                handles[index]->format_title(nullptr, temp, m_scripts[i], nullptr);
+                items[index].m_groups[i] = temp;
+            }
+        });
     }
 
     void ng_playlist_view_t::flush_items()

@@ -98,7 +98,7 @@ namespace filter_panel {
             get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
             mmh::permutation_t permutation(data0.get_count());
-            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
+            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
 
             pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
             pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -197,7 +197,7 @@ namespace filter_panel {
             get_data_entries_v2(handles, data0, g_showemptyitems);
 
             mmh::permutation_t permutation(data0.get_count());
-            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
+            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
 
             pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
             pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -334,7 +334,7 @@ namespace filter_panel {
         get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
         mmh::permutation_t permutation(data0.get_count());
-        mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
+        mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
 
         pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
         pfc::list_base_const_t<data_entry_t> & data = data2;
@@ -472,27 +472,26 @@ namespace filter_panel {
 
             if (m_field_data.m_use_script)
             {
-                pfc::string8_fastalloc buffer;
                 titleformat_object_wrapper to(m_field_data.m_script);
-                buffer.prealloc(32);
                 p_out.set_count(count);
                 data_entry_t * pp_out = p_out.get_ptr();
-                t_size i, k = 0;
-                for (i = 0; i<count; i++)
-                {
+                std::atomic<size_t> node_count = 0;
+                concurrency::parallel_for(size_t{0}, count, [&](size_t i) {
+                    pfc::string8_fastalloc buffer;
+                    buffer.prealloc(32);
                     p_handles[i]->format_title(nullptr, buffer, to, nullptr);
                     if (b_show_empty || pfc::strlen_max(buffer, 1))
                     {
-                        pp_out[k].m_handle = p_handles[i];
-                        pp_out[k].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(buffer));
-                        pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[k].m_text.get_ptr(), buffer);
+                        const size_t node_index = node_count++;
+                        pp_out[node_index].m_handle = p_handles[i];
+                        pp_out[node_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(buffer));
+                        pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[node_index].m_text.get_ptr(), buffer);
                         //int size = LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, NULL, NULL);
                         //pp_out[k].m_sortkey.set_size(size);
                         //LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, (LPWSTR)pp_out[k].m_sortkey.get_ptr(), size);
-                        k++;
                     }
-                }
-                p_out.set_count(k);
+                });
+                p_out.set_count(node_count);
             }
             else
             {
@@ -500,7 +499,7 @@ namespace filter_panel {
                 infos.set_count(count);
                 handle_info_t * p_infos = infos.get_ptr();
 
-                t_size i, counter = 0, k = 0, l, lcount = m_field_data.m_fields.get_count();
+                t_size i, counter = 0, l, lcount = m_field_data.m_fields.get_count();
 
                 for (i = 0; i<count; i++)
                 {
@@ -521,7 +520,9 @@ namespace filter_panel {
                 p_out.set_count(counter);
 
                 data_entry_t * pp_out = p_out.get_ptr();
-                for (i = 0; i<count; i++)
+                std::atomic<size_t> out_counter = 0;
+
+                concurrency::parallel_for(size_t{0}, count, [&](size_t i)
                 {
                     t_size j;
                     for (j = 0; j<p_infos[i].m_value_count; j++)
@@ -529,17 +530,18 @@ namespace filter_panel {
                         const char * str = p_infos[i].m_info->info().meta_enum_value(p_infos[i].m_field_index, j);
                         if (b_show_empty || *str)
                         {
-                            pp_out[k].m_handle = p_handles[i];
-                            pp_out[k].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(str));
-                            pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[k].m_text.get_ptr(), str);
+                            size_t out_index = out_counter++;
+                            pp_out[out_index].m_handle = p_handles[i];
+                            pp_out[out_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(str));
+                            pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[out_index].m_text.get_ptr(), str);
                             //int size = LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, NULL, NULL);
                             //pp_out[k].m_sortkey.set_size(size);
                             //LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, (LPWSTR)pp_out[k].m_sortkey.get_ptr(), size);
-                            k++;
+
                         }
                     }
-                }
-                p_out.set_count(k);
+                });
+                p_out.set_count(out_counter);
             }
         }
     }
@@ -580,7 +582,7 @@ namespace filter_panel {
 
         mmh::permutation_t permutation(data0.get_count());
         {
-            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction());
+            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
         }
 
         //data.reorder(permutation.get_ptr());
@@ -646,7 +648,7 @@ namespace filter_panel {
             mmh::permutation_t sort_permuation(node_count - 1);
             const auto * nodes = m_nodes.get_ptr();
             ++nodes;
-            mmh::sort_get_permuation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending);
+            mmh::sort_get_permuation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending, true);
 
             m_nodes.reorder_partial(1, sort_permuation.get_ptr(), node_count - 1);
 

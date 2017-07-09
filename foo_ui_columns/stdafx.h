@@ -14,9 +14,11 @@
 #include <memory>
 #include <complex>
 #include <iostream>
-#include <io.h>
-#include <share.h>
 #include <utility>
+
+#include <io.h>
+#include <ppl.h>
+#include <share.h>
 
 #include <windows.h>
 #include <windowsx.h>
