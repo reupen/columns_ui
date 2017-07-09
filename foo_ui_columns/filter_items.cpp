@@ -596,23 +596,15 @@ namespace filter_panel {
                 data_entry_t * p_data = data0.get_ptr();
                 t_size * perm = permutation.get_ptr();
                 t_size i, count = data.get_count(), j;
-                t_size counter = 0;
-                for (i = 0; i<count; i++)
-                    if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
-                        //if (i +1 == count || !(p_data[perm[i]].m_same_as_next = !CompareString(LOCALE_USER_DEFAULT, NULL, p_data[perm[i]].m_text.get_ptr(), -1, p_data[perm[i+1]].m_text.get_ptr(), -1)))
-                        counter++;
-                //counter++;
-                /*if (i +1 == count)
-                counter++ ;
-                else
+
+                std::atomic<size_t> counter = 0;
+                concurrency::parallel_for(size_t{0}, count, [&](size_t i)
                 {
-                t_size a = p_data[perm[i]].m_sortkey.get_size(), b = p_data[perm[i+1]].m_sortkey.get_size();
-                if (!(p_data[perm[i]].m_same_as_next = !memcmp(p_data[perm[i]].m_sortkey.get_ptr(), p_data[perm[i+1]].m_sortkey.get_ptr(), min(a,b))))
-                counter++;
-                }*/
+                    if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
+                        ++counter;
+                });
 
                 m_nodes.set_count(counter + 1);
-                //pfc::list_t<node_t> & p_nodes = m_nodes;
                 node_t * p_nodes = m_nodes.get_ptr();
                 {
                     p_nodes[0].m_handles.add_items(actualHandles);
