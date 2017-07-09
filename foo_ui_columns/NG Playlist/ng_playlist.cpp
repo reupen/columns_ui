@@ -585,7 +585,8 @@ namespace pvt {
     }
     void ng_playlist_view_t::notify_on_create()
     {
-
+        pfc::hires_timer timer;
+        timer.start();
 
         populate_list();
 
@@ -600,6 +601,9 @@ namespace pvt {
 
         if (cfg_playlist_date)
             set_day_timer();
+
+        console::formatter formatter;
+        formatter << "NG Playlist initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";;
     }
 
 
@@ -1022,7 +1026,8 @@ namespace pvt {
 
         concurrency::parallel_for(size_t{0}, count, [&](size_t index)
         {
-            pfc::string8_fast_aggressive temp;
+            pfc::string8_fast temp;
+            temp.prealloc(32);
             items[index].m_groups.set_size(group_count);
             for (size_t i = 0; i < group_count; i++) {
                 handles[index]->format_title(nullptr, temp, m_scripts[i], nullptr);
