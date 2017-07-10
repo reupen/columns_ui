@@ -94,7 +94,7 @@ namespace filter_panel {
 
     class filter_panel_t :
         public t_list_view_panel<appearance_client_filter_impl, uie::window>,
-        fbh::library_callback_t
+        fbh::LibraryCallback
     {
     public:
         class filter_stream_t : public pfc::refcounted_object_root

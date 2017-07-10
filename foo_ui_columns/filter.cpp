@@ -1082,14 +1082,14 @@ namespace filter_panel {
         formatter << "Filter Panel - " << m_field_data.m_name << ": initialised in " << pfc::format_float(time, 0, 3) <<" s";
 
         g_windows.push_back(this);
-        fbh::library_callback_manager::g_register_callback(this);
+        fbh::library_callback_manager::register_callback(this);
 
     }
 
 
     void filter_panel_t::notify_on_destroy()
     {
-        fbh::library_callback_manager::g_deregister_callback(this);
+        fbh::library_callback_manager::deregister_callback(this);
 
         m_selection_holder.release();
 
