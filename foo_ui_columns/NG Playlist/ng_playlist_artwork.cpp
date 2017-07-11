@@ -469,7 +469,7 @@ namespace pvt
     HBITMAP g_create_hbitmap_from_data(const album_art_data_ptr & data, t_size & cx, t_size & cy, COLORREF cr_back, bool b_reflection)
     {
         HBITMAP ret = nullptr;
-        pfc::com_ptr_t<mmh::win32::IStream_memblock> pStream = new mmh::win32::IStream_memblock((const t_uint8*)data->get_ptr(), data->get_size());
+        pfc::com_ptr_t<mmh::IStreamMemblock> pStream = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
         //m_image.release();
         //flush_cached_bitmap();
         {

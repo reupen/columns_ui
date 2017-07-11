@@ -467,7 +467,7 @@ namespace artwork_panel
             album_art_data_ptr data;
             if (m_artwork_loader->QueryEmptyCover(data))
             {
-                pfc::com_ptr_t<mmh::win32::IStream_memblock> pStream = new mmh::win32::IStream_memblock((const t_uint8*)data->get_ptr(), data->get_size());
+                pfc::com_ptr_t<mmh::IStreamMemblock> pStream = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
                 {
                     m_image = pfc::rcnew_t<Gdiplus::Bitmap>(pStream.get_ptr());
                     pStream.release();
@@ -494,7 +494,7 @@ namespace artwork_panel
             if (m_artwork_loader->Query(g_artwork_types[index], data))
                 //if (m_nowplaying_artwork_loader.get_data(m_position, data))
             {
-                pfc::com_ptr_t<mmh::win32::IStream_memblock> pStream = new mmh::win32::IStream_memblock((const t_uint8*)data->get_ptr(), data->get_size());
+                pfc::com_ptr_t<mmh::IStreamMemblock> pStream = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
                 ///m_image.release();
                 ///flush_cached_bitmap();
                 {
