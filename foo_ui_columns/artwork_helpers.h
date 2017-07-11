@@ -10,7 +10,7 @@ namespace artwork_panel
         fb2k_artwork_embedded_and_external,
     };
 
-    class artwork_reader_v2_t : public mmh::thread_v2_t
+    class artwork_reader_v2_t : public mmh::Thread
     {
     public:
         bool is_aborting();

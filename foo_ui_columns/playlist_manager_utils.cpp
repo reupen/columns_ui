@@ -107,7 +107,7 @@ bool playlist_format_name_t::titleformat_hook_playlist_t::process_field(titlefor
     else if (!stricmp_utf8_ex(p_name,p_name_length,"filesize",pfc_infinite))
     {
         initialise_filesize();
-        mmh::format_file_size str(m_filesize);
+        mmh::FileSizeFormatter str(m_filesize);
         p_out->write(titleformat_inputtypes::unknown, str.get_ptr(), pfc_infinite);
         p_found_flag = true;
         return true;

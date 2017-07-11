@@ -109,7 +109,7 @@ namespace pvt
     private:
     };
 
-    class artwork_reader_ng_t : public mmh::thread_v2_t
+    class artwork_reader_ng_t : public mmh::Thread
     {
     public:
         bool is_aborting()
