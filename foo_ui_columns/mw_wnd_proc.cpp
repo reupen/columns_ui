@@ -57,7 +57,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 
     if (WM_TASKBARBUTTONCREATED && msg == WM_TASKBARBUTTONCREATED) {
-        mmh::comptr_t<ITaskbarList> p_ITaskbarList;
+        mmh::ComPtr<ITaskbarList> p_ITaskbarList;
         if (SUCCEEDED(p_ITaskbarList.instantiate(CLSID_TaskbarList))) {
             main_window::g_ITaskbarList3 = p_ITaskbarList;
             if (main_window::g_ITaskbarList3.is_valid() && SUCCEEDED(main_window::g_ITaskbarList3->HrInit())) {

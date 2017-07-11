@@ -53,7 +53,7 @@ bool toolbar_extension::config_param::t_button_list_view::do_drag_drop(WPARAM wp
         sm.tymed = TYMED_HGLOBAL;
         sm.hGlobal = glb;
 
-        mmh::comptr_t<IDataObject> pDO = new CDataObject;
+        mmh::ComPtr<IDataObject> pDO = new CDataObject;
         pDO->SetData(&fe, &sm, TRUE);
 
         DWORD blah = DROPEFFECT_NONE;

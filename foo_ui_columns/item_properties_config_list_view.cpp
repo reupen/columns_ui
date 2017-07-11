@@ -16,7 +16,7 @@ void fields_list_view_t::notify_save_inline_edit(const char * value)
     m_edit_index = pfc_infinite;
 }
 
-bool fields_list_view_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries)
+bool fields_list_view_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
     if (indices_count == 1 && indices[0] < m_fields.get_count())

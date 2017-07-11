@@ -31,6 +31,6 @@ private:
 
     long drop_ref_count;
     POINTL last_over;
-    mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
-    mmh::comptr_t<IDataObject> m_DataObject;
+    mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
+    mmh::ComPtr<IDataObject> m_DataObject;
 };

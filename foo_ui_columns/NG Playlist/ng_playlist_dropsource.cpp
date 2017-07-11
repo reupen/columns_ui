@@ -10,7 +10,7 @@ namespace pvt
         if (data.get_count() > 0)
         {
             static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
-            mmh::comptr_t<IDataObject> pDataObject;
+            mmh::ComPtr<IDataObject> pDataObject;
             pDataObject.attach(incoming_api->create_dataobject(data));
             if (pDataObject.is_valid())
             {

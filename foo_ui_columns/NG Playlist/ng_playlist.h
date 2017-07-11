@@ -675,7 +675,7 @@ namespace pvt
         bool do_drag_drop(WPARAM wp) override;
 
         bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;
-        bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;
+        bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;
         void notify_save_inline_edit(const char * value) override;
         void notify_exit_inline_edit() override;
 
@@ -736,7 +736,7 @@ namespace pvt
         bool m_is_accepted_type;
         service_ptr_t<ng_playlist_view_t> p_playlist;
         pfc::com_ptr_t<IDataObject> m_DataObject;
-        mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
+        mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
     };
 
     class IDropSource_playlist : public IDropSource

@@ -29,7 +29,7 @@ public:
     void get_insert_items(t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & items);
     void notify_on_create() override;;
     bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;;
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;;
     void notify_save_inline_edit(const char * value) override;
 private:
 };
@@ -196,7 +196,7 @@ public:
     void notify_on_column_size_change(t_size index, t_size new_width) override;
     bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;;
     static void g_print_field(const char * field, const file_info & p_info, pfc::string_base & p_out);
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;;
     void notify_save_inline_edit(const char * value) override;
 
     //UI SEL API

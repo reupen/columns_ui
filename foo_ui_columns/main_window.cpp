@@ -16,7 +16,7 @@ layout_window g_layout_window;
 cui::main_window_t cui::g_main_window;
 user_interface::HookProc_t main_window::g_hookproc;
 status_pane g_status_pane;
-mmh::comptr_t<ITaskbarList3> main_window::g_ITaskbarList3;
+mmh::ComPtr<ITaskbarList3> main_window::g_ITaskbarList3;
 
 HIMAGELIST  g_imagelist = nullptr;
 

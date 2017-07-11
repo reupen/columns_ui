@@ -277,7 +277,7 @@ namespace filter_panel {
         void _on_items_removed(const metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_data);
 
         bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;
-        bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;
+        bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;
         void notify_save_inline_edit(const char * value) override;
         void notify_exit_inline_edit() override;
 

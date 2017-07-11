@@ -48,7 +48,7 @@ class playlist_switcher_t :
         pfc::com_ptr_t<IDataObject> m_DataObject;
         service_ptr_t<ole_interaction_v2> m_ole_api;
         service_ptr_t<playlist_manager_v4> m_playlist_api;
-        mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
+        mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
     };
 
 public:
@@ -108,7 +108,7 @@ public:
     void move_selection (int delta) override;
 
     bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;
     void notify_save_inline_edit(const char * value) override;
 
     const char * get_drag_unit_singular() const override { return "playlist"; }

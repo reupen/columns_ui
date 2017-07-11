@@ -793,7 +793,7 @@ void selection_properties_t::notify_save_inline_edit(const char * value)
     m_edit_handles.remove_all();
 }
 
-bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries)
+bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
     if (m_handles.get_count() && column == 1 && indices_count == 1 && indices[0] < m_fields.get_count())

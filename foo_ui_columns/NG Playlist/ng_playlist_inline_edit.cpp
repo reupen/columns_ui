@@ -9,7 +9,7 @@ namespace pvt
             return true;
         return false;
     };
-    bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) 
+    bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) 
     {
         t_size indices_count = indices.get_count();
         m_edit_handles.remove_all();

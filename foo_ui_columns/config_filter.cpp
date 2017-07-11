@@ -29,7 +29,7 @@ public:
             return true;
         return false;
     };
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::comptr_t<IUnknown> & pAutocompleteEntries) override
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override
     {
         t_size indices_count = indices.get_count();
         if (indices_count == 1 && indices[0] < filter_panel::cfg_field_list.get_count()) {

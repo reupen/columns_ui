@@ -181,8 +181,8 @@ public:
                 long drop_ref_count;
                 bool last_rmb;
                 t_button_list_view * m_button_list_view;
-                mmh::comptr_t<IDataObject> m_DataObject;
-                mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
+                mmh::ComPtr<IDataObject> m_DataObject;
+                mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
                 //pfc::string
             public:
                 HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject) override;

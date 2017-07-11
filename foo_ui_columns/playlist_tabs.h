@@ -94,7 +94,7 @@ public:
         POINTL last_over;
         service_ptr_t<playlists_tabs_extension> p_list;
         pfc::com_ptr_t<IDataObject> m_DataObject;
-        mmh::comptr_t<IDropTargetHelper> m_DropTargetHelper;
+        mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
     };
 
     void FB2KAPI on_items_removing(unsigned p_playlist, const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override;;//called before actually removing them

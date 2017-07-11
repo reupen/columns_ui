@@ -134,7 +134,7 @@ public:
 namespace main_window
 {
     extern user_interface::HookProc_t g_hookproc;
-    extern mmh::comptr_t<ITaskbarList3> g_ITaskbarList3;
+    extern mmh::ComPtr<ITaskbarList3> g_ITaskbarList3;
 };
 
 namespace taskbar_buttons {

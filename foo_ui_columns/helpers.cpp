@@ -118,7 +118,7 @@ HBITMAP g_load_png_wic(HDC dc, const char * fn)
         //coinitialise_scope m_coinit;
 
 
-        mmh::comptr_t<IWICImagingFactory> pWICImagingFactory;
+        mmh::ComPtr<IWICImagingFactory> pWICImagingFactory;
         _check_hresult(pWICImagingFactory.instantiate(CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER));
 
         abort_callback_dummy p_abort;
@@ -144,9 +144,9 @@ HBITMAP g_load_png_wic(HDC dc, const char * fn)
         if (FAILED(hr))
             throw exception_win32(hr);
 
-        mmh::comptr_t<IWICBitmapFrameDecode> pWICBitmapFrameDecode;
+        mmh::ComPtr<IWICBitmapFrameDecode> pWICBitmapFrameDecode;
 
-        mmh::comptr_t<IWICBitmapDecoder> pWICBitmapDecoder;
+        mmh::ComPtr<IWICBitmapDecoder> pWICBitmapDecoder;
         _check_hresult(pWICImagingFactory->CreateDecoderFromStream(pStream, NULL, WICDecodeMetadataCacheOnDemand, pWICBitmapDecoder));
 
         pStream->Release();
@@ -154,13 +154,13 @@ HBITMAP g_load_png_wic(HDC dc, const char * fn)
         _check_hresult(pWICBitmapDecoder->GetFrame(0, pWICBitmapFrameDecode));
 
 #if 1
-        mmh::comptr_t<IWICFormatConverter> pWICFormatConverter;
+        mmh::ComPtr<IWICFormatConverter> pWICFormatConverter;
         _check_hresult(pWICImagingFactory->CreateFormatConverter(pWICFormatConverter));
 
         _check_hresult(pWICFormatConverter->Initialize(pWICBitmapFrameDecode, GUID_WICPixelFormat32bppBGRA,
             WICBitmapDitherTypeNone, NULL, 0.f, WICBitmapPaletteTypeCustom));
 #else
-        mmh::comptr_t<IWICBitmapSource> pWICFormatConverter;
+        mmh::ComPtr<IWICBitmapSource> pWICFormatConverter;
         _check_hresult(WICConvertBitmapSource(GUID_WICPixelFormat32bppBGRA, pWICBitmapFrameDecode, pWICFormatConverter));
 #endif
 
