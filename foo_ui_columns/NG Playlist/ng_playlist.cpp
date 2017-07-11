@@ -524,13 +524,13 @@ namespace pvt {
                 data.sort(cc);
             }*/
 
-            mmh::permutation_t order(data.get_count());
+            mmh::Permuation order(data.get_count());
             sort_get_permuation(data.get_ptr(), order, g_compare_wchar, true, b_descending, true);
 
             m_playlist_api->activeplaylist_undo_backup();
             if (b_selection_only)
             {
-                mmh::permutation_t order2(count);
+                mmh::Permuation order2(count);
                 t_size count2 = data.get_count();
                 for(n=0;n<count2;n++)
                 {

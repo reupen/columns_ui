@@ -154,7 +154,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
         {
             t_size button_count = m_button_list_view->m_param.m_buttons.get_count(), abs_delta = abs(int(index) - int(new_index));
             int direction = new_index>index ? -1 : 1;
-            mmh::permutation_t perm(button_count);
+            mmh::Permuation perm(button_count);
             for (t_size i = 0; i < abs_delta; i++)
                 perm.swap_items(new_index + direction*(i), new_index + direction*(i + 1));
 

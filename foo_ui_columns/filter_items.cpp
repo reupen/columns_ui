@@ -35,7 +35,7 @@ namespace filter_panel {
                 for (i = 0; i<count; i++)
                 {
                     t_size index;
-                    if (mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, previous_nodes[i].get_ptr(), 1, index, get_sort_direction()))
+                    if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, previous_nodes[i].get_ptr(), 1, index, get_sort_direction()))
                     {
                         new_selection[index] = true;
                         b_found = true;
@@ -97,7 +97,7 @@ namespace filter_panel {
 
             get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
-            mmh::permutation_t permutation(data0.get_count());
+            mmh::Permuation permutation(data0.get_count());
             mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
 
             pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
@@ -129,7 +129,7 @@ namespace filter_panel {
                         t_size handles_count = 1 + i - start, k;
 
                         t_size index_item;
-                        bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
+                        bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
                             p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
                         if (b_exact)
                         {
@@ -196,7 +196,7 @@ namespace filter_panel {
 
             get_data_entries_v2(handles, data0, g_showemptyitems);
 
-            mmh::permutation_t permutation(data0.get_count());
+            mmh::Permuation permutation(data0.get_count());
             mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
 
             pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
@@ -229,7 +229,7 @@ namespace filter_panel {
                         t_size handles_count = 1 + i - start;
 
                         t_size index_item;
-                        bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
+                        bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
                             p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
 
                         if (b_exact)
@@ -333,7 +333,7 @@ namespace filter_panel {
 
         get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
 
-        mmh::permutation_t permutation(data0.get_count());
+        mmh::Permuation permutation(data0.get_count());
         mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
 
         pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
@@ -379,7 +379,7 @@ namespace filter_panel {
                     t_size handles_count = 1 + i - start, k;
 
                     t_size index_item;
-                    bool b_exact = mmh::bsearch_partial_t(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
+                    bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
                     if (b_exact)
                     {
                         t_size current_count = m_nodes[index_item].m_handles.get_count();
@@ -580,7 +580,7 @@ namespace filter_panel {
             get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_size(), data0, g_showemptyitems);
         }
 
-        mmh::permutation_t permutation(data0.get_count());
+        mmh::Permuation permutation(data0.get_count());
         {
             mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
         }
@@ -637,7 +637,7 @@ namespace filter_panel {
     {
         auto node_count = m_nodes.get_count();
         if (node_count > 2) {
-            mmh::permutation_t sort_permuation(node_count - 1);
+            mmh::Permuation sort_permuation(node_count - 1);
             const auto * nodes = m_nodes.get_ptr();
             ++nodes;
             mmh::sort_get_permuation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending, true);
