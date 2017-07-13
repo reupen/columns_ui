@@ -228,9 +228,9 @@ void selection_properties_t::notify_on_initialisation()
 }
 void selection_properties_t::notify_on_create()
 {
-    pfc::list_t<t_column> columns;
-    columns.add_item(t_column("Field", m_column_name_width, 0));
-    columns.add_item(t_column("Value", m_column_field_width, 1));
+    pfc::list_t<Column> columns;
+    columns.add_item(Column("Field", m_column_name_width, 0));
+    columns.add_item(Column("Value", m_column_field_width, 1));
     set_columns(columns);
     set_group_count(m_show_group_titles ? 1 : 0);
 
@@ -418,7 +418,7 @@ void selection_properties_t::refresh_contents()
     bool b_redraw = disable_redrawing();
 
     metadata_aggregator_t metadata_aggregator;
-    pfc::list_t<t_list_view::t_item_insert> items;
+    pfc::list_t<uih::ListView::InsertItem> items;
     t_size i, count = m_handles.get_count();
     metadata_aggregator.set_fields(m_fields);
     {
@@ -438,7 +438,7 @@ void selection_properties_t::refresh_contents()
         count = metadata_aggregator.m_fields.get_count();
         for (i=0; i<count; i++)
         {
-            t_list_view::t_item_insert item(2, 1);
+            uih::ListView::InsertItem item(2, 1);
             pfc::string8 temp;
             item.m_subitems[0] = m_fields[i].m_name_friendly;
             temp.reset();
@@ -475,7 +475,7 @@ void selection_properties_t::refresh_contents()
             {
                 if (m_info_sections_mask & (1<<(g_info_sections[index_group].id)) )
                 {
-                    t_list_view::t_item_insert item(2, 1);
+                    uih::ListView::InsertItem item(2, 1);
                     item.m_subitems[0] = props.m_values[index_group][index_field].m_name;
                     item.m_subitems[1] = props.m_values[index_group][index_field].m_value;
                     item.m_groups[0] = g_info_sections[index_group].name;
@@ -489,18 +489,18 @@ void selection_properties_t::refresh_contents()
 
     if (new_count && old_count)
     {
-        pfc::list_t<t_list_view::t_item_insert> items_replace;
+        pfc::list_t<uih::ListView::InsertItem> items_replace;
         items_replace.add_items_fromptr(items.get_ptr(), min(new_count, old_count));
-        t_list_view::replace_items(0, items_replace, false);
+        uih::ListView::replace_items(0, items_replace, false);
     }
     
     if (new_count > old_count)
     {
-        t_list_view::insert_items(old_count, items.get_count()-old_count, items.get_ptr()+old_count, false);
+        uih::ListView::insert_items(old_count, items.get_count()-old_count, items.get_ptr()+old_count, false);
     }
     else if (new_count < old_count)
     {
-        t_list_view::remove_items(bit_array_range(new_count, old_count-new_count), false);
+        uih::ListView::remove_items(bit_array_range(new_count, old_count-new_count), false);
     }
 
     if (b_redraw)
@@ -781,7 +781,7 @@ void selection_properties_t::notify_save_inline_edit(const char * value)
     /*if (m_edit_index < m_fields.get_count())
     {
     (m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
-    pfc::list_t<t_list_view:: t_item_insert> items;
+    pfc::list_t<uih::ListView:: InsertItem> items;
     items.set_count(1);
     items[0].m_subitems.add_item(m_fields[m_edit_index].m_name_friendly);
     items[0].m_subitems.add_item(m_fields[m_edit_index].m_name);

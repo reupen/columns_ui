@@ -143,7 +143,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
     pti.x = ptl.x;
     if (m_window->get_wnd())
     {
-        t_list_view::t_hit_test_result hi;
+        uih::ListView::t_hit_test_result hi;
 
         {
             POINT ptt = pti;
@@ -179,8 +179,8 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
             else*/
             {
                 m_window->hit_test_ex(ptt, hi);
-                if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-                    || hi.result == t_list_view::hit_test_obscured_below)
+                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+                    || hi.result == uih::ListView::hit_test_obscured_below)
                 {
                     if (m_is_playlists)
                     {
@@ -210,7 +210,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
                         }
                     }
                 }
-                else if (hi.result == t_list_view::hit_test_below_items)
+                else if (hi.result == uih::ListView::hit_test_below_items)
                 {
                     m_window->remove_highlight_item();
                     m_window->set_insert_mark(hi.insertion_index);
@@ -294,7 +294,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
 
         if (process)
         {
-            t_list_view::t_hit_test_result hi;
+            uih::ListView::t_hit_test_result hi;
             {
                 POINT ptt = pti;
                 ScreenToClient(m_window->get_wnd(), &ptt);
@@ -309,9 +309,9 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
             {
                 if (b_internal_move)
                 {
-                    if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-                        || hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above
-                        || hi.result == t_list_view::hit_test_below_items)
+                    if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+                        || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_obscured_above
+                        || hi.result == uih::ListView::hit_test_below_items)
                     {
                         t_size count = m_playlist_api->get_playlist_count();
                         order_helper order(count);
@@ -348,9 +348,9 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
                     {
                         t_size index_insert = m_playlist_api->get_playlist_count();
 
-                        if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-                            || hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above
-                            || hi.result == t_list_view::hit_test_below_items)
+                        if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+                            || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_obscured_above
+                            || hi.result == uih::ListView::hit_test_below_items)
                             index_insert = hi.insertion_index;
 
                         t_size index_activate = NULL;
@@ -387,14 +387,14 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
                 bool create_new = true;
                 t_size idx = pfc_infinite;
 
-                if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-                    || hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above
+                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+                    || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_obscured_above
                     )
                 {
                     create_new = isAltDown;
                     idx = create_new ? hi.insertion_index : hi.index;
                 }
-                else if (hi.result == t_list_view::hit_test_below_items)
+                else if (hi.result == uih::ListView::hit_test_below_items)
                 {
                     create_new = true;
                 }

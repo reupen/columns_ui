@@ -79,7 +79,7 @@ public:
         get_group_combined_index(index, combined_index_start, count);
     }
 
-    class t_list_view_artwork : public t_list_view
+    class t_list_view_artwork : public uih::ListView
     {
     public:
         t_size m_edit_index, m_edit_subindex, m_edit_combined_index;
@@ -91,11 +91,11 @@ public:
             set_group_count(1);
             set_autosize(true);
             set_show_header(false);
-            pfc::list_t<t_column> columns;
+            pfc::list_t<Column> columns;
             columns.set_count(1);
             columns[0].m_title = "Source script";
             columns[0].m_size = 100;
-            t_list_view::set_columns(columns);
+            uih::ListView::set_columns(columns);
         };
         bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override 
         {
@@ -132,7 +132,7 @@ public:
                 if (strcmp(dest, value))
                 {
                     dest = value;
-                    pfc::list_t<t_list_view::t_item_insert> items;
+                    pfc::list_t<uih::ListView::InsertItem> items;
                     items.set_count(1);
                     {
                         items[0].m_groups.set_size(1);
@@ -195,7 +195,7 @@ public:
         for (index = 0; index < indexcount; index++)
         {
             t_size subindex, subindexcount = g_artwork_sources[index].m_scripts->get_count();
-            pfc::array_t<t_list_view::t_item_insert> items;
+            pfc::array_t<uih::ListView::InsertItem> items;
             items.set_count(subindexcount);
             for (subindex=0; subindex<subindexcount; subindex++)
             {
@@ -317,7 +317,7 @@ public:
 
                         t_size combined_index = get_combined_index(index, subindex);
 
-                        t_list_view::t_item_insert item(1, 1);
+                        uih::ListView::InsertItem item(1, 1);
                         item.m_groups[0] = g_artwork_sources[index].m_name;
                         item.m_subitems[0] = "<enter script>";
                         m_source_list.insert_items(combined_index, 1, &item);
@@ -377,7 +377,7 @@ public:
                         {
                             g_artwork_sources[index].m_scripts->swap_items(subindex, subindex-1);
 
-                            pfc::list_t<t_list_view::t_item_insert_sized<1,1>> items;
+                            pfc::list_t<uih::ListView::SizedInsertItem<1,1>> items;
                             items.set_count(2);
 
                             items[0].m_groups[0] = g_artwork_sources[index].m_name;
@@ -408,7 +408,7 @@ public:
                         if (subindex + 1 < count)
                         {
                             g_artwork_sources[index].m_scripts->swap_items(subindex, subindex+1);
-                            pfc::list_t<t_list_view::t_item_insert_sized<1,1>> items;
+                            pfc::list_t<uih::ListView::SizedInsertItem<1,1>> items;
                             items.set_count(2);
 
                             items[0].m_groups[0] = g_artwork_sources[index].m_name;

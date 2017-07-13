@@ -77,7 +77,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     }
     if (m_button_list_view->get_wnd())
     {
-        t_list_view::t_hit_test_result hi;
+        uih::ListView::t_hit_test_result hi;
 
         {
             POINT ptt = pti;
@@ -102,8 +102,8 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
             else m_button_list_view->destroy_timer_scroll_down();
             {
                 m_button_list_view->hit_test_ex(ptt, hi);
-                if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-                    || hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_below_items)
+                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+                    || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_below_items)
                     m_button_list_view->set_insert_mark(hi.insertion_index);
                 else
                     m_button_list_view->remove_insert_mark();
@@ -135,7 +135,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
         *pdwEffect = DROPEFFECT_MOVE;
         t_size index = m_button_list_view->get_selected_item_single(); //meh
 
-        t_list_view::t_hit_test_result hi;
+        uih::ListView::t_hit_test_result hi;
 
         POINT ptt = pt;
         ScreenToClient(m_button_list_view->get_wnd(), &ptt);
@@ -144,8 +144,8 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
 
         t_size new_index = pfc_infinite;
 
-        if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-            || hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_below_items)
+        if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+            || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_below_items)
             new_index = hi.insertion_index;
 
         if (new_index != pfc_infinite && new_index > index) --new_index;

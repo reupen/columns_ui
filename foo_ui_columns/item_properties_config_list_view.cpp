@@ -6,7 +6,7 @@ void fields_list_view_t::notify_save_inline_edit(const char * value)
     if (m_edit_index < m_fields.get_count())
     {
         (m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
-        pfc::list_t<t_list_view::t_item_insert_sized<2, 0>> items;
+        pfc::list_t<uih::ListView::SizedInsertItem<2, 0>> items;
         items.set_count(1);
         items[0].m_subitems[0] = m_fields[m_edit_index].m_name_friendly;
         items[0].m_subitems[1] = m_fields[m_edit_index].m_name;
@@ -44,21 +44,21 @@ bool fields_list_view_t::notify_before_create_inline_edit(const pfc::list_base_c
 void fields_list_view_t::notify_on_create()
 {
     set_single_selection(true);
-    pfc::list_t<t_column> columns;
+    pfc::list_t<Column> columns;
     columns.set_count(2);
     columns[0].m_title = "Name";
     columns[0].m_size = 150;
     columns[1].m_title = "Field";
     columns[1].m_size = 150;
-    t_list_view::set_columns(columns);
+    uih::ListView::set_columns(columns);
 
     t_size count = m_fields.get_count();
-    pfc::list_t<t_list_view::t_item_insert> items;
+    pfc::list_t<uih::ListView::InsertItem> items;
     get_insert_items(0, count, items);
     insert_items(0, count, items.get_ptr());
 }
 
-void fields_list_view_t::get_insert_items(t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & items)
+void fields_list_view_t::get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem> & items)
 {
     t_size i;
     items.set_count(count);

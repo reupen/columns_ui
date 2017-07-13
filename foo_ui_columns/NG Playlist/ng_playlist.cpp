@@ -195,7 +195,7 @@ namespace pvt {
 
         m_column_data.remove_all();
         m_edit_fields.remove_all();
-        pfc::list_t<t_column> columns;
+        pfc::list_t<Column> columns;
 
         pfc::string8 filter, playlist_name;
         m_playlist_api->activeplaylist_get_name(playlist_name);
@@ -236,7 +236,7 @@ namespace pvt {
             if (b_valid)
             {
                 column_data_t temp;
-                columns.add_item(t_column(source->name, source->width, source->parts, (uih::alignment)source->align));
+                columns.add_item(Column(source->name, source->width, source->parts, (uih::alignment)source->align));
                 p_compiler->compile_safe(temp.m_display_script, source->spec);
                 if (source->use_custom_colour)
                     p_compiler->compile_safe(temp.m_style_script, source->colour_spec);
@@ -295,7 +295,7 @@ namespace pvt {
                 get_item(i+index)->get_group(j)->m_style_data.release();
             get_item(i+index)->m_style_data.set_count(0);
         }
-        t_list_view::update_items(index, count, b_update_display);
+        uih::ListView::update_items(index, count, b_update_display);
     }
     void ng_playlist_view_t::g_on_autosize_change()
     {
@@ -906,7 +906,7 @@ namespace pvt {
         item_ng_t * p_item = get_item(index);
 
         t_size group_index = 0, group_count = 0;
-        //t_list_view::get_item_group(index, get_group_count()-1, group_index, group_count);
+        //uih::ListView::get_item_group(index, get_group_count()-1, group_index, group_count);
 
         pfc::string8_fast_aggressive temp, str_dummy;
         temp.prealloc(32);

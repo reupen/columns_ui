@@ -2,7 +2,7 @@
 #include "filter.h"
 #include "config.h"
 
-class t_list_view_filter : public t_list_view
+class t_list_view_filter : public uih::ListView
 {
 public:
     t_size m_edit_index, m_edit_column;
@@ -15,13 +15,13 @@ public:
     void notify_on_create() override
     {
         set_single_selection(true);
-        pfc::list_t<t_column> columns;
+        pfc::list_t<Column> columns;
         columns.set_count(2);
         columns[0].m_title = "Name";
         columns[0].m_size = 130;
         columns[1].m_title = "Field";
         columns[1].m_size = 250;
-        t_list_view::set_columns(columns);
+        uih::ListView::set_columns(columns);
     };
     bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override
     {
@@ -52,7 +52,7 @@ public:
                 if (m_edit_column == 0)
                     filter_panel::cfg_field_list.fix_name(valueReal);
                 dest = valueReal;
-                pfc::list_t<t_list_view::t_item_insert_sized<2, 0>> items;
+                pfc::list_t<uih::ListView::SizedInsertItem<2, 0>> items;
                 items.set_count(1);
                 {
                     items[0].m_subitems[0] = filter_panel::cfg_field_list[m_edit_index].m_name;
@@ -77,7 +77,7 @@ static class tab_filter_fields : public preferences_tab
 public:
     tab_filter_fields() : initialising(false)/*, m_changed(false)*/ {};
 
-    void get_insert_items(t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & items)
+    void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem> & items)
     {
         t_size i;
         items.set_count(count);
@@ -94,7 +94,7 @@ public:
         initialising = true;    
 
         m_field_list.remove_items(bit_array_true());
-        pfc::list_t<t_list_view::t_item_insert> items;
+        pfc::list_t<uih::ListView::InsertItem> items;
         t_size count = filter_panel::cfg_field_list.get_count();
         get_insert_items(0, count, items);
         m_field_list.insert_items(0, items.get_count(), items.get_ptr());
@@ -162,7 +162,7 @@ public:
                             filter_panel::cfg_field_list.swap_items(index, index-1);
                             filter_panel::filter_panel_t::g_on_fields_swapped(index, index - 1);
 
-                            pfc::list_t<t_list_view::t_item_insert> items;
+                            pfc::list_t<uih::ListView::InsertItem> items;
                             get_insert_items(index-1, 2, items);
                             m_field_list.replace_items(index-1, items);
                             m_field_list.set_item_selected_single(index-1);
@@ -181,7 +181,7 @@ public:
                             filter_panel::cfg_field_list.swap_items(index, index+1);
                             filter_panel::filter_panel_t::g_on_fields_swapped(index, index + 1);
 
-                            pfc::list_t<t_list_view::t_item_insert> items;
+                            pfc::list_t<uih::ListView::InsertItem> items;
                             get_insert_items(index, 2, items);
                             m_field_list.replace_items(index, items);
                             m_field_list.set_item_selected_single(index+1);
@@ -197,7 +197,7 @@ public:
                     t_size index = filter_panel::cfg_field_list.add_item(temp);
                     filter_panel::filter_panel_t::g_on_new_field(temp);
 
-                    pfc::list_t<t_list_view::t_item_insert> items;
+                    pfc::list_t<uih::ListView::InsertItem> items;
                     get_insert_items(index, 1, items);
                     m_field_list.insert_items(index, 1, items.get_ptr());
                     m_field_list.set_item_selected_single(index);

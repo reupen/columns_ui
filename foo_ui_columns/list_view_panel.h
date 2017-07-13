@@ -1,7 +1,7 @@
 #pragma once
 
 template<typename t_appearance_client, typename t_window = uie::window>
-class t_list_view_panel : public t_list_view, public t_window {
+class t_list_view_panel : public uih::ListView, public t_window {
 public:
     HWND create_or_transfer_window(HWND parent, const uie::window_host_ptr& host, const ui_helpers::window_position_t& p_position) override
     {
@@ -29,7 +29,7 @@ public:
     }
 
     bool is_available(const uie::window_host_ptr&) const override { return true; }
-    HWND get_wnd() const override { return t_list_view::get_wnd(); }
+    HWND get_wnd() const override { return uih::ListView::get_wnd(); }
 
     const uie::window_host_ptr& get_host() const { return m_window_host; }
 
@@ -37,7 +37,7 @@ protected:
     const char * get_drag_unit_plural() const override { return "tracks"; }
     const char * get_drag_unit_singular() const override { return "track"; }
     bool should_show_drag_text(t_size selection_count) override { return true; }
-    void render_get_colour_data(colour_data_t & p_out) override
+    void render_get_colour_data(ColourData & p_out) override
     {
         cui::colours::helper p_helper(t_appearance_client::g_guid);
         p_out.m_themed = p_helper.get_themed();

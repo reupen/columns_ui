@@ -58,7 +58,7 @@ namespace pvt
             rc_inner.left += indentation;
             const RECT * rc = &rc_inner;
 
-            const t_item * item = get_item(index);
+            const Item* item = get_item(index);
             int theme_state = NULL;
             if (b_selected)
                 theme_state = (b_highlight ? LISS_HOTSELECTED : (b_window_focused ? LISS_SELECTED : LISS_SELECTEDNOTFOCUS));

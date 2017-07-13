@@ -113,7 +113,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
                 {
                     m_fields.swap_items(index, index - 1);
 
-                    pfc::list_t<t_list_view::t_item_insert> items;
+                    pfc::list_t<uih::ListView::InsertItem> items;
                     m_field_list.get_insert_items(index - 1, 2, items);
                     m_field_list.replace_items(index - 1, items);
                     m_field_list.set_item_selected_single(index - 1);
@@ -131,7 +131,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
                 {
                     m_fields.swap_items(index, index + 1);
 
-                    pfc::list_t<t_list_view::t_item_insert> items;
+                    pfc::list_t<uih::ListView::InsertItem> items;
                     m_field_list.get_insert_items(index, 2, items);
                     m_field_list.replace_items(index, items);
                     m_field_list.set_item_selected_single(index + 1);
@@ -146,7 +146,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
             temp.m_name = "<ENTER FIELD HERE>";
             t_size index = m_fields.add_item(temp);
 
-            pfc::list_t<t_list_view::t_item_insert> items;
+            pfc::list_t<uih::ListView::InsertItem> items;
             m_field_list.get_insert_items(index, 1, items);
             m_field_list.insert_items(index, 1, items.get_ptr());
             m_field_list.set_item_selected_single(index);

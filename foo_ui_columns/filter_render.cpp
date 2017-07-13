@@ -13,7 +13,7 @@ namespace filter_panel {
     void filter_panel_t::render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc)
     {
         cui::colours::helper p_helper(appearance_client_filter_impl::g_guid);
-        const t_item * item = get_item(index);
+        const Item* item = get_item(index);
         int theme_state = NULL;
         if (b_selected)
             theme_state = (b_highlight ? LISS_HOTSELECTED : (b_window_focused ? LISS_SELECTED : LISS_SELECTEDNOTFOCUS));

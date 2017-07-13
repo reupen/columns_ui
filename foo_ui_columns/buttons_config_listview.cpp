@@ -3,7 +3,7 @@
 
 CLIPFORMAT toolbar_extension::config_param::t_button_list_view::g_clipformat()
 {
-    static CLIPFORMAT cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIListViewStandardClipFormat");
+    static CLIPFORMAT cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIuih::ListViewStandardClipFormat");
     return cf;
 }
 
@@ -11,9 +11,9 @@ void toolbar_extension::config_param::t_button_list_view::notify_on_initialisati
 {
     set_single_selection(true);
 
-    pfc::list_t<t_list_view::t_column> columns;
-    columns.add_item(t_list_view::t_column("Name", 300));
-    columns.add_item(t_list_view::t_column("Type", 125));
+    pfc::list_t<uih::ListView::Column> columns;
+    columns.add_item(uih::ListView::Column("Name", 300));
+    columns.add_item(uih::ListView::Column("Type", 125));
 
     set_columns(columns);
 }

@@ -406,12 +406,12 @@ namespace pvt
         pfc::com_ptr_t<IDataObject> m_DataObject;
         t_size m_dragging_initial_playlist;
     protected:
-        using InsertItemsContainer = pfc::array_t<t_item_insert>;
+        using InsertItemsContainer = pfc::array_t<InsertItem>;
     private:
         static const GUID g_extension_guid;
         enum {timer_date_change = TIMER_BASE};
 
-        class item_group_ng_t : public t_group
+        class item_group_ng_t : public Group
         {
         public:
             typedef item_group_ng_t self_t;
@@ -427,7 +427,7 @@ namespace pvt
             item_group_ng_t() : m_artwork_load_attempted(false), /*m_data_to_bitmap_attempted(false),*/ m_artwork_load_succeeded(false) {};
         };
 
-        class item_ng_t : public t_item
+        class item_ng_t : public Item
         {
         public:
             typedef item_ng_t self_t;
@@ -509,11 +509,11 @@ namespace pvt
         void refresh_all_items_text(bool b_update_display = true);
         void update_items(t_size index, t_size count, bool b_update_display = true);
 
-        t_item * storage_create_item() override {return new item_ng_t;}
+        Item* storage_create_item() override {return new item_ng_t;}
 
-        t_group * storage_create_group() override {return new item_group_ng_t;}
+        Group * storage_create_group() override {return new item_group_ng_t;}
 
-        item_ng_t * get_item(t_size index) {return static_cast<item_ng_t*>(t_list_view::get_item(index));}
+        item_ng_t * get_item(t_size index) {return static_cast<item_ng_t*>(uih::ListView::get_item(index));}
 
         void notify_update_item_data(t_size index) override;
 

@@ -963,7 +963,7 @@ namespace filter_panel {
 
     void filter_panel_t::refresh_columns()
     {
-        set_columns(pfc::list_single_ref_t<t_column>(t_column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name, 200)));
+        set_columns(pfc::list_single_ref_t<Column>(Column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name, 200)));
         set_sort_column(0, m_pending_sort_direction);
     }
     /*void filter_panel_t::on_groups_change()

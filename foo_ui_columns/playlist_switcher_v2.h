@@ -95,7 +95,7 @@ public:
         return false;
     }
 
-    void get_insert_items (t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & p_out);
+    void get_insert_items (t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem> & p_out);
     void refresh_all_items();
     void refresh_items (t_size base, t_size count, bool b_update = true);
     void add_items (t_size base, t_size count);

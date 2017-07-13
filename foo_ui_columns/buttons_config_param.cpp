@@ -166,7 +166,7 @@ void toolbar_extension::config_param::populate_buttons_list()
     unsigned n, count = m_buttons.get_count();
 
     pfc::string8_fast_aggressive name;
-    pfc::array_staticsize_t<t_list_view::t_item_insert> items(count);
+    pfc::array_staticsize_t<uih::ListView::InsertItem> items(count);
     for (n = 0; n<count; n++)
     {
         items[n].m_subitems.set_size(2);
@@ -185,7 +185,7 @@ void toolbar_extension::config_param::refresh_buttons_list_items(t_size index, t
     if (index + count > real_count) count = real_count - index;
 
     pfc::string8_fast_aggressive name;
-    pfc::list_t<t_list_view::t_item_insert> items;
+    pfc::list_t<uih::ListView::InsertItem> items;
     items.set_count(count);
     for (n = index; n<index + count; n++)
     {
@@ -353,7 +353,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
                 //m_buttons[index].get_name(name);
                 //unsigned idx = uSendDlgItemMessageText(wnd, IDC_BUTTON_LIST, LB_ADDSTRING, 0, name);
 
-                t_list_view::t_item_insert item;
+                uih::ListView::InsertItem item;
                 item.m_subitems.set_size(2);
                 m_buttons[index].get_name_name(name);
                 item.m_subitems[0] = name;

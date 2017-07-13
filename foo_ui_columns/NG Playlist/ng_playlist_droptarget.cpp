@@ -79,7 +79,7 @@ namespace pvt
 
         if (p_playlist->get_wnd())
         {
-            t_list_view::t_hit_test_result hi;
+            uih::ListView::t_hit_test_result hi;
 
             {
                 POINT ptt = pti;
@@ -108,8 +108,8 @@ namespace pvt
                 else
                 {
                     p_playlist->hit_test_ex(ptt, hi);
-                    if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-                        || hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_below_items)
+                    if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+                        || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_below_items)
                         p_playlist->set_insert_mark(hi.insertion_index);
                     else
                         p_playlist->remove_insert_mark();
@@ -196,7 +196,7 @@ namespace pvt
                 static_api_ptr_t<playlist_manager> playlist_api;
 
                 t_size idx = playlist_api->activeplaylist_get_item_count();
-                t_list_view::t_hit_test_result hi;
+                uih::ListView::t_hit_test_result hi;
 
                 {
                     POINT ptt = pti;
@@ -205,9 +205,9 @@ namespace pvt
                     p_playlist->hit_test_ex(ptt, hi);
                 }
 
-                if (hi.result == t_list_view::hit_test_on || hi.result == t_list_view::hit_test_on_group
-                    || hi.result == t_list_view::hit_test_obscured_below || hi.result == t_list_view::hit_test_obscured_above
-                    || hi.result == t_list_view::hit_test_below_items
+                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
+                    || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_obscured_above
+                    || hi.result == uih::ListView::hit_test_below_items
                     )
                 {
                     idx = hi.insertion_index;

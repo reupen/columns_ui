@@ -19,14 +19,14 @@ public:
     field_t() {};
 };
 
-class fields_list_view_t : public t_list_view
+class fields_list_view_t : public uih::ListView
 {
 public:
     t_size m_edit_index, m_edit_column;
     pfc::list_t<field_t> & m_fields;
     fields_list_view_t(pfc::list_t<field_t> & p_fields);;
 
-    void get_insert_items(t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & items);
+    void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem> & items);
     void notify_on_create() override;;
     bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;;
     bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;;

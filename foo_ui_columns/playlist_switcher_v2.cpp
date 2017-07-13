@@ -7,7 +7,7 @@ const GUID playlist_switcher_t::g_guid_font =
 
 std::vector<playlist_switcher_t*> playlist_switcher_t::g_windows;
 
-void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list_t<t_list_view::t_item_insert> & p_out)
+void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem> & p_out)
     {
         p_out.set_count(count);
 
@@ -34,21 +34,21 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 
     void playlist_switcher_t::refresh_items (t_size base, t_size count, bool b_update)
     {
-        pfc::list_t<t_list_view::t_item_insert> items_insert;
+        pfc::list_t<uih::ListView::InsertItem> items_insert;
         get_insert_items(base, count, items_insert);
         replace_items(base, items_insert, b_update);
     }
 
     void playlist_switcher_t::add_items (t_size base, t_size count)
     {
-        pfc::list_t<t_list_view::t_item_insert> items_insert;
+        pfc::list_t<uih::ListView::InsertItem> items_insert;
         get_insert_items(base, count, items_insert);
         insert_items(base, items_insert.get_count(), items_insert.get_ptr());
     }
 
     void playlist_switcher_t::refresh_columns()
     {
-        set_columns(pfc::list_single_ref_t<t_column>(t_column("Name", 100)));
+        set_columns(pfc::list_single_ref_t<Column>(Column("Name", 100)));
     }
 
     void playlist_switcher_t::move_selection (int delta) 

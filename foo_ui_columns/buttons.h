@@ -167,7 +167,7 @@ public:
     {
     public:
         //service_ptr_t<toolbar_extension> m_this;
-        class t_button_list_view : public t_list_view
+        class t_button_list_view : public uih::ListView
         {
             config_param & m_param;
             static CLIPFORMAT g_clipformat();
@@ -208,7 +208,7 @@ public:
         } m_button_list;
 
         modal_dialog_scope m_scope;
-        //t_list_view m_button_list;
+        //uih::ListView m_button_list;
         button * m_selection;
         HWND m_wnd, m_child;
         unsigned m_active;

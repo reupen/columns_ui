@@ -103,7 +103,7 @@ namespace filter_panel {
             pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
             pfc::list_base_const_t<data_entry_t> & data = data2;
 
-            pfc::list_t<t_list_view::t_item_insert, pfc::alloc_fast_aggressive> items;
+            pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
             items.prealloc(data.get_count());
 
             {
@@ -154,7 +154,7 @@ namespace filter_panel {
                                 node.m_handles[k] = p_data[perm[start + k]].m_handle;
 
                             m_nodes.insert_item(node, index_item);
-                            t_item_insert item;
+                            InsertItem item;
                             insert_items(index_item, 1, &item);
                         }
                     }
@@ -404,7 +404,7 @@ namespace filter_panel {
                             node.m_handles[k] = p_data[perm[start + k]].m_handle;
 
                         m_nodes.insert_item(node, index_item);
-                        t_item_insert item;
+                        InsertItem item;
                         insert_items(index_item, 1, &item, false);
                     }
                 }
@@ -589,7 +589,7 @@ namespace filter_panel {
         pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
         pfc::list_base_const_t<data_entry_t> & data = data2;
 
-        pfc::list_t<t_list_view::t_item_insert, pfc::alloc_fast_aggressive> items;
+        pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
         items.prealloc(data.get_count());
         {
             {
