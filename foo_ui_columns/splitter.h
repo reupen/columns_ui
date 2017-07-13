@@ -237,7 +237,7 @@ public:
 void g_get_panel_list(uie::window_info_list_simple & p_out, uie::window_host_ptr & p_host);
 void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple & panels, UINT base);
 void g_append_menu_splitters(HMENU menu, const uie::window_info_list_simple & panels, UINT base);
-void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, TranslucentFillWindow & p_overlay, const RECT & rc_overlay, uie::window_ptr ptr, uie::splitter_window_ptr p_container, t_size index, uie::window_host_ptr & p_host);
+void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, uih::TranslucentFillWindow & p_overlay, const RECT & rc_overlay, uie::window_ptr ptr, uie::splitter_window_ptr p_container, t_size index, uie::window_host_ptr & p_host);
 void clip_minmaxinfo(MINMAXINFO & mmi);
 
 #endif

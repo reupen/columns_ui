@@ -106,7 +106,7 @@ private:
 
     void enter_layout_editing_mode();
     void exit_layout_editing_mode();
-    TranslucentFillWindow m_trans_fill;
+    uih::TranslucentFillWindow m_trans_fill;
     void run_live_edit_base(POINT pt_menu);
     void run_live_edit_base_delayed(POINT pt_menu);
     void run_live_edit_base_delayed_v2(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr> & p_hierarchy);

@@ -394,7 +394,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
     case WM_CONTEXTMENU:
         if ((HWND)wp == wnd)
         {
-            TranslucentFillWindow m_trans_fill;
+            uih::TranslucentFillWindow m_trans_fill;
 
             if (m_layout_editing_active)
             {
