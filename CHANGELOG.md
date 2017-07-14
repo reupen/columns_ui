@@ -1,5 +1,19 @@
 # Change log
 
+## 0.6.0-dev
+
+### Performance improvements
+
+* Significantly faster Filter panel performance on multi-core PCs. With a quad-core Intel Core-i7 6700K, initialisation time is just under half of what it was under 0.5.1 for a medium- to large-sized library.
+
+* Slightly faster NG Playlist grouping and sorting performance on multi-core PCs.
+
+### Other changes
+
+* The value of the 'Allow resizing of locked panels' setting is now available to other components.
+
+* Miscellaneous internal code refactoring.
+
 ## 0.5.1
 
 ### NG playlist
