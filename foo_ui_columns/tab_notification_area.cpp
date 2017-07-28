@@ -17,6 +17,7 @@ public:
         //        EnableWindow(GetDlgItem(wnd, IDC_MINIMISE_TO_SYSTRAY), cfg_show_systray);
 
         SendDlgItemMessage(wnd, IDC_MINIMISE_TO_SYSTRAY, BM_SETCHECK, cfg_minimise_to_tray, 0);
+        SendDlgItemMessage(wnd, IDC_EXIT_TO_SYSTRAY, BM_SETCHECK, cfg_exit_to_tray, 0);
         SendDlgItemMessage(wnd, IDC_USE_CUSTOM_ICON, BM_SETCHECK, cfg_custom_icon, 0);
         SendDlgItemMessage(wnd, IDC_NOWPL, BM_SETCHECK, cfg_np, 0);
 
@@ -78,6 +79,11 @@ public:
                 cfg_minimise_to_tray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
             }
             break;
+            case IDC_EXIT_TO_SYSTRAY:
+            {
+                cfg_exit_to_tray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+            }
+            break;
             case IDC_SHOW_SYSTRAY:
             {
                 cfg_show_systray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
@@ -90,7 +96,7 @@ public:
                     {
                         create_systray_icon();
                     }
-                    else if (!cfg_show_systray && g_icon_created && (!is_iconic || !cfg_minimise_to_tray))
+                    else if (!cfg_show_systray && g_icon_created && (!is_iconic || (!cfg_minimise_to_tray && !cfg_exit_to_tray)))
                     {
                         destroy_systray_icon();
                         if (is_iconic)

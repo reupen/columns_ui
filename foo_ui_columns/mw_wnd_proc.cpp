@@ -184,8 +184,21 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ImageList_Destroy(g_imagelist_taskbar);
             break;
         case WM_CLOSE:
-            standard_commands::main_exit();
-            return 0;
+            if(cfg_exit_to_tray)
+            {
+                g_minimised = true;
+                if(!g_icon_created)
+                  create_systray_icon();
+                if(g_icon_created)
+                  ShowWindow(wnd, SW_HIDE);
+                return true;
+            }
+            else
+            {
+                standard_commands::main_exit();
+                return 0;
+            }
+            break;
         case WM_COMMAND:
             {
                 switch (wp) {

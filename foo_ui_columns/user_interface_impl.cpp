@@ -84,7 +84,7 @@ public:
             size_windows();
             ShowWindow(g_main_window, cfg_window_placement_columns.get_value().showCmd);
 
-            if (g_icon_created && (cfg_window_placement_columns.get_value().showCmd == SW_SHOWMINIMIZED) && cfg_minimise_to_tray)
+            if (g_icon_created && (cfg_window_placement_columns.get_value().showCmd == SW_SHOWMINIMIZED) && (cfg_minimise_to_tray || cfg_exit_to_tray))
                 ShowWindow(g_main_window, SW_HIDE);
         }
         else
