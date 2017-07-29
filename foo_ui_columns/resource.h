@@ -258,8 +258,10 @@
 #define IDC_SHOWGROUPS                  1164
 #define IDC_GEN_FONT                    1165
 #define IDC_COLOUR_CODE                 1166
-#define IDC_EXIT_TO_SYSTRAY             1168
-#define IDC_STATIC                      -1
+
+#ifndef IDC_STATIC
+#define IDC_STATIC                        -1
+#endif
 
 // Next default values for new objects
 // 
@@ -268,7 +270,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        158
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1169
+#define _APS_NEXT_CONTROL_VALUE         1168
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

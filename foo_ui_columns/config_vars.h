@@ -105,7 +105,6 @@ extern cfg_int cfg_back,
     cfg_playlist_panel_delete,
     cfg_nohscroll;
 
-extern cfg_bool cfg_exit_to_tray;
 extern cfg_bool cfg_go_to_tray;
 
 extern cfg_string

@@ -184,7 +184,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ImageList_Destroy(g_imagelist_taskbar);
             break;
         case WM_CLOSE:
-            if(cfg_exit_to_tray) {
+            if(g_advbool_close_to_tray.get_static_instance().get_state()) {
                 cfg_go_to_tray = true;
                 ShowWindow(wnd, SW_MINIMIZE);
             } else

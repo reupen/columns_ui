@@ -121,14 +121,13 @@ BEGIN
     GROUPBOX        "System notification area",IDC_STATIC,4,4,308,258
     CONTROL         "Always show icon",IDC_SHOW_SYSTRAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,23,72,10
     CONTROL         "Minimise to icon",IDC_MINIMISE_TO_SYSTRAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,39,65,10
-    CONTROL         "Exit to icon",IDC_EXIT_TO_SYSTRAY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,55,69,10
-    CONTROL         "Use custom icon",IDC_USE_CUSTOM_ICON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,71,67,10
-    PUSHBUTTON      "Browse...",IDC_BROWSE_ICON,83,68,39,14
-    CONTROL         "Show popup notification balloons",IDC_BALLOON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,87,121,10
+    CONTROL         "Use custom icon",IDC_USE_CUSTOM_ICON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,55,67,10
+    PUSHBUTTON      "Browse...",IDC_BROWSE_ICON,83,52,39,14
+    CONTROL         "Show popup notification balloons",IDC_BALLOON,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,71,121,10
     CONTROL         "Show now playing sub-menu in icon shortcut menu",IDC_NOWPL,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,103,181,10
-    EDITTEXT        IDC_STRING,15,132,287,56,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
-    LTEXT           "Tooltip title format script:",IDC_STATIC,16,122,287,8
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,15,87,181,10
+    EDITTEXT        IDC_STRING,15,116,287,56,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Tooltip title format script:",IDC_STATIC,16,106,287,8
 END
 
 IDD_PLAYLISTS_DRAGDROP DIALOGEX 0, 0, 318, 271
