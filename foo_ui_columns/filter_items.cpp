@@ -185,10 +185,23 @@ namespace filter_panel {
 
         bool b_no_selection = get_selection_count(1) == 0 || get_item_selected(0);
         {
-            t_size j, count = handles.get_count();
-            for (j = 0; j<count; j++)
-                m_nodes[0].m_handles.remove_item(handles[j]);
+            auto& existing_handles = m_nodes[0].m_handles;
+            const auto existing_handle_count = existing_handles.get_count();
+            mmh::Permuation perm(existing_handle_count);
+            pfc::array_staticsize_t<bool> remove_mask(existing_handle_count);
+            pfc::fill_array_t(remove_mask, false);
+            mmh::sort_get_permuation(existing_handles, perm, pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, false);
+
+            const size_t remove_handles_count = handles.get_count();
+            for (size_t j = 0; j < remove_handles_count; j++) {
+                size_t handle_index = -1;
+                if (existing_handles.bsearch_permutation_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, handles[j], perm, handle_index)) {
+                    remove_mask[handle_index] = true;
+                }
+            }
+            existing_handles.remove_mask(remove_mask.get_ptr());
         }
+
         {
             pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data0;
             //data0.prealloc(handles.get_count());
@@ -210,11 +223,10 @@ namespace filter_panel {
                     t_size * perm = permutation.get_ptr();
 
                     //node_t node;
-                    t_size i, count = data.get_count(), counter = 0;
+                    t_size i, count = data.get_count();
 
-                    for (i = 0; i<count; i++)
-                        if (i + 1 == count || !((p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr()))))
-                            counter++;
+                    for (i = 0; i + 1 < count; i++)
+                        p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
 
                     pfc::array_t<bool> mask0;
                     mask0.set_count(m_nodes.get_count());
@@ -365,11 +377,10 @@ namespace filter_panel {
                 data_entry_t * p_data = data0.get_ptr();
                 t_size * perm = permutation.get_ptr();
 
-                t_size i, count = data.get_count(), counter = 0;
+                t_size i, count = data.get_count();
 
-                for (i = 0; i<count; i++)
-                    if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
-                        counter++;
+                for (i = 0; i + 1 < count; i++)
+                    p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
 
                 for (i = 0; i<count; i++)
                 {
