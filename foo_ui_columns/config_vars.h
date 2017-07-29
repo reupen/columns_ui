@@ -69,7 +69,6 @@ extern cfg_int cfg_back,
     cfg_np,
     cfg_show_systray,
     cfg_minimise_to_tray,
-    cfg_exit_to_tray,
     cfg_show_vol,
     cfg_custom_icon,
     cfg_custom_buttons,
@@ -106,6 +105,8 @@ extern cfg_int cfg_back,
     cfg_playlist_panel_delete,
     cfg_nohscroll;
 
+extern cfg_bool cfg_exit_to_tray;
+extern cfg_bool cfg_go_to_tray;
 
 extern cfg_string
     cfg_tray_icon_path,

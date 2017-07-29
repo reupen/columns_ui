@@ -184,21 +184,12 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ImageList_Destroy(g_imagelist_taskbar);
             break;
         case WM_CLOSE:
-            if(cfg_exit_to_tray)
-            {
-                g_minimised = true;
-                if(!g_icon_created)
-                  create_systray_icon();
-                if(g_icon_created)
-                  ShowWindow(wnd, SW_HIDE);
-                return true;
-            }
-            else
-            {
+            if(cfg_exit_to_tray) {
+                cfg_go_to_tray = true;
+                ShowWindow(wnd, SW_MINIMIZE);
+            } else
                 standard_commands::main_exit();
-                return 0;
-            }
-            break;
+            return 0;
         case WM_COMMAND:
             {
                 switch (wp) {
@@ -520,9 +511,10 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
                     if (styles & WS_MINIMIZE) {
                         g_minimised = true;
-                        if (!g_icon_created && cfg_minimise_to_tray)
+                        cfg_go_to_tray = cfg_go_to_tray || cfg_minimise_to_tray;
+                        if (!g_icon_created && cfg_go_to_tray)
                             create_systray_icon();
-                        if (g_icon_created && cfg_minimise_to_tray)
+                        if (g_icon_created && cfg_go_to_tray)
                             ShowWindow(wnd, SW_HIDE);
                     } else {
                         g_minimised = false;

@@ -258,8 +258,6 @@
 #define IDC_SHOWGROUPS                  1164
 #define IDC_GEN_FONT                    1165
 #define IDC_COLOUR_CODE                 1166
-#define IDC_CHECK1                      1168
-#define IDC_EXIT_TO_TRAY                1168
 #define IDC_EXIT_TO_SYSTRAY             1168
 #define IDC_STATIC                      -1
 
