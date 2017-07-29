@@ -118,7 +118,7 @@ namespace filter_panel {
                     t_size i, count = data.get_count(), counter = 0;
 
                     for (i = 0; i<count; i++)
-                        if (i + 1 == count || !((p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr()))))
+                        if (i + 1 == count || !((p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr()))))
                             counter++;
 
                     for (i = 0; i<count; i++)
@@ -226,7 +226,7 @@ namespace filter_panel {
                     t_size i, count = data.get_count();
 
                     for (i = 0; i + 1 < count; i++)
-                        p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
+                        p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
 
                     pfc::array_t<bool> mask0;
                     mask0.set_count(m_nodes.get_count());
@@ -380,7 +380,7 @@ namespace filter_panel {
                 t_size i, count = data.get_count();
 
                 for (i = 0; i + 1 < count; i++)
-                    p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
+                    p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
 
                 for (i = 0; i<count; i++)
                 {
@@ -611,7 +611,7 @@ namespace filter_panel {
                 std::atomic<size_t> counter = 0;
                 concurrency::parallel_for(size_t{0}, count, [&](size_t i)
                 {
-                    if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpLogicalW(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
+                    if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
                         ++counter;
                 });
 
