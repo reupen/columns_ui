@@ -184,7 +184,11 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ImageList_Destroy(g_imagelist_taskbar);
             break;
         case WM_CLOSE:
-            standard_commands::main_exit();
+            if(g_advbool_close_to_tray.get_static_instance().get_state()) {
+                cfg_go_to_tray = true;
+                ShowWindow(wnd, SW_MINIMIZE);
+            } else
+                standard_commands::main_exit();
             return 0;
         case WM_COMMAND:
             {
@@ -507,9 +511,10 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
                     if (styles & WS_MINIMIZE) {
                         g_minimised = true;
-                        if (!g_icon_created && cfg_minimise_to_tray)
+                        cfg_go_to_tray = cfg_go_to_tray || cfg_minimise_to_tray;
+                        if (!g_icon_created && cfg_go_to_tray)
                             create_systray_icon();
-                        if (g_icon_created && cfg_minimise_to_tray)
+                        if (g_icon_created && cfg_go_to_tray)
                             ShowWindow(wnd, SW_HIDE);
                     } else {
                         g_minimised = false;

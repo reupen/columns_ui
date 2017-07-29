@@ -90,7 +90,7 @@ public:
                     {
                         create_systray_icon();
                     }
-                    else if (!cfg_show_systray && g_icon_created && (!is_iconic || !cfg_minimise_to_tray))
+                    else if (!cfg_show_systray && g_icon_created && (!is_iconic || (!cfg_minimise_to_tray && !g_advbool_close_to_tray.get_static_instance().get_state())))
                     {
                         destroy_systray_icon();
                         if (is_iconic)

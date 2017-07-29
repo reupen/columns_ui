@@ -97,6 +97,7 @@ void g_rename_playlist(unsigned idx, HWND wnd_parent);
 void make_ui();
 void size_windows();
 extern advconfig_checkbox_factory g_advbool_notification_icon_x_buttons;
+extern advconfig_checkbox_factory g_advbool_close_to_tray;
 
 extern cfg_struct_t<LOGFONT> cfg_tab_font;
 
