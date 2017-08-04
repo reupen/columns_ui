@@ -9,12 +9,6 @@ environment:
     PlatformToolset: v141
     Configuration: Debug
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    PlatformToolset: v140
-    Configuration: Release
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    PlatformToolset: v140
-    Configuration: Debug
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
     PlatformToolset: LLVM-vs2014
     Configuration: Release
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
@@ -27,7 +21,7 @@ install:
 - cmd: git submodule update --init --recursive
 build_script:
 - ps: >-
-    $command = 'msbuild "vc14/columns_ui-public.sln" /m /verbosity:normal /p:PlatformToolset=' + $Env:PlatformToolset + ' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
+    $command = 'msbuild "vc15/columns_ui-public.sln" /m /verbosity:normal /p:PlatformToolset=' + $Env:PlatformToolset + ' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
 
     iex $command
 
