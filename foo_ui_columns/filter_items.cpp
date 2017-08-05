@@ -486,7 +486,7 @@ namespace filter_panel {
                 titleformat_object_wrapper to(m_field_data.m_script);
                 p_out.set_count(count);
                 data_entry_t * pp_out = p_out.get_ptr();
-                std::atomic<size_t> node_count = 0;
+                std::atomic<size_t> node_count{0};
                 concurrency::parallel_for(size_t{0}, count, [&](size_t i) {
                     pfc::string8_fastalloc buffer;
                     buffer.prealloc(32);
@@ -531,7 +531,7 @@ namespace filter_panel {
                 p_out.set_count(counter);
 
                 data_entry_t * pp_out = p_out.get_ptr();
-                std::atomic<size_t> out_counter = 0;
+                std::atomic<size_t> out_counter{0};
 
                 concurrency::parallel_for(size_t{0}, count, [&](size_t i)
                 {
@@ -608,7 +608,7 @@ namespace filter_panel {
                 t_size * perm = permutation.get_ptr();
                 t_size i, count = data.get_count(), j;
 
-                std::atomic<size_t> counter = 0;
+                std::atomic<size_t> counter{0};
                 concurrency::parallel_for(size_t{0}, count, [&](size_t i)
                 {
                     if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
