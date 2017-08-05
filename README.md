@@ -14,35 +14,35 @@ This repo makes use of Git submodules. If you're not familiar with them, [check 
 
 ## Build instructions
 
-Visual Studio 2015 Update 3 is required to build Columns UI. You can use the [free community edition](https://www.microsoft.com/en-gb/download/details.aspx?id=48146). (If you don't want to install the IDE, you can use the [Visual C++ Build Tools](http://go.microsoft.com/fwlink/?LinkId=691126) and skip to the MSBuild section below.)
+Visual Studio 2017 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/).
 
-You'll need the Windows SDK for Windows 8.1 (installed by default with Visual Studio 2015).
+You'll need the Windows SDK for Windows 8.1 (installed by default with Visual Studio 2017).
 
 ### Using the Visual Studio IDE
-Open `vc14/columns_ui-public.sln` in Visual Studio 2015 Update 3. 
+Open `vc15/columns_ui-public.sln` in Visual Studio 2017. 
 Select the Release configuration and the Win32 platform, and build the solution. 
-If the build is successful, `foo_ui_columns.dll` will be output in `vc14\Release`.
+If the build is successful, `foo_ui_columns.dll` will be output in `vc15\Release`.
 
 ### Using MSBuild on the command line
 
-You can use MSBuild if you prefer. In a VS2015 Native Tools x86 command prompt, run:
+You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2017 (in the start menu), run:
 
 ```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release vc14\columns_ui-public.sln
+msbuild /m /p:Platform=Win32 /p:Configuration=Release vc15\columns_ui-public.sln
 ```
 
-If the build is successful, `foo_ui_columns.dll` will be output in `vc14\Release`.
+If the build is successful, `foo_ui_columns.dll` will be output in `vc15\Release`.
 
 For a clean build, run:
 
 ```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc14\columns_ui-public.sln
+msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc15\columns_ui-public.sln
 ```
 
 ### Using the Clang compiler (experimental)
 
-If you're feeling adventurous, you can compile Columns UI using Clang 4.0.0 or newer and MSBuild. Download and install a [release build](http://llvm.org/releases/download.html) or a [snapshot build](http://llvm.org/builds/) ([older snapshot builds](http://llvm.org/pre-releases/win-snapshots/?C=M;O=D)) from the LLVM website. In a VS2015 Native Tools x86 command prompt, run:
+If you're feeling adventurous, you can compile Columns UI using Clang 4.0.0 or newer and MSBuild. Download and install a [release build](http://llvm.org/releases/download.html) or a [snapshot build](http://llvm.org/builds/) from the LLVM website. In a VS2015 Native Tools x86 command prompt, run:
 
 ```
-msbuild /m /p:PlatformToolset=LLVM-vs2014 /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc14\columns_ui-public.sln
+msbuild /m /p:PlatformToolset=LLVM-vs2014 /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc15\columns_ui-public.sln
 ```
