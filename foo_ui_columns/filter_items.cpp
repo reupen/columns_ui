@@ -606,33 +606,33 @@ namespace filter_panel {
             {
                 data_entry_t * p_data = data0.get_ptr();
                 t_size * perm = permutation.get_ptr();
-                t_size i, count = data.get_count(), j;
+                const size_t count{data.get_count()};
 
-                std::atomic<size_t> counter{0};
+                concurrency::combinable<size_t> counts;
                 concurrency::parallel_for(size_t{0}, count, [&](size_t i)
                 {
                     if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
-                        ++counter;
+                        ++counts.local();
                 });
 
-                m_nodes.set_count(counter + 1);
+                m_nodes.set_count(counts.combine(std::plus<size_t>()) + 1);
                 node_t * p_nodes = m_nodes.get_ptr();
                 {
                     p_nodes[0].m_handles.add_items(actualHandles);
                     p_nodes[0].m_value.set_string(L"All");
                 }
 
-                for (i = 0, j = 1; i<count; i++)
+                for (size_t i{0}, j{1}; i < count; i++)
                 {
-                    t_size start = i;
+                    const size_t start{i};
                     while (p_data[perm[i]].m_same_as_next && i + 1<count)
                         i++;
-                    t_size handles_count = 1 + i - start, k;
+                    const size_t handles_count{1 + i - start};
 #ifdef _DEBUG
                     PFC_ASSERT(j < counter + 1);
 #endif
                     p_nodes[j].m_handles.set_count(handles_count);
-                    for (k = 0; k<handles_count; k++)
+                    for (t_size k{0}; k < handles_count; k++)
                         p_nodes[j].m_handles[k] = p_data[perm[start + k]].m_handle;
                     p_nodes[j].m_value = p_data[perm[start]].m_text.get_ptr();
                     j++;
