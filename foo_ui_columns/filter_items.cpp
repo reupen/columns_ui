@@ -443,7 +443,7 @@ namespace filter_panel {
                 p_out.set_count(count);
                 data_entry_t * pp_out = p_out.get_ptr();
                 std::atomic<size_t> node_count{0};
-                concurrency::parallel_for(size_t{0}, count, [&](size_t i) {
+                concurrency::parallel_for(size_t{0}, count, [&node_count, &to, p_handles, b_show_empty, pp_out](size_t i) {
                     pfc::string8_fastalloc buffer;
                     buffer.prealloc(32);
                     p_handles[i]->format_title(nullptr, buffer, to, nullptr);
@@ -466,13 +466,13 @@ namespace filter_panel {
                 infos.set_count(count);
                 handle_info_t * p_infos = infos.get_ptr();
 
-                t_size i, counter = 0, l, lcount = m_field_data.m_fields.get_count();
+                t_size counter = 0, lcount = m_field_data.m_fields.get_count();
 
-                for (i = 0; i<count; i++)
+                for (size_t i{0}; i < count; i++)
                 {
                     if (p_handles[i]->get_info_ref(p_infos[i].m_info))
                     {
-                        for (l = 0; l<lcount; l++)
+                        for (size_t l{0}; l < lcount; l++)
                         {
                             p_infos[i].m_field_index = p_infos[i].m_info->info().meta_find(m_field_data.m_fields[l]);
                             p_infos[i].m_value_count = p_infos[i].m_field_index != pfc_infinite ? p_infos[i].m_info->info().meta_enum_value_count(p_infos[i].m_field_index) : 0;
@@ -489,7 +489,7 @@ namespace filter_panel {
                 data_entry_t * pp_out = p_out.get_ptr();
                 std::atomic<size_t> out_counter{0};
 
-                concurrency::parallel_for(size_t{0}, count, [&](size_t i)
+                concurrency::parallel_for(size_t{0}, count, [&out_counter, p_handles, p_infos, b_show_empty, pp_out](size_t i)
                 {
                     t_size j;
                     for (j = 0; j<p_infos[i].m_value_count; j++)
@@ -547,7 +547,7 @@ namespace filter_panel {
                 const size_t count{data.get_count()};
 
                 concurrency::combinable<size_t> counts;
-                concurrency::parallel_for(size_t{0}, count, [&](size_t i)
+                concurrency::parallel_for(size_t{0}, count, [&counts, perm, p_data, count](size_t i)
                 {
                     if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
                         ++counts.local();

@@ -1024,7 +1024,7 @@ namespace pvt {
 
         const auto group_count = m_scripts.get_count();
 
-        concurrency::parallel_for(size_t{0}, count, [&](size_t index)
+        concurrency::parallel_for(size_t{0}, count, [this, &items, &handles, group_count](size_t index)
         {
             pfc::string8_fast temp;
             temp.prealloc(32);

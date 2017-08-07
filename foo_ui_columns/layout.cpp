@@ -24,7 +24,7 @@ public:
 
     void on_size_limit_change(HWND wnd, unsigned flags) override
     {
-    };
+    }
 
     
     bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out) override
