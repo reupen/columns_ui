@@ -628,9 +628,9 @@ namespace filter_panel {
                     while (p_data[perm[i]].m_same_as_next && i + 1<count)
                         i++;
                     const size_t handles_count{1 + i - start};
-#ifdef _DEBUG
-                    PFC_ASSERT(j < counter + 1);
-#endif
+
+                    PFC_ASSERT(j < m_nodes.get_count());
+
                     p_nodes[j].m_handles.set_count(handles_count);
                     for (t_size k{0}; k < handles_count; k++)
                         p_nodes[j].m_handles[k] = p_data[perm[start + k]].m_handle;
