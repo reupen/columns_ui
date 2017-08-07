@@ -77,15 +77,11 @@ namespace filter_panel {
     bool filter_panel_t::notify_on_contextmenu(const POINT & pt)
     {
         uie::window_ptr p_this_temp = this;
-        enum { ID_SEARCH = action_add_to_active + 2, ID_BASE };
+        enum { ID_BASE = action_add_to_active + 2 };
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         handles.prealloc(m_nodes.get_count());
         get_selection_handles(handles, true, true);
         HMENU menu = CreatePopupMenu();
-#ifdef FILTER_OLD_SEARCH
-        AppendMenu(menu, MF_STRING, ID_SEARCH, m_show_search ? L"Hide search" : L"Search");
-        AppendMenu(menu, MF_SEPARATOR, NULL, NULL);
-#endif
         {
             WCHAR * p_asend = L"Send to autosend playlist";
             WCHAR * p_asend_play = L"Send to autosend playlist and play";
@@ -151,29 +147,11 @@ namespace filter_panel {
         m_contextmenu_manager.release();
         m_contextmenu_manager_base = NULL;
         m_status_text_override.release();
-        if (cmd)
-        {
-            if (cmd == ID_SEARCH)
-            {
-#ifdef FILTER_OLD_SEARCH
-                if (m_query_active)
-                {
-                    close_search_box();
-                }
-                else
-                {
-                    show_search_box("Search", true);
-                    m_query_active = true;
-                    m_show_search = true;
-                }
-#endif
-            }
-            else
-                if (cmd >= ID_BASE)
-                    manager->execute_by_id(cmd - ID_BASE);
-                else if (cmd > 0)
-                    do_selection_action((action_t)(cmd - 1));
-        }
+
+        if (cmd >= ID_BASE)
+            manager->execute_by_id(cmd - ID_BASE);
+        else if (cmd > 0)
+            do_selection_action((action_t)(cmd - 1));
 
         return true;
     }

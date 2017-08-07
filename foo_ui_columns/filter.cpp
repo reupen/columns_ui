@@ -526,77 +526,15 @@ namespace filter_panel {
         subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value);
     }
 
-
     t_size filter_panel_t::get_highlight_item()
     {
         return pfc_infinite;
     }
+
     bool filter_panel_t::notify_on_keyboard_keydown_search()
     {
-#ifdef FILTER_OLD_SEARCH
-        if (m_query_active)
-        {
-            focus_search_box();
-        }
-        else if (m_nodes.get_count())
-        {
-            show_search_box("Search");
-            //m_search_original_handles = m_nodes[0].m_handles;
-            m_query_active = true;
-            m_show_search = true;
-        }
-#else
         return filter_search_bar::g_activate();
-#endif
-        return true;
     }
-#ifdef FILTER_OLD_SEARCH
-    void filter_panel_t::notify_on_search_box_contents_change(const char * p_str)
-    {
-        m_search_query = p_str;
-        if (m_query_timer_active)
-            KillTimer(get_wnd(), TIMER_QUERY);
-        SetTimer(get_wnd(), TIMER_QUERY, 333, NULL);
-        m_query_timer_active = true;
-    };
-    void filter_panel_t::notify_on_search_box_close()
-    {
-        //m_search_original_handles.remove_all();
-        bool b_refresh = m_query_timer_active || m_search_query.get_length();
-        m_search_query.reset();
-        m_query_active = false;
-        m_show_search = false;
-        if (m_query_timer_active)
-        {
-            KillTimer(get_wnd(), TIMER_QUERY);
-            m_query_timer_active = false;
-        }
-        if (b_refresh)
-        {
-            metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
-            get_initial_handles(data);
-            populate_list_from_chain(data, false);
-            update_subsequent_filters();
-        }
-    };
-    bool filter_panel_t::notify_on_timer(UINT_PTR timerid)
-    {
-        if (timerid == TIMER_QUERY)
-        {
-            KillTimer(get_wnd(), TIMER_QUERY);
-            m_query_timer_active = false;
-            if (m_query_active)
-            {
-                metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
-                get_initial_handles(data);
-                populate_list_from_chain(data, false);
-                update_subsequent_filters();
-            }
-            return true;
-        }
-        return false;
-    }
-#endif
 
     bool filter_panel_t::do_drag_drop(WPARAM wp)
     {
@@ -1052,25 +990,8 @@ namespace filter_panel {
 
     void filter_panel_t::notify_on_create()
     {
-#if 0
-        void * buf = malloc(4096 * 16);
-        assert(buf);
-        buf = _expand(buf, 2 * 16);
-        assert(buf);
-        _expand(buf, 4096 * 16);  // verifier gets upset
-
-#endif
-
         refresh_columns();
         refresh_groups();
-
-#ifdef FILTER_OLD_SEARCH
-        if (m_show_search)
-        {
-            show_search_box("Search", false);
-            m_query_active = true;
-        }
-#endif
 
         pfc::hires_timer timer0;
         timer0.start();
@@ -1146,9 +1067,6 @@ namespace filter_panel {
 
 
     filter_panel_t::filter_panel_t() :
-#ifdef FILTER_OLD_SEARCH
-        m_query_active(false), m_query_timer_active(false),
-#endif
         m_drag_item_count(0), m_show_search(false), m_contextmenu_manager_base(NULL), m_pending_sort_direction(false)
     {
 

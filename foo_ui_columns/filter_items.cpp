@@ -69,20 +69,6 @@ namespace filter_panel {
 
 
         metadb_handle_list actualHandles = handles;
-#ifdef FILTER_OLD_SEARCH
-        bool b_filter = m_query_active && strnlen(m_search_query, 1);
-        if (b_filter)
-        {
-            try {
-                search_filter::ptr api = static_api_ptr_t<search_filter_manager>()->create(m_search_query);
-                pfc::array_t<bool> data;
-                data.set_size(actualHandles.get_count());
-                api->test_multi(actualHandles, data.get_ptr());
-                actualHandles.remove_mask(bit_array_not(bit_array_table(data.get_ptr(), data.get_count())));
-            }
-            catch (pfc::exception const &) {};
-        }
-#endif
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handlesNotifyNext;
         handlesNotifyNext.prealloc(actualHandles.get_count());
 
@@ -315,31 +301,6 @@ namespace filter_panel {
 
 
         metadb_handle_list actualHandles = handles;
-#ifdef FILTER_OLD_SEARCH
-        bool b_filter = m_query_active && strnlen(m_search_query, 1);
-        if (b_filter)
-        {
-            try {
-                search_filter::ptr api = static_api_ptr_t<search_filter_manager>()->create(m_search_query);
-                pfc::array_t<bool> data;
-                data.set_size(actualHandles.get_count());
-                api->test_multi(actualHandles, data.get_ptr());
-                actualHandles.remove_mask(bit_array_not(bit_array_table(data.get_ptr(), data.get_count())));
-            }
-            catch (pfc::exception const &) {};
-            //dataFilter.prealloc(filterHandles.get_count());
-            //get_data_entries_v2(filterHandles, dataFilter, g_showemptyitems);
-
-            //permutationFilter.set_count(dataFilter.get_count());
-            //mmh::g_sort_get_permutation_qsort_v2(dataFilter.get_ptr(), permutationFilter, data_entry_t::g_compare, false);
-
-            t_size j, count = handles.get_count();
-            for (j = 0; j<count; j++)
-                m_nodes[0].m_handles.remove_item(handles[j]);
-            m_nodes[0].m_handles.add_items(actualHandles);
-        }
-#endif
-
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handlesNotifyNext;
         handlesNotifyNext.prealloc(actualHandles.get_count());
 
@@ -438,15 +399,10 @@ namespace filter_panel {
         }
         if (index + 1<windows.get_count())
         {
-#ifdef FILTER_OLD_SEARCH
-            if (b_filter)
-                g_update_subsequent_filters(windows, index + 1, false, false);
-            else
-#endif
-                if (b_no_selection)
-                    windows[index + 1]->_on_items_modified(actualHandles);
-                else if (handlesNotifyNext.get_count())
-                    windows[index + 1]->_on_items_modified(handlesNotifyNext);
+            if (b_no_selection)
+                windows[index + 1]->_on_items_modified(actualHandles);
+            else if (handlesNotifyNext.get_count())
+                windows[index + 1]->_on_items_modified(handlesNotifyNext);
         }
     }
 
@@ -567,25 +523,7 @@ namespace filter_panel {
         pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data0;
         //data0.prealloc(handles.get_count());
 
-#ifdef FILTER_OLD_SEARCH
-        metadb_handle_list filtered_list;
-        bool b_filter = m_query_active && strnlen(m_search_query, 1);
-        const metadb_handle_list & actualHandles = b_filter ? filtered_list : handles;
-        if (b_filter)
-        {
-            filtered_list = handles;
-            try {
-                search_filter::ptr api = static_api_ptr_t<search_filter_manager>()->create(m_search_query);
-                pfc::array_t<bool> data;
-                data.set_size(filtered_list.get_count());
-                api->test_multi(filtered_list, data.get_ptr());
-                filtered_list.remove_mask(bit_array_not(bit_array_table(data.get_ptr(), data.get_count())));
-            }
-            catch (pfc::exception const &) {};
-        }
-#else
         const metadb_handle_list & actualHandles = handles;
-#endif
 
         {
             get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_size(), data0, g_showemptyitems);

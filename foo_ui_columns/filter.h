@@ -236,11 +236,6 @@ namespace filter_panel {
 
         t_size get_highlight_item() override;
         bool notify_on_keyboard_keydown_search() override;
-#ifdef FILTER_OLD_SEARCH
-        virtual void notify_on_search_box_contents_change(const char * p_str);
-        virtual void notify_on_search_box_close();
-        virtual bool notify_on_timer(UINT_PTR timerid);
-#endif
         bool notify_on_contextmenu_header(const POINT & pt, const HDHITTESTINFO & ht) override;
         void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
         bool notify_on_contextmenu(const POINT & pt) override;
@@ -293,12 +288,6 @@ namespace filter_panel {
         pfc::list_t<pfc::string8> m_edit_fields;
         metadb_handle_list m_edit_handles;
         bool m_show_search;
-#ifdef FILTER_OLD_SEARCH
-        bool m_query_active, m_query_timer_active;
-        //metadb_handle_list m_search_original_handles;
-        pfc::string8 m_search_query;
-#endif
-
         contextmenu_manager::ptr m_contextmenu_manager;
         UINT_PTR m_contextmenu_manager_base;
         ui_status_text_override::ptr m_status_text_override;
