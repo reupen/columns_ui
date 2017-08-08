@@ -72,6 +72,17 @@ void status_pane::render_background (HDC dc, const RECT & rc)
     }
 }
 
+void status_pane::update_playback_status_text()
+{
+    static_api_ptr_t<playback_control> api;
+    if (api->is_playing()) {
+        m_track_label = api->is_paused() ? "Paused" : "Playing";
+    }
+    else {
+        m_track_label = "";
+    }
+}
+
 void status_pane::get_length_data(bool & p_selection, t_size & p_count, pfc::string_base & p_out)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> sels;

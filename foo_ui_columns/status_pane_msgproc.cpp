@@ -14,8 +14,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
 
             update_playlist_data();
-            static_api_ptr_t<playback_control> play_api;
-            set_track_label(play_api->is_playing(), play_api->is_paused());
+            update_playback_status_text();
             static_api_ptr_t<playlist_manager>()->register_callback(this, playlist_callback_single::flag_all);
             static_api_ptr_t<play_callback_manager>()->register_callback(this, play_callback::flag_on_playback_all|play_callback::flag_on_volume_change, false);
         }

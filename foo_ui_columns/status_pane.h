@@ -74,13 +74,19 @@ class status_pane : public ui_helpers::container_window, private playlist_callba
 
     void on_playback_new_track(metadb_handle_ptr p_track) override
     {
-        m_track_label = "Playing:"; update_playing_text(); invalidate_all();
+        // Note: On start-up, playback can actually be paused when we get here
+        // (and on_playback_pause() won't be called).
+        update_playback_status_text();
+        update_playing_text(); 
+        invalidate_all();
     }
 
     void on_playback_stop(play_control::t_stop_reason p_reason) override
     {
         if (p_reason != playback_control::stop_reason_shutting_down) {
-            m_track_label = ""; update_playing_text();  invalidate_all();
+            m_track_label = ""; 
+            update_playing_text();  
+            invalidate_all();
         }
     }
 
@@ -122,10 +128,8 @@ class status_pane : public ui_helpers::container_window, private playlist_callba
     void invalidate_all(bool b_update = true) {RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE|(b_update?RDW_UPDATENOW:NULL));}
     void render_background (HDC dc, const RECT & rc);
 
-    void set_track_label (bool b_playing, bool b_paused)
-    {
-        m_track_label = b_playing ? (b_paused ? "Paused:" : "Playing:") : "";
-    }
+    void update_playback_status_text();
+
     void update_playing_text()
     {
         metadb_handle_ptr track;
