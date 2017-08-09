@@ -42,8 +42,8 @@ static const GUID g_guid_advbool_close_to_tray =
 
 advconfig_branch_factory advBranchCUI("Columns UI", g_guid_advbranch_cui, advconfig_branch::guid_branch_display, 0);
 
-advconfig_checkbox_factory g_advbool_notification_icon_x_buttons("Enable notification icon support for back/forward mouse buttons", g_guid_advbool_notification_icon_x_buttons, g_guid_advbranch_cui, 0, false);
-advconfig_checkbox_factory g_advbool_close_to_tray("Close foobar2000 window to tray", g_guid_advbool_close_to_tray, g_guid_advbranch_cui, 0, false);
+advconfig_checkbox_factory g_advbool_notification_icon_x_buttons("Use back/forward mouse buttons to skip track when over notification area icon", g_guid_advbool_notification_icon_x_buttons, g_guid_advbranch_cui, 0, false);
+advconfig_checkbox_factory g_advbool_close_to_tray("Close to notification area icon", g_guid_advbool_close_to_tray, g_guid_advbranch_cui, 0, false);
 
 cfg_struct_t<LOGFONT> cfg_font(create_guid(0x2465a5af, 0xd5e3, 0x29f6, 0xae, 0x12, 0x1f, 0x39, 0x4e, 0x9b, 0xff, 0xf3), get_icon_font());
 cfg_struct_t<LOGFONT> cfg_status_font(create_guid(0x93681691, 0xd7ed, 0x7567, 0x63, 0xdf, 0xcb, 0xc3, 0x86, 0x9f, 0x2f, 0x9e), get_menu_font());
