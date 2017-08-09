@@ -76,83 +76,62 @@ namespace filter_panel {
 
         bool b_no_selection = get_selection_count(1) == 0 || get_item_selected(0);
 
+        pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
+        const auto node_count = get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data_entries, g_showemptyitems);
+
+        pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
+        items.prealloc(node_count);
+
+        if (!m_field_data.is_empty())
         {
-            pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data0;
-            //data0.prealloc(handles.get_count());
+            data_entry_t * p_data = data_entries.get_ptr();
 
+            //node_t node;
+            t_size i, count = data_entries.get_count();
 
-            get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
-
-            mmh::Permuation permutation(data0.get_count());
-            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
-
-            pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
-            pfc::list_base_const_t<data_entry_t> & data = data2;
-
-            pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
-            items.prealloc(data.get_count());
-
+            for (i = 0; i<count; i++)
             {
-                if (!m_field_data.is_empty())
+                t_size start = i;
+                while (p_data[i].m_same_as_next && i + 1<count)
+                    i++;
+                t_size handles_count = 1 + i - start, k;
+
+                t_size index_item;
+                bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
+                    p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
+                if (b_exact)
                 {
+                    t_size current_count = m_nodes[index_item].m_handles.get_count();
+                    m_nodes[index_item].m_handles.set_count(current_count + handles_count);
 
+                    bool b_selected = !b_no_selection && get_item_selected(index_item);
 
-                    data_entry_t * p_data = data0.get_ptr();
-                    t_size * perm = permutation.get_ptr();
+                    for (k = 0; k<handles_count; k++)
+                        m_nodes[index_item].m_handles[current_count + k] = p_data[start + k].m_handle;
 
-                    //node_t node;
-                    t_size i, count = data.get_count(), counter = 0;
+                    if (b_selected && handles_count)
+                        handlesNotifyNext.add_items_fromptr(m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
+                }
+                else
+                {
+                    node_t node;
+                    node.m_value = p_data[start].m_text.get_ptr();
+                    node.m_handles.set_count(handles_count);
 
-                    for (i = 0; i<count; i++)
-                        if (i + 1 == count || !((p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr()))))
-                            counter++;
+                    for (k = 0; k<handles_count; k++)
+                        node.m_handles[k] = p_data[start + k].m_handle;
 
-                    for (i = 0; i<count; i++)
-                    {
-                        t_size start = i;
-                        while (p_data[perm[i]].m_same_as_next && i + 1<count)
-                            i++;
-                        t_size handles_count = 1 + i - start, k;
-
-                        t_size index_item;
-                        bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
-                            p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
-                        if (b_exact)
-                        {
-                            t_size current_count = m_nodes[index_item].m_handles.get_count();
-                            m_nodes[index_item].m_handles.set_count(current_count + handles_count);
-
-                            bool b_selected = !b_no_selection && get_item_selected(index_item);
-
-                            for (k = 0; k<handles_count; k++)
-                                m_nodes[index_item].m_handles[current_count + k] = p_data[perm[start + k]].m_handle;
-
-                            if (b_selected && handles_count)
-                                handlesNotifyNext.add_items_fromptr(m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
-                        }
-                        else
-                        {
-                            node_t node;
-                            node.m_value = p_data[perm[start]].m_text.get_ptr();
-                            node.m_handles.set_count(handles_count);
-
-                            for (k = 0; k<handles_count; k++)
-                                node.m_handles[k] = p_data[perm[start + k]].m_handle;
-
-                            m_nodes.insert_item(node, index_item);
-                            InsertItem item;
-                            insert_items(index_item, 1, &item);
-                        }
-                    }
-
-                    update_first_node_text(true);
+                    m_nodes.insert_item(node, index_item);
+                    InsertItem item;
+                    insert_items(index_item, 1, &item);
                 }
             }
+
+            update_first_node_text(true);
         }
+
         if (index + 1<windows.get_count())
         {
-            //if (index==0)
-            //    g_update_subsequent_filters(windows, index+1, false, false);
             if (b_no_selection)
                 windows[index + 1]->_on_items_added(actualHandles);
             else if (handlesNotifyNext.get_count())
@@ -188,77 +167,53 @@ namespace filter_panel {
             existing_handles.remove_mask(remove_mask.get_ptr());
         }
 
+        pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
+        get_data_entries_v2(handles, data_entries, g_showemptyitems);
+
+        if (!m_field_data.is_empty())
         {
-            pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data0;
-            //data0.prealloc(handles.get_count());
+            data_entry_t * p_data = data_entries.get_ptr();
+
+            t_size i, count = data_entries.get_count();
+
+            pfc::array_t<bool> mask0;
+            mask0.set_count(m_nodes.get_count());
+            mask0.fill_null();
 
 
-            get_data_entries_v2(handles, data0, g_showemptyitems);
-
-            mmh::Permuation permutation(data0.get_count());
-            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
-
-            pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
-            pfc::list_base_const_t<data_entry_t> & data = data2;
-
+            for (i = 0; i<count; i++)
             {
-                if (!m_field_data.is_empty())
+                t_size start = i;
+                while (p_data[i].m_same_as_next && i + 1<count)
+                    i++;
+                t_size handles_count = 1 + i - start;
+
+                t_size index_item;
+                bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
+                    p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
+
+                if (b_exact)
                 {
+                    bool b_selected = !b_no_selection && get_item_selected(index_item);
 
-                    data_entry_t * p_data = data0.get_ptr();
-                    t_size * perm = permutation.get_ptr();
-
-                    //node_t node;
-                    t_size i, count = data.get_count();
-
-                    for (i = 0; i + 1 < count; i++)
-                        p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
-
-                    pfc::array_t<bool> mask0;
-                    mask0.set_count(m_nodes.get_count());
-                    mask0.fill_null();
-
-
-                    for (i = 0; i<count; i++)
+                    t_size k;
+                    for (k = 0; k<handles_count; k++)
                     {
-                        t_size start = i;
-                        while (p_data[perm[i]].m_same_as_next && i + 1<count)
-                            i++;
-                        t_size handles_count = 1 + i - start;
-
-                        t_size index_item;
-                        bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, 
-                            p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
-
-                        if (b_exact)
-                        {
-                            //t_size current_count = m_nodes[index_item].m_handles.get_count();
-                            //m_nodes[index_item].m_handles.set_count(handles_count);
-
-                            bool b_selected = !b_no_selection && get_item_selected(index_item);
-
-                            t_size k;
-                            for (k = 0; k<handles_count; k++)
-                            {
-                                m_nodes[index_item].m_handles.remove_item(p_data[perm[start + k]].m_handle);
-                                if (b_selected) handlesNotifyNext.add_item(p_data[perm[start + k]].m_handle);
-                            }
-
-
-                            if (m_nodes[index_item].m_handles.get_count() == 0)
-                            {
-                                mask0[index_item] = true;
-                            }
-                        }
+                        m_nodes[index_item].m_handles.remove_item(p_data[start + k].m_handle);
+                        if (b_selected) handlesNotifyNext.add_item(p_data[start + k].m_handle);
                     }
-                    m_nodes.remove_mask(mask0.get_ptr());
-                    remove_items(bit_array_table(mask0.get_ptr(), mask0.get_size()));
-                    update_first_node_text(true);
+
+                    if (m_nodes[index_item].m_handles.get_count() == 0)
+                    {
+                        mask0[index_item] = true;
+                    }
                 }
             }
+            m_nodes.remove_mask(mask0.get_ptr());
+            remove_items(bit_array_table(mask0.get_ptr(), mask0.get_size()));
+            update_first_node_text(true);
         }
-        //if (index==0)
-        //    g_update_subsequent_filters(windows, index+1, false, false);
+
         if (index + 1<windows.get_count())
         {
             if (b_no_selection)
@@ -296,106 +251,89 @@ namespace filter_panel {
         get_windows(windows);
         t_size index = windows.find_item(this);
 
-        pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data0;//, dataFilter;
-        data0.prealloc(handles.get_count());
+        pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;//, dataFilter;
+        data_entries.prealloc(handles.get_count());
 
 
         metadb_handle_list actualHandles = handles;
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handlesNotifyNext;
         handlesNotifyNext.prealloc(actualHandles.get_count());
 
-        get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data0, g_showemptyitems);
-
-        mmh::Permuation permutation(data0.get_count());
-        mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
-
-        pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
-        pfc::list_base_const_t<data_entry_t> & data = data2;
+        get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_count(), data_entries, g_showemptyitems);
 
         bool b_no_selection = get_selection_count(1) == 0 || get_item_selected(0);
 
+        if (!m_field_data.is_empty())
         {
-            if (!m_field_data.is_empty())
+            t_size j, countj = handles.get_count();
+            t_size k, old_node_count = m_nodes.get_count();
+            for (k = 1; k<old_node_count; k++)
             {
+                pfc::array_t<bool> mask;
+                mask.set_count(m_nodes[k].m_handles.get_count());
+                mask.fill_null();
+                for (j = 0; j<countj; j++)
                 {
-                    t_size j, countj = handles.get_count();
-                    t_size k, countk = m_nodes.get_count();
-                    for (k = 1; k<countk; k++)
-                    {
-                        pfc::array_t<bool> mask;
-                        mask.set_count(m_nodes[k].m_handles.get_count());
-                        mask.fill_null();
-                        for (j = 0; j<countj; j++)
-                        {
-                            t_size index_found = m_nodes[k].m_handles.find_item(handles[j]);
-                            if (index_found != pfc_infinite)
-                                mask[index_found] = true;
-                        }
-                        m_nodes[k].m_handles.remove_mask(mask.get_ptr());
-                    }
+                    t_size index_found = m_nodes[k].m_handles.find_item(handles[j]);
+                    if (index_found != pfc_infinite)
+                        mask[index_found] = true;
                 }
-
-                data_entry_t * p_data = data0.get_ptr();
-                t_size * perm = permutation.get_ptr();
-
-                t_size i, count = data.get_count();
-
-                for (i = 0; i + 1 < count; i++)
-                    p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr());
-
-                for (i = 0; i<count; i++)
-                {
-                    t_size start = i;
-                    while (p_data[perm[i]].m_same_as_next && i + 1<count)
-                        i++;
-                    t_size handles_count = 1 + i - start, k;
-
-                    t_size index_item;
-                    bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[perm[start]].m_text.get_ptr(), 1, index_item, get_sort_direction());
-                    if (b_exact)
-                    {
-                        t_size current_count = m_nodes[index_item].m_handles.get_count();
-                        m_nodes[index_item].m_handles.set_count(current_count + handles_count);
-
-                        bool b_selected = !b_no_selection && get_item_selected(index_item);
-
-                        for (k = 0; k<handles_count; k++)
-                        {
-                            m_nodes[index_item].m_handles[current_count + k] = p_data[perm[start + k]].m_handle;
-                        }
-                        if (b_selected && handles_count)
-                            handlesNotifyNext.add_items_fromptr(m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
-                    }
-                    else
-                    {
-                        node_t node;
-                        node.m_value = p_data[perm[start]].m_text.get_ptr();
-                        node.m_handles.set_count(handles_count);
-
-                        for (k = 0; k<handles_count; k++)
-                            node.m_handles[k] = p_data[perm[start + k]].m_handle;
-
-                        m_nodes.insert_item(node, index_item);
-                        InsertItem item;
-                        insert_items(index_item, 1, &item, false);
-                    }
-                }
-
-                {
-                    t_size k, countk = m_nodes.get_count();
-                    pfc::array_t<bool> mask0;
-                    mask0.set_count(countk);
-                    mask0[0] = false;
-                    //mask0.fill_null();
-                    for (k = 1; k<countk; k++)
-                    {
-                        mask0[k] = m_nodes[k].m_handles.get_count() == 0;
-                    }
-                    m_nodes.remove_mask(mask0.get_ptr());
-                    remove_items(bit_array_table(mask0.get_ptr(), mask0.get_size()), true);
-                }
-                update_first_node_text(true);
+                m_nodes[k].m_handles.remove_mask(mask.get_ptr());
             }
+
+            data_entry_t * p_data = data_entries.get_ptr();
+
+            t_size i, count = data_entries.get_count();
+
+            for (i = 0; i<count; i++)
+            {
+                t_size start = i;
+                while (p_data[i].m_same_as_next && i + 1<count)
+                    i++;
+                t_size handles_count = 1 + i - start, k;
+
+                t_size index_item;
+                bool b_exact = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
+                if (b_exact)
+                {
+                    t_size current_count = m_nodes[index_item].m_handles.get_count();
+                    m_nodes[index_item].m_handles.set_count(current_count + handles_count);
+
+                    bool b_selected = !b_no_selection && get_item_selected(index_item);
+
+                    for (k = 0; k<handles_count; k++)
+                    {
+                        m_nodes[index_item].m_handles[current_count + k] = p_data[start + k].m_handle;
+                    }
+                    if (b_selected && handles_count)
+                        handlesNotifyNext.add_items_fromptr(m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
+                }
+                else
+                {
+                    node_t node;
+                    node.m_value = p_data[start].m_text.get_ptr();
+                    node.m_handles.set_count(handles_count);
+
+                    for (k = 0; k<handles_count; k++)
+                        node.m_handles[k] = p_data[start + k].m_handle;
+
+                    m_nodes.insert_item(node, index_item);
+                    InsertItem item;
+                    insert_items(index_item, 1, &item, false);
+                }
+            }
+
+            t_size node_index, node_count = m_nodes.get_count();
+            pfc::array_t<bool> mask0;
+            mask0.set_count(node_count);
+            mask0[0] = false;
+            for (node_index = 1; node_index < node_count; node_index++)
+            {
+                mask0[node_index] = m_nodes[node_index].m_handles.get_count() == 0;
+            }
+            m_nodes.remove_mask(mask0.get_ptr());
+            remove_items(bit_array_table(mask0.get_ptr(), mask0.get_size()), true);
+            update_first_node_text(true);
         }
         if (index + 1<windows.get_count())
         {
@@ -418,13 +356,13 @@ namespace filter_panel {
         }
     }
 
-    void filter_panel_t::get_data_entries_v2(const pfc::list_base_const_t<metadb_handle_ptr> & handles, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty)
+    size_t filter_panel_t::get_data_entries_v2(const pfc::list_base_const_t<metadb_handle_ptr> & handles, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty)
     {
         metadb_handle_list p_handles(handles);
-        get_data_entries_v2(p_handles.get_ptr(), p_handles.get_count(), p_out, b_show_empty);
+        return get_data_entries_v2(p_handles.get_ptr(), p_handles.get_count(), p_out, b_show_empty);
     }
 
-    void filter_panel_t::get_data_entries_v2(const metadb_handle_ptr * p_handles, t_size count, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty)
+    size_t filter_panel_t::get_data_entries_v2(const metadb_handle_ptr * p_handles, t_size track_count, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty)
     {
         class handle_info_t
         {
@@ -433,84 +371,87 @@ namespace filter_panel {
             t_size m_value_count;
             t_size m_field_index;
         };
-        //pfc::stringcvt::string_wide_from_utf8_t<pfc::alloc_fast_aggressive> str_utf16;
-        if (!m_field_data.is_empty())
+
+        if (m_field_data.is_empty())
+            return 0;
+
+        if (m_field_data.m_use_script)
         {
-
-            if (m_field_data.m_use_script)
-            {
-                titleformat_object_wrapper to(m_field_data.m_script);
-                p_out.set_count(count);
-                data_entry_t * pp_out = p_out.get_ptr();
-                std::atomic<size_t> node_count{0};
-                concurrency::parallel_for(size_t{0}, count, [&node_count, &to, p_handles, b_show_empty, pp_out](size_t i) {
-                    pfc::string8_fastalloc buffer;
-                    buffer.prealloc(32);
-                    p_handles[i]->format_title(nullptr, buffer, to, nullptr);
-                    if (b_show_empty || pfc::strlen_max(buffer, 1))
-                    {
-                        const size_t node_index = node_count++;
-                        pp_out[node_index].m_handle = p_handles[i];
-                        pp_out[node_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(buffer));
-                        pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[node_index].m_text.get_ptr(), buffer);
-                        //int size = LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, NULL, NULL);
-                        //pp_out[k].m_sortkey.set_size(size);
-                        //LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, (LPWSTR)pp_out[k].m_sortkey.get_ptr(), size);
-                    }
-                });
-                p_out.set_count(node_count);
-            }
-            else
-            {
-                pfc::list_t<handle_info_t> infos;
-                infos.set_count(count);
-                handle_info_t * p_infos = infos.get_ptr();
-
-                t_size counter = 0, lcount = m_field_data.m_fields.get_count();
-
-                for (size_t i{0}; i < count; i++)
+            titleformat_object_wrapper to(m_field_data.m_script);
+            p_out.set_count(track_count);
+            data_entry_t * pp_out = p_out.get_ptr();
+            std::atomic<size_t> node_count{0};
+            concurrency::parallel_for(size_t{0}, track_count, [&node_count, &to, p_handles, b_show_empty, pp_out](size_t i) {
+                pfc::string8_fastalloc buffer;
+                buffer.prealloc(32);
+                p_handles[i]->format_title(nullptr, buffer, to, nullptr);
+                if (b_show_empty || pfc::strlen_max(buffer, 1))
                 {
-                    if (p_handles[i]->get_info_ref(p_infos[i].m_info))
-                    {
-                        for (size_t l{0}; l < lcount; l++)
-                        {
-                            p_infos[i].m_field_index = p_infos[i].m_info->info().meta_find(m_field_data.m_fields[l]);
-                            p_infos[i].m_value_count = p_infos[i].m_field_index != pfc_infinite ? p_infos[i].m_info->info().meta_enum_value_count(p_infos[i].m_field_index) : 0;
-                            counter += p_infos[i].m_value_count;
-                            if (p_infos[i].m_value_count)
-                                break;
-                        }
-                    }
-                    else p_infos[i].m_value_count = 0;
+                    const size_t node_index = node_count++;
+                    pp_out[node_index].m_handle = p_handles[i];
+                    pp_out[node_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(buffer));
+                    pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[node_index].m_text.get_ptr(), buffer);
                 }
-
-                p_out.set_count(counter);
-
-                data_entry_t * pp_out = p_out.get_ptr();
-                std::atomic<size_t> out_counter{0};
-
-                concurrency::parallel_for(size_t{0}, count, [&out_counter, p_handles, p_infos, b_show_empty, pp_out](size_t i)
-                {
-                    t_size j;
-                    for (j = 0; j<p_infos[i].m_value_count; j++)
-                    {
-                        const char * str = p_infos[i].m_info->info().meta_enum_value(p_infos[i].m_field_index, j);
-                        if (b_show_empty || *str)
-                        {
-                            size_t out_index = out_counter++;
-                            pp_out[out_index].m_handle = p_handles[i];
-                            pp_out[out_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(str));
-                            pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[out_index].m_text.get_ptr(), str);
-                            //int size = LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, NULL, NULL);
-                            //pp_out[k].m_sortkey.set_size(size);
-                            //LCMapString(LOCALE_USER_DEFAULT, LCMAP_SORTKEY, pp_out[k].m_text.get_ptr(), -1, (LPWSTR)pp_out[k].m_sortkey.get_ptr(), size);
-
-                        }
-                    }
-                });
-                p_out.set_count(out_counter);
-            }
+            });
+            p_out.set_count(node_count);
         }
+        else
+        {
+            pfc::list_t<handle_info_t> infos;
+            infos.set_count(track_count);
+            handle_info_t * p_infos = infos.get_ptr();
+
+            t_size counter = 0, field_count = m_field_data.m_fields.get_count();
+
+            for (size_t i{0}; i < track_count; i++) {
+                if (p_handles[i]->get_info_ref(p_infos[i].m_info)) {
+                    for (size_t l{0}; l < field_count; l++)
+                    {
+                        p_infos[i].m_field_index = p_infos[i].m_info->info().meta_find(m_field_data.m_fields[l]);
+                        p_infos[i].m_value_count = p_infos[i].m_field_index != pfc_infinite ? p_infos[i].m_info->info().meta_enum_value_count(p_infos[i].m_field_index) : 0;
+                        counter += p_infos[i].m_value_count;
+                        if (p_infos[i].m_value_count)
+                            break;
+                    }
+                }
+                else p_infos[i].m_value_count = 0;
+            }
+
+            p_out.set_count(counter);
+
+            data_entry_t * pp_out = p_out.get_ptr();
+            std::atomic<size_t> out_counter{0};
+
+            concurrency::parallel_for(size_t{0}, track_count, [&out_counter, p_handles, p_infos, b_show_empty, pp_out](size_t i) {
+                for (size_t j{0}; j < p_infos[i].m_value_count; j++) {
+                    const char * str = p_infos[i].m_info->info().meta_enum_value(p_infos[i].m_field_index, j);
+                    if (b_show_empty || *str) {
+                        size_t out_index = out_counter++;
+                        pp_out[out_index].m_handle = p_handles[i];
+                        pp_out[out_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(str));
+                        pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[out_index].m_text.get_ptr(), str);
+                    }
+                }
+            });
+            p_out.set_count(out_counter);
+        }
+
+        mmh::in_place_sort(p_out, data_entry_t::g_compare, false, get_sort_direction(), true);
+        const auto data_entries_count{p_out.get_count()};
+
+        data_entry_t * p_data = p_out.get_ptr();
+        concurrency::combinable<size_t> counts;
+        concurrency::parallel_for(size_t{0}, data_entries_count, [&counts, p_data, data_entries_count](size_t i) {
+            if (i + 1 == data_entries_count) {
+                p_data[i].m_same_as_next = false;
+            } else {
+                p_data[i].m_same_as_next = !StrCmpI(p_data[i].m_text.get_ptr(), p_data[i + 1].m_text.get_ptr());
+            }
+
+            if (!p_data[i].m_same_as_next)
+                ++counts.local();
+        });
+        return counts.combine(std::plus<size_t>());
     }
 
     void filter_panel_t::populate_list(const metadb_handle_list_t<pfc::alloc_fast> & handles)
@@ -518,66 +459,40 @@ namespace filter_panel {
         clear_all_items();
         m_nodes.remove_all();
 
-        //m_nodes.prealloc(handles.get_count());
-
-        pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data0;
-        //data0.prealloc(handles.get_count());
+        pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
 
         const metadb_handle_list & actualHandles = handles;
 
-        {
-            get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_size(), data0, g_showemptyitems);
-        }
-
-        mmh::Permuation permutation(data0.get_count());
-        {
-            mmh::sort_get_permuation(data0.get_ptr(), permutation, data_entry_t::g_compare, false, get_sort_direction(), true);
-        }
-
-        //data.reorder(permutation.get_ptr());
-        pfc::list_permutation_t<data_entry_t> data2(data0, permutation.get_ptr(), permutation.get_count());
-        pfc::list_base_const_t<data_entry_t> & data = data2;
+        const auto node_count = get_data_entries_v2(actualHandles.get_ptr(), actualHandles.get_size(), data_entries, g_showemptyitems);
 
         pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
-        items.prealloc(data.get_count());
+        items.prealloc(node_count);
+
+        data_entry_t * p_data = data_entries.get_ptr();
+        const size_t data_entries_count{data_entries.get_count()};
+
+        m_nodes.set_count(node_count + 1);
+        node_t * p_nodes = m_nodes.get_ptr();
+        p_nodes[0].m_handles.add_items(actualHandles);
+        p_nodes[0].m_value.set_string(L"All");
+
+        for (size_t i{0}, j{1}; i < data_entries_count; i++)
         {
-            {
-                data_entry_t * p_data = data0.get_ptr();
-                t_size * perm = permutation.get_ptr();
-                const size_t count{data.get_count()};
+            const size_t start{i};
+            while (p_data[i].m_same_as_next && i + 1<data_entries_count)
+                i++;
+            const size_t handles_count{1 + i - start};
 
-                concurrency::combinable<size_t> counts;
-                concurrency::parallel_for(size_t{0}, count, [&counts, perm, p_data, count](size_t i)
-                {
-                    if (i + 1 == count || !(p_data[perm[i]].m_same_as_next = !StrCmpI(p_data[perm[i]].m_text.get_ptr(), p_data[perm[i + 1]].m_text.get_ptr())))
-                        ++counts.local();
-                });
+            PFC_ASSERT(j < m_nodes.get_count());
 
-                m_nodes.set_count(counts.combine(std::plus<size_t>()) + 1);
-                node_t * p_nodes = m_nodes.get_ptr();
-                {
-                    p_nodes[0].m_handles.add_items(actualHandles);
-                    p_nodes[0].m_value.set_string(L"All");
-                }
-
-                for (size_t i{0}, j{1}; i < count; i++)
-                {
-                    const size_t start{i};
-                    while (p_data[perm[i]].m_same_as_next && i + 1<count)
-                        i++;
-                    const size_t handles_count{1 + i - start};
-
-                    PFC_ASSERT(j < m_nodes.get_count());
-
-                    p_nodes[j].m_handles.set_count(handles_count);
-                    for (t_size k{0}; k < handles_count; k++)
-                        p_nodes[j].m_handles[k] = p_data[perm[start + k]].m_handle;
-                    p_nodes[j].m_value = p_data[perm[start]].m_text.get_ptr();
-                    j++;
-                }
-                update_first_node_text();
-            }
+            p_nodes[j].m_handles.set_count(handles_count);
+            for (t_size k{0}; k < handles_count; k++)
+                p_nodes[j].m_handles[k] = p_data[start + k].m_handle;
+            p_nodes[j].m_value = p_data[start].m_text.get_ptr();
+            j++;
         }
+        update_first_node_text();
+
         items.set_count(m_nodes.get_count());
         insert_items(0, items.get_count(), items.get_ptr());
     }

@@ -214,9 +214,8 @@ namespace filter_panel {
             data_entry_t() : m_same_as_next(false) {};
         };
 
-        //void get_data_entries(const pfc::list_base_const_t<metadb_handle_ptr> & handles, pfc::list_base_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty = false);
-        void get_data_entries_v2(const metadb_handle_ptr * p_handles, t_size count, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty);
-        void get_data_entries_v2(const pfc::list_base_const_t<metadb_handle_ptr> & handles, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty);
+        size_t get_data_entries_v2(const metadb_handle_ptr * p_handles, t_size count, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty);
+        size_t get_data_entries_v2(const pfc::list_base_const_t<metadb_handle_ptr> & handles, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty);
         void populate_list(const metadb_handle_list_t<pfc::alloc_fast> & handles);
         void populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast> & handles, bool b_last_in_chain);
         virtual void refresh_groups();
