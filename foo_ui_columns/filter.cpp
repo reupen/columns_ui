@@ -382,6 +382,15 @@ namespace filter_panel {
         }
     }
 
+    filter_panel_t* filter_panel_t::get_next_window()
+    {
+        pfc::list_t<filter_panel_t*> windows;
+        get_windows(windows);
+        const auto window_index = windows.find_item(this);
+        const auto window_count = windows.get_count();
+        return window_index + 1 < window_count ? windows[window_index + 1] : nullptr;
+    }
+
     void filter_panel_t::g_create_field_data(const field_t & field, field_data_t & p_out)
     {
         p_out.m_name = field.m_name;
@@ -833,8 +842,6 @@ namespace filter_panel {
             m_handles_sorted = true;
         }
     }
-
-    filter_panel_t::node_t::node_t() : m_handles_sorted(false) {};
 
     int filter_panel_t::node_t::g_compare(const node_t & i1, const WCHAR * i2)
     {

@@ -185,6 +185,8 @@ namespace filter_panel {
 
         void get_windows(pfc::list_base_t<filter_panel_t*> & windows);
 
+        filter_panel_t* get_next_window();
+
         static void g_create_field_data(const field_t & field, field_data_t & p_out);
 
         static void g_load_fields();
@@ -214,8 +216,7 @@ namespace filter_panel {
             data_entry_t() : m_same_as_next(false) {};
         };
 
-        size_t get_data_entries_v2(const metadb_handle_ptr * p_handles, t_size count, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty);
-        size_t get_data_entries_v2(const pfc::list_base_const_t<metadb_handle_ptr> & handles, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty);
+        size_t get_data_entries_v2(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& handles, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty);
         void populate_list(const metadb_handle_list_t<pfc::alloc_fast> & handles);
         void populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast> & handles, bool b_last_in_chain);
         virtual void refresh_groups();
@@ -255,6 +256,7 @@ namespace filter_panel {
             action_send_to_new_play,
             action_add_to_active,
         };
+        bool get_nothing_or_all_node_selected() { return get_selection_count(1) == 0 || get_item_selected(0);  }
         void do_selection_action(action_t action = action_send_to_autosend);
         void do_items_action(const bit_array & p_nodes, action_t action = action_send_to_autosend);
         void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl) override;
@@ -266,9 +268,9 @@ namespace filter_panel {
         void on_items_added(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) override;
         void on_items_removed(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) override;
         void on_items_modified(const pfc::list_base_const_t<metadb_handle_ptr> & p_data) override;
-        void _on_items_modified(const metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_data);
-        void _on_items_added(const metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_data);
-        void _on_items_removed(const metadb_handle_list_t<pfc::alloc_fast_aggressive> & p_data);
+        void _on_items_modified(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_data);
+        void _on_items_added(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_data);
+        void _on_items_removed(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_data);
 
         bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;
         bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;
@@ -299,11 +301,26 @@ namespace filter_panel {
         public:
             metadb_handle_list_t<pfc::alloc_fast_aggressive> m_handles;
             pfc::string_simple_t<WCHAR> m_value;
-            bool m_handles_sorted;
+            bool m_handles_sorted{false};
 
             void ensure_handles_sorted();
+            void remove_handles(metadb_handle_list_cref& to_remove)
+            {
+                pfc::array_staticsize_t<bool> remove_mask(m_handles.get_count());
+                pfc::fill_array_t(remove_mask, false);
 
-            node_t();
+                m_handles_sorted = false;
+                mmh::in_place_sort(m_handles, pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, false);
+
+                const size_t remove_handles_count = to_remove.get_count();
+                for (size_t j = 0; j < remove_handles_count; j++) {
+                    size_t handle_index = -1;
+                    if (m_handles.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, to_remove[j], handle_index)) {
+                        remove_mask[handle_index] = true;
+                    }
+                }
+                m_handles.remove_mask(remove_mask.get_ptr());
+            }
 
             static int g_compare(const node_t & i1, const WCHAR * i2);
             static int g_compare_ptr(const node_t * i1, const WCHAR * i2);
