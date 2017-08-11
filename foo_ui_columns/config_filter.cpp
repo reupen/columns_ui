@@ -328,7 +328,7 @@ public:
                         uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_SETCURSEL, filter_panel::cfg_edgestyle, nullptr);
 
                         uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_ADDSTRING, 0, "By position in splitter");
-                        uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_ADDSTRING, 0, "By field list above");
+                        uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_ADDSTRING, 0, "By field order in field list");
                         uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_SETCURSEL, filter_panel::cfg_orderedbysplitters ? 0 : 1, nullptr);
 
                         SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETRANGE32, -100, 100);
