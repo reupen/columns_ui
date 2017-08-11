@@ -28,16 +28,11 @@ namespace filter_panel {
 
 
 
-    bool filter_panel_t::filter_stream_t::is_visible()
+    bool filter_stream_t::is_visible()
     {
         for (t_size i = 0, count = m_windows.get_count(); i<count; i++)
             if (!m_windows[i]->is_visible()) return false;
         return true;
-    }
-
-    filter_panel_t::filter_stream_t::filter_stream_t() : m_source_overriden(false)
-    {
-        /*filter_search_bar::g_initialise_filter_stream(this);*/
     }
 
     void filter_panel_t::set_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort)
@@ -829,7 +824,7 @@ namespace filter_panel {
     }
 
 
-    void filter_panel_t::node_t::ensure_handles_sorted()
+    void node_t::ensure_handles_sorted()
     {
         if (!m_handles_sorted)
         {
@@ -843,18 +838,36 @@ namespace filter_panel {
         }
     }
 
-    int filter_panel_t::node_t::g_compare(const node_t & i1, const WCHAR * i2)
+    void node_t::remove_handles(metadb_handle_list_cref to_remove)
+    {
+        pfc::array_staticsize_t<bool> remove_mask(m_handles.get_count());
+        pfc::fill_array_t(remove_mask, false);
+
+        m_handles_sorted = false;
+        mmh::in_place_sort(m_handles, pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, false);
+
+        const size_t remove_handles_count = to_remove.get_count();
+        for (size_t j = 0; j < remove_handles_count; j++) {
+            size_t handle_index = -1;
+            if (m_handles.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, to_remove[j], handle_index)) {
+                remove_mask[handle_index] = true;
+            }
+        }
+        m_handles.remove_mask(remove_mask.get_ptr());
+    }
+
+    int node_t::g_compare(const node_t & i1, const WCHAR * i2)
     {
         //return CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE, i1.m_value, -1, i2, -1);
         return StrCmpLogicalW(i1.m_value, i2);
     }
-    int filter_panel_t::node_t::g_compare_ptr(const node_t * i1, const WCHAR * i2)
+    int node_t::g_compare_ptr(const node_t * i1, const WCHAR * i2)
     {
         //return CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE, i1.m_value, -1, i2, -1);
         return StrCmpLogicalW(i1->m_value, i2);
     }
 
-    int filter_panel_t::node_t::g_compare_ptr_with_node(const node_t & i1, const node_t & i2)
+    int node_t::g_compare_ptr_with_node(const node_t & i1, const node_t & i2)
     {
         return StrCmpLogicalW(i1.m_value, i2.m_value);
     }
@@ -1057,9 +1070,9 @@ namespace filter_panel {
     std::vector<filter_panel_t *> filter_panel_t::g_windows;
     bool filter_panel_t::g_showemptyitems = false;
 
-    pfc::list_t<filter_panel_t::field_data_t> filter_panel_t::g_field_data;
+    pfc::list_t<field_data_t> filter_panel_t::g_field_data;
 
-    pfc::list_t<filter_panel_t::filter_stream_t::ptr> filter_panel_t::g_streams;
+    pfc::list_t<filter_stream_t::ptr> filter_panel_t::g_streams;
 
     // {4D6774AF-C292-44ac-8A8F-3B0855DCBDF4}
     const GUID appearance_client_filter_impl::g_guid =
@@ -1067,17 +1080,8 @@ namespace filter_panel {
 
     namespace {
         cui::colours::client::factory<appearance_client_filter_impl> g_appearance_client_impl;
-    };
-
-
-
-
-
-    filter_panel_t::filter_panel_t() :
-        m_drag_item_count(0), m_show_search(false), m_contextmenu_manager_base(NULL), m_pending_sort_direction(false)
-    {
-
     }
+
 
     class font_client_filter : public cui::fonts::client
     {

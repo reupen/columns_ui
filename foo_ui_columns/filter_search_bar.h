@@ -19,7 +19,7 @@ namespace filter_panel {
     public:
         static bool g_activate();
         //static void g_on_orderedbysplitters_change();
-        static bool g_filter_search_bar_has_stream(filter_search_bar const* p_seach_bar, const filter_panel_t::filter_stream_t * p_stream);
+        static bool g_filter_search_bar_has_stream(filter_search_bar const* p_seach_bar, const filter_stream_t * p_stream);
 
         template <class TStream>
         static void g_initialise_filter_stream(const TStream & p_stream)

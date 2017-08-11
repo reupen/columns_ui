@@ -45,12 +45,12 @@ namespace filter_panel {
             enable_redrawing();
     }
 
-    void filter_panel_t::_on_items_added(metadb_handle_list_t<pfc::alloc_fast_aggressive>& added_tracks)
+    void filter_panel_t::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& added_tracks)
     {
         filter_panel_t* const next_window = get_next_window();
         if (m_field_data.is_empty()) {
             if (next_window)
-                next_window->_on_items_added(added_tracks);
+                next_window->add_nodes(added_tracks);
             return;
         }
 
@@ -62,7 +62,7 @@ namespace filter_panel {
         m_nodes[0].m_handles.add_items(added_tracks);
 
         pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
-        get_data_entries_v2(added_tracks, data_entries, g_showemptyitems);
+        make_data_entries(added_tracks, data_entries, g_showemptyitems);
 
         const data_entry_t* p_data = data_entries.get_ptr();
         const auto count{data_entries.get_count()};
@@ -107,18 +107,18 @@ namespace filter_panel {
 
         if (next_window) {
             if (nothing_or_all_node_selected)
-                next_window->_on_items_added(added_tracks);
+                next_window->add_nodes(added_tracks);
             else if (tracks_for_next_window.get_count())
-                next_window->_on_items_added(tracks_for_next_window);
+                next_window->add_nodes(tracks_for_next_window);
         }
     }
 
-    void filter_panel_t::_on_items_removed(metadb_handle_list_t<pfc::alloc_fast_aggressive>& removed_tracks)
+    void filter_panel_t::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& removed_tracks)
     {
         filter_panel_t* const next_window = get_next_window();
         if (m_field_data.is_empty()) {
             if (next_window)
-                next_window->_on_items_removed(removed_tracks);
+                next_window->remove_nodes(removed_tracks);
             return;
         }
 
@@ -129,7 +129,7 @@ namespace filter_panel {
         m_nodes[0].remove_handles(removed_tracks);
 
         pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
-        get_data_entries_v2(removed_tracks, data_entries, g_showemptyitems);
+        make_data_entries(removed_tracks, data_entries, g_showemptyitems);
 
         const data_entry_t * p_data = data_entries.get_ptr();
         const size_t count = data_entries.get_count();
@@ -167,9 +167,9 @@ namespace filter_panel {
 
         if (next_window) {
             if (nothing_or_all_node_selected)
-                next_window->_on_items_removed(removed_tracks);
+                next_window->remove_nodes(removed_tracks);
             else if (tracks_for_next_window.get_count())
-                next_window->_on_items_removed(tracks_for_next_window);
+                next_window->remove_nodes(tracks_for_next_window);
         }
 
     }
@@ -181,7 +181,7 @@ namespace filter_panel {
         t_size index = windows.find_item(this);
         if (index == 0 || index == pfc_infinite) {
             metadb_handle_list_t<pfc::alloc_fast_aggressive> handles_copy{handles};
-            _on_items_added(handles_copy);
+            add_nodes(handles_copy);
         }
     }
 
@@ -192,16 +192,16 @@ namespace filter_panel {
         t_size index = windows.find_item(this);
         if (index == 0 || index == pfc_infinite) {
             metadb_handle_list_t<pfc::alloc_fast_aggressive> handles_copy{handles};
-            _on_items_removed(handles_copy);
+            remove_nodes(handles_copy);
         }
     }
 
-    void filter_panel_t::_on_items_modified(metadb_handle_list_t<pfc::alloc_fast_aggressive>& modified_tracks)
+    void filter_panel_t::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& modified_tracks)
     {
         filter_panel_t* const next_window = get_next_window();
         if (m_field_data.is_empty()) {
             if (next_window)
-                next_window->_on_items_modified(modified_tracks);
+                next_window->update_nodes(modified_tracks);
             return;
         }
 
@@ -214,7 +214,7 @@ namespace filter_panel {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> tracks_for_next_window;
         tracks_for_next_window.prealloc(modified_tracks_count);
 
-        get_data_entries_v2(modified_tracks, data_entries, g_showemptyitems);
+        make_data_entries(modified_tracks, data_entries, g_showemptyitems);
 
         auto node_count = m_nodes.get_count();
         for (size_t node_index{1}; node_index < node_count; node_index++) {
@@ -275,9 +275,9 @@ namespace filter_panel {
 
         if (next_window) {
             if (nothing_or_all_node_selected)
-                next_window->_on_items_modified(modified_tracks);
+                next_window->update_nodes(modified_tracks);
             else if (tracks_for_next_window.get_count())
-                next_window->_on_items_modified(tracks_for_next_window);
+                next_window->update_nodes(tracks_for_next_window);
         }
     }
 
@@ -288,11 +288,11 @@ namespace filter_panel {
         t_size index = windows.find_item(this);
         if (index == 0 || index == pfc_infinite) {
             metadb_handle_list_t<pfc::alloc_fast_aggressive> handles_copy{handles};
-            _on_items_modified(handles_copy);
+            update_nodes(handles_copy);
         }
     }
 
-    size_t filter_panel_t::get_data_entries_v2(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty)
+    size_t filter_panel_t::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks, pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> & p_out, bool b_show_empty)
     {
         class handle_info_t
         {
@@ -390,7 +390,7 @@ namespace filter_panel {
 
         pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
 
-        const auto node_count = get_data_entries_v2(handles, data_entries, g_showemptyitems);
+        const auto node_count = make_data_entries(handles, data_entries, g_showemptyitems);
 
         pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
         items.prealloc(node_count);
