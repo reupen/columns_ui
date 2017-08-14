@@ -709,7 +709,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
                 bool b_custom = ptr->m_selection ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom) : false;
 
                 SendDlgItemMessage(wnd,IDC_IMAGE_TYPE,CB_SETCURSEL,ptr->m_selection && b_custom?1:0,0);
-                uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (ptr->m_selection && b_custom) ? ptr->m_image->m_path : "");
+                uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (ptr->m_selection && b_custom) ? ptr->m_image->m_path.get_ptr() : "");
                 bool b_enable = ptr->m_selection && ptr->m_selection->m_type != TYPE_SEPARATOR;
                 EnableWindow(GetDlgItem(wnd, IDC_IMAGE_PATH), b_enable && b_custom);
                 EnableWindow(GetDlgItem(wnd, IDC_IMAGE_TYPE), b_enable);
@@ -735,7 +735,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
                         b_custom = idx == 1;
                         EnableWindow(GetDlgItem(wnd, IDC_IMAGE_PATH), b_custom);
                         EnableWindow(GetDlgItem(wnd, IDC_BROWSE), b_custom);
-                        uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (ptr->m_selection && b_custom) ? ptr->m_image->m_path : "");
+                        uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (ptr->m_selection && b_custom) ? ptr->m_image->m_path.get_ptr() : "");
                     }
                 }
             }
@@ -762,7 +762,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
                     if (uGetOpenFileName(wnd, "Image Files (*.bmp;*.png;*.gif;*.tiff;*.ico)|*.bmp;*.png;*.gif;*.tiff;*.ico|All Files (*.*)|*.*", 0, "png", "Choose image", nullptr, temp, FALSE))
                     {
                         ptr->m_image->m_path = temp;
-                        uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (1) ? ptr->m_image->m_path : "");
+                        uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (1) ? ptr->m_image->m_path.get_ptr() : "");
                     }
                 }
             }

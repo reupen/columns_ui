@@ -65,9 +65,9 @@ public:
             HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
 
             tabs.mask = TCIF_TEXT;
-            tabs.pszText = "Variables";
+            tabs.pszText = const_cast<char*>("Variables");
             uTabCtrl_InsertItem(wnd_tab, 0, &tabs);
-            tabs.pszText = "Style";
+            tabs.pszText = const_cast<char*>("Style");
             uTabCtrl_InsertItem(wnd_tab, 1, &tabs);
 
             TabCtrl_SetCurSel(wnd_tab, g_cur_tab2);

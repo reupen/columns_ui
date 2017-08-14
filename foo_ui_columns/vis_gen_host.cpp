@@ -61,7 +61,7 @@ void window_visualisation_interface::g_create(service_ptr_t<window_visualisation
     p_out->p_wnd = wnd;
 }
 
-TCHAR* window_visualisation::class_name = _T("{ED4F644F-26AB-4aa0-809D-0D8F25352C5F}");
+const wchar_t* window_visualisation::class_name = L"{ED4F644F-26AB-4aa0-809D-0D8F25352C5F}";
 
 pfc::ptr_list_t<window_visualisation> window_visualisation::list_vis;
 

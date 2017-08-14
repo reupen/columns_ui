@@ -84,18 +84,18 @@ namespace filter_panel {
         get_selection_handles(handles, true, true);
         HMENU menu = CreatePopupMenu();
         {
-            WCHAR * p_asend = L"Send to autosend playlist";
-            WCHAR * p_asend_play = L"Send to autosend playlist and play";
-            WCHAR * p_send = L"Send to playlist";
-            WCHAR * p_send_play = L"Send to playlist and play";
-            WCHAR * p_add = L"Add to active playlist";
+            const wchar_t* p_asend = L"Send to autosend playlist";
+            const wchar_t* p_asend_play = L"Send to autosend playlist and play";
+            const wchar_t* p_send = L"Send to playlist";
+            const wchar_t* p_send_play = L"Send to playlist and play";
+            const wchar_t* p_add = L"Add to active playlist";
             MENUITEMINFO mii;
             memset(&mii, 0, sizeof(mii));
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_FTYPE | MIIM_STRING | MIIM_ID | MIIM_STATE;
             mii.fType = MFT_STRING;
 
-            mii.dwTypeData = p_asend;
+            mii.dwTypeData = const_cast<wchar_t*>(p_asend);
             mii.cch = wcslen(p_asend);
             mii.wID = action_send_to_autosend + 1;
             mii.fState = MFS_ENABLED;
@@ -103,7 +103,7 @@ namespace filter_panel {
                 mii.fState |= MFS_DEFAULT;
             InsertMenuItem(menu, 2, TRUE, &mii);
 
-            mii.dwTypeData = p_asend_play;
+            mii.dwTypeData = const_cast<wchar_t*>(p_asend_play);
             mii.cch = wcslen(p_asend_play);
             mii.wID = action_send_to_autosend_play + 1;
             mii.fState = MFS_ENABLED;
@@ -111,7 +111,7 @@ namespace filter_panel {
                 mii.fState |= MFS_DEFAULT;
             InsertMenuItem(menu, 3, TRUE, &mii);
 
-            mii.dwTypeData = p_send;
+            mii.dwTypeData = const_cast<wchar_t*>(p_send);
             mii.cch = wcslen(p_send);
             mii.wID = action_send_to_new + 1;
             mii.fState = MFS_ENABLED;
@@ -119,7 +119,7 @@ namespace filter_panel {
                 mii.fState |= MFS_DEFAULT;
             InsertMenuItem(menu, 4, TRUE, &mii);
 
-            mii.dwTypeData = p_send_play;
+            mii.dwTypeData = const_cast<wchar_t*>(p_send_play);
             mii.cch = wcslen(p_send_play);
             mii.wID = action_send_to_new_play + 1;
             mii.fState = MFS_ENABLED;
@@ -127,7 +127,7 @@ namespace filter_panel {
                 mii.fState |= MFS_DEFAULT;
             InsertMenuItem(menu, 5, TRUE, &mii);
 
-            mii.dwTypeData = p_add;
+            mii.dwTypeData = const_cast<wchar_t*>(p_add);
             mii.cch = wcslen(p_add);
             mii.wID = action_add_to_active + 1;
             mii.fState = MFS_ENABLED;

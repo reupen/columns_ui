@@ -372,11 +372,11 @@ public:
                 HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
 
                 tabs.mask = TCIF_TEXT;
-                tabs.pszText = "Display";
+                tabs.pszText = const_cast<char*>("Display");
                 uTabCtrl_InsertItem(wnd_tab, 0, &tabs);
-                tabs.pszText = "Style";
+                tabs.pszText = const_cast<char*>("Style");
                 uTabCtrl_InsertItem(wnd_tab, 1, &tabs);
-                tabs.pszText = "Sort";
+                tabs.pszText = const_cast<char*>("Sort");
                 uTabCtrl_InsertItem(wnd_tab, 2, &tabs);
 
                 TabCtrl_SetCurSel(wnd_tab, g_cur_tab);

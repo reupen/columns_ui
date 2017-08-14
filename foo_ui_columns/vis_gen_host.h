@@ -4,7 +4,7 @@
 #if 1
 class window_visualisation : public ui_extension::container_ui_extension
 {
-    static TCHAR * class_name;
+    static const wchar_t* class_name;
     bool initialised;
     GUID m_guid;
     pfc::array_t<t_uint8> m_data;
