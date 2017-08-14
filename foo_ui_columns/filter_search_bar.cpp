@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "filter_search_bar.h"
+#include "filter_config_var.h"
 
 namespace filter_panel {
 
@@ -30,7 +31,7 @@ namespace filter_panel {
         else
             index = playlist_api->find_or_create_playlist(b_play ? "Filter Results (Playback)" : "Filter Results", pfc_infinite);
         playlist_api->playlist_clear(index);
-#if 1
+
         if (cfg_sort)
         {
             service_ptr_t<titleformat_object> to;
@@ -40,9 +41,7 @@ namespace filter_panel {
             }
         }
         playlist_api->playlist_add_items(index, handles, bit_array_false());
-#else
-        playlist_api->playlist_add_items_filter(index, handles, false);
-#endif
+
         playlist_api->set_active_playlist(index);
         if (b_play)
         {
@@ -52,27 +51,6 @@ namespace filter_panel {
         //if (index_remove != pfc_infinite)
         //    playlist_api->remove_playlist(index+1);
     }
-
-    bool filter_search_bar::menu_node_show_clear_button::get_display_data(pfc::string_base & p_out, unsigned & p_displayflags) const
-    {
-        p_out = "Show clear button";
-        p_displayflags = p_this->m_show_clear_button ? menu_node_t::state_checked : NULL;
-        return true;
-    }
-    bool filter_search_bar::menu_node_show_clear_button::get_description(pfc::string_base & p_out) const
-    {
-        return false;
-    }
-    void filter_search_bar::menu_node_show_clear_button::execute()
-    {
-        p_this->m_show_clear_button = !p_this->m_show_clear_button;
-        p_this->on_show_clear_button_change();
-    }
-
-    filter_search_bar::filter_search_bar() : m_search_editbox(nullptr), m_wnd_toolbar(nullptr),
-        m_proc_search_edit(nullptr), m_favourite_state(false), m_query_timer_active(false),
-        m_show_clear_button(cfg_showsearchclearbutton), m_wnd_last_focused(nullptr), m_imagelist(nullptr), m_combo_cx(0), m_combo_cy(0),
-        m_toolbar_cx(0), m_toolbar_cy(0) {};
 
     void g_get_search_bar_sibling_streams(filter_search_bar const * p_serach_bar, pfc::list_t<filter_stream_t::ptr> & p_out)
     {
@@ -143,7 +121,13 @@ namespace filter_panel {
 
     void filter_search_bar::get_menu_items(uie::menu_hook_t & p_hook)
     {
-        p_hook.add_node(new menu_node_show_clear_button(this));
+        p_hook.add_node(new uie::simple_command_menu_node("Show clear button",
+            "Shows or hides the clear button",
+            m_show_clear_button ? uie::menu_node_t::state_checked : 0, 
+            [this, ref = ptr{this}]{
+                m_show_clear_button = !m_show_clear_button;
+                on_show_clear_button_change();
+        }));
     }
 
     void filter_search_bar::on_show_clear_button_change()
@@ -164,11 +148,6 @@ namespace filter_panel {
         if (get_host().is_valid()) get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
         on_size();
     }
-    /*void filter_search_bar::g_on_orderedbysplitters_change()
-    {
-    for (t_size i = 0, count = g_active_instances.get_count(); i<count; i++)
-    g_active_instances[i]->commit_search_results(string_utf8_from_window(g_active_instances[i]->m_search_editbox), false, true);
-    }*/
 
     bool filter_search_bar::g_activate()
     {
@@ -238,13 +217,6 @@ namespace filter_panel {
                 catch (pfc::exception const &) {};
             }
 
-            /*bit_array_bittable mask_visible(stream_count);
-            bool b_any_visible = false;
-            for (t_size i = 0; i< stream_count; i++)
-            {
-            mask_visible.set(i, p_streams[i]->is_visible());
-            if (mask_visible.get(i)) b_any_visible = true;
-            }*/
             bool b_autosent = false;
             for (t_size i = 0; i< stream_count; i++)
             {
@@ -356,29 +328,6 @@ namespace filter_panel {
                     StringCchCopy(lpnmtbgit->pszText, lpnmtbgit->cchTextMax, pfc::stringcvt::string_wide_from_utf8(temp));
                 }
                 return 0;
-#if 0
-                case NM_CUSTOMDRAW:
-                {
-                    LPNMTBCUSTOMDRAW lptbcd = (LPNMTBCUSTOMDRAW)lp;
-                    switch ((lptbcd)->nmcd.dwDrawStage)
-                    {
-                    case CDDS_PREPAINT:
-                        return (CDRF_NOTIFYITEMDRAW);
-                    case CDDS_ITEMPREPAINT:
-                    {
-                        if (lptbcd->nmcd.dwItemSpec == idc_clear)
-                        {
-                            DLLVERSIONINFO2 dvi;
-                            HRESULT hr = g_get_comctl32_vresion(dvi);
-                            if (SUCCEEDED(hr) && dvi.info1.dwMajorVersion >= 6)
-                                lptbcd->rcText.left -= LOWORD(SendMessage(m_wnd_toolbar, TB_GETPADDING, (WPARAM)0, 0)) + 2;  //Hack for commctrl6
-                        }
-                    }
-                    break;
-                    }
-                }
-                break;
-#endif
                 }
                 break;
             }
@@ -480,8 +429,6 @@ namespace filter_panel {
         const unsigned cx = GetSystemMetrics(SM_CXSMICON), cy = GetSystemMetrics(SM_CYSMICON);
 
         m_imagelist = ImageList_Create(cx, cy, ILC_COLOR32, 0, 3);
-
-        t_size i = 0;
 
         HICON icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_STAROFF), IMAGE_ICON, cx, cy, NULL);
         if (icon)

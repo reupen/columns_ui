@@ -306,9 +306,6 @@
     <ClCompile Include=".\filter_search_bar.cpp">
       <Filter>Panels\Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter_guids.cpp">
-      <Filter>Panels\Filter</Filter>
-    </ClCompile>
     <ClCompile Include=".\playlist_view_dropsource.cpp">
       <Filter>Panels\Columns Playlist</Filter>
     </ClCompile>

@@ -4,24 +4,6 @@
 
 namespace filter_panel {
 
-    extern const GUID g_guid_cfg_sort;
-    extern const GUID g_guid_cfg_sort_string;
-    extern const GUID g_guid_cfg_autosend;
-    extern const GUID g_guid_doubleclickaction;
-    extern const GUID g_guid_middleclickaction;
-    extern const GUID g_guid_filter_items_font_client;
-    extern const GUID g_guid_filter_header_font_client;
-    extern const GUID guid_cfg_fields;
-    extern const GUID g_guid_edgestyle;
-    extern const GUID g_guid_orderedbysplitters;
-    extern const GUID g_guid_showemptyitems;
-    extern const GUID g_guid_itempadding;
-    extern const GUID g_guid_favouritequeries;
-    extern const GUID g_guid_showsearchclearbutton;
-    extern const GUID g_guid_show_column_titles;
-    extern const GUID g_guid_allow_sorting;
-    extern const GUID g_guid_show_sort_indicators;
-
     class appearance_client_filter_impl : public cui::colours::client {
     public:
         static const GUID g_guid;
@@ -37,62 +19,10 @@ namespace filter_panel {
 
     class field_t {
     public:
-        pfc::string8 m_name, m_field;
-        bool m_last_sort_direction;
-
-        field_t() : m_last_sort_direction(false) {}
+        pfc::string8 m_name;
+        pfc::string8 m_field;
+        bool m_last_sort_direction{};
     };
-
-    class cfg_fields_t : public cfg_var, public pfc::list_t<field_t> {
-    public:
-        enum { stream_version_current = 0 };
-
-        enum { sub_stream_version_current = 0 };
-
-        void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
-        void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
-        void reset();
-
-        bool find_by_name(const char* p_name, size_t& p_index);
-        bool have_name(const char* p_name);
-        void fix_name(const char* p_name, pfc::string8& p_out);
-        void fix_name(pfc::string8& p_name);
-
-        cfg_fields_t(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
-    };
-
-    class cfg_favouriteslist : public cfg_var, public pfc::list_t<pfc::string8> {
-    public:
-        void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
-        void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
-
-        bool have_item(const char* p_item);
-        bool find_item(const char* p_item, t_size& index);
-
-        cfg_favouriteslist(const GUID& p_guid) : cfg_var(p_guid) {}
-    };
-
-    class filter_panel_t;
-    class filter_search_bar;
-
-    extern cfg_favouriteslist cfg_favourites;
-    extern cfg_string cfg_sort_string;
-    extern cfg_bool
-            cfg_sort,
-            cfg_autosend,
-            cfg_orderedbysplitters,
-            cfg_showemptyitems,
-            cfg_showsearchclearbutton;
-    extern cfg_int
-            cfg_doubleclickaction,
-            cfg_middleclickaction,
-            cfg_edgestyle;
-    extern cfg_fields_t cfg_field_list;
-    extern fbh::ConfigInt32DpiAware cfg_vertical_item_padding;
-    extern fbh::ConfigBool
-            cfg_show_column_titles,
-            cfg_allow_sorting,
-            cfg_show_sort_indicators;
 
     class node_t {
     public:
@@ -101,10 +31,9 @@ namespace filter_panel {
         bool m_handles_sorted{false};
 
         void ensure_handles_sorted();
-        void remove_handles(metadb_handle_list_cref& to_remove);
+        void remove_handles(metadb_handle_list_cref to_remove);
 
         static int g_compare(const node_t& i1, const WCHAR* i2);
-        static int g_compare_ptr(const node_t* i1, const WCHAR* i2);
         static int g_compare_ptr_with_node(const node_t& i1, const node_t& i2);
     };
 

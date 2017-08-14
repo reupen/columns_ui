@@ -258,7 +258,6 @@
     <ClCompile Include=".\component_impl.cpp" />
     <ClCompile Include=".\config_defaults.cpp" />
     <ClCompile Include=".\config_items.cpp" />
-    <ClCompile Include=".\filter_guids.cpp" />
     <ClCompile Include=".\filter_inline_edit.cpp" />
     <ClCompile Include=".\filter_items.cpp" />
     <ClCompile Include=".\filter_menu.cpp" />

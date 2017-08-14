@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "filter.h"
+#include "filter_config_var.h"
 #include "config.h"
 
 class t_list_view_filter : public uih::ListView

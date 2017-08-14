@@ -1,32 +1,12 @@
 #include "stdafx.h"
 #include "filter.h"
+#include "filter_config_var.h"
 #include "filter_search_bar.h"
-
-HRESULT g_get_comctl32_vresion(DLLVERSIONINFO2 & p_dvi);
 
 namespace filter_panel {
 
-    cfg_fields_t cfg_field_list(guid_cfg_fields);
-
-    //cfg_string cfg_fields(g_guid_cfg_fields, "Genre;Artist;Album");
-    cfg_string cfg_sort_string(g_guid_cfg_sort_string, "%album artist% - %album% - %discnumber% - %tracknumber% - %title%");
-    cfg_bool cfg_sort(g_guid_cfg_sort, true);
-    cfg_bool cfg_autosend(g_guid_cfg_autosend, true);
-    cfg_bool cfg_orderedbysplitters(g_guid_orderedbysplitters, true);
-    cfg_bool cfg_showemptyitems(g_guid_showemptyitems, false);
-    cfg_int cfg_doubleclickaction(g_guid_doubleclickaction, 1);
-    cfg_int cfg_middleclickaction(g_guid_middleclickaction, 0);
-    cfg_int cfg_edgestyle(g_guid_edgestyle, 2);
-    fbh::ConfigInt32DpiAware cfg_vertical_item_padding(g_guid_itempadding, 4);
-    fbh::ConfigBool cfg_show_column_titles(g_guid_show_column_titles, true);
-    fbh::ConfigBool cfg_allow_sorting(g_guid_allow_sorting, true);
-    fbh::ConfigBool cfg_show_sort_indicators(g_guid_show_sort_indicators, true);
-
-    cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
-
-    cfg_favouriteslist cfg_favourites(g_guid_favouritequeries);
-
-
+    const GUID g_guid_filter_items_font_client{0xd93f1ef3, 0x4aee, 0x4632,{0xb5, 0xbf, 0x2, 0x20, 0xce, 0xc7, 0x6d, 0xed}};
+    const GUID g_guid_filter_header_font_client{0xfca8752b, 0xc064, 0x41c4,{0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34}};
 
     bool filter_stream_t::is_visible()
     {
@@ -55,20 +35,15 @@ namespace filter_panel {
                 }
             }
         }
-    };
+    }
+
     void filter_panel_t::get_config(stream_writer * p_writer, abort_callback & p_abort) const
     {
         p_writer->write_lendian_t(t_size(config_version_current), p_abort);
         p_writer->write_string(m_field_data.m_name, p_abort);
         p_writer->write_lendian_t(m_show_search, p_abort);
         p_writer->write_lendian_t(get_sort_direction(), p_abort);
-        /*p_writer->write_lendian_t(m_field_data.m_use_script, p_abort);
-        p_writer->write_string(m_field_data.m_script, p_abort);
-        t_uint32 count=m_field_data.m_fields.get_count(), i;
-        p_writer->write_lendian_t(count, p_abort);
-        for (i=0; i<count; i++)
-        p_writer->write_string(m_field_data.m_fields[i], p_abort);*/
-    };
+    }
 
     t_size filter_panel_t::g_get_stream_index_by_window(const uie::window_ptr & ptr)
     {
@@ -82,6 +57,7 @@ namespace filter_panel {
         }
         return pfc_infinite;
     }
+
     void filter_panel_t::g_on_orderedbysplitters_change()
     {
         g_streams.remove_all();
@@ -104,7 +80,6 @@ namespace filter_panel {
         }
     }
 
-
     void filter_panel_t::g_on_fields_change()
     {
         g_load_fields();
@@ -114,6 +89,7 @@ namespace filter_panel {
             window->set_field(field_index == pfc_infinite ? field_data_t() : g_field_data[field_index], true);
         }
     }
+
     t_size filter_panel_t::g_get_field_index_by_name(const char * p_name)
     {
         t_size i, count = g_field_data.get_count();
@@ -429,37 +405,27 @@ namespace filter_panel {
         t_size i, count = windows.get_count();
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
 
+        for (i = index; i<count; i++)
         {
-            //pfc::hires_timer timer;
-            //timer.start();
-            for (i = index; i<count; i++)
+            handles.remove_all();
+            windows[i]->get_initial_handles(handles);
+            if (b_check_needs_update)
             {
-                handles.remove_all();
-                windows[i]->get_initial_handles(handles);
-                if (b_check_needs_update)
+
+                metadb_handle_list items1(windows[i]->m_nodes[0].m_handles);
+                handles.sort_by_pointer();
+                items1.sort_by_pointer();
+                if (!pfc::comparator_array<>::compare(items1, handles))
                 {
-
-                    metadb_handle_list items1(windows[i]->m_nodes[0].m_handles);
-                    handles.sort_by_pointer();
-                    items1.sort_by_pointer();
-                    if (!pfc::comparator_array<>::compare(items1, handles))
-                    {
-                        b_update_playlist = false;
-                        break;
-                    }
-
+                    b_update_playlist = false;
+                    break;
                 }
-                windows[i]->populate_list_from_chain(handles, false);
+
             }
-            //console::formatter() << "total populate: " << timer.query() << " s";
+            windows[i]->populate_list_from_chain(handles, false);
         }
-            {
-                //pfc::hires_timer timer;
-                //timer.start();
-                if (count && b_update_playlist && cfg_autosend)
-                    windows[count - 1]->send_results_to_playlist();
-                //console::formatter() << "send: " << timer.query() << " s";
-            }
+        if (count && b_update_playlist && cfg_autosend)
+            windows[count - 1]->send_results_to_playlist();
     }
 
     void filter_panel_t::update_subsequent_filters(bool b_allow_autosend)
@@ -501,16 +467,16 @@ namespace filter_panel {
             pfc::ptr_list_t<filter_panel_t> windows_before;
             get_windows(windows_before);
             t_size pos_before = windows_before.find_item(this);
-            if (pos_before != pfc_infinite)
-            {
-            }
+
             m_field_data = field;
             bool b_redraw = disable_redrawing();
             clear_all_items();
             refresh_columns();
+
             metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
             get_initial_handles(handles);
             populate_list(handles);
+
             pfc::ptr_list_t<filter_panel_t> windows_after;
             get_windows(windows_after);
             t_size pos_after = windows_after.find_item(this);
@@ -610,11 +576,9 @@ namespace filter_panel {
     {
         bit_array_bittable mask(m_nodes.get_count());
         get_selection_state(mask);
-        //metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        //handles.prealloc(m_nodes.get_count());
-        //get_selection_handles(handles);
         do_items_action(mask, action);
     }
+
     void filter_panel_t::do_items_action(const bit_array & p_nodes, action_t action)
     {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
@@ -669,7 +633,6 @@ namespace filter_panel {
                     }
                 }
             }
-            //t_size index_remove = playlist_api->find_playlist("Filter Results", pfc_infinite);
 
             if (index_insert != pfc_infinite)
                 index = playlist_api->create_playlist(playlist_name, pfc_infinite, index_insert);
@@ -678,7 +641,7 @@ namespace filter_panel {
             playlist_api->playlist_undo_backup(index);
             playlist_api->playlist_clear(index);
         }
-#if 1
+
         if (cfg_sort)
         {
             service_ptr_t<titleformat_object> to;
@@ -693,9 +656,7 @@ namespace filter_panel {
             playlist_api->playlist_add_items(index, handles, bit_array_true());
         }
         playlist_api->playlist_set_focus_item(index, playlist_api->playlist_get_item_count(index) - handles.get_count());
-#else
-        playlist_api->playlist_add_items_filter(index, handles, false);
-#endif
+
         if (action != action_add_to_active)
         {
             playlist_api->set_active_playlist(index);
@@ -752,7 +713,7 @@ namespace filter_panel {
         else
             index = playlist_api->find_or_create_playlist(b_play ? "Filter Results (Playback)" : "Filter Results", pfc_infinite);
         playlist_api->playlist_clear(index);
-#if 1
+
         if (cfg_sort)
         {
             service_ptr_t<titleformat_object> to;
@@ -762,9 +723,7 @@ namespace filter_panel {
             }
         }
         playlist_api->playlist_add_items(index, handles, bit_array_false());
-#else
-        playlist_api->playlist_add_items_filter(index, handles, false);
-#endif
+
         playlist_api->set_active_playlist(index);
         if (b_play)
         {
@@ -808,9 +767,7 @@ namespace filter_panel {
                 update_items(0, 1);
         }
     }
-
-
-
+    
     void filter_panel_t::notify_on_set_focus(HWND wnd_lost)
     {
         m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
@@ -822,7 +779,6 @@ namespace filter_panel {
     {
         m_selection_holder.release();
     }
-
 
     void node_t::ensure_handles_sorted()
     {
@@ -858,20 +814,13 @@ namespace filter_panel {
 
     int node_t::g_compare(const node_t & i1, const WCHAR * i2)
     {
-        //return CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE, i1.m_value, -1, i2, -1);
         return StrCmpLogicalW(i1.m_value, i2);
-    }
-    int node_t::g_compare_ptr(const node_t * i1, const WCHAR * i2)
-    {
-        //return CompareString(LOCALE_USER_DEFAULT, NORM_IGNORECASE, i1.m_value, -1, i2, -1);
-        return StrCmpLogicalW(i1->m_value, i2);
     }
 
     int node_t::g_compare_ptr_with_node(const node_t & i1, const node_t & i2)
     {
         return StrCmpLogicalW(i1.m_value, i2.m_value);
     }
-
 
     void filter_panel_t::refresh_stream()
     {
@@ -924,25 +873,7 @@ namespace filter_panel {
         set_columns(pfc::list_single_ref_t<Column>(Column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name, 200)));
         set_sort_column(0, m_pending_sort_direction);
     }
-    /*void filter_panel_t::on_groups_change()
-    {
-    if (get_wnd())
-    {
-    clear_all_items();
-    refresh_groups();
-    //populate_list();
-    }
-    }
 
-    void filter_panel_t::on_columns_change()
-    {
-    if (get_wnd())
-    {
-    clear_all_items();
-    refresh_columns();
-    //populate_list();
-    }
-    }*/
     void filter_panel_t::notify_on_initialisation()
     {
         //set_variable_height_items(true); //Implementation not finished
@@ -1027,7 +958,6 @@ namespace filter_panel {
 
     }
 
-
     void filter_panel_t::notify_on_destroy()
     {
         fbh::library_callback_manager::deregister_callback(this);
@@ -1044,7 +974,6 @@ namespace filter_panel {
             g_field_data.remove_all();
         m_nodes.remove_all();
     }
-
 
     const GUID & filter_panel_t::get_extension_guid() const
     {
