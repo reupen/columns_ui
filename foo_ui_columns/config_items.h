@@ -3,25 +3,6 @@
 namespace main_window
 {
 
-#if 0
-    class config_inline_metafield_edit_mode_t : public config_item_t < t_uint32 >
-    {
-    public:
-        enum metafield_edit_mode_t
-        {
-            mode_disabled,
-            mode_columns,
-            mode_windows
-        };
-        virtual t_uint32 get_default_value();
-        virtual void on_change(){};
-        virtual const GUID & get_guid();
-        config_inline_metafield_edit_mode_t();
-    };
-
-    extern config_inline_metafield_edit_mode_t config_inline_metafield_edit_mode;
-#endif
-
     class config_status_bar_script_t : public fbh::config_item_t < pfc::string8 >
     {
     public:
