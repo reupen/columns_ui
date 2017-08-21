@@ -1,38 +1,9 @@
 #pragma once
 
-namespace main_window
-{
-
-    class config_status_bar_script_t : public fbh::config_item_t < pfc::string8 >
-    {
-    public:
-        const char * get_default_value() override;
-        void on_change() override;;
-        const GUID & get_guid() override;;
-        config_status_bar_script_t();;
-    };
-
-    class config_notification_icon_script_t : public fbh::config_item_t < pfc::string8 >
-    {
-    public:
-        const char * get_default_value() override;
-        void on_change() override;;
-        const GUID & get_guid() override;;
-        config_notification_icon_script_t();;
-    };
-
-    class config_main_window_title_script_t : public fbh::config_item_t < pfc::string8 >
-    {
-    public:
-        const char * get_default_value() override;
-        void on_change() override;;
-        const GUID & get_guid() override;;
-        config_main_window_title_script_t();;
-    };
-
-    extern config_status_bar_script_t config_status_bar_script;
-    extern config_notification_icon_script_t config_notification_icon_script;
-    extern config_main_window_title_script_t config_main_window_title_script;
+namespace main_window {
+    extern fbh::ConfigString config_status_bar_script;
+    extern fbh::ConfigString config_notification_icon_script;
+    extern fbh::ConfigString config_main_window_title_script;
 
     enum metafield_edit_mode_t
     {

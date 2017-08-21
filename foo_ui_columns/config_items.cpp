@@ -4,84 +4,49 @@
 
 namespace main_window
 {
-    config_status_bar_script_t::config_status_bar_script_t() : config_item_t<pfc::string8>(get_guid(), get_default_value())
-    {
+    const char* default_status_pane_script =
+        "// This is the default script for the content of the main status bar pane during "
+        "playback.\r\n\r\n"
+        "$if(%is_status_pane%,%artist% - %title%$crlf(),$if(%ispaused%,Paused,Playing) | )"
+        "%codec% | %bitrate% kbps | %samplerate% Hz | $caps(%channels%) | %playback_time%[ / %length%]";
 
-    }
+    const char* default_notification_icon_script =
+        "//This is the default script for the content of the notification area icon tooltip "
+        "during playback.\r\n\r\n"
+        "[%title%]$crlf()[%artist%][$crlf()%album%]";
 
-    const GUID & config_status_bar_script_t::get_guid()
-    {
-        // {B5CA645B-A5E0-4c70-A598-CD625CF3CC37}
-        static const GUID ret =
-        { 0xb5ca645b, 0xa5e0, 0x4c70, { 0xa5, 0x98, 0xcd, 0x62, 0x5c, 0xf3, 0xcc, 0x37 } };
-        return ret;
-    }
+    const char* default_main_window_title_script =
+        "//This is the default script for the title of the main window during playback.\r\n\r\n"
+        "[%title% - ]foobar2000";
 
-    void config_status_bar_script_t::on_change()
+    void on_status_bar_script_change(const char*)
     {
         if (g_main_window)
             SendMessage(g_main_window, MSG_UPDATE_STATUS, 0, 0);
     }
 
-    const char * config_status_bar_script_t::get_default_value()
-    {
-        return "//This is the default script for the content of the main status bar pane during playback.\r\n\r\n"
-            "$if(%is_status_pane%,%artist% - %title%$crlf(),$if(%ispaused%,Paused,Playing) | )%codec% | %bitrate% kbps | %samplerate% Hz | $caps(%channels%) | %playback_time%[ / %length%]";
-    }
-
-    config_notification_icon_script_t::config_notification_icon_script_t() : config_item_t<pfc::string8>(get_guid(), get_default_value())
-    {
-
-    }
-
-    const GUID & config_notification_icon_script_t::get_guid()
-    {
-        // {85D128CF-8B01-4ae9-B81C-6BC4BE67599F}
-        static const GUID ret =
-        { 0x85d128cf, 0x8b01, 0x4ae9, { 0xb8, 0x1c, 0x6b, 0xc4, 0xbe, 0x67, 0x59, 0x9f } };
-        return ret;
-    }
-
-    void config_notification_icon_script_t::on_change()
-    {
-
-    }
-
-    const char * config_notification_icon_script_t::get_default_value()
-    {
-        return "//This is the default script for the content of the notification area icon tooltip during playback.\r\n\r\n"
-            "[%title%]$crlf()[%artist%][$crlf()%album%]";
-    }
-
-    config_main_window_title_script_t::config_main_window_title_script_t() : config_item_t<pfc::string8>(get_guid(), get_default_value())
-    {
-
-    }
-
-    const GUID & config_main_window_title_script_t::get_guid()
-    {
-        // {28B799FB-BC22-4e1c-B999-F1E6B1F26040}
-        static const GUID ret =
-        { 0x28b799fb, 0xbc22, 0x4e1c, { 0xb9, 0x99, 0xf1, 0xe6, 0xb1, 0xf2, 0x60, 0x40 } };
-        return ret;
-    }
-
-    void config_main_window_title_script_t::on_change()
+    void on_main_window_title_script_change(const char*)
     {
         if (g_main_window)
             SendMessage(g_main_window, MSG_UPDATE_TITLE, 0, 0);
     }
 
-    const char * config_main_window_title_script_t::get_default_value()
-    {
-        return "//This is the default script for the title of the main window during playback.\r\n\r\n"
-            "[%title% - ]foobar2000";
-    }
+    fbh::ConfigString config_status_bar_script(
+        GUID{0xb5ca645b, 0xa5e0, 0x4c70,{0xa5, 0x98, 0xcd, 0x62, 0x5c, 0xf3, 0xcc, 0x37}},
+        default_status_pane_script,
+        &on_status_bar_script_change
+    );
 
-    config_status_bar_script_t config_status_bar_script;
-    config_notification_icon_script_t config_notification_icon_script;
-    config_main_window_title_script_t config_main_window_title_script;
+    fbh::ConfigString config_notification_icon_script(
+        GUID{0x85d128cf, 0x8b01, 0x4ae9,{0xb8, 0x1c, 0x6b, 0xc4, 0xbe, 0x67, 0x59, 0x9f}},
+        default_notification_icon_script
+    );
 
+    fbh::ConfigString config_main_window_title_script(
+        GUID{0x28b799fb, 0xbc22, 0x4e1c,{0xb9, 0x99, 0xf1, 0xe6, 0xb1, 0xf2, 0x60, 0x40}},
+        default_main_window_title_script,
+        &on_main_window_title_script_change
+    );
 
     // {2B6EAF5C-970A-4432-B809-12E8CEF6DCDE}
     static const GUID guid_inline_metafield_edit_mode =
