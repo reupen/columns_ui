@@ -32,9 +32,7 @@ extern preferences_tab * const g_tab_filter_fields, *const g_tab_filter_misc;
 
 
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
-bool colour_picker(HWND wnd, cfg_int & out, COLORREF custom);
 bool colour_picker(HWND wnd, COLORREF & out, COLORREF custom);
-bool colour_picker2(HWND wnd, fbh::config_item_t<COLORREF> & p_out, COLORREF custom);
 BOOL font_picker(LOGFONT & p_font, HWND parent);
 bool font_picker(HWND wnd, cfg_struct_t<LOGFONT> & out);
 void preview_to_console(const char * spec, bool extra);

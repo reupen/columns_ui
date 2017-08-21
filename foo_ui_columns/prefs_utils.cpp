@@ -57,19 +57,6 @@ void colour_code_gen(HWND parent, UINT edit, bool markers, bool init)
     }
 }
 
-bool colour_picker(HWND wnd, cfg_int & out, COLORREF custom)
-{
-    bool rv = false;
-    COLORREF COLOR = out;
-    COLORREF COLORS[16] = { custom, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    if (uChooseColor(&COLOR, wnd, &COLORS[0]))
-    {
-        out = COLOR;
-        rv = true;
-    }
-    return rv;
-}
-
 bool colour_picker(HWND wnd, COLORREF & out, COLORREF custom)
 {
     bool rv = false;
@@ -78,19 +65,6 @@ bool colour_picker(HWND wnd, COLORREF & out, COLORREF custom)
     if (uChooseColor(&COLOR, wnd, &COLORS[0]))
     {
         out = COLOR;
-        rv = true;
-    }
-    return rv;
-}
-
-bool colour_picker2(HWND wnd, fbh::config_item_t<COLORREF> & p_out, COLORREF custom)
-{
-    bool rv = false;
-    COLORREF COLOR = p_out.get();
-    COLORREF COLORS[16] = { custom, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    if (uChooseColor(&COLOR, wnd, &COLORS[0]))
-    {
-        p_out.set(COLOR);
         rv = true;
     }
     return rv;
