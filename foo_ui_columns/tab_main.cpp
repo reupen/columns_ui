@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "fcl.h"
-#include "fcs.h"
 #include "config.h"
 #include "font_notify.h"
 #include "rebar.h"
@@ -56,37 +55,12 @@ public:
             case IDC_QUICKSETUP:
                 SendMessage(g_main_window, MSG_RUN_INITIAL_SETUP, NULL, NULL);
                 break;
-
-            /*case IDC_EXPORT:
-            {
-            refresh_config_columns();
-            export(wnd);
-            config_columns.delete_all();
-            //                    uDialogBox(IDD_EXPORT,wnd,ExportProc,0);
-            }
-            break;*/
-            case IDC_IMPORT:
-            {
-                import(wnd);
-                //                    refresh_me(wnd);
-            }
-            break;
             case IDC_FCL_EXPORT:
                 g_export_layout(wnd);
                 break;
             case IDC_FCL_IMPORT:
                 g_import_layout(wnd);
                 break;
-            case IDC_IMPORT_TITLES:
-            {
-                cfg_import_titles = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-            }
-            break;
-            /*case IDC_EXPORT_TITLES:
-            {
-            cfg_export_titles = SendMessage((HWND)lp,BM_GETCHECK,0,0);
-            }
-            break;*/
             case (EN_CHANGE << 16) | IDC_TRANSPARENCY_LEVEL:
             {
                 if (initialised)

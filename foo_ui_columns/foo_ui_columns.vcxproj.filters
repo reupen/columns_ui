@@ -177,9 +177,6 @@
     <ClCompile Include=".\common.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
-    <ClCompile Include=".\fcs.cpp">
-      <Filter>Misc</Filter>
-    </ClCompile>
     <ClCompile Include=".\font_notify.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
@@ -517,9 +514,6 @@
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include=".\extern.h">
-      <Filter>Misc</Filter>
-    </ClInclude>
-    <ClInclude Include=".\fcs.h">
       <Filter>Misc</Filter>
     </ClInclude>
     <ClInclude Include=".\font_notify.h">
