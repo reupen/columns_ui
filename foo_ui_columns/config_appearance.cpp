@@ -312,12 +312,6 @@ void g_import_fonts_to_unified(bool b_pv, bool b_ps, bool b_status )
         api->set_font(fonts::filter_items, cfg_font);
         api->set_font(fonts::filter_header, cfg_header_font);
     }
-    if (b_ps)
-    {
-        api->set_font(fonts::playlist_switcher, cfg_plist_font);
-        api->set_font(fonts::playlist_tabs, cfg_tab_font);
-        api->set_font(fonts::splitter_tabs, cfg_tab_font);
-    }
     if (b_status)
         api->set_font(fonts::status_bar, cfg_status_font);
     if (g_tab_appearance_fonts.is_active())

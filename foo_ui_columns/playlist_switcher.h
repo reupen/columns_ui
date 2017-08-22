@@ -17,22 +17,4 @@ public:
     void on_bool_changed(t_size mask) const override {};
 };
 
-namespace playlist_switcher
-{
-
-    namespace colours 
-    {
-        class config_inactive_selection_text_t : public fbh::config_item_t<COLORREF>
-        {
-        public:
-            COLORREF get_default_value () override;
-            void on_change() override;
-            const GUID & get_guid() override;
-            config_inactive_selection_text_t();
-        };
-
-        extern config_inactive_selection_text_t config_inactive_selection_text;
-    };
-};
-
 #endif

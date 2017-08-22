@@ -477,40 +477,14 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
         reader.read_item_force_bool(cfg_pv_use_system_frame);
         break;
     case CONFIG_COLOUR_PLIST_INACTIVE_SELECTED_TEXT:
-        COLORREF temp;
-        reader.read_item(temp);
-        playlist_switcher::colours::config_inactive_selection_text.set(temp);
-        break;
     case CONFIG_COLOUR_PLIST_FORE:
-        {
-            read_dword_cfg(p_file, &cfg_plist_text);
-            break;
-        }
     case CONFIG_COLOUR_PLIST_BACK:
-        {
-            read_dword_cfg(p_file, &cfg_plist_bk);
-            break;
-        }
     case CONFIG_COLOUR_PLIST_SELECTED_TEXT:
-        {
-            read_dword_cfg(p_file, &cfg_plist_selected_text);
-            break;
-        }
-    case CONFIG_COLOUR_PLIST_SELECTED_FRAME:
-        {
-            read_dword_cfg(p_file, &cfg_plist_selected_frame);
-            break;
-        }
     case CONFIG_COLOUR_PLIST_SELECTED_BACK:
-        {
-            read_dword_cfg(p_file, &cfg_plist_selected_back);
-            break;
-        }
     case CONFIG_COLOUR_PLIST_SELECTED_BACK_NO_FOCUS:
-        {
-            read_dword_cfg(p_file, &cfg_plist_selected_back_no_focus);
-            break;
-        }
+    case CONFIG_COLOUR_PLIST_SELECTED_FRAME:
+        p_file->seek_ex(sizeof(COLORREF), file::seek_from_current, p_abort);
+        break;
     case CONFIG_COLOUR_VIS_FORE:
         {
             read_dword_cfg(p_file, &cfg_vis2);
@@ -546,7 +520,7 @@ void parse(service_ptr_t<file> & p_file, unsigned identifier, unsigned version)
         }
 
     case CONFIG_FONT_PLIST:
-        read_font_cfg(p_file, &cfg_plist_font);
+        p_file->seek_ex(sizeof(uLOGFONT), file::seek_from_current, p_abort);
         break;
     case CONFIG_FB2K_STATUS:
         {

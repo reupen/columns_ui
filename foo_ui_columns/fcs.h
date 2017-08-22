@@ -10,10 +10,8 @@
  * Functions for importing deprecated FCS files. Export functions no longer used.
  */
 
-bool g_import(const char * path);
-bool g_export(const char * path);
+[[deprecated]] bool g_import(const char * path);
 
-void import(HWND wnd);
-void _export(HWND wnd);
+[[deprecated]] void import(HWND wnd);
 
 #endif

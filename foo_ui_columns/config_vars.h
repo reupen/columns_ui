@@ -58,9 +58,7 @@ extern cfg_int cfg_back,
     cfg_balloon,
     cfg_scroll_h_no_v,
     cfg_ellipsis,
-    cfg_plist_text,
     cfg_tabs_multiline,
-    cfg_plist_bk,
     cfg_frame,
     cfg_show_seltime,
     cfg_plistframe,
@@ -80,10 +78,6 @@ extern cfg_int cfg_back,
     cfg_oldglobal,
     cfg_alternative_sel,
     cfg_plm_rename,
-    cfg_plist_selected_back,
-    cfg_plist_selected_frame,
-    cfg_plist_selected_back_no_focus,
-    cfg_plist_selected_text,
     cfg_pgen_playlist,
     cfg_pgen_tf,
     cfg_autoswitch_delay,
@@ -121,8 +115,7 @@ extern cfg_menu_item cfg_statusdbl;
 
 extern cfg_struct_t<LOGFONT> cfg_font,
     cfg_status_font,
-    cfg_header_font,
-    cfg_plist_font;
+    cfg_header_font;
 
 
 extern cfg_bool g_colours_fonts_imported;

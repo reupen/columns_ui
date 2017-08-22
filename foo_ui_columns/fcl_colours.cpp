@@ -166,14 +166,6 @@ class export_colours_switcher : public cui::fcl::dataset
     void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
-        /*out.write_item(colours_switcher_background, cfg_plist_bk);
-        out.write_item(colours_switcher_selection_background, cfg_plist_selected_back);
-        out.write_item(colours_switcher_inactive_selection_background, cfg_plist_selected_back_no_focus);
-        out.write_item(colours_switcher_text, cfg_plist_text);
-        out.write_item(colours_switcher_selection_text, cfg_plist_selected_text);
-        out.write_item_config(colours_switcher_inactive_selection_text, playlist_switcher::colours::config_inactive_selection_text);
-        out.write_item(colours_switcher_font_tabs, cfg_tab_font);
-        out.write_item(colours_switcher_font_list, cfg_plist_font);*/
         out.write_item(identifier_item_height, settings::playlist_switcher_item_padding.get_raw_value().value);
         out.write_item(identifier_item_height_dpi, settings::playlist_switcher_item_padding.get_raw_value().dpi);
     }
@@ -182,7 +174,6 @@ class export_colours_switcher : public cui::fcl::dataset
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;
         t_uint32 element_size;
-        bool b_font_read = false;
 
         bool item_padding_read = false;
         uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
@@ -201,40 +192,12 @@ class export_colours_switcher : public cui::fcl::dataset
             case identifier_item_height_dpi:
                 reader.read_item(item_padding.dpi);
                 break;
-            case colours_switcher_background:
-                reader.read_item(cfg_plist_bk);
-                break;
-            case colours_switcher_selection_background:
-                reader.read_item(cfg_plist_selected_back);
-                break;
-            case colours_switcher_inactive_selection_background:
-                reader.read_item(cfg_plist_selected_back_no_focus);
-                break;
-            case colours_switcher_text:
-                reader.read_item(cfg_plist_text);
-                break;
-            case colours_switcher_selection_text:
-                reader.read_item(cfg_plist_selected_text);
-                break;
-            case colours_switcher_inactive_selection_text:
-                reader.read_item(playlist_switcher::colours::config_inactive_selection_text);
-                break;
-            case colours_switcher_font_list:
-                b_font_read = true;
-                reader.read_item(cfg_plist_font);
-                break;
-            case colours_switcher_font_tabs:
-                reader.read_item(cfg_tab_font);
-                break;
             default:
                 reader.skip(element_size);
                 break;
             };
 
         }
-
-        if (b_font_read)
-            g_import_fonts_to_unified(false, true, false);
 
         if (item_padding_read)
             settings::playlist_switcher_item_padding = item_padding;

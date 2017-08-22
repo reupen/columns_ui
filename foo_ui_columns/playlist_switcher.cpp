@@ -40,31 +40,6 @@ const GUID appearance_client_ps_impl::g_guid =
 
 appearance_client_ps_impl::factory<appearance_client_ps_impl> g_appearance_client_ps_impl;
 
-
-namespace playlist_switcher
-{
-
-    namespace colours 
-    {
-        COLORREF config_inactive_selection_text_t::get_default_value ()
-        {
-            return ::get_default_colour(::colours::COLOUR_SELECTED_TEXT_NO_FOCUS);
-        }
-        void config_inactive_selection_text_t::on_change(){};
-        const GUID & config_inactive_selection_text_t::get_guid()
-        {
-            // {4262FCDA-C345-40fa-9DCA-1A1AA91B4C1C}
-            static const GUID ret = 
-            { 0x4262fcda, 0xc345, 0x40fa, { 0x9d, 0xca, 0x1a, 0x1a, 0xa9, 0x1b, 0x4c, 0x1c } };
-            return ret;
-        }
-        config_inactive_selection_text_t::config_inactive_selection_text_t()
-            : config_item_t(get_guid(), get_default_value())
-        {};
-        config_inactive_selection_text_t config_inactive_selection_text;
-    };
-}
-
 void appearance_client_ps_impl::on_colour_changed(t_size mask) const
 {
     playlist_switcher_t::g_redraw_all();

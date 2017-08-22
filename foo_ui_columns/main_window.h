@@ -99,8 +99,6 @@ void size_windows();
 extern advconfig_checkbox_factory g_advbool_notification_icon_x_buttons;
 extern advconfig_checkbox_factory g_advbool_close_to_tray;
 
-extern cfg_struct_t<LOGFONT> cfg_tab_font;
-
 void g_update_taskbar_buttons_now(bool b_init = false);
 void g_update_taskbar_buttons_delayed(bool b_init = false);
 
