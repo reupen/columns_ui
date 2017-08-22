@@ -66,7 +66,6 @@ public:
         else if (!g_colours_fonts_imported)
         {
             g_import_pv_colours_to_unified_global();
-            g_import_fonts_to_unified();
         }
 
         g_colours_fonts_imported = true;

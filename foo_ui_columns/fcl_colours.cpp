@@ -56,7 +56,7 @@ class export_colours : public cui::fcl::dataset
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;
         t_uint32 element_size;
-        bool b_font_read = false, b_colour_read=false;
+        bool b_colour_read=false;
 
         bool item_padding_read = false;
         uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
@@ -101,13 +101,6 @@ class export_colours : public cui::fcl::dataset
             case colours_pview_inactive_selection_text:
                 reader.read_item(cfg_pv_selected_text_no_focus);
                 break;
-            case colours_pview_header_font:
-                reader.read_item(cfg_header_font);
-                break;
-            case colours_pview_list_font:
-                b_font_read = true;
-                reader.read_item(cfg_font);
-                break;
             default:
                 reader.skip(element_size);
                 break;
@@ -118,8 +111,6 @@ class export_colours : public cui::fcl::dataset
         //on_playlist_font_change();
         //pvt::ng_playlist_view_t::g_on_font_change();
         //pvt::ng_playlist_view_t::g_on_header_font_change();
-        if (b_font_read)
-            g_import_fonts_to_unified(true, false, false);
         if (b_colour_read)
             g_import_pv_colours_to_unified_global();
 
@@ -209,61 +200,3 @@ class export_colours_switcher : public cui::fcl::dataset
 };
 
 cui::fcl::dataset_factory<export_colours_switcher> g_export_colours_switcher_t;
-
-class export_misc_fonts : public cui::fcl::dataset
-{
-    enum t_colour_pview_identifiers
-    {
-        font_status,
-    };
-    void get_name (pfc::string_base & p_out) const override
-    {
-        p_out = "Misc fonts";
-    }
-    const GUID & get_group () const override
-    {
-        return cui::fcl::groups::colours_and_fonts;
-    }
-    const GUID & get_guid () const override
-    {
-        // {0A297BE7-DE43-49da-8D8E-C8D888CF1014}
-        static const GUID guid = 
-        { 0xa297be7, 0xde43, 0x49da, { 0x8d, 0x8e, 0xc8, 0xd8, 0x88, 0xcf, 0x10, 0x14 } };
-        return guid;
-    }
-    void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
-    {
-        fbh::fcl::Writer out(p_writer, p_abort);
-        //out.write_item(font_status, cfg_status_font);
-    }
-    void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
-    {
-        fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
-        bool b_font_read = false;
-
-        while (reader.get_remaining())
-        {
-            reader.read_item(element_id);
-            reader.read_item(element_size);
-
-            switch (element_id)
-            {
-            case font_status:
-                b_font_read = true;
-                reader.read_item(cfg_status_font);
-                break;
-            default:
-                reader.skip(element_size);
-                break;
-            };
-        }
-
-        if (b_font_read)
-            g_import_fonts_to_unified(false, false, true);
-        //on_status_font_change();
-    }
-};
-
-cui::fcl::dataset_factory<export_misc_fonts> g_export_misc_fonts_t;

@@ -300,28 +300,6 @@ namespace fonts
     { 0xfca8752b, 0xc064, 0x41c4, { 0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34 } };
 }
 
-void g_import_fonts_to_unified(bool b_pv, bool b_ps, bool b_status )
-{
-    static_api_ptr_t<cui::fonts::manager> api;
-    if (b_pv)
-    {
-        api->set_font(fonts::columns_playlist_items, cfg_font);
-        api->set_font(fonts::columns_playlist_header, cfg_header_font);
-        api->set_font(fonts::ng_playlist_items, cfg_font);
-        api->set_font(fonts::ng_playlist_header, cfg_header_font);
-        api->set_font(fonts::filter_items, cfg_font);
-        api->set_font(fonts::filter_header, cfg_header_font);
-    }
-    if (b_status)
-        api->set_font(fonts::status_bar, cfg_status_font);
-    if (g_tab_appearance_fonts.is_active())
-    {
-        g_tab_appearance_fonts.update_mode_combobox();
-        g_tab_appearance_fonts.update_font_desc();
-        g_tab_appearance_fonts.update_change();
-    }
-}
-
 static preferences_tab * g_tabs_appearance[] = 
 {
     &g_tab_appearance, &g_tab_appearance_fonts

@@ -45,10 +45,6 @@ advconfig_branch_factory advBranchCUI("Columns UI", g_guid_advbranch_cui, advcon
 advconfig_checkbox_factory g_advbool_notification_icon_x_buttons("Use back/forward mouse buttons to skip track when over notification area icon", g_guid_advbool_notification_icon_x_buttons, g_guid_advbranch_cui, 0, false);
 advconfig_checkbox_factory g_advbool_close_to_tray("Close to notification area icon", g_guid_advbool_close_to_tray, g_guid_advbranch_cui, 0, false);
 
-cfg_struct_t<LOGFONT> cfg_font(create_guid(0x2465a5af, 0xd5e3, 0x29f6, 0xae, 0x12, 0x1f, 0x39, 0x4e, 0x9b, 0xff, 0xf3), get_icon_font());
-cfg_struct_t<LOGFONT> cfg_status_font(create_guid(0x93681691, 0xd7ed, 0x7567, 0x63, 0xdf, 0xcb, 0xc3, 0x86, 0x9f, 0x2f, 0x9e), get_menu_font());
-cfg_struct_t<LOGFONT> cfg_header_font(create_guid(0x1ebb1ab5, 0xefd6, 0xf6c9, 0xbd, 0xfe, 0xa6, 0x5c, 0x1d, 0xb9, 0x8a, 0xec), get_icon_font());
-
 cfg_rebar g_cfg_rebar(create_guid(0xd26d3aa5, 0x9157, 0xbf8e, 0xd5, 0x9f, 0x44, 0x86, 0x1c, 0x7a, 0x82, 0xc7));
 cfg_band_cache_t cfg_band_cache(create_guid(0x76e74192, 0x6932, 0x2671, 0x90, 0x12, 0xcf, 0x18, 0xca, 0x02, 0x06, 0xe0));
 

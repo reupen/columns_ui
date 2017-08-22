@@ -88,7 +88,7 @@ BOOL CALLBACK tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LP
             update_change();
             on_font_changed();
         }
-                                                      break;
+        break;
         case IDC_COLOURS_ELEMENT | (CBN_SELCHANGE << 16) :
         {
             int idx = ComboBox_GetCurSel((HWND)lp);
@@ -109,10 +109,7 @@ BOOL CALLBACK tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LP
             update_font_desc();
             update_change();
         }
-                                                         return 0;
-                                                         /*case IDC_IMPORT:
-                                                         g_import_fonts_to_unified();
-                                                         break;*/
+        return 0;
         }
         break;
     }

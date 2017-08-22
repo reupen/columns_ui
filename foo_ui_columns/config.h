@@ -91,8 +91,7 @@ extern editor_font_notify g_editor_font_notify;
 extern cfg_int g_last_colour;
 extern const GUID g_guid_columns_ui_preferences_page;
 
-void g_import_pv_colours_to_unified_global();
-[[deprecated]] void g_import_fonts_to_unified(bool b_pv=true, bool b_ps=true, bool b_status=true);
+[[deprecated]] void g_import_pv_colours_to_unified_global();
 
 cui::colours::colour_mode_t g_get_global_colour_mode();
 void g_set_global_colour_mode(cui::colours::colour_mode_t p_mode);

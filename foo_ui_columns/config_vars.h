@@ -112,12 +112,6 @@ extern cfg_string
 
 extern cfg_menu_item cfg_statusdbl;
 
-
-extern cfg_struct_t<LOGFONT> cfg_font,
-    cfg_status_font,
-    cfg_header_font;
-
-
 extern cfg_bool g_colours_fonts_imported;
 
 extern cfg_window_placement_t cfg_window_placement_columns;
