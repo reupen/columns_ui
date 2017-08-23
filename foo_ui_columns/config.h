@@ -16,6 +16,19 @@ namespace columns
     const GUID & config_get_main_guid();
 }
 
+namespace fonts {
+    extern const GUID playlist_switcher;
+    extern const GUID playlist_tabs;
+    extern const GUID splitter_tabs;
+    extern const GUID status_bar;
+    extern const GUID columns_playlist_items;
+    extern const GUID ng_playlist_items;
+    extern const GUID filter_items;
+    extern const GUID columns_playlist_header;
+    extern const GUID ng_playlist_header;
+    extern const GUID filter_header;
+}
+
 void g_show_artwork_settings();
 
 preferences_tab * g_get_tab_layout();
@@ -30,7 +43,7 @@ preferences_tab * g_get_tab_global();
 
 extern preferences_tab * const g_tab_filter_fields, *const g_tab_filter_misc;
 
-
+void refresh_appearance_prefs();
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
 bool colour_picker(HWND wnd, COLORREF & out, COLORREF custom);
 BOOL font_picker(LOGFONT & p_font, HWND parent);

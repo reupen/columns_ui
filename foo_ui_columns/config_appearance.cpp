@@ -300,6 +300,16 @@ namespace fonts
     { 0xfca8752b, 0xc064, 0x41c4, { 0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34 } };
 }
 
+void refresh_appearance_prefs()
+{
+    if (g_tab_appearance_fonts.is_active())
+    {
+        g_tab_appearance_fonts.update_mode_combobox();
+        g_tab_appearance_fonts.update_font_desc();
+        g_tab_appearance_fonts.update_change();
+    }
+}
+
 static preferences_tab * g_tabs_appearance[] = 
 {
     &g_tab_appearance, &g_tab_appearance_fonts
@@ -555,12 +565,7 @@ class fcl_fonts_t : public cui::fcl::dataset
                 break;
             };
         }
-        if (g_tab_appearance_fonts.is_active())
-        {
-            g_tab_appearance_fonts.update_mode_combobox();
-            g_tab_appearance_fonts.update_font_desc();
-            g_tab_appearance_fonts.update_change();
-        }
+        refresh_appearance_prefs();
         g_fonts_manager_data.g_on_common_font_changed(pfc_infinite);
         service_enum_t<cui::fonts::client> font_enum;
         cui::fonts::client::ptr ptr;
