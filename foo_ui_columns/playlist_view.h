@@ -13,14 +13,6 @@
 #define cfg_inline_edit 1
 #define EDIT_TIMER_ID  668
 
-extern cfg_int cfg_pv_use_system_frame,
-    cfg_pv_text_colour,
-    cfg_pv_selected_text_colour,
-    cfg_pv_selected_back,
-    cfg_pv_selceted_back_no_focus,
-    cfg_pv_selected_text_no_focus,
-    cfg_pv_use_custom_colours;
-
 extern service_ptr_t<titleformat_object> g_to_global;
 extern service_ptr_t<titleformat_object> g_to_global_colour;
 
@@ -193,9 +185,6 @@ public:
     static void g_set_sort( unsigned column, bool descending, bool selection_only=false);
     static void g_update_sort();
     static void g_remove_sort();
-
-    static COLORREF g_get_default_colour(colours::t_colours col);
-    COLORREF get_default_colour_v2(colours::t_colours col);
 
     bool drawing_enabled;
 

@@ -17,15 +17,6 @@ LRESULT playlist_message_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
     case WM_TIMER:
         on_day_change();
         break;
-    case WM_SYSCOLORCHANGE:
-        if (!cfg_pv_use_custom_colours)
-        {
-            playlist_view::g_reset_columns();
-            //playlist_view::update_all_windows();
-        }
-        break;
-    case WM_THEMECHANGED:
-        break;
     case WM_DESTROY:
         if (g_font) DeleteObject(g_font); g_font = nullptr;
         if (g_header_font) DeleteObject(g_header_font); g_header_font = nullptr;

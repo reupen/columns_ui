@@ -2,6 +2,7 @@
 #include "playlist_switcher_v2.h"
 #include "playlist_view.h"
 #include "config.h"
+#include "tab_colours.h"
 
 class export_colours : public cui::fcl::dataset
 {
@@ -38,22 +39,15 @@ class export_colours : public cui::fcl::dataset
     void get_data (stream_writer * p_writer, t_uint32 type, cui::fcl::t_export_feedback & feedback, abort_callback & p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
-        /*out.write_item(colours_pview_mode, cfg_pv_use_custom_colours);
-        out.write_item(colours_pview_background, cfg_back);
-        out.write_item(colours_pview_selection_background, cfg_pv_selected_back);
-        out.write_item(colours_pview_inactive_selection_background, cfg_pv_selected_text_no_focus);
-        out.write_item(colours_pview_text, cfg_pv_text_colour);
-        out.write_item(colours_pview_selection_text, cfg_pv_selected_text_colour);
-        out.write_item(colours_pview_inactive_selection_text, cfg_pv_selected_text_no_focus);
-        out.write_item(colours_pview_list_font, cfg_font);
-        out.write_item(colours_pview_header_font, cfg_header_font);*/
-        //out.write_item(colours_pview_use_system_focus_frame, cfg_pv_use_system_frame);
         out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.get_raw_value().value);
         out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.get_raw_value().dpi);
     }
     void set_data (stream_reader * p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback & feedback, abort_callback & p_abort) override
     {
         static_api_ptr_t<cui::fonts::manager> api;
+        colours_manager_data::entry_ptr_t colour_manager_entry;
+        g_colours_manager_data.find_by_guid(pfc::guid_null, colour_manager_entry);
+
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;
         t_uint32 element_size;
@@ -79,29 +73,42 @@ class export_colours : public cui::fcl::dataset
                 item_padding_read = true;
                 break;
             case colours_pview_mode:
-                reader.read_item(cfg_pv_use_custom_colours);
+            {
+                int use_custom_colours{};
+                reader.read_item(use_custom_colours);
+                if (use_custom_colours == 2)
+                    colour_manager_entry->colour_mode = cui::colours::colour_mode_themed;
+                else if (use_custom_colours == 1)
+                    colour_manager_entry->colour_mode = cui::colours::colour_mode_custom;
+                else
+                    colour_manager_entry->colour_mode = cui::colours::colour_mode_system;
                 break;
+            }
             case colours_pview_use_system_focus_frame:
-                reader.read_item(cfg_pv_use_system_frame);
+            {
+                int use_system_frame{};
+                reader.read_item(use_system_frame);
+                colour_manager_entry->use_custom_active_item_frame = !use_system_frame;
                 break;
+            }
             case colours_pview_background:
                 b_colour_read=true;
-                reader.read_item(cfg_back);
+                reader.read_item(colour_manager_entry->background);
                 break;
             case colours_pview_selection_background:
-                reader.read_item(cfg_pv_selected_back);
+                reader.read_item(colour_manager_entry->selection_background);
                 break;
             case colours_pview_inactive_selection_background:
-                reader.read_item(cfg_pv_selected_text_no_focus);
+                reader.read_item(colour_manager_entry->inactive_selection_background);
                 break;
             case colours_pview_text:
-                reader.read_item(cfg_pv_text_colour);
+                reader.read_item(colour_manager_entry->text);
                 break;
             case colours_pview_selection_text:
-                reader.read_item(cfg_pv_selected_text_colour);
+                reader.read_item(colour_manager_entry->selection_text);
                 break;
             case colours_pview_inactive_selection_text:
-                reader.read_item(cfg_pv_selected_text_no_focus);
+                reader.read_item(colour_manager_entry->inactive_selection_text);
                 break;
             case colours_pview_header_font:
             {
@@ -134,7 +141,7 @@ class export_colours : public cui::fcl::dataset
         //pvt::ng_playlist_view_t::g_on_font_change();
         //pvt::ng_playlist_view_t::g_on_header_font_change();
         if (b_colour_read)
-            g_import_pv_colours_to_unified_global();
+            on_global_colours_change();
 
         if (font_read)
             refresh_appearance_prefs();

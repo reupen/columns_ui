@@ -221,24 +221,8 @@ void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
     }
 }
 
-void g_import_pv_colours_to_unified_global()
+void on_global_colours_change()
 {
-    colours_manager_data::entry_ptr_t ptr;
-    g_colours_manager_data.find_by_guid(pfc::guid_null, ptr);
-    ptr->inactive_selection_background = cfg_pv_selceted_back_no_focus;
-    ptr->inactive_selection_text = cfg_pv_selected_text_no_focus;
-    ptr->selection_text = cfg_pv_selected_text_colour;
-    ptr->selection_background = cfg_pv_selected_back;
-    ptr->text = cfg_pv_text_colour;
-    ptr->background = cfg_back;
-    ptr->active_item_frame = cfg_focus;
-    ptr->use_custom_active_item_frame = !cfg_pv_use_system_frame;
-    if (cfg_pv_use_custom_colours==2)
-        ptr->colour_mode = cui::colours::colour_mode_themed;
-    else if (cfg_pv_use_custom_colours==1)
-        ptr->colour_mode = cui::colours::colour_mode_custom;
-    else
-        ptr->colour_mode = cui::colours::colour_mode_system;
     if (g_tab_appearance.is_active())
     {
         g_tab_appearance.update_mode_combobox();

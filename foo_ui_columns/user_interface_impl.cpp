@@ -63,12 +63,6 @@ public:
         {
             cfg_plist_width = cx * 10 / 100;
         }
-        else if (!g_colours_fonts_imported)
-        {
-            g_import_pv_colours_to_unified_global();
-        }
-
-        g_colours_fonts_imported = true;
 
         g_main_window = CreateWindowEx(main_window::config_get_transparency_enabled() ? WS_EX_LAYERED : 0 /*WS_EX_TOOLWINDOW*/, main_window_class_name, _T("foobar2000"), WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN | WS_CLIPSIBLINGS |
             WS_THICKFRAME, left, top, cx, cy, nullptr, nullptr, core_api::get_my_instance(), nullptr);

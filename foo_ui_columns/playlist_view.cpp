@@ -2,19 +2,6 @@
 #include "playlist_view.h"
 #include "main_window.h"
 
-cfg_int cfg_pv_use_system_frame(create_guid(0x99bbcbcb,0xd5c4,0x2122,0x0b,0x5c,0xd8,0x01,0x33,0x63,0xaa,0x36),0),
-cfg_pv_text_colour(create_guid(0x2a1aeb89,0xd278,0xa73e,0xe4,0x12,0x22,0xb2,0xe0,0x23,0x80,0x62),get_default_colour(colours::COLOUR_TEXT)),
-cfg_pv_selected_text_colour(create_guid(0xc8f9907d,0x675b,0x89a6,0xb0,0xda,0xfc,0xea,0xa3,0x35,0x79,0x4a),get_default_colour(colours::COLOUR_SELECTED_TEXT)),
-cfg_pv_selected_back(create_guid(0x70f6c48c,0xdee7,0xecaf,0xcf,0xff,0xca,0x90,0xf8,0x18,0x58,0x57),get_default_colour(colours::COLOUR_SELECTED_BACK)),
-cfg_pv_selceted_back_no_focus(create_guid(0x0327b009,0xdcf2,0x3a97,0x24,0x52,0x71,0x0d,0x14,0xe4,0xc5,0xce),get_default_colour(colours::COLOUR_SELECTED_BACK_NO_FOCUS)),
-cfg_pv_use_custom_colours(create_guid(0x214156c5,0x17cb,0x58f7,0xf1,0x5e,0x50,0x50,0x95,0x23,0x59,0x42),0);
-
-// {224ED777-DF52-4985-B70B-C518186DE8BE}
-static const GUID guid_pv_selected_text_no_focus = 
-{ 0x224ed777, 0xdf52, 0x4985, { 0xb7, 0xb, 0xc5, 0x18, 0x18, 0x6d, 0xe8, 0xbe } };
-
-cfg_int cfg_pv_selected_text_no_focus(guid_pv_selected_text_no_focus,get_default_colour(colours::COLOUR_SELECTED_TEXT_NO_FOCUS));
-
 service_ptr_t<titleformat_object> g_to_global;
 service_ptr_t<titleformat_object> g_to_global_colour;
 
@@ -216,36 +203,6 @@ unsigned playlist_view::get_last_viewable_item()
     return rv;
 }
 
-COLORREF playlist_view::g_get_default_colour(colours::t_colours col)
-{
-    if (cfg_pv_use_custom_colours!=1) return get_default_colour(col, cfg_pv_use_custom_colours ==2);
-    switch (col)
-    {
-    case colours::COLOUR_TEXT:
-        return cfg_pv_text_colour;
-        break;
-    case colours::COLOUR_SELECTED_TEXT:
-        return cfg_pv_selected_text_colour;
-        break;
-    case colours::COLOUR_BACK:
-        return cfg_back;
-        break;
-    case colours::COLOUR_SELECTED_BACK:
-        return cfg_pv_selected_back;
-        break;
-    case colours::COLOUR_FRAME:
-        return cfg_focus;
-        break;
-    case colours::COLOUR_SELECTED_BACK_NO_FOCUS:
-        return cfg_pv_selceted_back_no_focus;
-        break;
-    case colours::COLOUR_SELECTED_TEXT_NO_FOCUS:
-        return cfg_pv_selected_text_no_focus;
-        break;
-    }
-    return 0xFF;
-}
-
 COLORREF get_default_theme_colour(HTHEME thm, colours::t_colours index)
 {
     if (!thm || !IsAppThemed() || !IsThemeActive())
@@ -269,42 +226,6 @@ COLORREF get_default_theme_colour(HTHEME thm, colours::t_colours index)
     default:
         return 0x0000FF;
     }
-}
-
-COLORREF playlist_view::get_default_colour_v2(colours::t_colours col)
-{
-    if (cfg_pv_use_custom_colours==0)
-        return get_default_colour(col);
-    else if (cfg_pv_use_custom_colours==2)
-        return get_default_theme_colour(m_theme, col);
-    else
-    {
-        switch (col)
-        {
-        case colours::COLOUR_TEXT:
-            return cfg_pv_text_colour;
-            break;
-        case colours::COLOUR_SELECTED_TEXT:
-            return cfg_pv_selected_text_colour;
-            break;
-        case colours::COLOUR_BACK:
-            return cfg_back;
-            break;
-        case colours::COLOUR_SELECTED_BACK:
-            return cfg_pv_selected_back;
-            break;
-        case colours::COLOUR_FRAME:
-            return cfg_focus;
-            break;
-        case colours::COLOUR_SELECTED_BACK_NO_FOCUS:
-            return cfg_pv_selceted_back_no_focus;
-            break;
-        case colours::COLOUR_SELECTED_TEXT_NO_FOCUS:
-            return cfg_pv_selected_text_no_focus;
-            break;
-        }
-    }
-    return 0xFF;
 }
 
 void playlist_view::get_playlist_rect(RECT * out)

@@ -40,13 +40,12 @@ namespace settings
 extern cfg_string cfg_playlist_switcher_tagz;
 extern cfg_menu_item cfg_playlist_double;
 
-extern cfg_int cfg_back,
+extern cfg_int
     cfg_global,
     cfg_cur_prefs_col,
     cfg_header_hottrack,
     cfg_sortsel,
     cfg_global_sort,
-    cfg_focus,
     cfg_vis,
     cfg_vis2,
     cfg_vis_edge,
@@ -111,7 +110,5 @@ extern cfg_string
     cfg_pgenstring;
 
 extern cfg_menu_item cfg_statusdbl;
-
-extern cfg_bool g_colours_fonts_imported;
 
 extern cfg_window_placement_t cfg_window_placement_columns;
