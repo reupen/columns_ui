@@ -319,8 +319,8 @@ BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         {
         case IDC_GROUP | (LBN_SELCHANGE << 16) :
             m_group = SendMessage(wnd_group, LB_GETCURSEL, 0, 0);
-            m_guid.reset();
-            m_subcommand.reset();
+            m_guid = {};
+            m_subcommand = {};
             populate_commands();
             return TRUE;
         case IDC_ITEM | (LBN_SELCHANGE << 16) :
@@ -332,8 +332,8 @@ BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                                               return TRUE;
         case IDC_COMMAND | (LBN_SELCHANGE << 16) :
         {
-            m_guid.reset();
-            m_subcommand.reset();
+            m_guid = {};
+            m_subcommand = {};
 
             LRESULT p_command = SendMessage(wnd_command, LB_GETCURSEL, 0, 0);
             if (p_command != LB_ERR)

@@ -20,24 +20,6 @@ public:
     }
 };
 
-namespace types
-{
-struct t_guid : public GUID
-{
-public:
-    void reset()
-    {
-        *this = pfc::guid_null;
-    }
-    t_guid()
-        : GUID(pfc::guid_null) {}
-    t_guid(const GUID & p_guid)
-        : GUID(p_guid) {}
-    t_guid(const t_guid & p_guid)
-        = default;
-};
-}
-
 enum playlist_filter_type
 {
     FILTER_NONE = 0,

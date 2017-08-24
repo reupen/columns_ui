@@ -24,12 +24,12 @@ namespace menu_helpers
 class menu_item_identifier
 {
 public:
-    types::t_guid m_command;
-    types::t_guid m_subcommand;
+    GUID m_command{};
+    GUID m_subcommand{};
     menu_item_identifier & operator=(const menu_item_identifier & p_source) = default;
-    menu_item_identifier(){};
+    menu_item_identifier() = default;
     menu_item_identifier(const GUID & p_val, const GUID & psub = pfc::guid_null)
-        : m_command(p_val), m_subcommand(psub){};
+        : m_command(p_val), m_subcommand(psub) {}
 };
 
 bool operator==(const menu_item_identifier & p1, const menu_item_identifier & p2);

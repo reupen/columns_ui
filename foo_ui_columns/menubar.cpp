@@ -98,7 +98,7 @@ class mainmenu_root_group
 public:
     pfc::string8 m_name;
     pfc::array_t<TCHAR> m_name_with_accelerators;
-    types::t_guid m_guid;
+    GUID m_guid{};
     t_uint32 m_sort_priority;
 
     mainmenu_root_group()

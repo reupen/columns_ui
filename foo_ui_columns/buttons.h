@@ -63,8 +63,8 @@ public:
         t_type m_type;
         t_filter m_filter;
         t_show m_show;
-        types::t_guid m_guid;
-        types::t_guid m_subcommand;
+        GUID m_guid{};
+        GUID m_subcommand{};
         bool m_use_custom;
         bool m_use_custom_hot;
         bool m_use_custom_text;
@@ -292,11 +292,12 @@ public:
 class command_picker_param
 {
 public:
-    types::t_guid m_guid, m_subcommand;
+    GUID m_guid{};
+    GUID m_subcommand{};
     unsigned m_group;
     unsigned m_filter;
     command_picker_param() = delete;
-    command_picker_param(types::t_guid p_guid, types::t_guid p_subcommand, unsigned p_group, unsigned p_filter)
+    command_picker_param(GUID p_guid, GUID p_subcommand, unsigned p_group, unsigned p_filter)
         : m_guid(p_guid), m_subcommand(p_subcommand), m_group(p_group), m_filter(p_filter) {};
 };
 
@@ -306,8 +307,8 @@ class command_picker_data
     class command_data
     {
     public:
-        types::t_guid m_guid;
-        types::t_guid m_subcommand;
+        GUID m_guid{};
+        GUID m_subcommand{};
         pfc::string8 m_desc;
     };
     ptr_list_autodel_t<command_data> m_data;
@@ -316,8 +317,8 @@ class command_picker_data
     HWND wnd_filter;
     HWND wnd_command;
     unsigned m_group;
-    types::t_guid m_guid;
-    types::t_guid m_subcommand;
+    GUID m_guid{};
+    GUID m_subcommand{};
     unsigned m_filter;
 
     bool __populate_mainmenu_dynamic_recur(command_data & data, const mainmenu_node::ptr & ptr_node, pfc::string_base & full, bool b_root);
