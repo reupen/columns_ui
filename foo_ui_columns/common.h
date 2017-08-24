@@ -10,8 +10,6 @@
  * Some common functions and enumerations
  */
 
-#include <DelayImp.h>
-
 template <typename type_t>
 class ptr_list_autodel_t : public pfc::ptr_list_t < type_t >
 {
@@ -21,37 +19,6 @@ public:
         this->delete_all();
     }
 };
-
-class format_win32_delayload_error {
-public:
-    format_win32_delayload_error(PDelayLoadInfo pdli)
-    {
-        if (pdli)
-        {
-            if (pdli->szDll)
-                m_buffer << "Delay load failure - Module: " << pdli->szDll;
-            if (!pdli->dlp.fImportByName)
-                m_buffer << ", Ordinal: " << pfc::format_hex(pdli->dlp.dwOrdinal) << "h";
-            else if (pdli->dlp.szProcName)
-                m_buffer << ", Procedure: " << pdli->dlp.szProcName;
-
-            pfc::string8 temp;
-            m_buffer << ", Error: ";
-            if (uFormatSystemErrorMessage(temp,pdli->dwLastError))
-            {
-                m_buffer << temp;
-            }
-            else
-                m_buffer << (unsigned)pdli->dwLastError;
-        }
-    }
-
-    const char * get_ptr() const {return m_buffer.get_ptr();}
-    operator const char*() const {return m_buffer.get_ptr();}
-private:
-    pfc::string8 m_buffer;
-};
-
 
 namespace types
 {
