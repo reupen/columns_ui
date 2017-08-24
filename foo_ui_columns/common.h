@@ -216,24 +216,6 @@ namespace pfc
 
 const char * strchr_n(const char * src, char c, unsigned len = -1);
 
-struct create_guid : public GUID
-{
-    create_guid(t_uint32 p_data1, t_uint16 p_data2, t_uint16 p_data3, t_uint8 p_data41, t_uint8 p_data42, t_uint8 p_data43, t_uint8 p_data44, t_uint8 p_data45, t_uint8 p_data46, t_uint8 p_data47, t_uint8 p_data48) 
-    {
-        Data1 = p_data1;
-        Data2 = p_data2;
-        Data3 = p_data3;
-        Data4[0] = p_data41;
-        Data4[1] = p_data42;
-        Data4[2] = p_data43;
-        Data4[3] = p_data44;
-        Data4[4] = p_data45;
-        Data4[5] = p_data46;
-        Data4[6] = p_data47;
-        Data4[7] = p_data48;
-    }
-};
-
 struct colour_bytes {BYTE B; BYTE G; BYTE R;};
 
 struct colour
