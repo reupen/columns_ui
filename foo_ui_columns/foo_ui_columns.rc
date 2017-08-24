@@ -62,7 +62,7 @@ BEGIN
     CONTROL         "Use global variables for display",IDC_GLOBAL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,3,3,115,10
     CONTROL         "Use global variables when sorting by column",IDC_GLOBALSORT,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,153,3,157,10
-    CONTROL         "Enable legacy support for globals (Columns Playlist only)",IDC_OLDGLOBAL,
+    CONTROL         "Enable legacy support for globals (legacy playlist only)",IDC_OLDGLOBAL,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,115,15,195,10
     CONTROL         "Make date info available",IDC_DATE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,3,15,91,10
     EDITTEXT        IDC_STRING,6,46,301,181,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL

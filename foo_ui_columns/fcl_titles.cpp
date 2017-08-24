@@ -3,7 +3,7 @@
 #include "NG Playlist/ng_playlist_groups.h"
 #include "NG Playlist/ng_playlist.h"
 
-cui::fcl::group_impl_factory fclgroupcolumns(cui::fcl::groups::titles_playlist_view, "Columns/NG Playlist Scripts", "Columns/NG Playlist Scripts", cui::fcl::groups::title_scripts);
+cui::fcl::group_impl_factory fclgroupcolumns(cui::fcl::groups::titles_playlist_view, "Playlist Scripts", "Playlist Scripts", cui::fcl::groups::title_scripts);
 cui::fcl::group_impl_factory fclgroupcommon(cui::fcl::groups::titles_common, "Common Scripts", "Common Scripts", cui::fcl::groups::title_scripts);
 
 class export_columns : public cui::fcl::dataset

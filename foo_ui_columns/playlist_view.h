@@ -297,7 +297,7 @@ public:
 
     const GUID & get_client_guid() const override { return g_guid;};
 
-    void get_name (pfc::string_base & p_out) const override {p_out = "Columns Playlist";};
+    void get_name (pfc::string_base & p_out) const override {p_out = "Legacy playlist";};
 
     t_size get_supported_colours() const override {return cui::colours::colour_flag_all;}; //bit-mask
 

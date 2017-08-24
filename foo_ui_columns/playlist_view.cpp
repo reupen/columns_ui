@@ -49,7 +49,7 @@ const GUID & playlist_view::get_extension_guid() const
 
 void playlist_view::get_name(pfc::string_base & out)const
 {
-    out.set_string("Columns Playlist");
+    out.set_string("Legacy playlist");
 }
 
 bool playlist_view::get_short_name(pfc::string_base & out)const
