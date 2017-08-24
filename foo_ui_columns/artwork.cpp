@@ -618,7 +618,7 @@ namespace artwork_panel
         static const GUID g_guid;
 
         const GUID & get_client_guid() const override { return g_guid_colour_client; };
-        void get_name(pfc::string_base & p_out) const override { p_out = "Artwork View"; };
+        void get_name(pfc::string_base & p_out) const override { p_out = "Artwork view"; };
 
         t_size get_supported_colours() const override { return cui::colours::colour_flag_background; }; //bit-mask
         t_size get_supported_bools() const override { return 0; }; //bit-mask

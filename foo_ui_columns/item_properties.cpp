@@ -615,7 +615,7 @@ public:
     }
     void get_name (pfc::string_base & p_out) const override
     {
-        p_out = "Item Properties: Items";
+        p_out = "Item properties: Items";
     }
 
     cui::fonts::font_type_t get_default_font_type() const override
@@ -639,7 +639,7 @@ public:
     }
     void get_name (pfc::string_base & p_out) const override
     {
-        p_out = "Item Properties: Column Titles";
+        p_out = "Item properties: Column titles";
     }
 
     cui::fonts::font_type_t get_default_font_type() const override
@@ -663,7 +663,7 @@ public:
     }
     void get_name (pfc::string_base & p_out) const override
     {
-        p_out = "Item Properties: Group Titles";
+        p_out = "Item Properties: Group titles";
     }
 
     cui::fonts::font_type_t get_default_font_type() const override

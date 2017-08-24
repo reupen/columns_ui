@@ -1099,7 +1099,7 @@ public:
     }
     void get_name (pfc::string_base & p_out) const override
     {
-        p_out = "Tab Stack";
+        p_out = "Tab stack";
     }
 
     cui::fonts::font_type_t get_default_font_type() const override

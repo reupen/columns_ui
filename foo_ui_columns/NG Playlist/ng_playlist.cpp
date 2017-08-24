@@ -603,7 +603,7 @@ namespace pvt {
             set_day_timer();
 
         console::formatter formatter;
-        formatter << "NG Playlist initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";;
+        formatter << "NG playlist initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";;
     }
 
 
@@ -1178,7 +1178,7 @@ namespace pvt {
 
     void ng_playlist_view_t::get_name(pfc::string_base & out)const
     {
-        out.set_string("NG Playlist");
+        out.set_string("NG playlist");
     }
     bool ng_playlist_view_t::get_short_name(pfc::string_base & out)const
     {
@@ -1223,7 +1223,7 @@ namespace pvt {
         }
         void get_name (pfc::string_base & p_out) const override
         {
-            p_out = "NG Playlist: Items";
+            p_out = "NG playlist: Items";
         }
 
         cui::fonts::font_type_t get_default_font_type() const override
@@ -1247,7 +1247,7 @@ namespace pvt {
         }
         void get_name (pfc::string_base & p_out) const override
         {
-            p_out = "NG Playlist: Column Titles";
+            p_out = "NG playlist: Column titles";
         }
 
         cui::fonts::font_type_t get_default_font_type() const override
@@ -1271,7 +1271,7 @@ namespace pvt {
         }
         void get_name (pfc::string_base & p_out) const override
         {
-            p_out = "NG Playlist: Group Titles";
+            p_out = "NG playlist: Group titles";
         }
 
         cui::fonts::font_type_t get_default_font_type() const override

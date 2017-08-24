@@ -187,7 +187,7 @@ public:
     }
     void get_name(pfc::string_base & p_out) const override
     {
-        p_out = "Item Details";
+        p_out = "Item details";
     }
 
     cui::fonts::font_type_t get_default_font_type() const override
@@ -211,7 +211,7 @@ public:
     }
     void get_name(pfc::string_base & p_out) const override
     {
-        p_out = "Item Details";
+        p_out = "Item details";
     }
 
     t_size get_supported_colours() const override { return cui::colours::colour_flag_background | cui::colours::colour_flag_text; }; //bit-mask
