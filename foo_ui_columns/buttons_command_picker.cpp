@@ -271,7 +271,7 @@ void command_picker_data::initialise(HWND wnd)
 
     SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM)_T("Separator"));
     SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM)_T("Buttons"));
-    SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM)_T("Shortcut menu items"));
+    SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM)_T("Context menu items"));
     SendMessage(wnd_group, LB_ADDSTRING, 0, (LPARAM)_T("Main menu items"));
 
     SendMessage(wnd_filter, LB_ADDSTRING, 0, (LPARAM)_T("None"));

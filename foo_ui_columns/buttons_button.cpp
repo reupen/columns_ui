@@ -173,7 +173,7 @@ void toolbar_extension::button::get_name_type(pfc::string_base & p_out) //config
     }
     else
     {
-        p_out = "Shortcut menu item";
+        p_out = "Context menu item";
     }
 }
 
@@ -228,7 +228,7 @@ void toolbar_extension::button::get_name(pfc::string_base & p_out) //config
     {
         pfc::string8 temp;
         menu_helpers::contextpath_from_guid(m_guid, m_subcommand, temp);
-        p_out = "[Shortcut menu item] ";
+        p_out = "[Context menu item] ";
         p_out += temp;
     }
 }

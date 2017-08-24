@@ -13,7 +13,7 @@ void toolbar_extension::config_param::t_button_list_view::notify_on_initialisati
 
     pfc::list_t<uih::ListView::Column> columns;
     columns.add_item(uih::ListView::Column("Name", 300));
-    columns.add_item(uih::ListView::Column("Type", 125));
+    columns.add_item(uih::ListView::Column("Type", 150));
 
     set_columns(columns);
 }
