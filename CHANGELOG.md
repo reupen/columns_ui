@@ -11,7 +11,7 @@
 ### Other changes
 
 * Added the ability to close foobar2000 to the notification area [contributed by tuxzz, [#56](https://github.com/reupen/columns_ui/pull/56)].
-* 
+
 * The value of the 'Allow resizing of locked panels' setting is now available to other components.
 
 * Removed the ability to import FCS files.
