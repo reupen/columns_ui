@@ -4,15 +4,27 @@
 
 ### Performance improvements
 
-* Significantly faster Filter panel performance on multi-core PCs. With a quad-core Intel Core-i7 6700K, initialisation time is just under half of what it was under 0.5.1 for a medium- to large-sized library.
+* Significantly faster Filter panel performance on multi-core PCs. With a quad-core Intel Core-i7 6700K, initialisation time is just under half of what it was under 0.5.1 for a mid- to large-sized library.
 
 * Slightly faster NG Playlist grouping and sorting performance on multi-core PCs.
 
 ### Other changes
 
+* Added the ability to close foobar2000 to the notification area [contributed by tuxzz, [#56](https://github.com/reupen/columns_ui/pull/56)].
+* 
 * The value of the 'Allow resizing of locked panels' setting is now available to other components.
 
+* Removed the ability to import FCS files.
+
 * Miscellaneous internal code refactoring.
+
+* Some minor changes to labels and layout in preferences and other configuration dialogs.
+
+* Renamed Columns playlist to legacy playlist. The columns/legacy will be completely removed in version 0.7.0 or later, anyone still using it is advised to switch to NG playlist.
+
+* Windows XP and Vista are no longer officially supported. Support will be completely removed in version 0.7.0 or later. Users of those operating systems are advised to stick with version 0.5.1.
+
+* Compiled with Visual Studio 2017 15.3.
 
 ## 0.5.1
 
