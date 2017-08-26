@@ -729,9 +729,6 @@
     <None Include=".\up1.bmp">
       <Filter>Resources</Filter>
     </None>
-    <None Include=".\changelog.txt">
-      <Filter>Misc</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\foo_ui_columns.rc">

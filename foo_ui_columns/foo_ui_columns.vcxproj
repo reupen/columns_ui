@@ -531,7 +531,6 @@
     <None Include=".\icons\New Folder\square\stop256.ico" />
     <None Include=".\icons\New Folder\square\stop64.bmp" />
     <None Include=".\up1.bmp" />
-    <None Include=".\changelog.txt" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\foo_ui_columns.rc" />
