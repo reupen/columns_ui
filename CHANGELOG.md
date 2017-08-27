@@ -14,6 +14,8 @@
 
 * The value of the 'Allow resizing of locked panels' setting is now available to other components.
 
+* Corrected the status pane playback status when resume playback on start-up is enabled and foobar2000 is started when playback was previously paused.
+
 * Removed the ability to import FCS files.
 
 * Miscellaneous internal code refactoring.
