@@ -311,7 +311,7 @@ class command_picker_data
         GUID m_subcommand{};
         pfc::string8 m_desc;
     };
-    ptr_list_autodel_t<command_data> m_data;
+    std::vector<std::unique_ptr<command_data>> m_data;
     HWND m_wnd;
     HWND wnd_group;
     HWND wnd_filter;

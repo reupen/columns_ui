@@ -17,14 +17,14 @@ bool command_picker_data::__populate_mainmenu_dynamic_recur(command_data & data,
                 subfull.add_byte('/');
             subfull.add_string(subname);
 
-            auto  p_data = new command_data(data);
+            auto p_data = std::make_unique<command_data>(data);
             p_data->m_subcommand = ptr_node->get_guid();
             ptr_node->get_description(p_data->m_desc);
 
-            m_data.add_item(p_data);
+            auto& data_item = m_data.emplace_back(std::move(p_data));
 
             unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, subfull);
-            SendMessage(wnd_command, LB_SETITEMDATA, idx, (LPARAM)p_data);
+            SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
         }
         return true;
         case mainmenu_node::type_group:
@@ -84,14 +84,14 @@ bool command_picker_data::__populate_commands_recur(command_data & data, pfc::st
                 subfull.add_byte('/');
             subfull.add_string(subname);
 
-            auto  p_data = new command_data(data);
+            auto p_data = std::make_unique<command_data>(data);
             p_data->m_subcommand = p_node->get_guid();
             p_node->get_description(p_data->m_desc);
 
-            m_data.add_item(p_data);
+            auto& data_item = m_data.emplace_back(std::move(p_data));
 
             unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, subfull);
-            SendMessage(wnd_command, LB_SETITEMDATA, idx, (LPARAM)p_data);
+            SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
             return true;
         }
     }
@@ -100,7 +100,7 @@ bool command_picker_data::__populate_commands_recur(command_data & data, pfc::st
 void command_picker_data::populate_commands()
 {
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
-    m_data.delete_all();
+    m_data.clear();
     SendMessage(wnd_command, WM_SETREDRAW, FALSE, 0);
     if (m_group == 2)
     {
@@ -132,12 +132,12 @@ void command_picker_data::populate_commands()
                             full.add_byte('/');
                         full.add_string(name);
 
-                        auto  p_data = new command_data(data);
+                        auto p_data = std::make_unique<command_data>(data);
                         ptr->get_item_description(p_service_item_index, p_data->m_desc);
-                        m_data.add_item(p_data);
+                        auto& data_item = m_data.emplace_back(std::move(p_data));
 
                         unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, full);
-                        SendMessage(wnd_command, LB_SETITEMDATA, idx, (LPARAM)p_data);
+                        SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
                         //                            n++;
                     }
                 }
@@ -188,11 +188,11 @@ void command_picker_data::populate_commands()
                     }
                     else
                     {
-                        auto  p_data = new command_data(data);
+                        auto p_data = std::make_unique<command_data>(data);
                         ptr->get_description(p_service_item_index, p_data->m_desc);
-                        m_data.add_item(p_data);
+                        auto& data_item = m_data.emplace_back(std::move(p_data));
                         unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, full);
-                        SendMessage(wnd_command, LB_SETITEMDATA, idx, (LPARAM)p_data);
+                        SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
                     }
                 }
             }
@@ -207,14 +207,14 @@ void command_picker_data::populate_commands()
             service_ptr_t<uie::custom_button> p_button;
             if (ptr->get_guid_type() == uie::BUTTON_GUID_BUTTON && ptr->service_query_t(p_button))
             {
-                auto  p_data = new command_data;
+                auto p_data = std::make_unique<command_data>();
                 p_data->m_guid = ptr->get_item_guid();
                 p_button->get_description(p_data->m_desc);
-                m_data.add_item(p_data);
+                auto& data_item = m_data.emplace_back(std::move(p_data));
                 pfc::string8 temp;
                 p_button->get_name(temp);
                 unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, temp);
-                SendMessage(wnd_command, LB_SETITEMDATA, idx, (LPARAM)p_data);
+                SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
             }
         }
     }
@@ -287,7 +287,7 @@ void command_picker_data::deinitialise(HWND wnd)
     SendMessage(wnd_group, LB_RESETCONTENT, 0, 0);
     SendMessage(wnd_filter, LB_RESETCONTENT, 0, 0);
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
-    m_data.delete_all();
+    m_data.clear();
 }
 BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
