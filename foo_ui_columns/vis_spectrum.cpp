@@ -672,7 +672,7 @@ class window_visualisation_spectrum : public window_visualisation
     }
     void get_menu_items (ui_extension::menu_hook_t & p_hook) override
     {
-        p_hook.add_node(uie::menu_node_ptr(new(std::nothrow) uie::menu_node_configure(this)));
+        p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_configure(this)));
     };
     void set_config(stream_reader * r, t_size p_size, abort_callback & p_abort) override
     {

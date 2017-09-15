@@ -269,8 +269,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
 
         if (!entry) 
         {
-            entry = new(std::nothrow) playlist_entry_ui; 
-            if (!entry) return false;
+            entry = new playlist_entry_ui; 
             
             unsigned e=columns.get_count();
             entry->add_display_items(column_get_active_count(playlist));
@@ -727,7 +726,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
                     ptr = temp2;
                 }
 
-                data.add_item(new(std::nothrow) sort_info(ptr,n));
+                data.add_item(new sort_info(ptr,n));
             }
 
         }
@@ -857,7 +856,7 @@ void playlist_view_cache::rebuild()
     unsigned n,pcount = playlist_api->get_playlist_count();
     for (n=0; n<pcount; n++)
     {
-        auto  p_cache = new(std::nothrow) playlist_cache;
+        auto  p_cache = new playlist_cache;
         unsigned i,count = playlist_api->playlist_get_item_count(n);
         for (i=0;i<count;i++)
             p_cache->add_item(i);

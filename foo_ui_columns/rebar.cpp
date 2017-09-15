@@ -31,14 +31,12 @@ void create_rebar()
 {
     if (cfg_toolbars) {
         if (!g_rebar_window) {
-            g_rebar_window = new(std::nothrow) rebar_window();
-            if (g_rebar_window) {
-                cfg_band_cache.get_band_cache(g_rebar_window->cache);
-                g_rebar = g_rebar_window->init();
-                if (!g_rebar) {
-                    delete g_rebar_window;
-                    g_rebar_window = nullptr;
-                }
+            g_rebar_window = new rebar_window;
+            cfg_band_cache.get_band_cache(g_rebar_window->cache);
+            g_rebar = g_rebar_window->init();
+            if (!g_rebar) {
+                delete g_rebar_window;
+                g_rebar_window = nullptr;
             }
         }
     }

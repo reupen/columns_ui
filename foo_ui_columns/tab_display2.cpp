@@ -49,7 +49,7 @@ public:
         {
         case WM_INITDIALOG:
         {
-            p_menu_cache = new(std::nothrow) menu_item_cache;
+            p_menu_cache = new menu_item_cache;
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "None");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Sunken");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Grey");

@@ -251,7 +251,7 @@ public:
     }
     inline void on_playlist_created(unsigned p_index,const char * p_name,unsigned p_name_len)
     {
-        insert_item(new(std::nothrow) playlist_cache, p_index);
+        insert_item(new playlist_cache, p_index);
 #if 0
         unsigned n , count=get_count();
         if (p_index != count -1)

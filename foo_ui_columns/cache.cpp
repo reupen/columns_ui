@@ -61,7 +61,7 @@ colourinfo * cache_manager::add_colour(/*COLORREF text, COLORREF text_sel, COLOR
             return item;
         }
     }
-    auto  new_colourinfo =  new(std::nothrow) colourinfo(colour_add);
+    auto  new_colourinfo = new colourinfo(colour_add);
     
     unsigned i = colours.add_item(new_colourinfo);
 //    console::info(pfc::string_printf("colour count: %u",i+1));
@@ -134,7 +134,7 @@ void playlist_entry_ui::add_display_items(unsigned count)
 //    display_info * display = new(std::nothrow) display_info;
 //    display_data.add_item(display);
     if (display_data) {delete[] display_data; display_data=nullptr;}
-    display_data = new(std::nothrow) display_info[count];
+    display_data = new display_info[count];
 }
 void playlist_entry_ui::set_display_item(int column, const char * data, colourinfo & colour_add)
 {
