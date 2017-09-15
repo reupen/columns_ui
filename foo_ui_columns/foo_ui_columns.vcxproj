@@ -435,6 +435,7 @@
     <ClCompile Include=".\helpers.cpp" />
     <ClCompile Include="config_host.cpp" />
     <ClCompile Include="list_view_panel.cpp" />
+    <ClCompile Include="rebar_band.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\artwork_helpers.h" />
@@ -493,6 +494,7 @@
     <ClInclude Include="config_host.h" />
     <ClInclude Include="filter_search_bar.h" />
     <ClInclude Include="list_view_panel.h" />
+    <ClInclude Include="rebar_band.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp" />

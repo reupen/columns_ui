@@ -364,8 +364,8 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                     uie::window_ptr p_ext;
 
-                    if (idx_hit < g_rebar_window->bands.get_count())
-                        p_ext = g_rebar_window->bands[idx_hit]->p_ext;
+                    if (idx_hit < g_rebar_window->m_bands.size())
+                        p_ext = g_rebar_window->m_bands[idx_hit].m_window;
 
                     pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes = new ui_extension::menu_hook_impl;
 

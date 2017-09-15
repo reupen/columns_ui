@@ -12,6 +12,7 @@
 
 #include "stdafx.h"
 #include "extern.h"
+#include "rebar_band.h"
 
 struct band_cache_entry
 {
@@ -49,38 +50,6 @@ public:
     void reset();
 };
 
-class rebar_band_info
-{
-public:
-    GUID guid;
-    HWND wnd;
-    ui_extension::window_ptr p_ext;
-    pfc::array_t<t_uint8> config;
-    // Although we store the DPI, this does virtually nothing as remaining space is automatically 
-    // distributed among the remaining bands.
-    uih::IntegerAndDpi<uint32_t> width;
-    bool rbbs_break;
-
-    rebar_band_info(GUID id = pfc::guid_null, unsigned h = 100);
-    void _export(stream_writer * out, t_uint32 type, abort_callback & p_abort);
-    void import(stream_reader * p_reader, t_uint32 type, abort_callback & p_abort);
-    void write(stream_writer * out, abort_callback & p_abort);
-    void read(stream_reader * p_reader, abort_callback & p_abort);
-    void write_extra(stream_writer * out, abort_callback & p_abort);
-    void read_extra(stream_reader * p_reader, abort_callback & p_abort);
-    void copy(rebar_band_info & out);
-};
-
-class rebar_info : public ptr_list_autodel_t<rebar_band_info>
-{
-public:
-    void set_rebar_info(rebar_info & in);
-    rebar_band_info * find_by_wnd(HWND wnd);
-    unsigned find_by_wnd_n(HWND wnd);
-    void add_band(const GUID & id, unsigned width = 125, bool new_line = false, const ui_extension::window_ptr & p_ext = uie::window_ptr_null);
-    void insert_band(unsigned idx, const GUID & id, unsigned width = 125, bool new_line = false, const ui_extension::window_ptr & p_ext = uie::window_ptr_null);
-};
-
 class cfg_rebar : public cfg_var
 {
 private:
@@ -90,7 +59,7 @@ private:
         VersionCurrent = Version1
     };
 
-    rebar_info entries;
+    std::vector<RebarBandInfo> m_entries;
 
     void get_data_raw(stream_writer * out, abort_callback & p_abort) override;
     void set_data_raw(stream_reader * p_reader, unsigned p_sizehint, abort_callback & p_abort) override;
@@ -100,8 +69,15 @@ public:
     void import_config(stream_reader * p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID> & panels, abort_callback & p_abort);
 
     explicit inline cfg_rebar(const GUID & p_guid) : cfg_var(p_guid) {reset();};
-    void get_rebar_info(rebar_info & out);
-    void set_rebar_info(rebar_info & in);
+    const std::vector<RebarBandInfo>& get_rebar_info()
+    {
+        return m_entries;
+    }
+    template<typename Container>
+    void set_rebar_info(Container&& in)
+    {
+        m_entries = in;
+    }
     void reset();
 };
 
@@ -111,19 +87,18 @@ private:
     void destroy_bands();
 public:
     HWND wnd_rebar;
-    rebar_info bands;
+    std::vector<RebarBandInfo> m_bands;
     band_cache cache;
     
     
     rebar_window();
-    HWND init(rebar_info & new_bands);
+    HWND init();
 
     void add_band(const GUID & guid, unsigned width = 100, const ui_extension::window_ptr & p_ext = ui_extension::window_ptr_null);
     void insert_band(unsigned idx, const GUID & guid, unsigned width = 100, const ui_extension::window_ptr & p_ext = ui_extension::window_ptr_null);
     void update_bands();
     void delete_band(HWND wnd, bool destroy = true);
 
-    void update_band(HWND wnd, bool size = false/*bool min_height, bool max_height, bool min_width, bool max_width*/);
     void update_band(unsigned n, bool size = false);
 
     bool check_band(const GUID & id);
@@ -144,25 +119,18 @@ public:
     
     void save_bands();
     void destroy();
-    void refresh_bands(bool force_destroy_bands = true, bool save = true);
+    void refresh_bands(bool force_destroy_bands = true);
+
+    auto find_band_by_hwnd(HWND wnd)
+    {
+        return std::find_if(std::begin(m_bands), std::end(m_bands), [&wnd](auto&& item) {
+            return item.m_wnd == wnd;
+        });
+    }
 
     ~rebar_window();
 };
 
 ui_extension::window_host & get_rebar_host();
-
-/*
-void save_bar(unsigned ID, unsigned width, unsigned style);
-void destroy_rebar(bool des = true);
-//LRESULT WINAPI RebarHook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
-void insert_rebar_item(unsigned id, int insert_idx = -1);
-void build_rebar(bool visible = true);
-
-namespace toolbar_images
-{
-    void create_toolbar_imagelist();
-    void destroy_toolbar_imagelist();
-};
-*/
 
 #endif

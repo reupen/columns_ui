@@ -451,6 +451,9 @@
     <ClCompile Include="config_host.cpp">
       <Filter>Prefs UI</Filter>
     </ClCompile>
+    <ClCompile Include="rebar_band.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -618,6 +621,9 @@
     </ClInclude>
     <ClInclude Include="config_columns_v2.h">
       <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include="rebar_band.h">
+      <Filter>Main Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
