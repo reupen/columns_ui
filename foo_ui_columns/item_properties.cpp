@@ -1022,7 +1022,7 @@ void track_property_callback_itemproperties::sort()
     for (i = 0; i < count; i++)
     {
         mmh::Permutation perm(m_values[i].get_count());
-        mmh::sort_get_permuation(m_values[i].get_ptr(), perm, track_property_t::g_compare, false);
+        mmh::sort_get_permutation(m_values[i].get_ptr(), perm, track_property_t::g_compare, false);
         m_values[i].reorder(perm.get_ptr());
     }
 }

@@ -431,7 +431,7 @@ namespace filter_panel {
             mmh::Permutation sort_permuation(node_count - 1);
             const auto * nodes = m_nodes.get_ptr();
             ++nodes;
-            mmh::sort_get_permuation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending, true);
+            mmh::sort_get_permutation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending, true);
 
             m_nodes.reorder_partial(1, sort_permuation.get_ptr(), node_count - 1);
 

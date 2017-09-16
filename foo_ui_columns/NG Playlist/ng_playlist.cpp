@@ -525,7 +525,7 @@ namespace pvt {
             }*/
 
             mmh::Permutation order(data.get_count());
-            sort_get_permuation(data.get_ptr(), order, g_compare_wchar, true, b_descending, true);
+            sort_get_permutation(data.get_ptr(), order, g_compare_wchar, true, b_descending, true);
 
             m_playlist_api->activeplaylist_undo_backup();
             if (b_selection_only)
