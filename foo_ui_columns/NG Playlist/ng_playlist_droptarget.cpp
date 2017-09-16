@@ -220,7 +220,7 @@ namespace pvt
                 {
                     dropped_data.to_handles(data, false, p_playlist->get_wnd());
                     pfc::list_t<bool> selection;
-                    mmh::Permuation permutation_move;
+                    mmh::Permutation permutation_move;
 
                     t_size active_playlist = playlist_api->get_active_playlist();
 

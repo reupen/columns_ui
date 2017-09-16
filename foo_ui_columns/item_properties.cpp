@@ -1021,7 +1021,7 @@ void track_property_callback_itemproperties::sort()
     t_size i, count = m_values.get_size();
     for (i = 0; i < count; i++)
     {
-        mmh::Permuation perm(m_values[i].get_count());
+        mmh::Permutation perm(m_values[i].get_count());
         mmh::sort_get_permuation(m_values[i].get_ptr(), perm, track_property_t::g_compare, false);
         m_values[i].reorder(perm.get_ptr());
     }

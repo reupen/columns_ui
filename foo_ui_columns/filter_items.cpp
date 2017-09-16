@@ -428,7 +428,7 @@ namespace filter_panel {
     {
         const auto node_count = m_nodes.get_count();
         if (node_count > 2) {
-            mmh::Permuation sort_permuation(node_count - 1);
+            mmh::Permutation sort_permuation(node_count - 1);
             const auto * nodes = m_nodes.get_ptr();
             ++nodes;
             mmh::sort_get_permuation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending, true);

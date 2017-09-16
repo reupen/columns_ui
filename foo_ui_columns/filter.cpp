@@ -347,7 +347,7 @@ namespace filter_panel {
                     windows.add_item(m_stream->m_windows[i]);
                 }
             }
-            mmh::Permuation permutation(windows.get_count());
+            mmh::Permutation permutation(windows.get_count());
             mmh::sort_get_permuation(indices.get_ptr(), permutation, (pfc::compare_t<t_size, t_size>), true, false);
             windows.reorder(permutation.get_ptr());
         }

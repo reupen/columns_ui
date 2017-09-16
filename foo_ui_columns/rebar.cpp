@@ -491,7 +491,7 @@ void rebar_window::save_bands()
     rbbi.fMask = RBBIM_SIZE | RBBIM_STYLE | RBBIM_LPARAM;
 
     const auto band_count = m_bands.size();
-    mmh::Permuation order(band_count);
+    mmh::Permutation order(band_count);
 
     UINT count = SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0);
 
