@@ -8,13 +8,14 @@
 #include <crtdbg.h>
 #endif
 
-#include <atomic>
-#include <vector>
 #include <algorithm>
-#include <memory>
+#include <atomic>
 #include <complex>
 #include <iostream>
+#include <memory>
+#include <string_view>
 #include <utility>
+#include <vector>
 
 #include <io.h>
 #include <ppl.h>
