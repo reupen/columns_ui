@@ -89,23 +89,24 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             HFONT fnt_old = SelectFont(dc, m_font);
 
             const char * placeholder = "999999999 items selected";
+						const auto default_text_colour = GetSysColor(COLOR_BTNTEXT);
             t_size placeholder_len = uih::get_text_width(dc, placeholder, strlen(placeholder)) + 20;
 
             pfc::string8 items_text; items_text<< m_item_count << " item";
             if (m_item_count != 1) items_text << "s";
             if (m_selection) items_text << " selected";
 
-            uih::text_out_colours_tab(dc, items_text, -1, 4, 2, &rc_top, false, GetSysColor(COLOR_BTNTEXT), false, false, false, uih::ALIGN_LEFT);
+            uih::text_out_colours_tab(dc, items_text, -1, 4, 2, &rc_top, false, default_text_colour, false, false, false, uih::ALIGN_LEFT);
             if (m_item_count) {
                 pfc::string_formatter formatter;
-                uih::text_out_colours_tab(dc, formatter << "Length: " << m_length_text, -1, 4, 2, &rc_bottom, false, GetSysColor(COLOR_BTNTEXT), false, false, false, uih::ALIGN_LEFT);
+                uih::text_out_colours_tab(dc, formatter << "Length: " << m_length_text, -1, 4, 2, &rc_bottom, false, default_text_colour, false, false, false, uih::ALIGN_LEFT);
             }
 
             if (m_menu_active)
             {
                 {
                     RECT rc_item = rc_top;
-                    uih::text_out_colours_tab(dc, m_menu_text, -1, 4 + placeholder_len, 0, &rc_item, false, GetSysColor(COLOR_BTNTEXT), false, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
+                    uih::text_out_colours_tab(dc, m_menu_text, -1, 4 + placeholder_len, 0, &rc_item, false, default_text_colour, false, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
                 }
             }
             else
@@ -118,7 +119,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
                     RECT rc_item = rc_top;
                     //rc_item.right = 4 + placeholder_len + placeholder2_len;
                     pfc::string_formatter formatter;
-                    uih::text_out_colours_tab(dc, formatter << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, GetSysColor(COLOR_BTNTEXT), false, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
+                    uih::text_out_colours_tab(dc, formatter << m_track_label << "  ", -1, 4 + placeholder_len, 0, &rc_item, false, default_text_colour, false, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
                 }
                 if (playing1.get_length())
                 {
@@ -126,9 +127,9 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
                     g_split_string_by_crlf(playing1.get_ptr(), playingstrings);
                     t_size lines = playingstrings.get_count();
                     if (lines)
-                        uih::text_out_colours_tab(dc, playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_top, false, GetSysColor(COLOR_BTNTEXT), true, true, false, uih::ALIGN_LEFT);
+                        uih::text_out_colours_tab(dc, playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_top, false, default_text_colour, true, true, false, uih::ALIGN_LEFT);
                     if (lines > 1)
-                        uih::text_out_colours_tab(dc, playingstrings[1], pfc_infinite, now_playing_x_end, 0, &rc_bottom, false, GetSysColor(COLOR_BTNTEXT), true, true, false, uih::ALIGN_LEFT);
+                        uih::text_out_colours_tab(dc, playingstrings[1], pfc_infinite, now_playing_x_end, 0, &rc_bottom, false, default_text_colour, true, true, false, uih::ALIGN_LEFT);
                 }
             }
 
