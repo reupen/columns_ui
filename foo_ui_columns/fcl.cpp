@@ -461,100 +461,107 @@ void g_import_layout(HWND wnd)
         }
     };
 
-void g_export_layout(HWND wnd)
+void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
 {
-    pfc::string8 path;
     FCLDialog pFCLDialog;
-    if (uDialogBox (IDD_FCL_EXPORT, wnd, FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog))
-        && uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", nullptr, path, TRUE))
-    {
-        t_export_feedback_impl feedback;
-        pfc::list_t<GUID> groups;
-        {
-            t_size i, count = pFCLDialog.m_nodes.get_count();
-            for (i=0; i<count; i++)
-                if (pFCLDialog.m_nodes[i].checked)
-                    groups.add_item(pFCLDialog.m_nodes[i].group->get_guid());
-        }
-        try
-        {
-            service_ptr_t<file> p_file;
-            abort_callback_impl p_abort;
-            filesystem::g_open_write_new(p_file, path, p_abort);
-            p_file->write_lendian_t(g_fcl_header, p_abort);
-            p_file->write_lendian_t((t_uint32)fcl_stream_version, p_abort);
-            p_file->write_lendian_t((t_uint32)pFCLDialog.get_mode(), p_abort);
+    if (!is_quiet && !uDialogBox(IDD_FCL_EXPORT, wnd, FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog)))
+        return;
+    
+    if (path.is_empty() && !uGetOpenFileName(wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", nullptr, path, TRUE))
+        return;
 
-            stream_writer_memblock mem;
-            t_size actualtotal=0;
-            {
-                cui::fcl::dataset_list export_items;
-                t_size i, count = export_items.get_count();
-                pfc::array_t< t_export_feedback_impl > feeds;
-                feeds.set_count(count);
-                for (i=0; i<count; i++)
-                {
-                    if (groups.have_item(export_items[i]->get_group()))
-                    {
-                        pfc::string8 name;
-                        export_items[i]->get_name(name);
-                        mem.write_lendian_t(export_items[i]->get_guid(), p_abort);
-                        mem.write_string(name, p_abort);
-                        stream_writer_memblock writer;
-                        export_items[i]->get_data(&writer, pFCLDialog.get_mode(), feeds[i], p_abort);
-                        t_size j, pcount = feeds[i].get_count();
-                        mem.write_lendian_t(pcount, p_abort);
-                        for (j=0; j<pcount; j++)
-                        {
-                            t_uint32 temp = feedback.find_or_add_guid(feeds[i][j]);
-                            mem.write_lendian_t(temp, p_abort);
-                        }                        
-                        mem.write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
-                        mem.write(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
-                        actualtotal++;
-                    }
-                }
-            }
+    if (path.is_empty())
+        throw pfc::exception_bug_check();
 
-            {
-                t_size j, pcount = feedback.get_count();
-                p_file->write_lendian_t(pcount, p_abort);
-                for (j=0; j<pcount; j++)
-                {
-                    uie::window_ptr ptr;
-                    pfc::string8 name;
-                    if (uie::window::create_by_guid(feedback[j], ptr))
-                        ptr->get_name(name);
-                    p_file->write_lendian_t(feedback[j], p_abort);
-                    p_file->write_string(name, p_abort);
-                }
-                /*pfc::list_t<uie::window_ptr> windows;
-                uie::window_ptr ptr;
-                service_enum_t<uie::window> window_enum;
-                while (window_enum.next(ptr))
-                {
-                    windows.add_item(ptr);
-                }
-                t_size i, count = windows.get_count();
-                p_file->write_lendian_t(count, p_abort);
-                for (i=0; i<count; i++)
-                {
-                    pfc::string8 temp;
-                    p_file->write_lendian_t(windows[i]->get_extension_guid(), p_abort);
-                    windows[i]->get_name(temp);
-                    p_file->write_string(temp, p_abort);
-                }*/
-            }
-
-            p_file->write_lendian_t(actualtotal, p_abort);
-            p_file->write(mem.m_data.get_ptr(), mem.m_data.get_size(), p_abort);
-        }
-        catch (const pfc::exception & ex)
-        {
-            abort_callback_impl p_abort;
-            try {if (filesystem::g_exists(path, p_abort)) filesystem::g_remove(path, p_abort);} catch (const pfc::exception &) {};
-            popup_message::g_show(ex.what(), "Error");
-        };
+    t_export_feedback_impl feedback;
+    pfc::list_t<GUID> groups;
+    
+    if (!is_quiet) {
+        const t_size count = pFCLDialog.m_nodes.get_count();
+        for (t_size i = 0; i < count; i++)
+            if (pFCLDialog.m_nodes[i].checked)
+                groups.add_item(pFCLDialog.m_nodes[i].group->get_guid());
     }
+
+    try {
+        service_ptr_t<file> p_file;
+        abort_callback_impl p_abort;
+        filesystem::g_open_write_new(p_file, path, p_abort);
+        p_file->write_lendian_t(g_fcl_header, p_abort);
+        p_file->write_lendian_t((t_uint32)fcl_stream_version, p_abort);
+
+        const uint32_t mode = is_quiet ? cui::fcl::type_private : pFCLDialog.get_mode();
+        p_file->write_lendian_t(mode, p_abort);
+
+        stream_writer_memblock mem;
+        t_size actualtotal=0;
+        {
+            cui::fcl::dataset_list export_items;
+            t_size i, count = export_items.get_count();
+            pfc::array_t< t_export_feedback_impl > feeds;
+            feeds.set_count(count);
+            for (i=0; i<count; i++)
+            {
+                if (is_quiet || groups.have_item(export_items[i]->get_group()))
+                {
+                    pfc::string8 name;
+                    export_items[i]->get_name(name);
+                    mem.write_lendian_t(export_items[i]->get_guid(), p_abort);
+                    mem.write_string(name, p_abort);
+                    stream_writer_memblock writer;
+                    export_items[i]->get_data(&writer, mode, feeds[i], p_abort);
+                    t_size j, pcount = feeds[i].get_count();
+                    mem.write_lendian_t(pcount, p_abort);
+                    for (j=0; j<pcount; j++)
+                    {
+                        t_uint32 temp = feedback.find_or_add_guid(feeds[i][j]);
+                        mem.write_lendian_t(temp, p_abort);
+                    }                        
+                    mem.write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
+                    mem.write(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
+                    actualtotal++;
+                }
+            }
+        }
+
+        {
+            t_size j, pcount = feedback.get_count();
+            p_file->write_lendian_t(pcount, p_abort);
+            for (j=0; j<pcount; j++)
+            {
+                uie::window_ptr ptr;
+                pfc::string8 name;
+                if (uie::window::create_by_guid(feedback[j], ptr))
+                    ptr->get_name(name);
+                p_file->write_lendian_t(feedback[j], p_abort);
+                p_file->write_string(name, p_abort);
+            }
+            /*pfc::list_t<uie::window_ptr> windows;
+            uie::window_ptr ptr;
+            service_enum_t<uie::window> window_enum;
+            while (window_enum.next(ptr))
+            {
+                windows.add_item(ptr);
+            }
+            t_size i, count = windows.get_count();
+            p_file->write_lendian_t(count, p_abort);
+            for (i=0; i<count; i++)
+            {
+                pfc::string8 temp;
+                p_file->write_lendian_t(windows[i]->get_extension_guid(), p_abort);
+                windows[i]->get_name(temp);
+                p_file->write_string(temp, p_abort);
+            }*/
+        }
+
+        p_file->write_lendian_t(actualtotal, p_abort);
+        p_file->write(mem.m_data.get_ptr(), mem.m_data.get_size(), p_abort);
+    }
+    catch (const pfc::exception & ex)
+    {
+        abort_callback_impl p_abort;
+        try {if (filesystem::g_exists(path, p_abort)) filesystem::g_remove(path, p_abort);} catch (const pfc::exception &) {};
+        popup_message::g_show(ex.what(), "Error");
+    };
 }
 
