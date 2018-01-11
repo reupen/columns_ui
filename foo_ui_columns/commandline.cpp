@@ -7,7 +7,7 @@ static const char* g_help_text = u8"syntax: foobar2000 /columnsui:<command> \"<p
     "import – imports an fcl file\n"
     "import-quiet – imports an fcl file without confirmation dialog boxes";
 
-class commandline_handler_help : public commandline_handler {
+class HelpCommandLineHandler : public commandline_handler {
 public:
     result on_token(const char * token) override
     {
@@ -58,7 +58,6 @@ public:
                 m_error_title,
                 m_too_many_files_error,
                 OIC_ERROR);
-            m_files.remove_all();
             return false;
         }
         return true;
@@ -74,12 +73,12 @@ private:
     const char* m_too_many_files_error;
 };
 
-class commandline_handler_columns : public commandline_handler {
+class ImportCommandLineHandler : public commandline_handler {
 public:
     bool m_is_quiet = false;
     CommandLineSingleFileHelper m_single_file_helper;
 
-    commandline_handler_columns()
+    ImportCommandLineHandler()
         : m_single_file_helper{
             u8"Import configuration – Columns UI",
             u8"No file to import specified.",
@@ -115,18 +114,7 @@ public:
     static void execute_import(const char* path, bool is_quiet)
     {
         const auto main_window = core_api::get_main_window();
-
         pfc::string_formatter formatter;
-        if (stricmp_utf8("fcl", pfc::string_extension(path))) {
-            static_api_ptr_t<ui_control>()->activate();
-            fbh::show_info_box(main_window, 
-                u8"Import configuration",
-                formatter
-                << pfc::string_filename_ext(path)
-                << u8" is not an FCL file. An FCL file should have the .fcl extension.", 
-                OIC_ERROR);
-            return;
-        }
 
         if (!is_quiet) {
             static_api_ptr_t<ui_control>()->activate();
@@ -144,12 +132,12 @@ public:
     }
 };
 
-class commandline_handler_export : public commandline_handler {
+class ExportCommandLineHandler : public commandline_handler {
 public:
     bool m_is_quiet = false;
     CommandLineSingleFileHelper m_single_file_helper;
 
-    commandline_handler_export()
+    ExportCommandLineHandler()
         : m_single_file_helper{
         u8"Export configuration – Columns UI",
         u8"No file to export to specified.",
@@ -191,6 +179,6 @@ public:
     }
 };
 
-static commandline_handler_factory_t<commandline_handler_help> help_cli_handler;
-static commandline_handler_factory_t<commandline_handler_columns> import_cli_handler;
-static commandline_handler_factory_t<commandline_handler_export> export_cli_handler;
+static commandline_handler_factory_t<HelpCommandLineHandler> help_cli_handler;
+static commandline_handler_factory_t<ImportCommandLineHandler> import_cli_handler;
+static commandline_handler_factory_t<ExportCommandLineHandler> export_cli_handler;
