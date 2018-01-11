@@ -89,7 +89,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             HFONT fnt_old = SelectFont(dc, m_font);
 
             const char * placeholder = "999999999 items selected";
-						const auto default_text_colour = GetSysColor(COLOR_BTNTEXT);
+            const auto default_text_colour = GetSysColor(COLOR_BTNTEXT);
             t_size placeholder_len = uih::get_text_width(dc, placeholder, strlen(placeholder)) + 20;
 
             pfc::string8 items_text; items_text<< m_item_count << " item";
