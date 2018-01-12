@@ -10,8 +10,7 @@
  * Contains functions for importing and exporting FCL (Columns UI layout) files
  */
 
-void g_export_layout(HWND wnd);
-//void g_export_layout(HWND wnd, const char * path);
+void g_export_layout(HWND wnd, pfc::string8 path = {}, bool is_quiet = false);
 void g_import_layout(HWND wnd);
 void g_import_layout(HWND wnd, const char * path, bool quiet=false);
 

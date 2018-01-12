@@ -18,6 +18,10 @@
 
 * Removed the ability to import FCS files.
 
+* Changed the syntax of CLI commands for importing configurations from FCL files. The commands now use the following syntax: `/columnsui:import <path>` and `/columnsui:import-quiet <path>`
+
+* Added CLI commands for exporting the current configuration to an FCL file. The added commands are `/columnsui:export <path>` and `/columnsui:export-quiet <path>`
+
 * Miscellaneous internal code refactoring.
 
 * Some minor changes to labels and layout in preferences and other configuration dialogs.
