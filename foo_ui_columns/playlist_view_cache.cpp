@@ -42,7 +42,7 @@ public:
 };
 #endif
 
-void playlist_view_cache::on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection)
+void playlist_view_cache::on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection)
 {
     flush(p_playlist);
     flush_sort(p_playlist);
@@ -64,11 +64,11 @@ void playlist_view_cache::on_items_reordered(unsigned p_playlist,const unsigned 
         {
             n++;
         }
-        if (n>start) on_items_change(p_playlist, bit_array_range(start, n));
+        if (n>start) on_items_change(p_playlist, pfc::bit_array_range(start, n));
     }
 }
 
-void playlist_view_cache::on_items_removed(unsigned p_playlist,const bit_array & mask)
+void playlist_view_cache::on_items_removed(unsigned p_playlist,const pfc::bit_array & mask)
 {
     flush(p_playlist);
     flush_sort(p_playlist);
@@ -76,7 +76,7 @@ void playlist_view_cache::on_items_removed(unsigned p_playlist,const bit_array &
 //    p_cache->remove_mask(mask);
 }
 
-void playlist_view_cache::on_items_change(unsigned p_playlist, const bit_array & p_mask)
+void playlist_view_cache::on_items_change(unsigned p_playlist, const pfc::bit_array & p_mask)
 {
     playlist_cache * p_cache = get_item(p_playlist);
     unsigned n, count = p_cache->get_count();
@@ -94,13 +94,13 @@ void playlist_view_cache::on_items_change(unsigned p_playlist, const bit_array &
     }
 }
 
-void playlist_view_cache::on_items_modified(unsigned p_playlist, const bit_array & p_mask)
+void playlist_view_cache::on_items_modified(unsigned p_playlist, const pfc::bit_array & p_mask)
 {
     flush_sort(p_playlist);
     on_items_change(p_playlist, p_mask);
 }
 
-void playlist_view_cache::on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level)
+void playlist_view_cache::on_items_modified_fromplayback(unsigned p_playlist,const pfc::bit_array & p_mask,play_control::t_display_level p_level)
 {
     on_items_change(p_playlist, p_mask);
 }
@@ -261,7 +261,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
     if (idx >= 0 && idx < p_cache->get_count())
     {
         column_list_cref_t columns = playlist_view::g_get_columns();
-        const bit_array & p_mask = get_columns_mask(playlist);
+        const pfc::bit_array & p_mask = get_columns_mask(playlist);
 
         playlist_entry_ui * entry = p_cache->get_item(idx);
 
@@ -404,7 +404,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
     return rv;
 }
 
-const bit_array & playlist_view_cache::get_columns_mask(unsigned playlist)
+const pfc::bit_array & playlist_view_cache::get_columns_mask(unsigned playlist)
 {
     playlist_cache * p_cache = get_item(playlist);
     if (!p_cache->m_active_columns_valid)
@@ -416,7 +416,7 @@ const bit_array & playlist_view_cache::get_columns_mask(unsigned playlist)
 
 unsigned playlist_view_cache::column_active_to_actual(unsigned playlist, unsigned column)
 {
-    const bit_array & p_array = get_columns_mask(playlist);
+    const pfc::bit_array & p_array = get_columns_mask(playlist);
     unsigned n, rv=0, count = playlist_view::g_get_columns().get_count();
     for (n=0; n<count;n++)
     {
@@ -430,7 +430,7 @@ unsigned playlist_view_cache::column_active_to_actual(unsigned playlist, unsigne
 
 unsigned playlist_view_cache::column_get_active_count(unsigned playlist)
 {
-    const bit_array & p_array = get_columns_mask(playlist);
+    const pfc::bit_array & p_array = get_columns_mask(playlist);
     unsigned n, rv=0, count = playlist_view::g_get_columns().get_count();
     for (n=0; n<count;n++)
     {
@@ -496,7 +496,7 @@ void playlist_view::g_reset_columns()
 
 unsigned int playlist_view::g_columns_get_total_width()
 {    
-    const bit_array & p_mask = g_cache.active_get_columns_mask();
+    const pfc::bit_array & p_mask = g_cache.active_get_columns_mask();
     unsigned w=0,n,t = columns.get_count();
     for (n=0;n<t;n++) if (p_mask[n]) w += columns[n]->width;
     return w;
@@ -504,7 +504,7 @@ unsigned int playlist_view::g_columns_get_total_width()
 
 unsigned int playlist_view::g_columns_get_total_parts()
 {    
-    const bit_array & p_mask = g_cache.active_get_columns_mask();
+    const pfc::bit_array & p_mask = g_cache.active_get_columns_mask();
     unsigned w=0,n,t = columns.get_count();
     for (n=0;n<t;n++) if (p_mask[n]) w += columns[n]->parts;
     return w;
@@ -679,7 +679,7 @@ void playlist_view::g_set_sort( unsigned column, bool descending, bool selection
         bool extra = (cfg_global_sort != 0);
         bool b_legacy = cfg_oldglobal != 0;
 
-        bit_array_bittable mask(count);
+        pfc::bit_array_bittable mask(count);
         if (selection_only) playlist_api->activeplaylist_get_selection_mask(mask);
 
         service_ptr_t<titleformat_object> to_sort;

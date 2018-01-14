@@ -21,6 +21,9 @@
 #include <ppl.h>
 #include <share.h>
 
+// Included before windows.h, because pfc.h includes winsock2.h
+#include "../pfc/pfc.h"
+
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>

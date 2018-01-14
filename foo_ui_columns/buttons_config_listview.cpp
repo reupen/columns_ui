@@ -26,7 +26,7 @@ void toolbar_extension::config_param::t_button_list_view::notify_on_destroy()
 {
     RevokeDragDrop(get_wnd());
 }
-void toolbar_extension::config_param::t_button_list_view::notify_on_selection_change(const bit_array & p_affected, const bit_array & p_status, notification_source_t p_notification_source)
+void toolbar_extension::config_param::t_button_list_view::notify_on_selection_change(const pfc::bit_array & p_affected, const pfc::bit_array & p_status, notification_source_t p_notification_source)
 {
     t_size index = get_selected_item_single();
     m_param.on_selection_change(index);

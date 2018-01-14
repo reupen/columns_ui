@@ -222,7 +222,7 @@ public:
 private:
     bool is_valid(unsigned idx);
 
-    bit_array_bittable m_active_columns;
+    pfc::bit_array_bittable m_active_columns;
     bool m_active_columns_valid;
 
     bool m_sorted;
@@ -235,13 +235,13 @@ private:
 class playlist_view_cache : private ptr_list_autodel_t<playlist_cache>
 {
 public:
-    void on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection);
+    void on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection);
     void on_items_reordered(unsigned p_playlist,const unsigned * order,unsigned count);
-    void on_items_removed(unsigned p_playlist,const bit_array & mask);
-    void on_items_modified(unsigned p_playlist,const bit_array & p_mask);
-    void on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level);
-    void on_items_change(unsigned p_playlist,const bit_array & p_mask);
-    inline void on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data)
+    void on_items_removed(unsigned p_playlist,const pfc::bit_array & mask);
+    void on_items_modified(unsigned p_playlist,const pfc::bit_array & p_mask);
+    void on_items_modified_fromplayback(unsigned p_playlist,const pfc::bit_array & p_mask,play_control::t_display_level p_level);
+    void on_items_change(unsigned p_playlist,const pfc::bit_array & p_mask);
+    inline void on_items_replaced(unsigned p_playlist,const pfc::bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data)
     {
         on_items_modified(p_playlist, p_mask);
     }
@@ -283,8 +283,8 @@ public:
         }
         reorder(p_order);
     }
-    void on_playlists_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count);
-    void on_playlists_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
+    void on_playlists_removing(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count);
+    void on_playlists_removed(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count)
     {
 #if 0
         unsigned n, first=0;
@@ -352,11 +352,11 @@ public:
         return 0;
     }
 
-    const bit_array & get_columns_mask(unsigned playlist);
+    const pfc::bit_array & get_columns_mask(unsigned playlist);
 
-    inline const bit_array & active_get_columns_mask()
+    inline const pfc::bit_array & active_get_columns_mask()
     {
-        static bit_array_false bt_false;
+        static pfc::bit_array_false bt_false;
         if (is_active_playlist_valid())
             return get_columns_mask(active_playlist);
         return bt_false;
@@ -486,21 +486,21 @@ public:
         m_entries.remove_all();
     }
 private:
-    void FB2KAPI on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override {};
+    void FB2KAPI on_items_added(unsigned p_playlist,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection) override {};
 
     void FB2KAPI on_items_reordered(unsigned p_playlist,const unsigned * order,unsigned count) override {};
 
-    void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override {};//called before actually removing them
-    void FB2KAPI on_items_removed(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override {};
+    void FB2KAPI on_items_removing(unsigned p_playlist,const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override {};//called before actually removing them
+    void FB2KAPI on_items_removed(unsigned p_playlist,const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override {};
 
-    void FB2KAPI on_items_selection_change(unsigned p_playlist,const bit_array & affected,const bit_array & state) override {};
+    void FB2KAPI on_items_selection_change(unsigned p_playlist,const pfc::bit_array & affected,const pfc::bit_array & state) override {};
 
     void FB2KAPI on_item_focus_change(unsigned p_playlist,unsigned from,unsigned to) override {};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-    void FB2KAPI on_items_modified(unsigned p_playlist,const bit_array & p_mask) override {};
+    void FB2KAPI on_items_modified(unsigned p_playlist,const pfc::bit_array & p_mask) override {};
 
-    void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) override {};
+    void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const pfc::bit_array & p_mask,play_control::t_display_level p_level) override {};
 
-    void FB2KAPI on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override {};
+    void FB2KAPI on_items_replaced(unsigned p_playlist,const pfc::bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override {};
 
     void FB2KAPI on_item_ensure_visible(unsigned p_playlist,unsigned idx) override {};
 
@@ -517,9 +517,9 @@ private:
             m_entries.reorder(p_order);
     };
 
-    void on_playlists_removing(const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override {};
+    void on_playlists_removing(const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override {};
 
-    void on_playlists_removed(const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override
+    void on_playlists_removed(const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
         m_entries.remove_mask(p_mask);
     }

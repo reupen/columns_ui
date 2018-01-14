@@ -160,7 +160,7 @@ void toolbar_extension::create_toolbar()
 
         SIZE sz = {0,0};
 
-        bit_array_bittable mask(count);
+        pfc::bit_array_bittable mask(count);
 
         for (n=0; n<count; n++)
         {

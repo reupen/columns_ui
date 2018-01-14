@@ -414,7 +414,7 @@ namespace artwork_panel
             }
         }
     }
-    void artwork_panel_t::on_items_selection_change(const bit_array & p_affected, const bit_array & p_state)
+    void artwork_panel_t::on_items_selection_change(const pfc::bit_array & p_affected, const pfc::bit_array & p_state)
     {
         if (g_track_mode_includes_plalist(m_track_mode) && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing()))
         {

@@ -159,7 +159,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
         {
             if (m_field_list.get_selection_count(2) == 1)
             {
-                bit_array_bittable mask(m_field_list.get_item_count());
+                pfc::bit_array_bittable mask(m_field_list.get_item_count());
                 m_field_list.get_selection_state(mask);
                 //bool b_found = false;
                 t_size index = 0, count = m_field_list.get_item_count();

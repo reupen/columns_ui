@@ -56,7 +56,7 @@ public:
         return false;
     }
 
-    void get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported) override;
+    void get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, pfc::bit_array_var & p_mask_unsupported) override;
     unsigned get_panel_count()const override;
     uie::splitter_item_t * get_panel(unsigned index)const override;
 

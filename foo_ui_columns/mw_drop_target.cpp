@@ -68,7 +68,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(IDataObject *pDataObj, DW
 
         playlist_api->activeplaylist_undo_backup();
         playlist_api->activeplaylist_clear_selection();
-        playlist_api->activeplaylist_insert_items(idx, data, bit_array_true());
+        playlist_api->activeplaylist_insert_items(idx, data, pfc::bit_array_true());
 
         data.remove_all();
     }

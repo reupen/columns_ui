@@ -28,7 +28,7 @@ ui_extension::window_host_factory<playlists_tabs_extension::window_host_impl> g_
 HFONT playlists_tabs_extension::g_font
  = nullptr;
 
-void playlists_tabs_extension::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported)
+void playlists_tabs_extension::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, pfc::bit_array_var & p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_tab_host.instance_create(temp);
@@ -782,7 +782,7 @@ void playlists_tabs_extension::on_default_format_changed()
 
 }
 
-void playlists_tabs_extension::on_playlists_removing(const bit_array &, unsigned int, unsigned int)
+void playlists_tabs_extension::on_playlists_removing(const pfc::bit_array &, unsigned int, unsigned int)
 {
 
 }
@@ -792,17 +792,17 @@ void playlists_tabs_extension::on_item_ensure_visible(unsigned int, unsigned int
 
 }
 
-void playlists_tabs_extension::on_items_replaced(unsigned int, const bit_array &, const pfc::list_base_const_t<t_on_items_replaced_entry> &)
+void playlists_tabs_extension::on_items_replaced(unsigned int, const pfc::bit_array &, const pfc::list_base_const_t<t_on_items_replaced_entry> &)
 {
 
 }
 
-void playlists_tabs_extension::on_items_modified_fromplayback(unsigned int, const bit_array &, play_control::t_display_level)
+void playlists_tabs_extension::on_items_modified_fromplayback(unsigned int, const pfc::bit_array &, play_control::t_display_level)
 {
 
 }
 
-void playlists_tabs_extension::on_items_modified(unsigned int, const bit_array &)
+void playlists_tabs_extension::on_items_modified(unsigned int, const pfc::bit_array &)
 {
 
 }
@@ -812,7 +812,7 @@ void playlists_tabs_extension::on_item_focus_change(unsigned int, unsigned int, 
 
 }
 
-void playlists_tabs_extension::on_items_selection_change(unsigned int, const bit_array &, const bit_array &)
+void playlists_tabs_extension::on_items_selection_change(unsigned int, const pfc::bit_array &, const pfc::bit_array &)
 {
 
 }
@@ -822,7 +822,7 @@ void playlists_tabs_extension::on_items_reordered(unsigned int, const unsigned i
 
 }
 
-void playlists_tabs_extension::on_items_added(unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr> &, const bit_array &)
+void playlists_tabs_extension::on_items_added(unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr> &, const pfc::bit_array &)
 {
 
 }
@@ -836,7 +836,7 @@ void playlists_tabs_extension::on_playlist_renamed(unsigned p_index, const char 
     }
 }
 
-void playlists_tabs_extension::on_playlists_removed(const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count)
+void playlists_tabs_extension::on_playlists_removed(const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count)
 {
     bool need_move = false;
 
@@ -899,12 +899,12 @@ void playlists_tabs_extension::on_playlist_activate(unsigned p_old, unsigned p_n
     }
 }
 
-void FB2KAPI playlists_tabs_extension::on_items_removed(unsigned p_playlist, const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count)
+void FB2KAPI playlists_tabs_extension::on_items_removed(unsigned p_playlist, const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count)
 {
 
 }
 
-void FB2KAPI playlists_tabs_extension::on_items_removing(unsigned p_playlist, const bit_array & p_mask, unsigned p_old_count, unsigned p_new_count)
+void FB2KAPI playlists_tabs_extension::on_items_removing(unsigned p_playlist, const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count)
 {
 
 }

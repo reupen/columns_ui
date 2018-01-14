@@ -431,7 +431,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
                                     playlist_api->playlist_clear_selection(m_insertIndexTracker.m_playlist);
                                 }
 
-                                playlist_api->playlist_add_items(m_insertIndexTracker.m_playlist, p_items, bit_array_true());
+                                playlist_api->playlist_add_items(m_insertIndexTracker.m_playlist, p_items, pfc::bit_array_true());
 
                                 if (main_window::config_get_activate_target_playlist_on_dropped_items())
                                     playlist_api->set_active_playlist(m_insertIndexTracker.m_playlist);

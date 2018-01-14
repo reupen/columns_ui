@@ -133,7 +133,7 @@ namespace playlist_manager_utils
         catch (const exception_service_not_found &) {};
         return false;
     }
-    bool cut(const bit_array & mask)    
+    bool cut(const pfc::bit_array & mask)    
     {
         try 
         {
@@ -160,7 +160,7 @@ namespace playlist_manager_utils
     {
         static_api_ptr_t<playlist_manager> m_playlist_api;
         t_size i, count = indices.get_count(), playlist_count=m_playlist_api->get_playlist_count();
-        bit_array_bittable mask(playlist_count);
+        pfc::bit_array_bittable mask(playlist_count);
         for (i=0; i<count; i++)
         {
             if (indices[i]<playlist_count)
@@ -168,7 +168,7 @@ namespace playlist_manager_utils
         }
         return cut(mask);
     };
-    bool copy(const bit_array & mask)    
+    bool copy(const pfc::bit_array & mask)    
     {
         try 
         {
@@ -192,7 +192,7 @@ namespace playlist_manager_utils
     {
         static_api_ptr_t<playlist_manager> m_playlist_api;
         t_size i, count = indices.get_count(), playlist_count=m_playlist_api->get_playlist_count();
-        bit_array_bittable mask(playlist_count);
+        pfc::bit_array_bittable mask(playlist_count);
         for (i=0; i<count; i++)
         {
             if (indices[i]<playlist_count)
@@ -227,7 +227,7 @@ namespace playlist_manager_utils
                             data.get_entry_name(i, name);
                             data.get_entry_content(i, handles);
                             index_insert = m_playlist_api->create_playlist(name, pfc_infinite, index_insert);
-                            m_playlist_api->playlist_insert_items(index_insert, 0, handles, bit_array_false());
+                            m_playlist_api->playlist_insert_items(index_insert, 0, handles, pfc::bit_array_false());
                             index_insert++;
                         }
                     }

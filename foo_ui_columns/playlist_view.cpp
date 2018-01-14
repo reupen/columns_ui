@@ -253,7 +253,7 @@ void playlist_view::get_playlist_rect(RECT * out)
 
 unsigned playlist_view::get_column_widths(pfc::array_t<int, pfc::alloc_fast_aggressive> & out) const
 {
-    const bit_array & p_mask = g_cache.active_get_columns_mask();
+    const pfc::bit_array & p_mask = g_cache.active_get_columns_mask();
     unsigned n,t = columns.get_count(),nw=0,i;
 
     unsigned ac = 0;
@@ -381,7 +381,7 @@ class playlist_callback_playlist : public playlist_callback_static
 {
 public:
 
-    void on_items_added(unsigned p_index,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
+    void on_items_added(unsigned p_index,unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection) override//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
     {
         //        console::info(pfc::string_printf("on_items_added: %i %i",p_index,start));
         if (playlist_view::g_get_cache().is_active())
@@ -441,8 +441,8 @@ public:
         }
     }
     //changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
-    void FB2KAPI on_items_removing(unsigned p_playlist,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};//called before actually removing them
-    void FB2KAPI on_items_removed(unsigned p_index,const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
+    void FB2KAPI on_items_removing(unsigned p_playlist,const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};//called before actually removing them
+    void FB2KAPI on_items_removed(unsigned p_index,const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
     {
         //        console::info(pfc::string_printf("on_items_removed: %i",p_index));
         if (playlist_view::g_get_cache().is_active())
@@ -468,7 +468,7 @@ public:
         }
     }
 
-    void on_items_selection_change(unsigned p_index,const bit_array & affected,const bit_array & state) override
+    void on_items_selection_change(unsigned p_index,const pfc::bit_array & affected,const pfc::bit_array & state) override
     {
         //        console::info(pfc::string_printf("on_items_selection_change: %i",p_index));
         //        if (playlist_view::g_get_cache().is_active())
@@ -522,17 +522,17 @@ public:
         }
     }
 
-    void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) override
+    void FB2KAPI on_items_modified_fromplayback(unsigned p_playlist,const pfc::bit_array & p_mask,play_control::t_display_level p_level) override
     {
         on_items_modified(p_playlist, p_mask, true, p_level);
     }
 
-    void on_items_modified(unsigned p_index,const bit_array & p_mask) override
+    void on_items_modified(unsigned p_index,const pfc::bit_array & p_mask) override
     {
         on_items_modified(p_index, p_mask, false);
     }
 
-    void on_items_modified(unsigned p_index,const bit_array & p_mask, bool b_playback, playback_control::t_display_level p_level = playback_control::display_level_none)
+    void on_items_modified(unsigned p_index,const pfc::bit_array & p_mask, bool b_playback, playback_control::t_display_level p_level = playback_control::display_level_none)
     {
         //        console::info(pfc::string_printf("on_items_modified: %i",p_index));
         if (playlist_view::g_get_cache().is_active())
@@ -573,7 +573,7 @@ public:
         }
     }
 
-    void on_items_replaced(unsigned p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override
+    void on_items_replaced(unsigned p_playlist,const pfc::bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override
     {
         //        console::info(pfc::string_printf("on_items_replaced: %i",p_playlist));
         on_items_modified(p_playlist, p_mask);
@@ -624,11 +624,11 @@ public:
             playlist_view::g_get_cache().on_playlists_reorder(p_order, p_count);
         }
     };
-    void on_playlists_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
+    void on_playlists_removing(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
     {
         //        console::info(pfc::string_printf("on_playlist_removing"));
     };
-    void on_playlists_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
+    void on_playlists_removed(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override
     {
         //        console::info(pfc::string_printf("on_playlist_removed:"));
         if (playlist_view::g_get_cache().is_active())

@@ -427,7 +427,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
                                 autoplaylist->show_ui(position_tracker.m_playlist);
                             break;
                         case ID_RECYCLER_CLEAR:
-                            playlist_api->recycler_purge(bit_array_true());
+                            playlist_api->recycler_purge(pfc::bit_array_true());
                             break;
                         case ID_CUT:
                             if (b_index_valid) playlist_manager_utils::cut(pfc::list_single_ref_t<t_size>(idx));
@@ -469,7 +469,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
                         case ID_NEW:
                         {
                             metadb_handle_list data;
-                            playlist_api->playlist_add_items(playlist_api->create_playlist(pfc::string8("Untitled"), -1, playlist_api->get_playlist_count()), data, bit_array_false());
+                            playlist_api->playlist_add_items(playlist_api->create_playlist(pfc::string8("Untitled"), -1, playlist_api->get_playlist_count()), data, pfc::bit_array_false());
                         }
                         break;
                         case ID_SAVE:

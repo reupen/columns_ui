@@ -161,7 +161,7 @@
                         autoplaylist->show_ui(index);
                     break;
                 case ID_RECYCLER_CLEAR:
-                    m_playlist_api->recycler_purge(bit_array_true());
+                    m_playlist_api->recycler_purge(pfc::bit_array_true());
                     break;
                 case ID_CUT:
                     if (b_index_valid) playlist_manager_utils::cut(pfc::list_single_ref_t<t_size>(index));
@@ -235,7 +235,7 @@
             set_item_selected_single(index_active, false);
         }
         else
-            set_selection_state(bit_array_true(), bit_array_false(), false);*/
+            set_selection_state(pfc::bit_array_true(), pfc::bit_array_false(), false);*/
 
         return true;
     }

@@ -188,7 +188,7 @@ public:
         //uSetWindowText(wnd_edit, artwork_panel::cfg_icon);
 #endif
 
-        m_source_list.remove_items(bit_array_true());
+        m_source_list.remove_items(pfc::bit_array_true());
 
 
         t_size index, indexcount = tabsize(g_artwork_sources);
@@ -332,7 +332,7 @@ public:
                 {
                     if (m_source_list.get_selection_count(2) == 1)
                     {
-                        bit_array_bittable mask(m_source_list.get_item_count());
+                        pfc::bit_array_bittable mask(m_source_list.get_item_count());
                         m_source_list.get_selection_state(mask);
                         //bool b_found = false;
                         t_size combined_index=0, count=m_source_list.get_item_count();

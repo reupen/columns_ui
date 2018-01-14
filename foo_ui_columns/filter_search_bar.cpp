@@ -40,7 +40,7 @@ namespace filter_panel {
                 fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
             }
         }
-        playlist_api->playlist_add_items(index, handles, bit_array_false());
+        playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
 
         playlist_api->set_active_playlist(index);
         if (b_play)
@@ -212,7 +212,7 @@ namespace filter_panel {
                     pfc::array_t<bool> data;
                     data.set_size(m_active_handles.get_count());
                     api->test_multi(m_active_handles, data.get_ptr());
-                    m_active_handles.remove_mask(bit_array_not(bit_array_table(data.get_ptr(), data.get_count())));
+                    m_active_handles.remove_mask(pfc::bit_array_not(pfc::bit_array_table(data.get_ptr(), data.get_count())));
                 }
                 catch (pfc::exception const &) {};
             }

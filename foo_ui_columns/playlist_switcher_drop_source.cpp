@@ -6,7 +6,7 @@ bool playlist_switcher_t::do_drag_drop(WPARAM wp)
 {
     try 
     {
-        bit_array_bittable mask(get_item_count());
+        pfc::bit_array_bittable mask(get_item_count());
         get_selection_state(mask);
 
         playlist_dataobject_desc_impl data;

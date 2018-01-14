@@ -329,7 +329,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
                 else  new_idx = playlist_api->create_playlist(playlist_name, pfc_infinite, newPlaylistIndex);
 
-                playlist_api->playlist_add_items(new_idx, data, bit_array_false());
+                playlist_api->playlist_add_items(new_idx, data, pfc::bit_array_false());
                 if (main_window::config_get_activate_target_playlist_on_dropped_items())
                     playlist_api->set_active_playlist(new_idx);
 
@@ -337,7 +337,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
             else
             {
                 playlist_api->playlist_clear_selection(target_index);
-                playlist_api->playlist_insert_items(target_index, idx, data, bit_array_true());
+                playlist_api->playlist_insert_items(target_index, idx, data, pfc::bit_array_true());
                 if (main_window::config_get_activate_target_playlist_on_dropped_items())
                     playlist_api->set_active_playlist(target_index);
             }

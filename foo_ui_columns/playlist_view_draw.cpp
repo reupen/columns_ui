@@ -79,7 +79,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
     int total_width = get_column_widths(widths);
     int t = columns.get_count();
 
-    const bit_array & p_mask = g_cache.active_get_columns_mask();
+    const pfc::bit_array & p_mask = g_cache.active_get_columns_mask();
 
     item_area.left = rect.left;
     item_area.right = rect.right;

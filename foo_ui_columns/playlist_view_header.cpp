@@ -26,7 +26,7 @@ void playlist_view::rebuild_header(bool rebuild)
         pfc::array_t<int, pfc::alloc_fast_aggressive> widths;
         get_column_widths(widths);
 
-        const bit_array & p_mask = g_cache.active_get_columns_mask();
+        const pfc::bit_array & p_mask = g_cache.active_get_columns_mask();
 
         int n, t = columns.get_count(), i = 0;//,tw=g_playlist_entries.get_total_width();
         for (n = 0; n < t; n++)

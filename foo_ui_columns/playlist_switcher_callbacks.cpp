@@ -1,21 +1,21 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
-    void playlist_switcher_t::on_items_added(t_size p_playlist,t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection)
+    void playlist_switcher_t::on_items_added(t_size p_playlist,t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection)
     {
         refresh_items(p_playlist, 1);
     }
-    void playlist_switcher_t::on_items_removed(t_size p_playlist,const bit_array & p_mask,t_size p_old_count,t_size p_new_count)
-    {
-        refresh_items(p_playlist, 1);
-    }
-
-    void playlist_switcher_t::on_items_modified(t_size p_playlist,const bit_array & p_mask)
+    void playlist_switcher_t::on_items_removed(t_size p_playlist,const pfc::bit_array & p_mask,t_size p_old_count,t_size p_new_count)
     {
         refresh_items(p_playlist, 1);
     }
 
-    void playlist_switcher_t::on_items_replaced(t_size p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data)
+    void playlist_switcher_t::on_items_modified(t_size p_playlist,const pfc::bit_array & p_mask)
+    {
+        refresh_items(p_playlist, 1);
+    }
+
+    void playlist_switcher_t::on_items_replaced(t_size p_playlist,const pfc::bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data)
     {
         refresh_items(p_playlist, 1);
     }
@@ -31,7 +31,7 @@
             ensure_visible(p_new);
         }
         else
-            set_selection_state(bit_array_true(), bit_array_false(), false);
+            set_selection_state(pfc::bit_array_true(), pfc::bit_array_false(), false);
     };
     void playlist_switcher_t::on_playlist_created(t_size p_index,const char * p_name,t_size p_name_len) 
     {
@@ -54,7 +54,7 @@
         if (index != pfc_infinite)
             set_item_selected_single(index, false);
     };
-    void playlist_switcher_t::on_playlists_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count)
+    void playlist_switcher_t::on_playlists_removed(const pfc::bit_array & p_mask,t_size p_old_count,t_size p_new_count)
     {
         refresh_playing_playlist();
         remove_items(p_mask);

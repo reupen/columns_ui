@@ -832,7 +832,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                                 else if (cfg_show_vol && part == status_bar::u_vol_pos) {
                                     //static_api_ptr_t<ui_control>()->show_preferences(preferences_page::guid_playback);
                                 } else if (cfg_show_seltime && part == status_bar::u_length_pos) {
-                                    static_api_ptr_t<playlist_manager>()->activeplaylist_set_selection(bit_array_true(), bit_array_true());
+                                    static_api_ptr_t<playlist_manager>()->activeplaylist_set_selection(pfc::bit_array_true(), pfc::bit_array_true());
                                 }
                             }
                             break;
