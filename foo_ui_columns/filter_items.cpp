@@ -11,7 +11,7 @@ namespace filter_panel {
         if (m_nodes.get_count()) {
             pfc::list_t<bool> sel_data;
             sel_data.set_count(m_nodes.get_count());
-            bit_array_var_table selection(sel_data.get_ptr(), sel_data.get_count());
+            pfc::bit_array_var_table selection(sel_data.get_ptr(), sel_data.get_count());
             get_selection_state(selection);
             t_size i, count = sel_data.get_count();
             b_all_was_selected = selection[0];
@@ -38,8 +38,8 @@ namespace filter_panel {
             }
             if (!b_found)
                 new_selection[0] = true; //m_nodes.get_count() >= 1
-            set_selection_state(bit_array_var_table(new_selection.get_ptr(), new_selection.get_count()),
-                bit_array_var_table(new_selection.get_ptr(), new_selection.get_count()), false);
+            set_selection_state(pfc::bit_array_var_table(new_selection.get_ptr(), new_selection.get_count()),
+                pfc::bit_array_var_table(new_selection.get_ptr(), new_selection.get_count()), false);
         }
 
         if (b_redraw)
@@ -163,7 +163,7 @@ namespace filter_panel {
             }
         }
         m_nodes.remove_mask(mask_nodes.get_ptr());
-        remove_items(bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()));
+        remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()));
         update_first_node_text(true);
 
         if (next_window) {
@@ -271,7 +271,7 @@ namespace filter_panel {
             mask_nodes[node_index] = m_nodes[node_index].m_handles.get_count() == 0;
         }
         m_nodes.remove_mask(mask_nodes.get_ptr());
-        remove_items(bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()), true);
+        remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()), true);
         update_first_node_text(true);
 
         if (next_window) {

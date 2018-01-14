@@ -81,7 +81,7 @@ namespace playlist_utils
                         if (index != pfc_infinite) index ++;
                         data.to_handles(handles, b_native, GetAncestor(wnd, GA_ROOT));
                         m_playlist_api->activeplaylist_clear_selection();
-                        m_playlist_api->activeplaylist_insert_items(index, handles, bit_array_true());
+                        m_playlist_api->activeplaylist_insert_items(index, handles, pfc::bit_array_true());
 
                         //OleSetClipboard(NULL);
                     }

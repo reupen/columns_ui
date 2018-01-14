@@ -500,7 +500,7 @@ void selection_properties_t::refresh_contents()
     }
     else if (new_count < old_count)
     {
-        uih::ListView::remove_items(bit_array_range(new_count, old_count-new_count), false);
+        uih::ListView::remove_items(pfc::bit_array_range(new_count, old_count-new_count), false);
     }
 
     if (b_redraw)
@@ -900,7 +900,7 @@ bool selection_properties_t::show_config_popup(HWND wnd_parent)
                 m_show_group_titles = dialog.m_show_groups;
                 cfg_selection_poperties_show_group_titles = m_show_group_titles;
 
-                remove_items(bit_array_true(), false);
+                remove_items(pfc::bit_array_true(), false);
                 set_group_count(m_show_group_titles ? 1 : 0);
             }
 

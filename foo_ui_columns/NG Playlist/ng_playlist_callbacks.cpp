@@ -3,7 +3,7 @@
 
 namespace pvt
 {
-        void ng_playlist_view_t::on_items_added(/*unsigned p_playlist, */unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection)
+        void ng_playlist_view_t::on_items_added(/*unsigned p_playlist, */unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection)
         {
             /*(if (p_playlist == 0)*/
             {
@@ -22,7 +22,7 @@ namespace pvt
             {
                 clear_sort_column();
                 //metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
-                //m_playlist_api->playlist_get_items(p_playlist, data, bit_array_true());
+                //m_playlist_api->playlist_get_items(p_playlist, data, pfc::bit_array_true());
                 t_size i,start;
                 for (i=0; i<p_count; i++)
                 {
@@ -41,7 +41,7 @@ namespace pvt
             }
         };//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
 
-        void ng_playlist_view_t::on_items_removed(/*t_size p_playlist, */const bit_array & p_mask,t_size p_old_count,t_size p_new_count)
+        void ng_playlist_view_t::on_items_removed(/*t_size p_playlist, */const pfc::bit_array & p_mask,t_size p_old_count,t_size p_new_count)
         {
             /*(if (p_playlist == 0)*/
             {
@@ -52,7 +52,7 @@ namespace pvt
                 //reset_items();
             }
         };
-        void ng_playlist_view_t::on_items_selection_change(/*t_size p_playlist, */const bit_array & p_affected,const bit_array & p_state) 
+        void ng_playlist_view_t::on_items_selection_change(/*t_size p_playlist, */const pfc::bit_array & p_affected,const pfc::bit_array & p_state) 
         {
             /*(if (p_playlist == 0)*/
             if (!m_ignore_callback)
@@ -69,7 +69,7 @@ namespace pvt
             }
         };//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
 
-        void ng_playlist_view_t::on_items_modified(/*t_size p_playlist, */const bit_array & p_mask)
+        void ng_playlist_view_t::on_items_modified(/*t_size p_playlist, */const pfc::bit_array & p_mask)
         {
             //if (p_playlist==0)
             {
@@ -92,7 +92,7 @@ namespace pvt
                 }
             }
         };
-        void ng_playlist_view_t::on_items_modified_fromplayback(/*t_size p_playlist, */const bit_array & p_mask,play_control::t_display_level p_level)
+        void ng_playlist_view_t::on_items_modified_fromplayback(/*t_size p_playlist, */const pfc::bit_array & p_mask,play_control::t_display_level p_level)
         {
             if (!core_api::is_shutting_down())
             {
@@ -113,7 +113,7 @@ namespace pvt
             }
         };
 
-        void ng_playlist_view_t::on_items_replaced(/*t_size p_playlist, */const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data)
+        void ng_playlist_view_t::on_items_replaced(/*t_size p_playlist, */const pfc::bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data)
         {
             on_items_modified(p_mask);
         };

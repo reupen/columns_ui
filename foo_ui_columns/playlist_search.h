@@ -86,7 +86,7 @@ class progressive_search
                     }
                 }
             }
-            api->playlist_set_selection(active, bit_array_true(), bit_array_table_t<bool>(m_filter.get_ptr(), m_filter.get_size()));
+            api->playlist_set_selection(active, pfc::bit_array_true(), pfc::bit_array_table_t<bool>(m_filter.get_ptr(), m_filter.get_size()));
             unsigned the_focus = api->playlist_get_focus_item(active);
             if (!b_first && !(the_focus < m_filter.get_size() && m_filter[the_focus]))
             {

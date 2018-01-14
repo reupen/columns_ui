@@ -94,7 +94,7 @@ public:
     {
         initialising = true;    
 
-        m_field_list.remove_items(bit_array_true());
+        m_field_list.remove_items(pfc::bit_array_true());
         pfc::list_t<uih::ListView::InsertItem> items;
         t_size count = filter_panel::cfg_field_list.get_count();
         get_insert_items(0, count, items);
@@ -211,7 +211,7 @@ public:
                 {
                     if (m_field_list.get_selection_count(2) == 1)
                     {
-                        bit_array_bittable mask(m_field_list.get_item_count());
+                        pfc::bit_array_bittable mask(m_field_list.get_item_count());
                         m_field_list.get_selection_state(mask);
                         //bool b_found = false;
                         t_size index=0, count=m_field_list.get_item_count();

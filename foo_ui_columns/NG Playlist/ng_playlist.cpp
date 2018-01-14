@@ -95,7 +95,7 @@ namespace pvt {
     {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
         m_playlist_api->activeplaylist_get_all_items(data);
-        on_items_added(0, data, bit_array_false());
+        on_items_added(0, data, pfc::bit_array_false());
     }
     void ng_playlist_view_t::refresh_groups(bool b_update_columns)
     {
@@ -462,7 +462,7 @@ namespace pvt {
 
             bool extra = m_script_global.is_valid() && cfg_global_sort;
 
-            bit_array_bittable mask(count);
+            pfc::bit_array_bittable mask(count);
             if (b_selection_only)
                 m_playlist_api->activeplaylist_get_selection_mask(mask);
 
@@ -1019,7 +1019,7 @@ namespace pvt {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         handles.prealloc(count);
 
-        bit_array_range bit_table(start, count);
+        pfc::bit_array_range bit_table(start, count);
         m_playlist_api->activeplaylist_get_items(handles, bit_table);
 
         const auto group_count = m_scripts.get_count();
@@ -1113,18 +1113,18 @@ namespace pvt {
         pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
         static_api_ptr_t<playlist_manager>()->activeplaylist_set_focus_item(index);
     }
-    void ng_playlist_view_t::storage_get_selection_state(bit_array_var & out)
+    void ng_playlist_view_t::storage_get_selection_state(pfc::bit_array_var & out)
     {
         static_api_ptr_t<playlist_manager>()->activeplaylist_get_selection_mask(out);
     }
-    bool ng_playlist_view_t::storage_set_selection_state(const bit_array & p_affected,const bit_array & p_status, bit_array_var * p_changed)
+    bool ng_playlist_view_t::storage_set_selection_state(const pfc::bit_array & p_affected,const pfc::bit_array & p_status, pfc::bit_array_var * p_changed)
     {
         pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
 
         static_api_ptr_t<playlist_manager> api;
 
         t_size i, count = api->activeplaylist_get_item_count();
-        bit_array_bittable previous_state(count);
+        pfc::bit_array_bittable previous_state(count);
 
         api->activeplaylist_get_selection_mask(previous_state);
 

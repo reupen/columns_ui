@@ -160,7 +160,7 @@ namespace filter_panel {
                                    bool b_sort = false);
         bool get_nothing_or_all_node_selected() { return get_selection_count(1) == 0 || get_item_selected(0); }
         void do_selection_action(action_t action = action_send_to_autosend);
-        void do_items_action(const bit_array& p_nodes, action_t action = action_send_to_autosend);
+        void do_items_action(const pfc::bit_array& p_nodes, action_t action = action_send_to_autosend);
         void send_results_to_playlist(bool b_play = false);
 
         void update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_data);
@@ -177,7 +177,7 @@ namespace filter_panel {
         void move_selection(int delta) override {}
         void notify_update_item_data(t_size index) override;
         bool notify_on_middleclick(bool on_item, t_size index) override;
-        void notify_on_selection_change(const bit_array& p_affected, const bit_array& p_status,
+        void notify_on_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
                                         notification_source_t p_notification_source) override;
         bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
                                               bool b_source_mouse) override;

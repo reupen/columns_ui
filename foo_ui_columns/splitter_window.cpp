@@ -719,7 +719,7 @@ void splitter_window_impl::start_autohide_dehide(unsigned p_panel, bool b_next_t
 }
 
 
-void splitter_window_impl::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported)
+void splitter_window_impl::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, pfc::bit_array_var & p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_splitter_host_vert.instance_create(temp);

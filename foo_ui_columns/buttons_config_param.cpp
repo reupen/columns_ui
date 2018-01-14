@@ -373,7 +373,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
         {
             if (win32_helpers::message_box(wnd, _T("This will reset all your buttons to the default buttons. Continue?"), _T("Reset buttons"), MB_YESNO) == IDYES)
             {
-                m_button_list.remove_items(bit_array_true(), false);
+                m_button_list.remove_items(pfc::bit_array_true(), false);
                 toolbar_extension::reset_buttons(m_buttons);
                 populate_buttons_list();
             }
@@ -463,7 +463,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
                 pfc::string8 path;
                 if (uGetOpenFileName(wnd, "fcb Files (*.fcb)|*.fcb|All Files (*.*)|*.*", 0, "fcb", "Open file", nullptr, path, FALSE))
                 {
-                    m_button_list.remove_items(bit_array_true(), false);
+                    m_button_list.remove_items(pfc::bit_array_true(), false);
 
                     HWND wnd_show = GetDlgItem(wnd, IDC_SHOW);
                     HWND wnd_text = GetDlgItem(wnd, IDC_TEXT_LOCATION);

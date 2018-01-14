@@ -227,7 +227,7 @@ namespace pvt
                     if (p_playlist->m_dragging)
                     {
                         selection.set_size(playlist_api->playlist_get_item_count(p_playlist->m_dragging_initial_playlist));
-                        bit_array_var_table bitsel(selection.get_ptr(), selection.get_count());
+                        pfc::bit_array_var_table bitsel(selection.get_ptr(), selection.get_count());
                         playlist_api->playlist_get_selection_mask(p_playlist->m_dragging_initial_playlist, bitsel);
                         permutation_move.set_size(selection.get_count());
 
@@ -245,7 +245,7 @@ namespace pvt
                                     }
                                 permutation_move.insert_items(indices, idx);
                                 selection.insert_items_repeat(false, indices.get_count(), idx);
-                                permutation_move.remove_mask(bit_array_table(selection.get_ptr(), selection.get_count()));
+                                permutation_move.remove_mask(pfc::bit_array_table(selection.get_ptr(), selection.get_count()));
                             }
                             else
                                 selection.insert_items_repeat(false, data.get_count(), idx);
@@ -264,11 +264,11 @@ namespace pvt
                     else
                     {
                         playlist_api->activeplaylist_clear_selection();
-                        t_size index_insert = playlist_api->activeplaylist_insert_items(idx, data, bit_array_true());
+                        t_size index_insert = playlist_api->activeplaylist_insert_items(idx, data, pfc::bit_array_true());
                         playlist_api->activeplaylist_set_focus_item(index_insert);
                         if (p_playlist->m_dragging && *pdwEffect == DROPEFFECT_MOVE)
                         {
-                            playlist_api->playlist_remove_items(p_playlist->m_dragging_initial_playlist, bit_array_table(selection.get_ptr(), selection.get_count()));
+                            playlist_api->playlist_remove_items(p_playlist->m_dragging_initial_playlist, pfc::bit_array_table(selection.get_ptr(), selection.get_count()));
                         }
                     }
                     p_playlist->remove_insert_mark();
@@ -295,7 +295,7 @@ namespace pvt
                                 playlist_api->playlist_undo_backup(m_insertIndexTracker.m_playlist);
                                 bool b_redraw = p_playlist->disable_redrawing();
                                 playlist_api->playlist_clear_selection(m_insertIndexTracker.m_playlist);
-                                t_size index_insert = playlist_api->playlist_insert_items(m_insertIndexTracker.m_playlist,m_insertIndexTracker.m_item, p_items, bit_array_true());
+                                t_size index_insert = playlist_api->playlist_insert_items(m_insertIndexTracker.m_playlist,m_insertIndexTracker.m_item, p_items, pfc::bit_array_true());
                                 playlist_api->playlist_set_focus_item(m_insertIndexTracker.m_playlist,m_insertIndexTracker.m_item);
                                 if (b_redraw)
                                     p_playlist->enable_redrawing();

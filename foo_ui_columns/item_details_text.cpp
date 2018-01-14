@@ -120,7 +120,7 @@ void g_get_text_font_info(const font_change_data_list_t & p_data, font_change_in
             p_info.m_font_changes[i].m_text_index = p_data[i].m_character_index;
 
         }
-        p_info.m_fonts.remove_mask(bit_array_not(bit_array_table(maskKeepFonts.get_ptr(), maskKeepFonts.get_count(), true)));
+        p_info.m_fonts.remove_mask(pfc::bit_array_not(pfc::bit_array_table(maskKeepFonts.get_ptr(), maskKeepFonts.get_count(), true)));
 
         ReleaseDC(nullptr, dc);
     }

@@ -8,15 +8,15 @@
 class playlist_callback_single_order : public playlist_callback_single
 {
 public:
-    virtual void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection){};//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
+    virtual void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection){};//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
     virtual void on_items_reordered(const unsigned * order,unsigned count){};//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
-    virtual void FB2KAPI on_items_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};//called before actually removing them
-    virtual void FB2KAPI on_items_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};
-    virtual void on_items_selection_change(const bit_array & affected,const bit_array & state){};
+    virtual void FB2KAPI on_items_removing(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};//called before actually removing them
+    virtual void FB2KAPI on_items_removed(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count){};
+    virtual void on_items_selection_change(const pfc::bit_array & affected,const pfc::bit_array & state){};
     virtual void on_item_focus_change(unsigned from,unsigned to){};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-    virtual void on_items_modified(const bit_array & p_mask){};
-    virtual void FB2KAPI on_items_modified_fromplayback(const bit_array & p_mask,play_control::t_display_level p_level){};
-    virtual void on_items_replaced(const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data){};
+    virtual void on_items_modified(const pfc::bit_array & p_mask){};
+    virtual void FB2KAPI on_items_modified_fromplayback(const pfc::bit_array & p_mask,play_control::t_display_level p_level){};
+    virtual void on_items_replaced(const pfc::bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data){};
     virtual void on_item_ensure_visible(unsigned idx){};
 
     virtual void on_playlist_switch(){};
@@ -102,15 +102,15 @@ public:
         __implement_get_class_data_child_ex(class_name, false, false);
     }
 
-    void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override{};//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
+    void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection) override{};//inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but only methods that read playlist state, not those that modify it)
     void on_items_reordered(const unsigned * order,unsigned count) override{};//changes selection too; doesnt actually change set of items that are selected or item having focus, just changes their order
-    void FB2KAPI on_items_removing(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};//called before actually removing them
-    void FB2KAPI on_items_removed(const bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};
-    void on_items_selection_change(const bit_array & affected,const bit_array & state) override{};
+    void FB2KAPI on_items_removing(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};//called before actually removing them
+    void FB2KAPI on_items_removed(const pfc::bit_array & p_mask,unsigned p_old_count,unsigned p_new_count) override{};
+    void on_items_selection_change(const pfc::bit_array & affected,const pfc::bit_array & state) override{};
     void on_item_focus_change(unsigned from,unsigned to) override{};//focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-    void on_items_modified(const bit_array & p_mask) override{};
-    void FB2KAPI on_items_modified_fromplayback(const bit_array & p_mask,play_control::t_display_level p_level) override{};
-    void on_items_replaced(const bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data) override{};
+    void on_items_modified(const pfc::bit_array & p_mask) override{};
+    void FB2KAPI on_items_modified_fromplayback(const pfc::bit_array & p_mask,play_control::t_display_level p_level) override{};
+    void on_items_replaced(const pfc::bit_array & p_mask,const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry> & p_data) override{};
     void on_item_ensure_visible(unsigned idx) override{};
 
     void on_playlist_switch() override{};

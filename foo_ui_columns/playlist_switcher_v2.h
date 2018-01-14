@@ -190,7 +190,7 @@ public:
             static_api_ptr_t<play_control>()->start();
         }
     }
-    void notify_on_selection_change(const bit_array & p_affected,const bit_array & p_status, notification_source_t p_notification_source) override
+    void notify_on_selection_change(const pfc::bit_array & p_affected,const pfc::bit_array & p_status, notification_source_t p_notification_source) override
     {
         if (p_notification_source != notification_source_rmb)
         {
@@ -199,7 +199,7 @@ public:
 
             if (numSelected == 1)
             {
-                bit_array_bittable mask(get_item_count());
+                pfc::bit_array_bittable mask(get_item_count());
                 get_selection_state(mask);
                 t_size index=0, count=get_item_count();
                 while (index < count)
@@ -247,25 +247,25 @@ public:
         m_playing_playlist = get_playing_playlist();
     }
 
-    void on_items_added(t_size p_playlist,t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const bit_array & p_selection) override;
+    void on_items_added(t_size p_playlist,t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr> & p_data,const pfc::bit_array & p_selection) override;
     void on_items_reordered(t_size p_playlist,const t_size * p_order,t_size p_count) override {};
-    void on_items_removing(t_size p_playlist,const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {};
-    void on_items_removed(t_size p_playlist,const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override;
-    void on_items_selection_change(t_size p_playlist,const bit_array & p_affected,const bit_array & p_state) override {}
+    void on_items_removing(t_size p_playlist,const pfc::bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {};
+    void on_items_removed(t_size p_playlist,const pfc::bit_array & p_mask,t_size p_old_count,t_size p_new_count) override;
+    void on_items_selection_change(t_size p_playlist,const pfc::bit_array & p_affected,const pfc::bit_array & p_state) override {}
     void on_item_focus_change(t_size p_playlist,t_size p_from,t_size p_to) override {}
 
-    void on_items_modified(t_size p_playlist,const bit_array & p_mask) override;
-    void on_items_modified_fromplayback(t_size p_playlist,const bit_array & p_mask,play_control::t_display_level p_level) override {};
+    void on_items_modified(t_size p_playlist,const pfc::bit_array & p_mask) override;
+    void on_items_modified_fromplayback(t_size p_playlist,const pfc::bit_array & p_mask,play_control::t_display_level p_level) override {};
 
-    void on_items_replaced(t_size p_playlist,const bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override;
+    void on_items_replaced(t_size p_playlist,const pfc::bit_array & p_mask,const pfc::list_base_const_t<t_on_items_replaced_entry> & p_data) override;
 
     void on_item_ensure_visible(t_size p_playlist,t_size p_idx) override {};
 
     void on_playlist_activate(t_size p_old,t_size p_new) override;
     void on_playlist_created(t_size p_index,const char * p_name,t_size p_name_len) override;
     void on_playlists_reorder(const t_size * p_order,t_size p_count) override;
-    void on_playlists_removing(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {};
-    void on_playlists_removed(const bit_array & p_mask,t_size p_old_count,t_size p_new_count) override;
+    void on_playlists_removing(const pfc::bit_array & p_mask,t_size p_old_count,t_size p_new_count) override {};
+    void on_playlists_removed(const pfc::bit_array & p_mask,t_size p_old_count,t_size p_new_count) override;
     void on_playlist_renamed(t_size p_index,const char * p_new_name,t_size p_new_name_len) override;
 
     void on_default_format_changed() override {};

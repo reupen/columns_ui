@@ -23,7 +23,7 @@ void playlist_switcher_t::get_insert_items (t_size base, t_size count, pfc::list
 
     void playlist_switcher_t::refresh_all_items()
     {
-        remove_items(bit_array_true(), false);
+        remove_items(pfc::bit_array_true(), false);
 
         add_items(0, m_playlist_api->get_playlist_count());
 

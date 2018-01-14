@@ -154,7 +154,7 @@ public:
 
 ui_extension::window_host_factory<splitter_window_tabs_impl::splitter_host_impl > g_splitter_tabs_host;
 
-void splitter_window_tabs_impl::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, bit_array_var & p_mask_unsupported)
+void splitter_window_tabs_impl::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, pfc::bit_array_var & p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_splitter_tabs_host.instance_create(temp);

@@ -574,12 +574,12 @@ namespace filter_panel {
 
     void filter_panel_t::do_selection_action(action_t action )
     {
-        bit_array_bittable mask(m_nodes.get_count());
+        pfc::bit_array_bittable mask(m_nodes.get_count());
         get_selection_state(mask);
         do_items_action(mask, action);
     }
 
-    void filter_panel_t::do_items_action(const bit_array & p_nodes, action_t action)
+    void filter_panel_t::do_items_action(const pfc::bit_array & p_nodes, action_t action)
     {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         handles.prealloc(m_nodes.get_count());
@@ -649,11 +649,11 @@ namespace filter_panel {
             fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
         }
         if (action != action_add_to_active)
-            playlist_api->playlist_add_items(index, handles, bit_array_false());
+            playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
         else
         {
             playlist_api->playlist_clear_selection(index);
-            playlist_api->playlist_add_items(index, handles, bit_array_true());
+            playlist_api->playlist_add_items(index, handles, pfc::bit_array_true());
         }
         playlist_api->playlist_set_focus_item(index, playlist_api->playlist_get_item_count(index) - handles.get_count());
 
@@ -679,7 +679,7 @@ namespace filter_panel {
         if (cfg_middleclickaction && on_item && index < m_nodes.get_count())
         {
             action_t action = static_cast<action_t>(cfg_middleclickaction.get_value() - 1);
-            do_items_action(bit_array_one(index), action);
+            do_items_action(pfc::bit_array_one(index), action);
             return true;
         }
         return false;
@@ -722,7 +722,7 @@ namespace filter_panel {
                 fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
             }
         }
-        playlist_api->playlist_add_items(index, handles, bit_array_false());
+        playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
 
         playlist_api->set_active_playlist(index);
         if (b_play)
@@ -733,7 +733,7 @@ namespace filter_panel {
         //if (index_remove != pfc_infinite)
         //    playlist_api->remove_playlist(index+1);
     }
-    void filter_panel_t::notify_on_selection_change(const bit_array & p_affected, const bit_array & p_status, notification_source_t p_notification_source)
+    void filter_panel_t::notify_on_selection_change(const pfc::bit_array & p_affected, const pfc::bit_array & p_status, notification_source_t p_notification_source)
     {
         if (p_notification_source != notification_source_rmb)
         {

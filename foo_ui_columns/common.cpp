@@ -27,14 +27,14 @@ void set_sel_single(int idx, bool toggle, bool focus, bool single_only)
     unsigned total = playlist_api->activeplaylist_get_item_count();
     unsigned idx_focus = playlist_api->activeplaylist_get_focus_item();
 
-    bit_array_bittable mask(total);
+    pfc::bit_array_bittable mask(total);
     mask.set(idx, toggle ? !playlist_api->activeplaylist_is_item_selected(idx) : true);
 
     if (single_only) {
-        playlist_api->activeplaylist_set_selection(bit_array_true(), mask);
+        playlist_api->activeplaylist_set_selection(pfc::bit_array_true(), mask);
     }
     else if (toggle || !playlist_api->activeplaylist_is_item_selected(idx)) {
-        playlist_api->activeplaylist_set_selection(bit_array_one(idx), mask);
+        playlist_api->activeplaylist_set_selection(pfc::bit_array_one(idx), mask);
     }
     
     if (focus && idx_focus != idx) playlist_api->activeplaylist_set_focus_item(idx);
@@ -45,7 +45,7 @@ void set_sel_range(int start, int end, bool keep, bool deselect)
     //    console::info(pfc::string_printf("%i %i %i %i",start,end,(long)keep,(long)deselect));
     static_api_ptr_t<playlist_manager> playlist_api;
     unsigned total = playlist_api->activeplaylist_get_item_count();
-    bit_array_bittable mask(total);
+    pfc::bit_array_bittable mask(total);
     //    if (keep)
     //        playlist_api->activeplaylist_get_selection_mask(mask);
     int n = start, t = end;
@@ -59,9 +59,9 @@ void set_sel_range(int start, int end, bool keep, bool deselect)
     int to = (start < end ? end + 1 : start);
 
     if (keep)
-        playlist_api->activeplaylist_set_selection(bit_array_range(from, to - from, true), mask);
+        playlist_api->activeplaylist_set_selection(pfc::bit_array_range(from, to - from, true), mask);
     else
-        playlist_api->activeplaylist_set_selection(bit_array_true(), mask);
+        playlist_api->activeplaylist_set_selection(pfc::bit_array_true(), mask);
 }
 
 

@@ -256,7 +256,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     if (focus != pfc_infinite)
                     {
                         t_size i, pcount = playlist_api->activeplaylist_get_item_count();
-                        bit_array_bittable sel(pcount);
+                        pfc::bit_array_bittable sel(pcount);
                         playlist_api->activeplaylist_get_selection_mask(sel);
 
                         pfc::list_t<t_size> indices;
@@ -315,7 +315,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     static_api_ptr_t<playlist_manager> playlist_api;
                     if (wp == 1) //Ctrl-A
                     {
-                        playlist_api->activeplaylist_set_selection(bit_array_true(), bit_array_true());
+                        playlist_api->activeplaylist_set_selection(pfc::bit_array_true(), pfc::bit_array_true());
                         return 0;
                     }
                     else if (wp == 26) //Ctrl-Z
@@ -453,7 +453,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 set_sel_single(idx, false, true, true);
 
-                /*            bit_array_bittable mask(playlist_api->activeplaylist_get_item_count());
+                /*            pfc::bit_array_bittable mask(playlist_api->activeplaylist_get_item_count());
                 //        playlist_api->activeplaylist_is_item_selected_mask(mask);
                 int n, t = playlist_api->activeplaylist_get_item_count();
                 for (n = 0;n <t;n++) { if (n==idx) mask.set(n, true); else mask.set(n, false); }
@@ -468,8 +468,8 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         else
         {
             //            console::info("wow");
-            //                bit_array_bittable mask(playlist_api->activeplaylist_get_item_count());
-            playlist_api->activeplaylist_set_selection(bit_array_true(), bit_array_false());
+            //                pfc::bit_array_bittable mask(playlist_api->activeplaylist_get_item_count());
+            playlist_api->activeplaylist_set_selection(pfc::bit_array_true(), pfc::bit_array_false());
             dragged = true;
             drag_type = 0;
         }

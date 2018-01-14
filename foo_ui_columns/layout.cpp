@@ -795,7 +795,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
         HMENU menu = CreatePopupMenu();
         panel_list_t panel_list;
         pfc::list_t<uie::window::ptr> supported_panels(panel_list);
-        bit_array_bittable mask_remove(supported_panels.get_count());
+        pfc::bit_array_bittable mask_remove(supported_panels.get_count());
         if (p_container_v2.is_valid())
             p_container_v2->get_supported_panels(supported_panels, mask_remove);
         supported_panels.remove_mask(mask_remove);
