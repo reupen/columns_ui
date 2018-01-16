@@ -173,7 +173,7 @@ namespace pvt {
     void ng_playlist_view_t::on_column_widths_change()
     {
         t_size i , count = m_column_mask.get_count();
-        pfc::list_t<t_size> widths;
+        pfc::list_t<int> widths;
         for (i=0; i<count; i++)
             if (m_column_mask[i])
                 widths.add_item(g_columns[i]->width);

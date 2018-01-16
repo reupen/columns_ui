@@ -59,12 +59,13 @@ void playlist_view::update_scrollbar(bool redraw)
 
     if (cfg_nohscroll) horizontal_offset = 0;
     {
-        unsigned totalh = get_columns_total_width();
+        const auto totalh = get_columns_total_width();
+        const auto playlist_width = rect.right - rect.left;
         scroll.nMin = 0;
         scroll.nPos = horizontal_offset;
         scroll.nMax = cfg_nohscroll ? 0 : totalh - 1;
         scroll.nPage = rect.right - rect.left;
-        if (scroll.nPage > scroll.nMax + 1)
+        if (playlist_width > scroll.nMax + 1)
             scroll.nPage = scroll.nMax + 1;
         horizontal_offset = SetScrollInfo(wnd_playlist, SB_HORZ, &scroll, true);//redraw
         if (!cfg_nohscroll)

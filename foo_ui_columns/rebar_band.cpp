@@ -25,7 +25,7 @@ void RebarBandInfo::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_typ
     writer->write_lendian_t(m_guid, aborter);
     writer->write_lendian_t(m_width.get_scaled_value(), aborter);
     writer->write_lendian_t(m_break_before_band, aborter);
-    const auto size = pfc::downcast_guarded<uint32_t>(w.m_data.get_size());
+    const auto size = gsl::narrow<uint32_t>(w.m_data.get_size());
     writer->write_lendian_t(size, aborter);
     writer->write(w.m_data.get_ptr(), size, aborter);
 }
@@ -67,7 +67,7 @@ void RebarBandInfo::write_to_stream(stream_writer* writer, abort_callback& abort
     writer->write_lendian_t(m_guid, aborter);
     writer->write_lendian_t(m_width.get_scaled_value(), aborter);
     writer->write_lendian_t(m_break_before_band, aborter);
-    const auto size = pfc::downcast_guarded<uint32_t>(m_config.get_size());
+    const auto size = gsl::narrow<uint32_t>(m_config.get_size());
     writer->write_lendian_t(size, aborter);
     writer->write(m_config.get_ptr(), size, aborter);
 }

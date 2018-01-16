@@ -364,7 +364,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                     uie::window_ptr p_ext;
 
-                    if (idx_hit < g_rebar_window->m_bands.size())
+                    if (idx_hit >= 0 && gsl::narrow_cast<unsigned>(idx_hit) < g_rebar_window->m_bands.size())
                         p_ext = g_rebar_window->m_bands[idx_hit].m_window;
 
                     pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes = new ui_extension::menu_hook_impl;
@@ -419,7 +419,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                     menu_helpers::win32_auto_mnemonics(menu);
 
-                    int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
+                    const auto cmd = static_cast<unsigned>(TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr));
 
                     if (g_rebar_window) {
 

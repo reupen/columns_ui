@@ -193,7 +193,7 @@ public:
     void notify_on_kill_focus(HWND wnd_receiving) override;
     bool notify_on_keyboard_keydown_copy() override;;
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool & b_processed) override;;
-    void notify_on_column_size_change(t_size index, t_size new_width) override;
+    void notify_on_column_size_change(t_size index, int new_width) override;
     bool notify_before_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, bool b_source_mouse) override;;
     static void g_print_field(const char * field, const file_info & p_info, pfc::string_base & p_out);
     bool notify_create_inline_edit(const pfc::list_base_const_t<t_size> & indices, unsigned column, pfc::string_base & p_text, t_size & p_flags, mmh::ComPtr<IUnknown> & pAutocompleteEntries) override;;

@@ -18,12 +18,30 @@ Visual Studio 2017 15.5 is required to build Columns UI. You can use the [free c
 
 You'll need Windows 10 SDK version 10.0.16299.0 (installed by default with Visual Studio 2017 15.5 and the 'Desktop development with C++' workload).
 
-### Using the Visual Studio IDE
-Open `vc15/columns_ui-public.sln` in Visual Studio 2017. 
-Select the Release configuration and the Win32 platform, and build the solution. 
+### Installing the Microsoft Guideline Support Library (GSL)
+
+The Microsoft Guideline Support Library (GSL) is required to build Columns UI.
+
+Currently, the recommended way to install it is using [vcpkg](https://github.com/Microsoft/vcpkg).
+
+You can set up vcpkg, and install Microsoft GSL, using the following commands (run outside of the Columns UI source tree):
+
+```
+git clone https://github.com/Microsoft/vcpkg.git
+cd vcpkg
+.\bootstrap-vcpkg.bat
+.\vcpkg integrate install
+.\vcpkg install ms-gsl
+```
+
+### Building using the Visual Studio IDE
+Open `vc15/columns_ui-public.sln` in Visual Studio 2017.
+
+Select the Release configuration and the Win32 platform, and build the solution.
+
 If the build is successful, `foo_ui_columns.dll` will be output in `vc15\Release`.
 
-### Using MSBuild on the command line
+### Building using MSBuild on the command line
 
 You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2017 (in the start menu), run:
 

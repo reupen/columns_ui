@@ -173,11 +173,11 @@ public:
     static unsigned int g_columns_get_total_width();
     static unsigned int g_columns_get_total_parts();
 
-    unsigned get_columns_total_width() const;
+    int get_columns_total_width() const;
 
-    unsigned get_column_width(unsigned column_index) const; //ACTIVE idx!
+    int get_column_width(unsigned column_index) const; //ACTIVE idx!
     
-    unsigned get_column_widths(pfc::array_t<int, pfc::alloc_fast_aggressive> & p_out) const;
+    int get_column_widths(pfc::array_t<int, pfc::alloc_fast_aggressive> & p_out) const;
 
     static unsigned g_columns_get_width(unsigned column); //ACTIVE idx!!
     inline static playlist_view_cache & g_get_cache() { return g_cache; }
@@ -253,9 +253,8 @@ private:
     int last_column;
     int g_shift_item_start;
 
-    bool g_dragging,
-        g_drag_lmb,
-        g_dragging1;
+    bool g_drag_lmb,
+        m_rmb_is_dragging;
 
     int scroll_item_offset, 
         horizontal_offset;

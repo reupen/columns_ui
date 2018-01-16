@@ -650,7 +650,7 @@ void playlists_tabs_extension::on_size(unsigned cx, unsigned cy)
     if (wnd_tabs)
     {
         SetWindowPos(wnd_tabs, nullptr, 0, 0, cx, cy, SWP_NOZORDER);
-        RECT rc = { 0, 0, cx, cy };
+        RECT rc = { 0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy) };
         adjust_rect(FALSE, &rc);
         if (m_child_wnd)
             SetWindowPos(m_child_wnd, nullptr, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);

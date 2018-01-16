@@ -148,7 +148,7 @@ void cfg_columns_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
     for (t_size n = 0; n < num; n++) {
         stream_writer_memblock columnExtraData;
         get_item(n)->write_extra(&columnExtraData, p_abort);
-        out->write_lendian_t(pfc::downcast_guarded<uint32_t>(columnExtraData.m_data.get_size()), p_abort);
+        out->write_lendian_t(gsl::narrow<uint32_t>(columnExtraData.m_data.get_size()), p_abort);
         out->write(columnExtraData.m_data.get_ptr(), columnExtraData.m_data.get_size(), p_abort);
     }
 }

@@ -19,6 +19,7 @@ matrix:
     - PlatformToolset: LLVM-vs2014
 install:
 - cmd: git submodule update --init --recursive
+- cmd: vcpkg install ms-gsl
 build_script:
 - ps: >-
     $command = 'msbuild "vc15/columns_ui-public.sln" /m /verbosity:normal /p:PlatformToolset=' + $Env:PlatformToolset + ' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'

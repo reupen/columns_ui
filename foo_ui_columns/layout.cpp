@@ -665,7 +665,7 @@ void layout_window::run_live_edit_base(POINT pt_menu)
 
         AppendMenu(menu, MF_STRING|MF_POPUP, (UINT_PTR)menu_change, L"Change panel");
 
-        int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,get_wnd(),nullptr);
+        const auto cmd = static_cast<unsigned>(TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt_menu.x, pt_menu.y, 0, get_wnd(), nullptr));
         m_trans_fill.destroy();
         {
             {
@@ -881,7 +881,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t & p_data)
         }
 
 
-        int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,p_data.m_point.x,p_data.m_point.y,0,get_wnd(),nullptr);
+        const auto cmd = static_cast<unsigned>(TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,p_data.m_point.x,p_data.m_point.y,0,get_wnd(),nullptr));
         m_trans_fill.destroy();
         {
             {

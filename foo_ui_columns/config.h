@@ -101,7 +101,7 @@ public:
 void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_date);
 
 extern editor_font_notify g_editor_font_notify;
-extern cfg_int g_last_colour;
+extern cfg_uint g_last_colour;
 extern const GUID g_guid_columns_ui_preferences_page;
 
 void on_global_colours_change();

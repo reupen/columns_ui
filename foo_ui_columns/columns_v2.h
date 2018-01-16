@@ -12,7 +12,7 @@ public:
     pfc::string8 colour_spec;
     bool use_custom_sort;
     pfc::string8 sort_spec;
-    uih::IntegerAndDpi<uint32_t> width;
+    uih::IntegerAndDpi<int32_t> width;
     alignment align;
     playlist_filter_type filter_type;
     pfc::string8 filter;
@@ -23,7 +23,7 @@ public:
     column_base_t() : use_custom_colour(false), use_custom_sort(false), width(100), align(ALIGN_LEFT), filter_type(FILTER_NONE), parts(1), show(true) {};
 
     column_base_t(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec, bool b_use_custom_sort, 
-        const char* p_sort_spec, unsigned p_width, alignment p_align, playlist_filter_type p_filter_type, const char* p_filter_string, 
+        const char* p_sort_spec, int p_width, alignment p_align, playlist_filter_type p_filter_type, const char* p_filter_string, 
         unsigned p_parts, bool b_show, const char* p_edit_field)
         : name(pname), spec(pspec), use_custom_colour(b_use_custom_colour), colour_spec(p_colour_spec), use_custom_sort(b_use_custom_sort), 
         sort_spec(p_sort_spec), width(p_width), align(p_align), filter_type(p_filter_type), filter(p_filter_string), parts(p_parts), 

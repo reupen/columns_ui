@@ -127,7 +127,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
                 unsigned cx = m_this->m_panels[index]->m_caption_orientation == vertical ? caption_size : rc_client.right;
                 unsigned cy = m_this->m_panels[index]->m_caption_orientation == vertical ? rc_client.bottom : caption_size;
 
-                RECT rc_caption = { 0, 0, cx, cy };
+                RECT rc_caption = { 0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy) };
 
                 if (IntersectRect(&rc_dummy, &ps.rcPaint, &rc_caption))
                 {
@@ -326,7 +326,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
 
                 //            menu_ext_base = IDM_EXT_BASE;
 
-                int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
+                const auto cmd = static_cast<unsigned>(TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr));
 
                 //            menu_ext_base=0;
 

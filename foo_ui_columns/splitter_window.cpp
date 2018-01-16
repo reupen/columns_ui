@@ -970,7 +970,7 @@ void splitter_window_impl::write_config(stream_writer * p_writer, bool is_export
     for (i = 0; i < count; i++) {
         stream_writer_memblock extraData;
         m_panels[i]->write_extra(&extraData, p_abort);
-        p_writer->write_lendian_t(pfc::downcast_guarded<uint32_t>(extraData.m_data.get_size()), p_abort);
+        p_writer->write_lendian_t(gsl::narrow<uint32_t>(extraData.m_data.get_size()), p_abort);
         p_writer->write(extraData.m_data.get_ptr(), extraData.m_data.get_size(), p_abort);
     }
 }

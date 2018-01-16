@@ -50,7 +50,7 @@ namespace pvt
             FillRect(dc, rc, br);
         }
 
-        void ng_playlist_view_t::render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc_outter_item)
+        void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc_outter_item)
         {
             cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
 
@@ -166,7 +166,7 @@ namespace pvt
             }
         }
 
-        void ng_playlist_view_t::render_group(HDC dc, t_size index, t_size group, const char * text, t_size indentation, t_size level, const RECT & rc)
+        void ng_playlist_view_t::render_group(HDC dc, t_size index, t_size group, const char * text, int indentation, t_size level, const RECT & rc)
         {
             cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
             bool b_theme_enabled = p_helper.get_themed();

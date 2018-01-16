@@ -164,29 +164,30 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 int offset = 0;
                 int scroll = scroll_item_offset;
+                const auto page_size = gsl::narrow<int>(si.nPage);
 
                 if (wp == VK_HOME)
                     scroll = 0;
                 else if (wp == VK_PRIOR && focus == scroll_item_offset)
-                    scroll -= si.nPage;
+                    scroll -= page_size;
                 else if (wp == VK_UP)
                 {
                     if (focus <= scroll_item_offset)
                         scroll = focus - 1;
-                    else if (focus > si.nPos + si.nPage - 1)
-                        scroll = focus - 1 - si.nPage + 1;
+                    else if (focus > si.nPos + page_size - 1)
+                        scroll = focus - 1 - page_size + 1;
                 }
                 else if (wp == VK_DOWN)
                 {
                     if (focus < scroll_item_offset)
                         scroll = focus + 1;
-                    else if (focus >= si.nPos + si.nPage - 1)
-                        scroll = focus + 1 - si.nPage + 1;
+                    else if (focus >= si.nPos + page_size - 1)
+                        scroll = focus + 1 - page_size + 1;
                 }
                 else if (wp == VK_END)
                     scroll = total - 1;
-                else if (wp == VK_NEXT && focus == si.nPos + si.nPage - 1)
-                    scroll += si.nPage;
+                else if (wp == VK_NEXT && focus == si.nPos + page_size - 1)
+                    scroll += page_size;
 
                 drawing_enabled = false;
 
@@ -571,9 +572,10 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             SendMessage(g_tooltip, TTM_RELAYEVENT, 0, (LPARAM)&message);
         }
-        const unsigned cx_drag = (unsigned)abs(GetSystemMetrics(SM_CXDRAG));
-        const unsigned cy_drag = (unsigned)abs(GetSystemMetrics(SM_CYDRAG));
-        if (!g_dragging && ((g_dragging1 && wp & MK_RBUTTON && (abs(drag_start.x - GET_X_LPARAM(lp)) > cx_drag || abs(drag_start.y - GET_Y_LPARAM(lp)) > cy_drag)) || (g_drag_lmb && (wp & MK_LBUTTON) && (wp & MK_CONTROL) && (abs(drag_start_lmb.x - GET_X_LPARAM(lp)) > 3 || abs(drag_start_lmb.y - GET_Y_LPARAM(lp)) > 3))))
+        const auto cx_drag = std::abs(GetSystemMetrics(SM_CXDRAG));
+        const auto cy_drag = std::abs(GetSystemMetrics(SM_CYDRAG));
+        if ((m_rmb_is_dragging && wp & MK_RBUTTON && (std::abs(drag_start.x - GET_X_LPARAM(lp)) > cx_drag || std::abs(drag_start.y - GET_Y_LPARAM(lp)) > cy_drag))
+            || (g_drag_lmb && (wp & MK_LBUTTON) && (wp & MK_CONTROL) && (std::abs(drag_start_lmb.x - GET_X_LPARAM(lp)) > 3 || std::abs(drag_start_lmb.y - GET_Y_LPARAM(lp)) > 3)))
         {
             static_api_ptr_t<playlist_manager> playlist_api;
             metadb_handle_list data;
@@ -596,8 +598,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }
             data.remove_all();
-            g_dragging = false;
-            g_dragging1 = false;
+            m_rmb_is_dragging = false;
             g_drag_lmb = false;
             if (wp & MK_LBUTTON)
             {
@@ -833,7 +834,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         if (wnd_playlist) SetFocus(wnd_playlist);
 
-        g_dragging1 = true;
+        m_rmb_is_dragging = true;
 
         drag_start.x = GET_X_LPARAM(lp);
         drag_start.y = GET_Y_LPARAM(lp);
@@ -882,7 +883,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     int new_pos = horizontal_offset;
                     int old_pos = horizontal_offset;
 
-                    unsigned scroll_lines = GetNumScrollLines();
+                    int scroll_lines = gsl::narrow<int>(GetNumScrollLines());
 
                     int zDelta = short(HIWORD(wp));
 
@@ -896,12 +897,12 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                     if (!si.nPage) si.nPage++;
 
-                    if (delta < 0 && delta*-1 > si.nPage)
+                    if (delta < 0 && static_cast<unsigned>(delta*-1) > si.nPage)
                     {
                         delta = si.nPage*-1;
                         if (delta >1) delta--;
                     }
-                    else if (delta > 0 && delta > si.nPage)
+                    else if (delta > 0 && static_cast<unsigned>(delta) > si.nPage)
                     {
                         delta = si.nPage;
                         if (delta >1) delta--;
@@ -922,28 +923,31 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         int new_pos = scroll_item_offset;
         int old_pos = scroll_item_offset;
-        unsigned scroll_lines = GetNumScrollLines();
+        auto scroll_lines = static_cast<int>(GetNumScrollLines());
+        auto page_size = gsl::narrow<int>(si.nPage);
 
         int zDelta = short(HIWORD(wp));
 
         if (scroll_lines == -1)
         {
-            scroll_lines = si.nPage > 1 ? si.nPage - 1 : 1;
+            scroll_lines = page_size > 1 ? page_size - 1 : 1;
         }
 
         int delta = MulDiv(zDelta, scroll_lines, 120);
 
-        if (!si.nPage) si.nPage++;
+        if (!page_size)
+            page_size = 1;
 
-        if (delta < 0 && delta*-1 > si.nPage)
+        if (delta < 0 && delta*-1 > page_size)
         {
-            delta = si.nPage*-1;
+            delta = page_size *-1;
             if (delta >1) delta--;
         }
-        else if (delta > 0 && delta > si.nPage)
+        else if (delta > 0 && delta > page_size)
         {
-            delta = si.nPage;
-            if (delta >1) delta--;
+            delta = page_size;
+            if (delta >1) 
+                delta--;
         }
 
         scroll(scroll_vertically, scroll_position_delta, -delta);
@@ -1152,9 +1156,9 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             {
                 if (pt.x == -1 && pt.y == -1)
                 {
-                    int focus = playlist_api->activeplaylist_get_focus_item();
+                    const auto focus = playlist_api->activeplaylist_get_focus_item();
                     unsigned last = get_last_viewable_item();
-                    if (focus == -1 || focus < scroll_item_offset || focus > last)
+                    if (focus == (std::numeric_limits<size_t>::max)() || focus < gsl::narrow<size_t>(scroll_item_offset) || focus > last)
                     {
                         px.x = 0;
                         px.y = 0;

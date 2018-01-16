@@ -597,7 +597,7 @@ namespace pvt
         bool notify_on_keyboard_keydown_copy() override;
         bool notify_on_keyboard_keydown_paste() override;
 
-        void notify_on_column_size_change(t_size index, t_size new_width) override
+        void notify_on_column_size_change(t_size index, int new_width) override
         {
             t_size act = column_index_display_to_actual(index);
             if (act != pfc_infinite && act < g_columns.get_count())
@@ -684,8 +684,8 @@ namespace pvt
 
         void render_group_info(HDC dc, t_size index, t_size group_count, const RECT & rc2) override;
         void render_background(HDC dc, const RECT * rc) override;
-        void render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc) override;
-        void render_group(HDC dc, t_size index, t_size group, const char * text, t_size indentation, t_size level, const RECT & rc) override;
+        void render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc) override;
+        void render_group(HDC dc, t_size index, t_size group, const char * text, int indentation, t_size level, const RECT & rc) override;
 
         void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 

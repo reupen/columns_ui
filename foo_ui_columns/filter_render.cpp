@@ -10,7 +10,7 @@ namespace filter_panel {
         FillRect(dc, rc, br);
     }
 
-    void filter_panel_t::render_item(HDC dc, t_size index, t_size indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc)
+    void filter_panel_t::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool b_focused, const RECT * rc)
     {
         cui::colours::helper p_helper(appearance_client_filter_impl::g_guid);
         const Item* item = get_item(index);
