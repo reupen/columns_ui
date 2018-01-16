@@ -18,12 +18,15 @@ matrix:
   allow_failures:
     - PlatformToolset: LLVM-vs2014
 install:
-- cmd: git submodule update --init --recursive
-- cmd: vcpkg install ms-gsl
+- cmd: |
+    cd C:\Tools\vcpkg
+    git pull
+    .\bootstrap-vcpkg.bat
+    vcpkg install ms-gsl
+    cd %APPVEYOR_BUILD_FOLDER%
+    git submodule update --init --recursive
 build_script:
-- ps: >-
+- ps: |
     $command = 'msbuild "vc15/columns_ui-public.sln" /m /verbosity:normal /p:PlatformToolset=' + $Env:PlatformToolset + ' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
-
     iex $command
-
     $host.SetShouldExit($LASTEXITCODE)
