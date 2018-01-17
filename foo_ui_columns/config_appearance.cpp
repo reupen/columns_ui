@@ -586,8 +586,11 @@ LRESULT appearance_message_window_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPAR
                 {
                     colours_manager_data::entry_ptr_t p_data;
                     g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
-                    if (p_data->colour_mode != cui::colours::colour_mode_custom && (!p_data->colour_mode == cui::colours::colour_mode_global || b_global_custom))
+                    if (p_data->colour_mode == cui::colours::colour_mode_system 
+                            || p_data->colour_mode == cui::colours::colour_mode_themed
+                            || (p_data->colour_mode == cui::colours::colour_mode_global && !b_global_custom)) {
                         m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
+                    }
                 }
             }
             break;
