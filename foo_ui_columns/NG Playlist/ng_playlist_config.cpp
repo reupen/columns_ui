@@ -26,7 +26,7 @@ namespace pvt
         case WM_INITDIALOG:
             SetWindowLongPtr(wnd,DWLP_USER,lp);
             {
-                edit_view_param * ptr = reinterpret_cast<edit_view_param*>(lp);
+                auto * ptr = reinterpret_cast<edit_view_param*>(lp);
                 SetWindowText(wnd, ptr->b_new ? L"Add New Group" : L"Edit Group");
 
                 uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show on all playlists");
@@ -57,7 +57,7 @@ namespace pvt
                 break;
             case IDOK:
                 {
-                    edit_view_param * ptr = reinterpret_cast<edit_view_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                    auto * ptr = reinterpret_cast<edit_view_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                     uGetDlgItemText(wnd,IDC_VALUE,ptr->value.string);
                     ptr->value.filter_type = ((playlist_filter_type)SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE,CB_GETCURSEL,0,0));
                     ptr->value.filter_playlists = (string_utf8_from_window(wnd, IDC_PLAYLIST_FILTER_STRING));
@@ -104,12 +104,12 @@ namespace pvt
             break;
         case WM_NOTIFY:
             {
-                LPNMHDR lpnm = (LPNMHDR)lp;
+                auto lpnm = (LPNMHDR)lp;
                 if (lpnm->idFrom == IDC_GROUPS)
                 {
                     if (lpnm->code == NM_DBLCLK)
                     {
-                        LPNMITEMACTIVATE lpnmia = (LPNMITEMACTIVATE)lp;
+                        auto lpnmia = (LPNMITEMACTIVATE)lp;
                         if (lpnmia->iItem != -1 && (t_size)lpnmia->iItem < g_groups.get_groups().get_count())
                         {
                             edit_view_param p;

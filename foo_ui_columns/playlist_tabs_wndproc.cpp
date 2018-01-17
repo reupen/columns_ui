@@ -48,7 +48,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
     }
     case WM_WINDOWPOSCHANGED:
     {
-        LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+        auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE))
         {
             on_size(lpwp->cx, lpwp->cy);
@@ -60,7 +60,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
         break;
     case WM_GETMINMAXINFO:
     {
-        LPMINMAXINFO lpmmi = LPMINMAXINFO(lp);
+        auto lpmmi = LPMINMAXINFO(lp);
         *lpmmi = mmi;
     }
     return 0;

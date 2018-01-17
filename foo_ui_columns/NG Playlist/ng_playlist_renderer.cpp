@@ -110,7 +110,7 @@ namespace pvt
                 if (style_data[k]->use_frame_left)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_left);
-                    HPEN pen_old = (HPEN)SelectObject(dc, pen);
+                    auto pen_old = (HPEN)SelectObject(dc, pen);
 
                     MoveToEx(dc, rc_subitem.left, rc_subitem.top, nullptr);
                     LineTo(dc, rc_subitem.left, rc_subitem.bottom);
@@ -120,7 +120,7 @@ namespace pvt
                 if (style_data[k]->use_frame_top)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_top);
-                    HPEN pen_old = (HPEN)SelectObject(dc, pen);
+                    auto pen_old = (HPEN)SelectObject(dc, pen);
 
                     MoveToEx(dc, rc_subitem.left, rc_subitem.top, nullptr);
                     LineTo(dc, rc_subitem.right, rc_subitem.top);
@@ -130,7 +130,7 @@ namespace pvt
                 if (style_data[k]->use_frame_right)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_right);
-                    HPEN pen_old = (HPEN)SelectObject(dc, pen);
+                    auto pen_old = (HPEN)SelectObject(dc, pen);
 
                     MoveToEx(dc, rc_subitem.right-1, rc_subitem.top, nullptr);
                     LineTo(dc, rc_subitem.right-1, rc_subitem.bottom);
@@ -140,7 +140,7 @@ namespace pvt
                 if (style_data[k]->use_frame_bottom)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, style_data[k]->frame_bottom);
-                    HPEN pen_old = (HPEN)SelectObject(dc, pen);
+                    auto pen_old = (HPEN)SelectObject(dc, pen);
 
                     MoveToEx(dc, rc_subitem.right-1, rc_subitem.bottom-1, nullptr);
                     LineTo(dc, rc_subitem.left-1, rc_subitem.bottom-1);
@@ -188,7 +188,7 @@ namespace pvt
 
             uih::text_out_colours_tab(dc, text, strlen(text), 2 + indentation*level, 2, &rc, false, cr, true, true, true, uih::ALIGN_LEFT, nullptr, true, true, &text_width);
 
-            LONG cx = (LONG)min(text_width, MAXLONG);
+            auto cx = (LONG)min(text_width, MAXLONG);
 
             RECT rc_line = { cx + 7, rc.top + RECT_CY(rc) / 2, rc.right - 4, rc.top + RECT_CY(rc) / 2 + 1 };
 

@@ -341,7 +341,7 @@ void set_font_size(bool up)
 
 int CALLBACK FontSizesProc(const LOGFONT *plf,  const TEXTMETRIC *ptm, DWORD FontType, LPARAM lp)
 {
-    fontsizeinfo* fn =(fontsizeinfo*)lp;
+    auto* fn =(fontsizeinfo*)lp;
     
     if(FontType != TRUETYPE_FONTTYPE)
     {

@@ -301,7 +301,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd,DWLP_USER,lp);
         {
-            spec_param * ptr = reinterpret_cast<spec_param*>(lp);
+            auto * ptr = reinterpret_cast<spec_param*>(lp);
             ptr->m_scope.initialize(FindOwningPopup(wnd));
             SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, ptr->ptr->mode == MODE_BARS, 0);
             HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
@@ -332,9 +332,9 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         return TRUE;
     case WM_CTLCOLORSTATIC:
         {
-            spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+            auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
             if (GetDlgItem(wnd, IDC_PATCH_FORE) == (HWND)lp) {
-                HDC dc =(HDC)wp;
+                auto dc =(HDC)wp;
                 if (!ptr->br_fore) 
                 {
                     ptr->br_fore = CreateSolidBrush(ptr->cr_fore);
@@ -343,7 +343,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             } 
             else if (GetDlgItem(wnd, IDC_PATCH_BACK) == (HWND)lp) 
             {
-                HDC dc =(HDC)wp;
+                auto dc =(HDC)wp;
                 if (!ptr->br_back) 
                 {
                     ptr->br_back = CreateSolidBrush(ptr->cr_back);
@@ -362,7 +362,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             return TRUE;
         case IDC_CHANGE_BACK:
             {
-                spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 COLORREF COLOR = ptr->cr_back;
                 COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_BACK),GetSysColor(COLOR_3DFACE),0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                 if (uChooseColor(&COLOR, wnd, &COLORS[0]))
@@ -375,7 +375,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             break;
         case IDC_CHANGE_FORE:
             {
-                spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 COLORREF COLOR = ptr->cr_fore;
                 COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_TEXT),GetSysColor(COLOR_3DSHADOW),0,0,0,0,0,0,0,0,0,0,0,0,0,0};
                 if (uChooseColor(&COLOR, wnd, &COLORS[0]))
@@ -388,31 +388,31 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             break;
         case IDC_BARS:
             {
-                spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 ptr->mode = (SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != TRUE ? MODE_STANDARD : MODE_BARS);
             }
             break;
         case IDC_FRAME_COMBO|(CBN_SELCHANGE<<16):
             {
-                spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 ptr->frame = ComboBox_GetCurSel(HWND(lp));
             }
             break;
         case IDC_SCALE|(CBN_SELCHANGE<<16):
             {
-                spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 ptr->m_scale = ComboBox_GetCurSel(HWND(lp));
             }
             break;
         case IDC_VERTICAL_SCALE|(CBN_SELCHANGE<<16):
             {
-                spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 ptr->m_vertical_scale = ComboBox_GetCurSel(HWND(lp));
             }
             break;
         case IDOK:
             {
-                spec_param * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 EndDialog(wnd,1);
             }
             return TRUE;

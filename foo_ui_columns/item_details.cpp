@@ -726,7 +726,7 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
                 g_message_window.create(nullptr);
             g_windows.push_back(this);
 
-            LPCREATESTRUCT lpcs = (LPCREATESTRUCT)lp;
+            auto lpcs = (LPCREATESTRUCT)lp;
 
             static_api_ptr_t<titleformat_compiler>()->compile_safe(m_to, m_script);
 
@@ -768,7 +768,7 @@ LRESULT item_details_t::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         break;
     case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE) || (lpwp->flags & SWP_FRAMECHANGED))
             {
                 on_size(lpwp->cx, lpwp->cy);

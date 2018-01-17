@@ -316,7 +316,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         }
         case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 //SIZE sz = {0,0};
@@ -438,7 +438,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         }
         case WM_GETMINMAXINFO:
         {
-            LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+            auto mmi = LPMINMAXINFO(lp);
 
             RECT rc = { 0,0,0,0 };
             SendMessage(wnd_menu, TB_GETITEMRECT, m_buttons.get_count() - 1, (LPARAM)(&rc));

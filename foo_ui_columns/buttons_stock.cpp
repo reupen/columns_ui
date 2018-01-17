@@ -64,7 +64,7 @@ class button_menu_item_with_bitmap : public uie::button_v2
 
     HANDLE get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, unsigned cx_hint, unsigned cy_hint, unsigned & handle_type) const override
     {
-        HICON icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IconID), IMAGE_ICON, cx_hint, cy_hint, NULL);
+        auto icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IconID), IMAGE_ICON, cx_hint, cy_hint, NULL);
         handle_type = uie::button_v2::handle_type_icon;
         return (HANDLE)icon;
     }

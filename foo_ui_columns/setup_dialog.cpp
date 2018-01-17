@@ -149,7 +149,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return 0;
     case WM_NOTIFY:
     {
-        LPNMHDR lpnm = (LPNMHDR)lp;
+        auto lpnm = (LPNMHDR)lp;
         switch (lpnm->idFrom)
         {
         case IDC_COLUMNS:
@@ -158,7 +158,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             {
             case LVN_ITEMCHANGED:
             {
-                LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
+                auto lpnmlv = (LPNMLISTVIEW)lp;
                 if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (t_size)lpnmlv->iItem < m_presets.get_count())
                 {
                     if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED))

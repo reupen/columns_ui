@@ -122,7 +122,7 @@ unsigned int playlist_view::calculate_header_height()
     unsigned rv = 0;
     if (wnd_header)
     {
-        HFONT font = (HFONT)SendMessage(wnd_header, WM_GETFONT, 0, 0);
+        auto font = (HFONT)SendMessage(wnd_header, WM_GETFONT, 0, 0);
         rv = uGetFontHeight(font) + 5;
     }
     return rv;

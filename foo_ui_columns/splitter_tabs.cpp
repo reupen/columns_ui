@@ -582,7 +582,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
         break;
     case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 on_size_changed(lpwp->cx, lpwp->cy);
@@ -594,7 +594,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
         break;*/
     case WM_GETMINMAXINFO:
         {
-            LPMINMAXINFO lpmmi = (LPMINMAXINFO)lp;
+            auto lpmmi = (LPMINMAXINFO)lp;
 
             lpmmi->ptMinTrackSize.y = m_size_limits.min_height;
             lpmmi->ptMinTrackSize.x = m_size_limits.min_width;

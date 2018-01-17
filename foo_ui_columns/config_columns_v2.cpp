@@ -644,7 +644,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 
                     if (cmd) {
                         int & idx = item;
-                        HWND wnd_lv = HWND(wp);
+                        auto wnd_lv = HWND(wp);
                         if (cmd == ID_NEW) {
                             column_t::ptr temp = new column_t;
                             temp->name = "New Column";
@@ -724,14 +724,14 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
             return 0;
         case WM_NOTIFY:
             {
-                LPNMHDR lpnm = (LPNMHDR)lp;
+                auto lpnm = (LPNMHDR)lp;
                 switch (lpnm->idFrom) {
                     case IDC_COLUMNS:
                         {
                             switch (lpnm->code) {
                                 case LVN_ITEMCHANGED:
                                     {
-                                        LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
+                                        auto lpnmlv = (LPNMLISTVIEW)lp;
                                         if (m_child.is_valid()) {
                                             if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (t_size)lpnmlv->iItem < m_columns.get_count()) {
                                                 if ((lpnmlv->uNewState & LVIS_SELECTED) != (lpnmlv->uOldState & LVIS_SELECTED))

@@ -217,7 +217,7 @@ namespace artwork_panel
             return FALSE;
         case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 flush_cached_bitmap();

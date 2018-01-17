@@ -55,7 +55,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
         return (BOOL)GetSysColorBrush(COLOR_WINDOW);
     case WM_NOTIFY:
     {
-        LPNMHDR lpnm = (LPNMHDR)lp;
+        auto lpnm = (LPNMHDR)lp;
         switch (lpnm->idFrom)
         {
         case IDC_INFOSECTIONS:
@@ -63,7 +63,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
             {
             case LVN_ITEMCHANGED:
             {
-                LPNMLISTVIEW lpnmlv = (LPNMLISTVIEW)lp;
+                auto lpnmlv = (LPNMLISTVIEW)lp;
                 if (!m_initialising && lpnmlv->iItem < tabsize(g_info_sections) && (lpnmlv->uChanged & LVIF_STATE))
                 {
                     m_info_sections_mask = m_info_sections_mask & ~(1 << g_info_sections[lpnmlv->iItem].id);

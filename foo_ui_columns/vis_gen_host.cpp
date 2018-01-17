@@ -183,14 +183,14 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
             }
         case WM_GETMINMAXINFO:
             {
-                LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+                auto mmi = LPMINMAXINFO(lp);
                 mmi->ptMinTrackSize.x = uih::scale_dpi_value(50);
 
                 return 0;
             }
         case WM_WINDOWPOSCHANGED:
             {
-                LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+                auto lpwp = (LPWINDOWPOS)lp;
                 if (!(lpwp->flags & SWP_NOSIZE)) {
                     GetClientRect(wnd, &rc_client);
                     flush_bitmap();

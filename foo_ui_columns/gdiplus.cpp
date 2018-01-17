@@ -82,7 +82,7 @@ HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData & pB
 
     if (data)
     {
-        char * ptr = (char*)data;
+        auto * ptr = (char*)data;
 
         GdiFlush();
 
@@ -101,7 +101,7 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
     file::ptr p_file;
     filesystem::g_get_canonical_path(fn, canPath);
     filesystem::g_open_read(p_file, canPath, p_abort);
-    t_size fsize = gsl::narrow<t_size>(p_file->get_size_ex(p_abort));
+    auto fsize = gsl::narrow<t_size>(p_file->get_size_ex(p_abort));
     pfc::array_staticsize_t<t_uint8> buffer(fsize);
     p_file->read(buffer.get_ptr(), fsize, p_abort);
     p_file.release();

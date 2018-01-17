@@ -124,7 +124,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, uih::TranslucentFillWi
             g_append_menu_panels(menu_add, panels, ID_PARENT_ADD_BASE);
             AppendMenu(menu, MF_STRING|MF_POPUP, (UINT_PTR)menu_add, L"Add panel");
         }
-        unsigned cmd = (unsigned)TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,wnd,nullptr);
+        auto cmd = (unsigned)TrackPopupMenu(menu, TPM_RIGHTBUTTON|TPM_NONOTIFY|TPM_RETURNCMD,pt_menu.x,pt_menu.y,0,wnd,nullptr);
         p_overlay.destroy();
         {
             {

@@ -254,7 +254,7 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             SetWindowText(wnd, _T("FCL import results"));
             HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
             uih::list_view_set_explorer_theme(wnd_lv);
-            t_import_results_data * p_data = reinterpret_cast<t_import_results_data*>(lp);
+            auto * p_data = reinterpret_cast<t_import_results_data*>(lp);
 
             SetWindowText(GetDlgItem(wnd, IDC_CAPTION), 
                 (p_data->m_aborted ? _T("The layout import was aborted because the following required panels are not installed:") : _T("Some parts of the layout may not have imported because the following panels are not installed:"))

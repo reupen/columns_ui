@@ -329,7 +329,7 @@ static BOOL CALLBACK RenameProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd,DWLP_USER,lp);
         {
-            rename_param * ptr = (rename_param *)lp;
+            auto * ptr = (rename_param *)lp;
             ptr->m_scope.initialize(FindOwningPopup(wnd));
             pfc::string_formatter formatter;
             formatter << R"(Rename playlist: ")" << *ptr->m_text << R"(")";
@@ -342,7 +342,7 @@ static BOOL CALLBACK RenameProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         {
         case IDOK:
             {
-                rename_param * ptr = (rename_param *)GetWindowLong(wnd,DWLP_USER);
+                auto * ptr = (rename_param *)GetWindowLong(wnd,DWLP_USER);
                 uGetDlgItemText(wnd,IDC_EDIT,*ptr->m_text);
                 EndDialog(wnd,1);
             }

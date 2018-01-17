@@ -205,7 +205,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     }
     else if (msg == WM_WINDOWPOSCHANGED)
     {
-        LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+        auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE))
         {
             SetWindowPos(wnd_combo, nullptr, 0, 0, lpwp->cx, 300, SWP_NOZORDER);
@@ -233,7 +233,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     }
     else if (msg == WM_GETMINMAXINFO)
     {
-        LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+        auto mmi = LPMINMAXINFO(lp);
 
         mmi->ptMinTrackSize.x = min_width;
         mmi->ptMinTrackSize.y = height;

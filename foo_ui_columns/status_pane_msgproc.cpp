@@ -42,7 +42,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         return FALSE;
     case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 t_size vol_cy = GetSystemMetrics(SM_CYSMICON)*3/2, vol_cx = vol_cy * 4;
@@ -58,7 +58,7 @@ LRESULT status_pane::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         {
             if (lp & PRF_ERASEBKGND)
             {
-                HDC dc = (HDC)wp;
+                auto dc = (HDC)wp;
 
 
                 RECT rc;

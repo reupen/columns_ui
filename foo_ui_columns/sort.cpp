@@ -6,7 +6,7 @@ void create_image_list() /*sort arrows*/
 {
     g_imagelist = ImageList_Create(12, 11, ILC_COLOR|ILC_MASK, 2, 0);
     
-    HBITMAP g_down = (HBITMAP)uLoadImage(core_api::get_my_instance(), uMAKEINTRESOURCE(IDB_ARROWS), IMAGE_BITMAP, 0, 0, 0);
+    auto g_down = (HBITMAP)uLoadImage(core_api::get_my_instance(), uMAKEINTRESOURCE(IDB_ARROWS), IMAGE_BITMAP, 0, 0, 0);
     ImageList_AddMasked(g_imagelist, g_down, 0xFFFFFF); 
     
     DeleteObject(g_down);

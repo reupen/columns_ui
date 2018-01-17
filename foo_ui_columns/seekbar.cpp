@@ -66,7 +66,7 @@ void seek_bar_extension::update_seek_pos()
         if (position > length)
             position = length;
 
-        int pos_display = (int) (10.0 * position);
+        auto pos_display = (int) (10.0 * position);
         m_child.set_position(pos_display);
     }
 }
@@ -105,7 +105,7 @@ void seek_bar_extension::update_seek()
 
         m_child.set_range((int)(10 * length));//VC8
 
-        int pos_display = (int) (10.0 * position);
+        auto pos_display = (int) (10.0 * position);
         m_child.set_position(pos_display);
 
         if (play_api->playback_can_seek()/* && play_api->playback_get_length()*/)
@@ -155,7 +155,7 @@ LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         case WM_WINDOWPOSCHANGED:
             {
-                LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+                auto lpwp = (LPWINDOWPOS)lp;
                 if (!(lpwp->flags & SWP_NOSIZE)) {
                     SetWindowPos(wnd_seekbar, nullptr, 0, 0, lpwp->cx, lpwp->cy, SWP_NOZORDER);
                 }
@@ -163,7 +163,7 @@ LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         case WM_GETMINMAXINFO:
             {
-                LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+                auto mmi = LPMINMAXINFO(lp);
                 mmi->ptMinTrackSize.y = uih::scale_dpi_value(21);
 
                 return 0;

@@ -71,7 +71,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_WINDOWPOSCHANGED:
     {
-        LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+        auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE))
         {
             on_size(lpwp->cx, lpwp->cy);
@@ -883,7 +883,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     int new_pos = horizontal_offset;
                     int old_pos = horizontal_offset;
 
-                    int scroll_lines = gsl::narrow<int>(GetNumScrollLines());
+                    auto scroll_lines = gsl::narrow<int>(GetNumScrollLines());
 
                     int zDelta = short(HIWORD(wp));
 

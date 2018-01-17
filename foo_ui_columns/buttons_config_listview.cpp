@@ -3,7 +3,7 @@
 
 CLIPFORMAT toolbar_extension::config_param::t_button_list_view::g_clipformat()
 {
-    static CLIPFORMAT cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIuih::ListViewStandardClipFormat");
+    static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIuih::ListViewStandardClipFormat");
     return cf;
 }
 
@@ -38,7 +38,7 @@ bool toolbar_extension::config_param::t_button_list_view::do_drag_drop(WPARAM wp
     HGLOBAL glb = GlobalAlloc(GPTR, sizeof(DDData));
     if (glb)
     {
-        DDData * pddd = (DDData*)glb;
+        auto * pddd = (DDData*)glb;
         pddd->version = 0;
         pddd->wnd = get_wnd();
 
