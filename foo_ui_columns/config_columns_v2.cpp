@@ -4,7 +4,7 @@
 #include "config_columns_v2.h"
 
 extern cfg_int g_cur_tab;
-extern cfg_int g_last_colour;
+extern cfg_uint g_last_colour;
 
 enum {MSG_COLUMN_NAME_CHANGED = WM_USER+2,MSG_SELECTION_CHANGED};
 struct column_times

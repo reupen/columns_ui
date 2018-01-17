@@ -124,7 +124,7 @@ HBITMAP g_load_png_wic(HDC dc, const char * fn)
         abort_callback_dummy p_abort;
         file::ptr p_file;
         filesystem::g_open_read(p_file, fn, p_abort);
-        t_size fsize = pfc::downcast_guarded<t_size>(p_file->get_size_ex(p_abort));
+        t_size fsize = gsl::narrow<t_size>(p_file->get_size_ex(p_abort));
         pfc::array_staticsize_t<t_uint8> buffer(fsize);
         p_file->read(buffer.get_ptr(), fsize, p_abort);
         p_file.release();

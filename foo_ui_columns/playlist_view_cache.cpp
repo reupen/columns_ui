@@ -515,14 +515,14 @@ unsigned playlist_view::g_columns_get_width(unsigned column)
     return columns[g_cache.active_column_active_to_actual(column)]->width;
 }
 
-unsigned playlist_view::get_columns_total_width() const
+int playlist_view::get_columns_total_width() const
 {    
     pfc::array_t<int, pfc::alloc_fast_aggressive> widths;
     widths.prealloc(g_cache.active_column_get_active_count());
     return get_column_widths(widths);
 }
 
-unsigned playlist_view::get_column_width(unsigned column1) const
+int playlist_view::get_column_width(unsigned column1) const
 {    
     pfc::array_t<int, pfc::alloc_fast_aggressive> widths;
     widths.prealloc(g_cache.active_column_get_active_count());

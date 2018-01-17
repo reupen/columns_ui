@@ -408,7 +408,7 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback & p_abo
                                     if (file.is_valid())
                                     {
                                         service_ptr_t<album_art_data_impl> ptr = new service_impl_t<album_art_data_impl>;
-                                        ptr->from_stream(file.get_ptr(), pfc::downcast_guarded<t_size>(file->get_size_ex(p_abort)), p_abort);
+                                        ptr->from_stream(file.get_ptr(), gsl::narrow<t_size>(file->get_size_ex(p_abort)), p_abort);
                                         b_found = true;
                                         album_art_data_ptr data = ptr;
                                         m_content.set(*walk, data);

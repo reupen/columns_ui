@@ -83,9 +83,9 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
         }
         else
         {
-            target = indices[0] > scroll_item_offset ? indices[indices_count - 1] : indices[0];
+            target = indices[0] > gsl::narrow<unsigned>(scroll_item_offset) ? indices[indices_count - 1] : indices[0];
             //else target = !start_visible ? indices[0] : indices[indices_count-1];
-            scroll(scroll_vertically, scroll_position_delta, target - scroll_item_offset - (target > scroll_item_offset ? (si.nPage > 1 ? si.nPage - 1 : 0) : 0));
+            scroll(scroll_vertically, scroll_position_delta, target - scroll_item_offset - (target > gsl::narrow<unsigned>(scroll_item_offset) ? (si.nPage > 1 ? si.nPage - 1 : 0) : 0));
         }
     }
 
@@ -105,6 +105,7 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
     RECT rc_playlist, rc_items;
     GetClientRect(wnd_playlist, &rc_playlist);
     get_playlist_rect(&rc_items);
+    const auto playlist_width = static_cast<int>(rc_items.bottom - rc_items.top);
 
     int font_height = uGetFontHeight(g_font);
     int header_height = get_header_height();
@@ -112,7 +113,7 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
     int y = (indices[0] - scroll_item_offset)*item_height + header_height;
     if (y < header_height) y = header_height;
     int cx = get_column_width(column);
-    int cy = min(item_height*indices_spread, rc_items.bottom - rc_items.top);
+    int cy = (std::min)(item_height*gsl::narrow<int>(indices_spread), playlist_width);
 
     if (x - horizontal_offset + cx > rc_playlist.right)
         scroll(scroll_horizontally, scroll_position_delta, x - horizontal_offset + (cx > rc_playlist.right ? 0 : cx - rc_playlist.right));

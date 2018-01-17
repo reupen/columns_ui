@@ -17,7 +17,7 @@ int playlist_view::hittest_item(int x, int y, bool check_in_column)
     int idx = ((y - get_header_height()) / item_height) + scroll_item_offset;
     static_api_ptr_t<playlist_manager> playlist_api;
 
-    if (idx >= 0 && idx < playlist_api->activeplaylist_get_item_count())
+    if (idx >= 0 && static_cast<t_size>(idx) < playlist_api->activeplaylist_get_item_count())
         return idx;
     else
         return -1;

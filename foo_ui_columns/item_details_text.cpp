@@ -380,7 +380,8 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
                 }
             }
 
-            t_size widthCuml = 0, ptrStart = ptr;
+            int widthCuml = 0;
+            t_size ptrStart = ptr;
 
             bool bWrapped = false;
             t_size textWrappedPtr = 0, ptrLengthNoColours = 0, ptrLength = 0; // no colour codes
@@ -440,7 +441,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
                     widthCuml += character_extents[ptrCharacterExtent + max_chars - 1];
                 }
 
-                for (t_size k = 0; k < max_chars; k++)
+                for (int k = 0; k < max_chars; k++)
                     character_extents[ptrCharacterExtent + k] += ptrTextWidthPrev;
 
                 ptrCharacterExtent += length_chars_no_colours;
@@ -492,7 +493,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text
                         widthCuml += character_extents[ptrCharacterExtent + max_chars - 1];
                     }
                 }
-                for (t_size k = 0; k < max_chars; k++)
+                for (int k = 0; k < max_chars; k++)
                     character_extents[ptrCharacterExtent + k] += ptrTextWidthPrev;
                 ptrCharacterExtent += length_chars_no_colours;
             }
@@ -742,7 +743,7 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
         if (i < count)
         {
             ptr += newLineDataWrapped[i].m_raw_bytes;
-            while (fontPtr < fontChangesCount && (ptr - rawText) > p_font_data.m_font_changes[fontPtr].m_text_index) fontPtr++;
+            while (fontPtr < fontChangesCount && gsl::narrow<t_size>(ptr - rawText) > p_font_data.m_font_changes[fontPtr].m_text_index) fontPtr++;
         }
     }
     bool b_fontChanged = false;
@@ -815,14 +816,14 @@ void g_text_out_multiline_font(HDC dc, const RECT & rc_topleft, t_size line_heig
         {
             int width = NULL;
             t_size ptrThisCount = ptrRemaining;
-            if (ptr - rawText < p_font_data.m_font_changes[fontPtr].m_text_index)
+            if (gsl::narrow<t_size>(ptr - rawText) < p_font_data.m_font_changes[fontPtr].m_text_index)
                 ptrThisCount = p_font_data.m_font_changes[fontPtr].m_text_index - (ptr - rawText);
             else if (thisFontChangeCount>1)
                 ptrThisCount = p_font_data.m_font_changes[fontPtr + 1].m_text_index - (ptr - rawText);
 
             //rc_line.top = rc_line.bottom - 4 - p_font_data.m_fonts[p_font_data.m_font_changes[fontPtr].m_font_index]->m_height;
 
-            if ((ptr - rawText) >= p_font_data.m_font_changes[fontPtr].m_text_index)
+            if (gsl::narrow<t_size>(ptr - rawText) >= p_font_data.m_font_changes[fontPtr].m_text_index)
             {
                 HFONT fnt = SelectFont(dc, p_font_data.m_font_changes[fontPtr].m_font->m_font.get());
                 if (!b_fontChanged)

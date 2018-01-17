@@ -31,8 +31,8 @@ ULONG STDMETHODCALLTYPE IDropSource_playlist::Release()
 
 HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState)
 {
-    if (fEscapePressed || (p_playlist->g_dragging1 &&  grfKeyState&MK_LBUTTON) || (!p_playlist->g_dragging1 && ((grfKeyState&MK_RBUTTON) || !(grfKeyState&MK_CONTROL)))) { return DRAGDROP_S_CANCEL; }
-    else if ((p_playlist->g_dragging1 && !(grfKeyState&MK_RBUTTON)) || (!p_playlist->g_dragging1 && !(grfKeyState&MK_LBUTTON)))
+    if (fEscapePressed || (p_playlist->m_rmb_is_dragging &&  grfKeyState&MK_LBUTTON) || (!p_playlist->m_rmb_is_dragging && ((grfKeyState&MK_RBUTTON) || !(grfKeyState&MK_CONTROL)))) { return DRAGDROP_S_CANCEL; }
+    else if ((p_playlist->m_rmb_is_dragging && !(grfKeyState&MK_RBUTTON)) || (!p_playlist->m_rmb_is_dragging && !(grfKeyState&MK_LBUTTON)))
     {
         return DRAGDROP_S_DROP;
     }

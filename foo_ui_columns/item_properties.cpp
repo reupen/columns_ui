@@ -848,7 +848,7 @@ bool selection_properties_t::notify_before_create_inline_edit(const pfc::list_ba
     return false;
 }
 
-void selection_properties_t::notify_on_column_size_change(t_size index, t_size new_width)
+void selection_properties_t::notify_on_column_size_change(t_size index, int new_width)
 {
     if (index == 0)
         m_column_name_width = new_width;

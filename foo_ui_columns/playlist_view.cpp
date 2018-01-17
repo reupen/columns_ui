@@ -17,8 +17,8 @@ playlist_view::playlist_view()
     m_edit_changed(false), m_inline_edit_proc(nullptr),    initialised(false),    dragged(true),
     drag_type(0), dragitem(0), dragstartitem(0), last_idx(-1), last_column(-1)
 //#ifdef INLINE_EDIT
-    , g_shift_item_start(0),    g_dragging(false), g_drag_lmb(false),
-    g_dragging1(false),
+    , g_shift_item_start(0), g_drag_lmb(false),
+    m_rmb_is_dragging(false),
     scroll_item_offset(0),
     horizontal_offset(0), m_always_show_focus(false), m_prevent_wm_char_processing(false), MENU_A_BASE(1), MENU_B_BASE(0),
     m_shown(false), m_theme(nullptr)
@@ -75,7 +75,7 @@ bool playlist_view::is_item_clipped(int idx, int col)
     SelectObject(hdc, g_font);
     int width = uih::get_text_width_colour(hdc, text, text.length());
     ReleaseDC(wnd_playlist, hdc);
-    unsigned col_width = get_column_width(col);
+    const auto col_width = get_column_width(col);
 
     //    console::info(pfc::string_printf("%i %i",width+4, col_width));
 
@@ -196,7 +196,7 @@ unsigned playlist_view::get_last_viewable_item()
     int items = ((rect.bottom-rect.top)/item_height);
 
     static_api_ptr_t<playlist_manager> playlist_api;
-    int total = playlist_api->activeplaylist_get_item_count();
+    const auto total = playlist_api->activeplaylist_get_item_count();
     rv = items + scroll_item_offset - 1;
     if (rv >= total) rv = total-1; 
 
@@ -251,10 +251,11 @@ void playlist_view::get_playlist_rect(RECT * out)
 
 
 
-unsigned playlist_view::get_column_widths(pfc::array_t<int, pfc::alloc_fast_aggressive> & out) const
+int playlist_view::get_column_widths(pfc::array_t<int, pfc::alloc_fast_aggressive> & out) const
 {
     const pfc::bit_array & p_mask = g_cache.active_get_columns_mask();
-    unsigned n,t = columns.get_count(),nw=0,i;
+    unsigned n,t = columns.get_count(),i;
+    int nw = 0;
 
     unsigned ac = 0;
     for (n=0;n<t;n++) if  (p_mask[n]) ac++;
@@ -417,7 +418,7 @@ public:
             playlist_view::g_get_cache().on_items_reordered(p_index, order, count);
             if (b_active)
             {
-                int n,start=0;
+                t_size n,start=0;
                 for(n=0;n<count;n++)
                 {
                     start=n;
@@ -481,7 +482,7 @@ public:
                     playlist_view * p_playlist = playlist_view::list_playlist.get_item(n);
                     if (p_playlist->wnd_playlist)
                     {
-                        int n,start=0;
+                        t_size n, start=0;
                         unsigned count = static_api_ptr_t<playlist_manager>()->activeplaylist_get_item_count();
                         for(n=0;n<count;n++)
                         {

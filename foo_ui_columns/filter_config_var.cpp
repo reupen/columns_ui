@@ -77,7 +77,7 @@ namespace filter_panel {
     void cfg_fields_t::get_data_raw(stream_writer * p_stream, abort_callback & p_abort)
     {
         p_stream->write_lendian_t((t_uint32)stream_version_current, p_abort);
-        t_uint32 i, count = pfc::downcast_guarded<uint32_t>(get_count());
+        t_uint32 i, count = gsl::narrow<uint32_t>(get_count());
         p_stream->write_lendian_t(count, p_abort);
         for (i = 0; i<count; i++)
         {
@@ -146,7 +146,7 @@ namespace filter_panel {
 
     void cfg_favouriteslist::get_data_raw(stream_writer * p_stream, abort_callback & p_abort) 
     {
-        t_uint32 n, m = pfc::downcast_guarded<t_uint32>(get_count()), v = 0;
+        t_uint32 n, m = gsl::narrow<t_uint32>(get_count()), v = 0;
         p_stream->write_lendian_t(v, p_abort);
         p_stream->write_lendian_t(m, p_abort);
         for (n = 0; n<m; n++) p_stream->write_string(get_item(n), p_abort);
