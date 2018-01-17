@@ -551,7 +551,7 @@ void playlist_view_cache::flush_columns(unsigned playlist)
     //could change so doesnt do anythng if not using playlist filters
     playlist_cache * p_cache = get_item(playlist);
     p_cache->m_active_columns.resize(0);
-    p_cache->m_active_columns_valid = 0;
+    p_cache->m_active_columns_valid = false;
     flush_sort(playlist);
 }
 

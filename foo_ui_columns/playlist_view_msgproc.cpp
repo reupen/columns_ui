@@ -367,7 +367,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     break;
     case WM_LBUTTONDOWN:
     {
-        if (0 && g_tooltip)
+        if (false && g_tooltip)
         {
             MSG message;
             memset(&message, 0, sizeof(MSG));
@@ -490,7 +490,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     case WM_LBUTTONUP:
     {
-        if (0 && g_tooltip)
+        if (false && g_tooltip)
         {
             MSG message;
             memset(&message, 0, sizeof(MSG));
@@ -561,7 +561,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     break;
     case WM_MOUSEMOVE:
     {
-        if (0 && g_tooltip)
+        if (false && g_tooltip)
         {
             MSG message;
             memset(&message, 0, sizeof(MSG));
@@ -866,7 +866,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_MOUSEWHEEL:
     {//GET_WHEEL_DELTA_WPARAM
         exit_inline_edit();
-        if (1 || (wp & MK_CONTROL))
+        if (true || (wp & MK_CONTROL))
         {
 
             LONG_PTR style = GetWindowLongPtr(wnd_playlist, GWL_STYLE);
@@ -1152,7 +1152,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             //DWORD mp = GetMessagePos();
             POINT px, pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
             static_api_ptr_t<playlist_manager> playlist_api;
-            if (playlist_api->activeplaylist_get_selection_count(1) > 0 && 1)
+            if (playlist_api->activeplaylist_get_selection_count(1) > 0 && true)
             {
                 if (pt.x == -1 && pt.y == -1)
                 {

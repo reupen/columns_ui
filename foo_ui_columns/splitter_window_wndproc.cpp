@@ -173,7 +173,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                 lpmmi->ptMaxTrackSize.x = MAXLONG;
         }
 
-        if (0)
+        if (false)
         {
             lpmmi->ptMinTrackSize.y = 0;
             if (get_orientation() == horizontal) lpmmi->ptMaxTrackSize.x = 0;

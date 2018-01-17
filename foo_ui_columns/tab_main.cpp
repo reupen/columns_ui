@@ -121,7 +121,7 @@ public:
     }
 } g_tab_main;
 
-bool tab_main::initialised = 0;
+bool tab_main::initialised = false;
 
 preferences_tab * g_get_tab_main()
 {

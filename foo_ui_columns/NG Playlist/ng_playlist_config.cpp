@@ -49,7 +49,7 @@ namespace pvt
                 break;
             case (CBN_SELCHANGE<<16)|IDC_PLAYLIST_FILTER_TYPE:
                 {
-                    if (1) 
+                    if (true) 
                     {
                         EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), ((playlist_filter_type)SendMessage((HWND)lp,CB_GETCURSEL,0,0)) != FILTER_NONE);
                     }

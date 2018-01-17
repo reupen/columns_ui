@@ -76,7 +76,7 @@ void toolbar_extension::config_param::import_from_stream(stream_reader * p_file,
         p_file->read_lendian_t(vers, p_abort);
         if (vers > VERSION_CURRENT)
             throw "Fcb version is newer than component";
-        while (1) //!p_file.is_eof(p_abort)
+        while (true) //!p_file.is_eof(p_abort)
         {
             t_identifier id;
             try {

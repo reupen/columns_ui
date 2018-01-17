@@ -106,7 +106,7 @@ class tab_layout_new : public preferences_tab
         if (e.first(l))
             do
             {
-                if (1)
+                if (true)
                 {
                     uie::window_info_simple info;
 

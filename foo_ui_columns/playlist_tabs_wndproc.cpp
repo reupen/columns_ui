@@ -121,7 +121,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
     case WM_TIMER:
         if (wp == SWITCH_TIMER_ID)
         {
-            m_switch_timer = 0;
+            m_switch_timer = false;
             KillTimer(wnd, SWITCH_TIMER_ID);
             if (!m_playlist_switched)
             {

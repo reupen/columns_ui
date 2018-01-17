@@ -48,7 +48,7 @@ void status_pane::render_background (HDC dc, const RECT & rc)
 
     COLORREF cr = GetSysColor(COLOR_BTNFACE);
     COLORREF cr2 = GetSysColor(COLOR_3DDKSHADOW);
-    if (0 && m_theme)
+    if (false && m_theme)
     {
         //GetThemeColor(m_theme, 1, 0, TMT_EDGEHIGHLIGHTCOLOR, &cr);
         //GetThemeColor(m_theme, 1, 0, TMT_EDGEDKSHADOWCOLOR, &cr2);

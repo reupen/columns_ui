@@ -234,7 +234,7 @@ public:
 } g_tab_display2;
 
 menu_item_cache * tab_display2::p_menu_cache = nullptr;
-bool tab_display2::initialised = 0;
+bool tab_display2::initialised = false;
 
 preferences_tab * g_get_tab_display2()
 {

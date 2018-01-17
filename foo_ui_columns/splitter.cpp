@@ -11,7 +11,7 @@ void g_get_panel_list(uie::window_info_list_simple & p_out, uie::window_host_ptr
     if (e.first(l))
         do
         {
-            if (1)
+            if (true)
             {
                 uie::window_info_simple info;
 

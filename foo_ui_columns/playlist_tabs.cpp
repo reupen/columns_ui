@@ -116,7 +116,7 @@ void playlists_tabs_extension::kill_switch_timer()
 {
     if (m_switch_timer)
     {
-        m_switch_timer = 0;
+        m_switch_timer = false;
         KillTimer(get_wnd(), SWITCH_TIMER_ID);
     }
 }
@@ -231,7 +231,7 @@ bool playlists_tabs_extension::create_tabs()
         int cy = 0;
 
         wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Playlist switcher"),
-            WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | (t>1 ? TCS_MULTILINE : 0) | (1 ? WS_VISIBLE : 0), x, y, cx, cy,
+            WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | (t>1 ? TCS_MULTILINE : 0) | (true ? WS_VISIBLE : 0), x, y, cx, cy,
             m_host_wnd, HMENU(5002), core_api::get_my_instance(), nullptr);
 
         if (wnd_tabs)
@@ -399,7 +399,7 @@ LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONUP:
         {
-            if (cfg_mclick || 1 || cfg_plm_rename) //in actuality we dont get messages when mouse not on tab here.
+            if (cfg_mclick || true || cfg_plm_rename) //in actuality we dont get messages when mouse not on tab here.
             {
                 TCHITTESTINFO hittest;
                 hittest.pt.x = GET_X_LPARAM(lp);
@@ -411,7 +411,7 @@ LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd,UINT msg,WPARAM wp,LPARAM
                     if (cfg_mclick && msg == WM_MBUTTONUP) {remove_playlist_helper(idx);}
                     if (cfg_plm_rename && msg == WM_LBUTTONDBLCLK) {g_rename_playlist(idx, get_wnd());}
                 }
-                else if (1) 
+                else if (true) 
                 {
                     unsigned new_idx = playlist_api->create_playlist(pfc::string8("Untitled"),pfc_infinite,playlist_api->get_playlist_count());
                     playlist_api->set_active_playlist(new_idx);
