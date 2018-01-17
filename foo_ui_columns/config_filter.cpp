@@ -76,7 +76,7 @@ static class tab_filter_fields : public preferences_tab
 {
     t_list_view_filter m_field_list;
 public:
-    tab_filter_fields()  {};
+    tab_filter_fields()  = default;
 
     void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem> & items)
     {
@@ -260,7 +260,7 @@ private:
 static class tab_filter_misc : public preferences_tab
 {
 public:
-    tab_filter_misc()  {};
+    tab_filter_misc()  = default;
 
     void refresh_me(HWND wnd)
     {

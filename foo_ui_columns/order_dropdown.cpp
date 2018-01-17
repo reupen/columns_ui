@@ -76,8 +76,8 @@ public:
     static LRESULT WINAPI main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
     LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
-    order_extension();
-    ~order_extension();
+    order_extension() = default;
+    ~order_extension() = default;
 
     static const GUID extension_guid;
 
@@ -129,13 +129,6 @@ public:
 };
 
 HFONT order_extension::font_icon = nullptr;
-
-order_extension::order_extension()  
-{
-};
-
-order_extension::~order_extension()
-= default;
 
 const TCHAR * order_extension::class_name = _T("{ABA09E7E-9C95-443e-BDFC-049D66B324A0}");
 

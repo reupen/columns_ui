@@ -321,7 +321,7 @@ public:
         }
 
         metadata_field_t(const char * field) : m_name(field), m_truncated(false) {};
-        metadata_field_t()  {};
+        metadata_field_t()  = default;
 
     };
 

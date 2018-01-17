@@ -43,7 +43,7 @@ public:
         bool checked{true};
         t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)), checked(true)
         {};
-        t_node()  {};
+        t_node()  = default;
     };
     //cui::fcl::group_list m_groups;
     pfc::list_t<t_node> m_nodes;

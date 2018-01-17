@@ -101,9 +101,7 @@ public:
     GUID m_guid{};
     t_uint32 m_sort_priority{NULL};
 
-    mainmenu_root_group()
-         
-    {};
+    mainmenu_root_group() = default;
 
     static t_size g_compare(const mainmenu_root_group & p_item1, const mainmenu_root_group&p_item2)
     {

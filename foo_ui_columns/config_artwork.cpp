@@ -31,7 +31,7 @@ artwork_source_t g_artwork_sources[] =
 static class tab_artwork : public preferences_tab
 {
 public:
-    tab_artwork()  {};
+    tab_artwork()  = default;
 
     static t_size get_combined_index( t_size index, t_size subindex)
     {
