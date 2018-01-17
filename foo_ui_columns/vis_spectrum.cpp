@@ -39,15 +39,15 @@ class spectrum_extension : public ui_extension::visualisation, public play_callb
 protected:
 public:
 
-    bool b_active;
+    bool b_active{false};
 
-    HBRUSH br_foreground, br_background;
+    HBRUSH br_foreground{nullptr}, br_background{nullptr};
 
     COLORREF cr_fore;
     COLORREF cr_back;
     unsigned mode;
 
-    unsigned short m_bar_width, m_bar_gap;
+    unsigned short m_bar_width{3}, m_bar_gap{1};
 
     t_size m_scale, m_vertical_scale;
 
@@ -189,8 +189,8 @@ pfc::ptr_list_t<spectrum_extension> spectrum_extension::g_visualisations;
 
 
 spectrum_extension::spectrum_extension()
-    : b_active(false), br_foreground(nullptr), br_background(nullptr), cr_fore(cfg_vis2), cr_back(cfg_vis), 
-    mode(cfg_vis_mode), m_bar_width(3), m_bar_gap(1), m_scale(cfg_scale),
+    :  cr_fore(cfg_vis2), cr_back(cfg_vis), 
+    mode(cfg_vis_mode),  m_scale(cfg_scale),
     m_vertical_scale(cfg_vertical_scale)
 {
 };

@@ -409,7 +409,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
                     public:
                         playlist_position_reference_tracker m_insertIndexTracker;
                         service_ptr_t<playlist_switcher_t> m_window;
-                        bool m_new_playlist;
+                        bool m_new_playlist{false};
                         pfc::string8 m_playlist_name;
 
                         void on_completion(const pfc::list_base_const_t<metadb_handle_ptr> & p_items) override
@@ -441,7 +441,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop( IDataObject 
                         {
                         }
 
-                        delayed_drop_target_processer_t() : m_insertIndexTracker(false), m_new_playlist(false) {};
+                        delayed_drop_target_processer_t() : m_insertIndexTracker(false) {};
                     };
 
                     service_ptr_t<delayed_drop_target_processer_t> ptr = new service_impl_t<delayed_drop_target_processer_t>;

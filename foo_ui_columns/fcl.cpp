@@ -38,12 +38,12 @@ public:
     class t_node
     {
     public:
-        HTREEITEM item;
+        HTREEITEM item{nullptr};
         cui::fcl::group_ptr group;
-        bool checked;
+        bool checked{true};
         t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)), checked(true)
         {};
-        t_node() : item(nullptr), checked(true) {};
+        t_node()  {};
     };
     //cui::fcl::group_list m_groups;
     pfc::list_t<t_node> m_nodes;
@@ -200,10 +200,10 @@ public:
         return m_mode;
     }
     FCLDialog(bool b_import= false, const pfc::list_base_const_t<GUID> & p_list = pfc::list_t<GUID>())
-        : m_mode(0), m_import(b_import)
+        :  m_import(b_import)
     {m_filter.add_items(p_list);};
     private:
-        t_uint32 m_mode;
+        t_uint32 m_mode{0};
         bool m_import;
         pfc::list_t<GUID> m_filter;
 };
