@@ -142,6 +142,7 @@ cfg_columns_t g_columns(guid_columns, ColumnStreamVersion::streamVersion0);
 
 cfg_window_placement_t cfg_window_placement_columns(GUID{0x8bdb3caa, 0x6544, 0x07a6, 0x89, 0x67, 0xf8, 0x13, 0x3a, 0x80, 0x75, 0xbb});
 
+static cfg_bool cfg_colours_fonts_imported({0x27dfb9b0, 0x2621, 0x4935,{0xb6, 0x70, 0x2, 0x57, 0x69, 0x45, 0xc0, 0x12}}, true);
 
 cfg_window_placement_t::cfg_window_placement_t(const GUID & p_guid) : cfg_struct_t<WINDOWPLACEMENT>(p_guid, get_def_window_pos())
 {
