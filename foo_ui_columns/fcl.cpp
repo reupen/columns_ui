@@ -38,12 +38,12 @@ public:
     class t_node
     {
     public:
-        HTREEITEM item;
+        HTREEITEM item{nullptr};
         cui::fcl::group_ptr group;
-        bool checked;
+        bool checked{true};
         t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)), checked(true)
         {};
-        t_node() : item(nullptr), checked(true) {};
+        t_node()  = default;
     };
     //cui::fcl::group_list m_groups;
     pfc::list_t<t_node> m_nodes;
@@ -200,10 +200,10 @@ public:
         return m_mode;
     }
     FCLDialog(bool b_import= false, const pfc::list_base_const_t<GUID> & p_list = pfc::list_t<GUID>())
-        : m_mode(0), m_import(b_import)
+        :  m_import(b_import)
     {m_filter.add_items(p_list);};
     private:
-        t_uint32 m_mode;
+        t_uint32 m_mode{0};
         bool m_import;
         pfc::list_t<GUID> m_filter;
 };
@@ -254,7 +254,7 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             SetWindowText(wnd, _T("FCL import results"));
             HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
             uih::list_view_set_explorer_theme(wnd_lv);
-            t_import_results_data * p_data = reinterpret_cast<t_import_results_data*>(lp);
+            auto * p_data = reinterpret_cast<t_import_results_data*>(lp);
 
             SetWindowText(GetDlgItem(wnd, IDC_CAPTION), 
                 (p_data->m_aborted ? _T("The layout import was aborted because the following required panels are not installed:") : _T("Some parts of the layout may not have imported because the following panels are not installed:"))

@@ -257,7 +257,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
                 bool named = false;
 
-                if (1 || 1)
+                if (true || true)
                 {
                     FORMATETC   fe;
                     STGMEDIUM   sm;

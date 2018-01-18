@@ -489,7 +489,7 @@ namespace pvt
         HBITMAP ret = nullptr;
         if (group_count)
         {
-            item_ng_t * item = static_cast<item_ng_t*>(get_item(index_item));
+            auto * item = static_cast<item_ng_t*>(get_item(index_item));
             item_group_ng_t * group = item->get_group(group_count-1);
             if (group->m_artwork_load_attempted)
             {

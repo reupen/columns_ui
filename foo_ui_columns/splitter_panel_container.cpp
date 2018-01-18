@@ -190,7 +190,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
     case WM_WINDOWPOSCHANGED:
         if (m_this.is_valid())
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 m_panel->on_size(lpwp->cx, lpwp->cy);

@@ -242,7 +242,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
                 if (colours.use_frame_left)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_left);
-                    HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
+                    auto pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
                     MoveToEx(hdc_mem, draw.left, draw.top, nullptr);
                     LineTo(hdc_mem, draw.left, draw.bottom);
@@ -252,7 +252,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
                 if (colours.use_frame_top)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_top);
-                    HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
+                    auto pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
                     MoveToEx(hdc_mem, draw.left, draw.top, nullptr);
                     LineTo(hdc_mem, draw.right, draw.top);
@@ -262,7 +262,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
                 if (colours.use_frame_right)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_right);
-                    HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
+                    auto pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
                     MoveToEx(hdc_mem, draw.right - 1, draw.top, nullptr);
                     LineTo(hdc_mem, draw.right - 1, draw.bottom);
@@ -272,7 +272,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
                 if (colours.use_frame_bottom)
                 {
                     HPEN pen = CreatePen(PS_SOLID, 1, colours.frame_bottom);
-                    HPEN pen_old = (HPEN)SelectObject(hdc_mem, pen);
+                    auto pen_old = (HPEN)SelectObject(hdc_mem, pen);
 
                     MoveToEx(hdc_mem, draw.right - 1, draw.bottom - 1, nullptr);
                     LineTo(hdc_mem, draw.left - 1, draw.bottom - 1);

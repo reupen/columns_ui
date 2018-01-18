@@ -105,7 +105,7 @@ public:
 } g_tab_status;
 
 menu_item_cache * tab_status::p_cache = nullptr;
-bool tab_status::initialised = 0;
+bool tab_status::initialised = false;
 
 preferences_tab * g_get_tab_status()
 {

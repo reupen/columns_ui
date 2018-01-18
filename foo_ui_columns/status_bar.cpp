@@ -66,7 +66,7 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         GetClientRect(wnd, &rc);
 
         HBITMAP bm_mem = CreateCompatibleBitmap(dc, rc.right, rc.bottom);
-        HBITMAP bm_old = (HBITMAP)SelectObject(dc_mem, bm_mem);
+        auto bm_old = (HBITMAP)SelectObject(dc_mem, bm_mem);
 
         CallWindowProc(status_proc, wnd, WM_ERASEBKGND, (WPARAM)dc_mem, NULL);
         SendMessage(wnd, WM_PRINTCLIENT, (WPARAM)dc_mem, PRF_CHECKVISIBLE | PRF_CLIENT | PRF_ERASEBKGND);

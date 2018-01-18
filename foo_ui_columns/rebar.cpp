@@ -189,7 +189,7 @@ void cfg_rebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
     if (g_rebar_window)
         m_entries = g_rebar_window->m_bands;
 
-    uint32_t num = gsl::narrow<uint32_t>(m_entries.size());
+    auto num = gsl::narrow<uint32_t>(m_entries.size());
     out->write_lendian_t(num, p_abort);
     for (uint32_t n = 0; n < num; n++) {
         m_entries[n].write_to_stream(out, p_abort);

@@ -110,7 +110,7 @@ namespace pvt {
         for (i=0; i<count; i++)
         {
             bool b_valid = false;
-            if (1)
+            if (true)
             {
                 switch(g_groups.get_groups()[i].filter_type)
                 {

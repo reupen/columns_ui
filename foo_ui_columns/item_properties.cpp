@@ -302,7 +302,7 @@ public:
     public:
         pfc::string8 m_name;
         pfc::list_t <pfc::string8> m_values;
-        bool m_truncated;
+        bool m_truncated{false};
 
         /*static g_compare_entry (const char * str1, const pfc::string8 & str2)
         {
@@ -321,7 +321,7 @@ public:
         }
 
         metadata_field_t(const char * field) : m_name(field), m_truncated(false) {};
-        metadata_field_t() : m_truncated(false) {};
+        metadata_field_t()  = default;
 
     };
 

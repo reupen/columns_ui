@@ -527,7 +527,7 @@ void splitter_window_tabs_impl::set_styles(bool visible)
 {
     if (m_wnd_tabs)
     {
-        long flags = WS_CHILD |  TCS_HOTTRACK | TCS_TABS | (0 ? TCS_MULTILINE|TCS_RIGHTJUSTIFY  : TCS_SINGLELINE) |(visible ? WS_VISIBLE : 0)|WS_CLIPSIBLINGS |WS_TABSTOP |0;
+        long flags = WS_CHILD |  TCS_HOTTRACK | TCS_TABS | (false ? TCS_MULTILINE|TCS_RIGHTJUSTIFY  : TCS_SINGLELINE) |(visible ? WS_VISIBLE : 0)|WS_CLIPSIBLINGS |WS_TABSTOP |0;
 
         if (GetWindowLongPtr(m_wnd_tabs, GWL_STYLE) != flags)
             SetWindowLongPtr(m_wnd_tabs, GWL_STYLE, flags);
@@ -582,7 +582,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
         break;
     case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 on_size_changed(lpwp->cx, lpwp->cy);
@@ -594,7 +594,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM
         break;*/
     case WM_GETMINMAXINFO:
         {
-            LPMINMAXINFO lpmmi = (LPMINMAXINFO)lp;
+            auto lpmmi = (LPMINMAXINFO)lp;
 
             lpmmi->ptMinTrackSize.y = m_size_limits.min_height;
             lpmmi->ptMinTrackSize.x = m_size_limits.min_width;
@@ -902,7 +902,7 @@ void splitter_window_tabs_impl::create_tabs()
     g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs);
     RECT rc;
     GetClientRect(get_wnd(), &rc);
-    DWORD flags = WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | (1 ? WS_VISIBLE : 0); //TCS_MULTILINE hack to prevent BS.
+    DWORD flags = WS_CHILD |  WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | (true ? WS_VISIBLE : 0); //TCS_MULTILINE hack to prevent BS.
     m_wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Tab stack"),
         flags, 0, 0, rc.right, rc.bottom,
         get_wnd(), HMENU(2345), core_api::get_my_instance(), nullptr);

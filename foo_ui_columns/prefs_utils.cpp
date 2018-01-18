@@ -76,7 +76,7 @@ UINT_PTR CALLBACK choose_font_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
     case WM_INITDIALOG:
     {
-        CHOOSEFONT * cf = reinterpret_cast<CHOOSEFONT*>(lp);
+        auto * cf = reinterpret_cast<CHOOSEFONT*>(lp);
         reinterpret_cast<modal_dialog_scope*>(cf->lCustData)->initialize(FindOwningPopup(wnd));
     }
     return 0;
@@ -150,7 +150,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_ite
 
 void on_menu_combo_change(HWND wnd, LPARAM lp, cfg_menu_item & cfg_menu_store, menu_item_cache & p_cache, unsigned ID_DESC)
 {
-    HWND wnd_combo = (HWND)lp;
+    auto wnd_combo = (HWND)lp;
 
     pfc::string8 temp;
     unsigned cache_idx = SendMessage(wnd_combo, CB_GETITEMDATA, SendMessage(wnd_combo, CB_GETCURSEL, 0, 0), 0);

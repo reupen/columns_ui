@@ -63,21 +63,21 @@ class order_extension : public ui_extension::container_ui_extension, public play
 {
     static const TCHAR * class_name;
 
-    WNDPROC orderproc;
+    WNDPROC orderproc{nullptr};
 public:
-    unsigned min_width, height;
-    bool initialised;
-    t_int32 m_mousewheel_delta;
+    unsigned min_width{0}, height{0};
+    bool initialised{false};
+    t_int32 m_mousewheel_delta{0};
 
     static HFONT font_icon;
 
-    HWND wnd_combo;
+    HWND wnd_combo{nullptr};
     LRESULT WINAPI hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
     static LRESULT WINAPI main_hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
     LRESULT on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp) override;
 
-    order_extension();
-    ~order_extension();
+    order_extension() = default;
+    ~order_extension() = default;
 
     static const GUID extension_guid;
 
@@ -129,13 +129,6 @@ public:
 };
 
 HFONT order_extension::font_icon = nullptr;
-
-order_extension::order_extension() : orderproc(nullptr), min_width(0), height(0), initialised(false), m_mousewheel_delta(0), wnd_combo(nullptr)
-{
-};
-
-order_extension::~order_extension()
-= default;
 
 const TCHAR * order_extension::class_name = _T("{ABA09E7E-9C95-443e-BDFC-049D66B324A0}");
 
@@ -212,7 +205,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     }
     else if (msg == WM_WINDOWPOSCHANGED)
     {
-        LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+        auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE))
         {
             SetWindowPos(wnd_combo, nullptr, 0, 0, lpwp->cx, 300, SWP_NOZORDER);
@@ -240,7 +233,7 @@ LRESULT order_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     }
     else if (msg == WM_GETMINMAXINFO)
     {
-        LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+        auto mmi = LPMINMAXINFO(lp);
 
         mmi->ptMinTrackSize.x = min_width;
         mmi->ptMinTrackSize.y = height;

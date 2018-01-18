@@ -44,7 +44,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         break;
     case WM_WINDOWPOSCHANGED:
     {
-        LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+        auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE))
         {
             on_size_changed(lpwp->cx, lpwp->cy);
@@ -56,7 +56,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
     break;*/
     case WM_GETMINMAXINFO:
     {
-        LPMINMAXINFO lpmmi = (LPMINMAXINFO)lp;
+        auto lpmmi = (LPMINMAXINFO)lp;
 
         lpmmi->ptMinTrackSize.y = 0;
         lpmmi->ptMinTrackSize.x = 0;
@@ -173,7 +173,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                 lpmmi->ptMaxTrackSize.x = MAXLONG;
         }
 
-        if (0)
+        if (false)
         {
             lpmmi->ptMinTrackSize.y = 0;
             if (get_orientation() == horizontal) lpmmi->ptMaxTrackSize.x = 0;

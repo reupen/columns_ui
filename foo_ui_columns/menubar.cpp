@@ -99,11 +99,9 @@ public:
     pfc::string8 m_name;
     pfc::array_t<TCHAR> m_name_with_accelerators;
     GUID m_guid{};
-    t_uint32 m_sort_priority;
+    t_uint32 m_sort_priority{NULL};
 
-    mainmenu_root_group()
-        : m_sort_priority(NULL)
-    {};
+    mainmenu_root_group() = default;
 
     static t_size g_compare(const mainmenu_root_group & p_item1, const mainmenu_root_group&p_item2)
     {
@@ -149,20 +147,20 @@ class menu_extension : public ui_extension::containter_uie_window_t<uie::menu_wi
 {
     static const TCHAR * class_name;
 
-    WNDPROC menuproc;
-    bool initialised;
-    bool m_menu_key_pressed;
+    WNDPROC menuproc{nullptr};
+    bool initialised{false};
+    bool m_menu_key_pressed{false};
 public:
 //    static pfc::ptr_list_t<playlists_list_window> list_wnd;
     //static HHOOK msghook;
     static bool hooked;
     //static menu_extension * p_hooked_menu;
 
-    bool redrop;
-    bool is_submenu;
-    int active_item;
-    int actual_active;
-    int sub_menu_ref_count;
+    bool redrop{true};
+    bool is_submenu{false};
+    int active_item{0};
+    int actual_active{0};
+    int sub_menu_ref_count{-1};
     service_ptr_t<mainmenu_manager> p_manager;
     service_ptr_t<ui_status_text_override> m_status_override;
 
@@ -171,8 +169,8 @@ public:
         __implement_get_class_data_child_ex(class_name, true, false);
     }
 
-    HWND wnd_menu;
-    HWND wnd_prev_focus;
+    HWND wnd_menu{nullptr};
+    HWND wnd_prev_focus{nullptr};
     pfc::list_t<mainmenu_root_group> m_buttons;
 
     LRESULT WINAPI hook(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
@@ -225,9 +223,7 @@ public:
 
 bool menu_extension::hooked = false;
 
-menu_extension::menu_extension() : menuproc(nullptr), initialised(false), 
-    m_menu_key_pressed(false), redrop(true), is_submenu(false), active_item(0), /*hooked(false), */
-    actual_active(0), sub_menu_ref_count(-1), p_manager(nullptr), wnd_menu(nullptr), wnd_prev_focus(nullptr)
+menu_extension::menu_extension() :  p_manager(nullptr) 
 {
 };
 
@@ -320,7 +316,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         }
         case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 //SIZE sz = {0,0};
@@ -442,7 +438,7 @@ LRESULT menu_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         }
         case WM_GETMINMAXINFO:
         {
-            LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+            auto mmi = LPMINMAXINFO(lp);
 
             RECT rc = { 0,0,0,0 };
             SendMessage(wnd_menu, TB_GETITEMRECT, m_buttons.get_count() - 1, (LPARAM)(&rc));

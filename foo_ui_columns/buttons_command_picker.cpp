@@ -339,7 +339,7 @@ BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (p_command != LB_ERR)
             {
                 LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, p_command, 0);
-                command_data* p_data = (command_data*)ret;
+                auto* p_data = (command_data*)ret;
                 if (ret != LB_ERR)
                 {
                     m_guid = p_data->m_guid;

@@ -31,7 +31,7 @@ artwork_source_t g_artwork_sources[] =
 static class tab_artwork : public preferences_tab
 {
 public:
-    tab_artwork() : initialising(false)/*, m_changed(false)*/ {};
+    tab_artwork()  = default;
 
     static t_size get_combined_index( t_size index, t_size subindex)
     {
@@ -83,7 +83,7 @@ public:
     {
     public:
         t_size m_edit_index, m_edit_subindex, m_edit_combined_index;
-        t_list_view_artwork() : m_edit_index(pfc_infinite), m_edit_subindex(pfc_infinite), m_edit_combined_index(pfc_infinite), m_changed(false) {};
+        t_list_view_artwork() : m_edit_index(pfc_infinite), m_edit_subindex(pfc_infinite), m_edit_combined_index(pfc_infinite) {};
 
         void notify_on_create() override
         {
@@ -169,7 +169,7 @@ public:
                 m_changed = false;
             }
         }
-        bool m_changed;
+        bool m_changed{false};
     private:
     } m_source_list;
 
@@ -439,7 +439,7 @@ public:
     }
 
 private:
-    bool initialising;//, m_changed;
+    bool initialising{false};//, m_changed;
 } g_tab_artwork;    
 
 preferences_tab * g_get_tab_artwork()

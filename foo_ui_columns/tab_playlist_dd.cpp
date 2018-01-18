@@ -95,7 +95,7 @@ public:
     }
 } g_tab_playlist_dd;
 
-bool tab_playlist_dd::initialised = 0;
+bool tab_playlist_dd::initialised = false;
 
 
 preferences_tab * g_get_tab_playlist_dd()

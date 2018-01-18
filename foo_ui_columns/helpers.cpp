@@ -29,7 +29,7 @@ void g_compare_file_with_bytes(const service_ptr_t<file> & p1, const pfc::array_
         {
 
             enum { BUFSIZE = 1024 * 1024 };
-            unsigned size = (unsigned)(BUFSIZE<bytes ? BUFSIZE : bytes);
+            auto size = (unsigned)(BUFSIZE<bytes ? BUFSIZE : bytes);
             pfc::array_t<t_uint8> temp, temp2;
             temp.set_size(size); temp2.set_size(size);
 
@@ -41,7 +41,7 @@ void g_compare_file_with_bytes(const service_ptr_t<file> & p1, const pfc::array_
 
                 t_int64 delta64 = bytes - done;
                 if (delta64>BUFSIZE) delta64 = BUFSIZE;
-                unsigned delta = (unsigned)delta64;
+                auto delta = (unsigned)delta64;
 
                 io_bytes_done = p1->read(temp.get_ptr(), delta, p_abort);
 
@@ -71,7 +71,7 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
     HRSRC rs = FindResource(core_api::get_my_instance(), MAKEINTRESOURCE(uid), RT_BITMAP);
     HGLOBAL glb = LoadResource(core_api::get_my_instance(), rs);
     void * p_res = LockResource(glb);
-    BITMAPINFO * p_bih = (LPBITMAPINFO)p_res;
+    auto * p_bih = (LPBITMAPINFO)p_res;
     if (p_bih)
     {
         unsigned num_colours = p_bih->bmiHeader.biClrUsed;
@@ -81,7 +81,7 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
         pfc::array_t<t_uint8> bmi;
         bmi.append_fromptr((t_uint8*)p_bih, p_bih->bmiHeader.biSize + sizeof(RGBQUAD)*num_colours);
 
-        BITMAPINFO * lpbi = (LPBITMAPINFO)bmi.get_ptr();
+        auto * lpbi = (LPBITMAPINFO)bmi.get_ptr();
 
         if (num_colours == 2)
         {

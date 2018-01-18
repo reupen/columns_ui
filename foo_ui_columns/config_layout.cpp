@@ -106,7 +106,7 @@ class tab_layout_new : public preferences_tab
         if (e.first(l))
             do
             {
-                if (1)
+                if (true)
                 {
                     uie::window_info_simple info;
 
@@ -687,7 +687,7 @@ class tab_layout_new : public preferences_tab
         case WM_INITDIALOG:
             SetWindowLongPtr(wnd,DWLP_USER,lp);
             {
-                rename_param * ptr = reinterpret_cast<rename_param *>(lp);
+                auto * ptr = reinterpret_cast<rename_param *>(lp);
                 ptr->m_scope.initialize(FindOwningPopup(wnd));
                 uSetWindowText(wnd,(ptr->m_title));
                 uSetDlgItemText(wnd,IDC_EDIT,ptr->m_text);
@@ -698,7 +698,7 @@ class tab_layout_new : public preferences_tab
             {
             case IDOK:
                 {
-                    rename_param * ptr = reinterpret_cast<rename_param *>(GetWindowLong(wnd,DWLP_USER));
+                    auto * ptr = reinterpret_cast<rename_param *>(GetWindowLong(wnd,DWLP_USER));
                     uGetDlgItemText(wnd,IDC_EDIT,ptr->m_text);
                     EndDialog(wnd,1);
                 }
@@ -930,7 +930,7 @@ class tab_layout_new : public preferences_tab
             break;
         case WM_NOTIFY:
             {
-                LPNMHDR hdr = (LPNMHDR)lp;
+                auto hdr = (LPNMHDR)lp;
                 
                 switch (hdr->idFrom) 
                 {
@@ -959,7 +959,7 @@ class tab_layout_new : public preferences_tab
                         bool use_custom_title_val = false;
                         pfc::string8 custom_title_val;
 
-                        LPNMTREEVIEW param = (LPNMTREEVIEW)hdr;
+                        auto param = (LPNMTREEVIEW)hdr;
                         if (param->itemNew.hItem)
                         {
                             node::ptr p_node = reinterpret_cast<node*>(param->itemNew.lParam);

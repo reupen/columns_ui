@@ -1001,7 +1001,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
 {
     if (p_type == uih::MessageHookType::type_get_message)
     {
-        MSG * lpmsg = (LPMSG)lp;
+        auto * lpmsg = (LPMSG)lp;
         if (lpmsg->message == WM_CONTEXTMENU)
         {
             if (lpmsg->hwnd == get_wnd() || IsChild(get_wnd(), lpmsg->hwnd))
@@ -1045,7 +1045,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
     else
         if (p_type == uih::MessageHookType::type_mouse)
         {
-            MOUSEHOOKSTRUCT * lpmhs = (LPMOUSEHOOKSTRUCT)lp;
+            auto * lpmhs = (LPMOUSEHOOKSTRUCT)lp;
             if (lpmhs->hwnd == get_wnd() || IsChild(get_wnd(), lpmhs->hwnd))
             {
                 uie::splitter_window_v2_ptr sw2;
@@ -1089,7 +1089,7 @@ LRESULT layout_window::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         break;
     case WM_WINDOWPOSCHANGED:
         {
-            LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+            auto lpwp = (LPWINDOWPOS)lp;
             if (!(lpwp->flags & SWP_NOSIZE))
             {
                 if (m_child_wnd)

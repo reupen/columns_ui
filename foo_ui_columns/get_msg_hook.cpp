@@ -7,7 +7,7 @@ extern rebar_window * g_rebar_window;
 
 bool get_msg_hook_t::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
 {
-    LPMSG lpmsg = (LPMSG)lp;
+    auto lpmsg = (LPMSG)lp;
     if ((lpmsg->message == WM_KEYUP || lpmsg->message == WM_SYSKEYDOWN || lpmsg->message == WM_KEYDOWN) && IsChild(g_main_window, lpmsg->hwnd))
     {
         if (((HIWORD(lpmsg->lParam) & KF_ALTDOWN)))

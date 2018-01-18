@@ -670,7 +670,7 @@ namespace filter_panel {
     
     void filter_panel_t::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
     {
-        action_t action = static_cast<action_t>(cfg_doubleclickaction.get_value());
+        auto action = static_cast<action_t>(cfg_doubleclickaction.get_value());
         do_selection_action(action);
     }
     
@@ -678,7 +678,7 @@ namespace filter_panel {
     {
         if (cfg_middleclickaction && on_item && index < m_nodes.get_count())
         {
-            action_t action = static_cast<action_t>(cfg_middleclickaction.get_value() - 1);
+            auto action = static_cast<action_t>(cfg_middleclickaction.get_value() - 1);
             do_items_action(pfc::bit_array_one(index), action);
             return true;
         }

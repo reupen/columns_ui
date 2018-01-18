@@ -344,8 +344,8 @@ void toolbar_extension::destroy_toolbar()
     t_size i, count = m_buttons.get_count();
     for (i=0; i<count; i++)
         if (m_buttons[i].m_interface.is_valid()) m_buttons[i].m_interface->deregister_callback(m_buttons[i].m_callback);
-    HIMAGELIST iml = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETIMAGELIST, (WPARAM) 0, (LPARAM) 0);
-    HIMAGELIST iml_hot = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETHOTIMAGELIST, (WPARAM) 0, (LPARAM) 0);
+    auto iml = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETIMAGELIST, (WPARAM) 0, (LPARAM) 0);
+    auto iml_hot = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETHOTIMAGELIST, (WPARAM) 0, (LPARAM) 0);
     DestroyWindow(wnd_toolbar);
     wnd_toolbar=nullptr;
     if (iml)
@@ -379,7 +379,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     }
     else if (msg == WM_WINDOWPOSCHANGED)
     {
-        LPWINDOWPOS lpwp = (LPWINDOWPOS)lp;
+        auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE))
         {
             //SIZE sz = {0,0};
@@ -406,7 +406,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
     {
         if ( m_buttons.get_count() )
         {
-            LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+            auto mmi = LPMINMAXINFO(lp);
 
             RECT rc = {0,0,0,0};
 
@@ -438,13 +438,13 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
         {
         case TBN_ENDDRAG:
             {
-                LPNMTOOLBAR lpnmtb = (LPNMTOOLBAR)lp;
+                auto lpnmtb = (LPNMTOOLBAR)lp;
                 PostMessage(wnd, WM_USER+2, lpnmtb->iItem, NULL);
             }
             break;
         case TBN_GETINFOTIP:
             {
-                LPNMTBGETINFOTIP lpnmtbgit = (LPNMTBGETINFOTIP) lp;
+                auto lpnmtbgit = (LPNMTBGETINFOTIP) lp;
                 if (!m_buttons[lpnmtbgit->iItem].m_interface.is_valid() || (m_buttons[lpnmtbgit->iItem].m_interface->get_button_state() & uie::BUTTON_STATE_SHOW_TOOLTIP))
                 {
                     pfc::string8 temp;
@@ -455,7 +455,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             break;
         case TBN_DROPDOWN:
             {
-                LPNMTOOLBAR lpnmtb = (LPNMTOOLBAR)lp;
+                auto lpnmtb = (LPNMTOOLBAR)lp;
                 pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> menu_items = new ui_extension::menu_hook_impl;
 
                 m_buttons[lpnmtb->iItem].m_interface->get_menu_items(*menu_items.get_ptr());
@@ -472,7 +472,7 @@ LRESULT toolbar_extension::on_message(HWND wnd,UINT msg,WPARAM wp,LPARAM lp)
             }
         case NM_CUSTOMDRAW:
             {
-                LPNMTBCUSTOMDRAW lptbcd = (LPNMTBCUSTOMDRAW) lp;
+                auto lptbcd = (LPNMTBCUSTOMDRAW) lp;
                 switch ((lptbcd)->nmcd.dwDrawStage)
                 {
                 case CDDS_PREPAINT:
@@ -664,12 +664,12 @@ BOOL CALLBACK toolbar_extension::ConfigCommandProc(HWND wnd,UINT msg,WPARAM wp,L
     case WM_INITDIALOG:
         {
             SetWindowLongPtr(wnd,DWLP_USER,lp);
-            command_picker_data * ptr = reinterpret_cast<command_picker_data*>(lp);
+            auto * ptr = reinterpret_cast<command_picker_data*>(lp);
             return ptr->on_message(wnd, msg, wp, lp);
         }
     default:
         {
-            command_picker_data * ptr = reinterpret_cast<command_picker_data*>(GetWindowLongPtr(wnd,DWLP_USER));
+            auto * ptr = reinterpret_cast<command_picker_data*>(GetWindowLongPtr(wnd,DWLP_USER));
             return ptr->on_message(wnd, msg, wp, lp);
         }
     }
@@ -682,7 +682,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd,DWLP_USER,lp);
         {
-            config_param * ptr = reinterpret_cast<config_param*>(lp);
+            auto * ptr = reinterpret_cast<config_param*>(lp);
 
             uSendDlgItemMessageText(wnd,IDC_IMAGE_TYPE,CB_ADDSTRING,0,"Default");
             uSendDlgItemMessageText(wnd,IDC_IMAGE_TYPE,CB_ADDSTRING,0,"Custom");
@@ -692,7 +692,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
         return TRUE;
         case MSG_COMMAND_CHANGE:
             {
-                config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 if (ptr->m_selection)
                 {
                     bool & b_custom = (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom);
@@ -705,7 +705,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
             break;
         case MSG_BUTTON_CHANGE:
             {
-                config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 bool b_custom = ptr->m_selection ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom) : false;
 
                 SendDlgItemMessage(wnd,IDC_IMAGE_TYPE,CB_SETCURSEL,ptr->m_selection && b_custom?1:0,0);
@@ -725,7 +725,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
         {
         case (CBN_SELCHANGE<<16)|IDC_IMAGE_TYPE:
             {
-                config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 if (ptr->m_selection && ptr->m_image)
                 {
                     unsigned idx = SendMessage((HWND)lp,CB_GETCURSEL,0,0);
@@ -742,7 +742,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
             break;
         case (EN_CHANGE<<16)|IDC_IMAGE_PATH:
             {
-                config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                auto * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
                 if (ptr->m_image)
                 {
                     ptr->m_image->m_path = string_utf8_from_window((HWND)lp);
@@ -751,8 +751,8 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
             break;
         case IDC_BROWSE:
             {
-                config_param * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
-                bool b_custom = ptr->m_selection ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom) : 0;
+                auto * ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd,DWLP_USER));
+                bool b_custom = ptr->m_selection ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom) : false;
                 if (ptr->m_image && b_custom)
                 {
                     pfc::string8 temp;
@@ -762,7 +762,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd,UINT msg,WPARAM wp,LPA
                     if (uGetOpenFileName(wnd, "Image Files (*.bmp;*.png;*.gif;*.tiff;*.ico)|*.bmp;*.png;*.gif;*.tiff;*.ico|All Files (*.*)|*.*", 0, "png", "Choose image", nullptr, temp, FALSE))
                     {
                         ptr->m_image->m_path = temp;
-                        uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (1) ? ptr->m_image->m_path.get_ptr() : "");
+                        uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (true) ? ptr->m_image->m_path.get_ptr() : "");
                     }
                 }
             }

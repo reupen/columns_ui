@@ -178,8 +178,8 @@ public:
     }
 } g_tab_playlist;
 
-bool tab_playlist::initialised = 0;
-bool tab_playlist::playlist_switcher_string_changed = 0;
+bool tab_playlist::initialised = false;
+bool tab_playlist::playlist_switcher_string_changed = false;
 
 preferences_tab * g_get_tab_playlist()
 {

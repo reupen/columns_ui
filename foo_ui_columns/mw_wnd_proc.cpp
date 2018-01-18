@@ -68,7 +68,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 t_size i = 0;
 
                 for (i = 0; i < 6; i++) {
-                    HICON icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(g_taskbar_bitmaps[i]), IMAGE_ICON, cx, cy, NULL);
+                    auto icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(g_taskbar_bitmaps[i]), IMAGE_ICON, cx, cy, NULL);
                     ImageList_ReplaceIcon(g_imagelist_taskbar, -1, icon);
                     DestroyIcon(icon);
                 }
@@ -475,7 +475,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return DLGC_WANTALLKEYS;
         case WM_DRAWITEM:
             {
-                LPDRAWITEMSTRUCT lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lp);
+                auto lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lp);
 
                 if (lpdis->CtlID == ID_STATUS) {
                     RECT rc = lpdis->rcItem;
@@ -506,7 +506,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         case WM_WINDOWPOSCHANGED:
             {
-                LPWINDOWPOS lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+                auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
                 if (!(lpwp->flags & SWP_NOSIZE)) {
                     ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
                     if (styles & WS_MINIMIZE) {

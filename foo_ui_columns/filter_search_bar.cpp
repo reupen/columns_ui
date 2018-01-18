@@ -73,7 +73,7 @@ namespace filter_panel {
 
                 if (p_window->get_extension_guid() == cui::panels::guid_filter)
                 {
-                    filter_panel_t* p_filter = static_cast<filter_panel_t*>(p_window.get_ptr());
+                    auto* p_filter = static_cast<filter_panel_t*>(p_window.get_ptr());
                     if (!p_out.have_item(p_filter->m_stream.get_ptr()))
                         p_out.add_item(p_filter->m_stream);
                 }
@@ -300,7 +300,7 @@ namespace filter_panel {
             return 0;
         case WM_GETMINMAXINFO:
         {
-            LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+            auto mmi = LPMINMAXINFO(lp);
             mmi->ptMinTrackSize.x = m_combo_cx + m_toolbar_cx;
             mmi->ptMinTrackSize.y = max(m_combo_cy, m_toolbar_cy);
             mmi->ptMaxTrackSize.y = mmi->ptMinTrackSize.y;
@@ -308,7 +308,7 @@ namespace filter_panel {
         return 0;
         case WM_NOTIFY:
         {
-            LPNMHDR lpnm = (LPNMHDR)lp;
+            auto lpnm = (LPNMHDR)lp;
             switch (lpnm->idFrom)
             {
             case id_toolbar:
@@ -316,7 +316,7 @@ namespace filter_panel {
                 {
                 case TBN_GETINFOTIP:
                 {
-                    LPNMTBGETINFOTIP lpnmtbgit = (LPNMTBGETINFOTIP)lp;
+                    auto lpnmtbgit = (LPNMTBGETINFOTIP)lp;
                     pfc::string8 temp;
                     if (lpnmtbgit->iItem == idc_favourite)
                     {
@@ -430,7 +430,7 @@ namespace filter_panel {
 
         m_imagelist = ImageList_Create(cx, cy, ILC_COLOR32, 0, 3);
 
-        HICON icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_STAROFF), IMAGE_ICON, cx, cy, NULL);
+        auto icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_STAROFF), IMAGE_ICON, cx, cy, NULL);
         if (icon)
         {
             ImageList_ReplaceIcon(m_imagelist, -1, icon);

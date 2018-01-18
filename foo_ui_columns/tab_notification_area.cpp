@@ -118,7 +118,7 @@ public:
     }
 } g_tab_sys;
 
-bool tab_sys::initialised = 0;
+bool tab_sys::initialised = false;
 
 preferences_tab * g_get_tab_sys()
 {
