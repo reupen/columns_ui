@@ -2,18 +2,15 @@
 #include "NG Playlist/ng_playlist.h"
 #include "config.h"
 
-static cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, 0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}, 0);
+static cfg_int g_cur_tab2(GUID{ 0x5fb6e011, 0x1ead, 0x49fe, 0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b }, 0);
 
-
-class tab_global : public preferences_tab
-{
+class tab_global : public preferences_tab {
 public:
     static WNDPROC editproc;
 
     static LRESULT WINAPI EditHook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
-        switch (msg)
-        {
+        switch (msg) {
             /*    case WM_KEYDOWN:
             if (!(HIWORD(lp) & KF_REPEAT) && (wp == 'a' || wp =='A') &&  (GetKeyState(VK_CONTROL) & KF_UP))
             {
@@ -23,8 +20,7 @@ public:
 
             break;*/
         case WM_CHAR:
-            if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) && (GetKeyState(VK_CONTROL) & KF_UP))
-            {
+            if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) && (GetKeyState(VK_CONTROL) & KF_UP)) {
                 SendMessage(wnd, EM_SETSEL, 0, -1);
                 return 0;
             }
@@ -45,20 +41,18 @@ public:
     static void save_string(HWND wnd)
     {
         int id = g_cur_tab2;
-        if (id >= 0 && id < 2)
-        {
-            if (id == 0) cfg_globalstring = string_utf8_from_window(wnd, IDC_STRING);
-            else if (id == 1) cfg_colour = string_utf8_from_window(wnd, IDC_STRING);
+        if (id >= 0 && id < 2) {
+            if (id == 0)
+                cfg_globalstring = string_utf8_from_window(wnd, IDC_STRING);
+            else if (id == 1)
+                cfg_colour = string_utf8_from_window(wnd, IDC_STRING);
         }
     }
 
-
     static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
-        switch (msg)
-        {
-        case WM_INITDIALOG:
-        {
+        switch (msg) {
+        case WM_INITDIALOG: {
             uTCITEM tabs;
             memset(&tabs, 0, sizeof(tabs));
 
@@ -85,36 +79,30 @@ public:
         break;
 
         case WM_NOTIFY:
-            switch (((LPNMHDR)lp)->idFrom)
-            {
+            switch (((LPNMHDR)lp)->idFrom) {
             case IDC_TAB1:
-                switch (((LPNMHDR)lp)->code)
-                {
-                case TCN_SELCHANGE:
-                {
+                switch (((LPNMHDR)lp)->code) {
+                case TCN_SELCHANGE: {
                     save_string(wnd);
                     int id = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
                     g_cur_tab2 = id;
-                    uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, (g_cur_tab2 == 0 ? cfg_globalstring : cfg_colour));
-                }
-                break;
+                    uSendDlgItemMessageText(
+                        wnd, IDC_STRING, WM_SETTEXT, 0, (g_cur_tab2 == 0 ? cfg_globalstring : cfg_colour));
+                } break;
                 }
                 break;
             }
             break;
 
-        case WM_DESTROY:
-        {
+        case WM_DESTROY: {
             g_editor_font_notify.release();
             save_string(wnd);
             refresh_all_playlist_views();
             pvt::ng_playlist_view_t::g_update_all_items();
-        }
-        break;
+        } break;
 
         case WM_COMMAND:
-            switch (wp)
-            {
+            switch (wp) {
             case IDC_GLOBAL:
                 cfg_global = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 break;
@@ -123,13 +111,11 @@ public:
                 set_day_timer();
                 pvt::ng_playlist_view_t::g_on_use_date_info_change();
                 break;
-            case IDC_TFHELP:
-            {
+            case IDC_TFHELP: {
                 RECT rc;
                 GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
                 //        MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)(&rc), 2);
                 HMENU menu = CreatePopupMenu();
-
 
                 enum { IDM_TFHELP = 1, IDM_GHELP = 2, IDM_SPEEDTEST, IDM_PREVIEW, IDM_EDITORFONT, IDM_RESETSTYLE };
 
@@ -143,33 +129,25 @@ public:
                 uAppendMenu(menu, (MF_SEPARATOR), 0, "");
                 uAppendMenu(menu, (MF_STRING), IDM_RESETSTYLE, "&Reset style string");
 
-
-                int cmd = TrackPopupMenu(menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
+                int cmd = TrackPopupMenu(
+                    menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
                 DestroyMenu(menu);
-                if (cmd == IDM_TFHELP)
-                {
+                if (cmd == IDM_TFHELP) {
                     standard_commands::main_titleformat_help();
-                }
-                else if (cmd == IDM_GHELP)
-                {
-                    uMessageBox(wnd, COLOUR_HELP "\n\nNew global format: $set_global(var, val), retreive values using $get_global(var)", "Global help", 0);
-                }
-                else if (cmd == IDM_SPEEDTEST)
-                {
+                } else if (cmd == IDM_GHELP) {
+                    uMessageBox(wnd,
+                        COLOUR_HELP
+                        "\n\nNew global format: $set_global(var, val), retreive values using $get_global(var)",
+                        "Global help", 0);
+                } else if (cmd == IDM_SPEEDTEST) {
                     speedtest(g_columns, cfg_global != 0, cfg_oldglobal != 0, cfg_playlist_date != 0);
-                }
-                else if (cmd == IDM_PREVIEW)
-                {
+                } else if (cmd == IDM_PREVIEW) {
                     preview_to_console(string_utf8_from_window(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
-                }
-                else if (cmd == IDM_EDITORFONT)
-                {
+                } else if (cmd == IDM_EDITORFONT) {
                     if (font_picker(wnd, cfg_editor_font))
                         g_editor_font_notify.on_change();
-                }
-                else if (cmd == IDM_RESETSTYLE)
-                {
-                    extern const char * g_default_colour;
+                } else if (cmd == IDM_RESETSTYLE) {
+                    extern const char* g_default_colour;
                     cfg_colour = g_default_colour;
                     if (g_cur_tab2 == 1)
                         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
@@ -177,7 +155,6 @@ public:
                     pvt::ng_playlist_view_t::g_update_all_items();
                 }
             }
-
 
             break;
             case IDC_OLDGLOBAL:
@@ -199,8 +176,8 @@ public:
         return 0;
     }
     HWND create(HWND wnd) override { return uCreateDialog(IDD_GLOBAL, wnd, ConfigProc); }
-    const char * get_name() override { return "Globals"; }
-    bool get_help_url(pfc::string_base & p_out) override
+    const char* get_name() override { return "Globals"; }
+    bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:globals";
         return true;
@@ -210,8 +187,7 @@ public:
 
 WNDPROC tab_global::editproc = nullptr;
 
-preferences_tab * g_get_tab_global()
+preferences_tab* g_get_tab_global()
 {
     return &g_tab_global;
 }
-

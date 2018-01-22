@@ -3,7 +3,6 @@
 
 //#define _WIN32_WINNT 0x500
 
-
 #define ID_SEEK 2005
 
 pfc::ptr_list_t<seek_bar_extension> seek_bar_extension::windows;
@@ -56,7 +55,7 @@ void seek_bar_extension::update_seek_pos()
 
     static_api_ptr_t<play_control> play_api;
 
-    if (play_api->is_playing() && play_api->playback_get_length()/* && play_api->playback_can_seek()*/) {
+    if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
         double position = 0, length = 0;
         position = play_api->playback_get_position();
         length = play_api->playback_get_length();
@@ -66,11 +65,10 @@ void seek_bar_extension::update_seek_pos()
         if (position > length)
             position = length;
 
-        auto pos_display = (int) (10.0 * position);
+        auto pos_display = (int)(10.0 * position);
         m_child.set_position(pos_display);
     }
 }
-
 
 VOID CALLBACK seek_bar_extension::SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time)
 {
@@ -91,7 +89,7 @@ void seek_bar_extension::update_seek()
 
     static_api_ptr_t<play_control> play_api;
 
-    if (play_api->is_playing() && play_api->playback_get_length()/* && play_api->playback_can_seek()*/) {
+    if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
         double position = 0, length = 0;
         position = play_api->playback_get_position();
         length = play_api->playback_get_length();
@@ -103,12 +101,12 @@ void seek_bar_extension::update_seek()
         if (position > length)
             position = length;
 
-        m_child.set_range((int)(10 * length));//VC8
+        m_child.set_range((int)(10 * length)); // VC8
 
-        auto pos_display = (int) (10.0 * position);
+        auto pos_display = (int)(10.0 * position);
         m_child.set_position(pos_display);
 
-        if (play_api->playback_can_seek()/* && play_api->playback_get_length()*/)
+        if (play_api->playback_can_seek() /* && play_api->playback_get_length()*/)
             m_child.set_enabled(true);
 
     } else {
@@ -116,8 +114,7 @@ void seek_bar_extension::update_seek()
     }
 }
 
-
-seek_bar_extension::seek_bar_extension() : initialised(false), wnd_seekbar(nullptr) {};
+seek_bar_extension::seek_bar_extension() : initialised(false), wnd_seekbar(nullptr){};
 
 seek_bar_extension::~seek_bar_extension()
 {
@@ -130,64 +127,58 @@ seek_bar_extension::~seek_bar_extension()
 LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
+    case WM_CREATE: {
+        windows.add_item(this);
 
-        case WM_CREATE:
-            {
-                windows.add_item(this);
+        initialised = true;
 
-                initialised = true;
+        m_child.set_callback(&m_track_bar_host);
+        m_child.set_show_tooltips(true);
+        m_child.set_scroll_step(3);
 
-                m_child.set_callback(&m_track_bar_host);
-                m_child.set_show_tooltips(true);
-                m_child.set_scroll_step(3);
+        wnd_seekbar = m_child.create(wnd);
 
-                wnd_seekbar = m_child.create(wnd);
+        if (wnd_seekbar) {
+            update_seek();
 
-                if (wnd_seekbar) {
-                    update_seek();
+            update_seek_timer();
+        }
 
-                    update_seek_timer();
-                }
+        seek_bar_extension::update_seek_timer();
+        ShowWindow(wnd_seekbar, SW_SHOWNORMAL);
+        break;
+    }
+    case WM_WINDOWPOSCHANGED: {
+        auto lpwp = (LPWINDOWPOS)lp;
+        if (!(lpwp->flags & SWP_NOSIZE)) {
+            SetWindowPos(wnd_seekbar, nullptr, 0, 0, lpwp->cx, lpwp->cy, SWP_NOZORDER);
+        }
+        break;
+    }
+    case WM_GETMINMAXINFO: {
+        auto mmi = LPMINMAXINFO(lp);
+        mmi->ptMinTrackSize.y = uih::scale_dpi_value(21);
 
-                seek_bar_extension::update_seek_timer();
-                ShowWindow(wnd_seekbar, SW_SHOWNORMAL);
-                break;
-            }
-        case WM_WINDOWPOSCHANGED:
-            {
-                auto lpwp = (LPWINDOWPOS)lp;
-                if (!(lpwp->flags & SWP_NOSIZE)) {
-                    SetWindowPos(wnd_seekbar, nullptr, 0, 0, lpwp->cx, lpwp->cy, SWP_NOZORDER);
-                }
-                break;
-            }
-        case WM_GETMINMAXINFO:
-            {
-                auto mmi = LPMINMAXINFO(lp);
-                mmi->ptMinTrackSize.y = uih::scale_dpi_value(21);
+        return 0;
+    }
 
-                return 0;
-            }
-
-        case WM_DESTROY:
-            {
-                if (initialised) {
-                    m_child.destroy();
-                    windows.remove_item(this);
-                    initialised = false;
-                }
-                break;
-            }
+    case WM_DESTROY: {
+        if (initialised) {
+            m_child.destroy();
+            windows.remove_item(this);
+            initialised = false;
+        }
+        break;
+    }
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-
 const GUID& seek_bar_extension::get_extension_guid() const
 {
     // {678FE380-ABBB-4c72-A0B3-72E769671125}
-    static const GUID extension_guid =
-    {0x678fe380, 0xabbb, 0x4c72, {0xa0, 0xb3, 0x72, 0xe7, 0x69, 0x67, 0x11, 0x25}};
+    static const GUID extension_guid
+        = { 0x678fe380, 0xabbb, 0x4c72, { 0xa0, 0xb3, 0x72, 0xe7, 0x69, 0x67, 0x11, 0x25 } };
     return extension_guid;
 }
 
@@ -205,6 +196,5 @@ unsigned seek_bar_extension::get_type() const
 {
     return ui_extension::type_toolbar;
 };
-
 
 ui_extension::window_factory<seek_bar_extension> blue;

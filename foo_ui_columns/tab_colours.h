@@ -3,8 +3,7 @@
 #include "config_appearance.h"
 #include "config.h"
 
-class tab_appearance : public preferences_tab
-{
+class tab_appearance : public preferences_tab {
     HWND m_wnd;
     HWND m_wnd_colours_mode;
     HWND m_wnd_colours_element;
@@ -19,11 +18,12 @@ class tab_appearance : public preferences_tab
     colours_manager_data::entry_ptr_t m_element_ptr;
     cui::colours::client::ptr m_element_api;
     colours_client_list_t m_colours_client_list;
+
 public:
-    tab_appearance();;
+    tab_appearance();
+    ;
 
     void refresh_me(HWND wnd);
-
 
     static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -38,8 +38,8 @@ public:
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void apply();
     HWND create(HWND wnd) override;
-    const char * get_name() override;
-    bool get_help_url(pfc::string_base & p_out) override;
+    const char* get_name() override;
+    bool get_help_url(pfc::string_base& p_out) override;
     bool is_active();
 
 private:

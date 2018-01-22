@@ -4,11 +4,10 @@
 #include "prefs_utils.h"
 #include "main_window.h"
 
-static class tab_status : public preferences_tab
-{
+static class tab_status : public preferences_tab {
 public:
     static bool initialised;
-    static menu_item_cache * p_cache;
+    static menu_item_cache* p_cache;
 
     //    static ptr_list_autofree_t<char> status_items;
 
@@ -25,11 +24,8 @@ public:
 
     static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
-
-        switch (msg)
-        {
-        case WM_INITDIALOG:
-        {
+        switch (msg) {
+        case WM_INITDIALOG: {
             p_cache = new menu_item_cache;
 
             populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, *p_cache, false);
@@ -39,76 +35,57 @@ public:
         }
 
         break;
-        case WM_DESTROY:
-        {
+        case WM_DESTROY: {
             delete p_cache;
             p_cache = nullptr;
             //                status_items.free_all();
             initialised = false;
-        }
-        break;
+        } break;
         case WM_COMMAND:
-            switch (wp)
-            {
-
-
-
+            switch (wp) {
             case (EN_CHANGE << 16) | IDC_STRING:
                 main_window::config_status_bar_script.set(string_utf8_from_window((HWND)lp));
                 break;
-            case (CBN_SELCHANGE << 16) | IDC_MENU_DBLCLK:
-            {
+            case (CBN_SELCHANGE << 16) | IDC_MENU_DBLCLK: {
                 on_menu_combo_change(wnd, lp, cfg_statusdbl, *p_cache, IDC_MENU_DESC);
-            }
-            break;
-            case IDC_SHOW_LOCK:
-            {
+            } break;
+            case IDC_SHOW_LOCK: {
                 main_window::config_set_status_show_lock(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
-            }
-            break;
-            case IDC_VOL:
-            {
+            } break;
+            case IDC_VOL: {
                 cfg_show_vol = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 status_bar::set_part_sizes(status_bar::t_part_volume);
-            }
-            break;
-            case IDC_SELTIME:
-            {
+            } break;
+            case IDC_SELTIME: {
                 cfg_show_seltime = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 status_bar::set_part_sizes(status_bar::t_part_length | status_bar::t_part_volume);
 
-            }
-            break;
-            case IDC_SHOW_STATUS:
-            {
+            } break;
+            case IDC_SHOW_STATUS: {
                 cfg_status = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 on_show_status_change();
-            }
-            break;
-            case IDC_SHOW_STATUSPANE:
-            {
+            } break;
+            case IDC_SHOW_STATUSPANE: {
                 settings::show_status_pane = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0;
                 on_show_status_pane_change();
-            }
-            break;
+            } break;
             }
         }
         return 0;
     }
     HWND create(HWND wnd) override { return uCreateDialog(IDD_STATUS, wnd, ConfigProc); }
-    const char * get_name() override { return "Status bar"; }
-    bool get_help_url(pfc::string_base & p_out) override
+    const char* get_name() override { return "Status bar"; }
+    bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:status_bar";
         return true;
     }
 } g_tab_status;
 
-menu_item_cache * tab_status::p_cache = nullptr;
+menu_item_cache* tab_status::p_cache = nullptr;
 bool tab_status::initialised = false;
 
-preferences_tab * g_get_tab_status()
+preferences_tab* g_get_tab_status()
 {
     return &g_tab_status;
 }
-

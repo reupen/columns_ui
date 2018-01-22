@@ -1,26 +1,17 @@
 #include "stdafx.h"
 #include "main_window.h"
 
-class config_object_notify_columns : public config_object_notify
-{
-    unsigned get_watched_object_count() override
+class config_object_notify_columns : public config_object_notify {
+    unsigned get_watched_object_count() override { return 1; }
+    GUID get_watched_object(unsigned p_index) override { return standard_config_objects::bool_ui_always_on_top; };
+    void on_watched_object_changed(const service_ptr_t<config_object>& p_object) override
     {
-        return 1;
-    }
-    GUID get_watched_object(unsigned p_index) override
-    {
-        return standard_config_objects::bool_ui_always_on_top;
-    };
-    void on_watched_object_changed(const service_ptr_t<config_object> & p_object) override
-    {
-        if (g_main_window)
-        {
+        if (g_main_window) {
             bool aot = false;
             p_object->get_data_bool(aot);
-            uPostMessage(g_main_window,MSG_SET_AOT,aot,0);
+            uPostMessage(g_main_window, MSG_SET_AOT, aot, 0);
         }
     }
-
 };
 
 /*class titleformat_config_callback_columns : public titleformat_config_callback
@@ -39,4 +30,4 @@ class config_object_notify_columns : public config_object_notify
 };*/
 
 service_factory_single_t<config_object_notify_columns> hj;
-//service_factory_single_t<titleformat_config_callback_columns> hjc;
+// service_factory_single_t<titleformat_config_callback_columns> hjc;

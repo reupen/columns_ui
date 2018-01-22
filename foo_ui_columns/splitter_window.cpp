@@ -1,35 +1,29 @@
 #include "stdafx.h"
 #include "splitter.h"
 
-ui_extension::window_host_factory<splitter_window_impl::splitter_host_impl > g_splitter_host_vert;
+ui_extension::window_host_factory<splitter_window_impl::splitter_host_impl> g_splitter_host_vert;
 
 unsigned splitter_window_impl::g_count = 0;
 gdi_object_t<HFONT>::ptr_t splitter_window_impl::g_font_menu_horizontal;
 gdi_object_t<HFONT>::ptr_t splitter_window_impl::g_font_menu_vertical;
 
-
-
-void splitter_window_impl::insert_panel(unsigned index, const uie::splitter_item_t *  p_item)
+void splitter_window_impl::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
-    if (index <= m_panels.get_count())
-    {
+    if (index <= m_panels.get_count()) {
         pfc::refcounted_object_ptr_t<panel> temp;
         temp = new panel;
         temp->set_from_splitter_item(p_item);
         m_panels.insert_item(temp, index);
 
-        if (get_wnd())
-        {
+        if (get_wnd()) {
             refresh_children();
         }
     }
 };
 
-
-void splitter_window_impl::replace_panel(unsigned index, const uie::splitter_item_t *  p_item)
+void splitter_window_impl::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
-    if (index < m_panels.get_count())
-    {
+    if (index < m_panels.get_count()) {
         if (get_wnd())
             m_panels[index]->destroy();
         pfc::refcounted_object_ptr_t<panel> temp;
@@ -42,15 +36,12 @@ void splitter_window_impl::replace_panel(unsigned index, const uie::splitter_ite
     }
 };
 
-
 void splitter_window_impl::destroy_children()
 {
     unsigned n, count = m_panels.get_count();
-    for (n = 0; n<count; n++)
-    {
+    for (n = 0; n < count; n++) {
         pfc::refcounted_object_ptr_t<panel> pal = m_panels[n];
-        if (pal->m_child.is_valid())
-        {
+        if (pal->m_child.is_valid()) {
             //            pal->m_child_data.set_size(0);
             //            stream_writer_memblock_ref blah(pal->m_child_data);
             //            pal->m_child->get_config(&blah);
@@ -60,14 +51,12 @@ void splitter_window_impl::destroy_children()
             pal->m_wnd = nullptr;
             pal->m_child.release();
             pal->m_interface.release();
-            //pal->m_container.m_this.release();
+            // pal->m_container.m_this.release();
         }
     }
 
-    //m_wnd = NULL;
-
+    // m_wnd = NULL;
 }
-
 
 void splitter_window_impl::refresh_children()
 {
@@ -75,43 +64,35 @@ void splitter_window_impl::refresh_children()
     pfc::array_t<bool> new_items;
     new_items.set_count(count);
     new_items.fill_null();
-    for (n = 0; n<count; n++)
-    {
-        if (!m_panels[n]->m_wnd)
-        {
+    for (n = 0; n < count; n++) {
+        if (!m_panels[n]->m_wnd) {
             uie::window_ptr p_ext;
             p_ext = m_panels[n]->m_child;
 
             bool b_new = false;
 
-            if (!p_ext.is_valid())
-            {
+            if (!p_ext.is_valid()) {
                 ui_extension::window::create_by_guid(m_panels[n]->m_guid, p_ext);
                 b_new = true;
             }
 
-            if (!m_panels[n]->m_interface.is_valid())
-            {
+            if (!m_panels[n]->m_interface.is_valid()) {
                 service_ptr_t<service_base> temp;
                 g_splitter_host_vert.instance_create(temp);
                 uie::window_host_ptr ptr;
-                if (temp->service_query_t(ptr))
-                {
+                if (temp->service_query_t(ptr)) {
                     m_panels[n]->m_interface = static_cast<splitter_host_impl*>(ptr.get_ptr());
                     m_panels[n]->m_interface->set_window_ptr(this);
                 }
             }
 
-
-            if (p_ext.is_valid() && p_ext->is_available(uie::window_host_ptr(static_cast<uie::window_host*>(m_panels[n]->m_interface.get_ptr()))))
-            {
+            if (p_ext.is_valid()
+                && p_ext->is_available(
+                       uie::window_host_ptr(static_cast<uie::window_host*>(m_panels[n]->m_interface.get_ptr())))) {
                 pfc::string8 name;
-                if (m_panels[n]->m_use_custom_title)
-                {
+                if (m_panels[n]->m_use_custom_title) {
                     name = m_panels[n]->m_custom_title;
-                }
-                else
-                {
+                } else {
                     if (!p_ext->get_short_name(name))
                         p_ext->get_name(name);
                 }
@@ -121,25 +102,23 @@ void splitter_window_impl::refresh_children()
 
                 uSetWindowText(wnd_host, name);
 
-                if (wnd_host)
-                {
-                    if (b_new)
-                    {
+                if (wnd_host) {
+                    if (b_new) {
                         try {
                             abort_callback_dummy p_abort;
-                            p_ext->set_config_from_ptr(m_panels[n]->m_child_data.get_ptr(), m_panels[n]->m_child_data.get_size(), p_abort);
-                        }
-                        catch (const exception_io & e)
-                        {
+                            p_ext->set_config_from_ptr(
+                                m_panels[n]->m_child_data.get_ptr(), m_panels[n]->m_child_data.get_size(), p_abort);
+                        } catch (const exception_io& e) {
                             console::formatter formatter;
                             formatter << "Error setting panel config: " << e.what();
                         }
                     }
 
-                    HWND wnd_panel = p_ext->create_or_transfer_window(wnd_host, uie::window_host_ptr(m_panels[n]->m_interface.get_ptr())); //FIXX
-                    if (wnd_panel)
-                    {
-                        SetWindowLongPtr(wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE) | WS_CLIPSIBLINGS);
+                    HWND wnd_panel = p_ext->create_or_transfer_window(
+                        wnd_host, uie::window_host_ptr(m_panels[n]->m_interface.get_ptr())); // FIXX
+                    if (wnd_panel) {
+                        SetWindowLongPtr(
+                            wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE) | WS_CLIPSIBLINGS);
                         MINMAXINFO mmi;
                         memset(&mmi, 0, sizeof(MINMAXINFO));
                         mmi.ptMaxTrackSize.x = MAXLONG;
@@ -161,25 +140,20 @@ void splitter_window_impl::refresh_children()
                         << " max width: " << (t_int32)mmi.ptMaxTrackSize.y
                         << " max height: " << (t_int32)mmi.ptMaxTrackSize.y;*/
 
-                    }
-                    else
-                    {
+                    } else {
                         m_panels[n]->m_container.destroy();
                     }
                 }
             }
-            new_items[n] = true;//b_new;
+            new_items[n] = true; // b_new;
         }
     }
 
     on_size_changed();
 
-    if (IsWindowVisible(get_wnd()))
-    {
-        for (n = 0; n<count; n++)
-        {
-            if (new_items[n])
-            {
+    if (IsWindowVisible(get_wnd())) {
+        for (n = 0; n < count; n++) {
+            if (new_items[n]) {
                 ShowWindow(m_panels[n]->m_wnd_child, SW_SHOWNORMAL);
                 ShowWindow(m_panels[n]->m_wnd, SW_SHOWNORMAL);
             }
@@ -188,8 +162,6 @@ void splitter_window_impl::refresh_children()
         RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
     }
 }
-
-
 
 void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
 {
@@ -200,13 +172,10 @@ void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 
     HDWP dwp = BeginDeferWindowPos(m_panels.get_count());
-    if (dwp)
-    {
+    if (dwp) {
         unsigned size_cumulative = 0, n;
-        for (n = 0; n<count; n++)
-        {
-            if (m_panels[n]->m_child.is_valid() && m_panels[n]->m_wnd)
-            {
+        for (n = 0; n < count; n++) {
+            if (m_panels[n]->m_child.is_valid() && m_panels[n]->m_wnd) {
                 unsigned size = sizes[n];
 
                 unsigned x = get_orientation() == horizontal ? size_cumulative : 0;
@@ -214,13 +183,7 @@ void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
                 unsigned cx = get_orientation() == horizontal ? size - get_panel_divider_size(n) : width;
                 unsigned cy = get_orientation() == horizontal ? height : size - get_panel_divider_size(n);
 
-                dwp = DeferWindowPos(dwp, m_panels[n]->m_wnd,
-                    nullptr,
-                    x,
-                    y,
-                    cx,
-                    cy,
-                    SWP_NOZORDER);
+                dwp = DeferWindowPos(dwp, m_panels[n]->m_wnd, nullptr, x, y, cx, cy, SWP_NOZORDER);
 
                 size_cumulative += size;
             }
@@ -237,47 +200,39 @@ void splitter_window_impl::on_size_changed()
     on_size_changed(rc.right, rc.bottom);
 }
 
-bool splitter_window_impl::find_by_divider_pt(POINT & pt, unsigned & p_out)
+bool splitter_window_impl::find_by_divider_pt(POINT& pt, unsigned& p_out)
 {
     unsigned n, count = m_panels.get_count();
-    for (n = 0; n<count; n++)
-    {
+    for (n = 0; n < count; n++) {
         pfc::refcounted_object_ptr_t<panel> p_item = m_panels.get_item(n);
 
-        if (p_item->m_wnd_child)
-        {
-
+        if (p_item->m_wnd_child) {
             RECT rc_area;
             GetRelativeRect(p_item->m_wnd_child, m_wnd, &rc_area);
 
-            if (PtInRect(&rc_area, pt)) return false;
+            if (PtInRect(&rc_area, pt))
+                return false;
 
             bool in_divider = false;
-            if (get_orientation() == vertical)
-            {
+            if (get_orientation() == vertical) {
                 in_divider = (pt.y >= rc_area.bottom) && (pt.y < (rc_area.bottom + (LONG)get_panel_divider_size(n)));
-            }
-            else
-            {
+            } else {
                 in_divider = pt.x >= rc_area.right && pt.x < (rc_area.right + (LONG)get_panel_divider_size(n));
             }
-            if (in_divider)
-            {
+            if (in_divider) {
                 p_out = n;
                 return true;
             }
         }
-
     }
     return false;
 }
 
-bool splitter_window_impl::test_divider_pt(const POINT & pt, unsigned index)
+bool splitter_window_impl::test_divider_pt(const POINT& pt, unsigned index)
 {
     unsigned divider_index;
     POINT pt2 = pt;
-    if (find_by_divider_pt(pt2, divider_index))
-    {
+    if (find_by_divider_pt(pt2, divider_index)) {
         return divider_index == index || (index && divider_index == index - 1);
     }
     return false;
@@ -289,9 +244,9 @@ void splitter_window_impl::save_sizes(unsigned width, unsigned height)
     get_panels_sizes(width, height, sizes);
     unsigned n, count = m_panels.get_count();
 
-    for (n = 0; n<count; n++)
-    {
-        if (!m_panels[n]->m_hidden) m_panels[n]->m_size = sizes[n] - get_panel_divider_size(n);
+    for (n = 0; n < count; n++) {
+        if (!m_panels[n]->m_hidden)
+            m_panels[n]->m_size = sizes[n] - get_panel_divider_size(n);
     }
 }
 
@@ -302,73 +257,76 @@ void splitter_window_impl::save_sizes()
     save_sizes(rc.right, rc.bottom);
 }
 
-
-void splitter_window_impl::get_panels_sizes(unsigned client_width, unsigned client_height, pfc::list_base_t<unsigned> & p_out)
+void splitter_window_impl::get_panels_sizes(
+    unsigned client_width, unsigned client_height, pfc::list_base_t<unsigned>& p_out)
 {
-    struct t_size_info
-    {
+    struct t_size_info {
         unsigned height;
         bool sized;
         unsigned parts;
     };
 
-
     unsigned n, count = m_panels.get_count(), height_allocated = 0;
 
-    if (count)
-    {
+    if (count) {
         pfc::array_t<t_size_info> size_info;
         size_info.set_size(count);
-        //size_info.fill(0);
-        memset(size_info.get_ptr(), 0, size_info.get_size()*sizeof(t_size_info));
+        // size_info.fill(0);
+        memset(size_info.get_ptr(), 0, size_info.get_size() * sizeof(t_size_info));
 
         unsigned caption_size = g_get_caption_size();
-        //unsigned divider_width = 2;
+        // unsigned divider_width = 2;
 
         int available_height = get_orientation() == horizontal ? client_width : client_height;
         unsigned available_parts = 0;
 
-        for (n = 0; n<count; n++)
-        {
-            unsigned panel_divider_size = get_panel_divider_size(n);;
+        for (n = 0; n < count; n++) {
+            unsigned panel_divider_size = get_panel_divider_size(n);
+            ;
 
             unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size.get_scaled_value();
-            if (height>MAXLONG) height = MAXLONG;
+            if (height > MAXLONG)
+                height = MAXLONG;
             if (available_height > (-MAXLONG + (int)height))
                 available_height -= height;
-            else available_height = -MAXLONG;
+            else
+                available_height = -MAXLONG;
             if (available_height > (-MAXLONG + (int)panel_divider_size))
                 available_height -= panel_divider_size;
-            else available_height = -MAXLONG;
+            else
+                available_height = -MAXLONG;
 
             size_info[n].height = height + panel_divider_size;
             size_info[n].parts = (m_panels[n]->m_locked || m_panels[n]->m_hidden) ? 0 : 1;
             available_parts += size_info[n].parts;
         }
 
-        do
-        {
+        do {
             unsigned this_pass_available_parts = available_parts;
             int this_pass_available_height = available_height;
 
-            for (n = 0; n<count; n++)
-            {
-                if (!size_info[n].sized)
-                {
+            for (n = 0; n < count; n++) {
+                if (!size_info[n].sized) {
                     unsigned panel_divider_size = get_panel_divider_size(n);
-                    unsigned panel_caption_size = (get_orientation() != m_panels[n]->m_caption_orientation &&  m_panels[n]->m_show_caption) ? caption_size : 0;
+                    unsigned panel_caption_size
+                        = (get_orientation() != m_panels[n]->m_caption_orientation && m_panels[n]->m_show_caption)
+                        ? caption_size
+                        : 0;
 
                     unsigned height = size_info[n].height;
 
                     int adjustment = 0;
                     {
-                        adjustment = this_pass_available_parts ? MulDiv(this_pass_available_height, size_info[n].parts, this_pass_available_parts) : 0;
+                        adjustment = this_pass_available_parts
+                            ? MulDiv(this_pass_available_height, size_info[n].parts, this_pass_available_parts)
+                            : 0;
                         this_pass_available_parts -= size_info[n].parts;
                         this_pass_available_height -= adjustment;
                     }
 
-                    if ((adjustment < 0 && (height > panel_divider_size ? height - panel_divider_size : 0) < (unsigned)(adjustment*-1)))
-                    {
+                    if ((adjustment < 0
+                            && (height > panel_divider_size ? height - panel_divider_size : 0)
+                                < (unsigned)(adjustment * -1))) {
                         adjustment = (height > panel_divider_size ? height - panel_divider_size : 0) * -1;
                         size_info[n].sized = true;
                     }
@@ -379,48 +337,50 @@ void splitter_window_impl::get_panels_sizes(unsigned client_width, unsigned clie
 
                     height += adjustment;
 
-                    unsigned min_height = hidden ? 0 : (get_orientation() == horizontal ? m_panels[n]->m_size_limits.min_width : m_panels[n]->m_size_limits.min_height);
-                    if (min_height < (unsigned)(pfc_infinite)-panel_divider_size - caption_size) min_height += panel_divider_size + panel_caption_size;
+                    unsigned min_height = hidden
+                        ? 0
+                        : (get_orientation() == horizontal ? m_panels[n]->m_size_limits.min_width
+                                                           : m_panels[n]->m_size_limits.min_height);
+                    if (min_height < (unsigned)(pfc_infinite)-panel_divider_size - caption_size)
+                        min_height += panel_divider_size + panel_caption_size;
 
-                    unsigned max_height = hidden ? 0 : (get_orientation() == horizontal ? m_panels[n]->m_size_limits.max_width : m_panels[n]->m_size_limits.max_height);
-                    if (max_height < (unsigned)(pfc_infinite)-panel_divider_size - caption_size) max_height += panel_divider_size + panel_caption_size;
+                    unsigned max_height = hidden
+                        ? 0
+                        : (get_orientation() == horizontal ? m_panels[n]->m_size_limits.max_width
+                                                           : m_panels[n]->m_size_limits.max_height);
+                    if (max_height < (unsigned)(pfc_infinite)-panel_divider_size - caption_size)
+                        max_height += panel_divider_size + panel_caption_size;
 
-                    if (get_orientation() == horizontal && m_panels[n]->m_show_toggle_area && !m_panels[n]->m_autohide)
-                    {
-
+                    if (get_orientation() == horizontal && m_panels[n]->m_show_toggle_area
+                        && !m_panels[n]->m_autohide) {
                         if (max_height < unsigned(pfc_infinite) - 1)
                             max_height++;
                         if (min_height < unsigned(pfc_infinite) - 1)
                             min_height++;
                     }
 
-
-                    if (height < min_height)
-                    {
+                    if (height < min_height) {
                         height = min_height;
                         adjustment = (height - unadjusted);
                         size_info[n].sized = true;
-                    }
-                    else if (height > max_height)
-                    {
+                    } else if (height > max_height) {
                         height = max_height;
                         adjustment = (height - unadjusted);
                         size_info[n].sized = true;
                     }
-                    if (m_panels[n]->m_locked || hidden) size_info[n].sized = true;
+                    if (m_panels[n]->m_locked || hidden)
+                        size_info[n].sized = true;
 
-                    if (size_info[n].sized) available_parts -= size_info[n].parts;
+                    if (size_info[n].sized)
+                        available_parts -= size_info[n].parts;
 
                     available_height -= (height - unadjusted);
                     size_info[n].height = height;
-
-
                 }
             }
         } while (available_parts && available_height);
 
-        for (n = 0; n<count; n++)
-        {
+        for (n = 0; n < count; n++) {
             p_out.add_item(size_info[n].height);
         }
     }
@@ -432,7 +392,7 @@ bool splitter_window_impl::can_resize_divider(t_size index) const
     t_size count_right = 0;
     for (t_size i = 0, count = m_panels.get_count(); i < count; i++) {
         if (can_resize_panel(i)) {
-            if (i <= index) 
+            if (i <= index)
                 count_left++;
             else
                 count_right++;
@@ -443,7 +403,7 @@ bool splitter_window_impl::can_resize_divider(t_size index) const
 
 bool splitter_window_impl::can_resize_panel(t_size index) const
 {
-    const auto & panel = m_panels[index];
+    const auto& panel = m_panels[index];
 
     if (!settings::allow_locked_panel_resizing && panel->m_locked)
         return false;
@@ -452,54 +412,61 @@ bool splitter_window_impl::can_resize_panel(t_size index) const
         RECT rc_window;
         GetWindowRect(panel->m_wnd_child, &rc_window);
 
-        if (get_orientation() == vertical && RECT_CY(rc_window) == panel->m_size_limits.max_height && RECT_CY(rc_window) == panel->m_size_limits.min_height)
+        if (get_orientation() == vertical && RECT_CY(rc_window) == panel->m_size_limits.max_height
+            && RECT_CY(rc_window) == panel->m_size_limits.min_height)
             return false;
 
-        if (get_orientation() == horizontal && RECT_CX(rc_window) == panel->m_size_limits.max_width && RECT_CX(rc_window) == panel->m_size_limits.min_width)
+        if (get_orientation() == horizontal && RECT_CX(rc_window) == panel->m_size_limits.max_width
+            && RECT_CX(rc_window) == panel->m_size_limits.min_width)
             return false;
     }
 
     return true;
 }
 
-
-int splitter_window_impl::override_size(unsigned & panel, int delta)
+int splitter_window_impl::override_size(unsigned& panel, int delta)
 {
-    //console::formatter() << "Overriding " << panel << " by " << delta;
-    struct t_min_max_info
-    {
+    // console::formatter() << "Overriding " << panel << " by " << delta;
+    struct t_min_max_info {
         unsigned min_height;
         unsigned max_height;
         unsigned height;
-        //unsigned caption_height;
+        // unsigned caption_height;
     };
 
     unsigned count = m_panels.get_count();
-    if (count)
-    {
+    if (count) {
         save_sizes();
-        if (panel + 1 < count)
-        {
+        if (panel + 1 < count) {
             unsigned n = 0;
 
             unsigned the_caption_height = g_get_caption_size();
             pfc::array_t<t_min_max_info> minmax;
             minmax.set_size(count);
 
-            //minmax.fill(0);
-            memset(minmax.get_ptr(), 0, minmax.get_size()*sizeof(t_min_max_info));
+            // minmax.fill(0);
+            memset(minmax.get_ptr(), 0, minmax.get_size() * sizeof(t_min_max_info));
 
-            for (n = 0; n<count; n++)
-            {
-                unsigned caption_height = m_panels[n]->m_show_caption && m_panels[n]->m_caption_orientation != get_orientation() ? the_caption_height : 0;
-                unsigned min_height = m_panels[n]->m_hidden ? 0 : get_orientation() == vertical ? m_panels[n]->m_size_limits.min_height : m_panels[n]->m_size_limits.min_width;
-                unsigned max_height = m_panels[n]->m_hidden ? 0 : get_orientation() == vertical ? m_panels[n]->m_size_limits.max_height : m_panels[n]->m_size_limits.max_width;
+            for (n = 0; n < count; n++) {
+                unsigned caption_height
+                    = m_panels[n]->m_show_caption && m_panels[n]->m_caption_orientation != get_orientation()
+                    ? the_caption_height
+                    : 0;
+                unsigned min_height = m_panels[n]->m_hidden
+                    ? 0
+                    : get_orientation() == vertical ? m_panels[n]->m_size_limits.min_height
+                                                    : m_panels[n]->m_size_limits.min_width;
+                unsigned max_height = m_panels[n]->m_hidden
+                    ? 0
+                    : get_orientation() == vertical ? m_panels[n]->m_size_limits.max_height
+                                                    : m_panels[n]->m_size_limits.max_width;
 
-                if (min_height < (unsigned)(0 - caption_height)) min_height += caption_height;
-                if (max_height < (unsigned)(0 - caption_height)) max_height += caption_height;
+                if (min_height < (unsigned)(0 - caption_height))
+                    min_height += caption_height;
+                if (max_height < (unsigned)(0 - caption_height))
+                    max_height += caption_height;
 
-                if (get_orientation() == horizontal && m_panels[n]->m_show_toggle_area && !m_panels[n]->m_autohide)
-                {
+                if (get_orientation() == horizontal && m_panels[n]->m_show_toggle_area && !m_panels[n]->m_autohide) {
                     if (max_height < unsigned(pfc_infinite) - 1)
                         max_height++;
                     if (min_height < unsigned(pfc_infinite) - 1)
@@ -507,35 +474,31 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
                     caption_height++;
                 }
 
-                //minmax[n].caption_height = caption_height;
+                // minmax[n].caption_height = caption_height;
                 minmax[n].min_height = min_height;
                 minmax[n].max_height = max_height;
                 minmax[n].height = m_panels[n]->m_hidden ? caption_height : m_panels[n]->m_size.get_scaled_value();
             }
 
-            bool is_up = delta < 0;//new_height < m_panels[panel].height;
-            bool is_down = delta > 0;//new_height > m_panels[panel].height;
+            bool is_up = delta < 0; // new_height < m_panels[panel].height;
+            bool is_down = delta > 0; // new_height > m_panels[panel].height;
 
-            if (is_up /*&& !m_panels[panel].locked*/)
-            {
-
+            if (is_up /*&& !m_panels[panel].locked*/) {
                 unsigned diff_abs = 0, diff_avail = abs(delta);
 
                 unsigned n = panel + 1;
-                while (n < count && diff_abs < diff_avail)
-                {
+                while (n < count && diff_abs < diff_avail) {
                     {
-                        unsigned height = minmax[n].height + (diff_avail - diff_abs);//(diff_avail-diff_abs > m_panels[n]->height ? 0 : m_panels[n]->height-(diff_avail-diff_abs));
+                        unsigned height = minmax[n].height
+                            + (diff_avail - diff_abs); //(diff_avail-diff_abs > m_panels[n]->height ? 0 :
+                                                       //m_panels[n]->height-(diff_avail-diff_abs));
 
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
 
-                        if (height < min_height)
-                        {
+                        if (height < min_height) {
                             height = min_height;
-                        }
-                        else if (height > max_height)
-                        {
+                        } else if (height > max_height) {
                             height = max_height;
                         }
 
@@ -546,39 +509,34 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
 
                 n = panel + 1;
                 unsigned obtained = 0;
-                while (n>0 && obtained < diff_abs)
-                {
+                while (n > 0 && obtained < diff_abs) {
                     n--;
                     //                    if (!m_panels[n]->locked)
                     {
-                        unsigned height = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
+                        unsigned height
+                            = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
 
-                        //unsigned caption_height = m_panels[n]->m_show_caption ? the_caption_height : 0;
+                        // unsigned caption_height = m_panels[n]->m_show_caption ? the_caption_height : 0;
 
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
 
-
-                        if (height < min_height)
-                        {
+                        if (height < min_height) {
                             height = min_height;
-                        }
-                        else if (height > max_height)
-                        {
+                        } else if (height > max_height) {
                             height = max_height;
                         }
 
                         obtained += minmax[n].height - height;
                         minmax[n].height = height;
-                        if (!m_panels[n]->m_hidden) m_panels[n]->m_size = height;
-
+                        if (!m_panels[n]->m_hidden)
+                            m_panels[n]->m_size = height;
                     }
                 }
                 n = panel;
                 unsigned obtained2 = obtained;
 
-                while (n < count - 1 && obtained2)
-                {
+                while (n < count - 1 && obtained2) {
                     n++;
                     unsigned height = (minmax[n].height);
 
@@ -587,85 +545,74 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
 
                     height += obtained2;
 
-                    if (height < min_height)
-                    {
+                    if (height < min_height) {
                         height = min_height;
-                    }
-                    else if (height > max_height)
-                    {
+                    } else if (height > max_height) {
                         height = max_height;
                     }
 
                     obtained2 -= height - minmax[n].height;
                     minmax[n].height = height;
-                    if (!m_panels[n]->m_hidden) m_panels[n]->m_size = height;
+                    if (!m_panels[n]->m_hidden)
+                        m_panels[n]->m_size = height;
                 }
                 return (abs(delta) - obtained);
 
-
-            }
-            else if (is_down /*&& !m_panels[panel].locked*/)
-            {
+            } else if (is_down /*&& !m_panels[panel].locked*/) {
                 unsigned diff_abs = 0, diff_avail = abs(delta);
 
                 n = panel + 1;
-                while (n >0 && diff_abs < diff_avail)
-                {
+                while (n > 0 && diff_abs < diff_avail) {
                     n--;
                     {
-                        unsigned height = minmax[n].height + (diff_avail - diff_abs);//(diff_avail-diff_abs > m_panels[n]->height ? 0 : m_panels[n]->height-(diff_avail-diff_abs));
-                        //console::formatter() << "1: " << height << " " << minmax[n].height << " " << (diff_avail-diff_abs);
+                        unsigned height = minmax[n].height
+                            + (diff_avail - diff_abs); //(diff_avail-diff_abs > m_panels[n]->height ? 0 :
+                                                       //m_panels[n]->height-(diff_avail-diff_abs));
+                        // console::formatter() << "1: " << height << " " << minmax[n].height << " " <<
+                        // (diff_avail-diff_abs);
 
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
 
-                        if (height < min_height)
-                        {
+                        if (height < min_height) {
                             height = min_height;
-                        }
-                        else if (height > max_height)
-                        {
+                        } else if (height > max_height) {
                             height = max_height;
                         }
-
 
                         diff_abs += height - minmax[n].height;
                     }
                 }
                 n = panel;
                 unsigned obtained = 0;
-                while (n < count - 1 && obtained < diff_abs)
-                {
+                while (n < count - 1 && obtained < diff_abs) {
                     n++;
                     //                if (!m_panels[n]->locked)
                     {
-                        unsigned height = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
-                        //console::formatter() << "2: " << height << " " << minmax[n].height << " " << (diff_abs-obtained);
+                        unsigned height
+                            = (diff_abs - obtained > minmax[n].height ? 0 : minmax[n].height - (diff_abs - obtained));
+                        // console::formatter() << "2: " << height << " " << minmax[n].height << " " <<
+                        // (diff_abs-obtained);
 
-                        //unsigned caption_height = minmax[n].caption_height;
+                        // unsigned caption_height = minmax[n].caption_height;
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
 
-
-                        if (height < min_height)
-                        {
+                        if (height < min_height) {
                             height = min_height;
-                        }
-                        else if (height > max_height)
-                        {
+                        } else if (height > max_height) {
                             height = max_height;
                         }
 
                         obtained += minmax[n].height - height;
                         minmax[n].height = height;
-                        if (!m_panels[n]->m_hidden) m_panels[n]->m_size = height;
-
+                        if (!m_panels[n]->m_hidden)
+                            m_panels[n]->m_size = height;
                     }
                 }
                 n = panel + 1;
                 unsigned obtained2 = obtained;
-                while (n >0 && obtained2)
-                {
+                while (n > 0 && obtained2) {
                     n--;
                     unsigned height = (minmax[n].height);
                     unsigned min_height = minmax[n].min_height;
@@ -673,12 +620,9 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
 
                     height += obtained2;
 
-                    if (height < min_height)
-                    {
+                    if (height < min_height) {
                         height = min_height;
-                    }
-                    else if (height > max_height)
-                    {
+                    } else if (height > max_height) {
                         height = max_height;
                     }
 
@@ -686,13 +630,12 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
 
                     minmax[n].height = height;
 
-                    if (!m_panels[n]->m_hidden) m_panels[n]->m_size = height;
+                    if (!m_panels[n]->m_hidden)
+                        m_panels[n]->m_size = height;
                 }
-                //console::formatter() << "3: " << abs(delta) << " " << obtained;
+                // console::formatter() << "3: " << abs(delta) << " " << obtained;
                 return 0 - (abs(delta) - obtained);
-
             }
-
         }
     }
     return 0;
@@ -701,25 +644,32 @@ int splitter_window_impl::override_size(unsigned & panel, int delta)
 void splitter_window_impl::start_autohide_dehide(unsigned p_panel, bool b_next_too)
 {
     bool b_have_next = b_next_too && is_index_valid(p_panel + 1);
-    auto & panel_before = m_panels[p_panel];
-    auto & panel_after = b_have_next ? m_panels[p_panel + 1] : panel::null_ptr;
-    if ((panel_before->m_autohide && !panel_before->m_container.m_hook_active) || (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active))
-    {
+    auto& panel_before = m_panels[p_panel];
+    auto& panel_after = b_have_next ? m_panels[p_panel + 1] : panel::null_ptr;
+    if ((panel_before->m_autohide && !panel_before->m_container.m_hook_active)
+        || (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active)) {
         bool a1 = false, a2 = false;
-        if (panel_before->m_autohide && !panel_before->m_container.m_hook_active) { panel_before->m_hidden = false; a1 = true; }
-        if (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active) { panel_after->m_hidden = false; a2 = true; }
-        if (a1 || a2)
-        {
+        if (panel_before->m_autohide && !panel_before->m_container.m_hook_active) {
+            panel_before->m_hidden = false;
+            a1 = true;
+        }
+        if (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active) {
+            panel_after->m_hidden = false;
+            a2 = true;
+        }
+        if (a1 || a2) {
             get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
             on_size_changed();
-            if (a1) panel_before->m_container.enter_autohide_hook();
-            if (a2) panel_after->m_container.enter_autohide_hook();
+            if (a1)
+                panel_before->m_container.enter_autohide_hook();
+            if (a2)
+                panel_after->m_container.enter_autohide_hook();
         }
     }
 }
 
-
-void splitter_window_impl::get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, pfc::bit_array_var & p_mask_unsupported)
+void splitter_window_impl::get_supported_panels(
+    const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_splitter_host_vert.instance_create(temp);
@@ -727,45 +677,34 @@ void splitter_window_impl::get_supported_panels(const pfc::list_base_const_t<uie
     if (temp->service_query_t(ptr))
         (static_cast<splitter_host_impl*>(ptr.get_ptr()))->set_window_ptr(this);
     t_size i, count = p_windows.get_count();
-    for (i = 0; i<count; i++)
+    for (i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
-bool splitter_window_impl::is_point_ours(HWND wnd_point, const POINT & pt_screen, pfc::list_base_t<uie::window::ptr> & p_hierarchy)
+bool splitter_window_impl::is_point_ours(
+    HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy)
 {
-    if (wnd_point == get_wnd() || IsChild(get_wnd(), wnd_point))
-    {
-        if (wnd_point == get_wnd())
-        {
+    if (wnd_point == get_wnd() || IsChild(get_wnd(), wnd_point)) {
+        if (wnd_point == get_wnd()) {
             p_hierarchy.add_item(this);
             return true;
-        }
-        else
-        {
+        } else {
             t_size i, count = m_panels.get_count();
-            for (i = 0; i<count; i++)
-            {
+            for (i = 0; i < count; i++) {
                 uie::splitter_window_v2_ptr sptr;
-                if (m_panels[i]->m_child.is_valid())
-                {
-                    if (m_panels[i]->m_child->service_query_t(sptr))
-                    {
+                if (m_panels[i]->m_child.is_valid()) {
+                    if (m_panels[i]->m_child->service_query_t(sptr)) {
                         pfc::list_t<uie::window::ptr> temp;
                         temp.add_item(this);
-                        if (sptr->is_point_ours(wnd_point, pt_screen, temp))
-                        {
+                        if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
                             p_hierarchy.add_items(temp);
                             return true;
                         }
-                    }
-                    else if (wnd_point == m_panels[i]->m_wnd_child || IsChild(m_panels[i]->m_wnd_child, wnd_point))
-                    {
+                    } else if (wnd_point == m_panels[i]->m_wnd_child || IsChild(m_panels[i]->m_wnd_child, wnd_point)) {
                         p_hierarchy.add_item(this);
                         p_hierarchy.add_item(m_panels[i]->m_child);
                         return true;
-                    }
-                    else if (wnd_point == m_panels[i]->m_wnd)
-                    {
+                    } else if (wnd_point == m_panels[i]->m_wnd) {
                         p_hierarchy.add_item(this);
                         return true;
                     }
@@ -776,10 +715,9 @@ bool splitter_window_impl::is_point_ours(HWND wnd_point, const POINT & pt_screen
     return false;
 };
 
-splitter_window_impl::splitter_window_impl() : m_wnd(nullptr), m_last_position(NULL),
-m_panel_dragging(NULL), m_panel_dragging_valid(false)
+splitter_window_impl::splitter_window_impl()
+    : m_wnd(nullptr), m_last_position(NULL), m_panel_dragging(NULL), m_panel_dragging_valid(false)
 {
-
 }
 
 unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
@@ -787,73 +725,53 @@ unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
     return index + 1 < m_panels.get_count() ? settings::custom_splitter_divider_width : 0;
 }
 
-bool splitter_window_impl::set_config_item(unsigned index, const GUID & p_type, stream_reader * p_source, abort_callback & p_abort)
+bool splitter_window_impl::set_config_item(
+    unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
 {
-    if (is_index_valid(index))
-    {
-        if (p_type == uie::splitter_window::bool_show_caption)
-        {
+    if (is_index_valid(index)) {
+        if (p_type == uie::splitter_window::bool_show_caption) {
             p_source->read_object_t(m_panels[index]->m_show_caption, p_abort);
-            if (get_wnd())
-            {
+            if (get_wnd()) {
                 get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
                 on_size_changed();
                 m_panels[index]->on_size();
             }
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_hidden)
-        {
+        } else if (p_type == uie::splitter_window::bool_hidden) {
             if (!m_panels[index]->m_autohide)
                 p_source->read_object_t(m_panels[index]->m_hidden, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_autohide)
-        {
+        } else if (p_type == uie::splitter_window::bool_autohide) {
             p_source->read_object_t(m_panels[index]->m_autohide, p_abort);
             m_panels[index]->m_hidden = m_panels[index]->m_autohide;
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_locked)
-        {
+        } else if (p_type == uie::splitter_window::bool_locked) {
             if (get_wnd())
                 save_sizes();
             p_source->read_object_t(m_panels[index]->m_locked, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::uint32_orientation)
-        {
+        } else if (p_type == uie::splitter_window::uint32_orientation) {
             p_source->read_object_t(m_panels[index]->m_caption_orientation, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::uint32_size) 
-        {
+        } else if (p_type == uie::splitter_window::uint32_size) {
             uint32_t size;
             p_source->read_object_t(size, p_abort);
             m_panels[index]->m_size = size;
             return true;
-        }
-        else if (p_type == uie::splitter_window::size_and_dpi) 
-        {
+        } else if (p_type == uie::splitter_window::size_and_dpi) {
             uie::size_and_dpi sad;
             p_source->read_object_t(sad.size, p_abort);
             p_source->read_object_t(sad.dpi, p_abort);
             m_panels[index]->m_size.value = sad.size;
             m_panels[index]->m_size.dpi = sad.dpi;
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal)
-        {
+        } else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
             p_source->read_object_t(m_panels[index]->m_show_toggle_area, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_use_custom_title)
-        {
+        } else if (p_type == uie::splitter_window::bool_use_custom_title) {
             p_source->read_object_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::string_custom_title)
-        {
+        } else if (p_type == uie::splitter_window::string_custom_title) {
             p_source->read_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -862,56 +780,39 @@ bool splitter_window_impl::set_config_item(unsigned index, const GUID & p_type, 
     return false;
 }
 
-bool splitter_window_impl::get_config_item(unsigned index, const GUID & p_type, stream_writer * p_out, abort_callback & p_abort) const
+bool splitter_window_impl::get_config_item(
+    unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
 {
-    if (is_index_valid(index))
-    {
-        if (p_type == uie::splitter_window::bool_show_caption)
-        {
+    if (is_index_valid(index)) {
+        if (p_type == uie::splitter_window::bool_show_caption) {
             p_out->write_object_t(m_panels[index]->m_show_caption, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_hidden)
-        {
+        } else if (p_type == uie::splitter_window::bool_hidden) {
             p_out->write_object_t(m_panels[index]->m_hidden, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_autohide)
-        {
+        } else if (p_type == uie::splitter_window::bool_autohide) {
             p_out->write_object_t(m_panels[index]->m_autohide, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_locked)
-        {
+        } else if (p_type == uie::splitter_window::bool_locked) {
             p_out->write_object_t(m_panels[index]->m_locked, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::uint32_orientation)
-        {
+        } else if (p_type == uie::splitter_window::uint32_orientation) {
             p_out->write_object_t(m_panels[index]->m_caption_orientation, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::uint32_size) {
+        } else if (p_type == uie::splitter_window::uint32_size) {
             p_out->write_object_t(m_panels[index]->m_size.get_scaled_value(), p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::size_and_dpi) {
+        } else if (p_type == uie::splitter_window::size_and_dpi) {
             p_out->write_object_t(m_panels[index]->m_size.value, p_abort);
             p_out->write_object_t(m_panels[index]->m_size.dpi, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal)
-        {
+        } else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
             p_out->write_object_t(m_panels[index]->m_show_toggle_area, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::bool_use_custom_title)
-        {
+        } else if (p_type == uie::splitter_window::bool_use_custom_title) {
             p_out->write_object_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
-        }
-        else if (p_type == uie::splitter_window::string_custom_title)
-        {
+        } else if (p_type == uie::splitter_window::string_custom_title) {
             p_out->write_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -920,21 +821,16 @@ bool splitter_window_impl::get_config_item(unsigned index, const GUID & p_type, 
     return false;
 }
 
-bool splitter_window_impl::get_config_item_supported(unsigned index, const GUID & p_type) const
+bool splitter_window_impl::get_config_item_supported(unsigned index, const GUID& p_type) const
 {
-    if (is_index_valid(index))
-    {
-        if (p_type == uie::splitter_window::bool_show_caption
-            || p_type == uie::splitter_window::bool_locked
-            || p_type == uie::splitter_window::bool_hidden
-            || p_type == uie::splitter_window::uint32_orientation
+    if (is_index_valid(index)) {
+        if (p_type == uie::splitter_window::bool_show_caption || p_type == uie::splitter_window::bool_locked
+            || p_type == uie::splitter_window::bool_hidden || p_type == uie::splitter_window::uint32_orientation
             || p_type == uie::splitter_window::bool_autohide
             || (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal)
-            || p_type == uie::splitter_window::uint32_size
-            || p_type == uie::splitter_window::size_and_dpi
+            || p_type == uie::splitter_window::uint32_size || p_type == uie::splitter_window::size_and_dpi
             || p_type == uie::splitter_window::bool_use_custom_title
-            || p_type == uie::splitter_window::string_custom_title
-            )
+            || p_type == uie::splitter_window::string_custom_title)
             return true;
     }
     return false;
@@ -945,17 +841,17 @@ bool splitter_window_impl::is_index_valid(unsigned index) const
     return index < m_panels.get_count();
 }
 
-void splitter_window_impl::get_config(stream_writer * out, abort_callback & p_abort) const
+void splitter_window_impl::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     write_config(out, false, p_abort);
 }
 
-void splitter_window_impl::export_config(stream_writer * p_writer, abort_callback & p_abort) const
+void splitter_window_impl::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     write_config(p_writer, true, p_abort);
 }
 
-void splitter_window_impl::write_config(stream_writer * p_writer, bool is_export, abort_callback & p_abort) const
+void splitter_window_impl::write_config(stream_writer* p_writer, bool is_export, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(static_cast<t_uint32>(stream_version_current), p_abort);
     unsigned i, count = m_panels.get_count();
@@ -975,7 +871,7 @@ void splitter_window_impl::write_config(stream_writer * p_writer, bool is_export
     }
 }
 
-void splitter_window_impl::read_config(stream_reader * config, t_size p_size, bool is_import, abort_callback & p_abort)
+void splitter_window_impl::read_config(stream_reader* config, t_size p_size, bool is_import, abort_callback& p_abort)
 {
     if (p_size) {
         t_uint32 version;
@@ -1001,9 +897,9 @@ void splitter_window_impl::read_config(stream_reader * config, t_size p_size, bo
                 uint32_t extraDataSize;
                 try {
                     config->read_lendian_t(extraDataSize, p_abort);
-                }
-                catch (const exception_io_data_truncation &) {
-                    if (i == 0) break;
+                } catch (const exception_io_data_truncation&) {
+                    if (i == 0)
+                        break;
                     throw;
                 }
                 pfc::array_staticsize_t<t_uint8> columnExtraData(extraDataSize);
@@ -1017,20 +913,19 @@ void splitter_window_impl::read_config(stream_reader * config, t_size p_size, bo
     }
 }
 
-void splitter_window_impl::import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort)
+void splitter_window_impl::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     read_config(p_reader, p_size, true, p_abort);
 }
 
-void splitter_window_impl::set_config(stream_reader * config, t_size p_size, abort_callback & p_abort)
+void splitter_window_impl::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
 {
     read_config(config, p_size, false, p_abort);
 }
 
-uie::splitter_item_t * splitter_window_impl::get_panel(unsigned index) const
+uie::splitter_item_t* splitter_window_impl::get_panel(unsigned index) const
 {
-    if (index < m_panels.get_count())
-    {
+    if (index < m_panels.get_count()) {
         return m_panels[index]->create_splitter_item();
     }
     return nullptr;
@@ -1043,8 +938,7 @@ unsigned splitter_window_impl::get_panel_count() const
 
 void splitter_window_impl::remove_panel(unsigned index)
 {
-    if (index < m_panels.get_count())
-    {
+    if (index < m_panels.get_count()) {
         m_panels[index]->destroy();
         m_panels.remove_by_idx(index);
 
@@ -1058,7 +952,7 @@ unsigned splitter_window_impl::get_type() const
     return ui_extension::type_layout | uie::type_splitter;
 }
 
-void splitter_window_impl::get_category(pfc::string_base & p_out) const
+void splitter_window_impl::get_category(pfc::string_base& p_out) const
 {
     p_out = "Splitters";
 }
@@ -1073,13 +967,11 @@ unsigned splitter_window_impl::g_get_caption_size()
 void splitter_window_impl::splitter_host_impl::relinquish_ownership(HWND wnd)
 {
     unsigned index;
-    if (m_this->m_panels.find_by_wnd_child(wnd, index))
-    {
+    if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
         pfc::refcounted_object_ptr_t<splitter_window_impl::panel> p_ext = m_this->m_panels[index];
 
         {
-            if (GetAncestor(wnd, GA_PARENT) == p_ext->m_wnd)
-            {
+            if (GetAncestor(wnd, GA_PARENT) == p_ext->m_wnd) {
                 console::warning("window left by ui extension");
                 SetParent(wnd, core_api::get_main_window());
             }
@@ -1093,7 +985,7 @@ void splitter_window_impl::splitter_host_impl::relinquish_ownership(HWND wnd)
     }
 }
 
-void splitter_window_impl::splitter_host_impl::set_window_ptr(splitter_window_impl * p_ptr)
+void splitter_window_impl::splitter_host_impl::set_window_ptr(splitter_window_impl* p_ptr)
 {
     m_this = p_ptr;
 }
@@ -1103,13 +995,10 @@ bool splitter_window_impl::splitter_host_impl::set_window_visibility(HWND wnd, b
     bool rv = false;
     if (!m_this->get_host()->is_visible(m_this->get_wnd()))
         return m_this->get_host()->set_window_visibility(m_this->get_wnd(), visibility);
-    else
-    {
+    else {
         unsigned idx = 0;
-        if (m_this->m_panels.find_by_wnd_child(wnd, idx))
-        {
-            if (!m_this->m_panels[idx]->m_autohide)
-            {
+        if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
+            if (!m_this->m_panels[idx]->m_autohide) {
                 m_this->m_panels[idx]->m_hidden = !visibility;
                 m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
                 m_this->on_size_changed();
@@ -1125,37 +1014,32 @@ bool splitter_window_impl::splitter_host_impl::is_visibility_modifiable(HWND wnd
 
     if (!m_this->get_host()->is_visible(m_this->get_wnd()))
         return m_this->get_host()->is_visibility_modifiable(m_this->get_wnd(), desired_visibility);
-    else
-    {
+    else {
         unsigned idx = 0;
-        if (m_this->m_panels.find_by_wnd_child(wnd, idx))
-        {
+        if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
             rv = !m_this->m_panels[idx]->m_autohide;
         }
     }
-    return  rv;
+    return rv;
 }
 
 bool splitter_window_impl::splitter_host_impl::is_visible(HWND wnd) const
 {
     bool rv = false;
 
-    if (!m_this->get_host()->is_visible(m_this->get_wnd()))
-    {
+    if (!m_this->get_host()->is_visible(m_this->get_wnd())) {
         rv = false;
-    }
-    else
-    {
+    } else {
         unsigned idx = 0;
-        if (m_this->m_panels.find_by_wnd_child(wnd, idx))
-        {
+        if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
             rv = !m_this->m_panels[idx]->m_hidden;
         }
     }
-    return  rv;
+    return rv;
 }
 
-bool splitter_window_impl::splitter_host_impl::override_status_text_create(service_ptr_t<ui_status_text_override> & p_out)
+bool splitter_window_impl::splitter_host_impl::override_status_text_create(
+    service_ptr_t<ui_status_text_override>& p_out)
 {
     return m_this->get_host()->override_status_text_create(p_out);
 }
@@ -1163,19 +1047,16 @@ bool splitter_window_impl::splitter_host_impl::override_status_text_create(servi
 bool splitter_window_impl::splitter_host_impl::request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height)
 {
     bool rv = false;
-    if (!(flags & (get_orientation() == horizontal ? ui_extension::size_height : uie::size_width)))
-    {
-        if (flags & (get_orientation() == vertical ? ui_extension::size_height : uie::size_width))
-        {
+    if (!(flags & (get_orientation() == horizontal ? ui_extension::size_height : uie::size_width))) {
+        if (flags & (get_orientation() == vertical ? ui_extension::size_height : uie::size_width)) {
             unsigned index;
-            if (m_this->m_panels.find_by_wnd_child(wnd, index))
-            {
+            if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
                 int delta = (get_orientation() == horizontal ? width : height) - m_this->m_panels[index]->m_size;
                 m_this->override_size(index, delta);
                 rv = true;
             }
-        }
-        else rv = true;
+        } else
+            rv = true;
     }
     return rv;
 }
@@ -1193,8 +1074,7 @@ orientation_t splitter_window_impl::splitter_host_impl::get_orientation() const
 void splitter_window_impl::splitter_host_impl::on_size_limit_change(HWND wnd, unsigned flags)
 {
     unsigned index;
-    if (m_this->m_panels.find_by_wnd_child(wnd, index))
-    {
+    if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
         pfc::refcounted_object_ptr_t<splitter_window_impl::panel> p_ext = m_this->m_panels[index];
         MINMAXINFO mmi;
         memset(&mmi, 0, sizeof(MINMAXINFO));
@@ -1207,7 +1087,7 @@ void splitter_window_impl::splitter_host_impl::on_size_limit_change(HWND wnd, un
         p_ext->m_size_limits.max_width = min(mmi.ptMaxTrackSize.x, MAXSHORT);
         pfc::string8 name;
         p_ext->m_child->get_name(name);
-        //console::formatter() << "change: name: " << name << " min width: " << (t_int32)mmi.ptMinTrackSize.x;
+        // console::formatter() << "change: name: " << name << " min width: " << (t_int32)mmi.ptMinTrackSize.x;
 
         m_this->on_size_changed();
 
@@ -1215,13 +1095,11 @@ void splitter_window_impl::splitter_host_impl::on_size_limit_change(HWND wnd, un
     }
 }
 
-void splitter_window_impl::splitter_host_impl::get_children(pfc::list_base_t<uie::window::ptr> & p_out)
+void splitter_window_impl::splitter_host_impl::get_children(pfc::list_base_t<uie::window::ptr>& p_out)
 {
-    if (m_this.is_valid())
-    {
+    if (m_this.is_valid()) {
         t_size i, count = m_this->m_panels.get_count();
-        for (i = 0; i < count; i++)
-        {
+        for (i = 0; i < count; i++) {
             if (m_this->m_panels[i]->m_child.is_valid())
                 p_out.add_item(m_this->m_panels[i]->m_child);
         }
@@ -1233,18 +1111,16 @@ bool splitter_window_impl::splitter_host_impl::get_keyboard_shortcuts_enabled() 
     return m_this->get_host()->get_keyboard_shortcuts_enabled();
 }
 
-const GUID & splitter_window_impl::splitter_host_impl::get_host_guid() const
+const GUID& splitter_window_impl::splitter_host_impl::get_host_guid() const
 {
     // {FC0ED6EF-DCA2-4679-B7FE-48162DE321FC}
-    static const GUID rv =
-    { 0xfc0ed6ef, 0xdca2, 0x4679, { 0xb7, 0xfe, 0x48, 0x16, 0x2d, 0xe3, 0x21, 0xfc } };
+    static const GUID rv = { 0xfc0ed6ef, 0xdca2, 0x4679, { 0xb7, 0xfe, 0x48, 0x16, 0x2d, 0xe3, 0x21, 0xfc } };
     return rv;
 }
 
 void splitter_window_impl::g_on_size_change()
 {
-    for (t_size index = 0; index < g_instances.get_count(); index++)
-    {
+    for (t_size index = 0; index < g_instances.get_count(); index++) {
         g_instances[index]->on_size_changed();
     }
 }

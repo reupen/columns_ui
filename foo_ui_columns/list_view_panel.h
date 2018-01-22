@@ -1,23 +1,24 @@
 #pragma once
 
-template<typename t_appearance_client, typename t_window = uie::window>
-class t_list_view_panel : public uih::ListView, public t_window {
+template <typename t_appearance_client, typename t_window = uie::window>
+class t_list_view_panel
+    : public uih::ListView
+    , public t_window {
 public:
-    HWND create_or_transfer_window(HWND parent, const uie::window_host_ptr& host, const ui_helpers::window_position_t& p_position) override
+    HWND create_or_transfer_window(
+        HWND parent, const uie::window_host_ptr& host, const ui_helpers::window_position_t& p_position) override
     {
-        if (get_wnd())
-        {
+        if (get_wnd()) {
             ShowWindow(get_wnd(), SW_HIDE);
             SetParent(get_wnd(), parent);
             m_window_host->relinquish_ownership(get_wnd());
             m_window_host = host;
 
             SetWindowPos(get_wnd(), nullptr, p_position.x, p_position.y, p_position.cx, p_position.cy, SWP_NOZORDER);
-        }
-        else
-        {
+        } else {
             m_window_host = host;
-            this->create(parent, {p_position.x, p_position.y, static_cast<int>(p_position.cx), static_cast<int>(p_position.cy)});
+            this->create(parent,
+                { p_position.x, p_position.y, static_cast<int>(p_position.cx), static_cast<int>(p_position.cy) });
         }
 
         return get_wnd();
@@ -34,10 +35,10 @@ public:
     const uie::window_host_ptr& get_host() const { return m_window_host; }
 
 protected:
-    const char * get_drag_unit_plural() const override { return "tracks"; }
-    const char * get_drag_unit_singular() const override { return "track"; }
+    const char* get_drag_unit_plural() const override { return "tracks"; }
+    const char* get_drag_unit_singular() const override { return "track"; }
     bool should_show_drag_text(t_size selection_count) override { return true; }
-    void render_get_colour_data(ColourData & p_out) override
+    void render_get_colour_data(ColourData& p_out) override
     {
         cui::colours::helper p_helper(t_appearance_client::g_guid);
         p_out.m_themed = p_helper.get_themed();
@@ -53,6 +54,7 @@ protected:
             p_out.m_group_text = p_out.m_text;
         p_out.m_group_background = p_out.m_background;
     }
+
 private:
     uie::window_host_ptr m_window_host;
 };

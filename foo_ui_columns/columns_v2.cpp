@@ -133,7 +133,7 @@ void column_t::get_to_colour(titleformat_object::ptr& p_out)
 
 void cfg_columns_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
-    //if (!cfg_nohscroll) playlist_view::g_save_columns(); FIXME
+    // if (!cfg_nohscroll) playlist_view::g_save_columns(); FIXME
 
     t_size num = get_count();
 
@@ -171,8 +171,8 @@ void cfg_columns_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, a
         uint32_t streamVersion_;
         p_reader->read_lendian_t(streamVersion_, p_abort);
         streamVersion = static_cast<ColumnStreamVersion>(streamVersion_);
+    } catch (const exception_io_data_truncation&) {
     }
-    catch (const exception_io_data_truncation&) { }
 
     if (streamVersion >= ColumnStreamVersion::streamVersion1) {
         for (t_size i = 0; i < num; i++) {
@@ -190,12 +190,17 @@ void cfg_columns_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, a
 void cfg_columns_t::reset()
 {
     remove_all();
-    add_item(new column_t("Artist", "[%artist%]", false, "", false, "", 180, ALIGN_LEFT, FILTER_NONE, "", 180, true, "ARTIST"));
-    add_item(new column_t("#", "[%tracknumber%]", false, "", false, "", 18, ALIGN_RIGHT, FILTER_NONE, "", 18, true, "TRACKNUMBER"));
-    add_item(new column_t("Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
-    add_item(new column_t("Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
+    add_item(new column_t(
+        "Artist", "[%artist%]", false, "", false, "", 180, ALIGN_LEFT, FILTER_NONE, "", 180, true, "ARTIST"));
+    add_item(new column_t(
+        "#", "[%tracknumber%]", false, "", false, "", 18, ALIGN_RIGHT, FILTER_NONE, "", 18, true, "TRACKNUMBER"));
+    add_item(
+        new column_t("Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
+    add_item(
+        new column_t("Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
     add_item(new column_t("Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"));
-    add_item(new column_t("Length", "[%_time_elapsed% / ]%_length%", false, "", true, "$num(%_length_seconds%,6)", 60, ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
+    add_item(new column_t("Length", "[%_time_elapsed% / ]%_length%", false, "", true, "$num(%_length_seconds%,6)", 60,
+        ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
 }
 
 cfg_columns_t::cfg_columns_t(const GUID& p_guid, ColumnStreamVersion streamVersion) : cfg_var(p_guid)

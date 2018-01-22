@@ -4,50 +4,51 @@
 
 LRESULT playlist_message_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch (msg)
-    {
+    switch (msg) {
     case WM_CREATE:
         playlist_view::g_load_columns();
         playlist_view::g_get_cache().enable();
         set_day_timer();
         break;
     case WM_TIMECHANGE:
-        if (cfg_playlist_date) on_day_change();
+        if (cfg_playlist_date)
+            on_day_change();
         break;
     case WM_TIMER:
         on_day_change();
         break;
     case WM_DESTROY:
-        if (g_font) DeleteObject(g_font); g_font = nullptr;
-        if (g_header_font) DeleteObject(g_header_font); g_header_font = nullptr;
+        if (g_font)
+            DeleteObject(g_font);
+        g_font = nullptr;
+        if (g_header_font)
+            DeleteObject(g_header_font);
+        g_header_font = nullptr;
         g_to_global.release();
         g_to_global_colour.release();
         kill_day_timer();
         playlist_view::g_get_cache().disable();
         playlist_view::g_kill_columns();
         break;
-
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
 void playlist_message_window::add_ref()
 {
-    if (!ref_count++)
-    {
+    if (!ref_count++) {
         create(nullptr);
     }
 }
 
 void playlist_message_window::release()
 {
-    if (!--ref_count)
-    {
+    if (!--ref_count) {
         destroy();
     }
 }
 
-playlist_message_window::class_data & playlist_message_window::get_class_data() const
+playlist_message_window::class_data& playlist_message_window::get_class_data() const
 {
     __implement_get_class_data_ex(_T("{13EFE4B7-A679-4e5c-8B98-F24A77667F78}"), _T(""), false, 0, 0, 0, 0);
 }
