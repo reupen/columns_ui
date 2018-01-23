@@ -13,17 +13,17 @@
  * Main menu commands
  */
 namespace mainmenu_groups_columns {
-    extern const GUID view_columns_part;
-    extern const GUID view_playlist_popup;
-    extern const GUID playlist_font_part;
-    extern const GUID playlist_misc_part;
-    extern const GUID view_layout_commands;
-    extern const GUID view_layout_presets;
-}
+extern const GUID view_columns_part;
+extern const GUID view_playlist_popup;
+extern const GUID playlist_font_part;
+extern const GUID playlist_misc_part;
+extern const GUID view_layout_commands;
+extern const GUID view_layout_presets;
+} // namespace mainmenu_groups_columns
 
 class NOVTABLE mainmenu_command_t {
 public:
-    virtual const GUID& get_guid() const =0;
+    virtual const GUID& get_guid() const = 0;
     virtual void get_name(pfc::string_base& p_out) const = 0;
     virtual bool get_description(pfc::string_base& p_out) const = 0;
 
@@ -41,15 +41,9 @@ class mainmenu_decrease_fontsize_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Decrease font size";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Decrease font size"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -60,8 +54,8 @@ public:
     void execute(service_ptr_t<service_base> p_callback) const override
     {
         set_font_size(false);
-        //on_playlist_font_change();
-        //pvt::ng_playlist_view_t::g_on_font_change();
+        // on_playlist_font_change();
+        // pvt::ng_playlist_view_t::g_on_font_change();
     }
 };
 
@@ -69,15 +63,9 @@ class mainmenu_increase_fontsize_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Increase font size";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Increase font size"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -88,8 +76,8 @@ public:
     void execute(service_ptr_t<service_base> p_callback) const override
     {
         set_font_size(true);
-        //on_playlist_font_change();
-        //pvt::ng_playlist_view_t::g_on_font_change();
+        // on_playlist_font_change();
+        // pvt::ng_playlist_view_t::g_on_font_change();
     }
 };
 
@@ -99,15 +87,9 @@ class mainmenu_show_statusbar_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Show status bar";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Show status bar"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -133,15 +115,9 @@ class mainmenu_show_statuspane_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Show status pane";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Show status pane"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -167,15 +143,9 @@ class mainmenu_show_toolbars_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Show toolbars";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Show toolbars"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -201,15 +171,9 @@ class mainmenu_activate_now_playing_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Activate now playing";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Activate now playing"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -227,15 +191,9 @@ class mainmenu_export_layout_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Export layout";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Export layout"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -260,15 +218,9 @@ class mainmenu_import_layout_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Import layout";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Import layout"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {
@@ -293,15 +245,9 @@ class mainmenu_layout_live_edit_t : public mainmenu_command_t {
 public:
     static const GUID g_guid;
 
-    const GUID& get_guid() const override
-    {
-        return g_guid;
-    }
+    const GUID& get_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override
-    {
-        p_out = "Live editing";
-    };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Live editing"; };
 
     bool get_description(pfc::string_base& p_out) const override
     {

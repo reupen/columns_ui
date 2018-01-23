@@ -11,8 +11,7 @@
 
 #include "layout.h"
 
-class setup_dialog_t : public pfc::refcounted_object_root
-{
+class setup_dialog_t : public pfc::refcounted_object_root {
     pfc::list_t<cfg_layout_t::preset> m_presets;
     uie::splitter_item_ptr m_previous_layout;
     cui::colours::colour_mode_t m_previous_colour_mode;
@@ -25,4 +24,3 @@ class setup_dialog_t : public pfc::refcounted_object_root
 public:
     static void g_run();
 };
-

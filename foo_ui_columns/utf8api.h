@@ -10,9 +10,8 @@
  * Status bar text drawing functions only
  */
 
-namespace win32_helpers
-{
-    unsigned status_bar_get_text_width (HWND wnd, HTHEME thm, const char * p_text, bool b_customfont = false);
+namespace win32_helpers {
+unsigned status_bar_get_text_width(HWND wnd, HTHEME thm, const char* p_text, bool b_customfont = false);
 };
 
 #endif

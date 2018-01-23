@@ -49,11 +49,7 @@ public:
 
 class cfg_rebar : public cfg_var {
 private:
-    enum class StreamVersion : uint32_t {
-        Version0 = 0,
-        Version1 = 1,
-        VersionCurrent = Version1
-    };
+    enum class StreamVersion : uint32_t { Version0 = 0, Version1 = 1, VersionCurrent = Version1 };
 
     std::vector<RebarBandInfo> m_entries;
 
@@ -61,19 +57,16 @@ private:
     void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
 
 public:
-    void export_config(stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback,
-                       abort_callback& p_abort);
-    void import_config(stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels,
-                       abort_callback& p_abort);
+    void export_config(
+        stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback, abort_callback& p_abort);
+    void import_config(
+        stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 
     explicit cfg_rebar(const GUID& p_guid) : cfg_var(p_guid) { reset(); };
 
-    const std::vector<RebarBandInfo>& get_rebar_info()
-    {
-        return m_entries;
-    }
+    const std::vector<RebarBandInfo>& get_rebar_info() { return m_entries; }
 
-    template<typename Container>
+    template <typename Container>
     void set_rebar_info(Container&& in)
     {
         m_entries = in;
@@ -85,19 +78,19 @@ public:
 class rebar_window {
 private:
     void destroy_bands();
+
 public:
     HWND wnd_rebar;
     std::vector<RebarBandInfo> m_bands;
     band_cache cache;
 
-
     rebar_window();
     HWND init();
 
-    void add_band(const GUID& guid, unsigned width = 100,
-                  const ui_extension::window_ptr& p_ext = ui_extension::window_ptr_null);
+    void add_band(
+        const GUID& guid, unsigned width = 100, const ui_extension::window_ptr& p_ext = ui_extension::window_ptr_null);
     void insert_band(unsigned idx, const GUID& guid, unsigned width = 100,
-                     const ui_extension::window_ptr& p_ext = ui_extension::window_ptr_null);
+        const ui_extension::window_ptr& p_ext = ui_extension::window_ptr_null);
     void update_bands();
     void delete_band(HWND wnd, bool destroy = true);
 
@@ -117,7 +110,7 @@ public:
     bool is_menu_focused();
     bool get_previous_menu_focus_window(HWND& wnd_previous) const;
 
-    //save bands on layout changed - easier
+    // save bands on layout changed - easier
 
     void save_bands();
     void destroy();
@@ -125,9 +118,7 @@ public:
 
     auto find_band_by_hwnd(HWND wnd)
     {
-        return std::find_if(std::begin(m_bands), std::end(m_bands), [&wnd](auto&& item) {
-            return item.m_wnd == wnd;
-        });
+        return std::find_if(std::begin(m_bands), std::end(m_bands), [&wnd](auto&& item) { return item.m_wnd == wnd; });
     }
 
     ~rebar_window();

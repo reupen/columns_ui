@@ -2,8 +2,7 @@
 
 void CheckGdiplusStatus::g_CheckGdiplusStatus(Gdiplus::Status pStatus)
 {
-    switch (pStatus)
-    {
+    switch (pStatus) {
     case Gdiplus::Ok:
         break;
     case Gdiplus::GenericError:
@@ -55,7 +54,7 @@ void CheckGdiplusStatus::g_CheckGdiplusStatus(Gdiplus::Status pStatus)
     };
 }
 
-HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData & pBitmapData)
+HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData& pBitmapData)
 {
     pfc::array_t<t_uint8> bm_data;
     bm_data.set_size(sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 0);
@@ -73,27 +72,27 @@ HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData & pB
     bmi.biClrUsed = 0;
     bmi.biClrImportant = 0;
 
-    BITMAPINFO & bi = *(BITMAPINFO*)bm_data.get_ptr();
+    BITMAPINFO& bi = *(BITMAPINFO*)bm_data.get_ptr();
 
     bi.bmiHeader = bmi;
 
-    void * data = nullptr;
+    void* data = nullptr;
     HBITMAP bm = CreateDIBSection(nullptr, &bi, DIB_RGB_COLORS, &data, nullptr, 0);
 
-    if (data)
-    {
-        auto * ptr = (char*)data;
+    if (data) {
+        auto* ptr = (char*)data;
 
         GdiFlush();
 
-        memcpy(ptr, pBitmapData.Scan0, pBitmapData.Stride*pBitmapData.Height);
+        memcpy(ptr, pBitmapData.Scan0, pBitmapData.Stride * pBitmapData.Height);
     }
     return bm;
 }
 
-HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, unsigned target_cy)
+HBITMAP g_load_png_gdiplus_throw(HDC dc, const char* fn, unsigned target_cx, unsigned target_cy)
 {
-    //FIXME m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &Gdiplus::GdiplusStartupInput(), NULL));
+    // FIXME m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance,
+    // &Gdiplus::GdiplusStartupInput(), NULL));
     pfc::string8 canPath;
     HBITMAP bm = nullptr;
 
@@ -106,13 +105,12 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
     p_file->read(buffer.get_ptr(), fsize, p_abort);
     p_file.release();
 
-    IStream *pStream = nullptr;
+    IStream* pStream = nullptr;
     HGLOBAL gd = GlobalAlloc(GMEM_FIXED | GMEM_MOVEABLE, buffer.get_size());
     if (gd == nullptr)
         throw exception_win32(GetLastError());
-    void * p_data = GlobalLock(gd);
-    if (p_data == nullptr)
-    {
+    void* p_data = GlobalLock(gd);
+    if (p_data == nullptr) {
         GlobalFree(gd);
         throw exception_win32(GetLastError());
     }
@@ -121,8 +119,7 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
     GlobalUnlock(gd);
 
     HRESULT hr = CreateStreamOnHGlobal(gd, TRUE, &pStream);
-    if (FAILED(hr))
-    {
+    if (FAILED(hr)) {
         GlobalFree(gd);
         throw exception_win32(hr);
     }
@@ -132,10 +129,10 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
     CheckGdiplusStatus() << pImage.GetLastStatus();
     {
         Gdiplus::BitmapData bitmapData;
-        //Gdiplus::Bitmap * ppImage = &pImage;
-        if (target_cx != pfc_infinite || target_cy != pfc_infinite)
-        {
-            Gdiplus::Bitmap pBitmapResized(target_cx == pfc_infinite ? pImage.GetWidth() : target_cx, target_cy == pfc_infinite ? pImage.GetHeight() : target_cy, PixelFormat32bppARGB);
+        // Gdiplus::Bitmap * ppImage = &pImage;
+        if (target_cx != pfc_infinite || target_cy != pfc_infinite) {
+            Gdiplus::Bitmap pBitmapResized(target_cx == pfc_infinite ? pImage.GetWidth() : target_cx,
+                target_cy == pfc_infinite ? pImage.GetHeight() : target_cy, PixelFormat32bppARGB);
             CheckGdiplusStatus() << pBitmapResized.GetLastStatus();
             Gdiplus::Graphics pGraphics(&pBitmapResized);
             CheckGdiplusStatus() << pGraphics.GetLastStatus();
@@ -143,34 +140,32 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char * fn, unsigned target_cx, un
             CheckGdiplusStatus() << pGraphics.SetInterpolationMode(Gdiplus::InterpolationModeBicubic);
             Gdiplus::ImageAttributes imageAttributes;
             CheckGdiplusStatus() << imageAttributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
-            CheckGdiplusStatus() << pGraphics.DrawImage(&pImage, Gdiplus::Rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight()), 0, 0, pImage.GetWidth(), pImage.GetHeight(), Gdiplus::UnitPixel, &imageAttributes);
+            CheckGdiplusStatus() << pGraphics.DrawImage(&pImage,
+                Gdiplus::Rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight()), 0, 0, pImage.GetWidth(),
+                pImage.GetHeight(), Gdiplus::UnitPixel, &imageAttributes);
 
             Gdiplus::Rect rect(0, 0, pBitmapResized.GetWidth(), pBitmapResized.GetHeight());
-            CheckGdiplusStatus() << pBitmapResized.LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+            CheckGdiplusStatus() << pBitmapResized.LockBits(
+                &rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
             bm = g_CreateHbitmapFromGdiplusBitmapData32bpp(bitmapData);
             CheckGdiplusStatus() << pBitmapResized.UnlockBits(&bitmapData);
-        }
-        else
-        {
+        } else {
             Gdiplus::Rect rect(0, 0, pImage.GetWidth(), pImage.GetHeight());
-            CheckGdiplusStatus() << pImage.LockBits(&rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
-            //assert bitmapData.Stride == bitmapData.Width
+            CheckGdiplusStatus() << pImage.LockBits(
+                &rect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &bitmapData);
+            // assert bitmapData.Stride == bitmapData.Width
             bm = g_CreateHbitmapFromGdiplusBitmapData32bpp(bitmapData);
             CheckGdiplusStatus() << pImage.UnlockBits(&bitmapData);
         }
     }
     return bm;
-
 }
 
-HBITMAP g_load_png_gdiplus(HDC dc, const char * fn, unsigned target_cx, unsigned target_cy)
+HBITMAP g_load_png_gdiplus(HDC dc, const char* fn, unsigned target_cx, unsigned target_cy)
 {
-    try
-    {
+    try {
         return g_load_png_gdiplus_throw(dc, fn, target_cx, target_cy);
-    }
-    catch (pfc::exception const & ex)
-    {
+    } catch (pfc::exception const& ex) {
         console::formatter formatter;
         formatter << "Columns UI: Error loading image \"" << fn << "\" - " << ex.what();
         return nullptr;

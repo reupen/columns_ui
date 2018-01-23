@@ -3,15 +3,13 @@
 
 LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch (msg)
-    {
+    switch (msg) {
     case WM_NCCREATE:
         m_wnd = wnd;
         g_instances.add_item(this);
         break;
     case WM_CREATE:
-        if (!g_count++)
-        {
+        if (!g_count++) {
             g_font_menu_horizontal = uCreateMenuFont();
             g_font_menu_vertical = uCreateMenuFont(true);
         }
@@ -19,8 +17,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         break;
     case WM_DESTROY:
         destroy_children();
-        if (!--g_count)
-        {
+        if (!--g_count) {
             g_font_menu_horizontal.release();
             g_font_menu_vertical.release();
         }
@@ -30,32 +27,25 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         m_wnd = nullptr;
         break;
     case WM_SHOWWINDOW:
-        if (wp == TRUE && lp == 0)
-        {
+        if (wp == TRUE && lp == 0) {
             unsigned n, count = m_panels.get_count();
-            for (n = 0; n<count; n++)
-            {
+            for (n = 0; n < count; n++) {
                 ShowWindow(m_panels[n]->m_wnd_child, SW_SHOWNORMAL);
                 ShowWindow(m_panels[n]->m_wnd, SW_SHOWNORMAL);
             }
             RedrawWindow(wnd, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
-
         }
         break;
-    case WM_WINDOWPOSCHANGED:
-    {
+    case WM_WINDOWPOSCHANGED: {
         auto lpwp = (LPWINDOWPOS)lp;
-        if (!(lpwp->flags & SWP_NOSIZE))
-        {
+        if (!(lpwp->flags & SWP_NOSIZE)) {
             on_size_changed(lpwp->cx, lpwp->cy);
         }
-    }
-    break;
+    } break;
     /*case WM_SIZE:
     on_size_changed(LOWORD(lp), HIWORD(lp));
     break;*/
-    case WM_GETMINMAXINFO:
-    {
+    case WM_GETMINMAXINFO: {
         auto lpmmi = (LPMINMAXINFO)lp;
 
         lpmmi->ptMinTrackSize.y = 0;
@@ -66,138 +56,113 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         unsigned n, count = m_panels.get_count();
         bool b_found = false;
 
-        for (n = 0; n<count; n++)
-        {
+        for (n = 0; n < count; n++) {
             MINMAXINFO mmi;
             memset(&mmi, 0, sizeof(MINMAXINFO));
             mmi.ptMaxTrackSize.x = MAXLONG;
             mmi.ptMaxTrackSize.y = MAXLONG;
 
-            if (m_panels[n]->m_wnd_child)
-            {
+            if (m_panels[n]->m_wnd_child) {
                 b_found = true;
                 unsigned divider_size = get_panel_divider_size(n);
 
                 unsigned caption_height = m_panels[n]->m_show_caption ? g_get_caption_size() : 0;
-                if (m_panels[n]->m_hidden)
-                {
-                    if (get_orientation() == horizontal)
-                    {
-                        if (m_panels[n]->m_caption_orientation == vertical)
-                        {
+                if (m_panels[n]->m_hidden) {
+                    if (get_orientation() == horizontal) {
+                        if (m_panels[n]->m_caption_orientation == vertical) {
                             mmi.ptMinTrackSize.x = caption_height;
                             mmi.ptMaxTrackSize.x = caption_height;
                         }
-                    }
-                    else
-                    {
-                        if (m_panels[n]->m_caption_orientation == horizontal)
-                        {
+                    } else {
+                        if (m_panels[n]->m_caption_orientation == horizontal) {
                             mmi.ptMinTrackSize.y = caption_height;
                             mmi.ptMaxTrackSize.y = caption_height;
                         }
                     }
-                }
-                else
-                {
+                } else {
                     SendMessage(m_panels[n]->m_wnd_child, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-                    if (caption_height)
-                    {
-                        if (m_panels[n]->m_caption_orientation == horizontal)
-                        {
+                    if (caption_height) {
+                        if (m_panels[n]->m_caption_orientation == horizontal) {
                             mmi.ptMinTrackSize.y += caption_height;
-                            if (mmi.ptMaxTrackSize.y < MAXLONG - (long)caption_height) mmi.ptMaxTrackSize.y += caption_height;
-                            else mmi.ptMaxTrackSize.y = MAXLONG;
-                        }
-                        else
-                        {
+                            if (mmi.ptMaxTrackSize.y < MAXLONG - (long)caption_height)
+                                mmi.ptMaxTrackSize.y += caption_height;
+                            else
+                                mmi.ptMaxTrackSize.y = MAXLONG;
+                        } else {
                             mmi.ptMinTrackSize.x += caption_height;
-                            if (mmi.ptMaxTrackSize.x < MAXLONG - (long)caption_height) mmi.ptMaxTrackSize.x += caption_height;
-                            else mmi.ptMaxTrackSize.x = MAXLONG;
+                            if (mmi.ptMaxTrackSize.x < MAXLONG - (long)caption_height)
+                                mmi.ptMaxTrackSize.x += caption_height;
+                            else
+                                mmi.ptMaxTrackSize.x = MAXLONG;
                         }
                     }
                 }
 
-                if (m_panels[n]->m_show_toggle_area && !m_panels[n]->m_autohide)
-                {
+                if (m_panels[n]->m_show_toggle_area && !m_panels[n]->m_autohide) {
                     mmi.ptMinTrackSize.x++;
                     if (mmi.ptMaxTrackSize.x < MAXLONG)
                         mmi.ptMaxTrackSize.x++;
                 }
 
-
-                if (get_orientation() == vertical)
-                {
+                if (get_orientation() == vertical) {
                     lpmmi->ptMinTrackSize.y += mmi.ptMinTrackSize.y + divider_size;
 
                     lpmmi->ptMinTrackSize.x = max(mmi.ptMinTrackSize.x, lpmmi->ptMinTrackSize.x);
 
-                    if (lpmmi->ptMaxTrackSize.y <= MAXLONG - mmi.ptMaxTrackSize.y && lpmmi->ptMaxTrackSize.y + mmi.ptMaxTrackSize.y <= MAXLONG - (long)divider_size)
-                    {
+                    if (lpmmi->ptMaxTrackSize.y <= MAXLONG - mmi.ptMaxTrackSize.y
+                        && lpmmi->ptMaxTrackSize.y + mmi.ptMaxTrackSize.y <= MAXLONG - (long)divider_size) {
                         lpmmi->ptMaxTrackSize.y += mmi.ptMaxTrackSize.y + divider_size;
-                    }
-                    else
-                    {
+                    } else {
                         lpmmi->ptMaxTrackSize.y = MAXLONG;
                     }
                     lpmmi->ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, lpmmi->ptMaxTrackSize.x);
-                }
-                else
-                {
+                } else {
                     lpmmi->ptMinTrackSize.x += mmi.ptMinTrackSize.x + divider_size;
                     lpmmi->ptMinTrackSize.y = max(mmi.ptMinTrackSize.y, lpmmi->ptMinTrackSize.y);
-                    if (lpmmi->ptMaxTrackSize.x <= MAXLONG - mmi.ptMaxTrackSize.x && lpmmi->ptMaxTrackSize.x + mmi.ptMaxTrackSize.x <= MAXLONG - (long)divider_size)
-                    {
+                    if (lpmmi->ptMaxTrackSize.x <= MAXLONG - mmi.ptMaxTrackSize.x
+                        && lpmmi->ptMaxTrackSize.x + mmi.ptMaxTrackSize.x <= MAXLONG - (long)divider_size) {
                         lpmmi->ptMaxTrackSize.x += mmi.ptMaxTrackSize.x + divider_size;
-                    }
-                    else
-                    {
+                    } else {
                         lpmmi->ptMaxTrackSize.x = MAXLONG;
                     }
                     lpmmi->ptMaxTrackSize.y = min(mmi.ptMaxTrackSize.y, lpmmi->ptMaxTrackSize.y);
                 }
             }
         }
-        if (b_found)
-        {
+        if (b_found) {
             if (get_orientation() == vertical)
                 lpmmi->ptMaxTrackSize.x = max(lpmmi->ptMaxTrackSize.x, lpmmi->ptMinTrackSize.x);
             else
                 lpmmi->ptMaxTrackSize.y = max(lpmmi->ptMaxTrackSize.y, lpmmi->ptMinTrackSize.y);
-        }
-        else
-        {
+        } else {
             if (get_orientation() == vertical)
                 lpmmi->ptMaxTrackSize.y = MAXLONG;
             else
                 lpmmi->ptMaxTrackSize.x = MAXLONG;
         }
 
-        if (false)
-        {
+        if (false) {
             lpmmi->ptMinTrackSize.y = 0;
-            if (get_orientation() == horizontal) lpmmi->ptMaxTrackSize.x = 0;
+            if (get_orientation() == horizontal)
+                lpmmi->ptMaxTrackSize.x = 0;
             lpmmi->ptMinTrackSize.x = 0;
-            if (get_orientation() == vertical) lpmmi->ptMaxTrackSize.y = 0;
+            if (get_orientation() == vertical)
+                lpmmi->ptMaxTrackSize.y = 0;
         }
     }
-    return 0;
-    case WM_MOUSEHOVER:
-    {
+        return 0;
+    case WM_MOUSEHOVER: {
         POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
         HWND child = RealChildWindowFromPoint(wnd, pt);
-        if (child == wnd)
-        {
+        if (child == wnd) {
             unsigned p_panel = -1;
             bool b_have_next = false;
             bool b_on_divider = false;
 
             b_on_divider = find_by_divider_pt(pt, p_panel);
 
-            if (b_on_divider)
-            {
-                if (p_panel < m_panels.get_count())
-                {
+            if (b_on_divider) {
+                if (p_panel < m_panels.get_count()) {
                     b_have_next = (p_panel + 1 < m_panels.get_count());
                 }
 
@@ -206,47 +171,35 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
             }
         }
 
-    }
-    break;
+    } break;
     case WM_LBUTTONDOWN:
-    case WM_MOUSEMOVE:
-    {
-        if (m_panels.get_count())
-        {
-
+    case WM_MOUSEMOVE: {
+        if (m_panels.get_count()) {
             POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
             HWND child = RealChildWindowFromPoint(wnd, pt);
-            if (child == wnd)
-            {
+            if (child == wnd) {
                 unsigned p_panel = -1;
                 bool b_have_next = false;
                 bool b_on_divider = false;
-                if (m_panel_dragging_valid)
-                {
+                if (m_panel_dragging_valid) {
                     b_on_divider = true;
                     p_panel = m_panel_dragging;
-                }
-                else
+                } else
                     b_on_divider = find_by_divider_pt(pt, p_panel);
 
-                if (b_on_divider)
-                {
-                    if (p_panel < m_panels.get_count())
-                    {
+                if (b_on_divider) {
+                    if (p_panel < m_panels.get_count()) {
                         b_have_next = (p_panel + 1 < m_panels.get_count());
                     }
 
-                    if (msg == WM_MOUSEMOVE && ((is_index_valid(p_panel) && m_panels[p_panel]->m_autohide) || (b_have_next && m_panels[p_panel + 1]->m_autohide)))
-                    {
-                        if (cfg_sidebar_use_custom_show_delay && !cfg_sidebar_show_delay)
-                        {
-                            if ((is_index_valid(p_panel)))
-                            {
+                    if (msg == WM_MOUSEMOVE
+                        && ((is_index_valid(p_panel) && m_panels[p_panel]->m_autohide)
+                               || (b_have_next && m_panels[p_panel + 1]->m_autohide))) {
+                        if (cfg_sidebar_use_custom_show_delay && !cfg_sidebar_show_delay) {
+                            if ((is_index_valid(p_panel))) {
                                 start_autohide_dehide(p_panel);
                             }
-                        }
-                        else
-                        {
+                        } else {
                             TRACKMOUSEEVENT tme;
                             memset(&tme, 0, sizeof(TRACKMOUSEEVENT));
                             tme.cbSize = sizeof(TRACKMOUSEEVENT);
@@ -254,26 +207,23 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                             tme.hwndTrack = wnd;
                             _TrackMouseEvent(&tme);
 
-                            if (!(tme.dwFlags & TME_HOVER))
-                            {
+                            if (!(tme.dwFlags & TME_HOVER)) {
                                 memset(&tme, 0, sizeof(TRACKMOUSEEVENT));
                                 tme.cbSize = sizeof(TRACKMOUSEEVENT);
                                 tme.hwndTrack = wnd;
-                                tme.dwHoverTime = cfg_sidebar_use_custom_show_delay ? cfg_sidebar_show_delay : HOVER_DEFAULT;
+                                tme.dwHoverTime
+                                    = cfg_sidebar_use_custom_show_delay ? cfg_sidebar_show_delay : HOVER_DEFAULT;
                                 tme.dwFlags = TME_HOVER;
                                 _TrackMouseEvent(&tme);
                             }
                         }
-
                     }
                 }
 
-                if (b_on_divider && is_index_valid(p_panel) && can_resize_divider(p_panel))
-                {
+                if (b_on_divider && is_index_valid(p_panel) && can_resize_divider(p_panel)) {
                     SetCursor(LoadCursor(nullptr, get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS));
 
-                    if (msg == WM_LBUTTONDOWN)
-                    {
+                    if (msg == WM_LBUTTONDOWN) {
                         save_sizes();
 
                         m_panel_dragging = p_panel;
@@ -282,22 +232,20 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                         m_last_position = (get_orientation() == vertical ? pt.y : pt.x);
                         m_panel_dragging_valid = true;
                     }
-                }
-                else
-                {
-                    if (!(wp & MK_LBUTTON)) SetCursor(LoadCursor(nullptr, IDC_ARROW));
+                } else {
+                    if (!(wp & MK_LBUTTON))
+                        SetCursor(LoadCursor(nullptr, IDC_ARROW));
                     m_panel_dragging_valid = false;
                 }
             }
 
-            if (m_panel_dragging_valid && wp & MK_LBUTTON && is_index_valid(m_panel_dragging))
-            {
+            if (m_panel_dragging_valid && wp & MK_LBUTTON && is_index_valid(m_panel_dragging)) {
                 int new_height = m_last_position - (get_orientation() == vertical ? pt.y : pt.x);
                 int delta = (get_orientation() == vertical ? pt.y : pt.x) - m_last_position;
-                //console::formatter() << "before or: pt = " << pt.y << "," << pt.x << " lastpos: " << m_last_position << " enddelta: " << delta;
-                auto & p_panel = m_panels[m_panel_dragging];
-                if (p_panel->m_hidden && delta)
-                {
+                // console::formatter() << "before or: pt = " << pt.y << "," << pt.x << " lastpos: " << m_last_position
+                // << " enddelta: " << delta;
+                auto& p_panel = m_panels[m_panel_dragging];
+                if (p_panel->m_hidden && delta) {
                     p_panel->m_hidden = false;
                     p_panel->m_size = 0;
                     get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
@@ -309,45 +257,38 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                     start_autohide_dehide(m_panel_dragging);
             }
         }
-        //msg_last = msg;
-        //lp_last = lp;
-        //wp_last = wp;
+        // msg_last = msg;
+        // lp_last = lp;
+        // wp_last = wp;
 
-    }
-    break;
-    case WM_LBUTTONDBLCLK:
-    {
+    } break;
+    case WM_LBUTTONDBLCLK: {
         POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
         HWND child = ChildWindowFromPoint(wnd, pt);
-        if (child == wnd)
-        {
+        if (child == wnd) {
             unsigned p_panel = -1;
-            if (find_by_divider_pt(pt, p_panel) && is_index_valid(p_panel))
-            {
+            if (find_by_divider_pt(pt, p_panel) && is_index_valid(p_panel)) {
                 bool b_have_next = is_index_valid(p_panel + 1);
-                if (m_panels[p_panel]->m_locked && !m_panels[p_panel]->m_autohide && (!b_have_next || !m_panels[p_panel + 1]->m_locked))
-                {
+                if (m_panels[p_panel]->m_locked && !m_panels[p_panel]->m_autohide
+                    && (!b_have_next || !m_panels[p_panel + 1]->m_locked)) {
                     m_panels[p_panel]->m_hidden = !m_panels[p_panel]->m_hidden;
                     get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
                     on_size_changed();
-                }
-                else if (!m_panels[p_panel]->m_locked && b_have_next && m_panels[p_panel]->m_locked && !m_panels[p_panel]->m_autohide)
-                {
+                } else if (!m_panels[p_panel]->m_locked && b_have_next && m_panels[p_panel]->m_locked
+                    && !m_panels[p_panel]->m_autohide) {
                     m_panels[p_panel + 1]->m_hidden = !m_panels[p_panel]->m_hidden;
                     get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
                     on_size_changed();
                 }
             }
         }
-    }
-    break;
+    } break;
     case WM_LBUTTONUP:
-        if (m_panel_dragging_valid)
-        {
+        if (m_panel_dragging_valid) {
             m_panel_dragging_valid = false;
             if (GetCapture() == wnd)
                 ReleaseCapture();
-            //SetCursor(LoadCursor(0, IDC_ARROW));
+            // SetCursor(LoadCursor(0, IDC_ARROW));
         }
         break;
 #if 0

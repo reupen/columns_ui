@@ -2,7 +2,7 @@
 #include "rebar.h"
 #include "main_window.h"
 
-//extern HBITMAP buttons_images;
+// extern HBITMAP buttons_images;
 
 extern rebar_window* g_rebar_window;
 
@@ -11,7 +11,6 @@ extern cfg_band_cache_t cfg_band_cache;
 
 constexpr const auto default_toolbar_width = 21;
 constexpr const auto default_toolbar_height = 21;
-
 
 void destroy_rebar(bool save_config)
 {
@@ -39,14 +38,12 @@ void create_rebar()
                 g_rebar_window = nullptr;
             }
         }
-    }
-    else
+    } else
         destroy_rebar();
 }
 
-
-void cfg_rebar::export_config(stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback,
-                              abort_callback& p_abort)
+void cfg_rebar::export_config(
+    stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
     p_out->write_lendian_t((t_uint32)stream_version, p_abort);
@@ -63,8 +60,8 @@ void cfg_rebar::export_config(stream_writer* p_out, t_uint32 mode, cui::fcl::t_e
     }
 }
 
-void cfg_rebar::import_config(stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels,
-                              abort_callback& p_abort)
+void cfg_rebar::import_config(
+    stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     t_uint32 version;
     std::vector<RebarBandInfo> new_entries;
@@ -225,8 +222,8 @@ void cfg_rebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort
         uint32_t streamVersion_;
         p_reader->read_lendian_t(streamVersion_, p_abort);
         streamVersion = static_cast<StreamVersion>(streamVersion_);
+    } catch (const exception_io_data_truncation&) {
     }
-    catch (const exception_io_data_truncation&) { }
 
     if (streamVersion >= StreamVersion::Version1) {
         for (uint32_t i = 0; i < itemCount; i++) {
@@ -243,36 +240,24 @@ void cfg_rebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort
 void cfg_rebar::reset()
 {
     m_entries = {
-        {cui::toolbars::guid_menu, 9999},
-        {cui::toolbars::guid_buttons, 100, true},
-        {cui::toolbars::guid_seek_bar, 9999},
-        {cui::toolbars::guid_playback_order, 100},
-        {cui::toolbars::guid_spectrum_analyser, 125},
+        { cui::toolbars::guid_menu, 9999 },
+        { cui::toolbars::guid_buttons, 100, true },
+        { cui::toolbars::guid_seek_bar, 9999 },
+        { cui::toolbars::guid_playback_order, 100 },
+        { cui::toolbars::guid_spectrum_analyser, 125 },
     };
 }
 
 // {3D3C8D68-3AB9-4ad5-A4FA-22427ABAEBF4}
-static const GUID rebar_guid =
-        {0x3d3c8d68, 0x3ab9, 0x4ad5, {0xa4, 0xfa, 0x22, 0x42, 0x7a, 0xba, 0xeb, 0xf4}};
-
+static const GUID rebar_guid = { 0x3d3c8d68, 0x3ab9, 0x4ad5, { 0xa4, 0xfa, 0x22, 0x42, 0x7a, 0xba, 0xeb, 0xf4 } };
 
 class ui_ext_host_rebar : public ui_extension::window_host_with_control {
 public:
+    void get_name(pfc::string_base& out) const override { out.set_string("Columns UI/Toolbars"); };
 
-    void get_name(pfc::string_base& out) const override
-    {
-        out.set_string("Columns UI/Toolbars");
-    };
+    bool is_available() const override { return g_rebar_window != nullptr; }
 
-    bool is_available() const override
-    {
-        return g_rebar_window != nullptr;
-    }
-
-    unsigned get_supported_types() const override
-    {
-        return ui_extension::type_toolbar;
-    }
+    unsigned get_supported_types() const override { return ui_extension::type_toolbar; }
 
     void insert_extension(const GUID& in, unsigned height, unsigned width) override
     {
@@ -288,10 +273,7 @@ public:
         }
     };
 
-    unsigned is_resize_supported(HWND wnd) const override
-    {
-        return ui_extension::size_width;
-    }
+    unsigned is_resize_supported(HWND wnd) const override { return ui_extension::size_width; }
 
     bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height) override
     {
@@ -307,20 +289,11 @@ public:
         return false;
     }
 
-    bool is_visible(HWND wnd) const override
-    {
-        return true;
-    }
+    bool is_visible(HWND wnd) const override { return true; }
 
-    bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override
-    {
-        return false;
-    }
+    bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override { return false; }
 
-    bool set_window_visibility(HWND wnd, bool visibility) override
-    {
-        return false;
-    }
+    bool set_window_visibility(HWND wnd, bool visibility) override { return false; }
 
     void on_size_limit_change(HWND wnd, unsigned flags) override
     {
@@ -352,14 +325,13 @@ public:
             g_rebar_window->delete_band(wnd, false);
         }
     };
-
 };
 
 ui_extension::window_host_factory_single<ui_ext_host_rebar> g_ui_ext_host_rebar;
 
-
-rebar_window::rebar_window() : wnd_rebar(nullptr) {};
-rebar_window::~rebar_window() = default;;
+rebar_window::rebar_window() : wnd_rebar(nullptr){};
+rebar_window::~rebar_window() = default;
+;
 
 HWND rebar_window::init()
 {
@@ -368,15 +340,11 @@ HWND rebar_window::init()
     m_bands = g_cfg_rebar.get_rebar_info();
 
     if (!wnd_rebar) {
-        rv = wnd_rebar = CreateWindowEx(
-            WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
-            WS_BORDER | WS_CHILD |
-            WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE |
-            RBS_AUTOSIZE |
-            RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0, 0, 0, 0, 0,
-            g_main_window, (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr
-        );
-        //SetWindowTheme(wnd_rebar, L"Default", NULL);
+        rv = wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
+            WS_BORDER | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE | RBS_AUTOSIZE
+                | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
+            0, 0, 0, 0, g_main_window, (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
+        // SetWindowTheme(wnd_rebar, L"Default", NULL);
     }
 
     refresh_bands();
@@ -465,11 +433,9 @@ bool rebar_window::set_menu_focus()
                 if (!rv) {
                     p_menu_ext->set_focus();
                     rv = true;
-                }
-                else {
+                } else {
                     p_menu_ext->hide_accelerators();
                 }
-
             }
         }
     }
@@ -505,8 +471,7 @@ void rebar_window::save_bands()
                 order[n] = band_index;
                 m_bands[band_index].m_width = rbbi.cx;
                 m_bands[band_index].m_break_before_band = ((rbbi.fStyle & RBBS_BREAK) != 0);
-            }
-            else
+            } else
                 b_death = true;
         }
 
@@ -518,16 +483,14 @@ void rebar_window::save_bands()
 
 bool rebar_window::check_band(const GUID& id)
 {
-    return std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) {
-        return band.m_guid == id;
-    }) != m_bands.end();
+    return std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_guid == id; })
+        != m_bands.end();
 }
 
 bool rebar_window::find_band(const GUID& id, unsigned& out)
 {
-    const auto iterator = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) {
-        return band.m_guid == id;
-    });
+    const auto iterator
+        = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_guid == id; });
 
     out = std::distance(m_bands.begin(), iterator);
     return iterator != m_bands.end();
@@ -557,8 +520,8 @@ void rebar_window::destroy_bands()
                 stream_writer_memblock_ref data(band.m_config);
                 try {
                     band.m_window->get_config(&data, abortCallbackDummy);
+                } catch (const pfc::exception&) {
                 }
-                catch (const pfc::exception&) {}
                 band.m_window->destroy_window();
                 band.m_wnd = nullptr;
                 band.m_window.release();
@@ -610,7 +573,6 @@ void rebar_window::delete_band(HWND wnd, bool destroy)
         cache.add_entry(iter->m_guid, iter->m_width);
         m_bands.erase(iter);
         refresh_bands(false);
-
     }
 }
 
@@ -660,7 +622,6 @@ void rebar_window::update_band(unsigned n, bool size)
 
         uRebar_InsertItem(wnd_rebar, n, &rbbi, false);
         SendMessage(wnd_rebar, RB_SHOWBAND, n, TRUE);
-
     }
 }
 
@@ -680,7 +641,6 @@ void rebar_window::refresh_bands(bool force_destroy_bands)
         memset(&rbbi, 0, sizeof(rbbi));
         rbbi.cbSize = sizeof(uREBARBANDINFO);
 
-
         if (!band.m_wnd) {
             ui_extension::window_ptr p_ext = band.m_window;
             bool b_new = false;
@@ -690,14 +650,12 @@ void rebar_window::refresh_bands(bool force_destroy_bands)
             }
 
             if (p_ext.is_valid() && p_ext->is_available(&g_ui_ext_host_rebar.get_static_instance())) {
-
                 adding = true;
                 if (b_new) {
                     try {
-                        p_ext->set_config_from_ptr(band.m_config.get_ptr(), band.m_config.get_size(),
-                                                   abortCallbackDummy);
-                    }
-                    catch (const exception_io& e) {
+                        p_ext->set_config_from_ptr(
+                            band.m_config.get_ptr(), band.m_config.get_size(), abortCallbackDummy);
+                    } catch (const exception_io& e) {
                         console::formatter formatter;
                         formatter << "Error setting panel config: " << e.what();
                     }
@@ -726,23 +684,20 @@ void rebar_window::refresh_bands(bool force_destroy_bands)
                     rbbi.cyMinChild = mmi.ptMinTrackSize.y;
                     rbbi.cyMaxChild = mmi.ptMaxTrackSize.y;
                     rbbi.cxMinChild = mmi.ptMinTrackSize.x;
-                }
-                else {
+                } else {
                     p_ext.release();
                 }
-            }
-            else {
+            } else {
                 p_ext.release();
             }
         }
 
-
         if (band.m_wnd) {
             rbbi.fMask |= RBBIM_SIZE | RBBIM_CHILD | RBBIM_HEADERSIZE | RBBIM_LPARAM | RBBIM_STYLE;
-            //rbbi.cyIntegral = 1;
+            // rbbi.cyIntegral = 1;
             rbbi.cx = m_bands[n].m_width;
-            rbbi.fStyle = /*RBBS_VARIABLEHEIGHT|*/RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS | (
-                band.m_break_before_band ? RBBS_BREAK : 0) | (cfg_lock ? RBBS_NOGRIPPER : 0);
+            rbbi.fStyle = /*RBBS_VARIABLEHEIGHT|*/ RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS
+                | (band.m_break_before_band ? RBBS_BREAK : 0) | (cfg_lock ? RBBS_NOGRIPPER : 0);
             rbbi.lParam = n;
             rbbi.hwndChild = band.m_wnd;
             rbbi.cxHeader = cfg_lock ? 5 : 9;
@@ -750,14 +705,12 @@ void rebar_window::refresh_bands(bool force_destroy_bands)
             uRebar_InsertItem(wnd_rebar, n, &rbbi, adding);
 
             n++;
-        }
-        else {
+        } else {
             m_bands.erase(m_bands.begin() + n);
             --count;
         }
     }
 }
-
 
 ui_extension::window_host& get_rebar_host()
 {

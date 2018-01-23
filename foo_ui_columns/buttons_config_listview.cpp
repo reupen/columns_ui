@@ -26,7 +26,8 @@ void toolbar_extension::config_param::t_button_list_view::notify_on_destroy()
 {
     RevokeDragDrop(get_wnd());
 }
-void toolbar_extension::config_param::t_button_list_view::notify_on_selection_change(const pfc::bit_array & p_affected, const pfc::bit_array & p_status, notification_source_t p_notification_source)
+void toolbar_extension::config_param::t_button_list_view::notify_on_selection_change(
+    const pfc::bit_array& p_affected, const pfc::bit_array& p_status, notification_source_t p_notification_source)
 {
     t_size index = get_selected_item_single();
     m_param.on_selection_change(index);
@@ -36,9 +37,8 @@ bool toolbar_extension::config_param::t_button_list_view::do_drag_drop(WPARAM wp
     UINT cf = g_clipformat();
 
     HGLOBAL glb = GlobalAlloc(GPTR, sizeof(DDData));
-    if (glb)
-    {
-        auto * pddd = (DDData*)glb;
+    if (glb) {
+        auto* pddd = (DDData*)glb;
         pddd->version = 0;
         pddd->wnd = get_wnd();
 

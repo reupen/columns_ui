@@ -7,5 +7,4 @@ void create_image_list();
 
 #include "extern.h"
 
-
 #endif

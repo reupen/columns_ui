@@ -3,7 +3,7 @@
 class RebarBandInfo {
 public:
     GUID m_guid{};
-    // Although we store the DPI, this does virtually nothing as remaining space is automatically 
+    // Although we store the DPI, this does virtually nothing as remaining space is automatically
     // distributed among the remaining bands.
     uih::IntegerAndDpi<uint32_t> m_width{};
     bool m_break_before_band{};
@@ -23,9 +23,11 @@ public:
     RebarBandInfo& operator=(const RebarBandInfo& band_info);
     RebarBandInfo() = default;
 
-    RebarBandInfo(GUID guid, uih::IntegerAndDpi<uint32_t> width, bool break_before_band = false,
-                  uie::window_ptr window = {})
-        : m_guid{guid}, m_width(width), m_break_before_band{break_before_band}, m_window(window) {}
+    RebarBandInfo(
+        GUID guid, uih::IntegerAndDpi<uint32_t> width, bool break_before_band = false, uie::window_ptr window = {})
+        : m_guid{ guid }, m_width(width), m_break_before_band{ break_before_band }, m_window(window)
+    {
+    }
 
     RebarBandInfo(RebarBandInfo&&) = default;
     RebarBandInfo(const RebarBandInfo& band_info);

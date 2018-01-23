@@ -3,8 +3,7 @@
 
 COLORREF get_default_colour(colours::t_colours index, bool themed)
 {
-    switch (index)
-    {
+    switch (index) {
     case colours::COLOUR_TEXT:
         return GetSysColor(COLOR_WINDOWTEXT);
     case colours::COLOUR_SELECTED_TEXT:

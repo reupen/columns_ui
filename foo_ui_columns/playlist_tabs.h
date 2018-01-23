@@ -10,41 +10,40 @@ void g_on_tabs_font_change();
 
 void remove_playlist_helper(t_size index);
 
-class playlists_tabs_extension : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2>, public playlist_callback
-{
+class playlists_tabs_extension
+    : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2>
+    , public playlist_callback {
 public:
-    enum : uint32_t {
-        MSG_RESET_SIZE_LIMITS =  WM_USER+3
-    };
-    class window_host_impl : public ui_extension::window_host
-    {
+    enum : uint32_t { MSG_RESET_SIZE_LIMITS = WM_USER + 3 };
+    class window_host_impl : public ui_extension::window_host {
     public:
-
-        unsigned is_resize_supported(HWND wnd)const override;
+        unsigned is_resize_supported(HWND wnd) const override;
 
         bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height) override;
-        bool is_visible(HWND wnd)const override;
-        bool is_visibility_modifiable(HWND wnd, bool desired_visibility)const override;
+        bool is_visible(HWND wnd) const override;
+        bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override;
         bool set_window_visibility(HWND wnd, bool visibility) override;
 
-        bool get_keyboard_shortcuts_enabled()const override;
+        bool get_keyboard_shortcuts_enabled() const override;
 
-        virtual bool get_show_shortcuts()const;
+        virtual bool get_show_shortcuts() const;
 
-        void on_size_limit_change(HWND wnd, unsigned flags) override;;
+        void on_size_limit_change(HWND wnd, unsigned flags) override;
+        ;
 
-        const GUID & get_host_guid()const override;
+        const GUID& get_host_guid() const override;
 
-        bool override_status_text_create(service_ptr_t<ui_status_text_override> & p_out) override;
+        bool override_status_text_create(service_ptr_t<ui_status_text_override>& p_out) override;
 
-        void relinquish_ownership(HWND wnd) override;;
-        void set_this(playlists_tabs_extension * ptr);
+        void relinquish_ownership(HWND wnd) override;
+        ;
+        void set_this(playlists_tabs_extension* ptr);
+
     private:
         service_ptr_t<playlists_tabs_extension> m_this;
-
     };
-private:
 
+private:
     service_ptr_t<ui_status_text_override> m_status_override;
 
     WNDPROC tabproc;
@@ -63,7 +62,7 @@ private:
 
     service_ptr_t<contextmenu_manager> p_manager;
 
-    class_data & get_class_data()const override;
+    class_data& get_class_data() const override;
 
 public:
     static pfc::ptr_list_t<playlists_tabs_extension> list_wnd;
@@ -76,17 +75,18 @@ public:
 
     ~playlists_tabs_extension();
 
-    class playlists_tabs_drop_target : public IDropTarget
-    {
+    class playlists_tabs_drop_target : public IDropTarget {
     public:
-        HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR *ppvObject) override;
-        ULONG STDMETHODCALLTYPE   AddRef() override;
-        ULONG STDMETHODCALLTYPE   Release() override;
-        HRESULT STDMETHODCALLTYPE DragEnter(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
-        HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
+        HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;
+        ULONG STDMETHODCALLTYPE AddRef() override;
+        ULONG STDMETHODCALLTYPE Release() override;
+        HRESULT STDMETHODCALLTYPE DragEnter(
+            IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
+        HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
         HRESULT STDMETHODCALLTYPE DragLeave() override;
-        HRESULT STDMETHODCALLTYPE Drop(IDataObject *pDataObj, DWORD grfKeyState, POINTL pt, DWORD *pdwEffect) override;
-        playlists_tabs_drop_target(playlists_tabs_extension * p_wnd);
+        HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
+        playlists_tabs_drop_target(playlists_tabs_extension* p_wnd);
+
     private:
         bool m_last_rmb;
         bool m_is_accepted_type;
@@ -97,28 +97,46 @@ public:
         mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
     };
 
-    void FB2KAPI on_items_removing(unsigned p_playlist, const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override;;//called before actually removing them
-    void FB2KAPI on_items_removed(unsigned p_playlist, const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override;;
+    void FB2KAPI on_items_removing(
+        unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
+    ; // called before actually removing them
+    void FB2KAPI on_items_removed(
+        unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
+    ;
 
     void on_playlist_activate(unsigned p_old, unsigned p_new) override;
 
-    void on_playlists_reorder(const unsigned * p_order, unsigned p_count) override;
-    void on_playlist_created(unsigned p_index, const char * p_name, unsigned p_name_len) override;
-    void on_playlists_removed(const pfc::bit_array & p_mask, unsigned p_old_count, unsigned p_new_count) override;
-    void on_playlist_renamed(unsigned p_index, const char * p_new_name, unsigned p_new_name_len) override;
+    void on_playlists_reorder(const unsigned* p_order, unsigned p_count) override;
+    void on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len) override;
+    void on_playlists_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
+    void on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len) override;
 
-    void on_items_added(unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr> &, const pfc::bit_array &) override;;
-    void on_items_reordered(unsigned int, const unsigned int *, unsigned int) override;;
-    void on_items_selection_change(unsigned int, const pfc::bit_array &, const pfc::bit_array &) override;;
-    void on_item_focus_change(unsigned int, unsigned int, unsigned int) override;;
-    void on_items_modified(unsigned int, const pfc::bit_array &) override;;
-    void on_items_modified_fromplayback(unsigned int, const pfc::bit_array &, play_control::t_display_level) override;;
-    void on_items_replaced(unsigned int, const pfc::bit_array &, const pfc::list_base_const_t<t_on_items_replaced_entry> &) override;;
-    void on_item_ensure_visible(unsigned int, unsigned int) override;;
-    void on_playlists_removing(const pfc::bit_array &, unsigned int, unsigned int) override;;
-    void on_default_format_changed() override;;
-    void on_playback_order_changed(unsigned int) override;;
-    void on_playlist_locked(unsigned int, bool) override;;
+    void on_items_added(
+        unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr>&, const pfc::bit_array&) override;
+    ;
+    void on_items_reordered(unsigned int, const unsigned int*, unsigned int) override;
+    ;
+    void on_items_selection_change(unsigned int, const pfc::bit_array&, const pfc::bit_array&) override;
+    ;
+    void on_item_focus_change(unsigned int, unsigned int, unsigned int) override;
+    ;
+    void on_items_modified(unsigned int, const pfc::bit_array&) override;
+    ;
+    void on_items_modified_fromplayback(unsigned int, const pfc::bit_array&, play_control::t_display_level) override;
+    ;
+    void on_items_replaced(
+        unsigned int, const pfc::bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&) override;
+    ;
+    void on_item_ensure_visible(unsigned int, unsigned int) override;
+    ;
+    void on_playlists_removing(const pfc::bit_array&, unsigned int, unsigned int) override;
+    ;
+    void on_default_format_changed() override;
+    ;
+    void on_playback_order_changed(unsigned int) override;
+    ;
+    void on_playlist_locked(unsigned int, bool) override;
+    ;
 
     void kill_switch_timer();
 
@@ -126,11 +144,11 @@ public:
 
     static const GUID extension_guid;
 
-    const GUID & get_extension_guid() const override;
+    const GUID& get_extension_guid() const override;
 
-    void get_name(pfc::string_base & out)const override;
-    void get_category(pfc::string_base & out)const override;
-    bool get_short_name(pfc::string_base & out)const override;
+    void get_name(pfc::string_base& out) const override;
+    void get_category(pfc::string_base& out) const override;
+    bool get_short_name(pfc::string_base& out) const override;
 
     void set_styles(bool visible = true);
 
@@ -138,34 +156,44 @@ public:
 
     void on_size();
 
-    void adjust_rect(bool b_larger, RECT * rc);
+    void adjust_rect(bool b_larger, RECT* rc);
 
     void on_size(unsigned cx, unsigned cy);
 
-
-    unsigned get_type() const override;;
+    unsigned get_type() const override;
+    ;
     static void on_font_change();
     bool create_tabs();
 
     void create_child();
     void destroy_child();
 
-    bool is_point_ours(HWND wnd_point, const POINT & pt_screen, pfc::list_base_t<uie::window::ptr> & p_hierarchy) override;
-    void get_supported_panels(const pfc::list_base_const_t<uie::window::ptr> & p_windows, pfc::bit_array_var & p_mask_unsupported) override;
+    bool is_point_ours(
+        HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy) override;
+    void get_supported_panels(
+        const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported) override;
 
-    void insert_panel(unsigned index, const uie::splitter_item_t *  p_item) override;;
-    void remove_panel(unsigned index) override;;
-    void replace_panel(unsigned index, const uie::splitter_item_t * p_item) override;;
-    unsigned get_panel_count()const override;;
-    unsigned get_maximum_panel_count()const override;;
-    uie::splitter_item_t * get_panel(unsigned index)const override;;
+    void insert_panel(unsigned index, const uie::splitter_item_t* p_item) override;
+    ;
+    void remove_panel(unsigned index) override;
+    ;
+    void replace_panel(unsigned index, const uie::splitter_item_t* p_item) override;
+    ;
+    unsigned get_panel_count() const override;
+    ;
+    unsigned get_maximum_panel_count() const override;
+    ;
+    uie::splitter_item_t* get_panel(unsigned index) const override;
+    ;
 
-    void import_config(stream_reader * p_reader, t_size p_size, abort_callback & p_abort) override;
-    void export_config(stream_writer * p_writer, abort_callback & p_abort) const override;
+    void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
-    void set_config(stream_reader * config, t_size p_size, abort_callback & p_abort) override;;
+    void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
+    ;
 
-    void get_config(stream_writer * out, abort_callback & p_abort) const override;;
+    void get_config(stream_writer* out, abort_callback& p_abort) const override;
+    ;
 
     void on_child_position_change();
 

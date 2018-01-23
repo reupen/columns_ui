@@ -1,4 +1,2 @@
-//cpp used to generate precompiled header
+// cpp used to generate precompiled header
 #include "stdafx.h"
-
-

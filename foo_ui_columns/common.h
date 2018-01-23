@@ -11,31 +11,24 @@
  */
 
 template <typename type_t>
-class ptr_list_autodel_t : public pfc::ptr_list_t < type_t >
-{
+class ptr_list_autodel_t : public pfc::ptr_list_t<type_t> {
 public:
-    ~ptr_list_autodel_t()
-    {
-        this->delete_all();
-    }
+    ~ptr_list_autodel_t() { this->delete_all(); }
 };
 
-enum playlist_filter_type
-{
+enum playlist_filter_type {
     FILTER_NONE = 0,
     FILTER_SHOW,
     FILTER_HIDE,
 };
 
-enum
-{
+enum {
     LIBPNG_NOTFOUND,
     LIBPNG_UNKNOWNVERSION,
     LIBPNG_FOUND,
 };
 
-enum colour_type
-{
+enum colour_type {
     COLOUR_FORE = 0,
     COLOUR_FORE_SELECTED,
     COLOUR_BACK,
@@ -44,8 +37,7 @@ enum colour_type
     COLOUR_TEXT_SELECTED_NO_FOCUS,
 };
 
-enum string_type
-{
+enum string_type {
     STRING_NAME = 0,
     STRING_DISPLAY,
     STRING_SORT,
@@ -54,28 +46,24 @@ enum string_type
     STRING_EDIT_FIELD,
 };
 
-enum bool_type
-{
+enum bool_type {
     BOOL_CUSTOM_SORT = 0,
     BOOL_CUSTOM_COLOUR,
     BOOL_SHOW,
 };
 
-enum long_type
-{
+enum long_type {
     LONG_WIDTH = 0,
     LONG_PARTS,
 };
 
-enum alignment
-{
+enum alignment {
     ALIGN_LEFT,
     ALIGN_CENTRE,
     ALIGN_RIGHT,
 };
 
-enum column_data
-{
+enum column_data {
     COLUMN_END = -1,
     COLUMN_NAME = 0,
     COLUMN_SPEC,
@@ -98,8 +86,7 @@ enum column_data
     COLUMN_EDIT_FIELD,
 };
 
-enum config_data
-{
+enum config_data {
     CONFIG_END = -1,
     CONFIG_COLUMN = 0,
     CONFIG_USE_LEGACY_GLOBAL,
@@ -129,7 +116,7 @@ enum config_data
     CONFIG_PLHEIGHT,
 
     /*v3 +*/
-    CONFIG_USE_OLD_GLOBAL,//old old
+    CONFIG_USE_OLD_GLOBAL, // old old
 
     CONFIG_INCLUDE_DATE,
     CONFIG_MAP_COLOUR_CODES,
@@ -140,8 +127,7 @@ enum config_data
     CONFIG_COLOUR_PLIST_SELECTED_BACK_NO_FOCUS,
     CONFIG_USE_GLOBAL,
 
-    
-    /*v4*/  /* TODO */
+    /*v4*/ /* TODO */
     CONFIG_COLOUR_PLIST_INACTIVE_SELECTED_TEXT,
 
     CONFIG_USE_CUSTOM_COLOURS,
@@ -154,51 +140,54 @@ enum config_data
 
 };
 
-namespace pfc
-{
-    template<> class traits_t<playlist_filter_type> : public traits_rawobject {};
-    template<> class traits_t<alignment> : public traits_rawobject {};
-    template<> class traits_t<column_data> : public traits_rawobject {};
-    template<> class traits_t<config_data> : public traits_rawobject {};
-}
+namespace pfc {
+template <>
+class traits_t<playlist_filter_type> : public traits_rawobject {
+};
+template <>
+class traits_t<alignment> : public traits_rawobject {
+};
+template <>
+class traits_t<column_data> : public traits_rawobject {
+};
+template <>
+class traits_t<config_data> : public traits_rawobject {
+};
+} // namespace pfc
 
+const char* strchr_n(const char* src, char c, unsigned len = -1);
 
-const char * strchr_n(const char * src, char c, unsigned len = -1);
-
-struct colour_bytes {BYTE B; BYTE G; BYTE R;};
-
-struct colour
-{
-
+struct colour_bytes {
     BYTE B;
     BYTE G;
     BYTE R;
-//public:
-    colour() : B(0),G(0),R(0) {}
-    void set(COLORREF new_colour);
-    inline operator COLORREF () const
-    {
-        return RGB(R, G, B);
-    }
 };
 
-    inline bool operator==(const colour & c1, const  colour &c2) 
-    {
-        return (c1.B == c2.B && c1.G == c2.G && c1.R == c2.R);
-    }
+struct colour {
+    BYTE B;
+    BYTE G;
+    BYTE R;
+    // public:
+    colour() : B(0), G(0), R(0) {}
+    void set(COLORREF new_colour);
+    inline operator COLORREF() const { return RGB(R, G, B); }
+};
 
-class string_pn: public pfc::string8
+inline bool operator==(const colour& c1, const colour& c2)
 {
+    return (c1.B == c2.B && c1.G == c2.G && c1.R == c2.R);
+}
+
+class string_pn : public pfc::string8 {
 public:
-    string_pn(metadb_handle_list_cref handles, const char * format, const char * def = "Untitled");
+    string_pn(metadb_handle_list_cref handles, const char* format, const char* def = "Untitled");
 };
 
 void set_sel_single(int idx, bool toggle, bool focus, bool single_only);
-void set_sel_range(int start, int end, bool keep, bool deselect=false);
-
+void set_sel_range(int start, int end, bool keep, bool deselect = false);
 
 UINT GetNumScrollLines();
 
-void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr> & p_items, const char * name);
+void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr>& p_items, const char* name);
 
 #endif
