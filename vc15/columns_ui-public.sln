@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27130.2020
+VisualStudioVersion = 15.0.27130.2024
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{5CE500DE-1CE0-4222-9433-DCE0A3364124}"
 EndProject
@@ -30,10 +30,12 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mmh", "..\mmh\mmh.vcxproj",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0FF158B9-F515-4DCF-B879-3D38EEC6DA2C}"
 	ProjectSection(SolutionItems) = preProject
+		..\.clang-format = ..\.clang-format
 		..\.gitignore = ..\.gitignore
 		..\.gitmodules = ..\.gitmodules
 		..\appveyor.yml = ..\appveyor.yml
 		..\CHANGELOG.md = ..\CHANGELOG.md
+		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
 		..\COPYING = ..\COPYING
 		..\COPYING.LESSER = ..\COPYING.LESSER
 		..\COPYRIGHT = ..\COPYRIGHT
@@ -153,5 +155,8 @@ Global
 		{EBFFFB4E-261D-44D3-B89C-957B31A0BF9C} = {B9D1251F-E5BC-412F-950B-BE588408EA59}
 		{743CBAAD-BE8E-430A-918B-2BB68008A616} = {5CE500DE-1CE0-4222-9433-DCE0A3364124}
 		{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E} = {3A85ACE2-E7C5-4F1F-A253-9C60B8076BE8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {69B91470-DA3C-4CE2-B984-1659F90BD386}
 	EndGlobalSection
 EndGlobal
