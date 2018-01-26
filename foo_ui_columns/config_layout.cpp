@@ -251,81 +251,103 @@ class tab_layout_new : public preferences_tab {
             g_node_clipboard = copy_splitter_item(p_node->m_item->get_ptr());
         }
     }
+
     static bool _fix_single_instance_recur(uie::splitter_window_ptr& p_window)
     {
-        bool b_ret = false;
-        if (p_window.is_valid()) {
-            t_size i, count = p_window->get_panel_count();
-            pfc::array_staticsize_t<bool> mask(count);
-            for (i = 0; i < count; i++) {
-                uie::window_ptr p_child_window;
-                uie::splitter_item_ptr p_si;
-                p_window->get_panel(i, p_si);
-                if (!uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window))
-                    mask[i] = true;
-                else
-                    mask[i]
-                        = p_child_window->get_is_single_instance() && g_node_root->have_item(p_si->get_panel_guid());
+        if (!p_window.is_valid())
+            return false;
+
+        bool modified = false;
+        t_size i, count = p_window->get_panel_count();
+        pfc::array_staticsize_t<bool> mask(count);
+
+        for (i = 0; i < count; i++) {
+            uie::window_ptr p_child_window;
+            uie::splitter_item_ptr p_si;
+            p_window->get_panel(i, p_si);
+            if (!uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window))
+                mask[i] = true;
+            else
+                mask[i] = p_child_window->get_is_single_instance() && g_node_root->have_item(p_si->get_panel_guid());
+        }
+
+        for (i = count; i > 0; i--)
+            if (mask[i - 1]) {
+                p_window->remove_panel(i - 1);
+                modified = true;
             }
 
-            for (i = count; i > 0; i--)
-                if (mask[i - 1]) {
-                    p_window->remove_panel(i - 1);
-                    b_ret = true;
-                }
+        count = p_window->get_panel_count();
 
-            count = p_window->get_panel_count();
+        for (i = 0; i < count; i++) {
+            uie::window_ptr p_child_window;
+            uie::splitter_window_ptr p_child_sw;
 
-            for (i = 0; i < count; i++) {
-                uie::window_ptr p_child_window;
-                uie::splitter_window_ptr p_child_sw;
-
-                uie::splitter_item_ptr p_si;
-                p_window->get_panel(i, p_si);
-                if (uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window)) {
-                    if (p_child_window->service_query_t(p_child_sw)) {
-                        stream_writer_memblock sw;
-                        abort_callback_dummy abortCallback;
-                        p_si->get_panel_config(&sw);
-                        p_child_window->set_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size(), abortCallback);
-                        if (_fix_single_instance_recur(p_child_sw)) {
-                            sw.m_data.set_size(0);
-                            p_child_window->get_config(&sw, abortCallback);
-                            p_si->set_panel_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size());
-                            p_window->replace_panel(i, p_si.get_ptr());
-                            b_ret = true;
-                        }
+            uie::splitter_item_ptr p_si;
+            p_window->get_panel(i, p_si);
+            if (uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window)) {
+                if (p_child_window->service_query_t(p_child_sw)) {
+                    stream_writer_memblock sw;
+                    abort_callback_dummy abortCallback;
+                    p_si->get_panel_config(&sw);
+                    p_child_window->set_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size(), abortCallback);
+                    if (_fix_single_instance_recur(p_child_sw)) {
+                        sw.m_data.set_size(0);
+                        p_child_window->get_config(&sw, abortCallback);
+                        p_si->set_panel_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size());
+                        p_window->replace_panel(i, p_si.get_ptr());
+                        modified = true;
                     }
                 }
             }
         }
-        return b_ret;
+        return modified;
     }
+
+    /**
+     * \brief Fixes a copied splitter item prior to pasting
+     *
+     * If the copied panel is a single-instance panel, this checks if there are any other instances
+     * of the panel in the layout. It also checks if the panel can be instantiated, as if it can't be
+     * there's no way to know if it's a single-instance panel.
+     *
+     * If the copied item is a splitter panel, this also removes any child panels from the splitter
+     * that don't meet the above two conditions.
+     *
+     * \param p_source  Source splitter item
+     * \param p_out     Recieves a new splitter item
+     * \return          Whether to proceed with pasting
+     */
     static bool fix_paste_item(const uie::splitter_item_ptr& p_source, uie::splitter_item_ptr& p_out)
     {
         uie::window::ptr p_window;
-        if (uie::window::create_by_guid(p_source->get_panel_guid(), p_window)) {
-            stream_writer_memblock sw;
-            p_source->get_panel_config(&sw);
-            if (!p_window->get_is_single_instance() || !g_node_root->have_item(p_source->get_panel_guid())) {
-                uie::splitter_window_ptr p_sw;
-                if (p_window->service_query_t(p_sw)) {
-                    abort_callback_dummy abortCallback;
-                    p_window->set_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size(), abortCallback);
-                    if (_fix_single_instance_recur(p_sw)) {
-                        p_out = copy_splitter_item(p_source.get_ptr());
-                        sw.m_data.set_size(0);
-                        p_window->get_config(&sw, abortCallback);
-                        p_out->set_panel_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size());
-                    } else
-                        p_out = copy_splitter_item(p_source.get_ptr());
-                } else
-                    p_out = copy_splitter_item(p_source.get_ptr());
-                return true;
+        if (!uie::window::create_by_guid(p_source->get_panel_guid(), p_window))
+            return false;
+
+        if (p_window->get_is_single_instance() && g_node_root->have_item(p_source->get_panel_guid()))
+            return false;
+
+        stream_writer_memblock sw;
+        p_source->get_panel_config(&sw);
+
+        uie::splitter_window_ptr p_sw;
+        if (p_window->service_query_t(p_sw)) {
+            abort_callback_dummy aborter;
+            p_window->set_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size(), aborter);
+            if (_fix_single_instance_recur(p_sw)) {
+                p_out = copy_splitter_item(p_source.get_ptr());
+                sw.m_data.set_size(0);
+                p_window->get_config(&sw, aborter);
+                p_out->set_panel_config_from_ptr(sw.m_data.get_ptr(), sw.m_data.get_size());
+            } else {
+                p_out = copy_splitter_item(p_source.get_ptr());
             }
+        } else {
+            p_out = copy_splitter_item(p_source.get_ptr());
         }
-        return false;
+        return true;
     }
+
     static void paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
