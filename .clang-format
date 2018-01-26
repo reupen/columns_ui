@@ -50,7 +50,7 @@ CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
 ContinuationIndentWidth: 4
-Cpp11BracedListStyle: false
+Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 DisableFormat:   false
 FixNamespaceComments: true
