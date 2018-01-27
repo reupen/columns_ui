@@ -144,11 +144,12 @@ public:
         m_gdiplus_initialised = false;
     }
 
-    main_window_t() : m_gdiplus_instance(NULL), m_gdiplus_initialised(false){};
+    main_window_t() = default;
+    ;
 
 private:
-    ULONG_PTR m_gdiplus_instance;
-    bool m_gdiplus_initialised;
+    ULONG_PTR m_gdiplus_instance{NULL};
+    bool m_gdiplus_initialised{false};
 };
 
 extern main_window_t g_main_window;

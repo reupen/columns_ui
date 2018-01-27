@@ -179,17 +179,17 @@ private:
     void show_emptycover();
     void flush_image();
 
-    ULONG_PTR m_gdiplus_instance;
-    bool m_gdiplus_initialised;
+    ULONG_PTR m_gdiplus_instance{NULL};
+    bool m_gdiplus_initialised{false};
 
     // pfc::rcptr_t<CCustomAlbumArtLoader> m_artwork_loader;
     pfc::refcounted_object_ptr_t<artwork_reader_manager_t> m_artwork_loader;
     // now_playing_album_art_manager m_nowplaying_artwork_loader;
     pfc::rcptr_t<Gdiplus::Bitmap> m_image;
     gdi_object_t<HBITMAP>::ptr_t m_bitmap;
-    t_size m_position;
+    t_size m_position{0};
     t_size m_track_mode;
-    bool m_preserve_aspect_ratio, m_lock_type;
+    bool m_preserve_aspect_ratio, m_lock_type{false};
     metadb_handle_list m_selection_handles;
 
     static std::vector<artwork_panel_t*> g_windows;

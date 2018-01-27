@@ -4,10 +4,8 @@
 
 bool g_last_rmb = false;
 
-drop_handler_interface::drop_handler_interface() : drop_ref_count(0)
+drop_handler_interface::drop_handler_interface()
 {
-    last_over.x = 0;
-    last_over.y = 0;
     m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 }
 

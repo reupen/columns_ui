@@ -10,39 +10,6 @@ column_list_t playlist_view::columns;
 pfc::ptr_list_t<playlist_view> playlist_view::list_playlist;
 
 playlist_view::playlist_view()
-    : wnd_playlist(nullptr)
-    , wnd_header(nullptr)
-    , drawing_enabled(false)
-    , m_wnd_edit(nullptr)
-    , m_edit_index(-1)
-    , m_edit_column(-1)
-    , m_prev_sel(false)
-    , m_no_next_edit(false)
-    , m_edit_timer(false)
-    , m_edit_save(true)
-    , m_edit_saving(false)
-    , m_edit_changed(false)
-    , m_inline_edit_proc(nullptr)
-    , initialised(false)
-    , dragged(true)
-    , drag_type(0)
-    , dragitem(0)
-    , dragstartitem(0)
-    , last_idx(-1)
-    , last_column(-1)
-    //#ifdef INLINE_EDIT
-    , g_shift_item_start(0)
-    , g_drag_lmb(false)
-    , m_rmb_is_dragging(false)
-    , scroll_item_offset(0)
-    , horizontal_offset(0)
-    , m_always_show_focus(false)
-    , m_prevent_wm_char_processing(false)
-    , MENU_A_BASE(1)
-    , MENU_B_BASE(0)
-    , m_shown(false)
-    , m_theme(nullptr)
-//#endif
 {
     drag_start.x = 0;
     drag_start.y = 0;

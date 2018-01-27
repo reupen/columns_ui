@@ -74,15 +74,7 @@ void cfg_groups_t::remove_group(t_size index)
     ng_playlist_view_t::g_on_groups_change();
 }
 
-ng_playlist_view_t::ng_playlist_view_t()
-    : m_dragging(false)
-    , m_dragging_initial_playlist(pfc_infinite)
-    , m_day_timer_active(false)
-    , m_ignore_callback(false)
-    , m_gdiplus_token(NULL)
-    , m_gdiplus_initialised(false)
-    , m_mainmenu_manager_base(NULL)
-    , m_contextmenu_manager_base(NULL){};
+ng_playlist_view_t::ng_playlist_view_t() : m_dragging_initial_playlist(pfc_infinite){};
 
 ng_playlist_view_t::~ng_playlist_view_t() = default;
 

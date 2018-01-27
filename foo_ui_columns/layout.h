@@ -91,7 +91,7 @@ public:
     void set_layout_editing_active(bool b_val);
     bool get_layout_editing_active();
 
-    layout_window();
+    layout_window() = default;
 
 private:
     class live_edit_data_t {
@@ -131,10 +131,10 @@ private:
     bool __get_previous_menu_focus_window_recur(const uie::window_ptr& p_wnd, HWND& wnd_previous) const;
 
     uie::window_ptr m_child;
-    GUID m_child_guid;
+    GUID m_child_guid{columns_ui::panels::guid_playlist_view_v2};
     pfc::array_t<t_uint8> m_child_data;
-    HWND m_child_wnd;
-    bool m_layout_editing_active;
+    HWND m_child_wnd{nullptr};
+    bool m_layout_editing_active{false};
     live_edit_data_t m_live_edit_data;
 };
 

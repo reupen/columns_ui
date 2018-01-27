@@ -18,8 +18,7 @@ public:
     const pfc::map_t<GUID, album_art_data_ptr>& get_content() const;
     const album_art_data_ptr& get_emptycover() const;
 
-    artwork_reader_v2_t();
-    ;
+    artwork_reader_v2_t() = default;
 
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, album_art_data_ptr>& p_content_previous,
@@ -41,9 +40,10 @@ private:
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
     metadb_handle_ptr m_handle;
     completion_notify_ptr m_notify;
-    bool m_succeeded, m_read_emptycover;
+    bool m_succeeded{false};
+    bool m_read_emptycover{true};
     album_art_data_ptr m_emptycover;
-    t_size m_native_artwork_reader_mode;
+    t_size m_native_artwork_reader_mode{fb2k_artwork_embedded_and_external};
     abort_callback_impl m_abort;
     pfc::refcounted_object_ptr_t<class artwork_reader_manager_t> m_manager;
 };

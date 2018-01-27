@@ -15,13 +15,6 @@ const GUID& toolbar_extension::get_extension_guid() const
 
 toolbar_extension::config_param::config_param()
     : m_button_list(*this)
-    , m_selection(nullptr)
-    , m_wnd(nullptr)
-    , m_child(nullptr)
-    , m_active(0)
-    , m_image(nullptr)
-    , m_text_below(false)
-    , m_appearance(APPEARANCE_NORMAL)
 {
 }
 
@@ -107,15 +100,6 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
 }
 
 toolbar_extension::toolbar_extension()
-    : width(0)
-    , height(0)
-    , menuproc(nullptr)
-    , initialised(false)
-    , m_gdiplus_initialised(false)
-    , wnd_toolbar(nullptr)
-    , wnd_host(nullptr)
-    , m_text_below(false)
-    , m_appearance(APPEARANCE_NORMAL)
 {
     reset_buttons(m_buttons_config);
     memset(&m_gdiplus_instance, 0, sizeof(m_gdiplus_instance));

@@ -180,8 +180,3 @@ void tab_appearance_fonts::refresh_me(HWND wnd)
     initialising = true;
     initialising = false;
 }
-
-tab_appearance_fonts::tab_appearance_fonts()
-    : m_wnd(nullptr), m_wnd_colours_mode(nullptr), m_wnd_colours_element(nullptr), initialising(false)
-{
-}

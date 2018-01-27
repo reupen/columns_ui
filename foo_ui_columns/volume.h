@@ -172,7 +172,7 @@ class volume_control_t
 
 public:
     bool get_using_gdiplus() { return m_using_gdiplus; }
-    HWND wnd_trackbar;
+    HWND wnd_trackbar{nullptr};
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override
     {
         switch (msg) {
@@ -299,8 +299,7 @@ public:
         return DefWindowProc(wnd, msg, wp, lp);
     }
 
-    volume_control_t()
-        : m_child(this), m_track_bar_host(this), wnd_trackbar(nullptr), m_Gdiplus_token(NULL), m_using_gdiplus(false){};
+    volume_control_t() : m_child(this), m_track_bar_host(this){};
     ~volume_control_t() = default;
     ;
 
@@ -367,8 +366,8 @@ private:
     void FB2KAPI on_volume_change(float p_new_val) override { update_position(p_new_val); }
 
     gdi_object_t<HFONT>::ptr_t m_font_caption;
-    ULONG_PTR m_Gdiplus_token;
-    bool m_using_gdiplus;
+    ULONG_PTR m_Gdiplus_token{NULL};
+    bool m_using_gdiplus{false};
 };
 
 class volume_popup_class_name {

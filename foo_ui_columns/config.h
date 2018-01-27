@@ -53,8 +53,8 @@ void preview_to_console(const char* spec, bool extra);
 extern cfg_struct_t<LOGFONT> cfg_editor_font;
 
 class editor_font_notify {
-    HFONT g_edit_font;
-    HWND wnd;
+    HFONT g_edit_font{nullptr};
+    HWND wnd{nullptr};
     void _set()
     {
         if (wnd) {
@@ -90,7 +90,8 @@ public:
         _release();
     }
 
-    editor_font_notify() : g_edit_font(nullptr), wnd(nullptr){};
+    editor_font_notify() = default;
+    ;
     ~editor_font_notify()
     {
         if (g_edit_font) {

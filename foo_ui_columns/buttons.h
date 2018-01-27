@@ -4,8 +4,8 @@
 
 class toolbar_extension : public ui_extension::container_ui_extension {
     static const TCHAR* class_name;
-    int width;
-    int height;
+    int width{0};
+    int height{0};
 
     enum t_config_version { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
 
@@ -27,21 +27,21 @@ class toolbar_extension : public ui_extension::container_ui_extension {
 
     class_data& get_class_data() const override;
 
-    WNDPROC menuproc;
-    bool initialised, m_gdiplus_initialised;
+    WNDPROC menuproc{nullptr};
+    bool initialised{false}, m_gdiplus_initialised{false};
     ULONG_PTR m_gdiplus_instance;
 
 public:
     class button {
     public:
-        t_type m_type;
-        t_filter m_filter;
-        t_show m_show;
+        t_type m_type{TYPE_SEPARATOR};
+        t_filter m_filter{FILTER_ACTIVE_SELECTION};
+        t_show m_show{SHOW_IMAGE};
         GUID m_guid{};
         GUID m_subcommand{};
-        bool m_use_custom;
-        bool m_use_custom_hot;
-        bool m_use_custom_text;
+        bool m_use_custom{false};
+        bool m_use_custom_hot{false};
+        bool m_use_custom_text{false};
         pfc::string_simple m_text;
         class custom_image {
         public:
@@ -66,20 +66,20 @@ public:
             void on_command_state_change(unsigned p_new_state) override{};
 
             service_ptr_t<toolbar_extension> m_this;
-            unsigned id;
+            unsigned id{0};
 
         public:
             callback_impl& operator=(const callback_impl& p_source);
             void set_wnd(toolbar_extension* p_source);
             void set_id(const unsigned i);
-            callback_impl();
+            callback_impl() = default;
         } m_callback;
 
         void set(const button& p_source);
 
         button(GUID p_guid, bool p_custom, const char* p_custom_bitmap_path, const char* p_custom_bitmap_mask_path,
             COLORREF p_custom_bitmap_colour_mask, ui_extension::t_mask p_custom_bitmap_mask_type);
-        button();
+        button() = default;
         const button& operator=(const button& p_source);
         void write(stream_writer* out, abort_callback& p_abort) const;
 
@@ -96,14 +96,14 @@ public:
     };
 
     class button_image {
-        HBITMAP m_bm;
-        HICON m_icon;
-        ui_extension::t_mask m_mask_type;
-        HBITMAP m_bm_mask;
-        COLORREF m_mask_colour;
+        HBITMAP m_bm{nullptr};
+        HICON m_icon{nullptr};
+        ui_extension::t_mask m_mask_type{uie::MASK_NONE};
+        HBITMAP m_bm_mask{nullptr};
+        COLORREF m_mask_colour{0};
 
     public:
-        button_image();
+        button_image() = default;
         ~button_image();
         bool is_valid();
         void load(const button::custom_image& p_image);
@@ -114,8 +114,8 @@ public:
 
     static const button g_button_null;
 
-    HWND wnd_toolbar;
-    HWND wnd_host;
+    HWND wnd_toolbar{nullptr};
+    HWND wnd_host{nullptr};
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
@@ -173,13 +173,13 @@ public:
 
         modal_dialog_scope m_scope;
         // uih::ListView m_button_list;
-        button* m_selection;
-        HWND m_wnd, m_child;
-        unsigned m_active;
-        button::custom_image* m_image;
+        button* m_selection{nullptr};
+        HWND m_wnd{nullptr}, m_child{nullptr};
+        unsigned m_active{0};
+        button::custom_image* m_image{nullptr};
         pfc::list_t<button> m_buttons;
-        bool m_text_below;
-        t_appearance m_appearance;
+        bool m_text_below{false};
+        t_appearance m_appearance{APPEARANCE_NORMAL};
         void export_to_file(const char* p_path, bool b_paths = false);
         void import_from_file(const char* p_path, bool add);
         void export_to_stream(stream_writer* p_writer, bool b_paths, abort_callback& p_abort);
@@ -212,8 +212,8 @@ public:
     pfc::list_t<button> m_buttons;
     pfc::list_t<button> m_buttons_config;
 
-    bool m_text_below;
-    t_appearance m_appearance;
+    bool m_text_below{false};
+    t_appearance m_appearance{APPEARANCE_NORMAL};
 
     static void reset_buttons(pfc::list_base_t<button>& p_buttons);
 

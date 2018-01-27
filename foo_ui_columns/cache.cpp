@@ -161,7 +161,6 @@ playlist_entry_ui::~playlist_entry_ui()
         delete[] display_data;
     // display_data.delete_all();
 }
-playlist_entry_ui::playlist_entry_ui() : display_data(nullptr){};
 
 void process_colour_string(const char* src, colourinfo& out)
 {

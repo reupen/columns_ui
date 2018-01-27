@@ -715,11 +715,6 @@ bool splitter_window_impl::is_point_ours(
     return false;
 };
 
-splitter_window_impl::splitter_window_impl()
-    : m_wnd(nullptr), m_last_position(NULL), m_panel_dragging(NULL), m_panel_dragging_valid(false)
-{
-}
-
 unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
 {
     return index + 1 < m_panels.get_count() ? settings::custom_splitter_divider_width : 0;

@@ -8,7 +8,7 @@
 #include <commctrl.h>
 
 class seek_bar_extension : public ui_extension::container_ui_extension {
-    bool initialised;
+    bool initialised{false};
     uih::Trackbar m_child;
 
     class track_bar_host_impl : public uih::TrackbarCallback {
@@ -19,7 +19,7 @@ class seek_bar_extension : public ui_extension::container_ui_extension {
 public:
     static pfc::ptr_list_t<seek_bar_extension> windows;
 
-    HWND wnd_seekbar;
+    HWND wnd_seekbar{nullptr};
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 

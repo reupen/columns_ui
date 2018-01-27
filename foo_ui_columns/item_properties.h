@@ -14,7 +14,8 @@ public:
     pfc::string8 m_name_friendly;
 
     field_t(const char* friendly, const char* field) : m_name(field), m_name_friendly(friendly){};
-    field_t(){};
+    field_t() = default;
+    ;
 };
 
 class fields_list_view_t : public uih::ListView {
@@ -49,13 +50,12 @@ public:
     public:
         typedef track_property_t self_t;
         pfc::string8 m_name, m_value;
-        double m_sortpriority;
+        double m_sortpriority{0};
 
         static int g_compare(self_t const& a, self_t const& b);
 
         track_property_t(double p_sortpriority, const char* p_name, const char* p_value);
-        ;
-        track_property_t();
+        track_property_t() = default;
     };
 
     void set_property(const char* p_group, double p_sortpriority, const char* p_name, const char* p_value) override;
@@ -253,14 +253,14 @@ private:
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles, m_selection_handles;
     pfc::list_t<field_t> m_fields;
-    bool m_callback_registered;
+    bool m_callback_registered{false};
     t_size m_tracking_mode;
 
     t_uint32 m_info_sections_mask;
     bool m_show_column_titles, m_show_group_titles;
 
-    bool m_autosizing_columns;
-    t_size m_column_name_width, m_column_field_width;
+    bool m_autosizing_columns{true};
+    t_size m_column_name_width{75}, m_column_field_width{125};
 
     t_size m_edge_style;
     t_size m_edit_column, m_edit_index;

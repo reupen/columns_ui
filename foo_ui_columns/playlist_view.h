@@ -22,7 +22,7 @@ class playlist_view;
 class IDropTarget_playlist;
 
 class titleformat_hook_playlist_name : public titleformat_hook {
-    bool m_initialised;
+    bool m_initialised{false};
     pfc::string8 m_name;
 
 public:
@@ -35,7 +35,8 @@ public:
     {
         return false;
     };
-    inline titleformat_hook_playlist_name() : m_initialised(false){};
+    inline titleformat_hook_playlist_name() = default;
+    ;
 };
 
 class IDropSource_playlist : public IDropSource {
@@ -72,7 +73,7 @@ public:
 };
 
 class playlist_message_window : public ui_helpers::container_window {
-    long ref_count;
+    long ref_count{0};
 
 public:
     class_data& get_class_data() const override;
@@ -80,7 +81,8 @@ public:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void add_ref();
     void release();
-    playlist_message_window() : ref_count(0){};
+    playlist_message_window() = default;
+    ;
 };
 
 class playlist_view
@@ -96,7 +98,7 @@ public:
     static GUID extension_guid;
 
     static pfc::ptr_list_t<playlist_view> list_playlist;
-    HWND wnd_playlist, wnd_header;
+    HWND wnd_playlist{nullptr}, wnd_header{nullptr};
 
     // static LRESULT WINAPI window_proc(HWND wnd,UINT msg,WPARAM wp,LPARAM lp);
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
@@ -183,28 +185,29 @@ public:
     static void g_update_sort();
     static void g_remove_sort();
 
-    bool drawing_enabled;
+    bool drawing_enabled{false};
 
     void on_size();
     void on_size(unsigned cx, unsigned cy);
 
 private:
     //#ifdef INLINE_EDIT
-    HWND m_wnd_edit;
+    HWND m_wnd_edit{nullptr};
     void exit_inline_edit();
     // void create_inline_edit(t_size index, unsigned column);
     // void save_inline_edit();
-    unsigned m_edit_index, m_edit_column;
+    unsigned m_edit_index{(std::numeric_limits<unsigned>::max)()};
+    unsigned m_edit_column{(std::numeric_limits<unsigned>::max)()};
     // long m_edit_x;
-    bool m_prev_sel;
-    bool m_no_next_edit;
-    bool m_edit_timer;
-    bool m_edit_save;
-    bool m_edit_saving;
+    bool m_prev_sel{false};
+    bool m_no_next_edit{false};
+    bool m_edit_timer{false};
+    bool m_edit_save{true};
+    bool m_edit_saving{false};
     metadb_handle_ptr m_edit_item;
     pfc::string_simple m_edit_field;
 
-    bool m_edit_changed;
+    bool m_edit_changed{false};
     metadb_handle_list m_edit_items;
     pfc::list_t<t_uint32> m_edit_indices;
     void create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>& indices, unsigned column);
@@ -226,39 +229,39 @@ private:
 
     static LRESULT WINAPI g_inline_edit_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     LRESULT WINAPI on_inline_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    WNDPROC m_inline_edit_proc;
+    WNDPROC m_inline_edit_proc{nullptr};
 
     t_local_cache m_cache;
 
-    bool initialised;
-    bool dragged;
-    int drag_type;
-    unsigned dragitem, dragstartitem;
+    bool initialised{false};
+    bool dragged{true};
+    int drag_type{0};
+    unsigned dragitem{0}, dragstartitem{0};
     POINT drag_start;
     POINT drag_start_lmb;
-    int last_idx;
-    int last_column;
-    int g_shift_item_start;
+    int last_idx{-1};
+    int last_column{-1};
+    int g_shift_item_start{0};
 
-    bool g_drag_lmb, m_rmb_is_dragging;
+    bool g_drag_lmb{false}, m_rmb_is_dragging{false};
 
-    int scroll_item_offset, horizontal_offset;
+    int scroll_item_offset{0}, horizontal_offset{0};
 
-    bool m_always_show_focus;
-    bool m_prevent_wm_char_processing;
+    bool m_always_show_focus{false};
+    bool m_prevent_wm_char_processing{false};
 
     RECT tooltip;
 
     service_ptr_t<mainmenu_manager> g_main_menu_a;
-    unsigned MENU_A_BASE;
+    unsigned MENU_A_BASE{1};
     service_ptr_t<contextmenu_manager> g_main_menu_b;
-    unsigned MENU_B_BASE;
+    unsigned MENU_B_BASE{0};
 
     service_ptr_t<ui_status_text_override> m_status_override;
 
-    bool m_shown;
+    bool m_shown{false};
 
-    HTHEME m_theme;
+    HTHEME m_theme{nullptr};
 
     ui_selection_holder::ptr m_selection_holder;
 

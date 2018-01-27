@@ -9,26 +9,19 @@ public:
 
     pfc::string8 name;
     pfc::string8 spec;
-    bool use_custom_colour;
+    bool use_custom_colour{false};
     pfc::string8 colour_spec;
-    bool use_custom_sort;
+    bool use_custom_sort{false};
     pfc::string8 sort_spec;
-    uih::IntegerAndDpi<int32_t> width;
-    alignment align;
-    playlist_filter_type filter_type;
+    uih::IntegerAndDpi<int32_t> width{100};
+    alignment align{ALIGN_LEFT};
+    playlist_filter_type filter_type{FILTER_NONE};
     pfc::string8 filter;
-    t_uint32 parts;
-    bool show;
+    t_uint32 parts{1};
+    bool show{true};
     pfc::string8 edit_field;
 
-    column_base_t()
-        : use_custom_colour(false)
-        , use_custom_sort(false)
-        , width(100)
-        , align(ALIGN_LEFT)
-        , filter_type(FILTER_NONE)
-        , parts(1)
-        , show(true){};
+    column_base_t() = default;
 
     column_base_t(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
         bool b_use_custom_sort, const char* p_sort_spec, int p_width, alignment p_align,
@@ -73,7 +66,8 @@ public:
     void read_extra(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback);
     void write_extra(stream_writer* writer, abort_callback& abortCallback) const;
 
-    column_t(){};
+    column_t() = default;
+    ;
 
     column_t(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
         bool b_use_custom_sort, const char* p_sort_spec, unsigned p_width, alignment p_align,

@@ -46,19 +46,19 @@ public:
 private:
     service_ptr_t<ui_status_text_override> m_status_override;
 
-    WNDPROC tabproc;
+    WNDPROC tabproc{nullptr};
 
-    bool m_dragging;
-    unsigned m_dragging_idx;
-    RECT m_dragging_rect;
+    bool m_dragging{false};
+    unsigned m_dragging_idx{0};
+    RECT m_dragging_rect{};
 
-    bool m_playlist_switched;
-    bool m_switch_timer;
-    unsigned m_switch_playlist;
-    bool initialised;
+    bool m_playlist_switched{false};
+    bool m_switch_timer{false};
+    unsigned m_switch_playlist{0};
+    bool initialised{false};
 
-    t_int32 m_mousewheel_delta;
-    UINT_PTR ID_CUSTOM_BASE;
+    t_int32 m_mousewheel_delta{0};
+    UINT_PTR ID_CUSTOM_BASE{NULL};
 
     service_ptr_t<contextmenu_manager> p_manager;
 
@@ -67,11 +67,11 @@ private:
 public:
     static pfc::ptr_list_t<playlists_tabs_extension> list_wnd;
 
-    HWND wnd_tabs;
+    HWND wnd_tabs{nullptr};
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-    playlists_tabs_extension();
+    playlists_tabs_extension() = default;
 
     ~playlists_tabs_extension();
 
@@ -200,16 +200,16 @@ public:
 private:
     static HFONT g_font;
 
-    GUID m_child_guid;
+    GUID m_child_guid{};
     pfc::array_t<t_uint8> m_child_data;
     service_ptr_t<window_host_impl> m_host;
     ui_extension::window_ptr m_child;
-    HWND m_child_wnd;
-    HWND m_host_wnd;
+    HWND m_child_wnd{nullptr};
+    HWND m_host_wnd{nullptr};
 
-    unsigned m_child_top;
+    unsigned m_child_top{0};
 
-    MINMAXINFO mmi;
+    MINMAXINFO mmi{};
 };
 
 extern ui_extension::window_host_factory<playlists_tabs_extension::window_host_impl> g_tab_host;

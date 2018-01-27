@@ -6,7 +6,8 @@ class group_t {
 public:
     group_t(const char* p_string, playlist_filter_type p_filter_type = FILTER_NONE, const char* p_filter = "")
         : string(p_string), filter_type(p_filter_type), filter_playlists(p_filter){};
-    group_t() : filter_type(FILTER_NONE){};
+    group_t() = default;
+    ;
     void write(stream_writer* p_stream, abort_callback& p_abort)
     {
         p_stream->write_string(string.get_ptr(), p_abort);
@@ -22,7 +23,7 @@ public:
         }
     }
     pfc::string8 string;
-    playlist_filter_type filter_type;
+    playlist_filter_type filter_type{FILTER_NONE};
     pfc::string8 filter_playlists;
 
 private:

@@ -114,7 +114,8 @@ void seek_bar_extension::update_seek()
     }
 }
 
-seek_bar_extension::seek_bar_extension() : initialised(false), wnd_seekbar(nullptr){};
+seek_bar_extension::seek_bar_extension() = default;
+;
 
 seek_bar_extension::~seek_bar_extension()
 {

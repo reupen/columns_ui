@@ -36,7 +36,7 @@ class status_pane
             return false;
         }
 
-        titleformat_hook_impl() {}
+        titleformat_hook_impl() = default;
 
     private:
     };
@@ -172,7 +172,8 @@ class status_pane
     void get_length_data(bool& p_selection, t_size& p_count, pfc::string_base& p_out);
 
 public:
-    status_pane() : m_selection(false), m_item_count(0), m_menu_active(false), m_theme(nullptr){};
+    status_pane() = default;
+    ;
     t_size get_ideal_height() { return uGetFontHeight(m_font) * 2 + 6 + 6; }
     void enter_menu_mode(const char* p_text)
     {
@@ -193,13 +194,13 @@ public:
     static const GUID g_guid_font;
 
 private:
-    bool m_selection;
-    t_size m_item_count;
+    bool m_selection{false};
+    t_size m_item_count{0};
     pfc::string8 m_length_text;
     pfc::string8 m_track_label;
     pfc::string8_fast_aggressive playing1;
     pfc::string8 m_menu_text;
-    bool m_menu_active;
+    bool m_menu_active{false};
     gdi_object_t<HFONT>::ptr_t m_font;
-    HTHEME m_theme;
+    HTHEME m_theme{nullptr};
 };

@@ -107,13 +107,7 @@ void artwork_panel_t::get_menu_items(ui_extension::menu_hook_t& p_hook)
     p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_options()));
 }
 
-artwork_panel_t::artwork_panel_t()
-    : m_gdiplus_instance(NULL)
-    , m_gdiplus_initialised(false)
-    , m_position(0)
-    , m_track_mode(cfg_track_mode)
-    , m_preserve_aspect_ratio(cfg_preserve_aspect_ratio)
-    , m_lock_type(false){};
+artwork_panel_t::artwork_panel_t() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio){};
 
 void artwork_panel_t::g_on_edge_style_change()
 {

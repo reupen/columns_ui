@@ -22,27 +22,30 @@ extern cfg_bool cfg_item_details_word_wrapping;
 
 class line_info_t {
 public:
-    t_size m_bytes;
-    t_size m_raw_bytes;
+    t_size m_bytes{NULL};
+    t_size m_raw_bytes{NULL};
 
-    line_info_t() : m_bytes(NULL), m_raw_bytes(NULL){};
+    line_info_t() = default;
+    ;
 };
 
 class display_line_info_t : public line_info_t {
 public:
-    t_size m_width;
-    t_size m_height;
+    t_size m_width{0};
+    t_size m_height{0};
 
-    display_line_info_t() : m_width(0), m_height(0){};
+    display_line_info_t() = default;
+    ;
 };
 
 class font_data_t {
 public:
     pfc::string8 m_face;
-    t_size m_point;
-    bool m_bold, m_underline, m_italic;
+    t_size m_point{10};
+    bool m_bold{false}, m_underline{false}, m_italic{false};
 
-    font_data_t() : m_point(10), m_bold(false), m_underline(false), m_italic(false){};
+    font_data_t() = default;
+    ;
 
     static int g_compare(const font_data_t& item1, const font_data_t& item2)
     {
@@ -64,10 +67,11 @@ bool operator==(const font_data_t& item1, const font_data_t& item2);
 class font_change_data_t {
 public:
     font_data_t m_font_data;
-    bool m_reset;
-    t_size m_character_index;
+    bool m_reset{false};
+    t_size m_character_index{NULL};
 
-    font_change_data_t() : m_reset(false), m_character_index(NULL){};
+    font_change_data_t() = default;
+    ;
 };
 
 typedef pfc::list_t<font_change_data_t, pfc::alloc_fast_aggressive> font_change_data_list_t;
@@ -384,16 +388,17 @@ private:
 
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles, m_selection_handles;
-    bool m_callback_registered, m_nowplaying_active; //, m_update_scrollbar_range_in_progress;
+    bool m_callback_registered{false};
+    bool m_nowplaying_active{false}; //, m_update_scrollbar_range_in_progress;
     t_size m_tracking_mode;
 
-    bool m_font_change_info_valid;
+    bool m_font_change_info_valid{false};
     font_change_info_t m_font_change_info;
     font_change_data_list_t m_font_change_data;
 
     line_info_list_t m_line_info;
     display_line_info_list_t m_display_line_info;
-    bool m_display_info_valid;
+    bool m_display_info_valid{false};
 
     SIZE m_display_sz;
 
@@ -405,7 +410,7 @@ private:
     t_size m_edge_style;
     bool m_hscroll, m_word_wrapping;
 
-    HWND m_wnd_config;
+    HWND m_wnd_config{nullptr};
 
     // gdi_object_t<HFONT>::ptr_t m_default_font;
 

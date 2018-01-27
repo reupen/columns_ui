@@ -1,21 +1,7 @@
 #include "stdafx.h"
 #include "splitter.h"
 
-splitter_window_impl::panel::panel()
-    : m_container(this)
-    , m_guid(pfc::guid_null)
-    , m_caption_orientation(NULL)
-    , m_locked(false)
-    , m_hidden(false)
-    , m_autohide(false)
-    , m_wnd(nullptr)
-    , m_wnd_child(nullptr)
-    , m_show_caption(true)
-    , m_show_toggle_area(false)
-    , m_use_custom_title(false)
-    , m_size(150)
-{
-}
+splitter_window_impl::panel::panel() : m_container(this) {}
 
 void splitter_window_impl::panel::destroy()
 {

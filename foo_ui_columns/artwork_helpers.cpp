@@ -26,11 +26,6 @@ void artwork_panel::artwork_reader_v2_t::initialise(const pfc::chain_list_v2_t<G
     m_native_artwork_reader_mode = b_native_artwork_reader_mode;
 }
 
-artwork_panel::artwork_reader_v2_t::artwork_reader_v2_t()
-    : m_succeeded(false), m_read_emptycover(true), m_native_artwork_reader_mode(fb2k_artwork_embedded_and_external)
-{
-}
-
 const album_art_data_ptr& artwork_panel::artwork_reader_v2_t::get_emptycover() const
 {
     return m_emptycover;

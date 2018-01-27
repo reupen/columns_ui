@@ -38,7 +38,7 @@ public:
         HTREEITEM item{nullptr};
         cui::fcl::group_ptr group;
         bool checked{true};
-        t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)), checked(true){};
+        t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)){};
         t_node() = default;
     };
     // cui::fcl::group_list m_groups;

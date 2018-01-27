@@ -160,7 +160,6 @@ bool splitter_window_tabs_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_ou
     }
     return false;
 }
-splitter_window_tabs_impl::panel::panel() : m_wnd(nullptr), m_use_custom_title(false){};
 
 splitter_window_tabs_impl::panel::~panel() = default;
 
@@ -904,9 +903,7 @@ void splitter_window_tabs_impl::on_active_tab_changed(t_size index_to)
         m_active_tab = m_panels.find_item(m_active_panels[index_to]);
     } else
         m_active_tab = pfc_infinite;
-};
-splitter_window_tabs_impl::splitter_window_tabs_impl()
-    : m_tab_proc(nullptr), m_wnd_tabs(nullptr), m_active_tab(pfc_infinite), m_mousewheel_delta(NULL){};
+}
 
 LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {

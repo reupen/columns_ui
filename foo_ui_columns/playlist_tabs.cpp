@@ -116,32 +116,6 @@ void playlists_tabs_extension::switch_to_playlist_delayed2(unsigned idx)
     }
 }
 
-playlists_tabs_extension::playlists_tabs_extension()
-    : tabproc(nullptr)
-    , m_dragging(false)
-    , m_dragging_idx(0)
-    , m_playlist_switched(false)
-    , m_switch_timer(false)
-    , m_switch_playlist(0)
-    , initialised(false)
-    , m_mousewheel_delta(0)
-    , ID_CUSTOM_BASE(NULL)
-    , wnd_tabs(nullptr)
-    , m_child_guid(/*cfg_default_playlist*/ pfc::guid_null)
-    , m_child_wnd(nullptr)
-    , m_host_wnd(nullptr)
-    , m_child_top(0)
-{
-    // reset_size_limits();
-    memset(&mmi, 0, sizeof(mmi));
-    mmi.ptMaxTrackSize.x = MAXLONG;
-    mmi.ptMaxTrackSize.y = MAXLONG;
-    m_dragging_rect.left = 0;
-    m_dragging_rect.top = 0;
-    m_dragging_rect.right = 0;
-    m_dragging_rect.bottom = 0;
-};
-
 playlists_tabs_extension::~playlists_tabs_extension() = default;
 
 LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
