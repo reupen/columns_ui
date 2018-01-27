@@ -2,10 +2,10 @@
 #define _COLUMNS_2_H_
 
 class column_base_t : public pfc::refcounted_object_root {
-    typedef column_base_t self_t;
+    using self_t = column_base_t;
 
 public:
-    typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
 
     pfc::string8 name;
     pfc::string8 spec;
@@ -50,10 +50,10 @@ enum class ColumnStreamVersion {
 };
 
 class column_t : public column_base_t {
-    typedef column_t self_t;
+    using self_t = column_t;
 
 public:
-    typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
 
     ptr source_item;
 
@@ -86,7 +86,7 @@ private:
     service_ptr_t<titleformat_object> to_sort;
 };
 
-typedef const pfc::list_base_const_t<column_t::ptr>& column_list_cref_t;
+using column_list_cref_t = const pfc::list_base_const_t<column_t::ptr>&;
 
 class column_list_t : public pfc::list_t<column_t::ptr> {
 public:

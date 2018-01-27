@@ -110,7 +110,7 @@ public:
 
 class completion_notify_artwork_base_t : public pfc::refcounted_object_root {
 public:
-    typedef pfc::refcounted_object_ptr_t<completion_notify_artwork_base_t> ptr_t;
+    using ptr_t = pfc::refcounted_object_ptr_t<completion_notify_artwork_base_t>;
 
     virtual void on_completion(const pfc::rcptr_t<class artwork_reader_ng_t>& p_reader) = 0;
 
@@ -176,7 +176,7 @@ private:
 
 class artwork_reader_manager_ng_t : public pfc::refcounted_object_root {
 public:
-    typedef pfc::refcounted_object_ptr_t<artwork_reader_manager_ng_t> ptr;
+    using ptr = pfc::refcounted_object_ptr_t<artwork_reader_manager_ng_t>;
     void add_type(const GUID& p_what) { m_requestIds.add_item(p_what); }
     void abort_task(t_size index)
     {
@@ -393,8 +393,8 @@ private:
 
     class item_group_ng_t : public Group {
     public:
-        typedef item_group_ng_t self_t;
-        typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+        using self_t = item_group_ng_t;
+        using ptr = pfc::refcounted_object_ptr_t<self_t>;
         style_data_cell_t::ptr m_style_data;
 
         bool m_artwork_load_attempted{false};
@@ -409,8 +409,8 @@ private:
 
     class item_ng_t : public Item {
     public:
-        typedef item_ng_t self_t;
-        typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+        using self_t = item_ng_t;
+        using ptr = pfc::refcounted_object_ptr_t<self_t>;
         style_data_t m_style_data;
         item_group_ng_t* get_group(t_size index) { return static_cast<item_group_ng_t*>(m_groups[index].get_ptr()); }
         t_size get_group_count() { return m_groups.get_count(); }
@@ -463,7 +463,7 @@ private:
 
     class completion_notify_artwork_t : public completion_notify_artwork_base_t {
     public:
-        typedef pfc::refcounted_object_ptr_t<completion_notify_artwork_t> ptr_t;
+        using ptr_t = pfc::refcounted_object_ptr_t<completion_notify_artwork_t>;
 
         void on_completion(const pfc::rcptr_t<artwork_reader_ng_t>& p_reader) override
         {

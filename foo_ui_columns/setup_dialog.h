@@ -16,7 +16,7 @@ class setup_dialog_t : public pfc::refcounted_object_root {
     uie::splitter_item_ptr m_previous_layout;
     cui::colours::colour_mode_t m_previous_colour_mode;
     bool m_previous_show_artwork, m_previous_show_grouping;
-    typedef pfc::refcounted_object_ptr_t<setup_dialog_t> ptr_t;
+    using ptr_t = pfc::refcounted_object_ptr_t<setup_dialog_t>;
     ptr_t m_this;
     static BOOL CALLBACK g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     BOOL SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);

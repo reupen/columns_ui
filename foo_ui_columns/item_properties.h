@@ -43,7 +43,7 @@ class track_property_callback_itemproperties : public track_property_callback_v2
 public:
     class track_property_t {
     public:
-        typedef track_property_t self_t;
+        using self_t = track_property_t;
         pfc::string8 m_name, m_value;
         double m_sortpriority{0};
 

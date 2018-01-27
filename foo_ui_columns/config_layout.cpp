@@ -132,7 +132,7 @@ auto deserialise_splitter_item(gsl::span<t_uint8> data)
 class tab_layout_new : public preferences_tab {
     class node : public pfc::refcounted_object_root {
     public:
-        typedef pfc::refcounted_object_ptr_t<node> ptr;
+        using ptr = pfc::refcounted_object_ptr_t<node>;
 
         bool have_item(const GUID& p_guid)
         {
@@ -158,7 +158,7 @@ class tab_layout_new : public preferences_tab {
         node() : m_item(pfc::rcnew_t<uie::splitter_item_ptr>()){};
     };
 
-    typedef node::ptr node_ptr;
+    using node_ptr = node::ptr;
 
     static node_ptr g_node_root;
     static pfc::array_t<t_uint8> g_node_clipboard;

@@ -3,7 +3,7 @@
 
 class splitter_window_tabs_impl
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
-    typedef splitter_window_tabs_impl t_self;
+    using t_self = splitter_window_tabs_impl;
 
 public:
     class_data& get_class_data() const override;

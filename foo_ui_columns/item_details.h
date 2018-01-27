@@ -70,17 +70,17 @@ public:
     font_change_data_t() = default;
 };
 
-typedef pfc::list_t<font_change_data_t, pfc::alloc_fast_aggressive> font_change_data_list_t;
+using font_change_data_list_t = pfc::list_t<font_change_data_t, pfc::alloc_fast_aggressive>;
 
-typedef pfc::list_t<line_info_t, pfc::alloc_fast_aggressive> line_info_list_t;
-typedef pfc::list_t<display_line_info_t, pfc::alloc_fast_aggressive> display_line_info_list_t;
+using line_info_list_t = pfc::list_t<line_info_t, pfc::alloc_fast_aggressive>;
+using display_line_info_list_t = pfc::list_t<display_line_info_t, pfc::alloc_fast_aggressive>;
 
 void g_parse_font_format_string(const char* str, t_size len, font_data_t& p_out);
 void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_new_text, font_change_data_list_t& p_out);
 
 class font_t : public pfc::refcounted_object_root {
 public:
-    typedef pfc::refcounted_object_ptr_t<font_t> ptr_t;
+    using ptr_t = pfc::refcounted_object_ptr_t<font_t>;
 
     font_data_t m_data;
 
@@ -89,7 +89,7 @@ public:
     // font_t (const font_t & p_font) : m_font(p_font.m_font), m_height(p_font.m_height), m_data(p_font.m_data) {};
 };
 
-typedef pfc::list_t<font_t::ptr_t> font_list_t;
+using font_list_t = pfc::list_t<font_t::ptr_t>;
 
 class font_change_info_t {
 public:

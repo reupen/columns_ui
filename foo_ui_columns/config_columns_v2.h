@@ -2,8 +2,8 @@
 
 class column_tab : public pfc::refcounted_object_root {
 public:
-    typedef column_tab self_t;
-    typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+    using self_t = column_tab;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
     virtual HWND create(HWND wnd) = 0;
     // virtual void destroy(HWND wnd)=0;
     // virtual const char * get_name()=0;

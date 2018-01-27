@@ -73,8 +73,8 @@ class style_data_cell_t
     : public pfc::refcounted_object_root
     , public style_data_cell_info_t {
 public:
-    typedef style_data_cell_t self_t;
-    typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+    using self_t = style_data_cell_t;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
 
     /*inline void set (const style_data_cell_t::ptr & in)
     {
@@ -119,7 +119,7 @@ namespace style_cache_manager {
 void g_add_object(const style_data_cell_info_t& p_data, style_data_cell_t::ptr& p_out);
 void g_remove_object(style_data_cell_t* p_object);
 } // namespace style_cache_manager
-typedef pfc::array_t<style_data_cell_t::ptr> style_data_t;
+using style_data_t = pfc::array_t<style_data_cell_t::ptr>;
 
 class titleformat_hook_style_v2 : public titleformat_hook {
     style_data_cell_info_t p_default_colours;

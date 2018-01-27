@@ -64,8 +64,8 @@ public:
 
 class filter_stream_t : public pfc::refcounted_object_root {
 public:
-    typedef filter_stream_t self_t;
-    typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+    using self_t = filter_stream_t;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
     /** Unordered */
     pfc::ptr_list_t<class filter_panel_t> m_windows;
 

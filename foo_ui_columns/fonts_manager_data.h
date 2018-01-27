@@ -25,7 +25,7 @@ public:
         void reset_fonts();
         entry_t(bool b_global = false);
     };
-    typedef pfc::refcounted_object_ptr_t<entry_t> entry_ptr_t;
+    using entry_ptr_t = pfc::refcounted_object_ptr_t<entry_t>;
     pfc::list_t<entry_ptr_t> m_entries;
     entry_ptr_t m_common_items_entry;
     entry_ptr_t m_common_labels_entry;

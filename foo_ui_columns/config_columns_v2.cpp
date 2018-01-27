@@ -19,7 +19,7 @@ struct column_times {
 class edit_column_window_options : public column_tab {
 public:
     void get_column(column_t::ptr& p_out) override { p_out = m_column; };
-    typedef edit_column_window_options self_t;
+    using self_t = edit_column_window_options;
     HWND create(HWND wnd) override { return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this); }
     // virtual const char * get_name()=0;
     edit_column_window_options(column_t::ptr column)
@@ -184,7 +184,7 @@ public:
 
 class edit_column_window_scripts : public column_tab {
 public:
-    typedef edit_column_window_scripts self_t;
+    using self_t = edit_column_window_scripts;
     void get_column(column_t::ptr& p_out) override { p_out = m_column; };
     HWND create(HWND wnd) override { return uCreateDialog(IDD_COLUMN_SCRIPTS, wnd, g_on_message, (LPARAM)this); }
     // virtual const char * get_name()=0;
