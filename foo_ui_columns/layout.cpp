@@ -3,7 +3,7 @@
 #include "splitter.h"
 
 // {755971A7-109B-41dc-BED9-5A05CC07C905}
-static const GUID g_guid_layout = { 0x755971a7, 0x109b, 0x41dc, { 0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5 } };
+static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5}};
 
 cfg_layout_t cfg_layout(g_guid_layout);
 
@@ -12,7 +12,7 @@ public:
     const GUID& get_host_guid() const override
     {
         // {DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}
-        static const GUID ret = { 0xda9a1375, 0xa411, 0x48a9, { 0xaf, 0x74, 0x4a, 0xc2, 0x9f, 0xf9, 0xbe, 0x9c } };
+        static const GUID ret = {0xda9a1375, 0xa411, 0x48a9, {0xaf, 0x74, 0x4a, 0xc2, 0x9f, 0xf9, 0xbe, 0x9c}};
         return ret;
     }
 
@@ -906,7 +906,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
                     RECT rc;
                     GetRelativeRect(lpmsg->hwnd, HWND_DESKTOP, &rc);
 
-                    POINT pt = { rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2 };
+                    POINT pt = {rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2};
 
                     pfc::list_t<uie::window::ptr> hierarchy;
                     if (!sw2.is_valid() || sw2->is_point_ours(lpmsg->hwnd, pt, hierarchy)) {
@@ -917,7 +917,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
                             wnd_panel = hierarchy[hierarchy.get_count() - 1]->get_wnd();
 
                             GetRelativeRect(wnd_panel, HWND_DESKTOP, &rc);
-                            POINT pt = { rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2 };
+                            POINT pt = {rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2};
 
                             run_live_edit_base_delayed_v2(wnd_panel, pt, hierarchy);
                         }
@@ -979,7 +979,7 @@ LRESULT layout_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         PostMessage(wnd, MSG_LAYOUT_SET_FOCUS, 0, 0);
         break;
     case MSG_EDIT_PANEL: {
-        POINT pt = { int(wp), int(lp) };
+        POINT pt = {int(wp), int(lp)};
         run_live_edit_base(pt);
     } break;
     case MSG_EDIT_PANEL_V2: {

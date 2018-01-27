@@ -179,7 +179,7 @@ void playlist_cache::delete_all()
 void playlist_cache::rebuild_all()
 {
     delete_all();
-    
+    
 
     int n,count = static_api_ptr_t<playlist_manager>()->activeplaylist_get_item_count();
     for (n=0;n<count;n++)

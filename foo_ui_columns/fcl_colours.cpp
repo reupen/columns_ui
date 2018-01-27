@@ -24,7 +24,7 @@ class export_colours : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {1D5291B1-392D-4469-B905-91202B80EB7B}
-        static const GUID guid = { 0x1d5291b1, 0x392d, 0x4469, { 0xb9, 0x5, 0x91, 0x20, 0x2b, 0x80, 0xeb, 0x7b } };
+        static const GUID guid = {0x1d5291b1, 0x392d, 0x4469, {0xb9, 0x5, 0x91, 0x20, 0x2b, 0x80, 0xeb, 0x7b}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -47,7 +47,7 @@ class export_colours : public cui::fcl::dataset {
         bool b_colour_read = false;
 
         bool item_padding_read = false;
-        bool font_read{ false };
+        bool font_read{false};
         uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
 
         while (reader.get_remaining()) {
@@ -161,7 +161,7 @@ class export_colours_switcher : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {1DE0CF38-5E8E-439c-8F01-B8999975AC0D}
-        static const GUID guid = { 0x1de0cf38, 0x5e8e, 0x439c, { 0x8f, 0x1, 0xb8, 0x99, 0x99, 0x75, 0xac, 0xd } };
+        static const GUID guid = {0x1de0cf38, 0x5e8e, 0x439c, {0x8f, 0x1, 0xb8, 0x99, 0x99, 0x75, 0xac, 0xd}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -178,7 +178,7 @@ class export_colours_switcher : public cui::fcl::dataset {
         t_uint32 element_id;
         t_uint32 element_size;
 
-        bool font_read{ false };
+        bool font_read{false};
         bool item_padding_read = false;
         uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
         static_api_ptr_t<cui::fonts::manager> api;
@@ -238,7 +238,7 @@ class export_misc_fonts : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {0A297BE7-DE43-49da-8D8E-C8D888CF1014}
-        static const GUID guid = { 0xa297be7, 0xde43, 0x49da, { 0x8d, 0x8e, 0xc8, 0xd8, 0x88, 0xcf, 0x10, 0x14 } };
+        static const GUID guid = {0xa297be7, 0xde43, 0x49da, {0x8d, 0x8e, 0xc8, 0xd8, 0x88, 0xcf, 0x10, 0x14}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -254,7 +254,7 @@ class export_misc_fonts : public cui::fcl::dataset {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;
         t_uint32 element_size;
-        bool font_read{ false };
+        bool font_read{false};
 
         while (reader.get_remaining()) {
             reader.read_item(element_id);

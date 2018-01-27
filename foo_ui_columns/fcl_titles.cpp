@@ -34,7 +34,7 @@ class export_columns : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {2415AAE7-7F5E-4ad8-94E2-1E730A2139EF}
-        static const GUID guid = { 0x2415aae7, 0x7f5e, 0x4ad8, { 0x94, 0xe2, 0x1e, 0x73, 0xa, 0x21, 0x39, 0xef } };
+        static const GUID guid = {0x2415aae7, 0x7f5e, 0x4ad8, {0x94, 0xe2, 0x1e, 0x73, 0xa, 0x21, 0x39, 0xef}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -182,7 +182,7 @@ class export_groups : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {A89F68C6-B40A-4200-BA2A-68999F704FFD}
-        static const GUID guid = { 0xa89f68c6, 0xb40a, 0x4200, { 0xba, 0x2a, 0x68, 0x99, 0x9f, 0x70, 0x4f, 0xfd } };
+        static const GUID guid = {0xa89f68c6, 0xb40a, 0x4200, {0xba, 0x2a, 0x68, 0x99, 0x9f, 0x70, 0x4f, 0xfd}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -319,7 +319,7 @@ class export_pview : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {190F4811-899A-4366-A181-FF5161FC1C77}
-        static const GUID guid = { 0x190f4811, 0x899a, 0x4366, { 0xa1, 0x81, 0xff, 0x51, 0x61, 0xfc, 0x1c, 0x77 } };
+        static const GUID guid = {0x190f4811, 0x899a, 0x4366, {0xa1, 0x81, 0xff, 0x51, 0x61, 0xfc, 0x1c, 0x77}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -397,7 +397,7 @@ class export_titles : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {9AF6A28B-3EFF-4d1a-AD81-FA1759F1D66C}
-        static const GUID guid = { 0x9af6a28b, 0x3eff, 0x4d1a, { 0xad, 0x81, 0xfa, 0x17, 0x59, 0xf1, 0xd6, 0x6c } };
+        static const GUID guid = {0x9af6a28b, 0x3eff, 0x4d1a, {0xad, 0x81, 0xfa, 0x17, 0x59, 0xf1, 0xd6, 0x6c}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,

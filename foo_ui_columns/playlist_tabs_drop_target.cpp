@@ -37,7 +37,7 @@ ULONG STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::Re
 HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragEnter(p_list->get_wnd(), pDataObj, &pt, *pdwEffect);
     m_DataObject = pDataObj;
@@ -59,7 +59,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragOver(
     DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
@@ -143,7 +143,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);

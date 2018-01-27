@@ -19,12 +19,12 @@ enum {
 };
 
 // {DFA4E08C-325F-4b32-91EB-CD9FD5D0AD14}
-const GUID g_guid_scale = { 0xdfa4e08c, 0x325f, 0x4b32, { 0x91, 0xeb, 0xcd, 0x9f, 0xd5, 0xd0, 0xad, 0x14 } };
+const GUID g_guid_scale = {0xdfa4e08c, 0x325f, 0x4b32, {0x91, 0xeb, 0xcd, 0x9f, 0xd5, 0xd0, 0xad, 0x14}};
 
 // {3323C764-875A-4464-AC8E-BB130E215A4C}
-const GUID g_guid_vertical_scale = { 0x3323c764, 0x875a, 0x4464, { 0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c } };
+const GUID g_guid_vertical_scale = {0x3323c764, 0x875a, 0x4464, {0xac, 0x8e, 0xbb, 0x13, 0xe, 0x21, 0x5a, 0x4c}};
 
-cfg_int cfg_vis_mode(GUID{ 0x3341d306, 0xf8b6, 0x6c60, 0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd }, MODE_BARS);
+cfg_int cfg_vis_mode(GUID{0x3341d306, 0xf8b6, 0x6c60, 0xbd, 0x7e, 0xe4, 0xc5, 0xab, 0x51, 0xf3, 0xdd}, MODE_BARS);
 cfg_int cfg_scale(g_guid_scale, scale_logarithmic);
 cfg_int cfg_vertical_scale(g_guid_vertical_scale, scale_logarithmic);
 
@@ -35,15 +35,15 @@ class spectrum_extension
 
 protected:
 public:
-    bool b_active{ false };
+    bool b_active{false};
 
-    HBRUSH br_foreground{ nullptr }, br_background{ nullptr };
+    HBRUSH br_foreground{nullptr}, br_background{nullptr};
 
     COLORREF cr_fore;
     COLORREF cr_back;
     unsigned mode;
 
-    unsigned short m_bar_width{ 3 }, m_bar_gap{ 1 };
+    unsigned short m_bar_width{3}, m_bar_gap{1};
 
     t_size m_scale, m_vertical_scale;
 
@@ -334,8 +334,8 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_CHANGE_BACK: {
             auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
             COLORREF COLOR = ptr->cr_back;
-            COLORREF COLORS[16] = { get_default_colour(colours::COLOUR_BACK), GetSysColor(COLOR_3DFACE), 0, 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_BACK), GetSysColor(COLOR_3DFACE), 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0};
             if (uChooseColor(&COLOR, wnd, &COLORS[0])) {
                 ptr->cr_back = COLOR;
                 ptr->flush_back();
@@ -345,8 +345,8 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_CHANGE_FORE: {
             auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
             COLORREF COLOR = ptr->cr_fore;
-            COLORREF COLORS[16] = { get_default_colour(colours::COLOUR_TEXT), GetSysColor(COLOR_3DSHADOW), 0, 0, 0, 0,
-                0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+            COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_TEXT), GetSysColor(COLOR_3DSHADOW), 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0, 0};
             if (uChooseColor(&COLOR, wnd, &COLORS[0])) {
                 ptr->cr_fore = COLOR;
                 ptr->flush_fore();
@@ -507,7 +507,7 @@ void spectrum_extension::refresh(const audio_chunk* p_chunk)
                     }
                     int j;
                     for (j = rc_client->bottom; j > rc_client->top; j -= 2) {
-                        RECT rc = { 0, j - 1, rc_client->right, j };
+                        RECT rc = {0, j - 1, rc_client->right, j};
                         FillRect(dc, &rc, br_background);
                     }
                 }
@@ -592,7 +592,7 @@ void spectrum_extension::get_config(stream_writer* data, abort_callback& p_abort
 
 // {D947777C-94C7-409a-B02C-9B0EB9E374FA}
 const GUID spectrum_extension::extension_guid
-    = { 0xd947777c, 0x94c7, 0x409a, { 0xb0, 0x2c, 0x9b, 0xe, 0xb9, 0xe3, 0x74, 0xfa } };
+    = {0xd947777c, 0x94c7, 0x409a, {0xb0, 0x2c, 0x9b, 0xe, 0xb9, 0xe3, 0x74, 0xfa}};
 
 ui_extension::visualisation_factory<spectrum_extension> blah;
 

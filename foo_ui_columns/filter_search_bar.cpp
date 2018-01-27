@@ -112,7 +112,7 @@ void filter_search_bar::get_config(stream_writer* p_writer, abort_callback& p_ab
 void filter_search_bar::get_menu_items(uie::menu_hook_t& p_hook)
 {
     p_hook.add_node(new uie::simple_command_menu_node("Show clear button", "Shows or hides the clear button",
-        m_show_clear_button ? uie::menu_node_t::state_checked : 0, [this, ref = ptr{ this }] {
+        m_show_clear_button ? uie::menu_node_t::state_checked : 0, [this, ref = ptr{this}] {
             m_show_clear_button = !m_show_clear_button;
             on_show_clear_button_change();
         }));
@@ -127,7 +127,7 @@ void filter_search_bar::on_show_clear_button_change()
     tbbi.fsState = TBSTATE_ENABLED | (m_show_clear_button ? NULL : TBSTATE_HIDDEN);
     SendMessage(m_wnd_toolbar, TB_SETBUTTONINFO, idc_clear, (LPARAM)&tbbi);
     // UpdateWindow(m_wnd_toolbar);
-    RECT rc = { 0 };
+    RECT rc = {0};
     SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 1, (LPARAM)(&rc));
 
     m_toolbar_cx = rc.right;

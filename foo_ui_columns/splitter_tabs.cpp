@@ -2,7 +2,7 @@
 #include "splitter_tabs.h"
 
 // {6F000FC4-3F86-4fc5-80EA-F7AA4D9551E6}
-const GUID g_guid_splitter_tabs = { 0x6f000fc4, 0x3f86, 0x4fc5, { 0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6 } };
+const GUID g_guid_splitter_tabs = {0x6f000fc4, 0x3f86, 0x4fc5, {0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6}};
 
 class splitter_window_tabs_impl::splitter_host_impl : public ui_extension::window_host {
     service_ptr_t<splitter_window_tabs_impl> m_this;
@@ -11,7 +11,7 @@ public:
     const GUID& get_host_guid() const override
     {
         // {B5C88724-EDCD-46a1-90B9-C298309FDFB7}
-        static const GUID rv = { 0xb5c88724, 0xedcd, 0x46a1, { 0x90, 0xb9, 0xc2, 0x98, 0x30, 0x9f, 0xdf, 0xb7 } };
+        static const GUID rv = {0xb5c88724, 0xedcd, 0x46a1, {0x90, 0xb9, 0xc2, 0x98, 0x30, 0x9f, 0xdf, 0xb7}};
         return rv;
     }
 
@@ -289,7 +289,7 @@ void splitter_window_tabs_impl::get_name(pfc::string_base& p_out) const
 const GUID& splitter_window_tabs_impl::get_extension_guid() const
 {
     // {5CB67C98-B77F-4926-A79F-49D9B21B9705}
-    static const GUID rv = { 0x5cb67c98, 0xb77f, 0x4926, { 0xa7, 0x9f, 0x49, 0xd9, 0xb2, 0x1b, 0x97, 0x5 } };
+    static const GUID rv = {0x5cb67c98, 0xb77f, 0x4926, {0xa7, 0x9f, 0x49, 0xd9, 0xb2, 0x1b, 0x97, 0x5}};
     return rv;
 }
 void splitter_window_tabs_impl::get_category(pfc::string_base& p_out) const
@@ -447,8 +447,8 @@ void splitter_window_tabs_impl::update_size_limits()
             m_size_limits.max_height = m_size_limits.min_height;
     }
     clip_sizelimit(m_size_limits);
-    RECT rcmin = { 0, 0, (LONG)m_size_limits.min_width, (LONG)m_size_limits.min_height };
-    RECT rcmax = { 0, 0, (LONG)m_size_limits.max_width, (LONG)m_size_limits.max_height };
+    RECT rcmin = {0, 0, (LONG)m_size_limits.min_width, (LONG)m_size_limits.min_height};
+    RECT rcmax = {0, 0, (LONG)m_size_limits.max_width, (LONG)m_size_limits.max_height};
     adjust_rect(TRUE, &rcmin);
     adjust_rect(TRUE, &rcmax);
     m_size_limits.min_width = RECT_CX(rcmin);
@@ -562,7 +562,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPA
     case WM_CONTEXTMENU: {
         enum { IDM_BASE = 1 };
 
-        POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+        POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         if (pt.x == -1 && pt.y == -1)
             GetMessagePos(&pt);
 
@@ -869,7 +869,7 @@ void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
     // SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 
     t_size i, count = m_active_panels.get_count();
-    RECT rc = { 0, 0, (LONG)width, (LONG)height };
+    RECT rc = {0, 0, (LONG)width, (LONG)height};
     adjust_rect(FALSE, &rc);
     for (i = 0; i < count; i++) {
         if (m_active_panels[i]->m_wnd)

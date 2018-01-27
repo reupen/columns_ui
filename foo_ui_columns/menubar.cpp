@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-cfg_int cfg_fullsizemenu(GUID{ 0xe880f267, 0x73de, 0x7952, 0x5b, 0x79, 0xb5, 0xda, 0x77, 0x28, 0x6d, 0xb6 }, 0);
+cfg_int cfg_fullsizemenu(GUID{0xe880f267, 0x73de, 0x7952, 0x5b, 0x79, 0xb5, 0xda, 0x77, 0x28, 0x6d, 0xb6}, 0);
 
 #define ID_MENU 2001
 
@@ -99,7 +99,7 @@ public:
     pfc::string8 m_name;
     pfc::array_t<TCHAR> m_name_with_accelerators;
     GUID m_guid{};
-    t_uint32 m_sort_priority{ NULL };
+    t_uint32 m_sort_priority{NULL};
 
     mainmenu_root_group() = default;
 
@@ -143,9 +143,9 @@ class menu_extension
     , uih::MessageHook {
     static const TCHAR* class_name;
 
-    WNDPROC menuproc{ nullptr };
-    bool initialised{ false };
-    bool m_menu_key_pressed{ false };
+    WNDPROC menuproc{nullptr};
+    bool initialised{false};
+    bool m_menu_key_pressed{false};
 
 public:
     //    static pfc::ptr_list_t<playlists_list_window> list_wnd;
@@ -153,18 +153,18 @@ public:
     static bool hooked;
     // static menu_extension * p_hooked_menu;
 
-    bool redrop{ true };
-    bool is_submenu{ false };
-    int active_item{ 0 };
-    int actual_active{ 0 };
-    int sub_menu_ref_count{ -1 };
+    bool redrop{true};
+    bool is_submenu{false};
+    int active_item{0};
+    int actual_active{0};
+    int sub_menu_ref_count{-1};
     service_ptr_t<mainmenu_manager> p_manager;
     service_ptr_t<ui_status_text_override> m_status_override;
 
     class_data& get_class_data() const override { __implement_get_class_data_child_ex(class_name, true, false); }
 
-    HWND wnd_menu{ nullptr };
-    HWND wnd_prev_focus{ nullptr };
+    HWND wnd_menu{nullptr};
+    HWND wnd_prev_focus{nullptr};
     pfc::list_t<mainmenu_root_group> m_buttons;
 
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -295,7 +295,7 @@ LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // SIZE sz = {0,0};
             // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
 
-            RECT rc = { 0, 0, 0, 0 };
+            RECT rc = {0, 0, 0, 0};
             t_size count = m_buttons.get_count();
             int cx = lpwp->cx;
             int cy = lpwp->cy;
@@ -397,7 +397,7 @@ LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_GETMINMAXINFO: {
         auto mmi = LPMINMAXINFO(lp);
 
-        RECT rc = { 0, 0, 0, 0 };
+        RECT rc = {0, 0, 0, 0};
         SendMessage(wnd_menu, TB_GETITEMRECT, m_buttons.get_count() - 1, (LPARAM)(&rc));
 
         // SIZE sz = {0,0};
@@ -725,6 +725,6 @@ bool menu_extension::on_menuchar(unsigned short chr)
 
 // {76E6DB50-0DE3-4f30-A7E4-93FD628B1401}
 const GUID menu_extension::extension_guid
-    = { 0x76e6db50, 0xde3, 0x4f30, { 0xa7, 0xe4, 0x93, 0xfd, 0x62, 0x8b, 0x14, 0x1 } };
+    = {0x76e6db50, 0xde3, 0x4f30, {0xa7, 0xe4, 0x93, 0xfd, 0x62, 0x8b, 0x14, 0x1}};
 
 ui_extension::window_factory<menu_extension> blah;

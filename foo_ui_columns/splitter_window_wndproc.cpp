@@ -152,7 +152,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
     }
         return 0;
     case WM_MOUSEHOVER: {
-        POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+        POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         HWND child = RealChildWindowFromPoint(wnd, pt);
         if (child == wnd) {
             unsigned p_panel = -1;
@@ -175,7 +175,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
     case WM_LBUTTONDOWN:
     case WM_MOUSEMOVE: {
         if (m_panels.get_count()) {
-            POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+            POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
             HWND child = RealChildWindowFromPoint(wnd, pt);
             if (child == wnd) {
                 unsigned p_panel = -1;
@@ -263,7 +263,7 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 
     } break;
     case WM_LBUTTONDBLCLK: {
-        POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+        POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         HWND child = ChildWindowFromPoint(wnd, pt);
         if (child == wnd) {
             unsigned p_panel = -1;

@@ -151,7 +151,7 @@ unsigned artwork_reader_ng_t::read_artwork(abort_callback& p_abort)
                     t_size i, count = to.get_count();
                     for (i = 0; i < count && !b_found; i++) {
                         if (m_handle->format_title_legacy(nullptr, path, to[i], nullptr)) {
-                            const char* image_extensions[] = { "jpg", "jpeg", "gif", "bmp", "png" };
+                            const char* image_extensions[] = {"jpg", "jpeg", "gif", "bmp", "png"};
 
                             t_size i, count = tabsize(image_extensions);
 

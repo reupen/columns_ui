@@ -17,8 +17,8 @@ public:
             SetWindowPos(get_wnd(), nullptr, p_position.x, p_position.y, p_position.cx, p_position.cy, SWP_NOZORDER);
         } else {
             m_window_host = host;
-            this->create(parent,
-                { p_position.x, p_position.y, static_cast<int>(p_position.cx), static_cast<int>(p_position.cy) });
+            this->create(
+                parent, {p_position.x, p_position.y, static_cast<int>(p_position.cx), static_cast<int>(p_position.cy)});
         }
 
         return get_wnd();

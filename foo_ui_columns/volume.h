@@ -210,7 +210,7 @@ public:
         }
         case WM_SIZE: {
             if (t_attributes::get_show_caption()) {
-                SIZE sz = { 0 };
+                SIZE sz = {0};
                 ;
                 get_caption_extent(sz);
                 unsigned size_caption = get_caption_size();
@@ -239,7 +239,7 @@ public:
                 if (!b_popup) {
                     HDC dc = (HDC)wp;
                     HWND wnd_parent = GetAncestor(wnd, GA_PARENT);
-                    POINT pt = { 0, 0 }, pt_old = { 0, 0 };
+                    POINT pt = {0, 0}, pt_old = {0, 0};
                     MapWindowPoints(wnd, wnd_parent, &pt, 1);
                     OffsetWindowOrgEx(dc, pt.x, pt.y, &pt_old);
                     SendMessage(wnd_parent, msg, wp, lp);
@@ -254,10 +254,10 @@ public:
             if (t_attributes::get_show_caption()) {
                 RECT rc_client, rc_dummy;
                 GetClientRect(wnd, &rc_client);
-                SIZE sz = { 0 };
+                SIZE sz = {0};
                 get_caption_extent(sz);
                 long size_caption = (long)get_caption_size();
-                RECT rc_caption = { 0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom };
+                RECT rc_caption = {0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom};
 
                 if (IntersectRect(&rc_dummy, &rc_caption, &ps.rcPaint)) {
                     HFONT old = SelectFont(dc, m_font_caption);

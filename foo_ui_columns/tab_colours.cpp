@@ -37,18 +37,17 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         auto y = 85;
         auto spacing = 5 + 14;
 
-        g_fill_text.create(wnd, uih::WindowPosition{ 120, y, 18, 14 }, nullptr, true);
-        g_fill_selection_text.create(wnd, uih::WindowPosition{ 120, y += spacing, 18, 14 }, nullptr, true);
-        g_fill_selection_text_inactive.create(wnd, uih::WindowPosition{ 120, y += spacing, 18, 14 }, nullptr, true);
+        g_fill_text.create(wnd, uih::WindowPosition{120, y, 18, 14}, nullptr, true);
+        g_fill_selection_text.create(wnd, uih::WindowPosition{120, y += spacing, 18, 14}, nullptr, true);
+        g_fill_selection_text_inactive.create(wnd, uih::WindowPosition{120, y += spacing, 18, 14}, nullptr, true);
 
-        g_fill_active_item_frame.create(wnd, uih::WindowPosition{ 120, 162, 18, 14 }, nullptr, true);
+        g_fill_active_item_frame.create(wnd, uih::WindowPosition{120, 162, 18, 14}, nullptr, true);
 
         y = 85;
 
-        g_fill_background.create(wnd, uih::WindowPosition{ 225, y, 18, 14 }, nullptr, true);
-        g_fill_selection_background.create(wnd, uih::WindowPosition{ 225, y += spacing, 18, 14 }, nullptr, true);
-        g_fill_selection_background_inactive.create(
-            wnd, uih::WindowPosition{ 225, y += spacing, 18, 14 }, nullptr, true);
+        g_fill_background.create(wnd, uih::WindowPosition{225, y, 18, 14}, nullptr, true);
+        g_fill_selection_background.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
+        g_fill_selection_background_inactive.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
         ;

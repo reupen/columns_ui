@@ -51,7 +51,7 @@ void splitter_window_impl::panel::on_size(unsigned cx, unsigned cy)
         int caption_cx = min(m_caption_orientation == vertical ? caption_size : (cx), MAXLONG);
         int caption_cy = min(m_caption_orientation == vertical ? cy : caption_size, MAXLONG);
 
-        RECT rc_caption = { 0, 0, caption_cx, caption_cy };
+        RECT rc_caption = {0, 0, caption_cx, caption_cy};
         RedrawWindow(m_wnd, &rc_caption, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
     }
 }

@@ -89,7 +89,7 @@ ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Release()
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragEnter(m_window->get_wnd(), pDataObj, &pt, *pdwEffect);
 
@@ -122,7 +122,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragEnter(
 
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
@@ -259,7 +259,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave()
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
@@ -398,7 +398,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
                     public:
                         playlist_position_reference_tracker m_insertIndexTracker;
                         service_ptr_t<playlist_switcher_t> m_window;
-                        bool m_new_playlist{ false };
+                        bool m_new_playlist{false};
                         pfc::string8 m_playlist_name;
 
                         void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override

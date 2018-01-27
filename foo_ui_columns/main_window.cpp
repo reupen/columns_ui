@@ -59,9 +59,9 @@ void action_add_to_queue(bool on_item, unsigned idx)
 void action_none(bool on_on_item, unsigned idx) {}
 
 pma playlist_mclick_actions::g_pma_actions[] = {
-    { "(None)", 0, action_none },
-    { "Remove track from playlist", 1, action_remove_track },
-    { "Add to playback queue", 2, action_add_to_queue },
+    {"(None)", 0, action_none},
+    {"Remove track from playlist", 1, action_remove_track},
+    {"Add to playback queue", 2, action_add_to_queue},
 };
 
 unsigned playlist_mclick_actions::get_count()
@@ -385,8 +385,8 @@ void g_update_taskbar_buttons_now(bool b_init)
         bool b_is_paused = play_api->is_paused();
 
         const WCHAR* ttips[6]
-            = { L"Stop", L"Previous", (b_is_playing && !b_is_paused ? L"Pause" : L"Play"), L"Next", L"Random" };
-        INT_PTR bitmap_indices[] = { 0, 1, (b_is_playing && !b_is_paused ? 2 : 3), 4, 5 };
+            = {L"Stop", L"Previous", (b_is_playing && !b_is_paused ? L"Pause" : L"Play"), L"Next", L"Random"};
+        INT_PTR bitmap_indices[] = {0, 1, (b_is_playing && !b_is_paused ? 2 : 3), 4, 5};
 
         THUMBBUTTON tb[tabsize(bitmap_indices)];
         memset(&tb, 0, sizeof(tb));

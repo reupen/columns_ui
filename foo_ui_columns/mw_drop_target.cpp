@@ -22,7 +22,7 @@ bool drop_handler_interface::check_window_allowed(HWND wnd)
 HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
@@ -98,7 +98,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragLeave()
 
 HRESULT STDMETHODCALLTYPE drop_handler_interface::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
@@ -131,7 +131,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragOver(DWORD grfKeyState, PO
 HRESULT STDMETHODCALLTYPE drop_handler_interface::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragEnter(g_main_window, pDataObj, &pt, *pdwEffect);
 

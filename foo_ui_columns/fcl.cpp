@@ -3,16 +3,16 @@
 
 // {EBD87879-65A7-4242-821B-812AF9F68E8F}
 const GUID cui::fcl::groups::titles_playlist_view
-    = { 0xebd87879, 0x65a7, 0x4242, { 0x82, 0x1b, 0x81, 0x2a, 0xf9, 0xf6, 0x8e, 0x8f } };
+    = {0xebd87879, 0x65a7, 0x4242, {0x82, 0x1b, 0x81, 0x2a, 0xf9, 0xf6, 0x8e, 0x8f}};
 
 // {F17DDDF4-BB3E-4f36-B9E1-D626629F2C76}
 const GUID cui::fcl::groups::titles_common
-    = { 0xf17dddf4, 0xbb3e, 0x4f36, { 0xb9, 0xe1, 0xd6, 0x26, 0x62, 0x9f, 0x2c, 0x76 } };
+    = {0xf17dddf4, 0xbb3e, 0x4f36, {0xb9, 0xe1, 0xd6, 0x26, 0x62, 0x9f, 0x2c, 0x76}};
 
 enum { fcl_stream_version = 2 };
 
 // {9FAADFF3-E51A-4a8b-B4A3-D209A36AB301}
-static const GUID g_fcl_header = { 0x9faadff3, 0xe51a, 0x4a8b, { 0xb4, 0xa3, 0xd2, 0x9, 0xa3, 0x6a, 0xb3, 0x1 } };
+static const GUID g_fcl_header = {0x9faadff3, 0xe51a, 0x4a8b, {0xb4, 0xa3, 0xd2, 0x9, 0xa3, 0x6a, 0xb3, 0x1}};
 
 namespace treeview {
 static HTREEITEM insert_item(
@@ -35,9 +35,9 @@ class FCLDialog {
 public:
     class t_node {
     public:
-        HTREEITEM item{ nullptr };
+        HTREEITEM item{nullptr};
         cui::fcl::group_ptr group;
-        bool checked{ true };
+        bool checked{true};
         t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)), checked(true){};
         t_node() = default;
     };
@@ -184,7 +184,7 @@ public:
     };
 
 private:
-    t_uint32 m_mode{ 0 };
+    t_uint32 m_mode{0};
     bool m_import;
     pfc::list_t<GUID> m_filter;
 };

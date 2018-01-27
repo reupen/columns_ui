@@ -4,8 +4,7 @@
 #include "status_pane.h"
 
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
-const GUID status_pane::g_guid_font
-    = { 0x522e01c6, 0xea7c, 0x49f2, { 0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24 } };
+const GUID status_pane::g_guid_font = {0x522e01c6, 0xea7c, 0x49f2, {0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24}};
 
 class font_client_status_pane : public cui::fonts::client {
 public:
@@ -50,7 +49,7 @@ void status_pane::render_background(HDC dc, const RECT& rc)
         Gdiplus::LinearGradientBrush lgb(rect, cr_start, cr_end, Gdiplus::LinearGradientModeVertical);
         Gdiplus::Graphics(dc).FillRectangle(&lgb, rect);
     } else {
-        RECT rcl = { 0, 0, rc.right, 1 };
+        RECT rcl = {0, 0, rc.right, 1};
         FillRect(dc, &rcl, GetSysColorBrush(COLOR_3DLIGHT));
     }
 }

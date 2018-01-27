@@ -91,7 +91,7 @@ class button_blank : public ui_extension::custom_button {
     const GUID& get_item_guid() const override
     {
         // {A8FE61BA-A055-4a53-A588-9DDA92ED7312}
-        static const GUID guid = { 0xa8fe61ba, 0xa055, 0x4a53, { 0xa5, 0x88, 0x9d, 0xda, 0x92, 0xed, 0x73, 0x12 } };
+        static const GUID guid = {0xa8fe61ba, 0xa055, 0x4a53, {0xa5, 0x88, 0x9d, 0xda, 0x92, 0xed, 0x73, 0x12}};
         return guid;
     }
     HBITMAP get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, uie::t_mask& p_mask_type,

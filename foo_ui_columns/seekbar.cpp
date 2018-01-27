@@ -177,8 +177,7 @@ LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 const GUID& seek_bar_extension::get_extension_guid() const
 {
     // {678FE380-ABBB-4c72-A0B3-72E769671125}
-    static const GUID extension_guid
-        = { 0x678fe380, 0xabbb, 0x4c72, { 0xa0, 0xb3, 0x72, 0xe7, 0x69, 0x67, 0x11, 0x25 } };
+    static const GUID extension_guid = {0x678fe380, 0xabbb, 0x4c72, {0xa0, 0xb3, 0x72, 0xe7, 0x69, 0x67, 0x11, 0x25}};
     return extension_guid;
 }
 

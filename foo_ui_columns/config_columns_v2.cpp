@@ -413,7 +413,7 @@ public:
 };
 
 // {0A7A2845-06A4-4c15-B09F-A6EBEE86335D}
-const GUID g_guid_cfg_child_column = { 0xa7a2845, 0x6a4, 0x4c15, { 0xb0, 0x9f, 0xa6, 0xeb, 0xee, 0x86, 0x33, 0x5d } };
+const GUID g_guid_cfg_child_column = {0xa7a2845, 0x6a4, 0x4c15, {0xb0, 0x9f, 0xa6, 0xeb, 0xee, 0x86, 0x33, 0x5d}};
 
 cfg_uint cfg_child_column(g_guid_cfg_child_column, 0);
 
@@ -531,7 +531,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
     case WM_CONTEXTMENU:
         if (HWND(wp) == GetDlgItem(wnd, IDC_COLUMNS)) {
             enum { ID_REMOVE = 1, ID_UP, ID_DOWN, ID_NEW };
-            POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+            POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
             int item = ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED);
             // if (item != -1 && item >= 0)
             {

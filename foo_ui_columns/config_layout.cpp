@@ -1097,7 +1097,7 @@ class tab_layout_new : public preferences_tab {
                 TRACK_CALL_TEXT("tab_layout::WM_CONTEXTMENU");
 
                 HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-                POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
                 HTREEITEM treeitem = TreeView_GetSelection(wnd_tv);
 
                 TVHITTESTINFO ti;

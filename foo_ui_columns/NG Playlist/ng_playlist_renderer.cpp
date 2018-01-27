@@ -187,7 +187,7 @@ void ng_playlist_view_t::render_group(
 
     auto cx = (LONG)min(text_width, MAXLONG);
 
-    RECT rc_line = { cx + 7, rc.top + RECT_CY(rc) / 2, rc.right - 4, rc.top + RECT_CY(rc) / 2 + 1 };
+    RECT rc_line = {cx + 7, rc.top + RECT_CY(rc) / 2, rc.right - 4, rc.top + RECT_CY(rc) / 2 + 1};
 
     if (rc_line.right > rc_line.left) {
         if (b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_GROUPHEADERLINE, NULL)
