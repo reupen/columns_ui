@@ -91,7 +91,6 @@ public:
     }
 
     editor_font_notify() = default;
-    ;
     ~editor_font_notify()
     {
         if (g_edit_font) {

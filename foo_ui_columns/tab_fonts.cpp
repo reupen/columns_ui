@@ -72,7 +72,6 @@ BOOL CALLBACK tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         case IDC_COLOURS_MODE | (CBN_SELCHANGE << 16): {
             int idx = ComboBox_GetCurSel((HWND)lp);
             m_element_ptr->font_mode = (cui::fonts::font_mode_t)ComboBox_GetItemData((HWND)lp, idx);
-            ;
             update_font_desc();
             update_change();
             on_font_changed();

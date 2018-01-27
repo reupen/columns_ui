@@ -62,9 +62,9 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
                         m_info_sections_mask = m_info_sections_mask | (1 << g_info_sections[lpnmlv->iItem].id);
                 }
             } break;
-            };
+            }
             break;
-        };
+        }
     } break;
     case WM_COMMAND:
         switch (LOWORD(wp)) {

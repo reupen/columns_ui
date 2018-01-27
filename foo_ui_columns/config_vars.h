@@ -8,7 +8,6 @@ class cfg_window_placement_t : public cfg_struct_t<WINDOWPLACEMENT> {
 
 public:
     cfg_window_placement_t(const GUID& p_guid);
-    ;
 };
 
 class cfg_menu_item : public cfg_struct_t<menu_item_identifier> {

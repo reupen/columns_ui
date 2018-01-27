@@ -370,7 +370,7 @@ class fcl_colours_t : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
         if (g_tab_appearance.is_active()) {
             g_tab_appearance.update_mode_combobox();
@@ -484,7 +484,7 @@ class fcl_fonts_t : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
         refresh_appearance_prefs();
         g_fonts_manager_data.g_on_common_font_changed(pfc_infinite);
@@ -551,7 +551,7 @@ LRESULT appearance_message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
         destroy();
         delete this;
         return 0;
-    };
+    }
     return DefWindowProc(wnd, msg, wp, lp);
 }
 

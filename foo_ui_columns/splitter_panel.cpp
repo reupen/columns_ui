@@ -109,7 +109,7 @@ void splitter_window_impl::panel::import(stream_reader* t, abort_callback& p_abo
         try {
             m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
         m_child->get_config_to_array(m_child_data, p_abort, true);
     }
     // else
@@ -157,7 +157,7 @@ void splitter_window_impl::panel::_export(stream_writer* out, abort_callback& p_
         try {
             ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
     }
     {
         ptr->export_config(&child_exported_data, p_abort);

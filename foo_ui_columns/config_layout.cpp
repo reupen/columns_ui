@@ -254,7 +254,7 @@ class tab_layout_new : public preferences_tab {
             } catch (const pfc::exception& ex) {
                 console::formatter formatter;
                 formatter << "warning: " << sz_text << ": function uie::window::set_config; error " << ex.what();
-            };
+            }
         } else
             sz_text = "<unknown>";
 
@@ -546,7 +546,7 @@ class tab_layout_new : public preferences_tab {
                             abort_callback_dummy abort_callback;
                             splitter->get_config(&conf, abort_callback);
                         } catch (const pfc::exception&) {
-                        };
+                        }
                         p_node->m_item->get_ptr()->set_panel_guid(p_guid);
                         p_node->m_item->get_ptr()->set_panel_config_from_ptr(
                             conf.m_data.get_ptr(), conf.m_data.get_size());
@@ -604,7 +604,7 @@ class tab_layout_new : public preferences_tab {
                     abort_callback_dummy abortCallback;
                     p_node->m_window->get_config(&conf, abortCallback);
                 } catch (const pfc::exception&) {
-                };
+                }
                 p_node->m_item->get_ptr()->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
             }
             HTREEITEM parent = TreeView_GetParent(wnd_tv, ti);
@@ -1246,7 +1246,7 @@ class tab_layout_new : public preferences_tab {
             }
             return 0;
         } break;
-        };
+        }
         return 0;
     }
 

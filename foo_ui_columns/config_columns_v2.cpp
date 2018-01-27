@@ -641,7 +641,7 @@ BOOL CALLBACK tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                 }
             }
                 return 0;
-            };
+            }
         } break;
         case IDC_TAB1:
             switch (((LPNMHDR)lp)->code) {

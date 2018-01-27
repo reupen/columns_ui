@@ -165,7 +165,6 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                 item_filter_splitter.set_panel_guid(columns_ui::panels::guid_horizontal_splitter);
                 item_filter.set_panel_guid(columns_ui::panels::guid_filter);
                 item_artwork.set_panel_guid(columns_ui::panels::guid_artwork_view);
-                ;
                 splitter2->add_panel(&item);
                 stream_writer_memblock conf1, conf2, conf3;
                 splitter2->get_config(&conf1, abortCallbackDummy);

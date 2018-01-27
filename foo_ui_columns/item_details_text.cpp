@@ -557,7 +557,6 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
             }
 
             sz.cx = max(sz.cx, widthCuml);
-            ;
             sz.cy += thisLineHeight + 2;
         }
         if (b_fontChanged)

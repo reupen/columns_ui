@@ -46,9 +46,7 @@ public:
     colours_manager_data();
 
     void register_common_callback(cui::colours::common_callback* p_callback);
-    ;
     void deregister_common_callback(cui::colours::common_callback* p_callback);
-    ;
 
     void g_on_common_colour_changed(t_size mask);
 

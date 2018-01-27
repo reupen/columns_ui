@@ -282,7 +282,6 @@ void splitter_window_impl::get_panels_sizes(
 
         for (n = 0; n < count; n++) {
             unsigned panel_divider_size = get_panel_divider_size(n);
-            ;
 
             unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size.get_scaled_value();
             if (height > MAXLONG)

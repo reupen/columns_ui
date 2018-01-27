@@ -211,7 +211,6 @@ public:
         case WM_SIZE: {
             if (t_attributes::get_show_caption()) {
                 SIZE sz = {0};
-                ;
                 get_caption_extent(sz);
                 unsigned size_caption = get_caption_size();
                 const int x = b_vertical ? size_caption : sz.cx;
@@ -301,7 +300,6 @@ public:
 
     volume_control_t() : m_child(this), m_track_bar_host(this){};
     ~volume_control_t() = default;
-    ;
 
     ui_helpers::container_window::class_data& get_class_data() const override
     {

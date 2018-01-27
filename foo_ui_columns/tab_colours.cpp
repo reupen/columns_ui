@@ -50,7 +50,6 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         g_fill_selection_background_inactive.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
-        ;
         m_colours_client_list.g_get_list(m_colours_client_list);
         t_size i, count = m_colours_client_list.get_count();
         for (i = 0; i < count; i++)
@@ -96,7 +95,6 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         case IDC_COLOURS_MODE | (CBN_SELCHANGE << 16): {
             int idx = ComboBox_GetCurSel((HWND)lp);
             m_element_ptr->colour_mode = (cui::colours::colour_mode_t)ComboBox_GetItemData((HWND)lp, idx);
-            ;
             update_fills();
             update_buttons();
             on_colour_changed();

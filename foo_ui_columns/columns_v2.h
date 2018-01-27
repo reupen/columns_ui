@@ -67,7 +67,6 @@ public:
     void write_extra(stream_writer* writer, abort_callback& abortCallback) const;
 
     column_t() = default;
-    ;
 
     column_t(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
         bool b_use_custom_sort, const char* p_sort_spec, unsigned p_width, alignment p_align,

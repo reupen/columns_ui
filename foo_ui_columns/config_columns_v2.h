@@ -44,7 +44,6 @@ public:
 
 private:
     tab_columns_v3() = default;
-    ;
 
     column_list_t m_columns;
     bool initialising{false};

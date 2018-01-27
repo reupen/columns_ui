@@ -15,7 +15,7 @@ bool check_clipboard()
                 return b_native;
         }
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 }
 bool cut()
@@ -33,7 +33,7 @@ bool cut()
         }
         return true;
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 };
 bool copy()
@@ -49,7 +49,7 @@ bool copy()
         }
         return true;
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 };
 bool paste(HWND wnd)
@@ -81,7 +81,7 @@ bool paste(HWND wnd)
         }
         return true;
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 };
 

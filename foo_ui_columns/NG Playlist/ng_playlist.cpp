@@ -562,7 +562,6 @@ void ng_playlist_view_t::notify_on_create()
 
     console::formatter formatter;
     formatter << "NG playlist initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
-    ;
 }
 
 void ng_playlist_view_t::notify_on_destroy()

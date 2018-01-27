@@ -174,7 +174,7 @@ void colours_manager_data::entry_t::import(
         default:
             reader.skip(element_size);
             break;
-        };
+        }
     }
 }
 

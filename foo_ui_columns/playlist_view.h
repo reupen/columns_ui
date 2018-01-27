@@ -36,7 +36,6 @@ public:
         return false;
     };
     inline titleformat_hook_playlist_name() = default;
-    ;
 };
 
 class IDropSource_playlist : public IDropSource {
@@ -53,7 +52,6 @@ public:
     HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect) override;
 
     IDropSource_playlist(playlist_view* playlist);
-    ;
 };
 
 class IDropTarget_playlist : public IDropTarget {
@@ -82,7 +80,6 @@ public:
     void add_ref();
     void release();
     playlist_message_window() = default;
-    ;
 };
 
 class playlist_view

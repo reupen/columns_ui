@@ -204,7 +204,7 @@ void filter_search_bar::commit_search_results(const char* str, bool b_force_auto
                 m_active_handles.remove_mask(
                     pfc::bit_array_not(pfc::bit_array_table(data.get_ptr(), data.get_count())));
             } catch (pfc::exception const&) {
-            };
+            }
         }
 
         bool b_autosent = false;
@@ -306,7 +306,7 @@ LRESULT filter_search_bar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }
-    }; break;
+    } break;
     case WM_COMMAND:
         switch (LOWORD(wp)) {
         case id_edit:
@@ -476,7 +476,6 @@ LRESULT WINAPI filter_search_bar::g_on_search_edit_message(HWND wnd, UINT msg, W
     p_this = reinterpret_cast<filter_search_bar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }
@@ -533,7 +532,7 @@ LRESULT filter_search_bar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp,
         case VK_ESCAPE:
         case VK_RETURN:
             return 0;
-        };
+        }
         break;
     }
     return CallWindowProc(m_proc_search_edit, wnd, msg, wp, lp);

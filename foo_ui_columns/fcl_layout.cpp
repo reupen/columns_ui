@@ -137,7 +137,7 @@ class export_layout_misc : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
 
         on_show_status_change();

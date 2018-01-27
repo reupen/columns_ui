@@ -145,7 +145,6 @@ public:
     }
 
     main_window_t() = default;
-    ;
 
 private:
     ULONG_PTR m_gdiplus_instance{NULL};

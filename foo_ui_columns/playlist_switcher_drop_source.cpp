@@ -22,9 +22,7 @@ bool playlist_switcher_t::do_drag_drop(WPARAM wp)
             m_dragging = false;
         }
     } catch (exception_service_extension_not_found const&) {
-        ;
     } catch (exception_service_not_found const&) {
-        ;
     }
 
     return true;

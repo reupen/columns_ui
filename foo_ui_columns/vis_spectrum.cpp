@@ -577,7 +577,7 @@ void spectrum_extension::set_config(stream_reader* r, t_size p_size, abort_callb
             r->read_lendian_t(m_scale, p_abort);
             r->read_lendian_t(m_vertical_scale, p_abort);
         } catch (const exception_io_data_truncation&) {
-        };
+        }
     }
 }
 
@@ -648,7 +648,7 @@ class window_visualisation_spectrum : public window_visualisation {
                 get_vis_data(m_data);
                 p_temp->set_config_from_ptr(m_data.get_ptr(), m_data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
         }
 
         spec_param param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
@@ -676,7 +676,7 @@ class window_visualisation_spectrum : public window_visualisation {
                     p_temp->get_config_to_array(m_data, p_abort, true);
                     set_vis_data(m_data.get_ptr(), m_data.get_size());
                 } catch (pfc::exception&) {
-                };
+                }
             }
         }
         return rv;

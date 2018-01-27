@@ -902,7 +902,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         EndPaint(wnd, &ps);
     }
         return 0;
-    };
+    }
     return DefWindowProc(wnd, msg, wp, lp);
 }
 

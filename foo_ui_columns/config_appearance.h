@@ -20,7 +20,7 @@ public:
             entry.m_guid = entry.m_ptr->get_client_guid();
             entry.m_ptr->get_name(entry.m_name);
             p_out.add_item(entry);
-        };
+        }
         p_out.sort_t(g_compare);
     }
     static int g_compare(const colours_client_list_entry_t& p1, const colours_client_list_entry_t& p2)
@@ -47,7 +47,7 @@ public:
             entry.m_guid = entry.m_ptr->get_client_guid();
             entry.m_ptr->get_name(entry.m_name);
             p_out.add_item(entry);
-        };
+        }
         p_out.sort_t(g_compare);
     }
     static int g_compare(const fonts_client_list_entry_t& p1, const fonts_client_list_entry_t& p2)

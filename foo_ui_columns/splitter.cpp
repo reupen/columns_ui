@@ -167,7 +167,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, uih::TranslucentFillWi
                                 try {
                                     splitter->get_config(&conf, p_abort);
                                 } catch (const pfc::exception&) {
-                                };
+                                }
                                 newsi->set_panel_guid(panels[panel_index].guid);
                                 newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 

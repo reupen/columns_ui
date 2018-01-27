@@ -110,7 +110,7 @@ bool check_clipboard()
                 return true;
         }
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 }
 bool cut(const pfc::bit_array& mask)
@@ -130,7 +130,7 @@ bool cut(const pfc::bit_array& mask)
         }
         return true;
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 }
 bool cut(const pfc::list_base_const_t<t_size>& indices)
@@ -158,7 +158,7 @@ bool copy(const pfc::bit_array& mask)
         }
         return true;
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 }
 bool copy(const pfc::list_base_const_t<t_size>& indices)
@@ -202,7 +202,7 @@ bool paste(HWND wnd, t_size index_insert)
         }
         return true;
     } catch (const exception_service_not_found&) {
-    };
+    }
     return false;
 };
 } // namespace playlist_manager_utils

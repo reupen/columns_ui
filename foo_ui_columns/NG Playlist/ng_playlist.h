@@ -99,7 +99,6 @@ public:
     bool m_initialised{false};
     t_size m_scroll_position{NULL};
     playlist_cache_item_t() = default;
-    ;
 };
 
 class column_data_t {
@@ -131,7 +130,6 @@ public:
     artwork_reader_ng_t() : m_back(RGB(255, 255, 255)){};
 
     ~artwork_reader_ng_t() override = default;
-    ;
 
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
@@ -258,7 +256,6 @@ public:
     void on_reader_abort(const artwork_reader_ng_t* ptr);
 
     artwork_reader_manager_ng_t() = default;
-    ;
 
     void request_nocover_image(pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx, t_size cy,
         COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
@@ -313,7 +310,6 @@ public:
     bool get_themes_supported() const override { return true; };
 
     void on_colour_changed(t_size mask) const override;
-    ;
 
     void on_bool_changed(t_size mask) const override{};
 };

@@ -126,7 +126,6 @@ LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd, UINT msg, WPARAM wp
     p_this = reinterpret_cast<playlists_tabs_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }
@@ -141,7 +140,7 @@ void playlists_tabs_extension::create_child()
                 abort_callback_dummy abortCallback;
                 m_child->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
             } catch (const exception_io&) {
-            };
+            }
             m_child_wnd
                 = m_child->create_or_transfer_window(m_host_wnd, ui_extension::window_host_ptr(m_host.get_ptr()));
             if (m_child_wnd) {
@@ -459,7 +458,7 @@ void playlists_tabs_extension::export_config(stream_writer* p_writer, abort_call
             try {
                 ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
             } catch (const exception_io&) {
-            };
+            }
         } else
             throw cui::fcl::exception_missing_panel();
     }
@@ -487,7 +486,7 @@ void playlists_tabs_extension::import_config(stream_reader* p_reader, t_size p_s
             try {
                 ptr->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
             ptr->get_config_to_array(m_child_data, p_abort, true);
         }
         // p_reader->read(m_child_data.get_ptr(), size, p_abort);

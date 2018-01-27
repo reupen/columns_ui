@@ -348,7 +348,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
                                 abort_callback_dummy p_abort;
                                 ptr->set_config_from_ptr(w.m_data.get_ptr(), w.m_data.get_size(), p_abort);
                             } catch (const exception_io&) {
-                            };
+                            }
                         } else
                             throw cui::fcl::exception_missing_panel();
                     __get_panel_list_recur(ptr, p_out);
@@ -384,7 +384,7 @@ bool layout_window::import_config_to_object(stream_reader* p_reader, t_size psiz
             try {
                 wnd->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
             wnd->get_config_to_array(conf, p_abort);
             __get_panel_list_recur(wnd, panels);
         } else
@@ -398,7 +398,7 @@ bool layout_window::import_config_to_object(stream_reader* p_reader, t_size psiz
             try {
                 wnd->set_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
             __get_panel_list_recur(wnd, panels);
         } else
             return false;
@@ -438,7 +438,7 @@ void layout_window::export_config(
                     try {
                         ptr->set_config_from_ptr(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
                     } catch (const exception_io&) {
-                    };
+                    }
                     __get_panel_list_recur(ptr, panels);
                     ptr->export_config(&writer, p_abort);
                     p_out->write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
@@ -458,7 +458,7 @@ void layout_window::export_config(
                     try {
                         ptr->set_config_from_ptr(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
                     } catch (const exception_io&) {
-                    };
+                    }
                     __get_panel_list_recur(ptr, panels);
                 }
 
@@ -627,7 +627,7 @@ void layout_window::run_live_edit_base(POINT pt_menu)
                                     abort_callback_dummy p_abort;
                                     splitter->get_config(&conf, p_abort);
                                 } catch (const pfc::exception&) {
-                                };
+                                }
                                 newsi->set_panel_guid(panels[panel_index].guid);
                                 newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
@@ -835,7 +835,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                                 try {
                                     splitter->get_config(&conf, p_abort);
                                 } catch (const pfc::exception&) {
-                                };
+                                }
                                 newsi->set_panel_guid(panels[panel_index].guid);
                                 newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
@@ -876,7 +876,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                                 try {
                                     splitter->get_config(&conf, p_abort);
                                 } catch (const pfc::exception&) {
-                                };
+                                }
                                 newsi->set_panel_guid(panels[panel_index].guid);
                                 newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 

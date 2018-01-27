@@ -173,7 +173,7 @@ public:
     }
     void on_item_focus_change(unsigned from, unsigned to)
         override{}; // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-    void FB2KAPI on_items_modified(const pfc::bit_array& p_mask) override { ; }
+    void FB2KAPI on_items_modified(const pfc::bit_array& p_mask) override {}
     void FB2KAPI on_items_modified_fromplayback(
         const pfc::bit_array& p_mask, play_control::t_display_level p_level) override{};
     void on_items_replaced(const pfc::bit_array& p_mask,

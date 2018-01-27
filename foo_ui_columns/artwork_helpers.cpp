@@ -354,7 +354,7 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback& p_abor
                                                 }
                                             } catch (exception_io const&) {
                                                 // console::formatter() << ex.what();
-                                            };
+                                            }
                                         }
                                     }
                                     if (file.is_valid()) {

@@ -145,7 +145,7 @@ class export_columns : public cui::fcl::dataset {
                 default:
                     reader2.skip(element_size);
                     break;
-                };
+                }
             }
             if (!dpiRead)
                 item->width.dpi = uih::get_system_dpi_cached().cx;
@@ -281,7 +281,7 @@ class export_groups : public cui::fcl::dataset {
                         default:
                             reader2.skip(group_element_size);
                             break;
-                        };
+                        }
                     }
                     newgroups.add_item(item);
                 }
@@ -291,7 +291,7 @@ class export_groups : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
 
         if (b_groups_set)
@@ -371,7 +371,7 @@ class export_pview : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
 
         refresh_all_playlist_views();
@@ -438,7 +438,7 @@ class export_titles : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
     }
 };

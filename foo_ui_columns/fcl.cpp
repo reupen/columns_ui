@@ -394,7 +394,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
         ShowWindow(uCreateDialog(IDD_RESULTS, wnd, g_ImportResultsProc, (LPARAM)&data), SW_SHOWNORMAL);
     } catch (const pfc::exception& ex) {
         popup_message::g_show(ex.what(), "Error");
-    };
+    }
 }
 
 void g_import_layout(HWND wnd)
@@ -520,7 +520,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
             if (filesystem::g_exists(path, p_abort))
                 filesystem::g_remove(path, p_abort);
         } catch (const pfc::exception&) {
-        };
+        }
         popup_message::g_show(ex.what(), "Error");
-    };
+    }
 }

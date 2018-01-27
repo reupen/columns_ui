@@ -26,7 +26,6 @@ public:
     t_size m_raw_bytes{NULL};
 
     line_info_t() = default;
-    ;
 };
 
 class display_line_info_t : public line_info_t {
@@ -35,7 +34,6 @@ public:
     t_size m_height{0};
 
     display_line_info_t() = default;
-    ;
 };
 
 class font_data_t {
@@ -45,7 +43,6 @@ public:
     bool m_bold{false}, m_underline{false}, m_italic{false};
 
     font_data_t() = default;
-    ;
 
     static int g_compare(const font_data_t& item1, const font_data_t& item2)
     {
@@ -71,7 +68,6 @@ public:
     t_size m_character_index{NULL};
 
     font_change_data_t() = default;
-    ;
 };
 
 typedef pfc::list_t<font_change_data_t, pfc::alloc_fast_aggressive> font_change_data_list_t;
@@ -315,7 +311,6 @@ public:
     };
     void on_playlist_switch() override;
     void on_item_focus_change(t_size p_from, t_size p_to) override;
-    ;
 
     void on_items_added(t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
         const pfc::bit_array& p_selection) override;
@@ -355,7 +350,6 @@ public:
     void set_config_wnd(HWND wnd);
 
     item_details_t();
-    ;
 
 private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
@@ -431,7 +425,6 @@ public:
 
     static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     item_details_config_t(const char* p_text, t_size edge_style, t_size halign, t_size valign);
-    ;
 
     bool run_modal(HWND wnd);
     void run_modeless(HWND wnd, item_details_t* p_this);

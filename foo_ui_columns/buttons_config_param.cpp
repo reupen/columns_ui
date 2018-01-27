@@ -125,7 +125,6 @@ void toolbar_extension::config_param::import_from_file(const char* p_path, bool 
         popup_message::g_show_ex(p_error.what(), pfc_infinite, "Error reading FCB file", pfc_infinite);
     } catch (const char* p_error) {
         popup_message::g_show_ex(p_error, pfc_infinite, "Error reading FCB file", pfc_infinite);
-        ;
     }
 }
 
@@ -198,7 +197,7 @@ BOOL CALLBACK toolbar_extension::config_param::g_ConfigPopupProc(HWND wnd, UINT 
     default:
         ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
         break;
-    };
+    }
     return ptr ? ptr->ConfigPopupProc(wnd, msg, wp, lp) : FALSE;
 }
 

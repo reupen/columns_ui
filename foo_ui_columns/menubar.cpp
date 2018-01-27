@@ -229,7 +229,6 @@ LRESULT WINAPI menu_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM l
     p_this = reinterpret_cast<menu_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }

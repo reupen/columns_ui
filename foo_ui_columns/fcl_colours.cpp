@@ -120,7 +120,7 @@ class export_colours : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
 
         // on_header_font_change();
@@ -213,7 +213,7 @@ class export_colours_switcher : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
 
         if (item_padding_read)
@@ -271,7 +271,7 @@ class export_misc_fonts : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
 
         if (font_read)

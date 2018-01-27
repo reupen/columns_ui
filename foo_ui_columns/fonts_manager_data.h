@@ -33,9 +33,7 @@ public:
     void find_by_guid(const GUID& p_guid, entry_ptr_t& p_out);
 
     void register_common_callback(cui::fonts::common_callback* p_callback);
-    ;
     void deregister_common_callback(cui::fonts::common_callback* p_callback);
-    ;
 
     void g_on_common_font_changed(t_size mask);
 

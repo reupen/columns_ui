@@ -131,6 +131,6 @@ LRESULT status_pane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         return 0;
     }
-    };
+    }
     return DefWindowProc(wnd, msg, wp, lp);
 }

@@ -13,28 +13,21 @@ public:
     static unsigned g_get_caption_size();
     void get_category(pfc::string_base& p_out) const override;
     unsigned get_type() const override;
-    ;
 
     void insert_panel(unsigned index, const uie::splitter_item_t* p_item) override;
 
     void remove_panel(unsigned index) override;
-    ;
     void replace_panel(unsigned index, const uie::splitter_item_t* p_item) override;
 
     unsigned get_panel_count() const override;
-    ;
     uie::splitter_item_t* get_panel(unsigned index) const override;
-    ;
     enum { stream_version_current = 0 };
 
     void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
     void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
-    ;
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
-    ;
 
     void get_config(stream_writer* out, abort_callback& p_abort) const override;
-    ;
 
     bool is_index_valid(unsigned index) const;
 
@@ -44,7 +37,6 @@ public:
         unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const override;
 
     bool set_config_item(unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
-    ;
 
     class splitter_host_impl : public ui_extension::window_host_ex {
         service_ptr_t<splitter_window_impl> m_this;
@@ -211,7 +203,6 @@ private:
 
 public:
     splitter_window_impl() = default;
-    ;
 
     //
 };

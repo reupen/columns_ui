@@ -256,7 +256,7 @@ LRESULT artwork_panel_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         EndPaint(wnd, &ps);
     }
         return 0;
-    };
+    }
     return DefWindowProc(wnd, msg, wp, lp);
 }
 bool g_check_process_on_selection_changed()
@@ -596,7 +596,7 @@ void artwork_panel_t::set_config(stream_reader* p_reader, t_size size, abort_cal
         try {
             p_reader->read_lendian_t(version, p_abort);
         } catch (exception_io_data_truncation const&) {
-        };
+        }
 
         if (version <= 3) {
             p_reader->read_lendian_t(m_preserve_aspect_ratio, p_abort);

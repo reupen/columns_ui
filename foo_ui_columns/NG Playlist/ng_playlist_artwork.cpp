@@ -135,7 +135,6 @@ unsigned artwork_reader_ng_t::read_artwork(abort_callback& p_abort)
     m_bitmaps.remove_all();
 
     bool b_loaded = false, b_extracter_attempted = false;
-    ;
     pfc::chain_list_v2_t<GUID>::const_iterator walk;
     album_art_extractor_instance_ptr p_extractor;
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
@@ -211,7 +210,7 @@ unsigned artwork_reader_ng_t::read_artwork(abort_callback& p_abort)
                                                     break;
                                                 }
                                             } catch (exception_io const&) {
-                                            };
+                                            }
                                         }
                                     }
                                     if (file.is_valid()) {

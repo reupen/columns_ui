@@ -242,7 +242,7 @@ void splitter_window_tabs_impl::panel::_export(stream_writer* out, abort_callbac
         try {
             ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
     }
     {
         ptr->export_config(&child_exported_data, p_abort);
@@ -268,7 +268,7 @@ void splitter_window_tabs_impl::panel::import(stream_reader* t, abort_callback& 
         try {
             m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
         m_child_data.set_size(0);
         m_child->get_config_to_array(m_child_data, p_abort);
     }
@@ -913,7 +913,6 @@ LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd, UINT msg, WPARAM
     p_this = reinterpret_cast<splitter_window_tabs_impl*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->on_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }

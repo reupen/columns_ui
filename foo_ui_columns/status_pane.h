@@ -173,7 +173,6 @@ class status_pane
 
 public:
     status_pane() = default;
-    ;
     t_size get_ideal_height() { return uGetFontHeight(m_font) * 2 + 6 + 6; }
     void enter_menu_mode(const char* p_text)
     {

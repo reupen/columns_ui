@@ -44,7 +44,7 @@ bool command_picker_data::__populate_mainmenu_dynamic_recur(
             return true;
         default:
             return false;
-        };
+        }
     }
     return false;
 }

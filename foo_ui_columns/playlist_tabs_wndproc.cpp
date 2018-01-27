@@ -246,7 +246,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
                     autoplaylist_client::ptr ptr = autoplaylist_api->query_client(idx);
                     ptr->service_query_t(autoplaylist);
                 } catch (pfc::exception const&) {
-                };
+                }
 
                 HMENU menu = CreatePopupMenu();
 
