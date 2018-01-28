@@ -1047,22 +1047,22 @@ void item_details_t::on_volume_change(float p_new_val) {}
 
 void item_details_t::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
 
-const bool item_details_t::g_track_mode_includes_selection(t_size mode)
+bool item_details_t::g_track_mode_includes_selection(t_size mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-const bool item_details_t::g_track_mode_includes_auto(t_size mode)
+bool item_details_t::g_track_mode_includes_auto(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-const bool item_details_t::g_track_mode_includes_plalist(t_size mode)
+bool item_details_t::g_track_mode_includes_plalist(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-const bool item_details_t::g_track_mode_includes_now_playing(t_size mode)
+bool item_details_t::g_track_mode_includes_now_playing(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }

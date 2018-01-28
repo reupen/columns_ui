@@ -370,7 +370,7 @@ private:
 
 class volume_popup_class_name {
 public:
-    static const TCHAR* const get_class_name() { return _T("volume_popup"); }
+    static const TCHAR* get_class_name() { return _T("volume_popup"); }
     static bool get_show_caption() { return true; }
     static COLORREF get_background_colour() { return -1; }
 };

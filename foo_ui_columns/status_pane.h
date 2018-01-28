@@ -9,7 +9,7 @@ class status_pane
     , play_callback {
     class volume_panel_attributes {
     public:
-        static const TCHAR* const get_class_name() { return _T("volume_toolbar_pain"); }
+        static const TCHAR* get_class_name() { return _T("volume_toolbar_pain"); }
         static bool get_show_caption() { return false; }
         static COLORREF get_background_colour() { return -1; /*RGB(230,230,255);*/ }
     };

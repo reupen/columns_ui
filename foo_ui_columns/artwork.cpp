@@ -49,22 +49,22 @@ enum track_mode_t {
     track_selection,
 };
 
-const bool g_track_mode_includes_now_playing(t_size mode)
+bool g_track_mode_includes_now_playing(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
 
-const bool g_track_mode_includes_plalist(t_size mode)
+bool g_track_mode_includes_plalist(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-const bool g_track_mode_includes_auto(t_size mode)
+bool g_track_mode_includes_auto(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-const bool g_track_mode_includes_selection(t_size mode)
+bool g_track_mode_includes_selection(t_size mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
