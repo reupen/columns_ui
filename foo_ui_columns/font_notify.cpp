@@ -200,36 +200,7 @@ void on_header_font_change()
     }
 }
 
-static void strncpy_addnull(char* dest, const char* src, int max)
-{
-    int n;
-    for (n = 0; n < max - 1 && src[n]; n++)
-        dest[n] = src[n];
-    dest[n] = 0;
-}
-
-static void wcsncpy_addnull(WCHAR* dest, const WCHAR* src, int max)
-{
-    int n;
-    for (n = 0; n < max - 1 && src[n]; n++)
-        dest[n] = src[n];
-    dest[n] = 0;
-}
-
-static void font_utf16_from_utf8(LOGFONTW* dst, const uLOGFONT* src)
-{
-    memcpy(dst, src, sizeof(*src) - sizeof(src->lfFaceName));
-    wcsncpy_addnull(dst->lfFaceName, pfc::stringcvt::string_wide_from_utf8(src->lfFaceName), tabsize(dst->lfFaceName));
-}
-
-static void font_ansi_from_utf8(LOGFONTA* dst, const uLOGFONT* src)
-{
-    memcpy(dst, src, sizeof(*src) - sizeof(src->lfFaceName));
-    strncpy_addnull(dst->lfFaceName, pfc::stringcvt::string_ansi_from_utf8(src->lfFaceName), tabsize(dst->lfFaceName));
-}
-
 int CALLBACK FontSizesProc(const LOGFONT* plf, const TEXTMETRIC* ptm, DWORD FontType, LPARAM lp);
-int CALLBACK FontSizesProcA(const LOGFONTA* plf, const TEXTMETRICA* ptm, DWORD FontType, LPARAM lp);
 
 struct fontsizeinfo {
     bool up;
