@@ -112,7 +112,7 @@ void filter_search_bar::get_config(stream_writer* p_writer, abort_callback& p_ab
 void filter_search_bar::get_menu_items(uie::menu_hook_t& p_hook)
 {
     p_hook.add_node(new uie::simple_command_menu_node("Show clear button", "Shows or hides the clear button",
-        m_show_clear_button ? uie::menu_node_t::state_checked : 0, [this, ref = ptr{ this }] {
+        m_show_clear_button ? uie::menu_node_t::state_checked : 0, [this, ref = ptr{this}] {
             m_show_clear_button = !m_show_clear_button;
             on_show_clear_button_change();
         }));
@@ -127,7 +127,7 @@ void filter_search_bar::on_show_clear_button_change()
     tbbi.fsState = TBSTATE_ENABLED | (m_show_clear_button ? NULL : TBSTATE_HIDDEN);
     SendMessage(m_wnd_toolbar, TB_SETBUTTONINFO, idc_clear, (LPARAM)&tbbi);
     // UpdateWindow(m_wnd_toolbar);
-    RECT rc = { 0 };
+    RECT rc = {0};
     SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 1, (LPARAM)(&rc));
 
     m_toolbar_cx = rc.right;
@@ -204,7 +204,7 @@ void filter_search_bar::commit_search_results(const char* str, bool b_force_auto
                 m_active_handles.remove_mask(
                     pfc::bit_array_not(pfc::bit_array_table(data.get_ptr(), data.get_count())));
             } catch (pfc::exception const&) {
-            };
+            }
         }
 
         bool b_autosent = false;
@@ -306,7 +306,7 @@ LRESULT filter_search_bar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }
-    }; break;
+    } break;
     case WM_COMMAND:
         switch (LOWORD(wp)) {
         case id_edit:
@@ -476,7 +476,6 @@ LRESULT WINAPI filter_search_bar::g_on_search_edit_message(HWND wnd, UINT msg, W
     p_this = reinterpret_cast<filter_search_bar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }
@@ -533,7 +532,7 @@ LRESULT filter_search_bar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp,
         case VK_ESCAPE:
         case VK_RETURN:
             return 0;
-        };
+        }
         break;
     }
     return CallWindowProc(m_proc_search_edit, wnd, msg, wp, lp);

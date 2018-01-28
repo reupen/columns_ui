@@ -48,7 +48,7 @@ bool get_msg_hook_t::on_hooked_message(uih::MessageHookType p_type, int code, WP
          *
          * This implementation works with non-main message loops e.g. modal dialogs.
          */
-        POINT pt = { GET_X_LPARAM(lpmsg->lParam), GET_Y_LPARAM(lpmsg->lParam) };
+        POINT pt = {GET_X_LPARAM(lpmsg->lParam), GET_Y_LPARAM(lpmsg->lParam)};
         ScreenToClient(g_main_window, &pt);
         HWND wnd = uRecursiveChildWindowFromPoint(g_main_window, pt);
         if (wnd)

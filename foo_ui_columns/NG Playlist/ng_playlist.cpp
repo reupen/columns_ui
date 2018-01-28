@@ -16,22 +16,22 @@ extern cfg_bool cfg_use_fb2k_artwork;
 namespace pvt {
 
 // {775E2746-6019-4b45-83B3-D7DF3A5BAE57}
-const GUID g_groups_guid = { 0x775e2746, 0x6019, 0x4b45, { 0x83, 0xb3, 0xd7, 0xdf, 0x3a, 0x5b, 0xae, 0x57 } };
+const GUID g_groups_guid = {0x775e2746, 0x6019, 0x4b45, {0x83, 0xb3, 0xd7, 0xdf, 0x3a, 0x5b, 0xae, 0x57}};
 
 // {85068AD6-A45D-4968-9898-A34F1F3C40EA}
-const GUID g_show_artwork_guid = { 0x85068ad6, 0xa45d, 0x4968, { 0x98, 0x98, 0xa3, 0x4f, 0x1f, 0x3c, 0x40, 0xea } };
+const GUID g_show_artwork_guid = {0x85068ad6, 0xa45d, 0x4968, {0x98, 0x98, 0xa3, 0x4f, 0x1f, 0x3c, 0x40, 0xea}};
 
 // {3003B49E-AD9C-464f-8B54-E9F864D52BBA}
-const GUID g_artwork_width_guid = { 0x3003b49e, 0xad9c, 0x464f, { 0x8b, 0x54, 0xe9, 0xf8, 0x64, 0xd5, 0x2b, 0xba } };
+const GUID g_artwork_width_guid = {0x3003b49e, 0xad9c, 0x464f, {0x8b, 0x54, 0xe9, 0xf8, 0x64, 0xd5, 0x2b, 0xba}};
 
 // {C764D238-403F-4a8c-B310-30D23E4C42F6}
-const GUID g_artwork_reflection = { 0xc764d238, 0x403f, 0x4a8c, { 0xb3, 0x10, 0x30, 0xd2, 0x3e, 0x4c, 0x42, 0xf6 } };
+const GUID g_artwork_reflection = {0xc764d238, 0x403f, 0x4a8c, {0xb3, 0x10, 0x30, 0xd2, 0x3e, 0x4c, 0x42, 0xf6}};
 
 // {CB1C1C5D-4F99-4c24-B239-A6E008E5BA7C}
-const GUID g_artwork_lowpriority = { 0xcb1c1c5d, 0x4f99, 0x4c24, { 0xb2, 0x39, 0xa6, 0xe0, 0x8, 0xe5, 0xba, 0x7c } };
+const GUID g_artwork_lowpriority = {0xcb1c1c5d, 0x4f99, 0x4c24, {0xb2, 0x39, 0xa6, 0xe0, 0x8, 0xe5, 0xba, 0x7c}};
 
 // {A28CC736-2B8B-484c-B7A9-4CC312DBD357}
-const GUID g_guid_grouping = { 0xa28cc736, 0x2b8b, 0x484c, { 0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57 } };
+const GUID g_guid_grouping = {0xa28cc736, 0x2b8b, 0x484c, {0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57}};
 
 std::vector<ng_playlist_view_t*> ng_playlist_view_t::g_windows;
 ng_playlist_view_t::ng_global_mesage_window ng_playlist_view_t::g_global_mesage_window;
@@ -74,15 +74,7 @@ void cfg_groups_t::remove_group(t_size index)
     ng_playlist_view_t::g_on_groups_change();
 }
 
-ng_playlist_view_t::ng_playlist_view_t()
-    : m_dragging(false)
-    , m_dragging_initial_playlist(pfc_infinite)
-    , m_day_timer_active(false)
-    , m_ignore_callback(false)
-    , m_gdiplus_token(NULL)
-    , m_gdiplus_initialised(false)
-    , m_mainmenu_manager_base(NULL)
-    , m_contextmenu_manager_base(NULL){};
+ng_playlist_view_t::ng_playlist_view_t() : m_dragging_initial_playlist(pfc_infinite){};
 
 ng_playlist_view_t::~ng_playlist_view_t() = default;
 
@@ -570,7 +562,6 @@ void ng_playlist_view_t::notify_on_create()
 
     console::formatter formatter;
     formatter << "NG playlist initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
-    ;
 }
 
 void ng_playlist_view_t::notify_on_destroy()
@@ -783,7 +774,7 @@ bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt)
         AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
         if (p_manager_context.is_valid()) {
             const keyboard_shortcut_manager::shortcut_type shortcuts[]
-                = { keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT };
+                = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
             p_manager_context->set_shortcut_preference(shortcuts, tabsize(shortcuts));
             p_manager_context->init_context_playlist(standard_config_objects::query_show_keyboard_shortcuts_in_menus()
                     ? contextmenu_manager::FLAG_SHOW_SHORTCUTS
@@ -951,7 +942,7 @@ void ng_playlist_view_t::get_insert_items(
 
     const auto group_count = m_scripts.get_count();
 
-    concurrency::parallel_for(size_t{ 0 }, count, [this, &items, &handles, group_count](size_t index) {
+    concurrency::parallel_for(size_t{0}, count, [this, &items, &handles, group_count](size_t index) {
         pfc::string8_fast temp;
         temp.prealloc(32);
         items[index].m_groups.set_size(group_count);
@@ -1118,24 +1109,23 @@ unsigned ng_playlist_view_t::get_type() const
 
 // {FB059406-5F14-4bd0-8A11-4242854CBBA5}
 const GUID ng_playlist_view_t::g_extension_guid
-    = { 0xfb059406, 0x5f14, 0x4bd0, { 0x8a, 0x11, 0x42, 0x42, 0x85, 0x4c, 0xbb, 0xa5 } };
+    = {0xfb059406, 0x5f14, 0x4bd0, {0x8a, 0x11, 0x42, 0x42, 0x85, 0x4c, 0xbb, 0xa5}};
 
 uie::window_factory<ng_playlist_view_t> g_pvt;
 
 // {C882D3AC-C014-44df-9C7E-2DADF37645A0}
 const GUID appearance_client_ngpv_impl::g_guid
-    = { 0xc882d3ac, 0xc014, 0x44df, { 0x9c, 0x7e, 0x2d, 0xad, 0xf3, 0x76, 0x45, 0xa0 } };
+    = {0xc882d3ac, 0xc014, 0x44df, {0x9c, 0x7e, 0x2d, 0xad, 0xf3, 0x76, 0x45, 0xa0}};
 appearance_client_ngpv_impl::factory<appearance_client_ngpv_impl> g_appearance_client_ngpv_impl;
 
 // {19F8E0B3-E822-4f07-B200-D4A67E4872F9}
-const GUID g_guid_items_font = { 0x19f8e0b3, 0xe822, 0x4f07, { 0xb2, 0x0, 0xd4, 0xa6, 0x7e, 0x48, 0x72, 0xf9 } };
+const GUID g_guid_items_font = {0x19f8e0b3, 0xe822, 0x4f07, {0xb2, 0x0, 0xd4, 0xa6, 0x7e, 0x48, 0x72, 0xf9}};
 
 // {30FBD64C-2031-4f0b-A937-F21671A2E195}
-const GUID g_guid_header_font = { 0x30fbd64c, 0x2031, 0x4f0b, { 0xa9, 0x37, 0xf2, 0x16, 0x71, 0xa2, 0xe1, 0x95 } };
+const GUID g_guid_header_font = {0x30fbd64c, 0x2031, 0x4f0b, {0xa9, 0x37, 0xf2, 0x16, 0x71, 0xa2, 0xe1, 0x95}};
 
 // {FB127FFA-1B35-4572-9C1A-4B96A5C5D537}
-const GUID g_guid_group_header_font
-    = { 0xfb127ffa, 0x1b35, 0x4572, { 0x9c, 0x1a, 0x4b, 0x96, 0xa5, 0xc5, 0xd5, 0x37 } };
+const GUID g_guid_group_header_font = {0xfb127ffa, 0x1b35, 0x4572, {0x9c, 0x1a, 0x4b, 0x96, 0xa5, 0xc5, 0xd5, 0x37}};
 
 class font_client_ngpv : public cui::fonts::client {
 public:

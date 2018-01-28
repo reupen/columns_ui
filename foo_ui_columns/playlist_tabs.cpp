@@ -2,12 +2,12 @@
 #include "playlist_tabs.h"
 #include "main_window.h"
 
-cfg_guid cfg_default_playlist(GUID{ 0x68527c89, 0xb0f7, 0xf653, 0x00, 0x53, 0x8c, 0xeb, 0x47, 0xe7, 0xa3, 0xb3 },
+cfg_guid cfg_default_playlist(GUID{0x68527c89, 0xb0f7, 0xf653, 0x00, 0x53, 0x8c, 0xeb, 0x47, 0xe7, 0xa3, 0xb3},
     columns_ui::panels::guid_playlist_view_v2);
 
 // {942C36A4-4E28-4cea-9644-F223C9A838EC}
 const GUID g_guid_playlist_switcher_tabs_font
-    = { 0x942c36a4, 0x4e28, 0x4cea, { 0x96, 0x44, 0xf2, 0x23, 0xc9, 0xa8, 0x38, 0xec } };
+    = {0x942c36a4, 0x4e28, 0x4cea, {0x96, 0x44, 0xf2, 0x23, 0xc9, 0xa8, 0x38, 0xec}};
 
 void remove_playlist_helper(t_size index)
 {
@@ -116,32 +116,6 @@ void playlists_tabs_extension::switch_to_playlist_delayed2(unsigned idx)
     }
 }
 
-playlists_tabs_extension::playlists_tabs_extension()
-    : tabproc(nullptr)
-    , m_dragging(false)
-    , m_dragging_idx(0)
-    , m_playlist_switched(false)
-    , m_switch_timer(false)
-    , m_switch_playlist(0)
-    , initialised(false)
-    , m_mousewheel_delta(0)
-    , ID_CUSTOM_BASE(NULL)
-    , wnd_tabs(nullptr)
-    , m_child_guid(/*cfg_default_playlist*/ pfc::guid_null)
-    , m_child_wnd(nullptr)
-    , m_host_wnd(nullptr)
-    , m_child_top(0)
-{
-    // reset_size_limits();
-    memset(&mmi, 0, sizeof(mmi));
-    mmi.ptMaxTrackSize.x = MAXLONG;
-    mmi.ptMaxTrackSize.y = MAXLONG;
-    m_dragging_rect.left = 0;
-    m_dragging_rect.top = 0;
-    m_dragging_rect.right = 0;
-    m_dragging_rect.bottom = 0;
-};
-
 playlists_tabs_extension::~playlists_tabs_extension() = default;
 
 LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -152,7 +126,6 @@ LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd, UINT msg, WPARAM wp
     p_this = reinterpret_cast<playlists_tabs_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }
@@ -167,7 +140,7 @@ void playlists_tabs_extension::create_child()
                 abort_callback_dummy abortCallback;
                 m_child->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
             } catch (const exception_io&) {
-            };
+            }
             m_child_wnd
                 = m_child->create_or_transfer_window(m_host_wnd, ui_extension::window_host_ptr(m_host.get_ptr()));
             if (m_child_wnd) {
@@ -284,7 +257,7 @@ bool playlists_tabs_extension::get_short_name(pfc::string_base& out) const
 
 // {ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}
 const GUID playlists_tabs_extension::extension_guid
-    = { 0xabb72d0d, 0xdbf0, 0x4bba, { 0x8c, 0x68, 0x33, 0x57, 0xeb, 0xe0, 0x7a, 0x4d } };
+    = {0xabb72d0d, 0xdbf0, 0x4bba, {0x8c, 0x68, 0x33, 0x57, 0xeb, 0xe0, 0x7a, 0x4d}};
 
 LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -485,7 +458,7 @@ void playlists_tabs_extension::export_config(stream_writer* p_writer, abort_call
             try {
                 ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
             } catch (const exception_io&) {
-            };
+            }
         } else
             throw cui::fcl::exception_missing_panel();
     }
@@ -513,7 +486,7 @@ void playlists_tabs_extension::import_config(stream_reader* p_reader, t_size p_s
             try {
                 ptr->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
             ptr->get_config_to_array(m_child_data, p_abort, true);
         }
         // p_reader->read(m_child_data.get_ptr(), size, p_abort);
@@ -599,7 +572,7 @@ void playlists_tabs_extension::on_size(unsigned cx, unsigned cy)
 {
     if (wnd_tabs) {
         SetWindowPos(wnd_tabs, nullptr, 0, 0, cx, cy, SWP_NOZORDER);
-        RECT rc = { 0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy) };
+        RECT rc = {0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy)};
         adjust_rect(FALSE, &rc);
         if (m_child_wnd)
             SetWindowPos(m_child_wnd, nullptr, rc.left, rc.top, rc.right - rc.left, rc.bottom - rc.top, SWP_NOZORDER);
@@ -648,8 +621,8 @@ void playlists_tabs_extension::reset_size_limits()
         SendMessage(m_child_wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
         if (mmi.ptMinTrackSize.x != 0 || mmi.ptMinTrackSize.y != 0 || mmi.ptMaxTrackSize.x != MAXLONG
             || mmi.ptMaxTrackSize.y != MAXLONG) {
-            RECT rc_min = { 0, 0, mmi.ptMinTrackSize.x, mmi.ptMinTrackSize.y };
-            RECT rc_max = { 0, 0, mmi.ptMaxTrackSize.x, mmi.ptMaxTrackSize.y };
+            RECT rc_min = {0, 0, mmi.ptMinTrackSize.x, mmi.ptMinTrackSize.y};
+            RECT rc_max = {0, 0, mmi.ptMaxTrackSize.x, mmi.ptMaxTrackSize.y};
             if (wnd_tabs) {
                 adjust_rect(TRUE, &rc_min);
                 adjust_rect(TRUE, &rc_max);
@@ -878,7 +851,7 @@ bool playlists_tabs_extension::window_host_impl::override_status_text_create(
 const GUID& playlists_tabs_extension::window_host_impl::get_host_guid() const
 {
     // {20789B52-4998-43ae-9B20-CCFD3BFBEEBD}
-    static const GUID guid = { 0x20789b52, 0x4998, 0x43ae, { 0x9b, 0x20, 0xcc, 0xfd, 0x3b, 0xfb, 0xee, 0xbd } };
+    static const GUID guid = {0x20789b52, 0x4998, 0x43ae, {0x9b, 0x20, 0xcc, 0xfd, 0x3b, 0xfb, 0xee, 0xbd}};
     return guid;
 }
 

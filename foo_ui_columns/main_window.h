@@ -99,7 +99,7 @@ void g_update_taskbar_buttons_delayed(bool b_init = false);
 extern class status_pane g_status_pane;
 extern class rebar_window* g_rebar_window;
 
-typedef void (*pma_action)(bool on_on_item, unsigned idx);
+using pma_action = void (*)(bool, unsigned int);
 
 struct pma {
     const char* name;
@@ -144,11 +144,11 @@ public:
         m_gdiplus_initialised = false;
     }
 
-    main_window_t() : m_gdiplus_instance(NULL), m_gdiplus_initialised(false){};
+    main_window_t() = default;
 
 private:
-    ULONG_PTR m_gdiplus_instance;
-    bool m_gdiplus_initialised;
+    ULONG_PTR m_gdiplus_instance{NULL};
+    bool m_gdiplus_initialised{false};
 };
 
 extern main_window_t g_main_window;

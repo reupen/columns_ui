@@ -28,7 +28,6 @@ void filter_panel_t::render_item(HDC dc, t_size index, int indentation, bool b_s
     COLORREF cr_text = NULL;
     if (b_themed && theme_state) {
         cr_text = GetThemeSysColor(get_theme(), b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
-        ;
         {
             if (IsThemeBackgroundPartiallyTransparent(get_theme(), LVP_LISTITEM, theme_state))
                 DrawThemeParentBackground(get_wnd(), dc, rc);

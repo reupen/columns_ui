@@ -900,7 +900,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CONTEXTMENU: {
         uie::window_ptr p_this_temp = this;
         if ((HWND)wp == wnd_header) {
-            POINT pt = { (short)LOWORD(lp), (short)HIWORD(lp) };
+            POINT pt = {(short)LOWORD(lp), (short)HIWORD(lp)};
             POINT temp;
             temp.x = pt.x;
             temp.y = pt.y;
@@ -1014,7 +1014,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         } else if ((HWND)wp == wnd) {
             // DWORD mp = GetMessagePos();
-            POINT px, pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+            POINT px, pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
             static_api_ptr_t<playlist_manager> playlist_api;
             if (playlist_api->activeplaylist_get_selection_count(1) > 0 && true) {
                 if (pt.x == -1 && pt.y == -1) {
@@ -1066,7 +1066,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
                 if (p_manager_context.is_valid()) {
                     const keyboard_shortcut_manager::shortcut_type shortcuts[]
-                        = { keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT };
+                        = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
                     p_manager_context->set_shortcut_preference(shortcuts, tabsize(shortcuts));
                     p_manager_context->init_context_playlist(
                         standard_config_objects::query_show_keyboard_shortcuts_in_menus()

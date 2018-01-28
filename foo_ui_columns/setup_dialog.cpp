@@ -154,7 +154,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }
                 return 0;
-            };
+            }
         } break;
         }
         break;

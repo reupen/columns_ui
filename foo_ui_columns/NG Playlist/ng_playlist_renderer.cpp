@@ -73,7 +73,6 @@ void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool
     COLORREF cr_text = NULL;
     if (b_themed && theme_state) {
         cr_text = GetThemeSysColor(get_theme(), b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
-        ;
         {
             if (IsThemeBackgroundPartiallyTransparent(get_theme(), LVP_LISTITEM, theme_state))
                 DrawThemeParentBackground(get_wnd(), dc, rc);
@@ -187,7 +186,7 @@ void ng_playlist_view_t::render_group(
 
     auto cx = (LONG)min(text_width, MAXLONG);
 
-    RECT rc_line = { cx + 7, rc.top + RECT_CY(rc) / 2, rc.right - 4, rc.top + RECT_CY(rc) / 2 + 1 };
+    RECT rc_line = {cx + 7, rc.top + RECT_CY(rc) / 2, rc.right - 4, rc.top + RECT_CY(rc) / 2 + 1};
 
     if (rc_line.right > rc_line.left) {
         if (b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_GROUPHEADERLINE, NULL)

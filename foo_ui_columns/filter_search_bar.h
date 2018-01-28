@@ -71,7 +71,7 @@ private:
     WNDPROC m_proc_search_edit{};
     bool m_favourite_state{};
     bool m_query_timer_active{};
-    bool m_show_clear_button{ cfg_showsearchclearbutton };
+    bool m_show_clear_button{cfg_showsearchclearbutton};
     pfc::string8 m_active_search_string;
     metadb_handle_list m_active_handles;
     gdi_object_t<HFONT>::ptr_t m_font;

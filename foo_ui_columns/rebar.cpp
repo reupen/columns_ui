@@ -240,16 +240,16 @@ void cfg_rebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort
 void cfg_rebar::reset()
 {
     m_entries = {
-        { cui::toolbars::guid_menu, 9999 },
-        { cui::toolbars::guid_buttons, 100, true },
-        { cui::toolbars::guid_seek_bar, 9999 },
-        { cui::toolbars::guid_playback_order, 100 },
-        { cui::toolbars::guid_spectrum_analyser, 125 },
+        {cui::toolbars::guid_menu, 9999},
+        {cui::toolbars::guid_buttons, 100, true},
+        {cui::toolbars::guid_seek_bar, 9999},
+        {cui::toolbars::guid_playback_order, 100},
+        {cui::toolbars::guid_spectrum_analyser, 125},
     };
 }
 
 // {3D3C8D68-3AB9-4ad5-A4FA-22427ABAEBF4}
-static const GUID rebar_guid = { 0x3d3c8d68, 0x3ab9, 0x4ad5, { 0xa4, 0xfa, 0x22, 0x42, 0x7a, 0xba, 0xeb, 0xf4 } };
+static const GUID rebar_guid = {0x3d3c8d68, 0x3ab9, 0x4ad5, {0xa4, 0xfa, 0x22, 0x42, 0x7a, 0xba, 0xeb, 0xf4}};
 
 class ui_ext_host_rebar : public ui_extension::window_host_with_control {
 public:
@@ -329,7 +329,6 @@ public:
 
 ui_extension::window_host_factory_single<ui_ext_host_rebar> g_ui_ext_host_rebar;
 
-rebar_window::rebar_window() : wnd_rebar(nullptr){};
 rebar_window::~rebar_window() = default;
 ;
 

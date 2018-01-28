@@ -2,7 +2,7 @@
 #include "splitter_tabs.h"
 
 // {6F000FC4-3F86-4fc5-80EA-F7AA4D9551E6}
-const GUID g_guid_splitter_tabs = { 0x6f000fc4, 0x3f86, 0x4fc5, { 0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6 } };
+const GUID g_guid_splitter_tabs = {0x6f000fc4, 0x3f86, 0x4fc5, {0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6}};
 
 class splitter_window_tabs_impl::splitter_host_impl : public ui_extension::window_host {
     service_ptr_t<splitter_window_tabs_impl> m_this;
@@ -11,7 +11,7 @@ public:
     const GUID& get_host_guid() const override
     {
         // {B5C88724-EDCD-46a1-90B9-C298309FDFB7}
-        static const GUID rv = { 0xb5c88724, 0xedcd, 0x46a1, { 0x90, 0xb9, 0xc2, 0x98, 0x30, 0x9f, 0xdf, 0xb7 } };
+        static const GUID rv = {0xb5c88724, 0xedcd, 0x46a1, {0x90, 0xb9, 0xc2, 0x98, 0x30, 0x9f, 0xdf, 0xb7}};
         return rv;
     }
 
@@ -160,7 +160,6 @@ bool splitter_window_tabs_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_ou
     }
     return false;
 }
-splitter_window_tabs_impl::panel::panel() : m_wnd(nullptr), m_use_custom_title(false){};
 
 splitter_window_tabs_impl::panel::~panel() = default;
 
@@ -243,7 +242,7 @@ void splitter_window_tabs_impl::panel::_export(stream_writer* out, abort_callbac
         try {
             ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
     }
     {
         ptr->export_config(&child_exported_data, p_abort);
@@ -269,7 +268,7 @@ void splitter_window_tabs_impl::panel::import(stream_reader* t, abort_callback& 
         try {
             m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
         m_child_data.set_size(0);
         m_child->get_config_to_array(m_child_data, p_abort);
     }
@@ -289,7 +288,7 @@ void splitter_window_tabs_impl::get_name(pfc::string_base& p_out) const
 const GUID& splitter_window_tabs_impl::get_extension_guid() const
 {
     // {5CB67C98-B77F-4926-A79F-49D9B21B9705}
-    static const GUID rv = { 0x5cb67c98, 0xb77f, 0x4926, { 0xa7, 0x9f, 0x49, 0xd9, 0xb2, 0x1b, 0x97, 0x5 } };
+    static const GUID rv = {0x5cb67c98, 0xb77f, 0x4926, {0xa7, 0x9f, 0x49, 0xd9, 0xb2, 0x1b, 0x97, 0x5}};
     return rv;
 }
 void splitter_window_tabs_impl::get_category(pfc::string_base& p_out) const
@@ -447,8 +446,8 @@ void splitter_window_tabs_impl::update_size_limits()
             m_size_limits.max_height = m_size_limits.min_height;
     }
     clip_sizelimit(m_size_limits);
-    RECT rcmin = { 0, 0, (LONG)m_size_limits.min_width, (LONG)m_size_limits.min_height };
-    RECT rcmax = { 0, 0, (LONG)m_size_limits.max_width, (LONG)m_size_limits.max_height };
+    RECT rcmin = {0, 0, (LONG)m_size_limits.min_width, (LONG)m_size_limits.min_height};
+    RECT rcmax = {0, 0, (LONG)m_size_limits.max_width, (LONG)m_size_limits.max_height};
     adjust_rect(TRUE, &rcmin);
     adjust_rect(TRUE, &rcmax);
     m_size_limits.min_width = RECT_CX(rcmin);
@@ -562,7 +561,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPA
     case WM_CONTEXTMENU: {
         enum { IDM_BASE = 1 };
 
-        POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+        POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         if (pt.x == -1 && pt.y == -1)
             GetMessagePos(&pt);
 
@@ -869,7 +868,7 @@ void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
     // SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 
     t_size i, count = m_active_panels.get_count();
-    RECT rc = { 0, 0, (LONG)width, (LONG)height };
+    RECT rc = {0, 0, (LONG)width, (LONG)height};
     adjust_rect(FALSE, &rc);
     for (i = 0; i < count; i++) {
         if (m_active_panels[i]->m_wnd)
@@ -904,9 +903,7 @@ void splitter_window_tabs_impl::on_active_tab_changed(t_size index_to)
         m_active_tab = m_panels.find_item(m_active_panels[index_to]);
     } else
         m_active_tab = pfc_infinite;
-};
-splitter_window_tabs_impl::splitter_window_tabs_impl()
-    : m_tab_proc(nullptr), m_wnd_tabs(nullptr), m_active_tab(pfc_infinite), m_mousewheel_delta(NULL){};
+}
 
 LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -916,7 +913,6 @@ LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd, UINT msg, WPARAM
     p_this = reinterpret_cast<splitter_window_tabs_impl*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->on_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }

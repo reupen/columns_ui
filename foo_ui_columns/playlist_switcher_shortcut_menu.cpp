@@ -24,7 +24,7 @@ bool playlist_switcher_t::notify_on_contextmenu(const POINT& pt)
         autoplaylist_client::ptr ptr = autoplaylist_api->query_client(index);
         ptr->service_query_t(autoplaylist);
     } catch (pfc::exception const&) {
-    };
+    }
 
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
 

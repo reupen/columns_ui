@@ -59,7 +59,6 @@ void g_compare_file_with_bytes(
             b_same = true;
         }
     } catch (const exception_io&) {
-        return;
     }
 }
 

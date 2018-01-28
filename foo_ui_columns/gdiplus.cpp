@@ -51,7 +51,7 @@ void CheckGdiplusStatus::g_CheckGdiplusStatus(Gdiplus::Status pStatus)
 #endif
     default:
         throw pfc::exception("GDI+ Error: Unknown Error");
-    };
+    }
 }
 
 HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData& pBitmapData)

@@ -26,11 +26,6 @@ void artwork_panel::artwork_reader_v2_t::initialise(const pfc::chain_list_v2_t<G
     m_native_artwork_reader_mode = b_native_artwork_reader_mode;
 }
 
-artwork_panel::artwork_reader_v2_t::artwork_reader_v2_t()
-    : m_succeeded(false), m_read_emptycover(true), m_native_artwork_reader_mode(fb2k_artwork_embedded_and_external)
-{
-}
-
 const album_art_data_ptr& artwork_panel::artwork_reader_v2_t::get_emptycover() const
 {
     return m_emptycover;
@@ -292,7 +287,7 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback& p_abor
                     for (i = 0; i < count && !b_found; i++) {
                         pfc::string8 path;
                         if (m_handle->format_title_legacy(nullptr, path, to[i], nullptr)) {
-                            const char* image_extensions[] = { "jpg", "jpeg", "gif", "bmp", "png" };
+                            const char* image_extensions[] = {"jpg", "jpeg", "gif", "bmp", "png"};
 
                             t_size i, count = tabsize(image_extensions);
 
@@ -359,7 +354,7 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback& p_abor
                                                 }
                                             } catch (exception_io const&) {
                                                 // console::formatter() << ex.what();
-                                            };
+                                            }
                                         }
                                     }
                                     if (file.is_valid()) {

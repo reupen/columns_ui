@@ -132,7 +132,7 @@ auto deserialise_splitter_item(gsl::span<t_uint8> data)
 class tab_layout_new : public preferences_tab {
     class node : public pfc::refcounted_object_root {
     public:
-        typedef pfc::refcounted_object_ptr_t<node> ptr;
+        using ptr = pfc::refcounted_object_ptr_t<node>;
 
         bool have_item(const GUID& p_guid)
         {
@@ -158,7 +158,7 @@ class tab_layout_new : public preferences_tab {
         node() : m_item(pfc::rcnew_t<uie::splitter_item_ptr>()){};
     };
 
-    typedef node::ptr node_ptr;
+    using node_ptr = node::ptr;
 
     static node_ptr g_node_root;
     static pfc::array_t<t_uint8> g_node_clipboard;
@@ -254,7 +254,7 @@ class tab_layout_new : public preferences_tab {
             } catch (const pfc::exception& ex) {
                 console::formatter formatter;
                 formatter << "warning: " << sz_text << ": function uie::window::set_config; error " << ex.what();
-            };
+            }
         } else
             sz_text = "<unknown>";
 
@@ -546,7 +546,7 @@ class tab_layout_new : public preferences_tab {
                             abort_callback_dummy abort_callback;
                             splitter->get_config(&conf, abort_callback);
                         } catch (const pfc::exception&) {
-                        };
+                        }
                         p_node->m_item->get_ptr()->set_panel_guid(p_guid);
                         p_node->m_item->get_ptr()->set_panel_config_from_ptr(
                             conf.m_data.get_ptr(), conf.m_data.get_size());
@@ -604,7 +604,7 @@ class tab_layout_new : public preferences_tab {
                     abort_callback_dummy abortCallback;
                     p_node->m_window->get_config(&conf, abortCallback);
                 } catch (const pfc::exception&) {
-                };
+                }
                 p_node->m_item->get_ptr()->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
             }
             HTREEITEM parent = TreeView_GetParent(wnd_tv, ti);
@@ -1097,7 +1097,7 @@ class tab_layout_new : public preferences_tab {
                 TRACK_CALL_TEXT("tab_layout::WM_CONTEXTMENU");
 
                 HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-                POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
                 HTREEITEM treeitem = TreeView_GetSelection(wnd_tv);
 
                 TVHITTESTINFO ti;
@@ -1246,7 +1246,7 @@ class tab_layout_new : public preferences_tab {
             }
             return 0;
         } break;
-        };
+        }
         return 0;
     }
 

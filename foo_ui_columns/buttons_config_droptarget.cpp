@@ -55,7 +55,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     // console::formatter() << "DragEnter";
     m_DataObject = pDataObj;
     last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragEnter(m_button_list_view->get_wnd(), pDataObj, &pt, *pdwEffect);
     *pdwEffect = DROPEFFECT_NONE;
@@ -69,7 +69,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     // console::formatter() << "DragOver";
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
@@ -135,7 +135,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
 HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 

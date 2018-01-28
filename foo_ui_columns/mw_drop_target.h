@@ -28,8 +28,8 @@ public:
 private:
     static bool check_window_allowed(HWND wnd);
 
-    long drop_ref_count;
-    POINTL last_over;
+    long drop_ref_count{0};
+    POINTL last_over{};
     mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
     mmh::ComPtr<IDataObject> m_DataObject;
 };

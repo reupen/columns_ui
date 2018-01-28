@@ -282,7 +282,6 @@ void splitter_window_impl::get_panels_sizes(
 
         for (n = 0; n < count; n++) {
             unsigned panel_divider_size = get_panel_divider_size(n);
-            ;
 
             unsigned height = m_panels[n]->m_hidden ? 0 : m_panels[n]->m_size.get_scaled_value();
             if (height > MAXLONG)
@@ -491,7 +490,7 @@ int splitter_window_impl::override_size(unsigned& panel, int delta)
                     {
                         unsigned height = minmax[n].height
                             + (diff_avail - diff_abs); //(diff_avail-diff_abs > m_panels[n]->height ? 0 :
-                                                       //m_panels[n]->height-(diff_avail-diff_abs));
+                                                       // m_panels[n]->height-(diff_avail-diff_abs));
 
                         unsigned min_height = minmax[n].min_height;
                         unsigned max_height = minmax[n].max_height;
@@ -567,7 +566,7 @@ int splitter_window_impl::override_size(unsigned& panel, int delta)
                     {
                         unsigned height = minmax[n].height
                             + (diff_avail - diff_abs); //(diff_avail-diff_abs > m_panels[n]->height ? 0 :
-                                                       //m_panels[n]->height-(diff_avail-diff_abs));
+                                                       // m_panels[n]->height-(diff_avail-diff_abs));
                         // console::formatter() << "1: " << height << " " << minmax[n].height << " " <<
                         // (diff_avail-diff_abs);
 
@@ -714,11 +713,6 @@ bool splitter_window_impl::is_point_ours(
     }
     return false;
 };
-
-splitter_window_impl::splitter_window_impl()
-    : m_wnd(nullptr), m_last_position(NULL), m_panel_dragging(NULL), m_panel_dragging_valid(false)
-{
-}
 
 unsigned splitter_window_impl::get_panel_divider_size(unsigned index)
 {
@@ -1114,7 +1108,7 @@ bool splitter_window_impl::splitter_host_impl::get_keyboard_shortcuts_enabled() 
 const GUID& splitter_window_impl::splitter_host_impl::get_host_guid() const
 {
     // {FC0ED6EF-DCA2-4679-B7FE-48162DE321FC}
-    static const GUID rv = { 0xfc0ed6ef, 0xdca2, 0x4679, { 0xb7, 0xfe, 0x48, 0x16, 0x2d, 0xe3, 0x21, 0xfc } };
+    static const GUID rv = {0xfc0ed6ef, 0xdca2, 0x4679, {0xb7, 0xfe, 0x48, 0x16, 0x2d, 0xe3, 0x21, 0xfc}};
     return rv;
 }
 

@@ -60,11 +60,7 @@ const wchar_t* window_visualisation::class_name = L"{ED4F644F-26AB-4aa0-809D-0D8
 
 pfc::ptr_list_t<window_visualisation> window_visualisation::list_vis;
 
-window_visualisation::window_visualisation()
-    : initialised(false), m_frame(cfg_vis_edge), bm_display(nullptr), m_wnd(nullptr)
-{
-    memset(&rc_client, 0, sizeof(RECT));
-};
+window_visualisation::window_visualisation() : m_frame(cfg_vis_edge) {}
 
 window_visualisation::~window_visualisation() = default;
 
@@ -136,7 +132,7 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
                 abort_callback_dummy p_abort;
                 p_vis->set_config_from_ptr(m_data.get_ptr(), m_data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
             p_vis->enable(ui_extension::visualisation_host_ptr(m_interface.get_ptr()));
         }
         break;

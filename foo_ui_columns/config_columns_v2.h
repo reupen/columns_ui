@@ -2,8 +2,8 @@
 
 class column_tab : public pfc::refcounted_object_root {
 public:
-    typedef column_tab self_t;
-    typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+    using self_t = column_tab;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
     virtual HWND create(HWND wnd) = 0;
     // virtual void destroy(HWND wnd)=0;
     // virtual const char * get_name()=0;
@@ -13,9 +13,9 @@ public:
 
 class tab_columns_v3 : public preferences_tab {
 private:
-    HWND m_wnd_child;
-    HWND m_wnd;
-    HWND m_wnd_lv;
+    HWND m_wnd_child{nullptr};
+    HWND m_wnd{nullptr};
+    HWND m_wnd_lv{nullptr};
     column_tab::ptr m_child;
     // edit_column_window_options m_tab_options;
     // edit_column_window_scripts m_tab_scripts;
@@ -43,8 +43,8 @@ public:
     }
 
 private:
-    tab_columns_v3() : m_wnd_child(nullptr), m_wnd(nullptr), m_wnd_lv(nullptr), initialising(false){};
+    tab_columns_v3() = default;
 
     column_list_t m_columns;
-    bool initialising;
+    bool initialising{false};
 };

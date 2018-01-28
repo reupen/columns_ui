@@ -18,7 +18,7 @@ void ng_playlist_view_t::on_items_added(/*unsigned p_playlist, */ unsigned start
 }
 void ng_playlist_view_t::on_items_reordered(/*t_size p_playlist, */ const t_size* p_order, t_size p_count){
     /*(if (p_playlist ==0)*/
-    { clear_sort_column();
+    {clear_sort_column();
 // metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
 // m_playlist_api->playlist_get_items(p_playlist, data, pfc::bit_array_true());
 t_size i, start;
@@ -39,8 +39,8 @@ for (i = 0; i < p_count; i++) {
   // their order
 
 void ng_playlist_view_t::on_items_removed(/*t_size p_playlist, */ const pfc::bit_array& p_mask, t_size p_old_count,
-    t_size p_new_count){ /*(if (p_playlist == 0)*/
-    { clear_sort_column();
+    t_size p_new_count){/*(if (p_playlist == 0)*/
+    {clear_sort_column();
 remove_items(p_mask, false);
 refresh_all_items_text(false);
 invalidate_all();
@@ -64,8 +64,8 @@ void ng_playlist_view_t::on_item_focus_change(/*t_size p_playlist, */ t_size p_f
     }
 }; // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
 
-void ng_playlist_view_t::on_items_modified(/*t_size p_playlist, */ const pfc::bit_array& p_mask){ // if (p_playlist==0)
-    { clear_sort_column();
+void ng_playlist_view_t::on_items_modified(/*t_size p_playlist, */ const pfc::bit_array& p_mask){// if (p_playlist==0)
+    {clear_sort_column();
 t_size i, start, count = m_playlist_api->activeplaylist_get_item_count();
 
 for (i = 0; i < count; i++) {
@@ -106,8 +106,8 @@ void ng_playlist_view_t::on_items_replaced(/*t_size p_playlist, */ const pfc::bi
     on_items_modified(p_mask);
 };
 
-void ng_playlist_view_t::on_item_ensure_visible(/*t_size p_playlist, */ t_size p_idx){ // if (p_playlist==0)
-    { ensure_visible(p_idx);
+void ng_playlist_view_t::on_item_ensure_visible(/*t_size p_playlist, */ t_size p_idx){// if (p_playlist==0)
+    {ensure_visible(p_idx);
 }
 }
 ;

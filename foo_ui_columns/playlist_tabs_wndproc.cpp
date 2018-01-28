@@ -190,7 +190,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
     case WM_CONTEXTMENU:
         if (wnd_tabs) {
             uie::window_ptr p_this_temp = this;
-            POINT pt = { (short)LOWORD(lp), (short)HIWORD(lp) };
+            POINT pt = {(short)LOWORD(lp), (short)HIWORD(lp)};
             int old_idx = 0;
             unsigned idx = 0;
 
@@ -246,7 +246,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
                     autoplaylist_client::ptr ptr = autoplaylist_api->query_client(idx);
                     ptr->service_query_t(autoplaylist);
                 } catch (pfc::exception const&) {
-                };
+                }
 
                 HMENU menu = CreatePopupMenu();
 

@@ -80,11 +80,11 @@ private:
     void destroy_bands();
 
 public:
-    HWND wnd_rebar;
+    HWND wnd_rebar{nullptr};
     std::vector<RebarBandInfo> m_bands;
     band_cache cache;
 
-    rebar_window();
+    rebar_window() = default;
     HWND init();
 
     void add_band(

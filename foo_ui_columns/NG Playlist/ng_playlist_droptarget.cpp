@@ -39,7 +39,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragEnter(
     m_DataObject = pDataObj;
     last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragEnter(p_playlist->get_wnd(), pDataObj, &pt, *pdwEffect);
 
@@ -64,7 +64,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragEnter(
 
 HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
@@ -141,7 +141,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave()
 HRESULT STDMETHODCALLTYPE IDropTarget_playlist::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
-    POINT pt = { ptl.x, ptl.y };
+    POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 

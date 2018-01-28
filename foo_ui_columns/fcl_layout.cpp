@@ -8,7 +8,7 @@ class export_layout : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {2CF00365-F2D7-4e78-9FCA-C1D56E2707D8}
-        static const GUID guid = { 0x2cf00365, 0xf2d7, 0x4e78, { 0x9f, 0xca, 0xc1, 0xd5, 0x6e, 0x27, 0x7, 0xd8 } };
+        static const GUID guid = {0x2cf00365, 0xf2d7, 0x4e78, {0x9f, 0xca, 0xc1, 0xd5, 0x6e, 0x27, 0x7, 0xd8}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -68,7 +68,7 @@ class export_toolbars : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {2F802663-0BD1-4d3d-AE7E-0663007A9C2B}
-        static const GUID guid = { 0x2f802663, 0xbd1, 0x4d3d, { 0xae, 0x7e, 0x6, 0x63, 0x0, 0x7a, 0x9c, 0x2b } };
+        static const GUID guid = {0x2f802663, 0xbd1, 0x4d3d, {0xae, 0x7e, 0x6, 0x63, 0x0, 0x7a, 0x9c, 0x2b}};
         return guid;
     }
     const GUID& get_group() const override { return cui::fcl::groups::toolbars; }
@@ -102,7 +102,7 @@ class export_layout_misc : public cui::fcl::dataset {
     const GUID& get_guid() const override
     {
         // {78AA8894-4B2C-477d-B233-E7A7A7663D24}
-        static const GUID guid = { 0x78aa8894, 0x4b2c, 0x477d, { 0xb2, 0x33, 0xe7, 0xa7, 0xa7, 0x66, 0x3d, 0x24 } };
+        static const GUID guid = {0x78aa8894, 0x4b2c, 0x477d, {0xb2, 0x33, 0xe7, 0xa7, 0xa7, 0x66, 0x3d, 0x24}};
         return guid;
     }
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
@@ -137,7 +137,7 @@ class export_layout_misc : public cui::fcl::dataset {
             default:
                 reader.skip(element_size);
                 break;
-            };
+            }
         }
 
         on_show_status_change();

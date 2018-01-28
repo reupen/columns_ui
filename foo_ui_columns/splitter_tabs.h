@@ -3,7 +3,7 @@
 
 class splitter_window_tabs_impl
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
-    typedef splitter_window_tabs_impl t_self;
+    using t_self = splitter_window_tabs_impl;
 
 public:
     class_data& get_class_data() const override;
@@ -68,25 +68,26 @@ public:
     class splitter_host_impl;
 
     struct t_size_limit {
-        unsigned min_height;
-        unsigned max_height;
-        unsigned min_width;
-        unsigned max_width;
-        t_size_limit() : min_height(0), max_height(0), min_width(0), max_width(0){};
+        unsigned min_height{0};
+        unsigned max_height{0};
+        unsigned min_width{0};
+        unsigned max_width{0};
+        t_size_limit() = default;
+        ;
     };
     class panel : public pfc::refcounted_object_root {
     public:
-        GUID m_guid;
-        HWND m_wnd;
+        GUID m_guid{};
+        HWND m_wnd{nullptr};
         pfc::array_t<t_uint8> m_child_data;
         t_size_limit m_size_limits;
         uie::window_ptr m_child;
-        bool m_use_custom_title;
+        bool m_use_custom_title{false};
         pfc::string8 m_custom_title;
         service_ptr_t<splitter_window_tabs_impl> m_this;
         void set_splitter_window_ptr(splitter_window_tabs_impl* ptr) { m_this = ptr; }
 
-        panel();
+        panel() = default;
         ~panel() override;
 
         uie::splitter_item_full_v2_t* create_splitter_item();
@@ -114,7 +115,7 @@ public:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     LRESULT WINAPI on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    WNDPROC m_tab_proc;
+    WNDPROC m_tab_proc{nullptr};
 
     void create_tabs();
     void destroy_tabs();
@@ -124,11 +125,11 @@ public:
     void set_styles(bool visible = true);
     panel_list m_panels;
     panel_list m_active_panels;
-    HWND m_wnd_tabs;
-    t_size m_active_tab;
+    HWND m_wnd_tabs{nullptr};
+    t_size m_active_tab{(std::numeric_limits<size_t>::max)()};
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;
-    t_int32 m_mousewheel_delta;
+    t_int32 m_mousewheel_delta{NULL};
 
     void update_size_limits();
     void on_font_change();
@@ -139,7 +140,7 @@ public:
     void on_active_tab_changing(t_size index_from);
     void on_active_tab_changed(t_size index_to);
 
-    splitter_window_tabs_impl();
+    splitter_window_tabs_impl() = default;
 };
 
 #endif

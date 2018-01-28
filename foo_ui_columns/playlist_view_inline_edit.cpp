@@ -274,7 +274,6 @@ LRESULT WINAPI playlist_view::g_inline_edit_hook_v2(HWND wnd, UINT msg, WPARAM w
     p_this = reinterpret_cast<playlist_view*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
 
     rv = p_this ? p_this->on_inline_edit_message_v2(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    ;
 
     return rv;
 }

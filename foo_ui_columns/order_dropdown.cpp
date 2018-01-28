@@ -63,16 +63,16 @@ class order_extension
     , public playlist_callback_single {
     static const TCHAR* class_name;
 
-    WNDPROC orderproc{ nullptr };
+    WNDPROC orderproc{nullptr};
 
 public:
-    unsigned min_width{ 0 }, height{ 0 };
-    bool initialised{ false };
-    t_int32 m_mousewheel_delta{ 0 };
+    unsigned min_width{0}, height{0};
+    bool initialised{false};
+    t_int32 m_mousewheel_delta{0};
 
     static HFONT font_icon;
 
-    HWND wnd_combo{ nullptr };
+    HWND wnd_combo{nullptr};
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
@@ -298,6 +298,6 @@ LRESULT WINAPI order_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 // {ABA09E7E-9C95-443e-BDFC-049D66B324A0}
 const GUID order_extension::extension_guid
-    = { 0xaba09e7e, 0x9c95, 0x443e, { 0xbd, 0xfc, 0x4, 0x9d, 0x66, 0xb3, 0x24, 0xa0 } };
+    = {0xaba09e7e, 0x9c95, 0x443e, {0xbd, 0xfc, 0x4, 0x9d, 0x66, 0xb3, 0x24, 0xa0}};
 
 ui_extension::window_factory<order_extension> blah;

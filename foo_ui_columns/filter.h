@@ -28,7 +28,7 @@ class node_t {
 public:
     metadb_handle_list_t<pfc::alloc_fast_aggressive> m_handles;
     pfc::string_simple_t<WCHAR> m_value;
-    bool m_handles_sorted{ false };
+    bool m_handles_sorted{false};
 
     void ensure_handles_sorted();
     void remove_handles(metadb_handle_list_cref to_remove);
@@ -64,12 +64,12 @@ public:
 
 class filter_stream_t : public pfc::refcounted_object_root {
 public:
-    typedef filter_stream_t self_t;
-    typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+    using self_t = filter_stream_t;
+    using ptr = pfc::refcounted_object_ptr_t<self_t>;
     /** Unordered */
     pfc::ptr_list_t<class filter_panel_t> m_windows;
 
-    bool m_source_overriden{ false };
+    bool m_source_overriden{false};
     metadb_handle_list m_source_handles;
 
     bool is_visible();
@@ -209,15 +209,15 @@ private:
     static bool g_showallnode;
 
     ui_selection_holder::ptr m_selection_holder;
-    t_size m_drag_item_count{ 0 };
+    t_size m_drag_item_count{0};
     pfc::string8 m_edit_previous_value;
     pfc::list_t<pfc::string8> m_edit_fields;
     metadb_handle_list m_edit_handles;
     pfc::list_t<node_t> m_nodes;
-    bool m_show_search{ false };
-    bool m_pending_sort_direction{ false };
+    bool m_show_search{false};
+    bool m_pending_sort_direction{false};
     contextmenu_manager::ptr m_contextmenu_manager;
-    UINT_PTR m_contextmenu_manager_base{ 0 };
+    UINT_PTR m_contextmenu_manager_base{0};
     ui_status_text_override::ptr m_status_text_override;
 };
 }; // namespace filter_panel

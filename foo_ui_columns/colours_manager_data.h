@@ -37,7 +37,7 @@ public:
         void reset_colors();
         entry_t(bool b_global = false);
     };
-    typedef pfc::refcounted_object_ptr_t<entry_t> entry_ptr_t;
+    using entry_ptr_t = pfc::refcounted_object_ptr_t<entry_t>;
     pfc::list_t<entry_ptr_t> m_entries;
     entry_ptr_t m_global_entry;
 
@@ -46,9 +46,7 @@ public:
     colours_manager_data();
 
     void register_common_callback(cui::colours::common_callback* p_callback);
-    ;
     void deregister_common_callback(cui::colours::common_callback* p_callback);
-    ;
 
     void g_on_common_colour_changed(t_size mask);
 

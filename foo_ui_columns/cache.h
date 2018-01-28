@@ -88,7 +88,7 @@ extern cache_manager g_cache_manager;
 class display_info {
 private:
     pfc::string_simple display;
-    colourinfo* colours;
+    colourinfo* colours{nullptr};
 
 public:
     void set_display(const char* new_display);
@@ -98,7 +98,7 @@ public:
     void set_colour(
         /*COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF back_sel_nofocus*/ colourinfo&
             colour_add);
-    display_info() : colours(nullptr){};
+    display_info() = default;
     ~display_info()
     {
         if (colours)
@@ -111,14 +111,14 @@ public:
 class playlist_entry_ui {
 private:
     //    pfc::ptr_list_t<display_info> display_data;
-    display_info* display_data;
+    display_info* display_data{nullptr};
 
 public:
     void add_display_items(unsigned count);
     void set_display_item(int column, const char* data, colourinfo& colour_add);
     display_info* get_item(unsigned col) const;
     ~playlist_entry_ui();
-    playlist_entry_ui();
+    playlist_entry_ui() = default;
 };
 
 class global_variable {
@@ -202,12 +202,7 @@ public:
 
     inline bool get_active_columns_valid() { return m_active_columns_valid; }
 
-    playlist_cache()
-        : m_active_columns(0)
-        , m_active_columns_valid(false)
-        , m_sorted(false)
-        , m_sorted_column(0)
-        , m_sorted_descending(false){};
+    playlist_cache() : m_active_columns(0){};
 
     ~playlist_cache();
 
@@ -215,11 +210,11 @@ private:
     bool is_valid(unsigned idx);
 
     pfc::bit_array_bittable m_active_columns;
-    bool m_active_columns_valid;
+    bool m_active_columns_valid{false};
 
-    bool m_sorted;
-    unsigned m_sorted_column;
-    bool m_sorted_descending;
+    bool m_sorted{false};
+    unsigned m_sorted_column{0};
+    bool m_sorted_descending{false};
 
     friend class playlist_view_cache;
 };
@@ -393,7 +388,7 @@ public:
         return false;
     }
 
-    inline playlist_view_cache() : active_playlist(0), m_active(false){};
+    inline playlist_view_cache() = default;
 
     inline bool is_active() { return m_active; }
 
@@ -410,8 +405,8 @@ private:
     bool is_in_playlist(unsigned playlist, unsigned idx);
     bool update_item(unsigned playlist, unsigned idx);
 
-    unsigned active_playlist;
-    bool m_active;
+    unsigned active_playlist{0};
+    bool m_active{false};
 };
 
 class t_local_cache : private playlist_callback {
@@ -430,11 +425,11 @@ public:
             m_last_position = u_position;
         }
 
-        t_local_cache_entry() : m_last_position_valid(false), m_last_position(0){};
+        t_local_cache_entry() = default;
 
     private:
-        bool m_last_position_valid;
-        unsigned m_last_position;
+        bool m_last_position_valid{false};
+        unsigned m_last_position{0};
     };
 
     bool get_entry(unsigned index, t_local_cache_entry*& p_out)

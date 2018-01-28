@@ -49,7 +49,7 @@ void preview_to_console(const char* spec, bool extra)
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init)
 {
     COLORREF COLOR = g_last_colour;
-    COLORREF COLORS[16] = { g_last_colour, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    COLORREF COLORS[16] = {g_last_colour, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     if (init || uChooseColor(&COLOR, parent, &COLORS[0])) {
         g_last_colour = COLOR;
 
@@ -65,7 +65,7 @@ bool colour_picker(HWND wnd, COLORREF& out, COLORREF custom)
 {
     bool rv = false;
     COLORREF COLOR = out;
-    COLORREF COLORS[16] = { custom, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    COLORREF COLORS[16] = {custom, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     if (uChooseColor(&COLOR, wnd, &COLORS[0])) {
         out = COLOR;
         rv = true;

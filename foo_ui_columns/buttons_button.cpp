@@ -29,7 +29,6 @@ void toolbar_extension::button::callback_impl::set_id(const unsigned i)
 {
     id = i;
 }
-toolbar_extension::button::callback_impl::callback_impl() : id(0){};
 
 void toolbar_extension::button::set(const toolbar_extension::button& p_source)
 {
@@ -71,16 +70,6 @@ toolbar_extension::button::button(GUID p_guid, bool p_custom, const char* p_cust
     m_filter = FILTER_ACTIVE_SELECTION;
     m_show = SHOW_IMAGE;
     m_use_custom_text = false;
-}
-toolbar_extension::button::button()
-    : m_type(TYPE_SEPARATOR)
-    , m_filter(FILTER_ACTIVE_SELECTION)
-    , m_show(SHOW_IMAGE)
-    , m_guid(pfc::guid_null)
-    , m_use_custom(false)
-    , m_use_custom_hot(false)
-    , m_use_custom_text(false)
-{
 }
 
 const toolbar_extension::button& toolbar_extension::button::operator=(const toolbar_extension::button& p_source)

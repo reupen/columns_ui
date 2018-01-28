@@ -96,9 +96,9 @@ public:
 
 class playlist_cache_item_t {
 public:
-    bool m_initialised;
-    t_size m_scroll_position;
-    playlist_cache_item_t() : m_initialised(false), m_scroll_position(NULL){};
+    bool m_initialised{false};
+    t_size m_scroll_position{NULL};
+    playlist_cache_item_t() = default;
 };
 
 class column_data_t {
@@ -110,7 +110,7 @@ public:
 
 class completion_notify_artwork_base_t : public pfc::refcounted_object_root {
 public:
-    typedef pfc::refcounted_object_ptr_t<completion_notify_artwork_base_t> ptr_t;
+    using ptr_t = pfc::refcounted_object_ptr_t<completion_notify_artwork_base_t>;
 
     virtual void on_completion(const pfc::rcptr_t<class artwork_reader_ng_t>& p_reader) = 0;
 
@@ -127,16 +127,9 @@ public:
     bool is_ready() { return !is_thread_open(); }
     const pfc::map_t<GUID, pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>>& get_content() const { return m_bitmaps; }
 
-    artwork_reader_ng_t()
-        : m_cx(0)
-        , m_cy(0)
-        , m_back(RGB(255, 255, 255))
-        , m_reflection(false)
-        , m_succeeded(false)
-        , m_native_artwork_reader_mode(artwork_panel::fb2k_artwork_embedded_and_external){};
+    artwork_reader_ng_t() : m_back(RGB(255, 255, 255)){};
 
     ~artwork_reader_ng_t() override = default;
-    ;
 
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
@@ -170,20 +163,20 @@ private:
     pfc::chain_list_v2_t<GUID> m_requestIds;
     pfc::map_t<GUID, pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>> m_bitmaps;
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
-    t_size m_cx, m_cy;
+    t_size m_cx{0}, m_cy{0};
     COLORREF m_back;
-    bool m_reflection;
+    bool m_reflection{false};
     metadb_handle_ptr m_handle;
     completion_notify_artwork_base_t::ptr_t m_notify;
-    bool m_succeeded;
-    t_size m_native_artwork_reader_mode;
+    bool m_succeeded{false};
+    t_size m_native_artwork_reader_mode{artwork_panel::fb2k_artwork_embedded_and_external};
     abort_callback_impl m_abort;
     pfc::refcounted_object_ptr_t<class artwork_reader_manager_ng_t> m_manager;
 };
 
 class artwork_reader_manager_ng_t : public pfc::refcounted_object_root {
 public:
-    typedef pfc::refcounted_object_ptr_t<artwork_reader_manager_ng_t> ptr;
+    using ptr = pfc::refcounted_object_ptr_t<artwork_reader_manager_ng_t>;
     void add_type(const GUID& p_what) { m_requestIds.add_item(p_what); }
     void abort_task(t_size index)
     {
@@ -262,7 +255,7 @@ public:
     void on_reader_completion(const artwork_reader_ng_t* ptr);
     void on_reader_abort(const artwork_reader_ng_t* ptr);
 
-    artwork_reader_manager_ng_t() : m_nocover_cx(0), m_nocover_cy(0){};
+    artwork_reader_manager_ng_t() = default;
 
     void request_nocover_image(pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx, t_size cy,
         COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
@@ -298,7 +291,7 @@ private:
 
     critical_section m_nocover_sync;
     pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t> m_nocover_bitmap;
-    t_size m_nocover_cx, m_nocover_cy;
+    t_size m_nocover_cx{0}, m_nocover_cy{0};
 };
 
 class appearance_client_ngpv_impl : public cui::colours::client {
@@ -317,7 +310,6 @@ public:
     bool get_themes_supported() const override { return true; };
 
     void on_colour_changed(t_size mask) const override;
-    ;
 
     void on_bool_changed(t_size mask) const override{};
 };
@@ -388,7 +380,7 @@ public:
     void get_category(pfc::string_base& out) const override;
     unsigned get_type() const override;
 
-    bool m_dragging;
+    bool m_dragging{false};
     pfc::com_ptr_t<IDataObject> m_DataObject;
     t_size m_dragging_initial_playlist;
 
@@ -401,24 +393,24 @@ private:
 
     class item_group_ng_t : public Group {
     public:
-        typedef item_group_ng_t self_t;
-        typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+        using self_t = item_group_ng_t;
+        using ptr = pfc::refcounted_object_ptr_t<self_t>;
         style_data_cell_t::ptr m_style_data;
 
-        bool m_artwork_load_attempted;
-        bool m_artwork_load_succeeded;
+        bool m_artwork_load_attempted{false};
+        bool m_artwork_load_succeeded{false};
         // bool m_data_to_bitmap_attempted;
         // album_art_data_ptr m_artwork_data;
         pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t> m_artwork_bitmap; // cached for display
 
-        item_group_ng_t()
-            : m_artwork_load_attempted(false), /*m_data_to_bitmap_attempted(false),*/ m_artwork_load_succeeded(false){};
+        item_group_ng_t() = default;
+        ;
     };
 
     class item_ng_t : public Item {
     public:
-        typedef item_ng_t self_t;
-        typedef pfc::refcounted_object_ptr_t<self_t> ptr;
+        using self_t = item_ng_t;
+        using ptr = pfc::refcounted_object_ptr_t<self_t>;
         style_data_t m_style_data;
         item_group_ng_t* get_group(t_size index) { return static_cast<item_group_ng_t*>(m_groups[index].get_ptr()); }
         t_size get_group_count() { return m_groups.get_count(); }
@@ -456,7 +448,7 @@ private:
 
             if (group_count) {
                 for (i = 0; i < count; i++) {
-                    item_ng_t* item = static_cast<item_ng_t*>(get_item(i));
+                    auto* item = static_cast<item_ng_t*>(get_item(i));
                     if (item->get_group(group_count - 1) == p_group.get_ptr()) {
                         if (p_reader->get_content().query(album_art_ids::cover_front, p_group->m_artwork_bitmap)) {
                             p_group->m_artwork_load_succeeded = true;
@@ -471,7 +463,7 @@ private:
 
     class completion_notify_artwork_t : public completion_notify_artwork_base_t {
     public:
-        typedef pfc::refcounted_object_ptr_t<completion_notify_artwork_t> ptr_t;
+        using ptr_t = pfc::refcounted_object_ptr_t<completion_notify_artwork_t>;
 
         void on_completion(const pfc::rcptr_t<artwork_reader_ng_t>& p_reader) override
         {
@@ -620,7 +612,7 @@ private:
         }
     };
 
-    bool m_day_timer_active;
+    bool m_day_timer_active{false};
 
     void kill_day_timer()
     {
@@ -681,16 +673,16 @@ private:
     metadb_handle_list m_edit_handles;
     service_ptr_t<titleformat_object> m_script_global, m_script_global_style;
     service_ptr_t<playlist_manager> m_playlist_api;
-    bool m_ignore_callback;
-    ULONG_PTR m_gdiplus_token;
-    bool m_gdiplus_initialised;
+    bool m_ignore_callback{false};
+    ULONG_PTR m_gdiplus_token{NULL};
+    bool m_gdiplus_initialised{false};
 
     mainmenu_manager::ptr m_mainmenu_manager;
     contextmenu_manager::ptr m_contextmenu_manager;
     ui_status_text_override::ptr m_status_text_override;
 
-    UINT_PTR m_mainmenu_manager_base;
-    UINT_PTR m_contextmenu_manager_base;
+    UINT_PTR m_mainmenu_manager_base{NULL};
+    UINT_PTR m_contextmenu_manager_base{NULL};
 
     playlist_cache_t<playlist_cache_item_t> m_playlist_cache;
 

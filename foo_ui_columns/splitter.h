@@ -13,28 +13,21 @@ public:
     static unsigned g_get_caption_size();
     void get_category(pfc::string_base& p_out) const override;
     unsigned get_type() const override;
-    ;
 
     void insert_panel(unsigned index, const uie::splitter_item_t* p_item) override;
 
     void remove_panel(unsigned index) override;
-    ;
     void replace_panel(unsigned index, const uie::splitter_item_t* p_item) override;
 
     unsigned get_panel_count() const override;
-    ;
     uie::splitter_item_t* get_panel(unsigned index) const override;
-    ;
     enum { stream_version_current = 0 };
 
     void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
     void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
-    ;
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
-    ;
 
     void get_config(stream_writer* out, abort_callback& p_abort) const override;
-    ;
 
     bool is_index_valid(unsigned index) const;
 
@@ -44,7 +37,6 @@ public:
         unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const override;
 
     bool set_config_item(unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
-    ;
 
     class splitter_host_impl : public ui_extension::window_host_ex {
         service_ptr_t<splitter_window_impl> m_this;
@@ -86,11 +78,12 @@ public:
 
 private:
     struct t_size_limit {
-        unsigned min_height;
-        unsigned max_height;
-        unsigned min_width;
-        unsigned max_width;
-        t_size_limit() : min_height(0), max_height(0), min_width(0), max_width(0){};
+        unsigned min_height{0};
+        unsigned max_height{0};
+        unsigned min_width{0};
+        unsigned max_width{0};
+        t_size_limit() = default;
+        ;
     };
     class panel : public pfc::refcounted_object_root {
     public:
@@ -122,23 +115,23 @@ private:
         } m_container;
 
         GUID m_guid;
-        unsigned m_caption_orientation;
-        bool m_locked;
-        bool m_hidden;
-        bool m_autohide;
-        HWND m_wnd;
-        HWND m_wnd_child;
-        bool m_show_caption;
+        unsigned m_caption_orientation{NULL};
+        bool m_locked{false};
+        bool m_hidden{false};
+        bool m_autohide{false};
+        HWND m_wnd{nullptr};
+        HWND m_wnd_child{nullptr};
+        bool m_show_caption{true};
         pfc::array_t<t_uint8> m_child_data;
         t_size_limit m_size_limits;
         uie::window_ptr m_child;
-        bool m_show_toggle_area;
-        bool m_use_custom_title;
+        bool m_show_toggle_area{false};
+        bool m_use_custom_title{false};
         pfc::string8 m_custom_title;
 
         service_ptr_t<class splitter_host_impl> m_interface;
 
-        uih::IntegerAndDpi<uint32_t> m_size;
+        uih::IntegerAndDpi<uint32_t> m_size{150};
 
         uie::splitter_item_full_v2_t* create_splitter_item(bool b_set_ptr = true);
 
@@ -197,11 +190,11 @@ private:
 
     // unsigned get_orientation();
     panel_list m_panels;
-    HWND m_wnd;
+    HWND m_wnd{nullptr};
 
-    int m_last_position;
-    unsigned m_panel_dragging;
-    bool m_panel_dragging_valid;
+    int m_last_position{NULL};
+    unsigned m_panel_dragging{NULL};
+    bool m_panel_dragging_valid{false};
 
     static gdi_object_t<HFONT>::ptr_t g_font_menu_horizontal;
     static gdi_object_t<HFONT>::ptr_t g_font_menu_vertical;
@@ -209,8 +202,7 @@ private:
     static pfc::ptr_list_t<splitter_window_impl> g_instances;
 
 public:
-    splitter_window_impl();
-    ;
+    splitter_window_impl() = default;
 
     //
 };

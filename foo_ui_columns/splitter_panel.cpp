@@ -1,21 +1,7 @@
 #include "stdafx.h"
 #include "splitter.h"
 
-splitter_window_impl::panel::panel()
-    : m_container(this)
-    , m_guid(pfc::guid_null)
-    , m_caption_orientation(NULL)
-    , m_locked(false)
-    , m_hidden(false)
-    , m_autohide(false)
-    , m_wnd(nullptr)
-    , m_wnd_child(nullptr)
-    , m_show_caption(true)
-    , m_show_toggle_area(false)
-    , m_use_custom_title(false)
-    , m_size(150)
-{
-}
+splitter_window_impl::panel::panel() : m_container(this) {}
 
 void splitter_window_impl::panel::destroy()
 {
@@ -51,7 +37,7 @@ void splitter_window_impl::panel::on_size(unsigned cx, unsigned cy)
         int caption_cx = min(m_caption_orientation == vertical ? caption_size : (cx), MAXLONG);
         int caption_cy = min(m_caption_orientation == vertical ? cy : caption_size, MAXLONG);
 
-        RECT rc_caption = { 0, 0, caption_cx, caption_cy };
+        RECT rc_caption = {0, 0, caption_cx, caption_cy};
         RedrawWindow(m_wnd, &rc_caption, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
     }
 }
@@ -123,7 +109,7 @@ void splitter_window_impl::panel::import(stream_reader* t, abort_callback& p_abo
         try {
             m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
         m_child->get_config_to_array(m_child_data, p_abort, true);
     }
     // else
@@ -171,7 +157,7 @@ void splitter_window_impl::panel::_export(stream_writer* out, abort_callback& p_
         try {
             ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
         } catch (const exception_io&) {
-        };
+        }
     }
     {
         ptr->export_config(&child_exported_data, p_abort);

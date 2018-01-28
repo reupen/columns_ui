@@ -3,7 +3,7 @@
 #include "splitter.h"
 
 // {755971A7-109B-41dc-BED9-5A05CC07C905}
-static const GUID g_guid_layout = { 0x755971a7, 0x109b, 0x41dc, { 0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5 } };
+static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5}};
 
 cfg_layout_t cfg_layout(g_guid_layout);
 
@@ -12,7 +12,7 @@ public:
     const GUID& get_host_guid() const override
     {
         // {DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}
-        static const GUID ret = { 0xda9a1375, 0xa411, 0x48a9, { 0xaf, 0x74, 0x4a, 0xc2, 0x9f, 0xf9, 0xbe, 0x9c } };
+        static const GUID ret = {0xda9a1375, 0xa411, 0x48a9, {0xaf, 0x74, 0x4a, 0xc2, 0x9f, 0xf9, 0xbe, 0x9c}};
         return ret;
     }
 
@@ -52,8 +52,6 @@ public:
 
 ui_extension::window_host_factory_single<window_host_layout> g_window_host_layout_factory;
 
-layout_window::layout_window()
-    : m_child_guid(columns_ui::panels::guid_playlist_view_v2), m_child_wnd(nullptr), m_layout_editing_active(false){};
 bool layout_window::set_focus()
 {
     return __set_focus_recur(m_child);
@@ -350,7 +348,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
                                 abort_callback_dummy p_abort;
                                 ptr->set_config_from_ptr(w.m_data.get_ptr(), w.m_data.get_size(), p_abort);
                             } catch (const exception_io&) {
-                            };
+                            }
                         } else
                             throw cui::fcl::exception_missing_panel();
                     __get_panel_list_recur(ptr, p_out);
@@ -386,7 +384,7 @@ bool layout_window::import_config_to_object(stream_reader* p_reader, t_size psiz
             try {
                 wnd->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
             wnd->get_config_to_array(conf, p_abort);
             __get_panel_list_recur(wnd, panels);
         } else
@@ -400,7 +398,7 @@ bool layout_window::import_config_to_object(stream_reader* p_reader, t_size psiz
             try {
                 wnd->set_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
             } catch (const exception_io&) {
-            };
+            }
             __get_panel_list_recur(wnd, panels);
         } else
             return false;
@@ -440,7 +438,7 @@ void layout_window::export_config(
                     try {
                         ptr->set_config_from_ptr(data.m_data.get_ptr(), data.m_data.get_size(), p_abort);
                     } catch (const exception_io&) {
-                    };
+                    }
                     __get_panel_list_recur(ptr, panels);
                     ptr->export_config(&writer, p_abort);
                     p_out->write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
@@ -460,7 +458,7 @@ void layout_window::export_config(
                     try {
                         ptr->set_config_from_ptr(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
                     } catch (const exception_io&) {
-                    };
+                    }
                     __get_panel_list_recur(ptr, panels);
                 }
 
@@ -629,7 +627,7 @@ void layout_window::run_live_edit_base(POINT pt_menu)
                                     abort_callback_dummy p_abort;
                                     splitter->get_config(&conf, p_abort);
                                 } catch (const pfc::exception&) {
-                                };
+                                }
                                 newsi->set_panel_guid(panels[panel_index].guid);
                                 newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
@@ -837,7 +835,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                                 try {
                                     splitter->get_config(&conf, p_abort);
                                 } catch (const pfc::exception&) {
-                                };
+                                }
                                 newsi->set_panel_guid(panels[panel_index].guid);
                                 newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
@@ -878,7 +876,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                                 try {
                                     splitter->get_config(&conf, p_abort);
                                 } catch (const pfc::exception&) {
-                                };
+                                }
                                 newsi->set_panel_guid(panels[panel_index].guid);
                                 newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
@@ -906,7 +904,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
                     RECT rc;
                     GetRelativeRect(lpmsg->hwnd, HWND_DESKTOP, &rc);
 
-                    POINT pt = { rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2 };
+                    POINT pt = {rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2};
 
                     pfc::list_t<uie::window::ptr> hierarchy;
                     if (!sw2.is_valid() || sw2->is_point_ours(lpmsg->hwnd, pt, hierarchy)) {
@@ -917,7 +915,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
                             wnd_panel = hierarchy[hierarchy.get_count() - 1]->get_wnd();
 
                             GetRelativeRect(wnd_panel, HWND_DESKTOP, &rc);
-                            POINT pt = { rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2 };
+                            POINT pt = {rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2};
 
                             run_live_edit_base_delayed_v2(wnd_panel, pt, hierarchy);
                         }
@@ -979,7 +977,7 @@ LRESULT layout_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         PostMessage(wnd, MSG_LAYOUT_SET_FOCUS, 0, 0);
         break;
     case MSG_EDIT_PANEL: {
-        POINT pt = { int(wp), int(lp) };
+        POINT pt = {int(wp), int(lp)};
         run_live_edit_base(pt);
     } break;
     case MSG_EDIT_PANEL_V2: {

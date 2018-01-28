@@ -164,13 +164,12 @@ struct colour_bytes {
 };
 
 struct colour {
-    BYTE B;
-    BYTE G;
-    BYTE R;
-    // public:
-    colour() : B(0), G(0), R(0) {}
+    BYTE B{0};
+    BYTE G{0};
+    BYTE R{0};
+
     void set(COLORREF new_colour);
-    inline operator COLORREF() const { return RGB(R, G, B); }
+    operator COLORREF() const { return RGB(R, G, B); }
 };
 
 inline bool operator==(const colour& c1, const colour& c2)

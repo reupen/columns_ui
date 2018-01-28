@@ -14,7 +14,7 @@ public:
     pfc::string8 m_name_friendly;
 
     field_t(const char* friendly, const char* field) : m_name(field), m_name_friendly(friendly){};
-    field_t(){};
+    field_t() = default;
 };
 
 class fields_list_view_t : public uih::ListView {
@@ -22,17 +22,13 @@ public:
     t_size m_edit_index, m_edit_column;
     pfc::list_t<field_t>& m_fields;
     fields_list_view_t(pfc::list_t<field_t>& p_fields);
-    ;
 
     void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items);
     void notify_on_create() override;
-    ;
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
-    ;
     bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
-    ;
     void notify_save_inline_edit(const char* value) override;
 
 private:
@@ -47,15 +43,14 @@ class track_property_callback_itemproperties : public track_property_callback_v2
 public:
     class track_property_t {
     public:
-        typedef track_property_t self_t;
+        using self_t = track_property_t;
         pfc::string8 m_name, m_value;
-        double m_sortpriority;
+        double m_sortpriority{0};
 
         static int g_compare(self_t const& a, self_t const& b);
 
         track_property_t(double p_sortpriority, const char* p_name, const char* p_value);
-        ;
-        track_property_t();
+        track_property_t() = default;
     };
 
     void set_property(const char* p_group, double p_sortpriority, const char* p_name, const char* p_value) override;
@@ -78,7 +73,6 @@ public:
     void sort();
 
     track_property_callback_itemproperties();
-    ;
     pfc::array_staticsize_t<pfc::list_t<track_property_t>> m_values;
 };
 
@@ -99,7 +93,6 @@ public:
     bool get_themes_supported() const override { return true; };
 
     void on_colour_changed(t_size mask) const override;
-    ;
 
     void on_bool_changed(t_size mask) const override{};
 };
@@ -115,7 +108,6 @@ public:
     static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     selection_properties_config_t(pfc::list_t<field_t> p_fields, t_size edge_style, t_uint32 info_sections_mask,
         bool b_show_columns, bool b_show_groups);
-    ;
 
     bool run_modal(HWND wnd);
 
@@ -201,17 +193,13 @@ public:
     void notify_on_set_focus(HWND wnd_lost) override;
     void notify_on_kill_focus(HWND wnd_receiving) override;
     bool notify_on_keyboard_keydown_copy() override;
-    ;
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed) override;
-    ;
     void notify_on_column_size_change(t_size index, int new_width) override;
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
-    ;
     static void g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out);
     bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
-    ;
     void notify_save_inline_edit(const char* value) override;
 
     // UI SEL API
@@ -238,7 +226,6 @@ public:
     static void g_on_font_groups_change();
 
     selection_properties_t();
-    ;
 
 private:
     void register_callback();
@@ -253,14 +240,14 @@ private:
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles, m_selection_handles;
     pfc::list_t<field_t> m_fields;
-    bool m_callback_registered;
+    bool m_callback_registered{false};
     t_size m_tracking_mode;
 
     t_uint32 m_info_sections_mask;
     bool m_show_column_titles, m_show_group_titles;
 
-    bool m_autosizing_columns;
-    t_size m_column_name_width, m_column_field_width;
+    bool m_autosizing_columns{true};
+    t_size m_column_name_width{75}, m_column_field_width{125};
 
     t_size m_edge_style;
     t_size m_edit_column, m_edit_index;

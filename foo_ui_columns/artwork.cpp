@@ -16,32 +16,30 @@ namespace artwork_panel {
     { 0x9dc64eb7, 0x9252, 0x4a88, { 0xae, 0x13, 0x4f, 0x1b, 0xab, 0x21, 0x6f, 0x90 } };
 #endif
 // {D6B58D7C-CABA-49f3-8E46-4CCD396B9FC7}
-const GUID g_guid_cfg_icon = { 0xd6b58d7c, 0xcaba, 0x49f3, { 0x8e, 0x46, 0x4c, 0xcd, 0x39, 0x6b, 0x9f, 0xc7 } };
+const GUID g_guid_cfg_icon = {0xd6b58d7c, 0xcaba, 0x49f3, {0x8e, 0x46, 0x4c, 0xcd, 0x39, 0x6b, 0x9f, 0xc7}};
 // {A24038C7-C055-45ed-B631-CC8FD2A22473}
-const GUID g_guid_fb2k_artwork_mode
-    = { 0xa24038c7, 0xc055, 0x45ed, { 0xb6, 0x31, 0xcc, 0x8f, 0xd2, 0xa2, 0x24, 0x73 } };
+const GUID g_guid_fb2k_artwork_mode = {0xa24038c7, 0xc055, 0x45ed, {0xb6, 0x31, 0xcc, 0x8f, 0xd2, 0xa2, 0x24, 0x73}};
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
-const GUID g_guid_track_mode = { 0x5c7b29, 0x3915, 0x4b83, { 0xa2, 0x83, 0xc0, 0x1a, 0x4e, 0xdc, 0x4f, 0x3a } };
+const GUID g_guid_track_mode = {0x5c7b29, 0x3915, 0x4b83, {0xa2, 0x83, 0xc0, 0x1a, 0x4e, 0xdc, 0x4f, 0x3a}};
 // {A35E8697-0B8A-4e6f-9DBE-39EC4626524D}
-const GUID g_guid_preserve_aspect_ratio
-    = { 0xa35e8697, 0xb8a, 0x4e6f, { 0x9d, 0xbe, 0x39, 0xec, 0x46, 0x26, 0x52, 0x4d } };
+const GUID g_guid_preserve_aspect_ratio = {0xa35e8697, 0xb8a, 0x4e6f, {0x9d, 0xbe, 0x39, 0xec, 0x46, 0x26, 0x52, 0x4d}};
 
 // {F5C8CE6B-5D68-4ce2-8B9F-874D8EDB03B3}
-const GUID g_guid_edge_style = { 0xf5c8ce6b, 0x5d68, 0x4ce2, { 0x8b, 0x9f, 0x87, 0x4d, 0x8e, 0xdb, 0x3, 0xb3 } };
+const GUID g_guid_edge_style = {0xf5c8ce6b, 0x5d68, 0x4ce2, {0x8b, 0x9f, 0x87, 0x4d, 0x8e, 0xdb, 0x3, 0xb3}};
 
 // {F6E92FCD-7E02-4329-9DA3-D03AEDD66D07}
 static const GUID g_guid_cfg_front_scripts
-    = { 0xf6e92fcd, 0x7e02, 0x4329, { 0x9d, 0xa3, 0xd0, 0x3a, 0xed, 0xd6, 0x6d, 0x7 } };
+    = {0xf6e92fcd, 0x7e02, 0x4329, {0x9d, 0xa3, 0xd0, 0x3a, 0xed, 0xd6, 0x6d, 0x7}};
 // {BD2474FC-2CF9-475f-AC0B-26130541526C}
 static const GUID g_guid_cfg_back_scripts
-    = { 0xbd2474fc, 0x2cf9, 0x475f, { 0xac, 0xb, 0x26, 0x13, 0x5, 0x41, 0x52, 0x6c } };
+    = {0xbd2474fc, 0x2cf9, 0x475f, {0xac, 0xb, 0x26, 0x13, 0x5, 0x41, 0x52, 0x6c}};
 // {70D71DF4-D1FF-4d19-9412-B949690ED43E}
 static const GUID g_guid_cfg_disc_scripts
-    = { 0x70d71df4, 0xd1ff, 0x4d19, { 0x94, 0x12, 0xb9, 0x49, 0x69, 0xe, 0xd4, 0x3e } };
+    = {0x70d71df4, 0xd1ff, 0x4d19, {0x94, 0x12, 0xb9, 0x49, 0x69, 0xe, 0xd4, 0x3e}};
 
 // {C1E7DA7E-1D3A-4f30-8384-0E47C49B6DD9}
 static const GUID g_guid_cfg_artist_scripts
-    = { 0xc1e7da7e, 0x1d3a, 0x4f30, { 0x83, 0x84, 0xe, 0x47, 0xc4, 0x9b, 0x6d, 0xd9 } };
+    = {0xc1e7da7e, 0x1d3a, 0x4f30, {0x83, 0x84, 0xe, 0x47, 0xc4, 0x9b, 0x6d, 0xd9}};
 
 enum track_mode_t {
     track_auto_playlist_playing,
@@ -86,11 +84,10 @@ cfg_objList<pfc::string8> cfg_front_scripts(g_guid_cfg_front_scripts), cfg_back_
     cfg_disc_scripts(g_guid_cfg_disc_scripts), cfg_artist_scripts(g_guid_cfg_artist_scripts);
 
 // {E32DCBA9-A2BF-4901-AB43-228628071410}
-static const GUID g_guid_colour_client
-    = { 0xe32dcba9, 0xa2bf, 0x4901, { 0xab, 0x43, 0x22, 0x86, 0x28, 0x7, 0x14, 0x10 } };
+static const GUID g_guid_colour_client = {0xe32dcba9, 0xa2bf, 0x4901, {0xab, 0x43, 0x22, 0x86, 0x28, 0x7, 0x14, 0x10}};
 
 const GUID g_artwork_types[]
-    = { album_art_ids::cover_front, album_art_ids::cover_back, album_art_ids::disc, album_art_ids::artist };
+    = {album_art_ids::cover_front, album_art_ids::cover_back, album_art_ids::disc, album_art_ids::artist};
 
 void artwork_panel_t::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
@@ -110,13 +107,7 @@ void artwork_panel_t::get_menu_items(ui_extension::menu_hook_t& p_hook)
     p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_options()));
 }
 
-artwork_panel_t::artwork_panel_t()
-    : m_gdiplus_instance(NULL)
-    , m_gdiplus_initialised(false)
-    , m_position(0)
-    , m_track_mode(cfg_track_mode)
-    , m_preserve_aspect_ratio(cfg_preserve_aspect_ratio)
-    , m_lock_type(false){};
+artwork_panel_t::artwork_panel_t() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio){};
 
 void artwork_panel_t::g_on_edge_style_change()
 {
@@ -136,7 +127,7 @@ void artwork_panel_t::g_on_edge_style_change()
 const GUID& artwork_panel_t::get_extension_guid() const
 {
     // {DEEAD6EC-F0B9-4919-B16D-280AEDDE7343}
-    static const GUID guid = { 0xdeead6ec, 0xf0b9, 0x4919, { 0xb1, 0x6d, 0x28, 0xa, 0xed, 0xde, 0x73, 0x43 } };
+    static const GUID guid = {0xdeead6ec, 0xf0b9, 0x4919, {0xb1, 0x6d, 0x28, 0xa, 0xed, 0xde, 0x73, 0x43}};
     return guid;
 }
 void artwork_panel_t::get_name(pfc::string_base& out) const
@@ -265,7 +256,7 @@ LRESULT artwork_panel_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         EndPaint(wnd, &ps);
     }
         return 0;
-    };
+    }
     return DefWindowProc(wnd, msg, wp, lp);
 }
 bool g_check_process_on_selection_changed()
@@ -605,7 +596,7 @@ void artwork_panel_t::set_config(stream_reader* p_reader, t_size size, abort_cal
         try {
             p_reader->read_lendian_t(version, p_abort);
         } catch (exception_io_data_truncation const&) {
-        };
+        }
 
         if (version <= 3) {
             p_reader->read_lendian_t(m_preserve_aspect_ratio, p_abort);

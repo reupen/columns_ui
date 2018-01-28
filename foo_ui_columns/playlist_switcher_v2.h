@@ -307,22 +307,18 @@ public:
     }
     unsigned get_type() const override { return uie::type_panel; }
 
-    playlist_switcher_t()
-        : m_contextmenu_manager_base(NULL)
-        , m_switch_timer_active(false)
-        , m_dragging(false)
-        , m_playing_playlist(pfc_infinite){};
+    playlist_switcher_t() : m_playing_playlist(pfc_infinite){};
 
 private:
     contextmenu_manager::ptr m_contextmenu_manager;
-    UINT_PTR m_contextmenu_manager_base;
+    UINT_PTR m_contextmenu_manager_base{NULL};
     ui_status_text_override::ptr m_status_text_override;
     ui_selection_holder::ptr m_selection_holder;
 
-    bool m_switch_timer_active;
+    bool m_switch_timer_active{false};
     pfc::rcptr_t<playlist_position_reference_tracker> m_switch_playlist;
 
-    bool m_dragging;
+    bool m_dragging{false};
     pfc::com_ptr_t<IDataObject> m_DataObject;
 
     pfc::rcptr_t<playlist_position_reference_tracker> m_edit_playlist;

@@ -22,27 +22,27 @@ extern cfg_bool cfg_item_details_word_wrapping;
 
 class line_info_t {
 public:
-    t_size m_bytes;
-    t_size m_raw_bytes;
+    t_size m_bytes{NULL};
+    t_size m_raw_bytes{NULL};
 
-    line_info_t() : m_bytes(NULL), m_raw_bytes(NULL){};
+    line_info_t() = default;
 };
 
 class display_line_info_t : public line_info_t {
 public:
-    t_size m_width;
-    t_size m_height;
+    t_size m_width{0};
+    t_size m_height{0};
 
-    display_line_info_t() : m_width(0), m_height(0){};
+    display_line_info_t() = default;
 };
 
 class font_data_t {
 public:
     pfc::string8 m_face;
-    t_size m_point;
-    bool m_bold, m_underline, m_italic;
+    t_size m_point{10};
+    bool m_bold{false}, m_underline{false}, m_italic{false};
 
-    font_data_t() : m_point(10), m_bold(false), m_underline(false), m_italic(false){};
+    font_data_t() = default;
 
     static int g_compare(const font_data_t& item1, const font_data_t& item2)
     {
@@ -64,23 +64,23 @@ bool operator==(const font_data_t& item1, const font_data_t& item2);
 class font_change_data_t {
 public:
     font_data_t m_font_data;
-    bool m_reset;
-    t_size m_character_index;
+    bool m_reset{false};
+    t_size m_character_index{NULL};
 
-    font_change_data_t() : m_reset(false), m_character_index(NULL){};
+    font_change_data_t() = default;
 };
 
-typedef pfc::list_t<font_change_data_t, pfc::alloc_fast_aggressive> font_change_data_list_t;
+using font_change_data_list_t = pfc::list_t<font_change_data_t, pfc::alloc_fast_aggressive>;
 
-typedef pfc::list_t<line_info_t, pfc::alloc_fast_aggressive> line_info_list_t;
-typedef pfc::list_t<display_line_info_t, pfc::alloc_fast_aggressive> display_line_info_list_t;
+using line_info_list_t = pfc::list_t<line_info_t, pfc::alloc_fast_aggressive>;
+using display_line_info_list_t = pfc::list_t<display_line_info_t, pfc::alloc_fast_aggressive>;
 
 void g_parse_font_format_string(const char* str, t_size len, font_data_t& p_out);
 void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_new_text, font_change_data_list_t& p_out);
 
 class font_t : public pfc::refcounted_object_root {
 public:
-    typedef pfc::refcounted_object_ptr_t<font_t> ptr_t;
+    using ptr_t = pfc::refcounted_object_ptr_t<font_t>;
 
     font_data_t m_data;
 
@@ -89,7 +89,7 @@ public:
     // font_t (const font_t & p_font) : m_font(p_font.m_font), m_height(p_font.m_height), m_data(p_font.m_data) {};
 };
 
-typedef pfc::list_t<font_t::ptr_t> font_list_t;
+using font_list_t = pfc::list_t<font_t::ptr_t>;
 
 class font_change_info_t {
 public:
@@ -311,7 +311,6 @@ public:
     };
     void on_playlist_switch() override;
     void on_item_focus_change(t_size p_from, t_size p_to) override;
-    ;
 
     void on_items_added(t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
         const pfc::bit_array& p_selection) override;
@@ -351,7 +350,6 @@ public:
     void set_config_wnd(HWND wnd);
 
     item_details_t();
-    ;
 
 private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
@@ -384,16 +382,17 @@ private:
 
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles, m_selection_handles;
-    bool m_callback_registered, m_nowplaying_active; //, m_update_scrollbar_range_in_progress;
+    bool m_callback_registered{false};
+    bool m_nowplaying_active{false}; //, m_update_scrollbar_range_in_progress;
     t_size m_tracking_mode;
 
-    bool m_font_change_info_valid;
+    bool m_font_change_info_valid{false};
     font_change_info_t m_font_change_info;
     font_change_data_list_t m_font_change_data;
 
     line_info_list_t m_line_info;
     display_line_info_list_t m_display_line_info;
-    bool m_display_info_valid;
+    bool m_display_info_valid{false};
 
     SIZE m_display_sz;
 
@@ -405,7 +404,7 @@ private:
     t_size m_edge_style;
     bool m_hscroll, m_word_wrapping;
 
-    HWND m_wnd_config;
+    HWND m_wnd_config{nullptr};
 
     // gdi_object_t<HFONT>::ptr_t m_default_font;
 
@@ -426,7 +425,6 @@ public:
 
     static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     item_details_config_t(const char* p_text, t_size edge_style, t_size halign, t_size valign);
-    ;
 
     bool run_modal(HWND wnd);
     void run_modeless(HWND wnd, item_details_t* p_this);

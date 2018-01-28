@@ -134,7 +134,7 @@ class volume_control_t
             scaled *= 1.0 - offset;
             scaled += offset;
 
-            double vol = double(20.0 * log10(scaled * scaled * scaled));
+            auto vol = double(20.0 * log10(scaled * scaled * scaled));
             if (vol < -100.0)
                 vol = -100;
             else if (vol > 0.0)
@@ -172,7 +172,7 @@ class volume_control_t
 
 public:
     bool get_using_gdiplus() { return m_using_gdiplus; }
-    HWND wnd_trackbar;
+    HWND wnd_trackbar{nullptr};
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override
     {
         switch (msg) {
@@ -210,8 +210,7 @@ public:
         }
         case WM_SIZE: {
             if (t_attributes::get_show_caption()) {
-                SIZE sz = { 0 };
-                ;
+                SIZE sz = {0};
                 get_caption_extent(sz);
                 unsigned size_caption = get_caption_size();
                 const int x = b_vertical ? size_caption : sz.cx;
@@ -224,7 +223,7 @@ public:
                 SetWindowPos(wnd_trackbar, nullptr, 0, 0, LOWORD(lp), HIWORD(lp), SWP_NOZORDER);
         } break;
         case WM_GETMINMAXINFO: {
-            LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+            auto mmi = LPMINMAXINFO(lp);
 
             if (!b_popup) {
                 if (!b_vertical)
@@ -237,9 +236,9 @@ public:
         case WM_PRINTCLIENT: {
             if (lp & PRF_ERASEBKGND) {
                 if (!b_popup) {
-                    HDC dc = (HDC)wp;
+                    auto dc = (HDC)wp;
                     HWND wnd_parent = GetAncestor(wnd, GA_PARENT);
-                    POINT pt = { 0, 0 }, pt_old = { 0, 0 };
+                    POINT pt = {0, 0}, pt_old = {0, 0};
                     MapWindowPoints(wnd, wnd_parent, &pt, 1);
                     OffsetWindowOrgEx(dc, pt.x, pt.y, &pt_old);
                     SendMessage(wnd_parent, msg, wp, lp);
@@ -254,10 +253,10 @@ public:
             if (t_attributes::get_show_caption()) {
                 RECT rc_client, rc_dummy;
                 GetClientRect(wnd, &rc_client);
-                SIZE sz = { 0 };
+                SIZE sz = {0};
                 get_caption_extent(sz);
-                long size_caption = (long)get_caption_size();
-                RECT rc_caption = { 0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom };
+                auto size_caption = (long)get_caption_size();
+                RECT rc_caption = {0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom};
 
                 if (IntersectRect(&rc_dummy, &rc_caption, &ps.rcPaint)) {
                     HFONT old = SelectFont(dc, m_font_caption);
@@ -299,10 +298,8 @@ public:
         return DefWindowProc(wnd, msg, wp, lp);
     }
 
-    volume_control_t()
-        : m_child(this), m_track_bar_host(this), wnd_trackbar(nullptr), m_Gdiplus_token(NULL), m_using_gdiplus(false){};
+    volume_control_t() : m_child(this), m_track_bar_host(this){};
     ~volume_control_t() = default;
-    ;
 
     ui_helpers::container_window::class_data& get_class_data() const override
     {
@@ -367,8 +364,8 @@ private:
     void FB2KAPI on_volume_change(float p_new_val) override { update_position(p_new_val); }
 
     gdi_object_t<HFONT>::ptr_t m_font_caption;
-    ULONG_PTR m_Gdiplus_token;
-    bool m_using_gdiplus;
+    ULONG_PTR m_Gdiplus_token{NULL};
+    bool m_using_gdiplus{false};
 };
 
 class volume_popup_class_name {
@@ -378,6 +375,6 @@ public:
     static COLORREF get_background_colour() { return -1; }
 };
 
-typedef volume_control_t<true, true, volume_popup_class_name> volume_popup_t;
+using volume_popup_t = volume_control_t<true, true, volume_popup_class_name>;
 
 #endif

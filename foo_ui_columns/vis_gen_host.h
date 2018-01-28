@@ -4,15 +4,15 @@
 #if 1
 class window_visualisation : public ui_extension::container_ui_extension {
     static const wchar_t* class_name;
-    bool initialised;
+    bool initialised{false};
     GUID m_guid;
     pfc::array_t<t_uint8> m_data;
     service_ptr_t<class window_visualisation_interface> m_interface;
     uie::visualisation_ptr p_vis;
     unsigned m_frame;
-    HBITMAP bm_display;
-    RECT rc_client;
-    HWND m_wnd;
+    HBITMAP bm_display{nullptr};
+    RECT rc_client{};
+    HWND m_wnd{nullptr};
 
 public:
     HBITMAP get_bitmap() const { return bm_display; }

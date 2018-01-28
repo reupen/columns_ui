@@ -25,7 +25,7 @@ public:
         void reset_fonts();
         entry_t(bool b_global = false);
     };
-    typedef pfc::refcounted_object_ptr_t<entry_t> entry_ptr_t;
+    using entry_ptr_t = pfc::refcounted_object_ptr_t<entry_t>;
     pfc::list_t<entry_ptr_t> m_entries;
     entry_ptr_t m_common_items_entry;
     entry_ptr_t m_common_labels_entry;
@@ -33,9 +33,7 @@ public:
     void find_by_guid(const GUID& p_guid, entry_ptr_t& p_out);
 
     void register_common_callback(cui::fonts::common_callback* p_callback);
-    ;
     void deregister_common_callback(cui::fonts::common_callback* p_callback);
-    ;
 
     void g_on_common_font_changed(t_size mask);
 

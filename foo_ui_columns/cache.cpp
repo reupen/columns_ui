@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "cache.h"
 
-cfg_string cfg_global_nontrack(GUID{ 0x6c012fdb, 0x30a4, 0x398d, 0x16, 0xf1, 0x75, 0x27, 0x99, 0x77, 0xc9, 0x8f }, "");
+cfg_string cfg_global_nontrack(GUID{0x6c012fdb, 0x30a4, 0x398d, 0x16, 0xf1, 0x75, 0x27, 0x99, 0x77, 0xc9, 0x8f}, "");
 cache_manager g_cache_manager;
 
 #if 0
@@ -161,7 +161,6 @@ playlist_entry_ui::~playlist_entry_ui()
         delete[] display_data;
     // display_data.delete_all();
 }
-playlist_entry_ui::playlist_entry_ui() : display_data(nullptr){};
 
 void process_colour_string(const char* src, colourinfo& out)
 {

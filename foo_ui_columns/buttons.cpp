@@ -15,13 +15,6 @@ const GUID& toolbar_extension::get_extension_guid() const
 
 toolbar_extension::config_param::config_param()
     : m_button_list(*this)
-    , m_selection(nullptr)
-    , m_wnd(nullptr)
-    , m_child(nullptr)
-    , m_active(0)
-    , m_image(nullptr)
-    , m_text_below(false)
-    , m_appearance(APPEARANCE_NORMAL)
 {
 }
 
@@ -73,7 +66,7 @@ void toolbar_extension::export_config(stream_writer* p_writer, abort_callback& p
 
 // {AFD89390-8E1F-434c-B9C5-A4C1261BB792}
 const GUID toolbar_extension::g_guid_fcb
-    = { 0xafd89390, 0x8e1f, 0x434c, { 0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92 } };
+    = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 
 const toolbar_extension::button toolbar_extension::g_button_null(
     pfc::guid_null, false, "", "", 0, ui_extension::MASK_NONE);
@@ -107,15 +100,6 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
 }
 
 toolbar_extension::toolbar_extension()
-    : width(0)
-    , height(0)
-    , menuproc(nullptr)
-    , initialised(false)
-    , m_gdiplus_initialised(false)
-    , wnd_toolbar(nullptr)
-    , wnd_host(nullptr)
-    , m_text_below(false)
-    , m_appearance(APPEARANCE_NORMAL)
 {
     reset_buttons(m_buttons_config);
     memset(&m_gdiplus_instance, 0, sizeof(m_gdiplus_instance));
@@ -170,7 +154,7 @@ void toolbar_extension::create_toolbar()
             }
         }
 
-        SIZE sz = { 0, 0 };
+        SIZE sz = {0, 0};
 
         pfc::bit_array_bittable mask(count);
 
@@ -371,7 +355,7 @@ LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // SIZE sz = {0,0};
             // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
 
-            RECT rc = { 0, 0, 0, 0 };
+            RECT rc = {0, 0, 0, 0};
             t_size count = m_buttons.get_count();
             int cx = lpwp->cx;
             int cy = lpwp->cy;
@@ -388,7 +372,7 @@ LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (m_buttons.get_count()) {
             auto mmi = LPMINMAXINFO(lp);
 
-            RECT rc = { 0, 0, 0, 0 };
+            RECT rc = {0, 0, 0, 0};
 
             if (SendMessage(wnd_toolbar, TB_GETITEMRECT, m_buttons.get_count() - 1, (LPARAM)(&rc))) {
                 mmi->ptMinTrackSize.x = rc.right;
@@ -430,7 +414,7 @@ LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_buttons[lpnmtb->iItem].m_interface->get_menu_items(*menu_items.get_ptr());
             HMENU menu = CreatePopupMenu();
             menu_items->win32_build_menu(menu, 1, pfc_infinite);
-            POINT pt = { lpnmtb->rcButton.left, lpnmtb->rcButton.bottom };
+            POINT pt = {lpnmtb->rcButton.left, lpnmtb->rcButton.bottom};
             MapWindowPoints(lpnmtb->hdr.hwndFrom, HWND_DESKTOP, &pt, 1);
             int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON | TPM_RETURNCMD, pt.x, pt.y, wnd, nullptr);
             if (cmd)
@@ -517,7 +501,7 @@ LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } else if (msg == WM_CONTEXTMENU) {
         if (HWND(wp) == wnd_toolbar) {
             if (lp != -1) {
-                POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
                 POINT pts = pt;
                 ScreenToClient(wnd_toolbar, &pt);
                 int lresult = SendMessage(wnd_toolbar, TB_HITTEST, 0, (LPARAM)&pt);
@@ -723,6 +707,6 @@ bool toolbar_extension::show_config_popup(HWND wnd_parent)
 
 // {D8E65660-64ED-42e7-850B-31D828C25294}
 const GUID toolbar_extension::extension_guid
-    = { 0xd8e65660, 0x64ed, 0x42e7, { 0x85, 0xb, 0x31, 0xd8, 0x28, 0xc2, 0x52, 0x94 } };
+    = {0xd8e65660, 0x64ed, 0x42e7, {0x85, 0xb, 0x31, 0xd8, 0x28, 0xc2, 0x52, 0x94}};
 
 ui_extension::window_factory<toolbar_extension> blah;

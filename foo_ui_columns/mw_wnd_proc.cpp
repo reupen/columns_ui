@@ -6,7 +6,7 @@
 #include "rebar.h"
 #include "status_bar.h"
 
-INT_PTR g_taskbar_bitmaps[] = { IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND };
+INT_PTR g_taskbar_bitmaps[] = {IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND};
 
 namespace statusbar_contextmenus {
 enum { ID_BASE = 1 };
@@ -307,7 +307,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return (MNC_CLOSE << 16);
     case WM_CONTEXTMENU:
         if (g_status && (HWND)wp == g_status) {
-            POINT pt = { (short)(LOWORD(lp)), (short)(HIWORD(lp)) };
+            POINT pt = {(short)(LOWORD(lp)), (short)(HIWORD(lp))};
             enum { ID_CUSTOM_BASE = 1 };
             HMENU menu = CreatePopupMenu();
             service_ptr_t<contextmenu_manager> p_manager;
@@ -316,7 +316,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 statusbar_contextmenus::g_main_nowplaying = p_manager;
 
                 const keyboard_shortcut_manager::shortcut_type shortcuts[]
-                    = { keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING };
+                    = {keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING};
                 p_manager->set_shortcut_preference(shortcuts, tabsize(shortcuts));
                 if (p_manager->init_context_now_playing(
                         standard_config_objects::query_show_keyboard_shortcuts_in_menus()
@@ -346,7 +346,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 service_enum_t<ui_extension::window> e;
                 uie::window_ptr l;
 
-                POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
 
                 if (pt.x == -1 && pt.y == -1) {
                     RECT rc;
@@ -617,7 +617,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     contextmenu_manager::g_create(p_manager_selection);
                     if (p_manager_selection.is_valid()) {
                         const keyboard_shortcut_manager::shortcut_type shortcuts[]
-                            = { keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING };
+                            = {keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING};
                         p_manager_selection->set_shortcut_preference(shortcuts, tabsize(shortcuts));
 
                         if (p_manager_selection->init_context_now_playing(

@@ -112,7 +112,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
                 unsigned cy
                     = m_this->m_panels[index]->m_caption_orientation == vertical ? rc_client.bottom : caption_size;
 
-                RECT rc_caption = { 0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy) };
+                RECT rc_caption = {0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy)};
 
                 if (IntersectRect(&rc_dummy, &ps.rcPaint, &rc_caption)) {
                     {
@@ -147,7 +147,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
         return 0;
     }
     case WM_ERASEBKGND: {
-        RECT rc_caption = { 0, 0, 0, 0 };
+        RECT rc_caption = {0, 0, 0, 0};
         RECT rc_fill, rc_client;
         GetClientRect(wnd, &rc_client);
         if (m_this.is_valid()) {
@@ -186,7 +186,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
     case WM_LBUTTONDOWN:
         if (m_this.is_valid()) {
             if (m_panel->m_show_toggle_area && !m_panel->m_autohide) {
-                POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
                 if (pt.x == 0) {
                     m_panel->set_hidden(!m_panel->m_hidden);
                 }
@@ -198,7 +198,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
             unsigned index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->get_orientation() != m_panel->m_caption_orientation
                 && !m_panel->m_autohide) {
-                POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
                 if (ChildWindowFromPoint(wnd, pt) == wnd) {
                     m_this->m_panels[index]->m_hidden = !m_this->m_panels[index]->m_hidden;
                     m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
@@ -249,7 +249,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
     case WM_CONTEXTMENU: {
         enum { IDM_CLOSE = 1, IDM_MOVE_UP, IDM_MOVE_DOWN, IDM_LOCK, IDM_CAPTION, IDM_BASE };
 
-        POINT pt = { GET_X_LPARAM(lp), GET_Y_LPARAM(lp) };
+        POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         if (pt.x == -1 && pt.y == -1)
             GetMessagePos(&pt);
 

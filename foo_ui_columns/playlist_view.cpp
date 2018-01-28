@@ -10,39 +10,6 @@ column_list_t playlist_view::columns;
 pfc::ptr_list_t<playlist_view> playlist_view::list_playlist;
 
 playlist_view::playlist_view()
-    : wnd_playlist(nullptr)
-    , wnd_header(nullptr)
-    , drawing_enabled(false)
-    , m_wnd_edit(nullptr)
-    , m_edit_index(-1)
-    , m_edit_column(-1)
-    , m_prev_sel(false)
-    , m_no_next_edit(false)
-    , m_edit_timer(false)
-    , m_edit_save(true)
-    , m_edit_saving(false)
-    , m_edit_changed(false)
-    , m_inline_edit_proc(nullptr)
-    , initialised(false)
-    , dragged(true)
-    , drag_type(0)
-    , dragitem(0)
-    , dragstartitem(0)
-    , last_idx(-1)
-    , last_column(-1)
-    //#ifdef INLINE_EDIT
-    , g_shift_item_start(0)
-    , g_drag_lmb(false)
-    , m_rmb_is_dragging(false)
-    , scroll_item_offset(0)
-    , horizontal_offset(0)
-    , m_always_show_focus(false)
-    , m_prevent_wm_char_processing(false)
-    , MENU_A_BASE(1)
-    , MENU_B_BASE(0)
-    , m_shown(false)
-    , m_theme(nullptr)
-//#endif
 {
     drag_start.x = 0;
     drag_start.y = 0;
@@ -58,7 +25,7 @@ playlist_view::playlist_view()
 playlist_view::~playlist_view() = default;
 
 // {F20BED8F-225B-46c3-9FC7-454CEDB6CDAD}
-GUID playlist_view::extension_guid = { 0xf20bed8f, 0x225b, 0x46c3, { 0x9f, 0xc7, 0x45, 0x4c, 0xed, 0xb6, 0xcd, 0xad } };
+GUID playlist_view::extension_guid = {0xf20bed8f, 0x225b, 0x46c3, {0x9f, 0xc7, 0x45, 0x4c, 0xed, 0xb6, 0xcd, 0xad}};
 
 const GUID& playlist_view::get_extension_guid() const
 {
@@ -704,6 +671,6 @@ void refresh_all_playlist_views()
 
 // {0CF29D60-1262-4f55-A6E1-BC4AE6579D19}
 const GUID appearance_client_pv_impl::g_guid
-    = { 0xcf29d60, 0x1262, 0x4f55, { 0xa6, 0xe1, 0xbc, 0x4a, 0xe6, 0x57, 0x9d, 0x19 } };
+    = {0xcf29d60, 0x1262, 0x4f55, {0xa6, 0xe1, 0xbc, 0x4a, 0xe6, 0x57, 0x9d, 0x19}};
 
 appearance_client_pv_impl::factory<appearance_client_pv_impl> g_appearance_client_pv_impl;

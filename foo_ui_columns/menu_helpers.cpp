@@ -213,7 +213,7 @@ bool mainmenunode_subguid_to_path(
             return false;
         default:
             return false;
-        };
+        }
     }
     return false;
 }

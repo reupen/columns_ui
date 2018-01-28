@@ -50,7 +50,7 @@ bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
         // p_library_autocomplete->get_value_list(m_edit_field, pUnk);
         pAutocompleteEntries = pUnk.get_ptr();
     } catch (exception_service_not_found const&) {
-    };
+    }
     return true;
 };
 void ng_playlist_view_t::notify_save_inline_edit(const char* value)

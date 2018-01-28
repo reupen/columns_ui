@@ -157,7 +157,7 @@ public:
                 m_changed = false;
             }
         }
-        bool m_changed{ false };
+        bool m_changed{false};
 
     private:
     } m_source_list;
@@ -395,7 +395,7 @@ public:
     }
 
 private:
-    bool initialising{ false }; //, m_changed;
+    bool initialising{false}; //, m_changed;
 } g_tab_artwork;
 
 preferences_tab* g_get_tab_artwork()

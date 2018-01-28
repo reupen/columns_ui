@@ -229,7 +229,7 @@ public:
     }
 
 private:
-    bool initialising{ false };
+    bool initialising{false};
 } g_tab_filter_fields_;
 
 static class tab_filter_misc : public preferences_tab {
@@ -373,7 +373,7 @@ public:
     }
 
 private:
-    bool initialising{ false }; //, m_changed;
+    bool initialising{false}; //, m_changed;
 } g_tab_filter_misc_;
 
 preferences_tab* const g_tab_filter_fields = &g_tab_filter_fields_;

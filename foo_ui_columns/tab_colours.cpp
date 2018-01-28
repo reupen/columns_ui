@@ -37,21 +37,19 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         auto y = 85;
         auto spacing = 5 + 14;
 
-        g_fill_text.create(wnd, uih::WindowPosition{ 120, y, 18, 14 }, nullptr, true);
-        g_fill_selection_text.create(wnd, uih::WindowPosition{ 120, y += spacing, 18, 14 }, nullptr, true);
-        g_fill_selection_text_inactive.create(wnd, uih::WindowPosition{ 120, y += spacing, 18, 14 }, nullptr, true);
+        g_fill_text.create(wnd, uih::WindowPosition{120, y, 18, 14}, nullptr, true);
+        g_fill_selection_text.create(wnd, uih::WindowPosition{120, y += spacing, 18, 14}, nullptr, true);
+        g_fill_selection_text_inactive.create(wnd, uih::WindowPosition{120, y += spacing, 18, 14}, nullptr, true);
 
-        g_fill_active_item_frame.create(wnd, uih::WindowPosition{ 120, 162, 18, 14 }, nullptr, true);
+        g_fill_active_item_frame.create(wnd, uih::WindowPosition{120, 162, 18, 14}, nullptr, true);
 
         y = 85;
 
-        g_fill_background.create(wnd, uih::WindowPosition{ 225, y, 18, 14 }, nullptr, true);
-        g_fill_selection_background.create(wnd, uih::WindowPosition{ 225, y += spacing, 18, 14 }, nullptr, true);
-        g_fill_selection_background_inactive.create(
-            wnd, uih::WindowPosition{ 225, y += spacing, 18, 14 }, nullptr, true);
+        g_fill_background.create(wnd, uih::WindowPosition{225, y, 18, 14}, nullptr, true);
+        g_fill_selection_background.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
+        g_fill_selection_background_inactive.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
-        ;
         m_colours_client_list.g_get_list(m_colours_client_list);
         t_size i, count = m_colours_client_list.get_count();
         for (i = 0; i < count; i++)
@@ -97,7 +95,6 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         case IDC_COLOURS_MODE | (CBN_SELCHANGE << 16): {
             int idx = ComboBox_GetCurSel((HWND)lp);
             m_element_ptr->colour_mode = (cui::colours::colour_mode_t)ComboBox_GetItemData((HWND)lp, idx);
-            ;
             update_fills();
             update_buttons();
             on_colour_changed();
@@ -295,13 +292,4 @@ void tab_appearance::refresh_me(HWND wnd)
 {
     initialising = true;
     initialising = false;
-}
-
-tab_appearance::tab_appearance()
-    : m_wnd(nullptr)
-    , m_wnd_colours_mode(nullptr)
-    , m_wnd_colours_element(nullptr)
-    , m_element_guid(pfc::guid_null)
-    , initialising(false)
-{
 }
