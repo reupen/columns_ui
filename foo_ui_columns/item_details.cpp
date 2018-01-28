@@ -690,7 +690,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
         m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font);
 
-        if (0 == g_windows.size())
+        if (g_windows.empty())
             g_message_window.create(nullptr);
         g_windows.push_back(this);
 
@@ -709,7 +709,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case WM_DESTROY: {
         g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
-        if (g_windows.size() == 0)
+        if (g_windows.empty())
             g_message_window.destroy();
 
         m_font_change_info.m_default_font.release();
