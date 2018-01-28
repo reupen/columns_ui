@@ -210,7 +210,7 @@ public:
         }
         case WM_SIZE: {
             if (t_attributes::get_show_caption()) {
-                SIZE sz = {0};
+                SIZE sz{};
                 get_caption_extent(sz);
                 unsigned size_caption = get_caption_size();
                 const int x = b_vertical ? size_caption : sz.cx;
@@ -253,7 +253,7 @@ public:
             if (t_attributes::get_show_caption()) {
                 RECT rc_client, rc_dummy;
                 GetClientRect(wnd, &rc_client);
-                SIZE sz = {0};
+                SIZE sz{};
                 get_caption_extent(sz);
                 auto size_caption = (long)get_caption_size();
                 RECT rc_caption = {0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom};

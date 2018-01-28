@@ -390,7 +390,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
                     thisFontChangeCount--;
                 }
 
-                SIZE sz2 = {0};
+                SIZE sz2{};
                 t_size length_chars_no_colours = g_get_text_ptr_characters_colour(&text[ptr], ptrThisCount);
                 INT max_chars = length_chars_no_colours;
 

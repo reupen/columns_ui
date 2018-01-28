@@ -127,7 +127,7 @@ void filter_search_bar::on_show_clear_button_change()
     tbbi.fsState = TBSTATE_ENABLED | (m_show_clear_button ? NULL : TBSTATE_HIDDEN);
     SendMessage(m_wnd_toolbar, TB_SETBUTTONINFO, idc_clear, (LPARAM)&tbbi);
     // UpdateWindow(m_wnd_toolbar);
-    RECT rc = {0};
+    RECT rc{};
     SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 1, (LPARAM)(&rc));
 
     m_toolbar_cx = rc.right;
