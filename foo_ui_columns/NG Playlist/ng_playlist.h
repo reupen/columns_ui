@@ -448,7 +448,7 @@ private:
 
             if (group_count) {
                 for (i = 0; i < count; i++) {
-                    item_ng_t* item = static_cast<item_ng_t*>(get_item(i));
+                    auto* item = static_cast<item_ng_t*>(get_item(i));
                     if (item->get_group(group_count - 1) == p_group.get_ptr()) {
                         if (p_reader->get_content().query(album_art_ids::cover_front, p_group->m_artwork_bitmap)) {
                             p_group->m_artwork_load_succeeded = true;

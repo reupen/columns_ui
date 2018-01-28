@@ -134,7 +134,7 @@ class volume_control_t
             scaled *= 1.0 - offset;
             scaled += offset;
 
-            double vol = double(20.0 * log10(scaled * scaled * scaled));
+            auto vol = double(20.0 * log10(scaled * scaled * scaled));
             if (vol < -100.0)
                 vol = -100;
             else if (vol > 0.0)
@@ -223,7 +223,7 @@ public:
                 SetWindowPos(wnd_trackbar, nullptr, 0, 0, LOWORD(lp), HIWORD(lp), SWP_NOZORDER);
         } break;
         case WM_GETMINMAXINFO: {
-            LPMINMAXINFO mmi = LPMINMAXINFO(lp);
+            auto mmi = LPMINMAXINFO(lp);
 
             if (!b_popup) {
                 if (!b_vertical)
@@ -236,7 +236,7 @@ public:
         case WM_PRINTCLIENT: {
             if (lp & PRF_ERASEBKGND) {
                 if (!b_popup) {
-                    HDC dc = (HDC)wp;
+                    auto dc = (HDC)wp;
                     HWND wnd_parent = GetAncestor(wnd, GA_PARENT);
                     POINT pt = {0, 0}, pt_old = {0, 0};
                     MapWindowPoints(wnd, wnd_parent, &pt, 1);
@@ -255,7 +255,7 @@ public:
                 GetClientRect(wnd, &rc_client);
                 SIZE sz = {0};
                 get_caption_extent(sz);
-                long size_caption = (long)get_caption_size();
+                auto size_caption = (long)get_caption_size();
                 RECT rc_caption = {0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom};
 
                 if (IntersectRect(&rc_dummy, &rc_caption, &ps.rcPaint)) {
