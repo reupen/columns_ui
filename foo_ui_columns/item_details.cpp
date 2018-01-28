@@ -1184,10 +1184,10 @@ const char* item_details_t::menu_node_alignment::get_name(t_size source)
 {
     if (source == 0)
         return "Left";
-    else if (source == 1)
+    if (source == 1)
         return "Centre";
-    else /*if (source == 2)*/
-        return "Right";
+    /*if (source == 2)*/
+    return "Right";
 }
 
 item_details_t::menu_node_source_popup::menu_node_source_popup(item_details_t* p_wnd)

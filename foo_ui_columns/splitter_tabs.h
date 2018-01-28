@@ -22,23 +22,22 @@ public:
             if (wnd_point == get_wnd() || wnd_point == m_wnd_tabs) {
                 p_hierarchy.add_item(this);
                 return true;
-            } else {
-                t_size i, count = m_panels.get_count();
-                for (i = 0; i < count; i++) {
-                    uie::splitter_window_v2_ptr sptr;
-                    if (m_panels[i]->m_child.is_valid()) {
-                        if (m_panels[i]->m_child->service_query_t(sptr)) {
-                            pfc::list_t<uie::window::ptr> temp;
-                            temp.add_item(this);
-                            if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
-                                p_hierarchy.add_items(temp);
-                                return true;
-                            }
-                        } else if (wnd_point == m_panels[i]->m_wnd || IsChild(m_panels[i]->m_wnd, wnd_point)) {
-                            p_hierarchy.add_item(this);
-                            p_hierarchy.add_item(m_panels[i]->m_child);
+            }
+            t_size i, count = m_panels.get_count();
+            for (i = 0; i < count; i++) {
+                uie::splitter_window_v2_ptr sptr;
+                if (m_panels[i]->m_child.is_valid()) {
+                    if (m_panels[i]->m_child->service_query_t(sptr)) {
+                        pfc::list_t<uie::window::ptr> temp;
+                        temp.add_item(this);
+                        if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
+                            p_hierarchy.add_items(temp);
                             return true;
                         }
+                    } else if (wnd_point == m_panels[i]->m_wnd || IsChild(m_panels[i]->m_wnd, wnd_point)) {
+                        p_hierarchy.add_item(this);
+                        p_hierarchy.add_item(m_panels[i]->m_child);
+                        return true;
                     }
                 }
             }

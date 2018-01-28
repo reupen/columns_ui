@@ -10,12 +10,13 @@ HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryInterface(REFIID iid, void*
         AddRef();
         *ppvObject = (IUnknown*)this;
         return S_OK;
-    } else if (iid == IID_IDropSource) {
+    }
+    if (iid == IID_IDropSource) {
         AddRef();
         *ppvObject = (IDropSource*)this;
         return S_OK;
-    } else
-        return E_NOINTERFACE;
+    }
+    return E_NOINTERFACE;
 }
 
 ULONG STDMETHODCALLTYPE IDropSource_playlist::AddRef()
@@ -40,11 +41,12 @@ HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryContinueDrag(BOOL fEscapePr
     if (fEscapePressed || (p_playlist->m_rmb_is_dragging && grfKeyState & MK_LBUTTON)
         || (!p_playlist->m_rmb_is_dragging && ((grfKeyState & MK_RBUTTON) || !(grfKeyState & MK_CONTROL)))) {
         return DRAGDROP_S_CANCEL;
-    } else if ((p_playlist->m_rmb_is_dragging && !(grfKeyState & MK_RBUTTON))
+    }
+    if ((p_playlist->m_rmb_is_dragging && !(grfKeyState & MK_RBUTTON))
         || (!p_playlist->m_rmb_is_dragging && !(grfKeyState & MK_LBUTTON))) {
         return DRAGDROP_S_DROP;
-    } else
-        return S_OK;
+    }
+    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE IDropSource_playlist::GiveFeedback(DWORD dwEffect)

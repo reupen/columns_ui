@@ -40,7 +40,8 @@ bool titleformat_hook_style::process_field(
                 p_out->write(titleformat_inputtypes::unknown, text.get_ptr(), text.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text", pfc_infinite)) {
                 if (!selected_text.get_ptr()) {
                     selected_text.set_size(33);
                     selected_text.fill(0);
@@ -50,7 +51,8 @@ bool titleformat_hook_style::process_field(
                 p_out->write(titleformat_inputtypes::unknown, selected_text.get_ptr(), selected_text.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "back", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "back", pfc_infinite)) {
                 if (!back.get_ptr()) {
                     back.set_size(33);
                     back.fill(0);
@@ -59,7 +61,8 @@ bool titleformat_hook_style::process_field(
                 p_out->write(titleformat_inputtypes::unknown, back.get_ptr(), back.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back", pfc_infinite)) {
                 if (!selected_back.get_ptr()) {
                     selected_back.set_size(33);
                     selected_back.fill(0);
@@ -69,7 +72,8 @@ bool titleformat_hook_style::process_field(
                 p_out->write(titleformat_inputtypes::unknown, selected_back.get_ptr(), selected_back.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back_no_focus", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back_no_focus", pfc_infinite)) {
                 if (!selected_back_no_focus.get_ptr()) {
                     selected_back_no_focus.set_size(33);
                     selected_back_no_focus.fill(0);
@@ -80,7 +84,8 @@ bool titleformat_hook_style::process_field(
                     selected_back_no_focus.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text_no_focus", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text_no_focus", pfc_infinite)) {
                 if (!selected_text_no_focus.get_ptr()) {
                     selected_text_no_focus.set_size(33);
                     selected_text_no_focus.fill(0);
@@ -91,7 +96,8 @@ bool titleformat_hook_style::process_field(
                     selected_text_no_focus.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "themed", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "themed", pfc_infinite)) {
                 cui::colours::helper p_helper(appearance_client_pv_impl::g_guid);
                 if (p_helper.get_themed()) {
                     p_out->write(titleformat_inputtypes::unknown, "1", 1);
@@ -461,7 +467,8 @@ bool titleformat_hook_date::process_field(
                 p_out->write(titleformat_inputtypes::unknown, year.get_ptr(), pfc_infinite);
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "month", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "month", pfc_infinite)) {
                 if (!month.get_ptr()) {
                     month.set_size(33);
                     month.fill(0);
@@ -470,7 +477,8 @@ bool titleformat_hook_date::process_field(
                 p_out->write(titleformat_inputtypes::unknown, month.get_ptr(), pfc_infinite);
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "day", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "day", pfc_infinite)) {
                 if (!day.get_ptr()) {
                     day.set_size(33);
                     day.fill(0);
@@ -479,7 +487,8 @@ bool titleformat_hook_date::process_field(
                 p_out->write(titleformat_inputtypes::unknown, day.get_ptr(), pfc_infinite);
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "day_of_week", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "day_of_week", pfc_infinite)) {
                 if (!dayofweek.get_ptr()) {
                     dayofweek.set_size(33);
                     dayofweek.fill(0);
@@ -488,7 +497,8 @@ bool titleformat_hook_date::process_field(
                 p_out->write(titleformat_inputtypes::unknown, dayofweek.get_ptr(), pfc_infinite);
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "julian_day", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "julian_day", pfc_infinite)) {
                 if (!julian.get_ptr()) {
                     julian.set_size(33);
                     julian.fill(0);
@@ -497,7 +507,8 @@ bool titleformat_hook_date::process_field(
                 p_out->write(titleformat_inputtypes::unknown, julian.get_ptr(), pfc_infinite);
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "hour", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 8, p_name_length - 8, "hour", pfc_infinite)) {
                 if (!hour.get_ptr()) {
                     hour.set_size(33);
                     hour.fill(0);

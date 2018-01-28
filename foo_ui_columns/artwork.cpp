@@ -798,12 +798,11 @@ const char* artwork_panel_t::menu_node_artwork_type::get_name(t_size source)
 {
     if (source == 0)
         return "Front cover";
-    else if (source == 1)
+    if (source == 1)
         return "Back cover";
-    else if (source == 2)
+    if (source == 2)
         return "Disc cover";
-    else
-        return "Artist picture";
+    return "Artist picture";
 }
 
 artwork_panel_t::menu_node_source_popup::menu_node_source_popup(artwork_panel_t* p_wnd)

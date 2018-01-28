@@ -839,7 +839,8 @@ bool titleformat_hook_set_global<set, get>::process_function(titleformat_text_ou
         default:
             return false;
         }
-    } else if (get && !stricmp_utf8_ex(p_name, p_name_length, "get_global", pfc_infinite)) {
+    }
+    if (get && !stricmp_utf8_ex(p_name, p_name_length, "get_global", pfc_infinite)) {
         switch (p_params->get_param_count()) {
         case 1: {
             const char* name;
@@ -856,6 +857,6 @@ bool titleformat_hook_set_global<set, get>::process_function(titleformat_text_ou
         default:
             return false;
         }
-    } else
-        return false;
+    }
+    return false;
 }

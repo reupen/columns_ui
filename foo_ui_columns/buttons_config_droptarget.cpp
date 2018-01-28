@@ -11,12 +11,13 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
         AddRef();
         *ppvObject = (IUnknown*)this;
         return S_OK;
-    } else if (riid == IID_IDropTarget) {
+    }
+    if (riid == IID_IDropTarget) {
         AddRef();
         *ppvObject = (IDropTarget*)this;
         return S_OK;
-    } else
-        return E_NOINTERFACE;
+    }
+    return E_NOINTERFACE;
 }
 ULONG STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::AddRef()
 {

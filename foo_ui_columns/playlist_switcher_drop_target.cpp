@@ -64,12 +64,13 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::QueryInterface(REF
         AddRef();
         *ppvObject = (IUnknown*)this;
         return S_OK;
-    } else if (riid == IID_IDropTarget) {
+    }
+    if (riid == IID_IDropTarget) {
         AddRef();
         *ppvObject = (IDropTarget*)this;
         return S_OK;
-    } else
-        return E_NOINTERFACE;
+    }
+    return E_NOINTERFACE;
 }
 
 ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::AddRef()

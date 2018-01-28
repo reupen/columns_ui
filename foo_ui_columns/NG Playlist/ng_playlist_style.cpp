@@ -55,7 +55,8 @@ bool titleformat_hook_style_v2::process_field(
                 p_out->write(titleformat_inputtypes::unknown, text.get_ptr(), text.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text", pfc_infinite)) {
                 if (!selected_text.get_ptr()) {
                     selected_text.set_size(33);
                     selected_text.fill(0);
@@ -65,7 +66,8 @@ bool titleformat_hook_style_v2::process_field(
                 p_out->write(titleformat_inputtypes::unknown, selected_text.get_ptr(), selected_text.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "back", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "back", pfc_infinite)) {
                 if (!back.get_ptr()) {
                     back.set_size(33);
                     back.fill(0);
@@ -74,7 +76,8 @@ bool titleformat_hook_style_v2::process_field(
                 p_out->write(titleformat_inputtypes::unknown, back.get_ptr(), back.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back", pfc_infinite)) {
                 if (!selected_back.get_ptr()) {
                     selected_back.set_size(33);
                     selected_back.fill(0);
@@ -84,7 +87,8 @@ bool titleformat_hook_style_v2::process_field(
                 p_out->write(titleformat_inputtypes::unknown, selected_back.get_ptr(), selected_back.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back_no_focus", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_back_no_focus", pfc_infinite)) {
                 if (!selected_back_no_focus.get_ptr()) {
                     selected_back_no_focus.set_size(33);
                     selected_back_no_focus.fill(0);
@@ -95,7 +99,8 @@ bool titleformat_hook_style_v2::process_field(
                     selected_back_no_focus.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text_no_focus", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "selected_text_no_focus", pfc_infinite)) {
                 if (!selected_text_no_focus.get_ptr()) {
                     selected_text_no_focus.set_size(33);
                     selected_text_no_focus.fill(0);
@@ -106,14 +111,16 @@ bool titleformat_hook_style_v2::process_field(
                     selected_text_no_focus.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "themed", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "themed", pfc_infinite)) {
                 cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
                 if (p_helper.get_themed()) {
                     p_out->write(titleformat_inputtypes::unknown, "1", 1);
                     p_found_flag = true;
                 }
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "display_index", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "display_index", pfc_infinite)) {
                 if (!m_index_text.get_ptr()) {
                     m_index_text.set_size(33);
                     m_index_text.fill(0);
@@ -122,7 +129,8 @@ bool titleformat_hook_style_v2::process_field(
                 p_out->write(titleformat_inputtypes::unknown, m_index_text.get_ptr(), m_index_text.get_size());
                 p_found_flag = true;
                 return true;
-            } else if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "is_group", pfc_infinite)) {
+            }
+            if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "is_group", pfc_infinite)) {
                 if (m_is_group) {
                     p_out->write(titleformat_inputtypes::unknown, "1", 1);
                     p_found_flag = true;

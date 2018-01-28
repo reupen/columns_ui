@@ -270,14 +270,13 @@ int CALLBACK FontSizesProc(const LOGFONT* plf, const TEXTMETRIC* ptm, DWORD Font
             }
         }
         return 1;
-    } else {
-        if (fn->size > 1 && !fn->up)
-            fn->new_size = fn->size - 1;
-        else if (fn->size < MAXLONG && fn->up)
-            fn->new_size = fn->size + 1;
-        fn->changed = true;
-        return 0;
     }
+    if (fn->size > 1 && !fn->up)
+        fn->new_size = fn->size - 1;
+    else if (fn->size < MAXLONG && fn->up)
+        fn->new_size = fn->size + 1;
+    fn->changed = true;
+    return 0;
 }
 
 int fontsizecommonproc(int pointsize, DWORD FontType, fontsizeinfo* fn)
@@ -293,8 +292,7 @@ int fontsizecommonproc(int pointsize, DWORD FontType, fontsizeinfo* fn)
             }
         }
         return 1;
-    } else {
-        fn->new_size = fn->size + (fn->up ? 1 : -1);
-        return 0;
     }
+    fn->new_size = fn->size + (fn->up ? 1 : -1);
+    return 0;
 }

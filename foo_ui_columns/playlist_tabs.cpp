@@ -46,22 +46,21 @@ bool playlists_tabs_extension::is_point_ours(
         if (wnd_point == get_wnd() || wnd_point == wnd_tabs) {
             p_hierarchy.add_item(this);
             return true;
-        } else {
-            {
-                uie::splitter_window_v2_ptr sptr;
-                if (m_child.is_valid()) {
-                    if (m_child->service_query_t(sptr)) {
-                        pfc::list_t<uie::window::ptr> temp;
-                        temp.add_item(this);
-                        if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
-                            p_hierarchy.add_items(temp);
-                            return true;
-                        }
-                    } else if (wnd_point == m_child_wnd || IsChild(m_child_wnd, wnd_point)) {
-                        p_hierarchy.add_item(this);
-                        p_hierarchy.add_item(m_child);
+        }
+        {
+            uie::splitter_window_v2_ptr sptr;
+            if (m_child.is_valid()) {
+                if (m_child->service_query_t(sptr)) {
+                    pfc::list_t<uie::window::ptr> temp;
+                    temp.add_item(this);
+                    if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
+                        p_hierarchy.add_items(temp);
                         return true;
                     }
+                } else if (wnd_point == m_child_wnd || IsChild(m_child_wnd, wnd_point)) {
+                    p_hierarchy.add_item(this);
+                    p_hierarchy.add_item(m_child);
+                    return true;
                 }
             }
         }
@@ -268,7 +267,7 @@ LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPA
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
             && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
-        else if (wp == VK_TAB) {
+        if (wp == VK_TAB) {
             ui_extension::window::g_on_tab(wnd);
             // return 0;
         }
@@ -897,8 +896,8 @@ bool playlists_tabs_extension::window_host_impl::request_resize(
             m_this->adjust_rect(TRUE, &rc);
             // We would expect rc.top and rc.left to be 0.
             return m_this->get_host()->request_resize(m_this->get_wnd(), flags, rc.right, rc.bottom);
-        } else
-            return m_this->get_host()->request_resize(m_this->get_wnd(), flags, width, height);
+        }
+        return m_this->get_host()->request_resize(m_this->get_wnd(), flags, width, height);
     }
     return false;
 }

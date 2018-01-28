@@ -47,8 +47,8 @@ BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
             SendMessage(wnd, DM_SETDEFID, IDCANCEL, NULL);
             SetFocus(GetDlgItem(wnd, IDCANCEL));
             return FALSE;
-        } else
-            return FALSE;
+        }
+        return FALSE;
     }
         return FALSE; // m_modal ? FALSE : TRUE;
     case WM_DESTROY:

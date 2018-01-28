@@ -447,7 +447,8 @@ LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     lptbcd->clrHighlightHotTrack = GetSysColor(COLOR_HIGHLIGHT);
                     rv |= TBCDRF_HILITEHOTTRACK;
                     return rv;
-                } else if (m_appearance == APPEARANCE_NOEDGE) {
+                }
+                if (m_appearance == APPEARANCE_NOEDGE) {
                     return TBCDRF_NOEDGES | TBCDRF_NOBACKGROUND;
                 }
             } break;

@@ -248,9 +248,8 @@ LRESULT WINAPI order_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_KEYDOWN:
         if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
-        else if (wp == VK_TAB) {
+        if (wp == VK_TAB)
             ui_extension::window::g_on_tab(wnd);
-        }
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
         break;
     case WM_SYSKEYDOWN:
