@@ -25,7 +25,7 @@ public:
 
     RebarBandInfo(
         GUID guid, uih::IntegerAndDpi<uint32_t> width, bool break_before_band = false, uie::window_ptr window = {})
-        : m_guid{guid}, m_width(width), m_break_before_band{break_before_band}, m_window(window)
+        : m_guid{guid}, m_width(width), m_break_before_band{break_before_band}, m_window(std::move(window))
     {
     }
 
