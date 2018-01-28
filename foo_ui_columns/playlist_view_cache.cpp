@@ -166,10 +166,7 @@ void playlist_cache::delete_all()
 
     int n, t = get_count();
     for (n = 0; n < t; n++) {
-        playlist_entry_ui* entry = get_item(n);
-        if (entry) {
-            delete entry;
-        }
+        delete get_item(n);
     }
 
     remove_all();
