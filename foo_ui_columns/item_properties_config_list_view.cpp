@@ -60,9 +60,8 @@ void fields_list_view_t::notify_on_create()
 
 void fields_list_view_t::get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
 {
-    t_size i;
     items.set_count(count);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         items[i].m_subitems.set_size(2);
         items[i].m_subitems[0] = m_fields[base + i].m_name_friendly;
         items[i].m_subitems[1] = m_fields[base + i].m_name;

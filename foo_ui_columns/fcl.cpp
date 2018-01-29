@@ -46,8 +46,8 @@ public:
     void g_populate_tree(HWND wnd_tree, cui::fcl::group_list& list, const cui::fcl::group_list_filtered& filtered,
         HTREEITEM ti_parent = TVI_ROOT)
     {
-        t_size i, count = filtered.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = filtered.get_count();
+        for (t_size i = 0; i < count; i++) {
             pfc::string8 name;
             filtered[i]->get_name(name);
             HTREEITEM item = treeview::insert_item(wnd_tree, name, m_nodes.get_count(), ti_parent);
@@ -100,8 +100,8 @@ public:
             if (m_import) {
                 cui::fcl::dataset_list datasets;
                 pfc::list_t<GUID> groupslist;
-                t_size j, count = datasets.get_count();
-                for (j = 0; j < count; j++) {
+                t_size count = datasets.get_count();
+                for (t_size j = 0; j < count; j++) {
                     if (m_filter.have_item(datasets[j]->get_guid())) {
                         GUID guid = datasets[j]->get_group();
                         if (!groupslist.have_item(guid))
@@ -135,8 +135,8 @@ public:
             switch (wp) {
             case IDOK: {
                 HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
-                t_size i, count = m_nodes.get_count();
-                for (i = 0; i < count; i++) {
+                t_size count = m_nodes.get_count();
+                for (t_size i = 0; i < count; i++) {
                     m_nodes[i].checked = 0 != TreeView_GetCheckState(wnd_tree, m_nodes[i].item);
                 }
                 HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
@@ -169,8 +169,8 @@ public:
     }
     bool have_node_checked(const GUID& pguid)
     {
-        t_size i, count = m_nodes.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = m_nodes.get_count();
+        for (t_size i = 0; i < count; i++) {
             if (m_nodes[i].group->get_guid() == pguid)
                 return m_nodes[i].checked;
         }
@@ -205,8 +205,8 @@ class panel_info_list : public pfc::list_t<t_panel_info> {
 public:
     bool get_name_by_guid(const GUID& guid, pfc::string8& p_out)
     {
-        t_size i, count = get_count();
-        for (i = 0; i < count; i++)
+        t_size count = get_count();
+        for (t_size i = 0; i < count; i++)
             if (get_item(i).guid == guid) {
                 p_out = get_item(i).name;
                 return true;
@@ -250,8 +250,8 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         LVITEM lvi;
         memset(&lvi, 0, sizeof(LVITEM));
         lvi.mask = LVIF_TEXT;
-        t_size i, count = p_data->m_items.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = p_data->m_items.get_count();
+        for (t_size i = 0; i < count; i++) {
             pfc::string8 temp;
             uih::list_view_insert_item_text(wnd_lv, i, 0, p_data->m_items[i].name, false);
             uih::list_view_insert_item_text(wnd_lv, i, 1, pfc::print_guid(p_data->m_items[i].guid), true);
@@ -313,9 +313,9 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             p_file->read_lendian_t(mode, p_abort);
         {
             pfc::list_t<bool> mask;
-            t_size i, count;
+            t_size count;
             p_file->read_lendian_t(count, p_abort);
-            for (i = 0; i < count; i++) {
+            for (t_size i = 0; i < count; i++) {
                 t_panel_info info;
                 p_file->read_lendian_t(info.guid, p_abort);
                 p_file->read_string(info.name, p_abort);
@@ -357,10 +357,10 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                 pfc::string8 name;
                 p_file->read_lendian_t(datasets[i].guid, p_abort);
                 p_file->read_string(name, p_abort);
-                t_uint32 pcount, j;
+                t_uint32 pcount;
                 p_file->read_lendian_t(pcount, p_abort);
                 panel_indices[i].set_count(pcount);
-                for (j = 0; j < pcount; j++)
+                for (t_uint32 j = 0; j < pcount; j++)
                     p_file->read_lendian_t(panel_indices[i][j], p_abort);
                 // pfc::array_t<t_uint8> data;
                 t_size size;
@@ -459,10 +459,10 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
         t_size actualtotal = 0;
         {
             cui::fcl::dataset_list export_items;
-            t_size i, count = export_items.get_count();
+            t_size count = export_items.get_count();
             pfc::array_t<t_export_feedback_impl> feeds;
             feeds.set_count(count);
-            for (i = 0; i < count; i++) {
+            for (t_size i = 0; i < count; i++) {
                 if (is_quiet || groups.have_item(export_items[i]->get_group())) {
                     pfc::string8 name;
                     export_items[i]->get_name(name);
@@ -470,9 +470,9 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
                     mem.write_string(name, p_abort);
                     stream_writer_memblock writer;
                     export_items[i]->get_data(&writer, mode, feeds[i], p_abort);
-                    t_size j, pcount = feeds[i].get_count();
+                    t_size pcount = feeds[i].get_count();
                     mem.write_lendian_t(pcount, p_abort);
-                    for (j = 0; j < pcount; j++) {
+                    for (t_size j = 0; j < pcount; j++) {
                         t_uint32 temp = feedback.find_or_add_guid(feeds[i][j]);
                         mem.write_lendian_t(temp, p_abort);
                     }
@@ -484,9 +484,9 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
         }
 
         {
-            t_size j, pcount = feedback.get_count();
+            t_size pcount = feedback.get_count();
             p_file->write_lendian_t(pcount, p_abort);
-            for (j = 0; j < pcount; j++) {
+            for (t_size j = 0; j < pcount; j++) {
                 uie::window_ptr ptr;
                 pfc::string8 name;
                 if (uie::window::create_by_guid(feedback[j], ptr))

@@ -173,7 +173,6 @@ LRESULT playlist_view::CreateToolTip(const char* text)
 
 unsigned playlist_view::get_last_viewable_item()
 {
-    unsigned rv;
     RECT rect;
     get_playlist_rect(&rect);
     int item_height = get_item_height();
@@ -181,7 +180,7 @@ unsigned playlist_view::get_last_viewable_item()
 
     static_api_ptr_t<playlist_manager> playlist_api;
     const auto total = playlist_api->activeplaylist_get_item_count();
-    rv = items + scroll_item_offset - 1;
+    unsigned rv = items + scroll_item_offset - 1;
     if (rv >= total)
         rv = total - 1;
 
@@ -306,8 +305,8 @@ void playlist_view::on_playlist_activate(unsigned p_old, unsigned p_new)
     // if (!cfg_nohscroll) g_save_columns();
     //    g_reset_columns();
 
-    unsigned n, count = playlist_view::list_playlist.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = playlist_view::list_playlist.get_count();
+    for (unsigned n = 0; n < count; n++) {
         playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
 
         t_local_cache::t_local_cache_entry* p_cache = nullptr;
@@ -353,8 +352,8 @@ public:
                 playlist_view::g_remove_sort();
             playlist_view::g_get_cache().on_items_added(p_index, start, p_data, p_selection);
             if (b_active) {
-                unsigned n, count = playlist_view::list_playlist.get_count();
-                for (n = 0; n < count; n++) {
+                unsigned count = playlist_view::list_playlist.get_count();
+                for (unsigned n = 0; n < count; n++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                     if (p_playlist->wnd_playlist) {
                         //                    g_playlist_entries.rebuild_all();
@@ -375,16 +374,16 @@ public:
                 playlist_view::g_remove_sort();
             playlist_view::g_get_cache().on_items_reordered(p_index, order, count);
             if (b_active) {
-                t_size n, start = 0;
-                for (n = 0; n < count; n++) {
+                t_size start = 0;
+                for (t_size n = 0; n < count; n++) {
                     start = n;
                     while (n < count && order[n] != n) {
                         //                    g_playlist_entries.mark_out_of_date(n);
                         n++;
                     }
                     if (n > start) {
-                        unsigned nn, pcount = playlist_view::list_playlist.get_count();
-                        for (nn = 0; nn < pcount; nn++) {
+                        unsigned pcount = playlist_view::list_playlist.get_count();
+                        for (unsigned nn = 0; nn < pcount; nn++) {
                             playlist_view* p_playlist = playlist_view::list_playlist.get_item(nn);
                             if (p_playlist->wnd_playlist)
                                 p_playlist->draw_items_wrapper(start, n - start);
@@ -408,8 +407,8 @@ public:
                 playlist_view::g_remove_sort();
             playlist_view::g_get_cache().on_items_removed(p_index, p_mask);
             if (b_active) {
-                unsigned n, count = playlist_view::list_playlist.get_count();
-                for (n = 0; n < count; n++) {
+                unsigned count = playlist_view::list_playlist.get_count();
+                for (unsigned n = 0; n < count; n++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                     if (p_playlist->wnd_playlist) {
                         //                    g_playlist_entries.rebuild_all();
@@ -429,13 +428,13 @@ public:
         //        if (playlist_view::g_get_cache().is_active())
         {
             if (p_index == playlist_view::g_get_cache().get_active_playlist()) {
-                unsigned n, pcount = playlist_view::list_playlist.get_count();
-                for (n = 0; n < pcount; n++) {
+                unsigned pcount = playlist_view::list_playlist.get_count();
+                for (unsigned n = 0; n < pcount; n++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                     if (p_playlist->wnd_playlist) {
-                        t_size n, start = 0;
+                        t_size start = 0;
                         unsigned count = static_api_ptr_t<playlist_manager>()->activeplaylist_get_item_count();
-                        for (n = 0; n < count; n++) {
+                        for (t_size n = 0; n < count; n++) {
                             //    if (before[n]!=after[n]) draw_items_wrapper(n);
                             start = n;
                             while (n < count && affected[n]) {
@@ -455,8 +454,8 @@ public:
         //        console::info(pfc::string_printf("on_item_focus_change: %i",p_index));
         if (playlist_view::g_get_cache().is_active()) {
             if (p_index == playlist_view::g_get_cache().get_active_playlist()) {
-                unsigned n, count = playlist_view::list_playlist.get_count();
-                for (n = 0; n < count; n++) {
+                unsigned count = playlist_view::list_playlist.get_count();
+                for (unsigned n = 0; n < count; n++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                     if (p_playlist->wnd_playlist) {
                         p_playlist->draw_items_wrapper(from);
@@ -491,12 +490,12 @@ public:
             else
                 playlist_view::g_get_cache().on_items_modified(p_index, p_mask);
             if (b_active) {
-                unsigned n, count = playlist_view::list_playlist.get_count();
-                for (n = 0; n < count; n++) {
+                unsigned count = playlist_view::list_playlist.get_count();
+                for (unsigned n = 0; n < count; n++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                     if (p_playlist->wnd_playlist) {
-                        unsigned n, start = 0, count = playlist_view::g_get_cache().playlist_get_count(p_index);
-                        for (n = 0; n < count; n++) {
+                        unsigned start = 0, count = playlist_view::g_get_cache().playlist_get_count(p_index);
+                        for (unsigned n = 0; n < count; n++) {
                             start = n;
                             while (n < count && p_mask[n]) {
                                 n++;
@@ -525,8 +524,8 @@ public:
         //        console::info(pfc::string_printf("on_item_item_visible: %i",p_index));
         if (playlist_view::g_get_cache().is_active()) {
             if (p_index == playlist_view::g_get_cache().get_active_playlist()) {
-                unsigned n, count = playlist_view::list_playlist.get_count();
-                for (n = 0; n < count; n++) {
+                unsigned count = playlist_view::list_playlist.get_count();
+                for (unsigned n = 0; n < count; n++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                     if (p_playlist->wnd_playlist) {
                         p_playlist->ensure_visible(idx);
@@ -617,8 +616,8 @@ playlist_view::class_data& playlist_view::get_class_data() const
 
 void playlist_view::g_on_playback_follows_cursor_change(bool b_val)
 {
-    unsigned n, count = playlist_view::list_playlist.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = playlist_view::list_playlist.get_count();
+    for (unsigned n = 0; n < count; n++) {
         playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
         p_playlist->m_always_show_focus = b_val;
         RedrawWindow(p_playlist->wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
@@ -627,8 +626,8 @@ void playlist_view::g_on_playback_follows_cursor_change(bool b_val)
 
 void playlist_view::update_all_windows(HWND wnd_header_skip /*= 0*/)
 {
-    unsigned n, count = playlist_view::list_playlist.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = playlist_view::list_playlist.get_count();
+    for (unsigned n = 0; n < count; n++) {
         playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
         if (p_playlist->wnd_header && wnd_header_skip != p_playlist->wnd_header) {
             p_playlist->rebuild_header();
@@ -642,8 +641,8 @@ void playlist_view::g_on_columns_size_change(const playlist_view* p_skip /*= NUL
 {
     if (g_cache.is_active())
         columns.set_widths(g_columns);
-    unsigned n, count = playlist_view::list_playlist.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = playlist_view::list_playlist.get_count();
+    for (unsigned n = 0; n < count; n++) {
         playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
         if (p_playlist != p_skip && p_playlist->wnd_header) {
             p_playlist->rebuild_header();
@@ -658,8 +657,8 @@ void refresh_all_playlist_views()
         g_to_global.release();
         g_to_global_colour.release();
         playlist_view::g_reset_columns();
-        unsigned m, pcount = playlist_view::list_playlist.get_count();
-        for (m = 0; m < pcount; m++) {
+        unsigned pcount = playlist_view::list_playlist.get_count();
+        for (unsigned m = 0; m < pcount; m++) {
             playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
             p_playlist->create_header();
             if (p_playlist->wnd_header)

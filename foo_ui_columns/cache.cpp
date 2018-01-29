@@ -52,8 +52,8 @@ colourinfo* cache_manager::add_colour(
     /*COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF back_sel_nofocus*/ colourinfo&
         colour_add)
 {
-    unsigned n, count = colours.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = colours.get_count();
+    for (unsigned n = 0; n < count; n++) {
         colourinfo* item = colours[n];
 
         if (*item == colour_add) {
@@ -70,8 +70,8 @@ colourinfo* cache_manager::add_colour(
 
 void cache_manager::release_colour(colourinfo* col)
 {
-    unsigned n, count = colours.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = colours.get_count();
+    for (unsigned n = 0; n < count; n++) {
         colourinfo* item = colours[n];
         if (item == col) {
             if (item->release())

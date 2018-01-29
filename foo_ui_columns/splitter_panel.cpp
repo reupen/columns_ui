@@ -225,8 +225,8 @@ uie::splitter_item_full_v2_t* splitter_window_impl::panel::create_splitter_item(
 
 bool splitter_window_impl::panel_list::find_by_wnd_child(HWND wnd, unsigned& p_out)
 {
-    unsigned n, count = get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (get_item(n)->m_wnd_child == wnd) {
             p_out = n;
             return true;
@@ -237,8 +237,8 @@ bool splitter_window_impl::panel_list::find_by_wnd_child(HWND wnd, unsigned& p_o
 
 bool splitter_window_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_out)
 {
-    unsigned n, count = get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (get_item(n)->m_wnd == wnd) {
             p_out = n;
             return true;

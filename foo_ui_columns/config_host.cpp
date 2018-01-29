@@ -69,8 +69,8 @@ BOOL config_host_generic::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_wnd = wnd;
         m_wnd_tabs = GetDlgItem(wnd, IDC_TAB1);
         // SendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
-        unsigned n, count = m_tab_count;
-        for (n = 0; n < count; n++) {
+        unsigned count = m_tab_count;
+        for (unsigned n = 0; n < count; n++) {
             uTabCtrl_InsertItemText(m_wnd_tabs, n, m_tabs[n]->get_name());
         }
         TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);

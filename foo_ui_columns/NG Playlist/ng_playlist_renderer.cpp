@@ -81,9 +81,9 @@ void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool
     }
 
     RECT rc_subitem = *rc_outter_item;
-    t_size k, countk = get_column_count();
+    t_size countk = get_column_count();
 
-    for (k = 0; k < countk; k++) {
+    for (t_size k = 0; k < countk; k++) {
         rc_subitem.right = rc_subitem.left + get_column_display_width(k);
         if (k == 0)
             rc_subitem.left += indentation;

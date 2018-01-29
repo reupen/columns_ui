@@ -57,8 +57,8 @@ void playlist_view_cache::on_items_reordered(unsigned p_playlist, const unsigned
     //    assert(p_cache->get_count() == count);
     //    p_cache->reorder(order);
     flush_sort(p_playlist);
-    unsigned n, start = 0;
-    for (n = 0; n < count; n++) {
+    unsigned start = 0;
+    for (unsigned n = 0; n < count; n++) {
         start = n;
         while (n < count && order[n] != n) {
             n++;
@@ -79,8 +79,8 @@ void playlist_view_cache::on_items_removed(unsigned p_playlist, const pfc::bit_a
 void playlist_view_cache::on_items_change(unsigned p_playlist, const pfc::bit_array& p_mask)
 {
     playlist_cache* p_cache = get_item(p_playlist);
-    unsigned n, count = p_cache->get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = p_cache->get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (p_mask[n]) {
             playlist_entry_ui* entry = p_cache->get_item(n);
             if (entry) {
@@ -164,8 +164,8 @@ void playlist_cache::delete_all()
 {
     //    if (synctest) console::error("oh dear 3");
 
-    int n, t = get_count();
-    for (n = 0; n < t; n++) {
+    int t = get_count();
+    for (int n = 0; n < t; n++) {
         delete get_item(n);
     }
 
@@ -271,7 +271,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
             make_extra(playlist, idx, p_vars, date ? &st : nullptr, b_legacy);
         }
 
-        int s, e = columns.get_count(), i = 0;
+        int e = columns.get_count(), i = 0;
         pfc::string8_fast_aggressive colour, display, temp;
         colour.prealloc(512);
         display.prealloc(512);
@@ -291,7 +291,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
         service_ptr_t<titleformat_object> to_global_style;
 
         bool colour_global_av = false;
-        for (s = 0; s < e; s++) {
+        for (int s = 0; s < e; s++) {
             if (p_mask[s]) {
                 playlist_view::g_get_columns()[s]->get_to_display(to_display);
                 // playlist_view::g_get_titleformat_object(s, STRING_DISPLAY, to_display);
@@ -380,8 +380,8 @@ const pfc::bit_array& playlist_view_cache::get_columns_mask(unsigned playlist)
 unsigned playlist_view_cache::column_active_to_actual(unsigned playlist, unsigned column)
 {
     const pfc::bit_array& p_array = get_columns_mask(playlist);
-    unsigned n, rv = 0, count = playlist_view::g_get_columns().get_count();
-    for (n = 0; n < count; n++) {
+    unsigned rv = 0, count = playlist_view::g_get_columns().get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (p_array[n]) {
             if (rv++ == column)
                 return n;
@@ -393,8 +393,8 @@ unsigned playlist_view_cache::column_active_to_actual(unsigned playlist, unsigne
 unsigned playlist_view_cache::column_get_active_count(unsigned playlist)
 {
     const pfc::bit_array& p_array = get_columns_mask(playlist);
-    unsigned n, rv = 0, count = playlist_view::g_get_columns().get_count();
-    for (n = 0; n < count; n++) {
+    unsigned rv = 0, count = playlist_view::g_get_columns().get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (p_array[n])
             rv++;
     }
@@ -411,9 +411,9 @@ void playlist_view_cache::update_active_columns(unsigned playlist)
     column_list_cref_t columns = playlist_view::g_get_columns();
     playlist_cache* p_cache = get_item(playlist);
 
-    int s, e = columns.get_count();
+    int e = columns.get_count();
     p_cache->m_active_columns.resize(e);
-    for (s = 0; s < e; s++) {
+    for (int s = 0; s < e; s++) {
         bool b_valid = false;
         if (columns[s]->show) {
             switch (columns[s]->filter_type) {
@@ -450,8 +450,8 @@ void playlist_view::g_reset_columns()
 unsigned int playlist_view::g_columns_get_total_width()
 {
     const pfc::bit_array& p_mask = g_cache.active_get_columns_mask();
-    unsigned w = 0, n, t = columns.get_count();
-    for (n = 0; n < t; n++)
+    unsigned w = 0, t = columns.get_count();
+    for (unsigned n = 0; n < t; n++)
         if (p_mask[n])
             w += columns[n]->width;
     return w;
@@ -460,8 +460,8 @@ unsigned int playlist_view::g_columns_get_total_width()
 unsigned int playlist_view::g_columns_get_total_parts()
 {
     const pfc::bit_array& p_mask = g_cache.active_get_columns_mask();
-    unsigned w = 0, n, t = columns.get_count();
-    for (n = 0; n < t; n++)
+    unsigned w = 0, t = columns.get_count();
+    for (unsigned n = 0; n < t; n++)
         if (p_mask[n])
             w += columns[n]->parts;
     return w;
@@ -497,8 +497,8 @@ void playlist_view_cache::flush(unsigned playlist)
     playlist_cache* p_cache = get_item(playlist);
     p_cache->delete_all();
 
-    unsigned n, count = static_api_ptr_t<playlist_manager>()->playlist_get_item_count(playlist);
-    for (n = 0; n < count; n++)
+    unsigned count = static_api_ptr_t<playlist_manager>()->playlist_get_item_count(playlist);
+    for (unsigned n = 0; n < count; n++)
         p_cache->add_item(n);
 }
 
@@ -567,13 +567,12 @@ class desc_sort_callback : public pfc::list_base_t<T>::sort_callback {
 
 void playlist_view::g_remove_sort()
 {
-    bool b_sorted;
     unsigned idx;
-    b_sorted = g_cache.active_get_playlist_sort(idx);
+    bool b_sorted = g_cache.active_get_playlist_sort(idx);
 
     if (b_sorted) {
-        unsigned n, pcount = playlist_view::list_playlist.get_count();
-        for (n = 0; n < pcount; n++) {
+        unsigned pcount = playlist_view::list_playlist.get_count();
+        for (unsigned n = 0; n < pcount; n++) {
             playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
             if (p_playlist->wnd_header) {
                 HDITEM hdi;
@@ -623,10 +622,10 @@ void playlist_view::g_set_sort(unsigned column, bool descending, bool selection_
         pfc::string8_fast_aggressive temp2;
         temp.prealloc(512);
 
-        pfc::string8 spec;
         bool custom_sort = columns[act_column]->use_custom_sort;
 
-        /*if (custom_sort) */ spec = custom_sort ? columns[act_column]->sort_spec : columns[act_column]->spec;
+        /*if (custom_sort) */
+        pfc::string8 spec = custom_sort ? columns[act_column]->sort_spec : columns[act_column]->spec;
         // columns.get_string(act_column, spec, custom_sort ? STRING_SORT : STRING_DISPLAY);
 
         global_variable_list extra_items;
@@ -731,8 +730,8 @@ void playlist_view::g_update_sort()
         bool descending;
         bool b_sorted = g_cache.active_get_playlist_sort(column, &descending);
         if (b_sorted) {
-            unsigned n, pcount = list_playlist.get_count();
-            for (n = 0; n < pcount; n++) {
+            unsigned pcount = list_playlist.get_count();
+            for (unsigned n = 0; n < pcount; n++) {
                 playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                 if (p_playlist->wnd_header) {
                     HDITEM hdi;
@@ -766,8 +765,8 @@ void playlist_view::g_update_sort()
 
 void playlist_view_cache::flush_all(bool b_flush_columns)
 {
-    unsigned n, count = get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = get_count();
+    for (unsigned n = 0; n < count; n++) {
         flush(n);
         if (b_flush_columns)
             flush_columns(n);
@@ -786,11 +785,11 @@ void playlist_view_cache::rebuild()
 
     static_api_ptr_t<playlist_manager> playlist_api;
 
-    unsigned n, pcount = playlist_api->get_playlist_count();
-    for (n = 0; n < pcount; n++) {
+    unsigned pcount = playlist_api->get_playlist_count();
+    for (unsigned n = 0; n < pcount; n++) {
         auto p_cache = new playlist_cache;
-        unsigned i, count = playlist_api->playlist_get_item_count(n);
-        for (i = 0; i < count; i++)
+        unsigned count = playlist_api->playlist_get_item_count(n);
+        for (unsigned i = 0; i < count; i++)
             p_cache->add_item(i);
         add_item(p_cache);
     }

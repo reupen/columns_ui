@@ -56,8 +56,8 @@ public:
 
             populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, *p_menu_cache, true);
 
-            unsigned n, count = playlist_mclick_actions::get_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = playlist_mclick_actions::get_count();
+            for (unsigned n = 0; n < count; n++) {
                 uSendDlgItemMessageText(
                     wnd, IDC_PLAYLIST_MIDDLE, CB_ADDSTRING, 0, playlist_mclick_actions::g_pma_actions[n].name);
                 SendDlgItemMessage(
@@ -141,8 +141,8 @@ public:
 
             case IDC_HEADER: {
                 cfg_header = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                unsigned m, pcount = playlist_view::list_playlist.get_count();
-                for (m = 0; m < pcount; m++) {
+                unsigned pcount = playlist_view::list_playlist.get_count();
+                for (unsigned m = 0; m < pcount; m++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
                     p_playlist->create_header();
                     if (p_playlist->wnd_header)
@@ -160,8 +160,8 @@ public:
 
             case IDC_HHTRACK: {
                 cfg_header_hottrack = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                unsigned m, pcount = playlist_view::list_playlist.get_count();
-                for (m = 0; m < pcount; m++) {
+                unsigned pcount = playlist_view::list_playlist.get_count();
+                for (unsigned m = 0; m < pcount; m++) {
                     playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
                     long flags = WS_CHILD | WS_VISIBLE | HDS_HOTTRACK | HDS_HORZ | (cfg_nohscroll ? 0 : HDS_FULLDRAG)
                         | (cfg_header_hottrack ? HDS_BUTTONS : 0);
@@ -172,8 +172,8 @@ public:
             case (CBN_SELCHANGE << 16) | IDC_PLEDGE: {
                 cfg_frame = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
                 {
-                    unsigned m, pcount = playlist_view::list_playlist.get_count();
-                    for (m = 0; m < pcount; m++) {
+                    unsigned pcount = playlist_view::list_playlist.get_count();
+                    for (unsigned m = 0; m < pcount; m++) {
                         playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
                         if (p_playlist->wnd_playlist) {
                             long flags = 0;

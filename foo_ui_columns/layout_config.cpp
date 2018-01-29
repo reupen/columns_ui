@@ -587,9 +587,9 @@ void cfg_layout_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     out->write_lendian_t(t_uint32(stream_version_current), p_abort);
     out->write_lendian_t(m_active, p_abort);
-    unsigned n, count = m_presets.get_count();
+    unsigned count = m_presets.get_count();
     out->write_lendian_t(count, p_abort);
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         if (n != m_active || !g_layout_window.get_wnd())
             m_presets[n].write(out, p_abort);
         else {
@@ -612,9 +612,9 @@ void cfg_layout_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, ab
     if (version <= stream_version_current) {
         m_presets.remove_all();
         p_reader->read_lendian_t(m_active, p_abort);
-        unsigned n, count;
+        unsigned count;
         p_reader->read_lendian_t(count, p_abort);
-        for (n = 0; n < count; n++) {
+        for (unsigned n = 0; n < count; n++) {
             preset temp;
             temp.read(p_reader, p_abort);
             m_presets.add_item(temp);

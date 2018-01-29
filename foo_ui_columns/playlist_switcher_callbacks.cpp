@@ -42,8 +42,8 @@ void playlist_switcher_t::on_playlist_created(t_size p_index, const char* p_name
 void playlist_switcher_t::on_playlists_reorder(const t_size* p_order, t_size p_count)
 {
     refresh_playing_playlist();
-    t_size i, start = 0;
-    for (i = 0; i < p_count; i++) {
+    t_size start = 0;
+    for (t_size i = 0; i < p_count; i++) {
         start = i;
         while (i < p_count && p_order[i] != i)
             i++;

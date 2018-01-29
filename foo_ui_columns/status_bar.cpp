@@ -260,8 +260,7 @@ void set_part_sizes(unsigned p_parts)
 
         if (count > 1) {
             for (n = count - 2; n; n--) {
-                unsigned i;
-                for (i = 0; i < n; i++)
+                for (unsigned i = 0; i < n; i++)
                     m_parts[n] += m_parts[i];
             }
         }

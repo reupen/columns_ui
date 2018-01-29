@@ -48,8 +48,8 @@ const info_section_t g_info_sections[] = {info_section_t(0, "Location"), info_se
 
 t_size g_get_info_secion_index_by_name(const char* p_name)
 {
-    t_size i, count = tabsize(g_info_sections);
-    for (i = 0; i < count; i++) {
+    t_size count = tabsize(g_info_sections);
+    for (t_size i = 0; i < count; i++) {
         if (!stricmp_utf8(p_name, g_info_sections[i].name))
             return i;
     }
@@ -58,8 +58,8 @@ t_size g_get_info_secion_index_by_name(const char* p_name)
 
 t_size g_get_info_secion_index_by_id(t_size id)
 {
-    t_size i, count = tabsize(g_info_sections);
-    for (i = 0; i < count; i++) {
+    t_size count = tabsize(g_info_sections);
+    for (t_size i = 0; i < count; i++) {
         if (g_info_sections[i].id == id)
             return i;
     }
@@ -160,8 +160,7 @@ void selection_properties_t::set_config(stream_reader* p_reader, t_size p_size, 
             p_reader->read_lendian_t(field_count, p_abort);
             m_fields.remove_all();
             m_fields.set_count(field_count);
-            t_size i;
-            for (i = 0; i < field_count; i++) {
+            for (t_size i = 0; i < field_count; i++) {
                 p_reader->read_string(m_fields[i].m_name_friendly, p_abort);
                 p_reader->read_string(m_fields[i].m_name, p_abort);
             }
@@ -184,9 +183,9 @@ void selection_properties_t::set_config(stream_reader* p_reader, t_size p_size, 
 void selection_properties_t::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(t_size(config_version_current), p_abort);
-    t_size i, count = m_fields.get_count();
+    t_size count = m_fields.get_count();
     p_writer->write_lendian_t(count, p_abort);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         p_writer->write_string(m_fields[i].m_name_friendly, p_abort);
         p_writer->write_string(m_fields[i].m_name, p_abort);
     }
@@ -327,11 +326,11 @@ public:
 
     void process_file_info(const file_info* p_info)
     {
-        t_size index_field, count_field = p_info->meta_get_count();
-        for (index_field = 0; index_field < count_field; index_field++) {
+        t_size count_field = p_info->meta_get_count();
+        for (t_size index_field = 0; index_field < count_field; index_field++) {
             const char* p_field = p_info->meta_enum_name(index_field);
-            t_size index_value, value_count = p_info->meta_enum_value_count(index_field);
-            for (index_value = 0; index_value < value_count; index_value++) {
+            t_size value_count = p_info->meta_enum_value_count(index_field);
+            for (t_size index_value = 0; index_value < value_count; index_value++) {
                 add_field(p_field, p_info->meta_enum_value(index_field, index_value));
             }
         }
@@ -362,12 +361,12 @@ public:
 
     void process_file_info_v2(const file_info* p_info)
     {
-        t_size index_field, count_field = m_fields.get_count();
-        for (index_field = 0; index_field < count_field; index_field++) {
+        t_size count_field = m_fields.get_count();
+        for (t_size index_field = 0; index_field < count_field; index_field++) {
             t_size index_field_meta = p_info->meta_find(m_fields[index_field].m_name);
             if (index_field_meta != pfc_infinite) {
-                t_size index_value, value_count = p_info->meta_enum_value_count(index_field_meta);
-                for (index_value = 0; index_value < value_count; index_value++) {
+                t_size value_count = p_info->meta_enum_value_count(index_field_meta);
+                for (t_size index_value = 0; index_value < value_count; index_value++) {
                     m_fields[index_field].add_value(p_info->meta_enum_value(index_field_meta, index_value));
                 }
             } else {
@@ -381,9 +380,9 @@ public:
     }
     void set_fields(pfc::list_t<field_t>& p_source)
     {
-        t_size i, count = p_source.get_count();
+        t_size count = p_source.get_count();
         m_fields.set_count(count);
-        for (i = 0; i < count; i++)
+        for (t_size i = 0; i < count; i++)
             m_fields[i].m_name = p_source[i].m_name;
     }
     pfc::list_t<metadata_field_t> m_fields;
@@ -416,8 +415,8 @@ void selection_properties_t::refresh_contents()
             pfc::string8 temp;
             item.m_subitems[0] = m_fields[i].m_name_friendly;
             temp.reset();
-            t_size j, count_values = metadata_aggregator.m_fields[i].m_values.get_count();
-            for (j = 0; j < count_values; j++) {
+            t_size count_values = metadata_aggregator.m_fields[i].m_values.get_count();
+            for (t_size j = 0; j < count_values; j++) {
                 temp << metadata_aggregator.m_fields[i].m_values[j];
                 if (j + 1 != count_values)
                     temp << "; ";
@@ -440,10 +439,10 @@ void selection_properties_t::refresh_contents()
                 ptr->enumerate_properties(m_handles, props);
         }
 
-        t_size index_group, count_group = props.m_values.get_size();
-        for (index_group = 0; index_group < count_group; index_group++) {
-            t_size index_field, count_field = props.m_values[index_group].get_count();
-            for (index_field = 0; index_field < count_field; index_field++) {
+        t_size count_group = props.m_values.get_size();
+        for (t_size index_group = 0; index_group < count_group; index_group++) {
+            t_size count_field = props.m_values[index_group].get_count();
+            for (t_size index_field = 0; index_field < count_field; index_field++) {
                 if (m_info_sections_mask & (1 << (g_info_sections[index_group].id))) {
                     uih::ListView::InsertItem item(2, 1);
                     item.m_subitems[0] = props.m_values[index_group][index_field].m_name;
@@ -499,8 +498,8 @@ void selection_properties_t::on_changed_sorted(metadb_handle_list_cref p_items_s
 {
     if (!p_fromhook) {
         bool b_refresh = false;
-        t_size i, count = m_handles.get_count();
-        for (i = 0; i < count && !b_refresh; i++) {
+        t_size count = m_handles.get_count();
+        for (t_size i = 0; i < count && !b_refresh; i++) {
             t_size index = pfc_infinite;
             if (p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, m_handles[i], index))
                 b_refresh = true;
@@ -657,17 +656,17 @@ void selection_properties_t::notify_save_inline_edit(const char* value)
                 ptr++;
         }
 
-        t_size j, value_count = values.get_count();
+        t_size value_count = values.get_count();
 
         metadb_handle_list ptrs(m_edit_handles);
         pfc::list_t<file_info_impl> infos;
         pfc::list_t<bool> mask;
         pfc::list_t<const file_info*> infos_ptr;
-        t_size i, count = ptrs.get_count();
+        t_size count = ptrs.get_count();
         mask.set_count(count);
         infos.set_count(count);
         // infos.set_count(count);
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             assert(ptrs[i].is_valid());
             mask[i] = !ptrs[i]->get_info(infos[i]);
             infos_ptr.add_item(&infos[i]);
@@ -676,7 +675,7 @@ void selection_properties_t::notify_save_inline_edit(const char* value)
                 g_print_field(m_edit_field, infos[i], old_value);
                 if (!(mask[i] = !((strcmp(old_value, value))))) {
                     infos[i].meta_remove_field(m_edit_field);
-                    for (j = 0; j < value_count; j++)
+                    for (t_size j = 0; j < value_count; j++)
                         infos[i].meta_add(m_edit_field, values[j]);
                 }
             }
@@ -722,8 +721,8 @@ bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_cons
             metadb_info_container::ptr p_info;
             if (m_edit_handles[0]->get_info_ref(p_info))
                 g_print_field(m_edit_field, p_info->info(), text);
-            t_size i, count = m_handles.get_count();
-            for (i = 1; i < count; i++) {
+            t_size count = m_handles.get_count();
+            for (t_size i = 1; i < count; i++) {
                 temp.reset();
                 if (m_edit_handles[i]->get_info_ref(p_info))
                     g_print_field(m_edit_field, p_info->info(), temp);
@@ -745,8 +744,8 @@ void selection_properties_t::g_print_field(const char* field, const file_info& p
 {
     t_size meta_index = p_info.meta_find(field);
     if (meta_index != pfc_infinite) {
-        t_size i, count = p_info.meta_enum_value_count(meta_index);
-        for (i = 0; i < count; i++)
+        t_size count = p_info.meta_enum_value_count(meta_index);
+        for (t_size i = 0; i < count; i++)
             p_out << p_info.meta_enum_value(meta_index, i) << (i + 1 < count ? "; " : "");
     }
 }
@@ -783,8 +782,7 @@ bool selection_properties_t::notify_on_keyboard_keydown_copy()
 
 void selection_properties_t::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    ui_extension::menu_node_ptr p_node;
-    p_node = new menu_node_source_popup(this);
+    ui_extension::menu_node_ptr p_node = new menu_node_source_popup(this);
     p_hook.add_node(p_node);
     p_node = new menu_node_autosize(this);
     p_hook.add_node(p_node);
@@ -926,8 +924,8 @@ track_property_callback_itemproperties::track_property_callback_itemproperties()
 
 void track_property_callback_itemproperties::sort()
 {
-    t_size i, count = m_values.get_size();
-    for (i = 0; i < count; i++) {
+    t_size count = m_values.get_size();
+    for (t_size i = 0; i < count; i++) {
         mmh::Permutation perm(m_values[i].get_count());
         mmh::sort_get_permutation(m_values[i].get_ptr(), perm, track_property_t::g_compare, false);
         m_values[i].reorder(perm.get_ptr());

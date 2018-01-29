@@ -93,8 +93,8 @@ void ng_playlist_view_t::refresh_groups(bool b_update_columns)
     pfc::string8 filter, playlist_name;
     m_playlist_api->activeplaylist_get_name(playlist_name);
 
-    t_size i, count = cfg_grouping ? g_groups.get_groups().get_count() : 0, used_count = 0;
-    for (i = 0; i < count; i++) {
+    t_size count = cfg_grouping ? g_groups.get_groups().get_count() : 0, used_count = 0;
+    for (t_size i = 0; i < count; i++) {
         bool b_valid = false;
         if (true) {
             switch (g_groups.get_groups()[i].filter_type) {
@@ -123,8 +123,8 @@ void ng_playlist_view_t::refresh_groups(bool b_update_columns)
 
 t_size ng_playlist_view_t::column_index_display_to_actual(t_size display_index)
 {
-    t_size i, count = m_column_mask.get_count(), counter = 0;
-    for (i = 0; i < count; i++) {
+    t_size count = m_column_mask.get_count(), counter = 0;
+    for (t_size i = 0; i < count; i++) {
         if (m_column_mask[i])
             if (counter++ == display_index)
                 return i;
@@ -134,8 +134,8 @@ t_size ng_playlist_view_t::column_index_display_to_actual(t_size display_index)
 
 t_size ng_playlist_view_t::column_index_actual_to_display(t_size actual_index)
 {
-    t_size i, count = m_column_mask.get_count(), counter = 0;
-    for (i = 0; i < count; i++) {
+    t_size count = m_column_mask.get_count(), counter = 0;
+    for (t_size i = 0; i < count; i++) {
         if (m_column_mask[i]) {
             counter++;
             if (i == actual_index)
@@ -147,9 +147,9 @@ t_size ng_playlist_view_t::column_index_actual_to_display(t_size actual_index)
 }
 void ng_playlist_view_t::on_column_widths_change()
 {
-    t_size i, count = m_column_mask.get_count();
+    t_size count = m_column_mask.get_count();
     pfc::list_t<int> widths;
-    for (i = 0; i < count; i++)
+    for (t_size i = 0; i < count; i++)
         if (m_column_mask[i])
             widths.add_item(g_columns[i]->width);
     set_column_widths(widths);
@@ -179,9 +179,9 @@ void ng_playlist_view_t::refresh_columns()
         p_compiler->compile_safe(m_script_global, cfg_globalstring);
     p_compiler->compile_safe(m_script_global_style, cfg_colour);
 
-    t_size i, count = g_columns.get_count();
+    t_size count = g_columns.get_count();
     m_column_mask.set_size(count);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         column_t* source = g_columns[i].get_ptr();
         bool b_valid = false;
         if (source->show) {
@@ -252,10 +252,9 @@ void ng_playlist_view_t::refresh_all_items_text(bool b_update_display)
 }
 void ng_playlist_view_t::update_items(t_size index, t_size count, bool b_update_display)
 {
-    t_size i, j, cg;
-    for (i = 0; i < count; i++) {
-        cg = get_item(i + index)->get_group_count();
-        for (j = 0; j < cg; j++)
+    for (t_size i = 0; i < count; i++) {
+        t_size cg = get_item(i + index)->get_group_count();
+        for (t_size j = 0; j < cg; j++)
             get_item(i + index)->get_group(j)->m_style_data.release();
         get_item(i + index)->m_style_data.set_count(0);
     }
@@ -642,8 +641,8 @@ bool ng_playlist_view_t::notify_on_contextmenu_header(const POINT& pt, const HDH
 
         pfc::string8_fast_aggressive filter, name;
 
-        int s, e = g_columns.get_count();
-        for (s = 0; s < e; s++) {
+        int e = g_columns.get_count();
+        for (int s = 0; s < e; s++) {
             bool add = false;
             switch (g_columns[s]->filter_type) {
             case FILTER_NONE: {
@@ -753,9 +752,8 @@ bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt)
         enum { ID_PLAY = 1, ID_CUT, ID_COPY, ID_PASTE, ID_SELECTION, ID_CUSTOM_BASE = 0x8000 };
         HMENU menu = CreatePopupMenu();
 
-        service_ptr_t<mainmenu_manager> p_manager_selection;
         service_ptr_t<contextmenu_manager> p_manager_context;
-        p_manager_selection = standard_api_create_t<mainmenu_manager>();
+        service_ptr_t<mainmenu_manager> p_manager_selection = standard_api_create_t<mainmenu_manager>();
         contextmenu_manager::g_create(p_manager_context);
         if (p_manager_selection.is_valid()) {
             p_manager_selection->instantiate(mainmenu_groups::edit_part2_selection);
@@ -1040,14 +1038,14 @@ bool ng_playlist_view_t::storage_set_selection_state(
 
     static_api_ptr_t<playlist_manager> api;
 
-    t_size i, count = api->activeplaylist_get_item_count();
+    t_size count = api->activeplaylist_get_item_count();
     pfc::bit_array_bittable previous_state(count);
 
     api->activeplaylist_get_selection_mask(previous_state);
 
     bool b_changed = false;
 
-    for (i = 0; i < count; i++)
+    for (t_size i = 0; i < count; i++)
         if (p_affected.get(i) && (p_status.get(i) != previous_state.get(i))) {
             b_changed = true;
             if (p_changed)

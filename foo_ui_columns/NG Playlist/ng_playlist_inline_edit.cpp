@@ -20,13 +20,12 @@ bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
     pfc::array_t<file_info_impl> infos;
     pfc::ptr_list_t<const char> ptrs;
     infos.set_count(indices_count);
-    t_size i;
 
     m_edit_field = m_edit_fields[column];
 
     bool matching = true;
 
-    for (i = 0; i < indices_count; i++) {
+    for (t_size i = 0; i < indices_count; i++) {
         if (m_playlist_api->activeplaylist_get_item_handle(m_edit_handles[i], indices[i])) {
             m_edit_handles[i]->get_info(infos[i]);
             ptrs.add_item(infos[i].meta_get(m_edit_field, 0));
@@ -42,8 +41,7 @@ bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
     p_text = matching ? (ptrs[0] ? ptrs[0] : "") : "<multiple values>";
 
     try {
-        library_meta_autocomplete::ptr p_library_autocomplete;
-        p_library_autocomplete = standard_api_create_t<library_meta_autocomplete>();
+        library_meta_autocomplete::ptr p_library_autocomplete = standard_api_create_t<library_meta_autocomplete>();
         p_flags |= inline_edit_autocomplete;
         pfc::com_ptr_t<IUnknown> pUnk;
         p_library_autocomplete->get_value_list(m_edit_field, pUnk);
@@ -61,11 +59,11 @@ void ng_playlist_view_t::notify_save_inline_edit(const char* value)
         pfc::list_t<file_info_impl> infos;
         pfc::list_t<bool> mask;
         pfc::list_t<const file_info*> infos_ptr;
-        t_size i, count = ptrs.get_count();
+        t_size count = ptrs.get_count();
         mask.set_count(count);
         infos.set_count(count);
         // infos.set_count(count);
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             assert(ptrs[i].is_valid());
             mask[i] = !ptrs[i]->get_info(infos[i]);
             infos_ptr.add_item(&infos[i]);

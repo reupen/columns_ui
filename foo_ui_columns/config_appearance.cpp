@@ -200,8 +200,8 @@ void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
         }
         colours_client_list_t m_colours_client_list;
         m_colours_client_list.g_get_list(m_colours_client_list);
-        t_size i, count = m_colours_client_list.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = m_colours_client_list.get_count();
+        for (t_size i = 0; i < count; i++) {
             colours_manager_data::entry_ptr_t p_data;
             g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_global)
@@ -219,8 +219,8 @@ void on_global_colours_change()
     g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
     colours_client_list_t m_colours_client_list;
     m_colours_client_list.g_get_list(m_colours_client_list);
-    t_size i, count = m_colours_client_list.get_count();
-    for (i = 0; i < count; i++) {
+    t_size count = m_colours_client_list.get_count();
+    for (t_size i = 0; i < count; i++) {
         colours_manager_data::entry_ptr_t p_data;
         g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
         if (p_data->colour_mode == cui::colours::colour_mode_global)
@@ -311,9 +311,9 @@ class fcl_colours_t : public cui::fcl::dataset {
         {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
-            t_size i, count = g_colours_manager_data.m_entries.get_count();
+            t_size count = g_colours_manager_data.m_entries.get_count();
             mem.write_lendian_t(count, p_abort);
-            for (i = 0; i < count; i++) {
+            for (t_size i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
                 g_colours_manager_data.m_entries[i]->_export(&mem2, p_abort);
                 out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
@@ -345,13 +345,13 @@ class fcl_colours_t : public cui::fcl::dataset {
                 stream_reader_memblock_ref stream2(data);
                 fbh::fcl::Reader reader2(&stream2, data.get_size(), p_abort);
 
-                t_size count, i;
+                t_size count;
                 reader2.read_item(count);
 
                 g_colours_manager_data.m_entries.remove_all();
                 g_colours_manager_data.m_entries.set_count(count);
 
-                for (i = 0; i < count; i++) {
+                for (t_size i = 0; i < count; i++) {
                     t_uint32 element_id2;
                     t_uint32 element_size2;
                     reader2.read_item(element_id2);
@@ -422,9 +422,9 @@ class fcl_fonts_t : public cui::fcl::dataset {
         {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
-            t_size i, count = g_fonts_manager_data.m_entries.get_count();
+            t_size count = g_fonts_manager_data.m_entries.get_count();
             mem.write_lendian_t(count, p_abort);
-            for (i = 0; i < count; i++) {
+            for (t_size i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
                 g_fonts_manager_data.m_entries[i]->_export(&mem2, p_abort);
                 out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
@@ -459,13 +459,13 @@ class fcl_fonts_t : public cui::fcl::dataset {
             case identifier_client_entries: {
                 fbh::fcl::Reader reader2(&data_reader, data.get_size(), p_abort);
 
-                t_size count, i;
+                t_size count;
                 reader2.read_item(count);
 
                 g_fonts_manager_data.m_entries.remove_all();
                 g_fonts_manager_data.m_entries.set_count(count);
 
-                for (i = 0; i < count; i++) {
+                for (t_size i = 0; i < count; i++) {
                     t_uint32 element_id2;
                     t_uint32 element_size2;
                     reader2.read_item(element_id2);
@@ -513,11 +513,11 @@ LRESULT appearance_message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
     case WM_SYSCOLORCHANGE: {
         colours_client_list_t m_colours_client_list;
         m_colours_client_list.g_get_list(m_colours_client_list);
-        t_size i, count = m_colours_client_list.get_count();
+        t_size count = m_colours_client_list.get_count();
         bool b_global_custom = g_colours_manager_data.m_global_entry->colour_mode == cui::colours::colour_mode_custom;
         if (!b_global_custom)
             g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             colours_manager_data::entry_ptr_t p_data;
             g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_system
@@ -534,10 +534,10 @@ LRESULT appearance_message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
                    && g_fonts_manager_data.m_common_labels_entry->font_mode == cui::fonts::font_mode_system)) {
             fonts_client_list_t m_fonts_client_list;
             m_fonts_client_list.g_get_list(m_fonts_client_list);
-            t_size i, count = m_fonts_client_list.get_count();
+            t_size count = m_fonts_client_list.get_count();
             g_fonts_manager_data.g_on_common_font_changed(
                 wp == SPI_GETICONTITLELOGFONT ? cui::fonts::font_type_flag_items : cui::fonts::font_type_flag_labels);
-            for (i = 0; i < count; i++) {
+            for (t_size i = 0; i < count; i++) {
                 fonts_manager_data::entry_ptr_t p_data;
                 g_fonts_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
                 if (wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == cui::fonts::font_mode_common_items)

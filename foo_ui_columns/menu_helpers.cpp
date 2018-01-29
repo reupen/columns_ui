@@ -16,12 +16,12 @@ menu_item_cache::menu_item_cache()
     service_enum_t<mainmenu_commands> e;
     service_ptr_t<mainmenu_commands> ptr;
 
-    unsigned p_service_item_index;
     while (e.next(ptr)) {
         // if (ptr->get_type() == menu_item::TYPE_MAIN)
         {
             unsigned p_service_item_count = ptr->get_command_count();
-            for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
+            for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
+                 p_service_item_index++) {
                 menu_item_info info;
 
                 info.m_command = ptr->get_command(p_service_item_index);
@@ -36,8 +36,8 @@ menu_item_cache::menu_item_cache()
                         if (menu_helpers::maingroupname_from_guid(GUID(parent), parentname, parent))
                             levels.insert_item(parentname, 0);
                     }
-                    unsigned i, count = levels.get_count();
-                    for (i = 0; i < count; i++) {
+                    unsigned count = levels.get_count();
+                    for (unsigned i = 0; i < count; i++) {
                         full.add_string(levels[i]);
                         full.add_byte('/');
                     }
@@ -98,8 +98,8 @@ bool __contextpath_from_guid_recur(
             if (temp.get_length() && temp.get_ptr()[temp.get_length() - 1] != '/')
                 temp.add_byte('/');
             temp << subname;
-            unsigned child, child_count = p_node->get_children_count();
-            for (child = 0; child < child_count; child++) {
+            unsigned child_count = p_node->get_children_count();
+            for (unsigned child = 0; child < child_count; child++) {
                 contextmenu_item_node* p_child = p_node->get_child(child);
                 if (__contextpath_from_guid_recur(p_child, p_subcommand, temp, b_short, false)) {
                     p_out = temp;
@@ -129,10 +129,9 @@ void contextpath_from_guid(const GUID& p_guid, const GUID& p_subcommand, pfc::st
     service_enum_t<contextmenu_item> e;
     service_ptr_t<contextmenu_item> ptr;
 
-    unsigned p_service_item_index;
     while (e.next(ptr)) {
         unsigned p_service_item_count = ptr->get_num_items();
-        for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
+        for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
             if (p_guid == ptr->get_item_guid(p_service_item_index)) {
                 pfc::string8 name;
                 ptr->get_item_name(p_service_item_index, name);
@@ -194,9 +193,8 @@ bool mainmenunode_subguid_to_path(
         }
             return false;
         case mainmenu_node::type_group: {
-            mainmenu_node::ptr ptr_child;
             for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
-                ptr_child = ptr_node->get_child(i);
+                mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
                 pfc::string8 name;
                 if (mainmenunode_subguid_to_path(ptr_child, p_subguid, name)) {
                     if (b_is_root)
@@ -223,12 +221,11 @@ void mainpath_from_guid(const GUID& p_guid, const GUID& p_subguid, pfc::string_b
     service_enum_t<mainmenu_commands> e;
     service_ptr_t<mainmenu_commands> ptr;
 
-    unsigned p_service_item_index;
     while (e.next(ptr)) {
         service_ptr_t<mainmenu_commands_v2> ptr_v2;
         ptr->service_query_t(ptr_v2);
         unsigned p_service_item_count = ptr->get_command_count();
-        for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
+        for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
             if (p_guid == ptr->get_command(p_service_item_index)) {
                 pfc::string8 name;
                 ptr->get_name(p_service_item_index, name);
@@ -247,8 +244,8 @@ void mainpath_from_guid(const GUID& p_guid, const GUID& p_subguid, pfc::string_b
                         if (maingroupname_from_guid(GUID(parent), parentname, parent))
                             levels.insert_item(parentname, 0);
                     }
-                    unsigned i, count = levels.get_count();
-                    for (i = 0; i < count; i++) {
+                    unsigned count = levels.get_count();
+                    for (unsigned i = 0; i < count; i++) {
                         p_out.add_string(levels[i]);
                         p_out.add_byte('/');
                     }

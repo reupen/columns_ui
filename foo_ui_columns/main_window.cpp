@@ -71,8 +71,8 @@ unsigned playlist_mclick_actions::get_count()
 
 unsigned playlist_mclick_actions::id_to_idx(unsigned id)
 {
-    unsigned n, count = tabsize(g_pma_actions);
-    for (n = 0; n < count; n++) {
+    unsigned count = tabsize(g_pma_actions);
+    for (unsigned n = 0; n < count; n++) {
         if (g_pma_actions[n].id == id)
             return n;
     }
@@ -391,8 +391,7 @@ void g_update_taskbar_buttons_now(bool b_init)
         THUMBBUTTON tb[tabsize(bitmap_indices)];
         memset(&tb, 0, sizeof(tb));
 
-        size_t i;
-        for (i = 0; i < tabsize(bitmap_indices); i++) {
+        for (size_t i = 0; i < tabsize(bitmap_indices); i++) {
             tb[i].dwMask = THB_BITMAP | THB_TOOLTIP /*|THB_FLAGS*/;
             tb[i].iId = taskbar_buttons::ID_FIRST + i;
             tb[i].iBitmap = bitmap_indices[i];

@@ -470,14 +470,8 @@ void filter_search_bar::create_edit()
 
 LRESULT WINAPI filter_search_bar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    filter_search_bar* p_this;
-    LRESULT rv;
-
-    p_this = reinterpret_cast<filter_search_bar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-
-    rv = p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-
-    return rv;
+    auto p_this = reinterpret_cast<filter_search_bar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    return p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
 LRESULT filter_search_bar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

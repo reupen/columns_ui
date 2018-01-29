@@ -264,8 +264,8 @@ public:
 private:
     bool find_aborting_reader(const artwork_reader_ng_t* ptr, t_size& index)
     {
-        t_size i, count = m_aborting_readers.get_count();
-        for (i = 0; i < count; i++)
+        t_size count = m_aborting_readers.get_count();
+        for (t_size i = 0; i < count; i++)
             if (&*m_aborting_readers[i] == ptr) {
                 index = i;
                 return true;
@@ -274,8 +274,8 @@ private:
     }
     bool find_current_reader(const artwork_reader_ng_t* ptr, t_size& index)
     {
-        t_size i, count = m_current_readers.get_count();
-        for (i = 0; i < count; i++)
+        t_size count = m_current_readers.get_count();
+        for (t_size i = 0; i < count; i++)
             if (&*m_current_readers[i] == ptr) {
                 index = i;
                 return true;
@@ -421,9 +421,9 @@ private:
             m_artwork_manager->abort_current_tasks();
             m_artwork_manager->flush_nocover();
         }
-        t_size i, cg, count = get_item_count();
-        for (i = 0; i < count; i++) {
-            cg = get_item(i)->get_group_count();
+        t_size count = get_item_count();
+        for (t_size i = 0; i < count; i++) {
+            t_size cg = get_item(i)->get_group_count();
             if (cg) {
                 item_group_ng_t* ptr = get_item(i)->get_group(cg - 1);
                 // ptr->m_data_to_bitmap_attempted = false;
@@ -444,10 +444,10 @@ private:
         const item_group_ng_t::ptr& p_group, const pfc::rcptr_t<artwork_reader_ng_t>& p_reader)
     {
         if (!p_reader->is_aborting()) {
-            t_size i, count = get_item_count(), group_count = m_scripts.get_count();
+            t_size count = get_item_count(), group_count = m_scripts.get_count();
 
             if (group_count) {
-                for (i = 0; i < count; i++) {
+                for (t_size i = 0; i < count; i++) {
                     auto* item = static_cast<item_ng_t*>(get_item(i));
                     if (item->get_group(group_count - 1) == p_group.get_ptr()) {
                         if (p_reader->get_content().query(album_art_ids::cover_front, p_group->m_artwork_bitmap)) {

@@ -249,10 +249,10 @@ class live_layout_editing_button_t : public uie::button {
 public:
     static void g_on_layout_editing_enabled_change(bool b_enabled)
     {
-        t_size i, ic = m_buttons.get_count(), j, jc;
-        for (i = 0; i < ic; i++) {
-            jc = m_buttons[i]->m_callbacks.get_count();
-            for (j = 0; j < jc; j++) {
+        t_size ic = m_buttons.get_count();
+        for (t_size i = 0; i < ic; i++) {
+            t_size jc = m_buttons[i]->m_callbacks.get_count();
+            for (t_size j = 0; j < jc; j++) {
                 m_buttons[i]->m_callbacks[j]->on_button_state_change(
                     b_enabled ? uie::BUTTON_STATE_PRESSED | uie::BUTTON_STATE_ENABLED : uie::BUTTON_STATE_DEFAULT);
             }

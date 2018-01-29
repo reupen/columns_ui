@@ -29,21 +29,21 @@ class export_layout : public cui::fcl::dataset {
         p_reader->read_lendian_t(version, p_abort);
         if (version > 0)
             throw pfc::exception("Need new columns ui");
-        t_uint32 j, pcount, active;
+        t_uint32 pcount, active;
         p_reader->read_lendian_t(active, p_abort);
         p_reader->read_lendian_t(pcount, p_abort);
 
         pfc::list_t<cfg_layout_t::preset> presets;
 
-        for (j = 0; j < pcount; j++) {
+        for (t_uint32 j = 0; j < pcount; j++) {
             cfg_layout_t::preset pres;
             if (!g_layout_window.import_config_to_object(p_reader, size, type, pres, panels, p_abort))
                 missingpanels = true;
             presets.add_item(pres);
         }
 
-        t_size i, count = panels.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = panels.get_count();
+        for (t_size i = 0; i < count; i++) {
             uie::window_ptr ptr;
             if (!uie::window::create_by_guid(panels[i], ptr)) {
                 missingpanels = true;
@@ -82,8 +82,8 @@ class export_toolbars : public cui::fcl::dataset {
     {
         pfc::list_t<GUID> panels;
         g_cfg_rebar.import_config(p_reader, size, type, panels, p_abort);
-        t_size i, count = panels.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = panels.get_count();
+        for (t_size i = 0; i < count; i++) {
             feedback.add_required_panel("", panels[i]);
         }
     }

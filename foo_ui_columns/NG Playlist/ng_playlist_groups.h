@@ -46,22 +46,22 @@ public:
 private:
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override
     {
-        t_size count = m_groups.get_count(), i;
+        t_size count = m_groups.get_count();
         p_stream->write_lendian_t(t_size(stream_version_current), p_abort);
         p_stream->write_lendian_t(count, p_abort);
-        for (i = 0; i < count; i++)
+        for (t_size i = 0; i < count; i++)
             m_groups[i].write(p_stream, p_abort);
     }
 
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override
     {
-        t_size count, i, version;
+        t_size count, version;
         p_stream->read_lendian_t(version, p_abort);
         if (version <= stream_version_current) {
             m_groups.remove_all();
             p_stream->read_lendian_t(count, p_abort);
             m_groups.set_count(count);
-            for (i = 0; i < count; i++)
+            for (t_size i = 0; i < count; i++)
                 m_groups[i].read(version, p_stream, p_abort);
         }
     }

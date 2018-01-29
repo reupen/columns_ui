@@ -5,9 +5,9 @@
 void playlist_view::rebuild_header(bool rebuild)
 {
     if (rebuild) {
-        int n, t = Header_GetItemCount(wnd_header);
+        int t = Header_GetItemCount(wnd_header);
         {
-            for (n = 0; n < t; n++)
+            for (int n = 0; n < t; n++)
                 Header_DeleteItem(wnd_header, 0);
         }
     }
@@ -18,22 +18,20 @@ void playlist_view::rebuild_header(bool rebuild)
     hdi.mask = (rebuild ? HDI_TEXT | HDI_FORMAT : 0) | HDI_WIDTH;
     hdi.fmt = HDF_LEFT | HDF_STRING;
 
-    pfc::string8 name;
-
     {
         pfc::array_t<int, pfc::alloc_fast_aggressive> widths;
         get_column_widths(widths);
 
         const pfc::bit_array& p_mask = g_cache.active_get_columns_mask();
 
-        int n, t = columns.get_count(), i = 0; //,tw=g_playlist_entries.get_total_width();
-        for (n = 0; n < t; n++) {
+        int t = columns.get_count(), i = 0; //,tw=g_playlist_entries.get_total_width();
+        for (int n = 0; n < t; n++) {
             if (p_mask[n]) {
                 if (rebuild) {
                     alignment align = columns[n]->align;
                     hdi.fmt = HDF_STRING
                         | (align == ALIGN_CENTRE ? HDF_CENTER : (align == ALIGN_RIGHT ? HDF_RIGHT : HDF_LEFT));
-                    name = columns[n]->name;
+                    const auto& name = columns[n]->name;
                     hdi.cchTextMax = name.length();
                     hdi.pszText = const_cast<char*>(name.get_ptr());
                 }

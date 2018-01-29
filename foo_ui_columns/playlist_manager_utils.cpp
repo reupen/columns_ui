@@ -140,9 +140,9 @@ bool cut(const pfc::bit_array& mask)
 bool cut(const pfc::list_base_const_t<t_size>& indices)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
-    t_size i, count = indices.get_count(), playlist_count = m_playlist_api->get_playlist_count();
+    t_size count = indices.get_count(), playlist_count = m_playlist_api->get_playlist_count();
     pfc::bit_array_bittable mask(playlist_count);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
             mask.set(indices[i], true);
     }
@@ -168,9 +168,9 @@ bool copy(const pfc::bit_array& mask)
 bool copy(const pfc::list_base_const_t<t_size>& indices)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
-    t_size i, count = indices.get_count(), playlist_count = m_playlist_api->get_playlist_count();
+    t_size count = indices.get_count(), playlist_count = m_playlist_api->get_playlist_count();
     pfc::bit_array_bittable mask(playlist_count);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
             mask.set(indices[i], true);
     }
@@ -191,8 +191,8 @@ bool paste(HWND wnd, t_size index_insert)
                     t_size plcount = m_playlist_api->get_playlist_count();
                     if (index_insert > plcount)
                         index_insert = plcount;
-                    t_size i, count = data.get_entry_count();
-                    for (i = 0; i < count; i++) {
+                    t_size count = data.get_entry_count();
+                    for (t_size i = 0; i < count; i++) {
                         pfc::string8 name;
                         metadb_handle_list handles;
                         data.get_entry_name(i, name);

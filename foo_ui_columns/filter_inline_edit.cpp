@@ -35,24 +35,23 @@ void filter_panel_t::notify_save_inline_edit(const char* value)
         pfc::list_t<file_info_impl> infos;
         pfc::list_t<bool> mask;
         pfc::list_t<const file_info*> infos_ptr;
-        t_size i, count = ptrs.get_count();
+        t_size count = ptrs.get_count();
         mask.set_count(count);
         infos.set_count(count);
         // infos.set_count(count);
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             assert(ptrs[i].is_valid());
             mask[i] = !ptrs[i]->get_info(infos[i]);
             infos_ptr.add_item(&infos[i]);
             if (!mask[i]) {
                 bool b_remove = true;
-                t_size j, jcount = m_edit_fields.get_count();
-                for (j = 0; j < jcount; j++) {
+                t_size jcount = m_edit_fields.get_count();
+                for (t_size j = 0; j < jcount; j++) {
                     t_size field_index = infos[i].meta_find(m_edit_fields[j]);
                     if (field_index != pfc_infinite) {
                         t_size field_count = infos[i].meta_enum_value_count(field_index);
-                        t_size k;
                         bool b_found = false;
-                        for (k = 0; k < field_count; k++) {
+                        for (t_size k = 0; k < field_count; k++) {
                             const char* ptr = infos[i].meta_enum_value(field_index, k);
                             if (((!ptr && m_edit_previous_value.is_empty())
                                     || !stricmp_utf8(m_edit_previous_value, ptr))

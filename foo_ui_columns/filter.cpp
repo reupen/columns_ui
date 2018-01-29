@@ -45,10 +45,10 @@ void filter_panel_t::get_config(stream_writer* p_writer, abort_callback& p_abort
 
 t_size filter_panel_t::g_get_stream_index_by_window(const uie::window_ptr& ptr)
 {
-    t_size i, count = g_streams.get_count();
-    for (i = 0; i < count; i++) {
-        t_size j, subcount = g_streams[i]->m_windows.get_count();
-        for (j = 0; j < subcount; j++)
+    t_size count = g_streams.get_count();
+    for (t_size i = 0; i < count; i++) {
+        t_size subcount = g_streams[i]->m_windows.get_count();
+        for (t_size j = 0; j < subcount; j++)
             if (g_streams[i]->m_windows[j] == ptr.get_ptr())
                 return i;
     }
@@ -85,8 +85,8 @@ void filter_panel_t::g_on_fields_change()
 
 t_size filter_panel_t::g_get_field_index_by_name(const char* p_name)
 {
-    t_size i, count = g_field_data.get_count();
-    for (i = 0; i < count; i++) {
+    t_size count = g_field_data.get_count();
+    for (t_size i = 0; i < count; i++) {
         if (!strcmp(g_field_data[i].m_name, p_name))
             return i;
     }
@@ -137,14 +137,14 @@ void filter_panel_t::g_on_field_query_change(const field_t& field)
     t_size field_index = g_get_field_index_by_name(field.m_name);
     if (field_index != pfc_infinite) {
         g_create_field_data(field, g_field_data[field_index]);
-        t_size i, count = g_streams.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = g_streams.get_count();
+        for (t_size i = 0; i < count; i++) {
             if (g_streams[i]->m_windows.get_count()) {
                 pfc::list_t<filter_panel_t*> windows;
                 g_streams[i]->m_windows[0]->get_windows(windows);
-                t_size j, subcount = windows.get_count();
+                t_size subcount = windows.get_count();
 
-                for (j = 0; j < subcount; j++) {
+                for (t_size j = 0; j < subcount; j++) {
                     if (windows[j]->get_field_index() == field_index) // meh
                     {
                         windows[j]->set_field(g_field_data[field_index], true);
@@ -159,8 +159,8 @@ void filter_panel_t::g_on_showemptyitems_change(bool b_val)
 {
     if (!g_windows.empty()) {
         g_showemptyitems = b_val;
-        t_size i, count = g_streams.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = g_streams.get_count();
+        for (t_size i = 0; i < count; i++) {
             if (g_streams[i]->m_windows.get_count()) {
                 pfc::list_t<filter_panel_t*> windows;
                 g_streams[i]->m_windows[0]->get_windows(windows);
@@ -212,13 +212,13 @@ void filter_panel_t::g_on_fields_swapped(t_size index_1, t_size index_2)
     if (max(index_1, index_2) < g_field_data.get_count())
         g_field_data.swap_items(index_1, index_2);
     if (!cfg_orderedbysplitters) {
-        t_size i, count = g_streams.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = g_streams.get_count();
+        for (t_size i = 0; i < count; i++) {
             if (g_streams[i]->m_windows.get_count()) {
                 pfc::list_t<filter_panel_t*> windows;
                 g_streams[i]->m_windows[0]->get_windows(windows);
-                t_size j, subcount = windows.get_count();
-                for (j = 0; j < subcount; j++) {
+                t_size subcount = windows.get_count();
+                for (t_size j = 0; j < subcount; j++) {
                     t_size this_index = windows[j]->get_field_index();
                     if (this_index == index_1 || this_index == index_2) {
                         g_update_subsequent_filters(windows, j, false, false);
@@ -233,15 +233,15 @@ void filter_panel_t::g_on_fields_swapped(t_size index_1, t_size index_2)
 }
 void filter_panel_t::g_on_field_removed(t_size index)
 {
-    t_size i, count = g_streams.get_count();
-    for (i = 0; i < count; i++) {
+    t_size count = g_streams.get_count();
+    for (t_size i = 0; i < count; i++) {
         if (g_streams[i]->m_windows.get_count()) {
             pfc::list_t<filter_panel_t*> windows;
             g_streams[i]->m_windows[0]->get_windows(windows);
-            t_size j, subcount = windows.get_count();
+            t_size subcount = windows.get_count();
             bool b_found = false;
             t_size index_found = pfc_infinite;
-            for (j = 0; j < subcount; j++) {
+            for (t_size j = 0; j < subcount; j++) {
                 t_size this_index = windows[j]->get_field_index();
                 if (index == this_index) {
                     windows[j]->set_field(field_data_t());
@@ -271,8 +271,8 @@ void filter_panel_t::refresh(bool b_allow_autosend)
 
 t_size filter_panel_t::get_field_index()
 {
-    t_size i, count = g_field_data.get_count(), ret = pfc_infinite;
-    for (i = 0; i < count; i++)
+    t_size count = g_field_data.get_count(), ret = pfc_infinite;
+    for (t_size i = 0; i < count; i++)
         if (!stricmp_utf8(g_field_data[i].m_name, m_field_data.m_name)) {
             ret = i;
             break;
@@ -290,8 +290,8 @@ void filter_panel_t::get_windows(pfc::list_base_t<filter_panel_t*>& windows)
         else
             siblings.add_item(this);
         pfc::list_t<t_size> indices;
-        t_size i, count = siblings.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = siblings.get_count();
+        for (t_size i = 0; i < count; i++) {
             t_size index = pfc_infinite;
             if ((index = m_stream->m_windows.find_item(static_cast<filter_panel_t*>(siblings[i].get_ptr())))
                 != pfc_infinite) // meh
@@ -299,8 +299,8 @@ void filter_panel_t::get_windows(pfc::list_base_t<filter_panel_t*>& windows)
         }
     } else {
         pfc::list_t<t_size> indices;
-        t_size i, count = m_stream->m_windows.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = m_stream->m_windows.get_count();
+        for (t_size i = 0; i < count; i++) {
             t_size index = m_stream->m_windows[i]->get_field_index();
             if (index != pfc_infinite) {
                 indices.add_item(index);
@@ -349,9 +349,9 @@ void filter_panel_t::g_create_field_data(const field_t& field, field_data_t& p_o
 
 void filter_panel_t::g_load_fields()
 {
-    t_size i, count = filter_panel::cfg_field_list.get_count();
+    t_size count = filter_panel::cfg_field_list.get_count();
     g_field_data.set_count(count);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         const field_t& field = filter_panel::cfg_field_list[i];
         g_create_field_data(field, g_field_data[i]);
     }
@@ -359,10 +359,10 @@ void filter_panel_t::g_load_fields()
 void filter_panel_t::g_update_subsequent_filters(const pfc::list_base_const_t<filter_panel_t*>& windows, t_size index,
     bool b_check_needs_update, bool b_update_playlist)
 {
-    t_size i, count = windows.get_count();
+    t_size count = windows.get_count();
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
 
-    for (i = index; i < count; i++) {
+    for (t_size i = index; i < count; i++) {
         handles.remove_all();
         windows[i]->get_initial_handles(handles);
         if (b_check_needs_update) {
@@ -489,10 +489,10 @@ void filter_panel_t::get_selection_handles(
     metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out, bool fallback, bool b_sort)
 {
     bool b_found = false;
-    t_size i, count = m_nodes.get_count();
+    t_size count = m_nodes.get_count();
     if (count)
         p_out.prealloc(count);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         if (get_item_selected(i)) {
             b_found = true;
             if (b_sort)
@@ -751,8 +751,8 @@ void filter_panel_t::refresh_stream()
         if (get_host()->service_query_t(hostex)) {
             pfc::list_t<uie::window_ptr> siblings;
             hostex->get_children(siblings);
-            t_size i, count = siblings.get_count();
-            for (i = 0; i < count; i++) {
+            t_size count = siblings.get_count();
+            for (t_size i = 0; i < count; i++) {
                 if ((stream_index = g_get_stream_index_by_window(siblings[i])) != pfc_infinite)
                     break;
             }
@@ -822,16 +822,15 @@ void filter_panel_t::notify_on_initialisation()
         used.set_count(field_count);
         used.fill_null();
         {
-            t_size i, count = m_stream->m_windows.get_count();
-            for (i = 0; i < count; i++) {
+            t_size count = m_stream->m_windows.get_count();
+            for (t_size i = 0; i < count; i++) {
                 t_size field_index = m_stream->m_windows[i]->get_field_index();
                 if (field_index != pfc_infinite)
                     used[field_index] = true;
             }
         }
         {
-            t_size i;
-            for (i = 0; i < field_count; i++) {
+            for (t_size i = 0; i < field_count; i++) {
                 if (!used[i]) {
                     m_field_data = g_field_data[i];
                     field_index = i;

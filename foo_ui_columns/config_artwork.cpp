@@ -178,12 +178,12 @@ public:
 
         m_source_list.remove_items(pfc::bit_array_true());
 
-        t_size index, indexcount = tabsize(g_artwork_sources);
-        for (index = 0; index < indexcount; index++) {
-            t_size subindex, subindexcount = g_artwork_sources[index].m_scripts->get_count();
+        t_size indexcount = tabsize(g_artwork_sources);
+        for (t_size index = 0; index < indexcount; index++) {
+            t_size subindexcount = g_artwork_sources[index].m_scripts->get_count();
             pfc::array_t<uih::ListView::InsertItem> items;
             items.set_count(subindexcount);
-            for (subindex = 0; subindex < subindexcount; subindex++) {
+            for (t_size subindex = 0; subindex < subindexcount; subindex++) {
                 items[subindex].m_groups.set_size(1);
                 items[subindex].m_subitems.set_size(1);
                 items[subindex].m_groups[0] = g_artwork_sources[index].m_name;

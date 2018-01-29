@@ -76,9 +76,8 @@ bool layout_window::__set_focus_recur(const uie::window_ptr& p_wnd)
             return true;
         }
         if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid() && __set_focus_recur(temp->get_window_ptr()))
@@ -102,9 +101,8 @@ void layout_window::__show_menu_access_keys_recur(const uie::window_ptr& p_wnd)
         if (p_wnd->service_query_t(p_menu_wnd)) {
             p_menu_wnd->show_accelerators();
         } else if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid())
@@ -133,9 +131,8 @@ bool layout_window::__on_menu_char_recur(const uie::window_ptr& p_wnd, unsigned 
             if (p_menu_wnd->on_menuchar(c))
                 return true;
         } else if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid() && __on_menu_char_recur(temp->get_window_ptr(), c))
@@ -165,9 +162,8 @@ bool layout_window::__set_menu_focus_recur(const uie::window_ptr& p_wnd)
                 p_menu_wnd->hide_accelerators();
             }
         } else if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid()) {
@@ -229,9 +225,8 @@ bool layout_window::__is_menu_focused_recur(const uie::window_ptr& p_wnd)
             if (p_menu_wnd->is_menu_focused())
                 return true;
         } else if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid()) {
@@ -262,9 +257,8 @@ bool layout_window::__get_previous_menu_focus_window_recur(const uie::window_ptr
                 return true;
             }
         } else if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid()) {
@@ -285,9 +279,8 @@ void layout_window::__hide_menu_access_keys_recur(const uie::window_ptr& p_wnd)
         if (p_wnd->service_query_t(p_menu_wnd)) {
             p_menu_wnd->hide_accelerators();
         } else if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid())
@@ -333,9 +326,8 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
     if (p_wnd.is_valid()) {
         p_out.add_item(p_wnd->get_extension_guid());
         if (p_wnd->service_query_t(p_splitter_wnd)) {
-            unsigned n, count;
-            count = p_splitter_wnd->get_panel_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = p_splitter_wnd->get_panel_count();
+            for (unsigned n = 0; n < count; n++) {
                 uie::splitter_item_ptr temp;
                 p_splitter_wnd->get_panel(n, temp);
                 if (temp.is_valid()) {
@@ -416,10 +408,10 @@ void layout_window::export_config(
 {
     enum { stream_version = 0 };
     p_out->write_lendian_t((t_uint32)stream_version, p_abort);
-    t_size i, count = cfg_layout.get_presets().get_count();
+    t_size count = cfg_layout.get_presets().get_count();
     p_out->write_lendian_t(cfg_layout.get_active(), p_abort);
     p_out->write_lendian_t(count, p_abort);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         uie::splitter_item_ptr item;
         cfg_layout.get_preset(i, item);
         pfc::string8 name;
@@ -591,14 +583,12 @@ void layout_window::run_live_edit_base(POINT pt_menu)
                 if (cmd) {
                     if (cmd >= ID_CHANGE_BASE && cmd < panels.get_count() + ID_CHANGE_BASE) {
                         t_size panel_index = cmd - ID_CHANGE_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         set_child(si.get_ptr());
                     } else if (cmd >= ID_ADD_BASE && cmd < panels.get_count() + ID_ADD_BASE) {
                         t_size panel_index = cmd - ID_ADD_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         p_splitter->add_panel(si.get_ptr());
                     } else if (cmd >= ID_CHANGE_SPLITTER_BASE && cmd < panels.get_count() + ID_CHANGE_SPLITTER_BASE) {
@@ -608,14 +598,14 @@ void layout_window::run_live_edit_base(POINT pt_menu)
                         service_ptr_t<uie::splitter_window> splitter;
                         if (uie::window::create_by_guid(panels[panel_index].guid, window)
                             && window->service_query_t(splitter)) {
-                            unsigned n, count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
+                            unsigned count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
                             if (count == p_splitter->get_panel_count()
                                 || MessageBox(get_wnd(),
                                        _T("The number of child items will not fit in the selected splitter type. ")
                                        _T("Continue?"),
                                        _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
                                     == IDYES) {
-                                for (n = 0; n < count; n++) {
+                                for (unsigned n = 0; n < count; n++) {
                                     uie::splitter_item_ptr ptr;
                                     p_splitter->get_panel(n, ptr);
                                     splitter->add_panel(ptr.get_ptr());
@@ -658,9 +648,9 @@ public:
 
 void g_get_panels_info(const pfc::list_t<uie::window::ptr>& p_panels, uie::window_info_list_simple& p_out)
 {
-    t_size i, count = p_panels.get_count();
+    t_size count = p_panels.get_count();
 
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         uie::window_info_simple info;
         uie::window::ptr l = p_panels[i];
 
@@ -799,14 +789,12 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                         p_container->set_config_item_t(index, uie::splitter_window::bool_locked, !b_old, p_abort);
                     } else if (cmd >= ID_CHANGE_BASE && cmd < panels.get_count() + ID_CHANGE_BASE) {
                         t_size panel_index = cmd - ID_CHANGE_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         set_child(si.get_ptr());
                     } else if (cmd >= ID_PARENT_ADD_BASE && cmd < panels.get_count() + ID_PARENT_ADD_BASE) {
                         t_size panel_index = cmd - ID_PARENT_ADD_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         p_container->add_panel(si.get_ptr());
                     } else if (cmd >= ID_CHANGE_BASE_SPLITTER_BASE
@@ -817,14 +805,14 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                         service_ptr_t<uie::splitter_window> splitter;
                         if (uie::window::create_by_guid(panels[panel_index].guid, window)
                             && window->service_query_t(splitter)) {
-                            unsigned n, count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
+                            unsigned count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
                             if (count == p_splitter->get_panel_count()
                                 || MessageBox(get_wnd(),
                                        _T("The number of child items will not fit in the selected splitter type. ")
                                        _T("Continue?"),
                                        _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
                                     == IDYES) {
-                                for (n = 0; n < count; n++) {
+                                for (unsigned n = 0; n < count; n++) {
                                     uie::splitter_item_ptr ptr;
                                     p_splitter->get_panel(n, ptr);
                                     splitter->add_panel(ptr.get_ptr());
@@ -846,8 +834,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
 
                     } else if (cmd >= ID_ADD_BASE && cmd < panels.get_count() + ID_ADD_BASE) {
                         t_size panel_index = cmd - ID_ADD_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         p_splitter->add_panel(si.get_ptr());
                     } else if (cmd >= ID_CHANGE_SPLITTER_BASE && cmd < panels.get_count() + ID_CHANGE_SPLITTER_BASE) {
@@ -857,7 +844,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                         service_ptr_t<uie::splitter_window> splitter;
                         if (uie::window::create_by_guid(panels[panel_index].guid, window)
                             && window->service_query_t(splitter)) {
-                            unsigned n, count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
+                            unsigned count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
                             if (index != pfc_infinite
                                 && (count == p_splitter->get_panel_count()
                                        || MessageBox(p_data.m_wnd,
@@ -865,7 +852,7 @@ void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
                                               _T("type. Continue?"),
                                               _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
                                            == IDYES)) {
-                                for (n = 0; n < count; n++) {
+                                for (unsigned n = 0; n < count; n++) {
                                     uie::splitter_item_ptr ptr;
                                     p_splitter->get_panel(n, ptr);
                                     splitter->add_panel(ptr.get_ptr());

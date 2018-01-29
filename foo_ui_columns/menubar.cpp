@@ -223,14 +223,8 @@ HWND menu_extension::get_previous_focus_window() const
 
 LRESULT WINAPI menu_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    menu_extension* p_this;
-    LRESULT rv;
-
-    p_this = reinterpret_cast<menu_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-
-    rv = p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-
-    return rv;
+    auto p_this = reinterpret_cast<menu_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
 LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -259,8 +253,8 @@ LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             SendMessage(wnd_menu, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 
-            unsigned n, count = tbb.get_size();
-            for (n = 0; n < count; n++) {
+            unsigned count = tbb.get_size();
+            for (unsigned n = 0; n < count; n++) {
                 tbb[n].iBitmap = I_IMAGECALLBACK;
                 tbb[n].idCommand = n + 1;
                 tbb[n].fsState = TBSTATE_ENABLED;

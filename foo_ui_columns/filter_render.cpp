@@ -36,9 +36,9 @@ void filter_panel_t::render_item(HDC dc, t_size index, int indentation, bool b_s
     }
 
     RECT rc_subitem = *rc;
-    t_size k, countk = get_column_count();
+    t_size countk = get_column_count();
 
-    for (k = 0; k < countk; k++) {
+    for (t_size k = 0; k < countk; k++) {
         rc_subitem.right = rc_subitem.left + get_column_display_width(k);
 
         if (!(b_themed && theme_state)) {

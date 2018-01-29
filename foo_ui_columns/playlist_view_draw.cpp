@@ -134,7 +134,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
 
     // draw each item
 
-    int n, focus = playlist_api->activeplaylist_get_focus_item();
+    int focus = playlist_api->activeplaylist_get_focus_item();
 
     //    static int pcount;
 
@@ -143,7 +143,7 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
     bool b_playback = static_api_ptr_t<play_control>()->is_playing();
     if (g_cache.get_active_playlist() != playing_playlist)
         playing_index = pfc_infinite;
-    for (n = start_item; n < end_item; n++) {
+    for (int n = start_item; n < end_item; n++) {
         bool sel = playlist_api->activeplaylist_is_item_selected(n + scroll_item_offset);
         bool b_focused = GetFocus() == wnd_playlist || IsChild(wnd_playlist, GetFocus());
         bool b_playing = b_playback && playing_index == (n + scroll_item_offset);
@@ -161,8 +161,8 @@ bool playlist_view::draw_items(HDC dc, int start_item, int count)
         }
 
         // int total = playlist_api->activeplaylist_get_item_count();
-        int c, offset = 0, i = 0;
-        for (c = 0; c < t; c++) {
+        int offset = 0, i = 0;
+        for (int c = 0; c < t; c++) {
             if (p_mask[c]) {
                 draw.left = item.left + offset;
                 draw.top = item.top;

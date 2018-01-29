@@ -77,7 +77,7 @@ string_pn::string_pn(metadb_handle_list_cref handles, const char* format, const 
     pfc::string8_fast_aggressive a, b;
     a.prealloc(512);
     b.prealloc(512);
-    unsigned n, count = handles.get_count(), f;
+    unsigned count = handles.get_count();
     bool use = false;
 
     pfc::ptr_list_t<char> specs;
@@ -95,10 +95,10 @@ string_pn::string_pn(metadb_handle_list_cref handles, const char* format, const 
 
     unsigned fmt_count = specs.get_count();
 
-    for (f = 0; f < fmt_count; f++) {
+    for (unsigned f = 0; f < fmt_count; f++) {
         service_ptr_t<titleformat_object> to_temp;
         static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, specs[f]);
-        for (n = 0; n < count; n++) {
+        for (unsigned n = 0; n < count; n++) {
             if (n == 0) {
                 handles[0]->format_title(nullptr, a, to_temp, nullptr);
                 use = true;

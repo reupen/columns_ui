@@ -51,10 +51,9 @@ void cfg_rebar::export_config(
     if (g_rebar_window)
         m_entries = g_rebar_window->m_bands;
 
-    t_size i;
     t_size count = m_entries.size();
     p_out->write_lendian_t(count, p_abort);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         feedback.add_required_panel(m_entries[i].m_guid);
         m_entries[i].export_to_fcl_stream(p_out, mode, p_abort);
     }
@@ -68,9 +67,9 @@ void cfg_rebar::import_config(
     p_reader->read_lendian_t(version, p_abort);
     if (version > 0)
         throw exception_io_unsupported_format();
-    t_size i, count;
+    t_size count;
     p_reader->read_lendian_t(count, p_abort);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         RebarBandInfo item;
         item.import_from_fcl_stream(p_reader, mode, p_abort);
 
@@ -97,8 +96,8 @@ void cfg_rebar::import_config(
 
 void band_cache::add_entry(const GUID& guid, unsigned width)
 {
-    unsigned n, count = get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = get_count();
+    for (unsigned n = 0; n < count; n++) {
         band_cache_entry& p_bce = (*this)[n];
         if (p_bce.guid == guid) {
             p_bce.width = width;
@@ -114,8 +113,8 @@ void band_cache::add_entry(const GUID& guid, unsigned width)
 unsigned band_cache::get_width(const GUID& guid)
 {
     unsigned rv = 100;
-    unsigned n, count = get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = get_count();
+    for (unsigned n = 0; n < count; n++) {
         const auto& p_bce = get_item_ref(n);
         if (p_bce.guid == guid) {
             rv = p_bce.width;
@@ -126,9 +125,9 @@ unsigned band_cache::get_width(const GUID& guid)
 
 void band_cache::write(stream_writer* out, abort_callback& p_abort)
 {
-    unsigned n, count = get_count();
+    unsigned count = get_count();
     out->write_lendian_t(count, p_abort);
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         const auto& p_bce = get_item_ref(n);
         out->write_lendian_t(p_bce.guid, p_abort);
         out->write_lendian_t(p_bce.width, p_abort);
@@ -138,9 +137,9 @@ void band_cache::write(stream_writer* out, abort_callback& p_abort)
 void band_cache::read(stream_reader* data, abort_callback& p_abort)
 {
     remove_all();
-    unsigned n, count;
+    unsigned count;
     data->read_lendian_t(count, p_abort);
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         GUID guid;
         unsigned width;
         data->read_lendian_t(guid, p_abort);

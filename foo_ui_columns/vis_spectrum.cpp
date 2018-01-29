@@ -479,16 +479,14 @@ void spectrum_extension::refresh(const audio_chunk* p_chunk)
                     const audio_sample* p_data = p_chunk->get_data();
                     t_size sample_count = p_chunk->get_sample_count();
                     t_size channel_count = p_chunk->get_channels();
-                    t_size i;
-                    for (i = 0; i < totalbars; i++) {
+                    for (t_size i = 0; i < totalbars; i++) {
                         double val = 0;
-                        t_size starti, endi, j;
+                        t_size starti, endi;
                         g_scale_value(sample_count, i, totalbars, starti, endi, m_scale == scale_logarithmic);
-                        for (j = starti; j <= endi; j++) {
+                        for (t_size j = starti; j <= endi; j++) {
                             if (j < sample_count) {
                                 double sample_val = 0;
-                                t_size k;
-                                for (k = 0; k < channel_count; k++)
+                                for (t_size k = 0; k < channel_count; k++)
                                     sample_val += p_data[j * channel_count + k];
                                 sample_val *= 1.0 / channel_count;
                                 val = max(val, sample_val);
@@ -506,8 +504,7 @@ void spectrum_extension::refresh(const audio_chunk* p_chunk)
                         if (r.bottom > r.top)
                             FillRect(dc, &r, br_foreground);
                     }
-                    int j;
-                    for (j = rc_client->bottom; j > rc_client->top; j -= 2) {
+                    for (int j = rc_client->bottom; j > rc_client->top; j -= 2) {
                         RECT rc = {0, j - 1, rc_client->right, j};
                         FillRect(dc, &rc, br_background);
                     }
@@ -516,16 +513,14 @@ void spectrum_extension::refresh(const audio_chunk* p_chunk)
                 const audio_sample* p_data = p_chunk->get_data();
                 t_size sample_count = p_chunk->get_sample_count();
                 t_size channel_count = p_chunk->get_channels();
-                t_size i;
-                for (i = 0; i < (t_size)rc_client->right; i++) {
+                for (t_size i = 0; i < (t_size)rc_client->right; i++) {
                     double val = 0;
-                    t_size starti, endi, j;
+                    t_size starti, endi;
                     g_scale_value(sample_count, i, rc_client->right, starti, endi, m_scale == scale_logarithmic);
-                    for (j = starti; j <= endi; j++) {
+                    for (t_size j = starti; j <= endi; j++) {
                         if (j < sample_count) {
                             double sample_val = 0;
-                            t_size k;
-                            for (k = 0; k < channel_count; k++)
+                            for (t_size k = 0; k < channel_count; k++)
                                 sample_val += p_data[j * channel_count + k];
                             sample_val *= 1.0 / channel_count;
                             val = max(val, sample_val);
@@ -555,8 +550,8 @@ void spectrum_extension::g_refresh_all()
     unsigned fft_size = 4096;
     bool ret = g_stream->get_spectrum_absolute(p_chunk, p_time, fft_size);
 
-    unsigned n, count = spectrum_extension::g_visualisations.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = spectrum_extension::g_visualisations.get_count();
+    for (unsigned n = 0; n < count; n++) {
         spectrum_extension* vis_ext = spectrum_extension::g_visualisations[n];
         if (ret)
             vis_ext->refresh(&p_chunk);

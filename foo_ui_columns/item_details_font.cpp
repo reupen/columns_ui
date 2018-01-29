@@ -16,8 +16,8 @@ void font_change_info_t::reset(bool bKeepHandles /*= false*/)
 
 bool font_change_info_t::find_font(const font_data_t& p_font, t_size& index)
 {
-    t_size i, count = m_fonts.get_count();
-    for (i = 0; i < count; i++) {
+    t_size count = m_fonts.get_count();
+    for (t_size i = 0; i < count; i++) {
         if (m_fonts[i]->m_data == p_font) {
             index = i;
             return true;

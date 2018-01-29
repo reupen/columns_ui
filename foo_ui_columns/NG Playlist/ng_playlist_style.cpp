@@ -8,8 +8,8 @@ namespace style_cache_manager {
 pfc::list_t<style_data_cell_t*> m_objects;
 void g_add_object(const style_data_cell_info_t& p_data, style_data_cell_t::ptr& p_out)
 {
-    t_size i, count = m_objects.get_count();
-    for (i = 0; i < count; i++)
+    t_size count = m_objects.get_count();
+    for (t_size i = 0; i < count; i++)
         if (m_objects[i]->is_equal(p_data)) {
             p_out = m_objects[i];
             return;

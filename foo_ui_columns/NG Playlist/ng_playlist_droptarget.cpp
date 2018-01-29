@@ -245,8 +245,8 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::Drop(
                         if (*pdwEffect == DROPEFFECT_MOVE) {
                             pfc::list_t<t_size, pfc::alloc_fast_aggressive> indices;
                             indices.prealloc(data.get_count());
-                            t_size i, count = selection.get_count(); //, counter=0;
-                            for (i = 0; i < count; i++)
+                            t_size count = selection.get_count(); //, counter=0;
+                            for (t_size i = 0; i < count; i++)
                                 if (selection[i]) {
                                     indices.add_item(i);
                                 }
