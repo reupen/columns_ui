@@ -20,8 +20,7 @@ int playlist_view::hittest_item(int x, int y, bool check_in_column)
 
     if (idx >= 0 && static_cast<t_size>(idx) < playlist_api->activeplaylist_get_item_count())
         return idx;
-    else
-        return -1;
+    return -1;
 }
 
 int playlist_view::hittest_item_no_scroll(int x, int y, bool check_in_column)

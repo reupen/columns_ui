@@ -130,115 +130,118 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             g_drag_lmb = true;
         if (m_prevent_wm_char_processing = process_keydown(msg, lp, wp, true))
             return 0;
-        else {
-            SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
-            if (wp == VK_HOME || wp == VK_DOWN || wp == VK_END || wp == VK_PRIOR || wp == VK_NEXT || wp == VK_UP) {
-                int focus = playlist_api->activeplaylist_get_focus_item();
-                int total = playlist_api->activeplaylist_get_item_count();
+        SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
+        if (wp == VK_HOME || wp == VK_DOWN || wp == VK_END || wp == VK_PRIOR || wp == VK_NEXT || wp == VK_UP) {
+            int focus = playlist_api->activeplaylist_get_focus_item();
+            int total = playlist_api->activeplaylist_get_item_count();
 
-                if ((wp == VK_HOME || wp == VK_PRIOR || wp == VK_UP)) {
-                    //    if (focus == 0) return 0;
-                }
-                if ((wp == VK_END || wp == VK_NEXT || wp == VK_DOWN)) {
-                    //    if (focus == total - 1) return 0;
-                }
+            if ((wp == VK_HOME || wp == VK_PRIOR || wp == VK_UP)) {
+                //    if (focus == 0) return 0;
+            }
+            if ((wp == VK_END || wp == VK_NEXT || wp == VK_DOWN)) {
+                //    if (focus == total - 1) return 0;
+            }
 
-                SCROLLINFO si;
-                memset(&si, 0, sizeof(si));
-                si.cbSize = sizeof(si);
+            SCROLLINFO si;
+            memset(&si, 0, sizeof(si));
+            si.cbSize = sizeof(si);
 
-                si.fMask = SIF_PAGE | SIF_POS;
-                GetScrollInfo(wnd_playlist, SB_VERT, &si);
+            si.fMask = SIF_PAGE | SIF_POS;
+            GetScrollInfo(wnd_playlist, SB_VERT, &si);
 
-                int offset = 0;
-                int scroll = scroll_item_offset;
-                const auto page_size = gsl::narrow<int>(si.nPage);
+            int offset = 0;
+            int scroll = scroll_item_offset;
+            const auto page_size = gsl::narrow<int>(si.nPage);
 
-                if (wp == VK_HOME)
-                    scroll = 0;
-                else if (wp == VK_PRIOR && focus == scroll_item_offset)
-                    scroll -= page_size;
-                else if (wp == VK_UP) {
-                    if (focus <= scroll_item_offset)
-                        scroll = focus - 1;
-                    else if (focus > si.nPos + page_size - 1)
-                        scroll = focus - 1 - page_size + 1;
-                } else if (wp == VK_DOWN) {
-                    if (focus < scroll_item_offset)
-                        scroll = focus + 1;
-                    else if (focus >= si.nPos + page_size - 1)
-                        scroll = focus + 1 - page_size + 1;
-                } else if (wp == VK_END)
-                    scroll = total - 1;
-                else if (wp == VK_NEXT && focus == si.nPos + page_size - 1)
-                    scroll += page_size;
+            if (wp == VK_HOME)
+                scroll = 0;
+            else if (wp == VK_PRIOR && focus == scroll_item_offset)
+                scroll -= page_size;
+            else if (wp == VK_UP) {
+                if (focus <= scroll_item_offset)
+                    scroll = focus - 1;
+                else if (focus > si.nPos + page_size - 1)
+                    scroll = focus - 1 - page_size + 1;
+            } else if (wp == VK_DOWN) {
+                if (focus < scroll_item_offset)
+                    scroll = focus + 1;
+                else if (focus >= si.nPos + page_size - 1)
+                    scroll = focus + 1 - page_size + 1;
+            } else if (wp == VK_END)
+                scroll = total - 1;
+            else if (wp == VK_NEXT && focus == si.nPos + page_size - 1)
+                scroll += page_size;
 
-                drawing_enabled = false;
+            drawing_enabled = false;
 
-                si.nPos = scroll;
-                si.fMask = SIF_POS;
-                scroll_item_offset = SetScrollInfo(wnd_playlist, SB_VERT, &si, true);
+            si.nPos = scroll;
+            si.fMask = SIF_POS;
+            scroll_item_offset = SetScrollInfo(wnd_playlist, SB_VERT, &si, true);
 
-                if (wp == VK_HOME)
-                    offset = 0 - focus;
-                else if (wp == VK_PRIOR)
-                    offset = scroll_item_offset - focus;
-                else if (wp == VK_END)
-                    offset = total - focus - 1;
-                else if (wp == VK_NEXT)
-                    offset = get_last_viewable_item() - focus;
-                else if (wp == VK_DOWN)
-                    offset = 1;
-                else if (wp == VK_UP)
-                    offset = -1;
+            if (wp == VK_HOME)
+                offset = 0 - focus;
+            else if (wp == VK_PRIOR)
+                offset = scroll_item_offset - focus;
+            else if (wp == VK_END)
+                offset = total - focus - 1;
+            else if (wp == VK_NEXT)
+                offset = get_last_viewable_item() - focus;
+            else if (wp == VK_DOWN)
+                offset = 1;
+            else if (wp == VK_UP)
+                offset = -1;
 
-                // if (offset)
-                process_keydown(
-                    offset, ((HIWORD(lp) & KF_ALTDOWN) != 0), drawing_enabled, (HIWORD(lp) & KF_REPEAT) != 0);
-                drawing_enabled = true;
+            // if (offset)
+            process_keydown(offset, ((HIWORD(lp) & KF_ALTDOWN) != 0), drawing_enabled, (HIWORD(lp) & KF_REPEAT) != 0);
+            drawing_enabled = true;
 
-                RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+            RedrawWindow(wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
 
-                return 0;
-            } else if (wp == VK_SPACE) {
-                int focus = playlist_api->activeplaylist_get_focus_item();
-                set_sel_single(focus, true, false, false);
-                return 0;
-            } else if (wp == VK_RETURN) {
-                bool ctrl_down = 0 != (GetKeyState(VK_CONTROL) & KF_UP);
-                int focus = playlist_api->activeplaylist_get_focus_item();
-                unsigned active = playlist_api->get_active_playlist();
-                if (ctrl_down) {
-                    if (active != -1 && focus != -1)
-                        playlist_api->queue_add_item_playlist(active, focus);
-                } else {
-                    //                    playlist_api->set_playing_playlist(active);
-                    unsigned focus = playlist_api->activeplaylist_get_focus_item();
-                    // unsigned active = playlist_api->get_active_playlist();
-                    // playlist_api->playlist_set_playback_cursor(active, focus);
-                    playlist_api->activeplaylist_execute_default_action(focus);
-                    // static_api_ptr_t<play_control>()->play_start(play_control::track_command_settrack);
-                }
-                return 0;
-            } else if (wp == VK_SHIFT) {
-                if (!(HIWORD(lp) & KF_REPEAT))
-                    g_shift_item_start = playlist_api->activeplaylist_get_focus_item();
-            } else if (wp == VK_F2) {
-                unsigned count = g_get_cache().active_column_get_active_count();
-                if (count) {
-                    unsigned focus = playlist_api->activeplaylist_get_focus_item();
-                    if (focus != pfc_infinite) {
-                        t_size i, pcount = playlist_api->activeplaylist_get_item_count();
-                        pfc::bit_array_bittable sel(pcount);
-                        playlist_api->activeplaylist_get_selection_mask(sel);
+            return 0;
+        }
+        if (wp == VK_SPACE) {
+            int focus = playlist_api->activeplaylist_get_focus_item();
+            set_sel_single(focus, true, false, false);
+            return 0;
+        }
+        if (wp == VK_RETURN) {
+            bool ctrl_down = 0 != (GetKeyState(VK_CONTROL) & KF_UP);
+            int focus = playlist_api->activeplaylist_get_focus_item();
+            unsigned active = playlist_api->get_active_playlist();
+            if (ctrl_down) {
+                if (active != -1 && focus != -1)
+                    playlist_api->queue_add_item_playlist(active, focus);
+            } else {
+                //                    playlist_api->set_playing_playlist(active);
+                unsigned focus = playlist_api->activeplaylist_get_focus_item();
+                // unsigned active = playlist_api->get_active_playlist();
+                // playlist_api->playlist_set_playback_cursor(active, focus);
+                playlist_api->activeplaylist_execute_default_action(focus);
+                // static_api_ptr_t<play_control>()->play_start(play_control::track_command_settrack);
+            }
+            return 0;
+        }
+        if (wp == VK_SHIFT) {
+            if (!(HIWORD(lp) & KF_REPEAT))
+                g_shift_item_start = playlist_api->activeplaylist_get_focus_item();
+            break;
+        }
+        if (wp == VK_F2) {
+            unsigned count = g_get_cache().active_column_get_active_count();
+            if (count) {
+                unsigned focus = playlist_api->activeplaylist_get_focus_item();
+                if (focus != pfc_infinite) {
+                    t_size i, pcount = playlist_api->activeplaylist_get_item_count();
+                    pfc::bit_array_bittable sel(pcount);
+                    playlist_api->activeplaylist_get_selection_mask(sel);
 
-                        pfc::list_t<t_size> indices;
-                        indices.prealloc(32);
-                        for (i = 0; i < pcount; i++)
-                            if (sel[i])
-                                indices.add_item(i);
+                    pfc::list_t<t_size> indices;
+                    indices.prealloc(32);
+                    for (i = 0; i < pcount; i++)
+                        if (sel[i])
+                            indices.add_item(i);
 
-                        /*t_size start = focus, end = focus;
+                    /*t_size start = focus, end = focus;
 
                         if (sel[start] && pcount)
                         {
@@ -246,32 +249,36 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         while (end<pcount-1 && sel[end+1]) end++;
                         }*/
 
-                        unsigned count = g_get_cache().active_column_get_active_count();
-                        unsigned column;
-                        for (column = 0; column < count; column++) {
-                            if (!g_get_columns()[g_get_cache().active_column_active_to_actual(column)]
-                                     ->edit_field.is_empty()) {
-                                // create_inline_edit_v2(start, end-start+1, column);
-                                create_inline_edit_v2(indices, column);
-                                break;
-                            }
+                    unsigned count = g_get_cache().active_column_get_active_count();
+                    unsigned column;
+                    for (column = 0; column < count; column++) {
+                        if (!g_get_columns()[g_get_cache().active_column_active_to_actual(column)]
+                                 ->edit_field.is_empty()) {
+                            // create_inline_edit_v2(start, end-start+1, column);
+                            create_inline_edit_v2(indices, column);
+                            break;
                         }
                     }
                 }
-            } else if (wp == VK_DELETE) {
-                playlist_api->activeplaylist_undo_backup();
-                playlist_api->activeplaylist_remove_selection();
-            } else if (wp == VK_F3) {
-                standard_commands::main_playlist_search();
             }
-            /*else if (vk_slash != -1 && wp == LOWORD(vk_slash))
+            return 0;
+        }
+        if (wp == VK_DELETE) {
+            playlist_api->activeplaylist_undo_backup();
+            playlist_api->activeplaylist_remove_selection();
+            return 0;
+        }
+        if (wp == VK_F3) {
+            standard_commands::main_playlist_search();
+            return 0;
+        }
+        /*else if (vk_slash != -1 && wp == LOWORD(vk_slash))
             {
             HWND wnd_search = m_searcher.create(wnd);
             on_size();
             ShowWindow(wnd_search, SW_SHOWNORMAL);
             ;
             }*/
-        }
     } break;
     case WM_CHAR:
         if (!m_prevent_wm_char_processing) {
@@ -283,27 +290,33 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     {
                         playlist_api->activeplaylist_set_selection(pfc::bit_array_true(), pfc::bit_array_true());
                         return 0;
-                    } else if (wp == 26) // Ctrl-Z
+                    }
+                    if (wp == 26) // Ctrl-Z
                     {
                         playlist_api->activeplaylist_undo_restore();
                         return 0;
-                    } else if (wp == 25) // Ctrl-Y
+                    }
+                    if (wp == 25) // Ctrl-Y
                     {
                         playlist_api->activeplaylist_redo_restore();
                         return 0;
-                    } else if (wp == 24) // Ctrl-X
+                    }
+                    if (wp == 24) // Ctrl-X
                     {
                         playlist_utils::cut();
                         return 0;
-                    } else if (wp == 3) // Ctrl-C
+                    }
+                    if (wp == 3) // Ctrl-C
                     {
                         playlist_utils::copy();
                         return 0;
-                    } else if (wp == 6) // Ctrl-F
+                    }
+                    if (wp == 6) // Ctrl-F
                     {
                         standard_commands::main_playlist_search();
                         return 0;
-                    } else if (wp == 22) // Ctrl-V
+                    }
+                    if (wp == 22) // Ctrl-V
                     {
                         playlist_utils::paste(wnd);
                         return 0;
@@ -1012,7 +1025,8 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }
             return 0;
-        } else if ((HWND)wp == wnd) {
+        }
+        if ((HWND)wp == wnd) {
             // DWORD mp = GetMessagePos();
             POINT px, pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
             static_api_ptr_t<playlist_manager> playlist_api;

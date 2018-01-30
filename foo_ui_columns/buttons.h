@@ -80,7 +80,7 @@ public:
         button(GUID p_guid, bool p_custom, const char* p_custom_bitmap_path, const char* p_custom_bitmap_mask_path,
             COLORREF p_custom_bitmap_colour_mask, ui_extension::t_mask p_custom_bitmap_mask_type);
         button() = default;
-        const button& operator=(const button& p_source);
+        button& operator=(const button& p_source);
         void write(stream_writer* out, abort_callback& p_abort) const;
 
         void read(t_config_version p_version, stream_reader* reader, abort_callback& p_abort);

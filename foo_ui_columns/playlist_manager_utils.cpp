@@ -37,25 +37,29 @@ bool playlist_format_name_t::titleformat_hook_playlist_t::process_field(
         p_out->write(titleformat_inputtypes::unknown, m_name, pfc_infinite);
         p_found_flag = true;
         return true;
-    } else if (!stricmp_utf8_ex(p_name, p_name_length, "is_locked", pfc_infinite)) {
+    }
+    if (!stricmp_utf8_ex(p_name, p_name_length, "is_locked", pfc_infinite)) {
         if (m_locked) {
             p_out->write(titleformat_inputtypes::unknown, "1", pfc_infinite);
             p_found_flag = true;
             return true;
         }
         return false;
-    } else if (!stricmp_utf8_ex(p_name, p_name_length, "is_active", pfc_infinite)) {
+    }
+    if (!stricmp_utf8_ex(p_name, p_name_length, "is_active", pfc_infinite)) {
         if (m_active) {
             p_out->write(titleformat_inputtypes::unknown, "1", pfc_infinite);
             p_found_flag = true;
             return true;
         }
         return false;
-    } else if (!stricmp_utf8_ex(p_name, p_name_length, "size", pfc_infinite)) {
+    }
+    if (!stricmp_utf8_ex(p_name, p_name_length, "size", pfc_infinite)) {
         p_out->write_int(titleformat_inputtypes::unknown, m_size);
         p_found_flag = true;
         return true;
-    } else if (!stricmp_utf8_ex(p_name, p_name_length, "is_playing", pfc_infinite)) {
+    }
+    if (!stricmp_utf8_ex(p_name, p_name_length, "is_playing", pfc_infinite)) {
         if (m_playing) {
             p_out->write(titleformat_inputtypes::unknown, "1", pfc_infinite);
             p_found_flag = true;

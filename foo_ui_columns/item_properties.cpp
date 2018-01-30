@@ -229,14 +229,14 @@ void selection_properties_t::notify_on_create()
     static_api_ptr_t<metadb_io_v3>()->register_callback(this);
     refresh_contents();
 
-    if (0 == g_windows.size())
+    if (g_windows.empty())
         g_message_window.create(nullptr);
     g_windows.push_back(this);
 }
 void selection_properties_t::notify_on_destroy()
 {
     g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
-    if (g_windows.size() == 0)
+    if (g_windows.empty())
         g_message_window.destroy();
 
     static_api_ptr_t<play_callback_manager>()->unregister_callback(this);

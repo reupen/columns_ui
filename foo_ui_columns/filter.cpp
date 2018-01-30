@@ -157,7 +157,7 @@ void filter_panel_t::g_on_field_query_change(const field_t& field)
 }
 void filter_panel_t::g_on_showemptyitems_change(bool b_val)
 {
-    if (g_windows.size()) {
+    if (!g_windows.empty()) {
         g_showemptyitems = b_val;
         t_size i, count = g_streams.get_count();
         for (i = 0; i < count; i++) {
@@ -201,7 +201,7 @@ void filter_panel_t::g_redraw_all()
 }
 void filter_panel_t::g_on_new_field(const field_t& field)
 {
-    if (g_windows.size()) {
+    if (!g_windows.empty()) {
         t_size index = g_field_data.get_count();
         g_field_data.set_count(index + 1);
         g_create_field_data(field, g_field_data[index]);
@@ -878,7 +878,7 @@ void filter_panel_t::notify_on_destroy()
     m_stream.release();
 
     g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
-    if (g_windows.size() == 0)
+    if (g_windows.empty())
         g_field_data.remove_all();
     m_nodes.remove_all();
 }

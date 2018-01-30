@@ -223,19 +223,15 @@ bool tab_appearance::get_colour_patch_enabled(cui::colours::colour_identifier_t 
         if (!m_element_api.is_valid()) {
             return m_element_ptr->colour_mode == cui::colours::colour_mode_custom
                 || colour_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
-        } else {
-            bool is_colour_supported = (m_element_api->get_supported_colours() & (1 << p_identifier)) != 0;
-            bool use_custom_frame_supported
-                = (m_element_api->get_supported_bools() & (1 << cui::colours::bool_flag_use_custom_active_item_frame))
-                != 0;
-
-            return is_colour_supported
-                && (!use_custom_frame_supported
-                       || colour_helper.get_bool(cui::colours::bool_use_custom_active_item_frame));
         }
-    } else {
-        return !m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier));
+        bool is_colour_supported = (m_element_api->get_supported_colours() & (1 << p_identifier)) != 0;
+        bool use_custom_frame_supported
+            = (m_element_api->get_supported_bools() & (1 << cui::colours::bool_flag_use_custom_active_item_frame)) != 0;
+
+        return is_colour_supported
+            && (!use_custom_frame_supported || colour_helper.get_bool(cui::colours::bool_use_custom_active_item_frame));
     }
+    return !m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier));
 }
 
 bool tab_appearance::get_change_colour_enabled(cui::colours::colour_identifier_t p_identifier)
@@ -246,9 +242,8 @@ bool tab_appearance::get_change_colour_enabled(cui::colours::colour_identifier_t
             && ((!m_element_api.is_valid()
                     || !(m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame))
                    || cui::colours::helper(m_element_guid).get_bool(cui::colours::bool_use_custom_active_item_frame));
-    else
-        return (m_element_ptr->colour_mode == cui::colours::colour_mode_custom
-            && (!m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier))));
+    return (m_element_ptr->colour_mode == cui::colours::colour_mode_custom
+        && (!m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier))));
 }
 
 void tab_appearance::update_fills()

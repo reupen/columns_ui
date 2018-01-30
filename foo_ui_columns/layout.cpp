@@ -74,7 +74,8 @@ bool layout_window::__set_focus_recur(const uie::window_ptr& p_wnd)
         {
             p_playlist_wnd->set_focus();
             return true;
-        } else if (p_wnd->service_query_t(p_splitter_wnd)) {
+        }
+        if (p_wnd->service_query_t(p_splitter_wnd)) {
             unsigned n, count;
             count = p_splitter_wnd->get_panel_count();
             for (n = 0; n < count; n++) {
@@ -929,7 +930,8 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
             }
         }
         return false;
-    } else if (p_type == uih::MessageHookType::type_mouse) {
+    }
+    if (p_type == uih::MessageHookType::type_mouse) {
         auto* lpmhs = (LPMOUSEHOOKSTRUCT)lp;
         if (lpmhs->hwnd == get_wnd() || IsChild(get_wnd(), lpmhs->hwnd)) {
             uie::splitter_window_v2_ptr sw2;

@@ -326,7 +326,8 @@ bool splitter_window_tabs_impl::get_config_item(
         if (p_type == uie::splitter_window::bool_use_custom_title) {
             p_out->write_lendian_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::string_custom_title) {
+        }
+        if (p_type == uie::splitter_window::string_custom_title) {
             p_out->write_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -341,7 +342,8 @@ bool splitter_window_tabs_impl::set_config_item(
         if (p_type == uie::splitter_window::bool_use_custom_title) {
             p_source->read_lendian_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::string_custom_title) {
+        }
+        if (p_type == uie::splitter_window::string_custom_title) {
             p_source->read_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -514,7 +516,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPA
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
             && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
-        else if (wp == VK_TAB) {
+        if (wp == VK_TAB) {
             ui_extension::window::g_on_tab(wnd);
             return 0;
         }
@@ -926,7 +928,7 @@ LRESULT WINAPI splitter_window_tabs_impl::on_hooked_message(HWND wnd, UINT msg, 
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
             && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
-        else if (wp == VK_TAB) {
+        if (wp == VK_TAB) {
             ui_extension::window::g_on_tab(wnd);
             return 0;
         }

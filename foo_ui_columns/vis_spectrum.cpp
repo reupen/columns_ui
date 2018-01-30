@@ -317,14 +317,15 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ptr->br_fore = CreateSolidBrush(ptr->cr_fore);
             }
             return (BOOL)ptr->br_fore;
-        } else if (GetDlgItem(wnd, IDC_PATCH_BACK) == (HWND)lp) {
+        }
+        if (GetDlgItem(wnd, IDC_PATCH_BACK) == (HWND)lp) {
             auto dc = (HDC)wp;
             if (!ptr->br_back) {
                 ptr->br_back = CreateSolidBrush(ptr->cr_back);
             }
             return (BOOL)ptr->br_back;
-        } else
-            return (BOOL)GetSysColorBrush(COLOR_3DHIGHLIGHT);
+        }
+        return (BOOL)GetSysColorBrush(COLOR_3DHIGHLIGHT);
     } break;
     case WM_COMMAND:
         switch (wp) {

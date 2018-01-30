@@ -553,7 +553,7 @@ void ng_playlist_view_t::notify_on_create()
     pfc::com_ptr_t<IDropTarget_playlist> IDT_playlist = new IDropTarget_playlist(this);
     RegisterDragDrop(get_wnd(), IDT_playlist.get_ptr());
 
-    if (g_windows.size() == 0)
+    if (g_windows.empty())
         g_global_mesage_window.create(nullptr);
     g_windows.push_back(this);
 
@@ -567,7 +567,7 @@ void ng_playlist_view_t::notify_on_create()
 void ng_playlist_view_t::notify_on_destroy()
 {
     g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
-    if (g_windows.size() == 0)
+    if (g_windows.empty())
         g_global_mesage_window.destroy();
 
     RevokeDragDrop(get_wnd());

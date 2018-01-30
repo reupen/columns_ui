@@ -67,7 +67,8 @@ bool command_picker_data::__populate_commands_recur(
                 __populate_commands_recur(data, subfull, p_child, false);
             }
             return true;
-        } else if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && !b_root) {
+        }
+        if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && !b_root) {
             pfc::string8 subfull = full, subname;
             unsigned dummy;
             p_node->get_display_data(

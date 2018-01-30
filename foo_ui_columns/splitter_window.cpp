@@ -556,8 +556,8 @@ int splitter_window_impl::override_size(unsigned& panel, int delta)
                         m_panels[n]->m_size = height;
                 }
                 return (abs(delta) - obtained);
-
-            } else if (is_down /*&& !m_panels[panel].locked*/) {
+            }
+            if (is_down /*&& !m_panels[panel].locked*/) {
                 unsigned diff_abs = 0, diff_avail = abs(delta);
 
                 n = panel + 1;
@@ -566,7 +566,7 @@ int splitter_window_impl::override_size(unsigned& panel, int delta)
                     {
                         unsigned height = minmax[n].height
                             + (diff_avail - diff_abs); //(diff_avail-diff_abs > m_panels[n]->height ? 0 :
-                                                       // m_panels[n]->height-(diff_avail-diff_abs));
+                        // m_panels[n]->height-(diff_avail-diff_abs));
                         // console::formatter() << "1: " << height << " " << minmax[n].height << " " <<
                         // (diff_avail-diff_abs);
 
@@ -687,26 +687,25 @@ bool splitter_window_impl::is_point_ours(
         if (wnd_point == get_wnd()) {
             p_hierarchy.add_item(this);
             return true;
-        } else {
-            t_size i, count = m_panels.get_count();
-            for (i = 0; i < count; i++) {
-                uie::splitter_window_v2_ptr sptr;
-                if (m_panels[i]->m_child.is_valid()) {
-                    if (m_panels[i]->m_child->service_query_t(sptr)) {
-                        pfc::list_t<uie::window::ptr> temp;
-                        temp.add_item(this);
-                        if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
-                            p_hierarchy.add_items(temp);
-                            return true;
-                        }
-                    } else if (wnd_point == m_panels[i]->m_wnd_child || IsChild(m_panels[i]->m_wnd_child, wnd_point)) {
-                        p_hierarchy.add_item(this);
-                        p_hierarchy.add_item(m_panels[i]->m_child);
-                        return true;
-                    } else if (wnd_point == m_panels[i]->m_wnd) {
-                        p_hierarchy.add_item(this);
+        }
+        t_size i, count = m_panels.get_count();
+        for (i = 0; i < count; i++) {
+            uie::splitter_window_v2_ptr sptr;
+            if (m_panels[i]->m_child.is_valid()) {
+                if (m_panels[i]->m_child->service_query_t(sptr)) {
+                    pfc::list_t<uie::window::ptr> temp;
+                    temp.add_item(this);
+                    if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
+                        p_hierarchy.add_items(temp);
                         return true;
                     }
+                } else if (wnd_point == m_panels[i]->m_wnd_child || IsChild(m_panels[i]->m_wnd_child, wnd_point)) {
+                    p_hierarchy.add_item(this);
+                    p_hierarchy.add_item(m_panels[i]->m_child);
+                    return true;
+                } else if (wnd_point == m_panels[i]->m_wnd) {
+                    p_hierarchy.add_item(this);
+                    return true;
                 }
             }
         }
@@ -731,41 +730,50 @@ bool splitter_window_impl::set_config_item(
                 m_panels[index]->on_size();
             }
             return true;
-        } else if (p_type == uie::splitter_window::bool_hidden) {
+        }
+        if (p_type == uie::splitter_window::bool_hidden) {
             if (!m_panels[index]->m_autohide)
                 p_source->read_object_t(m_panels[index]->m_hidden, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::bool_autohide) {
+        }
+        if (p_type == uie::splitter_window::bool_autohide) {
             p_source->read_object_t(m_panels[index]->m_autohide, p_abort);
             m_panels[index]->m_hidden = m_panels[index]->m_autohide;
             return true;
-        } else if (p_type == uie::splitter_window::bool_locked) {
+        }
+        if (p_type == uie::splitter_window::bool_locked) {
             if (get_wnd())
                 save_sizes();
             p_source->read_object_t(m_panels[index]->m_locked, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::uint32_orientation) {
+        }
+        if (p_type == uie::splitter_window::uint32_orientation) {
             p_source->read_object_t(m_panels[index]->m_caption_orientation, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::uint32_size) {
+        }
+        if (p_type == uie::splitter_window::uint32_size) {
             uint32_t size;
             p_source->read_object_t(size, p_abort);
             m_panels[index]->m_size = size;
             return true;
-        } else if (p_type == uie::splitter_window::size_and_dpi) {
+        }
+        if (p_type == uie::splitter_window::size_and_dpi) {
             uie::size_and_dpi sad;
             p_source->read_object_t(sad.size, p_abort);
             p_source->read_object_t(sad.dpi, p_abort);
             m_panels[index]->m_size.value = sad.size;
             m_panels[index]->m_size.dpi = sad.dpi;
             return true;
-        } else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
+        }
+        if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
             p_source->read_object_t(m_panels[index]->m_show_toggle_area, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::bool_use_custom_title) {
+        }
+        if (p_type == uie::splitter_window::bool_use_custom_title) {
             p_source->read_object_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::string_custom_title) {
+        }
+        if (p_type == uie::splitter_window::string_custom_title) {
             p_source->read_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -781,32 +789,41 @@ bool splitter_window_impl::get_config_item(
         if (p_type == uie::splitter_window::bool_show_caption) {
             p_out->write_object_t(m_panels[index]->m_show_caption, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::bool_hidden) {
+        }
+        if (p_type == uie::splitter_window::bool_hidden) {
             p_out->write_object_t(m_panels[index]->m_hidden, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::bool_autohide) {
+        }
+        if (p_type == uie::splitter_window::bool_autohide) {
             p_out->write_object_t(m_panels[index]->m_autohide, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::bool_locked) {
+        }
+        if (p_type == uie::splitter_window::bool_locked) {
             p_out->write_object_t(m_panels[index]->m_locked, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::uint32_orientation) {
+        }
+        if (p_type == uie::splitter_window::uint32_orientation) {
             p_out->write_object_t(m_panels[index]->m_caption_orientation, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::uint32_size) {
+        }
+        if (p_type == uie::splitter_window::uint32_size) {
             p_out->write_object_t(m_panels[index]->m_size.get_scaled_value(), p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::size_and_dpi) {
+        }
+        if (p_type == uie::splitter_window::size_and_dpi) {
             p_out->write_object_t(m_panels[index]->m_size.value, p_abort);
             p_out->write_object_t(m_panels[index]->m_size.dpi, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
+        }
+        if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
             p_out->write_object_t(m_panels[index]->m_show_toggle_area, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::bool_use_custom_title) {
+        }
+        if (p_type == uie::splitter_window::bool_use_custom_title) {
             p_out->write_object_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
-        } else if (p_type == uie::splitter_window::string_custom_title) {
+        }
+        if (p_type == uie::splitter_window::string_custom_title) {
             p_out->write_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -989,14 +1006,12 @@ bool splitter_window_impl::splitter_host_impl::set_window_visibility(HWND wnd, b
     bool rv = false;
     if (!m_this->get_host()->is_visible(m_this->get_wnd()))
         return m_this->get_host()->set_window_visibility(m_this->get_wnd(), visibility);
-    else {
-        unsigned idx = 0;
-        if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
-            if (!m_this->m_panels[idx]->m_autohide) {
-                m_this->m_panels[idx]->m_hidden = !visibility;
-                m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
-                m_this->on_size_changed();
-            }
+    unsigned idx = 0;
+    if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
+        if (!m_this->m_panels[idx]->m_autohide) {
+            m_this->m_panels[idx]->m_hidden = !visibility;
+            m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
+            m_this->on_size_changed();
         }
     }
     return rv;
@@ -1008,11 +1023,9 @@ bool splitter_window_impl::splitter_host_impl::is_visibility_modifiable(HWND wnd
 
     if (!m_this->get_host()->is_visible(m_this->get_wnd()))
         return m_this->get_host()->is_visibility_modifiable(m_this->get_wnd(), desired_visibility);
-    else {
-        unsigned idx = 0;
-        if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
-            rv = !m_this->m_panels[idx]->m_autohide;
-        }
+    unsigned idx = 0;
+    if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
+        rv = !m_this->m_panels[idx]->m_autohide;
     }
     return rv;
 }

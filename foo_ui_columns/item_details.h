@@ -187,13 +187,13 @@ public:
         track_selection,
     };
 
-    const bool g_track_mode_includes_now_playing(t_size mode);
+    bool g_track_mode_includes_now_playing(t_size mode);
 
-    const bool g_track_mode_includes_plalist(t_size mode);
+    bool g_track_mode_includes_plalist(t_size mode);
 
-    const bool g_track_mode_includes_auto(t_size mode);
+    bool g_track_mode_includes_auto(t_size mode);
 
-    const bool g_track_mode_includes_selection(t_size mode);
+    bool g_track_mode_includes_selection(t_size mode);
 
     class menu_node_track_mode : public ui_extension::menu_node_command_t {
         service_ptr_t<item_details_t> p_this;

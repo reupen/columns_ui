@@ -468,7 +468,8 @@ LRESULT WINAPI menu_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 PostMessage(wnd, TB_SETHOTITEM, -1, 0);
             }
             return 0;
-        } else if ((wp == VK_SPACE) && !lpkeyb.previous_key_state) {
+        }
+        if ((wp == VK_SPACE) && !lpkeyb.previous_key_state) {
             HWND wndparent = uFindParentPopup(wnd);
             if (wndparent)
                 PostMessage(wndparent, WM_SYSKEYDOWN, wp, lp | (1 << 29));

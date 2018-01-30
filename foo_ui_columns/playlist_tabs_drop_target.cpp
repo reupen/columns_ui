@@ -11,12 +11,13 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
         AddRef();
         *ppvObject = (IUnknown*)this;
         return S_OK;
-    } else if (riid == IID_IDropTarget) {
+    }
+    if (riid == IID_IDropTarget) {
         AddRef();
         *ppvObject = (IDropTarget*)this;
         return S_OK;
-    } else
-        return E_NOINTERFACE;
+    }
+    return E_NOINTERFACE;
 }
 ULONG STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::AddRef()
 {

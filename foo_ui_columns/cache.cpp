@@ -157,9 +157,7 @@ display_info* playlist_entry_ui::get_item(unsigned col) const
 
 playlist_entry_ui::~playlist_entry_ui()
 {
-    if (display_data)
-        delete[] display_data;
-    // display_data.delete_all();
+    delete[] display_data;
 }
 
 void process_colour_string(const char* src, colourinfo& out)

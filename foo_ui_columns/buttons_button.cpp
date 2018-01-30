@@ -72,7 +72,7 @@ toolbar_extension::button::button(GUID p_guid, bool p_custom, const char* p_cust
     m_use_custom_text = false;
 }
 
-const toolbar_extension::button& toolbar_extension::button::operator=(const toolbar_extension::button& p_source)
+toolbar_extension::button& toolbar_extension::button::operator=(const toolbar_extension::button& p_source)
 {
     set(p_source);
     return *this;

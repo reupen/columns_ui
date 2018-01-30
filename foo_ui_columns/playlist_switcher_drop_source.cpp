@@ -37,12 +37,13 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::QueryInterface(REF
         AddRef();
         *ppvObject = (IUnknown*)this;
         return S_OK;
-    } else if (iid == IID_IDropSource) {
+    }
+    if (iid == IID_IDropSource) {
         AddRef();
         *ppvObject = (IDropSource*)this;
         return S_OK;
-    } else
-        return E_NOINTERFACE;
+    }
+    return E_NOINTERFACE;
 }
 ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::AddRef()
 {
@@ -61,11 +62,12 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::QueryContinueDrag(
 {
     if (fEscapePressed || ((m_initial_key_state & MK_LBUTTON) && (grfKeyState & MK_RBUTTON))) {
         return DRAGDROP_S_CANCEL;
-    } else if (((m_initial_key_state & MK_LBUTTON) && !(grfKeyState & MK_LBUTTON))
+    }
+    if (((m_initial_key_state & MK_LBUTTON) && !(grfKeyState & MK_LBUTTON))
         || ((m_initial_key_state & MK_RBUTTON) && !(grfKeyState & MK_RBUTTON))) {
         return DRAGDROP_S_DROP;
-    } else
-        return S_OK;
+    }
+    return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::GiveFeedback(DWORD dwEffect)

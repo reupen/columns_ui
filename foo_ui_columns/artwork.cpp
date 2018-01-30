@@ -49,22 +49,22 @@ enum track_mode_t {
     track_selection,
 };
 
-const bool g_track_mode_includes_now_playing(t_size mode)
+bool g_track_mode_includes_now_playing(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
 
-const bool g_track_mode_includes_plalist(t_size mode)
+bool g_track_mode_includes_plalist(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-const bool g_track_mode_includes_auto(t_size mode)
+bool g_track_mode_includes_auto(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-const bool g_track_mode_includes_selection(t_size mode)
+bool g_track_mode_includes_selection(t_size mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
@@ -798,12 +798,11 @@ const char* artwork_panel_t::menu_node_artwork_type::get_name(t_size source)
 {
     if (source == 0)
         return "Front cover";
-    else if (source == 1)
+    if (source == 1)
         return "Back cover";
-    else if (source == 2)
+    if (source == 2)
         return "Disc cover";
-    else
-        return "Artist picture";
+    return "Artist picture";
 }
 
 artwork_panel_t::menu_node_source_popup::menu_node_source_popup(artwork_panel_t* p_wnd)

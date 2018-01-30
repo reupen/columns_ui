@@ -690,7 +690,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
         m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font);
 
-        if (0 == g_windows.size())
+        if (g_windows.empty())
             g_message_window.create(nullptr);
         g_windows.push_back(this);
 
@@ -709,7 +709,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case WM_DESTROY: {
         g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
-        if (g_windows.size() == 0)
+        if (g_windows.empty())
             g_message_window.destroy();
 
         m_font_change_info.m_default_font.release();
@@ -1047,22 +1047,22 @@ void item_details_t::on_volume_change(float p_new_val) {}
 
 void item_details_t::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
 
-const bool item_details_t::g_track_mode_includes_selection(t_size mode)
+bool item_details_t::g_track_mode_includes_selection(t_size mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-const bool item_details_t::g_track_mode_includes_auto(t_size mode)
+bool item_details_t::g_track_mode_includes_auto(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-const bool item_details_t::g_track_mode_includes_plalist(t_size mode)
+bool item_details_t::g_track_mode_includes_plalist(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-const bool item_details_t::g_track_mode_includes_now_playing(t_size mode)
+bool item_details_t::g_track_mode_includes_now_playing(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
@@ -1184,10 +1184,10 @@ const char* item_details_t::menu_node_alignment::get_name(t_size source)
 {
     if (source == 0)
         return "Left";
-    else if (source == 1)
+    if (source == 1)
         return "Centre";
-    else /*if (source == 2)*/
-        return "Right";
+    /*if (source == 2)*/
+    return "Right";
 }
 
 item_details_t::menu_node_source_popup::menu_node_source_popup(item_details_t* p_wnd)

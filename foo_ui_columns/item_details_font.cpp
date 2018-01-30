@@ -65,7 +65,8 @@ bool titleformat_hook_change_font::process_function(titleformat_text_out* p_out,
         }
         }
         return true;
-    } else if (!stricmp_utf8_ex(p_name, p_name_length, "reset_font", pfc_infinite)) {
+    }
+    if (!stricmp_utf8_ex(p_name, p_name_length, "reset_font", pfc_infinite)) {
         switch (p_params->get_param_count()) {
         case 0: {
             p_out->write(titleformat_inputtypes::unknown,
@@ -77,8 +78,8 @@ bool titleformat_hook_change_font::process_function(titleformat_text_out* p_out,
         }
         }
         return true;
-    } else
-        return false;
+    }
+    return false;
 }
 
 bool titleformat_hook_change_font::process_field(
@@ -89,7 +90,8 @@ bool titleformat_hook_change_font::process_field(
         p_out->write(titleformat_inputtypes::unknown, m_default_font_face);
         p_found_flag = true;
         return true;
-    } else if (!stricmp_utf8_ex(p_name, p_name_length, "default_font_size", pfc_infinite)) {
+    }
+    if (!stricmp_utf8_ex(p_name, p_name_length, "default_font_size", pfc_infinite)) {
         p_out->write_int(titleformat_inputtypes::unknown, m_default_font_size);
         p_found_flag = true;
         return true;

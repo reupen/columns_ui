@@ -64,7 +64,7 @@ const mainmenu_command_t* const g_mainmenu_commands_view_layout_commands_part[]
 
 class mainmenu_command_list_playlist_font_part_t {
 public:
-    static const mainmenu_command_t* const* const get_ptr() { return &g_mainmenu_commands_playlist_font_part[0]; }
+    static const mainmenu_command_t* const* get_ptr() { return &g_mainmenu_commands_playlist_font_part[0]; }
     static t_size get_size() { return tabsize(g_mainmenu_commands_playlist_font_part); }
     static GUID get_parent() { return mainmenu_groups_columns::view_playlist_popup; }
     static t_uint32 get_sort_priority() { return mainmenu_commands::sort_priority_dontcare; }
@@ -72,7 +72,7 @@ public:
 
 class mainmenu_command_list_view_columns_part_t {
 public:
-    static const mainmenu_command_t* const* const get_ptr() { return &g_mainmenu_commands_view_columns_part[0]; }
+    static const mainmenu_command_t* const* get_ptr() { return &g_mainmenu_commands_view_columns_part[0]; }
     static t_size get_size() { return tabsize(g_mainmenu_commands_view_columns_part); }
     static GUID get_parent() { return mainmenu_groups_columns::view_columns_part; }
     static t_uint32 get_sort_priority() { return mainmenu_commands::sort_priority_base + 1; }
@@ -80,7 +80,7 @@ public:
 
 class mainmenu_command_list_playlist_misc_part_t {
 public:
-    static const mainmenu_command_t* const* const get_ptr() { return &g_mainmenu_commands_playlist_misc_part[0]; }
+    static const mainmenu_command_t* const* get_ptr() { return &g_mainmenu_commands_playlist_misc_part[0]; }
     static t_size get_size() { return tabsize(g_mainmenu_commands_playlist_misc_part); }
     static GUID get_parent() { return mainmenu_groups_columns::playlist_misc_part; }
     static t_uint32 get_sort_priority() { return mainmenu_commands::sort_priority_dontcare; }
@@ -88,7 +88,7 @@ public:
 
 class mainmenu_command_list_view_layout_commands_part_t {
 public:
-    static const mainmenu_command_t* const* const get_ptr()
+    static const mainmenu_command_t* const* get_ptr()
     {
         return &g_mainmenu_commands_view_layout_commands_part[0];
     }

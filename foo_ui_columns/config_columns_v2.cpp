@@ -34,7 +34,7 @@ public:
     void set_detail_enabled(HWND wnd, BOOL show)
     {
         if (show == FALSE) {
-            pfc::vartoggle_t<bool>(initialising, true);
+            pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
             uSendDlgItemMessageText(wnd, IDC_NAME, WM_SETTEXT, 0, "");
             uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, "");
@@ -201,7 +201,7 @@ public:
     void set_detail_enabled(HWND wnd, BOOL show)
     {
         if (show == FALSE) {
-            pfc::vartoggle_t<bool>(initialising, true);
+            pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
             uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, "");
             SendDlgItemMessage(wnd, IDC_CUSTOM_SORT, BM_SETCHECK, 0, 0);
