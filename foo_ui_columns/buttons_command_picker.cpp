@@ -35,9 +35,8 @@ bool command_picker_data::__populate_mainmenu_dynamic_recur(
                 subfull.add_string(name);
             }
 
-            mainmenu_node::ptr ptr_child;
             for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
-                ptr_child = ptr_node->get_child(i);
+                mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
                 __populate_mainmenu_dynamic_recur(data, ptr_child, subfull, false);
             }
         }
@@ -61,8 +60,8 @@ bool command_picker_data::__populate_commands_recur(
                 subfull.add_byte('/');
             subfull.add_string(name);
 
-            unsigned child, child_count = p_node->get_children_count();
-            for (child = 0; child < child_count; child++) {
+            unsigned child_count = p_node->get_children_count();
+            for (unsigned child = 0; child < child_count; child++) {
                 contextmenu_item_node* p_child = p_node->get_child(child);
                 __populate_commands_recur(data, subfull, p_child, false);
             }
@@ -99,11 +98,12 @@ void command_picker_data::populate_commands()
         service_enum_t<contextmenu_item> e;
         service_ptr_t<contextmenu_item> ptr;
 
-        unsigned p_item_index = 0, p_service_item_index; //,n=0;
+        unsigned p_item_index = 0; //,n=0;
         while (e.next(ptr)) {
             {
                 unsigned p_service_item_count = ptr->get_num_items();
-                for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
+                for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
+                     p_service_item_index++) {
                     pfc::ptrholder_t<contextmenu_item_node_root> p_node(ptr->instantiate_item(
                         p_service_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list));
 
@@ -135,13 +135,14 @@ void command_picker_data::populate_commands()
         service_enum_t<mainmenu_commands> e;
         service_ptr_t<mainmenu_commands> ptr;
 
-        unsigned p_item_index = 0, p_service_item_index; //,n=0;
+        unsigned p_item_index = 0; //,n=0;
         while (e.next(ptr)) {
             service_ptr_t<mainmenu_commands_v2> ptr_v2;
             ptr->service_query_t(ptr_v2);
             {
                 unsigned p_service_item_count = ptr->get_command_count();
-                for (p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
+                for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
+                     p_service_item_index++) {
                     command_data data;
                     data.m_guid = ptr->get_command(p_service_item_index);
                     pfc::string8 name, full;
@@ -154,8 +155,8 @@ void command_picker_data::populate_commands()
                             if (menu_helpers::maingroupname_from_guid(GUID(parent), parentname, parent))
                                 levels.insert_item(parentname, 0);
                         }
-                        unsigned i, count = levels.get_count();
-                        for (i = 0; i < count; i++) {
+                        unsigned count = levels.get_count();
+                        for (unsigned i = 0; i < count; i++) {
                             full.add_string(levels[i]);
                             full.add_byte('/');
                         }
@@ -192,8 +193,8 @@ void command_picker_data::populate_commands()
             }
         }
     }
-    unsigned n, count = SendMessage(wnd_command, LB_GETCOUNT, 0, 0);
-    for (n = 0; n < count; n++) {
+    unsigned count = SendMessage(wnd_command, LB_GETCOUNT, 0, 0);
+    for (unsigned n = 0; n < count; n++) {
         LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, n, 0);
         command_data* p_data = ((command_data*)ret);
 

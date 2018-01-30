@@ -84,9 +84,8 @@ public:
 
     void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
     {
-        t_size i;
         items.set_count(count);
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             items[i].m_subitems.set_size(2);
             items[i].m_subitems[0] = filter_panel::cfg_field_list[base + i].m_name;
             items[i].m_subitems[1] = filter_panel::cfg_field_list[base + i].m_field;

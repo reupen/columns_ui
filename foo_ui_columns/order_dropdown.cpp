@@ -131,14 +131,8 @@ const TCHAR* order_extension::class_name = _T("{ABA09E7E-9C95-443e-BDFC-049D66B3
 
 LRESULT WINAPI order_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    order_extension* p_this;
-    LRESULT rv;
-
-    p_this = reinterpret_cast<order_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-
-    rv = p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-
-    return rv;
+    auto p_this = reinterpret_cast<order_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
 LRESULT order_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -162,9 +156,9 @@ LRESULT order_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             HDC dc = GetDC(wnd_combo);
             HFONT font_old = SelectFont(dc, font_icon);
-            unsigned n, count = playlist_api->playback_order_get_count();
+            unsigned count = playlist_api->playback_order_get_count();
 
-            for (n = 0; n < count; n++) {
+            for (unsigned n = 0; n < count; n++) {
                 const char* item = playlist_api->playback_order_get_name(n);
                 uSendMessageText(wnd_combo, CB_ADDSTRING, 0, item);
                 t_size cx = uih::get_text_width(dc, item, strlen(item));
@@ -210,9 +204,9 @@ LRESULT order_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uComboBox_GetText(wnd_combo, sel, temp);
         static_api_ptr_t<playlist_manager> playlist_api;
 
-        unsigned n, count = playlist_api->playback_order_get_count();
+        unsigned count = playlist_api->playback_order_get_count();
 
-        for (n = 0; n < count; n++) {
+        for (unsigned n = 0; n < count; n++) {
             if (!strcmp(playlist_api->playback_order_get_name(n), temp)) {
                 playlist_api->playback_order_set_active(n);
                 break;

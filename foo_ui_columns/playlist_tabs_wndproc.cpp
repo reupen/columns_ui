@@ -295,8 +295,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
                         recycler_ids.set_count(recycler_count);
                         HMENU recycler_popup = CreatePopupMenu();
                         pfc::string8_fast_aggressive temp;
-                        t_size i;
-                        for (i = 0; i < recycler_count; i++) {
+                        for (t_size i = 0; i < recycler_count; i++) {
                             playlist_api->recycler_get_name(i, temp);
                             recycler_ids[i] = playlist_api->recycler_get_id(i); // Menu Message Loop !
                             uAppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_BASE + i, temp);

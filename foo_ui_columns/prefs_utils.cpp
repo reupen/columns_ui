@@ -119,7 +119,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_ite
 {
     HWND wnd_combo = GetDlgItem(wnd, ID);
 
-    unsigned n, count = p_cache.get_count();
+    unsigned count = p_cache.get_count();
     pfc::string8_fast_aggressive temp;
     unsigned idx_none = 0;
     if (insert_none) {
@@ -130,7 +130,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_ite
     unsigned sel = -1;
     pfc::string8 desc;
 
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         unsigned idx = uSendMessageText(wnd_combo, CB_ADDSTRING, 0, p_cache.get_item(n).m_name);
         SendMessage(wnd_combo, CB_SETITEMDATA, idx, n);
 

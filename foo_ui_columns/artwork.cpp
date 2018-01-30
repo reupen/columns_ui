@@ -165,8 +165,8 @@ LRESULT artwork_panel_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         m_artwork_loader = new artwork_reader_manager_t; // pfc::rcnew_t<artwork_reader_t>();
         //        m_nowplaying_artwork_loader.initialise(this);
-        t_size i, count = tabsize(g_artwork_types);
-        for (i = 0; i < count; i++)
+        t_size count = tabsize(g_artwork_types);
+        for (t_size i = 0; i < count; i++)
             m_artwork_loader->AddType(g_artwork_types[i]);
         on_repository_change();
         m_artwork_loader->initialise();
@@ -206,8 +206,8 @@ LRESULT artwork_panel_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case WM_LBUTTONDOWN: {
         bool b_found = false;
-        t_size i, count = tabsize(g_artwork_types);
-        for (i = 1; i < count; i++) {
+        t_size count = tabsize(g_artwork_types);
+        for (t_size i = 1; i < count; i++) {
             if (refresh_image((m_position + i) % (tabsize(g_artwork_types)))) {
                 m_position = (m_position + i) % (tabsize(g_artwork_types));
                 b_found = true;
@@ -388,10 +388,10 @@ void artwork_panel_t::on_completion(unsigned p_code)
 {
     if (p_code == 1 && get_wnd()) {
         bool b_found = false;
-        t_size i, count = tabsize(g_artwork_types);
+        t_size count = tabsize(g_artwork_types);
         if (m_lock_type)
             count = min(1, count);
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             if (refresh_image((m_position + i) % (tabsize(g_artwork_types)))) {
                 m_position = (m_position + i) % (tabsize(g_artwork_types));
                 b_found = true;

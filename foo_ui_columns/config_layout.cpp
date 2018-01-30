@@ -210,8 +210,7 @@ class tab_layout_new : public preferences_tab {
     static HTREEITEM tree_view_get_child_by_index(HWND wnd_tv, HTREEITEM ti, unsigned index)
     {
         HTREEITEM item = TreeView_GetChild(wnd_tv, ti);
-        unsigned n;
-        for (n = 0; n < index && item; n++)
+        for (unsigned n = 0; n < index && item; n++)
             item = TreeView_GetNextSibling(wnd_tv, item);
         return item;
     }
@@ -266,8 +265,8 @@ class tab_layout_new : public preferences_tab {
             service_ptr_t<uie::splitter_window> p_splitter;
             if (p_wnd.is_valid() && p_wnd->service_query_t(p_splitter)) {
                 p_node->m_splitter = p_splitter;
-                unsigned n, count = p_splitter->get_panel_count();
-                for (n = 0; n < count; n++) {
+                unsigned count = p_splitter->get_panel_count();
+                for (unsigned n = 0; n < count; n++) {
                     // pfc::rcptr_t<uie::splitter_item_ptr> p_child = pfc::rcnew_t<uie::splitter_item_ptr>();
                     node_ptr p_child_node = new node;
                     p_node->m_children.insert_item(p_child_node, n);
@@ -475,10 +474,10 @@ class tab_layout_new : public preferences_tab {
     static void move_item(HWND wnd, HTREEITEM ti, bool up)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-        TVITEMEX item, itemparent;
+        TVITEMEX item;
         memset(&item, 0, sizeof(TVITEMEX));
         item.mask = TVIF_PARAM | TVIF_HANDLE;
-        itemparent = item;
+        TVITEMEX itemparent = item;
         item.hItem = ti;
         HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
         itemparent.hItem = ti_parent;
@@ -515,10 +514,10 @@ class tab_layout_new : public preferences_tab {
     static void switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-        TVITEMEX item, itemparent;
+        TVITEMEX item;
         memset(&item, 0, sizeof(TVITEMEX));
         item.mask = TVIF_PARAM | TVIF_HANDLE;
-        itemparent = item;
+        TVITEMEX itemparent = item;
         item.hItem = ti;
         HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
         itemparent.hItem = ti_parent;
@@ -533,13 +532,13 @@ class tab_layout_new : public preferences_tab {
                 uie::window_ptr window;
                 service_ptr_t<uie::splitter_window> splitter;
                 if (uie::window::create_by_guid(p_guid, window) && window->service_query_t(splitter)) {
-                    unsigned n, count = min(p_node->m_children.get_count(), splitter->get_maximum_panel_count());
+                    unsigned count = min(p_node->m_children.get_count(), splitter->get_maximum_panel_count());
                     if (count == p_node->m_children.get_count()
                         || MessageBox(wnd,
                                _T("The number of child items will not fit in the selected splitter type. Continue?"),
                                _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
                             == IDYES) {
-                        for (n = 0; n < count; n++)
+                        for (unsigned n = 0; n < count; n++)
                             splitter->add_panel(p_node->m_children[n]->m_item->get_ptr());
                         stream_writer_memblock conf;
                         try {
@@ -637,10 +636,10 @@ class tab_layout_new : public preferences_tab {
         if (ti) {
             HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
             if (ti_parent) {
-                TVITEMEX item, itemparent;
+                TVITEMEX item;
                 memset(&item, 0, sizeof(TVITEMEX));
                 item.mask = TVIF_PARAM | TVIF_HANDLE;
-                itemparent = item;
+                TVITEMEX itemparent = item;
                 itemparent.hItem = ti_parent;
                 item.hItem = ti;
                 if (TreeView_GetItem(wnd_tv, &item) && TreeView_GetItem(wnd_tv, &itemparent)) {
@@ -675,10 +674,10 @@ class tab_layout_new : public preferences_tab {
         if (ti) {
             HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
             if (ti_parent) {
-                TVITEMEX item, itemparent;
+                TVITEMEX item;
                 memset(&item, 0, sizeof(TVITEMEX));
                 item.mask = TVIF_PARAM | TVIF_HANDLE;
-                itemparent = item;
+                TVITEMEX itemparent = item;
                 itemparent.hItem = ti_parent;
                 item.hItem = ti;
                 if (TreeView_GetItem(wnd_tv, &item) && TreeView_GetItem(wnd_tv, &itemparent)) {
@@ -719,8 +718,8 @@ class tab_layout_new : public preferences_tab {
     }
     static void initialise_presets(HWND wnd)
     {
-        unsigned n, count = cfg_layout.get_presets().get_count();
-        for (n = 0; n < count; n++) {
+        unsigned count = cfg_layout.get_presets().get_count();
+        for (unsigned n = 0; n < count; n++) {
             uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].m_name);
         }
         ComboBox_SetCurSel(GetDlgItem(wnd, IDC_PRESETS), g_active_preset);
@@ -1152,8 +1151,8 @@ class tab_layout_new : public preferences_tab {
                         if (!ti_parent) {
                             HMENU menu_change_base = CreatePopupMenu();
                             HMENU popup = nullptr;
-                            unsigned n, count = panels.get_count();
-                            for (n = 0; n < count; n++) {
+                            unsigned count = panels.get_count();
+                            for (unsigned n = 0; n < count; n++) {
                                 if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
                                     if (n)
                                         uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, (UINT)popup,
@@ -1173,8 +1172,8 @@ class tab_layout_new : public preferences_tab {
                             && p_node->m_children.get_count() < p_splitter->get_maximum_panel_count()) {
                             HMENU menu_change_base = CreatePopupMenu();
                             HMENU popup = nullptr;
-                            unsigned n, count = panels.get_count(), last = 0;
-                            for (n = 0; n < count; n++) {
+                            unsigned count = panels.get_count(), last = 0;
+                            for (unsigned n = 0; n < count; n++) {
                                 if (!panels[n].prefer_multiple_instances || !g_node_root->have_item(panels[n].guid)) {
                                     if (!popup || uStringCompare(panels[last].category, panels[n].category)) {
                                         if (popup)
@@ -1193,9 +1192,9 @@ class tab_layout_new : public preferences_tab {
                             ID_SWITCH_BASE += count;
                         }
                         if (p_splitter.is_valid()) {
-                            unsigned n, count_exts = panels.get_count();
+                            unsigned count_exts = panels.get_count();
                             HMENU menu_insert = CreatePopupMenu();
-                            for (n = 0; n < count_exts; n++) {
+                            for (unsigned n = 0; n < count_exts; n++) {
                                 if (panels[n].type & uie::type_splitter) {
                                     uAppendMenu(menu_insert, (MF_STRING), ID_SWITCH_BASE + n, panels[n].name);
                                 }

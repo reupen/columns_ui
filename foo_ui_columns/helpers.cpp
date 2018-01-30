@@ -21,8 +21,7 @@ void g_compare_file_with_bytes(
 {
     try {
         b_same = false;
-        t_filesize bytes;
-        bytes = p1->get_size(p_abort);
+        t_filesize bytes = p1->get_size(p_abort);
 
         if (bytes == p2.get_size()) {
             enum { BUFSIZE = 1024 * 1024 };
@@ -31,7 +30,6 @@ void g_compare_file_with_bytes(
             temp.set_size(size);
             temp2.set_size(size);
 
-            unsigned io_bytes_done;
             t_filesize done = 0;
             while (done < bytes) {
                 if (p_abort.is_aborting())
@@ -42,7 +40,7 @@ void g_compare_file_with_bytes(
                     delta64 = BUFSIZE;
                 auto delta = (unsigned)delta64;
 
-                io_bytes_done = p1->read(temp.get_ptr(), delta, p_abort);
+                unsigned io_bytes_done = p1->read(temp.get_ptr(), delta, p_abort);
 
                 if (io_bytes_done <= 0)
                     break;

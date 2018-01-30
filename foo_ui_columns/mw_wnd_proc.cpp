@@ -360,7 +360,6 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ScreenToClient(g_rebar_window->wnd_rebar, &pt_client);
 
                 unsigned IDM_EXT_BASE = IDM_BASE + 1;
-                unsigned n;
 
                 HWND child = RealChildWindowFromPoint(g_rebar_window->wnd_rebar, pt_client);
 
@@ -400,7 +399,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 unsigned count_exts = moo.get_count();
                 HMENU popup = nullptr;
-                for (n = 0; n < count_exts; n++) {
+                for (unsigned n = 0; n < count_exts; n++) {
                     if (!n || uStringCompare(moo[n - 1].category, moo[n].category)) {
                         if (n)
                             uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, moo[n - 1].category);

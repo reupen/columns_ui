@@ -4,8 +4,7 @@
 void playlist_view::create_inline_edit_v2(t_uint32 index, t_uint32 count, unsigned column)
 {
     pfc::list_t<t_uint32> temp;
-    t_size i;
-    for (i = 0; i < count; i++)
+    for (t_size i = 0; i < count; i++)
         temp.add_item(index + i);
     create_inline_edit_v2(temp, column);
 }
@@ -88,8 +87,8 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
     {
         pfc::array_t<int, pfc::alloc_fast_aggressive> widths;
         get_column_widths(widths);
-        unsigned n, count = widths.get_size();
-        for (n = 0; n < count && n < column; n++) {
+        unsigned count = widths.get_size();
+        for (unsigned n = 0; n < count && n < column; n++) {
             x += widths[n];
         }
     }
@@ -127,16 +126,13 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
     pfc::array_t<file_info_impl> infos;
     pfc::ptr_list_t<const char> ptrs;
     infos.set_count(indices_count);
-    // mask.set_count(indices_count);
-    t_size i;
 
-    pfc::string8 meta;
-    meta = g_get_columns()[g_get_cache().active_column_active_to_actual(column)]->edit_field;
+    pfc::string8 meta = g_get_columns()[g_get_cache().active_column_active_to_actual(column)]->edit_field;
     m_edit_field = meta;
 
     bool matching = true;
 
-    for (i = 0; i < indices_count; i++) {
+    for (t_size i = 0; i < indices_count; i++) {
         if (playlist_api->activeplaylist_get_item_handle(m_edit_items[i], indices[i])) {
             // mask[i] = true;
             m_edit_items[i]->get_info(infos[i]);
@@ -238,11 +234,11 @@ void playlist_view::save_inline_edit_v2()
             pfc::list_t<file_info_impl> infos;
             pfc::list_t<bool> mask;
             pfc::ptr_list_t<file_info> infos_ptr;
-            t_size i, count = ptrs.get_count();
+            t_size count = ptrs.get_count();
             mask.set_count(count);
             infos.set_count(count);
             // infos.set_count(count);
-            for (i = 0; i < count; i++) {
+            for (t_size i = 0; i < count; i++) {
                 assert(ptrs[i].is_valid());
                 mask[i] = !ptrs[i]->get_info(infos[i]);
                 infos_ptr.add_item(&infos[i]);
@@ -268,14 +264,8 @@ void playlist_view::save_inline_edit_v2()
 
 LRESULT WINAPI playlist_view::g_inline_edit_hook_v2(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    playlist_view* p_this;
-    LRESULT rv;
-
-    p_this = reinterpret_cast<playlist_view*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-
-    rv = p_this ? p_this->on_inline_edit_message_v2(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-
-    return rv;
+    auto p_this = reinterpret_cast<playlist_view*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    return p_this ? p_this->on_inline_edit_message_v2(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
 LRESULT playlist_view::on_inline_edit_message_v2(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

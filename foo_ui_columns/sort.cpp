@@ -11,8 +11,8 @@ void create_image_list() /*sort arrows*/
 
     DeleteObject(g_down);
 
-    unsigned n, pcount = playlist_view::list_playlist.get_count();
-    for (n = 0; n < pcount; n++) {
+    unsigned pcount = playlist_view::list_playlist.get_count();
+    for (unsigned n = 0; n < pcount; n++) {
         playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
         if (p_playlist->wnd_header) {
             Header_SetImageList(p_playlist->wnd_header, g_imagelist);

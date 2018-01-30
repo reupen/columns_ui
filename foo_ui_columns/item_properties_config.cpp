@@ -19,8 +19,8 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
         GetClientRect(wnd_lv, &rc);
         uih::list_view_insert_column_text(wnd_lv, 0, L"", RECT_CX(rc));
 
-        t_size i, count = tabsize(g_info_sections);
-        for (i = 0; i < count; i++) {
+        t_size count = tabsize(g_info_sections);
+        for (t_size i = 0; i < count; i++) {
             uih::list_view_insert_item_text(wnd_lv, i, 0, g_info_sections[i].name);
             ListView_SetCheckState(wnd_lv, i, (m_info_sections_mask & (1 << g_info_sections[i].id)) ? TRUE : FALSE);
         }

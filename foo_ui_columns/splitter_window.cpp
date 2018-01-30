@@ -10,8 +10,7 @@ gdi_object_t<HFONT>::ptr_t splitter_window_impl::g_font_menu_vertical;
 void splitter_window_impl::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index <= m_panels.get_count()) {
-        pfc::refcounted_object_ptr_t<panel> temp;
-        temp = new panel;
+        pfc::refcounted_object_ptr_t<panel> temp = new panel;
         temp->set_from_splitter_item(p_item);
         m_panels.insert_item(temp, index);
 
@@ -26,8 +25,7 @@ void splitter_window_impl::replace_panel(unsigned index, const uie::splitter_ite
     if (index < m_panels.get_count()) {
         if (get_wnd())
             m_panels[index]->destroy();
-        pfc::refcounted_object_ptr_t<panel> temp;
-        temp = new panel;
+        pfc::refcounted_object_ptr_t<panel> temp = new panel;
         temp->set_from_splitter_item(p_item);
         m_panels.replace_item(index, temp);
 
@@ -38,8 +36,8 @@ void splitter_window_impl::replace_panel(unsigned index, const uie::splitter_ite
 
 void splitter_window_impl::destroy_children()
 {
-    unsigned n, count = m_panels.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = m_panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
         pfc::refcounted_object_ptr_t<panel> pal = m_panels[n];
         if (pal->m_child.is_valid()) {
             //            pal->m_child_data.set_size(0);
@@ -66,8 +64,7 @@ void splitter_window_impl::refresh_children()
     new_items.fill_null();
     for (n = 0; n < count; n++) {
         if (!m_panels[n]->m_wnd) {
-            uie::window_ptr p_ext;
-            p_ext = m_panels[n]->m_child;
+            uie::window_ptr p_ext = m_panels[n]->m_child;
 
             bool b_new = false;
 
@@ -173,8 +170,8 @@ void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
 
     HDWP dwp = BeginDeferWindowPos(m_panels.get_count());
     if (dwp) {
-        unsigned size_cumulative = 0, n;
-        for (n = 0; n < count; n++) {
+        unsigned size_cumulative = 0;
+        for (unsigned n = 0; n < count; n++) {
             if (m_panels[n]->m_child.is_valid() && m_panels[n]->m_wnd) {
                 unsigned size = sizes[n];
 
@@ -202,8 +199,8 @@ void splitter_window_impl::on_size_changed()
 
 bool splitter_window_impl::find_by_divider_pt(POINT& pt, unsigned& p_out)
 {
-    unsigned n, count = m_panels.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = m_panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
         pfc::refcounted_object_ptr_t<panel> p_item = m_panels.get_item(n);
 
         if (p_item->m_wnd_child) {
@@ -242,9 +239,9 @@ void splitter_window_impl::save_sizes(unsigned width, unsigned height)
 {
     pfc::list_t<unsigned> sizes;
     get_panels_sizes(width, height, sizes);
-    unsigned n, count = m_panels.get_count();
+    unsigned count = m_panels.get_count();
 
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         if (!m_panels[n]->m_hidden)
             m_panels[n]->m_size = sizes[n] - get_panel_divider_size(n);
     }
@@ -675,8 +672,8 @@ void splitter_window_impl::get_supported_panels(
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
         (static_cast<splitter_host_impl*>(ptr.get_ptr()))->set_window_ptr(this);
-    t_size i, count = p_windows.get_count();
-    for (i = 0; i < count; i++)
+    t_size count = p_windows.get_count();
+    for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
@@ -688,8 +685,8 @@ bool splitter_window_impl::is_point_ours(
             p_hierarchy.add_item(this);
             return true;
         }
-        t_size i, count = m_panels.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = m_panels.get_count();
+        for (t_size i = 0; i < count; i++) {
             uie::splitter_window_v2_ptr sptr;
             if (m_panels[i]->m_child.is_valid()) {
                 if (m_panels[i]->m_child->service_query_t(sptr)) {
@@ -1105,8 +1102,8 @@ void splitter_window_impl::splitter_host_impl::on_size_limit_change(HWND wnd, un
 void splitter_window_impl::splitter_host_impl::get_children(pfc::list_base_t<uie::window::ptr>& p_out)
 {
     if (m_this.is_valid()) {
-        t_size i, count = m_this->m_panels.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = m_this->m_panels.get_count();
+        for (t_size i = 0; i < count; i++) {
             if (m_this->m_panels[i]->m_child.is_valid())
                 p_out.add_item(m_this->m_panels[i]->m_child);
         }

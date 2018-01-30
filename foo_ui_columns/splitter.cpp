@@ -30,8 +30,8 @@ void g_get_panel_list(uie::window_info_list_simple& p_out, uie::window_host_ptr&
 void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple& panels, UINT base)
 {
     HMENU popup = nullptr;
-    unsigned n, count = panels.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
             if (n)
                 uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, panels[n - 1].category);
@@ -45,8 +45,8 @@ void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple& panels
 
 void g_append_menu_splitters(HMENU menu, const uie::window_info_list_simple& panels, UINT base)
 {
-    unsigned n, count = panels.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (panels[n].type & uie::type_splitter)
             uAppendMenu(menu, (MF_STRING), base + n, panels[n].name);
     }
@@ -130,14 +130,12 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, uih::TranslucentFillWi
                         p_container->remove_panel(index);
                     } else if (cmd >= ID_CHANGE_BASE && cmd < panels.get_count() + ID_CHANGE_BASE) {
                         t_size panel_index = cmd - ID_CHANGE_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         p_container->replace_panel(index, si.get_ptr());
                     } else if (cmd >= ID_ADD_BASE && cmd < panels.get_count() + ID_ADD_BASE) {
                         t_size panel_index = cmd - ID_ADD_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         p_splitter->add_panel(si.get_ptr());
                     } else if (cmd >= ID_CHANGE_SPLITTER_BASE && cmd < panels.get_count() + ID_CHANGE_SPLITTER_BASE) {
@@ -147,14 +145,14 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, uih::TranslucentFillWi
                         service_ptr_t<uie::splitter_window> splitter;
                         if (uie::window::create_by_guid(panels[panel_index].guid, window)
                             && window->service_query_t(splitter)) {
-                            unsigned n, count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
+                            unsigned count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
                             if (count == p_splitter->get_panel_count()
                                 || MessageBox(wnd,
                                        _T("The number of child items will not fit in the selected splitter type. ")
                                        _T("Continue?"),
                                        _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
                                     == IDYES) {
-                                for (n = 0; n < count; n++) {
+                                for (unsigned n = 0; n < count; n++) {
                                     uie::splitter_item_ptr ptr;
                                     p_splitter->get_panel(n, ptr);
                                     splitter->add_panel(ptr.get_ptr());
@@ -177,8 +175,7 @@ void g_run_live_edit_contextmenu(HWND wnd, POINT pt_menu, uih::TranslucentFillWi
 
                     } else if (cmd >= ID_PARENT_ADD_BASE && cmd < panels.get_count() + ID_PARENT_ADD_BASE) {
                         t_size panel_index = cmd - ID_PARENT_ADD_BASE;
-                        uie::splitter_item_ptr si;
-                        si = new uie::splitter_item_simple_t;
+                        uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
                         si->set_panel_guid(panels[panel_index].guid);
                         p_container->add_panel(si.get_ptr());
                     }

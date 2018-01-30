@@ -82,9 +82,9 @@ BOOL CALLBACK preferences_tab_impl::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LP
         Button_SetCheck(GetDlgItem(wnd, IDC_GROUPING), cfg_grouping ? BST_CHECKED : BST_UNCHECKED);
         uih::list_view_insert_column_text(list, 0, _T("Script"), 400);
 
-        unsigned n, m = g_groups.get_groups().get_count();
+        unsigned m = g_groups.get_groups().get_count();
         pfc::string8_fastalloc temp;
-        for (n = 0; n < m; n++) {
+        for (unsigned n = 0; n < m; n++) {
             uih::list_view_insert_item_text(list, n, 0, g_groups.get_groups()[n].string.get_ptr());
         }
     }

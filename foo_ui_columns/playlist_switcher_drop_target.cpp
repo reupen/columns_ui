@@ -349,8 +349,8 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
 
                         t_size index_activate = NULL;
 
-                        t_size i, count = data.get_entry_count();
-                        for (i = 0; i < count; i++) {
+                        t_size count = data.get_entry_count();
+                        for (t_size i = 0; i < count; i++) {
                             pfc::string8 name;
                             metadb_handle_list handles;
                             mem_block_container_impl sidedata;

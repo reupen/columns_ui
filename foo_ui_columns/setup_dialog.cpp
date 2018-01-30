@@ -61,8 +61,8 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         LVITEM lvi;
         memset(&lvi, 0, sizeof(LVITEM));
         lvi.mask = LVIF_TEXT;
-        t_size i, count = m_presets.get_count();
-        for (i = 0; i < count; i++) {
+        t_size count = m_presets.get_count();
+        for (t_size i = 0; i < count; i++) {
             uih::list_view_insert_item_text(wnd_lv, i, 0, m_presets[i].m_name, false);
         }
         ComboBox_InsertString(wnd_theming, 0, L"No");

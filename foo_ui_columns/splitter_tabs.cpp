@@ -142,8 +142,8 @@ void splitter_window_tabs_impl::get_supported_panels(
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
         (static_cast<splitter_window_tabs_impl::splitter_host_impl*>(ptr.get_ptr()))->set_window_ptr(this);
-    t_size i, count = p_windows.get_count();
-    for (i = 0; i < count; i++)
+    t_size count = p_windows.get_count();
+    for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
@@ -151,8 +151,8 @@ void clip_minmaxinfo(MINMAXINFO& mmi);
 
 bool splitter_window_tabs_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_out)
 {
-    unsigned n, count = get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (get_item(n)->m_wnd == wnd) {
             p_out = n;
             return true;
@@ -363,8 +363,7 @@ void splitter_window_tabs_impl::set_config(stream_reader* config, t_size p_size,
             unsigned count;
             config->read_lendian_t(count, p_abort);
 
-            unsigned n;
-            for (n = 0; n < count; n++) {
+            for (unsigned n = 0; n < count; n++) {
                 pfc::refcounted_object_ptr_t<panel> temp = new panel;
                 temp->read(config, p_abort);
                 m_panels.add_item(temp);
@@ -375,10 +374,10 @@ void splitter_window_tabs_impl::set_config(stream_reader* config, t_size p_size,
 void splitter_window_tabs_impl::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t((t_uint32)stream_version_current, p_abort);
-    unsigned n, count = m_panels.get_count();
+    unsigned count = m_panels.get_count();
     out->write_lendian_t(m_active_tab, p_abort);
     out->write_lendian_t(count, p_abort);
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         m_panels[n]->write(out, p_abort);
     }
 };
@@ -386,10 +385,10 @@ void splitter_window_tabs_impl::get_config(stream_writer* out, abort_callback& p
 void splitter_window_tabs_impl::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t((t_uint32)stream_version_current, p_abort);
-    unsigned n, count = m_panels.get_count();
+    unsigned count = m_panels.get_count();
     p_writer->write_lendian_t(m_active_tab, p_abort);
     p_writer->write_lendian_t(count, p_abort);
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         m_panels[n]->_export(p_writer, p_abort);
     }
 };
@@ -405,8 +404,7 @@ void splitter_window_tabs_impl::import_config(stream_reader* p_reader, t_size p_
         p_reader->read_lendian_t(m_active_tab, p_abort);
         p_reader->read_lendian_t(count, p_abort);
 
-        unsigned n;
-        for (n = 0; n < count; n++) {
+        for (unsigned n = 0; n < count; n++) {
             pfc::refcounted_object_ptr_t<panel> temp = new panel;
             temp->import(p_reader, p_abort);
             m_panels.add_item(temp);
@@ -426,9 +424,9 @@ void splitter_window_tabs_impl::update_size_limits()
 {
     m_size_limits = uie::size_limit_t();
 
-    unsigned n, count = m_active_panels.get_count();
+    unsigned count = m_active_panels.get_count();
 
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         MINMAXINFO mmi;
         memset(&mmi, 0, sizeof(MINMAXINFO));
         mmi.ptMaxTrackSize.x = MAXLONG;
@@ -469,8 +467,7 @@ void splitter_window_tabs_impl::adjust_rect(bool b_larger, RECT* rc)
         TabCtrl_AdjustRect(m_wnd_tabs, TRUE, &rc_child);
         *rc = rc_child;
     } else {
-        RECT rc_tabs;
-        rc_tabs = *rc;
+        RECT rc_tabs = *rc;
         TabCtrl_AdjustRect(m_wnd_tabs, FALSE, &rc_tabs);
         rc->top = rc_tabs.top - 2;
     }
@@ -656,12 +653,11 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPA
 
 void splitter_window_tabs_impl::refresh_children()
 {
-    unsigned n, count = m_panels.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = m_panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
         if (!m_panels[n]->m_wnd) {
             m_panels[n]->set_splitter_window_ptr(this);
-            uie::window_ptr p_ext;
-            p_ext = m_panels[n]->m_child;
+            uie::window_ptr p_ext = m_panels[n]->m_child;
 
             bool b_new = false;
             if (!p_ext.is_valid()) {
@@ -759,8 +755,8 @@ void splitter_window_tabs_impl::refresh_children()
 
 void splitter_window_tabs_impl::destroy_children()
 {
-    unsigned n, count = m_panels.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = m_panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
         pfc::refcounted_object_ptr_t<panel> pal = m_panels[n];
         pal->destroy();
     }
@@ -770,8 +766,7 @@ void splitter_window_tabs_impl::destroy_children()
 void splitter_window_tabs_impl::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index <= m_panels.get_count()) {
-        pfc::refcounted_object_ptr_t<panel> temp;
-        temp = new panel;
+        pfc::refcounted_object_ptr_t<panel> temp = new panel;
         temp->set_from_splitter_item(p_item);
         m_panels.insert_item(temp, index);
 
@@ -792,8 +787,7 @@ void splitter_window_tabs_impl::replace_panel(unsigned index, const uie::splitte
             TabCtrl_DeleteItem(m_wnd_tabs, activeindex);
         }
 
-        pfc::refcounted_object_ptr_t<panel> temp;
-        temp = new panel;
+        pfc::refcounted_object_ptr_t<panel> temp = new panel;
         temp->set_from_splitter_item(p_item);
         m_panels.replace_item(index, temp);
 
@@ -869,10 +863,10 @@ void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
         dwp = DeferWindowPos(dwp, m_wnd_tabs, nullptr, 0, 0, width, height, SWP_NOZORDER);
     // SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 
-    t_size i, count = m_active_panels.get_count();
+    t_size count = m_active_panels.get_count();
     RECT rc = {0, 0, (LONG)width, (LONG)height};
     adjust_rect(FALSE, &rc);
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         if (m_active_panels[i]->m_wnd)
             dwp = DeferWindowPos(dwp, m_active_panels[i]->m_wnd, nullptr, rc.left, rc.top, rc.right - rc.left,
                 rc.bottom - rc.top, SWP_NOZORDER);
@@ -909,14 +903,8 @@ void splitter_window_tabs_impl::on_active_tab_changed(t_size index_to)
 
 LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    splitter_window_tabs_impl* p_this;
-    LRESULT rv;
-
-    p_this = reinterpret_cast<splitter_window_tabs_impl*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-
-    rv = p_this ? p_this->on_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-
-    return rv;
+    auto p_this = reinterpret_cast<splitter_window_tabs_impl*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    return p_this ? p_this->on_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
 LRESULT WINAPI splitter_window_tabs_impl::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

@@ -34,8 +34,8 @@ void playlists_tabs_extension::get_supported_panels(
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
         (static_cast<playlists_tabs_extension::window_host_impl*>(ptr.get_ptr()))->set_this(this);
-    t_size i, count = p_windows.get_count();
-    for (i = 0; i < count; i++)
+    t_size count = p_windows.get_count();
+    for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
@@ -71,8 +71,8 @@ bool playlists_tabs_extension::is_point_ours(
 void playlists_tabs_extension::on_font_change()
 {
     if (g_font != nullptr) {
-        unsigned n, count = list_wnd.get_count();
-        for (n = 0; n < count; n++) {
+        unsigned count = list_wnd.get_count();
+        for (unsigned n = 0; n < count; n++) {
             HWND wnd = list_wnd[n]->wnd_tabs;
             if (wnd)
                 SendMessage(wnd, WM_SETFONT, (WPARAM)0, MAKELPARAM(0, 0));
@@ -82,8 +82,8 @@ void playlists_tabs_extension::on_font_change()
 
     g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_playlist_switcher_tabs_font);
 
-    unsigned n, count = list_wnd.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = list_wnd.get_count();
+    for (unsigned n = 0; n < count; n++) {
         HWND wnd = list_wnd[n]->wnd_tabs;
         if (wnd) {
             SendMessage(wnd, WM_SETFONT, (WPARAM)g_font, MAKELPARAM(1, 0));
@@ -119,14 +119,8 @@ playlists_tabs_extension::~playlists_tabs_extension() = default;
 
 LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    playlists_tabs_extension* p_this;
-    LRESULT rv;
-
-    p_this = reinterpret_cast<playlists_tabs_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-
-    rv = p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-
-    return rv;
+    auto p_this = reinterpret_cast<playlists_tabs_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
 void playlists_tabs_extension::create_child()
@@ -184,7 +178,7 @@ bool playlists_tabs_extension::create_tabs()
         wnd_tabs = nullptr;
         rv = true;
     } else if (!wnd_tabs && !force_close) {
-        int i, t = playlist_api->get_playlist_count();
+        int t = playlist_api->get_playlist_count();
         pfc::string8 temp;
 
         int x = 0;
@@ -209,7 +203,7 @@ bool playlists_tabs_extension::create_tabs()
             tabproc = (WNDPROC)SetWindowLongPtr(wnd_tabs, GWLP_WNDPROC, (LPARAM)main_hook);
 
             pfc::string8 temp2;
-            for (i = 0; i < t; i++) {
+            for (int i = 0; i < t; i++) {
                 playlist_api->playlist_get_name(i, temp);
                 uTabCtrl_InsertItemText(wnd_tabs, i, temp);
             }
@@ -602,8 +596,7 @@ void playlists_tabs_extension::adjust_rect(bool b_larger, RECT* rc)
         TabCtrl_AdjustRect(wnd_tabs, TRUE, &rc_child);
         *rc = rc_child;
     } else {
-        RECT rc_tabs;
-        rc_tabs = *rc;
+        RECT rc_tabs = *rc;
         TabCtrl_AdjustRect(wnd_tabs, FALSE, &rc_tabs);
         rc->top = rc_tabs.top - 2;
     }
@@ -632,10 +625,10 @@ void playlists_tabs_extension::reset_size_limits()
             mmi.ptMaxTrackSize.y = rc_max.bottom - rc_max.top;
         } else {
             if (wnd_tabs) {
-                RECT rc, rc_child;
+                RECT rc;
                 GetWindowRect(wnd_tabs, &rc);
                 MapWindowPoints(HWND_DESKTOP, get_wnd(), (LPPOINT)&rc, 2);
-                rc_child = rc;
+                RECT rc_child = rc;
                 adjust_rect(FALSE, &rc_child);
                 mmi.ptMinTrackSize.x = rc_child.left - rc.left + rc.right - rc_child.right;
                 mmi.ptMinTrackSize.y = rc_child.top - rc.top + rc.bottom - rc_child.bottom;
@@ -645,10 +638,10 @@ void playlists_tabs_extension::reset_size_limits()
         }
     } else {
         if (wnd_tabs) {
-            RECT rc_tabs, rc_child;
+            RECT rc_tabs;
             GetWindowRect(wnd_tabs, &rc_tabs);
             MapWindowPoints(HWND_DESKTOP, get_wnd(), (LPPOINT)&rc_tabs, 2);
-            rc_child = rc_tabs;
+            RECT rc_child = rc_tabs;
             adjust_rect(FALSE, &rc_child);
             mmi.ptMinTrackSize.x = rc_child.left - rc_tabs.left + rc_tabs.right - rc_child.right;
             mmi.ptMinTrackSize.y = rc_child.top - rc_tabs.top + rc_tabs.bottom - rc_child.bottom;
@@ -754,10 +747,9 @@ void playlists_tabs_extension::on_playlists_reorder(const unsigned* p_order, uns
 {
     if (wnd_tabs) {
         static_api_ptr_t<playlist_manager> playlist_api;
-        unsigned n;
         int sel = playlist_api->get_active_playlist();
 
-        for (n = 0; n < p_count; n++) {
+        for (unsigned n = 0; n < p_count; n++) {
             if (n != (unsigned)p_order[n]) {
                 pfc::string8 temp, temp2;
                 playlist_api->playlist_get_name(n, temp);
@@ -794,16 +786,16 @@ playlists_tabs_extension::class_data& playlists_tabs_extension::get_class_data()
 
 void g_on_autohide_tabs_change()
 {
-    unsigned n, count = playlists_tabs_extension::list_wnd.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = playlists_tabs_extension::list_wnd.get_count();
+    for (unsigned n = 0; n < count; n++) {
         playlists_tabs_extension::list_wnd[n]->create_tabs();
     }
 }
 
 void g_on_multiline_tabs_change()
 {
-    unsigned n, count = playlists_tabs_extension::list_wnd.get_count();
-    for (n = 0; n < count; n++) {
+    unsigned count = playlists_tabs_extension::list_wnd.get_count();
+    for (unsigned n = 0; n < count; n++) {
         playlists_tabs_extension* p_tabs = playlists_tabs_extension::list_wnd[n];
         p_tabs->set_styles();
         p_tabs->on_size();

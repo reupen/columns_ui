@@ -19,11 +19,8 @@ void ng_playlist_view_t::on_items_added(/*unsigned p_playlist, */ unsigned start
 void ng_playlist_view_t::on_items_reordered(/*t_size p_playlist, */ const t_size* p_order, t_size p_count){
     /*(if (p_playlist ==0)*/
     {clear_sort_column();
-// metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
-// m_playlist_api->playlist_get_items(p_playlist, data, pfc::bit_array_true());
-t_size i, start;
-for (i = 0; i < p_count; i++) {
-    start = i;
+        for (t_size i = 0; i < p_count; i++) {
+    t_size start = i;
     while (i < p_count && p_order[i] != i) {
         i++;
     }
@@ -66,10 +63,10 @@ void ng_playlist_view_t::on_item_focus_change(/*t_size p_playlist, */ t_size p_f
 
 void ng_playlist_view_t::on_items_modified(/*t_size p_playlist, */ const pfc::bit_array& p_mask){// if (p_playlist==0)
     {clear_sort_column();
-t_size i, start, count = m_playlist_api->activeplaylist_get_item_count();
+t_size count = m_playlist_api->activeplaylist_get_item_count();
 
-for (i = 0; i < count; i++) {
-    start = i;
+for (t_size i = 0; i < count; i++) {
+    t_size start = i;
     while (i < count && p_mask[i]) {
         i++;
     }
@@ -86,10 +83,10 @@ void ng_playlist_view_t::on_items_modified_fromplayback(
     /*t_size p_playlist, */ const pfc::bit_array& p_mask, play_control::t_display_level p_level)
 {
     if (!core_api::is_shutting_down()) {
-        t_size i, start, count = m_playlist_api->activeplaylist_get_item_count();
+        t_size count = m_playlist_api->activeplaylist_get_item_count();
 
-        for (i = 0; i < count; i++) {
-            start = i;
+        for (t_size i = 0; i < count; i++) {
+            t_size start = i;
             while (i < count && p_mask[i]) {
                 i++;
             }

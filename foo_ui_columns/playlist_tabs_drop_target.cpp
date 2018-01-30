@@ -81,11 +81,11 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
         }
 
         static_api_ptr_t<playlist_manager> playlist_api;
-        POINT pti, ptm;
+        POINT pti;
         pti.y = pt.y;
         pti.x = pt.x;
 
-        ptm = pti;
+        POINT ptm = pti;
         ScreenToClient(p_list->get_wnd(), &ptm);
 
         HWND wnd = ChildWindowFromPointEx(p_list->get_wnd(), ptm, CWP_SKIPINVISIBLE);
@@ -98,8 +98,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
         //    GetWindowRect(g_tab, &tabs);
 
         if (p_list->wnd_tabs) {
-            POINT pttab;
-            pttab = pti;
+            POINT pttab = pti;
 
             if (wnd == p_list->wnd_tabs && ScreenToClient(p_list->wnd_tabs, &pttab)) {
                 TCHITTESTINFO hittest;
@@ -161,11 +160,11 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
     static_api_ptr_t<playlist_manager> playlist_api;
 
-    POINT pti, ptm;
+    POINT pti;
     pti.y = pt.y;
     pti.x = pt.x;
 
-    ptm = pti;
+    POINT ptm = pti;
     ScreenToClient(p_list->get_wnd(), &ptm);
 
     HWND wnd = ChildWindowFromPointEx(p_list->get_wnd(), ptm, CWP_SKIPINVISIBLE);
@@ -208,9 +207,8 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
             static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
             incoming_api->process_dropped_files(pDataObj, data, true, p_list->get_wnd());
 
-            POINT pttab, ptpl;
-            pttab = pti;
-            ptpl = pti;
+            POINT pttab = pti;
+            POINT ptpl = pti;
 
             int idx = -1;
             t_size newPlaylistIndex = pfc_infinite;

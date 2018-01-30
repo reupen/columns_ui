@@ -41,11 +41,11 @@ class export_columns : public cui::fcl::dataset {
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
-        t_size count = g_columns.get_count(), i;
+        t_size count = g_columns.get_count();
         pfc::string8 temp;
         out.write_raw(count);
 
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
             w.write_item(identifier_name, g_columns[i]->name);
@@ -70,10 +70,10 @@ class export_columns : public cui::fcl::dataset {
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_size i, count;
+        t_size count;
         reader.read_item(count);
         column_list_t newcolumns;
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             t_uint32 column_id;
             t_uint32 column_size;
 
@@ -199,12 +199,12 @@ class export_groups : public cui::fcl::dataset {
         fbh::fcl::Writer groups_writer(&groups_sw, p_abort);
 
         const pfc::list_base_const_t<pvt::group_t>& groups = pvt::g_groups.get_groups();
-        t_size count = groups.get_count(), i;
+        t_size count = groups.get_count();
         pfc::string8 temp;
 
         groups_writer.write_raw(count);
 
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             const pvt::group_t& group = groups[i];
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
@@ -246,9 +246,9 @@ class export_groups : public cui::fcl::dataset {
             //    reader.read_item(pvt::cfg_artwork_width);
             //    break;
             case identifier_groups: {
-                t_size i, count;
+                t_size count;
                 reader.read_item(count);
-                for (i = 0; i < count; i++) {
+                for (t_size i = 0; i < count; i++) {
                     t_uint32 group_id;
                     t_uint32 group_size;
 

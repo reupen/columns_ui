@@ -316,8 +316,8 @@ void toolbar_extension::create_toolbar()
 
 void toolbar_extension::destroy_toolbar()
 {
-    t_size i, count = m_buttons.get_count();
-    for (i = 0; i < count; i++)
+    t_size count = m_buttons.get_count();
+    for (t_size i = 0; i < count; i++)
         if (m_buttons[i].m_interface.is_valid())
             m_buttons[i].m_interface->deregister_callback(m_buttons[i].m_callback);
     auto iml = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETIMAGELIST, (WPARAM)0, (LPARAM)0);
@@ -543,12 +543,12 @@ void toolbar_extension::get_category(pfc::string_base& out) const
 
 void toolbar_extension::get_config(stream_writer* out, abort_callback& p_abort) const
 {
-    unsigned n, count = m_buttons_config.get_count();
+    unsigned count = m_buttons_config.get_count();
     out->write_lendian_t(VERSION_CURRENT, p_abort);
     out->write_lendian_t(m_text_below, p_abort);
     out->write_lendian_t(m_appearance, p_abort);
     out->write_lendian_t(count, p_abort);
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         m_buttons_config[n].write(out, p_abort);
     }
 }
@@ -557,14 +557,14 @@ void toolbar_extension::set_config(stream_reader* p_reader, t_size p_size, abort
 {
     if (p_size) {
         t_config_version p_version;
-        unsigned n, count = m_buttons_config.get_count();
+        unsigned count = m_buttons_config.get_count();
         p_reader->read_lendian_t(p_version, p_abort);
         if (p_version <= VERSION_CURRENT) {
             p_reader->read_lendian_t(m_text_below, p_abort);
             p_reader->read_lendian_t(m_appearance, p_abort);
             p_reader->read_lendian_t(count, p_abort);
             m_buttons_config.remove_all();
-            for (n = 0; n < count; n++) {
+            for (unsigned n = 0; n < count; n++) {
                 button temp;
                 temp.read(p_version, p_reader, p_abort);
                 m_buttons_config.add_item(temp);

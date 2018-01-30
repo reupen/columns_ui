@@ -53,8 +53,8 @@ bool artwork_panel::artwork_reader_v2_t::is_aborting()
 
 bool artwork_panel::artwork_reader_manager_t::find_aborting_reader(const artwork_reader_v2_t* ptr, t_size& index)
 {
-    t_size i, count = m_aborting_readers.get_count();
-    for (i = 0; i < count; i++)
+    t_size count = m_aborting_readers.get_count();
+    for (t_size i = 0; i < count; i++)
         if (&*m_aborting_readers[i] == ptr) {
             index = i;
             return true;
@@ -195,16 +195,12 @@ void artwork_panel::artwork_reader_manager_t::on_reader_abort(const artwork_read
 bool artwork_panel::artwork_reader_v2_t::isContentEqual(
     const pfc::map_t<GUID, album_art_data_ptr>& content1, const pfc::map_t<GUID, album_art_data_ptr>& content2)
 {
-    pfc::chain_list_v2_t<GUID>::const_iterator walk;
-
-    walk = m_requestIds.first();
-    for (; walk.is_valid(); ++walk) {
+    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
         if (content1.have_item(*walk) != content2.have_item(*walk))
             return false;
     }
 
-    walk = m_requestIds.first();
-    for (; walk.is_valid(); ++walk) {
+    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
         album_art_data_ptr ptr1, ptr2;
         if (!(content1.query(*walk, ptr1) && content2.query(*walk, ptr2) && album_art_data::equals(*ptr1, *ptr2)))
             return false;
@@ -271,166 +267,122 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback& p_abor
     m_content.remove_all();
 
     bool b_opened = false, b_extracter_attempted = false;
-    pfc::chain_list_v2_t<GUID>::const_iterator walk;
     album_art_extractor_instance_ptr p_extractor;
     album_art_extractor_instance_v2::ptr artwork_api_v2;
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
 
-    {
-        walk = m_requestIds.first();
-        for (; walk.is_valid(); ++walk) {
-            bool b_found = false;
-            try {
-                pfc::list_t<pfc::string8> to;
-                if (m_repositories.query(*walk, to)) {
-                    t_size i, count = to.get_count();
-                    for (i = 0; i < count && !b_found; i++) {
-                        pfc::string8 path;
-                        if (m_handle->format_title_legacy(nullptr, path, to[i], nullptr)) {
-                            const char* image_extensions[] = {"jpg", "jpeg", "gif", "bmp", "png"};
+    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
+        bool b_found = false;
+        try {
+            pfc::list_t<pfc::string8> to;
+            if (m_repositories.query(*walk, to)) {
+                t_size count = to.get_count();
+                for (t_size i = 0; i < count && !b_found; i++) {
+                    pfc::string8 path;
+                    if (m_handle->format_title_legacy(nullptr, path, to[i], nullptr)) {
+                        const char* image_extensions[] = {"jpg", "jpeg", "gif", "bmp", "png"};
 
-                            t_size i, count = tabsize(image_extensions);
+                        t_size i, count = tabsize(image_extensions);
 
-                            bool b_absolute = path.find_first(':') != pfc_infinite || path.get_ptr()[0] == '\\';
+                        bool b_absolute = path.find_first(':') != pfc_infinite || path.get_ptr()[0] == '\\';
 
-                            pfc::string8 realPath, test;
-                            if (b_absolute)
-                                realPath = path;
-                            else
-                                realPath << pfc::string_directory(m_handle->get_path()) << "\\" << path;
+                        pfc::string8 realPath, test;
+                        if (b_absolute)
+                            realPath = path;
+                        else
+                            realPath << pfc::string_directory(m_handle->get_path()) << "\\" << path;
 
-                            bool b_search
-                                = realPath.find_first('*') != pfc_infinite || realPath.find_first('?') != pfc_infinite;
-                            bool b_search_matched = false;
+                        bool b_search
+                            = realPath.find_first('*') != pfc_infinite || realPath.find_first('?') != pfc_infinite;
+                        bool b_search_matched = false;
 
-                            if (b_search) {
-                                const char* pMainPath = realPath;
-                                if (!stricmp_utf8_partial(pMainPath, "file://"))
-                                    pMainPath += 7;
+                        if (b_search) {
+                            const char* pMainPath = realPath;
+                            if (!stricmp_utf8_partial(pMainPath, "file://"))
+                                pMainPath += 7;
 
-                                puFindFile pSearcher;
-                                {
-                                    pfc::string_formatter formatter;
-                                    pSearcher = uFindFirstFile(formatter << pMainPath << ".*");
-                                }
+                            puFindFile pSearcher;
+                            {
+                                pfc::string_formatter formatter;
+                                pSearcher = uFindFirstFile(formatter << pMainPath << ".*");
+                            }
 
-                                pfc::string8 searchPath = realPath;
-                                realPath.reset();
-                                if (pSearcher) {
-                                    do {
-                                        const char* pResult = pSearcher->GetFileName();
-                                        for (i = 0; i < count; i++) {
-                                            if (!stricmp_utf8(pfc::string_extension(pResult), image_extensions[i])) {
-                                                realPath << pfc::string_directory(searchPath) << "\\" << pResult;
-                                                b_search_matched = true;
+                            pfc::string8 searchPath = realPath;
+                            realPath.reset();
+                            if (pSearcher) {
+                                do {
+                                    const char* pResult = pSearcher->GetFileName();
+                                    for (i = 0; i < count; i++) {
+                                        if (!stricmp_utf8(pfc::string_extension(pResult), image_extensions[i])) {
+                                            realPath << pfc::string_directory(searchPath) << "\\" << pResult;
+                                            b_search_matched = true;
+                                            break;
+                                        }
+                                    }
+                                } while (!b_search_matched && pSearcher->FindNext());
+                                delete pSearcher;
+                            }
+                        }
+
+                        if (!b_search || b_search_matched) {
+                            {
+                                file::ptr file;
+                                if (b_search) {
+                                    pfc::string8 canPath;
+                                    filesystem::g_get_canonical_path(realPath, canPath);
+                                    if (!filesystem::g_is_remote_or_unrecognized(canPath))
+                                        filesystem::g_open(file, canPath, filesystem::open_mode_read, p_abort);
+                                } else {
+                                    for (i = 0; i < count; i++) {
+                                        pfc::string8 canPath;
+                                        try {
+                                            pfc::string_formatter formatter;
+                                            filesystem::g_get_canonical_path(
+                                                formatter << realPath << "." << image_extensions[i], canPath);
+
+                                            if (!filesystem::g_is_remote_or_unrecognized(canPath)) {
+                                                filesystem::g_open(file, canPath, filesystem::open_mode_read, p_abort);
                                                 break;
                                             }
+                                        } catch (exception_io const&) {
+                                            // console::formatter() << ex.what();
                                         }
-                                    } while (!b_search_matched && pSearcher->FindNext());
-                                    delete pSearcher;
+                                    }
                                 }
-                            }
-
-                            if (!b_search || b_search_matched) {
-                                {
-                                    file::ptr file;
-                                    if (b_search) {
-                                        pfc::string8 canPath;
-                                        filesystem::g_get_canonical_path(realPath, canPath);
-                                        if (!filesystem::g_is_remote_or_unrecognized(canPath))
-                                            filesystem::g_open(file, canPath, filesystem::open_mode_read, p_abort);
-                                    } else {
-                                        for (i = 0; i < count; i++) {
-                                            pfc::string8 canPath;
-                                            try {
-                                                pfc::string_formatter formatter;
-                                                filesystem::g_get_canonical_path(
-                                                    formatter << realPath << "." << image_extensions[i], canPath);
-
-                                                if (!filesystem::g_is_remote_or_unrecognized(canPath)) {
-                                                    filesystem::g_open(
-                                                        file, canPath, filesystem::open_mode_read, p_abort);
-                                                    break;
-                                                }
-                                            } catch (exception_io const&) {
-                                                // console::formatter() << ex.what();
-                                            }
-                                        }
-                                    }
-                                    if (file.is_valid()) {
-                                        service_ptr_t<album_art_data_impl> ptr
-                                            = new service_impl_t<album_art_data_impl>;
-                                        ptr->from_stream(
-                                            file.get_ptr(), gsl::narrow<t_size>(file->get_size_ex(p_abort)), p_abort);
-                                        b_found = true;
-                                        album_art_data_ptr data = ptr;
-                                        m_content.set(*walk, data);
-                                    }
+                                if (file.is_valid()) {
+                                    service_ptr_t<album_art_data_impl> ptr = new service_impl_t<album_art_data_impl>;
+                                    ptr->from_stream(
+                                        file.get_ptr(), gsl::narrow<t_size>(file->get_size_ex(p_abort)), p_abort);
+                                    b_found = true;
+                                    album_art_data_ptr data = ptr;
+                                    m_content.set(*walk, data);
                                 }
                             }
                         }
                     }
                 }
-            } catch (const exception_aborted&) {
-                throw;
-            } catch (pfc::exception const&) {
             }
-
-            if (!b_found && m_native_artwork_reader_mode == fb2k_artwork_embedded_and_external) {
-                {
-                    if (!b_opened) {
-                        pfc::list_t<GUID> guids;
-                        pfc::chain_list_v2_t<GUID>::const_iterator walk1 = m_requestIds.first();
-                        for (; walk1.is_valid(); ++walk1) {
-                            guids.add_item(*walk1);
-                        }
-                        artwork_api_v2 = p_album_art_manager_v2->open(
-                            pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
-                        b_opened = true;
-                    }
-                    album_art_data_ptr data;
-                    try {
-                        data = artwork_api_v2->query(*walk, p_abort);
-                        m_content.set(*walk, data);
-                        b_found = true;
-                    } catch (const exception_aborted&) {
-                        throw;
-                    } catch (exception_io_not_found const&) {
-                    } catch (exception_io const& e) {
-                        console::formatter formatter;
-                        formatter << "Requested Album Art entry could not be retrieved: " << e.what();
-                    }
-                }
-            } else if (!b_found && m_native_artwork_reader_mode == fb2k_artwork_embedded) {
-                {
-                    album_art_data_ptr data;
-                    try {
-                        if (!b_extracter_attempted) {
-                            b_extracter_attempted = true;
-                            p_extractor = g_get_album_art_extractor_instance(m_handle->get_path(), p_abort);
-                        }
-                        if (p_extractor.is_valid()) {
-                            data = p_extractor->query(*walk, p_abort);
-                            m_content.set(*walk, data);
-                            b_found = true;
-                        }
-                    } catch (const exception_aborted&) {
-                        throw;
-                    } catch (exception_io_not_found const&) {
-                    } catch (exception_io const& e) {
-                        console::formatter formatter;
-                        formatter << "Requested Album Art entry could not be retrieved: " << e.what();
-                    }
-                }
-            }
+        } catch (const exception_aborted&) {
+            throw;
+        } catch (pfc::exception const&) {
         }
 
-        {
-            if (m_read_emptycover) {
+        if (!b_found && m_native_artwork_reader_mode == fb2k_artwork_embedded_and_external) {
+            {
+                if (!b_opened) {
+                    pfc::list_t<GUID> guids;
+                    pfc::chain_list_v2_t<GUID>::const_iterator walk1 = m_requestIds.first();
+                    for (; walk1.is_valid(); ++walk1) {
+                        guids.add_item(*walk1);
+                    }
+                    artwork_api_v2 = p_album_art_manager_v2->open(
+                        pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
+                    b_opened = true;
+                }
                 try {
-                    auto p_extractor = p_album_art_manager_v2->open_stub(p_abort);
-                    // FIXME: We are always using the front no cover image
-                    m_emptycover = p_extractor->query(album_art_ids::cover_front, p_abort);
+                    album_art_data_ptr data = artwork_api_v2->query(*walk, p_abort);
+                    m_content.set(*walk, data);
+                    b_found = true;
                 } catch (const exception_aborted&) {
                     throw;
                 } catch (exception_io_not_found const&) {
@@ -438,9 +390,43 @@ unsigned artwork_panel::artwork_reader_v2_t::read_artwork(abort_callback& p_abor
                     console::formatter formatter;
                     formatter << "Requested Album Art entry could not be retrieved: " << e.what();
                 }
-                if (!m_emptycover.is_valid() && pvt::g_get_default_nocover_bitmap_data(m_emptycover, p_abort)) {
+            }
+        } else if (!b_found && m_native_artwork_reader_mode == fb2k_artwork_embedded) {
+            {
+                try {
+                    if (!b_extracter_attempted) {
+                        b_extracter_attempted = true;
+                        p_extractor = g_get_album_art_extractor_instance(m_handle->get_path(), p_abort);
+                    }
+                    if (p_extractor.is_valid()) {
+                        album_art_data_ptr data = p_extractor->query(*walk, p_abort);
+                        m_content.set(*walk, data);
+                        b_found = true;
+                    }
+                } catch (const exception_aborted&) {
+                    throw;
+                } catch (exception_io_not_found const&) {
+                } catch (exception_io const& e) {
+                    console::formatter formatter;
+                    formatter << "Requested Album Art entry could not be retrieved: " << e.what();
                 }
             }
+        }
+    }
+
+    if (m_read_emptycover) {
+        try {
+            auto p_extractor = p_album_art_manager_v2->open_stub(p_abort);
+            // FIXME: We are always using the front no cover image
+            m_emptycover = p_extractor->query(album_art_ids::cover_front, p_abort);
+        } catch (const exception_aborted&) {
+            throw;
+        } catch (exception_io_not_found const&) {
+        } catch (exception_io const& e) {
+            console::formatter formatter;
+            formatter << "Requested Album Art entry could not be retrieved: " << e.what();
+        }
+        if (!m_emptycover.is_valid() && pvt::g_get_default_nocover_bitmap_data(m_emptycover, p_abort)) {
         }
     }
     return isContentEqual(m_content, content_previous) ? 0 : 1;

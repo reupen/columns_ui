@@ -32,8 +32,8 @@ void on_playlist_font_change()
             g_font = nullptr;
         }
 
-        unsigned m, pcount = playlist_view::list_playlist.get_count();
-        for (m = 0; m < pcount; m++) {
+        unsigned pcount = playlist_view::list_playlist.get_count();
+        for (unsigned m = 0; m < pcount; m++) {
             playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
             if (p_playlist->wnd_playlist) {
                 if (!g_font)
@@ -175,8 +175,8 @@ void on_header_font_change()
 {
     {
         if (g_header_font != nullptr) {
-            unsigned n, count = playlist_view::list_playlist.get_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = playlist_view::list_playlist.get_count();
+            for (unsigned n = 0; n < count; n++) {
                 playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
                 if (p_playlist->wnd_header) {
                     SendMessage(p_playlist->wnd_header, WM_SETFONT, (WPARAM)0, MAKELPARAM(0, 0));
@@ -187,8 +187,8 @@ void on_header_font_change()
             g_header_font = nullptr;
         }
 
-        unsigned n, count = playlist_view::list_playlist.get_count();
-        for (n = 0; n < count; n++) {
+        unsigned count = playlist_view::list_playlist.get_count();
+        for (unsigned n = 0; n < count; n++) {
             playlist_view* p_playlist = playlist_view::list_playlist.get_item(n);
             if (p_playlist->wnd_header) {
                 if (!g_header_font)

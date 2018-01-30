@@ -23,8 +23,8 @@ public:
                 p_hierarchy.add_item(this);
                 return true;
             }
-            t_size i, count = m_panels.get_count();
-            for (i = 0; i < count; i++) {
+            t_size count = m_panels.get_count();
+            for (t_size i = 0; i < count; i++) {
                 uie::splitter_window_v2_ptr sptr;
                 if (m_panels[i]->m_child.is_valid()) {
                     if (m_panels[i]->m_child->service_query_t(sptr)) {

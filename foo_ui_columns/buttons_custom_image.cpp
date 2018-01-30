@@ -116,11 +116,10 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
                     filesystem::g_create_directory(dir2, p_abort);
 
                 service_ptr_t<file> p_image;
-                pfc::string8 curdir, wname;
 
-                curdir = pfc::string_printf("%s\\images", p_base);
+                pfc::string8 curdir = pfc::string_printf("%s\\images", p_base);
 
-                wname = curdir;
+                pfc::string8 wname = curdir;
                 wname.add_byte('\\');
 
                 wname.add_string(p_name);
@@ -205,11 +204,10 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
                 if (!filesystem::g_exists(dir2, p_abort))
                     filesystem::g_create_directory(dir2, p_abort);
                 service_ptr_t<file> p_image;
-                pfc::string8 curdir, wname;
 
-                curdir = pfc::string_printf("%s\\images", p_base);
+                pfc::string8 curdir = pfc::string_printf("%s\\images", p_base);
 
-                wname = curdir;
+                pfc::string8 wname = curdir;
                 wname.add_byte('\\');
 
                 wname.add_string(p_name);

@@ -78,10 +78,10 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         PAINTSTRUCT ps;
         HDC dc_paint = BeginPaint(wnd, &ps);
 
-        RECT rc_update, rc_playlist;
+        RECT rc_playlist;
         get_playlist_rect(&rc_playlist);
 
-        rc_update = ps.rcPaint;
+        RECT rc_update = ps.rcPaint;
         if (rc_update.top < rc_playlist.top)
             rc_update.top = rc_playlist.top;
         if (rc_update.bottom >= rc_update.top) {
@@ -231,13 +231,13 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (count) {
                 unsigned focus = playlist_api->activeplaylist_get_focus_item();
                 if (focus != pfc_infinite) {
-                    t_size i, pcount = playlist_api->activeplaylist_get_item_count();
+                    t_size pcount = playlist_api->activeplaylist_get_item_count();
                     pfc::bit_array_bittable sel(pcount);
                     playlist_api->activeplaylist_get_selection_mask(sel);
 
                     pfc::list_t<t_size> indices;
                     indices.prealloc(32);
-                    for (i = 0; i < pcount; i++)
+                    for (t_size i = 0; i < pcount; i++)
                         if (sel[i])
                             indices.add_item(i);
 
@@ -250,8 +250,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         }*/
 
                     unsigned count = g_get_cache().active_column_get_active_count();
-                    unsigned column;
-                    for (column = 0; column < count; column++) {
+                    for (unsigned column = 0; column < count; column++) {
                         if (!g_get_columns()[g_get_cache().active_column_active_to_actual(column)]
                                  ->edit_field.is_empty()) {
                             // create_inline_edit_v2(start, end-start+1, column);
@@ -957,8 +956,8 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 pfc::string8_fast_aggressive filter, name;
 
-                int s, e = columns.get_count();
-                for (s = 0; s < e; s++) {
+                int e = columns.get_count();
+                for (int s = 0; s < e; s++) {
                     bool add = false;
                     switch (columns[s]->filter_type) {
                     case FILTER_NONE: {
@@ -1059,9 +1058,8 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 enum { ID_PLAY = 1, ID_CUT, ID_COPY, ID_PASTE, ID_SELECTION, ID_CUSTOM_BASE = 0x8000 };
                 HMENU menu = CreatePopupMenu(); // LoadMenu(core_api::get_my_instance(),MAKEINTRESOURCE(IDR_TREEPOPUP));
 
-                service_ptr_t<mainmenu_manager> p_manager_selection;
                 service_ptr_t<contextmenu_manager> p_manager_context;
-                p_manager_selection = standard_api_create_t<mainmenu_manager>();
+                service_ptr_t<mainmenu_manager> p_manager_selection = standard_api_create_t<mainmenu_manager>();
                 contextmenu_manager::g_create(p_manager_context);
                 if (p_manager_selection.is_valid()) {
                     p_manager_selection->instantiate(mainmenu_groups::edit_part2_selection);
@@ -1171,9 +1169,9 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             switch (((LPNMHDR)lp)->code) {
             case TTN_SHOW:
 
-                RECT rc, rc_tt;
+                RECT rc_tt;
 
-                rc = tooltip;
+                RECT rc = tooltip;
                 GetWindowRect(g_tooltip, &rc_tt);
 
                 int offset = MulDiv(get_item_height() - rc_tt.bottom + rc_tt.top, 1, 2);
@@ -1214,20 +1212,18 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             case HDN_DIVIDERDBLCLICK:
                 if (!cfg_nohscroll) {
                     static_api_ptr_t<playlist_manager> playlist_api;
-                    HDC hdc;
-                    hdc = GetDC(wnd_playlist);
-                    int size;
+                    HDC hdc = GetDC(wnd_playlist);
                     pfc::string8 text;
 
                     SelectObject(hdc, g_font);
 
-                    int w = 0, n, t = playlist_api->activeplaylist_get_item_count();
+                    int w = 0, t = playlist_api->activeplaylist_get_item_count();
 
-                    for (n = 0; n < t; n++) {
+                    for (int n = 0; n < t; n++) {
                         //    playlist_api->format_title(n, text,
                         //    g_playlist_entries.get_display_spec(((LPNMHEADER)lp)->iItem), NULL);
                         g_cache.active_get_display_name(n, ((LPNMHEADER)lp)->iItem, text);
-                        size = uih::get_text_width_colour(hdc, text, text.length());
+                        int size = uih::get_text_width_colour(hdc, text, text.length());
                         if (size > w)
                             w = size;
                     }

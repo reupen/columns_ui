@@ -140,11 +140,10 @@ void item_details_t::get_config(stream_writer* p_writer, abort_callback& p_abort
 
 void item_details_t::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    ui_extension::menu_node_ptr p_node;
     p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_source_popup(this)));
     // p_node = new menu_node_alignment_popup(this);
     // p_hook.add_node(p_node);
-    p_node = new menu_node_hscroll(this);
+    ui_extension::menu_node_ptr p_node = new menu_node_hscroll(this);
     p_hook.add_node(p_node);
     p_node = new menu_node_wwrap(this);
     p_hook.add_node(p_node);
@@ -225,10 +224,10 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
     // if (m_update_scrollbar_range_in_progress) return;
 
     // pfc::vartoggle_t<bool> vart(m_update_scrollbar_range_in_progress, true);
-    SCROLLINFO si, si2;
+    SCROLLINFO si;
     memset(&si, 0, sizeof(si));
     si.cbSize = sizeof(si);
-    si2 = si;
+    SCROLLINFO si2 = si;
 
     RECT rc;
     GetClientRect(get_wnd(), &rc);
@@ -528,8 +527,8 @@ void item_details_t::on_changed_sorted(metadb_handle_list_cref p_items_sorted, b
 {
     if (!p_fromhook && !m_nowplaying_active) {
         bool b_refresh = false;
-        t_size i, count = m_handles.get_count();
-        for (i = 0; i < count && !b_refresh; i++) {
+        t_size count = m_handles.get_count();
+        for (t_size i = 0; i < count && !b_refresh; i++) {
             t_size index = pfc_infinite;
             if (p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, m_handles[i], index))
                 b_refresh = true;
@@ -841,11 +840,11 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         PAINTSTRUCT ps;
         BeginPaint(wnd, &ps);
 
-        SCROLLINFO siv, sih;
+        SCROLLINFO siv;
         memset(&siv, 0, sizeof(siv));
         siv.cbSize = sizeof(siv);
         siv.fMask = SIF_POS;
-        sih = siv;
+        SCROLLINFO sih = siv;
         GetScrollInfo(wnd, SB_VERT, &siv);
         GetScrollInfo(wnd, SB_HORZ, &sih);
 

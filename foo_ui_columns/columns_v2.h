@@ -99,9 +99,9 @@ public:
     void set_entries_copy(column_list_cref_t entries, bool keep_reference_to_source_items = false)
     {
         // remove_all();
-        t_size i, count = entries.get_count();
+        t_size count = entries.get_count();
         set_count(count);
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             column_t::ptr item = new column_t(*entries[i].get_ptr());
             if (keep_reference_to_source_items)
                 item->source_item = entries[i];
@@ -112,18 +112,18 @@ public:
     void set_widths(column_list_cref_t entries)
     {
         // remove_all();
-        t_size i, count = get_count();
+        t_size count = get_count();
         if (count == entries.get_count())
-            for (i = 0; i < count; i++)
+            for (t_size i = 0; i < count; i++)
                 (*this)[i]->width = entries[i]->width;
     }
 
     void set_widths(const pfc::list_base_const_t<t_size>& widths)
     {
         // remove_all();
-        t_size i, count = get_count();
+        t_size count = get_count();
         if (count == widths.get_count())
-            for (i = 0; i < count; i++)
+            for (t_size i = 0; i < count; i++)
                 (*this)[i]->width = widths[i];
     }
 

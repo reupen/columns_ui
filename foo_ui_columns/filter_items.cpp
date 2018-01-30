@@ -14,23 +14,23 @@ void filter_panel_t::populate_list_from_chain(
         sel_data.set_count(m_nodes.get_count());
         pfc::bit_array_var_table selection(sel_data.get_ptr(), sel_data.get_count());
         get_selection_state(selection);
-        t_size i, count = sel_data.get_count();
+        t_size count = sel_data.get_count();
         b_all_was_selected = selection[0];
-        for (i = 1; i < count; i++)
+        for (t_size i = 1; i < count; i++)
             if (selection[i])
                 previous_nodes.add_item(m_nodes[i].m_value);
     }
 
     populate_list(handles);
 
-    t_size i, count = previous_nodes.get_count();
+    t_size count = previous_nodes.get_count();
     pfc::array_t<bool> new_selection;
     new_selection.set_count(m_nodes.get_count());
     new_selection.fill_null();
     if (count || b_all_was_selected) {
         bool b_found = false;
         new_selection[0] = b_all_was_selected;
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             t_size index;
             if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, previous_nodes[i].get_ptr(),
                     1, index, get_sort_direction())) {

@@ -62,9 +62,8 @@ class volume_control_t
                         if (Gdiplus::Ok == graphics.GetLastStatus()) {
                             graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 
-                            COLORREF cr_shadow, cr_hilight /*, cr_light*/;
-                            cr_shadow = GetSysColor(COLOR_3DSHADOW);
-                            cr_hilight = GetSysColor(COLOR_3DHILIGHT);
+                            COLORREF cr_shadow = GetSysColor(COLOR_3DSHADOW);
+                            COLORREF cr_hilight = GetSysColor(COLOR_3DHILIGHT);
                             if (0 && get_theme_handle()) {
                                 // GetThemeColor(get_theme_handle(), 0, 0, TMT_EDGEHIGHLIGHTCOLOR, &cr_hilight);
                                 // GetThemeColor(get_theme_handle(), 0, 0, TMT_EDGESHADOWCOLOR, &cr_light);

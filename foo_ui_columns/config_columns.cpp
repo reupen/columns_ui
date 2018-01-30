@@ -45,8 +45,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 {
     static_api_ptr_t<playlist_manager> playlist_api;
     static_api_ptr_t<titleformat_compiler> titleformat_api;
-    service_ptr_t<genrand_service> p_genrand;
-    p_genrand = genrand_service::g_create();
+    service_ptr_t<genrand_service> p_genrand = genrand_service::g_create();
 
     unsigned activeplaylist_item_count = playlist_api->activeplaylist_get_item_count();
 
@@ -58,8 +57,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
     times_columns.set_size(column_count);
 
     {
-        unsigned i;
-        for (i = 0; i < column_count; i++)
+        for (unsigned i = 0; i < column_count; i++)
             if (!columns[i]->use_custom_colour) {
                 b_global_colour_used = true;
                 break;
@@ -75,9 +73,8 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 
     {
         double time_temp = 0;
-        unsigned i;
         if (b_global && column_count)
-            for (i = 0; i < 10; i++) {
+            for (unsigned i = 0; i < 10; i++) {
                 to_global.release();
                 pfc::hires_timer timer;
                 timer.start();
@@ -89,9 +86,8 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 
     {
         double time_temp = 0;
-        unsigned i;
         if (b_global_colour_used)
-            for (i = 0; i < 10; i++) {
+            for (unsigned i = 0; i < 10; i++) {
                 to_global_colour.release();
                 pfc::hires_timer timer;
                 timer.start();
@@ -108,8 +104,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
         b_column_times_valid = true;
 
         {
-            unsigned i;
-            for (i = 0; i < 16; i++)
+            for (unsigned i = 0; i < 16; i++)
                 tracks[i] = p_genrand->genrand(activeplaylist_item_count);
         }
 
@@ -123,11 +118,9 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 
             {
                 double time_temp = 0;
-                unsigned i;
                 if (b_global && column_count)
-                    for (i = 0; i < 10; i++) {
-                        unsigned j;
-                        for (j = 0; j < 16; j++) {
+                    for (unsigned i = 0; i < 10; i++) {
+                        for (unsigned j = 0; j < 16; j++) {
                             p_vars.delete_all();
                             pfc::hires_timer timer;
                             timer.start();
@@ -173,11 +166,9 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
 
             {
                 double time_temp = 0;
-                unsigned i;
                 if (b_global_colour_used)
-                    for (i = 0; i < 10; i++) {
-                        unsigned j;
-                        for (j = 0; j < 16; j++) {
+                    for (unsigned i = 0; i < 10; i++) {
+                        for (unsigned j = 0; j < 16; j++) {
                             colourinfo col_item(0, 0, 0, 0, 0, 0);
                             pfc::hires_timer timer;
                             timer.start();
@@ -195,8 +186,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                 time_colour = time_temp / (10 * 16);
             }
 
-            unsigned n;
-            for (n = 0; n < column_count; n++) {
+            for (unsigned n = 0; n < column_count; n++) {
                 {
                     double time_temp = 0;
                     unsigned i;
@@ -210,8 +200,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                     times_columns[n].time_display_compile = time_temp / 10;
                     time_temp = 0;
                     for (i = 0; i < 10; i++) {
-                        unsigned j;
-                        for (j = 0; j < 16; j++) {
+                        for (unsigned j = 0; j < 16; j++) {
                             pfc::hires_timer timer;
                             timer.start();
                             titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
@@ -243,8 +232,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                         times_columns[n].time_colour_compile = time_temp / 10;
                         time_temp = 0;
                         for (i = 0; i < 10; i++) {
-                            unsigned j;
-                            for (j = 0; j < 16; j++) {
+                            for (unsigned j = 0; j < 16; j++) {
                                 colourinfo col_item(0, 0, 0, 0, 0, 0);
                                 pfc::hires_timer timer;
                                 timer.start();

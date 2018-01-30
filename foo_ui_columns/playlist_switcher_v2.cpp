@@ -11,8 +11,7 @@ void playlist_switcher_t::get_insert_items(t_size base, t_size count, pfc::list_
 {
     p_out.set_count(count);
 
-    t_size i;
-    for (i = 0; i < count; i++) {
+    for (t_size i = 0; i < count; i++) {
         p_out[i].m_subitems.set_count(1);
         pfc::string8 temp;
         m_playlist_api->playlist_get_name(i + base, temp);

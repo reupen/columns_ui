@@ -109,8 +109,8 @@ void cfg_fields_t::reset()
 
 bool cfg_fields_t::have_name(const char* p_name)
 {
-    t_size i, count = get_count();
-    for (i = 0; i < count; i++)
+    t_size count = get_count();
+    for (t_size i = 0; i < count; i++)
         if (!stricmp_utf8(p_name, (*this)[i].m_name))
             return true;
     return false;
@@ -118,8 +118,8 @@ bool cfg_fields_t::have_name(const char* p_name)
 
 bool cfg_fields_t::find_by_name(const char* p_name, size_t& p_index)
 {
-    t_size i, count = get_count();
-    for (i = 0; i < count; i++)
+    t_size count = get_count();
+    for (t_size i = 0; i < count; i++)
         if (!stricmp_utf8(p_name, (*this)[i].m_name)) {
             p_index = i;
             return true;
@@ -143,22 +143,22 @@ void cfg_fields_t::fix_name(pfc::string8& p_name)
 
 void cfg_favouriteslist::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
-    t_uint32 n, m = gsl::narrow<t_uint32>(get_count()), v = 0;
+    t_uint32 m = gsl::narrow<t_uint32>(get_count()), v = 0;
     p_stream->write_lendian_t(v, p_abort);
     p_stream->write_lendian_t(m, p_abort);
-    for (n = 0; n < m; n++)
+    for (t_uint32 n = 0; n < m; n++)
         p_stream->write_string(get_item(n), p_abort);
 }
 
 void cfg_favouriteslist::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 n, count, version;
+    t_uint32 count, version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= 0) {
         p_stream->read_lendian_t(count, p_abort);
         pfc::string8_fast_aggressive temp;
         temp.prealloc(32);
-        for (n = 0; n < count; n++) {
+        for (t_uint32 n = 0; n < count; n++) {
             p_stream->read_string(temp, p_abort);
             add_item(temp);
         }
@@ -167,8 +167,8 @@ void cfg_favouriteslist::set_data_raw(stream_reader* p_stream, t_size p_sizehint
 
 bool cfg_favouriteslist::have_item(const char* p_item)
 {
-    t_size i, count = get_count();
-    for (i = 0; i < count; i++)
+    t_size count = get_count();
+    for (t_size i = 0; i < count; i++)
         if (!strcmp(p_item, get_item(i)))
             return true;
     return false;
@@ -176,8 +176,8 @@ bool cfg_favouriteslist::have_item(const char* p_item)
 
 bool cfg_favouriteslist::find_item(const char* p_item, t_size& index)
 {
-    t_size i, count = get_count();
-    for (i = 0; i < count; i++)
+    t_size count = get_count();
+    for (t_size i = 0; i < count; i++)
         if (!strcmp(p_item, get_item(i))) {
             index = i;
             return true;

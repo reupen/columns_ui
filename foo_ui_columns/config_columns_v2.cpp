@@ -274,8 +274,7 @@ public:
 
     static LRESULT WINAPI g_EditHook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
-        self_t* p_data = nullptr;
-        p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+        auto p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
         return p_data ? p_data->EditHook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
     }
 
@@ -474,8 +473,8 @@ void tab_columns_v3::refresh_me(HWND wnd, bool init)
 
     pfc::string8 temp;
 
-    int i, t = m_columns.get_count();
-    for (i = 0; i < t; i++) {
+    int t = m_columns.get_count();
+    for (int i = 0; i < t; i++) {
         uih::list_view_insert_item_text(wnd_lv, i, 0, m_columns[i]->name);
     }
 

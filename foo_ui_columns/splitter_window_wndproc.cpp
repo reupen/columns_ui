@@ -28,8 +28,8 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         break;
     case WM_SHOWWINDOW:
         if (wp == TRUE && lp == 0) {
-            unsigned n, count = m_panels.get_count();
-            for (n = 0; n < count; n++) {
+            unsigned count = m_panels.get_count();
+            for (unsigned n = 0; n < count; n++) {
                 ShowWindow(m_panels[n]->m_wnd_child, SW_SHOWNORMAL);
                 ShowWindow(m_panels[n]->m_wnd, SW_SHOWNORMAL);
             }
@@ -53,10 +53,10 @@ LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         lpmmi->ptMaxTrackSize.y = get_orientation() == vertical ? 0 : MAXLONG;
         lpmmi->ptMaxTrackSize.x = get_orientation() == horizontal ? 0 : MAXLONG;
 
-        unsigned n, count = m_panels.get_count();
+        unsigned count = m_panels.get_count();
         bool b_found = false;
 
-        for (n = 0; n < count; n++) {
+        for (unsigned n = 0; n < count; n++) {
             MINMAXINFO mmi;
             memset(&mmi, 0, sizeof(MINMAXINFO));
             mmi.ptMaxTrackSize.x = MAXLONG;

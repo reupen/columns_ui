@@ -60,7 +60,7 @@ void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_ne
 
 void g_get_text_font_info(const font_change_data_list_t& p_data, font_change_info_t& p_info)
 {
-    t_size i, count = p_data.get_count();
+    t_size count = p_data.get_count();
     if (count) {
         pfc::list_t<bool> maskKeepFonts;
 
@@ -76,7 +76,7 @@ void g_get_text_font_info(const font_change_data_list_t& p_data, font_change_inf
 
         pfc::stringcvt::string_wide_from_utf8_fast wideconv;
 
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             if (p_data[i].m_reset) {
                 p_info.m_font_changes[i].m_font = p_info.m_default_font;
             } else {

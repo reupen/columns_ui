@@ -6,7 +6,7 @@ void toolbar_extension::config_param::export_to_stream(stream_writer* p_file, bo
     p_file->write_lendian_t(g_guid_fcb, p_abort);
     p_file->write_lendian_t(VERSION_CURRENT, p_abort);
 
-    unsigned n, count = m_buttons.get_count();
+    unsigned count = m_buttons.get_count();
 
     p_file->write_lendian_t(I_TEXT_BELOW, p_abort);
     p_file->write_lendian_t(sizeof(m_text_below), p_abort);
@@ -24,7 +24,7 @@ void toolbar_extension::config_param::export_to_stream(stream_writer* p_file, bo
     p_file->write_lendian_t(p_write.m_data.get_size() + sizeof(count), p_abort);
     p_file->write_lendian_t(count, p_abort);
 
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         m_buttons[n].write_to_file(p_write, b_paths, p_abort);
         p_file->write_lendian_t(p_write.m_data.get_size(), p_abort);
         p_file->write(p_write.m_data.get_ptr(), p_write.m_data.get_size(), p_abort);
@@ -97,9 +97,9 @@ void toolbar_extension::config_param::import_from_stream(stream_reader* p_file, 
                 genrand->seed(GetTickCount());
                 t_uint32 dirname = genrand->genrand(pfc_infinite);
 
-                unsigned count, n;
+                unsigned count;
                 p_file->read_lendian_t(count, p_abort);
-                for (n = 0; n < count; n++) {
+                for (unsigned n = 0; n < count; n++) {
                     button temp = g_button_null;
                     unsigned size_button;
                     p_file->read_lendian_t(size_button, p_abort);
@@ -152,11 +152,11 @@ void toolbar_extension::config_param::on_selection_change(t_size index)
 
 void toolbar_extension::config_param::populate_buttons_list()
 {
-    unsigned n, count = m_buttons.get_count();
+    unsigned count = m_buttons.get_count();
 
     pfc::string8_fast_aggressive name;
     pfc::array_staticsize_t<uih::ListView::InsertItem> items(count);
-    for (n = 0; n < count; n++) {
+    for (unsigned n = 0; n < count; n++) {
         items[n].m_subitems.set_size(2);
         m_buttons[n].get_name_name(name);
         items[n].m_subitems[0] = name;
@@ -168,7 +168,7 @@ void toolbar_extension::config_param::populate_buttons_list()
 
 void toolbar_extension::config_param::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
 {
-    unsigned n, real_count = m_buttons.get_count();
+    unsigned real_count = m_buttons.get_count();
 
     if (index + count > real_count)
         count = real_count - index;
@@ -176,7 +176,7 @@ void toolbar_extension::config_param::refresh_buttons_list_items(t_size index, t
     pfc::string8_fast_aggressive name;
     pfc::list_t<uih::ListView::InsertItem> items;
     items.set_count(count);
-    for (n = index; n < index + count; n++) {
+    for (unsigned n = index; n < index + count; n++) {
         items[n - index].m_subitems.set_size(2);
         m_buttons[n].get_name_name(name);
         items[n - index].m_subitems[0] = name;

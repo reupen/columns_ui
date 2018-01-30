@@ -12,8 +12,8 @@ fonts_manager_data::fonts_manager_data() : cfg_var(g_cfg_guid)
 
 void fonts_manager_data::g_on_common_font_changed(t_size mask)
 {
-    t_size i, count = m_callbacks.get_count();
-    for (i = 0; i < count; i++)
+    t_size count = m_callbacks.get_count();
+    for (t_size i = 0; i < count; i++)
         m_callbacks[i]->on_font_changed(mask);
 }
 
@@ -29,8 +29,8 @@ void fonts_manager_data::register_common_callback(cui::fonts::common_callback* p
 
 void fonts_manager_data::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
 {
-    t_size i, count = m_entries.get_count();
-    for (i = 0; i < count; i++) {
+    t_size count = m_entries.get_count();
+    for (t_size i = 0; i < count; i++) {
         if (m_entries[i]->guid == p_guid) {
             p_out = m_entries[i];
             return;
@@ -95,10 +95,10 @@ void fonts_manager_data::set_data_raw(stream_reader* p_stream, t_size p_sizehint
     if (version <= cfg_version) {
         m_common_items_entry->read(version, p_stream, p_abort);
         m_common_labels_entry->read(version, p_stream, p_abort);
-        t_size i, count;
+        t_size count;
         p_stream->read_lendian_t(count, p_abort);
         m_entries.remove_all();
-        for (i = 0; i < count; i++) {
+        for (t_size i = 0; i < count; i++) {
             entry_ptr_t ptr = new entry_t;
             ptr->read(version, p_stream, p_abort);
             m_entries.add_item(ptr);

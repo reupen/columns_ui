@@ -10,8 +10,8 @@ VOID CALLBACK on_day_change()
     //    for (n=0;n<count;n++)
     playlist_view::g_get_cache().flush_all(false);
 
-    unsigned m, pcount = playlist_view::list_playlist.get_count();
-    for (m = 0; m < pcount; m++) {
+    unsigned pcount = playlist_view::list_playlist.get_count();
+    for (unsigned m = 0; m < pcount; m++) {
         playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
         if (p_playlist->wnd_playlist)
             RedrawWindow(p_playlist->wnd_playlist, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);

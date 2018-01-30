@@ -138,8 +138,8 @@ class global_variable_list : public pfc::ptr_list_t<global_variable> {
 public:
     const char* find_by_name(const char* p_name, unsigned length)
     {
-        unsigned n, count = get_count();
-        for (n = 0; n < count; n++) {
+        unsigned count = get_count();
+        for (unsigned n = 0; n < count; n++) {
             const char* ptr = get_item(n)->get_name();
             if (!stricmp_utf8_ex(p_name, length, ptr, pfc_infinite))
                 return get_item(n)->get_value();
@@ -249,7 +249,6 @@ public:
     inline void on_playlists_reorder(const unsigned* p_order, unsigned p_count)
     {
         unsigned old_active = active_playlist;
-        unsigned n;
 #if 0
         pfc::string8 temp;
         for (n=0; n<p_count; n++)
@@ -259,7 +258,7 @@ public:
         }
         console::print(temp);
 #endif
-        for (n = 0; n < p_count; n++) {
+        for (unsigned n = 0; n < p_count; n++) {
             if (p_order[n] == old_active)
                 active_playlist = n;
 #if 0
