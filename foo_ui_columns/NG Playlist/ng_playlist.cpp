@@ -448,7 +448,7 @@ void ng_playlist_view_t::notify_sort_column(t_size index, bool b_descending, boo
 
                     titleformat_hook_set_global<false, true> tf_hook_get_global(extra_items, false);
                     titleformat_hook_splitter_pt3 tf_hook(
-                        &extra ? &tf_hook_get_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+                        extra ? &tf_hook_get_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
                         m_column_data[index].m_sort_script, nullptr, play_control::display_level_none);
                 }
