@@ -199,7 +199,7 @@ void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
             g_tab_appearance.update_fills();
         }
         colours_client_list_t m_colours_client_list;
-        m_colours_client_list.g_get_list(m_colours_client_list);
+        colours_client_list_t::g_get_list(m_colours_client_list);
         t_size count = m_colours_client_list.get_count();
         for (t_size i = 0; i < count; i++) {
             colours_manager_data::entry_ptr_t p_data;
@@ -218,7 +218,7 @@ void on_global_colours_change()
     }
     g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
     colours_client_list_t m_colours_client_list;
-    m_colours_client_list.g_get_list(m_colours_client_list);
+    colours_client_list_t::g_get_list(m_colours_client_list);
     t_size count = m_colours_client_list.get_count();
     for (t_size i = 0; i < count; i++) {
         colours_manager_data::entry_ptr_t p_data;
@@ -512,7 +512,7 @@ LRESULT appearance_message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
     switch (msg) {
     case WM_SYSCOLORCHANGE: {
         colours_client_list_t m_colours_client_list;
-        m_colours_client_list.g_get_list(m_colours_client_list);
+        colours_client_list_t::g_get_list(m_colours_client_list);
         t_size count = m_colours_client_list.get_count();
         bool b_global_custom = g_colours_manager_data.m_global_entry->colour_mode == cui::colours::colour_mode_custom;
         if (!b_global_custom)
@@ -533,7 +533,7 @@ LRESULT appearance_message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
             || (wp == SPI_GETNONCLIENTMETRICS && g_fonts_manager_data.m_common_labels_entry.is_valid()
                    && g_fonts_manager_data.m_common_labels_entry->font_mode == cui::fonts::font_mode_system)) {
             fonts_client_list_t m_fonts_client_list;
-            m_fonts_client_list.g_get_list(m_fonts_client_list);
+            fonts_client_list_t::g_get_list(m_fonts_client_list);
             t_size count = m_fonts_client_list.get_count();
             g_fonts_manager_data.g_on_common_font_changed(
                 wp == SPI_GETICONTITLELOGFONT ? cui::fonts::font_type_flag_items : cui::fonts::font_type_flag_labels);
