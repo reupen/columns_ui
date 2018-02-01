@@ -518,10 +518,7 @@ bool selection_properties_t::check_process_on_selection_changed()
 
     DWORD processid = NULL;
     GetWindowThreadProcessId(wnd_focus, &processid);
-    if (processid != GetCurrentProcessId())
-        return false;
-
-    return true;
+    return processid == GetCurrentProcessId();
 }
 
 void selection_properties_t::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
@@ -753,9 +750,7 @@ void selection_properties_t::g_print_field(const char* field, const file_info& p
 bool selection_properties_t::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
-    if (m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count())
-        return true;
-    return false;
+    return m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count();
 }
 
 void selection_properties_t::notify_on_column_size_change(t_size index, int new_width)

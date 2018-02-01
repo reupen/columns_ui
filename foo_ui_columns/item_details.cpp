@@ -547,10 +547,7 @@ bool item_details_t::check_process_on_selection_changed()
 
     DWORD processid = NULL;
     GetWindowThreadProcessId(wnd_focus, &processid);
-    if (processid != GetCurrentProcessId())
-        return false;
-
-    return true;
+    return processid == GetCurrentProcessId();
 }
 
 void item_details_t::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)

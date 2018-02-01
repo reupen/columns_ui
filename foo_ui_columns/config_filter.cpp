@@ -26,9 +26,7 @@ public:
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override
     {
-        if (column <= 1 && indices.get_count() == 1)
-            return true;
-        return false;
+        return column <= 1 && indices.get_count() == 1;
     };
     bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override

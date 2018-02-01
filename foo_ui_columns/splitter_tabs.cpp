@@ -314,9 +314,7 @@ uie::splitter_item_t* splitter_window_tabs_impl::get_panel(unsigned index) const
 
 bool splitter_window_tabs_impl::get_config_item_supported(unsigned index, const GUID& p_type) const
 {
-    if (p_type == uie::splitter_window::bool_use_custom_title || p_type == uie::splitter_window::string_custom_title)
-        return true;
-    return false;
+    return p_type == uie::splitter_window::bool_use_custom_title || p_type == uie::splitter_window::string_custom_title;
 }
 
 bool splitter_window_tabs_impl::get_config_item(

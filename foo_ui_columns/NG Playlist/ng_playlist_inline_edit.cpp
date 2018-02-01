@@ -5,10 +5,8 @@ namespace pvt {
 bool ng_playlist_view_t::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
-    if ((!b_source_mouse || main_window::config_get_inline_metafield_edit_mode() != main_window::mode_disabled)
-        && column < m_edit_fields.get_count() && strlen(m_edit_fields[column]))
-        return true;
-    return false;
+    return (!b_source_mouse || main_window::config_get_inline_metafield_edit_mode() != main_window::mode_disabled)
+        && column < m_edit_fields.get_count() && strlen(m_edit_fields[column]);
 };
 bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
