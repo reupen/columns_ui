@@ -4,19 +4,6 @@
 #include "config.h"
 
 namespace artwork_panel {
-#if 0
-    // {5A409F56-7388-42b0-91C7-ACB6CD0032DC}
-    const GUID g_guid_cfg_front = 
-    { 0x5a409f56, 0x7388, 0x42b0, { 0x91, 0xc7, 0xac, 0xb6, 0xcd, 0x0, 0x32, 0xdc } };
-    // {6015499C-575F-4bae-8D9C-6D6FD23A40FE}
-    const GUID g_guid_cfg_back = 
-    { 0x6015499c, 0x575f, 0x4bae, { 0x8d, 0x9c, 0x6d, 0x6f, 0xd2, 0x3a, 0x40, 0xfe } };
-    // {9DC64EB7-9252-4a88-AE13-4F1BAB216F90}
-    const GUID g_guid_cfg_disc = 
-    { 0x9dc64eb7, 0x9252, 0x4a88, { 0xae, 0x13, 0x4f, 0x1b, 0xab, 0x21, 0x6f, 0x90 } };
-#endif
-// {D6B58D7C-CABA-49f3-8E46-4CCD396B9FC7}
-const GUID g_guid_cfg_icon = {0xd6b58d7c, 0xcaba, 0x49f3, {0x8e, 0x46, 0x4c, 0xcd, 0x39, 0x6b, 0x9f, 0xc7}};
 // {A24038C7-C055-45ed-B631-CC8FD2A22473}
 const GUID g_guid_fb2k_artwork_mode = {0xa24038c7, 0xc055, 0x45ed, {0xb6, 0x31, 0xcc, 0x8f, 0xd2, 0xa2, 0x24, 0x73}};
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
@@ -69,12 +56,6 @@ bool g_track_mode_includes_selection(t_size mode)
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-#if 0
-    cfg_string cfg_front(g_guid_cfg_front, "");
-    cfg_string cfg_back(g_guid_cfg_back, "");
-    cfg_string cfg_disc(g_guid_cfg_disc, "");
-#endif
-// cfg_string cfg_icon(g_guid_cfg_icon, "");
 cfg_uint cfg_fb2k_artwork_mode(g_guid_fb2k_artwork_mode, fb2k_artwork_embedded_and_external);
 cfg_uint cfg_track_mode(g_guid_track_mode, track_auto_playlist_playing);
 cfg_bool cfg_preserve_aspect_ratio(g_guid_preserve_aspect_ratio, true);

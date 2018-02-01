@@ -4,7 +4,6 @@
 #include "config.h"
 
 namespace artwork_panel {
-// extern cfg_string cfg_front, cfg_back, cfg_disc;//, cfg_icon;
 extern cfg_uint cfg_fb2k_artwork_mode, cfg_edge_style;
 void g_on_repository_change();
 } // namespace artwork_panel
@@ -233,29 +232,6 @@ public:
         } break;
         case WM_COMMAND:
             switch (wp) {
-#if 0
-            case (EN_CHANGE<<16)|IDC_FRONT:
-                artwork_panel::cfg_front = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;
-            case (EN_CHANGE<<16)|IDC_BACK:
-                artwork_panel::cfg_back = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;
-            case (EN_CHANGE<<16)|IDC_DISC:
-                artwork_panel::cfg_disc = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;
-            case (EN_KILLFOCUS<<16)|IDC_FRONT:
-            case (EN_KILLFOCUS<<16)|IDC_BACK:
-            case (EN_KILLFOCUS<<16)|IDC_DISC:
-                on_scripts_change();
-                break;
-#endif
-            /*case (EN_CHANGE<<16)|IDC_ICON:
-                artwork_panel::cfg_icon = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;*/
             case IDC_FB2KARTWORK | (CBN_SELCHANGE << 16):
                 artwork_panel::cfg_fb2k_artwork_mode = ComboBox_GetCurSel((HWND)lp);
                 break;
