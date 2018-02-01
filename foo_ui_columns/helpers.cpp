@@ -48,7 +48,7 @@ void g_compare_file_with_bytes(
                 if (io_bytes_done != delta)
                     throw exception_io();
 
-                if (memcmp(temp.get_ptr(), (char*)p2.get_ptr() + done, io_bytes_done))
+                if (memcmp(temp.get_ptr(), (char*)p2.get_ptr() + done, io_bytes_done) != 0)
                     return;
 
                 done += delta;

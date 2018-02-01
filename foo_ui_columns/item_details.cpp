@@ -367,7 +367,7 @@ void item_details_t::refresh_contents(bool b_new_track)
         else
             m_handles[0]->format_title(&tf_hook, temp, m_to, nullptr);
 
-        if (strcmp(temp, m_current_text_raw)) {
+        if (strcmp(temp, m_current_text_raw) != 0) {
             m_current_text_raw = temp;
 
             m_font_change_data.set_size(0);

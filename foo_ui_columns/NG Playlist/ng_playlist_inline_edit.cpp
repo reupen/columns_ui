@@ -31,7 +31,7 @@ bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
             return false;
         }
         if (matching && i > 0
-            && ((ptrs[i] && ptrs[i - 1] && strcmp(ptrs[i], ptrs[i - 1]))
+            && ((ptrs[i] && ptrs[i - 1] && strcmp(ptrs[i], ptrs[i - 1]) != 0)
                    || ((!ptrs[i] || !ptrs[i - 1]) && (ptrs[i] != ptrs[i - 1]))))
             matching = false;
     }
@@ -52,7 +52,7 @@ bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
 void ng_playlist_view_t::notify_save_inline_edit(const char* value)
 {
     static_api_ptr_t<metadb_io_v2> tagger_api;
-    if (strcmp(value, "<multiple values>")) {
+    if (strcmp(value, "<multiple values>") != 0) {
         metadb_handle_list ptrs(m_edit_handles);
         pfc::list_t<file_info_impl> infos;
         pfc::list_t<bool> mask;
@@ -67,7 +67,7 @@ void ng_playlist_view_t::notify_save_inline_edit(const char* value)
             infos_ptr.add_item(&infos[i]);
             if (!mask[i]) {
                 const char* ptr = infos[i].meta_get(m_edit_field, 0);
-                if (!(mask[i] = !((!ptr && strlen(value)) || (ptr && strcmp(ptr, value)))))
+                if (!(mask[i] = !((!ptr && strlen(value)) || (ptr && strcmp(ptr, value) != 0))))
                     infos[i].meta_set(m_edit_field, value);
             }
         }

@@ -53,7 +53,7 @@ void filter_panel_t::notify_save_inline_edit(const char* value)
                             const char* ptr = infos[i].meta_enum_value(field_index, k);
                             if (((!ptr && m_edit_previous_value.is_empty())
                                     || !stricmp_utf8(m_edit_previous_value, ptr))
-                                && strcmp(value, ptr)) {
+                                && strcmp(value, ptr) != 0) {
                                 infos[i].meta_modify_value(field_index, k, value);
                                 b_remove = false;
                             }

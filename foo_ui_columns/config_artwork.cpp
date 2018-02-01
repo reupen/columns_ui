@@ -119,7 +119,7 @@ public:
             if (m_edit_index < tabsize(g_artwork_sources)
                 && m_edit_subindex < g_artwork_sources[m_edit_index].m_scripts->get_count()) {
                 pfc::string8& dest = (*g_artwork_sources[m_edit_index].m_scripts)[m_edit_subindex];
-                if (strcmp(dest, value)) {
+                if (strcmp(dest, value) != 0) {
                     dest = value;
                     pfc::list_t<uih::ListView::InsertItem> items;
                     items.set_count(1);

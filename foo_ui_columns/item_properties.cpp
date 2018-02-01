@@ -641,7 +641,7 @@ selection_properties_t::selection_properties_t()
 void selection_properties_t::notify_save_inline_edit(const char* value)
 {
     static_api_ptr_t<metadb_io_v2> tagger_api;
-    if (strcmp(value, "<mixed values>")) {
+    if (strcmp(value, "<mixed values>") != 0) {
         pfc::list_t<pfc::string8> values;
         const char *ptr = value, *start = ptr;
         while (*ptr) {
@@ -723,7 +723,7 @@ bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_cons
                 temp.reset();
                 if (m_edit_handles[i]->get_info_ref(p_info))
                     g_print_field(m_edit_field, p_info->info(), temp);
-                if (strcmp(temp, text)) {
+                if (strcmp(temp, text) != 0) {
                     text = "<mixed values>";
                     break;
                 }

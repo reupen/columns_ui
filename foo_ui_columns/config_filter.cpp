@@ -49,7 +49,7 @@ public:
             pfc::string8& dest = m_edit_column ? filter_panel::cfg_field_list[m_edit_index].m_field
                                                : filter_panel::cfg_field_list[m_edit_index].m_name;
             filter_panel::field_t field_old = filter_panel::cfg_field_list[m_edit_index];
-            if (strcmp(dest, value)) {
+            if (strcmp(dest, value) != 0) {
                 pfc::string8 valueReal = value;
                 if (m_edit_column == 0)
                     filter_panel::cfg_field_list.fix_name(valueReal);
