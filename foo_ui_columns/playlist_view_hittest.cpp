@@ -7,8 +7,8 @@ int playlist_view::hittest_item(int x, int y, bool check_in_column)
     get_playlist_rect(&playlist);
     POINT pt = {x, y};
 
-    if (check_in_column && !PtInRect(&playlist, pt)
-        || !check_in_column && (pt.y < playlist.top || pt.y > playlist.bottom))
+    if ((check_in_column && !PtInRect(&playlist, pt))
+        || (!check_in_column && (pt.y < playlist.top || pt.y > playlist.bottom)))
         return -1;
 
     if (check_in_column && (x + horizontal_offset > get_columns_total_width()))
