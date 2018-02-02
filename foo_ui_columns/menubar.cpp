@@ -175,11 +175,11 @@ public:
 
     void make_menu(unsigned idx);
 
-    inline void destroy_menu() const { SendMessage(get_wnd(), WM_CANCELMODE, 0, 0); }
+    void destroy_menu() const { SendMessage(get_wnd(), WM_CANCELMODE, 0, 0); }
 
-    inline void update_menu_acc() const { uPostMessage(get_wnd(), MSG_HIDE_MENUACC, 0, 0); }
+    void update_menu_acc() const { uPostMessage(get_wnd(), MSG_HIDE_MENUACC, 0, 0); }
 
-    inline void show_menu_acc() const { uPostMessage(get_wnd(), MSG_SHOW_MENUACC, 0, 0); }
+    void show_menu_acc() const { uPostMessage(get_wnd(), MSG_SHOW_MENUACC, 0, 0); }
 
     static const GUID extension_guid;
 

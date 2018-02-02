@@ -18,14 +18,16 @@ public:
     bool use_frame_top : 1;
     bool use_frame_right : 1;
     bool use_frame_bottom : 1;
-    inline void add_ref() { ref++; }
-    inline bool release()
+    void add_ref() { ref++; }
+
+    bool release()
     {
         if (ref)
             ref--;
         return (ref == 0);
     }
-    inline void copy_to(colourinfo& out) const
+
+    void copy_to(colourinfo& out) const
     {
         out.text_colour = text_colour;
         out.selected_text_colour = selected_text_colour;
@@ -42,7 +44,8 @@ public:
         out.use_frame_right = use_frame_right;
         out.use_frame_bottom = use_frame_bottom;
     }
-    inline colourinfo(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus,
+
+    colourinfo(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus,
         COLORREF sel_no_focus)
         : ref(1), use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false)
     {
@@ -53,7 +56,8 @@ public:
         selected_text_colour_non_focus.set(text_no_focus);
         selected_background_colour_non_focus.set(sel_no_focus);
     }
-    inline colourinfo(const colourinfo& in) : ref(1) { in.copy_to(*this); }
+
+    colourinfo(const colourinfo& in) : ref(1) { in.copy_to(*this); }
 };
 
 inline bool operator==(const colourinfo& c1, const colourinfo& c2)
@@ -127,8 +131,9 @@ public:
         : m_name(p_name, p_name_length), m_value(p_value, p_value_length)
     {
     }
-    inline const char* get_name() const { return m_name; }
-    inline const char* get_value() const { return m_value; }
+
+    const char* get_name() const { return m_name; }
+    const char* get_value() const { return m_value; }
 
 private:
     pfc::string_simple m_name, m_value;
@@ -164,7 +169,8 @@ public:
         titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
     bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
-    inline titleformat_hook_set_global(global_variable_list& vars, bool legacy = false)
+
+    titleformat_hook_set_global(global_variable_list& vars, bool legacy = false)
         : p_vars(vars), b_legacy(legacy){};
 };
 
@@ -177,12 +183,12 @@ public:
         titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
     bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
-    inline titleformat_hook_date(const SYSTEMTIME* st = nullptr) : p_st(st){};
+    titleformat_hook_date(const SYSTEMTIME* st = nullptr) : p_st(st){};
 };
 
 class titleformat_hook_splitter_pt3 : public titleformat_hook {
 public:
-    inline titleformat_hook_splitter_pt3(titleformat_hook* p_hook1, titleformat_hook* p_hook2,
+    titleformat_hook_splitter_pt3(titleformat_hook* p_hook1, titleformat_hook* p_hook2,
         titleformat_hook* p_hook3, titleformat_hook* p_hook4 = nullptr)
         : m_hook1(p_hook1), m_hook2(p_hook2), m_hook3(p_hook3), m_hook4(p_hook4){};
     bool process_field(
@@ -196,11 +202,11 @@ private:
 
 class playlist_cache : private pfc::ptr_list_t<playlist_entry_ui> {
 public:
-    inline void add_item(int idx) { insert_item((playlist_entry_ui*)nullptr, idx); }
+    void add_item(int idx) { insert_item((playlist_entry_ui*)nullptr, idx); }
 
     void delete_all();
 
-    inline bool get_active_columns_valid() { return m_active_columns_valid; }
+    bool get_active_columns_valid() { return m_active_columns_valid; }
 
     playlist_cache() : m_active_columns(0){};
 
@@ -229,13 +235,16 @@ public:
     void on_items_modified_fromplayback(
         unsigned p_playlist, const pfc::bit_array& p_mask, play_control::t_display_level p_level);
     void on_items_change(unsigned p_playlist, const pfc::bit_array& p_mask);
-    inline void on_items_replaced(unsigned p_playlist, const pfc::bit_array& p_mask,
+
+    void on_items_replaced(unsigned p_playlist, const pfc::bit_array& p_mask,
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data)
     {
         on_items_modified(p_playlist, p_mask);
     }
-    inline void on_playlist_activate(unsigned p_old, unsigned p_new) { active_playlist = p_new; }
-    inline void on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len)
+
+    void on_playlist_activate(unsigned p_old, unsigned p_new) { active_playlist = p_new; }
+
+    void on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len)
     {
         insert_item(new playlist_cache, p_index);
 #if 0
@@ -246,7 +255,8 @@ public:
 #endif
         active_playlist = static_api_ptr_t<playlist_manager>()->get_active_playlist();
     }
-    inline void on_playlists_reorder(const unsigned* p_order, unsigned p_count)
+
+    void on_playlists_reorder(const unsigned* p_order, unsigned p_count)
     {
         unsigned old_active = active_playlist;
 #if 0
@@ -293,7 +303,7 @@ public:
     }
     void on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len);
 
-    inline void active_make_extra(
+    void active_make_extra(
         unsigned idx, global_variable_list& p_out, const SYSTEMTIME* st = nullptr, bool b_legacy = false) const
     {
         assert(active_playlist != pfc_infinite);
@@ -306,27 +316,29 @@ public:
     COLORREF get_colour(unsigned playlist, unsigned idx, int col, colour_type colour);
     void get_colour(unsigned playlist, unsigned idx, int col, colourinfo& out);
 
-    inline void active_get_display_name(unsigned idx, int col, pfc::string_base& out)
+    void active_get_display_name(unsigned idx, int col, pfc::string_base& out)
     {
         assert(active_playlist != pfc_infinite);
         get_display_name(active_playlist, idx, col, out);
     }
-    inline COLORREF active_get_colour(unsigned idx, int col, colour_type colour)
+
+    COLORREF active_get_colour(unsigned idx, int col, colour_type colour)
     {
         assert(active_playlist != pfc_infinite);
         return get_colour(active_playlist, idx, col, colour);
     }
-    inline void active_get_colour(unsigned idx, int col, colourinfo& out)
+
+    void active_get_colour(unsigned idx, int col, colourinfo& out)
     {
         assert(active_playlist != pfc_infinite);
         get_colour(active_playlist, idx, col, out);
     }
 
-    inline unsigned get_active_playlist() { return active_playlist; }
+    unsigned get_active_playlist() { return active_playlist; }
 
-    inline unsigned playlist_get_count(unsigned p_playlist) { return get_item(p_playlist)->get_count(); }
+    unsigned playlist_get_count(unsigned p_playlist) { return get_item(p_playlist)->get_count(); }
 
-    inline unsigned activeplaylist_get_count()
+    unsigned activeplaylist_get_count()
     {
         if (active_playlist < get_count())
             return get_item(active_playlist)->get_count();
@@ -335,7 +347,7 @@ public:
 
     const pfc::bit_array& get_columns_mask(unsigned playlist);
 
-    inline const pfc::bit_array& active_get_columns_mask()
+    const pfc::bit_array& active_get_columns_mask()
     {
         static pfc::bit_array_false bt_false;
         if (is_active_playlist_valid())
@@ -345,14 +357,15 @@ public:
 
     unsigned column_get_active_count(unsigned playlist);
 
-    inline unsigned active_column_get_active_count()
+    unsigned active_column_get_active_count()
     {
         if (is_active_playlist_valid())
             return column_get_active_count(active_playlist);
         return 0;
     }
     unsigned column_active_to_actual(unsigned playlist, unsigned column);
-    inline unsigned active_column_active_to_actual(unsigned column)
+
+    unsigned active_column_active_to_actual(unsigned column)
     {
         assert(active_playlist != pfc_infinite);
         return column_active_to_actual(active_playlist, column);
@@ -371,25 +384,25 @@ public:
     bool get_playlist_sort(unsigned playlist, unsigned& idx, bool* p_descending = nullptr);
     void set_playlist_sort(unsigned playlist, unsigned column, bool descending);
 
-    inline bool is_active_playlist_valid() { return active_playlist != pfc_infinite; }
+    bool is_active_playlist_valid() { return active_playlist != pfc_infinite; }
 
-    inline void active_set_playlist_sort(unsigned column, bool descending)
+    void active_set_playlist_sort(unsigned column, bool descending)
     {
         assert(is_active_playlist_valid());
         set_playlist_sort(active_playlist, column, descending);
         //        else console::error("No active playlist!");
     }
 
-    inline bool active_get_playlist_sort(unsigned& idx, bool* p_descending = nullptr)
+    bool active_get_playlist_sort(unsigned& idx, bool* p_descending = nullptr)
     {
         if (is_active_playlist_valid())
             return get_playlist_sort(active_playlist, idx, p_descending);
         return false;
     }
 
-    inline playlist_view_cache() = default;
+    playlist_view_cache() = default;
 
-    inline bool is_active() { return m_active; }
+    bool is_active() { return m_active; }
 
 private:
     /*    inline bool active_is_valid(unsigned idx)
@@ -412,13 +425,13 @@ class t_local_cache : private playlist_callback {
 public:
     class t_local_cache_entry {
     public:
-        inline bool get_last_position(unsigned& p_out)
+        bool get_last_position(unsigned& p_out)
         {
             p_out = m_last_position;
             return m_last_position_valid;
         }
 
-        inline void set_last_position(unsigned u_position)
+        void set_last_position(unsigned u_position)
         {
             m_last_position_valid = true;
             m_last_position = u_position;

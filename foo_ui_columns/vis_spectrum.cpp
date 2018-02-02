@@ -68,7 +68,7 @@ public:
     void paint_background(HDC dc, const RECT* rc_client) override;
     void disable() override;
 
-    inline void clear() { refresh(nullptr); }
+    void clear() { refresh(nullptr); }
 
     bool have_config_popup() const override { return true; }
 
