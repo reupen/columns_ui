@@ -286,7 +286,6 @@ public:
         }
         reorder(p_order);
     }
-    void on_playlists_removing(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count);
     void on_playlists_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
     {
 #if 0

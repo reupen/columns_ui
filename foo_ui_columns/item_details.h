@@ -334,7 +334,6 @@ public:
     void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
 
     static void g_on_app_activate(bool b_activated);
-    static void g_redraw_all();
     static void g_on_font_change();
     static void g_on_colours_change();
 

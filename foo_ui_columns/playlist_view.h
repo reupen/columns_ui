@@ -225,8 +225,6 @@ private:
 
     //#endif
 
-    static LRESULT WINAPI g_inline_edit_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    LRESULT WINAPI on_inline_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     WNDPROC m_inline_edit_proc{nullptr};
 
     t_local_cache m_cache;

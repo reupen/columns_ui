@@ -157,8 +157,6 @@ private:
     };
     class panel_list : public pfc::list_t<pfc::refcounted_object_ptr_t<panel>> {
     public:
-        bool move_up(unsigned idx);
-        bool move_down(unsigned idx);
         bool find_by_wnd(HWND wnd, unsigned& p_out);
         bool find_by_wnd_child(HWND wnd, unsigned& p_out);
     };
