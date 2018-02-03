@@ -149,11 +149,6 @@ class tab_layout_new : public preferences_tab {
         uie::window_ptr m_window;
         service_ptr_t<uie::splitter_window> m_splitter;
         pfc::list_t<ptr> m_children;
-        ~node() override
-        {
-            m_children.remove_all();
-            // m_item.release();
-        }
         pfc::rcptr_t<uie::splitter_item_ptr> m_item;
         node() : m_item(pfc::rcnew_t<uie::splitter_item_ptr>()){};
     };

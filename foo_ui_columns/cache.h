@@ -58,6 +58,14 @@ public:
     }
 
     colourinfo(const colourinfo& in) : ref(1) { in.copy_to(*this); }
+    colourinfo& operator=(const colourinfo& in)
+    {
+        in.copy_to(*this);
+        return *this;
+    }
+    colourinfo(colourinfo&& in) = delete;
+    colourinfo& operator=(colourinfo&& in) = delete;
+    ~colourinfo() = default;
 };
 
 inline bool operator==(const colourinfo& c1, const colourinfo& c2)

@@ -104,6 +104,10 @@ public:
 
     public:
         button_image() = default;
+        button_image(const button_image&) = delete;
+        button_image& operator=(const button_image&) = delete;
+        button_image(button_image&&) = delete;
+        button_image& operator=(button_image&&) = delete;
         ~button_image();
         bool is_valid();
         void load(const button::custom_image& p_image);

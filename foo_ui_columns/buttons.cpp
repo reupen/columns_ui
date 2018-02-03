@@ -116,11 +116,8 @@ void toolbar_extension::create_toolbar()
     pfc::array_t<TBBUTTON> tbb;
     tbb.set_size(m_buttons.get_count());
 
-    pfc::array_t<button_image> images;
-    images.set_size(m_buttons.get_count());
-
-    pfc::array_t<button_image> images_hot;
-    images_hot.set_size(m_buttons.get_count());
+    std::vector<button_image> images(m_buttons.get_count());
+    std::vector<button_image> images_hot(m_buttons.get_count());
 
     memset(tbb.get_ptr(), 0, tbb.get_size() * sizeof(*tbb.get_ptr()));
 

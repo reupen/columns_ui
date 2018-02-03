@@ -36,6 +36,10 @@
         }                                                                                                             \
         menu_command_button_t() { m_buttons.add_item(this); }                                                         \
         ~menu_command_button_t() { m_buttons.remove_item(this); }                                                     \
+        menu_command_button_t(const menu_command_button_t&) = delete;                                                 \
+        menu_command_button_t& operator=(const menu_command_button_t&) = delete;                                      \
+        menu_command_button_t(menu_command_button_t&&) = delete;                                                      \
+        menu_command_button_t& operator=(menu_command_button_t&&) = delete;                                           \
     };                                                                                                                \
     pfc::ptr_list_t<menu_command_button_t> menu_command_button_t::m_buttons;                                          \
     uie::button_factory<menu_command_button_t> g_menu_command_button;                                                 \

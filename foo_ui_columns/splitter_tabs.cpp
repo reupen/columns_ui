@@ -161,8 +161,6 @@ bool splitter_window_tabs_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_ou
     return false;
 }
 
-splitter_window_tabs_impl::panel::~panel() = default;
-
 uie::splitter_item_full_v2_t* splitter_window_tabs_impl::panel::create_splitter_item()
 {
     auto ret = new uie::splitter_item_full_v2_impl_t;
