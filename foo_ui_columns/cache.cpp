@@ -163,7 +163,7 @@ playlist_entry_ui::~playlist_entry_ui()
 void process_colour_string(const char* src, colourinfo& out)
 {
     const char* ptr = src;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     const char* start = ptr;
@@ -172,11 +172,11 @@ void process_colour_string(const char* src, colourinfo& out)
     if (ptr > start) {
         out.text_colour.set(strtoul(start, nullptr, 16));
     }
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     start = ptr;
@@ -186,11 +186,11 @@ void process_colour_string(const char* src, colourinfo& out)
         out.selected_text_colour.set(strtoul(start, nullptr, 16));
         out.selected_text_colour_non_focus.set(out.selected_text_colour);
     }
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     start = ptr;
@@ -200,11 +200,11 @@ void process_colour_string(const char* src, colourinfo& out)
         out.background_colour.set(strtoul(start, nullptr, 16));
     }
 
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     bool b_back = false;
@@ -216,11 +216,11 @@ void process_colour_string(const char* src, colourinfo& out)
         out.selected_background_colour.set(strtoul(start, nullptr, 16));
     }
 
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     start = ptr;
@@ -231,11 +231,11 @@ void process_colour_string(const char* src, colourinfo& out)
     else if (b_back)
         out.selected_background_colour_non_focus.set(out.selected_background_colour);
 
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     start = ptr;
@@ -248,11 +248,11 @@ void process_colour_string(const char* src, colourinfo& out)
     // else
     //    out.use_frame_left = false;
 
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     start = ptr;
@@ -265,11 +265,11 @@ void process_colour_string(const char* src, colourinfo& out)
     // else
     //    out.use_frame_top = false;
 
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     start = ptr;
@@ -282,11 +282,11 @@ void process_colour_string(const char* src, colourinfo& out)
     // else
     //    out.use_frame_right = false;
 
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
-    if (*ptr && *ptr == '|')
+    if (*ptr == '|')
         ptr++;
-    if (*ptr && *ptr == 3)
+    if (*ptr == 3)
         ptr++;
 
     start = ptr;
