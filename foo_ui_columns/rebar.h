@@ -85,6 +85,12 @@ public:
     band_cache cache;
 
     rebar_window() = default;
+    rebar_window(const rebar_window&) = delete;
+    rebar_window& operator=(const rebar_window&) = delete;
+    rebar_window(rebar_window&&) = delete;
+    rebar_window& operator=(rebar_window&&) = delete;
+    ~rebar_window() = default;
+
     HWND init();
 
     void add_band(
@@ -120,8 +126,6 @@ public:
     {
         return std::find_if(std::begin(m_bands), std::end(m_bands), [&wnd](auto&& item) { return item.m_wnd == wnd; });
     }
-
-    ~rebar_window();
 };
 
 ui_extension::window_host& get_rebar_host();

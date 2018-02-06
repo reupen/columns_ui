@@ -265,7 +265,13 @@ public:
         , br_fore(nullptr)
         , br_back(nullptr)
         , frame(p_frame)
-        , b_show_frame(p_show_frame){};
+        , b_show_frame(p_show_frame)
+    {
+    }
+    spec_param(const spec_param&) = delete;
+    spec_param& operator=(const spec_param&) = delete;
+    spec_param(spec_param&&) = delete;
+    spec_param& operator=(spec_param&&) = delete;
     ~spec_param()
     {
         flush_back();

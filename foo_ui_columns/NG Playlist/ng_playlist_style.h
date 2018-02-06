@@ -76,42 +76,11 @@ public:
     using self_t = style_data_cell_t;
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
 
-    /*inline void set (const style_data_cell_t::ptr & in)
-    {
-        text_colour = in->text_colour;
-        selected_text_colour = in->selected_text_colour;
-        background_colour = in->background_colour;
-        selected_background_colour = in->selected_background_colour;
-        selected_text_colour_non_focus = in->selected_text_colour_non_focus;
-        selected_background_colour_non_focus = in->selected_background_colour_non_focus;
-        frame_left = in->frame_left;
-        frame_top = in->frame_top;
-        frame_right = in->frame_right;
-        frame_bottom = in->frame_bottom;
-        use_frame_left = in->use_frame_left;
-        use_frame_top = in->use_frame_top;
-        use_frame_right = in->use_frame_right;
-        use_frame_bottom = in->use_frame_bottom;
-    }
-    style_data_cell_t(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus,
-    COLORREF sel_no_focus)// : use_frame_left(false), use_frame_top(false), use_frame_bottom(false),
-    use_frame_right(false)
-    {
-        text_colour.set(text);
-        selected_text_colour.set(text_sel);
-        background_colour.set(back);
-        selected_background_colour.set(back_sel);
-        selected_text_colour_non_focus.set(text_no_focus);
-        selected_background_colour_non_focus.set(sel_no_focus);
-    }
-    style_data_cell_t(const style_data_cell_t::ptr & in)
-    {
-        set(in);
-    }*/
     style_data_cell_t(const style_data_cell_info_t& in) : style_data_cell_info_t(in) {}
-    // style_data_cell_t() : use_frame_left(false), use_frame_top(false), use_frame_bottom(false),
-    // use_frame_right(false) {};
-
+    style_data_cell_t(const style_data_cell_t&) = delete;
+    style_data_cell_t& operator=(const style_data_cell_t&) = delete;
+    style_data_cell_t(style_data_cell_t&&) = delete;
+    style_data_cell_t& operator=(style_data_cell_t&&) = delete;
     ~style_data_cell_t() override;
 };
 

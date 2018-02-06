@@ -91,6 +91,10 @@ public:
     }
 
     editor_font_notify() = default;
+    editor_font_notify(const editor_font_notify&) = delete;
+    editor_font_notify& operator=(const editor_font_notify&) = delete;
+    editor_font_notify(editor_font_notify&&) = delete;
+    editor_font_notify& operator=(editor_font_notify&&) = delete;
     ~editor_font_notify()
     {
         if (g_edit_font) {

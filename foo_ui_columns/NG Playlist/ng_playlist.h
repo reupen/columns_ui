@@ -127,10 +127,6 @@ public:
     bool is_ready() { return !is_thread_open(); }
     const pfc::map_t<GUID, pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>>& get_content() const { return m_bitmaps; }
 
-    artwork_reader_ng_t() : m_back(RGB(255, 255, 255)){};
-
-    ~artwork_reader_ng_t() override = default;
-
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
         const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
@@ -164,7 +160,7 @@ private:
     pfc::map_t<GUID, pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>> m_bitmaps;
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
     t_size m_cx{0}, m_cy{0};
-    COLORREF m_back;
+    COLORREF m_back{RGB(255, 255, 255)};
     bool m_reflection{false};
     metadb_handle_ptr m_handle;
     completion_notify_artwork_base_t::ptr_t m_notify;
