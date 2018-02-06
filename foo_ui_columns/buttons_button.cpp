@@ -47,36 +47,6 @@ void toolbar_extension::button::set(const toolbar_extension::button& p_source)
     m_text = p_source.m_text;
 }
 
-//        inline button(const button & p_source)
-//        {
-//            set(p_source);
-//        }
-toolbar_extension::button::button(GUID p_guid, bool p_custom, const char* p_custom_bitmap_path,
-    const char* p_custom_bitmap_mask_path, COLORREF p_custom_bitmap_colour_mask,
-    ui_extension::t_mask p_custom_bitmap_mask_type)
-{
-    m_guid = p_guid;
-    m_use_custom = p_custom;
-    if (p_custom_bitmap_path)
-        m_custom_image.m_path = p_custom_bitmap_path;
-    if (p_custom_bitmap_mask_path)
-        m_custom_image.m_mask_path = p_custom_bitmap_mask_path;
-    m_custom_image.m_mask_colour = p_custom_bitmap_colour_mask;
-    m_custom_image.m_mask_type = p_custom_bitmap_mask_type;
-    m_use_custom_hot = false;
-    m_custom_hot_image.m_mask_type = uie::MASK_NONE;
-    m_custom_hot_image.m_mask_colour = 0;
-    m_type = TYPE_SEPARATOR;
-    m_filter = FILTER_ACTIVE_SELECTION;
-    m_show = SHOW_IMAGE;
-    m_use_custom_text = false;
-}
-
-toolbar_extension::button& toolbar_extension::button::operator=(const toolbar_extension::button& p_source)
-{
-    set(p_source);
-    return *this;
-}
 void toolbar_extension::button::write(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t(m_type, p_abort);
@@ -100,7 +70,7 @@ void toolbar_extension::button::write(stream_writer* out, abort_callback& p_abor
 void toolbar_extension::button::read(
     toolbar_extension::t_config_version p_version, stream_reader* reader, abort_callback& p_abort)
 {
-    *this = toolbar_extension::g_button_null;
+    *this = button{};
 
     reader->read_lendian_t(m_type, p_abort);
     reader->read_lendian_t(m_filter, p_abort);

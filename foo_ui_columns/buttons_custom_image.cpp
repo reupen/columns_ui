@@ -1,10 +1,6 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-toolbar_extension::button::custom_image& toolbar_extension::button::custom_image::operator=(
-    const toolbar_extension::button::custom_image& p_source)
-    = default;
-
 void toolbar_extension::button::custom_image::get_path(pfc::string8& p_out) const
 {
     p_out.reset();
