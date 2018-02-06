@@ -300,8 +300,8 @@ size_t filter_panel_t::make_data_entries(const metadb_handle_list_t<pfc::alloc_f
     class handle_info_t {
     public:
         metadb_info_container::ptr m_info;
-        t_size m_value_count;
-        t_size m_field_index;
+        t_size m_value_count{};
+        t_size m_field_index{};
     };
 
     if (m_field_data.is_empty())

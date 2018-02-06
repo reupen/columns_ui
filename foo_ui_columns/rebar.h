@@ -15,8 +15,8 @@
 #include "rebar_band.h"
 
 struct band_cache_entry {
-    GUID guid;
-    unsigned width;
+    GUID guid{};
+    unsigned width{};
 };
 
 class band_cache : public pfc::list_t<band_cache_entry> {

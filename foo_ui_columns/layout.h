@@ -14,7 +14,7 @@ public:
     class preset {
     public:
         pfc::array_t<t_uint8> m_val;
-        GUID m_guid;
+        GUID m_guid{};
         pfc::string_simple m_name;
         void write(stream_writer* out, abort_callback& p_abort);
         void read(stream_reader* out, abort_callback& p_abort);

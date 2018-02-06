@@ -137,10 +137,6 @@ public:
 
     static void on_playlist_activate(unsigned p_old, unsigned p_new);
 
-    playlist_view();
-
-    ~playlist_view();
-
     const GUID& get_extension_guid() const override;
 
     void get_name(pfc::string_base& out) const override;
@@ -233,8 +229,8 @@ private:
     bool dragged{true};
     int drag_type{0};
     unsigned dragitem{0}, dragstartitem{0};
-    POINT drag_start;
-    POINT drag_start_lmb;
+    POINT drag_start{};
+    POINT drag_start_lmb{};
     int last_idx{-1};
     int last_column{-1};
     int g_shift_item_start{0};
@@ -246,7 +242,7 @@ private:
     bool m_always_show_focus{false};
     bool m_prevent_wm_char_processing{false};
 
-    RECT tooltip;
+    RECT tooltip{};
 
     service_ptr_t<mainmenu_manager> g_main_menu_a;
     unsigned MENU_A_BASE{1};

@@ -12,10 +12,10 @@ editor_font_notify g_editor_font_notify;
 struct column_times {
     service_ptr_t<titleformat_object> to_display;
     service_ptr_t<titleformat_object> to_colour;
-    double time_display_compile;
-    double time_colour_compile;
-    double time_display;
-    double time_colour;
+    double time_display_compile{};
+    double time_colour_compile{};
+    double time_display{};
+    double time_colour{};
 };
 
 void double_to_string(double blah, pfc::string_base& p_out, int points = 10, bool ms = true)

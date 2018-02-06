@@ -16,7 +16,7 @@ class toolbar_extension : public ui_extension::container_ui_extension {
 
     WNDPROC menuproc{nullptr};
     bool initialised{false}, m_gdiplus_initialised{false};
-    ULONG_PTR m_gdiplus_instance;
+    ULONG_PTR m_gdiplus_instance{};
 
 public:
     enum t_filter : uint32_t {
@@ -302,14 +302,14 @@ class command_picker_data {
         pfc::string8 m_desc;
     };
     std::vector<std::unique_ptr<command_data>> m_data;
-    HWND m_wnd;
-    HWND wnd_group;
-    HWND wnd_filter;
-    HWND wnd_command;
-    unsigned m_group;
+    HWND m_wnd{};
+    HWND wnd_group{};
+    HWND wnd_filter{};
+    HWND wnd_command{};
+    unsigned m_group{toolbar_extension::TYPE_SEPARATOR};
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_filter;
+    unsigned m_filter{toolbar_extension::FILTER_ACTIVE_SELECTION};
 
     bool __populate_mainmenu_dynamic_recur(
         command_data& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root);

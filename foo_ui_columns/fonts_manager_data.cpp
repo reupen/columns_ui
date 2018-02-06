@@ -134,7 +134,6 @@ void fonts_manager_data::get_data_raw(stream_writer* p_stream, abort_callback& p
 }
 
 fonts_manager_data::entry_t::entry_t(bool b_global /*= false*/)
-    : guid(pfc::guid_null), font_mode(cui::fonts::font_mode_system)
 {
     reset_fonts();
 }

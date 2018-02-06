@@ -88,10 +88,10 @@ public:
         playlists_tabs_drop_target(playlists_tabs_extension* p_wnd);
 
     private:
-        bool m_last_rmb;
-        bool m_is_accepted_type;
-        long drop_ref_count;
-        POINTL last_over;
+        bool m_last_rmb{};
+        bool m_is_accepted_type{};
+        long drop_ref_count{};
+        POINTL last_over{};
         service_ptr_t<playlists_tabs_extension> p_list;
         pfc::com_ptr_t<IDataObject> m_DataObject;
         mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;

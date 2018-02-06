@@ -104,10 +104,7 @@ void band_cache::add_entry(const GUID& guid, unsigned width)
             return;
         }
     }
-    band_cache_entry item;
-    item.guid = guid;
-    item.width = width;
-    add_item(item);
+    add_item({guid, width});
 }
 
 unsigned band_cache::get_width(const GUID& guid)

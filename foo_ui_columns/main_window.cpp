@@ -295,7 +295,7 @@ void size_windows()
 class rename_param {
 public:
     modal_dialog_scope m_scope;
-    pfc::string8* m_text;
+    pfc::string8* m_text{};
 };
 
 static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

@@ -114,7 +114,7 @@ private:
             bool test_autohide_window(HWND wnd);
         } m_container;
 
-        GUID m_guid;
+        GUID m_guid{};
         unsigned m_caption_orientation{NULL};
         bool m_locked{false};
         bool m_hidden{false};

@@ -91,7 +91,6 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
 toolbar_extension::toolbar_extension()
 {
     reset_buttons(m_buttons);
-    memset(&m_gdiplus_instance, 0, sizeof(m_gdiplus_instance));
 };
 
 toolbar_extension::~toolbar_extension() = default;

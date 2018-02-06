@@ -6,7 +6,7 @@
 class colours_client_list_entry_t {
 public:
     pfc::string8 m_name;
-    GUID m_guid;
+    GUID m_guid{};
     cui::colours::client::ptr m_ptr;
 };
 
@@ -33,7 +33,7 @@ public:
 class fonts_client_list_entry_t {
 public:
     pfc::string8 m_name;
-    GUID m_guid;
+    GUID m_guid{};
     cui::fonts::client::ptr m_ptr;
 };
 

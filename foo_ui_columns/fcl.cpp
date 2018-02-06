@@ -198,7 +198,7 @@ cui::fcl::group_impl_factory g_group_titles(
 
 class t_panel_info {
 public:
-    GUID guid;
+    GUID guid{};
     pfc::string8 name;
 };
 class panel_info_list : public pfc::list_t<t_panel_info> {
@@ -293,7 +293,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
     try {
         class t_dataset {
         public:
-            GUID guid;
+            GUID guid{};
             pfc::array_t<t_uint8> data;
         };
 

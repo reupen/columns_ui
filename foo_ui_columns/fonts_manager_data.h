@@ -15,9 +15,9 @@ public:
             identifier_mode,
             identifier_font,
         };
-        GUID guid;
-        LOGFONT font;
-        cui::fonts::font_mode_t font_mode;
+        GUID guid{};
+        LOGFONT font{};
+        cui::fonts::font_mode_t font_mode{cui::fonts::font_mode_system};
         void write(stream_writer* p_stream, abort_callback& p_abort);
         void read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort);
         void _export(stream_writer* p_stream, abort_callback& p_abort);

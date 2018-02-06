@@ -9,21 +9,6 @@ column_list_t playlist_view::columns;
 
 pfc::ptr_list_t<playlist_view> playlist_view::list_playlist;
 
-playlist_view::playlist_view()
-{
-    drag_start.x = 0;
-    drag_start.y = 0;
-    drag_start_lmb.x = 0;
-    drag_start_lmb.y = 0;
-
-    tooltip.left = 0;
-    tooltip.top = 0;
-    tooltip.right = 0;
-    tooltip.bottom = 0;
-};
-
-playlist_view::~playlist_view() = default;
-
 // {F20BED8F-225B-46c3-9FC7-454CEDB6CDAD}
 GUID playlist_view::extension_guid = {0xf20bed8f, 0x225b, 0x46c3, {0x9f, 0xc7, 0x45, 0x4c, 0xed, 0xb6, 0xcd, 0xad}};
 
