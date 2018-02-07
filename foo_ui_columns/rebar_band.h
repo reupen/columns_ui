@@ -22,6 +22,7 @@ public:
     RebarBandInfo& operator=(RebarBandInfo&&) = default;
     RebarBandInfo& operator=(const RebarBandInfo& band_info);
     RebarBandInfo() = default;
+    ~RebarBandInfo() = default;
 
     RebarBandInfo(
         GUID guid, uih::IntegerAndDpi<uint32_t> width, bool break_before_band = false, uie::window_ptr window = {})

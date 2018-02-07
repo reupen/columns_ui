@@ -85,7 +85,7 @@ public:
     font_data_t m_data;
 
     gdi_object_t<HFONT>::ptr_t m_font;
-    t_size m_height;
+    t_size m_height{};
     // font_t (const font_t & p_font) : m_font(p_font.m_font), m_height(p_font.m_height), m_data(p_font.m_data) {};
 };
 
@@ -95,7 +95,7 @@ class font_change_info_t {
 public:
     class font_change_entry_t {
     public:
-        t_size m_text_index;
+        t_size m_text_index{};
         font_t::ptr_t m_font;
     };
 
@@ -156,7 +156,7 @@ public:
     void initialise(const LOGFONT& p_lf_default, HWND parent, UINT edit);
 
 private:
-    LOGFONT m_lf;
+    LOGFONT m_lf{};
 };
 
 class item_details_t
@@ -334,7 +334,6 @@ public:
     void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
 
     static void g_on_app_activate(bool b_activated);
-    static void g_redraw_all();
     static void g_on_font_change();
     static void g_on_colours_change();
 
@@ -394,7 +393,7 @@ private:
     display_line_info_list_t m_display_line_info;
     bool m_display_info_valid{false};
 
-    SIZE m_display_sz;
+    SIZE m_display_sz{};
 
     pfc::string8 m_current_text, m_script, m_current_text_raw;
     pfc::string8_fast_aggressive m_current_display_text;
@@ -415,16 +414,19 @@ private:
 class item_details_config_t {
 public:
     pfc::string8 m_script;
-    t_size m_edge_style, m_horizontal_alignment, m_vertical_alignment;
+    uint32_t m_edge_style{};
+    uint32_t m_horizontal_alignment{};
+    uint32_t m_vertical_alignment{};
     font_code_generator_t m_font_code_generator;
-    bool m_modal, m_timer_active;
+    bool m_modal{};
+    bool m_timer_active{};
     service_ptr_t<item_details_t> m_this;
-    HWND m_wnd;
+    HWND m_wnd{};
 
     enum { timer_id = 100 };
 
     static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    item_details_config_t(const char* p_text, t_size edge_style, t_size halign, t_size valign);
+    item_details_config_t(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign);
 
     bool run_modal(HWND wnd);
     void run_modeless(HWND wnd, item_details_t* p_this);

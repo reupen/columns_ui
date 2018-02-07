@@ -188,14 +188,8 @@ bool item_details_config_t::run_modal(HWND wnd)
     return uDialogBox(IDD_ITEMDETAILS_CONFIG, wnd, g_DialogProc, (LPARAM)this) != 0;
 }
 
-item_details_config_t::item_details_config_t(const char* p_text, t_size edge_style, t_size halign, t_size valign)
-    : m_script(p_text)
-    , m_edge_style(edge_style)
-    , m_horizontal_alignment(halign)
-    , m_vertical_alignment(valign)
-    , m_modal(true)
-    , m_timer_active(false)
-    , m_wnd(nullptr)
+item_details_config_t::item_details_config_t(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)
+    : m_script(p_text), m_edge_style(edge_style), m_horizontal_alignment(halign), m_vertical_alignment(valign)
 {
 }
 

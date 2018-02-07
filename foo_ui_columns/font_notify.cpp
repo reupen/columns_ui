@@ -217,7 +217,7 @@ void g_get_font_size_next_step(LOGFONT& p_lf, bool up)
     {
         HDC dc = GetDC(nullptr);
 
-        fontsizeinfo size;
+        fontsizeinfo size{};
 
         size.up = up;
         size.caps = GetDeviceCaps(dc, LOGPIXELSY);

@@ -33,7 +33,6 @@ void toolbar_extension::import_config(stream_reader* p_reader, t_size p_size, ab
 {
     toolbar_extension::config_param param;
     param.m_selection = nullptr;
-    param.m_buttons = m_buttons_config;
     param.m_child = nullptr;
     param.m_active = 0;
     param.m_image = nullptr;
@@ -41,21 +40,14 @@ void toolbar_extension::import_config(stream_reader* p_reader, t_size p_size, ab
     param.m_appearance = m_appearance;
     param.import_from_stream(p_reader, false, p_abort);
 
-    m_text_below = param.m_text_below;
-    m_buttons_config = param.m_buttons;
-    m_appearance = param.m_appearance;
-    if (initialised) {
-        destroy_toolbar();
-        create_toolbar();
-        get_host()->on_size_limit_change(wnd_host, ui_extension::size_limit_minimum_width);
-    }
+    configure(param.m_buttons, param.m_text_below, param.m_appearance);
 };
 
 void toolbar_extension::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     config_param param;
     param.m_selection = nullptr;
-    param.m_buttons = m_buttons_config;
+    param.m_buttons = m_buttons;
     param.m_child = nullptr;
     param.m_active = 0;
     param.m_image = nullptr;
@@ -68,13 +60,10 @@ void toolbar_extension::export_config(stream_writer* p_writer, abort_callback& p
 const GUID toolbar_extension::g_guid_fcb
     = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 
-const toolbar_extension::button toolbar_extension::g_button_null(
-    pfc::guid_null, false, "", "", 0, ui_extension::MASK_NONE);
-
 void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
 {
     p_buttons.remove_all();
-    button temp = g_button_null;
+    button temp{};
 
     temp.m_type = TYPE_MENU_ITEM_MAIN;
     temp.m_show = SHOW_IMAGE;
@@ -101,8 +90,7 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
 
 toolbar_extension::toolbar_extension()
 {
-    reset_buttons(m_buttons_config);
-    memset(&m_gdiplus_instance, 0, sizeof(m_gdiplus_instance));
+    reset_buttons(m_buttons);
 };
 
 toolbar_extension::~toolbar_extension() = default;
@@ -111,16 +99,11 @@ const TCHAR* toolbar_extension::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFF
 
 void toolbar_extension::create_toolbar()
 {
-    m_buttons.add_items(m_buttons_config);
-
     pfc::array_t<TBBUTTON> tbb;
     tbb.set_size(m_buttons.get_count());
 
-    pfc::array_t<button_image> images;
-    images.set_size(m_buttons.get_count());
-
-    pfc::array_t<button_image> images_hot;
-    images_hot.set_size(m_buttons.get_count());
+    std::vector<button_image> images(m_buttons.get_count());
+    std::vector<button_image> images_hot(m_buttons.get_count());
 
     memset(tbb.get_ptr(), 0, tbb.get_size() * sizeof(*tbb.get_ptr()));
 
@@ -543,32 +526,37 @@ void toolbar_extension::get_category(pfc::string_base& out) const
 
 void toolbar_extension::get_config(stream_writer* out, abort_callback& p_abort) const
 {
-    unsigned count = m_buttons_config.get_count();
+    unsigned count = m_buttons.get_count();
     out->write_lendian_t(VERSION_CURRENT, p_abort);
     out->write_lendian_t(m_text_below, p_abort);
     out->write_lendian_t(m_appearance, p_abort);
     out->write_lendian_t(count, p_abort);
     for (unsigned n = 0; n < count; n++) {
-        m_buttons_config[n].write(out, p_abort);
+        m_buttons[n].write(out, p_abort);
     }
 }
 
 void toolbar_extension::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
-    if (p_size) {
-        t_config_version p_version;
-        unsigned count = m_buttons_config.get_count();
-        p_reader->read_lendian_t(p_version, p_abort);
-        if (p_version <= VERSION_CURRENT) {
-            p_reader->read_lendian_t(m_text_below, p_abort);
-            p_reader->read_lendian_t(m_appearance, p_abort);
-            p_reader->read_lendian_t(count, p_abort);
-            m_buttons_config.remove_all();
-            for (unsigned n = 0; n < count; n++) {
-                button temp;
-                temp.read(p_version, p_reader, p_abort);
-                m_buttons_config.add_item(temp);
-            }
+    if (!p_size)
+        return;
+
+    if (get_wnd())
+        throw pfc::exception_bug_check(
+            "uie::window::set_config() cannot be called once the window has been initialised.");
+
+    t_config_version p_version;
+    unsigned count = m_buttons.get_count();
+    p_reader->read_lendian_t(p_version, p_abort);
+    if (p_version <= VERSION_CURRENT) {
+        p_reader->read_lendian_t(m_text_below, p_abort);
+        p_reader->read_lendian_t(m_appearance, p_abort);
+        p_reader->read_lendian_t(count, p_abort);
+        m_buttons.remove_all();
+        for (unsigned n = 0; n < count; n++) {
+            button temp;
+            temp.read(p_version, p_reader, p_abort);
+            m_buttons.add_item(temp);
         }
     }
 }
@@ -686,7 +674,7 @@ bool toolbar_extension::show_config_popup(HWND wnd_parent)
 {
     config_param param;
     param.m_selection = nullptr;
-    param.m_buttons = m_buttons_config;
+    param.m_buttons = m_buttons;
     param.m_child = nullptr;
     param.m_active = 0;
     param.m_image = nullptr;
@@ -694,14 +682,7 @@ bool toolbar_extension::show_config_popup(HWND wnd_parent)
     param.m_appearance = m_appearance;
     bool rv = !!uDialogBox(IDD_BUTTONS, wnd_parent, config_param::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
     if (rv) {
-        m_text_below = param.m_text_below;
-        m_buttons_config = param.m_buttons;
-        m_appearance = param.m_appearance;
-        if (initialised) {
-            destroy_toolbar();
-            create_toolbar();
-            get_host()->on_size_limit_change(wnd_host, ui_extension::size_limit_minimum_width);
-        }
+        configure(param.m_buttons, param.m_text_below, param.m_appearance);
     }
     return rv;
 }

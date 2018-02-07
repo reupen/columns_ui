@@ -9,19 +9,6 @@ class toolbar_extension : public ui_extension::container_ui_extension {
 
     enum t_config_version { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
 
-    enum t_filter { FILTER_NONE, FILTER_PLAYING, FILTER_PLAYLIST, FILTER_ACTIVE_SELECTION };
-
-    enum t_type {
-        TYPE_SEPARATOR,
-        TYPE_BUTTON,
-        TYPE_MENU_ITEM_CONTEXT,
-        TYPE_MENU_ITEM_MAIN,
-    };
-
-    enum t_show { SHOW_IMAGE, SHOW_IMAGE_TEXT, SHOW_TEXT };
-
-    enum t_appearance { APPEARANCE_NORMAL, APPEARANCE_FLAT, APPEARANCE_NOEDGE };
-
     /** For config dialog */
     enum { MSG_BUTTON_CHANGE = WM_USER + 2, MSG_COMMAND_CHANGE = WM_USER + 3 };
 
@@ -29,11 +16,52 @@ class toolbar_extension : public ui_extension::container_ui_extension {
 
     WNDPROC menuproc{nullptr};
     bool initialised{false}, m_gdiplus_initialised{false};
-    ULONG_PTR m_gdiplus_instance;
+    ULONG_PTR m_gdiplus_instance{};
 
 public:
+    enum t_filter : uint32_t {
+        FILTER_NONE,
+        FILTER_PLAYING,
+        FILTER_PLAYLIST,
+        FILTER_ACTIVE_SELECTION,
+    };
+
+    enum t_type : uint32_t {
+        TYPE_SEPARATOR,
+        TYPE_BUTTON,
+        TYPE_MENU_ITEM_CONTEXT,
+        TYPE_MENU_ITEM_MAIN,
+    };
+
+    enum t_show : uint32_t {
+        SHOW_IMAGE,
+        SHOW_IMAGE_TEXT,
+        SHOW_TEXT,
+    };
+
+    enum t_appearance : uint32_t {
+        APPEARANCE_NORMAL,
+        APPEARANCE_FLAT,
+        APPEARANCE_NOEDGE,
+    };
+
     class button {
     public:
+        class custom_image {
+        public:
+            pfc::string_simple m_path;
+            pfc::string_simple m_mask_path;
+            COLORREF m_mask_colour{};
+            ui_extension::t_mask m_mask_type{uie::MASK_NONE};
+
+            void get_path(pfc::string8& p_out) const;
+            void write(stream_writer* out, abort_callback& p_abort) const;
+            void read(t_config_version p_version, stream_reader* reader, abort_callback& p_abort);
+            void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
+            void read_from_file(t_config_version p_version, const char* p_base, const char* p_name,
+                stream_reader* p_file, unsigned p_size, abort_callback& p_abort);
+        };
+
         t_type m_type{TYPE_SEPARATOR};
         t_filter m_filter{FILTER_ACTIVE_SELECTION};
         t_show m_show{SHOW_IMAGE};
@@ -43,21 +71,8 @@ public:
         bool m_use_custom_hot{false};
         bool m_use_custom_text{false};
         pfc::string_simple m_text;
-        class custom_image {
-        public:
-            pfc::string_simple m_path;
-            pfc::string_simple m_mask_path;
-            COLORREF m_mask_colour;
-            ui_extension::t_mask m_mask_type;
-            custom_image& operator=(const custom_image& p_source);
-            void get_path(pfc::string8& p_out) const;
-            void write(stream_writer* out, abort_callback& p_abort) const;
-            void read(t_config_version p_version, stream_reader* reader, abort_callback& p_abort);
-            void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
-            void read_from_file(t_config_version p_version, const char* p_base, const char* p_name,
-                stream_reader* p_file, unsigned p_size, abort_callback& p_abort);
-
-        } m_custom_image, m_custom_hot_image;
+        custom_image m_custom_image;
+        custom_image m_custom_hot_image;
         service_ptr_t<uie::button> m_interface;
 
         class callback_impl : public uie::button_callback {
@@ -77,10 +92,6 @@ public:
 
         void set(const button& p_source);
 
-        button(GUID p_guid, bool p_custom, const char* p_custom_bitmap_path, const char* p_custom_bitmap_mask_path,
-            COLORREF p_custom_bitmap_colour_mask, ui_extension::t_mask p_custom_bitmap_mask_type);
-        button() = default;
-        button& operator=(const button& p_source);
         void write(stream_writer* out, abort_callback& p_abort) const;
 
         void read(t_config_version p_version, stream_reader* reader, abort_callback& p_abort);
@@ -104,6 +115,10 @@ public:
 
     public:
         button_image() = default;
+        button_image(const button_image&) = delete;
+        button_image& operator=(const button_image&) = delete;
+        button_image(button_image&&) = delete;
+        button_image& operator=(button_image&&) = delete;
         ~button_image();
         bool is_valid();
         void load(const button::custom_image& p_image);
@@ -111,8 +126,6 @@ public:
         unsigned add_to_imagelist(HIMAGELIST iml);
         void get_size(SIZE& p_out);
     };
-
-    static const button g_button_null;
 
     HWND wnd_toolbar{nullptr};
     HWND wnd_host{nullptr};
@@ -199,8 +212,23 @@ public:
     static BOOL CALLBACK ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     bool have_config_popup() const override { return true; }
-
     bool show_config_popup(HWND wnd_parent) override;
+
+    template <class List>
+    void configure(List&& buttons, bool text_below, t_appearance appearance)
+    {
+        const auto was_initialised = initialised;
+        if (was_initialised) {
+            destroy_toolbar();
+        }
+        m_text_below = text_below;
+        m_appearance = appearance;
+        m_buttons = buttons;
+        if (was_initialised) {
+            create_toolbar();
+            get_host()->on_size_limit_change(wnd_host, ui_extension::size_limit_minimum_width);
+        }
+    }
 
     void create_toolbar();
     void destroy_toolbar();
@@ -210,7 +238,6 @@ public:
     unsigned get_type() const override;
 
     pfc::list_t<button> m_buttons;
-    pfc::list_t<button> m_buttons_config;
 
     bool m_text_below{false};
     t_appearance m_appearance{APPEARANCE_NORMAL};
@@ -262,11 +289,8 @@ class command_picker_param {
 public:
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_group;
-    unsigned m_filter;
-    command_picker_param() = delete;
-    command_picker_param(GUID p_guid, GUID p_subcommand, unsigned p_group, unsigned p_filter)
-        : m_guid(p_guid), m_subcommand(p_subcommand), m_group(p_group), m_filter(p_filter){};
+    unsigned m_group{toolbar_extension::TYPE_SEPARATOR};
+    unsigned m_filter{toolbar_extension::FILTER_ACTIVE_SELECTION};
 };
 
 class command_picker_data {
@@ -278,14 +302,14 @@ class command_picker_data {
         pfc::string8 m_desc;
     };
     std::vector<std::unique_ptr<command_data>> m_data;
-    HWND m_wnd;
-    HWND wnd_group;
-    HWND wnd_filter;
-    HWND wnd_command;
-    unsigned m_group;
+    HWND m_wnd{};
+    HWND wnd_group{};
+    HWND wnd_filter{};
+    HWND wnd_command{};
+    unsigned m_group{toolbar_extension::TYPE_SEPARATOR};
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_filter;
+    unsigned m_filter{toolbar_extension::FILTER_ACTIVE_SELECTION};
 
     bool __populate_mainmenu_dynamic_recur(
         command_data& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root);

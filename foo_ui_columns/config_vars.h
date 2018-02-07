@@ -22,9 +22,8 @@ public:
     explicit cfg_menu_item(const GUID& p_guid, const menu_item_identifier& p_val)
         : cfg_struct_t<menu_item_identifier>(p_guid, p_val){};
     explicit cfg_menu_item(const GUID& p_guid, const GUID& p_val, const GUID& psub = pfc::guid_null)
-        : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier(p_val, psub)){};
-    explicit cfg_menu_item(const GUID& p_guid)
-        : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier()){};
+        : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier{p_val, psub}){};
+    explicit cfg_menu_item(const GUID& p_guid) : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier{}){};
 };
 
 namespace settings {

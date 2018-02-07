@@ -58,6 +58,14 @@ public:
     }
 
     colourinfo(const colourinfo& in) : ref(1) { in.copy_to(*this); }
+    colourinfo& operator=(const colourinfo& in)
+    {
+        in.copy_to(*this);
+        return *this;
+    }
+    colourinfo(colourinfo&& in) = delete;
+    colourinfo& operator=(colourinfo&& in) = delete;
+    ~colourinfo() = default;
 };
 
 inline bool operator==(const colourinfo& c1, const colourinfo& c2)
@@ -103,6 +111,10 @@ public:
         /*COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF back_sel_nofocus*/ colourinfo&
             colour_add);
     display_info() = default;
+    display_info(const display_info&) = delete;
+    display_info& operator=(const display_info&) = delete;
+    display_info(display_info&&) = delete;
+    display_info& operator=(display_info&&) = delete;
     ~display_info()
     {
         if (colours)
@@ -121,8 +133,12 @@ public:
     void add_display_items(unsigned count);
     void set_display_item(int column, const char* data, colourinfo& colour_add);
     display_info* get_item(unsigned col) const;
-    ~playlist_entry_ui();
     playlist_entry_ui() = default;
+    playlist_entry_ui(const playlist_entry_ui&) = delete;
+    playlist_entry_ui& operator=(const playlist_entry_ui&) = delete;
+    playlist_entry_ui(playlist_entry_ui&&) = delete;
+    playlist_entry_ui& operator=(playlist_entry_ui&&) = delete;
+    ~playlist_entry_ui();
 };
 
 class global_variable {
@@ -278,7 +294,6 @@ public:
         }
         reorder(p_order);
     }
-    void on_playlists_removing(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count);
     void on_playlists_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
     {
 #if 0

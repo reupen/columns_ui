@@ -49,8 +49,6 @@ public:
 
     static pfc::ptr_list_t<spectrum_extension> list_vis;
 
-    void make_bitmap(HDC hdc, const RECT* rc_area);
-    // void flush_bitmap();
     void flush_brushes();
 
     spectrum_extension();
@@ -267,7 +265,13 @@ public:
         , br_fore(nullptr)
         , br_back(nullptr)
         , frame(p_frame)
-        , b_show_frame(p_show_frame){};
+        , b_show_frame(p_show_frame)
+    {
+    }
+    spec_param(const spec_param&) = delete;
+    spec_param& operator=(const spec_param&) = delete;
+    spec_param(spec_param&&) = delete;
+    spec_param& operator=(spec_param&&) = delete;
     ~spec_param()
     {
         flush_back();
@@ -405,16 +409,6 @@ bool spectrum_extension::show_config_popup(HWND wnd_parent)
     }
     return rv;
 }
-
-/*
-void spectrum_extension::flush_bitmap()
-{
-    ui_extension::visualisation_host::vis_paint_struct ps;
-    p_host->begin_paint(ps);
-    paint_background(ps.dc, &ps.rc_client);
-    p_host->end_paint(ps);
-}
-*/
 
 void CALLBACK spectrum_extension::g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time)
 {

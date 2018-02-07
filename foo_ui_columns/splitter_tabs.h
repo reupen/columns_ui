@@ -86,9 +86,6 @@ public:
         service_ptr_t<splitter_window_tabs_impl> m_this;
         void set_splitter_window_ptr(splitter_window_tabs_impl* ptr) { m_this = ptr; }
 
-        panel() = default;
-        ~panel() override;
-
         uie::splitter_item_full_v2_t* create_splitter_item();
 
         void set_from_splitter_item(const uie::splitter_item_t* p_source);

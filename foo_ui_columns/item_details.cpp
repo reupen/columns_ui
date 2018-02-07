@@ -943,8 +943,6 @@ item_details_t::item_details_t()
 //, m_update_scrollbar_range_in_progress(false)
 // m_library_richedit(NULL), m_wnd_richedit(NULL)
 {
-    m_display_sz.cx = (NULL);
-    m_display_sz.cy = (NULL);
 }
 
 void item_details_t::set_config_wnd(HWND wnd)

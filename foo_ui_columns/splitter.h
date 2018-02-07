@@ -114,7 +114,7 @@ private:
             bool test_autohide_window(HWND wnd);
         } m_container;
 
-        GUID m_guid;
+        GUID m_guid{};
         unsigned m_caption_orientation{NULL};
         bool m_locked{false};
         bool m_hidden{false};
@@ -157,8 +157,6 @@ private:
     };
     class panel_list : public pfc::list_t<pfc::refcounted_object_ptr_t<panel>> {
     public:
-        bool move_up(unsigned idx);
-        bool move_down(unsigned idx);
         bool find_by_wnd(HWND wnd, unsigned& p_out);
         bool find_by_wnd_child(HWND wnd, unsigned& p_out);
     };

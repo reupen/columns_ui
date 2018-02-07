@@ -110,11 +110,9 @@ public:
                         cui::fcl::group_ptr ptr;
                         while (m_groups.find_by_guid(guid, ptr)) {
                             guid = ptr->get_parent_guid();
-                            if (guid != pfc::guid_null)
-                                if (!groupslist.have_item(guid))
-                                    groupslist.add_item(guid);
-                                else
-                                    break;
+                            if (guid == GUID{} || groupslist.have_item(guid))
+                                break;
+                            groupslist.add_item(guid);
                         }
                     }
                 }
@@ -198,7 +196,7 @@ cui::fcl::group_impl_factory g_group_titles(
 
 class t_panel_info {
 public:
-    GUID guid;
+    GUID guid{};
     pfc::string8 name;
 };
 class panel_info_list : public pfc::list_t<t_panel_info> {
@@ -293,7 +291,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
     try {
         class t_dataset {
         public:
-            GUID guid;
+            GUID guid{};
             pfc::array_t<t_uint8> data;
         };
 

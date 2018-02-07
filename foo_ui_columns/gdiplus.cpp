@@ -128,7 +128,7 @@ HBITMAP g_load_png_gdiplus_throw(HDC dc, const char* fn, unsigned target_cx, uns
 
     CheckGdiplusStatus() << pImage.GetLastStatus();
     {
-        Gdiplus::BitmapData bitmapData;
+        Gdiplus::BitmapData bitmapData{};
         // Gdiplus::Bitmap * ppImage = &pImage;
         if (target_cx != pfc_infinite || target_cy != pfc_infinite) {
             Gdiplus::Bitmap pBitmapResized(target_cx == pfc_infinite ? pImage.GetWidth() : target_cx,

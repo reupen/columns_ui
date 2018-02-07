@@ -8,9 +8,9 @@ namespace pvt {
 // CONFIG
 
 struct edit_view_param {
-    unsigned idx;
+    unsigned idx{};
     group_t value;
-    bool b_new;
+    bool b_new{};
 };
 
 static BOOL CALLBACK EditViewProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

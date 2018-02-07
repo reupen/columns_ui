@@ -297,7 +297,11 @@ public:
         return DefWindowProc(wnd, msg, wp, lp);
     }
 
-    volume_control_t() : m_child(this), m_track_bar_host(this){};
+    volume_control_t() : m_child(this), m_track_bar_host(this) {}
+    volume_control_t(const volume_control_t&) = delete;
+    volume_control_t& operator=(const volume_control_t&) = delete;
+    volume_control_t(volume_control_t&&) = delete;
+    volume_control_t& operator=(volume_control_t&&) = delete;
     ~volume_control_t() = default;
 
     ui_helpers::container_window::class_data& get_class_data() const override

@@ -26,6 +26,11 @@ public:
             m_rect = *p_wnd->get_rect_client();
         }
 
+        painter_impl(const painter_impl&) = delete;
+        painter_impl& operator=(const painter_impl&) = delete;
+        painter_impl(painter_impl&&) = delete;
+        painter_impl& operator=(painter_impl&&) = delete;
+
         ~painter_impl() override
         {
             HWND wnd = m_wnd->get_wnd();

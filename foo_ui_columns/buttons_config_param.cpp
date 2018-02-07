@@ -100,7 +100,7 @@ void toolbar_extension::config_param::import_from_stream(stream_reader* p_file, 
                 unsigned count;
                 p_file->read_lendian_t(count, p_abort);
                 for (unsigned n = 0; n < count; n++) {
-                    button temp = g_button_null;
+                    button temp{};
                     unsigned size_button;
                     p_file->read_lendian_t(size_button, p_abort);
                     pfc::string_formatter formatter;
@@ -309,11 +309,10 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
         } break;
         case IDC_ADD: {
             command_picker_data p_temp;
-            command_picker_param p_data(
-                g_button_null.m_guid, g_button_null.m_subcommand, g_button_null.m_type, g_button_null.m_filter);
+            command_picker_param p_data{};
             p_temp.set_data(p_data);
             if (uDialogBox(IDD_COMMAND, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
-                t_size index = m_buttons.add_item(g_button_null);
+                t_size index = m_buttons.add_item(button{});
 
                 p_temp.get_data(p_data);
                 m_buttons[index].m_type = (t_type)p_data.m_group;
@@ -455,8 +454,8 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
         case IDC_PICK: {
             if (m_selection) {
                 command_picker_data p_temp;
-                command_picker_param p_data(
-                    m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter);
+                command_picker_param p_data{
+                    m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter};
                 p_temp.set_data(p_data);
                 if (uDialogBox(IDD_COMMAND, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
                     p_temp.get_data(p_data);
@@ -464,6 +463,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
                     m_selection->m_guid = p_data.m_guid;
                     m_selection->m_subcommand = p_data.m_subcommand;
                     m_selection->m_filter = (t_filter)p_data.m_filter;
+                    m_selection->m_interface.release();
 
                     unsigned idx = m_button_list.get_selected_item_single();
                     if (idx != pfc_infinite) {

@@ -20,11 +20,18 @@ public:
             identifier_custom_active_item_frame,
             identifier_use_custom_active_item_frame,
         };
-        GUID guid;
-        COLORREF
-        text, selection_text, inactive_selection_text, background, selection_background, inactive_selection_background,
-            active_item_frame, group_foreground, group_background;
-        bool use_custom_active_item_frame;
+        GUID guid{};
+        COLORREF text{};
+        COLORREF selection_text{};
+        COLORREF inactive_selection_text{};
+        COLORREF background{};
+        COLORREF selection_background{};
+        COLORREF inactive_selection_background{};
+        COLORREF active_item_frame{};
+        COLORREF group_foreground{};
+        COLORREF group_background{};
+
+        bool use_custom_active_item_frame{};
         /*LOGFONT
         font_content,
         font_content_group,

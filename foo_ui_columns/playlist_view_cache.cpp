@@ -534,8 +534,14 @@ void playlist_view_cache::set_playlist_sort(unsigned playlist, unsigned column, 
 struct sort_info {
     HANDLE text;
     int index;
+
     sort_info(const char* p_text, int p_idx) : text(uSortStringCreate(p_text)), index(p_idx) {}
     ~sort_info() { uSortStringFree(text); }
+
+    sort_info(const sort_info&) = delete;
+    sort_info& operator=(const sort_info&) = delete;
+    sort_info(sort_info&&) = delete;
+    sort_info& operator=(sort_info&&) = delete;
 };
 
 template <class T>

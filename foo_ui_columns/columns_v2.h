@@ -78,7 +78,10 @@ public:
     }
 
     column_t(const column_t&) = default;
+    column_t& operator=(const column_t&) = default;
     column_t(column_t&&) = default;
+    column_t& operator=(column_t&&) = default;
+    ~column_t() = default;
 
 private:
     service_ptr_t<titleformat_object> to_display;
