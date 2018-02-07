@@ -101,7 +101,7 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
 void set_main_window_text(const char* ptr)
 {
     if (ptr) {
-        if (strcmp(windowtext, ptr))
+        if (strcmp(windowtext, ptr) != 0)
             uSetWindowText(g_main_window, ptr);
         windowtext = ptr;
     }

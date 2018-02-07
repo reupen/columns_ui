@@ -10,17 +10,15 @@ void g_get_panel_list(uie::window_info_list_simple& p_out, uie::window_host_ptr&
 
     if (e.first(l))
         do {
-            if (true) {
-                uie::window_info_simple info;
+            uie::window_info_simple info;
 
-                if (l->is_available(p_host)) {
-                    l->get_name(info.name);
-                    l->get_category(info.category);
-                    info.guid = l->get_extension_guid();
-                    info.prefer_multiple_instances = l->get_prefer_multiple_instances();
-                    info.type = l->get_type();
-                    p_out.add_item(info);
-                }
+            if (l->is_available(p_host)) {
+                l->get_name(info.name);
+                l->get_category(info.category);
+                info.guid = l->get_extension_guid();
+                info.prefer_multiple_instances = l->get_prefer_multiple_instances();
+                info.type = l->get_type();
+                p_out.add_item(info);
             }
         } while (e.next(l));
 

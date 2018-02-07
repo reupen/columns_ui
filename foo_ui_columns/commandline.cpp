@@ -11,7 +11,7 @@ class HelpCommandLineHandler : public commandline_handler {
 public:
     result on_token(const char* token) override
     {
-        if (stricmp_utf8_partial(token, u8"/columnsui:help") && stricmp_utf8_partial(token, u8"/columnsui:?"))
+        if (stricmp_utf8_partial(token, u8"/columnsui:help") != 0 && stricmp_utf8_partial(token, u8"/columnsui:?") != 0)
             return RESULT_NOT_OURS;
 
         execute();

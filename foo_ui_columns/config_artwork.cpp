@@ -4,7 +4,6 @@
 #include "config.h"
 
 namespace artwork_panel {
-// extern cfg_string cfg_front, cfg_back, cfg_disc;//, cfg_icon;
 extern cfg_uint cfg_fb2k_artwork_mode, cfg_edge_style;
 void g_on_repository_change();
 } // namespace artwork_panel
@@ -95,9 +94,7 @@ public:
         bool notify_before_create_inline_edit(
             const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override
         {
-            if (column == 0 && indices.get_count() == 1)
-                return true;
-            return false;
+            return column == 0 && indices.get_count() == 1;
         };
         bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
             pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override
@@ -122,7 +119,7 @@ public:
             if (m_edit_index < tabsize(g_artwork_sources)
                 && m_edit_subindex < g_artwork_sources[m_edit_index].m_scripts->get_count()) {
                 pfc::string8& dest = (*g_artwork_sources[m_edit_index].m_scripts)[m_edit_subindex];
-                if (strcmp(dest, value)) {
+                if (strcmp(dest, value) != 0) {
                     dest = value;
                     pfc::list_t<uih::ListView::InsertItem> items;
                     items.set_count(1);
@@ -235,29 +232,6 @@ public:
         } break;
         case WM_COMMAND:
             switch (wp) {
-#if 0
-            case (EN_CHANGE<<16)|IDC_FRONT:
-                artwork_panel::cfg_front = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;
-            case (EN_CHANGE<<16)|IDC_BACK:
-                artwork_panel::cfg_back = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;
-            case (EN_CHANGE<<16)|IDC_DISC:
-                artwork_panel::cfg_disc = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;
-            case (EN_KILLFOCUS<<16)|IDC_FRONT:
-            case (EN_KILLFOCUS<<16)|IDC_BACK:
-            case (EN_KILLFOCUS<<16)|IDC_DISC:
-                on_scripts_change();
-                break;
-#endif
-            /*case (EN_CHANGE<<16)|IDC_ICON:
-                artwork_panel::cfg_icon = string_utf8_from_window((HWND)lp);
-                m_changed = true;
-                break;*/
             case IDC_FB2KARTWORK | (CBN_SELCHANGE << 16):
                 artwork_panel::cfg_fb2k_artwork_mode = ComboBox_GetCurSel((HWND)lp);
                 break;

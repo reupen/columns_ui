@@ -518,10 +518,7 @@ bool selection_properties_t::check_process_on_selection_changed()
 
     DWORD processid = NULL;
     GetWindowThreadProcessId(wnd_focus, &processid);
-    if (processid != GetCurrentProcessId())
-        return false;
-
-    return true;
+    return processid == GetCurrentProcessId();
 }
 
 void selection_properties_t::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
@@ -644,7 +641,7 @@ selection_properties_t::selection_properties_t()
 void selection_properties_t::notify_save_inline_edit(const char* value)
 {
     static_api_ptr_t<metadb_io_v2> tagger_api;
-    if (strcmp(value, "<mixed values>")) {
+    if (strcmp(value, "<mixed values>") != 0) {
         pfc::list_t<pfc::string8> values;
         const char *ptr = value, *start = ptr;
         while (*ptr) {
@@ -726,7 +723,7 @@ bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_cons
                 temp.reset();
                 if (m_edit_handles[i]->get_info_ref(p_info))
                     g_print_field(m_edit_field, p_info->info(), temp);
-                if (strcmp(temp, text)) {
+                if (strcmp(temp, text) != 0) {
                     text = "<mixed values>";
                     break;
                 }
@@ -753,9 +750,7 @@ void selection_properties_t::g_print_field(const char* field, const file_info& p
 bool selection_properties_t::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
-    if (m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count())
-        return true;
-    return false;
+    return m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count();
 }
 
 void selection_properties_t::notify_on_column_size_change(t_size index, int new_width)

@@ -33,7 +33,7 @@ BOOL CALLBACK tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         m_wnd_colours_mode = GetDlgItem(wnd, IDC_COLOURS_MODE);
         m_wnd_colours_element = GetDlgItem(wnd, IDC_COLOURS_ELEMENT);
 
-        m_fonts_client_list.g_get_list(m_fonts_client_list);
+        fonts_client_list_t::g_get_list(m_fonts_client_list);
 
         ComboBox_AddString(m_wnd_colours_element, L"Common (list items)");
         ComboBox_AddString(m_wnd_colours_element, L"Common (labels)");

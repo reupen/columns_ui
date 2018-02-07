@@ -104,7 +104,7 @@ string_pn::string_pn(metadb_handle_list_cref handles, const char* format, const 
                 use = true;
             } else {
                 handles[n]->format_title(nullptr, b, to_temp, nullptr);
-                if (strcmp(a, b)) {
+                if (strcmp(a, b) != 0) {
                     use = false;
                     break;
                 }

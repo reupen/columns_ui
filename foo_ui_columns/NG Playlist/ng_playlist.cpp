@@ -96,21 +96,18 @@ void ng_playlist_view_t::refresh_groups(bool b_update_columns)
     t_size count = cfg_grouping ? g_groups.get_groups().get_count() : 0, used_count = 0;
     for (t_size i = 0; i < count; i++) {
         bool b_valid = false;
-        if (true) {
-            switch (g_groups.get_groups()[i].filter_type) {
-            case FILTER_NONE: {
+        switch (g_groups.get_groups()[i].filter_type) {
+        case FILTER_NONE:
+            b_valid = true;
+            break;
+        case FILTER_SHOW:
+            if (wildcard_helper::test(playlist_name, g_groups.get_groups()[i].filter_playlists, true))
                 b_valid = true;
-                break;
-            }
-            case FILTER_SHOW: {
-                if (wildcard_helper::test(playlist_name, g_groups.get_groups()[i].filter_playlists, true))
-                    b_valid = true;
-            } break;
-            case FILTER_HIDE: {
-                if (!wildcard_helper::test(playlist_name, g_groups.get_groups()[i].filter_playlists, true))
-                    b_valid = true;
-            } break;
-            }
+            break;
+        case FILTER_HIDE:
+            if (!wildcard_helper::test(playlist_name, g_groups.get_groups()[i].filter_playlists, true))
+                b_valid = true;
+            break;
         }
         if (b_valid) {
             p_compiler->compile_safe(p_script_group, g_groups.get_groups()[i].string);
@@ -433,7 +430,7 @@ void ng_playlist_view_t::notify_sort_column(t_size index, bool b_descending, boo
         t_size counter = 0;
 
         for (n = 0; n < count; n++) {
-            if (!b_selection_only || mask[n] == true) {
+            if (!b_selection_only || mask[n]) {
                 global_variable_list extra_items;
 
                 {
@@ -451,7 +448,7 @@ void ng_playlist_view_t::notify_sort_column(t_size index, bool b_descending, boo
 
                     titleformat_hook_set_global<false, true> tf_hook_get_global(extra_items, false);
                     titleformat_hook_splitter_pt3 tf_hook(
-                        &extra ? &tf_hook_get_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+                        extra ? &tf_hook_get_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
                         m_column_data[index].m_sort_script, nullptr, play_control::display_level_none);
                 }

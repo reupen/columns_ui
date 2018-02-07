@@ -111,7 +111,8 @@ class playlist_mclick_actions {
 public:
     static pma g_pma_actions[];
     static unsigned id_to_idx(unsigned id);
-    inline static bool run(unsigned id, bool on_item, unsigned idx)
+
+    static bool run(unsigned id, bool on_item, unsigned idx)
     {
         g_pma_actions[id_to_idx(id)].p_run(on_item, idx);
         return true;

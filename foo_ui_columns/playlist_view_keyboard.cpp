@@ -35,7 +35,7 @@ void playlist_view::process_keydown(int offset, bool alt_down, bool prevent_redr
         playlist_api->activeplaylist_set_focus_item(focus + offset);
     } else {
         //        console::info(pfc::string_printf("%i",focus+offset));
-        set_sel_single(focus + offset, false, true, (GetKeyState(VK_SHIFT) & KF_UP) ? false : true);
+        set_sel_single(focus + offset, false, true, (GetKeyState(VK_SHIFT) & KF_UP) == 0);
     }
 
     if (prevent_redrawing) {

@@ -35,7 +35,7 @@ public:
     {
         return false;
     };
-    inline titleformat_hook_playlist_name() = default;
+    titleformat_hook_playlist_name() = default;
 };
 
 class IDropSource_playlist : public IDropSource {
@@ -127,7 +127,7 @@ public:
             SetFocus(wnd_playlist);
     }
 
-    inline bool is_visible(int idx) { return ensure_visible(idx, true); }
+    bool is_visible(int idx) { return ensure_visible(idx, true); }
 
     static void g_on_columns_size_change(const playlist_view* p_skip = nullptr);
 
@@ -149,7 +149,7 @@ public:
 
     unsigned get_type() const override { return ui_extension::type_playlist | ui_extension::type_panel; };
 
-    inline static const pfc::list_base_const_t<column_t::ptr>& g_get_columns() { return columns; };
+    static const pfc::list_base_const_t<column_t::ptr>& g_get_columns() { return columns; };
     /*inline static void g_get_titleformat_object(unsigned index, string_type string, service_ptr_t<titleformat_object>
     & p_out)
     {
@@ -159,8 +159,9 @@ public:
 
     static void g_load_columns(); // from config
     static void g_reset_columns(); // from config
-    inline static void g_save_columns() { g_columns.set_entries_copy(columns); }
-    inline static void g_kill_columns()
+    static void g_save_columns() { g_columns.set_entries_copy(columns); }
+
+    static void g_kill_columns()
     {
         // g_save_columns();
         columns.remove_all();
@@ -176,7 +177,7 @@ public:
     int get_column_widths(pfc::array_t<int, pfc::alloc_fast_aggressive>& p_out) const;
 
     static unsigned g_columns_get_width(unsigned column); // ACTIVE idx!!
-    inline static playlist_view_cache& g_get_cache() { return g_cache; }
+    static playlist_view_cache& g_get_cache() { return g_cache; }
 
     static void g_set_sort(unsigned column, bool descending, bool selection_only = false);
     static void g_update_sort();
@@ -214,7 +215,7 @@ private:
     static LRESULT WINAPI g_inline_edit_hook_v2(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     LRESULT WINAPI on_inline_edit_message_v2(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-    inline void scroll_veritcally(unsigned sb_command)
+    void scroll_veritcally(unsigned sb_command)
     {
         SendMessage(wnd_playlist, WM_VSCROLL, MAKEWPARAM(sb_command, 0), 0);
     }
@@ -308,7 +309,7 @@ public:
         titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
     bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
-    inline titleformat_hook_style(colourinfo& vars) : p_default_colours(vars), p_colours(vars){};
+    titleformat_hook_style(colourinfo& vars) : p_default_colours(vars), p_colours(vars){};
 };
 
 extern playlist_message_window g_playlist_message_window;

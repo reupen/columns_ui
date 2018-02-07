@@ -16,10 +16,8 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         pfc::com_ptr_t<IDropTarget_playlist> IDT_playlist = new IDropTarget_playlist(this);
         RegisterDragDrop(wnd, IDT_playlist.get_ptr());
-        if (true) {
-            m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"ListView") : nullptr;
-            SetWindowTheme(wnd, L"Explorer", nullptr);
-        }
+        m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"ListView") : nullptr;
+        SetWindowTheme(wnd, L"Explorer", nullptr);
         m_always_show_focus
             = config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false);
         on_playlist_font_change();

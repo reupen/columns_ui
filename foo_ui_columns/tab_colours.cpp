@@ -50,7 +50,7 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         g_fill_selection_background_inactive.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
-        m_colours_client_list.g_get_list(m_colours_client_list);
+        colours_client_list_t::g_get_list(m_colours_client_list);
         t_size count = m_colours_client_list.get_count();
         for (t_size i = 0; i < count; i++)
             ComboBox_AddString(

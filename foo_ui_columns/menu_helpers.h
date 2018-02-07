@@ -42,7 +42,7 @@ class menu_item_cache {
 public:
     menu_item_cache();
     const menu_item_info& get_item(unsigned n) const;
-    inline unsigned get_count() { return m_data.get_count(); }
+    unsigned get_count() { return m_data.get_count(); }
 
 private:
     pfc::ptr_list_t<menu_item_info> m_data;

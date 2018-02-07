@@ -26,9 +26,7 @@ public:
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override
     {
-        if (column <= 1 && indices.get_count() == 1)
-            return true;
-        return false;
+        return column <= 1 && indices.get_count() == 1;
     };
     bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override
@@ -51,7 +49,7 @@ public:
             pfc::string8& dest = m_edit_column ? filter_panel::cfg_field_list[m_edit_index].m_field
                                                : filter_panel::cfg_field_list[m_edit_index].m_name;
             filter_panel::field_t field_old = filter_panel::cfg_field_list[m_edit_index];
-            if (strcmp(dest, value)) {
+            if (strcmp(dest, value) != 0) {
                 pfc::string8 valueReal = value;
                 if (m_edit_column == 0)
                     filter_panel::cfg_field_list.fix_name(valueReal);

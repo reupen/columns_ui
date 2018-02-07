@@ -6,10 +6,8 @@ namespace filter_panel {
 bool filter_panel_t::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
-    if (!m_field_data.m_use_script && m_field_data.m_fields.get_count() && column == 0 && indices.get_count() == 1
-        && indices[0] != 0)
-        return true;
-    return false;
+    return !m_field_data.m_use_script && m_field_data.m_fields.get_count() && column == 0 && indices.get_count() == 1
+        && indices[0] != 0;
 };
 bool filter_panel_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
@@ -55,7 +53,7 @@ void filter_panel_t::notify_save_inline_edit(const char* value)
                             const char* ptr = infos[i].meta_enum_value(field_index, k);
                             if (((!ptr && m_edit_previous_value.is_empty())
                                     || !stricmp_utf8(m_edit_previous_value, ptr))
-                                && strcmp(value, ptr)) {
+                                && strcmp(value, ptr) != 0) {
                                 infos[i].meta_modify_value(field_index, k, value);
                                 b_remove = false;
                             }

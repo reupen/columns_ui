@@ -36,9 +36,7 @@ bool fields_list_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
 bool fields_list_view_t::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
-    if (column <= 1 && indices.get_count() == 1)
-        return true;
-    return false;
+    return column <= 1 && indices.get_count() == 1;
 }
 
 void fields_list_view_t::notify_on_create()

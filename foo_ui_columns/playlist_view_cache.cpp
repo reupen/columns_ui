@@ -107,10 +107,7 @@ void process_colour_string(const char* src, colourinfo& out);
 
 bool playlist_cache::is_valid(unsigned idx)
 {
-    if (idx >= 0 && idx < get_count()) {
-        return true;
-    }
-    return false;
+    return idx >= 0 && idx < get_count();
 }
 
 bool playlist_view_cache::is_in_playlist(unsigned playlist, unsigned idx)
@@ -646,7 +643,7 @@ void playlist_view::g_set_sort(unsigned column, bool descending, bool selection_
             GetLocalTime(&st);
 
         for (n = 0; n < count; n++) {
-            if (!selection_only || mask[n] == true) {
+            if (!selection_only || mask[n]) {
                 //        if (custom_sort)
                 {
                     if (extra) {
@@ -691,7 +688,7 @@ void playlist_view::g_set_sort(unsigned column, bool descending, bool selection_
         unsigned i = 0;
 
         for (n = 0; n < count; n++) {
-            if (!selection_only || mask[n] == true) {
+            if (!selection_only || mask[n]) {
                 order[n] = data[/*descending ? new_count - 1 - i :*/ i]->index; // or we could use diff sortproc
                 i++;
             } else {

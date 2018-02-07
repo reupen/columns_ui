@@ -146,7 +146,7 @@ void playlist_view::create_inline_edit_v2(const pfc::list_base_const_t<t_uint32>
         }
         // exit_inline_edit();
         if (matching && i > 0
-            && ((ptrs[i] && ptrs[i - 1] && strcmp(ptrs[i], ptrs[i - 1]))
+            && ((ptrs[i] && ptrs[i - 1] && strcmp(ptrs[i], ptrs[i - 1]) != 0)
                    || ((!ptrs[i] || !ptrs[i - 1]) && (ptrs[i] != ptrs[i - 1]))))
             matching = false;
     }
@@ -229,7 +229,7 @@ void playlist_view::save_inline_edit_v2()
         pfc::string8 text;
         uGetWindowText(m_wnd_edit, text);
 
-        if (strcmp(text, "<multiple values>")) {
+        if (strcmp(text, "<multiple values>") != 0) {
             metadb_handle_list ptrs(m_edit_items);
             pfc::list_t<file_info_impl> infos;
             pfc::list_t<bool> mask;
@@ -244,7 +244,7 @@ void playlist_view::save_inline_edit_v2()
                 infos_ptr.add_item(&infos[i]);
                 if (!mask[i]) {
                     const char* ptr = infos[i].meta_get(m_edit_field, 0);
-                    if (!(mask[i] = !((!ptr && text.length()) || (ptr && strcmp(ptr, text)))))
+                    if (!(mask[i] = !((!ptr && text.length()) || (ptr && strcmp(ptr, text) != 0))))
                         infos[i].meta_set(m_edit_field, text);
                 }
             }

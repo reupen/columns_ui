@@ -385,7 +385,7 @@ size_t filter_panel_t::make_data_entries(const metadb_handle_list_t<pfc::alloc_f
         if (!p_data[i].m_same_as_next)
             ++counts.local();
     });
-    return counts.combine(std::plus<size_t>());
+    return counts.combine(std::plus<>());
 }
 
 void filter_panel_t::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& handles)

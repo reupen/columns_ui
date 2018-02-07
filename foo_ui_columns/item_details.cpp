@@ -367,7 +367,7 @@ void item_details_t::refresh_contents(bool b_new_track)
         else
             m_handles[0]->format_title(&tf_hook, temp, m_to, nullptr);
 
-        if (strcmp(temp, m_current_text_raw)) {
+        if (strcmp(temp, m_current_text_raw) != 0) {
             m_current_text_raw = temp;
 
             m_font_change_data.set_size(0);
@@ -547,10 +547,7 @@ bool item_details_t::check_process_on_selection_changed()
 
     DWORD processid = NULL;
     GetWindowThreadProcessId(wnd_focus, &processid);
-    if (processid != GetCurrentProcessId())
-        return false;
-
-    return true;
+    return processid == GetCurrentProcessId();
 }
 
 void item_details_t::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
