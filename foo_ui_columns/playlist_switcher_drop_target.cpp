@@ -408,11 +408,12 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
                             if ((m_new_playlist || m_insertIndexTracker.m_playlist != pfc_infinite)
                                 && p_items.get_count()) {
                                 if (m_new_playlist) {
-                                    if (!m_playlist_name.length())
+                                    if (!m_playlist_name.length()) {
                                         if (cfg_pgen_tf)
                                             m_playlist_name = string_pn(p_items, cfg_pgenstring);
                                         else
                                             m_playlist_name = "Untitled";
+                                    }
 
                                     m_insertIndexTracker.m_playlist = playlist_api->create_playlist(
                                         m_playlist_name, pfc_infinite, m_insertIndexTracker.m_playlist);

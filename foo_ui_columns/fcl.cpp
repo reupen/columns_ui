@@ -110,11 +110,9 @@ public:
                         cui::fcl::group_ptr ptr;
                         while (m_groups.find_by_guid(guid, ptr)) {
                             guid = ptr->get_parent_guid();
-                            if (guid != pfc::guid_null)
-                                if (!groupslist.have_item(guid))
-                                    groupslist.add_item(guid);
-                                else
-                                    break;
+                            if (guid == GUID{} || groupslist.have_item(guid))
+                                break;
+                            groupslist.add_item(guid);
                         }
                     }
                 }

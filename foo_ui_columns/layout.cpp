@@ -333,7 +333,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
                 if (temp.is_valid()) {
                     p_out.add_item(temp->get_panel_guid());
                     uie::window_ptr ptr = temp->get_window_ptr();
-                    if (!ptr.is_valid())
+                    if (!ptr.is_valid()) {
                         if (uie::window::create_by_guid(temp->get_panel_guid(), ptr)) {
                             stream_writer_memblock w;
                             temp->get_panel_config(&w);
@@ -342,8 +342,10 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
                                 ptr->set_config_from_ptr(w.m_data.get_ptr(), w.m_data.get_size(), p_abort);
                             } catch (const exception_io&) {
                             }
-                        } else
+                        } else {
                             throw cui::fcl::exception_missing_panel();
+                        }
+                    }
                     __get_panel_list_recur(ptr, p_out);
                 }
             }
