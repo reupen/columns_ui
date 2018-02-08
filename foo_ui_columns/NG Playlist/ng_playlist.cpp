@@ -744,71 +744,70 @@ void ng_playlist_view_t::notify_on_menu_select(WPARAM wp, LPARAM lp)
 
 bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt)
 {
-    uie::window_ptr p_this_temp = this;
-    if (m_playlist_api->activeplaylist_get_selection_count(1) > 0) {
-        enum { ID_PLAY = 1, ID_CUT, ID_COPY, ID_PASTE, ID_SELECTION, ID_CUSTOM_BASE = 0x8000 };
-        HMENU menu = CreatePopupMenu();
+    const bool playlist_selection_exists = m_playlist_api->activeplaylist_get_selection_count(1) > 0;
 
-        service_ptr_t<contextmenu_manager> p_manager_context;
-        service_ptr_t<mainmenu_manager> p_manager_selection = standard_api_create_t<mainmenu_manager>();
-        contextmenu_manager::g_create(p_manager_context);
-        if (p_manager_selection.is_valid()) {
-            p_manager_selection->instantiate(mainmenu_groups::edit_part2_selection);
-            p_manager_selection->generate_menu_win32(menu, ID_SELECTION, ID_CUSTOM_BASE - ID_SELECTION,
-                standard_config_objects::query_show_keyboard_shortcuts_in_menus()
-                    ? contextmenu_manager::FLAG_SHOW_SHORTCUTS
-                    : 0);
-            if (GetMenuItemCount(menu) > 0)
-                uAppendMenu(menu, MF_SEPARATOR, 0, "");
-        }
+    if (!playlist_selection_exists)
+        return true;
 
-        AppendMenu(menu, MF_STRING, ID_CUT, L"Cut");
-        AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
-        if (playlist_utils::check_clipboard())
-            AppendMenu(menu, MF_STRING, ID_PASTE, L"Paste");
-        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
-        if (p_manager_context.is_valid()) {
-            const keyboard_shortcut_manager::shortcut_type shortcuts[]
-                = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
-            p_manager_context->set_shortcut_preference(shortcuts, tabsize(shortcuts));
-            p_manager_context->init_context_playlist(standard_config_objects::query_show_keyboard_shortcuts_in_menus()
-                    ? contextmenu_manager::FLAG_SHOW_SHORTCUTS
-                    : 0);
+    enum {
+        ID_PLAY = 1,
+        ID_CUT,
+        ID_COPY,
+        ID_PASTE,
+        ID_SELECTION,
+        ID_CUSTOM_BASE = 0x8000,
+    };
 
-            p_manager_context->win32_build_menu(menu, ID_CUSTOM_BASE, -1);
-        }
-        menu_helpers::win32_auto_mnemonics(menu);
-        m_contextmenu_manager_base = ID_CUSTOM_BASE;
-        m_mainmenu_manager_base = ID_SELECTION;
+    HMENU menu = CreatePopupMenu();
 
-        m_mainmenu_manager = p_manager_selection;
-        m_contextmenu_manager = p_manager_context;
+    auto contextmenu_api = contextmenu_manager::get();
+    auto mainmenu_api = mainmenu_manager::get();
+    const auto show_shortcuts = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
+    const auto contextmenu_flags = show_shortcuts ? contextmenu_manager::flag_show_shortcuts : 0;
+    const auto mainmenu_flags = show_shortcuts ? mainmenu_manager::flag_show_shortcuts : 0;
 
-        int cmd
-            = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr);
+    mainmenu_api->instantiate(mainmenu_groups::edit_part2_selection);
+    mainmenu_api->generate_menu_win32(menu, ID_SELECTION, ID_CUSTOM_BASE - ID_SELECTION, mainmenu_flags);
+    if (GetMenuItemCount(menu) > 0)
+        uAppendMenu(menu, MF_SEPARATOR, 0, "");
 
-        m_status_text_override.release();
+    AppendMenu(menu, MF_STRING, ID_CUT, L"Cut");
+    AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
+    if (playlist_utils::check_clipboard())
+        AppendMenu(menu, MF_STRING, ID_PASTE, L"Paste");
+    AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
-        DestroyMenu(menu);
-        if (cmd) {
-            if (cmd == ID_CUT) {
-                playlist_utils::cut();
-            } else if (cmd == ID_COPY) {
-                playlist_utils::copy();
-            } else if (cmd == ID_PASTE) {
-                playlist_utils::paste(get_wnd());
-            } else if (cmd >= ID_SELECTION && cmd < ID_CUSTOM_BASE) {
-                if (p_manager_selection.is_valid()) {
-                    p_manager_selection->execute_command(cmd - ID_SELECTION);
-                }
-            } else if (cmd >= ID_CUSTOM_BASE) {
-                if (p_manager_context.is_valid()) {
-                    p_manager_context->execute_by_id(cmd - ID_CUSTOM_BASE);
-                }
-            }
-        }
-        m_mainmenu_manager.release();
-        m_contextmenu_manager.release();
+    const keyboard_shortcut_manager::shortcut_type shortcuts[]
+        = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
+    contextmenu_api->set_shortcut_preference(shortcuts, tabsize(shortcuts));
+    contextmenu_api->init_context_playlist(contextmenu_flags);
+    contextmenu_api->win32_build_menu(menu, ID_CUSTOM_BASE, -1);
+    menu_helpers::win32_auto_mnemonics(menu);
+
+    m_contextmenu_manager_base = ID_CUSTOM_BASE;
+    m_mainmenu_manager_base = ID_SELECTION;
+    m_mainmenu_manager = mainmenu_api;
+    m_contextmenu_manager = contextmenu_api;
+
+    uie::window_ptr self_ptr = this;
+    const auto tpm_flags = TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD;
+    const int cmd = TrackPopupMenu(menu, tpm_flags, pt.x, pt.y, 0, get_wnd(), nullptr);
+
+    DestroyMenu(menu);
+    m_status_text_override.release();
+    m_mainmenu_manager.release();
+    m_contextmenu_manager.release();
+
+    if (cmd == ID_CUT) {
+        playlist_utils::cut();
+    } else if (cmd == ID_COPY) {
+        playlist_utils::copy();
+    } else if (cmd == ID_PASTE) {
+        playlist_utils::paste(get_wnd());
+    } else if (cmd >= ID_SELECTION && cmd < ID_CUSTOM_BASE) {
+        mainmenu_api->execute_command(cmd - ID_SELECTION);
+    } else if (cmd >= ID_CUSTOM_BASE) {
+        contextmenu_api->execute_by_id(cmd - ID_CUSTOM_BASE);
     }
     return true;
 }
