@@ -315,7 +315,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     if (wp == 22) // Ctrl-V
                     {
-                        playlist_utils::paste(wnd);
+                        playlist_utils::paste_at_focused_item(wnd);
                         return 0;
                     }
                 }
@@ -1105,7 +1105,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     } else if (cmd == ID_COPY) {
                         playlist_utils::copy();
                     } else if (cmd == ID_PASTE) {
-                        playlist_utils::paste(wnd);
+                        playlist_utils::paste_at_focused_item(wnd);
                     } else if (cmd >= ID_SELECTION && cmd < ID_CUSTOM_BASE) {
                         if (p_manager_selection.is_valid()) {
                             p_manager_selection->execute_command(cmd - ID_SELECTION);

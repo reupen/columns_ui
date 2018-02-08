@@ -742,7 +742,7 @@ void ng_playlist_view_t::notify_on_menu_select(WPARAM wp, LPARAM lp)
     }
 }
 
-bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt)
+bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     enum {
         ID_PLAY = 1,
@@ -753,7 +753,7 @@ bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt)
         ID_CUSTOM_BASE = 0x8000,
     };
 
-    const bool playlist_selection_exists = m_playlist_api->activeplaylist_get_selection_count(1) > 0;
+    const auto playlist_selection_exists = m_playlist_api->activeplaylist_get_selection_count(1) > 0;
     const auto show_shortcuts = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
     HMENU menu = CreatePopupMenu();
 
@@ -813,7 +813,11 @@ bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt)
     } else if (cmd == ID_COPY) {
         playlist_utils::copy();
     } else if (cmd == ID_PASTE) {
-        playlist_utils::paste(get_wnd());
+        if (playlist_selection_exists || from_keyboard) {
+            playlist_utils::paste_at_focused_item(get_wnd());
+        } else {
+            playlist_utils::paste(get_wnd(), (std::numeric_limits<size_t>::max)());
+        }
     } else if (cmd >= ID_SELECTION && cmd < ID_CUSTOM_BASE && mainmenu_api.is_valid()) {
         mainmenu_api->execute_command(cmd - ID_SELECTION);
     } else if (cmd >= ID_CUSTOM_BASE && contextmenu_api.is_valid()) {
@@ -1021,7 +1025,7 @@ bool ng_playlist_view_t::notify_on_keyboard_keydown_copy()
 };
 bool ng_playlist_view_t::notify_on_keyboard_keydown_paste()
 {
-    return playlist_utils::paste(get_wnd());
+    return playlist_utils::paste_at_focused_item(get_wnd());
 };
 
 t_size ng_playlist_view_t::storage_get_focus_item()

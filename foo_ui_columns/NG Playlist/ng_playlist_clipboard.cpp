@@ -52,30 +52,37 @@ bool copy()
     }
     return false;
 };
-bool paste(HWND wnd)
+
+bool paste_at_focused_item(HWND wnd)
+{
+    auto playlist_api = playlist_manager::get();
+    size_t index = playlist_api->activeplaylist_get_focus_item();
+
+    if (index != (std::numeric_limits<size_t>::max)())
+        index++;
+    return paste(wnd, index);
+}
+
+bool paste(HWND wnd, size_t index)
 {
     try {
-        static_api_ptr_t<playlist_manager> m_playlist_api;
-        static_api_ptr_t<ole_interaction> api;
+        static_api_ptr_t<playlist_manager> playlist_api;
+        static_api_ptr_t<ole_interaction> ole_api;
         pfc::com_ptr_t<IDataObject> pDO;
         if (SUCCEEDED(OleGetClipboard(pDO.receive_ptr()))) {
             dropped_files_data_impl data;
             metadb_handle_list handles;
             bool b_native;
             DWORD dummy = DROPEFFECT_COPY;
-            HRESULT hr = api->check_dataobject(pDO, dummy, b_native);
+            HRESULT hr = ole_api->check_dataobject(pDO, dummy, b_native);
             if (SUCCEEDED(hr)) {
-                hr = api->parse_dataobject(pDO, data);
+                hr = ole_api->parse_dataobject(pDO, data);
                 if (SUCCEEDED(hr)) {
-                    m_playlist_api->activeplaylist_undo_backup();
-                    t_size index = m_playlist_api->activeplaylist_get_focus_item();
-                    if (index != pfc_infinite)
-                        index++;
-                    data.to_handles(handles, b_native, GetAncestor(wnd, GA_ROOT));
-                    m_playlist_api->activeplaylist_clear_selection();
-                    m_playlist_api->activeplaylist_insert_items(index, handles, pfc::bit_array_true());
+                    playlist_api->activeplaylist_undo_backup();
 
-                    // OleSetClipboard(NULL);
+                    data.to_handles(handles, b_native, GetAncestor(wnd, GA_ROOT));
+                    playlist_api->activeplaylist_clear_selection();
+                    playlist_api->activeplaylist_insert_items(index, handles, pfc::bit_array_true());
                 }
             }
         }
