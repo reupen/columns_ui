@@ -81,34 +81,31 @@
     <ClCompile Include=".\sort.cpp">
       <Filter>Panels\Columns Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_artwork.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_callbacks.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_callbacks.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_clipboard.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_clipboard.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_config.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_config.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_dropsource.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_dropsource.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_droptarget.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_droptarget.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_inline_edit.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_inline_edit.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_renderer.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
-    <ClCompile Include=".\NG Playlist\ng_playlist_renderer.cpp">
-      <Filter>Panels\NG Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\ng playlist\ng_playlist_style.cpp">
+    <ClCompile Include="ng_playlist\ng_playlist_style.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
     <ClCompile Include=".\playlist_search.cpp">
@@ -454,6 +451,9 @@
     <ClCompile Include="rebar_band.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
+    <ClCompile Include="ng_playlist\ng_playlist_artwork.cpp">
+      <Filter>Panels\NG Playlist</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -468,13 +468,13 @@
     <ClInclude Include=".\sort.h">
       <Filter>Panels\Columns Playlist</Filter>
     </ClInclude>
-    <ClInclude Include=".\NG Playlist\ng_playlist.h">
+    <ClInclude Include="ng_playlist\ng_playlist.h">
       <Filter>Panels\NG Playlist</Filter>
     </ClInclude>
-    <ClInclude Include=".\NG Playlist\ng_playlist_groups.h">
+    <ClInclude Include="ng_playlist\ng_playlist_groups.h">
       <Filter>Panels\NG Playlist</Filter>
     </ClInclude>
-    <ClInclude Include=".\ng playlist\ng_playlist_style.h">
+    <ClInclude Include="ng_playlist\ng_playlist_style.h">
       <Filter>Panels\NG Playlist</Filter>
     </ClInclude>
     <ClInclude Include=".\playlist_search.h">

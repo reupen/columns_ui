@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "NG Playlist/ng_playlist.h"
+#include "ng_playlist/ng_playlist.h"
 #include "setup_dialog.h"
 
 BOOL CALLBACK setup_dialog_t::g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

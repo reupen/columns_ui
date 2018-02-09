@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "NG Playlist/ng_playlist.h"
+#include "ng_playlist/ng_playlist.h"
 #include "config.h"
 #include "prefs_utils.h"
 

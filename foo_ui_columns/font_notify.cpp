@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "NG Playlist/ng_playlist.h"
+#include "ng_playlist/ng_playlist.h"
 
 #include "status_pane.h"
 #include "font_notify.h"
