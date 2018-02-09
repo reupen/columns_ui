@@ -195,7 +195,7 @@ private:
     bool notify_on_keyboard_keydown_search() override;
     bool notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& ht) override;
     void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
-    bool notify_on_contextmenu(const POINT& pt) override;
+    bool notify_on_contextmenu(const POINT& pt, bool from_keyboard) override;
     void notify_sort_column(t_size index, bool b_descending, bool b_selection_only) override;
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed) override;
     void render_background(HDC dc, const RECT* rc) override;

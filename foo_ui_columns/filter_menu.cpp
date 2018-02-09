@@ -66,7 +66,7 @@ void filter_panel_t::notify_on_menu_select(WPARAM wp, LPARAM lp)
     }
 }
 
-bool filter_panel_t::notify_on_contextmenu(const POINT& pt)
+bool filter_panel_t::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     uie::window_ptr p_this_temp = this;
     enum { ID_BASE = action_add_to_active + 2 };

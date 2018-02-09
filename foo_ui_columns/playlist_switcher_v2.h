@@ -131,7 +131,7 @@ public:
 
     bool do_drag_drop(WPARAM wp) override;
 
-    bool notify_on_contextmenu(const POINT& pt) override;
+    bool notify_on_contextmenu(const POINT& pt, bool from_keyboard) override;
 
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed) override
     {

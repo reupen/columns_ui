@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
-bool playlist_switcher_t::notify_on_contextmenu(const POINT& pt)
+bool playlist_switcher_t::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     uie::window_ptr p_this_temp = this;
     HMENU menu = CreatePopupMenu();

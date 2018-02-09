@@ -552,7 +552,7 @@ private:
     void set_focus() override { SetFocus(get_wnd()); }
 
     t_size get_highlight_item() override;
-    bool notify_on_contextmenu(const POINT& pt) override;
+    bool notify_on_contextmenu(const POINT& pt, bool from_keyboard) override;
     bool notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& ht) override;
     bool notify_on_middleclick(bool on_item, t_size index) override;
     bool notify_on_doubleleftclick_nowhere() override;
@@ -743,5 +743,6 @@ namespace playlist_utils {
 bool check_clipboard();
 bool cut();
 bool copy();
-bool paste(HWND wnd);
+bool paste_at_focused_item(HWND wnd);
+bool paste(HWND wnd, size_t index);
 } // namespace playlist_utils
