@@ -3,28 +3,23 @@
 
 bool playlist_switcher_t::do_drag_drop(WPARAM wp)
 {
-    try {
-        pfc::bit_array_bittable mask(get_item_count());
-        get_selection_state(mask);
+    pfc::bit_array_bittable mask(get_item_count());
+    get_selection_state(mask);
 
-        playlist_dataobject_desc_impl data;
-        data.set_from_playlist_manager(mask);
+    playlist_dataobject_desc_impl data;
+    data.set_from_playlist_manager(mask);
 
-        pfc::com_ptr_t<IDataObject> pDataObject = static_api_ptr_t<ole_interaction_v2>()->create_dataobject(data);
+    pfc::com_ptr_t<IDataObject> pDataObject = static_api_ptr_t<ole_interaction_v2>()->create_dataobject(data);
 
-        if (pDataObject.is_valid()) {
-            DWORD blah = DROPEFFECT_NONE;
-            m_dragging = true;
-            m_DataObject = pDataObject;
-            HRESULT hr = uih::ole::do_drag_drop(
-                get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
-            m_DataObject.release();
-            m_dragging = false;
-        }
-    } catch (exception_service_extension_not_found const&) {
-    } catch (exception_service_not_found const&) {
+    if (pDataObject.is_valid()) {
+        DWORD blah = DROPEFFECT_NONE;
+        m_dragging = true;
+        m_DataObject = pDataObject;
+        HRESULT hr = uih::ole::do_drag_drop(
+            get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
+        m_DataObject.release();
+        m_dragging = false;
     }
-
     return true;
 }
 
