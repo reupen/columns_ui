@@ -460,10 +460,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
 playlist_switcher_t::IDropTarget_t::IDropTarget_t(playlist_switcher_t* p_window)
     : drop_ref_count(0), m_last_rmb(false), m_is_playlists(false), m_is_accepted_type(false), m_window(p_window)
 {
-    try {
-        m_ole_api = standard_api_create_t<ole_interaction_v2>();
-        m_playlist_api = standard_api_create_t<playlist_manager_v4>();
-    } catch (exception_service_extension_not_found const&) {
-    }
+    m_ole_api = standard_api_create_t<ole_interaction_v2>();
+    m_playlist_api = standard_api_create_t<playlist_manager_v4>();
     m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 }
