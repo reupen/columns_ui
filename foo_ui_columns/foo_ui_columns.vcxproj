@@ -507,6 +507,7 @@
     <ClInclude Include="rebar_band.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".clang-format" />
     <None Include=".\buttons2.bmp" />
     <None Include=".\emptycoverdark.png" />
     <None Include=".\icons\star\left.ico" />

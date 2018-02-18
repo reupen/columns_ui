@@ -741,6 +741,7 @@
     <None Include=".\up1.bmp">
       <Filter>Resources</Filter>
     </None>
+    <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\foo_ui_columns.rc">
