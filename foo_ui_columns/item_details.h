@@ -1,6 +1,7 @@
 #pragma once
 
 #include "stdafx.h"
+#include "file_info_reader.h"
 
 extern const GUID g_guid_item_details;
 extern const GUID g_guid_item_details_tracking_mode;
@@ -356,7 +357,14 @@ private:
     void register_callback();
     void deregister_callback();
     void on_app_activate(bool b_activated);
-    void refresh_contents(bool b_new_track = true);
+
+    void set_handles(const metadb_handle_list& handles);
+    void refresh_contents(bool reset_scroll_position = true);
+    void request_full_file_info();
+    void on_full_file_info_request_completion(std::shared_ptr<cui::helpers::FullFileInfoRequest> request);
+    void release_aborted_full_file_info_requests();
+    void release_all_full_file_info_requests();
+
     void update_font_change_info();
     void reset_font_change_info();
     void update_display_info(HDC dc);
@@ -380,7 +388,12 @@ private:
     static std::vector<item_details_t*> g_windows;
 
     ui_selection_holder::ptr m_selection_holder;
-    metadb_handle_list m_handles, m_selection_handles;
+    metadb_handle_list m_handles;
+    metadb_handle_list m_selection_handles;
+    std::shared_ptr<file_info_impl> m_full_file_info;
+    std::shared_ptr<cui::helpers::FullFileInfoRequest> m_full_file_info_request;
+    std::vector<std::shared_ptr<cui::helpers::FullFileInfoRequest>> m_aborting_full_file_info_requests;
+    bool m_full_file_info_requested{};
     bool m_callback_registered{false};
     bool m_nowplaying_active{false}; //, m_update_scrollbar_range_in_progress;
     t_size m_tracking_mode;

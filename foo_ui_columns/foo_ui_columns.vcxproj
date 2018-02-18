@@ -304,6 +304,7 @@
     <ClCompile Include=".\prefs_utils.cpp" />
     <ClCompile Include=".\setup_dialog.cpp" />
     <ClCompile Include=".\sort.cpp" />
+    <ClCompile Include="file_info_reader.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\stdafx.h</PrecompiledHeaderFile>
@@ -464,6 +465,7 @@
     <ClInclude Include=".\playlist_view.h" />
     <ClInclude Include=".\setup_dialog.h" />
     <ClInclude Include=".\sort.h" />
+    <ClInclude Include="file_info_reader.h" />
     <ClInclude Include="ng_playlist\ng_playlist.h" />
     <ClInclude Include="ng_playlist\ng_playlist_groups.h" />
     <ClInclude Include="ng_playlist\ng_playlist_style.h" />

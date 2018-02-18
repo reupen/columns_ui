@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "item_details.h"
+
 //#include <Richedit.h>
 
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
@@ -349,7 +350,75 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
 #endif
 }
 
-void item_details_t::refresh_contents(bool b_new_track)
+void item_details_t::set_handles(const metadb_handle_list& handles)
+{
+    const auto old_handles = std::move(m_handles);
+    m_handles = handles;
+    if (handles.get_count() == 0 || old_handles.get_count() == 0 || handles[0] != old_handles[0]) {
+        if (m_full_file_info_request) {
+            m_full_file_info_request->abort();
+            m_aborting_full_file_info_requests.emplace_back(std::move(m_full_file_info_request));
+        }
+        m_full_file_info_requested = false;
+        m_full_file_info.reset();
+    }
+    refresh_contents();
+}
+
+void item_details_t::request_full_file_info()
+{
+    if (m_full_file_info_requested)
+        return;
+
+    m_full_file_info_requested = true;
+
+    if (m_handles.get_count() == 0)
+        return;
+
+    const auto handle = m_handles[0];
+    if (filesystem::g_is_remote_or_unrecognized(handle->get_path()))
+        return;
+    m_full_file_info_request = std::make_unique<cui::helpers::FullFileInfoRequest>(
+        std::move(handle), [self = service_ptr_t<item_details_t>{this}](auto&& request) {
+            self->on_full_file_info_request_completion(std::forward<decltype(request)>(request));
+        });
+    m_full_file_info_request->queue();
+}
+
+void item_details_t::on_full_file_info_request_completion(std::shared_ptr<cui::helpers::FullFileInfoRequest> request)
+{
+    if (m_full_file_info_request == request) {
+        m_full_file_info_request.reset();
+        if (get_wnd()) {
+            m_full_file_info = request->get_safe("Item details");
+            refresh_contents(false);
+        }
+    }
+
+    release_aborted_full_file_info_requests();
+}
+
+void item_details_t::release_aborted_full_file_info_requests()
+{
+    const auto erase_iterator = std::remove_if(m_aborting_full_file_info_requests.begin(),
+        m_aborting_full_file_info_requests.end(), [](auto&& item) { return item->is_ready(); });
+    m_aborting_full_file_info_requests.erase(erase_iterator, m_aborting_full_file_info_requests.end());
+}
+
+void item_details_t::release_all_full_file_info_requests()
+{
+    if (m_full_file_info_request) {
+        m_full_file_info_request->abort();
+        m_full_file_info_request->wait();
+    }
+    m_full_file_info_request.reset();
+    for (auto&& request : m_aborting_full_file_info_requests) {
+        request->wait();
+    }
+    m_aborting_full_file_info_requests.clear();
+}
+
+void item_details_t::refresh_contents(bool reset_scroll_position)
 {
     // DisableRedrawing noRedraw(get_wnd());
     bool b_Update = true;
@@ -361,11 +430,18 @@ void item_details_t::refresh_contents(bool b_new_track)
         pfc::string8_fast_aggressive temp, temp2;
         temp.prealloc(2048);
         temp2.prealloc(2048);
-        if (m_nowplaying_active)
+        if (m_nowplaying_active) {
             static_api_ptr_t<playback_control>()->playback_format_title(
                 &tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
-        else
-            m_handles[0]->format_title(&tf_hook, temp, m_to, nullptr);
+        } else {
+            const auto handle = m_handles[0];
+            if (m_full_file_info) {
+                m_handles[0]->format_title_from_external_info(*m_full_file_info, &tf_hook, temp, m_to, nullptr);
+            } else {
+                request_full_file_info();
+                m_handles[0]->format_title(&tf_hook, temp, m_to, nullptr);
+            }
+        }
 
         if (strcmp(temp, m_current_text_raw) != 0) {
             m_current_text_raw = temp;
@@ -391,7 +467,7 @@ void item_details_t::refresh_contents(bool b_new_track)
     if (b_Update) {
         reset_display_info();
 
-        update_scrollbar_range(b_new_track);
+        update_scrollbar_range(reset_scroll_position);
 
         invalidate_all();
     }
@@ -447,10 +523,8 @@ void item_details_t::reset_font_change_info()
 void item_details_t::on_playback_new_track(metadb_handle_ptr p_track)
 {
     if (g_track_mode_includes_now_playing(m_tracking_mode)) {
-        m_handles.remove_all();
-        m_handles.add_item(p_track);
         m_nowplaying_active = true;
-        refresh_contents();
+        set_handles(pfc::list_single_ref_t<metadb_handle_ptr>(p_track));
     }
 }
 
@@ -497,8 +571,7 @@ void item_details_t::on_playback_stop(play_control::t_stop_reason p_reason)
         } else if (m_tracking_mode == track_auto_selection_playing) {
             handles = m_selection_handles;
         }
-        m_handles = handles;
-        refresh_contents();
+        set_handles(handles);
     }
 }
 
@@ -508,8 +581,7 @@ void item_details_t::on_playlist_switch()
         && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
-        m_handles = handles;
-        refresh_contents();
+        set_handles(handles);
     }
 }
 void item_details_t::on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
@@ -518,8 +590,7 @@ void item_details_t::on_items_selection_change(const pfc::bit_array& p_affected,
         && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
-        m_handles = handles;
-        refresh_contents();
+        set_handles(handles);
     }
 }
 
@@ -560,8 +631,7 @@ void item_details_t::on_selection_changed(const pfc::list_base_const_t<metadb_ha
 
         if (g_track_mode_includes_selection(m_tracking_mode)
             && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
-            m_handles = m_selection_handles;
-            refresh_contents();
+            set_handles(m_selection_handles);
         }
     }
 
@@ -573,22 +643,21 @@ void item_details_t::on_selection_changed(const pfc::list_base_const_t<metadb_ha
 
 void item_details_t::on_tracking_mode_change()
 {
-    m_handles.remove_all();
+    metadb_handle_list handles;
 
     m_nowplaying_active = false;
 
     if (g_track_mode_includes_now_playing(m_tracking_mode) && static_api_ptr_t<play_control>()->is_playing()) {
         metadb_handle_ptr item;
         if (static_api_ptr_t<playback_control>()->get_now_playing(item))
-            m_handles.add_item(item);
+            handles.add_item(item);
         m_nowplaying_active = true;
     } else if (g_track_mode_includes_plalist(m_tracking_mode)) {
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(m_handles);
+        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
     } else if (g_track_mode_includes_selection(m_tracking_mode)) {
-        m_handles = m_selection_handles;
+        handles = m_selection_handles;
     }
-
-    refresh_contents();
+    set_handles(handles);
 }
 
 void item_details_t::update_now()
@@ -714,6 +783,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<metadb_io_v3>()->unregister_callback(this);
         static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
         deregister_callback();
+        release_all_full_file_info_requests();
         m_handles.remove_all();
         m_selection_handles.remove_all();
         m_selection_holder.release();
