@@ -454,6 +454,9 @@
     <ClCompile Include="ng_playlist\ng_playlist_artwork.cpp">
       <Filter>Panels\NG Playlist</Filter>
     </ClCompile>
+    <ClCompile Include="file_info_reader.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -625,6 +628,9 @@
     <ClInclude Include="rebar_band.h">
       <Filter>Main Window</Filter>
     </ClInclude>
+    <ClInclude Include="file_info_reader.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">
@@ -735,6 +741,7 @@
     <None Include=".\up1.bmp">
       <Filter>Resources</Filter>
     </None>
+    <None Include=".clang-format" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\foo_ui_columns.rc">

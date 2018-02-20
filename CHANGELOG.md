@@ -10,27 +10,39 @@
 
 ### Other changes
 
-* Added the ability to close foobar2000 to the notification area [contributed by tuxzz, [#56](https://github.com/reupen/columns_ui/pull/56)].
+* Added the ability to close foobar2000 to the notification area. [Contributed by tuxzz, [#56](https://github.com/reupen/columns_ui/pull/56)]
 
-* The value of the 'Allow resizing of locked panels' setting is now available to other components.
+* Made the Item details panel load full metadata (including large fields such as lyrics) for selected items. (Previously, only playing items showed full metadata.) [[#68](https://github.com/reupen/columns_ui/issues/68)]
+
+* Right-clicking in empty space in NG playlist now correctly deselects all items and always displays a context menu. [[#75](https://github.com/reupen/columns_ui/issues/75)]
+
+* The value of the 'Allow resizing of locked panels' setting is now available to other components. [[#53](https://github.com/reupen/columns_ui/issues/53)]
+
+* Added a reliable mechanism for third-party splitter panels to store extra configuration data for child panels that persists through panel copy-and-paste operations. [[#52](https://github.com/reupen/columns_ui/issues/52)]
 
 * Corrected the status pane playback status when resume playback on start-up is enabled and foobar2000 is started when playback was previously paused.
 
+* Corrected the colour of text in the status pane when using high-contrast Windows themes. [Contributed by MAxonn, [#59](https://github.com/reupen/columns_ui/issues/59)]
+
 * Removed the ability to import FCS files.
 
-* Changed the syntax of CLI commands for importing configurations from FCL files. The commands now use the following syntax: `/columnsui:import <path>` and `/columnsui:import-quiet <path>`
+* Changed the syntax of CLI commands for importing configurations from FCL files. The commands now use the following syntax: `/columnsui:import <path>` and `/columnsui:import-quiet <path>`. [[#47](https://github.com/reupen/columns_ui/issues/47)]
 
-* Added CLI commands for exporting the current configuration to an FCL file. The added commands are `/columnsui:export <path>` and `/columnsui:export-quiet <path>`
+* Added CLI commands for exporting the current configuration to an FCL file. The added commands are `/columnsui:export <path>` and `/columnsui:export-quiet <path>`. [[#47](https://github.com/reupen/columns_ui/issues/47)]
 
-* Miscellaneous internal code refactoring.
+* Fixed a bug where pressing Enter or Return while editing an NG playlist grouping script would close the dialog box. [[#48](https://github.com/reupen/columns_ui/issues/48)]
 
 * Some minor changes to labels and layout in preferences and other configuration dialogs.
 
 * Renamed Columns playlist to legacy playlist. The columns/legacy will be completely removed in version 0.7.0 or later, anyone still using it is advised to switch to NG playlist.
 
-* Windows XP and Vista are no longer officially supported. Support will be completely removed in version 0.7.0 or later. Users of those operating systems are advised to stick with version 0.5.1.
+* Windows XP and Vista are no longer supported. Users of those operating systems are advised to stick with version 0.5.1.
 
-* Compiled with Visual Studio 2017 15.3.
+* Miscellaneous internal code refactoring.
+
+* Compiled with the foobar2000 1.4 SDK.
+
+* Compiled with Visual Studio 2017 15.6.
 
 ## 0.5.1
 

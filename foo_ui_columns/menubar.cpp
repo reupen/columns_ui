@@ -139,7 +139,7 @@ public:
 };
 
 class menu_extension
-    : public ui_extension::containter_uie_window_t<uie::menu_window_v2>
+    : public ui_extension::container_uie_window_t<uie::menu_window_v2>
     , uih::MessageHook {
     static const TCHAR* class_name;
 
