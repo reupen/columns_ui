@@ -7,7 +7,7 @@
 
 static class tab_main : public preferences_tab {
 public:
-    static bool initialised;
+    bool m_initialised{};
 
     static void refresh_me(HWND wnd)
     {
@@ -26,19 +26,18 @@ public:
         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, main_window::config_main_window_title_script.get());
     }
 
-    static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
             SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
-
             refresh_me(wnd);
-            initialised = true;
+            m_initialised = true;
         }
 
         break;
         case WM_DESTROY: {
-            initialised = false;
+            m_initialised = false;
         } break;
         case WM_COMMAND:
             switch (wp) {
@@ -56,7 +55,7 @@ public:
                 g_import_layout(wnd);
                 break;
             case (EN_CHANGE << 16) | IDC_TRANSPARENCY_LEVEL: {
-                if (initialised) {
+                if (m_initialised) {
                     BOOL result;
                     unsigned new_val = GetDlgItemInt(wnd, IDC_TRANSPARENCY_LEVEL, &result, FALSE);
                     if (result) {
@@ -102,16 +101,19 @@ public:
         }
         return 0;
     }
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_MAIN, wnd, ConfigProc); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(
+            wnd, IDD_MAIN, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+    }
     const char* get_name() override { return "Main"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:main";
         return true;
     }
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 } g_tab_main;
-
-bool tab_main::initialised = false;
 
 preferences_tab* g_get_tab_main()
 {

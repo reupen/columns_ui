@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "config_host.h"
+#include "prefs_utils.h"
 
 void config_host_generic::make_child()
 {
@@ -43,6 +44,64 @@ BOOL config_host_generic::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         p_instance = reinterpret_cast<config_host_generic*>(GetWindowLongPtr(wnd, DWLP_USER));
     return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
 }
+
+namespace cui::prefs {
+HWND PreferencesTabHelper::create(
+    HWND wnd, UINT id, std::function<BOOL(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback)
+{
+    m_on_message_callback = std::move(on_message_callback);
+    return uCreateDialog(id, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
+}
+
+BOOL PreferencesTabHelper::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    PreferencesTabHelper* p_instance;
+    if (msg == WM_INITDIALOG) {
+        p_instance = reinterpret_cast<PreferencesTabHelper*>(lp);
+        SetWindowLongPtr(wnd, DWLP_USER, lp);
+    } else {
+        p_instance = reinterpret_cast<PreferencesTabHelper*>(GetWindowLongPtr(wnd, DWLP_USER));
+    }
+    return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
+}
+
+BOOL PreferencesTabHelper::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg) {
+    case WM_INITDIALOG:
+        on_initdialog(wnd);
+        break;
+    case WM_NCDESTROY:
+        on_ncdestroy();
+        break;
+    default:
+        break;
+    }
+    return m_on_message_callback(wnd, msg, wp, lp);
+}
+
+void PreferencesTabHelper::on_initdialog(HWND wnd)
+{
+    m_wnd = wnd;
+    m_title_font = create_default_title_font();
+
+    const auto children = cui::helpers::get_child_windows(wnd, [this, wnd](HWND wnd_child) {
+        return GetAncestor(wnd_child, GA_PARENT) == wnd
+            && m_title_ctrl_ids.find(GetDlgCtrlID(wnd_child)) != m_title_ctrl_ids.end();
+    });
+    for (auto&& child : children) {
+        SetWindowFont(child, m_title_font, FALSE);
+    }
+}
+
+void PreferencesTabHelper::on_ncdestroy()
+{
+    DeleteFont(m_title_font);
+    m_title_font = nullptr;
+    m_wnd = nullptr;
+}
+
+} // namespace cui::prefs
 
 void config_host_generic::show_tab(const char* tab_name)
 {

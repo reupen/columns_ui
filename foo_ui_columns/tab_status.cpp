@@ -6,10 +6,8 @@
 
 static class tab_status : public preferences_tab {
 public:
-    static bool initialised;
-    static menu_item_cache* p_cache;
-
-    //    static ptr_list_autofree_t<char> status_items;
+    bool m_initialised{};
+    menu_item_cache* m_cache{};
 
     static void refresh_me(HWND wnd)
     {
@@ -22,24 +20,23 @@ public:
         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, main_window::config_status_bar_script.get());
     }
 
-    static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            p_cache = new menu_item_cache;
+            m_cache = new menu_item_cache;
 
-            populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, *p_cache, false);
+            populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, *m_cache, false);
 
             refresh_me(wnd);
-            initialised = true;
+            m_initialised = true;
         }
 
         break;
         case WM_DESTROY: {
-            delete p_cache;
-            p_cache = nullptr;
-            //                status_items.free_all();
-            initialised = false;
+            delete m_cache;
+            m_cache = nullptr;
+            m_initialised = false;
         } break;
         case WM_COMMAND:
             switch (wp) {
@@ -47,7 +44,7 @@ public:
                 main_window::config_status_bar_script.set(string_utf8_from_window((HWND)lp));
                 break;
             case (CBN_SELCHANGE << 16) | IDC_MENU_DBLCLK: {
-                on_menu_combo_change(wnd, lp, cfg_statusdbl, *p_cache, IDC_MENU_DESC);
+                on_menu_combo_change(wnd, lp, cfg_statusdbl, *m_cache, IDC_MENU_DESC);
             } break;
             case IDC_SHOW_LOCK: {
                 main_window::config_set_status_show_lock(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
@@ -73,17 +70,19 @@ public:
         }
         return 0;
     }
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_STATUS, wnd, ConfigProc); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(
+            wnd, IDD_STATUS, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+    }
     const char* get_name() override { return "Status bar"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:status_bar";
         return true;
     }
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2, IDC_TITLE3}};
 } g_tab_status;
-
-menu_item_cache* tab_status::p_cache = nullptr;
-bool tab_status::initialised = false;
 
 preferences_tab* g_get_tab_status()
 {

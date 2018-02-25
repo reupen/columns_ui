@@ -96,6 +96,31 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
     return rv;
 }
 
+namespace cui::helpers {
+
+std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter)
+{
+    std::vector<HWND> children;
+
+    struct EnumChildWindowsData {
+        std::vector<HWND>& children;
+        std::function<bool(HWND)> filter;
+    } data{children, std::move(filter)};
+
+    auto enum_child_windows_proc = [](HWND wnd, LPARAM lp) -> BOOL {
+        auto data = reinterpret_cast<EnumChildWindowsData*>(lp);
+        if (!data->filter || data->filter(wnd))
+            data->children.emplace_back(wnd);
+        return TRUE;
+    };
+
+    EnumChildWindows(wnd, enum_child_windows_proc, reinterpret_cast<LPARAM>(&data));
+
+    return children;
+}
+
+} // namespace cui::helpers
+
 #if 0
 void _check_hresult(HRESULT hr)
 {

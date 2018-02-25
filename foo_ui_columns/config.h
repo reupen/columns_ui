@@ -136,7 +136,7 @@ public:
 };
 
 namespace cui {
-namespace preferences {
+namespace prefs {
 extern service_factory_single_t<config_host_generic> page_main;
 extern service_factory_single_t<config_host_generic> page_playlist_view;
 extern service_factory_single_t<config_host_generic> page_playlist_switcher;

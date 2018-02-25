@@ -169,3 +169,20 @@ void on_menu_combo_change(
     uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0,
         cache_idx < p_cache.get_count() ? p_cache.get_item(cache_idx).m_desc.get_ptr() : "");
 }
+
+namespace cui::prefs {
+
+HFONT create_default_ui_font(unsigned point_size)
+{
+    LOGFONT lf{};
+    wcsncpy_s(lf.lfFaceName, L"Segoe UI", _TRUNCATE);
+    lf.lfHeight = -MulDiv(point_size, uih::get_system_dpi_cached().cy, 72);
+    return CreateFontIndirect(&lf);
+}
+
+HFONT create_default_title_font()
+{
+    return create_default_ui_font(12);
+}
+
+} // namespace cui::prefs

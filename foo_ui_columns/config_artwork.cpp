@@ -161,18 +161,7 @@ public:
 
     void refresh_me(HWND wnd)
     {
-        initialising = true;
-#if 0
-        HWND wnd_edit = GetDlgItem(wnd, IDC_FRONT);
-        uSetWindowText(wnd_edit, artwork_panel::cfg_front);
-        wnd_edit = GetDlgItem(wnd, IDC_BACK);
-        uSetWindowText(wnd_edit, artwork_panel::cfg_back);
-        wnd_edit = GetDlgItem(wnd, IDC_DISC);
-        uSetWindowText(wnd_edit, artwork_panel::cfg_disc);
-        //wnd_edit = GetDlgItem(wnd, IDC_ICON);
-        //uSetWindowText(wnd_edit, artwork_panel::cfg_icon);
-#endif
-
+        m_initialising = true;
         m_source_list.remove_items(pfc::bit_array_true());
 
         t_size indexcount = tabsize(g_artwork_sources);
@@ -200,27 +189,16 @@ public:
         ComboBox_AddString(wnd_combo, L"Sunken");
         ComboBox_AddString(wnd_combo, L"Grey");
         ComboBox_SetCurSel(wnd_combo, artwork_panel::cfg_edge_style);
-        initialising = false;
-    }
-
-    static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        tab_artwork* p_data = nullptr;
-        if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<tab_artwork*>(lp);
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-        } else
-            p_data = reinterpret_cast<tab_artwork*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+        m_initialising = false;
     }
 
     void on_scripts_change() { m_source_list.on_scripts_change(); }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            HWND wnd_fields = m_source_list.create(wnd, uih::WindowPosition(20, 44, 276, 80), true);
+            HWND wnd_fields = m_source_list.create(wnd, uih::WindowPosition(7, 42, 271, 75), true);
             SetWindowPos(wnd_fields, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 
             refresh_me(wnd);
@@ -360,7 +338,11 @@ public:
         return 0;
     }
     void apply() {}
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_ARTWORK, wnd, g_on_message, (LPARAM)this); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(
+            wnd, IDD_ARTWORK, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    }
     const char* get_name() override { return "Artwork"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
@@ -369,7 +351,8 @@ public:
     }
 
 private:
-    bool initialising{false}; //, m_changed;
+    bool m_initialising{false};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 } g_tab_artwork;
 
 preferences_tab* g_get_tab_artwork()
