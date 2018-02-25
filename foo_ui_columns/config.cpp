@@ -24,9 +24,6 @@ pvt::preferences_tab_impl g_tab_grouping;
 
 static preferences_tab* g_tabs[] = {
     g_get_tab_main(),
-    //&g_tab_layout,
-    g_get_tab_layout(),
-    //&g_tab_display,
     g_get_tab_status(),
     g_get_tab_sys(),
     g_get_tab_artwork(),
@@ -79,7 +76,7 @@ const GUID& config_get_main_guid()
 }; // namespace columns
 
 namespace cui {
-namespace preferences {
+namespace prefs {
 service_factory_single_t<config_host_generic> page_main("Columns UI", g_tabs, tabsize(g_tabs),
     g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
 service_factory_single_t<config_host_generic> page_playlist_view("Playlist view", g_tabs_playlist_view,

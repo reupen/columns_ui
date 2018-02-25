@@ -3,6 +3,10 @@
 #include "config.h"
 #include "splitter.h"
 
+namespace cui::prefs {
+constexpr GUID layout_page_guid = {0x1d904b23, 0x9357, 0x4cf7, {0xbf, 0xdf, 0xd3, 0x9e, 0xa0, 0x30, 0x73, 0xb1}};
+}
+
 auto normalise_splitter_item(const uie::splitter_item_t* item)
 {
     auto normalised_item = std::make_unique<uie::splitter_item_full_v3_impl_t>();
@@ -129,7 +133,7 @@ auto deserialise_splitter_item(gsl::span<t_uint8> data)
     return item;
 }
 
-class tab_layout_new : public preferences_tab {
+class tab_layout_new : public preferences_page {
     class node : public pfc::refcounted_object_root {
     public:
         using ptr = pfc::refcounted_object_ptr_t<node>;
@@ -1246,13 +1250,23 @@ class tab_layout_new : public preferences_tab {
 
 public:
     HWND create(HWND wnd) override { return uCreateDialog(IDD_LAYOUT, wnd, ConfigProc); }
+
     const char* get_name() override { return "Layout"; }
+
     bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:layout";
         return true;
     }
-} g_tab_layout_new;
+
+    GUID get_guid() override { return cui::prefs::layout_page_guid; }
+
+    GUID get_parent_guid() override { return columns::config_get_main_guid(); }
+
+    bool reset_query() override { return false; }
+
+    void reset() override {}
+};
 
 tab_layout_new::node_ptr tab_layout_new::g_node_root;
 pfc::array_t<t_uint8> tab_layout_new::g_node_clipboard;
@@ -1262,7 +1276,4 @@ bool tab_layout_new::g_initialised;
 
 bool tab_layout_new::g_initialising = false;
 
-preferences_tab* g_get_tab_layout()
-{
-    return &g_tab_layout_new;
-}
+service_factory_single_t<tab_layout_new> page_layout;

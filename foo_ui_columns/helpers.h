@@ -16,3 +16,7 @@ void g_compare_file_with_bytes(
     const service_ptr_t<file>& p1, const pfc::array_t<t_uint8>& p2, bool& b_same, abort_callback& p_abort);
 
 HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext);
+
+namespace cui::helpers {
+std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter = nullptr);
+}

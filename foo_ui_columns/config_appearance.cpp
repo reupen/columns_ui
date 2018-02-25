@@ -280,7 +280,7 @@ cfg_int cfg_child_appearance(g_guid_cfg_child_appearance, 0);
 constexpr const GUID g_guid_colour_preferences
     = {0x41e6d7ed, 0xa1dc, 0x4d84, {0x9b, 0xc9, 0x35, 0x2d, 0xaf, 0x77, 0x88, 0xb0}};
 
-static service_factory_single_t<config_host_generic> g_config_tabs("Colours and Fonts", g_tabs_appearance,
+static service_factory_single_t<config_host_generic> g_config_tabs("Colours and fonts", g_tabs_appearance,
     tabsize(g_tabs_appearance), g_guid_colour_preferences, g_guid_columns_ui_preferences_page, &cfg_child_appearance);
 
 class fcl_colours_t : public cui::fcl::dataset {
