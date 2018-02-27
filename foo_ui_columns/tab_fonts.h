@@ -14,8 +14,6 @@ class tab_appearance_fonts : public preferences_tab {
 public:
     void refresh_me(HWND wnd);
 
-    static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
     void update_mode_combobox();
 
     void get_font(LOGFONT& lf);
@@ -26,7 +24,7 @@ public:
 
     void on_font_changed();
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void apply();
     HWND create(HWND wnd) override;
     const char* get_name() override;
@@ -35,4 +33,5 @@ public:
 
 private:
     bool initialising{false};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };

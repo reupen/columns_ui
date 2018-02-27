@@ -20,12 +20,13 @@ const char* tab_appearance_fonts::get_name()
 
 HWND tab_appearance_fonts::create(HWND wnd)
 {
-    return uCreateDialog(IDD_FONTS_GLOBAL, wnd, g_on_message, (LPARAM)this);
+    return m_helper.create(
+        wnd, IDD_FONTS_GLOBAL, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
 void tab_appearance_fonts::apply() {}
 
-BOOL CALLBACK tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -161,17 +162,6 @@ void tab_appearance_fonts::update_mode_combobox()
 
     ComboBox_SetCurSel(
         m_wnd_colours_mode, uih::combo_box_find_item_by_data(m_wnd_colours_mode, m_element_ptr->font_mode));
-}
-
-BOOL CALLBACK tab_appearance_fonts::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    tab_appearance_fonts* p_data = nullptr;
-    if (msg == WM_INITDIALOG) {
-        p_data = reinterpret_cast<tab_appearance_fonts*>(lp);
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-    } else
-        p_data = reinterpret_cast<tab_appearance_fonts*>(GetWindowLongPtr(wnd, DWLP_USER));
-    return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }
 
 void tab_appearance_fonts::refresh_me(HWND wnd)
