@@ -21,12 +21,13 @@ const char* tab_appearance::get_name()
 
 HWND tab_appearance::create(HWND wnd)
 {
-    return uCreateDialog(IDD_COLOURS_GLOBAL, wnd, g_on_message, (LPARAM)this);
+    return m_helper.create(
+        wnd, IDD_COLOURS_GLOBAL, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
 void tab_appearance::apply() {}
 
-BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -34,20 +35,23 @@ BOOL CALLBACK tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         m_wnd_colours_mode = GetDlgItem(wnd, IDC_COLOURS_MODE);
         m_wnd_colours_element = GetDlgItem(wnd, IDC_COLOURS_ELEMENT);
 
-        auto y = 85;
-        auto spacing = 5 + 14;
+        constexpr auto y_start = 83;
+        constexpr auto y_spacing = 6 + 14;
+        constexpr auto x_col_1 = 111;
+        constexpr auto x_col_2 = 204;
 
-        g_fill_text.create(wnd, uih::WindowPosition{120, y, 18, 14}, nullptr, true);
-        g_fill_selection_text.create(wnd, uih::WindowPosition{120, y += spacing, 18, 14}, nullptr, true);
-        g_fill_selection_text_inactive.create(wnd, uih::WindowPosition{120, y += spacing, 18, 14}, nullptr, true);
+        g_fill_text.create(wnd, uih::WindowPosition{x_col_1, y_start, 18, 14}, nullptr, true);
+        g_fill_selection_text.create(wnd, uih::WindowPosition{x_col_1, y_start + y_spacing, 18, 14}, nullptr, true);
+        g_fill_selection_text_inactive.create(
+            wnd, uih::WindowPosition{x_col_1, y_start + y_spacing * 2, 18, 14}, nullptr, true);
 
-        g_fill_active_item_frame.create(wnd, uih::WindowPosition{120, 162, 18, 14}, nullptr, true);
+        g_fill_active_item_frame.create(wnd, uih::WindowPosition{x_col_1, 163, 18, 14}, nullptr, true);
 
-        y = 85;
-
-        g_fill_background.create(wnd, uih::WindowPosition{225, y, 18, 14}, nullptr, true);
-        g_fill_selection_background.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
-        g_fill_selection_background_inactive.create(wnd, uih::WindowPosition{225, y += spacing, 18, 14}, nullptr, true);
+        g_fill_background.create(wnd, uih::WindowPosition{x_col_2, y_start, 18, 14}, nullptr, true);
+        g_fill_selection_background.create(
+            wnd, uih::WindowPosition{x_col_2, y_start + y_spacing, 18, 14}, nullptr, true);
+        g_fill_selection_background_inactive.create(
+            wnd, uih::WindowPosition{x_col_2, y_start + y_spacing * 2, 18, 14}, nullptr, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
         colours_client_list_t::g_get_list(m_colours_client_list);
@@ -270,17 +274,6 @@ void tab_appearance::update_fills()
 
     Button_SetCheck(
         GetDlgItem(m_wnd, IDC_CUSTOM_FRAME), p_manager.get_bool(cui::colours::bool_use_custom_active_item_frame));
-}
-
-BOOL CALLBACK tab_appearance::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    tab_appearance* p_data = nullptr;
-    if (msg == WM_INITDIALOG) {
-        p_data = reinterpret_cast<tab_appearance*>(lp);
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-    } else
-        p_data = reinterpret_cast<tab_appearance*>(GetWindowLongPtr(wnd, DWLP_USER));
-    return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }
 
 void tab_appearance::refresh_me(HWND wnd)

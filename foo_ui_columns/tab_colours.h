@@ -22,8 +22,6 @@ class tab_appearance : public preferences_tab {
 public:
     void refresh_me(HWND wnd);
 
-    static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
     void update_fills();
     bool get_change_colour_enabled(cui::colours::colour_identifier_t p_identifier);
     bool get_colour_patch_enabled(cui::colours::colour_identifier_t p_identifier);
@@ -32,7 +30,7 @@ public:
 
     void on_colour_changed();
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void apply();
     HWND create(HWND wnd) override;
     const char* get_name() override;
@@ -41,4 +39,5 @@ public:
 
 private:
     bool initialising{false};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
