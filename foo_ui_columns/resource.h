@@ -64,7 +64,8 @@
 #define IDD_ARTWORK                     223
 #define IDD_SELECTIONCONFIG             224
 #define IDD_ITEMDETAILS_CONFIG          225
-#define IDD_FILTER_MISC                 226
+#define IDD_FILTER_APPEARANCE           226
+#define IDD_FILTER_BEHAVIOUR            227
 #define IDC_LIBRARIES                   1003
 #define IDC_LIST                        1003
 #define IDC_COLUMNS                     1003
@@ -213,10 +214,8 @@
 #define IDC_SCALE                       1102
 #define IDC_CHANGE_FRAME                1103
 #define IDC_VERTICAL_SCALE              1103
-#define IDC_CHANGE_BACK3                1104
 #define IDC_CHANGE_SEL_FORE             1106
 #define IDC_CHANGE_SEL_INACTIVE_FORE    1110
-#define IDC_CHANGE_BACK6                1112
 #define IDC_CHANGE_TEXT_FORE            1116
 #define IDC_TRANSPARENCY_LEVEL          1122
 #define IDC_TRANSPARENCY_SPIN           1123

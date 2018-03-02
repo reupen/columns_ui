@@ -41,8 +41,6 @@ preferences_tab* g_get_tab_main();
 preferences_tab* g_get_tab_status();
 preferences_tab* g_get_tab_global();
 
-extern preferences_tab *const g_tab_filter_fields, *const g_tab_filter_misc;
-
 void refresh_appearance_prefs();
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
 bool colour_picker(HWND wnd, COLORREF& out, COLORREF custom);
