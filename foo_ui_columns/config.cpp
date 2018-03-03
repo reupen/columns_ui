@@ -14,12 +14,6 @@ cfg_int cfg_child(GUID{0xf20b83d0, 0x5890, 0xba6f, {0xe8, 0x62, 0x69, 0x30, 0xe2
 cfg_int cfg_child_panels(GUID{0x1a8d8760, 0x4f60, 0x4800, {0x93, 0x81, 0x32, 0x32, 0x66, 0xa0, 0x6c, 0xff}}, 0);
 cfg_int cfg_child_playlist(GUID{0xbc6c99d4, 0x51c1, 0xf76e, {0x10, 0x9c, 0x62, 0x92, 0x92, 0xbd, 0xbd, 0xb2}}, 0);
 
-// {E57A430E-51BB-4FCC-B0BC-9D228B891A17}
-static const GUID guid_filters_page_child
-    = {0xe57a430e, 0x51bb, 0x4fcc, {0xb0, 0xbc, 0x9d, 0x22, 0x8b, 0x89, 0x1a, 0x17}};
-
-cfg_int cfg_child_filters(guid_filters_page_child, 0);
-
 pvt::preferences_tab_impl g_tab_grouping;
 
 static preferences_tab* g_tabs[] = {
@@ -28,8 +22,6 @@ static preferences_tab* g_tabs[] = {
     g_get_tab_sys(),
     g_get_tab_artwork(),
 };
-
-static preferences_tab* g_tabs_filters[] = {g_tab_filter_misc, g_tab_filter_fields};
 
 static preferences_tab* g_tabs_panels[] = {
     g_get_tab_playlist(),
@@ -60,9 +52,6 @@ const GUID guid_playlist_switcher_page = {0x779f2fa6, 0x3b76, 0x4829, {0x9e, 0x2
 // {B8CA5FC9-7463-48e8-9879-0D9517F3E7A9}
 const GUID guid_playlist_view_page = {0xb8ca5fc9, 0x7463, 0x48e8, {0x98, 0x79, 0xd, 0x95, 0x17, 0xf3, 0xe7, 0xa9}};
 
-// {71A480E2-9007-4315-8DF3-81636C740AAD}
-static const GUID guid_filters_page = {0x71a480e2, 0x9007, 0x4315, {0x8d, 0xf3, 0x81, 0x63, 0x6c, 0x74, 0xa, 0xad}};
-
 namespace columns {
 const GUID& config_get_playlist_view_guid()
 {
@@ -83,7 +72,5 @@ service_factory_single_t<config_host_generic> page_playlist_view("Playlist view"
     tabsize(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
 service_factory_single_t<config_host_generic> page_playlist_switcher("Playlist switcher", g_tabs_panels,
     tabsize(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
-service_factory_single_t<config_host_generic> page_filters("Filters", g_tabs_filters, tabsize(g_tabs_filters),
-    guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);
 } // namespace preferences
 } // namespace cui

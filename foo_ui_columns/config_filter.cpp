@@ -18,9 +18,9 @@ public:
         pfc::list_t<Column> columns;
         columns.set_count(2);
         columns[0].m_title = "Name";
-        columns[0].m_size = 130;
+        columns[0].m_size = 150;
         columns[1].m_title = "Field";
-        columns[1].m_size = 250;
+        columns[1].m_size = 370;
         uih::ListView::set_columns(columns);
     };
     bool notify_before_create_inline_edit(
@@ -92,7 +92,7 @@ public:
 
     void refresh_me(HWND wnd)
     {
-        initialising = true;
+        m_initialising = true;
 
         m_field_list.remove_items(pfc::bit_array_true());
         pfc::list_t<uih::ListView::InsertItem> items;
@@ -100,18 +100,7 @@ public:
         get_insert_items(0, count, items);
         m_field_list.insert_items(0, items.get_count(), items.get_ptr());
 
-        initialising = false;
-    }
-
-    static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        tab_filter_fields* p_data = nullptr;
-        if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<tab_filter_fields*>(lp);
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-        } else
-            p_data = reinterpret_cast<tab_filter_fields*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+        m_initialising = false;
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -119,7 +108,7 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             {
-                HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(20, 17, 278, 180), true);
+                HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(7, 25, 273, 167), true);
                 SetWindowPos(wnd_fields, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
                 ShowWindow(wnd_fields, SW_SHOWNORMAL);
             }
@@ -216,8 +205,11 @@ public:
         }
         return 0;
     }
-    void apply() {}
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_FILTER_FIELDS, wnd, g_on_message, (LPARAM)this); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(wnd, IDD_FILTER_FIELDS,
+            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    }
     const char* get_name() override { return "Fields"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
@@ -226,143 +218,72 @@ public:
     }
 
 private:
-    bool initialising{false};
-} g_tab_filter_fields_;
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    bool m_initialising{false};
+} g_tab_filter_fields;
 
-static class tab_filter_misc : public preferences_tab {
+static class tab_filter_appearance : public preferences_tab {
 public:
-    tab_filter_misc() = default;
+    tab_filter_appearance() = default;
 
-    void refresh_me(HWND wnd)
+    void on_init_dialog(HWND wnd)
     {
-        initialising = true;
-        HWND wnd_sort = GetDlgItem(wnd, IDC_SORT);
-        HWND wnd_sort_string = GetDlgItem(wnd, IDC_SORT_STRING);
-        HWND wnd_autosend = GetDlgItem(wnd, IDC_AUTOSEND);
-        HWND wnd_showempty = GetDlgItem(wnd, IDC_SHOWEMPTY);
-        const auto wnd_show_column_titles = GetDlgItem(wnd, IDC_FILTERS_SHOW_COLUMN_TITLES);
-        const auto wnd_allow_sorting = GetDlgItem(wnd, IDC_FILTERS_ALLOW_SORTING);
-        const auto wnd_show_sort_indicators = GetDlgItem(wnd, IDC_FILTERS_SHOW_SORT_INDICATORS);
-        uSetWindowText(wnd_sort_string, filter_panel::cfg_sort_string);
-        Button_SetCheck(wnd_sort, filter_panel::cfg_sort ? BST_CHECKED : BST_UNCHECKED);
-        Button_SetCheck(wnd_showempty, filter_panel::cfg_showemptyitems ? BST_CHECKED : BST_UNCHECKED);
-        Button_SetCheck(wnd_show_column_titles, filter_panel::cfg_show_column_titles ? BST_CHECKED : BST_UNCHECKED);
-        Button_SetCheck(wnd_allow_sorting, filter_panel::cfg_allow_sorting ? BST_CHECKED : BST_UNCHECKED);
-        Button_SetCheck(wnd_show_sort_indicators, filter_panel::cfg_show_sort_indicators ? BST_CHECKED : BST_UNCHECKED);
+        pfc::vartoggle_t<bool> initialising_toggle(m_initialising, true);
 
-        Button_SetCheck(wnd_autosend, filter_panel::cfg_autosend ? BST_CHECKED : BST_UNCHECKED);
+        const auto wnd_edge_style = GetDlgItem(wnd, IDC_EDGESTYLE);
+        const auto edge_style_options = {L"None", L"Sunken", L"Grey"};
+        for (auto&& option : edge_style_options)
+            ComboBox_AddString(wnd_edge_style, option);
 
+        ComboBox_SetCurSel(wnd_edge_style, filter_panel::cfg_edgestyle);
+
+        SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETRANGE32, -100, 100);
         SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETPOS32, 0, filter_panel::cfg_vertical_item_padding);
 
-        initialising = false;
-    }
+        const auto wnd_show_column_titles = GetDlgItem(wnd, IDC_FILTERS_SHOW_COLUMN_TITLES);
+        Button_SetCheck(wnd_show_column_titles, filter_panel::cfg_show_column_titles ? BST_CHECKED : BST_UNCHECKED);
 
-    static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        tab_filter_misc* p_data = nullptr;
-        if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<tab_filter_misc*>(lp);
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-        } else
-            p_data = reinterpret_cast<tab_filter_misc*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+        const auto wnd_show_sort_indicators = GetDlgItem(wnd, IDC_FILTERS_SHOW_SORT_INDICATORS);
+        Button_SetCheck(wnd_show_sort_indicators, filter_panel::cfg_show_sort_indicators ? BST_CHECKED : BST_UNCHECKED);
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
-        case WM_INITDIALOG: {
-            {
-                HWND list = uGetDlgItem(wnd, IDC_DBLCLK);
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to autosend playlist");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to autosend playlist and play");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to playlist");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to playlist and play");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Add to active playlist");
-                SendMessage(list, CB_SETCURSEL, filter_panel::cfg_doubleclickaction, 0);
-
-                list = uGetDlgItem(wnd, IDC_MIDDLE);
-                uSendMessageText(list, CB_ADDSTRING, 0, "None");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to autosend playlist");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to autosend playlist and play");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to playlist");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Send to playlist and play");
-                uSendMessageText(list, CB_ADDSTRING, 0, "Add to active playlist");
-                SendMessage(list, CB_SETCURSEL, filter_panel::cfg_middleclickaction, 0);
-
-                uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_ADDSTRING, 0, "None");
-                uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_ADDSTRING, 0, "Sunken");
-                uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_ADDSTRING, 0, "Grey");
-                uSendDlgItemMessageText(wnd, IDC_EDGESTYLE, CB_SETCURSEL, filter_panel::cfg_edgestyle, nullptr);
-
-                uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_ADDSTRING, 0, "By position in splitter");
-                uSendDlgItemMessageText(wnd, IDC_PRECEDENCE, CB_ADDSTRING, 0, "By field order in field list");
-                uSendDlgItemMessageText(
-                    wnd, IDC_PRECEDENCE, CB_SETCURSEL, filter_panel::cfg_orderedbysplitters ? 0 : 1, nullptr);
-
-                SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETRANGE32, -100, 100);
-            }
-            refresh_me(wnd);
-        } break;
-        case WM_DESTROY: {
-            // if (m_changed)
-            //    filter_panel::g_on_fields_change();
-        } break;
+        case WM_INITDIALOG:
+            on_init_dialog(wnd);
+            break;
         case WM_COMMAND:
             switch (wp) {
-            case IDC_SORT: {
-                filter_panel::cfg_sort = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
-            } break;
-            case IDC_AUTOSEND:
-                filter_panel::cfg_autosend = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
-                break;
             case IDC_FILTERS_SHOW_COLUMN_TITLES:
-                filter_panel::cfg_show_column_titles = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
+                filter_panel::cfg_show_column_titles = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 filter_panel::filter_panel_t::g_on_show_column_titles_change();
                 break;
-            case IDC_FILTERS_ALLOW_SORTING:
-                filter_panel::cfg_allow_sorting = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
-                filter_panel::filter_panel_t::g_on_allow_sorting_change();
-                break;
             case IDC_FILTERS_SHOW_SORT_INDICATORS:
-                filter_panel::cfg_show_sort_indicators = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
+                filter_panel::cfg_show_sort_indicators = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 filter_panel::filter_panel_t::g_on_show_sort_indicators_change();
                 break;
-            case IDC_SHOWEMPTY:
-                filter_panel::cfg_showemptyitems = (Button_GetCheck((HWND)lp) != BST_UNCHECKED);
-                filter_panel::filter_panel_t::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems);
-                break;
-            case (EN_CHANGE << 16) | IDC_SORT_STRING: {
-                filter_panel::cfg_sort_string = string_utf8_from_window((HWND)lp);
-            } break;
-            case (EN_CHANGE << 16) | IDC_PADDING:
-                if (!initialising) {
+            case IDC_PADDING | EN_CHANGE << 16:
+                if (!m_initialising) {
                     filter_panel::cfg_vertical_item_padding
-                        = strtol(string_utf8_from_window((HWND)lp).get_ptr(), nullptr, 10);
+                        = strtol(string_utf8_from_window(reinterpret_cast<HWND>(lp)).get_ptr(), nullptr, 10);
                     filter_panel::filter_panel_t::g_on_vertical_item_padding_change();
                 }
                 break;
-            case IDC_PRECEDENCE | (CBN_SELCHANGE << 16):
-                filter_panel::cfg_orderedbysplitters = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0) == 0;
-                filter_panel::filter_panel_t::g_on_orderedbysplitters_change();
-                break;
-            case IDC_MIDDLE | (CBN_SELCHANGE << 16):
-                filter_panel::cfg_middleclickaction = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
-                break;
-            case IDC_DBLCLK | (CBN_SELCHANGE << 16):
-                filter_panel::cfg_doubleclickaction = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
-                break;
-            case IDC_EDGESTYLE | (CBN_SELCHANGE << 16):
-                filter_panel::cfg_edgestyle = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+            case IDC_EDGESTYLE | CBN_SELCHANGE << 16:
+                filter_panel::cfg_edgestyle = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
                 filter_panel::filter_panel_t::g_on_edgestyle_change();
                 break;
             }
         }
         return 0;
     }
-    void apply() {}
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_FILTER_MISC, wnd, g_on_message, (LPARAM)this); }
-    const char* get_name() override { return "General"; }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(wnd, IDD_FILTER_APPEARANCE,
+            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    }
+    const char* get_name() override { return "Appearance"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:filter";
@@ -370,8 +291,116 @@ public:
     }
 
 private:
-    bool initialising{false}; //, m_changed;
-} g_tab_filter_misc_;
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    bool m_initialising{false};
+} g_tab_filter_appearance;
 
-preferences_tab* const g_tab_filter_fields = &g_tab_filter_fields_;
-preferences_tab* const g_tab_filter_misc = &g_tab_filter_misc_;
+static class tab_filter_behaviour : public preferences_tab {
+public:
+    tab_filter_behaviour() = default;
+
+    void on_init_dialog(HWND wnd)
+    {
+        pfc::vartoggle_t<bool> initialising_toggle(m_initialising, true);
+
+        const auto double_click_action_options = {L"Send to autosend playlist", L"Send to autosend playlist and play",
+            L"Send to playlist", L"Send to playlist and play", L"Add to active playlist"};
+        const auto wnd_double_click_action = GetDlgItem(wnd, IDC_DBLCLK);
+        for (auto&& option : double_click_action_options)
+            ComboBox_AddString(wnd_double_click_action, option);
+        ComboBox_SetCurSel(wnd_double_click_action, filter_panel::cfg_doubleclickaction);
+
+        const auto middle_click_action_options
+            = {L"None", L"Send to autosend playlist", L"Send to autosend playlist and play", L"Send to playlist",
+                L"Send to playlist and play", L"Add to active playlist"};
+
+        const auto wnd_middle_click_action = uGetDlgItem(wnd, IDC_MIDDLE);
+        for (auto&& option : middle_click_action_options)
+            ComboBox_AddString(wnd_middle_click_action, option);
+        ComboBox_SetCurSel(wnd_middle_click_action, filter_panel::cfg_middleclickaction);
+
+        const auto wnd_precedence = uGetDlgItem(wnd, IDC_PRECEDENCE);
+        ComboBox_AddString(wnd_precedence, L"By position in splitter");
+        ComboBox_AddString(wnd_precedence, L"By field order in field list");
+        ComboBox_SetCurSel(wnd_precedence, filter_panel::cfg_orderedbysplitters ? 0 : 1);
+
+        const auto wnd_sort = GetDlgItem(wnd, IDC_SORT);
+        Button_SetCheck(wnd_sort, filter_panel::cfg_sort ? BST_CHECKED : BST_UNCHECKED);
+
+        const auto wnd_sort_string = GetDlgItem(wnd, IDC_SORT_STRING);
+        uSetWindowText(wnd_sort_string, filter_panel::cfg_sort_string);
+
+        const auto wnd_autosend = GetDlgItem(wnd, IDC_AUTOSEND);
+        Button_SetCheck(wnd_autosend, filter_panel::cfg_autosend ? BST_CHECKED : BST_UNCHECKED);
+
+        const auto wnd_showempty = GetDlgItem(wnd, IDC_SHOWEMPTY);
+        Button_SetCheck(wnd_showempty, filter_panel::cfg_showemptyitems ? BST_CHECKED : BST_UNCHECKED);
+
+        const auto wnd_allow_sorting = GetDlgItem(wnd, IDC_FILTERS_ALLOW_SORTING);
+        Button_SetCheck(wnd_allow_sorting, filter_panel::cfg_allow_sorting ? BST_CHECKED : BST_UNCHECKED);
+    }
+
+    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        switch (msg) {
+        case WM_INITDIALOG:
+            on_init_dialog(wnd);
+            break;
+        case WM_COMMAND:
+            switch (wp) {
+            case IDC_SORT:
+                filter_panel::cfg_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                break;
+            case IDC_AUTOSEND:
+                filter_panel::cfg_autosend = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                break;
+            case IDC_FILTERS_ALLOW_SORTING:
+                filter_panel::cfg_allow_sorting = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                filter_panel::filter_panel_t::g_on_allow_sorting_change();
+                break;
+            case IDC_SHOWEMPTY:
+                filter_panel::cfg_showemptyitems = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                filter_panel::filter_panel_t::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems);
+                break;
+            case IDC_SORT_STRING | EN_CHANGE << 16:
+                filter_panel::cfg_sort_string = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                break;
+            case IDC_PRECEDENCE | CBN_SELCHANGE << 16:
+                filter_panel::cfg_orderedbysplitters = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)) == 0;
+                filter_panel::filter_panel_t::g_on_orderedbysplitters_change();
+                break;
+            case IDC_MIDDLE | CBN_SELCHANGE << 16:
+                filter_panel::cfg_middleclickaction = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+                break;
+            case IDC_DBLCLK | CBN_SELCHANGE << 16:
+                filter_panel::cfg_doubleclickaction = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+                break;
+            }
+        }
+        return 0;
+    }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(wnd, IDD_FILTER_BEHAVIOUR,
+            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    }
+    const char* get_name() override { return "Behaviour"; }
+    bool get_help_url(pfc::string_base& p_out) override
+    {
+        p_out = "http://yuo.be/wiki/columns_ui:config:filter";
+        return true;
+    }
+
+private:
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    bool m_initialising{false};
+} g_tab_filter_behaviour;
+
+preferences_tab* g_tabs_filters[] = {&g_tab_filter_behaviour, &g_tab_filter_appearance, &g_tab_filter_fields};
+
+cfg_int cfg_child_filters({0xe57a430e, 0x51bb, 0x4fcc, {0xb0, 0xbc, 0x9d, 0x22, 0x8b, 0x89, 0x1a, 0x17}}, 0);
+
+constexpr GUID guid_filters_page = {0x71a480e2, 0x9007, 0x4315, {0x8d, 0xf3, 0x81, 0x63, 0x6c, 0x74, 0xa, 0xad}};
+
+service_factory_single_t<config_host_generic> page_filters("Filters", g_tabs_filters, tabsize(g_tabs_filters),
+    guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);
