@@ -77,6 +77,7 @@ void destroy_rebar(bool save_config = true);
 void create_icon_handle();
 void create_systray_icon();
 void destroy_systray_icon();
+void on_show_notification_area_icon_change();
 
 void set_main_window_text(const char* ptr);
 
@@ -90,8 +91,6 @@ void g_rename_playlist(unsigned idx, HWND wnd_parent);
 
 void make_ui();
 void size_windows();
-extern advconfig_checkbox_factory g_advbool_notification_icon_x_buttons;
-extern advconfig_checkbox_factory g_advbool_close_to_tray;
 
 void g_update_taskbar_buttons_now(bool b_init = false);
 void g_update_taskbar_buttons_delayed(bool b_init = false);

@@ -67,22 +67,7 @@ public:
             case IDC_SHOW_SYSTRAY: {
                 cfg_show_systray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 //                EnableWindow(GetDlgItem(wnd, IDC_MINIMISE_TO_SYSTRAY), cfg_show_systray);
-
-                if (g_main_window) {
-                    auto is_iconic = IsIconic(g_main_window) != 0;
-                    if (cfg_show_systray && !g_icon_created) {
-                        create_systray_icon();
-                    } else if (!cfg_show_systray && g_icon_created
-                        && (!is_iconic
-                               || (!cfg_minimise_to_tray
-                                      && !g_advbool_close_to_tray.get_static_instance().get_state()))) {
-                        destroy_systray_icon();
-                        if (is_iconic)
-                            standard_commands::main_activate();
-                    }
-                    if (g_status)
-                        update_systray();
-                }
+                on_show_notification_area_icon_change();
             } break;
             case IDC_BALLOON: {
                 cfg_balloon = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
