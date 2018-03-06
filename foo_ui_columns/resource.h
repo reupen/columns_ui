@@ -157,7 +157,6 @@
 #define IDC_SPINPL                      1045
 #define IDC_EDIT                        1046
 #define IDC_SWITCH_SPIN                 1047
-#define IDC_IMPORT_TITLES               1048
 #define IDC_DESC                        1049
 #define IDC_SELECTION_MODEL             1049
 #define IDC_DROP_USE_STRING             1050
