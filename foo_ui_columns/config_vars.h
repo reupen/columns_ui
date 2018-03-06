@@ -11,6 +11,8 @@ constexpr GUID advconfig_branch_notification_area_id{
 
 extern advconfig_checkbox_factory advbool_notification_icon_x_buttons;
 extern advconfig_checkbox_factory advbool_close_to_notification_icon;
+
+extern cfg_bool cfg_playlist_tabs_middle_click;
 } // namespace cui::config
 
 class cfg_window_placement_t : public cfg_struct_t<WINDOWPLACEMENT> {
@@ -55,10 +57,10 @@ extern cfg_int cfg_global, cfg_cur_prefs_col, cfg_header_hottrack, cfg_sortsel, 
     cfg_np, cfg_show_systray, cfg_minimise_to_tray, cfg_show_vol, cfg_custom_icon, cfg_custom_buttons,
     cfg_drag_autoswitch, cfg_plist_width, cfg_drag_pl, cfg_pl_autohide, cfg_sel_dp, cfg_oldglobal, cfg_alternative_sel,
     cfg_plm_rename, cfg_pgen_playlist, cfg_pgen_tf, cfg_autoswitch_delay, cfg_pgen_dir, cfg_custom_buttons_over,
-    cfg_custom_buttons_transparency, cfg_playlist_date, cfg_playlist_sidebar_tooltips, cfg_replace_drop_underscores,
-    cfg_status, cfg_show_sort_arrows, cfg_toolbar_disable_default_drawing, cfg_sidebar_use_custom_show_delay,
-    cfg_sidebar_show_delay, cfg_sidebar_hide_delay, cfg_toolbars, cfg_playlist_switcher_use_tagz,
-    cfg_playlist_middle_action, cfg_playlist_panel_delete, cfg_nohscroll;
+    cfg_custom_buttons_transparency, cfg_playlist_date, cfg_replace_drop_underscores, cfg_status, cfg_show_sort_arrows,
+    cfg_toolbar_disable_default_drawing, cfg_sidebar_use_custom_show_delay, cfg_sidebar_show_delay,
+    cfg_sidebar_hide_delay, cfg_toolbars, cfg_playlist_switcher_use_tagz, cfg_playlist_middle_action,
+    cfg_playlist_panel_delete, cfg_nohscroll;
 
 extern cfg_bool cfg_go_to_tray;
 

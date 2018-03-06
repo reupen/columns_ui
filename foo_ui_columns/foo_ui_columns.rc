@@ -84,33 +84,31 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,192,20,50,14
 END
 
-IDD_PLAYLISTS DIALOGEX 0, 0, 318, 269
+IDD_PLAYLISTS DIALOGEX 0, 0, 287, 219
 STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
-FONT 8, "Tahoma", 0, 0, 0x1
+FONT 9, "Segoe UI", 400, 0, 0x0
 BEGIN
-    GROUPBOX        "General",IDC_STATIC,4,5,309,41
-    CONTROL         "Allow playlist rearrangement by dragging",IDC_PLDRAG,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,91,147,10
-    CONTROL         "Middle-click deletes playlists",IDC_MCLICK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,22,106,10
-    CONTROL         "Double-click renames playlist",IDC_MCLICK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,195,91,106,10
-    GROUPBOX        "Playlists switcher tabs",IDC_STATIC,4,61,309,50
-    CONTROL         "Only show tabs when multiple playlists are open",IDC_PLAUTOHIDE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,77,169,10
-    CONTROL         "Multiline tabs",IDC_TABS_MULTILINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,195,77,57,10
-    GROUPBOX        "Playlists switcher panel",IDC_STATIC,4,127,309,135
-    LTEXT           "Vertical item padding:",IDC_STATIC,15,146,73,8
-    EDITTEXT        IDC_PLHEIGHT,91,144,41,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "Spin1",IDC_SPINPL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,123,150,9,10
-    CONTROL         "Show tooltips for clipped items",IDC_SIDEBAR_TOOLTIPS,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,162,113,10
-    LTEXT           "Edge style:",IDC_STATIC,164,146,37,8
-    COMBOBOX        IDC_PLISTEDGE,205,144,41,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Use title formatting for playlist title in panel:",IDC_USE_PLAYLIST_TF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,176,161,10
-    EDITTEXT        IDC_PLAYLIST_TF,14,188,290,50,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
-    LTEXT           "px",IDC_STATIC,134,146,9,8
-    PUSHBUTTON      "Apply",IDC_APPLY,253,240,50,14
+    LTEXT           "Playlist switcher",IDC_TITLE1,7,4,273,16
+    CONTROL         "Delete playlist on middle-click",IDC_MCLICK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,24,112,10
+    LTEXT           "Vertical item padding",IDC_STATIC,7,40,73,8
+    EDITTEXT        IDC_PLHEIGHT,7,50,41,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPINPL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,42,54,11,10
+    LTEXT           "px",IDC_STATIC,50,51,9,8
+    LTEXT           "Edge style",IDC_STATIC,7,69,37,8
+    COMBOBOX        IDC_PLISTEDGE,7,79,41,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use title formatting for playlist titles:",IDC_USE_PLAYLIST_TF,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,99,161,10
+    EDITTEXT        IDC_PLAYLIST_TF,7,109,273,23,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Playlist tabs",IDC_TITLE2,7,150,273,16
+    CONTROL         "Automatically hide when a single playlist is open",IDC_PLAUTOHIDE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,170,177,10
+    CONTROL         "Multiline tabs",IDC_TABS_MULTILINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,186,61,10
+    CONTROL         "Rearrange playlists when dragging tabs",IDC_PLDRAG,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,202,147,10
+    CONTROL         "Delete playlist on middle-click",IDC_PLAYLIST_TABS_MCLICK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,158,186,117,10
+    CONTROL         "Rename playlist on double-click",IDC_MCLICK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,158,202,122,10
 END
 
 IDD_SYS DIALOGEX 0, 0, 287, 219
@@ -130,26 +128,27 @@ BEGIN
     EDITTEXT        IDC_STRING,7,127,273,85,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
 END
 
-IDD_PLAYLISTS_DRAGDROP DIALOGEX 0, 0, 318, 271
+IDD_PLAYLISTS_DRAGDROP DIALOGEX 0, 0, 287, 219
 STYLE DS_SETFONT | DS_3DLOOK | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
-FONT 8, "Tahoma", 0, 0, 0x1
+FONT 9, "Segoe UI", 400, 0, 0x0
 BEGIN
-    GROUPBOX        "Drag and drop",-1,4,4,309,260
     CONTROL         "Switch playlist when dragging items over tabs or panel, delay",IDC_AUTOSWITCH,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,24,215,10
-    EDITTEXT        IDC_SWITCH_DELAY,230,22,34,12,ES_AUTOHSCROLL
-    CONTROL         "Spin1",IDC_SWITCH_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,256,23,9,10
-    LTEXT           "ms",-1,267,24,10,8
-    LTEXT           "When creating a playlist from dropped files..",-1,14,61,161,8
-    CONTROL         "Replace underscores from filename/directory generated playlist names",IDC_REMOVE_UNDERSCORES,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,79,247,10
-    CONTROL         "Compare following string and use output for name if identical for all files dropped:",IDC_DROP_USE_STRING,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,96,283,10
-    EDITTEXT        IDC_DROP_STRING,14,113,291,63,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
-    LTEXT           "Use \\ character to separate multiple strings",-1,15,176,142,8
-    CONTROL         "Activate target playlist on dropped items",IDC_ACTIVATE_TARGET,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,41,146,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,24,216,10
+    EDITTEXT        IDC_SWITCH_DELAY,224,23,34,12,ES_AUTOHSCROLL
+    CONTROL         "Spin1",IDC_SWITCH_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,253,31,9,10
+    LTEXT           "ms",-1,260,25,10,8
+    LTEXT           "When creating a playlist from dropped files..",-1,7,57,148,8
+    CONTROL         "Replace underscores with spaces when generating playlist names from file or directory names",IDC_REMOVE_UNDERSCORES,
+                    "Button",BS_AUTOCHECKBOX | BS_MULTILINE | WS_TABSTOP,7,72,273,15
+    CONTROL         "Generate playlist names using the following title formatting strings:",IDC_DROP_USE_STRING,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,93,238,10
+    EDITTEXT        IDC_DROP_STRING,7,105,273,79,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Use the \\ character to separate multiple strings",-1,7,186,159,8
+    CONTROL         "Activate target playlist after dropping files",IDC_ACTIVATE_TARGET,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,39,152,10
+    LTEXT           "Drag and drop",IDC_TITLE1,7,4,273,16
+    LTEXT           "If a formatted string is not identical for all dropped files, the next string in the list will be used",-1,7,196,273,15
 END
 
 IDD_LAYOUT DIALOGEX 0, 0, 295, 234
@@ -702,10 +701,10 @@ BEGIN
 
     IDD_PLAYLISTS, DIALOG
     BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 313
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 280
         TOPMARGIN, 4
-        BOTTOMMARGIN, 262
+        BOTTOMMARGIN, 212
     END
 
     IDD_SYS, DIALOG
@@ -718,10 +717,10 @@ BEGIN
 
     IDD_PLAYLISTS_DRAGDROP, DIALOG
     BEGIN
-        LEFTMARGIN, 4
-        RIGHTMARGIN, 313
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 280
         TOPMARGIN, 4
-        BOTTOMMARGIN, 264
+        BOTTOMMARGIN, 212
     END
 
     IDD_LAYOUT, DIALOG
