@@ -7,24 +7,21 @@
 
 const TCHAR* main_window_class_name = _T("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}");
 
+const wchar_t* unsupported_os_message = L"Sorry, your operating system version is not supported by this version "
+"of Columns UI. Please upgrade to Windows 7 Service Pack 1 or newer and try again.\n\n"
+"Otherwise, uninstall the Columns UI component to return to the Default User Interface.";
+
 class ui_test : public user_interface {
 public:
     const char* get_name() override { return "Columns UI"; }
 
     HWND init(HookProc_t hook) override
     {
-        {
-            if (!IsWindowsXPSP2OrGreater()) {
-                pfc::string_formatter message;
-                message << "Sorry, your operating system version is not supported by Columns UI. Please upgrade to "
-                           "Windows XP Service Pack 2 or newer and try again.\n\n"
-                           "Otherwise, uninstall the Columns UI component to return to the Default User Interface.",
-                    MessageBox(nullptr, uT(message), _T("Columns UI - Unsupported operating system"),
-                        MB_OK | MB_ICONEXCLAMATION);
-                return nullptr;
-            }
+        if (!IsWindows7SP1OrGreater()) {
+                MessageBox(nullptr, unsupported_os_message, L"Columns UI - Unsupported operating system",
+                    MB_OK | MB_ICONEXCLAMATION);
+            return nullptr;
         }
-        //        performance_counter startup;
 
         if (main_window::config_get_is_first_run()) {
             if (!cfg_layout.get_presets().get_count())
