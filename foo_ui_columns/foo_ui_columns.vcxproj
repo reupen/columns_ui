@@ -444,6 +444,7 @@
     <ClCompile Include=".\helpers.cpp" />
     <ClCompile Include="config_host.cpp" />
     <ClCompile Include="list_view_panel.cpp" />
+    <ClCompile Include="notification_area.cpp" />
     <ClCompile Include="rebar_band.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -504,6 +505,7 @@
     <ClInclude Include="config_host.h" />
     <ClInclude Include="filter_search_bar.h" />
     <ClInclude Include="list_view_panel.h" />
+    <ClInclude Include="notification_area.h" />
     <ClInclude Include="rebar_band.h" />
   </ItemGroup>
   <ItemGroup>

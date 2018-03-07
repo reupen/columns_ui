@@ -74,15 +74,9 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist = false, bool
 void create_rebar();
 void destroy_rebar(bool save_config = true);
 
-void create_icon_handle();
-void create_systray_icon();
-void destroy_systray_icon();
-void on_show_notification_area_icon_change();
-
 void set_main_window_text(const char* ptr);
 
 void status_update_main(bool is_caller_menu_desc);
-void update_systray(bool balloon = false, int btitle = 0, bool force_balloon = false);
 
 void create_status();
 

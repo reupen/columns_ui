@@ -3,6 +3,7 @@
 #include "seekbar.h"
 #include "playlist_view.h"
 #include "main_window.h"
+#include "notification_area.h"
 
 // callback_manager g_callback_manager;
 

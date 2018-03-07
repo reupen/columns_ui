@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "status_pane.h"
 #include "layout.h"
-#include "config.h"
 #include "font_notify.h"
 #include "status_bar.h"
+#include "notification_area.h"
 
 const TCHAR* main_window_class_name = _T("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}");
 
