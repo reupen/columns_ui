@@ -9,8 +9,6 @@
     "focus>])\r\n\r\n"                                                                                  \
     "Square brackets denote an optional parameter."
 
-extern cfg_int cfg_import_titles, cfg_export_titles;
-
 namespace columns {
 const GUID& config_get_playlist_view_guid();
 const GUID& config_get_main_guid();

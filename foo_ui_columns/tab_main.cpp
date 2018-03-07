@@ -11,9 +11,6 @@ public:
 
     static void refresh_me(HWND wnd)
     {
-        SendDlgItemMessage(wnd, IDC_IMPORT_TITLES, BM_SETCHECK, cfg_import_titles, 0);
-        // SendDlgItemMessage(wnd,IDC_EXPORT_TITLES,BM_SETCHECK,cfg_export_titles,0);
-
         SendDlgItemMessage(wnd, IDC_TOOLBARS, BM_SETCHECK, cfg_toolbars, 0);
         // SendDlgItemMessage(wnd,IDC_KEYB,BM_SETCHECK,config_object::g_get_data_bool_simple(standard_config_objects::bool_show_keyboard_shortcuts_in_menus,
         // true),0);

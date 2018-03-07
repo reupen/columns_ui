@@ -26,24 +26,29 @@ fbh::ConfigInt32DpiAware playlist_switcher_item_padding(
 cfg_bool show_status_pane(guids::show_status_pane, true);
 } // namespace settings
 
-// {D2DD7FFC-F780-4fa3-8952-38D82C8C1E4B}
-static const GUID g_guid_advbranch_cui = {0xd2dd7ffc, 0xf780, 0x4fa3, {0x89, 0x52, 0x38, 0xd8, 0x2c, 0x8c, 0x1e, 0x4b}};
+namespace cui::config {
 
-// {CEE3F8CC-7CA6-4277-AAD4-CEC7B9D05A63}
-static const GUID g_guid_advbool_notification_icon_x_buttons
-    = {0xcee3f8cc, 0x7ca6, 0x4277, {0xaa, 0xd4, 0xce, 0xc7, 0xb9, 0xd0, 0x5a, 0x63}};
+advconfig_branch_factory advconfig_branch_columns_ui(
+    "Columns UI", advconfig_branch_columns_ui_id, advconfig_branch::guid_branch_display, 0);
 
-// {41695241-7854-5A5A-4D69-6B7557526C44}
-static const GUID g_guid_advbool_close_to_tray
-    = {0x41695241, 0x7854, 0x5a5a, {0x4d, 0x69, 0x6b, 0x75, 0x57, 0x52, 0x6c, 0x44}};
+advconfig_branch_factory advconfig_branch_notification_area(
+    "Windows notification area", advconfig_branch_notification_area_id, advconfig_branch_columns_ui_id, 0);
 
-advconfig_branch_factory advBranchCUI("Columns UI", g_guid_advbranch_cui, advconfig_branch::guid_branch_display, 0);
-
-advconfig_checkbox_factory g_advbool_notification_icon_x_buttons(
+static GUID advbool_notification_icon_x_buttons_id{
+    0xcee3f8cc, 0x7ca6, 0x4277, {0xaa, 0xd4, 0xce, 0xc7, 0xb9, 0xd0, 0x5a, 0x63}};
+advconfig_checkbox_factory advbool_notification_icon_x_buttons(
     "Use back/forward mouse buttons to skip track when over notification area icon",
-    g_guid_advbool_notification_icon_x_buttons, g_guid_advbranch_cui, 0, false);
-advconfig_checkbox_factory g_advbool_close_to_tray(
-    "Close to notification area icon", g_guid_advbool_close_to_tray, g_guid_advbranch_cui, 0, false);
+    advbool_notification_icon_x_buttons_id, advconfig_branch_notification_area_id, 0, false);
+
+static GUID advbool_close_to_notification_icon_id{
+    0x41695241, 0x7854, 0x5a5a, {0x4d, 0x69, 0x6b, 0x75, 0x57, 0x52, 0x6c, 0x44}};
+advconfig_checkbox_factory advbool_close_to_notification_icon("Close to notification area icon",
+    advbool_close_to_notification_icon_id, advconfig_branch_notification_area_id, 0, false);
+
+cfg_bool cfg_playlist_tabs_middle_click(
+    {0x3074ea96, 0x22e7, 0x464a, {0x9d, 0xac, 0xec, 0x9, 0xc0, 0xb4, 0x5e, 0x5a}}, true);
+
+} // namespace cui::config
 
 cfg_rebar g_cfg_rebar(GUID{0xd26d3aa5, 0x9157, 0xbf8e, {0xd5, 0x9f, 0x44, 0x86, 0x1c, 0x7a, 0x82, 0xc7}});
 cfg_band_cache_t cfg_band_cache(GUID{0x76e74192, 0x6932, 0x2671, {0x90, 0x12, 0xcf, 0x18, 0xca, 0x02, 0x06, 0xe0}});
@@ -85,8 +90,6 @@ cfg_int cfg_global(GUID{0xf939e07d, 0x0944, 0x0f40, {0xbf, 0x1f, 0x6d, 0x31, 0xa
     cfg_pgen_tf(GUID{0xdc10bfe5, 0xe91b, 0x513e, {0xb9, 0xcb, 0xc4, 0xef, 0xd9, 0xed, 0xac, 0x25}}, 0),
     cfg_cur_prefs_col(GUID{0x6b77648d, 0x35ec, 0xb125, {0x49, 0xea, 0xa2, 0xe6, 0xd8, 0xa8, 0xed, 0x0c}}, 0),
     // cfg_playlist_sidebar_left_sep(GUID{0x9e812607,0xb455,0xe066,0xfc,0xfb,0x0a,0x2b,0x9c,0xef,0x2f,0x3c},0),
-    cfg_playlist_sidebar_tooltips(
-        GUID{0x0f6ad5ac, 0x7409, 0x151e, {0xe0, 0xd7, 0x61, 0xe5, 0xd8, 0x53, 0x9b, 0x4c}}, 1),
     cfg_playlist_switcher_use_tagz(
         GUID{0x43d94259, 0x4fde, 0x8779, {0x8e, 0xde, 0x18, 0xca, 0xa7, 0x2f, 0xc5, 0x7b}}, 0),
     cfg_sidebar_use_custom_show_delay(

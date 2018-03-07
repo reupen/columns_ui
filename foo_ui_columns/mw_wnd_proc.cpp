@@ -192,7 +192,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             ImageList_Destroy(g_imagelist_taskbar);
         break;
     case WM_CLOSE:
-        if (g_advbool_close_to_tray.get_static_instance().get_state()) {
+        if (cui::config::advbool_close_to_notification_icon.get()) {
             cfg_go_to_tray = true;
             ShowWindow(wnd, SW_MINIMIZE);
         } else
@@ -589,7 +589,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return TRUE;
         } else if (lp == WM_MOUSEMOVE) {
         } else if (lp == WM_XBUTTONUP) {
-            if (g_advbool_notification_icon_x_buttons.get_static_instance().get_state()) {
+            if (cui::config::advbool_notification_icon_x_buttons.get()) {
                 if (g_last_sysray_x1_down && !g_last_sysray_x2_down)
                     standard_commands::main_previous();
                 if (g_last_sysray_x2_down && !g_last_sysray_x1_down)

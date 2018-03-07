@@ -90,7 +90,6 @@
 #define IDC_GLOBAL                      1015
 #define IDC_HEADER                      1015
 #define IDC_AUTOSEND                    1015
-#define IDC_IMPORT                      1016
 #define IDC_GLOBALSORT                  1016
 #define IDC_GROUPS                      1016
 #define IDC_SHOWEMPTY                   1016
@@ -117,6 +116,7 @@
 #define IDC_ELLIPSIS                    1023
 #define IDC_PLDRAG                      1024
 #define IDC_TOOLTIPS                    1025
+#define IDC_PLAYLIST_TABS_MCLICK        1025
 #define IDC_ACTIVATE_TARGET             1026
 #define IDC_TOOLTIPS_CLIPPED            1026
 #define IDC_REMOVE                      1027
@@ -157,7 +157,6 @@
 #define IDC_SPINPL                      1045
 #define IDC_EDIT                        1046
 #define IDC_SWITCH_SPIN                 1047
-#define IDC_IMPORT_TITLES               1048
 #define IDC_DESC                        1049
 #define IDC_SELECTION_MODEL             1049
 #define IDC_DROP_USE_STRING             1050
@@ -179,7 +178,6 @@
 #define IDC_PICK_COLOUR                 1057
 #define IDC_MENU_DESC                   1058
 #define IDC_DATE                        1059
-#define IDC_SIDEBAR_TOOLTIPS            1062
 #define IDC_TREE                        1065
 #define IDC_CAPTION                     1066
 #define IDC_TOOLBARS                    1067
@@ -237,7 +235,6 @@
 #define IDC_CHANGE_TEXT_BACK            1149
 #define IDC_CHANGE_SELBACK              1150
 #define IDC_CHANGE_FONT                 1152
-#define IDC_GROUP_FIELDS                1153
 #define IDC_EDGESTYLE                   1155
 #define IDC_PRECEDENCE                  1156
 #define IDC_HALIGN                      1156
