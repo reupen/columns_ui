@@ -28,7 +28,6 @@ enum t_colours {
 COLORREF get_default_colour(colours::t_colours index, bool themed = false);
 
 BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool vert, bool world);
-LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
 /** Main window UI control IDs */
 #define ID_REBAR 2100
@@ -114,7 +113,6 @@ public:
 };
 
 namespace main_window {
-extern user_interface::HookProc_t g_hookproc;
 extern mmh::ComPtr<ITaskbarList3> g_ITaskbarList3;
 }; // namespace main_window
 
@@ -123,29 +121,24 @@ enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, I
 }
 
 namespace cui {
-class main_window_t {
+class MainWindow {
 public:
-    void initialise()
-    {
-        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-        m_gdiplus_initialised
-            = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
-    }
-    void deinitialise()
-    {
-        if (m_gdiplus_initialised)
-            Gdiplus::GdiplusShutdown(m_gdiplus_instance);
-        m_gdiplus_initialised = false;
-    }
-
-    main_window_t() = default;
+    HWND initialise(user_interface::HookProc_t hook);
+    void shutdown();
 
 private:
+    static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    void on_create();
+    void on_destroy();
+
+    user_interface::HookProc_t m_hook_proc{};
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};
 };
 
-extern main_window_t g_main_window;
+extern MainWindow main_window;
 } // namespace cui
 
 #endif
