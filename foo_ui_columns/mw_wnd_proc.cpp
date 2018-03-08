@@ -5,6 +5,7 @@
 #include "get_msg_hook.h"
 #include "rebar.h"
 #include "status_bar.h"
+#include "notification_area.h"
 
 INT_PTR g_taskbar_bitmaps[] = {IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND};
 
@@ -32,7 +33,25 @@ service_ptr_t<contextmenu_manager> g_main_nowplaying;
 get_msg_hook_t g_get_msg_hook;
 static HWND wnd_last;
 
-LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT cui::MainWindow::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    MainWindow* self = nullptr;
+
+    if (msg == WM_NCCREATE) {
+        const auto create_struct = reinterpret_cast<CREATESTRUCT*>(lp);
+        self = reinterpret_cast<MainWindow*>(create_struct->lpCreateParams);
+        SetWindowLongPtr(wnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(self));
+    } else {
+        self = reinterpret_cast<MainWindow*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    }
+
+    if (msg == WM_NCDESTROY)
+        SetWindowLongPtr(wnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(nullptr));
+
+    return self ? self->on_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
+}
+
+LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     static UINT WM_TASKBARCREATED;
     static UINT WM_TASKBARBUTTONCREATED;
@@ -44,9 +63,9 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     static HIMAGELIST g_imagelist_taskbar;
 
-    if (main_window::g_hookproc) {
+    if (m_hook_proc) {
         LRESULT ret;
-        if (main_window::g_hookproc(wnd, msg, wp, lp, &ret)) {
+        if (m_hook_proc(wnd, msg, wp, lp, &ret)) {
             return ret;
         }
     }
@@ -134,7 +153,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         icex.dwICC = ICC_BAR_CLASSES | ICC_COOL_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
         InitCommonControlsEx(&icex);
 
-        cui::g_main_window.initialise();
+        cui::main_window.on_create();
 
         // g_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&g_gdiplus_instance,
         // &Gdiplus::GdiplusStartupInput(), NULL));
@@ -184,7 +203,7 @@ LRESULT CALLBACK g_MainWindowProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         main_window::g_ITaskbarList3.release();
         RevokeDragDrop(g_main_window);
         destroy_systray_icon();
-        cui::g_main_window.deinitialise();
+        cui::main_window.on_destroy();
         OleUninitialize();
     } break;
     case WM_NCDESTROY:

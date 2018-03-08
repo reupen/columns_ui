@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "config.h"
-#include "main_window.h"
+#include "notification_area.h"
 
 static class tab_sys : public preferences_tab {
 public:

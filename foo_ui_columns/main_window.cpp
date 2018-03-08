@@ -10,11 +10,13 @@
 #include "layout.h"
 
 #include "main_window.h"
+#include "notification_area.h"
+#include "font_notify.h"
+#include "status_bar.h"
 
 rebar_window* g_rebar_window = nullptr;
 layout_window g_layout_window;
-cui::main_window_t cui::g_main_window;
-user_interface::HookProc_t main_window::g_hookproc;
+cui::MainWindow cui::main_window;
 status_pane g_status_pane;
 mmh::ComPtr<ITaskbarList3> main_window::g_ITaskbarList3;
 
@@ -69,6 +71,128 @@ unsigned playlist_mclick_actions::get_count()
     return tabsize(g_pma_actions);
 }
 
+const TCHAR* main_window_class_name = _T("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}");
+
+const wchar_t* unsupported_os_message
+    = L"Sorry, your operating system version is not supported by this version "
+      "of Columns UI. Please upgrade to Windows 7 Service Pack 1 or newer and try again.\n\n"
+      "Otherwise, uninstall the Columns UI component to return to the Default User Interface.";
+
+HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
+{
+    if (!IsWindows7SP1OrGreater()) {
+        MessageBox(
+            nullptr, unsupported_os_message, L"Columns UI - Unsupported operating system", MB_OK | MB_ICONEXCLAMATION);
+        return nullptr;
+    }
+
+    if (main_window::config_get_is_first_run()) {
+        if (!cfg_layout.get_presets().get_count())
+            cfg_layout.reset_presets();
+    }
+
+    m_hook_proc = hook;
+
+    create_icon_handle();
+
+    WNDCLASS wc{};
+    wc.lpfnWndProc = s_on_message;
+    wc.style = CS_DBLCLKS;
+    wc.hInstance = core_api::get_my_instance();
+    wc.hIcon = ui_control::get()->get_main_icon();
+    wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
+    wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_BTNFACE + 1);
+    wc.lpszClassName = main_window_class_name;
+
+    ATOM cls = RegisterClass(&wc);
+
+    RECT rc_work{};
+    SystemParametersInfo(SPI_GETWORKAREA, NULL, &rc_work, NULL);
+
+    const int cx = (rc_work.right - rc_work.left) * 80 / 100;
+    const int cy = (rc_work.bottom - rc_work.top) * 80 / 100;
+
+    const int left = (rc_work.right - rc_work.left - cx) / 2;
+    const int top = (rc_work.bottom - rc_work.top - cy) / 2;
+
+    if (main_window::config_get_is_first_run()) {
+        cfg_plist_width = cx * 10 / 100;
+    }
+
+    const DWORD ex_styles = main_window::config_get_transparency_enabled() ? WS_EX_LAYERED : 0;
+    const DWORD styles = WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN
+        | WS_CLIPSIBLINGS | WS_THICKFRAME;
+
+    g_main_window = CreateWindowEx(ex_styles, main_window_class_name, _T("foobar2000"), styles, left, top, cx, cy,
+        nullptr, nullptr, core_api::get_my_instance(), &cui::main_window);
+
+    main_window::on_transparency_enabled_change();
+
+    const bool rem_pos = remember_window_pos();
+
+    if (rem_pos && !main_window::config_get_is_first_run()) {
+        SetWindowPlacement(g_main_window, &cfg_window_placement_columns.get_value());
+        size_windows();
+        ShowWindow(g_main_window, cfg_window_placement_columns.get_value().showCmd);
+
+        if (g_icon_created && cfg_go_to_tray)
+            ShowWindow(g_main_window, SW_HIDE);
+    } else {
+        size_windows();
+        ShowWindow(g_main_window, SW_SHOWNORMAL);
+    }
+
+    if (g_rebar)
+        ShowWindow(g_rebar, SW_SHOWNORMAL);
+    if (g_status)
+        ShowWindow(g_status, SW_SHOWNORMAL);
+    if (g_status_pane.get_wnd())
+        ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
+    g_layout_window.show_window();
+
+    RedrawWindow(g_main_window, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
+
+    if (main_window::config_get_is_first_run())
+        SendMessage(g_main_window, MSG_RUN_INITIAL_SETUP, NULL, NULL);
+
+    main_window::config_set_is_first_run();
+
+    return g_main_window;
+}
+
+void cui::MainWindow::shutdown()
+{
+    DestroyWindow(g_main_window);
+    UnregisterClass(main_window_class_name, core_api::get_my_instance());
+    status_bar::volume_popup_window.class_release();
+    g_main_window = nullptr;
+    g_status = nullptr;
+    if (g_imagelist) {
+        ImageList_Destroy(g_imagelist);
+        g_imagelist = nullptr;
+    }
+    if (g_icon)
+        DestroyIcon(g_icon);
+    g_icon = nullptr;
+    status_bar::destroy_icon();
+
+    font_cleanup();
+}
+
+void cui::MainWindow::on_create()
+{
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    m_gdiplus_initialised
+        = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
+}
+
+void cui::MainWindow::on_destroy()
+{
+    if (m_gdiplus_initialised)
+        Gdiplus::GdiplusShutdown(m_gdiplus_instance);
+    m_gdiplus_initialised = false;
+}
+
 unsigned playlist_mclick_actions::id_to_idx(unsigned id)
 {
     unsigned count = tabsize(g_pma_actions);
@@ -108,58 +232,6 @@ void set_main_window_text(const char* ptr)
 }
 
 bool g_icon_created = false;
-
-void destroy_systray_icon()
-{
-    if (g_icon_created) {
-        uShellNotifyIcon(NIM_DELETE, g_main_window, 1, MSG_NOTICATION_ICON, nullptr, nullptr);
-        g_icon_created = false;
-    }
-}
-
-void on_show_notification_area_icon_change()
-{
-    if (!g_main_window)
-        return;
-
-    const auto is_iconic = IsIconic(g_main_window) != 0;
-    const auto close_to_icon = cui::config::advbool_close_to_notification_icon.get();
-    if (cfg_show_systray && !g_icon_created) {
-        create_systray_icon();
-    } else if (!cfg_show_systray && g_icon_created && (!is_iconic || !(cfg_minimise_to_tray || close_to_icon))) {
-        destroy_systray_icon();
-        if (is_iconic)
-            standard_commands::main_activate();
-    }
-    if (g_status)
-        update_systray();
-}
-
-void create_systray_icon()
-{
-    uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, g_main_window, 1, MSG_NOTICATION_ICON, g_icon,
-        "foobar2000" /*core_version_info::g_get_version_string()*/);
-    /* There was some misbehaviour with the newer messages. So we don't use them. */
-    //    if (!g_icon_created)
-    //        uih::shell_notify_icon(NIM_SETVERSION, g_main_window, 1, NOTIFYICON_VERSION, MSG_NOTICATION_ICON, g_icon,
-    //        "foobar2000"/*core_version_info::g_get_version_string()*/);
-    g_icon_created = true;
-}
-
-void create_icon_handle()
-{
-    const unsigned cx = GetSystemMetrics(SM_CXSMICON);
-    const unsigned cy = GetSystemMetrics(SM_CYSMICON);
-    if (g_icon) {
-        DestroyIcon(g_icon);
-        g_icon = nullptr;
-    }
-    if (cfg_custom_icon)
-        g_icon
-            = (HICON)uLoadImage(core_api::get_my_instance(), cfg_tray_icon_path, IMAGE_ICON, cx, cy, LR_LOADFROMFILE);
-    if (!g_icon)
-        g_icon = static_api_ptr_t<ui_control>()->load_main_icon(cx, cy);
-}
 
 class playlist_callback_single_columns : public playlist_callback_single_static {
 public:
@@ -440,38 +512,6 @@ void update_titlebar()
         track.release();
     } else {
         set_main_window_text("foobar2000" /*core_version_info::g_get_version_string()*/);
-    }
-}
-
-void update_systray(bool balloon, int btitle, bool force_balloon)
-{
-    if (g_icon_created) {
-        metadb_handle_ptr track;
-        static_api_ptr_t<play_control> play_api;
-        play_api->get_now_playing(track);
-        pfc::string8 sys, title;
-
-        if (track.is_valid()) {
-            service_ptr_t<titleformat_object> to_systray;
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(
-                to_systray, main_window::config_notification_icon_script.get());
-            play_api->playback_format_title_ex(
-                track, nullptr, title, to_systray, nullptr, play_control::display_level_titles);
-
-            track.release();
-
-        } else {
-            title = "foobar2000"; // core_version_info::g_get_version_string();
-        }
-
-        uFixAmpersandChars(title, sys);
-
-        if (balloon && (cfg_balloon || force_balloon)) {
-            uShellNotifyIconEx(NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, sys, "", "");
-            uShellNotifyIconEx(NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, sys,
-                (btitle == 0 ? "Now playing:" : (btitle == 1 ? "Unpaused:" : "Paused:")), title);
-        } else
-            uShellNotifyIcon(NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, sys);
     }
 }
 

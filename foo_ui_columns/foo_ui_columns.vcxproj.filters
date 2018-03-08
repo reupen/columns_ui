@@ -457,6 +457,9 @@
     <ClCompile Include="file_info_reader.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="notification_area.cpp">
+      <Filter>Main Window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -630,6 +633,9 @@
     </ClInclude>
     <ClInclude Include="file_info_reader.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="notification_area.h">
+      <Filter>Main Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
