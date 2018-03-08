@@ -3,9 +3,9 @@
 
 static const char* g_help_text = u8"syntax: foobar2000 /columnsui:<command> \"<path>\"\n\n"
                                  "Available commands:\n"
-                                 "help, ? – displays this command-line help\n"
-                                 "import – imports an fcl file\n"
-                                 "import-quiet – imports an fcl file without confirmation dialog boxes";
+                                 "help, ? â€“ displays this command-line help\n"
+                                 "import â€“ imports an fcl file\n"
+                                 "import-quiet â€“ imports an fcl file without confirmation dialog boxes";
 
 class HelpCommandLineHandler : public commandline_handler {
 public:
@@ -61,7 +61,7 @@ public:
     CommandLineSingleFileHelper m_single_file_helper;
 
     ImportCommandLineHandler()
-        : m_single_file_helper{u8"Import configuration – Columns UI", u8"No file to import specified.",
+        : m_single_file_helper{u8"Import configuration â€“ Columns UI", u8"No file to import specified.",
               u8"Too many files to import specified. You can only import one file at a time, "
               "and should use double quotes around paths containing spaces."}
     {
@@ -113,7 +113,7 @@ public:
     CommandLineSingleFileHelper m_single_file_helper;
 
     ExportCommandLineHandler()
-        : m_single_file_helper{u8"Export configuration – Columns UI", u8"No file to export to specified.",
+        : m_single_file_helper{u8"Export configuration â€“ Columns UI", u8"No file to export to specified.",
               u8"Too many destination files specified. You must specify only one destination path, "
               "and should use double quotes around paths containing spaces."}
     {
