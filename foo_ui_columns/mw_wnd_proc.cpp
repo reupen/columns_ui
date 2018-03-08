@@ -106,7 +106,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     }
 
-    if (WM_SHELLHOOKMESSAGE && msg == WM_SHELLHOOKMESSAGE) {
+    if (WM_SHELLHOOKMESSAGE && msg == WM_SHELLHOOKMESSAGE && m_should_handle_multimedia_keys) {
         if (wp == HSHELL_APPCOMMAND) {
             short cmd = GET_APPCOMMAND_LPARAM(lp);
             WORD uDevice = GET_DEVICE_LPARAM(lp);
@@ -143,10 +143,12 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         //            modeless_dialog_manager::add(wnd);
 
         WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
-        WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
         WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
 
-        RegisterShellHookWindow(wnd);
+        if (m_should_handle_multimedia_keys) {
+            WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
+            m_shell_hook_registered = RegisterShellHookWindow(wnd) != 0;
+        }
 
         INITCOMMONCONTROLSEX icex;
         icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
@@ -196,7 +198,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DESTROY: {
         g_get_msg_hook.deregister_hook();
         g_layout_window.destroy();
-        DeregisterShellHookWindow(wnd);
+        if (m_shell_hook_registered)
+            DeregisterShellHookWindow(wnd);
 
         destroy_rebar(false);
         status_bar::destroy_status_window();
