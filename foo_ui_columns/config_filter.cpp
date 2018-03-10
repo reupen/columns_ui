@@ -14,13 +14,17 @@ public:
     }
     void notify_on_create() override
     {
+        RECT rc{};
+        GetClientRect(get_wnd(), &rc);
+        const auto client_width = rc.right - rc.left;
+
         set_single_selection(true);
         pfc::list_t<Column> columns;
         columns.set_count(2);
         columns[0].m_title = "Name";
-        columns[0].m_size = 150;
+        columns[0].m_size = client_width/3;
         columns[1].m_title = "Field";
-        columns[1].m_size = 370;
+        columns[1].m_size = client_width*2/3;
         uih::ListView::set_columns(columns);
     };
     bool notify_before_create_inline_edit(
@@ -108,7 +112,7 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             {
-                HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(7, 25, 273, 167), true);
+                HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(7, 30, 313, 213), true);
                 SetWindowPos(wnd_fields, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
                 ShowWindow(wnd_fields, SW_SHOWNORMAL);
             }

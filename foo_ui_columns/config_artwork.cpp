@@ -85,6 +85,7 @@ public:
             set_group_count(1);
             set_autosize(true);
             set_show_header(false);
+            set_group_level_indentation_enabled(false);
             pfc::list_t<Column> columns;
             columns.set_count(1);
             columns[0].m_title = "Source script";
@@ -198,7 +199,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            HWND wnd_fields = m_source_list.create(wnd, uih::WindowPosition(7, 42, 271, 75), true);
+            HWND wnd_fields = m_source_list.create(wnd, uih::WindowPosition(7, 49, 313, 92), true);
             SetWindowPos(wnd_fields, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
 
             refresh_me(wnd);
