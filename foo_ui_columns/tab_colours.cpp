@@ -35,17 +35,17 @@ BOOL tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_wnd_colours_mode = GetDlgItem(wnd, IDC_COLOURS_MODE);
         m_wnd_colours_element = GetDlgItem(wnd, IDC_COLOURS_ELEMENT);
 
-        constexpr auto y_start = 83;
-        constexpr auto y_spacing = 6 + 14;
-        constexpr auto x_col_1 = 111;
-        constexpr auto x_col_2 = 204;
+        constexpr auto y_start = 94;
+        constexpr auto y_spacing = 23;
+        constexpr auto x_col_1 = 140;
+        constexpr auto x_col_2 = 245;
 
         g_fill_text.create(wnd, uih::WindowPosition{x_col_1, y_start, 18, 14}, nullptr, true);
         g_fill_selection_text.create(wnd, uih::WindowPosition{x_col_1, y_start + y_spacing, 18, 14}, nullptr, true);
         g_fill_selection_text_inactive.create(
             wnd, uih::WindowPosition{x_col_1, y_start + y_spacing * 2, 18, 14}, nullptr, true);
 
-        g_fill_active_item_frame.create(wnd, uih::WindowPosition{x_col_1, 163, 18, 14}, nullptr, true);
+        g_fill_active_item_frame.create(wnd, uih::WindowPosition{x_col_1, 186, 18, 14}, nullptr, true);
 
         g_fill_background.create(wnd, uih::WindowPosition{x_col_2, y_start, 18, 14}, nullptr, true);
         g_fill_selection_background.create(
