@@ -32,6 +32,7 @@ void g_show_artwork_settings();
 preferences_tab* g_get_tab_layout();
 preferences_tab* g_get_tab_artwork();
 preferences_tab* g_get_tab_display2();
+preferences_tab* g_get_tab_pview_artwork();
 preferences_tab* g_get_tab_sys();
 preferences_tab* g_get_tab_playlist();
 preferences_tab* g_get_tab_playlist_dd();

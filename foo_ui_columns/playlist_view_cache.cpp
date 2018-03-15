@@ -173,7 +173,7 @@ void playlist_cache::delete_all()
 void playlist_cache::rebuild_all()
 {
     delete_all();
-    
+    
 
 
     int n,count = static_api_ptr_t<playlist_manager>()->activeplaylist_get_item_count();
@@ -260,7 +260,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
             GetLocalTime(&st);
 
         bool global = (cfg_global != 0);
-        bool b_legacy = cfg_oldglobal != 0;
+        constexpr auto b_legacy = true;
 
         global_variable_list p_vars;
 
@@ -316,7 +316,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
 
                 bool b_custom = columns[s]->use_custom_colour;
 
-                if (!cfg_oldglobal || !b_custom) {
+                if (!b_legacy || !b_custom) {
                     if (!colour_global_av) {
                         playlist_view::g_get_global_style_titleformat_object(to_global_style);
                         if (to_global_style.is_valid()) {
@@ -333,7 +333,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
                                 nullptr, play_control::display_level_all);
                         }
 
-                        if (cfg_oldglobal && !colour.is_empty())
+                        if (b_legacy && !colour.is_empty())
                             process_colour_string(colour, colours_global);
                         colour_global_av = true;
                     }
@@ -353,7 +353,7 @@ bool playlist_view_cache::update_item(unsigned playlist, unsigned idx)
                             playlist, idx, &tf_hook, colour, to_colour, nullptr, play_control::display_level_all);
                     }
 
-                    if (cfg_oldglobal && !colour.is_empty())
+                    if (b_legacy && !colour.is_empty())
                         process_colour_string(colour, col_item);
                 }
 
@@ -633,7 +633,7 @@ void playlist_view::g_set_sort(unsigned column, bool descending, bool selection_
 
         global_variable_list extra_items;
         bool extra = (cfg_global_sort != 0);
-        bool b_legacy = cfg_oldglobal != 0;
+        constexpr auto b_legacy = true;
 
         pfc::bit_array_bittable mask(count);
         if (selection_only)

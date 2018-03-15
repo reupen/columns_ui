@@ -460,6 +460,9 @@
     <ClCompile Include="notification_area.cpp">
       <Filter>Main Window</Filter>
     </ClCompile>
+    <ClCompile Include="tab_pview_artwork.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">

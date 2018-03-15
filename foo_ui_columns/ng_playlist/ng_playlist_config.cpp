@@ -65,7 +65,7 @@ static bool run_edit_view(edit_view_param& param, HWND parent)
     return uDialogBox(IDD_EDIT_GROUP, parent, EditViewProc, reinterpret_cast<LPARAM>(&param)) != 0;
 }
 
-BOOL CALLBACK preferences_tab_impl::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL preferences_tab_impl::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:
@@ -76,8 +76,10 @@ BOOL CALLBACK preferences_tab_impl::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LP
         ListView_SetExtendedListViewStyleEx(list, LVS_EX_FULLROWSELECT, LVS_EX_FULLROWSELECT);
         uih::list_view_set_explorer_theme(list);
 
+        RECT rc{};
+        GetClientRect(list, &rc);
         Button_SetCheck(GetDlgItem(wnd, IDC_GROUPING), cfg_grouping ? BST_CHECKED : BST_UNCHECKED);
-        uih::list_view_insert_column_text(list, 0, _T("Script"), 400);
+        uih::list_view_insert_column_text(list, 0, _T("Script"), rc.right - rc.left);
 
         unsigned m = g_groups.get_groups().get_count();
         pfc::string8_fastalloc temp;

@@ -6,33 +6,9 @@ static cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x
 
 class tab_global : public preferences_tab {
 public:
-    static WNDPROC editproc;
-
-    static LRESULT WINAPI EditHook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        switch (msg) {
-            /*    case WM_KEYDOWN:
-            if (!(HIWORD(lp) & KF_REPEAT) && (wp == 'a' || wp =='A') &&  (GetKeyState(VK_CONTROL) & KF_UP))
-            {
-            SendMessage(wnd, EM_SETSEL, 0, -1);
-            return 0;
-            }
-
-            break;*/
-        case WM_CHAR:
-            if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) && (GetKeyState(VK_CONTROL) & KF_UP)) {
-                SendMessage(wnd, EM_SETSEL, 0, -1);
-                return 0;
-            }
-            break;
-        }
-        return uCallWindowProc(editproc, wnd, msg, wp, lp);
-    }
-
     static void refresh_me(HWND wnd)
     {
         SendDlgItemMessage(wnd, IDC_GLOBAL, BM_SETCHECK, cfg_global, 0);
-        SendDlgItemMessage(wnd, IDC_OLDGLOBAL, BM_SETCHECK, cfg_oldglobal, 0);
         SendDlgItemMessage(wnd, IDC_GLOBALSORT, BM_SETCHECK, cfg_global_sort, 0);
         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, (g_cur_tab2 == 0 ? cfg_globalstring : cfg_colour));
         SendDlgItemMessage(wnd, IDC_DATE, BM_SETCHECK, cfg_playlist_date, 0);
@@ -49,7 +25,26 @@ public:
         }
     }
 
-    static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    static LRESULT WINAPI s_on_edit_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        auto p_this = reinterpret_cast<tab_global*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+        return p_this ? p_this->on_edit_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
+    }
+
+    LRESULT on_edit_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        switch (msg) {
+        case WM_CHAR:
+            if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) && (GetKeyState(VK_CONTROL) & KF_UP)) {
+                SendMessage(wnd, EM_SETSEL, 0, -1);
+                return 0;
+            }
+            break;
+        }
+        return CallWindowProc(m_edit_proc, wnd, msg, wp, lp);
+    }
+
+    BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
@@ -71,7 +66,11 @@ public:
             SendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
 
             refresh_me(wnd);
-            editproc = (WNDPROC)SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING), GWLP_WNDPROC, (LPARAM)EditHook);
+
+            const auto wnd_edit = GetDlgItem(wnd, IDC_STRING);
+            SetWindowLongPtr(wnd_edit, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
+            m_edit_proc = reinterpret_cast<WNDPROC>(
+                SetWindowLongPtr(wnd_edit, GWLP_WNDPROC, reinterpret_cast<LPARAM>(s_on_edit_hooked_message)));
 
             g_editor_font_notify.set(GetDlgItem(wnd, IDC_STRING));
         }
@@ -157,9 +156,6 @@ public:
             }
 
             break;
-            case IDC_OLDGLOBAL:
-                cfg_oldglobal = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                break;
             case IDC_GLOBALSORT:
                 cfg_global_sort = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 break;
@@ -175,7 +171,11 @@ public:
         }
         return 0;
     }
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_GLOBAL, wnd, ConfigProc); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(
+            wnd, IDD_GLOBAL, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+    }
     const char* get_name() override { return "Globals"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
@@ -183,9 +183,10 @@ public:
         return true;
     }
 
+private:
+    WNDPROC m_edit_proc{};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 } g_tab_global;
-
-WNDPROC tab_global::editproc = nullptr;
 
 preferences_tab* g_get_tab_global()
 {
