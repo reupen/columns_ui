@@ -4,10 +4,7 @@
 #include "prefs_utils.h"
 
 static class tab_display2 : public preferences_tab {
-    static bool initialised;
-    static menu_item_cache* p_menu_cache;
-
-    static void refresh_me(HWND wnd)
+    void refresh_me(HWND wnd)
     {
         SendDlgItemMessage(wnd, IDC_HEADER, BM_SETCHECK, cfg_header, 0);
         // SendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
@@ -32,20 +29,14 @@ static class tab_display2 : public preferences_tab {
 
         SendDlgItemMessage(wnd, IDC_SORT_ARROWS, BM_SETCHECK, cfg_show_sort_arrows, 0);
         SendDlgItemMessage(wnd, IDC_DROP_AT_END, BM_SETCHECK, cfg_drop_at_end, 0);
-
-        SendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, pvt::cfg_show_artwork, 0);
-        SendDlgItemMessage(wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, pvt::cfg_artwork_reflection, 0);
-        SendDlgItemMessage(wnd, IDC_LOWPRIORITY, BM_SETCHECK, pvt::cfg_artwork_lowpriority, 0);
-        SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETRANGE32, 0, MAXLONG);
-        SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETPOS32, NULL, pvt::cfg_artwork_width);
     }
 
 public:
-    static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            p_menu_cache = new menu_item_cache;
+            m_menu_cache = new menu_item_cache;
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "None");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Sunken");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Grey");
@@ -54,7 +45,7 @@ public:
             //        SendDlgItemMessage(wnd,IDC_SPINPL,UDM_SETRANGE32,-100,100);
             //        SendDlgItemMessage(wnd,IDC_SPINSEL,UDM_SETRANGE32,0,3);
 
-            populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, *p_menu_cache, true);
+            populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, *m_menu_cache, true);
 
             unsigned count = playlist_mclick_actions::get_count();
             for (unsigned n = 0; n < count; n++) {
@@ -68,13 +59,13 @@ public:
                 playlist_mclick_actions::id_to_idx(cfg_playlist_middle_action), 0);
 
             refresh_me(wnd);
-            initialised = true;
+            m_initialised = true;
         }
 
         break;
         case WM_DESTROY: {
-            initialised = false;
-            delete p_menu_cache;
+            m_initialised = false;
+            delete m_menu_cache;
         } break;
         case WM_COMMAND:
             switch (wp) {
@@ -82,7 +73,7 @@ public:
                 cfg_drop_at_end = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
             } break;
             case (EN_CHANGE << 16) | IDC_HEIGHT: {
-                if (initialised) {
+                if (m_initialised) {
                     BOOL result;
                     int new_height = GetDlgItemInt(wnd, IDC_HEIGHT, &result, TRUE);
                     if (result)
@@ -93,7 +84,7 @@ public:
 
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_DOUBLE: {
-                on_menu_combo_change(wnd, lp, cfg_playlist_double, *p_menu_cache, IDC_MENU_DESC);
+                on_menu_combo_change(wnd, lp, cfg_playlist_double, *m_menu_cache, IDC_MENU_DESC);
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_MIDDLE: {
                 cfg_playlist_middle_action
@@ -109,23 +100,6 @@ public:
                 cfg_alternative_sel = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 pvt::ng_playlist_view_t::g_on_alternate_selection_change();
                 break;
-            case IDC_SHOWARTWORK:
-                pvt::cfg_show_artwork = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
-                pvt::ng_playlist_view_t::g_on_show_artwork_change();
-                break;
-            case IDC_ARTWORKREFLECTION:
-                pvt::cfg_artwork_reflection = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
-                pvt::ng_playlist_view_t::g_on_artwork_width_change();
-                break;
-            case IDC_LOWPRIORITY:
-                pvt::cfg_artwork_lowpriority = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
-                break;
-            case (EN_CHANGE << 16) | IDC_ARTWORKWIDTH:
-                if (initialised) {
-                    pvt::cfg_artwork_width = mmh::strtoul_n(string_utf8_from_window((HWND)lp).get_ptr(), pfc_infinite);
-                    pvt::ng_playlist_view_t::g_on_artwork_width_change();
-                }
-                break;
             case IDC_SORT_ARROWS:
                 cfg_show_sort_arrows = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 pvt::ng_playlist_view_t::g_on_show_sort_indicators_change();
@@ -137,6 +111,8 @@ public:
 
             case IDC_ELLIPSIS:
                 cfg_ellipsis = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                refresh_all_playlist_views();
+                pvt::ng_playlist_view_t::s_redraw_all();
                 break;
 
             case IDC_HEADER: {
@@ -200,17 +176,23 @@ public:
         }
         return 0;
     }
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_PVIEW_GENERAL, wnd, ConfigProc); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(wnd, IDD_PVIEW_GENERAL,
+            [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+    }
     const char* get_name() override { return "General"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:general";
         return true;
     }
-} g_tab_display2;
 
-menu_item_cache* tab_display2::p_menu_cache = nullptr;
-bool tab_display2::initialised = false;
+private:
+    bool m_initialised{};
+    menu_item_cache* m_menu_cache{};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+} g_tab_display2;
 
 preferences_tab* g_get_tab_display2()
 {

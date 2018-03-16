@@ -446,6 +446,7 @@
     <ClCompile Include="list_view_panel.cpp" />
     <ClCompile Include="notification_area.cpp" />
     <ClCompile Include="rebar_band.cpp" />
+    <ClCompile Include="tab_pview_artwork.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\artwork_helpers.h" />

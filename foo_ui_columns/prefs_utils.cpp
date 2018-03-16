@@ -20,18 +20,17 @@ void preview_to_console(const char* spec, bool extra)
 
         pfc::string8 temp;
 
-        bool b_legacy = cfg_oldglobal != 0;
         bool b_date = cfg_playlist_date != 0;
         SYSTEMTIME st;
         if (b_date)
             GetLocalTime(&st);
 
         global_variable_list extra_items;
-        playlist_view::g_get_cache().active_make_extra(idx, extra_items, b_date ? &st : nullptr, b_legacy);
+        playlist_view::g_get_cache().active_make_extra(idx, extra_items, b_date ? &st : nullptr, false);
         service_ptr_t<titleformat_object> to_temp;
         static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, spec);
 
-        titleformat_hook_set_global<false, true> tf_hook_set_global(extra_items, b_legacy);
+        titleformat_hook_set_global<false, true> tf_hook_set_global(extra_items, false);
         titleformat_hook_date tf_hook_date(&st);
 
         titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : nullptr);

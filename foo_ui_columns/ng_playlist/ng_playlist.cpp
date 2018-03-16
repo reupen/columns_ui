@@ -395,6 +395,12 @@ void ng_playlist_view_t::on_columns_change()
     }
 }
 
+void ng_playlist_view_t::s_redraw_all()
+{
+    for (auto&& window : g_windows)
+        RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+}
+
 int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
 {
     return StrCmpLogicalW(a.get_ptr(), b.get_ptr());

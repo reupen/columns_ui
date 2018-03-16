@@ -365,6 +365,7 @@ public:
     static void g_on_show_sort_indicators_change();
     static void g_on_edge_style_change();
     static void g_on_use_date_info_change();
+    static void s_redraw_all();
 
     static void g_on_time_change();
 
@@ -726,16 +727,22 @@ public:
 };
 
 class preferences_tab_impl : public preferences_tab {
-    static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
 public:
-    HWND create(HWND parent) override { return uCreateDialog(IDD_CONFIG_NG, parent, ConfigProc); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(
+            wnd, IDD_CONFIG_NG, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+    }
     const char* get_name() override { return "Grouping"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:playlist_view:grouping";
         return true;
     }
+
+private:
+    BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
 } // namespace pvt
 
