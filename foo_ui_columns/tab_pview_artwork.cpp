@@ -62,7 +62,7 @@ public:
 private:
     bool m_initialised{};
     menu_item_cache* m_menu_cache{};
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_pview_artwork;
 
 preferences_tab* g_get_tab_pview_artwork()

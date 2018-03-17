@@ -133,7 +133,7 @@ auto deserialise_splitter_item(gsl::span<t_uint8> data)
     return item;
 }
 
-class tab_layout_new : public preferences_page {
+class LayoutTab : public preferences_tab {
     class node : public pfc::refcounted_object_root {
     public:
         using ptr = pfc::refcounted_object_ptr_t<node>;
@@ -158,13 +158,6 @@ class tab_layout_new : public preferences_page {
     };
 
     using node_ptr = node::ptr;
-
-    static node_ptr g_node_root;
-    static pfc::array_t<t_uint8> g_node_clipboard;
-    // static uie::splitter_item_ptr g_item_root;
-    static bool g_changed;
-    static bool g_initialising;
-    static unsigned g_active_preset;
 
     static HTREEITEM insert_item_in_tree_view(
         HWND wnd_tree, const char* sz_text, LPARAM data, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST)
@@ -277,7 +270,7 @@ class tab_layout_new : public preferences_page {
             }
         }
     }
-    static void remove_item(HWND wnd, HTREEITEM ti)
+    void remove_item(HWND wnd, HTREEITEM ti)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
@@ -298,7 +291,7 @@ class tab_layout_new : public preferences_page {
             }
         }
     }
-    static void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST)
+    void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         TVITEMEX item;
@@ -325,7 +318,7 @@ class tab_layout_new : public preferences_page {
             }
         }
     }
-    static void copy_item(HWND wnd, HTREEITEM ti)
+    void copy_item(HWND wnd, HTREEITEM ti)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         TVITEMEX item;
@@ -335,11 +328,11 @@ class tab_layout_new : public preferences_page {
 
         if (TreeView_GetItem(wnd_tv, &item)) {
             node::ptr p_node = reinterpret_cast<node*>(item.lParam);
-            g_node_clipboard = serialise_splitter_item(p_node->m_item->get_ptr());
+            m_node_clipboard = serialise_splitter_item(p_node->m_item->get_ptr());
         }
     }
 
-    static bool _fix_single_instance_recur(uie::splitter_window_ptr& p_window)
+    bool _fix_single_instance_recur(uie::splitter_window_ptr& p_window)
     {
         if (!p_window.is_valid())
             return false;
@@ -355,7 +348,7 @@ class tab_layout_new : public preferences_page {
             if (!uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window))
                 mask[i] = true;
             else
-                mask[i] = p_child_window->get_is_single_instance() && g_node_root->have_item(p_si->get_panel_guid());
+                mask[i] = p_child_window->get_is_single_instance() && m_node_root->have_item(p_si->get_panel_guid());
         }
 
         for (i = count; i > 0; i--)
@@ -404,13 +397,13 @@ class tab_layout_new : public preferences_page {
      * \param item      Splitter item to fix
      * \return          Whether to proceed with pasting
      */
-    static bool fix_paste_item(uie::splitter_item_full_v3_impl_t& item)
+    bool fix_paste_item(uie::splitter_item_full_v3_impl_t& item)
     {
         uie::window::ptr p_window;
         if (!uie::window::create_by_guid(item.get_panel_guid(), p_window))
             return false;
 
-        if (p_window->get_is_single_instance() && g_node_root->have_item(item.get_panel_guid()))
+        if (p_window->get_is_single_instance() && m_node_root->have_item(item.get_panel_guid()))
             return false;
 
         uie::splitter_window_ptr p_sw;
@@ -429,7 +422,7 @@ class tab_layout_new : public preferences_page {
         return true;
     }
 
-    static void paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST)
+    void paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         TVITEMEX item;
@@ -441,11 +434,11 @@ class tab_layout_new : public preferences_page {
         if (!TreeView_GetItem(wnd_tv, &item))
             return;
 
-        if (g_node_clipboard.get_size() == 0)
+        if (m_node_clipboard.get_size() == 0)
             return;
 
         auto splitter_item = deserialise_splitter_item(
-            {g_node_clipboard.get_ptr(), gsl::narrow<gsl::span<t_uint8>::index_type>(g_node_clipboard.get_size())});
+            {m_node_clipboard.get_ptr(), gsl::narrow<gsl::span<t_uint8>::index_type>(m_node_clipboard.get_size())});
 
         if (!fix_paste_item(*splitter_item))
             return;
@@ -470,7 +463,7 @@ class tab_layout_new : public preferences_page {
             }
         }
     }
-    static void move_item(HWND wnd, HTREEITEM ti, bool up)
+    void move_item(HWND wnd, HTREEITEM ti, bool up)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         TVITEMEX item;
@@ -510,7 +503,7 @@ class tab_layout_new : public preferences_page {
         }
     }
     static void print_index_out_of_range() { console::print("layout editor: internel error: index out of range"); }
-    static void switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
+    void switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         TVITEMEX item;
@@ -568,26 +561,26 @@ class tab_layout_new : public preferences_page {
                         } else {
                             TreeView_DeleteItem(wnd_tv, ti);
                             populate_tree(wnd, p_node->m_item->get_ptr(), p_node);
-                            g_changed = true;
+                            m_changed = true;
                         }
                     }
                 }
             }
         }
     }
-    static void change_base(HWND wnd, const GUID& p_guid)
+    void change_base(HWND wnd, const GUID& p_guid)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         TreeView_DeleteAllItems(wnd_tv);
-        g_node_root->m_children.remove_all();
+        m_node_root->m_children.remove_all();
 
-        g_node_root->m_item->get_ptr()->set_panel_guid(p_guid);
-        g_node_root->m_window.release();
-        g_node_root->m_splitter.release();
-        populate_tree(wnd, g_node_root->m_item->get_ptr(), g_node_root);
-        g_changed = true;
+        m_node_root->m_item->get_ptr()->set_panel_guid(p_guid);
+        m_node_root->m_window.release();
+        m_node_root->m_splitter.release();
+        populate_tree(wnd, m_node_root->m_item->get_ptr(), m_node_root);
+        m_changed = true;
     }
-    static void save_item(HWND wnd, HTREEITEM ti)
+    void save_item(HWND wnd, HTREEITEM ti)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         TVITEMEX item;
@@ -620,16 +613,16 @@ class tab_layout_new : public preferences_page {
                     }
                 }
             }
-            g_changed = true;
+            m_changed = true;
         }
     }
     template <typename T>
-    static void set_item_property(HWND wnd, HTREEITEM ti, const GUID& guid, const T& val)
+    void set_item_property(HWND wnd, HTREEITEM ti, const GUID& guid, const T& val)
     {
         stream_reader_memblock_ref reader(&val, sizeof(T));
         set_item_property_stream(wnd, ti, guid, &reader);
     }
-    static void set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& guid, stream_reader* val)
+    void set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& guid, stream_reader* val)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         if (ti) {
@@ -656,17 +649,17 @@ class tab_layout_new : public preferences_page {
         }
     }
     template <typename T>
-    static void set_item_property(HWND wnd, const GUID& guid, const T& val)
+    void set_item_property(HWND wnd, const GUID& guid, const T& val)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         set_item_property(wnd, TreeView_GetSelection(wnd_tv), guid, val);
     }
-    static void set_item_property_stream(HWND wnd, const GUID& guid, stream_reader* val)
+    void set_item_property_stream(HWND wnd, const GUID& guid, stream_reader* val)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         set_item_property_stream(wnd, TreeView_GetSelection(wnd_tv), guid, val);
     }
-    static void run_configure(HWND wnd)
+    void run_configure(HWND wnd)
     {
         HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
         HTREEITEM ti = TreeView_GetSelection(wnd_tv);
@@ -692,45 +685,45 @@ class tab_layout_new : public preferences_page {
             }
         }
     }
-    static void initialise_tree(HWND wnd)
+    void initialise_tree(HWND wnd)
     {
-        g_node_root = new node;
-        cfg_layout.get_preset(g_active_preset, *g_node_root->m_item);
+        m_node_root = new node;
+        cfg_layout.get_preset(m_active_preset, *m_node_root->m_item);
         // g_layout_window.get_child(*g_node_root->m_item);
-        populate_tree(wnd, g_node_root->m_item->get_ptr(), g_node_root);
+        populate_tree(wnd, m_node_root->m_item->get_ptr(), m_node_root);
     }
-    static void deinitialise_tree(HWND wnd)
+    void deinitialise_tree(HWND wnd)
     {
         TreeView_DeleteAllItems(GetDlgItem(wnd, IDC_TREE));
-        g_node_root.release();
+        m_node_root.release();
     }
-    static void apply()
+    void apply()
     {
-        if (g_changed) {
-            g_changed = false;
-            if (g_active_preset != cfg_layout.get_active())
+        if (m_changed) {
+            m_changed = false;
+            if (m_active_preset != cfg_layout.get_active())
                 cfg_layout.save_active_preset();
-            cfg_layout.set_preset(g_active_preset, g_node_root->m_item->get_ptr());
-            cfg_layout.set_active_preset(g_active_preset);
+            cfg_layout.set_preset(m_active_preset, m_node_root->m_item->get_ptr());
+            cfg_layout.set_active_preset(m_active_preset);
             // g_layout_window.set_child(g_node_root->m_item->get_ptr());
         }
     }
-    static void initialise_presets(HWND wnd)
+    void initialise_presets(HWND wnd)
     {
         unsigned count = cfg_layout.get_presets().get_count();
         for (unsigned n = 0; n < count; n++) {
             uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].m_name);
         }
-        ComboBox_SetCurSel(GetDlgItem(wnd, IDC_PRESETS), g_active_preset);
+        ComboBox_SetCurSel(GetDlgItem(wnd, IDC_PRESETS), m_active_preset);
     }
-    static void switch_to_preset(HWND wnd, unsigned index)
+    void switch_to_preset(HWND wnd, unsigned index)
     {
         if (index < cfg_layout.get_presets().get_count()) {
-            if (g_changed)
-                cfg_layout.set_preset(g_active_preset, g_node_root->m_item->get_ptr());
-            g_changed = true;
+            if (m_changed)
+                cfg_layout.set_preset(m_active_preset, m_node_root->m_item->get_ptr());
+            m_changed = true;
             deinitialise_tree(wnd);
-            g_active_preset = index;
+            m_active_preset = index;
             initialise_tree(wnd);
         }
     }
@@ -770,8 +763,7 @@ class tab_layout_new : public preferences_page {
         }
         return 0;
     }
-    static bool g_initialised;
-    static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
@@ -779,11 +771,11 @@ class tab_layout_new : public preferences_page {
             cfg_layout.save_active_preset();
             if (!cfg_layout.get_presets().get_count())
                 cfg_layout.reset_presets();
-            g_changed = false;
-            g_active_preset = cfg_layout.get_active();
-            if (g_active_preset >= cfg_layout.get_presets().get_count()) {
-                g_active_preset = 0;
-                g_changed = true;
+            m_changed = false;
+            m_active_preset = cfg_layout.get_active();
+            if (m_active_preset >= cfg_layout.get_presets().get_count()) {
+                m_active_preset = 0;
+                m_changed = true;
             }
             initialise_presets(wnd);
             initialise_tree(wnd);
@@ -791,26 +783,10 @@ class tab_layout_new : public preferences_page {
             uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Horizontal");
             uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Vertical");
 
-            SetDlgItemInt(wnd, IDC_SHOW_DELAY, cfg_sidebar_show_delay, FALSE);
-            SetDlgItemInt(wnd, IDC_HIDE_DELAY, cfg_sidebar_hide_delay, FALSE);
-            EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
-            EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
-            SendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
-            SendDlgItemMessage(
-                wnd, IDC_ALLOW_LOCKED_PANEL_RESIZING, BM_SETCHECK, settings::allow_locked_panel_resizing, 0);
-
-            SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
-            SendDlgItemMessage(wnd, IDC_HIDE_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
-
-            HWND wnd_custom_divider_width_spin = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN);
-
-            SetDlgItemInt(wnd, IDC_CUSTOM_DIVIDER_WIDTH, settings::custom_splitter_divider_width, FALSE);
-            SendMessage(wnd_custom_divider_width_spin, UDM_SETRANGE32, 0, 20);
-
-            g_initialised = true;
+            m_initialised = true;
         } break;
         case WM_DESTROY:
-            g_initialised = false;
+            m_initialised = false;
             apply();
             deinitialise_tree(wnd);
             break;
@@ -833,12 +809,12 @@ class tab_layout_new : public preferences_page {
             case IDC_DUPLICATE_PRESET: {
                 rename_param param;
                 param.m_title = "Duplicate preset: Enter name";
-                cfg_layout.get_preset_name(g_active_preset, param.m_text);
+                cfg_layout.get_preset_name(m_active_preset, param.m_text);
                 param.m_text << " (copy)";
                 if (uDialogBox(IDD_RENAME_PLAYLIST, wnd, RenameProc, reinterpret_cast<LPARAM>(&param))) {
                     cfg_layout_t::preset preset;
                     preset.m_name = param.m_text;
-                    preset.set(g_node_root->m_item->get_ptr());
+                    preset.set(m_node_root->m_item->get_ptr());
                     auto preset_index = cfg_layout.add_preset(preset);
 
                     uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, param.m_text.get_ptr());
@@ -849,7 +825,7 @@ class tab_layout_new : public preferences_page {
             case IDC_RENAME_PRESET: {
                 rename_param param;
                 param.m_title = "Rename preset: Enter name";
-                cfg_layout.get_preset_name(g_active_preset, param.m_text);
+                cfg_layout.get_preset_name(m_active_preset, param.m_text);
                 HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
                 unsigned index = ComboBox_GetCurSel(wnd_combo);
                 if (uDialogBox(IDD_RENAME_PLAYLIST, wnd, RenameProc, reinterpret_cast<LPARAM>(&param))) {
@@ -862,20 +838,20 @@ class tab_layout_new : public preferences_page {
             case IDC_DELETE_PRESET: {
                 deinitialise_tree(wnd);
                 HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
-                t_size count = cfg_layout.delete_preset(g_active_preset);
-                ComboBox_DeleteString(wnd_combo, g_active_preset);
+                t_size count = cfg_layout.delete_preset(m_active_preset);
+                ComboBox_DeleteString(wnd_combo, m_active_preset);
                 if (!count) {
                     cfg_layout.reset_presets();
-                    g_active_preset = 0;
+                    m_active_preset = 0;
                     initialise_presets(wnd);
-                    ComboBox_SetCurSel(wnd_combo, g_active_preset);
+                    ComboBox_SetCurSel(wnd_combo, m_active_preset);
                     initialise_tree(wnd);
                 } else {
                     ComboBox_SetCurSel(wnd_combo,
-                        g_active_preset < ComboBox_GetCount(wnd_combo) ? g_active_preset : --g_active_preset);
+                        m_active_preset < ComboBox_GetCount(wnd_combo) ? m_active_preset : --m_active_preset);
                     initialise_tree(wnd);
                 }
-                g_changed = true;
+                m_changed = true;
             } break;
             case IDC_RESET_PRESETS:
                 if (win32_helpers::message_box(wnd,
@@ -886,11 +862,11 @@ class tab_layout_new : public preferences_page {
                     HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
                     ComboBox_ResetContent(wnd_combo);
                     cfg_layout.reset_presets();
-                    g_active_preset = 0;
+                    m_active_preset = 0;
                     initialise_presets(wnd);
-                    ComboBox_SetCurSel(wnd_combo, g_active_preset);
+                    ComboBox_SetCurSel(wnd_combo, m_active_preset);
                     initialise_tree(wnd);
-                    g_changed = true;
+                    m_changed = true;
                 }
                 break;
             case IDC_LOCKED:
@@ -902,7 +878,7 @@ class tab_layout_new : public preferences_page {
                 EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_TITLE), val);
             } break;
             case IDC_CUSTOM_TITLE | (EN_CHANGE << 16):
-                if (!g_initialising) {
+                if (!m_initialising) {
                     string_utf8_from_window text((HWND)lp);
                     stream_writer_memblock str;
                     abort_callback_impl p_abort;
@@ -933,39 +909,6 @@ class tab_layout_new : public preferences_page {
                 break;
             case IDC_APPLY:
                 apply();
-                break;
-            case (EN_CHANGE << 16) | IDC_HIDE_DELAY:
-                if (g_initialised) {
-                    BOOL result;
-                    int new_height = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
-                    if (result)
-                        cfg_sidebar_hide_delay = new_height;
-                }
-                break;
-            case (EN_CHANGE << 16) | IDC_SHOW_DELAY:
-                if (g_initialised) {
-                    BOOL result;
-                    int new_height = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
-                    if (result)
-                        cfg_sidebar_show_delay = new_height;
-                }
-                break;
-            case (EN_CHANGE << 16) | IDC_CUSTOM_DIVIDER_WIDTH:
-                if (g_initialised) {
-                    BOOL result;
-                    int new_width = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
-                    if (result)
-                        settings::custom_splitter_divider_width = new_width;
-                    splitter_window_impl::g_on_size_change();
-                }
-                break;
-            case IDC_USE_CUSTOM_SHOW_DELAY:
-                cfg_sidebar_use_custom_show_delay = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
-                EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
-                break;
-            case IDC_ALLOW_LOCKED_PANEL_RESIZING:
-                settings::allow_locked_panel_resizing = Button_GetCheck((HWND)lp) == BST_CHECKED;
                 break;
             }
             break;
@@ -1067,7 +1010,7 @@ class tab_layout_new : public preferences_page {
                             }
                         }
                     }
-                    g_initialising = true;
+                    m_initialising = true;
                     EnableWindow(GetDlgItem(wnd, IDC_HIDDEN), hidden);
                     EnableWindow(GetDlgItem(wnd, IDC_LOCKED), locked);
                     EnableWindow(GetDlgItem(wnd, IDC_CAPTIONSTYLE), orientation);
@@ -1085,7 +1028,7 @@ class tab_layout_new : public preferences_page {
                     Button_SetCheck(GetDlgItem(wnd, IDC_USE_CUSTOM_TITLE), use_custom_title_val);
                     uSendDlgItemMessageText(wnd, IDC_CUSTOM_TITLE, WM_SETTEXT, NULL, custom_title_val);
                     SendDlgItemMessage(wnd, IDC_CAPTIONSTYLE, CB_SETCURSEL, orientation_val, 0);
-                    g_initialising = false;
+                    m_initialising = false;
                 }
                 break;
             }
@@ -1173,7 +1116,7 @@ class tab_layout_new : public preferences_page {
                             HMENU popup = nullptr;
                             unsigned count = panels.get_count(), last = 0;
                             for (unsigned n = 0; n < count; n++) {
-                                if (!panels[n].prefer_multiple_instances || !g_node_root->have_item(panels[n].guid)) {
+                                if (!panels[n].prefer_multiple_instances || !m_node_root->have_item(panels[n].guid)) {
                                     if (!popup || uStringCompare(panels[last].category, panels[n].category)) {
                                         if (popup)
                                             uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, (UINT)popup,
@@ -1210,7 +1153,7 @@ class tab_layout_new : public preferences_page {
                             AppendMenu(menu, MF_STRING, ID_REMOVE, _T("Remove panel"));
                         }
                         AppendMenu(menu, MF_STRING, ID_COPY, _T("Copy panel"));
-                        if (g_node_clipboard.get_size() > 0 && p_splitter.is_valid()
+                        if (m_node_clipboard.get_size() > 0 && p_splitter.is_valid()
                             && p_node->m_children.get_count() < p_splitter->get_maximum_panel_count())
                             AppendMenu(menu, MF_STRING, ID_PASTE, _T("Paste panel"));
 
@@ -1249,7 +1192,11 @@ class tab_layout_new : public preferences_page {
     }
 
 public:
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_LAYOUT, wnd, ConfigProc); }
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(
+            wnd, IDD_LAYOUT, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+    }
 
     const char* get_name() override { return "Layout"; }
 
@@ -1259,21 +1206,109 @@ public:
         return true;
     }
 
-    GUID get_guid() override { return cui::prefs::layout_page_guid; }
-
-    GUID get_parent_guid() override { return columns::config_get_main_guid(); }
-
-    bool reset_query() override { return false; }
-
-    void reset() override {}
+private:
+    bool m_initialising{};
+    bool m_initialised{};
+    bool m_changed{};
+    unsigned m_active_preset{};
+    node_ptr m_node_root;
+    pfc::array_t<t_uint8> m_node_clipboard;
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 };
 
-tab_layout_new::node_ptr tab_layout_new::g_node_root;
-pfc::array_t<t_uint8> tab_layout_new::g_node_clipboard;
-bool tab_layout_new::g_changed;
-unsigned tab_layout_new::g_active_preset = 0;
-bool tab_layout_new::g_initialised;
+class LayoutMiscTab : public preferences_tab {
+public:
+    HWND create(HWND wnd) override
+    {
+        return m_helper.create(
+            wnd, IDD_LAYOUT_MISC, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+    }
 
-bool tab_layout_new::g_initialising = false;
+    const char* get_name() override { return "Misc"; }
 
-service_factory_single_t<tab_layout_new> page_layout;
+    bool get_help_url(pfc::string_base& p_out) override
+    {
+        p_out = "http://yuo.be/wiki/columns_ui:config:layout";
+        return true;
+    }
+
+private:
+    BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        switch (msg) {
+        case WM_INITDIALOG: {
+            SetDlgItemInt(wnd, IDC_SHOW_DELAY, cfg_sidebar_show_delay, FALSE);
+            SetDlgItemInt(wnd, IDC_HIDE_DELAY, cfg_sidebar_hide_delay, FALSE);
+            EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
+            EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
+            SendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
+            SendDlgItemMessage(
+                wnd, IDC_ALLOW_LOCKED_PANEL_RESIZING, BM_SETCHECK, settings::allow_locked_panel_resizing, 0);
+
+            SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
+            SendDlgItemMessage(wnd, IDC_HIDE_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
+
+            HWND wnd_custom_divider_width_spin = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN);
+
+            SetDlgItemInt(wnd, IDC_CUSTOM_DIVIDER_WIDTH, settings::custom_splitter_divider_width, FALSE);
+            SendMessage(wnd_custom_divider_width_spin, UDM_SETRANGE32, 0, 20);
+
+            m_initialised = true;
+        } break;
+        case WM_DESTROY:
+            m_initialised = false;
+            break;
+        case WM_COMMAND:
+            switch (wp) {
+            case (EN_CHANGE << 16) | IDC_HIDE_DELAY:
+                if (m_initialised) {
+                    BOOL result;
+                    int new_height = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
+                    if (result)
+                        cfg_sidebar_hide_delay = new_height;
+                }
+                break;
+            case (EN_CHANGE << 16) | IDC_SHOW_DELAY:
+                if (m_initialised) {
+                    BOOL result;
+                    int new_height = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
+                    if (result)
+                        cfg_sidebar_show_delay = new_height;
+                }
+                break;
+            case (EN_CHANGE << 16) | IDC_CUSTOM_DIVIDER_WIDTH:
+                if (m_initialised) {
+                    BOOL result;
+                    int new_width = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
+                    if (result)
+                        settings::custom_splitter_divider_width = new_width;
+                    splitter_window_impl::g_on_size_change();
+                }
+                break;
+            case IDC_USE_CUSTOM_SHOW_DELAY:
+                cfg_sidebar_use_custom_show_delay = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY_SPIN), cfg_sidebar_use_custom_show_delay);
+                EnableWindow(GetDlgItem(wnd, IDC_SHOW_DELAY), cfg_sidebar_use_custom_show_delay);
+                break;
+            case IDC_ALLOW_LOCKED_PANEL_RESIZING:
+                settings::allow_locked_panel_resizing = Button_GetCheck((HWND)lp) == BST_CHECKED;
+                break;
+            }
+            break;
+        }
+        return 0;
+    }
+
+    bool m_initialised{};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
+};
+
+LayoutMiscTab g_tab_layout_misc;
+LayoutTab g_tab_layout;
+
+preferences_tab* tabs_layout[] = {&g_tab_layout, &g_tab_layout_misc};
+
+cfg_int cfg_child_layout(GUID{0xe5c3db3c, 0xccd8, 0x4c8e, {0x9f, 0x74, 0xdf, 0xcc, 0x57, 0x6a, 0x41, 0xea}}, 0);
+
+service_factory_single_t<config_host_generic> page_layout("Layout", tabs_layout, tabsize(tabs_layout),
+    cui::prefs::layout_page_guid, g_guid_columns_ui_preferences_page, &cfg_child_layout);
