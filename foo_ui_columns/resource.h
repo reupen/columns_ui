@@ -67,6 +67,7 @@
 #define IDD_FILTER_APPEARANCE           226
 #define IDD_FILTER_BEHAVIOUR            227
 #define IDD_PVIEW_ARTWORK               229
+#define IDD_LAYOUT_MISC                 230
 #define IDC_LIBRARIES                   1003
 #define IDC_LIST                        1003
 #define IDC_COLUMNS                     1003

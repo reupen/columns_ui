@@ -742,7 +742,7 @@ public:
 
 private:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 };
 } // namespace pvt
 

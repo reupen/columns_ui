@@ -185,7 +185,7 @@ public:
 
 private:
     WNDPROC m_edit_proc{};
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_global;
 
 preferences_tab* g_get_tab_global()
