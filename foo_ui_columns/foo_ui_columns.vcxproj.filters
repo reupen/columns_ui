@@ -466,6 +466,9 @@
     <ClCompile Include="splitter_utils.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="tab_layout_misc.cpp">
+      <Filter>Prefs UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -645,6 +648,9 @@
     </ClInclude>
     <ClInclude Include="splitter_utils.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="tab_layout_misc.h">
+      <Filter>Prefs UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
