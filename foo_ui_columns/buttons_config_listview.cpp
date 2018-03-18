@@ -3,7 +3,7 @@
 
 CLIPFORMAT toolbar_extension::config_param::t_button_list_view::g_clipformat()
 {
-    static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIuih::ListViewStandardClipFormat");
+    static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIListViewStandardClipFormat");
     return cf;
 }
 
@@ -32,34 +32,17 @@ void toolbar_extension::config_param::t_button_list_view::notify_on_selection_ch
     t_size index = get_selected_item_single();
     m_param.on_selection_change(index);
 }
+
 bool toolbar_extension::config_param::t_button_list_view::do_drag_drop(WPARAM wp)
 {
     UINT cf = g_clipformat();
+    mmh::ComPtr<IDataObject> pDO = new CDataObject;
 
-    HGLOBAL glb = GlobalAlloc(GPTR, sizeof(DDData));
-    if (glb) {
-        auto* pddd = (DDData*)glb;
-        pddd->version = 0;
-        pddd->wnd = get_wnd();
+    DDData data = {0, get_wnd()};
+    uih::ole::set_blob(pDO, cf, &data, sizeof(data));
 
-        FORMATETC fe;
-        memset(&fe, 0, sizeof(fe));
-        fe.cfFormat = cf;
-        fe.dwAspect = DVASPECT_CONTENT;
-        fe.lindex = -1;
-        fe.tymed = TYMED_HGLOBAL;
-        STGMEDIUM sm;
-        memset(&sm, 0, sizeof(sm));
-        sm.tymed = TYMED_HGLOBAL;
-        sm.hGlobal = glb;
-
-        mmh::ComPtr<IDataObject> pDO = new CDataObject;
-        pDO->SetData(&fe, &sm, TRUE);
-
-        DWORD blah = DROPEFFECT_NONE;
-
-        uih::ole::do_drag_drop(get_wnd(), wp, pDO, DROPEFFECT_MOVE, NULL, &blah);
-    }
+    DWORD drop_effect = DROPEFFECT_NONE;
+    uih::ole::do_drag_drop(get_wnd(), wp, pDO, DROPEFFECT_MOVE, NULL, &drop_effect);
 
     return true;
 }
