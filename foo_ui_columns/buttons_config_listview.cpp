@@ -3,7 +3,7 @@
 
 CLIPFORMAT toolbar_extension::config_param::t_button_list_view::g_clipformat()
 {
-    static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIuih::ListViewStandardClipFormat");
+    static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIListViewStandardClipFormat");
     return cf;
 }
 
