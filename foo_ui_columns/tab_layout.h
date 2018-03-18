@@ -106,7 +106,6 @@ private:
     bool m_changed{};
     unsigned m_active_preset{};
     LayoutTabNode::ptr m_node_root;
-    pfc::array_t<t_uint8> m_node_clipboard;
     PreferencesTabHelper m_helper{IDC_TITLE1};
 };
 

@@ -19,4 +19,5 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext);
 
 namespace cui::helpers {
 std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter = nullptr);
-}
+pfc::string8 get_last_win32_error_message();
+} // namespace cui::helpers

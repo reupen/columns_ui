@@ -196,7 +196,11 @@ void LayoutTab::copy_item(HWND wnd, HTREEITEM ti)
 
     if (TreeView_GetItem(wnd_tv, &item)) {
         LayoutTabNode::ptr p_node = reinterpret_cast<LayoutTabNode*>(item.lParam);
-        m_node_clipboard = cui::splitter_utils::serialise_splitter_item(p_node->m_item->get_ptr());
+        try {
+            splitter_utils::copy_splitter_item_to_clipboard(p_node->m_item->get_ptr());
+        } catch (const exception_io& ex) {
+            uMessageBox(wnd, ex.what(), u8"Error – Copy Panel", MB_OK | MB_ICONERROR);
+        }
     }
 }
 
@@ -289,11 +293,14 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
     if (!TreeView_GetItem(wnd_tv, &item))
         return;
 
-    if (m_node_clipboard.get_size() == 0)
-        return;
+    std::unique_ptr<uie::splitter_item_full_v3_impl_t> splitter_item;
 
-    auto splitter_item = cui::splitter_utils::deserialise_splitter_item(
-        {m_node_clipboard.get_ptr(), gsl::narrow<gsl::span<t_uint8>::index_type>(m_node_clipboard.get_size())});
+    try {
+        splitter_item = splitter_utils::get_splitter_item_from_clipboard();
+    } catch (const exception_io& ex) {
+        uMessageBox(wnd, ex.what(), u8"Error – Paste Panel", MB_OK | MB_ICONERROR);
+        return;
+    }
 
     if (!fix_paste_item(*splitter_item))
         return;
@@ -1006,7 +1013,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         AppendMenu(menu, MF_STRING, ID_REMOVE, _T("Remove panel"));
                     }
                     AppendMenu(menu, MF_STRING, ID_COPY, _T("Copy panel"));
-                    if (m_node_clipboard.get_size() > 0 && p_splitter.is_valid()
+                    if (splitter_utils::is_splitter_item_in_clipboard() && p_splitter.is_valid()
                         && p_node->m_children.get_count() < p_splitter->get_maximum_panel_count())
                         AppendMenu(menu, MF_STRING, ID_PASTE, _T("Paste panel"));
 
