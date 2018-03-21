@@ -119,6 +119,14 @@ std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter)
     return children;
 }
 
+pfc::string8 get_last_win32_error_message()
+{
+    pfc::string8 error_message;
+    if (!uGetLastErrorMessage(error_message))
+        error_message = "Unknown error";
+    return error_message;
+}
+
 } // namespace cui::helpers
 
 #if 0

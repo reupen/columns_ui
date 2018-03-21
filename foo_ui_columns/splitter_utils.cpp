@@ -130,4 +130,28 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(gsl
     return item;
 }
 
+CLIPFORMAT get_splitter_item_clipboard_format()
+{
+    static auto clipboard_format{
+        gsl::narrow<CLIPFORMAT>(RegisterClipboardFormat(L"columns_ui_splitter_item_LvM_6LmP"))};
+    return clipboard_format;
+}
+
+bool is_splitter_item_in_clipboard()
+{
+    return IsClipboardFormatAvailable(get_splitter_item_clipboard_format()) != 0;
+}
+
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipboard()
+{
+    if (!is_splitter_item_in_clipboard())
+        throw exception_io("Clipboard does not contain a panel");
+    pfc::array_t<uint8_t> data;
+    if (!GetClipboardDataBlock(get_splitter_item_clipboard_format(), data)) {
+        auto message = "Error getting data from clipboard: "s + helpers::get_last_win32_error_message().get_ptr();
+        throw exception_io(message.c_str());
+    }
+    return deserialise_splitter_item({data.get_ptr(), gsl::narrow<gsl::span<t_uint8>::index_type>(data.get_size())});
+}
+
 } // namespace cui::splitter_utils
