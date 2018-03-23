@@ -8,22 +8,18 @@ environment:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     PlatformToolset: v141
     Configuration: Debug
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    PlatformToolset: LLVM-vs2014
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017 Preview
+    PlatformToolset: v141
     Configuration: Release
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    PlatformToolset: LLVM-vs2014
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017 Preview
+    PlatformToolset: v141
     Configuration: Debug
 matrix:
   allow_failures:
-    - PlatformToolset: LLVM-vs2014
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017 Preview
 install:
 - cmd: |
-    cd C:\Tools\vcpkg
-    git pull
-    .\bootstrap-vcpkg.bat
     vcpkg install ms-gsl
-    cd %APPVEYOR_BUILD_FOLDER%
     git submodule update --init --recursive
 build_script:
 - ps: |
