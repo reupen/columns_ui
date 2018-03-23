@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "buttons.h"
+#include "menu_items.h"
 
 #define ID_BUTTONS 2001
 
@@ -62,30 +63,33 @@ const GUID toolbar_extension::g_guid_fcb
 
 void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
 {
+    const std::initializer_list<std::tuple<GUID, t_type, t_show, const char*>> default_buttons{
+        {standard_commands::guid_main_stop, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
+        {standard_commands::guid_main_pause, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
+        {standard_commands::guid_main_play, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
+        {standard_commands::guid_main_previous, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
+        {standard_commands::guid_main_next, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
+        {standard_commands::guid_main_random, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
+        {{}, TYPE_SEPARATOR, SHOW_IMAGE, nullptr},
+        {standard_commands::guid_main_open, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
+        {{}, TYPE_SEPARATOR, SHOW_IMAGE, nullptr},
+        {mainmenu_layout_live_edit_t::g_guid, TYPE_MENU_ITEM_MAIN, SHOW_TEXT, "Live layout editing"},
+    };
+
     p_buttons.remove_all();
-    button temp{};
 
-    temp.m_type = TYPE_MENU_ITEM_MAIN;
-    temp.m_show = SHOW_IMAGE;
-
-    temp.m_guid = standard_commands::guid_main_stop;
-    p_buttons.add_item(temp);
-    temp.m_guid = standard_commands::guid_main_pause;
-    p_buttons.add_item(temp);
-    temp.m_guid = standard_commands::guid_main_play;
-    p_buttons.add_item(temp);
-    temp.m_guid = standard_commands::guid_main_previous;
-    p_buttons.add_item(temp);
-    temp.m_guid = standard_commands::guid_main_next;
-    p_buttons.add_item(temp);
-    temp.m_guid = standard_commands::guid_main_random;
-    p_buttons.add_item(temp);
-    temp.m_guid = pfc::guid_null;
-    temp.m_type = TYPE_SEPARATOR;
-    p_buttons.add_item(temp);
-    temp.m_guid = standard_commands::guid_main_open;
-    temp.m_type = TYPE_MENU_ITEM_MAIN;
-    p_buttons.add_item(temp);
+    for (auto&& default_button : default_buttons) {
+        const auto& [guid, type, show, text] = default_button;
+        button temp{};
+        temp.m_type = type;
+        temp.m_show = show;
+        temp.m_guid = guid;
+        if (text) {
+            temp.m_use_custom_text = true;
+            temp.m_text = text;
+        }
+        p_buttons.add_item(temp);
+    }
 }
 
 toolbar_extension::toolbar_extension()
