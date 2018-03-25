@@ -73,7 +73,7 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
         {{}, TYPE_SEPARATOR, SHOW_IMAGE, nullptr},
         {standard_commands::guid_main_open, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
         {{}, TYPE_SEPARATOR, SHOW_IMAGE, nullptr},
-        {mainmenu_layout_live_edit_t::g_guid, TYPE_MENU_ITEM_MAIN, SHOW_TEXT, "Live layout editing"},
+        {cui::main_menu::commands::toggle_live_editing_id, TYPE_MENU_ITEM_MAIN, SHOW_TEXT, "Live layout editing"},
     };
 
     p_buttons.remove_all();
