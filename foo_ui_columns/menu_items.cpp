@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "menu_items.h"
 #include "layout.h"
+#include "ng_playlist/ng_playlist.h"
 
 namespace cui::main_menu {
 
@@ -40,41 +41,51 @@ namespace commands {
 
 class LiveLayoutEditingButton : public uie::button {
 public:
-    static void g_on_layout_editing_enabled_change(bool b_enabled)
+    static void s_on_layout_editing_enabled_change()
     {
-        t_size ic = m_buttons.get_count();
-        for (t_size i = 0; i < ic; i++) {
-            t_size jc = m_buttons[i]->m_callbacks.get_count();
-            for (t_size j = 0; j < jc; j++) {
-                m_buttons[i]->m_callbacks[j]->on_button_state_change(
-                    b_enabled ? uie::BUTTON_STATE_PRESSED | uie::BUTTON_STATE_ENABLED : uie::BUTTON_STATE_DEFAULT);
+        for (auto&& button : m_buttons) {
+            for (auto&& callback : button->m_callbacks) {
+                callback->on_button_state_change(s_get_button_state());
             }
         }
     }
-    LiveLayoutEditingButton() { m_buttons.add_item(this); }
-    ~LiveLayoutEditingButton() { m_buttons.remove_item(this); }
+    static unsigned s_get_button_state()
+    {
+        return (g_layout_window.get_layout_editing_active() ? uie::BUTTON_STATE_PRESSED : 0)
+            | uie::BUTTON_STATE_DEFAULT;
+    }
+    LiveLayoutEditingButton() { m_buttons.emplace_back(this); }
+    ~LiveLayoutEditingButton()
+    {
+        m_buttons.erase(std::remove(m_buttons.begin(), m_buttons.end(), this), m_buttons.end());
+    }
 
 private:
     const GUID& get_item_guid() const override { return toggle_live_editing_id; }
     HBITMAP get_item_bitmap(unsigned, COLORREF, uie::t_mask&, COLORREF&, HBITMAP&) const override { return nullptr; }
-    unsigned get_button_state() const override
+    unsigned get_button_state() const override { return s_get_button_state(); }
+    void register_callback(uie::button_callback& p_callback) override { m_callbacks.emplace_back(&p_callback); };
+    void deregister_callback(uie::button_callback& p_callback) override
     {
-        return g_layout_window.get_layout_editing_active() ? uie::BUTTON_STATE_PRESSED | uie::BUTTON_STATE_ENABLED
-                                                           : uie::BUTTON_STATE_DEFAULT;
-    }
-    void register_callback(uie::button_callback& p_callback) override { m_callbacks.add_item(&p_callback); };
-    void deregister_callback(uie::button_callback& p_callback) override { m_callbacks.remove_item(&p_callback); };
+        m_callbacks.erase(std::remove(m_callbacks.begin(), m_callbacks.end(), &p_callback), m_callbacks.end());
+    };
 
-    static pfc::ptr_list_t<LiveLayoutEditingButton> m_buttons;
-    pfc::ptr_list_t<uie::button_callback> m_callbacks;
+    static std::vector<LiveLayoutEditingButton*> m_buttons;
+    std::vector<uie::button_callback*> m_callbacks;
 };
 
-pfc::ptr_list_t<LiveLayoutEditingButton> LiveLayoutEditingButton::m_buttons;
-
-static uie::button_factory<LiveLayoutEditingButton> live_layout_editing_button;
+std::vector<LiveLayoutEditingButton*> LiveLayoutEditingButton::m_buttons;
+static uie::button_factory<LiveLayoutEditingButton> live_layout_editing_button_factory;
 
 static const MainMenuCommand activate_now_playing{activate_now_playing_id, "Activate now playing",
     "Activates the currently playing item.", [] { playlist_manager::get()->highlight_playing_item(); }};
+
+static const MainMenuCommand show_groups{show_groups_id, "Show groups", "Shows or hides playlist view groups.",
+    [] {
+        pvt::cfg_grouping = !pvt::cfg_grouping;
+        pvt::ng_playlist_view_t::g_on_groups_change();
+    },
+    [] { return static_cast<bool>(pvt::cfg_grouping); }};
 
 static const MainMenuCommand decrease_font{
     {0xf2bc9f43, 0xf709, 0x4f6f, {0x9c, 0x65, 0x78, 0x73, 0x3b, 0x8, 0xc7, 0x77}}, "Decrease font size",
@@ -116,7 +127,7 @@ static const MainMenuCommand live_editing{toggle_live_editing_id, "Live editing"
     [] {
         bool val = !g_layout_window.get_layout_editing_active();
         g_layout_window.set_layout_editing_active(val);
-        LiveLayoutEditingButton::g_on_layout_editing_enabled_change(val);
+        LiveLayoutEditingButton::s_on_layout_editing_enabled_change();
     },
     [] { return g_layout_window.get_layout_editing_active(); }};
 
@@ -162,7 +173,7 @@ private:
 };
 
 static service_factory_single_t<MainMenuCommands> mainmenu_commands_view(groups::view_columns_part,
-    mainmenu_commands::sort_priority_base + 1, show_status_bar, show_status_pane, show_toolbars);
+    mainmenu_commands::sort_priority_base + 2, show_status_bar, show_status_pane, show_toolbars);
 
 static service_factory_single_t<MainMenuCommands> mainmenu_commands_layout(
     groups::view_layout_commands, mainmenu_commands::sort_priority_base, live_editing);
@@ -171,7 +182,7 @@ static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_mis
     groups::playlist_misc_part, mainmenu_commands::sort_priority_dontcare, activate_now_playing);
 
 static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_font(
-    groups::view_playlist_popup, mainmenu_commands::sort_priority_dontcare, increase_font, decrease_font);
+    groups::view_playlist_popup, mainmenu_commands::sort_priority_dontcare, show_groups, increase_font, decrease_font);
 
 class MainMenuLayoutPresets : public mainmenu_commands {
     t_uint32 get_command_count() override { return cfg_layout.get_presets().get_count(); }
