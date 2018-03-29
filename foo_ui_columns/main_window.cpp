@@ -179,6 +179,12 @@ void cui::MainWindow::shutdown()
     font_cleanup();
 }
 
+void cui::MainWindow::on_query_capability()
+{
+    if (!g_main_window)
+        m_should_handle_multimedia_keys = false;
+}
+
 void cui::MainWindow::on_create()
 {
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;

@@ -5,7 +5,7 @@
 #include "status_bar.h"
 #include "notification_area.h"
 
-class UserInterfaceImpl : public user_interface {
+class UserInterfaceImpl : public user_interface_v2 {
 public:
     const char* get_name() override { return "Columns UI"; }
 
@@ -60,6 +60,18 @@ public:
     {
         status_set_menu(false);
         g_status_pane.exit_menu_mode();
+    }
+
+    bool query_capability(const GUID& cap) override
+    {
+        cui::main_window.on_query_capability();
+        if (cap == cap_suppress_core_shellhook)
+            return false;
+        if (cap == cap_suppress_core_uvc)
+            return false;
+        // The SDK documentation does not say what to do when a GUID for an unknown capability is encountered.
+        // We return false (which is apparently what the Default UI does).
+        return false;
     }
 };
 

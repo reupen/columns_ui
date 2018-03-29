@@ -125,6 +125,7 @@ class MainWindow {
 public:
     HWND initialise(user_interface::HookProc_t hook);
     void shutdown();
+    void on_query_capability();
 
 private:
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -134,6 +135,8 @@ private:
     void on_destroy();
 
     user_interface::HookProc_t m_hook_proc{};
+    bool m_should_handle_multimedia_keys{true};
+    bool m_shell_hook_registered{};
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};
 };
