@@ -746,9 +746,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return TRUE;
         }
         break;
-    case MSG_SIZE:
-        resize_child_windows();
-        return 0;
 
     case WM_NOTIFY:
         auto lpnmh = reinterpret_cast<LPNMHDR>(lp);
