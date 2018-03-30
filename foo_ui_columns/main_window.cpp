@@ -443,67 +443,6 @@ void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
     }
 }
 
-class rename_param {
-public:
-    modal_dialog_scope m_scope;
-    pfc::string8* m_text{};
-};
-
-static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_INITDIALOG:
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-        {
-            auto* ptr = (rename_param*)lp;
-            ptr->m_scope.initialize(FindOwningPopup(wnd));
-            pfc::string_formatter formatter;
-            formatter << R"(Rename playlist: ")" << *ptr->m_text << R"(")";
-            uSetWindowText(wnd, formatter);
-            uSetDlgItemText(wnd, IDC_EDIT, ptr->m_text->get_ptr());
-        }
-        return 1;
-    case WM_COMMAND:
-        switch (wp) {
-        case IDOK: {
-            auto* ptr = (rename_param*)GetWindowLong(wnd, DWLP_USER);
-            uGetDlgItemText(wnd, IDC_EDIT, *ptr->m_text);
-            EndDialog(wnd, 1);
-        } break;
-        case IDCANCEL:
-            EndDialog(wnd, 0);
-            break;
-        }
-        break;
-    case WM_CLOSE:
-        EndDialog(wnd, 0);
-        break;
-    }
-    return 0;
-}
-
-static bool g_rename_dialog(pfc::string8* text, HWND parent)
-{
-    rename_param param;
-    param.m_text = text;
-    return !!uDialogBox(IDD_RENAME_PLAYLIST, parent, RenameProc, (LPARAM)(&param));
-}
-
-void g_rename_playlist(unsigned idx, HWND wnd_parent)
-{
-    static_api_ptr_t<playlist_manager> playlist_api;
-    pfc::string8 temp;
-    if (playlist_api->playlist_get_name(idx, temp)) {
-        if (g_rename_dialog(&temp, wnd_parent)) { // fucko: dialogobx has a messgeloop, someone might have called
-                                                  // switcher api funcs in the meanwhile
-            unsigned num = playlist_api->get_playlist_count();
-            if (idx < num) {
-                playlist_api->playlist_rename(idx, temp, temp.length());
-            }
-        }
-    }
-}
-
 bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
 {
     bool ret = false;

@@ -75,8 +75,6 @@ void status_update_main(bool is_caller_menu_desc);
 
 void create_status();
 
-void g_rename_playlist(unsigned idx, HWND wnd_parent);
-
 extern class status_pane g_status_pane;
 extern class rebar_window* g_rebar_window;
 

@@ -386,7 +386,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
                             break;
                         case ID_RENAME:
                             if (b_index_valid) {
-                                g_rename_playlist(idx, wnd);
+                                playlist_manager_utils::rename_playlist(idx, wnd);
                             }
                             break;
                         case ID_NEW: {
