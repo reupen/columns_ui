@@ -264,6 +264,23 @@ void cui::MainWindow::on_destroy()
     m_gdiplus_initialised = false;
 }
 
+void cui::MainWindow::create_child_windows()
+{
+    pfc::vartoggle_t<bool> initialising(ui_initialising, true);
+
+    RECT rc;
+    GetWindowRect(g_main_window, &rc);
+
+    g_layout_window.create(g_main_window);
+
+    create_rebar();
+    create_status();
+    if (settings::show_status_pane)
+        g_status_pane.create(g_main_window);
+
+    g_layout_window.set_focus();
+}
+
 unsigned playlist_mclick_actions::id_to_idx(unsigned id)
 {
     unsigned count = tabsize(g_pma_actions);
@@ -370,24 +387,6 @@ void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
         if (*ptr == '\n')
             ptr++;
     }
-}
-
-void make_ui()
-{
-    ui_initialising = true;
-
-    RECT rc;
-    GetWindowRect(g_main_window, &rc);
-
-    g_layout_window.create(g_main_window);
-
-    create_rebar();
-    create_status();
-    if (settings::show_status_pane)
-        g_status_pane.create(g_main_window);
-
-    g_layout_window.set_focus();
-    ui_initialising = false;
 }
 
 void size_windows()

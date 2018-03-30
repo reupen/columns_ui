@@ -78,7 +78,6 @@ void create_status();
 bool g_rename_dialog(pfc::string8* param, HWND parent);
 void g_rename_playlist(unsigned idx, HWND wnd_parent);
 
-void make_ui();
 void size_windows();
 
 extern class status_pane g_status_pane;
@@ -132,6 +131,7 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void on_create();
     void on_destroy();
+    void create_child_windows();
     void set_title(const char* ptr);
     void update_taskbar_buttons(bool update);
 

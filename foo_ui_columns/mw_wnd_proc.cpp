@@ -138,10 +138,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     switch (msg) {
     case WM_CREATE: {
-        /* initialise ui */
-
-        //            modeless_dialog_manager::add(wnd);
-
         WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
         WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
 
@@ -155,10 +151,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         icex.dwICC = ICC_BAR_CLASSES | ICC_COOL_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
         InitCommonControlsEx(&icex);
 
-        cui::main_window.on_create();
-
-        // g_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&g_gdiplus_instance,
-        // &Gdiplus::GdiplusStartupInput(), NULL));
+        on_create();
 
         if (!uih::are_keyboard_cues_enabled())
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
@@ -173,23 +166,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         pfc::com_ptr_t<drop_handler_interface> drop_handler = new drop_handler_interface;
         RegisterDragDrop(g_main_window, drop_handler.get_ptr());
 
-        /* end of initialisation */
-
-        //            ShowWindow(wnd, SW_SHOWNORMAL);
-
-        make_ui();
+        create_child_windows();
 
         g_get_msg_hook.register_hook();
 
-        // lets try recursively in wm_showwindow
-
-        //            SetWindowPos(wnd, 0, cfg_window_placement_columns.get_value().rcNormalPosition.left,
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.top,
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.right -
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.left,
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.bottom -
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.top, SWP_NOZORDER); ShowWindow(wnd,
-        //            SW_SHOWNORMAL);
         if (config_object::g_get_data_bool_simple(standard_config_objects::bool_ui_always_on_top, false))
             SendMessage(wnd, MSG_SET_AOT, TRUE, 0);
     }
@@ -206,7 +186,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_taskbar_list.release();
         RevokeDragDrop(g_main_window);
         destroy_systray_icon();
-        cui::main_window.on_destroy();
+        on_destroy();
         OleUninitialize();
     } break;
     case WM_NCDESTROY:
