@@ -24,8 +24,6 @@ enum t_colours {
 
 COLORREF get_default_colour(colours::t_colours index, bool themed = false);
 
-BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool vert, bool world);
-
 /** Main window UI control IDs */
 #define ID_REBAR 2100
 #define ID_STATUS 2002
