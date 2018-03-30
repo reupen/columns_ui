@@ -9,6 +9,7 @@ void g_on_multiline_tabs_change();
 void g_on_tabs_font_change();
 
 void remove_playlist_helper(t_size index);
+constexpr unsigned SWITCH_TIMER_ID = 670u;
 
 class playlists_tabs_extension
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2>

@@ -10,9 +10,6 @@
  * Largely functions used for initialising and deinitialising the core parts of the UI
  */
 
-#define SWITCH_TIMER_ID 670
-#define DAY_TIMER_ID 671
-
 namespace colours {
 enum t_colours {
     COLOUR_TEXT,

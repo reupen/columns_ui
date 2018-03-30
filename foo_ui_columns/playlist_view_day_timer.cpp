@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_view.h"
 
+constexpr unsigned day_timer_id = 671u;
+
 static unsigned g_day_timer;
 
 VOID CALLBACK on_day_change()
@@ -24,7 +26,7 @@ void kill_day_timer()
 {
     HWND wnd = g_playlist_message_window.get_wnd();
     if (g_day_timer && wnd) {
-        KillTimer(wnd, DAY_TIMER_ID);
+        KillTimer(wnd, day_timer_id);
         g_day_timer = 0;
     }
 }
@@ -34,7 +36,7 @@ void set_day_timer()
     HWND wnd = g_playlist_message_window.get_wnd();
 
     if (g_day_timer) {
-        KillTimer(wnd, DAY_TIMER_ID);
+        KillTimer(wnd, day_timer_id);
         g_day_timer = 0;
     }
 
@@ -46,6 +48,6 @@ void set_day_timer()
         unsigned ms
             = /*24**/ 60 * 60 * 1000 - (st.wMilliseconds + ((/*st.wHour*60 + */ st.wMinute) * 60 + st.wSecond) * 1000);
 
-        SetTimer(wnd, DAY_TIMER_ID, ms, nullptr);
+        SetTimer(wnd, day_timer_id, ms, nullptr);
     }
 }
