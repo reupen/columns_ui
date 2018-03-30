@@ -78,8 +78,6 @@ void create_status();
 bool g_rename_dialog(pfc::string8* param, HWND parent);
 void g_rename_playlist(unsigned idx, HWND wnd_parent);
 
-void size_windows();
-
 extern class status_pane g_status_pane;
 extern class rebar_window* g_rebar_window;
 
@@ -124,6 +122,7 @@ public:
      * ITaskbarList3::ThumbBarUpdateButtons() call etc.)
      */
     void queue_taskbar_button_update(bool update = true);
+    void resize_child_windows();
 
 private:
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);

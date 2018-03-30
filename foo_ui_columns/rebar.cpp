@@ -90,7 +90,7 @@ void cfg_rebar::import_config(
             ShowWindow(g_rebar, SW_SHOWNORMAL);
             UpdateWindow(g_rebar);
         }
-        size_windows();
+        cui::main_window.resize_child_windows();
     }
 }
 

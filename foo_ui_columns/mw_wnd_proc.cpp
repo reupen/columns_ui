@@ -522,7 +522,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     ShowWindow(wnd, SW_HIDE);
             } else {
                 g_minimised = false;
-                size_windows();
+                resize_child_windows();
             }
         }
     } break;
@@ -747,7 +747,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     case MSG_SIZE:
-        size_windows();
+        resize_child_windows();
         return 0;
 
     case WM_NOTIFY:
@@ -757,7 +757,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case ID_REBAR:
             switch (lpnmh->code) {
             case RBN_HEIGHTCHANGE: {
-                size_windows();
+                resize_child_windows();
             } break;
             case RBN_LAYOUTCHANGED: {
                 if (g_rebar_window) {

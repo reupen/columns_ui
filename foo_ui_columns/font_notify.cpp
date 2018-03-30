@@ -65,7 +65,7 @@ void on_show_toolbars_change()
             ShowWindow(g_rebar, SW_SHOWNORMAL);
             UpdateWindow(g_rebar);
         }
-        size_windows();
+        cui::main_window.resize_child_windows();
     }
 }
 
@@ -78,7 +78,7 @@ void on_show_status_change()
                 ShowWindow(g_status, SW_SHOWNORMAL);
                 UpdateWindow(g_status);
             }
-            size_windows();
+            cui::main_window.resize_child_windows();
         }
     }
 }
@@ -93,7 +93,7 @@ void on_show_status_pane_change()
                     ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
                 } else
                     g_status_pane.destroy();
-                size_windows();
+                cui::main_window.resize_child_windows();
             }
         }
     }
@@ -129,7 +129,7 @@ void on_status_font_change()
             g_status_font = static_api_ptr_t<cui::fonts::manager>()->get_font(font_client_status_guid);
             SendMessage(g_status, WM_SETFONT, (WPARAM)g_status_font, MAKELPARAM(1, 0));
             status_bar::set_part_sizes(status_bar::t_parts_all);
-            size_windows();
+            cui::main_window.resize_child_windows();
         }
     }
 }

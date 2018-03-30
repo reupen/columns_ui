@@ -131,13 +131,13 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
 
     if (rem_pos && !main_window::config_get_is_first_run()) {
         SetWindowPlacement(g_main_window, &cfg_window_placement_columns.get_value());
-        size_windows();
+        resize_child_windows();
         ShowWindow(g_main_window, cfg_window_placement_columns.get_value().showCmd);
 
         if (g_icon_created && cfg_go_to_tray)
             ShowWindow(g_main_window, SW_HIDE);
     } else {
-        size_windows();
+        resize_child_windows();
         ShowWindow(g_main_window, SW_SHOWNORMAL);
     }
 
@@ -281,6 +281,60 @@ void cui::MainWindow::create_child_windows()
     g_layout_window.set_focus();
 }
 
+void cui::MainWindow::resize_child_windows()
+{
+    if (!/*g_minimised*/ IsIconic(g_main_window) && !ui_initialising) {
+        RECT rc_main_client;
+        GetClientRect(g_main_window, &rc_main_client);
+
+        HDWP dwp = BeginDeferWindowPos(7);
+        if (dwp) {
+            int status_height = 0;
+            if (g_status) {
+                // SendMessage(g_status, WM_SETREDRAW, FALSE, 0);
+                SendMessage(g_status, WM_SIZE, 0, 0);
+                RECT rc_status;
+                GetWindowRect(g_status, &rc_status);
+
+                status_height += rc_status.bottom - rc_status.top;
+
+                // dwp = DeferWindowPos(dwp, g_status, 0, 0, rc_main_client.bottom-status_height,
+                // rc_main_client.right-rc_main_client.left, status_height, SWP_NOZORDER|SWP_NOREDRAW);
+            }
+            if (g_status_pane.get_wnd()) {
+                int cy = g_status_pane.get_ideal_height();
+                RedrawWindow(g_status_pane.get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+                dwp = DeferWindowPos(dwp, g_status_pane.get_wnd(), nullptr, 0,
+                    rc_main_client.bottom - status_height - cy, rc_main_client.right - rc_main_client.left, cy,
+                    SWP_NOZORDER);
+                status_height += cy;
+            }
+            int rebar_height = 0;
+
+            if (g_rebar) {
+                RECT rc_rebar;
+                GetWindowRect(g_rebar, &rc_rebar);
+                rebar_height = rc_rebar.bottom - rc_rebar.top;
+            }
+            if (g_layout_window.get_wnd())
+                dwp = DeferWindowPos(dwp, g_layout_window.get_wnd(), nullptr, 0, rebar_height,
+                    rc_main_client.right - rc_main_client.left,
+                    rc_main_client.bottom - rc_main_client.top - rebar_height - status_height, SWP_NOZORDER);
+            if (g_rebar) {
+                RedrawWindow(g_rebar, nullptr, nullptr, RDW_INVALIDATE);
+                dwp = DeferWindowPos(dwp, g_rebar, nullptr, 0, 0, rc_main_client.right - rc_main_client.left,
+                    rebar_height, SWP_NOZORDER);
+            }
+
+            EndDeferWindowPos(dwp);
+
+            if (g_status) {
+                status_bar::set_part_sizes(status_bar::t_parts_none);
+            }
+        }
+    }
+}
+
 unsigned playlist_mclick_actions::id_to_idx(unsigned id)
 {
     unsigned count = tabsize(g_pma_actions);
@@ -386,60 +440,6 @@ void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
             ptr++;
         if (*ptr == '\n')
             ptr++;
-    }
-}
-
-void size_windows()
-{
-    if (!/*g_minimised*/ IsIconic(g_main_window) && !ui_initialising) {
-        RECT rc_main_client;
-        GetClientRect(g_main_window, &rc_main_client);
-
-        HDWP dwp = BeginDeferWindowPos(7);
-        if (dwp) {
-            int status_height = 0;
-            if (g_status) {
-                // SendMessage(g_status, WM_SETREDRAW, FALSE, 0);
-                SendMessage(g_status, WM_SIZE, 0, 0);
-                RECT rc_status;
-                GetWindowRect(g_status, &rc_status);
-
-                status_height += rc_status.bottom - rc_status.top;
-
-                // dwp = DeferWindowPos(dwp, g_status, 0, 0, rc_main_client.bottom-status_height,
-                // rc_main_client.right-rc_main_client.left, status_height, SWP_NOZORDER|SWP_NOREDRAW);
-            }
-            if (g_status_pane.get_wnd()) {
-                int cy = g_status_pane.get_ideal_height();
-                RedrawWindow(g_status_pane.get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
-                dwp = DeferWindowPos(dwp, g_status_pane.get_wnd(), nullptr, 0,
-                    rc_main_client.bottom - status_height - cy, rc_main_client.right - rc_main_client.left, cy,
-                    SWP_NOZORDER);
-                status_height += cy;
-            }
-            int rebar_height = 0;
-
-            if (g_rebar) {
-                RECT rc_rebar;
-                GetWindowRect(g_rebar, &rc_rebar);
-                rebar_height = rc_rebar.bottom - rc_rebar.top;
-            }
-            if (g_layout_window.get_wnd())
-                dwp = DeferWindowPos(dwp, g_layout_window.get_wnd(), nullptr, 0, rebar_height,
-                    rc_main_client.right - rc_main_client.left,
-                    rc_main_client.bottom - rc_main_client.top - rebar_height - status_height, SWP_NOZORDER);
-            if (g_rebar) {
-                RedrawWindow(g_rebar, nullptr, nullptr, RDW_INVALIDATE);
-                dwp = DeferWindowPos(dwp, g_rebar, nullptr, 0, 0, rc_main_client.right - rc_main_client.left,
-                    rebar_height, SWP_NOZORDER);
-            }
-
-            EndDeferWindowPos(dwp);
-
-            if (g_status) {
-                status_bar::set_part_sizes(status_bar::t_parts_none);
-            }
-        }
     }
 }
 
