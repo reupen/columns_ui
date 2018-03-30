@@ -2,6 +2,7 @@
 #include "get_msg_hook.h"
 #include "layout.h"
 #include "rebar.h"
+#include "main_window.h"
 
 extern rebar_window* g_rebar_window;
 
@@ -9,7 +10,7 @@ bool get_msg_hook_t::on_hooked_message(uih::MessageHookType p_type, int code, WP
 {
     auto lpmsg = (LPMSG)lp;
     if ((lpmsg->message == WM_KEYUP || lpmsg->message == WM_SYSKEYDOWN || lpmsg->message == WM_KEYDOWN)
-        && IsChild(g_main_window, lpmsg->hwnd)) {
+        && IsChild(cui::main_window.get_wnd(), lpmsg->hwnd)) {
         if (((HIWORD(lpmsg->lParam) & KF_ALTDOWN))) {
             if (!(HIWORD(lpmsg->lParam) & KF_REPEAT)) {
                 if (lpmsg->wParam == VK_MENU) {
@@ -42,15 +43,15 @@ bool get_msg_hook_t::on_hooked_message(uih::MessageHookType p_type, int code, WP
                 SendMessage(lpmsg->hwnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
             }
         }
-    } else if (lpmsg->message == WM_MOUSEWHEEL && IsChild(g_main_window, lpmsg->hwnd)) {
+    } else if (lpmsg->message == WM_MOUSEWHEEL && IsChild(cui::main_window.get_wnd(), lpmsg->hwnd)) {
         /**
          * Redirects mouse wheel messages to window under the pointer.
          *
          * This implementation works with non-main message loops e.g. modal dialogs.
          */
         POINT pt = {GET_X_LPARAM(lpmsg->lParam), GET_Y_LPARAM(lpmsg->lParam)};
-        ScreenToClient(g_main_window, &pt);
-        HWND wnd = uRecursiveChildWindowFromPoint(g_main_window, pt);
+        ScreenToClient(cui::main_window.get_wnd(), &pt);
+        HWND wnd = uRecursiveChildWindowFromPoint(cui::main_window.get_wnd(), pt);
         if (wnd)
             lpmsg->hwnd = wnd;
     }

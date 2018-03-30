@@ -20,14 +20,14 @@ const char* default_main_window_title_script
 
 void on_status_bar_script_change(const char*)
 {
-    if (g_main_window)
-        SendMessage(g_main_window, MSG_UPDATE_STATUS, 0, 0);
+    if (cui::main_window.get_wnd())
+        SendMessage(cui::main_window.get_wnd(), MSG_UPDATE_STATUS, 0, 0);
 }
 
 void on_main_window_title_script_change(const char*)
 {
-    if (g_main_window)
-        SendMessage(g_main_window, MSG_UPDATE_TITLE, 0, 0);
+    if (cui::main_window.get_wnd())
+        SendMessage(cui::main_window.get_wnd(), MSG_UPDATE_TITLE, 0, 0);
 }
 
 fbh::ConfigString config_status_bar_script(
@@ -66,24 +66,24 @@ cfg_int cfg_transparency_enabled(GUID{0xd5ab3806, 0x8670, 0xf09d, {0x47, 0xdd, 0
 
 void on_transparency_enabled_change()
 {
-    if (g_main_window) {
-        LONG current_style = GetWindowLong(g_main_window, GWL_EXSTYLE);
+    if (cui::main_window.get_wnd()) {
+        LONG current_style = GetWindowLong(cui::main_window.get_wnd(), GWL_EXSTYLE);
         if (cfg_transparency_enabled /* && IsWindowVisible(g_main_window)*/) {
             if (!(current_style & WS_EX_LAYERED)) {
-                SetWindowLong(g_main_window, GWL_EXSTYLE, current_style | WS_EX_LAYERED);
+                SetWindowLong(cui::main_window.get_wnd(), GWL_EXSTYLE, current_style | WS_EX_LAYERED);
             }
             on_transparency_level_change();
         } else if (current_style & WS_EX_LAYERED) {
-            SetWindowLong(g_main_window, GWL_EXSTYLE, current_style ^ WS_EX_LAYERED);
-            RedrawWindow(g_main_window, nullptr, nullptr,
+            SetWindowLong(cui::main_window.get_wnd(), GWL_EXSTYLE, current_style ^ WS_EX_LAYERED);
+            RedrawWindow(cui::main_window.get_wnd(), nullptr, nullptr,
                 RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW);
         }
     }
 }
 void on_transparency_level_change()
 {
-    if (g_main_window && cfg_transparency_enabled) {
-        SetLayeredWindowAttributes(g_main_window, 0, cfg_transparency_level, LWA_ALPHA);
+    if (cui::main_window.get_wnd() && cfg_transparency_enabled) {
+        SetLayeredWindowAttributes(cui::main_window.get_wnd(), 0, cfg_transparency_level, LWA_ALPHA);
     }
 }
 void config_set_transparency_enabled(bool b_val)

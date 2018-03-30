@@ -156,7 +156,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!uih::are_keyboard_cues_enabled())
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
-        g_main_window = wnd;
+        m_wnd = wnd;
         statusbartext = core_version_info::g_get_version_string();
         set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
@@ -164,7 +164,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         HRESULT hr = OleInitialize(nullptr);
         pfc::com_ptr_t<drop_handler_interface> drop_handler = new drop_handler_interface;
-        RegisterDragDrop(g_main_window, drop_handler.get_ptr());
+        RegisterDragDrop(m_wnd, drop_handler.get_ptr());
 
         create_child_windows();
 
@@ -184,7 +184,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         destroy_rebar(false);
         status_bar::destroy_status_window();
         m_taskbar_list.release();
-        RevokeDragDrop(g_main_window);
+        RevokeDragDrop(m_wnd);
         destroy_systray_icon();
         on_destroy();
         OleUninitialize();
@@ -487,9 +487,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (lpdis->CtlID == ID_STATUS) {
             RECT rc = lpdis->rcItem;
             //            rc.right -= 3;
-            if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(g_main_window)) {
+            if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(m_wnd)) {
                 RECT rc_main;
-                GetClientRect(g_main_window, &rc_main);
+                GetClientRect(m_wnd, &rc_main);
                 rc.right = rc_main.right - GetSystemMetrics(SM_CXVSCROLL);
             } else {
                 int blah[3];

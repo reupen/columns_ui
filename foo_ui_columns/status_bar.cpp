@@ -201,9 +201,9 @@ void set_part_sizes(unsigned p_parts)
         unsigned u_old_lock_pos = status_bar::u_lock_pos;
 
         RECT rc2;
-        GetClientRect(g_main_window, &rc2);
+        GetClientRect(cui::main_window.get_wnd(), &rc2);
         int scrollbar_height = GetSystemMetrics(SM_CXVSCROLL);
-        if (!IsZoomed(g_main_window))
+        if (!IsZoomed(cui::main_window.get_wnd()))
             rc2.right -= scrollbar_height;
 
         int blah[3];
@@ -288,8 +288,8 @@ void set_part_sizes(unsigned p_parts)
 void create_status()
 {
     if (cfg_status && !g_status) {
-        g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0, g_main_window,
-            (HMENU)ID_STATUS, core_api::get_my_instance(), nullptr);
+        g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0,
+            cui::main_window.get_wnd(), (HMENU)ID_STATUS, core_api::get_my_instance(), nullptr);
 
         status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWLP_WNDPROC, (LPARAM)(g_status_hook));
 

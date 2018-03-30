@@ -59,7 +59,7 @@ void font_cleanup()
 
 void on_show_toolbars_change()
 {
-    if (g_main_window) {
+    if (cui::main_window.get_wnd()) {
         create_rebar();
         if (g_rebar) {
             ShowWindow(g_rebar, SW_SHOWNORMAL);
@@ -72,7 +72,7 @@ void on_show_toolbars_change()
 void on_show_status_change()
 {
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             create_status();
             if (g_status) {
                 ShowWindow(g_status, SW_SHOWNORMAL);
@@ -86,10 +86,10 @@ void on_show_status_change()
 void on_show_status_pane_change()
 {
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             if (settings::show_status_pane != (g_status_pane.get_wnd() != nullptr)) {
                 if (settings::show_status_pane) {
-                    g_status_pane.create(g_main_window);
+                    g_status_pane.create(cui::main_window.get_wnd());
                     ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
                 } else
                     g_status_pane.destroy();

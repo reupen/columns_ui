@@ -158,7 +158,7 @@ public:
         p_text = command.name;
         if (command.is_ticked_callback && command.is_ticked_callback())
             p_flags |= flag_checked;
-        return g_main_window != nullptr;
+        return cui::main_window.get_wnd() != nullptr;
     }
 
     void execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) override

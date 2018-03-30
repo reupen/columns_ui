@@ -21,7 +21,7 @@ status_pane g_status_pane;
 
 HIMAGELIST g_imagelist = nullptr;
 
-HWND g_main_window = nullptr, g_tooltip = nullptr, g_rebar = nullptr, g_status = nullptr;
+HWND g_tooltip = nullptr, g_rebar = nullptr, g_status = nullptr;
 
 bool ui_initialising = false, g_minimised = false;
 
@@ -122,23 +122,23 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     const DWORD styles = WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN
         | WS_CLIPSIBLINGS | WS_THICKFRAME;
 
-    g_main_window = CreateWindowEx(ex_styles, main_window_class_name, _T("foobar2000"), styles, left, top, cx, cy,
-        nullptr, nullptr, core_api::get_my_instance(), &cui::main_window);
+    m_wnd = CreateWindowEx(ex_styles, main_window_class_name, _T("foobar2000"), styles, left, top, cx, cy, nullptr,
+        nullptr, core_api::get_my_instance(), &cui::main_window);
 
     main_window::on_transparency_enabled_change();
 
     const bool rem_pos = remember_window_pos();
 
     if (rem_pos && !main_window::config_get_is_first_run()) {
-        SetWindowPlacement(g_main_window, &cfg_window_placement_columns.get_value());
+        SetWindowPlacement(m_wnd, &cfg_window_placement_columns.get_value());
         resize_child_windows();
-        ShowWindow(g_main_window, cfg_window_placement_columns.get_value().showCmd);
+        ShowWindow(m_wnd, cfg_window_placement_columns.get_value().showCmd);
 
         if (g_icon_created && cfg_go_to_tray)
-            ShowWindow(g_main_window, SW_HIDE);
+            ShowWindow(m_wnd, SW_HIDE);
     } else {
         resize_child_windows();
-        ShowWindow(g_main_window, SW_SHOWNORMAL);
+        ShowWindow(m_wnd, SW_SHOWNORMAL);
     }
 
     if (g_rebar)
@@ -149,22 +149,22 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
     g_layout_window.show_window();
 
-    RedrawWindow(g_main_window, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
+    RedrawWindow(m_wnd, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
 
     if (main_window::config_get_is_first_run())
-        SendMessage(g_main_window, MSG_RUN_INITIAL_SETUP, NULL, NULL);
+        SendMessage(m_wnd, MSG_RUN_INITIAL_SETUP, NULL, NULL);
 
     main_window::config_set_is_first_run();
 
-    return g_main_window;
+    return m_wnd;
 }
 
 void cui::MainWindow::shutdown()
 {
-    DestroyWindow(g_main_window);
+    DestroyWindow(m_wnd);
     UnregisterClass(main_window_class_name, core_api::get_my_instance());
     status_bar::volume_popup_window.class_release();
-    g_main_window = nullptr;
+    m_wnd = nullptr;
     g_status = nullptr;
     if (g_imagelist) {
         ImageList_Destroy(g_imagelist);
@@ -180,7 +180,7 @@ void cui::MainWindow::shutdown()
 
 void cui::MainWindow::on_query_capability()
 {
-    if (!g_main_window)
+    if (!m_wnd)
         m_should_handle_multimedia_keys = false;
 }
 
@@ -210,13 +210,13 @@ void cui::MainWindow::reset_title()
 void cui::MainWindow::set_title(const char* ptr)
 {
     if (strcmp(m_window_title, ptr) != 0)
-        uSetWindowText(g_main_window, ptr);
+        uSetWindowText(m_wnd, ptr);
     m_window_title = ptr;
 }
 
 void cui::MainWindow::update_taskbar_buttons(bool update)
 {
-    if (g_main_window && m_taskbar_list.is_valid()) {
+    if (m_wnd && m_taskbar_list.is_valid()) {
         static_api_ptr_t<playback_control> play_api;
 
         bool b_is_playing = play_api->is_playing();
@@ -239,9 +239,9 @@ void cui::MainWindow::update_taskbar_buttons(bool update)
         }
 
         if (update)
-            m_taskbar_list->ThumbBarUpdateButtons(g_main_window, tabsize(tb), tb);
+            m_taskbar_list->ThumbBarUpdateButtons(m_wnd, tabsize(tb), tb);
         else
-            m_taskbar_list->ThumbBarAddButtons(g_main_window, tabsize(tb), tb);
+            m_taskbar_list->ThumbBarAddButtons(m_wnd, tabsize(tb), tb);
     }
 }
 
@@ -269,23 +269,23 @@ void cui::MainWindow::create_child_windows()
     pfc::vartoggle_t<bool> initialising(ui_initialising, true);
 
     RECT rc;
-    GetWindowRect(g_main_window, &rc);
+    GetWindowRect(m_wnd, &rc);
 
-    g_layout_window.create(g_main_window);
+    g_layout_window.create(m_wnd);
 
     create_rebar();
     create_status();
     if (settings::show_status_pane)
-        g_status_pane.create(g_main_window);
+        g_status_pane.create(m_wnd);
 
     g_layout_window.set_focus();
 }
 
 void cui::MainWindow::resize_child_windows()
 {
-    if (!/*g_minimised*/ IsIconic(g_main_window) && !ui_initialising) {
+    if (!/*g_minimised*/ IsIconic(m_wnd) && !ui_initialising) {
         RECT rc_main_client;
-        GetClientRect(g_main_window, &rc_main_client);
+        GetClientRect(m_wnd, &rc_main_client);
 
         HDWP dwp = BeginDeferWindowPos(7);
         if (dwp) {
@@ -373,7 +373,7 @@ public:
         override // inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but
                  // only methods that read playlist state, not those that modify it)
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             status_bar::set_part_sizes(status_bar::t_part_length);
         }
     }
@@ -384,13 +384,13 @@ public:
         unsigned p_new_count) override{}; // called before actually removing them
     void FB2KAPI on_items_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             status_bar::set_part_sizes(status_bar::t_part_length);
         }
     };
     void on_items_selection_change(const pfc::bit_array& affected, const pfc::bit_array& state) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             status_bar::set_part_sizes(status_bar::t_part_length);
         }
     }
@@ -405,14 +405,14 @@ public:
 
     void on_playlist_switch() override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             status_bar::set_part_sizes(status_bar::t_parts_all);
         }
     };
     void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override{};
     void on_playlist_locked(bool p_locked) override
     {
-        if (g_main_window)
+        if (cui::main_window.get_wnd())
             if (g_status && main_window::config_get_status_show_lock())
                 status_bar::set_part_sizes(status_bar::t_parts_all);
     };

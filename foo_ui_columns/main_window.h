@@ -124,6 +124,8 @@ public:
     void queue_taskbar_button_update(bool update = true);
     void resize_child_windows();
 
+    HWND get_wnd() const { return m_wnd; }
+
 private:
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -136,6 +138,7 @@ private:
 
     pfc::string8 m_window_title;
     mmh::ComPtr<ITaskbarList3> m_taskbar_list;
+    HWND m_wnd{};
     user_interface::HookProc_t m_hook_proc{};
     bool m_should_handle_multimedia_keys{true};
     bool m_shell_hook_registered{};

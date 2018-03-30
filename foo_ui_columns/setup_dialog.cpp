@@ -174,5 +174,5 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 void setup_dialog_t::g_run()
 {
     setup_dialog_t::ptr_t dialog = new setup_dialog_t;
-    uCreateDialog(IDD_QUICK_SETUP, g_main_window, g_SetupDialogProc, (LPARAM)dialog.get_ptr());
+    uCreateDialog(IDD_QUICK_SETUP, cui::main_window.get_wnd(), g_SetupDialogProc, (LPARAM)dialog.get_ptr());
 }

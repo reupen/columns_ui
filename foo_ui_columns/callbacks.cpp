@@ -41,7 +41,7 @@ public:
     void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override
     {
         g_playing = true;
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
             update_systray(true);
             update_status();
@@ -56,12 +56,12 @@ public:
     {
         g_playing = false;
         seek_bar_extension::update_seek_timer();
-        if (g_main_window && p_reason != play_control::stop_reason_shutting_down) {
+        if (cui::main_window.get_wnd() && p_reason != play_control::stop_reason_shutting_down) {
             cui::main_window.reset_title();
 
             if (g_icon_created)
-                uShellNotifyIcon(
-                    NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, core_version_info_v2::get()->get_name());
+                uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon,
+                    core_version_info_v2::get()->get_name());
             statusbartext = core_version_info::g_get_version_string();
             status_update_main(false);
             cui::main_window.queue_taskbar_button_update();
@@ -71,7 +71,7 @@ public:
     }
     void FB2KAPI on_playback_seek(double p_time) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
             update_status();
         }
@@ -81,7 +81,7 @@ public:
     {
         g_playing = (b_state == 0);
         seek_bar_extension::update_seek_timer();
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             update_systray(true, b_state ? 2 : 1);
             cui::main_window.update_title();
             update_status();
@@ -91,7 +91,7 @@ public:
 
     void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
             update_status();
         }
@@ -99,14 +99,14 @@ public:
 
     void FB2KAPI on_playback_dynamic_info(const file_info& p_info) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
             update_status();
         }
     }
     void FB2KAPI on_playback_dynamic_info_track(const file_info& p_info) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             update_systray(true);
             cui::main_window.update_title();
             update_status();
@@ -114,7 +114,7 @@ public:
     }
     void FB2KAPI on_playback_time(double p_time) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
             update_status();
             //            update_seek();
@@ -122,7 +122,7 @@ public:
     }
     void FB2KAPI on_volume_change(float p_new_val) override
     {
-        if (g_main_window && g_status)
+        if (cui::main_window.get_wnd() && g_status)
             status_bar::set_part_sizes(status_bar::t_part_volume);
     }
 };
@@ -162,7 +162,7 @@ class playlist_callback_columns : public playlist_callback_static {
 
     void FB2KAPI on_playlist_activate(unsigned p_old, unsigned p_new) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             if (g_status && main_window::config_get_status_show_lock())
                 status_bar::set_part_sizes(status_bar::t_part_lock);
         }
@@ -170,23 +170,23 @@ class playlist_callback_columns : public playlist_callback_static {
 
     void on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
         }
     };
     void on_playlists_reorder(const unsigned* p_order, unsigned p_count) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
         }
     };
     void on_playlists_removing(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override{};
     void on_playlists_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
         }
     };
     void on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
         }
     };
 
@@ -194,7 +194,7 @@ class playlist_callback_columns : public playlist_callback_static {
     void on_playback_order_changed(unsigned p_new_index) override{};
     void on_playlist_locked(unsigned p_playlist, bool p_locked) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             if (g_status && main_window::config_get_status_show_lock())
                 status_bar::set_part_sizes(status_bar::t_part_lock);
         }
