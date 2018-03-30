@@ -78,27 +78,6 @@ void create_status();
 extern class status_pane g_status_pane;
 extern class rebar_window* g_rebar_window;
 
-using pma_action = void (*)(bool, unsigned int);
-
-struct pma {
-    const char* name;
-    unsigned id;
-    pma_action p_run;
-};
-
-class playlist_mclick_actions {
-public:
-    static pma g_pma_actions[];
-    static unsigned id_to_idx(unsigned id);
-
-    static bool run(unsigned id, bool on_item, unsigned idx)
-    {
-        g_pma_actions[id_to_idx(id)].p_run(on_item, idx);
-        return true;
-    }
-    static unsigned get_count();
-};
-
 namespace taskbar_buttons {
 enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };
 }
