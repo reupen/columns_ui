@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "main_window.h"
+#include "status_bar.h"
 
 namespace main_window {
 const char* default_status_pane_script

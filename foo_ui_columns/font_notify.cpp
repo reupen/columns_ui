@@ -3,6 +3,7 @@
 
 #include "status_pane.h"
 #include "font_notify.h"
+#include "status_bar.h"
 
 HFONT g_status_font = nullptr;
 HFONT g_tab_font = nullptr;

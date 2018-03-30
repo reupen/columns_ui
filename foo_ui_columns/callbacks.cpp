@@ -4,6 +4,7 @@
 #include "playlist_view.h"
 #include "main_window.h"
 #include "notification_area.h"
+#include "status_bar.h"
 
 // callback_manager g_callback_manager;
 
