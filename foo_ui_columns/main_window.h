@@ -75,7 +75,6 @@ void status_update_main(bool is_caller_menu_desc);
 
 void create_status();
 
-bool g_rename_dialog(pfc::string8* param, HWND parent);
 void g_rename_playlist(unsigned idx, HWND wnd_parent);
 
 extern class status_pane g_status_pane;

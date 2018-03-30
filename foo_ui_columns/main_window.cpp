@@ -482,7 +482,7 @@ static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return 0;
 }
 
-bool g_rename_dialog(pfc::string8* text, HWND parent)
+static bool g_rename_dialog(pfc::string8* text, HWND parent)
 {
     rename_param param;
     param.m_text = text;
@@ -496,7 +496,6 @@ void g_rename_playlist(unsigned idx, HWND wnd_parent)
     if (playlist_api->playlist_get_name(idx, temp)) {
         if (g_rename_dialog(&temp, wnd_parent)) { // fucko: dialogobx has a messgeloop, someone might have called
                                                   // switcher api funcs in the meanwhile
-            //            idx = ((HWND)wp == g_tab) ? idx : SendMessage(g_plist,LB_GETCURSEL,0,0);
             unsigned num = playlist_api->get_playlist_count();
             if (idx < num) {
                 playlist_api->playlist_rename(idx, temp, temp.length());
