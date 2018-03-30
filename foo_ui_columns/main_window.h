@@ -46,7 +46,6 @@ enum {
     MSG_HIDE_SIDEBAR,
     MSG_SET_FOCUS,
     MSG_RUN_INITIAL_SETUP,
-    MSG_UPDATE_THUMBBAR,
     MSG_NOTICATION_ICON
 };
 
@@ -82,9 +81,6 @@ void g_rename_playlist(unsigned idx, HWND wnd_parent);
 void make_ui();
 void size_windows();
 
-void g_update_taskbar_buttons_now(bool b_init = false);
-void g_update_taskbar_buttons_delayed(bool b_init = false);
-
 extern class status_pane g_status_pane;
 extern class rebar_window* g_rebar_window;
 
@@ -109,10 +105,6 @@ public:
     static unsigned get_count();
 };
 
-namespace main_window {
-extern mmh::ComPtr<ITaskbarList3> g_ITaskbarList3;
-}; // namespace main_window
-
 namespace taskbar_buttons {
 enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };
 }
@@ -126,6 +118,14 @@ public:
     void update_title();
     void reset_title();
 
+    /*
+     * ITaskbarList3::ThumbBarUpdateButtons calls SendMessageTimeout without the SMTO_BLOCK flag.
+     * So we postpone updates, to avoid weird bugs (other function calls when executing a callback
+     * function that aren't legal, calls to ITaskbarList3::ThumbBarUpdateButtons() during another
+     * ITaskbarList3::ThumbBarUpdateButtons() call etc.)
+     */
+    void queue_taskbar_button_update(bool update = true);
+
 private:
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
@@ -133,8 +133,10 @@ private:
     void on_create();
     void on_destroy();
     void set_title(const char* ptr);
+    void update_taskbar_buttons(bool update);
 
     pfc::string8 m_window_title;
+    mmh::ComPtr<ITaskbarList3> m_taskbar_list;
     user_interface::HookProc_t m_hook_proc{};
     bool m_should_handle_multimedia_keys{true};
     bool m_shell_hook_registered{};

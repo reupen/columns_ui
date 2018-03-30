@@ -45,7 +45,7 @@ public:
             cui::main_window.update_title();
             update_systray(true);
             update_status();
-            g_update_taskbar_buttons_delayed();
+            cui::main_window.queue_taskbar_button_update();
         }
 
         seek_bar_extension::update_seekbars();
@@ -64,7 +64,7 @@ public:
                     NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, core_version_info_v2::get()->get_name());
             statusbartext = core_version_info::g_get_version_string();
             status_update_main(false);
-            g_update_taskbar_buttons_delayed();
+            cui::main_window.queue_taskbar_button_update();
         }
         if (p_reason != play_control::stop_reason_shutting_down)
             seek_bar_extension::update_seekbars();
@@ -85,7 +85,7 @@ public:
             update_systray(true, b_state ? 2 : 1);
             cui::main_window.update_title();
             update_status();
-            g_update_taskbar_buttons_delayed();
+            cui::main_window.queue_taskbar_button_update();
         }
     }
 

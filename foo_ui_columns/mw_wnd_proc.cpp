@@ -83,8 +83,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     if (WM_TASKBARBUTTONCREATED && msg == WM_TASKBARBUTTONCREATED) {
         mmh::ComPtr<ITaskbarList> p_ITaskbarList;
         if (SUCCEEDED(p_ITaskbarList.instantiate(CLSID_TaskbarList))) {
-            main_window::g_ITaskbarList3 = p_ITaskbarList;
-            if (main_window::g_ITaskbarList3.is_valid() && SUCCEEDED(main_window::g_ITaskbarList3->HrInit())) {
+            m_taskbar_list = p_ITaskbarList;
+            if (m_taskbar_list.is_valid() && SUCCEEDED(m_taskbar_list->HrInit())) {
                 const unsigned cx = GetSystemMetrics(SM_CXSMICON), cy = GetSystemMetrics(SM_CYSMICON);
 
                 g_imagelist_taskbar = ImageList_Create(cx, cy, ILC_COLOR32, 0, 6);
@@ -98,10 +98,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     DestroyIcon(icon);
                 }
 
-                if (SUCCEEDED(main_window::g_ITaskbarList3->ThumbBarSetImageList(wnd, g_imagelist_taskbar))) {
-                    g_update_taskbar_buttons_delayed(true);
+                if (SUCCEEDED(m_taskbar_list->ThumbBarSetImageList(wnd, g_imagelist_taskbar))) {
+                    queue_taskbar_button_update(false);
                 } else
-                    main_window::g_ITaskbarList3.release();
+                    m_taskbar_list.release();
             }
         }
     }
@@ -203,7 +203,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         destroy_rebar(false);
         status_bar::destroy_status_window();
-        main_window::g_ITaskbarList3.release();
+        m_taskbar_list.release();
         RevokeDragDrop(g_main_window);
         destroy_systray_icon();
         cui::main_window.on_destroy();
@@ -486,9 +486,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }
         }
-        break;
-    case MSG_UPDATE_THUMBBAR:
-        g_update_taskbar_buttons_now(wp != 0);
         break;
     case MSG_SET_AOT:
         SetWindowPos(wnd, wp ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);

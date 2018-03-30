@@ -18,7 +18,6 @@ rebar_window* g_rebar_window = nullptr;
 layout_window g_layout_window;
 cui::MainWindow cui::main_window;
 status_pane g_status_pane;
-mmh::ComPtr<ITaskbarList3> main_window::g_ITaskbarList3;
 
 HIMAGELIST g_imagelist = nullptr;
 
@@ -213,6 +212,42 @@ void cui::MainWindow::set_title(const char* ptr)
     if (strcmp(m_window_title, ptr) != 0)
         uSetWindowText(g_main_window, ptr);
     m_window_title = ptr;
+}
+
+void cui::MainWindow::update_taskbar_buttons(bool update)
+{
+    if (g_main_window && m_taskbar_list.is_valid()) {
+        static_api_ptr_t<playback_control> play_api;
+
+        bool b_is_playing = play_api->is_playing();
+        bool b_is_paused = play_api->is_paused();
+
+        const WCHAR* ttips[6]
+            = {L"Stop", L"Previous", (b_is_playing && !b_is_paused ? L"Pause" : L"Play"), L"Next", L"Random"};
+        INT_PTR bitmap_indices[] = {0, 1, (b_is_playing && !b_is_paused ? 2 : 3), 4, 5};
+
+        THUMBBUTTON tb[tabsize(bitmap_indices)];
+        memset(&tb, 0, sizeof(tb));
+
+        for (size_t i = 0; i < tabsize(bitmap_indices); i++) {
+            tb[i].dwMask = THB_BITMAP | THB_TOOLTIP /*|THB_FLAGS*/;
+            tb[i].iId = taskbar_buttons::ID_FIRST + i;
+            tb[i].iBitmap = bitmap_indices[i];
+            wcscpy_s(tb[i].szTip, tabsize(tb[i].szTip), ttips[i]);
+            // if (tb[i].iId == ID_STOP && !b_is_playing)
+            //    tb[i].dwFlags |= THBF_DISABLED;
+        }
+
+        if (update)
+            m_taskbar_list->ThumbBarUpdateButtons(g_main_window, tabsize(tb), tb);
+        else
+            m_taskbar_list->ThumbBarAddButtons(g_main_window, tabsize(tb), tb);
+    }
+}
+
+void cui::MainWindow::queue_taskbar_button_update(bool update)
+{
+    fb2k::inMainThread([update, this] { update_taskbar_buttons(update); });
 }
 
 void cui::MainWindow::on_create()
@@ -484,44 +519,6 @@ bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
     }
     FreeResource(handle);
     return ret;
-}
-
-/** FUCKO: ITaskbarList3::ThumbBarUpdateButtons calls SendMessageTimeout without SMTO_BLOCK flag */
-void g_update_taskbar_buttons_delayed(bool b_init)
-{
-    if (g_main_window)
-        PostMessage(g_main_window, MSG_UPDATE_THUMBBAR, b_init, NULL);
-}
-
-void g_update_taskbar_buttons_now(bool b_init)
-{
-    if (main_window::g_ITaskbarList3.is_valid()) {
-        static_api_ptr_t<playback_control> play_api;
-
-        bool b_is_playing = play_api->is_playing();
-        bool b_is_paused = play_api->is_paused();
-
-        const WCHAR* ttips[6]
-            = {L"Stop", L"Previous", (b_is_playing && !b_is_paused ? L"Pause" : L"Play"), L"Next", L"Random"};
-        INT_PTR bitmap_indices[] = {0, 1, (b_is_playing && !b_is_paused ? 2 : 3), 4, 5};
-
-        THUMBBUTTON tb[tabsize(bitmap_indices)];
-        memset(&tb, 0, sizeof(tb));
-
-        for (size_t i = 0; i < tabsize(bitmap_indices); i++) {
-            tb[i].dwMask = THB_BITMAP | THB_TOOLTIP /*|THB_FLAGS*/;
-            tb[i].iId = taskbar_buttons::ID_FIRST + i;
-            tb[i].iBitmap = bitmap_indices[i];
-            wcscpy_s(tb[i].szTip, tabsize(tb[i].szTip), ttips[i]);
-            // if (tb[i].iId == ID_STOP && !b_is_playing)
-            //    tb[i].dwFlags |= THBF_DISABLED;
-        }
-
-        if (b_init)
-            main_window::g_ITaskbarList3->ThumbBarAddButtons(g_main_window, tabsize(tb), tb);
-        else
-            main_window::g_ITaskbarList3->ThumbBarUpdateButtons(g_main_window, tabsize(tb), tb);
-    }
 }
 
 class control_impl : public columns_ui::control {
