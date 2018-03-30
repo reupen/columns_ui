@@ -42,7 +42,7 @@ public:
     {
         g_playing = true;
         if (g_main_window) {
-            update_titlebar();
+            cui::main_window.update_title();
             update_systray(true);
             update_status();
             g_update_taskbar_buttons_delayed();
@@ -57,11 +57,11 @@ public:
         g_playing = false;
         seek_bar_extension::update_seek_timer();
         if (g_main_window && p_reason != play_control::stop_reason_shutting_down) {
-            set_main_window_text("foobar2000" /*core_version_info::g_get_version_string()*/);
+            cui::main_window.reset_title();
 
             if (g_icon_created)
-                uShellNotifyIcon(NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon,
-                    "foobar2000" /*core_version_info::g_get_version_string()*/);
+                uShellNotifyIcon(
+                    NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, core_version_info_v2::get()->get_name());
             statusbartext = core_version_info::g_get_version_string();
             status_update_main(false);
             g_update_taskbar_buttons_delayed();
@@ -72,7 +72,7 @@ public:
     void FB2KAPI on_playback_seek(double p_time) override
     {
         if (g_main_window) {
-            update_titlebar();
+            cui::main_window.update_title();
             update_status();
         }
         seek_bar_extension::update_seekbars(true);
@@ -83,7 +83,7 @@ public:
         seek_bar_extension::update_seek_timer();
         if (g_main_window) {
             update_systray(true, b_state ? 2 : 1);
-            update_titlebar();
+            cui::main_window.update_title();
             update_status();
             g_update_taskbar_buttons_delayed();
         }
@@ -92,7 +92,7 @@ public:
     void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override
     {
         if (g_main_window) {
-            update_titlebar();
+            cui::main_window.update_title();
             update_status();
         }
     }
@@ -100,7 +100,7 @@ public:
     void FB2KAPI on_playback_dynamic_info(const file_info& p_info) override
     {
         if (g_main_window) {
-            update_titlebar();
+            cui::main_window.update_title();
             update_status();
         }
     }
@@ -108,14 +108,14 @@ public:
     {
         if (g_main_window) {
             update_systray(true);
-            update_titlebar();
+            cui::main_window.update_title();
             update_status();
         }
     }
     void FB2KAPI on_playback_time(double p_time) override
     {
         if (g_main_window) {
-            update_titlebar();
+            cui::main_window.update_title();
             update_status();
             //            update_seek();
         }

@@ -21,7 +21,7 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
             track.release();
 
         } else {
-            title = "foobar2000"; // core_version_info::g_get_version_string();
+            title = core_version_info_v2::get()->get_name();
         }
 
         uFixAmpersandChars(title, sys);
@@ -64,7 +64,7 @@ void on_show_notification_area_icon_change()
 void create_systray_icon()
 {
     uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, g_main_window, 1, MSG_NOTICATION_ICON, g_icon,
-        "foobar2000" /*core_version_info::g_get_version_string()*/);
+        core_version_info_v2::get()->get_name());
     /* There was some misbehaviour with the newer messages. So we don't use them. */
     //    if (!g_icon_created)
     //        uih::shell_notify_icon(NIM_SETVERSION, g_main_window, 1, NOTIFYICON_VERSION, MSG_NOTICATION_ICON, g_icon,

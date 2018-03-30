@@ -165,7 +165,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         g_main_window = wnd;
         statusbartext = core_version_info::g_get_version_string();
-        set_main_window_text("foobar2000" /*core_version_info::g_get_version_string()*/);
+        set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
             create_systray_icon();
 
@@ -497,7 +497,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         update_status();
         break;
     case MSG_UPDATE_TITLE:
-        update_titlebar();
+        update_title();
         break;
     case MSG_RUN_INITIAL_SETUP:
         setup_dialog_t::g_run();

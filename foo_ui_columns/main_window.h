@@ -65,15 +65,12 @@ void set_part_sizes(unsigned p_parts = t_parts_none);
 
 bool remember_window_pos();
 
-void update_titlebar();
 void update_status();
 
 bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist = false, bool keyb = true);
 
 void create_rebar();
 void destroy_rebar(bool save_config = true);
-
-void set_main_window_text(const char* ptr);
 
 void status_update_main(bool is_caller_menu_desc);
 
@@ -126,6 +123,8 @@ public:
     HWND initialise(user_interface::HookProc_t hook);
     void shutdown();
     void on_query_capability();
+    void update_title();
+    void reset_title();
 
 private:
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -133,7 +132,9 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void on_create();
     void on_destroy();
+    void set_title(const char* ptr);
 
+    pfc::string8 m_window_title;
     user_interface::HookProc_t m_hook_proc{};
     bool m_should_handle_multimedia_keys{true};
     bool m_shell_hook_registered{};

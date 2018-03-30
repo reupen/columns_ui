@@ -30,7 +30,7 @@ bool g_playing = false;
 
 HICON g_icon = nullptr;
 
-pfc::string8 statusbartext, windowtext;
+pfc::string8 statusbartext;
 
 HFONT g_font = nullptr;
 
@@ -185,6 +185,36 @@ void cui::MainWindow::on_query_capability()
         m_should_handle_multimedia_keys = false;
 }
 
+void cui::MainWindow::update_title()
+{
+    metadb_handle_ptr track;
+    static_api_ptr_t<play_control> play_api;
+    play_api->get_now_playing(track);
+    if (track.is_valid()) {
+        pfc::string8 title;
+        service_ptr_t<titleformat_object> to_wtitle;
+        static_api_ptr_t<titleformat_compiler>()->compile_safe(
+            to_wtitle, main_window::config_main_window_title_script.get());
+        play_api->playback_format_title_ex(track, nullptr, title, to_wtitle, nullptr, play_control::display_level_all);
+        set_title(title);
+        track.release();
+    } else {
+        set_title(core_version_info_v2::get()->get_name());
+    }
+}
+
+void cui::MainWindow::reset_title()
+{
+    set_title(core_version_info_v2::get()->get_name());
+}
+
+void cui::MainWindow::set_title(const char* ptr)
+{
+    if (strcmp(m_window_title, ptr) != 0)
+        uSetWindowText(g_main_window, ptr);
+    m_window_title = ptr;
+}
+
 void cui::MainWindow::on_create()
 {
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -226,15 +256,6 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
         }
     }
     return false;
-}
-
-void set_main_window_text(const char* ptr)
-{
-    if (ptr) {
-        if (strcmp(windowtext, ptr) != 0)
-            uSetWindowText(g_main_window, ptr);
-        windowtext = ptr;
-    }
 }
 
 bool g_icon_created = false;
@@ -500,24 +521,6 @@ void g_update_taskbar_buttons_now(bool b_init)
             main_window::g_ITaskbarList3->ThumbBarAddButtons(g_main_window, tabsize(tb), tb);
         else
             main_window::g_ITaskbarList3->ThumbBarUpdateButtons(g_main_window, tabsize(tb), tb);
-    }
-}
-
-void update_titlebar()
-{
-    metadb_handle_ptr track;
-    static_api_ptr_t<play_control> play_api;
-    play_api->get_now_playing(track);
-    if (track.is_valid()) {
-        pfc::string8 title;
-        service_ptr_t<titleformat_object> to_wtitle;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(
-            to_wtitle, main_window::config_main_window_title_script.get());
-        play_api->playback_format_title_ex(track, nullptr, title, to_wtitle, nullptr, play_control::display_level_all);
-        set_main_window_text(title);
-        track.release();
-    } else {
-        set_main_window_text("foobar2000" /*core_version_info::g_get_version_string()*/);
     }
 }
 
