@@ -192,43 +192,6 @@ void clip_minmaxinfo(MINMAXINFO& mmi)
     mmi.ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, MAXSHORT);
 }
 
-BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool vert, bool world)
-{
-    COLORREF cr_back = GetSysColor(COLOR_3DFACE);
-    COLORREF cr_fore = GetSysColor(COLOR_MENUTEXT);
-    COLORREF cr_line = GetSysColor(COLOR_3DSHADOW);
-
-    {
-        SetBkMode(dc, TRANSPARENT);
-        SetTextColor(dc, cr_fore);
-
-        SIZE sz;
-        uGetTextExtentPoint32(dc, text, len, &sz);
-        int extra = vert ? rc_clip->bottom - sz.cy : (rc_clip->bottom - rc_clip->top - sz.cy - 1) / 2;
-        /*
-        if (world)
-        {
-        SetGraphicsMode(dc, GM_ADVANCED);
-        XFORM xf;
-        xf.eM11 = 0;
-        xf.eM21 = 1;
-        xf.eDx = 0;
-        xf.eM12 = -1;
-        xf.eM22 = 0;
-        xf.eDy = rc_clip->right;
-        SetWorldTransform(dc, &xf);
-        }
-        */
-        //        HFONT old = SelectFont(dc, fnt_menu);
-
-        uExtTextOut(dc, 5 + rc_clip->left, extra, ETO_CLIPPED, rc_clip, text, len, nullptr);
-        //        SelectFont(dc, old);
-
-        return TRUE;
-    }
-    return FALSE;
-}
-
 class splitter_window_horizontal : public splitter_window_impl {
     class_data& get_class_data() const override
     {

@@ -22,31 +22,31 @@ public:
 
     void activate() override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             cfg_go_to_tray = false;
             if (g_icon_created && !cfg_show_systray)
                 destroy_systray_icon();
 
             if (!is_visible()) {
-                ShowWindow(g_main_window, SW_RESTORE);
-                if ((GetWindowLong(g_main_window, GWL_EXSTYLE) & WS_EX_LAYERED))
-                    RedrawWindow(g_main_window, nullptr, nullptr,
+                ShowWindow(cui::main_window.get_wnd(), SW_RESTORE);
+                if ((GetWindowLong(cui::main_window.get_wnd(), GWL_EXSTYLE) & WS_EX_LAYERED))
+                    RedrawWindow(cui::main_window.get_wnd(), nullptr, nullptr,
                         RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW);
             }
-            SetForegroundWindow(g_main_window);
+            SetForegroundWindow(cui::main_window.get_wnd());
         }
     }
     void hide() override
     {
-        if (g_main_window) {
-            ShowWindow(g_main_window, SW_MINIMIZE);
+        if (cui::main_window.get_wnd()) {
+            ShowWindow(cui::main_window.get_wnd(), SW_MINIMIZE);
         }
     }
     bool is_visible() override
     {
         bool rv = false;
-        if (g_main_window) {
-            rv = IsWindowVisible(g_main_window) && !IsIconic(g_main_window);
+        if (cui::main_window.get_wnd()) {
+            rv = IsWindowVisible(cui::main_window.get_wnd()) && !IsIconic(cui::main_window.get_wnd());
         }
         return rv;
     }

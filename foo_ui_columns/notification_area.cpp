@@ -21,34 +21,34 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
             track.release();
 
         } else {
-            title = "foobar2000"; // core_version_info::g_get_version_string();
+            title = core_version_info_v2::get()->get_name();
         }
 
         uFixAmpersandChars(title, sys);
 
         if (balloon && (cfg_balloon || force_balloon)) {
-            uShellNotifyIconEx(NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, sys, "", "");
-            uShellNotifyIconEx(NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, sys,
+            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon, sys, "", "");
+            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon, sys,
                 (btitle == 0 ? "Now playing:" : (btitle == 1 ? "Unpaused:" : "Paused:")), title);
         } else
-            uShellNotifyIcon(NIM_MODIFY, g_main_window, 1, MSG_NOTICATION_ICON, g_icon, sys);
+            uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon, sys);
     }
 }
 
 void destroy_systray_icon()
 {
     if (g_icon_created) {
-        uShellNotifyIcon(NIM_DELETE, g_main_window, 1, MSG_NOTICATION_ICON, nullptr, nullptr);
+        uShellNotifyIcon(NIM_DELETE, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, nullptr, nullptr);
         g_icon_created = false;
     }
 }
 
 void on_show_notification_area_icon_change()
 {
-    if (!g_main_window)
+    if (!cui::main_window.get_wnd())
         return;
 
-    const auto is_iconic = IsIconic(g_main_window) != 0;
+    const auto is_iconic = IsIconic(cui::main_window.get_wnd()) != 0;
     const auto close_to_icon = cui::config::advbool_close_to_notification_icon.get();
     if (cfg_show_systray && !g_icon_created) {
         create_systray_icon();
@@ -63,12 +63,12 @@ void on_show_notification_area_icon_change()
 
 void create_systray_icon()
 {
-    uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, g_main_window, 1, MSG_NOTICATION_ICON, g_icon,
-        "foobar2000" /*core_version_info::g_get_version_string()*/);
+    uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon,
+        core_version_info_v2::get()->get_name());
     /* There was some misbehaviour with the newer messages. So we don't use them. */
     //    if (!g_icon_created)
-    //        uih::shell_notify_icon(NIM_SETVERSION, g_main_window, 1, NOTIFYICON_VERSION, MSG_NOTICATION_ICON, g_icon,
-    //        "foobar2000"/*core_version_info::g_get_version_string()*/);
+    //        uih::shell_notify_icon(NIM_SETVERSION, cui::main_window.get_wnd(), 1, NOTIFYICON_VERSION,
+    //        MSG_NOTICATION_ICON, g_icon, "foobar2000"/*core_version_info::g_get_version_string()*/);
     g_icon_created = true;
 }
 

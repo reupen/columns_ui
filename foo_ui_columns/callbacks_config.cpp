@@ -6,10 +6,10 @@ class config_object_notify_columns : public config_object_notify {
     GUID get_watched_object(unsigned p_index) override { return standard_config_objects::bool_ui_always_on_top; };
     void on_watched_object_changed(const service_ptr_t<config_object>& p_object) override
     {
-        if (g_main_window) {
+        if (cui::main_window.get_wnd()) {
             bool aot = false;
             p_object->get_data_bool(aot);
-            uPostMessage(g_main_window, MSG_SET_AOT, aot, 0);
+            uPostMessage(cui::main_window.get_wnd(), MSG_SET_AOT, aot, 0);
         }
     }
 };

@@ -21,7 +21,7 @@ font_client_status_pane::factory<font_client_status_pane> g_font_client_status_p
 void status_pane::on_font_changed()
 {
     m_font = cui::fonts::helper(g_guid_font).get_font();
-    size_windows();
+    cui::main_window.resize_child_windows();
 }
 
 void status_pane::render_background(HDC dc, const RECT& rc)

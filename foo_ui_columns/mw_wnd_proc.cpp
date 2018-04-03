@@ -83,8 +83,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     if (WM_TASKBARBUTTONCREATED && msg == WM_TASKBARBUTTONCREATED) {
         mmh::ComPtr<ITaskbarList> p_ITaskbarList;
         if (SUCCEEDED(p_ITaskbarList.instantiate(CLSID_TaskbarList))) {
-            main_window::g_ITaskbarList3 = p_ITaskbarList;
-            if (main_window::g_ITaskbarList3.is_valid() && SUCCEEDED(main_window::g_ITaskbarList3->HrInit())) {
+            m_taskbar_list = p_ITaskbarList;
+            if (m_taskbar_list.is_valid() && SUCCEEDED(m_taskbar_list->HrInit())) {
                 const unsigned cx = GetSystemMetrics(SM_CXSMICON), cy = GetSystemMetrics(SM_CYSMICON);
 
                 g_imagelist_taskbar = ImageList_Create(cx, cy, ILC_COLOR32, 0, 6);
@@ -98,10 +98,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     DestroyIcon(icon);
                 }
 
-                if (SUCCEEDED(main_window::g_ITaskbarList3->ThumbBarSetImageList(wnd, g_imagelist_taskbar))) {
-                    g_update_taskbar_buttons_delayed(true);
+                if (SUCCEEDED(m_taskbar_list->ThumbBarSetImageList(wnd, g_imagelist_taskbar))) {
+                    queue_taskbar_button_update(false);
                 } else
-                    main_window::g_ITaskbarList3.release();
+                    m_taskbar_list.release();
             }
         }
     }
@@ -138,10 +138,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     switch (msg) {
     case WM_CREATE: {
-        /* initialise ui */
-
-        //            modeless_dialog_manager::add(wnd);
-
         WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
         WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
 
@@ -155,41 +151,25 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         icex.dwICC = ICC_BAR_CLASSES | ICC_COOL_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
         InitCommonControlsEx(&icex);
 
-        cui::main_window.on_create();
-
-        // g_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&g_gdiplus_instance,
-        // &Gdiplus::GdiplusStartupInput(), NULL));
+        on_create();
 
         if (!uih::are_keyboard_cues_enabled())
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
-        g_main_window = wnd;
+        m_wnd = wnd;
         statusbartext = core_version_info::g_get_version_string();
-        set_main_window_text("foobar2000" /*core_version_info::g_get_version_string()*/);
+        set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
             create_systray_icon();
 
         HRESULT hr = OleInitialize(nullptr);
         pfc::com_ptr_t<drop_handler_interface> drop_handler = new drop_handler_interface;
-        RegisterDragDrop(g_main_window, drop_handler.get_ptr());
+        RegisterDragDrop(m_wnd, drop_handler.get_ptr());
 
-        /* end of initialisation */
-
-        //            ShowWindow(wnd, SW_SHOWNORMAL);
-
-        make_ui();
+        create_child_windows();
 
         g_get_msg_hook.register_hook();
 
-        // lets try recursively in wm_showwindow
-
-        //            SetWindowPos(wnd, 0, cfg_window_placement_columns.get_value().rcNormalPosition.left,
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.top,
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.right -
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.left,
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.bottom -
-        //            cfg_window_placement_columns.get_value().rcNormalPosition.top, SWP_NOZORDER); ShowWindow(wnd,
-        //            SW_SHOWNORMAL);
         if (config_object::g_get_data_bool_simple(standard_config_objects::bool_ui_always_on_top, false))
             SendMessage(wnd, MSG_SET_AOT, TRUE, 0);
     }
@@ -203,10 +183,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         destroy_rebar(false);
         status_bar::destroy_status_window();
-        main_window::g_ITaskbarList3.release();
-        RevokeDragDrop(g_main_window);
+        m_taskbar_list.release();
+        RevokeDragDrop(m_wnd);
         destroy_systray_icon();
-        cui::main_window.on_destroy();
+        on_destroy();
         OleUninitialize();
     } break;
     case WM_NCDESTROY:
@@ -487,9 +467,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         }
         break;
-    case MSG_UPDATE_THUMBBAR:
-        g_update_taskbar_buttons_now(wp != 0);
-        break;
     case MSG_SET_AOT:
         SetWindowPos(wnd, wp ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
         break;
@@ -497,7 +474,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         update_status();
         break;
     case MSG_UPDATE_TITLE:
-        update_titlebar();
+        update_title();
         break;
     case MSG_RUN_INITIAL_SETUP:
         setup_dialog_t::g_run();
@@ -510,9 +487,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (lpdis->CtlID == ID_STATUS) {
             RECT rc = lpdis->rcItem;
             //            rc.right -= 3;
-            if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(g_main_window)) {
+            if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(m_wnd)) {
                 RECT rc_main;
-                GetClientRect(g_main_window, &rc_main);
+                GetClientRect(m_wnd, &rc_main);
                 rc.right = rc_main.right - GetSystemMetrics(SM_CXVSCROLL);
             } else {
                 int blah[3];
@@ -545,7 +522,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     ShowWindow(wnd, SW_HIDE);
             } else {
                 g_minimised = false;
-                size_windows();
+                resize_child_windows();
             }
         }
     } break;
@@ -769,9 +746,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return TRUE;
         }
         break;
-    case MSG_SIZE:
-        size_windows();
-        return 0;
 
     case WM_NOTIFY:
         auto lpnmh = reinterpret_cast<LPNMHDR>(lp);
@@ -780,7 +754,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case ID_REBAR:
             switch (lpnmh->code) {
             case RBN_HEIGHTCHANGE: {
-                size_windows();
+                resize_child_windows();
             } break;
             case RBN_LAYOUTCHANGED: {
                 if (g_rebar_window) {

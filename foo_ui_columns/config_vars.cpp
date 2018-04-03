@@ -168,11 +168,11 @@ cfg_window_placement_t::cfg_window_placement_t(const GUID& p_guid)
 
 void cfg_window_placement_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
-    if (g_main_window && remember_window_pos()) {
+    if (cui::main_window.get_wnd() && remember_window_pos()) {
         WINDOWPLACEMENT wp;
         memset(&wp, 0, sizeof(wp));
         wp.length = sizeof(wp);
-        if (GetWindowPlacement(g_main_window, &wp))
+        if (GetWindowPlacement(cui::main_window.get_wnd(), &wp))
             *this = wp;
     }
     const WINDOWPLACEMENT& wp = get_value();

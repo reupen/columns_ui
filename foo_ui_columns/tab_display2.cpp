@@ -2,6 +2,7 @@
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
 #include "prefs_utils.h"
+#include "playlist_item_helpers.h"
 
 static class tab_display2 : public preferences_tab {
     void refresh_me(HWND wnd)
@@ -47,16 +48,16 @@ public:
 
             populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, *m_menu_cache, true);
 
-            unsigned count = playlist_mclick_actions::get_count();
+            unsigned count = cui::playlist_item_helpers::mclick_action::get_count();
             for (unsigned n = 0; n < count; n++) {
-                uSendDlgItemMessageText(
-                    wnd, IDC_PLAYLIST_MIDDLE, CB_ADDSTRING, 0, playlist_mclick_actions::g_pma_actions[n].name);
-                SendDlgItemMessage(
-                    wnd, IDC_PLAYLIST_MIDDLE, CB_SETITEMDATA, n, playlist_mclick_actions::g_pma_actions[n].id);
+                uSendDlgItemMessageText(wnd, IDC_PLAYLIST_MIDDLE, CB_ADDSTRING, 0,
+                    cui::playlist_item_helpers::mclick_action::g_pma_actions[n].name);
+                SendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETITEMDATA, n,
+                    cui::playlist_item_helpers::mclick_action::g_pma_actions[n].id);
             }
 
             SendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETCURSEL,
-                playlist_mclick_actions::id_to_idx(cfg_playlist_middle_action), 0);
+                cui::playlist_item_helpers::mclick_action::id_to_idx(cfg_playlist_middle_action), 0);
 
             refresh_me(wnd);
             m_initialised = true;

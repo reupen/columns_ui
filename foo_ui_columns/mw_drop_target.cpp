@@ -12,7 +12,7 @@ drop_handler_interface::drop_handler_interface()
 bool drop_handler_interface::check_window_allowed(HWND wnd)
 {
     return wnd
-        && (wnd == g_main_window || wnd == g_rebar || (g_rebar && IsChild(g_rebar, wnd))
+        && (wnd == cui::main_window.get_wnd() || wnd == g_rebar || (g_rebar && IsChild(g_rebar, wnd))
                || wnd == g_status_pane.get_wnd() || (g_status_pane.get_wnd() && IsChild(g_status_pane.get_wnd(), wnd))
                || wnd == g_status);
 }
@@ -45,7 +45,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(
         uAppendMenu(menu, MF_STRING, ID_CANCEL, "&Cancel");
 
         int cmd = TrackPopupMenu(
-            menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, g_main_window, nullptr);
+            menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, cui::main_window.get_wnd(), nullptr);
         DestroyMenu(menu);
 
         if (cmd) {
@@ -60,7 +60,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(
     if (process) {
         metadb_handle_list data;
 
-        incoming_api->process_dropped_files(pDataObj, data, true, g_main_window);
+        incoming_api->process_dropped_files(pDataObj, data, true, cui::main_window.get_wnd());
 
         bool send_new_playlist = false;
 
@@ -131,7 +131,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragEnter(
 {
     POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
-        m_DropTargetHelper->DragEnter(g_main_window, pDataObj, &pt, *pdwEffect);
+        m_DropTargetHelper->DragEnter(cui::main_window.get_wnd(), pDataObj, &pt, *pdwEffect);
 
     m_DataObject = pDataObj;
 

@@ -472,6 +472,9 @@
     <ClCompile Include="tab_layout.cpp">
       <Filter>Prefs UI</Filter>
     </ClCompile>
+    <ClCompile Include="playlist_item_helpers.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\cache.h">
@@ -657,6 +660,9 @@
     </ClInclude>
     <ClInclude Include="tab_layout.h">
       <Filter>Prefs UI</Filter>
+    </ClInclude>
+    <ClInclude Include="playlist_item_helpers.h">
+      <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

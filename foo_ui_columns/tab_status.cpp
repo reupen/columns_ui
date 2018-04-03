@@ -3,6 +3,7 @@
 #include "font_notify.h"
 #include "prefs_utils.h"
 #include "main_window.h"
+#include "status_bar.h"
 
 static class tab_status : public preferences_tab {
 public:

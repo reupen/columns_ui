@@ -386,19 +386,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
                             break;
                         case ID_RENAME:
                             if (b_index_valid) {
-                                pfc::string8 temp;
-                                if (playlist_api->playlist_get_name(idx, temp)) {
-                                    if (g_rename_dialog(
-                                            &temp, wnd)) { // fucko: dialogobx has a messgeloop, someone might have
-                                                           // called switcher api funcs in the meanwhile
-                                        //            idx = ((HWND)wp == wnd_tabs) ? idx :
-                                        //            SendMessage(g_plist,LB_GETCURSEL,0,0);
-                                        num = playlist_api->get_playlist_count();
-                                        if ((signed)idx >= 0 && idx < num) {
-                                            playlist_api->playlist_rename(idx, temp, -1);
-                                        }
-                                    }
-                                }
+                                playlist_manager_utils::rename_playlist(idx, wnd);
                             }
                             break;
                         case ID_NEW: {

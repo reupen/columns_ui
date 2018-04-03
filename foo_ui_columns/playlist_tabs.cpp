@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "playlist_tabs.h"
 #include "main_window.h"
+#include "playlist_switcher_v2.h"
 
 cfg_guid cfg_default_playlist(GUID{0x68527c89, 0xb0f7, 0xf653, {0x00, 0x53, 0x8c, 0xeb, 0x47, 0xe7, 0xa3, 0xb3}},
     columns_ui::panels::guid_playlist_view_v2);
@@ -342,7 +343,7 @@ LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPA
                 remove_playlist_helper(idx);
             }
             if (cfg_plm_rename && msg == WM_LBUTTONDBLCLK) {
-                g_rename_playlist(idx, get_wnd());
+                playlist_manager_utils::rename_playlist(idx, get_wnd());
             }
         } else {
             unsigned new_idx = playlist_api->create_playlist(

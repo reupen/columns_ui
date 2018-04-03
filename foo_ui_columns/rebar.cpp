@@ -78,19 +78,19 @@ void cfg_rebar::import_config(
             panels.add_item(item.m_guid);
         new_entries.push_back(item);
     }
-    if (g_main_window)
+    if (cui::main_window.get_wnd())
         destroy_rebar();
 
     m_entries = new_entries;
     cfg_band_cache.reset();
 
-    if (g_main_window) {
+    if (cui::main_window.get_wnd()) {
         create_rebar();
         if (g_rebar) {
             ShowWindow(g_rebar, SW_SHOWNORMAL);
             UpdateWindow(g_rebar);
         }
-        size_windows();
+        cui::main_window.resize_child_windows();
     }
 }
 
@@ -335,7 +335,7 @@ HWND rebar_window::init()
         rv = wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
             WS_BORDER | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE | RBS_AUTOSIZE
                 | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
-            0, 0, 0, 0, g_main_window, (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
+            0, 0, 0, 0, cui::main_window.get_wnd(), (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
         // SetWindowTheme(wnd_rebar, L"Default", NULL);
     }
 

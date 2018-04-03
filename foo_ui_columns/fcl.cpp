@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "fcl.h"
+#include "main_window.h"
 
 // {EBD87879-65A7-4242-821B-812AF9F68E8F}
 const GUID cui::fcl::groups::titles_playlist_view
@@ -374,7 +375,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                 if (!uDialogBox(IDD_FCL_IMPORT, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
                     throw exception_aborted();
             }
-            uih::DisableRedrawScope p_NoRedraw(g_main_window);
+            uih::DisableRedrawScope p_NoRedraw(cui::main_window.get_wnd());
             for (i = 0; i < count; i++) {
                 cui::fcl::dataset_ptr ptr;
                 if (export_items.find_by_guid(datasets[i].guid, ptr)

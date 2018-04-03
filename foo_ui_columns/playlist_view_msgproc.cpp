@@ -3,6 +3,7 @@
 #include "playlist_view.h"
 #include "font_notify.h"
 #include "config_columns_v2.h"
+#include "playlist_item_helpers.h"
 
 LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -443,7 +444,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_MBUTTONUP: {
         m_no_next_edit = false;
         unsigned idx = hittest_item(GET_X_LPARAM(lp), GET_Y_LPARAM(lp));
-        playlist_mclick_actions::run(cfg_playlist_middle_action, idx != -1, idx);
+        cui::playlist_item_helpers::mclick_action::run(cfg_playlist_middle_action, idx != -1, idx);
     } break;
 
     case WM_LBUTTONUP: {
