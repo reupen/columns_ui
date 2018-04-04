@@ -850,7 +850,8 @@ void ng_playlist_view_t::notify_update_item_data(t_size index)
 
     if (b_global) {
         titleformat_hook_set_global<true, false> tf_hook_set_global(globals, false);
-        titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : nullptr, &tf_hook_date);
+        titleformat_hook_splitter_pt3 tf_hook(
+            &tf_hook_set_global, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
         m_playlist_api->activeplaylist_item_format_title(
             index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
     }
