@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ng_playlist/ng_playlist.h"
 #include "setup_dialog.h"
+#include "main_window.h"
 
 BOOL CALLBACK setup_dialog_t::g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {

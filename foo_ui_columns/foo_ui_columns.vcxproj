@@ -260,7 +260,6 @@
     <ClCompile Include=".\buttons_config_droptarget.cpp" />
     <ClCompile Include=".\buttons_config_listview.cpp" />
     <ClCompile Include=".\buttons_custom_image.cpp" />
-    <ClCompile Include=".\cache.cpp" />
     <ClCompile Include=".\colours_manager_data.cpp" />
     <ClCompile Include=".\columns_v2.cpp" />
     <ClCompile Include=".\component_impl.cpp" />
@@ -286,25 +285,11 @@
     <ClCompile Include=".\mw_wnd_proc.cpp" />
     <ClCompile Include=".\playlist_tabs_drop_target.cpp" />
     <ClCompile Include=".\playlist_tabs_wndproc.cpp" />
-    <ClCompile Include=".\playlist_view.cpp" />
-    <ClCompile Include=".\playlist_view_cache.cpp" />
-    <ClCompile Include=".\playlist_view_day_timer.cpp" />
-    <ClCompile Include=".\playlist_view_draw.cpp" />
-    <ClCompile Include=".\playlist_view_dropsource.cpp" />
-    <ClCompile Include=".\playlist_view_droptarget.cpp" />
-    <ClCompile Include=".\playlist_view_header.cpp" />
-    <ClCompile Include=".\playlist_view_hittest.cpp" />
-    <ClCompile Include=".\playlist_view_inline_edit.cpp" />
-    <ClCompile Include=".\playlist_view_keyboard.cpp" />
-    <ClCompile Include=".\playlist_view_msgproc.cpp" />
-    <ClCompile Include=".\playlist_view_msgwindow.cpp" />
-    <ClCompile Include=".\playlist_view_scroll.cpp" />
-    <ClCompile Include=".\playlist_view_sizing.cpp" />
     <ClCompile Include=".\playlist_view_tfhook.cpp" />
     <ClCompile Include=".\prefs_utils.cpp" />
     <ClCompile Include=".\setup_dialog.cpp" />
-    <ClCompile Include=".\sort.cpp" />
     <ClCompile Include="file_info_reader.cpp" />
+    <ClCompile Include="legacy_config.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist.cpp">
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\stdafx.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">..\stdafx.h</PrecompiledHeaderFile>
@@ -455,7 +440,6 @@
   <ItemGroup>
     <ClInclude Include=".\artwork_helpers.h" />
     <ClInclude Include=".\buttons.h" />
-    <ClInclude Include=".\cache.h" />
     <ClInclude Include=".\colours_manager_data.h" />
     <ClInclude Include=".\columns_v2.h" />
     <ClInclude Include=".\config_appearance.h" />
@@ -468,9 +452,8 @@
     <ClInclude Include=".\item_properties.h" />
     <ClInclude Include=".\menu_helpers.h" />
     <ClInclude Include=".\mw_drop_target.h" />
-    <ClInclude Include=".\playlist_view.h" />
+    <ClInclude Include="playlist_view_tfhooks.h" />
     <ClInclude Include=".\setup_dialog.h" />
-    <ClInclude Include=".\sort.h" />
     <ClInclude Include="file_info_reader.h" />
     <ClInclude Include="ng_playlist\ng_playlist.h" />
     <ClInclude Include="ng_playlist\ng_playlist_groups.h" />

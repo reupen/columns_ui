@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "playlist_view.h"
+#include "playlist_view_tfhooks.h"
 #include "columns_v2.h"
 
 void column_t::read(stream_reader* reader, abort_callback& abortCallback)
@@ -98,37 +98,6 @@ bool column_list_t::move_down(t_size idx)
         return true;
     }
     return false;
-}
-
-void column_t::get_to_display(titleformat_object::ptr& p_out)
-{
-    if (!to_display.is_valid())
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to_display, spec);
-    p_out = to_display;
-}
-
-void column_t::get_to_sort(titleformat_object::ptr& p_out)
-{
-    if (use_custom_sort) {
-        if (!to_sort.is_valid())
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(to_sort, sort_spec);
-        p_out = to_sort;
-    } else {
-        get_to_display(p_out);
-    }
-}
-
-void column_t::get_to_colour(titleformat_object::ptr& p_out)
-{
-    if (use_custom_colour) {
-        if (!to_colour.is_valid())
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(to_colour, colour_spec);
-        p_out = to_colour;
-    } else {
-        if (!g_to_global_colour.is_valid())
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(g_to_global_colour, cfg_colour);
-        p_out = g_to_global_colour;
-    }
 }
 
 void cfg_columns_t::get_data_raw(stream_writer* out, abort_callback& p_abort)

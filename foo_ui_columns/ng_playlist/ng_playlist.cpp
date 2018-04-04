@@ -8,6 +8,7 @@
 #include "ng_playlist_groups.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
+#include "../playlist_view_tfhooks.h"
 
 namespace artwork_panel {
 // extern cfg_string cfg_front;
@@ -695,7 +696,6 @@ bool ng_playlist_view_t::notify_on_contextmenu_header(const POINT& pt, const HDH
         tab_columns_v3::get_instance().show_column(column_index_display_to_actual(index));
     } else if (cmd == IDM_AUTOSIZE) {
         cfg_nohscroll = cfg_nohscroll == 0;
-        playlist_view::update_all_windows();
         pvt::ng_playlist_view_t::g_on_autosize_change();
     } else if (cmd == IDM_PREFS) {
         static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
@@ -705,11 +705,6 @@ bool ng_playlist_view_t::notify_on_contextmenu_header(const POINT& pt, const HDH
     } else if (cmd >= IDM_CUSTOM_BASE) {
         if (t_size(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
             g_columns[cmd - IDM_CUSTOM_BASE]->show = !g_columns[cmd - IDM_CUSTOM_BASE]->show; // g_columns
-            // if (!cfg_nohscroll)
-            // playlist_view::g_save_columns();
-            // g_cache.flush_all();
-            playlist_view::g_reset_columns();
-            playlist_view::update_all_windows();
             pvt::ng_playlist_view_t::g_on_columns_change();
         }
     }

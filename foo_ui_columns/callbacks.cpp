@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "ng_playlist/ng_playlist.h"
 #include "seekbar.h"
-#include "playlist_view.h"
+#include "playlist_view_tfhooks.h"
 #include "main_window.h"
 #include "notification_area.h"
 #include "status_bar.h"
@@ -20,7 +20,6 @@ public:
     void on_watched_object_changed(const service_ptr_t<config_object>& p_object) override
     {
         bool val = p_object->get_data_bool_simple(false);
-        playlist_view::g_on_playback_follows_cursor_change(val);
         pvt::ng_playlist_view_t::g_on_playback_follows_cursor_change(val);
     }
 };

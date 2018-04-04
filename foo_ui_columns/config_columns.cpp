@@ -1,7 +1,8 @@
 #include "stdafx.h"
 
-#include "playlist_view.h"
 #include "config.h"
+#include "playlist_view_tfhooks.h"
+#include "ng_playlist/ng_playlist_style.h"
 
 cfg_int g_cur_tab(GUID{0x1f7903e5, 0x9523, 0xac7e, {0xd4, 0xea, 0x13, 0xdd, 0xe5, 0xac, 0xc8, 0x66}}, 0);
 
@@ -169,10 +170,10 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                 if (b_global_colour_used)
                     for (unsigned i = 0; i < 10; i++) {
                         for (unsigned j = 0; j < 16; j++) {
-                            colourinfo col_item(0, 0, 0, 0, 0, 0);
+                            auto style_info = pvt::style_data_cell_info_t::g_create_default();
                             pfc::hires_timer timer;
                             timer.start();
-                            titleformat_hook_style tf_hook_style(col_item);
+                            pvt::titleformat_hook_style_v2 tf_hook_style(style_info, 0);
                             titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
                             titleformat_hook_date tf_hook_date(&st);
                             titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style,
@@ -233,10 +234,10 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                         time_temp = 0;
                         for (i = 0; i < 10; i++) {
                             for (unsigned j = 0; j < 16; j++) {
-                                colourinfo col_item(0, 0, 0, 0, 0, 0);
+                                auto style_info = pvt::style_data_cell_info_t::g_create_default();
                                 pfc::hires_timer timer;
                                 timer.start();
-                                titleformat_hook_style tf_hook_style(col_item);
+                                pvt::titleformat_hook_style_v2 tf_hook_style(style_info, 0);
                                 titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
                                 titleformat_hook_date tf_hook_date(&st);
                                 titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style,

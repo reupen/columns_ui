@@ -96,7 +96,6 @@ public:
         case WM_DESTROY: {
             g_editor_font_notify.release();
             save_string(wnd);
-            refresh_all_playlist_views();
             pvt::ng_playlist_view_t::g_update_all_items();
         } break;
 
@@ -107,7 +106,6 @@ public:
                 break;
             case IDC_DATE:
                 cfg_playlist_date = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                set_day_timer();
                 pvt::ng_playlist_view_t::g_on_use_date_info_change();
                 break;
             case IDC_TFHELP: {
@@ -150,7 +148,6 @@ public:
                     cfg_colour = g_default_colour;
                     if (g_cur_tab2 == 1)
                         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
-                    refresh_all_playlist_views();
                     pvt::ng_playlist_view_t::g_update_all_items();
                 }
             }
@@ -161,7 +158,6 @@ public:
                 break;
             case IDC_APPLY:
                 save_string(wnd);
-                refresh_all_playlist_views();
                 pvt::ng_playlist_view_t::g_update_all_items();
                 break;
             case IDC_PICK_COLOUR:
