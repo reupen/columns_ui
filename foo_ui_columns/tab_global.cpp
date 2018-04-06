@@ -137,7 +137,7 @@ public:
                         "\n\nNew global format: $set_global(var, val), retreive values using $get_global(var)",
                         "Global help", 0);
                 } else if (cmd == IDM_SPEEDTEST) {
-                    speedtest(g_columns, cfg_global != 0, cfg_oldglobal != 0, cfg_playlist_date != 0);
+                    speedtest(g_columns, cfg_global != 0, false, cfg_playlist_date != 0);
                 } else if (cmd == IDM_PREVIEW) {
                     preview_to_console(string_utf8_from_window(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
                 } else if (cmd == IDM_EDITORFONT) {

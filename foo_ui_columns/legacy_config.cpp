@@ -1,10 +1,12 @@
 #include "stdafx.h"
 
 /**
- * Contains appearance clients for legacy playlist view colours and fonts.
+ * Contains configuration variable and appearance clients for the legacy playlist view.
  *
  * These are being temporarily retained, so they are are not lost following an upgrade and a downgrade.
  */
+
+cfg_int cfg_oldglobal(GUID{0x512eace5, 0x25c3, 0xb722, {0x28, 0x8b, 0xb3, 0x4a, 0xc5, 0x80, 0xf4, 0xbf}}, 0);
 
 class appearance_client_pv_impl : public cui::colours::client {
 public:
