@@ -92,9 +92,7 @@ void colours_manager_data::get_data_raw(stream_writer* p_stream, abort_callback&
 }
 
 colours_manager_data::entry_t::entry_t(bool b_global /*= false*/)
-    : colour_mode(b_global
-              ? (mmh::is_windows_vista_or_newer() ? cui::colours::colour_mode_themed : cui::colours::colour_mode_system)
-              : cui::colours::colour_mode_global)
+    : colour_mode(b_global ? cui::colours::colour_mode_themed : cui::colours::colour_mode_global)
 {
     reset_colors();
 }
