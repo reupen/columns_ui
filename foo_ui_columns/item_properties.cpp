@@ -581,7 +581,7 @@ public:
 class font_group_client_selection_properties : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_selection_properties_group_font_client; }
-    void get_name(pfc::string_base& p_out) const override { p_out = "Item Properties: Group titles"; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Group titles"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
