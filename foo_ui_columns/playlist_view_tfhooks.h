@@ -37,21 +37,12 @@ public:
 template <bool set = true, bool get = true>
 class titleformat_hook_set_global : public titleformat_hook {
     global_variable_list& p_vars;
-    bool b_legacy;
 
 public:
     bool process_field(
         titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override
     {
         p_found_flag = false;
-        if (b_legacy && p_name_length > 1 && p_name[0] == '_') {
-            const char* ptr = p_vars.find_by_name(p_name + 1, p_name_length - 1);
-            if (ptr) {
-                p_out->write(titleformat_inputtypes::unknown, ptr, pfc_infinite);
-                p_found_flag = true;
-                return true;
-            }
-        }
         return false;
     }
 
@@ -96,7 +87,7 @@ public:
         return false;
     }
 
-    titleformat_hook_set_global(global_variable_list& vars, bool legacy = false) : p_vars(vars), b_legacy(legacy){};
+    titleformat_hook_set_global(global_variable_list& vars) : p_vars(vars) {};
 };
 
 class titleformat_hook_date : public titleformat_hook {

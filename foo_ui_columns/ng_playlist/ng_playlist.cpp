@@ -446,7 +446,7 @@ void ng_playlist_view_t::notify_sort_column(t_size index, bool b_descending, boo
                     titleformat_hook_playlist_name tf_hook_playlist_name;
 
                     if (extra) {
-                        titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items, false);
+                        titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items);
                         titleformat_hook_splitter_pt3 tf_hook(
                             &tf_hook_set_global, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
                         pfc::string8 output;
@@ -454,7 +454,7 @@ void ng_playlist_view_t::notify_sort_column(t_size index, bool b_descending, boo
                             n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
                     }
 
-                    titleformat_hook_set_global<false, true> tf_hook_get_global(extra_items, false);
+                    titleformat_hook_set_global<false, true> tf_hook_get_global(extra_items);
                     titleformat_hook_splitter_pt3 tf_hook(
                         extra ? &tf_hook_get_global : nullptr, date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
@@ -849,7 +849,7 @@ void ng_playlist_view_t::notify_update_item_data(t_size index)
     titleformat_hook_playlist_name tf_hook_playlist_name;
 
     if (b_global) {
-        titleformat_hook_set_global<true, false> tf_hook_set_global(globals, false);
+        titleformat_hook_set_global<true, false> tf_hook_set_global(globals);
         titleformat_hook_splitter_pt3 tf_hook(
             &tf_hook_set_global, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
         m_playlist_api->activeplaylist_item_format_title(
@@ -866,7 +866,7 @@ void ng_playlist_view_t::notify_update_item_data(t_size index)
     metadb_handle_ptr ptr;
     m_playlist_api->activeplaylist_get_item_handle(ptr, index);
 
-    titleformat_hook_set_global<false, true> tf_hook_get_global(globals, false);
+    titleformat_hook_set_global<false, true> tf_hook_get_global(globals);
 
     t_size item_index = get_item_display_index(index);
     for (i = 0; i < count_display_groups; i++) {

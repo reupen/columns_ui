@@ -33,7 +33,7 @@ void preview_to_console(const char* spec, bool extra)
 
             titleformat_hook_playlist_name tf_hook_playlist_name;
             titleformat_hook_date tf_hook_date(&st);
-            titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items, false);
+            titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items);
             titleformat_hook_splitter_pt3 tf_hook(
                 &tf_hook_set_global, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
             playlist_api->activeplaylist_item_format_title(
@@ -43,7 +43,7 @@ void preview_to_console(const char* spec, bool extra)
         service_ptr_t<titleformat_object> to_temp;
         static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, spec);
 
-        titleformat_hook_set_global<false, true> tf_hook_set_global(extra_items, false);
+        titleformat_hook_set_global<false, true> tf_hook_set_global(extra_items);
         titleformat_hook_date tf_hook_date(&st);
 
         titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : nullptr);

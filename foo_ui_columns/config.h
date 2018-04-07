@@ -100,7 +100,7 @@ public:
         }
     }
 };
-void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_date);
+void speedtest(column_list_cref_t columns, bool b_global, bool b_date);
 
 extern editor_font_notify g_editor_font_notify;
 extern cfg_uint g_last_colour;

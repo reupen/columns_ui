@@ -390,7 +390,7 @@ public:
                 } else if (cmd == IDM_SHELP) {
                     uMessageBox(wnd, COLOUR_HELP, "Style string help", 0);
                 } else if (cmd == IDM_SPEEDTEST) {
-                    speedtest(g_columns, cfg_global != 0, false, cfg_playlist_date != 0);
+                    speedtest(g_columns, cfg_global != 0, cfg_playlist_date != 0);
                 } else if (cmd == IDM_PREVIEW) {
                     preview_to_console(string_utf8_from_window(wnd, IDC_STRING), cfg_global != 0);
                 } else if (cmd == IDM_EDITORFONT) {

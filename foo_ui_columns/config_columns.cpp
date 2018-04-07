@@ -42,7 +42,7 @@ void double_to_string(double blah, pfc::string_base& p_out, int points = 10, boo
     }
 }
 
-void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_date)
+void speedtest(column_list_cref_t columns, bool b_global, bool b_date)
 {
     static_api_ptr_t<playlist_manager> playlist_api;
     static_api_ptr_t<titleformat_compiler> titleformat_api;
@@ -126,7 +126,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                             pfc::hires_timer timer;
                             timer.start();
                             {
-                                titleformat_hook_set_global<true, false> tf_hook_set_global(p_vars, b_legacy);
+                                titleformat_hook_set_global<true, false> tf_hook_set_global(p_vars);
                                 if (b_date) {
                                     titleformat_hook_date tf_hook_date(&st);
                                     titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, &tf_hook_date);
@@ -138,26 +138,6 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                                 }
 
                                 //    if (map_codes) extra_formatted.replace_char(3, 6);
-
-                                if (b_legacy) {
-                                    const char* ptr = str_temp;
-
-                                    const char* start = ptr;
-
-                                    while (*ptr) {
-                                        start = ptr;
-                                        while (*ptr && *ptr != '\x07')
-                                            ptr++;
-                                        if (ptr > start) {
-                                            const char* p_equal = strchr_n(start + 1, '=', ptr - start - 1);
-                                            if (p_equal) {
-                                                p_vars.add_item(start, p_equal - start, p_equal + 1, ptr - p_equal - 1);
-                                            }
-                                        }
-                                        while (*ptr && *ptr == '\x07')
-                                            ptr++;
-                                    }
-                                }
                             }
                             time_temp += timer.query();
                         }
@@ -174,7 +154,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                             pfc::hires_timer timer;
                             timer.start();
                             pvt::titleformat_hook_style_v2 tf_hook_style(style_info, 0);
-                            titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+                            titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars);
                             titleformat_hook_date tf_hook_date(&st);
                             titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style,
                                 b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
@@ -204,7 +184,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                         for (unsigned j = 0; j < 16; j++) {
                             pfc::hires_timer timer;
                             timer.start();
-                            titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+                            titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars);
                             titleformat_hook_date tf_hook_date(&st);
                             titleformat_hook_impl_splitter tf_hook(
                                 b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
@@ -238,7 +218,7 @@ void speedtest(column_list_cref_t columns, bool b_global, bool b_legacy, bool b_
                                 pfc::hires_timer timer;
                                 timer.start();
                                 pvt::titleformat_hook_style_v2 tf_hook_style(style_info, 0);
-                                titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars, b_legacy);
+                                titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars);
                                 titleformat_hook_date tf_hook_date(&st);
                                 titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style,
                                     b_global ? &tf_hook_set_global : nullptr, b_date ? &tf_hook_date : nullptr);
