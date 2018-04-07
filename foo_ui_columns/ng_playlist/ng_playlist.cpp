@@ -565,7 +565,7 @@ void ng_playlist_view_t::notify_on_create()
         set_day_timer();
 
     console::formatter formatter;
-    formatter << "NG playlist initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
+    formatter << "Playlist view initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
 }
 
 void ng_playlist_view_t::notify_on_destroy()
@@ -1102,7 +1102,7 @@ const GUID& ng_playlist_view_t::get_extension_guid() const
 
 void ng_playlist_view_t::get_name(pfc::string_base& out) const
 {
-    out.set_string("NG playlist");
+    out.set_string("Playlist view");
 }
 bool ng_playlist_view_t::get_short_name(pfc::string_base& out) const
 {
@@ -1141,7 +1141,7 @@ const GUID g_guid_group_header_font = {0xfb127ffa, 0x1b35, 0x4572, {0x9c, 0x1a, 
 class font_client_ngpv : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_items_font; }
-    void get_name(pfc::string_base& p_out) const override { p_out = "NG playlist: Items"; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Items"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
@@ -1151,7 +1151,7 @@ public:
 class font_header_client_ngpv : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_header_font; }
-    void get_name(pfc::string_base& p_out) const override { p_out = "NG playlist: Column titles"; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Column titles"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
@@ -1161,7 +1161,7 @@ public:
 class font_group_header_client_ngpv : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_group_header_font; }
-    void get_name(pfc::string_base& p_out) const override { p_out = "NG playlist: Group titles"; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Group titles"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
