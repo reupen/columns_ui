@@ -79,7 +79,6 @@ public:
                     int new_height = GetDlgItemInt(wnd, IDC_HEIGHT, &result, TRUE);
                     if (result)
                         settings::playlist_view_item_padding = new_height;
-                    refresh_all_playlist_views();
                     pvt::ng_playlist_view_t::g_on_vertical_item_padding_change();
                 }
 
@@ -112,62 +111,24 @@ public:
 
             case IDC_ELLIPSIS:
                 cfg_ellipsis = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                refresh_all_playlist_views();
                 pvt::ng_playlist_view_t::s_redraw_all();
                 break;
 
             case IDC_HEADER: {
                 cfg_header = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                unsigned pcount = playlist_view::list_playlist.get_count();
-                for (unsigned m = 0; m < pcount; m++) {
-                    playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
-                    p_playlist->create_header();
-                    if (p_playlist->wnd_header)
-                        p_playlist->move_header();
-                    else
-                        p_playlist->update_scrollbar();
-                }
                 pvt::ng_playlist_view_t::g_on_show_header_change();
             } break;
             case IDC_NOHSCROLL: {
                 cfg_nohscroll = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                playlist_view::update_all_windows();
                 pvt::ng_playlist_view_t::g_on_autosize_change();
             } break;
 
             case IDC_HHTRACK: {
                 cfg_header_hottrack = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                unsigned pcount = playlist_view::list_playlist.get_count();
-                for (unsigned m = 0; m < pcount; m++) {
-                    playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
-                    long flags = WS_CHILD | WS_VISIBLE | HDS_HOTTRACK | HDS_HORZ | (cfg_nohscroll ? 0 : HDS_FULLDRAG)
-                        | (cfg_header_hottrack ? HDS_BUTTONS : 0);
-                    SetWindowLongPtr(p_playlist->wnd_header, GWL_STYLE, flags);
-                }
                 pvt::ng_playlist_view_t::g_on_sorting_enabled_change();
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLEDGE: {
                 cfg_frame = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
-                {
-                    unsigned pcount = playlist_view::list_playlist.get_count();
-                    for (unsigned m = 0; m < pcount; m++) {
-                        playlist_view* p_playlist = playlist_view::list_playlist.get_item(m);
-                        if (p_playlist->wnd_playlist) {
-                            long flags = 0;
-                            if (cfg_frame == 1)
-                                flags |= WS_EX_CLIENTEDGE;
-                            if (cfg_frame == 2)
-                                flags |= WS_EX_STATICEDGE;
-
-                            SetWindowLongPtr(p_playlist->wnd_playlist, GWL_EXSTYLE, flags);
-
-                            SetWindowPos(p_playlist->wnd_playlist, nullptr, 0, 0, 0, 0,
-                                SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
-                            //                    move_window_controls();
-                            //                    RedrawWindow(g_test, 0, 0, RDW_INVALIDATE|RDW_UPDATENOW);
-                        }
-                    }
-                }
                 pvt::ng_playlist_view_t::g_on_edge_style_change();
             } break;
             case IDC_INLINE_MODE: {

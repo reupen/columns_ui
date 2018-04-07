@@ -57,10 +57,6 @@ public:
 
     ptr source_item;
 
-    void get_to_display(titleformat_object::ptr& p_out);
-    void get_to_colour(titleformat_object::ptr& p_out);
-    void get_to_sort(titleformat_object::ptr& p_out);
-
     void read(stream_reader* reader, abort_callback& abortCallback);
     void write(stream_writer* writer, abort_callback& abortCallback) const;
     void read_extra(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback);

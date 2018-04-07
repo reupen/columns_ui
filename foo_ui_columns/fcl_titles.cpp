@@ -153,7 +153,6 @@ class export_columns : public cui::fcl::dataset {
         }
 
         g_columns.set_entries_ref(newcolumns);
-        refresh_all_playlist_views();
         pvt::ng_playlist_view_t::g_on_columns_change();
     }
 };
@@ -374,7 +373,6 @@ class export_pview : public cui::fcl::dataset {
             }
         }
 
-        refresh_all_playlist_views();
         pvt::ng_playlist_view_t::g_on_autosize_change();
         pvt::ng_playlist_view_t::g_on_vertical_item_padding_change();
         pvt::ng_playlist_view_t::g_on_show_header_change();

@@ -765,7 +765,6 @@ void tab_columns_v3::apply()
     g_columns.set_entries_copy(m_columns);
     for (size_t i = 0, count = m_columns.get_count(); i < count; i++)
         m_columns[i]->source_item = g_columns[i];
-    refresh_all_playlist_views();
     pvt::ng_playlist_view_t::g_on_columns_change();
 }
 

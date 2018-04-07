@@ -31,8 +31,6 @@ HICON g_icon = nullptr;
 
 pfc::string8 statusbartext;
 
-HFONT g_font = nullptr;
-
 bool remember_window_pos()
 {
     return config_object::g_get_data_bool_simple(standard_config_objects::bool_remember_window_positions, false);

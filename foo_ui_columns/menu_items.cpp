@@ -2,6 +2,7 @@
 #include "menu_items.h"
 #include "layout.h"
 #include "ng_playlist/ng_playlist.h"
+#include "main_window.h"
 
 namespace cui::main_menu {
 

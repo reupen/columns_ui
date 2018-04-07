@@ -17,8 +17,6 @@ extern bool g_playing;
 extern HICON g_icon;
 extern bool ui_initialising, g_minimised, g_icon_created;
 
-extern HFONT g_font;
-
 extern pfc::string8 statusbartext;
 
 extern HIMAGELIST g_imagelist;

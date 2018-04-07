@@ -1,7 +1,7 @@
 #pragma once
 
 #include "ng_playlist_style.h"
-#include "../playlist_view.h"
+#include "../playlist_view_tfhooks.h"
 #include "../artwork.h"
 #include "../config.h"
 #include "../list_view_panel.h"
@@ -575,7 +575,6 @@ private:
         if (act != pfc_infinite && act < g_columns.get_count()) {
             g_columns[act]->width = new_width;
             g_on_column_widths_change(this);
-            playlist_view::g_on_columns_size_change();
         }
     };
 
@@ -584,8 +583,6 @@ private:
         t_size act_from = column_index_display_to_actual(index_from);
         t_size act_to = column_index_display_to_actual(index_to);
         g_columns.move(act_from, act_to);
-        playlist_view::g_reset_columns();
-        playlist_view::update_all_windows();
         pvt::ng_playlist_view_t::g_on_columns_change();
     }
 

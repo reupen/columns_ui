@@ -4,12 +4,6 @@
     <Filter Include="Panels">
       <UniqueIdentifier>{b19366fb-a9d2-428e-8041-ab38abc39a3f}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Panels\Columns Playlist">
-      <UniqueIdentifier>{b772bc74-9a73-4f13-9ff9-6a24d6106ce9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Panels\NG Playlist">
-      <UniqueIdentifier>{9bc42edf-9fd0-4976-b96f-a1ac4492b347}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Panels\Others">
       <UniqueIdentifier>{6047e99d-011a-442c-9c20-737a5d355212}</UniqueIdentifier>
     </Filter>
@@ -64,49 +58,37 @@
     <Filter Include="Prefs UI">
       <UniqueIdentifier>{2a5af301-f1df-434b-aa47-3252737e8232}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Panels\Playlist view">
+      <UniqueIdentifier>{9bc42edf-9fd0-4976-b96f-a1ac4492b347}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include=".\cache.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\columns_v2.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_cache.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\sort.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_callbacks.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_clipboard.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_dropsource.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_droptarget.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_inline_edit.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_renderer.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_style.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include=".\playlist_search.cpp">
       <Filter>Panels\Others</Filter>
@@ -300,45 +282,6 @@
     <ClCompile Include=".\filter_search_bar.cpp">
       <Filter>Panels\Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_view_dropsource.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_droptarget.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_draw.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_hittest.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_header.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_scroll.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_inline_edit.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_msgproc.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_msgwindow.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_day_timer.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_keyboard.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_sizing.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
-    <ClCompile Include=".\playlist_view_tfhook.cpp">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClCompile>
     <ClCompile Include=".\splitter_window.cpp">
       <Filter>Panels\Splitter</Filter>
     </ClCompile>
@@ -452,7 +395,7 @@
       <Filter>Main Window</Filter>
     </ClCompile>
     <ClCompile Include="ng_playlist\ng_playlist_artwork.cpp">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="file_info_reader.cpp">
       <Filter>Helpers</Filter>
@@ -475,28 +418,25 @@
     <ClCompile Include="playlist_item_helpers.cpp">
       <Filter>Helpers</Filter>
     </ClCompile>
+    <ClCompile Include=".\columns_v2.cpp">
+      <Filter>Panels\Playlist view</Filter>
+    </ClCompile>
+    <ClCompile Include=".\playlist_view_tfhook.cpp">
+      <Filter>Panels\Playlist view</Filter>
+    </ClCompile>
+    <ClCompile Include="legacy_config.cpp">
+      <Filter>Panels\Playlist view</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include=".\cache.h">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClInclude>
-    <ClInclude Include=".\columns_v2.h">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClInclude>
-    <ClInclude Include=".\playlist_view.h">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClInclude>
-    <ClInclude Include=".\sort.h">
-      <Filter>Panels\Columns Playlist</Filter>
-    </ClInclude>
     <ClInclude Include="ng_playlist\ng_playlist.h">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClInclude>
     <ClInclude Include="ng_playlist\ng_playlist_groups.h">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClInclude>
     <ClInclude Include="ng_playlist\ng_playlist_style.h">
-      <Filter>Panels\NG Playlist</Filter>
+      <Filter>Panels\Playlist view</Filter>
     </ClInclude>
     <ClInclude Include=".\playlist_search.h">
       <Filter>Panels\Others</Filter>
@@ -663,6 +603,12 @@
     </ClInclude>
     <ClInclude Include="playlist_item_helpers.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include=".\columns_v2.h">
+      <Filter>Panels\Playlist view</Filter>
+    </ClInclude>
+    <ClInclude Include="playlist_view_tfhooks.h">
+      <Filter>Panels\Playlist view</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

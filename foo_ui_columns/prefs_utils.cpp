@@ -1,5 +1,5 @@
 #include "stdafx.h"
-#include "playlist_view.h"
+#include "playlist_view_tfhooks.h"
 #include "tab_colours.h"
 #include "prefs_utils.h"
 
@@ -21,12 +21,25 @@ void preview_to_console(const char* spec, bool extra)
         pfc::string8 temp;
 
         bool b_date = cfg_playlist_date != 0;
-        SYSTEMTIME st;
+        SYSTEMTIME st{};
         if (b_date)
             GetLocalTime(&st);
 
         global_variable_list extra_items;
-        playlist_view::g_get_cache().active_make_extra(idx, extra_items, b_date ? &st : nullptr, false);
+        if (extra) {
+            pfc::string8_fast_aggressive str_dummy;
+            service_ptr_t<titleformat_object> to_global;
+            static_api_ptr_t<titleformat_compiler>()->compile_safe(to_global, cfg_globalstring);
+
+            titleformat_hook_playlist_name tf_hook_playlist_name;
+            titleformat_hook_date tf_hook_date(&st);
+            titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items, false);
+            titleformat_hook_splitter_pt3 tf_hook(
+                &tf_hook_set_global, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+            playlist_api->activeplaylist_item_format_title(
+                idx, &tf_hook, str_dummy, to_global, nullptr, play_control::display_level_all);
+        }
+
         service_ptr_t<titleformat_object> to_temp;
         static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, spec);
 
