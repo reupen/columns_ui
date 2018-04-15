@@ -491,6 +491,7 @@
     <ClInclude Include=".\helpers.h" />
     <ClInclude Include="config_columns_v2.h" />
     <ClInclude Include="config_host.h" />
+    <ClInclude Include="drop_down_list_toolbar.h" />
     <ClInclude Include="filter_search_bar.h" />
     <ClInclude Include="list_view_panel.h" />
     <ClInclude Include="notification_area.h" />
