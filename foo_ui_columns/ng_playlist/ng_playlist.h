@@ -296,7 +296,7 @@ public:
 
     const GUID& get_client_guid() const override { return g_guid; };
 
-    void get_name(pfc::string_base& p_out) const override { p_out = "NG playlist"; };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; };
 
     t_size get_supported_colours() const override { return cui::colours::colour_flag_all; }; // bit-mask
     t_size get_supported_bools() const override

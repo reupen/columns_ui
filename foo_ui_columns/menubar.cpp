@@ -269,12 +269,9 @@ LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             //            SendMessage(wnd_menu, TB_AUTOSIZE, 0, 0);
 
-            // if (is_win2k_or_newer())
-            {
-                BOOL a = true;
-                SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
-                SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
-            }
+            BOOL a = true;
+            SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
+            SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
 
             //            SendMessage(wnd_menu, TB_SETPARENT, (WPARAM) (HWND)wnd_host, 0);
             menuproc = (WNDPROC)SetWindowLongPtr(wnd_menu, GWLP_WNDPROC, (LPARAM)main_hook);
@@ -326,20 +323,14 @@ LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case MSG_HIDE_MENUACC: {
-        // if (is_win2k_or_newer())
-        {
-            BOOL a = true;
-            SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
-            if ((SendMessage(wnd_menu, WM_QUERYUISTATE, 0, 0) & UISF_HIDEACCEL) != !a)
-                SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
-        }
+        BOOL a = true;
+        SystemParametersInfo(SPI_GETKEYBOARDCUES, 0, &a, 0);
+        if ((SendMessage(wnd_menu, WM_QUERYUISTATE, 0, 0) & UISF_HIDEACCEL) != !a)
+            SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(a ? UIS_CLEAR : UIS_SET, UISF_HIDEACCEL), 0);
         break;
     }
     case MSG_SHOW_MENUACC: {
-        // if (is_win2k_or_newer())
-        {
-            SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), 0);
-        }
+        SendMessage(wnd_menu, WM_UPDATEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEACCEL), 0);
         break;
     }
     case MSG_CREATE_MENU: {

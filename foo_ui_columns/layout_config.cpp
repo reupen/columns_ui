@@ -140,7 +140,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                     index_playlist, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
                 cfg_layout_t::preset preset_default;
-                preset_default.m_name = "NG playlist + Playlist switcher";
+                preset_default.m_name = "Playlist switcher";
                 preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
                 stream_writer_memblock_ref conf(preset_default.m_val, true);
                 splitter->get_config(&conf, abortCallbackDummy);
@@ -212,7 +212,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                     index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
                 cfg_layout_t::preset preset_default;
-                preset_default.m_name = "NG playlist + Playlist switcher + Filters";
+                preset_default.m_name = "Playlist switcher + Filters";
                 preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
                 stream_writer_memblock_ref conf(preset_default.m_val, true);
                 splitter->get_config(&conf, abortCallbackDummy);
@@ -233,7 +233,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                 splitter->set_config_item_t(
                     0, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
 
-                preset_default.m_name = "NG playlist + Playlist switcher + Artwork + Filters";
+                preset_default.m_name = "Playlist switcher + Artwork + Filters";
                 preset_default.m_val.set_size(0);
                 splitter->get_config(&conf, abortCallbackDummy);
                 t_size index_preset = p_out.add_item(preset_default);
@@ -246,7 +246,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                 splitter->replace_panel(index_splitter2, &item3);
                 splitter->set_config_item_t(
                     index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                preset_default.m_name = "NG playlist + Playlist switcher + Artwork";
+                preset_default.m_name = "Playlist switcher + Artwork";
                 splitter->get_config_to_array(preset_default.m_val, abortCallbackDummy, true);
                 p_out.insert_item(preset_default, index_preset);
             }
@@ -334,7 +334,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                     index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
                 cfg_layout_t::preset preset_default;
-                preset_default.m_name = "NG playlist + Playlist switcher + Item details + Artwork";
+                preset_default.m_name = "Playlist switcher + Item details + Artwork";
                 preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
                 stream_writer_memblock_ref conf(preset_default.m_val, true);
                 splitter->get_config(&conf, abortCallbackDummy);
@@ -360,7 +360,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                 splitter->set_config_item_t(1, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
                 cfg_layout_t::preset preset_default2;
-                preset_default2.m_name = "NG playlist + Playlist switcher + Filters + Item details + Artwork";
+                preset_default2.m_name = "Playlist switcher + Filters + Item details + Artwork";
                 preset_default2.m_guid = columns_ui::panels::guid_horizontal_splitter;
                 stream_writer_memblock_ref conft(preset_default2.m_val, true);
                 splitter->get_config(&conft, abortCallbackDummy);
@@ -379,7 +379,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                 splitter->add_panel(&item);
 
                 cfg_layout_t::preset preset_default;
-                preset_default.m_name = "NG playlist + Playlist tabs";
+                preset_default.m_name = "Playlist tabs";
                 preset_default.m_guid = columns_ui::panels::guid_playlist_tabs;
                 stream_writer_memblock_ref conf(preset_default.m_val, true);
                 splitter->get_config(&conf, abortCallbackDummy);
@@ -454,7 +454,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                     index_splitter2, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
 
                 cfg_layout_t::preset preset_default;
-                preset_default.m_name = "NG playlist + Playlist tabs + Filters";
+                preset_default.m_name = "Playlist tabs + Filters";
                 preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
                 stream_writer_memblock_ref conf(preset_default.m_val, true);
                 splitter->get_config(&conf, abortCallbackDummy);
@@ -492,7 +492,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                 splitter->set_config_item_t(
                     index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
-                preset_default.m_name = "NG playlist + Playlist tabs + Filters + Item details + Artwork";
+                preset_default.m_name = "Playlist tabs + Filters + Item details + Artwork";
                 preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 
                 splitter->get_config_to_array(preset_default.m_val, abortCallbackDummy, true);
@@ -508,7 +508,7 @@ void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_o
                 splitter->set_config_item_t(
                     index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
 
-                preset_default.m_name = "NG playlist + Playlist tabs + Item details + Artwork";
+                preset_default.m_name = "Playlist tabs + Item details + Artwork";
                 preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
 
                 splitter->get_config_to_array(preset_default.m_val, abortCallbackDummy, true);

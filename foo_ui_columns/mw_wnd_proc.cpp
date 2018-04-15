@@ -268,12 +268,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (!g_rebar_window || !g_rebar_window->get_previous_menu_focus_window(g_wnd_focused_before_menu))
                 g_wnd_focused_before_menu = g_layout_window.get_previous_menu_focus_window();
 
-            // if (is_win2k_or_newer())
-            {
-                if (g_rebar_window)
-                    g_rebar_window->hide_accelerators();
-                g_layout_window.hide_menu_access_keys();
-            }
+            if (g_rebar_window)
+                g_rebar_window->hide_accelerators();
+            g_layout_window.hide_menu_access_keys();
         }
     } break;
     case WM_SETFOCUS: {
@@ -543,17 +540,14 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         win32_helpers::send_message_to_direct_children(wnd, msg, wp, lp);
         break;
     case WM_THEMECHANGED:
-        if (mmh::is_windows_xp_or_newer()) {
-            if (g_rebar_window)
-                g_rebar_window->on_themechanged();
-            if (g_status) {
-                status_bar::destroy_theme_handle();
-                status_bar::create_theme_handle();
-                status_bar::set_part_sizes(status_bar::t_parts_none);
-            }
+        if (g_rebar_window)
+            g_rebar_window->on_themechanged();
+        if (g_status) {
+            status_bar::destroy_theme_handle();
+            status_bar::create_theme_handle();
+            status_bar::set_part_sizes(status_bar::t_parts_none);
         }
         break;
-
     case WM_KEYDOWN:
         if (process_keydown(msg, lp, wp))
             return 0;
