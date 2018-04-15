@@ -430,6 +430,7 @@
     <ClCompile Include="config_host.cpp" />
     <ClCompile Include="list_view_panel.cpp" />
     <ClCompile Include="notification_area.cpp" />
+    <ClCompile Include="output_device.cpp" />
     <ClCompile Include="playlist_item_helpers.cpp" />
     <ClCompile Include="rebar_band.cpp" />
     <ClCompile Include="splitter_utils.cpp" />
