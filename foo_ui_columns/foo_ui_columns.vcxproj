@@ -430,6 +430,7 @@
     <ClCompile Include="config_host.cpp" />
     <ClCompile Include="list_view_panel.cpp" />
     <ClCompile Include="notification_area.cpp" />
+    <ClCompile Include="output_device.cpp" />
     <ClCompile Include="playlist_item_helpers.cpp" />
     <ClCompile Include="rebar_band.cpp" />
     <ClCompile Include="splitter_utils.cpp" />
@@ -491,6 +492,7 @@
     <ClInclude Include=".\helpers.h" />
     <ClInclude Include="config_columns_v2.h" />
     <ClInclude Include="config_host.h" />
+    <ClInclude Include="drop_down_list_toolbar.h" />
     <ClInclude Include="filter_search_bar.h" />
     <ClInclude Include="list_view_panel.h" />
     <ClInclude Include="notification_area.h" />

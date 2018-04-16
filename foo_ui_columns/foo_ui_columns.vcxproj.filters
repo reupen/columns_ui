@@ -427,6 +427,12 @@
     <ClCompile Include="legacy_config.cpp">
       <Filter>Panels\Playlist view</Filter>
     </ClCompile>
+    <ClCompile Include="drop_down_list_toolbar.h">
+      <Filter>Toolbars</Filter>
+    </ClCompile>
+    <ClCompile Include="output_device.cpp">
+      <Filter>Toolbars</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ng_playlist\ng_playlist.h">
