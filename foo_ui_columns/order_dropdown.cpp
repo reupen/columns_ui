@@ -37,6 +37,7 @@ struct PlaybackOrderToolbarArgs {
 
     static constexpr void on_first_window_created() {}
     static constexpr void on_last_window_destroyed() {}
+    static constexpr bool is_available() { return true; }
     static constexpr bool refresh_on_click = false;
     static constexpr const wchar_t* class_name{L"columns_ui_playback_order_i3z1Bci1KNo"};
     static constexpr const char* name{"Playback order"};

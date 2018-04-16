@@ -24,6 +24,7 @@ public:
     unsigned get_type() const override { return ui_extension::type_toolbar; };
     void get_name(pfc::string_base& out) const override { out = ToolbarArgs::name; }
     void get_category(pfc::string_base& out) const override { out.set_string("Toolbars"); }
+    bool is_available(const uie::window_host_ptr& p_host) const override { return ToolbarArgs::is_available(); }
     class_data& get_class_data() const override
     {
         __implement_get_class_data_child_ex(ToolbarArgs::class_name, false, false);

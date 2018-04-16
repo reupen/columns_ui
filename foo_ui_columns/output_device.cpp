@@ -8,6 +8,10 @@ struct OutputDeviceToolbarArgs {
     static auto get_items()
     {
         ItemList items;
+
+        if (!is_available())
+            return items;
+
         auto api = output_manager_v2::get();
 
         api->listDevices([&items](auto&& name, auto&& output_id, auto&& device_id) {
@@ -18,6 +22,9 @@ struct OutputDeviceToolbarArgs {
     }
     static ID get_active_item()
     {
+        if (!is_available())
+            return ID{};
+
         auto api = output_manager_v2::get();
         outputCoreConfig_t config{};
         api->getCoreConfig(config);
@@ -25,6 +32,9 @@ struct OutputDeviceToolbarArgs {
     }
     static void set_active_item(ID id)
     {
+        if (!is_available())
+            return;
+
         auto api = output_manager_v2::get();
         auto items = get_items();
         const auto iter
@@ -37,10 +47,14 @@ struct OutputDeviceToolbarArgs {
     }
     static void on_first_window_created()
     {
+        if (!is_available())
+            return;
+
         auto api = output_manager_v2::get();
         callback_handle = api->addCallback([] { DropDownListToolbar<OutputDeviceToolbarArgs>::s_refresh_all_items(); });
     }
     static void on_last_window_destroyed() { callback_handle.release(); }
+    static bool is_available() { return static_api_test_t<output_manager_v2>(); }
     static service_ptr callback_handle;
     static constexpr bool refresh_on_click = true;
     static constexpr const wchar_t* class_name{L"columns_ui_output_device_DQLvIKXzFVY"};
