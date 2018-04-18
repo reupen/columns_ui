@@ -433,6 +433,7 @@
     <ClCompile Include="output_device.cpp" />
     <ClCompile Include="playlist_item_helpers.cpp" />
     <ClCompile Include="rebar_band.cpp" />
+    <ClCompile Include="replaygain_mode.cpp" />
     <ClCompile Include="splitter_utils.cpp" />
     <ClCompile Include="tab_layout.cpp" />
     <ClCompile Include="tab_layout_misc.cpp" />
