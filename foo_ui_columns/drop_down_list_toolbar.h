@@ -51,6 +51,7 @@ private:
     int m_max_item_width{0};
     int m_height{0};
     bool m_initialised{false};
+    bool m_process_next_char{true};
     t_int32 m_mousewheel_delta{0};
 };
 
@@ -78,7 +79,8 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
 }
 
 template <class ToolbarArgs>
-void DropDownListToolbar<ToolbarArgs>::update_active_item() {
+void DropDownListToolbar<ToolbarArgs>::update_active_item()
+{
     auto&& id = ToolbarArgs::get_active_item();
     const auto iter = std::find_if(
         m_items.begin(), m_items.end(), [id](auto&& item) { return std::get<ToolbarArgs::ID>(item) == id; });
@@ -192,16 +194,29 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
     switch (msg) {
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
-    case WM_KEYDOWN:
-        if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
+    case WM_KEYDOWN: {
+        const auto processed = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
+        m_process_next_char = !processed;
+        if (processed)
             return 0;
+
         if (wp == VK_TAB)
             g_on_tab(wnd);
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
         break;
-    case WM_SYSKEYDOWN:
-        if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
+    }
+    case WM_SYSKEYDOWN: {
+        const auto processed = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
+        m_process_next_char = !processed;
+        if (processed)
             return 0;
+        break;
+    }
+    case WM_CHAR:
+        if (!m_process_next_char) {
+            m_process_next_char = true;
+            return 0;
+        }
         break;
     case WM_UPDATEUISTATE:
         RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
