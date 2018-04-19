@@ -427,10 +427,10 @@
     <ClCompile Include="legacy_config.cpp">
       <Filter>Panels\Playlist view</Filter>
     </ClCompile>
-    <ClCompile Include="drop_down_list_toolbar.h">
+    <ClCompile Include="output_device.cpp">
       <Filter>Toolbars</Filter>
     </ClCompile>
-    <ClCompile Include="output_device.cpp">
+    <ClCompile Include="replaygain_mode.cpp">
       <Filter>Toolbars</Filter>
     </ClCompile>
   </ItemGroup>
@@ -616,6 +616,7 @@
     <ClInclude Include="playlist_view_tfhooks.h">
       <Filter>Panels\Playlist view</Filter>
     </ClInclude>
+    <ClInclude Include="drop_down_list_toolbar.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">
