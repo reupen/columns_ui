@@ -68,7 +68,7 @@ struct ReplayGainModeToolbarArgs {
     static bool is_available() { return static_api_test_t<replaygain_manager_v2>(); }
     static std::unique_ptr<ReplayGainCoreSettingsNotifyLambda> callback;
     static constexpr bool refresh_on_click = false;
-    static constexpr const wchar_t* class_name{L"columns_ui_output_device_-bdvzDNKnwDniA"};
+    static constexpr const wchar_t* class_name{L"columns_ui_replaygain_mode_-bdvzDNKnwDniA"};
     static constexpr const char* name{"ReplayGain mode"};
     static constexpr GUID extension_guid{0xad9a81f7, 0x723a, 0x4cce, {0x87, 0xb6, 0x13, 0x39, 0xb, 0xda, 0xc2, 0x16}};
 };
