@@ -1,28 +1,52 @@
 # Change log
 
-## 0.6.0-dev
+## 1.0.0-dev
 
-### Performance improvements
+### Playlist view
+
+* Removed Columns playlist. All users should migrate to NG playlist (now named Playlist view). [[#103](https://github.com/reupen/columns_ui/issues/103)]
+
+* Slightly faster playlist grouping and sorting performance on multi-core PCs.
+
+* Right-clicking in empty space in the playlist view now correctly deselects all items and always displays a context menu. [[#75](https://github.com/reupen/columns_ui/issues/75)]
+
+* Added a main menu command to toggle whether playlist groups are shown. [[#100](https://github.com/reupen/columns_ui/issues/100)]
+
+### Filter panel
 
 * Significantly faster Filter panel performance on multi-core PCs. With a quad-core Intel Core-i7 6700K, initialisation time is just under half of what it was under 0.5.1 for a mid- to large-sized library.
 
-* Slightly faster NG Playlist grouping and sorting performance on multi-core PCs.
+### Preferences
 
-### Other changes
+* Refreshed the appearance of all preference pages. [[#84](https://github.com/reupen/columns_ui/pull/84), [#85](https://github.com/reupen/columns_ui/pull/85), [#86](https://github.com/reupen/columns_ui/pull/86), [#87](https://github.com/reupen/columns_ui/pull/87), [#92](https://github.com/reupen/columns_ui/pull/92), [#93](https://github.com/reupen/columns_ui/pull/93), [#94](https://github.com/reupen/columns_ui/pull/94), [#95](https://github.com/reupen/columns_ui/pull/95)]
+
+* Made panel copying and pasting in Layout preferences use the Windows clipboard. [[#97](https://github.com/reupen/columns_ui/issues/97)]
+
+* Fixed a bug where pressing Enter or Return while editing a playlist grouping script would close the dialog box. [[#48](https://github.com/reupen/columns_ui/issues/48)]
+
+### Notification area
 
 * Added the ability to close foobar2000 to the notification area. [Contributed by tuxzz, [#56](https://github.com/reupen/columns_ui/pull/56)]
 
+### Item details panel
+
 * Made the Item details panel load full metadata (including large fields such as lyrics) for selected items. (Previously, only playing items showed full metadata.) [[#68](https://github.com/reupen/columns_ui/issues/68)]
 
-* Right-clicking in empty space in NG playlist now correctly deselects all items and always displays a context menu. [[#75](https://github.com/reupen/columns_ui/issues/75)]
+### Toolbars
 
-* The value of the 'Allow resizing of locked panels' setting is now available to other components. [[#53](https://github.com/reupen/columns_ui/issues/53)]
+* Added an output device toolbar (for foobar2000 1.4 and newer only). [[#105](https://github.com/reupen/columns_ui/pull/105)]
 
-* Added a reliable mechanism for third-party splitter panels to store extra configuration data for child panels that persists through panel copy-and-paste operations. [[#52](https://github.com/reupen/columns_ui/issues/52)]
+* Added a ReplayGain source mode toolbar (for foobar2000 1.4 and newer only). [[#106](https://github.com/reupen/columns_ui/pull/106)]
+
+* Added a live layout editing button to the default buttons toolbar configuration. [[#99](https://github.com/reupen/columns_ui/pull/99)]
+
+### Status pane
 
 * Corrected the status pane playback status when resume playback on start-up is enabled and foobar2000 is started when playback was previously paused.
 
 * Corrected the colour of text in the status pane when using high-contrast Windows themes. [Contributed by MAxonn, [#59](https://github.com/reupen/columns_ui/issues/59)]
+
+### Configuration importing and exporting
 
 * Removed the ability to import FCS files.
 
@@ -30,11 +54,17 @@
 
 * Added CLI commands for exporting the current configuration to an FCL file. The added commands are `/columnsui:export <path>` and `/columnsui:export-quiet <path>`. [[#47](https://github.com/reupen/columns_ui/issues/47)]
 
-* Fixed a bug where pressing Enter or Return while editing an NG playlist grouping script would close the dialog box. [[#48](https://github.com/reupen/columns_ui/issues/48)]
+### API
 
-* Some minor changes to labels and layout in preferences and other configuration dialogs.
+* The value of the 'Allow resizing of locked panels' setting is now available to other components. [[#53](https://github.com/reupen/columns_ui/issues/53)]
 
-* Renamed Columns playlist to legacy playlist. The columns/legacy will be completely removed in version 0.7.0 or later, anyone still using it is advised to switch to NG playlist.
+* Added a reliable mechanism for third-party splitter panels to store extra configuration data for child panels that persists through panel copy-and-paste operations. [[#52](https://github.com/reupen/columns_ui/issues/52)]
+
+### Other changes
+ 
+* Added compatibility with Windows 10 system media transport controls under foobar2000 1.4. [[#101](https://github.com/reupen/columns_ui/issues/101)]
+
+* Some minor changes to labels and layout in various dialogs.
 
 * Windows XP and Vista are no longer supported. Users of those operating systems are advised to stick with version 0.5.1.
 
