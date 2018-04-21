@@ -1,6 +1,210 @@
 #include "stdafx.h"
 #include "layout.h"
 
+namespace cui::default_presets {
+
+struct Node {
+    GUID guid{};
+    std::initializer_list<Node> children = std::initializer_list<Node>{};
+    bool locked{};
+    uie::size_and_dpi size{175};
+};
+
+struct Preset {
+    std::string_view name;
+    Node node;
+};
+
+// clang-format off
+const Preset default_preset = {"Default",
+    {columns_ui::panels::guid_horizontal_splitter, {
+        {columns_ui::panels::guid_vertical_splitter, {
+            {columns_ui::panels::guid_playlist_switcher},
+        }, true},
+        {columns_ui::panels::guid_vertical_splitter, {
+            {columns_ui::panels::guid_playlist_view_v2},
+        }},
+    }}
+};
+
+const std::initializer_list<Preset> quick_setup_presets = {
+    {"Playlist switcher",
+        {columns_ui::panels::guid_horizontal_splitter, {
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_playlist_switcher},
+            }, true},
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+        }}
+    },
+    {"Playlist switcher + Filters",
+        {columns_ui::panels::guid_horizontal_splitter, {
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_playlist_switcher},
+            }, true},
+            {columns_ui::panels::guid_vertical_splitter,{
+                {columns_ui::panels::guid_horizontal_splitter, {
+                    {columns_ui::panels::guid_filter}, 
+                    {columns_ui::panels::guid_filter},
+                    {columns_ui::panels::guid_filter},
+                }, true},
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+        }}
+    },
+    {"Playlist switcher + Artwork",
+        {columns_ui::panels::guid_horizontal_splitter, {
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_playlist_switcher}, 
+                {columns_ui::panels::guid_artwork_view, {}, true}
+            }, true},
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+        }}
+    },
+    {"Playlist switcher + Artwork + Filters",
+        {columns_ui::panels::guid_horizontal_splitter, {
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_playlist_switcher}, 
+                {columns_ui::panels::guid_artwork_view, {}, true}
+            }, true},
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_horizontal_splitter, {
+                    {columns_ui::panels::guid_filter},
+                    {columns_ui::panels::guid_filter},
+                    {columns_ui::panels::guid_filter},
+                }, true},
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+        }}
+    },
+    {"Playlist switcher + Item details + Artwork ",
+        {columns_ui::panels::guid_horizontal_splitter, {
+            {columns_ui::panels::guid_vertical_splitter, {{columns_ui::panels::guid_playlist_switcher}}, true},
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_playlist_view_v2},
+                {columns_ui::panels::guid_horizontal_splitter, {
+                    {columns_ui::panels::guid_item_details},
+                    {columns_ui::panels::guid_artwork_view, {}, true, 125},
+                }, true, 125},
+            }},
+        }}
+    },
+    {"Playlist switcher + Filters + Item details + Artwork ",
+        {columns_ui::panels::guid_horizontal_splitter, {
+            {columns_ui::panels::guid_vertical_splitter, {{columns_ui::panels::guid_playlist_switcher}}, true},
+            {columns_ui::panels::guid_vertical_splitter, {
+                {columns_ui::panels::guid_horizontal_splitter, {
+                    {columns_ui::panels::guid_filter},
+                    {columns_ui::panels::guid_filter},
+                    {columns_ui::panels::guid_filter},
+                }, true},
+                {columns_ui::panels::guid_playlist_view_v2},
+                {columns_ui::panels::guid_horizontal_splitter, {
+                    {columns_ui::panels::guid_item_details},
+                    {columns_ui::panels::guid_artwork_view, {}, true, 125},
+                }, true, 125},
+            }},
+        }}
+    },
+    {"Playlist tabs",
+        {columns_ui::panels::guid_vertical_splitter, {
+            {columns_ui::panels::guid_playlist_tabs, {
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+        }}
+    },
+    {"Playlist tabs + Filters",
+        {columns_ui::panels::guid_vertical_splitter, {
+            {columns_ui::panels::guid_horizontal_splitter, {
+                {columns_ui::panels::guid_filter}, 
+                {columns_ui::panels::guid_filter},
+                {columns_ui::panels::guid_filter},
+            }, true},
+            {columns_ui::panels::guid_playlist_tabs, {
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+        }}
+    },
+    {"Playlist tabs + Item details + Artwork",
+        {columns_ui::panels::guid_vertical_splitter, {
+            {columns_ui::panels::guid_playlist_tabs, {
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+            {columns_ui::panels::guid_horizontal_splitter, {
+                {columns_ui::panels::guid_item_details},
+                {columns_ui::panels::guid_artwork_view, {}, true, 125},
+            }, true, 125},
+        }}
+    },
+    {"Playlist tabs + Filters + Item details + Artwork",
+        {columns_ui::panels::guid_vertical_splitter, {
+            {columns_ui::panels::guid_horizontal_splitter, {
+                {columns_ui::panels::guid_filter}, 
+                {columns_ui::panels::guid_filter},
+                {columns_ui::panels::guid_filter},
+            }, true},
+            {columns_ui::panels::guid_playlist_tabs, {
+                {columns_ui::panels::guid_playlist_view_v2},
+            }},
+            {columns_ui::panels::guid_horizontal_splitter, {
+                {columns_ui::panels::guid_item_details},
+                {columns_ui::panels::guid_artwork_view, {}, true, 125},
+            }, true, 125},
+        }}
+    },
+};
+// clang-format on
+
+uie::window::ptr node_to_window(Node node)
+{
+    abort_callback_dummy aborter;
+    uie::window::ptr window;
+    uie::window::create_by_guid(node.guid, window);
+
+    if (node.children.size() > 0) {
+        uie::splitter_window::ptr splitter;
+
+        if (!window->service_query_t(splitter))
+            uBugCheck();
+
+        for (auto&& child : node.children) {
+            const auto child_window = node_to_window(child);
+
+            stream_writer_memblock conf;
+            child_window->get_config(&conf, aborter);
+
+            uie::splitter_item_full_v3_impl_t item;
+            item.set_panel_guid(child.guid);
+            item.m_locked = child.locked;
+            item.m_show_caption = false;
+            item.m_size_v2 = child.size.size;
+            item.m_size_v2_dpi = child.size.dpi;
+            item.set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
+
+            splitter->add_panel(&item);
+        }
+    }
+    return window;
+}
+
+cfg_layout_t::preset preset_to_config_preset(Preset preset)
+{
+    const auto window = node_to_window(preset.node);
+    abort_callback_dummy aborter;
+
+    cfg_layout_t::preset preset_default;
+    preset_default.m_name.set_string(preset.name.data(), preset.name.size());
+    preset_default.m_guid = preset.node.guid;
+    stream_writer_memblock_ref conf(preset_default.m_val, true);
+    window->get_config(&conf, aborter);
+    return preset_default;
+}
+
+} // namespace cui::default_presets
+
 cfg_layout_t::cfg_layout_t(const GUID& p_guid)
     : cfg_var(p_guid)
     , m_active(0) //, m_initialised(false)
@@ -112,452 +316,18 @@ void cfg_layout_t::set_presets(const pfc::list_base_const_t<preset>& presets, t_
 
 void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_out)
 {
-    abort_callback_dummy abortCallbackDummy;
-    {
-        uie::window_ptr wnd, wnd2, wnd3;
-        service_ptr_t<uie::splitter_window> splitter, splitter2, splitter3;
-        if (uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd)
-            && uie::window::create_by_guid(columns_ui::panels::guid_vertical_splitter, wnd2)) {
-            if (wnd->service_query_t(splitter) && wnd2->service_query_t(splitter2)) {
-                uie::splitter_item_simple_t item, item2;
-                item.set_panel_guid(columns_ui::panels::guid_playlist_switcher);
-                item2.set_panel_guid(columns_ui::panels::guid_vertical_splitter);
-                splitter2->add_panel(&item);
-                stream_writer_memblock conf1;
-                splitter2->get_config(&conf1, abortCallbackDummy);
-                item2.set_panel_config_from_ptr(conf1.m_data.get_ptr(), conf1.m_data.get_size());
-
-                t_size index = splitter->add_panel(&item2);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                splitter->set_config_item_t(
-                    index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-
-                item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
-                t_size index_playlist = splitter->add_panel(&item);
-                splitter->set_config_item_t(
-                    index_playlist, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                cfg_layout_t::preset preset_default;
-                preset_default.m_name = "Playlist switcher";
-                preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
-                stream_writer_memblock_ref conf(preset_default.m_val, true);
-                splitter->get_config(&conf, abortCallbackDummy);
-
-                p_out.add_item(preset_default);
-            }
-        }
-    }
-    {
-        uie::window_ptr wnd, wnd2, wnd3, wnd_filter_splitter;
-        service_ptr_t<uie::splitter_window> splitter, splitter2, splitter3, splitter_filter;
-        if (uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd)
-            && uie::window::create_by_guid(columns_ui::panels::guid_vertical_splitter, wnd2)
-            && uie::window::create_by_guid(columns_ui::panels::guid_vertical_splitter, wnd3)
-            && uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd_filter_splitter)) {
-            if (wnd->service_query_t(splitter) && wnd2->service_query_t(splitter2) && wnd3->service_query_t(splitter3)
-                && wnd_filter_splitter->service_query_t(splitter_filter)) {
-                uie::splitter_item_simple_t item, item2, item3, item_filter, item_filter_splitter, item_artwork;
-                item.set_panel_guid(columns_ui::panels::guid_playlist_switcher);
-                item2.set_panel_guid(columns_ui::panels::guid_vertical_splitter);
-                item3.set_panel_guid(columns_ui::panels::guid_vertical_splitter);
-                item_filter_splitter.set_panel_guid(columns_ui::panels::guid_horizontal_splitter);
-                item_filter.set_panel_guid(columns_ui::panels::guid_filter);
-                item_artwork.set_panel_guid(columns_ui::panels::guid_artwork_view);
-                splitter2->add_panel(&item);
-                stream_writer_memblock conf1, conf2, conf3;
-                splitter2->get_config(&conf1, abortCallbackDummy);
-                item2.set_panel_config_from_ptr(conf1.m_data.get_ptr(), conf1.m_data.get_size());
-
-                t_size index = splitter->add_panel(&item2);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                splitter->set_config_item_t(
-                    index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-
-                t_size index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                {
-                    splitter_filter->get_config(&conf3, abortCallbackDummy);
-                    item_filter_splitter.set_panel_config_from_ptr(conf3.m_data.get_ptr(), conf3.m_data.get_size());
-                    t_size indexfs = splitter3->add_panel(&item_filter_splitter);
-                    splitter3->set_config_item_t(
-                        indexfs, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                    bool temp = true;
-                    splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-
-                    splitter3->set_config_item_t(
-                        indexfs, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-                }
-
-                item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
-                t_size index_playlist = splitter3->add_panel(&item);
-                splitter3->set_config_item_t(
-                    index_playlist, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                splitter3->get_config(&conf2, abortCallbackDummy);
-                item3.set_panel_config_from_ptr(conf2.m_data.get_ptr(), conf2.m_data.get_size());
-
-                t_size index_splitter2 = splitter->add_panel(&item3);
-                splitter->set_config_item_t(
-                    index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                cfg_layout_t::preset preset_default;
-                preset_default.m_name = "Playlist switcher + Filters";
-                preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
-                stream_writer_memblock_ref conf(preset_default.m_val, true);
-                splitter->get_config(&conf, abortCallbackDummy);
-
-                p_out.add_item(preset_default);
-
-                index = splitter2->add_panel(&item_artwork);
-                splitter2->set_config_item_t(index, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                splitter2->set_config_item_t(index, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                splitter2->set_config_item_t(
-                    index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-                conf1.m_data.set_size(0);
-                splitter2->get_config(&conf1, abortCallbackDummy);
-                item2.set_panel_config_from_ptr(conf1.m_data.get_ptr(), conf1.m_data.get_size());
-                splitter->replace_panel(0, &item2);
-                splitter->set_config_item_t(0, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                splitter->set_config_item_t(0, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                splitter->set_config_item_t(
-                    0, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-
-                preset_default.m_name = "Playlist switcher + Artwork + Filters";
-                preset_default.m_val.set_size(0);
-                splitter->get_config(&conf, abortCallbackDummy);
-                t_size index_preset = p_out.add_item(preset_default);
-
-                splitter3->remove_panel(0);
-                conf2.m_data.set_size(0);
-                splitter3->get_config(&conf2, abortCallbackDummy);
-                item3.set_panel_config_from_ptr(conf2.m_data.get_ptr(), conf2.m_data.get_size());
-
-                splitter->replace_panel(index_splitter2, &item3);
-                splitter->set_config_item_t(
-                    index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                preset_default.m_name = "Playlist switcher + Artwork";
-                splitter->get_config_to_array(preset_default.m_val, abortCallbackDummy, true);
-                p_out.insert_item(preset_default, index_preset);
-            }
-        }
-    }
-    {
-        uie::window_ptr wnd, wnd2, wnd3, wnd_filter_splitter, wnd_bottom_splitter;
-        service_ptr_t<uie::splitter_window> splitter, splitter2, splitter3, splitter_filter, splitter_bottom;
-        if (uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd)
-            && uie::window::create_by_guid(columns_ui::panels::guid_vertical_splitter, wnd2)
-            && uie::window::create_by_guid(columns_ui::panels::guid_vertical_splitter, wnd3)
-            && uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd_filter_splitter)
-            && uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd_bottom_splitter)) {
-            if (wnd->service_query_t(splitter) && wnd2->service_query_t(splitter2) && wnd3->service_query_t(splitter3)
-                && wnd_filter_splitter->service_query_t(splitter_filter)
-                && wnd_bottom_splitter->service_query_t(splitter_bottom)) {
-                uie::splitter_item_simple_t item, item2, item3, item_filter, item_filter_splitter, item_artwork,
-                    item_bottom_splitter, item_item_details;
-                item.set_panel_guid(columns_ui::panels::guid_playlist_switcher);
-                item2.set_panel_guid(columns_ui::panels::guid_vertical_splitter);
-                item3.set_panel_guid(columns_ui::panels::guid_vertical_splitter);
-                item_filter_splitter.set_panel_guid(columns_ui::panels::guid_horizontal_splitter);
-                item_bottom_splitter.set_panel_guid(columns_ui::panels::guid_horizontal_splitter);
-                item_filter.set_panel_guid(columns_ui::panels::guid_filter);
-                item_artwork.set_panel_guid(columns_ui::panels::guid_artwork_view);
-                item_item_details.set_panel_guid(columns_ui::panels::guid_item_details);
-                splitter2->add_panel(&item);
-                stream_writer_memblock conf1, conf2, conf3, conf4;
-                splitter2->get_config(&conf1, abortCallbackDummy);
-                item2.set_panel_config_from_ptr(conf1.m_data.get_ptr(), conf1.m_data.get_size());
-
-                t_size index = splitter->add_panel(&item2);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                splitter->set_config_item_t(
-                    index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-
-                t_size index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                {
-                    splitter_filter->get_config(&conf3, abortCallbackDummy);
-                    item_filter_splitter.set_panel_config_from_ptr(conf3.m_data.get_ptr(), conf3.m_data.get_size());
-                }
-
-                item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
-                t_size index_playlist = splitter3->add_panel(&item);
-                splitter3->set_config_item_t(
-                    index_playlist, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                {
-                    t_size index = splitter_bottom->add_panel(&item_item_details);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
-                    index = splitter_bottom->add_panel(&item_artwork);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
-
-                    splitter_bottom->get_config(&conf4, abortCallbackDummy);
-                    item_bottom_splitter.set_panel_config_from_ptr(conf4.m_data.get_ptr(), conf4.m_data.get_size());
-                    index = splitter3->add_panel(&item_bottom_splitter);
-                    splitter3->set_config_item_t(
-                        index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
-                    splitter3->set_config_item_t(
-                        index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
-                    splitter3->set_config_item_t(
-                        index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
-                }
-
-                splitter3->get_config(&conf2, abortCallbackDummy);
-                item3.set_panel_config_from_ptr(conf2.m_data.get_ptr(), conf2.m_data.get_size());
-
-                t_size index_splitter2 = splitter->add_panel(&item3);
-                splitter->set_config_item_t(
-                    index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                cfg_layout_t::preset preset_default;
-                preset_default.m_name = "Playlist switcher + Item details + Artwork";
-                preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
-                stream_writer_memblock_ref conf(preset_default.m_val, true);
-                splitter->get_config(&conf, abortCallbackDummy);
-
-                p_out.add_item(preset_default);
-
-                {
-                    t_size indexfs = 0;
-                    splitter3->insert_panel(0, &item_filter_splitter);
-                    splitter3->set_config_item_t(
-                        indexfs, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                    splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                    splitter3->set_config_item_t(
-                        indexfs, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-                }
-
-                conf2.m_data.set_size(0);
-                splitter3->get_config(&conf2, abortCallbackDummy);
-                item3.set_panel_config_from_ptr(conf2.m_data.get_ptr(), conf2.m_data.get_size());
-
-                // t_size index_splitter2 =
-                splitter->replace_panel(1, &item3);
-                splitter->set_config_item_t(1, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                cfg_layout_t::preset preset_default2;
-                preset_default2.m_name = "Playlist switcher + Filters + Item details + Artwork";
-                preset_default2.m_guid = columns_ui::panels::guid_horizontal_splitter;
-                stream_writer_memblock_ref conft(preset_default2.m_val, true);
-                splitter->get_config(&conft, abortCallbackDummy);
-
-                p_out.add_item(preset_default2);
-            }
-        }
-    }
-    {
-        uie::window_ptr wnd;
-        service_ptr_t<uie::splitter_window> splitter;
-        if (uie::window::create_by_guid(columns_ui::panels::guid_playlist_tabs, wnd)) {
-            if (wnd->service_query_t(splitter)) {
-                uie::splitter_item_simple_t item;
-                item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
-                splitter->add_panel(&item);
-
-                cfg_layout_t::preset preset_default;
-                preset_default.m_name = "Playlist tabs";
-                preset_default.m_guid = columns_ui::panels::guid_playlist_tabs;
-                stream_writer_memblock_ref conf(preset_default.m_val, true);
-                splitter->get_config(&conf, abortCallbackDummy);
-
-                // m_active = pfc_infinite;
-
-                p_out.add_item(preset_default);
-            }
-        }
-    }
-    {
-        uie::window_ptr wnd, wnd2, wnd3, wnd_filter_splitter, wnd_bottom_splitter;
-        service_ptr_t<uie::splitter_window> splitter, splitter_tabs, splitter3, splitter_filter, splitter_bottom;
-        if (uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd)
-            && uie::window::create_by_guid(columns_ui::panels::guid_playlist_tabs, wnd2)
-            && uie::window::create_by_guid(columns_ui::panels::guid_vertical_splitter, wnd3)
-            && uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd_filter_splitter)
-            && uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd_bottom_splitter)) {
-            if (wnd->service_query_t(splitter) && wnd2->service_query_t(splitter_tabs)
-                && wnd3->service_query_t(splitter3) && wnd_filter_splitter->service_query_t(splitter_filter)
-                && wnd_bottom_splitter->service_query_t(splitter_bottom)) {
-                uie::splitter_item_simple_t item_tabs, item, item3, item_filter, item_filter_splitter, item_artwork,
-                    item_bottom_splitter, item_item_details;
-                item_tabs.set_panel_guid(columns_ui::panels::guid_playlist_tabs);
-
-                item3.set_panel_guid(columns_ui::panels::guid_vertical_splitter);
-                item_filter_splitter.set_panel_guid(columns_ui::panels::guid_horizontal_splitter);
-                item_bottom_splitter.set_panel_guid(columns_ui::panels::guid_horizontal_splitter);
-                item_filter.set_panel_guid(columns_ui::panels::guid_filter);
-                item_artwork.set_panel_guid(columns_ui::panels::guid_artwork_view);
-                item_item_details.set_panel_guid(columns_ui::panels::guid_item_details);
-                bool val = true;
-
-                stream_writer_memblock conf1, conf2, conf3, conf4;
-
-                val = false;
-                t_uint32 sz = 175;
-
-                t_size index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
-                index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
-                index_filter = splitter_filter->add_panel(&item_filter);
-                splitter_filter->set_config_item_t(
-                    index_filter, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
-                {
-                    splitter_filter->get_config(&conf3, abortCallbackDummy);
-                    item_filter_splitter.set_panel_config_from_ptr(conf3.m_data.get_ptr(), conf3.m_data.get_size());
-                    t_size indexfs = splitter3->add_panel(&item_filter_splitter);
-                    splitter3->set_config_item_t(
-                        indexfs, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
-                    splitter3->set_config_item_t(indexfs, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                    splitter3->set_config_item_t(
-                        indexfs, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-                }
-
-                item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
-                t_size index_playlist = splitter_tabs->add_panel(&item);
-                splitter_tabs->get_config(&conf1, abortCallbackDummy);
-                item_tabs.set_panel_config_from_ptr(conf1.m_data.get_ptr(), conf1.m_data.get_size());
-                t_size index_tabs = splitter3->add_panel(&item_tabs);
-                splitter3->set_config_item_t(
-                    index_tabs, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                splitter3->get_config(&conf2, abortCallbackDummy);
-                item3.set_panel_config_from_ptr(conf2.m_data.get_ptr(), conf2.m_data.get_size());
-
-                t_size index_splitter2 = splitter->add_panel(&item3);
-                splitter->set_config_item_t(
-                    index_splitter2, uie::splitter_window::bool_show_caption, val, abortCallbackDummy);
-
-                cfg_layout_t::preset preset_default;
-                preset_default.m_name = "Playlist tabs + Filters";
-                preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
-                stream_writer_memblock_ref conf(preset_default.m_val, true);
-                splitter->get_config(&conf, abortCallbackDummy);
-
-                p_out.add_item(preset_default);
-
-                {
-                    t_size index = splitter_bottom->add_panel(&item_item_details);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
-                    index = splitter_bottom->add_panel(&item_artwork);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
-                    splitter_bottom->set_config_item_t(
-                        index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
-
-                    splitter_bottom->get_config(&conf4, abortCallbackDummy);
-                    item_bottom_splitter.set_panel_config_from_ptr(conf4.m_data.get_ptr(), conf4.m_data.get_size());
-                    index = splitter3->add_panel(&item_bottom_splitter);
-                    splitter3->set_config_item_t(
-                        index, uie::splitter_window::bool_show_caption, bool(false), abortCallbackDummy);
-                    splitter3->set_config_item_t(
-                        index, uie::splitter_window::bool_locked, bool(true), abortCallbackDummy);
-                    splitter3->set_config_item_t(
-                        index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(125), abortCallbackDummy);
-                }
-
-                conf2.m_data.set_size(0);
-                splitter3->get_config(&conf2, abortCallbackDummy);
-                item3.set_panel_config_from_ptr(conf2.m_data.get_ptr(), conf2.m_data.get_size());
-
-                splitter->replace_panel(index_splitter2, &item3);
-                splitter->set_config_item_t(
-                    index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                preset_default.m_name = "Playlist tabs + Filters + Item details + Artwork";
-                preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
-
-                splitter->get_config_to_array(preset_default.m_val, abortCallbackDummy, true);
-
-                t_size preset_tabs_all = p_out.add_item(preset_default);
-
-                splitter3->remove_panel(0);
-                conf2.m_data.set_size(0);
-                splitter3->get_config(&conf2, abortCallbackDummy);
-                item3.set_panel_config_from_ptr(conf2.m_data.get_ptr(), conf2.m_data.get_size());
-
-                splitter->replace_panel(index_splitter2, &item3);
-                splitter->set_config_item_t(
-                    index_splitter2, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                preset_default.m_name = "Playlist tabs + Item details + Artwork";
-                preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
-
-                splitter->get_config_to_array(preset_default.m_val, abortCallbackDummy, true);
-
-                p_out.insert_item(preset_default, preset_tabs_all);
-            }
-        }
-    }
+    for (auto&& preset : cui::default_presets::quick_setup_presets)
+        p_out.add_item(preset_to_config_preset(preset));
 }
 
 void cfg_layout_t::reset_presets()
 {
     if (core_api::are_services_available()) {
-        abort_callback_dummy abortCallbackDummy;
+        const auto preset = preset_to_config_preset(cui::default_presets::default_preset);
         m_presets.remove_all();
-        uie::window_ptr wnd, wnd2;
-        service_ptr_t<uie::splitter_window> splitter, splitter2;
-        if (uie::window::create_by_guid(columns_ui::panels::guid_horizontal_splitter, wnd)
-            && uie::window::create_by_guid(columns_ui::panels::guid_vertical_splitter, wnd2)) {
-            if (wnd->service_query_t(splitter) && wnd2->service_query_t(splitter2)) {
-                uie::splitter_item_simple_t item, item2;
-                item.set_panel_guid(columns_ui::panels::guid_playlist_switcher);
-                item2.set_panel_guid(columns_ui::panels::guid_vertical_splitter);
-                splitter2->add_panel(&item);
-                stream_writer_memblock conf1;
-                splitter2->get_config(&conf1, abortCallbackDummy);
-                item2.set_panel_config_from_ptr(conf1.m_data.get_ptr(), conf1.m_data.get_size());
+        m_active = m_presets.add_item(preset);
 
-                t_size index = splitter->add_panel(&item2);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_locked, true, abortCallbackDummy);
-                splitter->set_config_item_t(index, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-                splitter->set_config_item_t(
-                    index, uie::splitter_window::size_and_dpi, uie::size_and_dpi(175), abortCallbackDummy);
-
-                item.set_panel_guid(columns_ui::panels::guid_playlist_view_v2);
-                t_size index_playlist = splitter->add_panel(&item);
-                splitter->set_config_item_t(
-                    index_playlist, uie::splitter_window::bool_show_caption, false, abortCallbackDummy);
-
-                preset preset_default;
-                preset_default.m_name = "Default";
-                preset_default.m_guid = columns_ui::panels::guid_horizontal_splitter;
-                stream_writer_memblock_ref conf(preset_default.m_val, true);
-                splitter->get_config(&conf, abortCallbackDummy);
-
-                m_active = m_presets.add_item(preset_default);
-            }
-        }
-        if (m_active < m_presets.get_count() && g_layout_window.get_wnd()) {
+        if (g_layout_window.get_wnd()) {
             uie::splitter_item_ptr item;
             m_presets[m_active].get(item);
             g_layout_window.set_child(item.get_ptr());
