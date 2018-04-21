@@ -45,7 +45,7 @@ const std::initializer_list<Preset> quick_setup_presets = {
             }, true},
             {columns_ui::panels::guid_vertical_splitter,{
                 {columns_ui::panels::guid_horizontal_splitter, {
-                    {columns_ui::panels::guid_filter}, 
+                    {columns_ui::panels::guid_filter},
                     {columns_ui::panels::guid_filter},
                     {columns_ui::panels::guid_filter},
                 }, true},
@@ -56,7 +56,7 @@ const std::initializer_list<Preset> quick_setup_presets = {
     {"Playlist switcher + Artwork",
         {columns_ui::panels::guid_horizontal_splitter, {
             {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_switcher}, 
+                {columns_ui::panels::guid_playlist_switcher},
                 {columns_ui::panels::guid_artwork_view, {}, true}
             }, true},
             {columns_ui::panels::guid_vertical_splitter, {
@@ -67,7 +67,7 @@ const std::initializer_list<Preset> quick_setup_presets = {
     {"Playlist switcher + Artwork + Filters",
         {columns_ui::panels::guid_horizontal_splitter, {
             {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_switcher}, 
+                {columns_ui::panels::guid_playlist_switcher},
                 {columns_ui::panels::guid_artwork_view, {}, true}
             }, true},
             {columns_ui::panels::guid_vertical_splitter, {
@@ -119,7 +119,7 @@ const std::initializer_list<Preset> quick_setup_presets = {
     {"Playlist tabs + Filters",
         {columns_ui::panels::guid_vertical_splitter, {
             {columns_ui::panels::guid_horizontal_splitter, {
-                {columns_ui::panels::guid_filter}, 
+                {columns_ui::panels::guid_filter},
                 {columns_ui::panels::guid_filter},
                 {columns_ui::panels::guid_filter},
             }, true},
@@ -142,7 +142,7 @@ const std::initializer_list<Preset> quick_setup_presets = {
     {"Playlist tabs + Filters + Item details + Artwork",
         {columns_ui::panels::guid_vertical_splitter, {
             {columns_ui::panels::guid_horizontal_splitter, {
-                {columns_ui::panels::guid_filter}, 
+                {columns_ui::panels::guid_filter},
                 {columns_ui::panels::guid_filter},
                 {columns_ui::panels::guid_filter},
             }, true},
