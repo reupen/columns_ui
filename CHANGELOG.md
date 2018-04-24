@@ -40,6 +40,8 @@
 
 * Added a live layout editing button to the default buttons toolbar configuration. [[#99](https://github.com/reupen/columns_ui/pull/99)]
 
+* Corrected the scale used in the volume bar so that -10 dB is at the 50% mark, -20 dB at the 25% mark etc.
+
 ### Status pane
 
 * Corrected the status pane playback status when resume playback on start-up is enabled and foobar2000 is started when playback was previously paused.
