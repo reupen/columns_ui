@@ -126,35 +126,29 @@ class volume_control_t
     } m_child;
 
     class track_bar_host_impl : public uih::TrackbarCallback {
-        void on_position_change(unsigned pos, bool b_tracking) override
+        static double position_to_volume(unsigned position)
         {
-            double scaled = pos / 1000.0;
-            double offset = pow(10, -5.0 / 3.0);
-            scaled *= 1.0 - offset;
-            scaled += offset;
-
-            auto vol = double(20.0 * log10(scaled * scaled * scaled));
-            if (vol < -100.0)
-                vol = -100;
-            else if (vol > 0.0)
-                vol = 0.0;
-
-            static_api_ptr_t<playback_control>()->set_volume(float(vol));
-        }
-        void get_tooltip_text(unsigned pos, uih::TrackbarString& out) override
-        {
-            double scaled = pos / 1000.0;
-            double offset = pow(10, -5.0 / 3.0);
-            scaled *= 1.0 - offset;
-            scaled += offset;
-            double volume = 20.0 * log10(scaled * scaled * scaled);
+            const auto normalised = position / 1000.0;
+            auto volume = 10.0 * std::log2(normalised);
             if (volume < -100.0)
                 volume = -100;
-            else if (volume > 0.0)
-                volume = 0.0;
+
+            return volume;
+        }
+
+        void on_position_change(unsigned pos, bool b_tracking) override
+        {
+            const auto volume = position_to_volume(pos);
+            static_api_ptr_t<playback_control>()->set_volume(static_cast<float>(volume));
+        }
+
+        void get_tooltip_text(unsigned pos, uih::TrackbarString& out) override
+        {
+            const auto volume = position_to_volume(pos);
             out.append(pfc::stringcvt::string_os_from_utf8(pfc::format_float(volume, 0, 2)));
             out.append(_T(" dB"));
-        };
+        }
+
         bool on_key(WPARAM wp, LPARAM lp) override
         {
             if (b_popup && wp == VK_ESCAPE && !(lp & (1 << 31))) {
