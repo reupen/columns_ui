@@ -454,10 +454,8 @@ LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 caller = contextmenu_item::caller_active_playlist_selection;
             } break;
             case FILTER_ACTIVE_SELECTION: {
-                static_api_ptr_t<ui_selection_manager> api;
-                if (api->get_selection_type() != contextmenu_item::caller_now_playing) {
-                    api->get_selection(data);
-                }
+                auto api = ui_selection_manager_v2::get();
+                api->get_selection(data, ui_selection_manager_v2::flag_no_now_playing);
                 caller = contextmenu_item::caller_undefined;
             } break;
             case FILTER_PLAYING: {
