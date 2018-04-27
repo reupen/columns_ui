@@ -86,74 +86,109 @@ const menu_item_cache::menu_item_info& menu_item_cache::get_item(unsigned n) con
 }
 
 namespace menu_helpers {
-bool __contextpath_from_guid_recur(
-    contextmenu_item_node* p_node, const GUID& p_subcommand, pfc::string_base& p_out, bool b_short, bool b_root)
+auto get_context_menu_node_name(contextmenu_item_node* p_node)
 {
-    if (p_node) {
-        if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP) {
-            pfc::string8 subname, temp = p_out;
-            unsigned dummy;
-            p_node->get_display_data(
-                subname, dummy, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
-            if (temp.get_length() && temp.get_ptr()[temp.get_length() - 1] != '/')
-                temp.add_byte('/');
-            temp << subname;
-            unsigned child_count = p_node->get_children_count();
-            for (unsigned child = 0; child < child_count; child++) {
-                contextmenu_item_node* p_child = p_node->get_child(child);
-                if (__contextpath_from_guid_recur(p_child, p_subcommand, temp, b_short, false)) {
-                    p_out = temp;
-                    return true;
-                }
-            }
-        } else if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && !b_root) {
-            if (p_node->get_guid() == p_subcommand) {
-                pfc::string8 subname;
-                unsigned dummy;
-                p_node->get_display_data(
-                    subname, dummy, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
-                if (!b_short)
-                    p_out.add_byte('/');
-                else
-                    p_out.reset();
-                p_out.add_string(subname);
+    pfc::string8 name;
+    unsigned _;
+    p_node->get_display_data(name, _, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
+    return name;
+}
+
+bool __contextpath_from_guid_recur(
+    contextmenu_item_node* p_node, const GUID& p_subcommand, std::list<std::string>& p_out, bool b_root)
+{
+    if (!p_node)
+        return false;
+
+    if (p_node->get_type() == contextmenu_item_node::type_command && p_node->get_guid() == p_subcommand) {
+        auto subname = get_context_menu_node_name(p_node);
+        p_out.emplace_back(subname);
+        return true;
+    }
+
+    if (p_node->get_type() == contextmenu_item_node::type_group) {
+        auto subname = get_context_menu_node_name(p_node);
+        const auto has_name = !subname.is_empty();
+        if (has_name)
+            p_out.emplace_back(subname);
+
+        const auto child_count = p_node->get_children_count();
+        for (unsigned child = 0; child < child_count; child++) {
+            const auto p_child = p_node->get_child(child);
+
+            if (__contextpath_from_guid_recur(p_child, p_subcommand, p_out, false))
                 return true;
-            }
         }
+
+        if (has_name)
+            p_out.erase(--p_out.end());
     }
     return false;
 }
-void contextpath_from_guid(const GUID& p_guid, const GUID& p_subcommand, pfc::string_base& p_out, bool b_short)
+
+void get_context_menu_item_parent_names(const contextmenu_item::ptr& menu_item, std::list<std::string>& names)
 {
-    p_out.reset();
-    service_enum_t<contextmenu_item> e;
-    service_ptr_t<contextmenu_item> ptr;
+    cui::fcl::service_list_auto_t<contextmenu_group> groups;
+    GUID parent_id = menu_item->get_parent_();
+    contextmenu_group::ptr group;
 
-    while (e.next(ptr)) {
-        unsigned p_service_item_count = ptr->get_num_items();
-        for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
-            if (p_guid == ptr->get_item_guid(p_service_item_index)) {
-                pfc::string8 name;
-                ptr->get_item_name(p_service_item_index, name);
-                if (!b_short) {
-                    ptr->get_item_default_path(p_service_item_index, p_out);
-                    if (p_out.get_length() && p_out[p_out.get_length() - 1] != '/')
-                        p_out.add_byte('/');
-                }
-                p_out.add_string(name);
-
-                if (p_subcommand != pfc::guid_null) {
-                    pfc::ptrholder_t<contextmenu_item_node_root> p_node(ptr->instantiate_item(
-                        p_service_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list));
-
-                    if (p_node.is_valid())
-                        if (__contextpath_from_guid_recur(p_node.get_ptr(), p_subcommand, p_out, b_short, true))
-                            return;
-                }
-            }
+    while (parent_id != contextmenu_groups::root && groups.find_by_guid(parent_id, group)) {
+        contextmenu_group_popup::ptr popup_parent;
+        if (group->service_query_t(popup_parent)) {
+            pfc::string8 name;
+            popup_parent->get_name(name);
+            names.emplace_front(name.c_str());
         }
+        parent_id = group->get_parent();
     }
 }
+
+auto get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand)
+{
+    std::list<std::string> item_parts;
+    contextmenu_item::ptr menu_item;
+    size_t menu_item_index{};
+
+    if (!menu_item_resolver::g_resolve_context_command(p_guid, menu_item, menu_item_index)) {
+        item_parts.emplace_back("Unknown command");
+        return item_parts;
+    }
+
+    get_context_menu_item_parent_names(menu_item, item_parts);
+
+    if (p_subcommand == GUID{}) {
+        pfc::string8 part_name;
+        menu_item->get_item_name(menu_item_index, part_name);
+        item_parts.emplace_front(part_name.c_str());
+    } else {
+        pfc::ptrholder_t<contextmenu_item_node_root> p_node = menu_item->instantiate_item(
+            menu_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
+
+        if (!__contextpath_from_guid_recur(p_node.get_ptr(), p_subcommand, item_parts, true))
+            item_parts.emplace_back("Unknown command");
+    }
+
+    return item_parts;
+}
+
+void contextpath_from_guid(GUID p_guid, GUID p_subcommand, pfc::string_base& p_out, bool b_short)
+{
+    auto name_parts = get_context_menu_item_name_parts(p_guid, p_subcommand);
+
+    if (b_short) {
+        p_out = (*--name_parts.end()).data();
+        return;
+    }
+
+    p_out.reset();
+
+    for (auto&& part : name_parts) {
+        if (!p_out.is_empty())
+            p_out << "/";
+        p_out << part.data();
+    }
+}
+
 bool maingroupname_from_guid(const GUID& p_guid, pfc::string_base& p_out, GUID& parentout)
 {
     p_out.reset();
