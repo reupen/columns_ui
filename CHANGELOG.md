@@ -43,7 +43,9 @@
 * Fixed a bug in the buttons toolbar where clicking on a context menu item button configured to use the 'Active selection' item group, with selection viewers set to prefer the playing track, would not have an effect if a track was playing. Now, the button will operate on the current selection as expected.
  [[#110](https://github.com/reupen/columns_ui/pull/110)]
 
-* Corrected the scale used in the volume bar so that -10 dB is at the 50% mark, -20 dB at the 25% mark etc.
+* Corrected the display of the names of dynamic context menu items in buttons toolbar options. [[#111](https://github.com/reupen/columns_ui/pull/111)]
+
+* Corrected the scale used in the volume bar so that -10 dB is at the 50% mark, -20 dB at the 25% mark etc. [[#109](https://github.com/reupen/columns_ui/pull/109)]
 
 ### Status pane
 
