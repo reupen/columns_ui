@@ -9,6 +9,7 @@
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
 #include "../playlist_view_tfhooks.h"
+#include "../button_items.h"
 
 namespace artwork_panel {
 // extern cfg_string cfg_front;
@@ -41,7 +42,9 @@ ng_playlist_view_t::ng_global_mesage_window ng_playlist_view_t::g_global_mesage_
 cfg_groups_t g_groups(g_groups_guid);
 
 cfg_bool cfg_show_artwork(g_show_artwork_guid, false), cfg_artwork_reflection(g_artwork_reflection, true),
-    cfg_artwork_lowpriority(g_artwork_lowpriority, true), cfg_grouping(g_guid_grouping, true);
+    cfg_artwork_lowpriority(g_artwork_lowpriority, true);
+
+fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { cui::button_items::ShowGroupsButton::s_on_change(); });
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
 
 void cfg_groups_t::swap(t_size index1, t_size index2)
@@ -216,6 +219,7 @@ void ng_playlist_view_t::refresh_columns()
     }
     set_columns(columns);
 }
+
 void ng_playlist_view_t::g_on_groups_change()
 {
     for (auto& window : g_windows)

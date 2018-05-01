@@ -9,8 +9,9 @@
 namespace pvt {
 extern const GUID g_guid_items_font, g_guid_header_font, g_guid_group_header_font;
 
-extern cfg_bool cfg_show_artwork, cfg_artwork_reflection, cfg_artwork_lowpriority, cfg_grouping;
+extern cfg_bool cfg_show_artwork, cfg_artwork_reflection, cfg_artwork_lowpriority;
 extern fbh::ConfigUint32DpiAware cfg_artwork_width;
+extern fbh::ConfigBool cfg_grouping;
 
 HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection);
 HBITMAP g_create_hbitmap_from_data(
