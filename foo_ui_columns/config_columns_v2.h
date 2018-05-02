@@ -30,8 +30,8 @@ public:
 
     HWND create(HWND wnd) override
     {
-        return m_helper.create(
-            wnd, IDD_COLUMNS_V4, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+        return m_helper.create(wnd, IDD_PREFS_COLUMNS,
+            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     }
     void make_child();
     void refresh_me(HWND wnd, bool init = false);

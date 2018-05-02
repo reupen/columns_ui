@@ -58,7 +58,7 @@
 #define IDD_FONTS_GLOBAL                216
 #define IDD_COLUMN_OPTIONS              218
 #define IDD_COLUMN_SCRIPTS              219
-#define IDD_COLUMNS_V4                  220
+#define IDD_PREFS_COLUMNS               220
 #define IDD_STATUS                      221
 #define IDD_COLOURS_GLOBAL              222
 #define IDD_PREFS_ARTWORK               223
