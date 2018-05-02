@@ -7,8 +7,8 @@ namespace cui::prefs {
 
 HWND LayoutMiscTab::create(HWND wnd)
 {
-    return m_helper.create(
-        wnd, IDD_LAYOUT_MISC, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    return m_helper.create(wnd, IDD_PREFS_LAYOUT_MISC,
+        [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
 const char* LayoutMiscTab::get_name()
