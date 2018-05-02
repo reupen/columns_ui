@@ -150,7 +150,7 @@ BEGIN
     LTEXT           "If a formatted string is not identical for all dropped files, the next string in the list will be used",-1,7,224,306,8
 END
 
-IDD_LAYOUT DIALOGEX 0, 0, 327, 272
+IDD_PREFS_LAYOUT_PRESETS DIALOGEX 0, 0, 327, 272
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
@@ -731,7 +731,7 @@ BEGIN
         BOTTOMMARGIN, 264
     END
 
-    IDD_LAYOUT, DIALOG
+    IDD_PREFS_LAYOUT_PRESETS, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 320

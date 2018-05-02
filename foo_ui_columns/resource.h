@@ -43,7 +43,7 @@
 #define IDD_SYS                         195
 #define IDD_PREFS_PVIEW_GENERAL               196
 #define IDD_PLAYLISTS_DRAGDROP          197
-#define IDD_LAYOUT                      198
+#define IDD_PREFS_LAYOUT_PRESETS                      198
 #define IDD_POPUP_VISHOST               199
 #define IDD_POPUP_SPECTRUM_NEW          204
 #define IDD_IMAGE                       205
