@@ -406,7 +406,7 @@ void filter_search_bar::create_edit()
             ImageList_ReplaceIcon(m_imagelist, -1, icon);
             DestroyIcon(icon);
             if (icon
-                = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_LEFT), IMAGE_ICON, cx, cy, NULL)) {
+                = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_RESET), IMAGE_ICON, cx, cy, NULL)) {
                 ImageList_ReplaceIcon(m_imagelist, -1, icon);
                 DestroyIcon(icon);
             }

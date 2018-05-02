@@ -21,7 +21,7 @@
 #define IDI_PREV                        153
 #define IDI_STARON                      155
 #define IDI_STAROFF                     156
-#define IDI_LEFT                        157
+#define IDI_RESET                       157
 #define IDD_RENAME_PLAYLIST             185
 #define IDD_PREFS_TAB_HOST              191
 #define IDD_PREFS_PLAYLISTS_MAIN        193

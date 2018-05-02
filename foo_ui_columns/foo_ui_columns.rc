@@ -966,7 +966,7 @@ IDI_STARON              ICON                    "icons\\star\\star on.ico"
 
 IDI_STAROFF             ICON                    "icons\\star\\star off.ico"
 
-IDI_LEFT                ICON                    "icons\\star\\left.ico"
+IDI_RESET               ICON                    "icons\\star\\left.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
