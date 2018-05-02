@@ -5,7 +5,7 @@
 #define IDC_TOOLS                       3
 #define IDC_ADD                         4
 #define IDD_MAIN                        101
-#define IDD_GLOBAL                      102
+#define IDD_PREFS_PVIEW_GLOBALS                      102
 #define IDC_PICK                        102
 #define IDD_BUTTONS                     105
 #define IDB_ARROWS                      107
