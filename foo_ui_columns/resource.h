@@ -61,7 +61,7 @@
 #define IDD_COLUMNS_V4                  220
 #define IDD_STATUS                      221
 #define IDD_COLOURS_GLOBAL              222
-#define IDD_ARTWORK                     223
+#define IDD_PREFS_ARTWORK               223
 #define IDD_SELECTIONCONFIG             224
 #define IDD_ITEMDETAILS_CONFIG          225
 #define IDD_FILTER_APPEARANCE           226
