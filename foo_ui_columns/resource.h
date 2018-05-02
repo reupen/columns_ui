@@ -48,7 +48,6 @@
 #define IDD_IMAGE                       205
 #define IDD_COMMAND                     206
 #define IDD_FCL_IMPORT                  207
-#define IDD_LIBRARIES                   208
 #define IDD_RESULTS                     209
 #define IDD_FCL_EXPORT                  210
 #define IDD_EDIT_GROUP                  213
@@ -67,7 +66,6 @@
 #define IDD_PREFS_FILTER_BEHAVIOUR      227
 #define IDD_PREFS_PVIEW_ARTWORK         229
 #define IDD_PREFS_LAYOUT_MISC           230
-#define IDC_LIBRARIES                   1003
 #define IDC_LIST                        1003
 #define IDC_COLUMNS                     1003
 #define IDC_INFOSECTIONS                1003
