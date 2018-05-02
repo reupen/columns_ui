@@ -237,7 +237,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
         TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
 
         m_child = CreateDialogParam(
-            core_api::get_my_instance(), MAKEINTRESOURCE(IDD_IMAGE), wnd, ConfigChildProc, (LPARAM)this);
+            core_api::get_my_instance(), MAKEINTRESOURCE(IDD_BUTTON_IMAGE), wnd, ConfigChildProc, (LPARAM)this);
 
         SetWindowPos(m_child, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
