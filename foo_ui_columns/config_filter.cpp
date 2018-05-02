@@ -385,7 +385,7 @@ public:
     }
     HWND create(HWND wnd) override
     {
-        return m_helper.create(wnd, IDD_FILTER_BEHAVIOUR,
+        return m_helper.create(wnd, IDD_PREFS_FILTER_BEHAVIOUR,
             [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Behaviour"; }
