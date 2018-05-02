@@ -109,8 +109,8 @@ public:
     }
     HWND create(HWND wnd) override
     {
-        return m_helper.create(
-            wnd, IDD_PLAYLISTS, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+        return m_helper.create(wnd, IDD_PREFS_PLAYLISTS_MAIN,
+            [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "General"; }
     bool get_help_url(pfc::string_base& p_out) override
