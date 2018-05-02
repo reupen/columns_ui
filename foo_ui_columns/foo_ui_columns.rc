@@ -936,37 +936,7 @@ END
 // Bitmap
 //
 
-IDB_ARROWS              BITMAP                  "up1.bmp"
-
-IDB_STOP                BITMAP                  "stop1.bmp"
-
-IDB_RAND                BITMAP                  "rand.bmp"
-
-IDB_PREV                BITMAP                  "prev.bmp"
-
-IDB_PLAY                BITMAP                  "play.bmp"
-
-IDB_PAUSE               BITMAP                  "pause.bmp"
-
-IDB_OPEN                BITMAP                  "open.bmp"
-
-IDB_NEXT                BITMAP                  "next.bmp"
-
 IDB_BLANK               BITMAP                  "next1.bmp"
-
-IDB_NEXT32              BITMAP                  "official_buttons_pack\\next.bmp"
-
-IDB_OPEN32              BITMAP                  "official_buttons_pack\\open.bmp"
-
-IDB_PAUSE32             BITMAP                  "official_buttons_pack\\pause.bmp"
-
-IDB_PLAY32              BITMAP                  "official_buttons_pack\\play.bmp"
-
-IDB_PREV32              BITMAP                  "official_buttons_pack\\prev.bmp"
-
-IDB_RAND32              BITMAP                  "official_buttons_pack\\rand.bmp"
-
-IDB_STOP32              BITMAP                  "official_buttons_pack\\stop.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
