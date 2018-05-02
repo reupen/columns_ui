@@ -61,7 +61,7 @@
 #define IDD_PREFS_COLOURS               222
 #define IDD_PREFS_ARTWORK               223
 #define IDD_ITEM_PROPS_OPTIONS          224
-#define IDD_ITEMDETAILS_CONFIG          225
+#define IDD_ITEM_DETAILS_OPTIONS        225
 #define IDD_PREFS_FILTER_APPEARANCE     226
 #define IDD_PREFS_FILTER_BEHAVIOUR      227
 #define IDD_PREFS_PVIEW_ARTWORK         229
