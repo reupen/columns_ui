@@ -341,8 +341,8 @@ public:
     void apply() {}
     HWND create(HWND wnd) override
     {
-        return m_helper.create(
-            wnd, IDD_ARTWORK, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+        return m_helper.create(wnd, IDD_PREFS_ARTWORK,
+            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Artwork"; }
     bool get_help_url(pfc::string_base& p_out) override

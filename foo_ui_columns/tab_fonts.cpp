@@ -21,7 +21,7 @@ const char* tab_appearance_fonts::get_name()
 HWND tab_appearance_fonts::create(HWND wnd)
 {
     return m_helper.create(
-        wnd, IDD_FONTS_GLOBAL, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+        wnd, IDD_PREFS_FONTS, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
 void tab_appearance_fonts::apply() {}

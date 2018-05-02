@@ -728,8 +728,8 @@ class preferences_tab_impl : public preferences_tab {
 public:
     HWND create(HWND wnd) override
     {
-        return m_helper.create(
-            wnd, IDD_CONFIG_NG, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+        return m_helper.create(wnd, IDD_PREFS_PVIEW_GROUPS,
+            [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Grouping"; }
     bool get_help_url(pfc::string_base& p_out) override

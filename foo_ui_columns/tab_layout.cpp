@@ -1053,8 +1053,8 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 HWND LayoutTab::create(HWND wnd)
 {
-    return m_helper.create(
-        wnd, IDD_LAYOUT, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    return m_helper.create(wnd, IDD_PREFS_LAYOUT_PRESETS,
+        [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
 const char* LayoutTab::get_name()

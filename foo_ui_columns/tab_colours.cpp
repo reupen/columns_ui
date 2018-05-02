@@ -22,7 +22,7 @@ const char* tab_appearance::get_name()
 HWND tab_appearance::create(HWND wnd)
 {
     return m_helper.create(
-        wnd, IDD_COLOURS_GLOBAL, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+        wnd, IDD_PREFS_COLOURS, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
 void tab_appearance::apply() {}

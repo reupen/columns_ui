@@ -178,14 +178,14 @@ void item_details_config_t::run_modeless(HWND wnd, item_details_t* p_this)
 {
     m_modal = false;
     m_this = p_this;
-    if (!uCreateDialog(IDD_ITEMDETAILS_CONFIG, wnd, g_DialogProc, (LPARAM)this))
+    if (!uCreateDialog(IDD_ITEM_DETAILS_OPTIONS, wnd, g_DialogProc, (LPARAM)this))
         delete this;
 }
 
 bool item_details_config_t::run_modal(HWND wnd)
 {
     m_modal = true;
-    return uDialogBox(IDD_ITEMDETAILS_CONFIG, wnd, g_DialogProc, (LPARAM)this) != 0;
+    return uDialogBox(IDD_ITEM_DETAILS_OPTIONS, wnd, g_DialogProc, (LPARAM)this) != 0;
 }
 
 item_details_config_t::item_details_config_t(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)
