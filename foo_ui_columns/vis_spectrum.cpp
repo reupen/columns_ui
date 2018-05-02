@@ -390,7 +390,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 bool spectrum_extension::show_config_popup(HWND wnd_parent)
 {
     spec_param param(cr_fore, cr_back, mode, m_scale, m_vertical_scale, this);
-    bool rv = !!uDialogBox(IDD_POPUP_SPECTRUM_NEW, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
+    bool rv = !!uDialogBox(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
     if (rv) {
         cr_fore = param.cr_fore;
         cfg_vis2 = param.cr_fore;
@@ -644,7 +644,7 @@ class window_visualisation_spectrum : public window_visualisation {
         spec_param param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
             p_temp.get_ptr(), true, get_frame_style());
 
-        bool rv = !!uDialogBox(IDD_POPUP_SPECTRUM_NEW, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
+        bool rv = !!uDialogBox(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
         if (rv) {
             p_temp->cr_fore = param.cr_fore;
             cfg_vis2 = param.cr_fore;

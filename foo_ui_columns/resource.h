@@ -44,7 +44,7 @@
 #define IDD_PREFS_PVIEW_GENERAL         196
 #define IDD_PREFS_PLAYLISTS_DRAGDROP    197
 #define IDD_PREFS_LAYOUT_PRESETS        198
-#define IDD_POPUP_SPECTRUM_NEW          204
+#define IDD_SPECTRUM_ANALYSER_OPTIONS   204
 #define IDD_IMAGE                       205
 #define IDD_COMMAND                     206
 #define IDD_FCL_IMPORT                  207
