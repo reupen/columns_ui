@@ -55,7 +55,7 @@
 #define IDD_EDIT_GROUP                  213
 #define IDD_PREFS_PVIEW_GROUPS                   214
 #define IDD_PREFS_FILTER_FIELDS               215
-#define IDD_FONTS_GLOBAL                216
+#define IDD_PREFS_FONTS                216
 #define IDD_COLUMN_OPTIONS              218
 #define IDD_COLUMN_SCRIPTS              219
 #define IDD_PREFS_COLUMNS               220
