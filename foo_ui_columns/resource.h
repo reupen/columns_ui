@@ -64,7 +64,7 @@
 #define IDD_PREFS_ARTWORK               223
 #define IDD_SELECTIONCONFIG             224
 #define IDD_ITEMDETAILS_CONFIG          225
-#define IDD_FILTER_APPEARANCE           226
+#define IDD_PREFS_FILTER_APPEARANCE           226
 #define IDD_FILTER_BEHAVIOUR            227
 #define IDD_PREFS_PVIEW_ARTWORK               229
 #define IDD_LAYOUT_MISC                 230
