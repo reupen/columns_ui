@@ -433,6 +433,9 @@
     <ClCompile Include="replaygain_mode.cpp">
       <Filter>Toolbars</Filter>
     </ClCompile>
+    <ClCompile Include="button_items.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ng_playlist\ng_playlist.h">
@@ -617,6 +620,9 @@
       <Filter>Panels\Playlist view</Filter>
     </ClInclude>
     <ClInclude Include="drop_down_list_toolbar.h" />
+    <ClInclude Include="button_items.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">

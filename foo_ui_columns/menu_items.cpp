@@ -3,6 +3,7 @@
 #include "layout.h"
 #include "ng_playlist/ng_playlist.h"
 #include "main_window.h"
+#include "button_items.h"
 
 namespace cui::main_menu {
 
@@ -39,44 +40,6 @@ static mainmenu_group_factory g_mainmenu_group_view_layout_presets_part(
 } // namespace groups
 
 namespace commands {
-
-class LiveLayoutEditingButton : public uie::button {
-public:
-    static void s_on_layout_editing_enabled_change()
-    {
-        for (auto&& button : m_buttons) {
-            for (auto&& callback : button->m_callbacks) {
-                callback->on_button_state_change(s_get_button_state());
-            }
-        }
-    }
-    static unsigned s_get_button_state()
-    {
-        return (g_layout_window.get_layout_editing_active() ? uie::BUTTON_STATE_PRESSED : 0)
-            | uie::BUTTON_STATE_DEFAULT;
-    }
-    LiveLayoutEditingButton() { m_buttons.emplace_back(this); }
-    ~LiveLayoutEditingButton()
-    {
-        m_buttons.erase(std::remove(m_buttons.begin(), m_buttons.end(), this), m_buttons.end());
-    }
-
-private:
-    const GUID& get_item_guid() const override { return toggle_live_editing_id; }
-    HBITMAP get_item_bitmap(unsigned, COLORREF, uie::t_mask&, COLORREF&, HBITMAP&) const override { return nullptr; }
-    unsigned get_button_state() const override { return s_get_button_state(); }
-    void register_callback(uie::button_callback& p_callback) override { m_callbacks.emplace_back(&p_callback); };
-    void deregister_callback(uie::button_callback& p_callback) override
-    {
-        m_callbacks.erase(std::remove(m_callbacks.begin(), m_callbacks.end(), &p_callback), m_callbacks.end());
-    };
-
-    static std::vector<LiveLayoutEditingButton*> m_buttons;
-    std::vector<uie::button_callback*> m_callbacks;
-};
-
-std::vector<LiveLayoutEditingButton*> LiveLayoutEditingButton::m_buttons;
-static uie::button_factory<LiveLayoutEditingButton> live_layout_editing_button_factory;
 
 static const MainMenuCommand activate_now_playing{activate_now_playing_id, "Activate now playing",
     "Activates the currently playing item.", [] { playlist_manager::get()->highlight_playing_item(); }};
@@ -128,7 +91,7 @@ static const MainMenuCommand live_editing{toggle_live_editing_id, "Live editing"
     [] {
         bool val = !g_layout_window.get_layout_editing_active();
         g_layout_window.set_layout_editing_active(val);
-        LiveLayoutEditingButton::s_on_layout_editing_enabled_change();
+        button_items::LiveLayoutEditingButton::s_on_change();
     },
     [] { return g_layout_window.get_layout_editing_active(); }};
 

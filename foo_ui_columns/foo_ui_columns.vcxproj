@@ -288,6 +288,7 @@
     <ClCompile Include=".\playlist_view_tfhook.cpp" />
     <ClCompile Include=".\prefs_utils.cpp" />
     <ClCompile Include=".\setup_dialog.cpp" />
+    <ClCompile Include="button_items.cpp" />
     <ClCompile Include="file_info_reader.cpp" />
     <ClCompile Include="legacy_config.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist.cpp">
@@ -454,6 +455,7 @@
     <ClInclude Include=".\item_properties.h" />
     <ClInclude Include=".\menu_helpers.h" />
     <ClInclude Include=".\mw_drop_target.h" />
+    <ClInclude Include="button_items.h" />
     <ClInclude Include="playlist_view_tfhooks.h" />
     <ClInclude Include=".\setup_dialog.h" />
     <ClInclude Include="file_info_reader.h" />

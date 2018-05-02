@@ -10,7 +10,7 @@
 
 * Right-clicking in empty space in the playlist view now correctly deselects all items and always displays a context menu. [[#75](https://github.com/reupen/columns_ui/issues/75)]
 
-* Added a main menu command to toggle whether playlist groups are shown. [[#100](https://github.com/reupen/columns_ui/issues/100)]
+* Added a main menu command to toggle whether playlist groups are shown. (Additionally, if the menu item is added as button, the button will become pressed when the 'Show groups' is turned on.) [[#100](https://github.com/reupen/columns_ui/issues/100), [#112](https://github.com/reupen/columns_ui/issues/112)]
 
 ### Filter panel
 
