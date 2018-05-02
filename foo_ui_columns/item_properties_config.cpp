@@ -163,7 +163,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
 
 bool selection_properties_config_t::run_modal(HWND wnd)
 {
-    return uDialogBox(IDD_SELECTIONCONFIG, wnd, g_DialogProc, (LPARAM)this) != 0;
+    return uDialogBox(IDD_ITEM_PROPS_OPTIONS, wnd, g_DialogProc, (LPARAM)this) != 0;
 }
 
 selection_properties_config_t::selection_properties_config_t(pfc::list_t<field_t> p_fields, t_size edge_style,
