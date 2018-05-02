@@ -53,7 +53,7 @@
 #define IDD_RESULTS                     209
 #define IDD_FCL_EXPORT                  210
 #define IDD_EDIT_GROUP                  213
-#define IDD_CONFIG_NG                   214
+#define IDD_PREFS_PVIEW_GROUPS                   214
 #define IDD_PREFS_FILTER_FIELDS               215
 #define IDD_FONTS_GLOBAL                216
 #define IDD_COLUMN_OPTIONS              218
