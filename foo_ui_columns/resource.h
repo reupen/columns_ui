@@ -60,7 +60,7 @@
 #define IDD_COLUMN_SCRIPTS              219
 #define IDD_PREFS_COLUMNS               220
 #define IDD_STATUS                      221
-#define IDD_COLOURS_GLOBAL              222
+#define IDD_PREFS_COLOURS              222
 #define IDD_PREFS_ARTWORK               223
 #define IDD_SELECTIONCONFIG             224
 #define IDD_ITEMDETAILS_CONFIG          225
