@@ -49,7 +49,7 @@ public:
     }
     HWND create(HWND wnd) override
     {
-        return m_helper.create(wnd, IDD_PVIEW_ARTWORK,
+        return m_helper.create(wnd, IDD_PREFS_PVIEW_ARTWORK,
             [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Artwork"; }
