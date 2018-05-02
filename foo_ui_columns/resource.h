@@ -40,7 +40,7 @@
 #define IDD_RENAME_PLAYLIST             185
 #define IDD_HOST                        191
 #define IDD_PREFS_PLAYLISTS_MAIN                   193
-#define IDD_SYS                         195
+#define IDD_PREFS_NOTIFICATION_AREA                         195
 #define IDD_PREFS_PVIEW_GENERAL               196
 #define IDD_PREFS_PLAYLISTS_DRAGDROP          197
 #define IDD_PREFS_LAYOUT_PRESETS                      198
