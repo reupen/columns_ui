@@ -73,8 +73,8 @@ public:
     }
     HWND create(HWND wnd) override
     {
-        return m_helper.create(
-            wnd, IDD_STATUS, [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+        return m_helper.create(wnd, IDD_PREFS_STATUS_BAR,
+            [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Status bar"; }
     bool get_help_url(pfc::string_base& p_out) override
