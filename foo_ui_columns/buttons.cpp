@@ -682,7 +682,8 @@ bool toolbar_extension::show_config_popup(HWND wnd_parent)
     param.m_image = nullptr;
     param.m_text_below = m_text_below;
     param.m_appearance = m_appearance;
-    bool rv = !!uDialogBox(IDD_BUTTONS, wnd_parent, config_param::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
+    bool rv = !!uDialogBox(
+        IDD_BUTTONS_OPTIONS, wnd_parent, config_param::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
     if (rv) {
         configure(param.m_buttons, param.m_text_below, param.m_appearance);
     }

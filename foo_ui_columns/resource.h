@@ -7,7 +7,7 @@
 #define IDD_PREFS_MAIN                  101
 #define IDD_PREFS_PVIEW_GLOBALS         102
 #define IDC_PICK                        102
-#define IDD_BUTTONS                     105
+#define IDD_BUTTONS_OPTIONS             105
 #define IDB_ARROWS                      107
 #define IDI_LOCK                        108
 #define IDB_PAUSE                       109
