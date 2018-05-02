@@ -311,7 +311,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
             command_picker_data p_temp;
             command_picker_param p_data{};
             p_temp.set_data(p_data);
-            if (uDialogBox(IDD_COMMAND, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
+            if (uDialogBox(IDD_BUTTON_COMMAND_PICKER, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
                 t_size index = m_buttons.add_item(button{});
 
                 p_temp.get_data(p_data);
@@ -457,7 +457,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
                 command_picker_param p_data{
                     m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter};
                 p_temp.set_data(p_data);
-                if (uDialogBox(IDD_COMMAND, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
+                if (uDialogBox(IDD_BUTTON_COMMAND_PICKER, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
                     p_temp.get_data(p_data);
                     m_selection->m_type = (t_type)p_data.m_group;
                     m_selection->m_guid = p_data.m_guid;

@@ -31,7 +31,7 @@
 #define IDD_PREFS_LAYOUT_PRESETS        198
 #define IDD_SPECTRUM_ANALYSER_OPTIONS   204
 #define IDD_BUTTON_IMAGE                205
-#define IDD_COMMAND                     206
+#define IDD_BUTTON_COMMAND_PICKER       206
 #define IDD_FCL_IMPORT                  207
 #define IDD_RESULTS                     209
 #define IDD_FCL_EXPORT                  210
