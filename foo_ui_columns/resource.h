@@ -96,7 +96,6 @@
 #define IDC_GROUPS                      1016
 #define IDC_SHOWEMPTY                   1016
 #define IDC_CUSTOM_COLOUR               1017
-#define IDC_OLDGLOBAL                   1017
 #define IDC_DROP_AT_END                 1017
 #define IDC_FCL_IMPORT                  1017
 #define IDC_FILTERS_SHOW_COLUMN_TITLES  1017
@@ -233,7 +232,6 @@
 #define IDC_DEST                        1135
 #define IDC_SORT_STRING                 1143
 #define IDC_FONT_DESC                   1144
-#define IDC_GROUPBOX                    1147
 #define IDC_CHANGE_TEXT_BACK            1149
 #define IDC_CHANGE_SELBACK              1150
 #define IDC_CHANGE_FONT                 1152
