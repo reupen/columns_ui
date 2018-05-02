@@ -211,7 +211,7 @@ public:
     }
     HWND create(HWND wnd) override
     {
-        return m_helper.create(wnd, IDD_FILTER_FIELDS,
+        return m_helper.create(wnd, IDD_PREFS_FILTER_FIELDS,
             [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Fields"; }
