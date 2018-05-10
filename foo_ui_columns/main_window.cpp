@@ -13,6 +13,7 @@
 #include "notification_area.h"
 #include "font_notify.h"
 #include "status_bar.h"
+#include "migrate.h"
 
 rebar_window* g_rebar_window = nullptr;
 layout_window g_layout_window;
@@ -50,6 +51,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
             nullptr, unsupported_os_message, L"Columns UI - Unsupported operating system", MB_OK | MB_ICONEXCLAMATION);
         return nullptr;
     }
+
+    migrate::v100::migrate();
 
     if (main_window::config_get_is_first_run()) {
         if (!cfg_layout.get_presets().get_count())

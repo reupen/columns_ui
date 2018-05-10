@@ -61,6 +61,9 @@
     <Filter Include="Panels\Playlist view">
       <UniqueIdentifier>{9bc42edf-9fd0-4976-b96f-a1ac4492b347}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Migration">
+      <UniqueIdentifier>{f48d2be5-8e31-495d-ace6-d8afa072dfce}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ng_playlist\ng_playlist.cpp">
@@ -436,6 +439,9 @@
     <ClCompile Include="button_items.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="migrate.cpp">
+      <Filter>Migration</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ng_playlist\ng_playlist.h">
@@ -622,6 +628,9 @@
     <ClInclude Include="drop_down_list_toolbar.h" />
     <ClInclude Include="button_items.h">
       <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="migrate.h">
+      <Filter>Migration</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
