@@ -56,7 +56,7 @@ struct ReplayGainModeToolbarArgs {
         if (!is_available())
             return;
         callback = std::make_unique<ReplayGainCoreSettingsNotifyLambda>(
-            [](auto&&) { DropDownListToolbar<ReplayGainModeToolbarArgs>::s_refresh_all_items(); });
+            [](auto&&) { DropDownListToolbar<ReplayGainModeToolbarArgs>::s_refresh_all_items_safe(); });
         auto api = replaygain_manager_v2::get();
         api->add_notify(callback.get());
     }

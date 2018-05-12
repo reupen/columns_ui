@@ -4,7 +4,7 @@
 
 ### Playlist view
 
-* Removed Columns playlist. All users should migrate to NG playlist (now named Playlist view). [[#103](https://github.com/reupen/columns_ui/issues/103)]
+* Removed Columns playlist. On upgrade, any Columns playlist instances in layout presets will be replaced with NG playlist (now named Playlist view). [[#103](https://github.com/reupen/columns_ui/issues/103), [#114](https://github.com/reupen/columns_ui/pull/114)]
 
 * Slightly faster playlist grouping and sorting performance on multi-core PCs.
 
@@ -37,6 +37,8 @@
 * Added an output device toolbar (for foobar2000 1.4 and newer only). [[#105](https://github.com/reupen/columns_ui/pull/105)]
 
 * Added a ReplayGain source mode toolbar (for foobar2000 1.4 and newer only). [[#106](https://github.com/reupen/columns_ui/pull/106)]
+
+* Added a DSP preset toolbar (for foobar2000 1.4 and newer only). [[#115](https://github.com/reupen/columns_ui/pull/115)]
 
 * Added a live layout editing button to the default buttons toolbar configuration. [[#99](https://github.com/reupen/columns_ui/pull/99)]
 

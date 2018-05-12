@@ -3,23 +3,23 @@
 template <class ToolbarArgs>
 class DropDownListToolbar : public ui_extension::container_ui_extension {
 public:
-    static void s_update_active_item()
+    static void s_update_active_item_safe()
     {
         for (auto&& window : s_windows) {
-            window->update_active_item();
+            window->update_active_item_safe();
         }
     }
 
-    static void s_refresh_all_items()
+    static void s_refresh_all_items_safe()
     {
         for (auto&& window : s_windows) {
-            window->refresh_all_items();
+            window->refresh_all_items_safe();
         }
     }
 
-    void refresh_all_items();
+    void refresh_all_items_safe();
+    void update_active_item_safe();
 
-    void update_active_item();
     const GUID& get_extension_guid() const override { return ToolbarArgs::extension_guid; }
     unsigned get_type() const override { return ui_extension::type_toolbar; };
     void get_name(pfc::string_base& out) const override { out = ToolbarArgs::name; }
@@ -45,6 +45,9 @@ private:
     static HFONT s_icon_font;
     static std::vector<DropDownListToolbar<ToolbarArgs>*> s_windows;
 
+    void refresh_all_items();
+    void update_active_item();
+
     typename ToolbarArgs::ItemList m_items;
     HWND m_wnd_combo{nullptr};
     WNDPROC m_order_proc{nullptr};
@@ -52,8 +55,37 @@ private:
     int m_height{0};
     bool m_initialised{false};
     bool m_process_next_char{true};
+    bool m_processing_selection_change{false};
     t_int32 m_mousewheel_delta{0};
 };
+
+template <class ToolbarArgs>
+void DropDownListToolbar<ToolbarArgs>::refresh_all_items_safe()
+{
+    if (m_processing_selection_change) {
+        fb2k::inMainThread([self = ptr{this}, this] {
+            if (get_wnd())
+                refresh_all_items();
+        });
+        return;
+    }
+
+    refresh_all_items();
+}
+
+template <class ToolbarArgs>
+void DropDownListToolbar<ToolbarArgs>::update_active_item_safe()
+{
+    if (m_processing_selection_change) {
+        fb2k::inMainThread([self = ptr{this}, this] {
+            if (get_wnd())
+                update_active_item();
+        });
+        return;
+    }
+
+    update_active_item();
+}
 
 template <class ToolbarArgs>
 void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
@@ -162,6 +194,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
     case WM_COMMAND:
         switch (wp) {
         case ID_COMBOBOX | CBN_SELCHANGE << 16: {
+            pfc::vartoggle_t<bool> var_toggle(m_processing_selection_change, true);
             const int sel = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             if (sel >= 0 && sel < gsl::narrow<int>(m_items.size()))
                 ToolbarArgs::set_active_item(std::get<ToolbarArgs::ID>(m_items[sel]));
