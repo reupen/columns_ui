@@ -51,7 +51,8 @@ struct OutputDeviceToolbarArgs {
             return;
 
         auto api = output_manager_v2::get();
-        callback_handle = api->addCallback([] { DropDownListToolbar<OutputDeviceToolbarArgs>::s_refresh_all_items(); });
+        callback_handle
+            = api->addCallback([] { DropDownListToolbar<OutputDeviceToolbarArgs>::s_refresh_all_items_safe(); });
     }
     static void on_last_window_destroyed() { callback_handle.release(); }
     static bool is_available() { return static_api_test_t<output_manager_v2>(); }

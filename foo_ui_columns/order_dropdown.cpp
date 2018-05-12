@@ -66,7 +66,7 @@ public:
     void on_default_format_changed() override{};
     void on_playback_order_changed(t_size p_new_index) override
     {
-        DropDownListToolbar<PlaybackOrderToolbarArgs>::s_update_active_item();
+        DropDownListToolbar<PlaybackOrderToolbarArgs>::s_update_active_item_safe();
     }
     unsigned get_flags() override { return flag_on_playback_order_changed; };
 };
