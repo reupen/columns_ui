@@ -637,6 +637,9 @@
     <ClInclude Include="drop_down_list_toolbar.h">
       <Filter>Toolbars</Filter>
     </ClInclude>
+    <ClInclude Include="panel_menu_item.h">
+      <Filter>Helpers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">

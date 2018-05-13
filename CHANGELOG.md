@@ -36,9 +36,9 @@
 
 * Added an output device toolbar (for foobar2000 1.4 and newer only). [[#105](https://github.com/reupen/columns_ui/pull/105)]
 
-* Added a ReplayGain source mode toolbar (for foobar2000 1.4 and newer only). [[#106](https://github.com/reupen/columns_ui/pull/106)]
+* Added a ReplayGain source mode toolbar (for foobar2000 1.4 and newer only). [[#106](https://github.com/reupen/columns_ui/pull/106), [#116](https://github.com/reupen/columns_ui/pull/116)]
 
-* Added a DSP preset toolbar (for foobar2000 1.4 and newer only). [[#115](https://github.com/reupen/columns_ui/pull/115)]
+* Added a DSP preset toolbar (for foobar2000 1.4 and newer only). [[#115](https://github.com/reupen/columns_ui/pull/115), [#116](https://github.com/reupen/columns_ui/pull/116)]
 
 * Added a live layout editing button to the default buttons toolbar configuration. [[#99](https://github.com/reupen/columns_ui/pull/99)]
 

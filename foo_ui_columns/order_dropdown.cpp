@@ -35,6 +35,7 @@ struct PlaybackOrderToolbarArgs {
             api->playback_order_set_active(iter - items.begin());
     }
 
+    static void get_menu_items(uie::menu_hook_t& p_hook) {}
     static constexpr void on_first_window_created() {}
     static constexpr void on_last_window_destroyed() {}
     static constexpr bool is_available() { return true; }
