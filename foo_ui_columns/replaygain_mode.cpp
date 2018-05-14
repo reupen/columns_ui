@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "drop_down_list_toolbar.h"
+#include "panel_menu_item.h"
 
 class ReplayGainCoreSettingsNotifyLambda : public replaygain_core_settings_notify {
 public:
@@ -50,6 +51,11 @@ struct ReplayGainModeToolbarArgs {
 
         auto playback_api = playback_control_v3::get();
         playback_api->restart();
+    }
+    static void get_menu_items(uie::menu_hook_t& p_hook)
+    {
+        p_hook.add_node(new cui::panel_helpers::CommandMenuNode{
+            "ReplayGain options", [] { ui_control::get()->show_preferences(preferences_page::guid_playback); }});
     }
     static void on_first_window_created()
     {

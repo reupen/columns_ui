@@ -45,6 +45,7 @@ struct OutputDeviceToolbarArgs {
             api->setCoreConfigDevice(output_id, device_id);
         }
     }
+    static void get_menu_items(uie::menu_hook_t& p_hook) {}
     static void on_first_window_created()
     {
         if (!is_available())

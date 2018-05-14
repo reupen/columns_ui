@@ -459,6 +459,7 @@
     <ClInclude Include=".\mw_drop_target.h" />
     <ClInclude Include="button_items.h" />
     <ClInclude Include="migrate.h" />
+    <ClInclude Include="panel_menu_item.h" />
     <ClInclude Include="playlist_view_tfhooks.h" />
     <ClInclude Include=".\setup_dialog.h" />
     <ClInclude Include="file_info_reader.h" />
