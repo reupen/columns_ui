@@ -291,6 +291,7 @@
     <ClCompile Include="button_items.cpp" />
     <ClCompile Include="dsp_preset.cpp" />
     <ClCompile Include="file_info_reader.cpp" />
+    <ClCompile Include="help.cpp" />
     <ClCompile Include="legacy_config.cpp" />
     <ClCompile Include="migrate.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist.cpp">
@@ -458,6 +459,7 @@
     <ClInclude Include=".\menu_helpers.h" />
     <ClInclude Include=".\mw_drop_target.h" />
     <ClInclude Include="button_items.h" />
+    <ClInclude Include="help.h" />
     <ClInclude Include="migrate.h" />
     <ClInclude Include="panel_menu_item.h" />
     <ClInclude Include="playlist_view_tfhooks.h" />
@@ -508,6 +510,7 @@
     <ClInclude Include="splitter_utils.h" />
     <ClInclude Include="tab_layout.h" />
     <ClInclude Include="tab_layout_misc.h" />
+    <ClInclude Include="urls.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
