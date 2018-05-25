@@ -445,6 +445,9 @@
     <ClCompile Include="dsp_preset.cpp">
       <Filter>Toolbars</Filter>
     </ClCompile>
+    <ClCompile Include="help.cpp">
+      <Filter>Misc</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ng_playlist\ng_playlist.h">
@@ -639,6 +642,12 @@
     </ClInclude>
     <ClInclude Include="panel_menu_item.h">
       <Filter>Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="urls.h">
+      <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="help.h">
+      <Filter>Misc</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

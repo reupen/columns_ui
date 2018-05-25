@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
+#include "help.h"
 
 static cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}}, 0);
 
@@ -114,12 +115,21 @@ public:
                 //        MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)(&rc), 2);
                 HMENU menu = CreatePopupMenu();
 
-                enum { IDM_TFHELP = 1, IDM_GHELP = 2, IDM_SPEEDTEST, IDM_PREVIEW, IDM_EDITORFONT, IDM_RESETSTYLE };
+                enum {
+                    IDM_TFHELP = 1,
+                    IDM_STYLE_HELP,
+                    IDM_GLOBALS_HELP,
+                    IDM_SPEEDTEST,
+                    IDM_PREVIEW,
+                    IDM_EDITORFONT,
+                    IDM_RESETSTYLE
+                };
 
-                uAppendMenu(menu, (MF_STRING), IDM_TFHELP, "Titleformatting &help");
-                uAppendMenu(menu, (MF_STRING), IDM_GHELP, "&Global help");
+                uAppendMenu(menu, (MF_STRING), IDM_TFHELP, "Title formatting &help");
+                uAppendMenu(menu, (MF_STRING), IDM_STYLE_HELP, "&Style script help");
+                uAppendMenu(menu, (MF_STRING), IDM_GLOBALS_HELP, "&Global variables help");
                 uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_SPEEDTEST, "&Speed test");
+                uAppendMenu(menu, (MF_STRING), IDM_SPEEDTEST, "Speed &test");
                 uAppendMenu(menu, (MF_STRING), IDM_PREVIEW, "&Preview to console");
                 uAppendMenu(menu, (MF_SEPARATOR), 0, "");
                 uAppendMenu(menu, (MF_STRING), IDM_EDITORFONT, "Change editor &font");
@@ -131,11 +141,10 @@ public:
                 DestroyMenu(menu);
                 if (cmd == IDM_TFHELP) {
                     standard_commands::main_titleformat_help();
-                } else if (cmd == IDM_GHELP) {
-                    uMessageBox(wnd,
-                        COLOUR_HELP
-                        "\n\nNew global format: $set_global(var, val), retreive values using $get_global(var)",
-                        "Global help", 0);
+                } else if (cmd == IDM_STYLE_HELP) {
+                    cui::help::open_colour_script_help(GetParent(wnd));
+                } else if (cmd == IDM_GLOBALS_HELP) {
+                    cui::help::open_global_variables_help(GetParent(wnd));
                 } else if (cmd == IDM_SPEEDTEST) {
                     speedtest(g_columns, cfg_global != 0, cfg_playlist_date != 0);
                 } else if (cmd == IDM_PREVIEW) {

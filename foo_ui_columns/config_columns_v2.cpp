@@ -2,6 +2,7 @@
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
 #include "config_columns_v2.h"
+#include "help.h"
 
 extern cfg_int g_cur_tab;
 extern cfg_uint g_last_colour;
@@ -372,12 +373,13 @@ public:
                 //        MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)(&rc), 2);
                 HMENU menu = CreatePopupMenu();
 
-                enum { IDM_TFHELP = 1, IDM_SHELP = 2, IDM_SPEEDTEST, IDM_PREVIEW, IDM_EDITORFONT };
+                enum { IDM_TFHELP = 1, IDM_STYLE_HELP, IDM_GLOBALS_HELP, IDM_SPEEDTEST, IDM_PREVIEW, IDM_EDITORFONT };
 
-                uAppendMenu(menu, (MF_STRING), IDM_TFHELP, "Titleformatting &help");
-                uAppendMenu(menu, (MF_STRING), IDM_SHELP, "&String help");
+                uAppendMenu(menu, (MF_STRING), IDM_TFHELP, "Title formatting &help");
+                uAppendMenu(menu, (MF_STRING), IDM_STYLE_HELP, "&Style script help");
+                uAppendMenu(menu, (MF_STRING), IDM_GLOBALS_HELP, "&Global variables help");
                 uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_SPEEDTEST, "Sp&eed test");
+                uAppendMenu(menu, (MF_STRING), IDM_SPEEDTEST, "Speed &test");
                 uAppendMenu(menu, (MF_STRING), IDM_PREVIEW, "&Preview script");
                 uAppendMenu(menu, (MF_SEPARATOR), 0, "");
                 uAppendMenu(menu, (MF_STRING), IDM_EDITORFONT, "Change editor &font");
@@ -387,8 +389,10 @@ public:
                 DestroyMenu(menu);
                 if (cmd == IDM_TFHELP) {
                     standard_commands::main_titleformat_help();
-                } else if (cmd == IDM_SHELP) {
-                    uMessageBox(wnd, COLOUR_HELP, "Style string help", 0);
+                } else if (cmd == IDM_STYLE_HELP) {
+                    cui::help::open_colour_script_help(GetParent(wnd));
+                } else if (cmd == IDM_GLOBALS_HELP) {
+                    cui::help::open_global_variables_help(GetParent(wnd));
                 } else if (cmd == IDM_SPEEDTEST) {
                     speedtest(g_columns, cfg_global != 0, cfg_playlist_date != 0);
                 } else if (cmd == IDM_PREVIEW) {
