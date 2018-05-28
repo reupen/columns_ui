@@ -239,7 +239,7 @@ public:
         }
     }
 
-    DisplayScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit DisplayScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -324,7 +324,7 @@ public:
         }
     }
 
-    StyleScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit StyleScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -418,7 +418,7 @@ public:
         }
     }
 
-    SortingScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit SortingScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
