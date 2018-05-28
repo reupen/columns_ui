@@ -40,7 +40,6 @@
 #define IDD_PREFS_FILTER_FIELDS         215
 #define IDD_PREFS_FONTS                 216
 #define IDD_COLUMN_OPTIONS              218
-#define IDD_COLUMN_SCRIPTS              219
 #define IDD_PREFS_COLUMNS               220
 #define IDD_PREFS_STATUS_BAR            221
 #define IDD_PREFS_COLOURS               222
@@ -51,6 +50,9 @@
 #define IDD_PREFS_FILTER_BEHAVIOUR      227
 #define IDD_PREFS_PVIEW_ARTWORK         229
 #define IDD_PREFS_LAYOUT_MISC           230
+#define IDD_COLUMN_DISPLAY_SCRIPT       231
+#define IDD_COLUMN_SORTING_SCRIPT       232
+#define IDD_COLUMN_STYLE_SCRIPT         233
 #define IDC_LIST                        1003
 #define IDC_COLUMNS                     1003
 #define IDC_INFOSECTIONS                1003
@@ -234,6 +236,9 @@
 #define IDC_TITLE1                      1168
 #define IDC_TITLE2                      1169
 #define IDC_TITLE3                      1170
+#define IDC_DISPLAY_SCRIPT              1173
+#define IDC_SORTING_SCRIPT              1174
+#define IDC_STYLE_SCRIPT                1175
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -243,7 +248,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        158
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1173
+#define _APS_NEXT_CONTROL_VALUE         1176
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

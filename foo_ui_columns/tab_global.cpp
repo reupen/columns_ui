@@ -2,6 +2,7 @@
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
 #include "help.h"
+#include "prefs_utils.h"
 
 static cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}}, 0);
 
@@ -24,25 +25,6 @@ public:
             else if (id == 1)
                 cfg_colour = string_utf8_from_window(wnd, IDC_STRING);
         }
-    }
-
-    static LRESULT WINAPI s_on_edit_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        auto p_this = reinterpret_cast<tab_global*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-        return p_this ? p_this->on_edit_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    }
-
-    LRESULT on_edit_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        switch (msg) {
-        case WM_CHAR:
-            if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) && (GetKeyState(VK_CONTROL) & KF_UP)) {
-                SendMessage(wnd, EM_SETSEL, 0, -1);
-                return 0;
-            }
-            break;
-        }
-        return CallWindowProc(m_edit_proc, wnd, msg, wp, lp);
     }
 
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -68,11 +50,7 @@ public:
 
             refresh_me(wnd);
 
-            const auto wnd_edit = GetDlgItem(wnd, IDC_STRING);
-            SetWindowLongPtr(wnd_edit, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
-            m_edit_proc = reinterpret_cast<WNDPROC>(
-                SetWindowLongPtr(wnd_edit, GWLP_WNDPROC, reinterpret_cast<LPARAM>(s_on_edit_hooked_message)));
-
+            m_edit_control_hook.attach(GetDlgItem(wnd, IDC_STRING));
             g_editor_font_notify.set(GetDlgItem(wnd, IDC_STRING));
         }
 
@@ -189,7 +167,7 @@ public:
     }
 
 private:
-    WNDPROC m_edit_proc{};
+    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_global;
 

@@ -3,6 +3,7 @@
 #include "config.h"
 #include "config_columns_v2.h"
 #include "help.h"
+#include "prefs_utils.h"
 
 extern cfg_int g_cur_tab;
 extern cfg_uint g_last_colour;
@@ -183,236 +184,310 @@ public:
     }
 };
 
-class edit_column_window_scripts : public column_tab {
-public:
-    using self_t = edit_column_window_scripts;
-    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_COLUMN_SCRIPTS, wnd, g_on_message, (LPARAM)this); }
-    // virtual const char * get_name()=0;
-    edit_column_window_scripts(column_t::ptr col)
-        : m_wnd(nullptr), initialising(false), editproc(nullptr), m_column(std::move(col)){};
+void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
+{
+    RECT rc;
+    GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
+    const HMENU menu = CreatePopupMenu();
 
-    HWND m_wnd;
+    enum { IDM_TFHELP = 1, IDM_STYLE_HELP, IDM_GLOBALS_HELP, IDM_SPEEDTEST, IDM_PREVIEW, IDM_EDITORFONT };
 
-    bool initialising;
-    WNDPROC editproc;
+    uAppendMenu(menu, MF_STRING, IDM_TFHELP, "Title formatting &help");
+    uAppendMenu(menu, MF_STRING, IDM_STYLE_HELP, "&Style script help");
+    uAppendMenu(menu, MF_STRING, IDM_GLOBALS_HELP, "&Global variables help");
+    uAppendMenu(menu, MF_SEPARATOR, 0, "");
+    uAppendMenu(menu, MF_STRING, IDM_SPEEDTEST, "Speed &test");
+    uAppendMenu(menu, MF_STRING, IDM_PREVIEW, "&Preview script");
+    uAppendMenu(menu, MF_SEPARATOR, 0, "");
+    uAppendMenu(menu, MF_STRING, IDM_EDITORFONT, "Change editor &font");
 
-    column_t::ptr m_column;
-
-    void set_detail_enabled(HWND wnd, BOOL show)
-    {
-        if (show == FALSE) {
-            pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
-
-            uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, "");
-            SendDlgItemMessage(wnd, IDC_CUSTOM_SORT, BM_SETCHECK, 0, 0);
-            SendDlgItemMessage(wnd, IDC_CUSTOM_COLOUR, BM_SETCHECK, 0, 0);
-        }
-
-        EnableWindow(GetDlgItem(wnd, IDC_STRING), show);
-        EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_SORT), show);
-        EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_COLOUR), show);
+    const int cmd
+        = TrackPopupMenu(menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
+    DestroyMenu(menu);
+    if (cmd == IDM_TFHELP) {
+        standard_commands::main_titleformat_help();
+    } else if (cmd == IDM_STYLE_HELP) {
+        cui::help::open_colour_script_help(GetParent(wnd));
+    } else if (cmd == IDM_GLOBALS_HELP) {
+        cui::help::open_global_variables_help(GetParent(wnd));
+    } else if (cmd == IDM_SPEEDTEST) {
+        speedtest(g_columns, cfg_global != 0, cfg_playlist_date != 0);
+    } else if (cmd == IDM_PREVIEW) {
+        preview_to_console(string_utf8_from_window(wnd, edit_ctrl_id), cfg_global != 0);
+    } else if (cmd == IDM_EDITORFONT) {
+        if (font_picker(GetParent(wnd), cfg_editor_font))
+            g_editor_font_notify.on_change();
     }
-    void refresh_me(HWND wnd, bool init = false)
+}
+
+class DisplayScriptTab : public column_tab {
+public:
+    using SelfType = DisplayScriptTab;
+
+    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
+
+    HWND create(HWND wnd) override
     {
-        initialising = true;
-
-        if (m_column.is_valid()) {
-            update_string(wnd);
-            SendDlgItemMessage(wnd, IDC_CUSTOM_SORT, BM_SETCHECK, m_column->use_custom_sort, 0);
-            SendDlgItemMessage(wnd, IDC_CUSTOM_COLOUR, BM_SETCHECK, m_column->use_custom_colour, 0);
-        }
-
-        initialising = false;
-
-        set_detail_enabled(wnd, m_column.is_valid());
+        return uCreateDialog(IDD_COLUMN_DISPLAY_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
     }
 
     void set_column(const column_t::ptr& column) override
     {
         if (m_column.get_ptr() != column.get_ptr()) {
             m_column = column;
-            refresh_me(m_wnd);
+            update_controls();
         }
     }
 
-    void update_string(HWND wnd, int id = -1)
+    explicit DisplayScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+
+private:
+    static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
-        initialising = true;
-        if (id == -1)
-            id = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-
-        pfc::string8 temp;
-
-        if (id >= 0 && id <= 2) {
-            if (m_column.is_valid()) {
-                if (id == 0)
-                    temp = m_column->spec;
-                else if (id == 1)
-                    temp = m_column->colour_spec;
-                else if (id == 2)
-                    temp = m_column->sort_spec;
-            }
-        }
-        uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, temp);
-        initialising = false;
-    }
-
-    void save_string(HWND wnd, LPARAM lp)
-    {
-        int id = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-        if (id >= 0 && id <= 2) {
-            if (!initialising && m_column.is_valid()) {
-                if (id == 0)
-                    m_column->spec = string_utf8_from_window((HWND)lp);
-                else if (id == 1)
-                    m_column->colour_spec = string_utf8_from_window((HWND)lp);
-                else if (id == 2)
-                    m_column->sort_spec = string_utf8_from_window((HWND)lp);
-            }
-        }
-    }
-
-    static LRESULT WINAPI g_EditHook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        auto p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
-        return p_data ? p_data->EditHook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
-    }
-
-    LRESULT WINAPI EditHook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        switch (msg) {
-        case WM_CHAR:
-            if (!(HIWORD(lp) & KF_REPEAT) && (wp == 1) && (GetKeyState(VK_CONTROL) & KF_UP)) {
-                SendMessage(wnd, EM_SETSEL, 0, -1);
-                return 0;
-            }
-            break;
-        }
-        return uCallWindowProc(editproc, wnd, msg, wp, lp);
-    }
-
-    static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        self_t* p_data = nullptr;
+        SelfType* p_data = nullptr;
         if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<self_t*>(lp);
+            p_data = reinterpret_cast<SelfType*>(lp);
             SetWindowLongPtr(wnd, DWLP_USER, lp);
         } else
-            p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, DWLP_USER));
+            p_data = reinterpret_cast<SelfType*>(GetWindowLongPtr(wnd, DWLP_USER));
         return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+    }
+
+    void update_controls()
+    {
+        pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
+
+        if (m_column.is_valid()) {
+            uSetWindowText(edit_control(), m_column->spec);
+        } else {
+            uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
+        }
+        EnableWindow(edit_control(), m_column.is_valid());
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
-        case WM_INITDIALOG: {
+        case WM_INITDIALOG:
             m_wnd = wnd;
-            uTCITEM tabs;
-            memset(&tabs, 0, sizeof(tabs));
-
-            HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
-
-            tabs.mask = TCIF_TEXT;
-            tabs.pszText = const_cast<char*>("Display");
-            uTabCtrl_InsertItem(wnd_tab, 0, &tabs);
-            tabs.pszText = const_cast<char*>("Style");
-            uTabCtrl_InsertItem(wnd_tab, 1, &tabs);
-            tabs.pszText = const_cast<char*>("Sort");
-            uTabCtrl_InsertItem(wnd_tab, 2, &tabs);
-
-            TabCtrl_SetCurSel(wnd_tab, g_cur_tab);
-
+            Edit_LimitText(edit_control(), 0);
+            m_edit_control_hook.attach(edit_control());
+            g_editor_font_notify.set(edit_control());
             colour_code_gen(wnd, IDC_COLOUR, true, true);
-
-            SendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
-
-            refresh_me(wnd, true);
-
-            SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING), GWLP_USERDATA, (LPARAM)this);
-            editproc = (WNDPROC)SetWindowLongPtr(GetDlgItem(wnd, IDC_STRING), GWLP_WNDPROC, (LPARAM)g_EditHook);
-
-            g_editor_font_notify.set(GetDlgItem(wnd, IDC_STRING));
-        }
-
-        break;
-
-        case WM_DESTROY: {
+            update_controls();
+            break;
+        case WM_DESTROY:
             m_wnd = nullptr;
             g_editor_font_notify.release();
-        } break;
-        case WM_NOTIFY:
-            switch (((LPNMHDR)lp)->idFrom) {
-            case IDC_TAB1:
-                switch (((LPNMHDR)lp)->code) {
-                case TCN_SELCHANGE: {
-                    int id = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB1));
-                    g_cur_tab = id;
-                    update_string(wnd, id);
-                } break;
-                }
-                break;
-            }
             break;
-
         case WM_COMMAND:
             switch (wp) {
-            case IDC_CUSTOM_SORT: {
-                if (!initialising && m_column.is_valid()) {
-                    m_column->use_custom_sort = ((SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0));
-                }
-            } break;
-            case IDC_CUSTOM_COLOUR: {
-                if (!initialising && m_column.is_valid()) {
-                    m_column->use_custom_colour = ((SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0));
-                }
-            } break;
-            case IDC_TFHELP: {
-                RECT rc;
-                GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
-                //        MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)(&rc), 2);
-                HMENU menu = CreatePopupMenu();
-
-                enum { IDM_TFHELP = 1, IDM_STYLE_HELP, IDM_GLOBALS_HELP, IDM_SPEEDTEST, IDM_PREVIEW, IDM_EDITORFONT };
-
-                uAppendMenu(menu, (MF_STRING), IDM_TFHELP, "Title formatting &help");
-                uAppendMenu(menu, (MF_STRING), IDM_STYLE_HELP, "&Style script help");
-                uAppendMenu(menu, (MF_STRING), IDM_GLOBALS_HELP, "&Global variables help");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_SPEEDTEST, "Speed &test");
-                uAppendMenu(menu, (MF_STRING), IDM_PREVIEW, "&Preview script");
-                uAppendMenu(menu, (MF_SEPARATOR), 0, "");
-                uAppendMenu(menu, (MF_STRING), IDM_EDITORFONT, "Change editor &font");
-
-                int cmd = TrackPopupMenu(
-                    menu, TPM_LEFTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, rc.left, rc.bottom, 0, wnd, nullptr);
-                DestroyMenu(menu);
-                if (cmd == IDM_TFHELP) {
-                    standard_commands::main_titleformat_help();
-                } else if (cmd == IDM_STYLE_HELP) {
-                    cui::help::open_colour_script_help(GetParent(wnd));
-                } else if (cmd == IDM_GLOBALS_HELP) {
-                    cui::help::open_global_variables_help(GetParent(wnd));
-                } else if (cmd == IDM_SPEEDTEST) {
-                    speedtest(g_columns, cfg_global != 0, cfg_playlist_date != 0);
-                } else if (cmd == IDM_PREVIEW) {
-                    preview_to_console(string_utf8_from_window(wnd, IDC_STRING), cfg_global != 0);
-                } else if (cmd == IDM_EDITORFONT) {
-                    if (font_picker(wnd, cfg_editor_font))
-                        g_editor_font_notify.on_change();
-                }
-            } break;
+            case IDC_TFHELP:
+                show_title_formatting_help_menu(wnd, IDC_DISPLAY_SCRIPT);
+                break;
             case IDC_PICK_COLOUR:
                 colour_code_gen(wnd, IDC_COLOUR, true, false);
                 break;
-            case (EN_CHANGE << 16) | IDC_STRING: {
+            case EN_CHANGE << 16 | IDC_DISPLAY_SCRIPT:
                 if (!initialising && m_column.is_valid())
-                    save_string(wnd, lp);
-            } break;
+                    m_column->spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                break;
             }
         }
         return 0;
     }
+
+    HWND edit_control() const { return GetDlgItem(m_wnd, IDC_DISPLAY_SCRIPT); }
+
+    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
+    HWND m_wnd;
+    bool initialising;
+    column_t::ptr m_column;
+};
+
+class StyleScriptTab : public column_tab {
+public:
+    using SelfType = StyleScriptTab;
+
+    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
+
+    HWND create(HWND wnd) override
+    {
+        return uCreateDialog(IDD_COLUMN_STYLE_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
+    }
+
+    void set_column(const column_t::ptr& column) override
+    {
+        if (m_column.get_ptr() != column.get_ptr()) {
+            m_column = column;
+            update_controls();
+        }
+    }
+
+    explicit StyleScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+
+private:
+    static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        SelfType* p_data = nullptr;
+        if (msg == WM_INITDIALOG) {
+            p_data = reinterpret_cast<SelfType*>(lp);
+            SetWindowLongPtr(wnd, DWLP_USER, lp);
+        } else
+            p_data = reinterpret_cast<SelfType*>(GetWindowLongPtr(wnd, DWLP_USER));
+        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+    }
+
+    void update_controls()
+    {
+        pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
+
+        if (m_column.is_valid()) {
+            uSetWindowText(edit_control(), m_column->colour_spec);
+            Button_SetCheck(custom_colour_control(), m_column->use_custom_colour ? BST_CHECKED : BST_UNCHECKED);
+        } else {
+            uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
+            Button_SetCheck(custom_colour_control(), BST_UNCHECKED);
+        }
+        EnableWindow(edit_control(), m_column.is_valid());
+        EnableWindow(custom_colour_control(), m_column.is_valid());
+    }
+
+    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        switch (msg) {
+        case WM_INITDIALOG:
+            m_wnd = wnd;
+            colour_code_gen(wnd, IDC_COLOUR, true, true);
+            Edit_LimitText(edit_control(), 0);
+            m_edit_control_hook.attach(edit_control());
+            g_editor_font_notify.set(edit_control());
+            update_controls();
+            break;
+        case WM_DESTROY:
+            m_wnd = nullptr;
+            g_editor_font_notify.release();
+            break;
+        case WM_COMMAND:
+            switch (wp) {
+            case IDC_TFHELP:
+                show_title_formatting_help_menu(wnd, IDC_STYLE_SCRIPT);
+                break;
+            case IDC_PICK_COLOUR:
+                colour_code_gen(wnd, IDC_COLOUR, true, false);
+                break;
+            case IDC_CUSTOM_COLOUR:
+                if (!initialising && m_column.is_valid()) {
+                    m_column->use_custom_colour = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                }
+                break;
+            case EN_CHANGE << 16 | IDC_STYLE_SCRIPT:
+                if (!initialising && m_column.is_valid())
+                    m_column->colour_spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                break;
+            }
+        }
+        return 0;
+    }
+
+    HWND edit_control() const { return GetDlgItem(m_wnd, IDC_STYLE_SCRIPT); }
+    HWND custom_colour_control() const { return GetDlgItem(m_wnd, IDC_CUSTOM_COLOUR); }
+
+    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
+    HWND m_wnd;
+    bool initialising;
+    column_t::ptr m_column;
+};
+
+class SortingScriptTab : public column_tab {
+public:
+    using SelfType = SortingScriptTab;
+
+    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
+
+    HWND create(HWND wnd) override
+    {
+        return uCreateDialog(IDD_COLUMN_SORTING_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
+    }
+
+    void set_column(const column_t::ptr& column) override
+    {
+        if (m_column.get_ptr() != column.get_ptr()) {
+            m_column = column;
+            update_controls();
+        }
+    }
+
+    explicit SortingScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+
+private:
+    static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        SelfType* p_data = nullptr;
+        if (msg == WM_INITDIALOG) {
+            p_data = reinterpret_cast<SelfType*>(lp);
+            SetWindowLongPtr(wnd, DWLP_USER, lp);
+        } else
+            p_data = reinterpret_cast<SelfType*>(GetWindowLongPtr(wnd, DWLP_USER));
+        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
+    }
+
+    void update_controls()
+    {
+        pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
+
+        if (m_column.is_valid()) {
+            uSetWindowText(edit_control(), m_column->sort_spec);
+            Button_SetCheck(custom_sorting_control(), m_column->use_custom_sort ? BST_CHECKED : BST_UNCHECKED);
+        } else {
+            uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
+            Button_SetCheck(custom_sorting_control(), BST_UNCHECKED);
+        }
+        EnableWindow(edit_control(), m_column.is_valid());
+        EnableWindow(custom_sorting_control(), m_column.is_valid());
+    }
+
+    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        switch (msg) {
+        case WM_INITDIALOG:
+            m_wnd = wnd;
+            Edit_LimitText(edit_control(), 0);
+            m_edit_control_hook.attach(edit_control());
+            g_editor_font_notify.set(edit_control());
+            update_controls();
+            break;
+
+        case WM_DESTROY:
+            m_wnd = nullptr;
+            g_editor_font_notify.release();
+            break;
+        case WM_COMMAND:
+            switch (wp) {
+            case IDC_TFHELP:
+                show_title_formatting_help_menu(wnd, IDC_SORTING_SCRIPT);
+                break;
+            case IDC_CUSTOM_SORT:
+                if (!initialising && m_column.is_valid()) {
+                    m_column->use_custom_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                }
+                break;
+            case EN_CHANGE << 16 | IDC_SORTING_SCRIPT:
+                if (!initialising && m_column.is_valid())
+                    m_column->sort_spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                break;
+            }
+        }
+        return 0;
+    }
+
+    HWND edit_control() const { return GetDlgItem(m_wnd, IDC_SORTING_SCRIPT); }
+    HWND custom_sorting_control() const { return GetDlgItem(m_wnd, IDC_CUSTOM_SORT); }
+
+    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
+    HWND m_wnd;
+    bool initialising;
+    column_t::ptr m_column;
 };
 
 // {0A7A2845-06A4-4c15-B09F-A6EBEE86335D}
@@ -439,7 +514,7 @@ void tab_columns_v3::make_child()
 
     TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
 
-    unsigned count = 2;
+    unsigned count = 4;
     if (cfg_child_column >= count)
         cfg_child_column = 0;
 
@@ -452,8 +527,12 @@ void tab_columns_v3::make_child()
 
         if (cfg_child_column == 0)
             m_child = new edit_column_window_options(column);
-        else
-            m_child = new edit_column_window_scripts(column);
+        else if (cfg_child_column == 1)
+            m_child = new DisplayScriptTab(column);
+        else if (cfg_child_column == 2)
+            m_child = new StyleScriptTab(column);
+        else if (cfg_child_column == 3)
+            m_child = new SortingScriptTab(column);
         m_wnd_child = m_child->create(m_wnd);
     }
 
@@ -512,7 +591,9 @@ BOOL tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
         uTabCtrl_InsertItemText(wnd_tab, 0, "Options");
-        uTabCtrl_InsertItemText(wnd_tab, 1, "Scripts");
+        uTabCtrl_InsertItemText(wnd_tab, 1, "Display script");
+        uTabCtrl_InsertItemText(wnd_tab, 2, "Style script");
+        uTabCtrl_InsertItemText(wnd_tab, 3, "Sorting script");
 
         TabCtrl_SetCurSel(wnd_tab, cfg_child_column);
 
