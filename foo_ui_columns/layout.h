@@ -64,7 +64,7 @@ class layout_window
     : public ui_helpers::container_window
     , private uih::MessageHook {
 public:
-    enum { MSG_LAYOUT_SET_FOCUS = WM_USER + 2, MSG_EDIT_PANEL, MSG_EDIT_PANEL_V2 };
+    enum { MSG_LAYOUT_SET_FOCUS = WM_USER + 2, MSG_EDIT_PANEL_V2 };
 
     static void g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_out);
 
@@ -106,8 +106,6 @@ private:
     void enter_layout_editing_mode();
     void exit_layout_editing_mode();
     uih::TranslucentFillWindow m_trans_fill;
-    void run_live_edit_base(POINT pt_menu);
-    void run_live_edit_base_delayed(POINT pt_menu);
     void run_live_edit_base_delayed_v2(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr>& p_hierarchy);
     void run_live_edit_base_v2(const live_edit_data_t& p_data);
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
