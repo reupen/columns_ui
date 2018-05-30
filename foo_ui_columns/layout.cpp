@@ -517,12 +517,12 @@ void layout_window::refresh_child()
     }
 }
 
-void layout_window::run_live_edit_base_delayed_v2(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr>& p_hierarchy)
+void layout_window::run_live_edit_base_delayed(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr>& p_hierarchy)
 {
     m_live_edit_data.m_hierarchy = p_hierarchy;
     m_live_edit_data.m_wnd = wnd;
     m_live_edit_data.m_point = pt;
-    PostMessage(get_wnd(), MSG_EDIT_PANEL_V2, NULL, NULL);
+    PostMessage(get_wnd(), MSG_EDIT_PANEL, NULL, NULL);
 }
 
 class panel_list_t : public pfc::list_t<uie::window::ptr> {
@@ -557,7 +557,7 @@ void g_get_panels_info(const pfc::list_t<uie::window::ptr>& p_panels, uie::windo
     p_out.sort_by_category_and_name();
 }
 
-void layout_window::run_live_edit_base_v2(const live_edit_data_t& p_data)
+void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
 {
     if (m_trans_fill.get_wnd())
         return;
@@ -787,7 +787,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
                             GetRelativeRect(wnd_panel, HWND_DESKTOP, &rc);
                             POINT pt = {rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2};
 
-                            run_live_edit_base_delayed_v2(wnd_panel, pt, hierarchy);
+                            run_live_edit_base_delayed(wnd_panel, pt, hierarchy);
                         }
 
                         lpmsg->message = WM_NULL;
@@ -814,7 +814,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
                                 hierarchy.add_item(m_child);
                             if (!m_trans_fill.get_wnd()) {
                                 POINT pt = lpmhs->pt;
-                                run_live_edit_base_delayed_v2(lpmhs->hwnd, pt, hierarchy);
+                                run_live_edit_base_delayed(lpmhs->hwnd, pt, hierarchy);
                             }
                         } else if (wp == WM_RBUTTONDOWN)
                             SendMessage(lpmhs->hwnd, WM_CANCELMODE, NULL, NULL);
@@ -847,8 +847,8 @@ LRESULT layout_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_SETFOCUS:
         PostMessage(wnd, MSG_LAYOUT_SET_FOCUS, 0, 0);
         break;
-    case MSG_EDIT_PANEL_V2: {
-        run_live_edit_base_v2(m_live_edit_data);
+    case MSG_EDIT_PANEL: {
+        run_live_edit_base(m_live_edit_data);
         m_live_edit_data.reset();
     } break;
     case MSG_LAYOUT_SET_FOCUS:
