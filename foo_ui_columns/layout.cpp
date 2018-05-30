@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "layout.h"
 #include "splitter.h"
+#include "splitter_utils.h"
+#include "main_window.h"
 
 // {755971A7-109B-41dc-BED9-5A05CC07C905}
 static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5}};
@@ -598,7 +600,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
 
     uie::window_info_list_simple panels;
     g_get_panels_info(supported_panels, panels);
-    enum { ID_CLOSE = 1, ID_SHOW_CAPTION, ID_LOCKED, ID_CHANGE_BASE };
+    enum { ID_CLOSE = 1, ID_SHOW_CAPTION, ID_LOCKED, ID_COPY, ID_CHANGE_BASE };
 
     pfc::string8 temp;
     p_window->get_name(temp);
@@ -623,7 +625,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
             AppendMenu(menu, MF_STRING | MF_POPUP, (UINT_PTR)menu_change, L"Change splitter");
         }
     }
-
+    
     if (p_splitter.is_valid()) {
         if (p_splitter->get_panel_count() < p_splitter->get_maximum_panel_count()) {
             HMENU menu_add = CreatePopupMenu();
@@ -637,9 +639,13 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
         }
     }
     t_size index = pfc_infinite;
+    uie::splitter_item_ptr splitter_item;
 
     if (p_container.is_valid()) {
         if (p_container->find_by_ptr(p_data.m_hierarchy[hierarchy_count - 1], index)) {
+            p_container->get_panel(index, splitter_item);
+            AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
+
             if (p_container->get_config_item_supported(index, uie::splitter_window::bool_show_caption)) {
                 bool b_val;
                 p_container->get_config_item(index, uie::splitter_window::bool_show_caption, b_val);
@@ -678,6 +684,12 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
         bool b_old;
         p_container->get_config_item(index, uie::splitter_window::bool_locked, b_old);
         p_container->set_config_item_t(index, uie::splitter_window::bool_locked, !b_old, p_abort);
+    } else if (cmd == ID_COPY) {
+        try {
+            cui::splitter_utils::copy_splitter_item_to_clipboard(splitter_item.get_ptr());
+        } catch (const exception_io& ex) {
+            uMessageBox(cui::main_window.get_wnd(), ex.what(), u8"Error – Copy Panel", MB_OK | MB_ICONERROR);
+        }
     } else if (cmd >= ID_CHANGE_BASE && cmd < panels.get_count() + ID_CHANGE_BASE) {
         t_size panel_index = cmd - ID_CHANGE_BASE;
         uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
