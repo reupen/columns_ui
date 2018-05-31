@@ -600,7 +600,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
 
     uie::window_info_list_simple panels;
     g_get_panels_info(supported_panels, panels);
-    enum { ID_CLOSE = 1, ID_SHOW_CAPTION, ID_LOCKED, ID_COPY, ID_CHANGE_BASE };
+    enum { ID_CLOSE = 1, ID_SHOW_CAPTION, ID_LOCKED, ID_COPY, ID_PASTE_ADD, ID_CHANGE_BASE };
 
     pfc::string8 temp;
     p_window->get_name(temp);
@@ -641,10 +641,14 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
     t_size index = pfc_infinite;
     uie::splitter_item_ptr splitter_item;
 
+    const auto splitter_item_in_clipboard = cui::splitter_utils::is_splitter_item_in_clipboard();
+
     if (p_container.is_valid()) {
         if (p_container->find_by_ptr(p_data.m_hierarchy[hierarchy_count - 1], index)) {
             p_container->get_panel(index, splitter_item);
             AppendMenu(menu, MF_STRING, ID_COPY, L"Copy");
+            if (splitter_item_in_clipboard && p_splitter.is_valid())
+                AppendMenu(menu, MF_STRING, ID_PASTE_ADD, L"Paste (add)");
 
             if (p_container->get_config_item_supported(index, uie::splitter_window::bool_show_caption)) {
                 bool b_val;
@@ -690,6 +694,15 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
         } catch (const exception_io& ex) {
             uMessageBox(cui::main_window.get_wnd(), ex.what(), u8"Error – Copy Panel", MB_OK | MB_ICONERROR);
         }
+    } else if (cmd == ID_PASTE_ADD) {
+        std::unique_ptr<uie::splitter_item_full_v3_impl_t> clipboard_splitter_item;
+        try {
+            clipboard_splitter_item = cui::splitter_utils::get_splitter_item_from_clipboard();
+        } catch (const exception_io& ex) {
+            uMessageBox(cui::main_window.get_wnd(), ex.what(), u8"Error – Paste Panel", MB_OK | MB_ICONERROR);
+        }
+        if (clipboard_splitter_item)
+            p_splitter->add_panel(clipboard_splitter_item.get());
     } else if (cmd >= ID_CHANGE_BASE && cmd < panels.get_count() + ID_CHANGE_BASE) {
         t_size panel_index = cmd - ID_CHANGE_BASE;
         uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
