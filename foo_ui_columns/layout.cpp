@@ -600,7 +600,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
 
     uie::window_info_list_simple panels;
     g_get_panels_info(supported_panels, panels);
-    enum { ID_CLOSE = 1, ID_SHOW_CAPTION, ID_LOCKED, ID_COPY, ID_PASTE_ADD, ID_PARENT_PASTE_INSERT, ID_CHANGE_BASE };
+    enum { ID_REMOVE = 1, ID_SHOW_CAPTION, ID_LOCKED, ID_COPY, ID_PASTE_ADD, ID_PARENT_PASTE_INSERT, ID_CHANGE_BASE };
 
     pfc::string8 temp;
     p_window->get_name(temp);
@@ -662,7 +662,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
                 p_container->get_config_item(index, uie::splitter_window::bool_locked, b_val);
                 AppendMenu(menu, MF_STRING | (b_val ? MF_CHECKED : NULL), ID_LOCKED, L"Locked");
             }
-            AppendMenu(menu, MF_STRING, ID_CLOSE, L"Close");
+            AppendMenu(menu, MF_STRING, ID_REMOVE, L"Remove");
         }
         uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, nullptr);
         p_container->get_name(temp);
@@ -682,7 +682,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
     DestroyMenu(menu);
 
     abort_callback_dummy p_abort;
-    if (cmd == ID_CLOSE) {
+    if (cmd == ID_REMOVE) {
         p_container->remove_panel(p_window);
     } else if (cmd == ID_SHOW_CAPTION) {
         bool b_old;
