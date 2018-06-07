@@ -624,11 +624,14 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
     if (found_in_parent) {
         p_container->get_panel(index, splitter_item);
 
-        const auto show_caption
-            = cui::splitter_utils::get_config_item<bool>(p_container, index, uie::splitter_window::bool_show_caption);
+        if (!p_splitter.is_valid()) {
+            const auto show_caption = cui::splitter_utils::get_config_item<bool>(
+                p_container, index, uie::splitter_window::bool_show_caption);
 
-        if (show_caption)
-            AppendMenu(menu, MF_STRING | (show_caption.value() ? MF_CHECKED : NULL), ID_SHOW_CAPTION, L"Show caption");
+            if (show_caption)
+                AppendMenu(
+                    menu, MF_STRING | (show_caption.value() ? MF_CHECKED : NULL), ID_SHOW_CAPTION, L"Show caption");
+        }
 
         const auto is_locked
             = cui::splitter_utils::get_config_item<bool>(p_container, index, uie::splitter_window::bool_locked);
