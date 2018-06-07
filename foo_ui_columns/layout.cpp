@@ -670,7 +670,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
     }
 
     if (p_container.is_valid()) {
-        uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, nullptr);
+        uAppendMenu(menu, MF_SEPARATOR, (UINT_PTR)0, nullptr);
         p_container->get_name(temp);
         uAppendMenu(menu, MF_STRING | MF_GRAYED, (UINT_PTR)0, temp);
         if (p_container->get_panel_count() < p_container->get_maximum_panel_count()) {
