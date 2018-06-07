@@ -196,11 +196,7 @@ void LayoutTab::copy_item(HWND wnd, HTREEITEM ti)
 
     if (TreeView_GetItem(wnd_tv, &item)) {
         LayoutTabNode::ptr p_node = reinterpret_cast<LayoutTabNode*>(item.lParam);
-        try {
-            splitter_utils::copy_splitter_item_to_clipboard(p_node->m_item->get_ptr());
-        } catch (const exception_io& ex) {
-            uMessageBox(wnd, ex.what(), u8"Error – Copy Panel", MB_OK | MB_ICONERROR);
-        }
+        splitter_utils::copy_splitter_item_to_clipboard_safe(wnd, p_node->m_item->get_ptr());
     }
 }
 
@@ -293,16 +289,9 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
     if (!TreeView_GetItem(wnd_tv, &item))
         return;
 
-    std::unique_ptr<uie::splitter_item_full_v3_impl_t> splitter_item;
+    auto splitter_item = splitter_utils::get_splitter_item_from_clipboard_safe(wnd);
 
-    try {
-        splitter_item = splitter_utils::get_splitter_item_from_clipboard();
-    } catch (const exception_io& ex) {
-        uMessageBox(wnd, ex.what(), u8"Error – Paste Panel", MB_OK | MB_ICONERROR);
-        return;
-    }
-
-    if (!fix_paste_item(*splitter_item))
+    if (!splitter_item || !fix_paste_item(*splitter_item))
         return;
 
     *p_node->m_item = splitter_item.release();

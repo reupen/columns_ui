@@ -701,27 +701,15 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
         if (old_value)
             p_container->set_config_item_t(index, uie::splitter_window::bool_locked, !old_value.value(), p_abort);
     } else if (cmd == ID_COPY) {
-        try {
-            cui::splitter_utils::copy_splitter_item_to_clipboard(splitter_item.get_ptr());
-        } catch (const exception_io& ex) {
-            uMessageBox(cui::main_window.get_wnd(), ex.what(), u8"Error – Copy Panel", MB_OK | MB_ICONERROR);
-        }
+        cui::splitter_utils::copy_splitter_item_to_clipboard_safe(cui::main_window.get_wnd(), splitter_item.get_ptr());
     } else if (cmd == ID_PASTE_ADD) {
-        std::unique_ptr<uie::splitter_item_full_v3_impl_t> clipboard_splitter_item;
-        try {
-            clipboard_splitter_item = cui::splitter_utils::get_splitter_item_from_clipboard();
-        } catch (const exception_io& ex) {
-            uMessageBox(cui::main_window.get_wnd(), ex.what(), u8"Error – Paste Panel", MB_OK | MB_ICONERROR);
-        }
+        auto clipboard_splitter_item
+            = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd());
         if (clipboard_splitter_item)
             p_splitter->add_panel(clipboard_splitter_item.get());
     } else if (cmd == ID_PARENT_PASTE_INSERT) {
-        std::unique_ptr<uie::splitter_item_full_v3_impl_t> clipboard_splitter_item;
-        try {
-            clipboard_splitter_item = cui::splitter_utils::get_splitter_item_from_clipboard();
-        } catch (const exception_io& ex) {
-            uMessageBox(cui::main_window.get_wnd(), ex.what(), u8"Error – Paste Panel", MB_OK | MB_ICONERROR);
-        }
+        auto clipboard_splitter_item
+            = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd());
         if (clipboard_splitter_item)
             p_container->insert_panel(index + 1, clipboard_splitter_item.get());
     } else if (cmd >= ID_CHANGE_BASE && cmd < panels.get_count() + ID_CHANGE_BASE) {
