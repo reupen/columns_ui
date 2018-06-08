@@ -154,4 +154,14 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipbo
     return deserialise_splitter_item({data.get_ptr(), gsl::narrow<gsl::span<t_uint8>::index_type>(data.get_size())});
 }
 
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipboard_safe(HWND wnd)
+{
+    try {
+        return get_splitter_item_from_clipboard();
+    } catch (const exception_io& ex) {
+        uMessageBox(wnd, ex.what(), u8"Error – Paste Panel", MB_OK | MB_ICONERROR);
+    }
+    return {};
+}
+
 } // namespace cui::splitter_utils
