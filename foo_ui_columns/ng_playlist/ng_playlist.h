@@ -365,12 +365,8 @@ public:
     static void g_on_sorting_enabled_change();
     static void g_on_show_sort_indicators_change();
     static void g_on_edge_style_change();
-    static void g_on_use_date_info_change();
     static void s_redraw_all();
-
     static void g_on_time_change();
-
-    void on_use_date_info_change();
 
     const GUID& get_extension_guid() const override;
     void get_name(pfc::string_base& out) const override;
@@ -596,15 +592,10 @@ private:
         return false;
     };
 
-    void notify_on_time_change() override{
-        // on_time_change();
-    };
     void on_time_change()
     {
-        if (cfg_playlist_date) {
-            update_items(0, get_item_count());
-            set_day_timer();
-        }
+        update_items(0, get_item_count());
+        set_day_timer();
     };
 
     bool m_day_timer_active{false};

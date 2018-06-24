@@ -331,7 +331,7 @@ class export_pview : public cui::fcl::dataset {
         out.write_item(identifier_show_header, cfg_header);
         out.write_item(identifier_autosize_columns, cfg_nohscroll);
         out.write_item(identifier_use_globals_for_sorting, cfg_global_sort);
-        out.write_item(identifier_use_dates, cfg_playlist_date);
+        out.write_item(identifier_use_dates, static_cast<int32_t>(true));
         out.write_item(identifier_use_globals, cfg_global);
     }
     void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
@@ -360,9 +360,6 @@ class export_pview : public cui::fcl::dataset {
                 break;
             case identifier_use_globals_for_sorting:
                 reader.read_item(cfg_global_sort);
-                break;
-            case identifier_use_dates:
-                reader.read_item(cfg_playlist_date);
                 break;
             case identifier_use_globals:
                 reader.read_item(cfg_global);

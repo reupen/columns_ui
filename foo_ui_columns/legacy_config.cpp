@@ -1,10 +1,13 @@
 #include "stdafx.h"
 
 /**
- * Contains configuration variable and appearance clients for the legacy playlist view.
+ * Contains configuration variable and appearance clients for the legacy playlist view, and other 
+ * legacy playlist view configuration variables.
  *
  * These are being temporarily retained, so they are are not lost following an upgrade and a downgrade.
  */
+
+cfg_int cfg_playlist_date(GUID{0xe0f9c009, 0x89f2, 0x4a6e, {0xdd, 0xb5, 0x10, 0x30, 0x0c, 0xc3, 0x74, 0xce}}, 0);
 
 cfg_int cfg_oldglobal(GUID{0x512eace5, 0x25c3, 0xb722, {0x28, 0x8b, 0xb3, 0x4a, 0xc5, 0x80, 0xf4, 0xbf}}, 0);
 

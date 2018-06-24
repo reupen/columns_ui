@@ -13,7 +13,6 @@ public:
         SendDlgItemMessage(wnd, IDC_GLOBAL, BM_SETCHECK, cfg_global, 0);
         SendDlgItemMessage(wnd, IDC_GLOBALSORT, BM_SETCHECK, cfg_global_sort, 0);
         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, (g_cur_tab2 == 0 ? cfg_globalstring : cfg_colour));
-        SendDlgItemMessage(wnd, IDC_DATE, BM_SETCHECK, cfg_playlist_date, 0);
     }
 
     static void save_string(HWND wnd)
@@ -83,10 +82,6 @@ public:
             case IDC_GLOBAL:
                 cfg_global = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 break;
-            case IDC_DATE:
-                cfg_playlist_date = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::g_on_use_date_info_change();
-                break;
             case IDC_TFHELP: {
                 RECT rc;
                 GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
@@ -124,7 +119,7 @@ public:
                 } else if (cmd == IDM_GLOBALS_HELP) {
                     cui::help::open_global_variables_help(GetParent(wnd));
                 } else if (cmd == IDM_SPEEDTEST) {
-                    speedtest(g_columns, cfg_global != 0, cfg_playlist_date != 0);
+                    speedtest(g_columns, cfg_global != 0);
                 } else if (cmd == IDM_PREVIEW) {
                     preview_to_console(string_utf8_from_window(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
                 } else if (cmd == IDM_EDITORFONT) {
