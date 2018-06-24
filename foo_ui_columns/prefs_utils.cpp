@@ -20,10 +20,8 @@ void preview_to_console(const char* spec, bool extra)
 
         pfc::string8 temp;
 
-        bool b_date = cfg_playlist_date != 0;
         SYSTEMTIME st{};
-        if (b_date)
-            GetLocalTime(&st);
+        GetLocalTime(&st);
 
         global_variable_list extra_items;
         if (extra) {
@@ -34,8 +32,7 @@ void preview_to_console(const char* spec, bool extra)
             titleformat_hook_playlist_name tf_hook_playlist_name;
             titleformat_hook_date tf_hook_date(&st);
             titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items);
-            titleformat_hook_splitter_pt3 tf_hook(
-                &tf_hook_set_global, b_date ? &tf_hook_date : nullptr, &tf_hook_playlist_name);
+            titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
             playlist_api->activeplaylist_item_format_title(
                 idx, &tf_hook, str_dummy, to_global, nullptr, play_control::display_level_all);
         }
@@ -46,7 +43,7 @@ void preview_to_console(const char* spec, bool extra)
         titleformat_hook_set_global<false, true> tf_hook_set_global(extra_items);
         titleformat_hook_date tf_hook_date(&st);
 
-        titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, b_date ? &tf_hook_date : nullptr);
+        titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, &tf_hook_date);
 
         // 0.9 fallout
         playlist_api->activeplaylist_item_format_title(

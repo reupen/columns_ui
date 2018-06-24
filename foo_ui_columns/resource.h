@@ -162,7 +162,6 @@
 #define IDC_USE_CUSTOM_TEXT             1056
 #define IDC_PICK_COLOUR                 1057
 #define IDC_MENU_DESC                   1058
-#define IDC_DATE                        1059
 #define IDC_TREE                        1065
 #define IDC_CAPTION                     1066
 #define IDC_TOOLBARS                    1067

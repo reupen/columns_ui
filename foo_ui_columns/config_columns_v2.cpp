@@ -211,7 +211,7 @@ void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
     } else if (cmd == IDM_GLOBALS_HELP) {
         cui::help::open_global_variables_help(GetParent(wnd));
     } else if (cmd == IDM_SPEEDTEST) {
-        speedtest(g_columns, cfg_global != 0, cfg_playlist_date != 0);
+        speedtest(g_columns, cfg_global != 0);
     } else if (cmd == IDM_PREVIEW) {
         preview_to_console(string_utf8_from_window(wnd, edit_ctrl_id), cfg_global != 0);
     } else if (cmd == IDM_EDITORFONT) {
