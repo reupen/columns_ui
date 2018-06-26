@@ -12,17 +12,25 @@
 
 * Added a main menu command to toggle whether playlist groups are shown. (Additionally, if the menu item is added as button, the button will become pressed when the 'Show groups' is turned on.) [[#100](https://github.com/reupen/columns_ui/issues/100), [#112](https://github.com/reupen/columns_ui/issues/112)]
 
+* Made system date title formatting fields always available and removed the associated option. [[#123](https://github.com/reupen/columns_ui/pull/123)]
+
 ### Filter panel
 
 * Significantly faster Filter panel performance on multi-core PCs. With a quad-core Intel Core-i7 6700K, initialisation time is just under half of what it was under 0.5.1 for a mid- to large-sized library.
 
+### Live layout editing
+
+* Added copy and paste context menu commands during live layout editing. [[#121](https://github.com/reupen/columns_ui/pull/121)]
+
 ### Preferences
 
-* Refreshed the appearance of all preference pages. [[#84](https://github.com/reupen/columns_ui/pull/84), [#85](https://github.com/reupen/columns_ui/pull/85), [#86](https://github.com/reupen/columns_ui/pull/86), [#87](https://github.com/reupen/columns_ui/pull/87), [#92](https://github.com/reupen/columns_ui/pull/92), [#93](https://github.com/reupen/columns_ui/pull/93), [#94](https://github.com/reupen/columns_ui/pull/94), [#95](https://github.com/reupen/columns_ui/pull/95)]
+* Refreshed the appearance of all preference pages. [[#84](https://github.com/reupen/columns_ui/pull/84), [#85](https://github.com/reupen/columns_ui/pull/85), [#86](https://github.com/reupen/columns_ui/pull/86), [#87](https://github.com/reupen/columns_ui/pull/87), [#92](https://github.com/reupen/columns_ui/pull/92), [#93](https://github.com/reupen/columns_ui/pull/93), [#94](https://github.com/reupen/columns_ui/pull/94), [#95](https://github.com/reupen/columns_ui/pull/95), [#118](https://github.com/reupen/columns_ui/pull/118)]
 
 * Made panel copying and pasting in Layout preferences use the Windows clipboard. [[#97](https://github.com/reupen/columns_ui/issues/97)]
 
 * Fixed a bug where pressing Enter or Return while editing a playlist grouping script would close the dialog box. [[#48](https://github.com/reupen/columns_ui/issues/48)]
+
+* Updated the style and global script help commands to open web-based documentation. [[#117](https://github.com/reupen/columns_ui/pull/117)]
 
 ### Notification area
 
@@ -75,13 +83,15 @@
 
 * Some minor changes to labels and layout in various dialogs.
 
-* Windows XP and Vista are no longer supported. Users of those operating systems are advised to stick with version 0.5.1.
+* Corrected the icons used in some dialogs. [[#8](https://github.com/reupen/ui_helpers/pull/8)]
+
+* The component is no longer compatible with Windows XP and Vista. Users of those operating systems are advised to stick with version 0.5.1.
 
 * Miscellaneous internal code refactoring.
 
 * Compiled with the foobar2000 1.4 SDK.
 
-* Compiled with Visual Studio 2017 15.6.
+* Compiled with Visual Studio 2017 15.7.
 
 ## 0.5.1
 
