@@ -83,6 +83,8 @@
 
 * Some minor changes to labels and layout in various dialogs.
 
+* Updated standalone dialogs to use the Segoe UI font. [[#125](https://github.com/reupen/columns_ui/pull/125)]
+
 * Corrected the icons used in some dialogs. [[#8](https://github.com/reupen/ui_helpers/pull/8)]
 
 * The component is no longer compatible with Windows XP and Vista. Users of those operating systems are advised to stick with version 0.5.1.
