@@ -16,7 +16,7 @@ DECLARE_COMPONENT_VERSION("Columns UI",
 
     "Columns UI\n"
     "Version " VERSION DATE "\n"
-    "Copyright (C) 2003-2016 musicmusic and contributors\n"
+    "Copyright (C) 2003-2018 musicmusic and contributors\n"
     "Current version at: yuo.be\n\n"
 
     "Columns UI SDK version: " UI_EXTENSION_VERSION
