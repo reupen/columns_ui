@@ -1,10 +1,10 @@
 # Change log
 
-## 1.0.0-dev
+## 1.0.0-alpha.1
 
 ### Playlist view
 
-* Removed Columns playlist. On upgrade, any Columns playlist instances in layout presets will be replaced with NG playlist (now named Playlist view). [[#103](https://github.com/reupen/columns_ui/issues/103), [#114](https://github.com/reupen/columns_ui/pull/114)]
+* Removed the Columns playlist. On upgrade, any Columns playlist instances in layout presets will be replaced with NG playlist (now simply named playlist view). [[#103](https://github.com/reupen/columns_ui/issues/103), [#114](https://github.com/reupen/columns_ui/pull/114)]
 
 * Slightly faster playlist grouping and sorting performance on multi-core PCs.
 
@@ -16,7 +16,7 @@
 
 ### Filter panel
 
-* Significantly faster Filter panel performance on multi-core PCs. With a quad-core Intel Core-i7 6700K, initialisation time is just under half of what it was under 0.5.1 for a mid- to large-sized library.
+* Significantly faster Filter panel performance on multi-core PCs. With a quad-core Intel Core-i7 6700K, initialisation time is just under half of what it was under 0.5.1 for a medium- to large-sized library.
 
 ### Live layout editing
 
@@ -38,7 +38,7 @@
 
 ### Item details panel
 
-* Made the Item details panel load full metadata (including large fields such as lyrics) for selected items. (Previously, only playing items showed full metadata.) [[#68](https://github.com/reupen/columns_ui/issues/68)]
+* Made the Item details panel load full metadata (including large fields such as lyrics) for selected items. (Note: full metadata for playing tracks is dependent on the input component.) [[#68](https://github.com/reupen/columns_ui/issues/68)]
 
 ### Toolbars
 
