@@ -81,7 +81,6 @@ private:
 
 public:
     HWND wnd_rebar{nullptr};
-    std::vector<RebarBandInfo> m_bands;
     band_cache cache;
 
     rebar_window() = default;
@@ -92,6 +91,9 @@ public:
     ~rebar_window() = default;
 
     HWND init();
+
+    void refresh_band_configs();
+    const std::vector<RebarBandInfo>& get_bands() const { return m_bands; }
 
     void add_band(
         const GUID& guid, unsigned width = 100, const ui_extension::window_ptr& p_ext = ui_extension::window_ptr_null);
@@ -126,6 +128,11 @@ public:
     {
         return std::find_if(std::begin(m_bands), std::end(m_bands), [&wnd](auto&& item) { return item.m_wnd == wnd; });
     }
+
+private:
+    std::vector<RebarBandInfo> m_bands;
+
+    friend class ui_ext_host_rebar;
 };
 
 ui_extension::window_host& get_rebar_host();

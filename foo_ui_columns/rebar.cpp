@@ -17,7 +17,7 @@ void destroy_rebar(bool save_config)
     if (g_rebar_window) {
         g_rebar_window->destroy();
         if (save_config) {
-            g_cfg_rebar.set_rebar_info(g_rebar_window->m_bands);
+            g_cfg_rebar.set_rebar_info(g_rebar_window->get_bands());
             cfg_band_cache.set_band_cache(g_rebar_window->cache);
         }
         delete g_rebar_window;
@@ -48,8 +48,10 @@ void cfg_rebar::export_config(
     enum { stream_version = 0 };
     p_out->write_lendian_t((t_uint32)stream_version, p_abort);
 
-    if (g_rebar_window)
-        m_entries = g_rebar_window->m_bands;
+    if (g_rebar_window) {
+        g_rebar_window->refresh_band_configs();
+        m_entries = g_rebar_window->get_bands();
+    }
 
     t_size count = m_entries.size();
     p_out->write_lendian_t(count, p_abort);
@@ -76,7 +78,7 @@ void cfg_rebar::import_config(
         uie::window_ptr ptr;
         if (!uie::window::create_by_guid(item.m_guid, ptr))
             panels.add_item(item.m_guid);
-        new_entries.push_back(item);
+        new_entries.push_back(std::move(item));
     }
     if (cui::main_window.get_wnd())
         destroy_rebar();
@@ -179,8 +181,10 @@ void cfg_band_cache_t::reset()
 
 void cfg_rebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
-    if (g_rebar_window)
-        m_entries = g_rebar_window->m_bands;
+    if (g_rebar_window) {
+        g_rebar_window->refresh_band_configs();
+        m_entries = g_rebar_window->get_bands();
+    }
 
     auto num = gsl::narrow<uint32_t>(m_entries.size());
     out->write_lendian_t(num, p_abort);
@@ -342,6 +346,21 @@ HWND rebar_window::init()
     refresh_bands();
 
     return rv;
+}
+
+void rebar_window::refresh_band_configs()
+{
+    for (auto&& band : m_bands) {
+        if (band.m_wnd && band.m_window.is_valid()) {
+            try {
+                abort_callback_dummy aborter;
+                stream_writer_memblock_ref writer(band.m_config);
+                band.m_config.set_size(0);
+                band.m_window->get_config(&writer, aborter);
+            } catch (const exception_io&) {
+            }
+        }
+    }
 }
 
 bool rebar_window::on_menu_char(unsigned short c)

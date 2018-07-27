@@ -369,8 +369,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 uie::window_ptr p_ext;
 
-                if (idx_hit >= 0 && gsl::narrow_cast<unsigned>(idx_hit) < g_rebar_window->m_bands.size())
-                    p_ext = g_rebar_window->m_bands[idx_hit].m_window;
+                if (idx_hit >= 0 && gsl::narrow_cast<unsigned>(idx_hit) < g_rebar_window->get_bands().size())
+                    p_ext = g_rebar_window->get_bands()[idx_hit].m_window;
 
                 pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
                     = new ui_extension::menu_hook_impl;
