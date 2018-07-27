@@ -18,9 +18,8 @@ public:
     void write_extra(stream_writer* writer, abort_callback& aborter) const;
     void read_extra(stream_reader* reader, abort_callback& aborter);
 
-    RebarBandInfo clone() const;
     RebarBandInfo& operator=(RebarBandInfo&&) = default;
-    RebarBandInfo& operator=(const RebarBandInfo& band_info);
+    RebarBandInfo& operator=(const RebarBandInfo& band_info) = default;
     RebarBandInfo() = default;
     ~RebarBandInfo() = default;
 
@@ -31,5 +30,5 @@ public:
     }
 
     RebarBandInfo(RebarBandInfo&&) = default;
-    RebarBandInfo(const RebarBandInfo& band_info);
+    RebarBandInfo(const RebarBandInfo& band_info) = default;
 };

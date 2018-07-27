@@ -1,5 +1,9 @@
 # Change log
 
+## 1.0.0-alpha.2
+
+* Fixed a crash when adding a toolbar after the last toolbar and other potential misbehaviour in the toolbars. [[#130](https://github.com/reupen/columns_ui/pull/130)]
+
 ## 1.0.0-alpha.1
 
 ### Playlist view

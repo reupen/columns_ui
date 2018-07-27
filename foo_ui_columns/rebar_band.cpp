@@ -97,34 +97,3 @@ void RebarBandInfo::read_extra(stream_reader* reader, abort_callback& aborter)
     reader->read_lendian_t(m_width.value, aborter);
     reader->read_lendian_t(m_width.dpi, aborter);
 }
-
-RebarBandInfo RebarBandInfo::clone() const
-{
-    RebarBandInfo band_info;
-    band_info.m_guid = m_guid;
-    band_info.m_width = m_width;
-    band_info.m_break_before_band = m_break_before_band;
-    band_info.m_config.set_size(0);
-    if (m_wnd && m_window.is_valid()) {
-        try {
-            abort_callback_dummy aborter;
-            stream_writer_memblock_ref writer(m_config);
-            m_config.set_size(0);
-            m_window->get_config(&writer, aborter);
-        } catch (const exception_io&) {
-        }
-    }
-    band_info.m_config.append_fromptr(m_config.get_ptr(), m_config.get_size());
-    return band_info;
-}
-
-RebarBandInfo& RebarBandInfo::operator=(const RebarBandInfo& band_info)
-{
-    *this = band_info.clone();
-    return *this;
-}
-
-RebarBandInfo::RebarBandInfo(const RebarBandInfo& band_info)
-{
-    *this = band_info.clone();
-}
