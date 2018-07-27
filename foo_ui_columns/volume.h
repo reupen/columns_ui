@@ -126,16 +126,6 @@ class volume_control_t
     } m_child;
 
     class track_bar_host_impl : public uih::TrackbarCallback {
-        static double position_to_volume(unsigned position)
-        {
-            const auto normalised = position / 1000.0;
-            auto volume = 10.0 * std::log2(normalised);
-            if (volume < -100.0)
-                volume = -100;
-
-            return volume;
-        }
-
         void on_position_change(unsigned pos, bool b_tracking) override
         {
             const auto volume = position_to_volume(pos);
@@ -164,6 +154,27 @@ class volume_control_t
     } m_track_bar_host;
 
 public:
+    static double position_to_volume(const unsigned position)
+    {
+        const auto normalised = position / 1000.0;
+        auto volume = 10.0 * std::log2(normalised);
+        if (volume < -100.0)
+            volume = -100;
+
+        return volume;
+    }
+
+    static unsigned volume_to_position(const double volume)
+    {
+        auto position = std::lround(std::pow(2.0, volume / 10.0) * 1000.0);
+        if (position < 0)
+            position = 0;
+        if (position > 1000)
+            position = 1000;
+
+        return gsl::narrow<unsigned>(position);
+    }
+
     bool get_using_gdiplus() { return m_using_gdiplus; }
     HWND wnd_trackbar{nullptr};
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override
@@ -311,14 +322,8 @@ public:
         update_position(vol);
     }
     void update_position(float p_new_volume)
-    {
-        double offset = pow(10.0, -5.0 / 3.0);
-        double pos = pow(pow(10.0, p_new_volume / 20.0), 1.0 / 3.0);
-        pos -= offset;
-        pos /= 1.0 - offset;
-        pos *= 1000.0;
-        pos = pos >= -0.5 ? pos + 0.5 : pos - 0.5;
-        m_child.set_position(unsigned(pos));
+    { 
+        m_child.set_position(volume_to_position(p_new_volume));
     }
     static unsigned g_get_caption_size(HFONT fnt)
     {

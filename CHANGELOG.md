@@ -4,6 +4,8 @@
 
 * Fixed a crash when adding a toolbar after the last toolbar and other potential misbehaviour in the toolbars. [[#130](https://github.com/reupen/columns_ui/pull/130)]
 
+* Fixed misbehaviour when using the mouse wheel with the volume bar and the volume bar misreporting the current volume in some cases. [[#131](https://github.com/reupen/columns_ui/pull/131)]
+
 ## 1.0.0-alpha.1
 
 ### Playlist view
