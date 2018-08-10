@@ -255,16 +255,16 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
     case WM_UPDATEUISTATE:
         RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
         break;
-    case WM_MOUSEWHEEL:
+    case WM_MOUSEWHEEL: {
         const int index = ComboBox_GetCurSel(wnd);
         const int count = ComboBox_GetCount(wnd);
         int new_index = index;
-        const int delta = short(HIWORD(wp));
+        const int delta = GET_WHEEL_DELTA_WPARAM(wp);
 
         m_mousewheel_delta += delta;
         if (m_mousewheel_delta >= WHEEL_DELTA)
             new_index = index - 1;
-        else if (m_mousewheel_delta <= WHEEL_DELTA)
+        else if (m_mousewheel_delta <= -WHEEL_DELTA)
             new_index = index + 1;
 
         if (new_index != index) {
@@ -277,6 +277,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
         }
 
         return 0;
+    }
     }
     return CallWindowProc(m_order_proc, wnd, msg, wp, lp);
 }
