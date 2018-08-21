@@ -210,7 +210,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         break;
     case WM_GETMINMAXINFO: {
         const auto mmi = LPMINMAXINFO(lp);
-        const auto max_min_width = uih::scale_dpi_value(300);
+        const auto max_min_width = uih::scale_dpi_value(150);
 
         mmi->ptMinTrackSize.x = (std::min)(m_max_item_width, max_min_width);
         mmi->ptMinTrackSize.y = m_height;
