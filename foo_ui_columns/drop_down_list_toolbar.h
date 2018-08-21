@@ -43,6 +43,9 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
     static constexpr unsigned ID_COMBOBOX = 1001;
+    static constexpr unsigned initial_height = 300;
+    static constexpr unsigned initial_width = 150;
+    static constexpr unsigned maximum_minimum_width = 150;
     static HFONT s_icon_font;
     static std::vector<DropDownListToolbar<ToolbarArgs>*> s_windows;
 
@@ -127,9 +130,6 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
 {
     switch (msg) {
     case WM_CREATE: {
-        const auto initial_width = uih::scale_dpi_value(100);
-        const auto initial_height = uih::scale_dpi_value(300);
-
         s_windows.emplace_back(this);
         if (s_windows.size() == 1) {
             ToolbarArgs::on_first_window_created();
@@ -139,8 +139,8 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
             s_icon_font = uCreateIconFont();
 
         m_wnd_combo = CreateWindowEx(0, WC_COMBOBOX, nullptr, CBS_DROPDOWNLIST | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0,
-            0, initial_width, initial_height, wnd, reinterpret_cast<HMENU>(ID_COMBOBOX), core_api::get_my_instance(),
-            nullptr);
+            0, uih::scale_dpi_value(initial_width), uih::scale_dpi_value(initial_height), wnd,
+            reinterpret_cast<HMENU>(ID_COMBOBOX), core_api::get_my_instance(), nullptr);
 
         m_initialised = true;
 
@@ -188,7 +188,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
     case WM_WINDOWPOSCHANGED: {
         const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
         if (!(lpwp->flags & SWP_NOSIZE)) {
-            SetWindowPos(m_wnd_combo, nullptr, 0, 0, lpwp->cx, 300, SWP_NOZORDER);
+            SetWindowPos(m_wnd_combo, nullptr, 0, 0, lpwp->cx, uih::scale_dpi_value(300), SWP_NOZORDER);
         }
         break;
     }
@@ -210,9 +210,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         break;
     case WM_GETMINMAXINFO: {
         const auto mmi = LPMINMAXINFO(lp);
-        const auto max_min_width = uih::scale_dpi_value(150);
-
-        mmi->ptMinTrackSize.x = (std::min)(m_max_item_width, max_min_width);
+        mmi->ptMinTrackSize.x = (std::min)(m_max_item_width, uih::scale_dpi_value(maximum_minimum_width));
         mmi->ptMinTrackSize.y = m_height;
         mmi->ptMaxTrackSize.y = m_height;
         return 0;
