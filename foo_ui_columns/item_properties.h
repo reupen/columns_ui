@@ -247,7 +247,7 @@ private:
     bool m_show_column_titles, m_show_group_titles;
 
     bool m_autosizing_columns{true};
-    uih::IntegerAndDpi<int32_t> m_column_name_width{75};
+    uih::IntegerAndDpi<int32_t> m_column_name_width{80};
     uih::IntegerAndDpi<int32_t> m_column_field_width{125};
 
     t_size m_edge_style;
