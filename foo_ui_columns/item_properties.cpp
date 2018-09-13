@@ -152,34 +152,50 @@ unsigned selection_properties_t::get_type() const
 
 void selection_properties_t::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
-    if (p_size) {
-        t_size version;
-        p_reader->read_lendian_t(version, p_abort);
-        if (version <= config_version_current) {
-            t_size field_count;
-            p_reader->read_lendian_t(field_count, p_abort);
-            m_fields.remove_all();
-            m_fields.set_count(field_count);
-            for (t_size i = 0; i < field_count; i++) {
-                p_reader->read_string(m_fields[i].m_name_friendly, p_abort);
-                p_reader->read_string(m_fields[i].m_name, p_abort);
-            }
-            p_reader->read_lendian_t(m_tracking_mode, p_abort);
-            p_reader->read_lendian_t(m_autosizing_columns, p_abort);
-            p_reader->read_lendian_t(m_column_name_width, p_abort);
-            p_reader->read_lendian_t(m_column_field_width, p_abort);
+    if (!p_size)
+        return;
 
-            if (version >= 3) {
-                p_reader->read_lendian_t(m_edge_style, p_abort);
-                if (version >= 4) {
-                    p_reader->read_lendian_t(m_info_sections_mask, p_abort);
-                    p_reader->read_lendian_t(m_show_column_titles, p_abort);
-                    p_reader->read_lendian_t(m_show_group_titles, p_abort);
-                }
-            }
-        }
+    t_size version;
+    p_reader->read_lendian_t(version, p_abort);
+    
+    if (version > config_version_current)
+        return;
+
+    t_size field_count;
+    p_reader->read_lendian_t(field_count, p_abort);
+    m_fields.remove_all();
+    m_fields.set_count(field_count);
+
+    for (t_size i = 0; i < field_count; i++) {
+        p_reader->read_string(m_fields[i].m_name_friendly, p_abort);
+        p_reader->read_string(m_fields[i].m_name, p_abort);
     }
+    p_reader->read_lendian_t(m_tracking_mode, p_abort);
+    p_reader->read_lendian_t(m_autosizing_columns, p_abort);
+    p_reader->read_lendian_t(m_column_name_width.value, p_abort);
+    m_column_name_width.dpi = uih::get_system_dpi_cached().cx;
+    p_reader->read_lendian_t(m_column_field_width.value, p_abort);
+    m_column_field_width.dpi = uih::get_system_dpi_cached().cx;
+
+    if (version < 3)
+        return;
+
+    p_reader->read_lendian_t(m_edge_style, p_abort);
+
+    if (version < 4)
+        return;
+
+    p_reader->read_lendian_t(m_info_sections_mask, p_abort);
+    p_reader->read_lendian_t(m_show_column_titles, p_abort);
+    p_reader->read_lendian_t(m_show_group_titles, p_abort);
+    
+    if (version < 5)
+        return;
+
+    p_reader->read_lendian_t(m_column_name_width.dpi, p_abort);
+    p_reader->read_lendian_t(m_column_field_width.dpi, p_abort);
 }
+
 void selection_properties_t::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(t_size(config_version_current), p_abort);
@@ -191,13 +207,16 @@ void selection_properties_t::get_config(stream_writer* p_writer, abort_callback&
     }
     p_writer->write_lendian_t(m_tracking_mode, p_abort);
     p_writer->write_lendian_t(m_autosizing_columns, p_abort);
-    p_writer->write_lendian_t(m_column_name_width, p_abort);
-    p_writer->write_lendian_t(m_column_field_width, p_abort);
+    p_writer->write_lendian_t(m_column_name_width.value, p_abort);
+    p_writer->write_lendian_t(m_column_field_width.value, p_abort);
     p_writer->write_lendian_t(m_edge_style, p_abort);
 
     p_writer->write_lendian_t(m_info_sections_mask, p_abort);
     p_writer->write_lendian_t(m_show_column_titles, p_abort);
     p_writer->write_lendian_t(m_show_group_titles, p_abort);
+
+    p_writer->write_lendian_t(m_column_name_width.dpi, p_abort);
+    p_writer->write_lendian_t(m_column_field_width.dpi, p_abort);
 }
 
 void selection_properties_t::notify_on_initialisation()

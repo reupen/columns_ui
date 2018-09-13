@@ -145,7 +145,7 @@ public:
     void get_category(pfc::string_base& out) const override;
     unsigned get_type() const override;
 
-    enum { config_version_current = 4 };
+    enum { config_version_current = 5 };
     void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
@@ -247,7 +247,8 @@ private:
     bool m_show_column_titles, m_show_group_titles;
 
     bool m_autosizing_columns{true};
-    t_size m_column_name_width{75}, m_column_field_width{125};
+    uih::IntegerAndDpi<int32_t> m_column_name_width{80};
+    uih::IntegerAndDpi<int32_t> m_column_field_width{125};
 
     t_size m_edge_style;
     t_size m_edit_column, m_edit_index;
