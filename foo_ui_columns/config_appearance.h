@@ -15,11 +15,15 @@ public:
     static void g_get_list(colours_client_list_t& p_out)
     {
         service_enum_t<cui::colours::client> e;
-        colours_client_list_entry_t entry;
-        while (e.next(entry.m_ptr)) {
-            entry.m_guid = entry.m_ptr->get_client_guid();
-            entry.m_ptr->get_name(entry.m_name);
-            p_out.add_item(entry);
+        cui::colours::client::ptr ptr;
+
+        while (e.next(ptr)) {
+            pfc::string8 name;
+            ptr->get_name(name);
+            if (name.is_empty())
+                name = "(unnamed item)";
+
+            p_out.add_item({name, ptr->get_client_guid(), std::move(ptr)});
         }
         p_out.sort_t(g_compare);
     }
@@ -42,11 +46,15 @@ public:
     static void g_get_list(fonts_client_list_t& p_out)
     {
         service_enum_t<cui::fonts::client> e;
-        fonts_client_list_entry_t entry;
-        while (e.next(entry.m_ptr)) {
-            entry.m_guid = entry.m_ptr->get_client_guid();
-            entry.m_ptr->get_name(entry.m_name);
-            p_out.add_item(entry);
+        cui::fonts::client::ptr ptr;
+
+        while (e.next(ptr)) {
+            pfc::string8 name;
+            ptr->get_name(name);
+            if (name.is_empty())
+                name = "(unnamed item)";
+
+            p_out.add_item({name, ptr->get_client_guid(), std::move(ptr)});
         }
         p_out.sort_t(g_compare);
     }
