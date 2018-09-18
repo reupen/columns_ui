@@ -1,5 +1,17 @@
 # Change log
 
+## 1.0.0-beta.1
+
+* Added support for horizontal mouse wheel scrolling in the playlist view and other list views (requires a mouse with a four-way mouse wheel). [[#139](https://github.com/reupen/columns_ui/pull/139)]
+
+* Reduced the minimum width of the output device toolbar. [[#140](https://github.com/reupen/columns_ui/pull/140)]
+
+* Column widths in the Item properties panel are now DPI-aware. [[#141](https://github.com/reupen/columns_ui/pull/141)]
+
+* Fixed misbehaviour when using the mouse wheel in various drop-down list toolbars. [[#130](https://github.com/reupen/columns_ui/pull/136)]
+
+* Fixed a problem in preferences where colour and font items from other components that don’t have a name were using the name of another colour or font item. [[#142](https://github.com/reupen/columns_ui/pull/142)]
+
 ## 1.0.0-alpha.2
 
 * Fixed a crash when adding a toolbar after the last toolbar and other potential misbehaviour in the toolbars. [[#130](https://github.com/reupen/columns_ui/pull/130)]
