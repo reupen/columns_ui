@@ -12,6 +12,8 @@
 
 * Fixed a problem in preferences where colour and font items from other components that don’t have a name were using the name of another colour or font item. [[#142](https://github.com/reupen/columns_ui/pull/142)]
 
+* Compiled with Visual Studio 2017 15.8.
+
 ## 1.0.0-alpha.2
 
 * Fixed a crash when adding a toolbar after the last toolbar and other potential misbehaviour in the toolbars. [[#130](https://github.com/reupen/columns_ui/pull/130)]
