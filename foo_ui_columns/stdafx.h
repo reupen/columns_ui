@@ -47,6 +47,7 @@
 #include "../ui_helpers/stdafx.h"
 #include "../mmh/stdafx.h"
 #include "../fbh/stdafx.h"
+#include "../pfc/range_based_for.h"
 
 #include "resource.h"
 #include "utf8api.h"
