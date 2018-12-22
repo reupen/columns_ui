@@ -24,6 +24,7 @@
 #include <share.h>
 
 #include <gsl/gsl>
+#include <range/v3/all.hpp>
 
 // Included before windows.h, because pfc.h includes winsock2.h
 #include "../pfc/pfc.h"
@@ -47,6 +48,7 @@
 #include "../ui_helpers/stdafx.h"
 #include "../mmh/stdafx.h"
 #include "../fbh/stdafx.h"
+#include "../pfc/range_based_for.h"
 
 #include "resource.h"
 #include "utf8api.h"

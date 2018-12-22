@@ -19,7 +19,7 @@ matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017 Preview
 install:
 - cmd: |
-    vcpkg install ms-gsl
+    vcpkg install ms-gsl range-v3
     git submodule update --init --recursive
 build_script:
 - ps: |
