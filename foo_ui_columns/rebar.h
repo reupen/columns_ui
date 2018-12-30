@@ -130,6 +130,12 @@ public:
     }
 
 private:
+    /**
+     * For some reason, the z-order gets messed up after adding bands to the rebar control.
+     * This makes sure that the z-order for bands goes from top to bottom.
+     */
+    void fix_z_order();
+
     std::vector<RebarBandInfo> m_bands;
 
     friend class ui_ext_host_rebar;
