@@ -180,7 +180,7 @@ void splitter_window_impl::on_size_changed(unsigned width, unsigned height)
                 unsigned cx = get_orientation() == horizontal ? size - get_panel_divider_size(n) : width;
                 unsigned cy = get_orientation() == horizontal ? height : size - get_panel_divider_size(n);
 
-                dwp = DeferWindowPos(dwp, m_panels[n]->m_wnd, nullptr, x, y, cx, cy, SWP_NOZORDER);
+                dwp = DeferWindowPos(dwp, m_panels[n]->m_wnd, HWND_BOTTOM, x, y, cx, cy, 0);
 
                 size_cumulative += size;
             }
