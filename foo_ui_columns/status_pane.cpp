@@ -58,7 +58,7 @@ void status_pane::update_playback_status_text()
 {
     static_api_ptr_t<playback_control> api;
     if (api->is_playing()) {
-        m_track_label = api->is_paused() ? "Paused" : "Playing";
+        m_track_label = api->is_paused() ? "Paused:" : "Playing:";
     } else {
         m_track_label = "";
     }
