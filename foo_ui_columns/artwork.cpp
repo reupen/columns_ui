@@ -864,7 +864,7 @@ bool artwork_panel_t::menu_node_preserve_aspect_ratio::get_display_data(
 
 void artwork_panel_t::menu_node_options::execute()
 {
-    g_show_artwork_settings();
+    cui::prefs::page_main.get_static_instance().show_tab("Artwork");
 }
 
 bool artwork_panel_t::menu_node_options::get_description(pfc::string_base& p_out) const
