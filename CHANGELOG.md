@@ -6,6 +6,8 @@
 
 * Re-added the colon after the 'Playing' and 'Paused' text in the status pane. [[#153](https://github.com/reupen/columns_ui/pull/153)]
 
+* Fixed a bug where right-clicking on the Artwork view panel and selecting Options would show the wrong tab in Columns UI preferences. [[#147](https://github.com/reupen/columns_ui/issues/147), [#155](https://github.com/reupen/columns_ui/pull/155)]
+
 ## 1.0.0-beta.1
 
 * Added support for horizontal mouse wheel scrolling in the playlist view and other list views (requires a mouse with a four-way mouse wheel). [[#139](https://github.com/reupen/columns_ui/pull/139)]

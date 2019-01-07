@@ -39,12 +39,6 @@ static preferences_tab* g_tabs_playlist_view[] = {
 const GUID g_guid_columns_ui_preferences_page
     = {0xdf6b9443, 0xdcc5, 0x4647, {0x8f, 0x8c, 0xd6, 0x85, 0xbf, 0x25, 0xbd, 0x9}};
 
-void g_show_artwork_settings()
-{
-    cfg_child = 5;
-    static_api_ptr_t<ui_control>()->show_preferences(g_guid_columns_ui_preferences_page);
-}
-
 // {779F2FA6-3B76-4829-9E02-2E579CA510BF}
 const GUID guid_playlist_switcher_page = {0x779f2fa6, 0x3b76, 0x4829, {0x9e, 0x2, 0x2e, 0x57, 0x9c, 0xa5, 0x10, 0xbf}};
 

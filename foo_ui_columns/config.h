@@ -21,8 +21,6 @@ extern const GUID ng_playlist_header;
 extern const GUID filter_header;
 } // namespace fonts
 
-void g_show_artwork_settings();
-
 preferences_tab* g_get_tab_layout();
 preferences_tab* g_get_tab_artwork();
 preferences_tab* g_get_tab_display2();
