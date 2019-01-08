@@ -1,6 +1,6 @@
 # Change log
 
-## 1.0.0-rc.1 (in development)
+## 1.0.0-rc.1
 
 * Fixed the inability to tab to the playlist view and other list views and fixed or worked around other tabbing misbehaviours. [[#148](https://github.com/reupen/columns_ui/issues/148), [#150](https://github.com/reupen/columns_ui/pull/150), [#151](https://github.com/reupen/columns_ui/pull/151), [#152](https://github.com/reupen/columns_ui/pull/152)]
 
