@@ -1,5 +1,9 @@
 # Change log
 
+## 1.0.0
+
+* No changes from 1.0.0-rc.1.
+
 ## 1.0.0-rc.1
 
 * Fixed the inability to tab to the playlist view and other list views and fixed or worked around other tabbing misbehaviours. [[#148](https://github.com/reupen/columns_ui/issues/148), [#150](https://github.com/reupen/columns_ui/pull/150), [#151](https://github.com/reupen/columns_ui/pull/151), [#152](https://github.com/reupen/columns_ui/pull/152)]
@@ -7,6 +11,8 @@
 * Re-added the colon after the 'Playing' and 'Paused' text in the status pane. [[#153](https://github.com/reupen/columns_ui/pull/153)]
 
 * Fixed a bug where right-clicking on the Artwork view panel and selecting Options would show the wrong tab in Columns UI preferences. [[#147](https://github.com/reupen/columns_ui/issues/147), [#155](https://github.com/reupen/columns_ui/pull/155)]
+
+* Compiled with Visual Studio 2017 15.9.
 
 ## 1.0.0-beta.1
 
