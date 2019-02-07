@@ -2,6 +2,7 @@
 
 #include "columns_v2.h"
 #include "config_host.h"
+#include "font_utils.h"
 
 namespace columns {
 const GUID& config_get_playlist_view_guid();
@@ -35,11 +36,9 @@ preferences_tab* g_get_tab_global();
 void refresh_appearance_prefs();
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
 bool colour_picker(HWND wnd, COLORREF& out, COLORREF custom);
-BOOL font_picker(LOGFONT& p_font, HWND parent);
-bool font_picker(HWND wnd, cfg_struct_t<LOGFONT>& out);
 void preview_to_console(const char* spec, bool extra);
 
-extern cfg_struct_t<LOGFONT> cfg_editor_font;
+extern cui::fonts::ConfigFontDescription cfg_editor_font;
 
 class editor_font_notify {
     HFONT g_edit_font{nullptr};
@@ -47,7 +46,7 @@ class editor_font_notify {
     void _set()
     {
         if (wnd) {
-            g_edit_font = CreateFontIndirect(&cfg_editor_font.get_value());
+            g_edit_font = CreateFontIndirect(&cfg_editor_font->log_font);
             SendMessage(wnd, WM_SETFONT, (WPARAM)g_edit_font, MAKELPARAM(1, 0));
         }
     }

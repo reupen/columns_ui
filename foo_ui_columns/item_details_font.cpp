@@ -107,7 +107,8 @@ void font_code_generator_t::initialise(const LOGFONT& p_lf_default, HWND parent,
 
 void font_code_generator_t::run(HWND parent, UINT edit)
 {
-    if (font_picker(m_lf, parent)) {
+    if (auto font_description = cui::fonts::select_font(parent, m_lf); font_description) {
+        m_lf = font_description->log_font;
         uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, string_font_code(m_lf));
     }
 }

@@ -1,13 +1,17 @@
 #include "stdafx.h"
 
+#include "font_utils.h"
 #include "fonts_manager_data.h"
 
 fonts_manager_data::fonts_manager_data() : cfg_var(g_cfg_guid)
 {
-    m_common_items_entry = new entry_t(true);
-    m_common_labels_entry = new entry_t(true);
-    uGetIconFont(&m_common_items_entry->font);
-    uGetMenuFont(&m_common_labels_entry->font);
+    m_common_items_entry = new entry_t;
+    uGetIconFont(&m_common_items_entry->font_description.log_font);
+    m_common_items_entry->font_description.estimate_point_size();
+
+    m_common_labels_entry = new entry_t;
+    uGetMenuFont(&m_common_labels_entry->font_description.log_font);
+    m_common_labels_entry->font_description.estimate_point_size();
 }
 
 void fonts_manager_data::g_on_common_font_changed(t_size mask)
@@ -50,44 +54,6 @@ void fonts_manager_data::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
     }
 }
 
-void fonts_manager_data::g_read_font(stream_reader* p_reader, LOGFONT& lf_out, abort_callback& p_abort)
-{
-    LOGFONT lf;
-    memset(&lf, 0, sizeof(LOGFONT));
-
-    p_reader->read_lendian_t(lf.lfHeight, p_abort);
-    p_reader->read_lendian_t(lf.lfWidth, p_abort);
-    p_reader->read_lendian_t(lf.lfEscapement, p_abort);
-    p_reader->read_lendian_t(lf.lfOrientation, p_abort);
-    p_reader->read_lendian_t(lf.lfWeight, p_abort);
-
-    // meh endianness
-    p_reader->read(&lf.lfItalic, 8 + sizeof(lf.lfFaceName), p_abort);
-
-    lf_out = lf;
-}
-
-void fonts_manager_data::g_write_font(stream_writer* m_output, const LOGFONT& lfc, abort_callback& m_abort)
-{
-    LOGFONT lf = lfc;
-    t_size face_len = pfc::wcslen_max(lf.lfFaceName, tabsize(lf.lfFaceName));
-
-    if (face_len < tabsize(lf.lfFaceName)) {
-        WCHAR* ptr = lf.lfFaceName;
-        ptr += face_len;
-        memset(ptr, 0, sizeof(WCHAR) * (tabsize(lf.lfFaceName) - face_len));
-    }
-
-    m_output->write_lendian_t(lf.lfHeight, m_abort);
-    m_output->write_lendian_t(lf.lfWidth, m_abort);
-    m_output->write_lendian_t(lf.lfEscapement, m_abort);
-    m_output->write_lendian_t(lf.lfOrientation, m_abort);
-    m_output->write_lendian_t(lf.lfWeight, m_abort);
-
-    // meh endianness
-    m_output->write(&lf.lfItalic, 8 + sizeof(lf.lfFaceName), m_abort);
-}
-
 void fonts_manager_data::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
@@ -103,6 +69,15 @@ void fonts_manager_data::set_data_raw(stream_reader* p_stream, t_size p_sizehint
             ptr->read(version, p_stream, p_abort);
             m_entries.add_item(ptr);
         }
+        try {
+            m_common_items_entry->read_extra_data(p_stream, p_abort);
+            m_common_labels_entry->read_extra_data(p_stream, p_abort);
+
+            for (auto&& entry : m_entries) {
+                entry->read_extra_data(p_stream, p_abort);
+            }
+        } catch (const exception_io_data_truncation&) {
+        }
     }
 }
 
@@ -110,37 +85,48 @@ void fonts_manager_data::get_data_raw(stream_writer* p_stream, abort_callback& p
 {
     pfc::list_t<GUID> clients;
     {
-        service_enum_t<cui::fonts::client> clientenum;
+        service_enum_t<cui::fonts::client> client_enum;
         cui::fonts::client::ptr ptr;
-        while (clientenum.next(ptr))
+        while (client_enum.next(ptr))
             clients.add_item(ptr->get_client_guid());
     }
 
     pfc::array_t<bool> mask;
-    t_size i, count = m_entries.get_count(), counter = 0;
+
+    const auto count = m_entries.get_count();
+    size_t counter = 0;
     mask.set_count(count);
-    for (i = 0; i < count; i++)
-        if (mask[i] = clients.have_item(m_entries[i]->guid))
+
+    for (auto&& i : ranges::view::iota(0, count))
+        if ((mask[i] = clients.have_item(m_entries[i]->guid)))
             counter++;
 
-    p_stream->write_lendian_t((t_uint32)cfg_version, p_abort);
+    p_stream->write_lendian_t(static_cast<uint32_t>(cfg_version), p_abort);
     m_common_items_entry->write(p_stream, p_abort);
     m_common_labels_entry->write(p_stream, p_abort);
-
     p_stream->write_lendian_t(counter, p_abort);
-    for (i = 0; i < count; i++)
+
+    for (auto&& i : ranges::view::iota(0, count))
         if (mask[i])
             m_entries[i]->write(p_stream, p_abort);
+
+    m_common_items_entry->write_extra_data(p_stream, p_abort);
+    m_common_labels_entry->write_extra_data(p_stream, p_abort);
+
+    for (auto&& i : ranges::view::iota(0, count))
+        if (mask[i])
+            m_entries[i]->write_extra_data(p_stream, p_abort);
 }
 
-fonts_manager_data::entry_t::entry_t(bool b_global /*= false*/)
+fonts_manager_data::entry_t::entry_t()
 {
     reset_fonts();
 }
 
 void fonts_manager_data::entry_t::reset_fonts()
 {
-    uGetIconFont(&font);
+    uGetIconFont(&font_description.log_font);
+    font_description.estimate_point_size();
 }
 
 void fonts_manager_data::entry_t::import(
@@ -162,7 +148,11 @@ void fonts_manager_data::entry_t::import(
             reader.read_item((t_uint32&)font_mode);
             break;
         case identifier_font:
-            reader.read_item(font);
+            reader.read_item(font_description.log_font);
+            font_description.estimate_point_size();
+            break;
+        case identifier_point_size_tenths:
+            reader.read_item(font_description.point_size_tenths);
             break;
         default:
             reader.skip(element_size);
@@ -177,20 +167,47 @@ void fonts_manager_data::entry_t::_export(stream_writer* p_stream, abort_callbac
     out.write_item(identifier_guid, guid);
     out.write_item(identifier_mode, (t_uint32)font_mode);
     if (font_mode == cui::fonts::font_mode_custom) {
-        out.write_item(identifier_font, font);
+        out.write_item(identifier_font, font_description.log_font);
     }
+    out.write_item(identifier_point_size_tenths, font_description.point_size_tenths);
 }
 
 void fonts_manager_data::entry_t::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
 {
     p_stream->read_lendian_t(guid, p_abort);
     p_stream->read_lendian_t((t_uint32&)font_mode, p_abort);
-    g_read_font(p_stream, font, p_abort);
+    font_description.log_font = cui::fonts::read_font(p_stream, p_abort);
+    font_description.estimate_point_size();
+}
+
+void fonts_manager_data::entry_t::read_extra_data(stream_reader* stream, abort_callback& aborter)
+{
+    uint32_t size{};
+    stream->read_lendian_t(size, aborter);
+    stream_reader_limited_ref limited_reader(stream, size);
+
+    limited_reader.read_lendian_t(font_description.point_size_tenths, aborter);
+}
+
+LOGFONT fonts_manager_data::entry_t::get_normalised_font()
+{
+    LOGFONT lf{font_description.log_font};
+    lf.lfHeight = -MulDiv(font_description.point_size_tenths, uih::get_system_dpi_cached().cy, 720);
+    return lf;
 }
 
 void fonts_manager_data::entry_t::write(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t(guid, p_abort);
     p_stream->write_lendian_t((t_uint32)font_mode, p_abort);
-    g_write_font(p_stream, font, p_abort);
+    cui::fonts::write_font(p_stream, font_description.log_font, p_abort);
+}
+
+void fonts_manager_data::entry_t::write_extra_data(stream_writer* stream, abort_callback& aborter)
+{
+    stream_writer_memblock item_stream;
+    item_stream.write_lendian_t(font_description.point_size_tenths, aborter);
+
+    stream->write_lendian_t(gsl::narrow<uint32_t>(item_stream.m_data.get_size()), aborter);
+    stream->write(item_stream.m_data.get_ptr(), item_stream.m_data.get_size(), aborter);
 }

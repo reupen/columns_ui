@@ -291,6 +291,7 @@
     <ClCompile Include="button_items.cpp" />
     <ClCompile Include="dsp_preset.cpp" />
     <ClCompile Include="file_info_reader.cpp" />
+    <ClCompile Include="font_utils.cpp" />
     <ClCompile Include="help.cpp" />
     <ClCompile Include="legacy_config.cpp" />
     <ClCompile Include="migrate.cpp" />
@@ -459,6 +460,7 @@
     <ClInclude Include=".\menu_helpers.h" />
     <ClInclude Include=".\mw_drop_target.h" />
     <ClInclude Include="button_items.h" />
+    <ClInclude Include="font_utils.h" />
     <ClInclude Include="help.h" />
     <ClInclude Include="migrate.h" />
     <ClInclude Include="panel_menu_item.h" />

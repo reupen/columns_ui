@@ -123,8 +123,11 @@ public:
                 } else if (cmd == IDM_PREVIEW) {
                     preview_to_console(string_utf8_from_window(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
                 } else if (cmd == IDM_EDITORFONT) {
-                    if (font_picker(wnd, cfg_editor_font))
+                    auto font_description = cui::fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
+                    if (font_description) {
+                        cfg_editor_font = *font_description;
                         g_editor_font_notify.on_change();
+                    }
                 } else if (cmd == IDM_RESETSTYLE) {
                     extern const char* g_default_colour;
                     cfg_colour = g_default_colour;
