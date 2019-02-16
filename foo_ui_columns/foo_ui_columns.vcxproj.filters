@@ -448,6 +448,9 @@
     <ClCompile Include="help.cpp">
       <Filter>Misc</Filter>
     </ClCompile>
+    <ClCompile Include="font_utils.cpp">
+      <Filter>Helpers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ng_playlist\ng_playlist.h">
@@ -648,6 +651,9 @@
     </ClInclude>
     <ClInclude Include="help.h">
       <Filter>Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="font_utils.h">
+      <Filter>Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

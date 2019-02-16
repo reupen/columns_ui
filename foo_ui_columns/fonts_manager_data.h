@@ -1,4 +1,5 @@
 #pragma once
+#include "font_utils.h"
 
 class fonts_manager_data : public cfg_var {
 public:
@@ -6,24 +7,30 @@ public:
     enum { cfg_version = 0 };
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
-    static void g_write_font(stream_writer* m_output, const LOGFONT& lfc, abort_callback& m_abort);
-    static void g_read_font(stream_reader* p_reader, LOGFONT& lf_out, abort_callback& p_abort);
+
     class entry_t : public pfc::refcounted_object_root {
     public:
         enum identifier_t {
             identifier_guid,
             identifier_mode,
             identifier_font,
+            identifier_point_size_tenths,
         };
         GUID guid{};
-        LOGFONT font{};
+        cui::fonts::FontDescription font_description{};
         cui::fonts::font_mode_t font_mode{cui::fonts::font_mode_system};
+
+        LOGFONT get_normalised_font();
+
         void write(stream_writer* p_stream, abort_callback& p_abort);
+        void write_extra_data(stream_writer* p_stream, abort_callback& p_abort);
         void read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort);
+        void read_extra_data(stream_reader* p_stream, abort_callback& p_abort);
         void _export(stream_writer* p_stream, abort_callback& p_abort);
         virtual void import(stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort);
         void reset_fonts();
-        entry_t(bool b_global = false);
+
+        entry_t();
     };
     using entry_ptr_t = pfc::refcounted_object_ptr_t<entry_t>;
     pfc::list_t<entry_ptr_t> m_entries;

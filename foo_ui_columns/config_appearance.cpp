@@ -133,7 +133,7 @@ public:
         else if (p_entry->font_mode == cui::fonts::font_mode_common_labels)
             get_font(cui::fonts::font_type_labels, p_out);
         else {
-            p_out = p_entry->font;
+            p_out = p_entry->get_normalised_font();
         }
     }
     void get_font(const cui::fonts::font_type_t p_type, LOGFONT& p_out) const override
@@ -150,7 +150,7 @@ public:
             else
                 uGetMenuFont(&p_out);
         } else {
-            p_out = p_entry->font;
+            p_out = p_entry->get_normalised_font();
         }
     }
     void set_font(const GUID& p_guid, const LOGFONT& p_font) override
@@ -158,7 +158,8 @@ public:
         fonts_manager_data::entry_ptr_t p_entry;
         g_fonts_manager_data.find_by_guid(p_guid, p_entry);
         p_entry->font_mode = cui::fonts::font_mode_custom;
-        p_entry->font = p_font;
+        p_entry->font_description.log_font = p_font;
+        p_entry->font_description.estimate_point_size();
         cui::fonts::client::ptr ptr;
         if (cui::fonts::client::create_by_guid(p_guid, ptr))
             ptr->on_font_changed();

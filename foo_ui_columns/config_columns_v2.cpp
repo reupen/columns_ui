@@ -215,8 +215,11 @@ void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
     } else if (cmd == IDM_PREVIEW) {
         preview_to_console(string_utf8_from_window(wnd, edit_ctrl_id), cfg_global != 0);
     } else if (cmd == IDM_EDITORFONT) {
-        if (font_picker(GetParent(wnd), cfg_editor_font))
+        auto font_description = cui::fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
+        if (font_description) {
+            cfg_editor_font = *font_description;
             g_editor_font_notify.on_change();
+        }
     }
 }
 

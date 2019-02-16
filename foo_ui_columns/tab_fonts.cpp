@@ -64,8 +64,9 @@ BOOL tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_CHANGE_FONT: {
             LOGFONT lf;
             get_font(lf);
-            if (font_picker(lf, wnd)) {
-                m_element_ptr->font = lf;
+
+            if (auto font_description = cui::fonts::select_font(wnd, lf); font_description) {
+                m_element_ptr->font_description = *font_description;
                 update_font_desc();
                 on_font_changed();
             }

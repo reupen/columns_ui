@@ -14,6 +14,7 @@
 #include <future>
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <set>
 #include <string_view>
 #include <utility>
