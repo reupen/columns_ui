@@ -1,5 +1,11 @@
 # Change log
 
+## 1.1.0 (in development)
+
+* Custom fonts now scale when the display scaling factor (DPI) changes.
+
+* The scrolling behaviour of the playlist view and other list views was improved when clicking on partially visible items at the top or bottom of the view.
+
 ## 1.0.0
 
 * No changes from 1.0.0-rc.1.
