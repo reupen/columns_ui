@@ -8,21 +8,35 @@ environment:
   - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     PlatformToolset: v141
     Configuration: Debug
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017 Preview
-    PlatformToolset: v141
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019 Preview
+    PlatformToolset: v142
     Configuration: Release
-  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017 Preview
-    PlatformToolset: v141
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019 Preview
+    PlatformToolset: v142
+    Configuration: Debug
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    PlatformToolset: llvm
+    UseLldLink: false
+    Configuration: Release
+  - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    PlatformToolset: llvm
+    UseLldLink: false
     Configuration: Debug
 matrix:
   allow_failures:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017 Preview
+    - PlatformToolset: v142
+    - PlatformToolset: llvm
 install:
 - cmd: |
     vcpkg install ms-gsl range-v3
     git submodule update --init --recursive
 build_script:
 - ps: |
-    $command = 'msbuild "vc15/columns_ui-public.sln" /m /verbosity:normal /p:PlatformToolset=' + $Env:PlatformToolset + ' /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
+    $properties = @{PlatformToolset = $Env:PlatformToolset}
+    if ($Env:UseLldLink) {
+      $properties.UseLldLink = $Env:UseLldLink
+    }
+    $propertiesArgValue = ($properties.GetEnumerator() | % { "$($_.Key)=$($_.Value)" }) -join ';'
+    $command = 'msbuild "vc15/columns_ui-public.sln" /m /verbosity:normal "/p:' + $propertiesArgValue + '" /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"'
     iex $command
     $host.SetShouldExit($LASTEXITCODE)
