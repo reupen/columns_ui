@@ -6,6 +6,8 @@
 
 * The scrolling behaviour of the playlist view and other list views was improved when clicking on partially visible items at the top or bottom of the view.
 
+* Compiled with the foobar2000 1.4 SDK.
+
 ## 1.0.0
 
 * No changes from 1.0.0-rc.1.
@@ -130,8 +132,6 @@
 * The component is no longer compatible with Windows XP and Vista. Users of those operating systems are advised to stick with version 0.5.1.
 
 * Miscellaneous internal code refactoring.
-
-* Compiled with the foobar2000 1.4 SDK.
 
 * Compiled with Visual Studio 2017 15.7.
 

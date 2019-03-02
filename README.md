@@ -16,7 +16,7 @@ This repo makes use of Git submodules. If you're not familiar with them, [check 
 
 Visual Studio 2017 15.9 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/).
 
-You'll need Windows 10 SDK version 10.0.16299.0 (an installation option in Visual Studio).
+You'll need Windows 10 SDK version 10.0.17763.0 (an installation option in Visual Studio).
 
 ### Installing external dependencies
 
