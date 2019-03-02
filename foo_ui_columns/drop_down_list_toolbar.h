@@ -119,7 +119,7 @@ void DropDownListToolbar<ToolbarArgs>::update_active_item()
 {
     auto&& id = ToolbarArgs::get_active_item();
     const auto iter = std::find_if(
-        m_items.begin(), m_items.end(), [id](auto&& item) { return std::get<ToolbarArgs::ID>(item) == id; });
+        m_items.begin(), m_items.end(), [id](auto&& item) { return std::get<typename ToolbarArgs::ID>(item) == id; });
 
     const int sel_item_index = iter != m_items.end() ? iter - m_items.begin() : -1;
     ComboBox_SetCurSel(m_wnd_combo, sel_item_index);
@@ -198,7 +198,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
             pfc::vartoggle_t<bool> var_toggle(m_processing_selection_change, true);
             const int sel = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             if (sel >= 0 && sel < gsl::narrow<int>(m_items.size()))
-                ToolbarArgs::set_active_item(std::get<ToolbarArgs::ID>(m_items[sel]));
+                ToolbarArgs::set_active_item(std::get<typename ToolbarArgs::ID>(m_items[sel]));
             break;
         }
         case ID_COMBOBOX | CBN_DROPDOWN << 16: {
