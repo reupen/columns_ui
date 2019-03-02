@@ -59,4 +59,8 @@ msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc15\columns_ui
 
 ### Using the Clang compiler (experimental)
 
-Compilation using Clang is not currently supported, as Clang does not currently integrate with VS 2017, and also as Clang rejects the `/permissive-` compiler option.
+Columns UI can be also compiled using recent versions of Clang. [Download and install LLVM](http://llvm.org/releases/download.html) and the [LLVM Compiler Toolchain Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.llvm-toolchain). In a (x86 or x64) VS 2017 Native Tools command prompt, run:
+
+```
+msbuild /m /p:PlatformToolset=llvm;UseLldLink=false;Platform=Win32;Configuration=Release /t:Rebuild vc15\columns_ui-public.sln
+```
