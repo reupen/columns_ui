@@ -135,22 +135,24 @@ BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, boo
 
 namespace cui::helpers {
 
+struct EnumChildWindowsData {
+    std::vector<HWND>& children;
+    std::function<bool(HWND)> filter;
+};
+
+static BOOL WINAPI enum_child_windows_proc(HWND wnd, LPARAM lp)
+{
+    auto data = reinterpret_cast<EnumChildWindowsData*>(lp);
+    if (!data->filter || data->filter(wnd))
+        data->children.emplace_back(wnd);
+    return TRUE;
+}
+
 std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter)
 {
     std::vector<HWND> children;
 
-    struct EnumChildWindowsData {
-        std::vector<HWND>& children;
-        std::function<bool(HWND)> filter;
-    } data{children, std::move(filter)};
-
-    auto enum_child_windows_proc = [](HWND wnd, LPARAM lp) -> BOOL {
-        auto data = reinterpret_cast<EnumChildWindowsData*>(lp);
-        if (!data->filter || data->filter(wnd))
-            data->children.emplace_back(wnd);
-        return TRUE;
-    };
-
+    EnumChildWindowsData data{children, std::move(filter)};
     EnumChildWindows(wnd, enum_child_windows_proc, reinterpret_cast<LPARAM>(&data));
 
     return children;
