@@ -1,0 +1,31 @@
+parameters:
+  installLlvm: ''
+  msBuildArgs: ''
+  platform: ''
+  solution: ''
+  vcpkgPackages: ''
+steps:
+- checkout: self
+  submodules: recursive
+- ${{ if parameters.installLlvm }}:
+  - powershell: |
+      choco install llvm
+      svn checkout https://github.com/llvm/llvm-project/trunk/llvm/tools/msbuild
+      ((Get-Content -path msbuild\install.bat -Raw) -replace 'Professional','Enterprise') | Set-Content -Path msbuild\install-enterprise.bat
+      cmd /c msbuild\install-enterprise.bat
+    displayName: Install LLVM
+- ${{ if parameters.vcpkgPackages }}:
+  - powershell: |
+      vcpkg integrate install
+      vcpkg install ${{ parameters.vcpkgPackages }}
+    displayName: Install dependencies
+- task: VSBuild@1
+  displayName: Build
+  inputs:
+    ${{ if parameters.solution }}:
+      solution: ${{ parameters.solution }}
+    ${{ if parameters.platform }}:
+      platform: ${{ parameters.platform }}
+    ${{ if parameters.configuration }}:
+      configuration: ${{ parameters.configuration }}
+    msbuildArgs: /m ${{ parameters.msBuildArgs }}

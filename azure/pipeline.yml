@@ -1,0 +1,41 @@
+variables:
+  solution: vc15/columns_ui-public.sln
+  vcpkgPackages: 'ms-gsl range-v3'
+  platform: Win32
+jobs:
+- job: vs2017
+  displayName: VS 2017 v141
+  pool:
+    vmImage: vs2017-win2016
+  strategy:
+    matrix:
+      Release:
+        configuration: Release
+      Debug:
+        configuration: Debug
+  steps:
+  - template: step-build.yml
+    parameters:
+      configuration: $(configuration)
+      platform: $(platform)
+      solution: $(solution)
+      vcpkgPackages: $(vcpkgPackages)
+- job: llvm
+  displayName: VS 2017 LLVM
+  pool:
+    vmImage: vs2017-win2016
+  strategy:
+    matrix:
+      Release:
+        configuration: Release
+      Debug:
+        configuration: Debug
+  steps:
+  - template: step-build.yml
+    parameters:
+      configuration: $(configuration)
+      installLlvm: true
+      msBuildArgs: /p:PlatformToolset=llvm;UseLldLink=False;SpectreMitigation=
+      platform: $(platform)
+      solution: $(solution)
+      vcpkgPackages: $(vcpkgPackages)
