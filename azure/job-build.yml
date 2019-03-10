@@ -29,7 +29,7 @@ jobs:
     submodules: recursive
   - powershell: |
       choco install llvm
-      svn checkout https://github.com/llvm/llvm-project/trunk/llvm/tools/msbuild
+      svn checkout -r351731 https://github.com/llvm/llvm-project/trunk/llvm/tools/msbuild
       ((Get-Content -path msbuild\install.bat -Raw) -replace 'Professional','Enterprise') | Set-Content -Path msbuild\install-enterprise.bat
       cmd /c msbuild\install-enterprise.bat
     condition: variables.installLlvm
