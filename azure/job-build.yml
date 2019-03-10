@@ -1,0 +1,54 @@
+parameters:
+  name: ''
+  displayName: ''
+  installLlvm: ''
+  installVcpkg: ''
+  matrix: {}
+  msBuildArgs: ''
+  platform: ''
+  solution: ''
+  vcpkgPackages: ''
+  vmImage: ''
+jobs:
+- job: ${{ parameters.name }}
+  displayName: ${{ parameters.displayName }}
+  pool:
+    vmImage: ${{ parameters.vmImage }}
+  variables:
+    installLlvm: ${{ parameters.installLlvm }}
+    installVcpkg: ${{ parameters.installVcpkg }}
+    msBuildArgs: ${{ parameters.msBuildArgs }}
+    platform: ${{ parameters.platform }}
+    solution: ${{ parameters.solution }}
+    vcpkgPackages: ${{ parameters.vcpkgPackages }}
+  strategy:
+    matrix:
+      ${{ insert }}: ${{ parameters.matrix }}
+  steps:
+  - checkout: self
+    submodules: recursive
+  - powershell: |
+      choco install llvm
+      svn checkout -r351731 https://github.com/llvm/llvm-project/trunk/llvm/tools/msbuild
+      ((Get-Content -path msbuild\install.bat -Raw) -replace 'Professional','Enterprise') | Set-Content -Path msbuild\install-enterprise.bat
+      cmd /c msbuild\install-enterprise.bat
+    condition: variables.installLlvm
+    displayName: Install LLVM
+  - script: |
+      git clone https://github.com/Microsoft/vcpkg.git
+      vcpkg\bootstrap-vcpkg.bat
+    condition: variables.installVcpkg
+    displayName: Install Vcpkg
+  - powershell: |
+      $vcpkgPath = If ('$(installVcpkg)') { '.\vcpkg\vcpkg' } Else { 'vcpkg' }
+      & $vcpkgPath integrate install
+      & $vcpkgPath install $(vcpkgPackages)
+    condition: variables.vcpkgPackages
+    displayName: Install dependencies
+  - task: VSBuild@1
+    displayName: Build
+    inputs:
+      solution: $(solution)
+      platform: $(platform)
+      configuration: $(configuration)
+      msbuildArgs: /m $(msBuildArgs)
