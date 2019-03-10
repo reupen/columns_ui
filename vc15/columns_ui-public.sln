@@ -1,4 +1,4 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27130.2024
@@ -46,8 +46,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fbh", "..\fbh\fbh.vcxproj",
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure", "Azure", "{4800C6BC-4666-4EBD-882B-B50A759132F0}"
 	ProjectSection(SolutionItems) = preProject
+		..\azure\job-build.yml = ..\azure\job-build.yml
 		..\azure\pipeline.yml = ..\azure\pipeline.yml
-		..\azure\step-build.yml = ..\azure\step-build.yml
 	EndProjectSection
 EndProject
 Global
