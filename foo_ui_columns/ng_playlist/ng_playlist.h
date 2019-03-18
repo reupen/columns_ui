@@ -643,7 +643,6 @@ private:
     void notify_on_kill_focus(HWND wnd_receiving) override;
 
     void render_group_info(HDC dc, t_size index, t_size group_count, const RECT& rc2) override;
-    void render_background(HDC dc, const RECT* rc) override;
     void render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused, bool b_highlight,
         bool should_hide_focus, bool b_focused, const RECT* rc) override;
     void render_group(

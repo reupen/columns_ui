@@ -41,12 +41,6 @@ void ng_playlist_view_t::render_group_info(HDC dc, t_size index, t_size group_co
         DeleteDC(dcc);
     }
 }
-void ng_playlist_view_t::render_background(HDC dc, const RECT* rc)
-{
-    cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
-    gdi_object_t<HBRUSH>::ptr_t br = CreateSolidBrush(p_helper.get_colour(cui::colours::colour_background));
-    FillRect(dc, rc, br);
-}
 
 void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused,
     bool b_highlight, bool should_hide_focus, bool b_focused, const RECT* rc_outter_item)
