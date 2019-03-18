@@ -200,7 +200,7 @@ private:
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed) override;
     void render_background(HDC dc, const RECT* rc) override;
     void render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused, bool b_highlight,
-        bool b_focused, const RECT* rc) override;
+        bool should_hide_focus, bool b_focused, const RECT* rc) override;
     bool do_drag_drop(WPARAM wp) override;
 
     t_size get_drag_item_count() override { return m_drag_item_count; }

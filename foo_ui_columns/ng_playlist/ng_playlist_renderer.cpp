@@ -49,7 +49,7 @@ void ng_playlist_view_t::render_background(HDC dc, const RECT* rc)
 }
 
 void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused,
-    bool b_highlight, bool b_focused, const RECT* rc_outter_item)
+    bool b_highlight, bool should_hide_focus, bool b_focused, const RECT* rc_outter_item)
 {
     cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
 
@@ -146,16 +146,9 @@ void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool
         rc_subitem.left = rc_subitem.right;
     }
     if (b_focused) {
-        RECT rc_focus = *rc;
-        if (b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_LISTITEM, LISS_SELECTED))
-            InflateRect(&rc_focus, -1, -1);
-        if (!p_helper.get_bool(cui::colours::bool_use_custom_active_item_frame)) {
-            DrawFocusRect(dc, &rc_focus);
-        } else {
-            gdi_object_t<HBRUSH>::ptr_t br
-                = CreateSolidBrush(p_helper.get_colour(cui::colours::colour_active_item_frame));
-            FrameRect(dc, &rc_focus, br);
-        }
+        ColourData colour_data{};
+        render_get_colour_data(colour_data);
+        render_focus_rect_default(colour_data, dc, should_hide_focus, *rc);
     }
 }
 
