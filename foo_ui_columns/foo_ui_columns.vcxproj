@@ -260,7 +260,6 @@
     <ClCompile Include=".\filter_inline_edit.cpp" />
     <ClCompile Include=".\filter_items.cpp" />
     <ClCompile Include=".\filter_menu.cpp" />
-    <ClCompile Include=".\filter_render.cpp" />
     <ClCompile Include=".\filter_search_bar.cpp" />
     <ClCompile Include=".\filter_config_var.cpp" />
     <ClCompile Include=".\fonts_manager_data.cpp" />

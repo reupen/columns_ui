@@ -6,6 +6,10 @@
 
 * The scrolling behaviour of the playlist view and other list views was improved when clicking on partially visible items at the top or bottom of the view.
 
+* List views now use themed focus rectangles when theming mode is enabled.
+
+* DPI scaling improvements were made to padding, lines and borders in list views.
+
 * Compiled with the foobar2000 1.4 SDK.
 
 ## 1.0.0

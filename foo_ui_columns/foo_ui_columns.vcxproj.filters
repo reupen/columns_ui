@@ -279,9 +279,6 @@
     <ClCompile Include=".\filter_menu.cpp">
       <Filter>Panels\Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter_render.cpp">
-      <Filter>Panels\Filter</Filter>
-    </ClCompile>
     <ClCompile Include=".\filter_search_bar.cpp">
       <Filter>Panels\Filter</Filter>
     </ClCompile>
