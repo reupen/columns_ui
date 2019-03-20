@@ -10,6 +10,8 @@
 
 * DPI scaling improvements were made to padding, lines and borders in list views.
 
+* The default vertical item padding of the playlist view and playlist switcher was increased.
+
 * Compiled with the foobar2000 1.4 SDK.
 
 ## 1.0.0
