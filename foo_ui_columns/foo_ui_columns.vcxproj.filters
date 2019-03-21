@@ -485,6 +485,9 @@
       <Filter>Config storage</Filter>
     </ClCompile>
     <ClCompile Include="version.cpp" />
+    <ClCompile Include="status_bar_callbacks.cpp">
+      <Filter>Status bar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
