@@ -3,7 +3,6 @@
 #include "seekbar.h"
 #include "main_window.h"
 #include "notification_area.h"
-#include "status_bar.h"
 
 class config_object_notify_pfc : public config_object_notify {
 public:
@@ -20,23 +19,16 @@ service_factory_single_t<config_object_notify_pfc> g_config_object_notify_pfc;
 
 class play_callback_ui : public play_callback_static {
 public:
-    enum { flags = flag_on_playback_all | flag_on_volume_change };
+    enum { flags = flag_on_playback_all };
 
     unsigned get_flags() override { return flags; }
-    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override
-    {
-        if (g_status) {
-            statusbartext = "Loading track..";
-            status_update_main(false);
-        }
-    }
+    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
     void on_playback_new_track(metadb_handle_ptr p_track) override
     {
         g_playing = true;
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
             update_systray(true);
-            update_status();
             cui::main_window.queue_taskbar_button_update();
         }
 
@@ -54,8 +46,6 @@ public:
             if (g_icon_created)
                 uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon,
                     core_version_info_v2::get()->get_name());
-            statusbartext = core_version_info::g_get_version_string();
-            status_update_main(false);
             cui::main_window.queue_taskbar_button_update();
         }
         if (p_reason != play_control::stop_reason_shutting_down)
@@ -65,7 +55,6 @@ public:
     {
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
-            update_status();
         }
         seek_bar_extension::update_seekbars(true);
     }
@@ -76,7 +65,6 @@ public:
         if (cui::main_window.get_wnd()) {
             update_systray(true, b_state ? 2 : 1);
             cui::main_window.update_title();
-            update_status();
             cui::main_window.queue_taskbar_button_update();
         }
     }
@@ -85,7 +73,6 @@ public:
     {
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
-            update_status();
         }
     }
 
@@ -93,7 +80,6 @@ public:
     {
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
-            update_status();
         }
     }
     void on_playback_dynamic_info_track(const file_info& p_info) override
@@ -101,21 +87,15 @@ public:
         if (cui::main_window.get_wnd()) {
             update_systray(true);
             cui::main_window.update_title();
-            update_status();
         }
     }
     void on_playback_time(double p_time) override
     {
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
-            update_status();
         }
     }
-    void on_volume_change(float p_new_val) override
-    {
-        if (cui::main_window.get_wnd() && g_status)
-            status_bar::set_part_sizes(status_bar::t_part_volume);
-    }
+    void on_volume_change(float p_new_val) override {}
 };
 
 static play_callback_static_factory_t<play_callback_ui> blah;
