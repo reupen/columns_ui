@@ -58,11 +58,6 @@ public:
     string_pn(metadb_handle_list_cref handles, const char* format, const char* def = "Untitled");
 };
 
-void set_sel_single(int idx, bool toggle, bool focus, bool single_only);
-void set_sel_range(int start, int end, bool keep, bool deselect = false);
-
-UINT GetNumScrollLines();
-
 void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr>& p_items, const char* name);
 
 #endif
