@@ -478,13 +478,13 @@
     <ClCompile Include=".\layout.cpp">
       <Filter>Layout host</Filter>
     </ClCompile>
-    <ClCompile Include=".\component_impl.cpp" />
     <ClCompile Include=".\get_msg_hook.cpp">
       <Filter>To split</Filter>
     </ClCompile>
     <ClCompile Include=".\config_appearance.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
+    <ClCompile Include="version.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
