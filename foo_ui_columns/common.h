@@ -10,18 +10,6 @@
  * Some common functions and enumerations
  */
 
-template <typename type_t>
-class ptr_list_autodel_t : public pfc::ptr_list_t<type_t> {
-public:
-    ptr_list_autodel_t() = default;
-    ptr_list_autodel_t(const ptr_list_autodel_t&) = delete;
-    ptr_list_autodel_t& operator=(const ptr_list_autodel_t&) = delete;
-    ptr_list_autodel_t(ptr_list_autodel_t&&) = delete;
-    ptr_list_autodel_t& operator=(ptr_list_autodel_t&&) = delete;
-
-    ~ptr_list_autodel_t() { this->delete_all(); }
-};
-
 enum playlist_filter_type {
     FILTER_NONE = 0,
     FILTER_SHOW,
