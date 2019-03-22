@@ -22,7 +22,7 @@ status_pane g_status_pane;
 
 HIMAGELIST g_imagelist = nullptr;
 
-HWND g_tooltip = nullptr, g_rebar = nullptr, g_status = nullptr;
+HWND g_rebar = nullptr, g_status = nullptr;
 
 bool ui_initialising = false, g_minimised = false;
 
@@ -135,10 +135,6 @@ void cui::MainWindow::shutdown()
     status_bar::volume_popup_window.class_release();
     m_wnd = nullptr;
     g_status = nullptr;
-    if (g_imagelist) {
-        ImageList_Destroy(g_imagelist);
-        g_imagelist = nullptr;
-    }
     if (g_icon)
         DestroyIcon(g_icon);
     g_icon = nullptr;

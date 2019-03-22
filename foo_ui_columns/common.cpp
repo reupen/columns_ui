@@ -20,58 +20,6 @@ void colour::set(COLORREF new_colour)
     R = LOBYTE(LOWORD(new_colour));
 }
 
-void set_sel_single(int idx, bool toggle, bool focus, bool single_only)
-{
-    static_api_ptr_t<playlist_manager> playlist_api;
-    unsigned total = playlist_api->activeplaylist_get_item_count();
-    unsigned idx_focus = playlist_api->activeplaylist_get_focus_item();
-
-    pfc::bit_array_bittable mask(total);
-    mask.set(idx, toggle ? !playlist_api->activeplaylist_is_item_selected(idx) : true);
-
-    if (single_only) {
-        playlist_api->activeplaylist_set_selection(pfc::bit_array_true(), mask);
-    } else if (toggle || !playlist_api->activeplaylist_is_item_selected(idx)) {
-        playlist_api->activeplaylist_set_selection(pfc::bit_array_one(idx), mask);
-    }
-
-    if (focus && idx_focus != idx)
-        playlist_api->activeplaylist_set_focus_item(idx);
-}
-
-void set_sel_range(int start, int end, bool keep, bool deselect)
-{
-    //    console::info(pfc::string_printf("%i %i %i %i",start,end,(long)keep,(long)deselect));
-    static_api_ptr_t<playlist_manager> playlist_api;
-    unsigned total = playlist_api->activeplaylist_get_item_count();
-    pfc::bit_array_bittable mask(total);
-    //    if (keep)
-    //        playlist_api->activeplaylist_get_selection_mask(mask);
-    int n = start, t = end;
-
-    if (n < t)
-        for (; n <= t; n++)
-            mask.set(n, !deselect);
-    else if (n >= t)
-        for (; n >= t; n--)
-            mask.set(n, !deselect);
-
-    int from = start < end ? start + 1 : end;
-    int to = (start < end ? end + 1 : start);
-
-    if (keep)
-        playlist_api->activeplaylist_set_selection(pfc::bit_array_range(from, to - from, true), mask);
-    else
-        playlist_api->activeplaylist_set_selection(pfc::bit_array_true(), mask);
-}
-
-UINT GetNumScrollLines()
-{
-    UINT ucNumLines = 3; // 3 is the default
-    SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &ucNumLines, 0);
-    return (ucNumLines);
-}
-
 string_pn::string_pn(metadb_handle_list_cref handles, const char* format, const char* def)
 {
     pfc::string8_fast_aggressive a, b;

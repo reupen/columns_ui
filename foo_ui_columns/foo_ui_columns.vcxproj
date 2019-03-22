@@ -254,7 +254,8 @@
     <ClCompile Include=".\buttons_custom_image.cpp" />
     <ClCompile Include=".\colours_manager_data.cpp" />
     <ClCompile Include=".\columns_v2.cpp" />
-    <ClCompile Include=".\component_impl.cpp" />
+    <ClCompile Include="status_bar_callbacks.cpp" />
+    <ClCompile Include="version.cpp" />
     <ClCompile Include=".\config_defaults.cpp" />
     <ClCompile Include=".\config_items.cpp" />
     <ClCompile Include=".\filter_inline_edit.cpp" />

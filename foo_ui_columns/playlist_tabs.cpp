@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "playlist_tabs.h"
 #include "main_window.h"
-#include "playlist_switcher_v2.h"
+#include "playlist_manager_utils.h"
 
 cfg_guid cfg_default_playlist(GUID{0x68527c89, 0xb0f7, 0xf653, {0x00, 0x53, 0x8c, 0xeb, 0x47, 0xe7, 0xa3, 0xb3}},
     columns_ui::panels::guid_playlist_view_v2);
