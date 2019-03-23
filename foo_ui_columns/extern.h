@@ -13,7 +13,7 @@
 extern HWND g_rebar, g_status;
 
 extern HICON g_icon;
-extern bool ui_initialising, g_minimised, g_icon_created;
+extern bool ui_initialising, g_icon_created;
 
 extern pfc::string8 statusbartext;
 

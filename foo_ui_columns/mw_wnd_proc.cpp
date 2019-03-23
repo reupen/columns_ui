@@ -511,14 +511,12 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!(lpwp->flags & SWP_NOSIZE)) {
             ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
             if (styles & WS_MINIMIZE) {
-                g_minimised = true;
                 cfg_go_to_tray = cfg_go_to_tray || cfg_minimise_to_tray;
                 if (!g_icon_created && cfg_go_to_tray)
                     create_systray_icon();
                 if (g_icon_created && cfg_go_to_tray)
                     ShowWindow(wnd, SW_HIDE);
             } else {
-                g_minimised = false;
                 resize_child_windows();
             }
         }
