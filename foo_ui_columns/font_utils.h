@@ -32,6 +32,7 @@ private:
 };
 
 std::optional<FontDescription> select_font(HWND wnd_parent, LOGFONT initial_font);
+void get_next_font_size_step(LOGFONT& log_font, bool up);
 
 LOGFONT read_font(stream_reader* stream, abort_callback& aborter);
 void write_font(stream_writer* stream, const LOGFONT& log_font, abort_callback& aborter);

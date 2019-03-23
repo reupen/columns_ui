@@ -12,7 +12,6 @@
 
 #include "stdafx.h"
 
-void g_get_font_size_next_step(LOGFONT& p_lf, bool up);
 void set_font_size(bool up);
 
 #endif
