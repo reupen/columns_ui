@@ -3,6 +3,10 @@
 #include "notification_area.h"
 #include "main_window.h"
 
+extern HWND g_status;
+extern HICON g_icon;
+extern bool g_icon_created;
+
 void update_systray(bool balloon, int btitle, bool force_balloon)
 {
     if (g_icon_created) {

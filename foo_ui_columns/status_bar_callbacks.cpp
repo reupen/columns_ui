@@ -2,6 +2,8 @@
 #include "main_window.h"
 #include "status_bar.h"
 
+extern HWND g_status;
+
 namespace status_bar {
 
 class StatusBarPlayCalllback : public play_callback_static {

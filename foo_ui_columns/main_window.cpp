@@ -23,11 +23,10 @@ HIMAGELIST g_imagelist = nullptr;
 
 HWND g_rebar = nullptr, g_status = nullptr;
 
+bool g_icon_created = false;
 bool ui_initialising = false, g_minimised = false;
 
 HICON g_icon = nullptr;
-
-pfc::string8 statusbartext;
 
 bool remember_window_pos()
 {
@@ -313,8 +312,6 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
     }
     return false;
 }
-
-bool g_icon_created = false;
 
 class playlist_callback_single_columns : public playlist_callback_single_static {
 public:

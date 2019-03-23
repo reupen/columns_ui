@@ -2,8 +2,11 @@
 #include "status_bar.h"
 
 extern HFONT g_status_font;
+extern HWND g_status;
 
 pfc::string8 status_bar::menudesc;
+pfc::string8 status_bar::statusbartext;
+
 bool menu = false;
 
 void status_set_menu(bool on)
@@ -23,7 +26,7 @@ void status_update_main(bool is_caller_menu_desc)
         if (menu && is_caller_menu_desc)
             SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&status_bar::menudesc));
         else if (!menu)
-            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&statusbartext));
+            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&status_bar::statusbartext));
     }
 }
 
@@ -36,11 +39,11 @@ void update_status()
         service_ptr_t<titleformat_object> to_status;
         static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
         play_api->playback_format_title_ex(
-            track, nullptr, statusbartext, to_status, nullptr, play_control::display_level_all);
+            track, nullptr, status_bar::statusbartext, to_status, nullptr, play_control::display_level_all);
 
         track.release();
     } else {
-        statusbartext = core_version_info::g_get_version_string();
+        status_bar::statusbartext = core_version_info::g_get_version_string();
     }
     status_update_main(false);
 }

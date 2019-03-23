@@ -4,6 +4,8 @@
 #include "rebar.h"
 #include "main_window.h"
 
+extern HWND g_rebar;
+
 static class tab_main : public preferences_tab {
 public:
     bool m_initialised{};

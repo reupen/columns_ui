@@ -2,6 +2,9 @@
 #include "status_pane.h"
 #include "mw_drop_target.h"
 
+extern HWND g_rebar;
+extern HWND g_status;
+
 bool g_last_rmb = false;
 
 drop_handler_interface::drop_handler_interface()

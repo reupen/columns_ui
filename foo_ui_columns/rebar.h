@@ -11,7 +11,6 @@
  */
 
 #include "stdafx.h"
-#include "extern.h"
 #include "rebar_band.h"
 
 struct band_cache_entry {

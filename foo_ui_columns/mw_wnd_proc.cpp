@@ -7,6 +7,10 @@
 #include "status_bar.h"
 #include "notification_area.h"
 
+extern HWND g_rebar;
+extern HWND g_status;
+extern bool g_icon_created;
+
 INT_PTR g_taskbar_bitmaps[] = {IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND};
 
 namespace statusbar_contextmenus {
@@ -157,7 +161,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
         m_wnd = wnd;
-        statusbartext = core_version_info::g_get_version_string();
+        status_bar::statusbartext = core_version_info::g_get_version_string();
         set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
             create_systray_icon();

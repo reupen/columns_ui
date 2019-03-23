@@ -489,7 +489,6 @@
     <ClInclude Include=".\layout.h" />
     <ClInclude Include=".\rebar.h" />
     <ClInclude Include=".\common.h" />
-    <ClInclude Include=".\extern.h" />
     <ClInclude Include=".\menu_items.h" />
     <ClInclude Include=".\status_bar.h" />
     <ClInclude Include=".\stdafx.h" />

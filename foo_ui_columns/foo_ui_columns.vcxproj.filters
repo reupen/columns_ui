@@ -100,9 +100,6 @@
     <Filter Include="Layout host">
       <UniqueIdentifier>{3da4e603-8dc8-4b08-a00d-7111c3851411}</UniqueIdentifier>
     </Filter>
-    <Filter Include="To split">
-      <UniqueIdentifier>{ef783cbf-0b28-473a-bbb9-75673c710f34}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Menu items">
       <UniqueIdentifier>{3606e825-9b65-4531-9f94-70972f21e197}</UniqueIdentifier>
     </Filter>
@@ -504,9 +501,6 @@
   <ItemGroup>
     <ClInclude Include=".\resource.h">
       <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include=".\extern.h">
-      <Filter>To split</Filter>
     </ClInclude>
     <ClInclude Include=".\config.h">
       <Filter>Config UI</Filter>

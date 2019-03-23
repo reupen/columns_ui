@@ -3,6 +3,8 @@
 #include "status_bar.h"
 #include "notification_area.h"
 
+extern bool g_icon_created;
+
 class UserInterfaceImpl : public user_interface_v2 {
 public:
     const char* get_name() override { return "Columns UI"; }

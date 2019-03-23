@@ -2,6 +2,9 @@
 #include "main_window.h"
 #include "notification_area.h"
 
+extern HICON g_icon;
+extern bool g_icon_created;
+
 class NotificationAreaPlayCallback : public play_callback_static {
 public:
     unsigned get_flags() override { return flags; }
