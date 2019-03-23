@@ -494,6 +494,9 @@
     <ClCompile Include="seekbar_callbacks.cpp">
       <Filter>Seek bar</Filter>
     </ClCompile>
+    <ClCompile Include="notification_area_callbacks.cpp">
+      <Filter>Notification area</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">

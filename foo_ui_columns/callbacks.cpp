@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "main_window.h"
-#include "notification_area.h"
 
 class play_callback_ui : public play_callback_static {
 public:
@@ -12,7 +11,6 @@ public:
     {
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
-            update_systray(true);
             cui::main_window.queue_taskbar_button_update();
         }
     }
@@ -21,10 +19,6 @@ public:
     {
         if (cui::main_window.get_wnd() && p_reason != play_control::stop_reason_shutting_down) {
             cui::main_window.reset_title();
-
-            if (g_icon_created)
-                uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon,
-                    core_version_info_v2::get()->get_name());
             cui::main_window.queue_taskbar_button_update();
         }
     }
@@ -37,7 +31,6 @@ public:
     void on_playback_pause(bool b_state) override
     {
         if (cui::main_window.get_wnd()) {
-            update_systray(true, b_state ? 2 : 1);
             cui::main_window.update_title();
             cui::main_window.queue_taskbar_button_update();
         }
@@ -59,7 +52,6 @@ public:
     void on_playback_dynamic_info_track(const file_info& p_info) override
     {
         if (cui::main_window.get_wnd()) {
-            update_systray(true);
             cui::main_window.update_title();
         }
     }
