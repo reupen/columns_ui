@@ -103,11 +103,11 @@
     <Filter Include="To split">
       <UniqueIdentifier>{ef783cbf-0b28-473a-bbb9-75673c710f34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Menu items">
+      <UniqueIdentifier>{3606e825-9b65-4531-9f94-70972f21e197}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include=".\menu_items.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include=".\config.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
@@ -497,15 +497,15 @@
     <ClCompile Include="status_bar_font_client.cpp">
       <Filter>Status bar</Filter>
     </ClCompile>
+    <ClCompile Include=".\menu_items.cpp">
+      <Filter>Menu items</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include=".\extern.h">
-      <Filter>To split</Filter>
-    </ClInclude>
-    <ClInclude Include=".\menu_items.h">
       <Filter>To split</Filter>
     </ClInclude>
     <ClInclude Include=".\config.h">
@@ -697,6 +697,9 @@
     </ClInclude>
     <ClInclude Include=".\config_appearance.h">
       <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include=".\menu_items.h">
+      <Filter>Menu items</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
