@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "config.h"
-#include "font_notify.h"
 #include "prefs_utils.h"
 #include "main_window.h"
 #include "status_bar.h"

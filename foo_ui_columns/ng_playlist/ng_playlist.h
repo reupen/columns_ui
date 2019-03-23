@@ -18,6 +18,7 @@ HBITMAP g_create_hbitmap_from_data(
     const album_art_data_ptr& data, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection);
 bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback& p_abort);
 HBITMAP g_get_nocover_bitmap(t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
+void set_font_size(bool up);
 
 class playlist_callback_base : public playlist_callback {
 public:

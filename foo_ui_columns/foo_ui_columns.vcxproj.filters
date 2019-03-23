@@ -105,9 +105,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include=".\font_notify.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include=".\menu_items.cpp">
       <Filter>To split</Filter>
     </ClCompile>
@@ -506,9 +503,6 @@
       <Filter>Resources</Filter>
     </ClInclude>
     <ClInclude Include=".\extern.h">
-      <Filter>To split</Filter>
-    </ClInclude>
-    <ClInclude Include=".\font_notify.h">
       <Filter>To split</Filter>
     </ClInclude>
     <ClInclude Include=".\menu_items.h">

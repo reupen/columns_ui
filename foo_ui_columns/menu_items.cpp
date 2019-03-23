@@ -53,11 +53,11 @@ static const MainMenuCommand show_groups{show_groups_id, "Show groups", "Shows o
 
 static const MainMenuCommand decrease_font{
     {0xf2bc9f43, 0xf709, 0x4f6f, {0x9c, 0x65, 0x78, 0x73, 0x3b, 0x8, 0xc7, 0x77}}, "Decrease font size",
-    "Decreases the playlist view font size.", [] { set_font_size(false); }};
+    "Decreases the playlist view font size.", [] { pvt::set_font_size(false); }};
 
 static const MainMenuCommand increase_font{
     {0x8553d7fd, 0xebc5, 0x4ae7, {0xaa, 0x28, 0xb2, 0x6, 0xfe, 0x94, 0xa0, 0xb4}}, "Increase font size",
-    "Increases the playlist font size.", [] { set_font_size(true); }};
+    "Increases the playlist font size.", [] { pvt::set_font_size(true); }};
 
 static const MainMenuCommand show_status_bar{
     {0x5f944522, 0x843b, 0x43d2, {0x87, 0x14, 0xe3, 0xca, 0x1b, 0x78, 0x2b, 0x1f}}, "Show status bar",

@@ -11,7 +11,6 @@
 
 #include "main_window.h"
 #include "notification_area.h"
-#include "font_notify.h"
 #include "status_bar.h"
 #include "migrate.h"
 

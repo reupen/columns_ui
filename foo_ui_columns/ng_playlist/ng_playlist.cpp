@@ -79,6 +79,17 @@ void cfg_groups_t::remove_group(t_size index)
     ng_playlist_view_t::g_on_groups_change();
 }
 
+void set_font_size(bool up)
+{
+    LOGFONT lf_ng;
+    static_api_ptr_t<cui::fonts::manager> api;
+    api->get_font(pvt::g_guid_items_font, lf_ng);
+
+    cui::fonts::get_next_font_size_step(lf_ng, up);
+
+    api->set_font(pvt::g_guid_items_font, lf_ng);
+}
+
 ng_playlist_view_t::ng_playlist_view_t() : m_dragging_initial_playlist(pfc_infinite){};
 
 ng_playlist_view_t::~ng_playlist_view_t() = default;

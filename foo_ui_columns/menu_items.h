@@ -1,7 +1,5 @@
 #pragma once
 
-#include "font_notify.h"
-
 namespace cui::main_menu {
 
 struct MainMenuCommand {
