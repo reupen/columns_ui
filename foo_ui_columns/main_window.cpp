@@ -411,6 +411,18 @@ bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
     return ret;
 }
 
+void on_show_status_change()
+{
+    if (cui::main_window.get_wnd()) {
+        create_status();
+        if (g_status) {
+            ShowWindow(g_status, SW_SHOWNORMAL);
+            UpdateWindow(g_status);
+        }
+        cui::main_window.resize_child_windows();
+    }
+}
+
 void on_show_status_pane_change()
 {
     if (cui::main_window.get_wnd()) {
