@@ -43,3 +43,5 @@ void destroy_status_window();
 extern pfc::string8 menudesc;
 
 }; // namespace status_bar
+
+void on_status_font_change();

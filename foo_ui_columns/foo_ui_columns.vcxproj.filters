@@ -497,6 +497,9 @@
     <ClCompile Include=".\commandline.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
+    <ClCompile Include="status_bar_font_client.cpp">
+      <Filter>Status bar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">

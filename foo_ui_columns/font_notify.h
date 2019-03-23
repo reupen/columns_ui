@@ -11,16 +11,6 @@
  */
 
 #include "stdafx.h"
-#include "extern.h"
-
-extern HFONT g_status_font;
-extern HFONT g_tab_font;
-extern HFONT g_header_font;
-extern HFONT g_plist_font;
-
-void on_status_font_change();
-
-void font_cleanup();
 
 void g_get_font_size_next_step(LOGFONT& p_lf, bool up);
 void set_font_size(bool up);

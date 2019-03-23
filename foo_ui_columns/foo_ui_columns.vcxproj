@@ -268,6 +268,7 @@
     <ClCompile Include="notification_area_callbacks.cpp" />
     <ClCompile Include="seekbar_callbacks.cpp" />
     <ClCompile Include="status_bar_callbacks.cpp" />
+    <ClCompile Include="status_bar_font_client.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include=".\config_defaults.cpp" />
     <ClCompile Include=".\config_items.cpp" />

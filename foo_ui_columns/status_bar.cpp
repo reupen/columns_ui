@@ -1,9 +1,9 @@
 #include "stdafx.h"
-#include "font_notify.h"
 #include "status_bar.h"
 
-pfc::string8 status_bar::menudesc;
+extern HFONT g_status_font;
 
+pfc::string8 status_bar::menudesc;
 bool menu = false;
 
 void status_set_menu(bool on)
@@ -123,6 +123,10 @@ void destroy_status_window()
     if (g_status) {
         DestroyWindow(g_status);
         g_status = nullptr;
+    }
+    if (g_status_font) {
+        DeleteObject(g_status_font);
+        g_status_font = nullptr;
     }
 }
 }; // namespace status_bar

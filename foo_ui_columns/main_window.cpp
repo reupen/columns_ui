@@ -137,8 +137,6 @@ void cui::MainWindow::shutdown()
         DestroyIcon(g_icon);
     g_icon = nullptr;
     status_bar::destroy_icon();
-
-    font_cleanup();
 }
 
 void cui::MainWindow::on_query_capability()
