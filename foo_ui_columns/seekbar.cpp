@@ -7,8 +7,6 @@
 
 pfc::ptr_list_t<seek_bar_extension> seek_bar_extension::windows;
 
-extern bool g_playing;
-
 void seek_bar_extension::track_bar_host_impl::on_position_change(unsigned pos, bool b_tracking)
 {
     if (!b_tracking || (GetKeyState(VK_SHIFT) & KF_UP))
@@ -38,7 +36,7 @@ unsigned seek_bar_extension::g_seek_timer = 0;
 
 void seek_bar_extension::update_seek_timer()
 {
-    if (windows.get_count() && g_playing) {
+    if (windows.get_count() && static_api_ptr_t<playback_control>()->is_playing()) {
         if (!g_seek_timer) {
             g_seek_timer = SetTimer(nullptr, NULL, 150, (TIMERPROC)SeekTimerProc);
         }
@@ -72,7 +70,7 @@ void seek_bar_extension::update_seek_pos()
 
 VOID CALLBACK seek_bar_extension::SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time)
 {
-    if (windows.get_count() && g_playing)
+    if (windows.get_count() && static_api_ptr_t<playback_control>()->is_playing())
         update_seekbars(true);
 }
 

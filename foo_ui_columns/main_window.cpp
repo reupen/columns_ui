@@ -26,8 +26,6 @@ HWND g_rebar = nullptr, g_status = nullptr;
 
 bool ui_initialising = false, g_minimised = false;
 
-bool g_playing = false;
-
 HICON g_icon = nullptr;
 
 pfc::string8 statusbartext;

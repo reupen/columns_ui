@@ -491,6 +491,9 @@
     <ClCompile Include="ng_playlist\config_object_callbacks.cpp">
       <Filter>Playlist view</Filter>
     </ClCompile>
+    <ClCompile Include="seekbar_callbacks.cpp">
+      <Filter>Seek bar</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">

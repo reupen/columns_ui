@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "seekbar.h"
 #include "main_window.h"
 #include "notification_area.h"
 
@@ -11,21 +10,15 @@ public:
     void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
     void on_playback_new_track(metadb_handle_ptr p_track) override
     {
-        g_playing = true;
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
             update_systray(true);
             cui::main_window.queue_taskbar_button_update();
         }
-
-        seek_bar_extension::update_seekbars();
-        seek_bar_extension::update_seek_timer();
     }
 
     void on_playback_stop(play_control::t_stop_reason p_reason) override
     {
-        g_playing = false;
-        seek_bar_extension::update_seek_timer();
         if (cui::main_window.get_wnd() && p_reason != play_control::stop_reason_shutting_down) {
             cui::main_window.reset_title();
 
@@ -34,20 +27,15 @@ public:
                     core_version_info_v2::get()->get_name());
             cui::main_window.queue_taskbar_button_update();
         }
-        if (p_reason != play_control::stop_reason_shutting_down)
-            seek_bar_extension::update_seekbars();
     }
     void on_playback_seek(double p_time) override
     {
         if (cui::main_window.get_wnd()) {
             cui::main_window.update_title();
         }
-        seek_bar_extension::update_seekbars(true);
     }
     void on_playback_pause(bool b_state) override
     {
-        g_playing = (b_state == 0);
-        seek_bar_extension::update_seek_timer();
         if (cui::main_window.get_wnd()) {
             update_systray(true, b_state ? 2 : 1);
             cui::main_window.update_title();

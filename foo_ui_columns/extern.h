@@ -12,8 +12,6 @@
 
 extern HWND g_rebar, g_status;
 
-extern bool g_playing;
-
 extern HICON g_icon;
 extern bool ui_initialising, g_minimised, g_icon_created;
 
