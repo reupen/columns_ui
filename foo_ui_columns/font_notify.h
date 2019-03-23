@@ -18,7 +18,6 @@ extern HFONT g_tab_font;
 extern HFONT g_header_font;
 extern HFONT g_plist_font;
 
-void on_show_toolbars_change();
 void on_show_status_change();
 void on_status_font_change();
 

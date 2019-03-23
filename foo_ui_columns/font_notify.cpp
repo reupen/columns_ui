@@ -21,18 +21,6 @@ void font_cleanup()
     }
 }
 
-void on_show_toolbars_change()
-{
-    if (cui::main_window.get_wnd()) {
-        create_rebar();
-        if (g_rebar) {
-            ShowWindow(g_rebar, SW_SHOWNORMAL);
-            UpdateWindow(g_rebar);
-        }
-        cui::main_window.resize_child_windows();
-    }
-}
-
 void on_show_status_change()
 {
     {

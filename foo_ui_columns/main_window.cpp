@@ -425,6 +425,18 @@ void on_show_status_pane_change()
     }
 }
 
+void on_show_toolbars_change()
+{
+    if (cui::main_window.get_wnd()) {
+        create_rebar();
+        if (g_rebar) {
+            ShowWindow(g_rebar, SW_SHOWNORMAL);
+            UpdateWindow(g_rebar);
+        }
+        cui::main_window.resize_child_windows();
+    }
+}
+
 class control_impl : public columns_ui::control {
 public:
     bool get_string(const GUID& p_guid, pfc::string_base& p_out) const override

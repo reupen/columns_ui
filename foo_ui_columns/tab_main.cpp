@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "fcl.h"
 #include "config.h"
-#include "font_notify.h"
 #include "rebar.h"
 #include "main_window.h"
 
