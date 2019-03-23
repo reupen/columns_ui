@@ -47,22 +47,6 @@ void on_show_status_change()
     }
 }
 
-void on_show_status_pane_change()
-{
-    {
-        if (cui::main_window.get_wnd()) {
-            if (settings::show_status_pane != (g_status_pane.get_wnd() != nullptr)) {
-                if (settings::show_status_pane) {
-                    g_status_pane.create(cui::main_window.get_wnd());
-                    ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
-                } else
-                    g_status_pane.destroy();
-                cui::main_window.resize_child_windows();
-            }
-        }
-    }
-}
-
 // {B9D5EA18-5827-40be-A896-302A71BCAA9C}
 static const GUID font_client_status_guid
     = {0xb9d5ea18, 0x5827, 0x40be, {0xa8, 0x96, 0x30, 0x2a, 0x71, 0xbc, 0xaa, 0x9c}};

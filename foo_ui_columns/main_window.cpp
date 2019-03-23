@@ -411,6 +411,20 @@ bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
     return ret;
 }
 
+void on_show_status_pane_change()
+{
+    if (cui::main_window.get_wnd()) {
+        if (settings::show_status_pane != (g_status_pane.get_wnd() != nullptr)) {
+            if (settings::show_status_pane) {
+                g_status_pane.create(cui::main_window.get_wnd());
+                ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
+            } else
+                g_status_pane.destroy();
+            cui::main_window.resize_child_windows();
+        }
+    }
+}
+
 class control_impl : public columns_ui::control {
 public:
     bool get_string(const GUID& p_guid, pfc::string_base& p_out) const override
