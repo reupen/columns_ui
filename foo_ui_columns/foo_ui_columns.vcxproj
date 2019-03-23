@@ -384,7 +384,7 @@
     </ClCompile>
     <ClCompile Include=".\layout.cpp" />
     <ClCompile Include=".\rebar.cpp" />
-    <ClCompile Include=".\callbacks.cpp" />
+    <ClCompile Include="main_window_callbacks.cpp" />
     <ClCompile Include=".\callbacks_config.cpp" />
     <ClCompile Include=".\commandline.cpp" />
     <ClCompile Include=".\common.cpp" />

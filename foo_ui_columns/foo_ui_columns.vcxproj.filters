@@ -442,9 +442,6 @@
     <ClCompile Include=".\common.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include=".\callbacks.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include="help.cpp">
       <Filter>Help</Filter>
     </ClCompile>
@@ -496,6 +493,9 @@
     </ClCompile>
     <ClCompile Include="notification_area_callbacks.cpp">
       <Filter>Notification area</Filter>
+    </ClCompile>
+    <ClCompile Include="main_window_callbacks.cpp">
+      <Filter>Main window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

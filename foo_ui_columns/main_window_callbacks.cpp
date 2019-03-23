@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "main_window.h"
 
-class play_callback_ui : public play_callback_static {
+class MainWindowPlayCallback : public play_callback_static {
 public:
     enum { flags = flag_on_playback_all };
 
@@ -64,4 +64,4 @@ public:
     void on_volume_change(float p_new_val) override {}
 };
 
-static play_callback_static_factory_t<play_callback_ui> blah;
+static play_callback_static_factory_t<MainWindowPlayCallback> main_window_play_callback;
