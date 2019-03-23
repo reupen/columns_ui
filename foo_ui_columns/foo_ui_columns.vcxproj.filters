@@ -469,9 +469,6 @@
     <ClCompile Include=".\layout.cpp">
       <Filter>Layout host</Filter>
     </ClCompile>
-    <ClCompile Include=".\get_msg_hook.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include=".\config_appearance.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
@@ -499,6 +496,9 @@
     </ClCompile>
     <ClCompile Include=".\menu_items.cpp">
       <Filter>Menu items</Filter>
+    </ClCompile>
+    <ClCompile Include=".\get_msg_hook.cpp">
+      <Filter>Main window</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -692,14 +692,14 @@
     <ClInclude Include=".\layout.h">
       <Filter>Layout host</Filter>
     </ClInclude>
-    <ClInclude Include=".\get_msg_hook.h">
-      <Filter>To split</Filter>
-    </ClInclude>
     <ClInclude Include=".\config_appearance.h">
       <Filter>Config storage</Filter>
     </ClInclude>
     <ClInclude Include=".\menu_items.h">
       <Filter>Menu items</Filter>
+    </ClInclude>
+    <ClInclude Include=".\get_msg_hook.h">
+      <Filter>Main window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
