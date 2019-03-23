@@ -105,9 +105,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include=".\commandline.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include=".\font_notify.cpp">
       <Filter>To split</Filter>
     </ClCompile>
@@ -496,6 +493,9 @@
     </ClCompile>
     <ClCompile Include="main_window_callbacks.cpp">
       <Filter>Main window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\commandline.cpp">
+      <Filter>FCL files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
