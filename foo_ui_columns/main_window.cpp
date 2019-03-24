@@ -11,7 +11,6 @@
 
 #include "main_window.h"
 #include "notification_area.h"
-#include "font_notify.h"
 #include "status_bar.h"
 #include "migrate.h"
 
@@ -24,13 +23,10 @@ HIMAGELIST g_imagelist = nullptr;
 
 HWND g_rebar = nullptr, g_status = nullptr;
 
+bool g_icon_created = false;
 bool ui_initialising = false, g_minimised = false;
 
-bool g_playing = false;
-
 HICON g_icon = nullptr;
-
-pfc::string8 statusbartext;
 
 bool remember_window_pos()
 {
@@ -139,8 +135,6 @@ void cui::MainWindow::shutdown()
         DestroyIcon(g_icon);
     g_icon = nullptr;
     status_bar::destroy_icon();
-
-    font_cleanup();
 }
 
 void cui::MainWindow::on_query_capability()
@@ -319,8 +313,6 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
     return false;
 }
 
-bool g_icon_created = false;
-
 class playlist_callback_single_columns : public playlist_callback_single_static {
 public:
     void on_items_added(
@@ -411,6 +403,44 @@ bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
     }
     FreeResource(handle);
     return ret;
+}
+
+void on_show_status_change()
+{
+    if (cui::main_window.get_wnd()) {
+        create_status();
+        if (g_status) {
+            ShowWindow(g_status, SW_SHOWNORMAL);
+            UpdateWindow(g_status);
+        }
+        cui::main_window.resize_child_windows();
+    }
+}
+
+void on_show_status_pane_change()
+{
+    if (cui::main_window.get_wnd()) {
+        if (settings::show_status_pane != (g_status_pane.get_wnd() != nullptr)) {
+            if (settings::show_status_pane) {
+                g_status_pane.create(cui::main_window.get_wnd());
+                ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
+            } else
+                g_status_pane.destroy();
+            cui::main_window.resize_child_windows();
+        }
+    }
+}
+
+void on_show_toolbars_change()
+{
+    if (cui::main_window.get_wnd()) {
+        create_rebar();
+        if (g_rebar) {
+            ShowWindow(g_rebar, SW_SHOWNORMAL);
+            UpdateWindow(g_rebar);
+        }
+        cui::main_window.resize_child_windows();
+    }
 }
 
 class control_impl : public columns_ui::control {

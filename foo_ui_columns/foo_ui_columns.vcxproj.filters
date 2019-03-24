@@ -100,20 +100,11 @@
     <Filter Include="Layout host">
       <UniqueIdentifier>{3da4e603-8dc8-4b08-a00d-7111c3851411}</UniqueIdentifier>
     </Filter>
-    <Filter Include="To split">
-      <UniqueIdentifier>{ef783cbf-0b28-473a-bbb9-75673c710f34}</UniqueIdentifier>
+    <Filter Include="Menu items">
+      <UniqueIdentifier>{3606e825-9b65-4531-9f94-70972f21e197}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include=".\commandline.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
-    <ClCompile Include=".\font_notify.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
-    <ClCompile Include=".\menu_items.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include=".\config.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
@@ -442,9 +433,6 @@
     <ClCompile Include=".\common.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include=".\callbacks.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include="help.cpp">
       <Filter>Help</Filter>
     </ClCompile>
@@ -478,9 +466,6 @@
     <ClCompile Include=".\layout.cpp">
       <Filter>Layout host</Filter>
     </ClCompile>
-    <ClCompile Include=".\get_msg_hook.cpp">
-      <Filter>To split</Filter>
-    </ClCompile>
     <ClCompile Include=".\config_appearance.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
@@ -488,19 +473,34 @@
     <ClCompile Include="status_bar_callbacks.cpp">
       <Filter>Status bar</Filter>
     </ClCompile>
+    <ClCompile Include="ng_playlist\config_object_callbacks.cpp">
+      <Filter>Playlist view</Filter>
+    </ClCompile>
+    <ClCompile Include="seekbar_callbacks.cpp">
+      <Filter>Seek bar</Filter>
+    </ClCompile>
+    <ClCompile Include="notification_area_callbacks.cpp">
+      <Filter>Notification area</Filter>
+    </ClCompile>
+    <ClCompile Include="main_window_callbacks.cpp">
+      <Filter>Main window</Filter>
+    </ClCompile>
+    <ClCompile Include=".\commandline.cpp">
+      <Filter>FCL files</Filter>
+    </ClCompile>
+    <ClCompile Include="status_bar_font_client.cpp">
+      <Filter>Status bar</Filter>
+    </ClCompile>
+    <ClCompile Include=".\menu_items.cpp">
+      <Filter>Menu items</Filter>
+    </ClCompile>
+    <ClCompile Include=".\get_msg_hook.cpp">
+      <Filter>Main window</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
       <Filter>Resources</Filter>
-    </ClInclude>
-    <ClInclude Include=".\extern.h">
-      <Filter>To split</Filter>
-    </ClInclude>
-    <ClInclude Include=".\font_notify.h">
-      <Filter>To split</Filter>
-    </ClInclude>
-    <ClInclude Include=".\menu_items.h">
-      <Filter>To split</Filter>
     </ClInclude>
     <ClInclude Include=".\config.h">
       <Filter>Config UI</Filter>
@@ -686,11 +686,14 @@
     <ClInclude Include=".\layout.h">
       <Filter>Layout host</Filter>
     </ClInclude>
-    <ClInclude Include=".\get_msg_hook.h">
-      <Filter>To split</Filter>
-    </ClInclude>
     <ClInclude Include=".\config_appearance.h">
       <Filter>Config storage</Filter>
+    </ClInclude>
+    <ClInclude Include=".\menu_items.h">
+      <Filter>Menu items</Filter>
+    </ClInclude>
+    <ClInclude Include=".\get_msg_hook.h">
+      <Filter>Main window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

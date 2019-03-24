@@ -5,7 +5,7 @@
 // extern HBITMAP buttons_images;
 
 extern rebar_window* g_rebar_window;
-
+extern HWND g_rebar;
 extern cfg_rebar g_cfg_rebar;
 extern cfg_band_cache_t cfg_band_cache;
 

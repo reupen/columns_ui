@@ -85,8 +85,18 @@
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
     <CodeAnalysisRuleAssemblies Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -254,7 +264,11 @@
     <ClCompile Include=".\buttons_custom_image.cpp" />
     <ClCompile Include=".\colours_manager_data.cpp" />
     <ClCompile Include=".\columns_v2.cpp" />
+    <ClCompile Include="ng_playlist\config_object_callbacks.cpp" />
+    <ClCompile Include="notification_area_callbacks.cpp" />
+    <ClCompile Include="seekbar_callbacks.cpp" />
     <ClCompile Include="status_bar_callbacks.cpp" />
+    <ClCompile Include="status_bar_font_client.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include=".\config_defaults.cpp" />
     <ClCompile Include=".\config_items.cpp" />
@@ -371,11 +385,10 @@
     </ClCompile>
     <ClCompile Include=".\layout.cpp" />
     <ClCompile Include=".\rebar.cpp" />
-    <ClCompile Include=".\callbacks.cpp" />
+    <ClCompile Include="main_window_callbacks.cpp" />
     <ClCompile Include=".\callbacks_config.cpp" />
     <ClCompile Include=".\commandline.cpp" />
     <ClCompile Include=".\common.cpp" />
-    <ClCompile Include=".\font_notify.cpp" />
     <ClCompile Include=".\menu_items.cpp" />
     <ClCompile Include=".\splitter_window.cpp" />
     <ClCompile Include=".\splitter_window_wndproc.cpp" />
@@ -476,8 +489,6 @@
     <ClInclude Include=".\layout.h" />
     <ClInclude Include=".\rebar.h" />
     <ClInclude Include=".\common.h" />
-    <ClInclude Include=".\extern.h" />
-    <ClInclude Include=".\font_notify.h" />
     <ClInclude Include=".\menu_items.h" />
     <ClInclude Include=".\status_bar.h" />
     <ClInclude Include=".\stdafx.h" />

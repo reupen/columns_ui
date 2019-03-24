@@ -1,8 +1,9 @@
 #include "stdafx.h"
 #include "status_pane.h"
-#include "font_notify.h"
 #include "status_bar.h"
 #include "notification_area.h"
+
+extern bool g_icon_created;
 
 class UserInterfaceImpl : public user_interface_v2 {
 public:

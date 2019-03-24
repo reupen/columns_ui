@@ -51,6 +51,9 @@ void destroy_rebar(bool save_config = true);
 void status_update_main(bool is_caller_menu_desc);
 
 void create_status();
+void on_show_status_change();
+void on_show_status_pane_change();
+void on_show_toolbars_change();
 
 extern class status_pane g_status_pane;
 extern class rebar_window* g_rebar_window;

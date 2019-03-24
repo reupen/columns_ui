@@ -1,0 +1,15 @@
+#include "stdafx.h"
+#include "ng_playlist/ng_playlist.h"
+
+class PlaybackFollowsCursorCallback : public config_object_notify {
+public:
+    t_size get_watched_object_count() override { return 1; }
+    GUID get_watched_object(t_size p_index) override { return standard_config_objects::bool_playback_follows_cursor; }
+    void on_watched_object_changed(const service_ptr_t<config_object>& p_object) override
+    {
+        const auto val = p_object->get_data_bool_simple(false);
+        pvt::ng_playlist_view_t::g_on_playback_follows_cursor_change(val);
+    }
+};
+
+service_factory_single_t<PlaybackFollowsCursorCallback> playback_follows_cursor_callback;

@@ -7,6 +7,10 @@
 #include "status_bar.h"
 #include "notification_area.h"
 
+extern HWND g_rebar;
+extern HWND g_status;
+extern bool g_icon_created;
+
 INT_PTR g_taskbar_bitmaps[] = {IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND};
 
 namespace statusbar_contextmenus {
@@ -157,7 +161,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
         m_wnd = wnd;
-        statusbartext = core_version_info::g_get_version_string();
+        status_bar::statusbartext = core_version_info::g_get_version_string();
         set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
             create_systray_icon();
@@ -511,14 +515,12 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!(lpwp->flags & SWP_NOSIZE)) {
             ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
             if (styles & WS_MINIMIZE) {
-                g_minimised = true;
                 cfg_go_to_tray = cfg_go_to_tray || cfg_minimise_to_tray;
                 if (!g_icon_created && cfg_go_to_tray)
                     create_systray_icon();
                 if (g_icon_created && cfg_go_to_tray)
                     ShowWindow(wnd, SW_HIDE);
             } else {
-                g_minimised = false;
                 resize_child_windows();
             }
         }
