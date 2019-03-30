@@ -12,6 +12,10 @@
 
 * The default vertical item padding of the playlist view and playlist switcher was increased.
 
+* The height of the playlist view and filter panel column titles now varies with the vertical item padding setting.
+
+* The scroll position is now preserved when adjusting playlist view, playlist switcher and filter panel settings that affect the vertical height and/or position of items.
+
 * Compiled with the foobar2000 1.4 SDK.
 
 ## 1.0.0
