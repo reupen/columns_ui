@@ -30,7 +30,7 @@ jobs:
   - powershell: |
       choco install llvm
       svn checkout -r351731 https://github.com/llvm/llvm-project/trunk/llvm/tools/msbuild
-      ((Get-Content -path msbuild\install.bat -Raw) -replace 'Professional','Enterprise') | Set-Content -Path msbuild\install-enterprise.bat
+      ((Get-Content -path msbuild\install.bat -Raw) -replace '2017\\Professional\\Common7\\IDE\\VC\\VCTargets','2019\Enterprise\MSBuild\Microsoft\VC\v160') | Set-Content -Path msbuild\install-enterprise.bat
       cmd /c msbuild\install-enterprise.bat
     condition: variables.installLlvm
     displayName: Install LLVM

@@ -14,9 +14,7 @@ This repo makes use of Git submodules. If you're not familiar with them, [check 
 
 ## Build instructions
 
-Visual Studio 2017 15.9 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/).
-
-You'll need Windows 10 SDK version 10.0.17763.0 (an installation option in Visual Studio).
+Visual Studio 2019 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/) (select the Desktop development with C++ workload during installation).
 
 ### Installing external dependencies
 
@@ -35,26 +33,26 @@ cd vcpkg
 ```
 
 ### Building using the Visual Studio IDE
-Open `vc15/columns_ui-public.sln` in Visual Studio 2017.
+Open `vc16/columns_ui-public.sln` in Visual Studio 2019.
 
 Select the Release configuration and the Win32 platform, and build the solution.
 
-If the build is successful, `foo_ui_columns.dll` will be output in `vc15\Release`.
+If the build is successful, `foo_ui_columns.dll` will be output in `vc16\Release`.
 
 ### Building using MSBuild on the command line
 
-You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2017 (in the start menu), run:
+You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2019 (in the start menu), run:
 
 ```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release vc15\columns_ui-public.sln
+msbuild /m /p:Platform=Win32 /p:Configuration=Release vc16\columns_ui-public.sln
 ```
 
-If the build is successful, `foo_ui_columns.dll` will be output in `vc15\Release`.
+If the build is successful, `foo_ui_columns.dll` will be output in `vc16\Release`.
 
 For a clean build, run:
 
 ```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc15\columns_ui-public.sln
+msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc16\columns_ui-public.sln
 ```
 
 ### Using the Clang compiler (experimental)
@@ -62,5 +60,5 @@ msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc15\columns_ui
 Columns UI can be also compiled using recent versions of Clang. [Download and install LLVM](http://llvm.org/releases/download.html) and the [LLVM Compiler Toolchain Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.llvm-toolchain). In a (x86 or x64) VS 2017 Native Tools command prompt, run:
 
 ```
-msbuild /m /p:PlatformToolset=llvm;UseLldLink=false;Platform=Win32;Configuration=Release /t:Rebuild vc15\columns_ui-public.sln
+msbuild /m /p:PlatformToolset=llvm;UseLldLink=false;Platform=Win32;Configuration=Release /t:Rebuild vc16\columns_ui-public.sln
 ```

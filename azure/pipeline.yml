@@ -1,16 +1,13 @@
 variables:
-  solution: vc15/columns_ui-public.sln
+  solution: vc16/columns_ui-public.sln
   llvmMsBuildArgs: /p:PlatformToolset=llvm;UseLldLink=False;SpectreMitigation=
   vcpkgPackages: 'ms-gsl range-v3'
 jobs:
 - template: job-build.yml
   parameters:
-    displayName: VS 2017
+    displayName: VS 2019
+    installVcpkg: 'true'
     matrix:
-      v141 Debug:
-        configuration: Debug
-      v141 Release:
-        configuration: Release
       LLVM Debug:
         configuration: Debug
         installLlvm: 'true'
@@ -19,21 +16,10 @@ jobs:
         configuration: Release
         installLlvm: 'true'
         msBuildArgs: ${{ variables.llvmMsBuildArgs }}
-    name: vs2017
-    platform: Win32
-    solution: ${{ variables.solution }}
-    vcpkgPackages: ${{ variables.vcpkgPackages }}
-    vmImage: vs2017-win2016
-- template: job-build.yml
-  parameters:
-    displayName: VS 2019
-    installVcpkg: 'true'
-    matrix:
       v142 Debug:
         configuration: Debug
       v142 Release:
         configuration: Release
-    msBuildArgs: /p:PlatformToolset=v142
     name: vs2019
     platform: Win32
     solution: ${{ variables.solution }}
