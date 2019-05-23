@@ -103,7 +103,7 @@ public:
     static void g_on_allow_sorting_change();
     static void g_on_show_sort_indicators_change();
     static void g_on_field_query_change(const field_t& field);
-    static void g_on_showemptyitems_change(bool b_val);
+    static void g_on_showemptyitems_change(bool b_val, bool update_filters = true);
     static void g_on_edgestyle_change();
     static void g_on_font_items_change();
     static void g_on_font_header_change();

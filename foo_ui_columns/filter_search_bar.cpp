@@ -155,6 +155,13 @@ bool filter_search_bar::g_filter_search_bar_has_stream(
     return p_streams.have_item(const_cast<filter_stream_t*>(p_stream)); // meh
 }
 
+void filter_search_bar::s_on_favourites_change()
+{
+    for (size_t i{0}; i < g_active_instances.get_count(); ++i) {
+        g_active_instances[i]->refresh_favourites(false);
+    }
+}
+
 void filter_search_bar::activate()
 {
     m_wnd_last_focused = GetFocus();
@@ -359,6 +366,20 @@ LRESULT filter_search_bar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
+void filter_search_bar::refresh_favourites(bool is_initial)
+{
+    if (!is_initial)
+        ComboBox_ResetContent(m_search_editbox);
+
+    for (size_t i{0}, count{cfg_favourites.get_count()}; i < count; i++) {
+        pfc::stringcvt::string_os_from_utf8 favourite(cfg_favourites[i]);
+        ComboBox_AddString(m_search_editbox, favourite);
+    }
+
+    if (!is_initial)
+        update_favourite_icon();
+}
+
 void filter_search_bar::update_favourite_icon(const char* p_new)
 {
     bool new_state = cfg_favourites.have_item(p_new ? p_new : string_utf8_from_window(m_search_editbox));
@@ -462,8 +483,7 @@ void filter_search_bar::create_edit()
     m_proc_search_edit = (WNDPROC)SetWindowLongPtr(cbi.hwndItem, GWLP_WNDPROC, (LPARAM)(g_on_search_edit_message));
     Edit_SetCueBannerText(cbi.hwndItem, uT("Search Filters"));
 
-    for (t_size i = 0, count = cfg_favourites.get_count(); i < count; i++)
-        ComboBox_AddString(m_search_editbox, uT(cfg_favourites[i]));
+    refresh_favourites(true);
 
     on_size();
 }

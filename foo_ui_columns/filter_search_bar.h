@@ -9,6 +9,7 @@ class filter_search_bar : public uie::container_uie_window_v2 {
 public:
     static bool g_activate();
     static bool g_filter_search_bar_has_stream(filter_search_bar const* p_seach_bar, const filter_stream_t* p_stream);
+    static void s_on_favourites_change();
 
     template <class TStream>
     static void g_initialise_filter_stream(const TStream& p_stream)
@@ -53,6 +54,7 @@ private:
     void on_search_editbox_change();
     void commit_search_results(const char* str, bool b_force_autosend = false, bool b_stream_update = false);
 
+    void refresh_favourites(bool is_initial);
     void update_favourite_icon(const char* p_new = nullptr);
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;

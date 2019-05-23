@@ -497,6 +497,9 @@
     <ClCompile Include=".\get_msg_hook.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
+    <ClCompile Include="filter_fcl.cpp">
+      <Filter>Filter</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
