@@ -6,7 +6,6 @@ jobs:
 - template: job-build.yml
   parameters:
     displayName: VS 2019
-    installVcpkg: 'true'
     matrix:
       LLVM Debug:
         configuration: Debug

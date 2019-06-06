@@ -2,7 +2,6 @@ parameters:
   name: ''
   displayName: ''
   installLlvm: ''
-  installVcpkg: ''
   matrix: {}
   msBuildArgs: ''
   platform: ''
@@ -16,7 +15,6 @@ jobs:
     vmImage: ${{ parameters.vmImage }}
   variables:
     installLlvm: ${{ parameters.installLlvm }}
-    installVcpkg: ${{ parameters.installVcpkg }}
     msBuildArgs: ${{ parameters.msBuildArgs }}
     platform: ${{ parameters.platform }}
     solution: ${{ parameters.solution }}
@@ -34,15 +32,9 @@ jobs:
       cmd /c msbuild\install-enterprise.bat
     condition: variables.installLlvm
     displayName: Install LLVM
-  - script: |
-      git clone https://github.com/Microsoft/vcpkg.git
-      vcpkg\bootstrap-vcpkg.bat
-    condition: variables.installVcpkg
-    displayName: Install Vcpkg
   - powershell: |
-      $vcpkgPath = If ('$(installVcpkg)') { '.\vcpkg\vcpkg' } Else { 'vcpkg' }
-      & $vcpkgPath integrate install
-      & $vcpkgPath install $(vcpkgPackages)
+      vcpkg integrate install
+      vcpkg install $(vcpkgPackages)
     condition: variables.vcpkgPackages
     displayName: Install dependencies
   - task: VSBuild@1
