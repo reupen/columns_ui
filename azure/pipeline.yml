@@ -5,22 +5,28 @@ variables:
 jobs:
 - template: job-build.yml
   parameters:
-    displayName: VS 2019
-    installVcpkg: 'true'
+    displayName: VS 2019 LLVM
+    installLlvm: 'true'
     matrix:
-      LLVM Debug:
+      Debug:
         configuration: Debug
-        installLlvm: 'true'
-        msBuildArgs: ${{ variables.llvmMsBuildArgs }}
-      LLVM Release:
+      Release:
         configuration: Release
-        installLlvm: 'true'
-        msBuildArgs: ${{ variables.llvmMsBuildArgs }}
-      v142 Debug:
+    msBuildArgs: ${{ variables.llvmMsBuildArgs }}
+    name: vs2019_llvm
+    platform: Win32
+    solution: ${{ variables.solution }}
+    vcpkgPackages: ${{ variables.vcpkgPackages }}
+    vmImage: windows-2019
+- template: job-build.yml
+  parameters:
+    displayName: VS 2019 v142
+    matrix:
+      Debug:
         configuration: Debug
-      v142 Release:
+      Release:
         configuration: Release
-    name: vs2019
+    name: vs2019_v142
     platform: Win32
     solution: ${{ variables.solution }}
     vcpkgPackages: ${{ variables.vcpkgPackages }}
