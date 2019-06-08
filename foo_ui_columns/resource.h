@@ -24,7 +24,7 @@
 #define IDI_RESET                       157
 #define IDD_RENAME_PLAYLIST             185
 #define IDD_PREFS_TAB_HOST              191
-#define IDD_PREFS_PLAYLISTS_MAIN        193
+#define IDD_PREFS_PLAYLIST_TABS         193
 #define IDD_PREFS_NOTIFICATION_AREA     195
 #define IDD_PREFS_PVIEW_GENERAL         196
 #define IDD_PREFS_PLAYLISTS_DRAGDROP    197
@@ -53,6 +53,7 @@
 #define IDD_COLUMN_DISPLAY_SCRIPT       231
 #define IDD_COLUMN_SORTING_SCRIPT       232
 #define IDD_COLUMN_STYLE_SCRIPT         233
+#define IDD_PREFS_PLAYLIST_SWITCHER     234
 #define IDC_LIST                        1003
 #define IDC_COLUMNS                     1003
 #define IDC_INFOSECTIONS                1003

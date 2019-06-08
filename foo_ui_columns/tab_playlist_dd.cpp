@@ -24,7 +24,6 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            SendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETRANGE32, -100, 100);
             SendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETRANGE32, 0, 10000);
 
             refresh_me(wnd);

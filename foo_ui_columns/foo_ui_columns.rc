@@ -82,31 +82,22 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,192,20,50,14
 END
 
-IDD_PREFS_PLAYLISTS_MAIN DIALOGEX 0, 0, 327, 271
+IDD_PREFS_PLAYLIST_TABS DIALOGEX 0, 0, 327, 271
 STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    LTEXT           "Playlist switcher",IDC_TITLE1,7,4,313,16
-    CONTROL         "Delete playlist on middle-click",IDC_MCLICK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,28,112,10
-    LTEXT           "Vertical item padding",IDC_STATIC,7,48,73,8
-    EDITTEXT        IDC_PLHEIGHT,7,59,41,12,ES_AUTOHSCROLL | ES_NUMBER
-    CONTROL         "Spin1",IDC_SPINPL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,42,63,11,10
-    LTEXT           "px",IDC_STATIC,51,60,9,8
-    LTEXT           "Edge style",IDC_STATIC,7,82,37,8
-    COMBOBOX        IDC_PLISTEDGE,7,93,41,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Use title formatting for playlist titles:",IDC_USE_PLAYLIST_TF,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,117,161,10
-    EDITTEXT        IDC_PLAYLIST_TF,7,129,313,23,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
-    LTEXT           "Playlist tabs",IDC_TITLE2,7,174,313,16
-    CONTROL         "Automatically hide when a single playlist is open",IDC_PLAUTOHIDE,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,203,177,10
-    CONTROL         "Multiline tabs",IDC_TABS_MULTILINE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,221,61,10
+    LTEXT           "Playlist tabs",IDC_TITLE1,7,4,313,16
+    CONTROL         "Hide when a single playlist is open",IDC_PLAUTOHIDE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,128,10
+    CONTROL         "Use multiple rows when tabs do not fit in one row",IDC_TABS_MULTILINE,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,51,179,10
     CONTROL         "Rearrange playlists when dragging tabs",IDC_PLDRAG,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,239,147,10
-    CONTROL         "Delete playlist on middle-click",IDC_PLAYLIST_TABS_MCLICK,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,198,221,117,10
-    CONTROL         "Rename playlist on double-click",IDC_MCLICK3,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,198,239,122,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,72,145,10
+    CONTROL         "Delete a playlist when middle-clicking on it",IDC_PLAYLIST_TABS_MCLICK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,93,154,10
+    CONTROL         "Rename a playlist when double-clicking on it",IDC_MCLICK3,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,114,161,10
 END
 
 IDD_PREFS_NOTIFICATION_AREA DIALOGEX 0, 0, 327, 271
@@ -676,6 +667,25 @@ BEGIN
     PUSHBUTTON      "Tools",IDC_TFHELP,170,181,46,13
 END
 
+IDD_PREFS_PLAYLIST_SWITCHER DIALOGEX 0, 0, 327, 271
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "Playlist switcher",IDC_TITLE1,7,4,313,16
+    CONTROL         "Delete a playlist when middle-clicking on it",IDC_MCLICK,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,154,10
+    LTEXT           "Vertical item padding",IDC_STATIC,7,50,73,8
+    EDITTEXT        IDC_PLHEIGHT,7,61,41,12,ES_AUTOHSCROLL | ES_NUMBER
+    CONTROL         "Spin1",IDC_SPINPL,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,42,65,11,10
+    LTEXT           "px",IDC_STATIC,51,62,9,8
+    LTEXT           "Edge style",IDC_STATIC,7,84,37,8
+    COMBOBOX        IDC_PLISTEDGE,7,95,41,68,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Use title formatting for playlist titles:",IDC_USE_PLAYLIST_TF,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,119,161,10
+    EDITTEXT        IDC_PLAYLIST_TF,7,131,313,133,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -701,7 +711,7 @@ BEGIN
         BOTTOMMARGIN, 29
     END
 
-    IDD_PREFS_PLAYLISTS_MAIN, DIALOG
+    IDD_PREFS_PLAYLIST_TABS, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 320
@@ -960,6 +970,14 @@ BEGIN
         RIGHTMARGIN, 216
         TOPMARGIN, 7
         BOTTOMMARGIN, 194
+    END
+
+    IDD_PREFS_PLAYLIST_SWITCHER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 320
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 264
     END
 END
 #endif    // APSTUDIO_INVOKED

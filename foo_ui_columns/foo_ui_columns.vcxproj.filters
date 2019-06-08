@@ -181,9 +181,6 @@
     <ClCompile Include=".\tab_display2.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_playlist.cpp">
-      <Filter>Config UI</Filter>
-    </ClCompile>
     <ClCompile Include=".\tab_playlist_dd.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
@@ -499,6 +496,12 @@
     </ClCompile>
     <ClCompile Include="filter_fcl.cpp">
       <Filter>Filter</Filter>
+    </ClCompile>
+    <ClCompile Include="tab_playlist_swticher.cpp">
+      <Filter>Config UI</Filter>
+    </ClCompile>
+    <ClCompile Include="tab_playlist_tabs.cpp">
+      <Filter>Config UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
