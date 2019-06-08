@@ -155,19 +155,24 @@ void filter_panel_t::g_on_field_query_change(const field_t& field)
         }
     }
 }
-void filter_panel_t::g_on_showemptyitems_change(bool b_val)
+void filter_panel_t::g_on_showemptyitems_change(bool b_val, bool update_filters)
 {
-    if (!g_windows.empty()) {
-        g_showemptyitems = b_val;
-        t_size count = g_streams.get_count();
-        for (t_size i = 0; i < count; i++) {
-            if (g_streams[i]->m_windows.get_count()) {
-                pfc::list_t<filter_panel_t*> windows;
-                g_streams[i]->m_windows[0]->get_windows(windows);
-                t_size j = windows.get_count();
-                if (windows.get_count())
-                    g_update_subsequent_filters(windows, 0, false, false);
-            }
+    if (g_windows.empty())
+        return;
+
+    g_showemptyitems = b_val;
+
+    if (!update_filters)
+        return;
+
+    t_size count = g_streams.get_count();
+    for (t_size i = 0; i < count; i++) {
+        if (g_streams[i]->m_windows.get_count()) {
+            pfc::list_t<filter_panel_t*> windows;
+            g_streams[i]->m_windows[0]->get_windows(windows);
+            t_size j = windows.get_count();
+            if (windows.get_count())
+                g_update_subsequent_filters(windows, 0, false, false);
         }
     }
 }

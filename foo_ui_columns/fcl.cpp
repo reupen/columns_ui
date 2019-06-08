@@ -343,15 +343,16 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             }
         }
         {
-            cui::fcl::dataset_list export_items;
-            t_size i, count;
+            t_size count;
             p_file->read_lendian_t(count, p_abort);
-            t_import_feedback_impl feed;
+
             pfc::array_t<pfc::array_t<t_uint32>> panel_indices;
             panel_indices.set_count(count);
-            pfc::array_t<t_dataset> datasets;
-            datasets.set_count(count);
-            for (i = 0; i < count; i++) {
+
+            std::vector<t_dataset> datasets;
+            datasets.resize(count);
+
+            for (auto i : ranges::view::iota(0, count)) {
                 // GUID guiditem;
                 pfc::string8 name;
                 p_file->read_lendian_t(datasets[i].guid, p_abort);
@@ -367,21 +368,31 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                 datasets[i].data.set_size(size);
                 p_file->read(datasets[i].data.get_ptr(), size, p_abort);
             }
+
             pfc::list_t<GUID> datasetsguids;
-            for (i = 0; i < count; i++)
-                datasetsguids.add_item(datasets[i].guid);
+            for (auto&& data_set : datasets)
+                datasetsguids.add_item(data_set.guid);
+
             FCLDialog pFCLDialog(true, datasetsguids);
             if (!quiet) {
                 if (!uDialogBox(IDD_FCL_IMPORT, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
                     throw exception_aborted();
             }
+
+            cui::fcl::dataset_list export_items;
+            t_import_feedback_impl feed;
+
             uih::DisableRedrawScope p_NoRedraw(cui::main_window.get_wnd());
-            for (i = 0; i < count; i++) {
-                cui::fcl::dataset_ptr ptr;
-                if (export_items.find_by_guid(datasets[i].guid, ptr)
-                    && (quiet || pFCLDialog.have_node_checked(ptr->get_group())))
+
+            for (auto export_item_index : ranges::view::iota(0, export_items.get_count())) {
+                auto ptr = export_items[export_item_index];
+                auto data_set_iter
+                    = ranges::find_if(datasets, [&ptr](auto&& data_set) { return data_set.guid == ptr->get_guid(); });
+
+                if (data_set_iter != datasets.end() && (quiet || pFCLDialog.have_node_checked(ptr->get_group()))) {
                     ptr->set_data_from_ptr(
-                        datasets[i].data.get_ptr(), datasets[i].data.get_size(), mode, feed, p_abort);
+                        data_set_iter->data.get_ptr(), data_set_iter->data.get_size(), mode, feed, p_abort);
+                }
             }
             if (feed.get_count()) {
                 throw pfc::exception("Bug check: panels missing");

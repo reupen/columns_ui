@@ -3,7 +3,7 @@
 #include "main_window.h"
 #include "rebar.h"
 
-class export_layout : public cui::fcl::dataset {
+class export_layout : public cui::fcl::dataset_v2 {
     void get_name(pfc::string_base& p_out) const override { p_out = "Layout"; }
     const GUID& get_guid() const override
     {
@@ -58,12 +58,14 @@ class export_layout : public cui::fcl::dataset {
         }
         // else console::print("misspan");
     }
+
+    [[nodiscard]] double get_import_priority() const override { return -100.0; }
 };
 
 cui::fcl::dataset_factory<export_layout> g_export_layout_t;
 
 extern cfg_rebar g_cfg_rebar;
-class export_toolbars : public cui::fcl::dataset {
+class export_toolbars : public cui::fcl::dataset_v2 {
     void get_name(pfc::string_base& p_out) const override { p_out = "Toolbars"; }
     const GUID& get_guid() const override
     {
@@ -87,6 +89,8 @@ class export_toolbars : public cui::fcl::dataset {
             feedback.add_required_panel("", panels[i]);
         }
     }
+
+    [[nodiscard]] double get_import_priority() const override { return -100.0; }
 };
 
 cui::fcl::dataset_factory<export_toolbars> g_export_toolbars_t;
