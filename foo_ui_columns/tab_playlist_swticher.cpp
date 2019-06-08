@@ -24,7 +24,6 @@ public:
         } break;
         case WM_DESTROY:
             m_initialised = false;
-            SendMessage(wnd, WM_COMMAND, IDC_APPLY, 0);
             break;
         case WM_COMMAND:
             switch (wp) {
@@ -37,24 +36,17 @@ public:
                     playlist_switcher_t::g_on_vertical_item_padding_change();
                 }
             break;
-            case IDC_APPLY:
-                if (m_playlist_switcher_string_changed) {
-                    playlist_switcher_t::g_refresh_all_items();
-                    m_playlist_switcher_string_changed = false;
-                }
-                break;
-
             case IDC_MCLICK:
                 cfg_mclick = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 break;
             case (EN_CHANGE << 16) | IDC_PLAYLIST_TF:
                 cfg_playlist_switcher_tagz = string_utf8_from_window((HWND)lp);
-                m_playlist_switcher_string_changed = true;
+                if (cfg_playlist_switcher_use_tagz)
+                    playlist_switcher_t::g_refresh_all_items();
                 break;
             case IDC_USE_PLAYLIST_TF:
                 cfg_playlist_switcher_use_tagz = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 playlist_switcher_t::g_refresh_all_items();
-                m_playlist_switcher_string_changed = false;
                 break;
             case (CBN_SELCHANGE << 16) | IDC_PLISTEDGE:
                 cfg_plistframe = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
@@ -79,7 +71,6 @@ public:
 private:
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
     bool m_initialised{};
-    bool m_playlist_switcher_string_changed{};
 
 } g_tab_playlist_switcher;
 
