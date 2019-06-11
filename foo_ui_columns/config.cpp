@@ -22,8 +22,8 @@ static preferences_tab* g_tabs[] = {
 };
 
 static preferences_tab* g_tabs_panels[] = {
-    g_get_tab_playlist(),
-    //&g_tab_playlist_colours,
+    g_get_tab_playlist_switcher(),
+    g_get_tab_playlist_tabs(),
     g_get_tab_playlist_dd(),
 };
 

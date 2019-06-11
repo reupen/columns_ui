@@ -270,6 +270,7 @@
     <ClCompile Include="seekbar_callbacks.cpp" />
     <ClCompile Include="status_bar_callbacks.cpp" />
     <ClCompile Include="status_bar_font_client.cpp" />
+    <ClCompile Include="tab_playlist_swticher.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include=".\config_defaults.cpp" />
     <ClCompile Include=".\config_items.cpp" />
@@ -410,7 +411,7 @@
     <ClCompile Include=".\tab_global.cpp" />
     <ClCompile Include=".\tab_main.cpp" />
     <ClCompile Include=".\tab_notification_area.cpp" />
-    <ClCompile Include=".\tab_playlist.cpp" />
+    <ClCompile Include="tab_playlist_tabs.cpp" />
     <ClCompile Include=".\tab_playlist_dd.cpp" />
     <ClCompile Include=".\tab_status.cpp" />
     <ClCompile Include=".\user_interface_impl.cpp" />
