@@ -780,11 +780,10 @@ void selection_properties_t::notify_on_column_size_change(t_size index, int new_
         m_column_field_width = new_width;
 }
 
-bool selection_properties_t::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed)
+bool selection_properties_t::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
     uie::window_ptr p_this = this;
     bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-    b_processed = ret;
     return ret;
 }
 

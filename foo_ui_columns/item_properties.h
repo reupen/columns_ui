@@ -193,7 +193,7 @@ public:
     void notify_on_set_focus(HWND wnd_lost) override;
     void notify_on_kill_focus(HWND wnd_receiving) override;
     bool notify_on_keyboard_keydown_copy() override;
-    bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed) override;
+    bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override;
     void notify_on_column_size_change(t_size index, int new_width) override;
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;

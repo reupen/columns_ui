@@ -133,11 +133,10 @@ public:
 
     bool notify_on_contextmenu(const POINT& pt, bool from_keyboard) override;
 
-    bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed) override
+    bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override
     {
         uie::window_ptr p_this = this;
         bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
-        b_processed = ret;
         return ret;
     };
 
