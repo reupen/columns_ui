@@ -556,7 +556,7 @@ private:
     bool notify_on_middleclick(bool on_item, t_size index) override;
     bool notify_on_doubleleftclick_nowhere() override;
 
-    bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp, bool& b_processed) override;
+    bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override;
     bool notify_on_keyboard_keydown_remove() override;
 
     bool notify_on_keyboard_keydown_search() override;
