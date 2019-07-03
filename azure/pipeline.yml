@@ -1,6 +1,6 @@
 variables:
   solution: vc16/columns_ui-public.sln
-  llvmMsBuildArgs: /p:PlatformToolset=llvm;UseLldLink=False;SpectreMitigation=
+  llvmMsBuildArgs: /p:PlatformToolset=llvm;UseLldLink=False;UseLlvmLib=False;SpectreMitigation=
   vcpkgPackages: 'ms-gsl range-v3'
 jobs:
 - template: job-build.yml
