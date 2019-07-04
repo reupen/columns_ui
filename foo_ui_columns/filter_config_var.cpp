@@ -33,6 +33,8 @@ fbh::ConfigInt32DpiAware cfg_vertical_item_padding(g_guid_itempadding, 4);
 fbh::ConfigBool cfg_show_column_titles(g_guid_show_column_titles, true);
 fbh::ConfigBool cfg_allow_sorting(g_guid_allow_sorting, true);
 fbh::ConfigBool cfg_show_sort_indicators(g_guid_show_sort_indicators, true);
+fbh::ConfigBool cfg_reverse_sort_tracks(
+    GUID{0x1edc5277, 0x2dd6, 0x4276, {0x80, 0xb6, 0xda, 0xa4, 0x1e, 0xd4, 0x6e, 0xe5}}, false);
 
 cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 

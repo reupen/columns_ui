@@ -2,6 +2,7 @@
 
 #include "filter_search_bar.h"
 #include "filter_config_var.h"
+#include "filter_utils.h"
 
 namespace filter_panel {
 
@@ -32,13 +33,7 @@ void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
             b_play ? "Filter Results (Playback)" : "Filter Results", pfc_infinite);
     playlist_api->playlist_clear(index);
 
-    if (cfg_sort) {
-        service_ptr_t<titleformat_object> to;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-        {
-            fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
-        }
-    }
+    sort_tracks(handles);
     playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
 
     playlist_api->set_active_playlist(index);

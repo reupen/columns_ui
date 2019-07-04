@@ -84,6 +84,7 @@
 #define IDC_DROP_AT_END                 1017
 #define IDC_FCL_IMPORT                  1017
 #define IDC_FILTERS_SHOW_COLUMN_TITLES  1017
+#define IDC_REVERSE_SORT_TRACKS         1017
 #define IDC_VALUE                       1018
 #define IDC_FILTERS_ALLOW_SORTING       1018
 #define IDC_PLAYLIST_FILTER_STRING      1019

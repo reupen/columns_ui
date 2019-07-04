@@ -581,7 +581,7 @@ BEGIN
     LTEXT           "Behaviour",IDC_TITLE1,7,4,313,16
     CONTROL         "Sort tracks added when added to a playlist by:",IDC_SORT,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,169,10
-    EDITTEXT        IDC_SORT_STRING,7,42,313,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_SORT_STRING,7,42,247,14,ES_AUTOHSCROLL
     CONTROL         "Allow sorting using column titles",IDC_FILTERS_ALLOW_SORTING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,68,124,10
     CONTROL         "Auto-send selection to playlist",IDC_AUTOSEND,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,117,10
@@ -592,6 +592,7 @@ BEGIN
     COMBOBOX        IDC_DBLCLK,7,174,131,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Middle-click action",IDC_STATIC,7,199,65,8
     COMBOBOX        IDC_MIDDLE,7,210,131,90,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Reverse order",IDC_REVERSE_SORT_TRACKS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,258,44,62,10
 END
 
 IDD_PREFS_PVIEW_ARTWORK DIALOGEX 0, 0, 327, 271

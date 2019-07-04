@@ -334,6 +334,9 @@ public:
         const auto wnd_sort_string = GetDlgItem(wnd, IDC_SORT_STRING);
         uSetWindowText(wnd_sort_string, filter_panel::cfg_sort_string);
 
+        const auto wnd_autosend_reverse_sort = GetDlgItem(wnd, IDC_REVERSE_SORT_TRACKS);
+        Button_SetCheck(wnd_autosend_reverse_sort, filter_panel::cfg_reverse_sort_tracks ? BST_CHECKED : BST_UNCHECKED);
+
         const auto wnd_autosend = GetDlgItem(wnd, IDC_AUTOSEND);
         Button_SetCheck(wnd_autosend, filter_panel::cfg_autosend ? BST_CHECKED : BST_UNCHECKED);
 
@@ -357,6 +360,9 @@ public:
                 break;
             case IDC_AUTOSEND:
                 filter_panel::cfg_autosend = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                break;
+            case IDC_REVERSE_SORT_TRACKS:
+                filter_panel::cfg_reverse_sort_tracks = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 break;
             case IDC_FILTERS_ALLOW_SORTING:
                 filter_panel::cfg_allow_sorting = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;

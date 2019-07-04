@@ -217,4 +217,5 @@ private:
     UINT_PTR m_contextmenu_manager_base{0};
     ui_status_text_override::ptr m_status_text_override;
 };
+
 }; // namespace filter_panel
