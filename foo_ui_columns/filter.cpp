@@ -2,6 +2,7 @@
 #include "filter.h"
 #include "filter_config_var.h"
 #include "filter_search_bar.h"
+#include "filter_utils.h"
 
 namespace filter_panel {
 
@@ -463,11 +464,7 @@ bool filter_panel_t::do_drag_drop(WPARAM wp)
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     get_selection_handles(data);
     if (data.get_count() > 0) {
-        if (cfg_sort) {
-            service_ptr_t<titleformat_object> to;
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-            fbh::sort_metadb_handle_list_by_format(data, to, nullptr);
-        }
+        sort_tracks(data);
         static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
         IDataObject* pDataObject = incoming_api->create_dataobject(data);
         if (pDataObject) {
@@ -578,11 +575,8 @@ void filter_panel_t::do_items_action(const pfc::bit_array& p_nodes, action_t act
         playlist_api->playlist_clear(index);
     }
 
-    if (cfg_sort) {
-        service_ptr_t<titleformat_object> to;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-        fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
-    }
+    sort_tracks(handles);
+
     if (action != action_add_to_active)
         playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
     else {
@@ -645,13 +639,7 @@ void filter_panel_t::send_results_to_playlist(bool b_play)
             b_play ? "Filter Results (Playback)" : "Filter Results", pfc_infinite);
     playlist_api->playlist_clear(index);
 
-    if (cfg_sort) {
-        service_ptr_t<titleformat_object> to;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-        {
-            fbh::sort_metadb_handle_list_by_format(handles, to, nullptr);
-        }
-    }
+    sort_tracks(handles);
     playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
 
     playlist_api->set_active_playlist(index);
@@ -709,11 +697,7 @@ void filter_panel_t::notify_on_kill_focus(HWND wnd_receiving)
 void node_t::ensure_handles_sorted()
 {
     if (!m_handles_sorted) {
-        if (cfg_sort) {
-            service_ptr_t<titleformat_object> to;
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(to, cfg_sort_string);
-            fbh::sort_metadb_handle_list_by_format(m_handles, to, nullptr);
-        }
+        sort_tracks(m_handles);
         m_handles_sorted = true;
     }
 }

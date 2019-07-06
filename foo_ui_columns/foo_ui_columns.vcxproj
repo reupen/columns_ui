@@ -467,6 +467,7 @@
     <ClInclude Include=".\menu_helpers.h" />
     <ClInclude Include=".\mw_drop_target.h" />
     <ClInclude Include="button_items.h" />
+    <ClInclude Include="filter_utils.h" />
     <ClInclude Include="font_utils.h" />
     <ClInclude Include="help.h" />
     <ClInclude Include="migrate.h" />

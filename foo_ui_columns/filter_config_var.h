@@ -43,6 +43,6 @@ extern cfg_bool cfg_sort, cfg_autosend, cfg_orderedbysplitters, cfg_showemptyite
 extern cfg_int cfg_doubleclickaction, cfg_middleclickaction, cfg_edgestyle;
 extern cfg_fields_t cfg_field_list;
 extern fbh::ConfigInt32DpiAware cfg_vertical_item_padding;
-extern fbh::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators;
+extern fbh::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators, cfg_reverse_sort_tracks;
 
 } // namespace filter_panel
