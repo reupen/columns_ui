@@ -1,22 +1,28 @@
 # Change log
 
-## 1.1.0 (in development)
+## 1.1.0-beta.1 (in development)
 
-* Custom fonts now scale when the display scaling factor (DPI) changes.
+* Custom fonts now scale when the display scaling factor (DPI) changes. [[#159](https://github.com/reupen/columns_ui/pull/159)]
 
-* The scrolling behaviour of the playlist view and other list views was improved when clicking on partially visible items at the top or bottom of the view.
+* The scrolling behaviour of the playlist view and other list views was improved when clicking on partially visible items at the top or bottom of the view. [[#160](https://github.com/reupen/columns_ui/pull/160)]
 
-* List views now use themed focus rectangles when theming mode is enabled.
+* List views now use themed focus rectangles when theming mode is enabled. [[#166](https://github.com/reupen/columns_ui/pull/166)]
 
-* DPI scaling improvements were made to padding, lines and borders in list views.
+* DPI scaling improvements were made to padding, lines and borders in list views. [[#166](https://github.com/reupen/columns_ui/pull/166)]
 
-* The default vertical item padding of the playlist view and playlist switcher was increased.
+* The default vertical item padding of the playlist view and playlist switcher was increased. [[#169](https://github.com/reupen/columns_ui/pull/169)]
 
-* The height of the playlist view and filter panel column titles now varies with the vertical item padding setting.
+* The height of the playlist view and filter panel column titles now varies with the vertical item padding setting. [[#170](https://github.com/reupen/columns_ui/pull/170), [#172](https://github.com/reupen/columns_ui/pull/172)]
 
-* The scroll position is now preserved when adjusting playlist view, playlist switcher and filter panel settings that affect the vertical height and/or position of items.
+* The scroll position is now preserved when adjusting playlist view, playlist switcher and filter panel settings that affect the vertical height and/or position of items. [[#170](https://github.com/reupen/columns_ui/pull/170)]
 
-* Compiled with the foobar2000 1.4 SDK.
+* FCL files now include Filter panel and toolbar settings. [[#175](https://github.com/reupen/columns_ui/pull/175)]
+
+* Playlist switcher and tab settings are now on separate tabs in preferences. [[#179](https://github.com/reupen/columns_ui/pull/179)]
+
+* A rare problem where a keyboard shortcut could be handled more than once when a natively-handled keyboard shortcut (such as Ctrl-C) was reassigned to another command was fixed. [[#180](https://github.com/reupen/columns_ui/pull/180)]
+
+* Visual Studio 2019 16.1 and foobar2000 SDK 1.4 are now used to compile the component.
 
 ## 1.0.0
 
