@@ -225,6 +225,8 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
     // if (m_update_scrollbar_range_in_progress) return;
 
     // pfc::vartoggle_t<bool> vart(m_update_scrollbar_range_in_progress, true);
+    const auto padding_size = uih::scale_dpi_value(2) * 2;
+
     SCROLLINFO si;
     memset(&si, 0, sizeof(si));
     si.cbSize = sizeof(si);
@@ -299,7 +301,7 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
         rc_old = rc;
     }*/
     int hMax = 1;
-    hMax = (m_hscroll && m_display_sz.cx) ? (m_display_sz.cx + 4 - 1) : 0;
+    hMax = (m_hscroll && m_display_sz.cx) ? (m_display_sz.cx + padding_size - 1) : 0;
     hMax = max(hMax, 1);
 
     if (b_set_pos)
@@ -325,7 +327,7 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
     GetClientRect(get_wnd(), &rc);
     update_display_info();
 
-    hMax = (m_hscroll && m_display_sz.cx) ? (m_display_sz.cx + 4 - 1) : 0;
+    hMax = (m_hscroll && m_display_sz.cx) ? (m_display_sz.cx + padding_size - 1) : 0;
     hMax = max(hMax, 1);
 
     /*GetClientRect(get_wnd(), &rc);
@@ -478,7 +480,9 @@ void item_details_t::update_display_info(HDC dc)
     if (!m_display_info_valid) {
         RECT rc;
         GetClientRect(get_wnd(), &rc);
-        t_size widthMax = rc.right > 4 ? rc.right - 4 : 0;
+        const auto padding_size = uih::scale_dpi_value(2) * 2;
+
+        t_size widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
         m_current_display_text = m_current_text;
         g_get_multiline_text_dimensions(dc, m_current_display_text, m_line_info, m_display_line_info,
             m_font_change_info, m_font_change_info.m_default_font->m_height, m_display_sz, m_word_wrapping, widthMax);
@@ -934,7 +938,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         FillRect(dc_mem, &rc,
             gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(p_helper.get_colour(cui::colours::colour_background))));
 
-        int line_height = uGetTextHeight(dc_mem) + 2;
+        int line_height = uGetTextHeight(dc_mem) + uih::scale_dpi_value(2);
 
         rc_client.top -= siv.nPos;
         rc_client.left -= sih.nPos;

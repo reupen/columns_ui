@@ -321,6 +321,8 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
     display_line_info_list_t& displayLines, const font_change_info_t& p_font_data, t_size line_height, SIZE& sz,
     bool b_word_wrapping, t_size max_width)
 {
+    const int half_padding_size = uih::scale_dpi_value(2);
+
     displayLines.remove_all();
     displayLines.prealloc(rawLines.get_count() * 2);
     sz.cx = 0;
@@ -544,20 +546,20 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
                     // temp.m_bytes--;
                 }
                 temp.m_width = widthCuml;
-                temp.m_height = thisLineHeight + 2;
+                temp.m_height = thisLineHeight + half_padding_size;
                 displayLines.insert_item(temp, i);
                 // text.remove_chars()
                 count++;
             } else {
                 displayLines[i].m_width = widthCuml;
-                displayLines[i].m_height = thisLineHeight + 2;
+                displayLines[i].m_height = thisLineHeight + half_padding_size;
                 displayLines[i].m_bytes = displayLines[i].m_raw_bytes;
                 text_new.add_string(text + ptrStart, displayLines[i].m_raw_bytes);
                 ptr = ptrStart + displayLines[i].m_raw_bytes;
             }
 
             sz.cx = max(sz.cx, widthCuml);
-            sz.cy += thisLineHeight + 2;
+            sz.cy += thisLineHeight + half_padding_size;
         }
         if (b_fontChanged)
             SelectFont(dc, fnt_old);
@@ -677,10 +679,12 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
     pfc::string8_fast_aggressive rawText = text;
 
     RECT rc = rc_topleft;
+    const auto half_padding_size = uih::scale_dpi_value(2);
+    const auto padding_size = half_padding_size * 2;
 
-    t_size widthMax = rc.right > 4 ? rc.right - 4 : 0;
+    t_size widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
 
-    int newRight = rc.left + sz.cx + 4;
+    int newRight = rc.left + sz.cx + padding_size;
     if (b_hscroll && newRight > rc.right)
         rc.right = newRight;
     rc.bottom = rc.top + sz.cy;
@@ -767,8 +771,8 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
         }
 
         rc_line.bottom = rc_line.top + thisLineHeight;
-        rc_line.left = rc.left + min(RECT_CX(rc), 2);
-        rc_line.right = rc.right - min(RECT_CX(rc), 2);
+        rc_line.left = rc.left + min(RECT_CX(rc), half_padding_size);
+        rc_line.right = rc.right - min(RECT_CX(rc), half_padding_size);
 
         t_size widthLine = RECT_CX(rc_line), widthLineText = newLineDataWrapped[i].m_width;
 
@@ -801,7 +805,7 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
             }
             RECT rc_font = rc_line;
             int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
-            rc_font.bottom -= 2; // extra/4;
+            rc_font.bottom -= half_padding_size; // extra/4;
             BOOL ret = uih::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 0, &rc_font, false, cr_text, false, false,
                 false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, &width);
             rc_line.left = width; // width == position actually!!
@@ -812,7 +816,7 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
         if (ptrRemaining) {
             RECT rc_font = rc_line;
             int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
-            rc_font.bottom -= 2;
+            rc_font.bottom -= half_padding_size;
             uih::text_out_colours_tab(dc, ptr, ptrRemaining, 0, 0, &rc_font, false, cr_text, false, false,
                 false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
         }
