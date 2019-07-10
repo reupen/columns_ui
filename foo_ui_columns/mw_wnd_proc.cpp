@@ -503,7 +503,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             if (lpdis->itemData) {
                 pfc::string8& text = *reinterpret_cast<pfc::string8*>(lpdis->itemData);
-                uih::text_out_colours_tab(lpdis->hDC, text, text.length(), 2, 0, &rc, FALSE,
+                uih::text_out_colours_tab(lpdis->hDC, text, text.length(), 0, uih::scale_dpi_value(3), &rc, FALSE,
                     GetSysColor(COLOR_MENUTEXT), TRUE, true, false, uih::ALIGN_LEFT);
             }
 
