@@ -26,30 +26,20 @@ void status_pane::on_font_changed()
 
 void status_pane::render_background(HDC dc, const RECT& rc)
 {
-    RECT rc_top = rc, rc_bottom = rc;
-    rc_top.top += 4;
-    rc_top.bottom = rc_top.top + (RECT_CY(rc) - 6) / 2;
-    rc_bottom.top = rc_top.bottom;
-    rc_bottom.bottom -= 2;
-
     COLORREF cr = GetSysColor(COLOR_BTNFACE);
     COLORREF cr2 = GetSysColor(COLOR_3DDKSHADOW);
-    if (false && m_theme) {
-        // GetThemeColor(m_theme, 1, 0, TMT_EDGEHIGHLIGHTCOLOR, &cr);
-        // GetThemeColor(m_theme, 1, 0, TMT_EDGEDKSHADOWCOLOR, &cr2);
-        // GetThemeColor(m_theme, 1, 0, TMT_BTNFACE, &cr);
-    }
+
     FillRect(dc, &rc, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cr)));
 
     if (m_theme) {
         COLORREF cr_back = cr2;
         Gdiplus::Color cr_end(0, LOBYTE(LOWORD(cr_back)), HIBYTE(LOWORD(cr_back)), LOBYTE(HIWORD(cr_back)));
         Gdiplus::Color cr_start(33, LOBYTE(LOWORD(cr_back)), HIBYTE(LOWORD(cr_back)), LOBYTE(HIWORD(cr_back)));
-        Gdiplus::Rect rect(rc.left, rc.top, RECT_CX(rc), 2);
+        Gdiplus::Rect rect(rc.left, rc.top, RECT_CX(rc), uih::scale_dpi_value(2));
         Gdiplus::LinearGradientBrush lgb(rect, cr_start, cr_end, Gdiplus::LinearGradientModeVertical);
         Gdiplus::Graphics(dc).FillRectangle(&lgb, rect);
     } else {
-        RECT rcl = {0, 0, rc.right, 1};
+        RECT rcl = {0, 0, rc.right, uih::scale_dpi_value(1)};
         FillRect(dc, &rcl, GetSysColorBrush(COLOR_3DLIGHT));
     }
 }
