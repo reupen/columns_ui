@@ -171,8 +171,8 @@ void ng_playlist_view_t::render_group(
         FillRect(dc, &rc, br);
     }
 
-    uih::text_out_colours_tab(dc, text, strlen(text), uih::scale_dpi_value(2) + indentation * level,
-        uih::scale_dpi_value(2), &rc, false, cr, true, true, true, uih::ALIGN_LEFT, nullptr, true, true, &text_width);
+    uih::text_out_colours_tab(dc, text, strlen(text), uih::scale_dpi_value(1) + indentation * level,
+        uih::scale_dpi_value(3), &rc, false, cr, true, true, true, uih::ALIGN_LEFT, nullptr, true, true, &text_width);
 
     auto cx = (LONG)min(text_width, MAXLONG);
 
