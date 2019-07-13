@@ -1,6 +1,6 @@
 # Change log
 
-## 1.1.0-beta.1 (in development)
+## 1.1.0-beta.1
 
 * Custom fonts now scale when the display scaling factor (DPI) changes. [[#159](https://github.com/reupen/columns_ui/pull/159)]
 
@@ -8,7 +8,9 @@
 
 * List views now use themed focus rectangles when theming mode is enabled. [[#166](https://github.com/reupen/columns_ui/pull/166)]
 
-* DPI scaling improvements were made to padding, lines and borders in list views. [[#166](https://github.com/reupen/columns_ui/pull/166)]
+* DPI scaling improvements were made to padding, lines and borders in list views. [[#166](https://github.com/reupen/columns_ui/pull/166), [#184](https://github.com/reupen/columns_ui/pull/184)]
+
+* DPI scaling improvements were made to the status bar, status pane and Item details panel. [[#184](https://github.com/reupen/columns_ui/pull/184)]
 
 * The default vertical item padding of the playlist view and playlist switcher was increased. [[#169](https://github.com/reupen/columns_ui/pull/169)]
 
@@ -20,9 +22,11 @@
 
 * Playlist switcher and tab settings are now on separate tabs in preferences. [[#179](https://github.com/reupen/columns_ui/pull/179)]
 
+* Changes to the playlist switcher title formatting script now apply instantly. [[#179](https://github.com/reupen/columns_ui/pull/179)]
+
 * A rare problem where a keyboard shortcut could be handled more than once when a natively-handled keyboard shortcut (such as Ctrl-C) was reassigned to another command was fixed. [[#180](https://github.com/reupen/columns_ui/pull/180)]
 
-* Visual Studio 2019 16.1 and foobar2000 SDK 1.4 are now used to compile the component.
+* The component is now compiled using Visual Studio 2019 16.1 and the foobar2000 SDK 2019-06-30.
 
 ## 1.0.0
 
