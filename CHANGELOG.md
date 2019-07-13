@@ -24,6 +24,8 @@
 
 * Changes to the playlist switcher title formatting script now apply instantly. [[#179](https://github.com/reupen/columns_ui/pull/179)]
 
+* A bug was fixed where text copied in certain list views using Ctrl-C could be corrupted. [[ui_helpers/#24](https://github.com/reupen/ui_helpers/pull/24)]
+
 * A rare problem where a keyboard shortcut could be handled more than once when a natively-handled keyboard shortcut (such as Ctrl-C) was reassigned to another command was fixed. [[#180](https://github.com/reupen/columns_ui/pull/180)]
 
 * The component is now compiled using Visual Studio 2019 16.1 and the foobar2000 SDK 2019-06-30.
