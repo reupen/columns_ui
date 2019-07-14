@@ -151,10 +151,10 @@ void artwork_panel::ArtworkReaderManager::AddType(const GUID& p_what)
     m_requestIds.add_item(p_what);
 }
 
-void artwork_panel::artwork_reader_notification_t::g_run(
+void artwork_panel::ArtworkReaderNotification::g_run(
     ArtworkReaderManager* p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader)
 {
-    service_ptr_t<artwork_reader_notification_t> ptr = new service_impl_t<artwork_reader_notification_t>;
+    service_ptr_t<ArtworkReaderNotification> ptr = new service_impl_t<ArtworkReaderNotification>;
     ptr->m_aborted = p_aborted;
     ptr->m_reader = p_reader;
     ptr->m_manager = p_manager;
@@ -163,7 +163,7 @@ void artwork_panel::artwork_reader_notification_t::g_run(
     static_api_ptr_t<main_thread_callback_manager>()->add_callback(ptr.get_ptr());
 }
 
-void artwork_panel::artwork_reader_notification_t::callback_run()
+void artwork_panel::ArtworkReaderNotification::callback_run()
 {
     if (m_aborted)
         m_manager->on_reader_abort(m_reader);
@@ -228,7 +228,7 @@ DWORD artwork_panel::ArtworkReader::on_thread()
         ret = -1;
     }
     // send this first so thread gets closed first
-    artwork_reader_notification_t::g_run(m_manager.get_ptr(), b_aborted, ret, this);
+    ArtworkReaderNotification::g_run(m_manager.get_ptr(), b_aborted, ret, this);
     /*if (!b_aborted)
     {
     if (m_notify.is_valid())

@@ -87,7 +87,7 @@ private:
     album_art_data_ptr m_emptycover;
 };
 
-class artwork_reader_notification_t : public main_thread_callback {
+class ArtworkReaderNotification : public main_thread_callback {
 public:
     void callback_run() override;
 
