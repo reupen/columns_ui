@@ -8,7 +8,7 @@ enum fb2k_artwork_mode_t {
     fb2k_artwork_embedded_and_external,
 };
 
-class artwork_reader_v2_t : public mmh::Thread {
+class ArtworkReader : public mmh::Thread {
 public:
     bool is_aborting();
     void abort();
@@ -18,7 +18,7 @@ public:
     const pfc::map_t<GUID, album_art_data_ptr>& get_content() const;
     const album_art_data_ptr& get_emptycover() const;
 
-    artwork_reader_v2_t() = default;
+    ArtworkReader() = default;
 
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, album_art_data_ptr>& p_content_previous,
@@ -72,13 +72,13 @@ public:
 
     void deinitialise();
 
-    void on_reader_completion(DWORD ret, const artwork_reader_v2_t* ptr);
-    void on_reader_abort(const artwork_reader_v2_t* ptr);
+    void on_reader_completion(DWORD ret, const ArtworkReader* ptr);
+    void on_reader_abort(const ArtworkReader* ptr);
 
 private:
-    bool find_aborting_reader(const artwork_reader_v2_t* ptr, t_size& index);
-    pfc::list_t<pfc::rcptr_t<artwork_reader_v2_t>> m_aborting_readers;
-    pfc::rcptr_t<artwork_reader_v2_t> m_current_reader;
+    bool find_aborting_reader(const ArtworkReader* ptr, t_size& index);
+    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_aborting_readers;
+    pfc::rcptr_t<ArtworkReader> m_current_reader;
     // album_art_manager_instance_ptr m_api;
 
     pfc::chain_list_v2_t<GUID> m_requestIds;
@@ -92,11 +92,11 @@ public:
     void callback_run() override;
 
     static void g_run(
-        artwork_reader_manager_t* p_manager, bool p_aborted, DWORD ret, const artwork_reader_v2_t* p_reader);
+        artwork_reader_manager_t* p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader);
 
     bool m_aborted;
     DWORD m_ret;
-    const artwork_reader_v2_t* m_reader;
+    const ArtworkReader* m_reader;
     pfc::refcounted_object_ptr_t<artwork_reader_manager_t> m_manager;
 };
 
