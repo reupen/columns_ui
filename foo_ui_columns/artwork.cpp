@@ -81,11 +81,11 @@ void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) 
 
 void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_type_popup(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_source_popup(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_preserve_aspect_ratio(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_lock_type(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_options()));
+    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeTypePopup(this)));
+    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeSourcePopup(this)));
+    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodePreserveAspectRatio(this)));
+    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeLockType(this)));
+    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeOptions()));
 }
 
 ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio){};
@@ -262,7 +262,7 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
             && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
             if (m_selection_handles.get_count()) {
                 m_artwork_loader->Request(
-                    m_selection_handles[0], new service_impl_t<completion_notify_forwarder>(this));
+                    m_selection_handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
             } else {
                 flush_image();
                 RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
@@ -287,7 +287,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
         }
 
         if (handles.get_count()) {
-            m_artwork_loader->Request(handles[0], new service_impl_t<completion_notify_forwarder>(this));
+            m_artwork_loader->Request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
             b_set = true;
         }
 
@@ -302,7 +302,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track)
 {
     if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader.is_valid())
-        m_artwork_loader->Request(p_track, new service_impl_t<completion_notify_forwarder>(this));
+        m_artwork_loader->Request(p_track, new service_impl_t<CompletionNotifyForwarder>(this));
 }
 void ArtworkPanel::force_reload_artwork()
 {
@@ -320,7 +320,7 @@ void ArtworkPanel::force_reload_artwork()
     }
 
     if (handle.is_valid()) {
-        m_artwork_loader->Request(handle, new service_impl_t<completion_notify_forwarder>(this));
+        m_artwork_loader->Request(handle, new service_impl_t<CompletionNotifyForwarder>(this));
     } else {
         flush_image();
         RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
@@ -336,7 +336,7 @@ void ArtworkPanel::on_playlist_switch()
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
-            m_artwork_loader->Request(handles[0], new service_impl_t<completion_notify_forwarder>(this));
+            m_artwork_loader->Request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
             RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
@@ -352,7 +352,7 @@ void ArtworkPanel::on_items_selection_change(const pfc::bit_array& p_affected, c
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
-            m_artwork_loader->Request(handles[0], new service_impl_t<completion_notify_forwarder>(this));
+            m_artwork_loader->Request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
             RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
@@ -548,9 +548,9 @@ namespace {
 cui::colours::client::factory<appearance_client_artwork_impl> g_appearance_client_impl;
 };
 
-ArtworkPanel::completion_notify_forwarder::completion_notify_forwarder(ArtworkPanel* p_this) : m_this(p_this) {}
+ArtworkPanel::CompletionNotifyForwarder::CompletionNotifyForwarder(ArtworkPanel* p_this) : m_this(p_this) {}
 
-void ArtworkPanel::completion_notify_forwarder::on_completion(unsigned p_code)
+void ArtworkPanel::CompletionNotifyForwarder::on_completion(unsigned p_code)
 {
     m_this->on_completion(p_code);
 }
@@ -710,31 +710,31 @@ void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callba
     };
 #endif
 
-ArtworkPanel::menu_node_track_mode::menu_node_track_mode(ArtworkPanel* p_wnd, t_size p_value)
+ArtworkPanel::MenuNodeTrackMode::MenuNodeTrackMode(ArtworkPanel* p_wnd, t_size p_value)
     : p_this(p_wnd), m_source(p_value)
 {
 }
 
-void ArtworkPanel::menu_node_track_mode::execute()
+void ArtworkPanel::MenuNodeTrackMode::execute()
 {
     p_this->m_track_mode = m_source;
     cfg_track_mode = m_source;
     p_this->force_reload_artwork();
 }
 
-bool ArtworkPanel::menu_node_track_mode::get_description(pfc::string_base& p_out) const
+bool ArtworkPanel::MenuNodeTrackMode::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ArtworkPanel::menu_node_track_mode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ArtworkPanel::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
     p_displayflags = (m_source == p_this->m_track_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
     return true;
 }
 
-const char* ArtworkPanel::menu_node_track_mode::get_name(t_size source)
+const char* ArtworkPanel::MenuNodeTrackMode::get_name(t_size source)
 {
     if (source == track_playing)
         return "Playing item";
@@ -747,12 +747,12 @@ const char* ArtworkPanel::menu_node_track_mode::get_name(t_size source)
     return "Automatic (playlist selection/playing item)";
 }
 
-ArtworkPanel::menu_node_artwork_type::menu_node_artwork_type(ArtworkPanel* p_wnd, t_size p_value)
+ArtworkPanel::MenuNodeArtworkType::MenuNodeArtworkType(ArtworkPanel* p_wnd, t_size p_value)
     : p_this(p_wnd), m_type(p_value)
 {
 }
 
-void ArtworkPanel::menu_node_artwork_type::execute()
+void ArtworkPanel::MenuNodeArtworkType::execute()
 {
     if (!p_this->refresh_image(m_type)) {
         p_this->show_emptycover();
@@ -760,19 +760,19 @@ void ArtworkPanel::menu_node_artwork_type::execute()
     p_this->m_position = m_type;
 }
 
-bool ArtworkPanel::menu_node_artwork_type::get_description(pfc::string_base& p_out) const
+bool ArtworkPanel::MenuNodeArtworkType::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ArtworkPanel::menu_node_artwork_type::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ArtworkPanel::MenuNodeArtworkType::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_type);
     p_displayflags = (m_type == p_this->m_position) ? ui_extension::menu_node_t::state_radiochecked : 0;
     return true;
 }
 
-const char* ArtworkPanel::menu_node_artwork_type::get_name(t_size source)
+const char* ArtworkPanel::MenuNodeArtworkType::get_name(t_size source)
 {
     if (source == 0)
         return "Front cover";
@@ -783,65 +783,65 @@ const char* ArtworkPanel::menu_node_artwork_type::get_name(t_size source)
     return "Artist picture";
 }
 
-ArtworkPanel::menu_node_source_popup::menu_node_source_popup(ArtworkPanel* p_wnd)
+ArtworkPanel::MenuNodeSourcePopup::MenuNodeSourcePopup(ArtworkPanel* p_wnd)
 {
-    m_items.add_item(new menu_node_track_mode(p_wnd, 3));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 0));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 3));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
     m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 4));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 1));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 4));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
 }
 
-void ArtworkPanel::menu_node_source_popup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ArtworkPanel::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ArtworkPanel::menu_node_source_popup::get_children_count() const
+unsigned ArtworkPanel::MenuNodeSourcePopup::get_children_count() const
 {
     return m_items.get_count();
 }
 
-bool ArtworkPanel::menu_node_source_popup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ArtworkPanel::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Displayed track";
     p_displayflags = 0;
     return true;
 }
 
-ArtworkPanel::menu_node_type_popup::menu_node_type_popup(ArtworkPanel* p_wnd)
+ArtworkPanel::MenuNodeTypePopup::MenuNodeTypePopup(ArtworkPanel* p_wnd)
 {
-    m_items.add_item(new menu_node_artwork_type(p_wnd, 0));
+    m_items.add_item(new MenuNodeArtworkType(p_wnd, 0));
     // m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new menu_node_artwork_type(p_wnd, 1));
-    m_items.add_item(new menu_node_artwork_type(p_wnd, 2));
-    m_items.add_item(new menu_node_artwork_type(p_wnd, 3));
+    m_items.add_item(new MenuNodeArtworkType(p_wnd, 1));
+    m_items.add_item(new MenuNodeArtworkType(p_wnd, 2));
+    m_items.add_item(new MenuNodeArtworkType(p_wnd, 3));
 }
 
-void ArtworkPanel::menu_node_type_popup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ArtworkPanel::MenuNodeTypePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ArtworkPanel::menu_node_type_popup::get_children_count() const
+unsigned ArtworkPanel::MenuNodeTypePopup::get_children_count() const
 {
     return m_items.get_count();
 }
 
-bool ArtworkPanel::menu_node_type_popup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ArtworkPanel::MenuNodeTypePopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Artwork type";
     p_displayflags = 0;
     return true;
 }
 
-ArtworkPanel::menu_node_preserve_aspect_ratio::menu_node_preserve_aspect_ratio(ArtworkPanel* p_wnd)
+ArtworkPanel::MenuNodePreserveAspectRatio::MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd)
     : p_this(p_wnd)
 {
 }
 
-void ArtworkPanel::menu_node_preserve_aspect_ratio::execute()
+void ArtworkPanel::MenuNodePreserveAspectRatio::execute()
 {
     p_this->m_preserve_aspect_ratio = !p_this->m_preserve_aspect_ratio;
     cfg_preserve_aspect_ratio = p_this->m_preserve_aspect_ratio;
@@ -849,12 +849,12 @@ void ArtworkPanel::menu_node_preserve_aspect_ratio::execute()
     RedrawWindow(p_this->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
 }
 
-bool ArtworkPanel::menu_node_preserve_aspect_ratio::get_description(pfc::string_base& p_out) const
+bool ArtworkPanel::MenuNodePreserveAspectRatio::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ArtworkPanel::menu_node_preserve_aspect_ratio::get_display_data(
+bool ArtworkPanel::MenuNodePreserveAspectRatio::get_display_data(
     pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Preserve aspect ratio";
@@ -862,36 +862,36 @@ bool ArtworkPanel::menu_node_preserve_aspect_ratio::get_display_data(
     return true;
 }
 
-void ArtworkPanel::menu_node_options::execute()
+void ArtworkPanel::MenuNodeOptions::execute()
 {
     cui::prefs::page_main.get_static_instance().show_tab("Artwork");
 }
 
-bool ArtworkPanel::menu_node_options::get_description(pfc::string_base& p_out) const
+bool ArtworkPanel::MenuNodeOptions::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ArtworkPanel::menu_node_options::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ArtworkPanel::MenuNodeOptions::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Options";
     p_displayflags = 0;
     return true;
 }
 
-ArtworkPanel::menu_node_lock_type::menu_node_lock_type(ArtworkPanel* p_wnd) : p_this(p_wnd) {}
+ArtworkPanel::MenuNodeLockType::MenuNodeLockType(ArtworkPanel* p_wnd) : p_this(p_wnd) {}
 
-void ArtworkPanel::menu_node_lock_type::execute()
+void ArtworkPanel::MenuNodeLockType::execute()
 {
     p_this->m_lock_type = !p_this->m_lock_type;
 }
 
-bool ArtworkPanel::menu_node_lock_type::get_description(pfc::string_base& p_out) const
+bool ArtworkPanel::MenuNodeLockType::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ArtworkPanel::menu_node_lock_type::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ArtworkPanel::MenuNodeLockType::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Lock artwork type";
     p_displayflags = (p_this->m_lock_type) ? ui_extension::menu_node_t::state_checked : 0;
