@@ -14,7 +14,7 @@ void artwork_panel::ArtworkReader::initialise(const pfc::chain_list_v2_t<GUID>& 
     const pfc::map_t<GUID, album_art_data_ptr>& p_content_previous,
     const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
     t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
-    class artwork_reader_manager_t* const p_manager)
+    class ArtworkReaderManager* const p_manager)
 {
     m_requestIds = p_requestIds;
     m_content = p_content_previous;
@@ -51,7 +51,7 @@ bool artwork_panel::ArtworkReader::is_aborting()
     return m_abort.is_aborting();
 }
 
-bool artwork_panel::artwork_reader_manager_t::find_aborting_reader(const ArtworkReader* ptr, t_size& index)
+bool artwork_panel::ArtworkReaderManager::find_aborting_reader(const ArtworkReader* ptr, t_size& index)
 {
     t_size count = m_aborting_readers.get_count();
     for (t_size i = 0; i < count; i++)
@@ -62,7 +62,7 @@ bool artwork_panel::artwork_reader_manager_t::find_aborting_reader(const Artwork
     return false;
 }
 
-void artwork_panel::artwork_reader_manager_t::deinitialise()
+void artwork_panel::ArtworkReaderManager::deinitialise()
 {
     t_size i = m_aborting_readers.get_count();
     for (; i; i--) {
@@ -76,9 +76,9 @@ void artwork_panel::artwork_reader_manager_t::deinitialise()
     m_emptycover.release();
 }
 
-void artwork_panel::artwork_reader_manager_t::initialise() {}
+void artwork_panel::ArtworkReaderManager::initialise() {}
 
-bool artwork_panel::artwork_reader_manager_t::QueryEmptyCover(album_art_data_ptr& p_data)
+bool artwork_panel::ArtworkReaderManager::QueryEmptyCover(album_art_data_ptr& p_data)
 {
     if (IsReady() && m_emptycover.is_valid()) {
         p_data = m_emptycover;
@@ -86,7 +86,7 @@ bool artwork_panel::artwork_reader_manager_t::QueryEmptyCover(album_art_data_ptr
     return p_data.is_valid();
 }
 
-bool artwork_panel::artwork_reader_manager_t::Query(const GUID& p_what, album_art_data_ptr& p_data)
+bool artwork_panel::ArtworkReaderManager::Query(const GUID& p_what, album_art_data_ptr& p_data)
 {
     if (IsReady() && m_current_reader->did_succeed()) {
         return m_current_reader->get_content().query(p_what, p_data);
@@ -94,7 +94,7 @@ bool artwork_panel::artwork_reader_manager_t::Query(const GUID& p_what, album_ar
     return false;
 }
 
-void artwork_panel::artwork_reader_manager_t::Request(
+void artwork_panel::ArtworkReaderManager::Request(
     const metadb_handle_ptr& p_handle, completion_notify_ptr p_notify /*= NULL*/)
 {
     pfc::rcptr_t<ArtworkReader> ptr_prev = m_current_reader;
@@ -110,32 +110,32 @@ void artwork_panel::artwork_reader_manager_t::Request(
     }
 }
 
-bool artwork_panel::artwork_reader_manager_t::IsReady()
+bool artwork_panel::ArtworkReaderManager::IsReady()
 {
     return m_current_reader.is_valid() && !m_current_reader->is_thread_open();
 }
 
-void artwork_panel::artwork_reader_manager_t::Reset()
+void artwork_panel::ArtworkReaderManager::Reset()
 {
     abort_current_task();
     m_current_reader.release();
     m_emptycover.release();
 }
 
-void artwork_panel::artwork_reader_manager_t::ResetRepository()
+void artwork_panel::ArtworkReaderManager::ResetRepository()
 {
     abort_current_task();
     m_repositories.remove_all();
     m_emptycover.release();
 }
 
-void artwork_panel::artwork_reader_manager_t::SetScript(const GUID& p_what, const pfc::list_t<pfc::string8>& script)
+void artwork_panel::ArtworkReaderManager::SetScript(const GUID& p_what, const pfc::list_t<pfc::string8>& script)
 {
     abort_current_task();
     m_repositories.set(p_what, script);
 }
 
-void artwork_panel::artwork_reader_manager_t::abort_current_task()
+void artwork_panel::ArtworkReaderManager::abort_current_task()
 {
     if (m_current_reader.is_valid()) {
         if (m_current_reader->is_thread_open()) {
@@ -146,13 +146,13 @@ void artwork_panel::artwork_reader_manager_t::abort_current_task()
     }
 }
 
-void artwork_panel::artwork_reader_manager_t::AddType(const GUID& p_what)
+void artwork_panel::ArtworkReaderManager::AddType(const GUID& p_what)
 {
     m_requestIds.add_item(p_what);
 }
 
 void artwork_panel::artwork_reader_notification_t::g_run(
-    artwork_reader_manager_t* p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader)
+    ArtworkReaderManager* p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader)
 {
     service_ptr_t<artwork_reader_notification_t> ptr = new service_impl_t<artwork_reader_notification_t>;
     ptr->m_aborted = p_aborted;
@@ -171,7 +171,7 @@ void artwork_panel::artwork_reader_notification_t::callback_run()
         m_manager->on_reader_completion(m_ret, m_reader);
 }
 
-void artwork_panel::artwork_reader_manager_t::on_reader_completion(DWORD state, const ArtworkReader* ptr)
+void artwork_panel::ArtworkReaderManager::on_reader_completion(DWORD state, const ArtworkReader* ptr)
 {
     if (m_current_reader.is_valid() && ptr == &*m_current_reader) {
         m_current_reader->wait_for_and_release_thread();
@@ -187,7 +187,7 @@ void artwork_panel::artwork_reader_manager_t::on_reader_completion(DWORD state, 
         }
     }
 }
-void artwork_panel::artwork_reader_manager_t::on_reader_abort(const ArtworkReader* ptr)
+void artwork_panel::ArtworkReaderManager::on_reader_abort(const ArtworkReader* ptr)
 {
     on_reader_completion(ERROR_PROCESS_ABORTED, ptr);
 }

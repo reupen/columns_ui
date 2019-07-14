@@ -144,7 +144,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         Gdiplus::GdiplusStartupInput gdiplusStartupInput;
         m_gdiplus_initialised
             = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
-        m_artwork_loader = new artwork_reader_manager_t; // pfc::rcnew_t<artwork_reader_t>();
+        m_artwork_loader = new ArtworkReaderManager; // pfc::rcnew_t<artwork_reader_t>();
         //        m_nowplaying_artwork_loader.initialise(this);
         t_size count = tabsize(g_artwork_types);
         for (t_size i = 0; i < count; i++)
