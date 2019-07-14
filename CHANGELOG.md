@@ -4,19 +4,19 @@
 
 * Custom fonts now scale when the display scaling factor (DPI) changes. [[#159](https://github.com/reupen/columns_ui/pull/159)]
 
-* The scrolling behaviour of the playlist view and other list views was improved when clicking on partially visible items at the top or bottom of the view. [[#160](https://github.com/reupen/columns_ui/pull/160)]
+* The scrolling behaviour of the playlist view and other list views was improved when clicking on partially visible items at the top or bottom of the view. [[#160](https://github.com/reupen/columns_ui/pull/160), [ui_helpers#11](https://github.com/reupen/ui_helpers/pull/11)]
 
-* List views now use themed focus rectangles when theming mode is enabled. [[#166](https://github.com/reupen/columns_ui/pull/166)]
+* List views now use themed focus rectangles when theming mode is enabled. [[#166](https://github.com/reupen/columns_ui/pull/166), [ui_helpers#14](https://github.com/reupen/ui_helpers/pull/14), [ui_helpers#15](https://github.com/reupen/ui_helpers/pull/15)]
 
-* DPI scaling improvements were made to padding, lines and borders in list views. [[#166](https://github.com/reupen/columns_ui/pull/166), [#184](https://github.com/reupen/columns_ui/pull/184)]
+* DPI scaling improvements were made to padding, lines and borders in list views. [[#166](https://github.com/reupen/columns_ui/pull/166), [#184](https://github.com/reupen/columns_ui/pull/184), [ui_helpers#14](https://github.com/reupen/ui_helpers/pull/14), [ui_helpers#22](https://github.com/reupen/ui_helpers/pull/22)]
 
 * DPI scaling improvements were made to the status bar, status pane and Item details panel. [[#184](https://github.com/reupen/columns_ui/pull/184)]
 
-* The default vertical item padding of the playlist view and playlist switcher was increased. [[#169](https://github.com/reupen/columns_ui/pull/169)]
+* The default vertical item padding of the playlist view and playlist switcher was increased. [[#167](https://github.com/reupen/columns_ui/pull/167)]
 
-* The height of the playlist view and filter panel column titles now varies with the vertical item padding setting. [[#170](https://github.com/reupen/columns_ui/pull/170), [#172](https://github.com/reupen/columns_ui/pull/172)]
+* The height of the playlist view and filter panel column titles now varies with the vertical item padding setting. [[#170](https://github.com/reupen/columns_ui/pull/170), [ui_helpers#16](https://github.com/reupen/ui_helpers/pull/16)]
 
-* The scroll position is now preserved when adjusting playlist view, playlist switcher and filter panel settings that affect the vertical height and/or position of items. [[#170](https://github.com/reupen/columns_ui/pull/170)]
+* The scroll position is now preserved when adjusting playlist view, playlist switcher and filter panel settings that affect the vertical height and/or position of items. [[#170](https://github.com/reupen/columns_ui/pull/170), [#172](https://github.com/reupen/columns_ui/pull/172), [ui_helpers#16](https://github.com/reupen/ui_helpers/pull/16), [ui_helpers#17](https://github.com/reupen/ui_helpers/pull/17)]
 
 * FCL files now include Filter panel and toolbar settings. [[#175](https://github.com/reupen/columns_ui/pull/175)]
 
@@ -24,9 +24,11 @@
 
 * Changes to the playlist switcher title formatting script now apply instantly. [[#179](https://github.com/reupen/columns_ui/pull/179)]
 
-* A bug was fixed where text copied in certain list views using Ctrl-C could be corrupted. [[ui_helpers/#24](https://github.com/reupen/ui_helpers/pull/24)]
+* A bug was fixed where text copied in certain list views using Ctrl-C could be corrupted. [[#186](https://github.com/reupen/columns_ui/pull/186), [ui_helpers#24](https://github.com/reupen/ui_helpers/pull/24)]
 
-* A rare problem where a keyboard shortcut could be handled more than once when a natively-handled keyboard shortcut (such as Ctrl-C) was reassigned to another command was fixed. [[#180](https://github.com/reupen/columns_ui/pull/180)]
+* A rare problem where a keyboard shortcut could be handled more than once when a natively-handled keyboard shortcut (such as Ctrl-C) was reassigned to another command was fixed. [[#180](https://github.com/reupen/columns_ui/pull/180), [ui_helpers#20](https://github.com/reupen/ui_helpers/pull/20)]
+
+* The behaviour of the Page Up and Page Down keys in the playlist and other list views was improved. [[#180](https://github.com/reupen/columns_ui/pull/180), [ui_helpers#19](https://github.com/reupen/ui_helpers/pull/19)]
 
 * The component is now compiled using Visual Studio 2019 16.1 and the foobar2000 SDK 2019-06-30.
 
