@@ -18,7 +18,7 @@ bool filter_stream_t::is_visible()
     return true;
 }
 
-void filter_panel_t::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void FilterPanel::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
         t_size version;
@@ -36,7 +36,7 @@ void filter_panel_t::set_config(stream_reader* p_reader, t_size p_size, abort_ca
     }
 }
 
-void filter_panel_t::get_config(stream_writer* p_writer, abort_callback& p_abort) const
+void FilterPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(t_size(config_version_current), p_abort);
     p_writer->write_string(m_field_data.m_name, p_abort);
@@ -44,7 +44,7 @@ void filter_panel_t::get_config(stream_writer* p_writer, abort_callback& p_abort
     p_writer->write_lendian_t(get_sort_direction(), p_abort);
 }
 
-t_size filter_panel_t::g_get_stream_index_by_window(const uie::window_ptr& ptr)
+t_size FilterPanel::g_get_stream_index_by_window(const uie::window_ptr& ptr)
 {
     t_size count = g_streams.get_count();
     for (t_size i = 0; i < count; i++) {
@@ -56,7 +56,7 @@ t_size filter_panel_t::g_get_stream_index_by_window(const uie::window_ptr& ptr)
     return pfc_infinite;
 }
 
-void filter_panel_t::g_on_orderedbysplitters_change()
+void FilterPanel::g_on_orderedbysplitters_change()
 {
     g_streams.remove_all();
     for (auto& window : g_windows) {
@@ -67,7 +67,7 @@ void filter_panel_t::g_on_orderedbysplitters_change()
     for (t_size i = 0; i < count; i++) {
         if (g_streams[i]->m_windows.get_count()) {
             filter_search_bar::g_initialise_filter_stream(g_streams[i]);
-            pfc::list_t<filter_panel_t*> windows;
+            pfc::list_t<FilterPanel*> windows;
             g_streams[i]->m_windows[0]->get_windows(windows);
             if (windows.get_count())
                 g_update_subsequent_filters(windows, 0, false, false);
@@ -75,7 +75,7 @@ void filter_panel_t::g_on_orderedbysplitters_change()
     }
 }
 
-void filter_panel_t::g_on_fields_change()
+void FilterPanel::g_on_fields_change()
 {
     g_load_fields();
     for (auto& window : g_windows) {
@@ -84,7 +84,7 @@ void filter_panel_t::g_on_fields_change()
     }
 }
 
-t_size filter_panel_t::g_get_field_index_by_name(const char* p_name)
+t_size FilterPanel::g_get_field_index_by_name(const char* p_name)
 {
     t_size count = g_field_data.get_count();
     for (t_size i = 0; i < count; i++) {
@@ -94,7 +94,7 @@ t_size filter_panel_t::g_get_field_index_by_name(const char* p_name)
     return pfc_infinite;
 }
 
-void filter_panel_t::g_on_field_title_change(const char* p_old, const char* p_new)
+void FilterPanel::g_on_field_title_change(const char* p_old, const char* p_new)
 {
     t_size field_index = g_get_field_index_by_name(p_old);
     if (field_index != pfc_infinite) {
@@ -109,31 +109,31 @@ void filter_panel_t::g_on_field_title_change(const char* p_old, const char* p_ne
     }
 }
 
-void filter_panel_t::g_on_vertical_item_padding_change()
+void FilterPanel::g_on_vertical_item_padding_change()
 {
     for (auto& window : g_windows)
         window->set_vertical_item_padding(cfg_vertical_item_padding);
 }
 
-void filter_panel_t::g_on_show_column_titles_change()
+void FilterPanel::g_on_show_column_titles_change()
 {
     for (auto& window : g_windows)
         window->set_show_header(cfg_show_column_titles);
 }
 
-void filter_panel_t::g_on_allow_sorting_change()
+void FilterPanel::g_on_allow_sorting_change()
 {
     for (auto& window : g_windows)
         window->set_sorting_enabled(cfg_allow_sorting);
 }
 
-void filter_panel_t::g_on_show_sort_indicators_change()
+void FilterPanel::g_on_show_sort_indicators_change()
 {
     for (auto& window : g_windows)
         window->set_show_sort_indicators(cfg_show_sort_indicators);
 }
 
-void filter_panel_t::g_on_field_query_change(const field_t& field)
+void FilterPanel::g_on_field_query_change(const field_t& field)
 {
     t_size field_index = g_get_field_index_by_name(field.m_name);
     if (field_index != pfc_infinite) {
@@ -141,7 +141,7 @@ void filter_panel_t::g_on_field_query_change(const field_t& field)
         t_size count = g_streams.get_count();
         for (t_size i = 0; i < count; i++) {
             if (g_streams[i]->m_windows.get_count()) {
-                pfc::list_t<filter_panel_t*> windows;
+                pfc::list_t<FilterPanel*> windows;
                 g_streams[i]->m_windows[0]->get_windows(windows);
                 t_size subcount = windows.get_count();
 
@@ -156,7 +156,7 @@ void filter_panel_t::g_on_field_query_change(const field_t& field)
         }
     }
 }
-void filter_panel_t::g_on_showemptyitems_change(bool b_val, bool update_filters)
+void FilterPanel::g_on_showemptyitems_change(bool b_val, bool update_filters)
 {
     if (g_windows.empty())
         return;
@@ -169,7 +169,7 @@ void filter_panel_t::g_on_showemptyitems_change(bool b_val, bool update_filters)
     t_size count = g_streams.get_count();
     for (t_size i = 0; i < count; i++) {
         if (g_streams[i]->m_windows.get_count()) {
-            pfc::list_t<filter_panel_t*> windows;
+            pfc::list_t<FilterPanel*> windows;
             g_streams[i]->m_windows[0]->get_windows(windows);
             t_size j = windows.get_count();
             if (windows.get_count())
@@ -177,13 +177,13 @@ void filter_panel_t::g_on_showemptyitems_change(bool b_val, bool update_filters)
         }
     }
 }
-void filter_panel_t::g_on_edgestyle_change()
+void FilterPanel::g_on_edgestyle_change()
 {
     for (auto& window : g_windows) {
         window->set_edge_style(cfg_edgestyle);
     }
 }
-void filter_panel_t::g_on_font_items_change()
+void FilterPanel::g_on_font_items_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
@@ -192,7 +192,7 @@ void filter_panel_t::g_on_font_items_change()
     }
 }
 
-void filter_panel_t::g_on_font_header_change()
+void FilterPanel::g_on_font_header_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
@@ -200,12 +200,12 @@ void filter_panel_t::g_on_font_header_change()
         window->set_header_font(&lf);
     }
 }
-void filter_panel_t::g_redraw_all()
+void FilterPanel::g_redraw_all()
 {
     for (auto& window : g_windows)
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 }
-void filter_panel_t::g_on_new_field(const field_t& field)
+void FilterPanel::g_on_new_field(const field_t& field)
 {
     if (!g_windows.empty()) {
         t_size index = g_field_data.get_count();
@@ -213,7 +213,7 @@ void filter_panel_t::g_on_new_field(const field_t& field)
         g_create_field_data(field, g_field_data[index]);
     }
 }
-void filter_panel_t::g_on_fields_swapped(t_size index_1, t_size index_2)
+void FilterPanel::g_on_fields_swapped(t_size index_1, t_size index_2)
 {
     if (max(index_1, index_2) < g_field_data.get_count())
         g_field_data.swap_items(index_1, index_2);
@@ -221,7 +221,7 @@ void filter_panel_t::g_on_fields_swapped(t_size index_1, t_size index_2)
         t_size count = g_streams.get_count();
         for (t_size i = 0; i < count; i++) {
             if (g_streams[i]->m_windows.get_count()) {
-                pfc::list_t<filter_panel_t*> windows;
+                pfc::list_t<FilterPanel*> windows;
                 g_streams[i]->m_windows[0]->get_windows(windows);
                 t_size subcount = windows.get_count();
                 for (t_size j = 0; j < subcount; j++) {
@@ -237,12 +237,12 @@ void filter_panel_t::g_on_fields_swapped(t_size index_1, t_size index_2)
         }
     }
 }
-void filter_panel_t::g_on_field_removed(t_size index)
+void FilterPanel::g_on_field_removed(t_size index)
 {
     t_size count = g_streams.get_count();
     for (t_size i = 0; i < count; i++) {
         if (g_streams[i]->m_windows.get_count()) {
-            pfc::list_t<filter_panel_t*> windows;
+            pfc::list_t<FilterPanel*> windows;
             g_streams[i]->m_windows[0]->get_windows(windows);
             t_size subcount = windows.get_count();
             bool b_found = false;
@@ -267,7 +267,7 @@ void filter_panel_t::g_on_field_removed(t_size index)
         g_field_data.remove_by_idx(index);
 }
 
-void filter_panel_t::refresh(bool b_allow_autosend)
+void FilterPanel::refresh(bool b_allow_autosend)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     get_initial_handles(data);
@@ -275,7 +275,7 @@ void filter_panel_t::refresh(bool b_allow_autosend)
     update_subsequent_filters(b_allow_autosend);
 }
 
-t_size filter_panel_t::get_field_index()
+t_size FilterPanel::get_field_index()
 {
     t_size count = g_field_data.get_count(), ret = pfc_infinite;
     for (t_size i = 0; i < count; i++)
@@ -286,7 +286,7 @@ t_size filter_panel_t::get_field_index()
     return ret;
 }
 
-void filter_panel_t::get_windows(pfc::list_base_t<filter_panel_t*>& windows)
+void FilterPanel::get_windows(pfc::list_base_t<FilterPanel*>& windows)
 {
     if (cfg_orderedbysplitters) {
         pfc::list_t<uie::window_ptr> siblings;
@@ -299,7 +299,7 @@ void filter_panel_t::get_windows(pfc::list_base_t<filter_panel_t*>& windows)
         t_size count = siblings.get_count();
         for (t_size i = 0; i < count; i++) {
             t_size index = pfc_infinite;
-            if ((index = m_stream->m_windows.find_item(static_cast<filter_panel_t*>(siblings[i].get_ptr())))
+            if ((index = m_stream->m_windows.find_item(static_cast<FilterPanel*>(siblings[i].get_ptr())))
                 != pfc_infinite) // meh
                 windows.add_item(m_stream->m_windows[index]);
         }
@@ -319,16 +319,16 @@ void filter_panel_t::get_windows(pfc::list_base_t<filter_panel_t*>& windows)
     }
 }
 
-filter_panel_t* filter_panel_t::get_next_window()
+FilterPanel* FilterPanel::get_next_window()
 {
-    pfc::list_t<filter_panel_t*> windows;
+    pfc::list_t<FilterPanel*> windows;
     get_windows(windows);
     const auto window_index = windows.find_item(this);
     const auto window_count = windows.get_count();
     return window_index + 1 < window_count ? windows[window_index + 1] : nullptr;
 }
 
-void filter_panel_t::g_create_field_data(const field_t& field, field_data_t& p_out)
+void FilterPanel::g_create_field_data(const field_t& field, field_data_t& p_out)
 {
     p_out.m_name = field.m_name;
     p_out.m_last_sort_direction = field.m_last_sort_direction;
@@ -353,7 +353,7 @@ void filter_panel_t::g_create_field_data(const field_t& field, field_data_t& p_o
     }
 }
 
-void filter_panel_t::g_load_fields()
+void FilterPanel::g_load_fields()
 {
     t_size count = filter_panel::cfg_field_list.get_count();
     g_field_data.set_count(count);
@@ -362,7 +362,7 @@ void filter_panel_t::g_load_fields()
         g_create_field_data(field, g_field_data[i]);
     }
 }
-void filter_panel_t::g_update_subsequent_filters(const pfc::list_base_const_t<filter_panel_t*>& windows, t_size index,
+void FilterPanel::g_update_subsequent_filters(const pfc::list_base_const_t<FilterPanel*>& windows, t_size index,
     bool b_check_needs_update, bool b_update_playlist)
 {
     t_size count = windows.get_count();
@@ -386,9 +386,9 @@ void filter_panel_t::g_update_subsequent_filters(const pfc::list_base_const_t<fi
         windows[count - 1]->send_results_to_playlist();
 }
 
-void filter_panel_t::update_subsequent_filters(bool b_allow_autosend)
+void FilterPanel::update_subsequent_filters(bool b_allow_autosend)
 {
-    pfc::ptr_list_t<filter_panel_t> windows;
+    pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
     t_size pos = windows.find_item(this);
 
@@ -397,9 +397,9 @@ void filter_panel_t::update_subsequent_filters(bool b_allow_autosend)
     }
 }
 
-void filter_panel_t::get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out)
+void FilterPanel::get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out)
 {
-    pfc::ptr_list_t<filter_panel_t> windows;
+    pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
     t_size pos = windows.find_item(this);
     if (pos && pos != pfc_infinite) {
@@ -412,12 +412,12 @@ void filter_panel_t::get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_ag
     }
 }
 
-void filter_panel_t::set_field(const field_data_t& field, bool b_force)
+void FilterPanel::set_field(const field_data_t& field, bool b_force)
 {
     if (b_force || stricmp_utf8(field.m_name, m_field_data.m_name)) {
         m_pending_sort_direction = field.m_last_sort_direction;
 
-        pfc::ptr_list_t<filter_panel_t> windows_before;
+        pfc::ptr_list_t<FilterPanel> windows_before;
         get_windows(windows_before);
         t_size pos_before = windows_before.find_item(this);
 
@@ -430,7 +430,7 @@ void filter_panel_t::set_field(const field_data_t& field, bool b_force)
         get_initial_handles(handles);
         populate_list(handles);
 
-        pfc::ptr_list_t<filter_panel_t> windows_after;
+        pfc::ptr_list_t<FilterPanel> windows_after;
         get_windows(windows_after);
         t_size pos_after = windows_after.find_item(this);
         t_size pos_update = min(pos_before, pos_after);
@@ -441,7 +441,7 @@ void filter_panel_t::set_field(const field_data_t& field, bool b_force)
     }
 }
 
-void filter_panel_t::notify_update_item_data(t_size index)
+void FilterPanel::notify_update_item_data(t_size index)
 {
     auto& subitems = get_item_subitems(index);
     subitems.set_size(1);
@@ -449,17 +449,17 @@ void filter_panel_t::notify_update_item_data(t_size index)
     subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value);
 }
 
-t_size filter_panel_t::get_highlight_item()
+t_size FilterPanel::get_highlight_item()
 {
     return pfc_infinite;
 }
 
-bool filter_panel_t::notify_on_keyboard_keydown_search()
+bool FilterPanel::notify_on_keyboard_keydown_search()
 {
     return filter_search_bar::g_activate();
 }
 
-bool filter_panel_t::do_drag_drop(WPARAM wp)
+bool FilterPanel::do_drag_drop(WPARAM wp)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     get_selection_handles(data);
@@ -479,14 +479,14 @@ bool filter_panel_t::do_drag_drop(WPARAM wp)
     return true;
 }
 
-bool filter_panel_t::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
+bool FilterPanel::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
     uie::window_ptr p_this = this;
     bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
     return ret;
 };
 
-void filter_panel_t::get_selection_handles(
+void FilterPanel::get_selection_handles(
     metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out, bool fallback, bool b_sort)
 {
     bool b_found = false;
@@ -512,14 +512,14 @@ void filter_panel_t::get_selection_handles(
     }
 }
 
-void filter_panel_t::do_selection_action(action_t action)
+void FilterPanel::do_selection_action(action_t action)
 {
     pfc::bit_array_bittable mask(m_nodes.get_count());
     get_selection_state(mask);
     do_items_action(mask, action);
 }
 
-void filter_panel_t::do_items_action(const pfc::bit_array& p_nodes, action_t action)
+void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, action_t action)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(m_nodes.get_count());
@@ -594,13 +594,13 @@ void filter_panel_t::do_items_action(const pfc::bit_array& p_nodes, action_t act
     }
 }
 
-void filter_panel_t::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
+void FilterPanel::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
 {
     auto action = static_cast<action_t>(cfg_doubleclickaction.get_value());
     do_selection_action(action);
 }
 
-bool filter_panel_t::notify_on_middleclick(bool on_item, t_size index)
+bool FilterPanel::notify_on_middleclick(bool on_item, t_size index)
 {
     if (cfg_middleclickaction && on_item && index < m_nodes.get_count()) {
         auto action = static_cast<action_t>(cfg_middleclickaction.get_value() - 1);
@@ -610,7 +610,7 @@ bool filter_panel_t::notify_on_middleclick(bool on_item, t_size index)
     return false;
 }
 
-void filter_panel_t::send_results_to_playlist(bool b_play)
+void FilterPanel::send_results_to_playlist(bool b_play)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(m_nodes.get_count());
@@ -650,7 +650,7 @@ void filter_panel_t::send_results_to_playlist(bool b_play)
     // if (index_remove != pfc_infinite)
     //    playlist_api->remove_playlist(index+1);
 }
-void filter_panel_t::notify_on_selection_change(
+void FilterPanel::notify_on_selection_change(
     const pfc::bit_array& p_affected, const pfc::bit_array& p_status, notification_source_t p_notification_source)
 {
     if (p_notification_source != notification_source_rmb) {
@@ -663,7 +663,7 @@ void filter_panel_t::notify_on_selection_change(
         }
     }
 }
-void filter_panel_t::update_first_node_text(bool b_update)
+void FilterPanel::update_first_node_text(bool b_update)
 {
     t_size nodes_count = m_nodes.get_count();
     if (nodes_count) {
@@ -682,14 +682,14 @@ void filter_panel_t::update_first_node_text(bool b_update)
     }
 }
 
-void filter_panel_t::notify_on_set_focus(HWND wnd_lost)
+void FilterPanel::notify_on_set_focus(HWND wnd_lost)
 {
     m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     get_selection_handles(handles, false);
     m_selection_holder->set_selection(handles);
 }
-void filter_panel_t::notify_on_kill_focus(HWND wnd_receiving)
+void FilterPanel::notify_on_kill_focus(HWND wnd_receiving)
 {
     m_selection_holder.release();
 }
@@ -730,7 +730,7 @@ int node_t::g_compare_ptr_with_node(const node_t& i1, const node_t& i2)
     return StrCmpLogicalW(i1.m_value, i2.m_value);
 }
 
-void filter_panel_t::refresh_stream()
+void FilterPanel::refresh_stream()
 {
     m_stream.release();
     if (cfg_orderedbysplitters) {
@@ -763,19 +763,19 @@ void filter_panel_t::refresh_stream()
     }
 }
 
-void filter_panel_t::refresh_groups()
+void FilterPanel::refresh_groups()
 {
     set_group_count(0);
 }
 
-void filter_panel_t::refresh_columns()
+void FilterPanel::refresh_columns()
 {
     set_columns(pfc::list_single_ref_t<Column>(
         Column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name.get_ptr(), 200)));
     set_sort_column(0, m_pending_sort_direction);
 }
 
-void filter_panel_t::notify_on_initialisation()
+void FilterPanel::notify_on_initialisation()
 {
     // set_variable_height_items(true); //Implementation not finished
     set_edge_style(cfg_edgestyle);
@@ -834,7 +834,7 @@ void filter_panel_t::notify_on_initialisation()
         m_field_data = g_field_data[field_index];
 }
 
-void filter_panel_t::notify_on_create()
+void FilterPanel::notify_on_create()
 {
     refresh_columns();
     refresh_groups();
@@ -853,7 +853,7 @@ void filter_panel_t::notify_on_create()
     fbh::library_callback_manager::register_callback(this);
 }
 
-void filter_panel_t::notify_on_destroy()
+void FilterPanel::notify_on_destroy()
 {
     fbh::library_callback_manager::deregister_callback(this);
 
@@ -870,36 +870,36 @@ void filter_panel_t::notify_on_destroy()
     m_nodes.remove_all();
 }
 
-const GUID& filter_panel_t::get_extension_guid() const
+const GUID& FilterPanel::get_extension_guid() const
 {
     return g_extension_guid;
 }
 
-void filter_panel_t::get_name(pfc::string_base& out) const
+void FilterPanel::get_name(pfc::string_base& out) const
 {
     out.set_string("Filter");
 }
-void filter_panel_t::get_category(pfc::string_base& out) const
+void FilterPanel::get_category(pfc::string_base& out) const
 {
     out.set_string("Panels");
 }
-unsigned filter_panel_t::get_type() const
+unsigned FilterPanel::get_type() const
 {
     return uie::type_panel;
 }
 
 // {FB059406-5F14-4bd0-8A11-4242854CBBA5}
-const GUID filter_panel_t::g_extension_guid
+const GUID FilterPanel::g_extension_guid
     = {0xfb059406, 0xdddd, 0x4bd0, {0x8a, 0x11, 0x42, 0x42, 0x85, 0x4c, 0xbb, 0xa5}};
 
-uie::window_factory<filter_panel_t> g_filter;
+uie::window_factory<FilterPanel> g_filter;
 
-std::vector<filter_panel_t*> filter_panel_t::g_windows;
-bool filter_panel_t::g_showemptyitems = false;
+std::vector<FilterPanel*> FilterPanel::g_windows;
+bool FilterPanel::g_showemptyitems = false;
 
-pfc::list_t<field_data_t> filter_panel_t::g_field_data;
+pfc::list_t<field_data_t> FilterPanel::g_field_data;
 
-pfc::list_t<filter_stream_t::ptr> filter_panel_t::g_streams;
+pfc::list_t<filter_stream_t::ptr> FilterPanel::g_streams;
 
 // {4D6774AF-C292-44ac-8A8F-3B0855DCBDF4}
 const GUID appearance_client_filter_impl::g_guid
@@ -916,7 +916,7 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { filter_panel_t::g_on_font_items_change(); }
+    void on_font_changed() const override { FilterPanel::g_on_font_items_change(); }
 };
 
 class font_header_client_filter : public cui::fonts::client {
@@ -926,7 +926,7 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { filter_panel_t::g_on_font_header_change(); }
+    void on_font_changed() const override { FilterPanel::g_on_font_header_change(); }
 };
 
 font_client_filter::factory<font_client_filter> g_font_client_filter;
@@ -934,7 +934,7 @@ font_header_client_filter::factory<font_header_client_filter> g_font_header_clie
 
 void appearance_client_filter_impl::on_colour_changed(t_size mask) const
 {
-    filter_panel_t::g_redraw_all();
+    FilterPanel::g_redraw_all();
 }
 
 } // namespace filter_panel

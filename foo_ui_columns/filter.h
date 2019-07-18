@@ -67,7 +67,7 @@ public:
     using self_t = filter_stream_t;
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
     /** Unordered */
-    pfc::ptr_list_t<class filter_panel_t> m_windows;
+    pfc::ptr_list_t<class FilterPanel> m_windows;
 
     bool m_source_overriden{false};
     metadb_handle_list m_source_handles;
@@ -75,7 +75,7 @@ public:
     bool is_visible();
 };
 
-class filter_panel_t
+class FilterPanel
     : public t_list_view_panel<appearance_client_filter_impl, uie::window>
     , fbh::LibraryCallback {
     friend class filter_search_bar;
@@ -112,7 +112,7 @@ public:
     static void g_on_fields_swapped(t_size index_1, t_size index_2);
     static void g_on_field_removed(t_size index);
 
-    ~filter_panel_t() = default;
+    ~FilterPanel() = default;
 
     bool is_visible() const
     {
@@ -132,20 +132,20 @@ public:
 private:
     static const GUID g_extension_guid;
     static pfc::list_t<filter_stream_t::ptr> g_streams;
-    static std::vector<filter_panel_t*> g_windows;
+    static std::vector<FilterPanel*> g_windows;
     static pfc::list_t<field_data_t> g_field_data;
 
     field_data_t m_field_data;
 
     static void g_create_field_data(const field_t& field, field_data_t& p_out);
     static void g_load_fields();
-    static void g_update_subsequent_filters(const pfc::list_base_const_t<filter_panel_t*>& windows, t_size index,
+    static void g_update_subsequent_filters(const pfc::list_base_const_t<FilterPanel*>& windows, t_size index,
         bool b_check_needs_update = false, bool b_update_playlist = true);
 
     t_size get_field_index();
     void set_field(const field_data_t& field, bool b_force = false);
-    void get_windows(pfc::list_base_t<filter_panel_t*>& windows);
-    filter_panel_t* get_next_window();
+    void get_windows(pfc::list_base_t<FilterPanel*>& windows);
+    FilterPanel* get_next_window();
 
     void get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out);
     void update_subsequent_filters(bool b_allow_autosend = true);

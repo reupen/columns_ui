@@ -144,14 +144,14 @@ class SettingsDataSet : public cui::fcl::dataset {
             }
         }
 
-        filter_panel::filter_panel_t::g_on_show_column_titles_change();
-        filter_panel::filter_panel_t::g_on_show_sort_indicators_change();
-        filter_panel::filter_panel_t::g_on_vertical_item_padding_change();
-        filter_panel::filter_panel_t::g_on_edgestyle_change();
-        filter_panel::filter_panel_t::g_on_allow_sorting_change();
+        filter_panel::FilterPanel::g_on_show_column_titles_change();
+        filter_panel::FilterPanel::g_on_show_sort_indicators_change();
+        filter_panel::FilterPanel::g_on_vertical_item_padding_change();
+        filter_panel::FilterPanel::g_on_edgestyle_change();
+        filter_panel::FilterPanel::g_on_allow_sorting_change();
 
-        filter_panel::filter_panel_t::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems, false);
-        filter_panel::filter_panel_t::g_on_orderedbysplitters_change();
+        filter_panel::FilterPanel::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems, false);
+        filter_panel::FilterPanel::g_on_orderedbysplitters_change();
     }
 };
 
@@ -273,7 +273,7 @@ class FieldsDataSet : public cui::fcl::dataset {
 
         filter_panel::cfg_field_list.remove_all();
         filter_panel::cfg_field_list.add_items(imported_fields);
-        filter_panel::filter_panel_t::g_on_fields_change();
+        filter_panel::FilterPanel::g_on_fields_change();
     }
 
     pfc::array_t<uint8_t> write_field(filter_panel::field_t& field, abort_callback& aborter) const

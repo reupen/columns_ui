@@ -3,7 +3,7 @@
 #include "filter_config_var.h"
 
 namespace filter_panel {
-bool filter_panel_t::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& ht)
+bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& ht)
 {
     HMENU menu = CreatePopupMenu();
     t_size count = g_field_data.get_count();
@@ -34,7 +34,7 @@ bool filter_panel_t::notify_on_contextmenu_header(const POINT& pt, const HDHITTE
     }
     return true;
 }
-void filter_panel_t::notify_on_menu_select(WPARAM wp, LPARAM lp)
+void FilterPanel::notify_on_menu_select(WPARAM wp, LPARAM lp)
 {
     if (HIWORD(wp) & MF_POPUP) {
         m_status_text_override.release();
@@ -66,7 +66,7 @@ void filter_panel_t::notify_on_menu_select(WPARAM wp, LPARAM lp)
     }
 }
 
-bool filter_panel_t::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
+bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     uie::window_ptr p_this_temp = this;
     enum { ID_BASE = action_add_to_active + 2 };

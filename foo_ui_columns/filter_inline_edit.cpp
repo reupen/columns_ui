@@ -3,13 +3,13 @@
 
 namespace filter_panel {
 
-bool filter_panel_t::notify_before_create_inline_edit(
+bool FilterPanel::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
     return !m_field_data.m_use_script && m_field_data.m_fields.get_count() && column == 0 && indices.get_count() == 1
         && indices[0] != 0;
 };
-bool filter_panel_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
@@ -25,7 +25,7 @@ bool filter_panel_t::notify_create_inline_edit(const pfc::list_base_const_t<t_si
     }
     return false;
 };
-void filter_panel_t::notify_save_inline_edit(const char* value)
+void FilterPanel::notify_save_inline_edit(const char* value)
 {
     static_api_ptr_t<metadb_io_v2> tagger_api;
     {
@@ -74,7 +74,7 @@ void filter_panel_t::notify_save_inline_edit(const char* value)
         }
     }
 };
-void filter_panel_t::notify_exit_inline_edit()
+void FilterPanel::notify_exit_inline_edit()
 {
     m_edit_fields.remove_all();
     m_edit_handles.remove_all();

@@ -3,7 +3,7 @@
 #include "filter_config_var.h"
 
 namespace filter_panel {
-void filter_panel_t::populate_list_from_chain(
+void FilterPanel::populate_list_from_chain(
     const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain)
 {
     bool b_redraw = disable_redrawing();
@@ -48,9 +48,9 @@ void filter_panel_t::populate_list_from_chain(
         enable_redrawing();
 }
 
-void filter_panel_t::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& added_tracks)
+void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& added_tracks)
 {
-    filter_panel_t* const next_window = get_next_window();
+    FilterPanel* const next_window = get_next_window();
     if (m_field_data.is_empty()) {
         if (next_window)
             next_window->add_nodes(added_tracks);
@@ -116,9 +116,9 @@ void filter_panel_t::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     }
 }
 
-void filter_panel_t::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& removed_tracks)
+void FilterPanel::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& removed_tracks)
 {
-    filter_panel_t* const next_window = get_next_window();
+    FilterPanel* const next_window = get_next_window();
     if (m_field_data.is_empty()) {
         if (next_window)
             next_window->remove_nodes(removed_tracks);
@@ -176,9 +176,9 @@ void filter_panel_t::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressiv
     }
 }
 
-void filter_panel_t::on_items_added(const pfc::list_base_const_t<metadb_handle_ptr>& handles)
+void FilterPanel::on_items_added(const pfc::list_base_const_t<metadb_handle_ptr>& handles)
 {
-    pfc::ptr_list_t<filter_panel_t> windows;
+    pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
     t_size index = windows.find_item(this);
     if (index == 0 || index == pfc_infinite) {
@@ -187,9 +187,9 @@ void filter_panel_t::on_items_added(const pfc::list_base_const_t<metadb_handle_p
     }
 }
 
-void filter_panel_t::on_items_removed(const pfc::list_base_const_t<metadb_handle_ptr>& handles)
+void FilterPanel::on_items_removed(const pfc::list_base_const_t<metadb_handle_ptr>& handles)
 {
-    pfc::ptr_list_t<filter_panel_t> windows;
+    pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
     t_size index = windows.find_item(this);
     if (index == 0 || index == pfc_infinite) {
@@ -198,9 +198,9 @@ void filter_panel_t::on_items_removed(const pfc::list_base_const_t<metadb_handle
     }
 }
 
-void filter_panel_t::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& modified_tracks)
+void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& modified_tracks)
 {
-    filter_panel_t* const next_window = get_next_window();
+    FilterPanel* const next_window = get_next_window();
     if (m_field_data.is_empty()) {
         if (next_window)
             next_window->update_nodes(modified_tracks);
@@ -283,9 +283,9 @@ void filter_panel_t::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressiv
     }
 }
 
-void filter_panel_t::on_items_modified(const pfc::list_base_const_t<metadb_handle_ptr>& handles)
+void FilterPanel::on_items_modified(const pfc::list_base_const_t<metadb_handle_ptr>& handles)
 {
-    pfc::ptr_list_t<filter_panel_t> windows;
+    pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
     t_size index = windows.find_item(this);
     if (index == 0 || index == pfc_infinite) {
@@ -294,7 +294,7 @@ void filter_panel_t::on_items_modified(const pfc::list_base_const_t<metadb_handl
     }
 }
 
-size_t filter_panel_t::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks,
+size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks,
     pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive>& p_out, bool b_show_empty)
 {
     class handle_info_t {
@@ -388,7 +388,7 @@ size_t filter_panel_t::make_data_entries(const metadb_handle_list_t<pfc::alloc_f
     return counts.combine(std::plus<>());
 }
 
-void filter_panel_t::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& handles)
+void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& handles)
 {
     clear_all_items();
     m_nodes.remove_all();
@@ -428,7 +428,7 @@ void filter_panel_t::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& 
     insert_items(0, items.get_count(), items.get_ptr());
 }
 
-void filter_panel_t::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
+void FilterPanel::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
 {
     const auto node_count = m_nodes.get_count();
     if (node_count > 2) {

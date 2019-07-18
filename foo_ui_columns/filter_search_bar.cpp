@@ -63,7 +63,7 @@ void g_get_search_bar_sibling_streams(filter_search_bar const* p_serach_bar, pfc
             uie::splitter_window_ptr p_splitter;
 
             if (p_window->get_extension_guid() == cui::panels::guid_filter) {
-                auto* p_filter = static_cast<filter_panel_t*>(p_window.get_ptr());
+                auto* p_filter = static_cast<FilterPanel*>(p_window.get_ptr());
                 if (!p_out.have_item(p_filter->m_stream.get_ptr()))
                     p_out.add_item(p_filter->m_stream);
             } else if (p_window->service_query_t(p_splitter)) {
@@ -183,7 +183,7 @@ void filter_search_bar::commit_search_results(const char* str, bool b_force_auto
     pfc::list_t<filter_stream_t::ptr> p_streams;
     g_get_search_bar_sibling_streams(this, p_streams);
     if (p_streams.get_count() == 0)
-        p_streams = filter_panel_t::g_streams;
+        p_streams = FilterPanel::g_streams;
 
     t_size stream_count = p_streams.get_count();
     bool b_diff = strcmp(m_active_search_string, str) != 0;
@@ -220,7 +220,7 @@ void filter_search_bar::commit_search_results(const char* str, bool b_force_auto
                 t_size filter_count = p_stream->m_windows.get_count();
                 if (filter_count) {
                     bool b_stream_visible = p_stream->is_visible(); // mask_visible.get(i);
-                    pfc::list_t<filter_panel_t*> ordered_windows;
+                    pfc::list_t<FilterPanel*> ordered_windows;
                     p_stream->m_windows[0]->get_windows(ordered_windows);
                     if (ordered_windows.get_count()) {
                         if (b_diff)
