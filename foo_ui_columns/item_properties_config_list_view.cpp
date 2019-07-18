@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "item_properties.h"
 
-void fields_list_view_t::notify_save_inline_edit(const char* value)
+void FieldsList::notify_save_inline_edit(const char* value)
 {
     if (m_edit_index < m_fields.get_count()) {
         (m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
@@ -15,7 +15,7 @@ void fields_list_view_t::notify_save_inline_edit(const char* value)
     m_edit_index = pfc_infinite;
 }
 
-bool fields_list_view_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+bool FieldsList::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
@@ -33,13 +33,13 @@ bool fields_list_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
     return false;
 }
 
-bool fields_list_view_t::notify_before_create_inline_edit(
+bool FieldsList::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
     return column <= 1 && indices.get_count() == 1;
 }
 
-void fields_list_view_t::notify_on_create()
+void FieldsList::notify_on_create()
 {
     set_single_selection(true);
     pfc::list_t<Column> columns;
@@ -56,7 +56,7 @@ void fields_list_view_t::notify_on_create()
     insert_items(0, count, items.get_ptr());
 }
 
-void fields_list_view_t::get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
+void FieldsList::get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
 {
     items.set_count(count);
     for (t_size i = 0; i < count; i++) {
@@ -66,7 +66,7 @@ void fields_list_view_t::get_insert_items(t_size base, t_size count, pfc::list_t
     }
 }
 
-fields_list_view_t::fields_list_view_t(pfc::list_t<field_t>& p_fields)
+FieldsList::FieldsList(pfc::list_t<Field>& p_fields)
     : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite), m_fields(p_fields)
 {
 }

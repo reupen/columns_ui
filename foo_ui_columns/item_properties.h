@@ -2,26 +2,26 @@
 
 #include "list_view_panel.h"
 
-struct info_section_t {
+struct InfoSection {
     t_uint32 id;
     const char* name;
-    info_section_t(t_uint32 p_id, const char* p_name) : id(p_id), name(p_name){};
+    InfoSection(t_uint32 p_id, const char* p_name) : id(p_id), name(p_name){};
 };
 
-class field_t {
+class Field {
 public:
     pfc::string8 m_name;
     pfc::string8 m_name_friendly;
 
-    field_t(const char* friendly, const char* field) : m_name(field), m_name_friendly(friendly){};
-    field_t() = default;
+    Field(const char* friendly, const char* field) : m_name(field), m_name_friendly(friendly){};
+    Field() = default;
 };
 
-class fields_list_view_t : public uih::ListView {
+class FieldsList : public uih::ListView {
 public:
     t_size m_edit_index, m_edit_column;
-    pfc::list_t<field_t>& m_fields;
-    fields_list_view_t(pfc::list_t<field_t>& p_fields);
+    pfc::list_t<Field>& m_fields;
+    FieldsList(pfc::list_t<Field>& p_fields);
 
     void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items);
     void notify_on_create() override;
@@ -37,9 +37,9 @@ private:
 t_size g_get_info_secion_index_by_name(const char* p_name);
 t_size g_get_info_secion_index_by_id(t_size id);
 
-extern const info_section_t g_info_sections[5];
+extern const InfoSection g_info_sections[5];
 
-class track_property_callback_itemproperties : public track_property_callback_v2 {
+class ItemPropertiesTrackPropertyCallback : public track_property_callback_v2 {
 public:
     class track_property_t {
     public:
@@ -72,11 +72,11 @@ public:
     bool is_group_wanted(const char* p_group) override;
     void sort();
 
-    track_property_callback_itemproperties();
+    ItemPropertiesTrackPropertyCallback();
     pfc::array_staticsize_t<pfc::list_t<track_property_t>> m_values;
 };
 
-class appearance_client_selection_properties_impl : public cui::colours::client {
+class ItemPropertiesColoursClient : public cui::colours::client {
 public:
     static const GUID g_guid;
 
@@ -97,16 +97,16 @@ public:
     void on_bool_changed(t_size mask) const override{};
 };
 
-class selection_properties_config_t {
+class ItemPropertiesConfig {
 public:
-    pfc::list_t<field_t> m_fields;
+    pfc::list_t<Field> m_fields;
     t_size m_edge_style;
     t_uint32 m_info_sections_mask;
     bool m_show_columns, m_show_groups;
 
     bool m_initialising;
     static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    selection_properties_config_t(pfc::list_t<field_t> p_fields, t_size edge_style, t_uint32 info_sections_mask,
+    ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style, t_uint32 info_sections_mask,
         bool b_show_columns, bool b_show_groups);
 
     bool run_modal(HWND wnd);
@@ -114,27 +114,27 @@ public:
 private:
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-    fields_list_view_t m_field_list;
+    FieldsList m_field_list;
 };
 
 class ItemProperties
-    : public t_list_view_panel<appearance_client_selection_properties_impl, uie::window>
+    : public t_list_view_panel<ItemPropertiesColoursClient, uie::window>
     , public ui_selection_callback
     , public play_callback
     , public metadb_io_callback_dynamic {
-    class message_window_t : public ui_helpers::container_window {
+    class MessageWindow : public ui_helpers::container_window {
         class_data& get_class_data() const override;
         LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     };
 
-    static message_window_t g_message_window;
+    static MessageWindow g_message_window;
 
     enum {
         MSG_REFRESH = WM_USER + 2,
     };
 
 public:
-    enum tracking_mode_t {
+    enum TrackingMode {
         track_selection,
         track_nowplaying,
         track_automatic,
@@ -151,7 +151,7 @@ public:
 
     bool have_config_popup() const override;
     bool show_config_popup(HWND wnd_parent) override;
-    class menu_node_track_mode : public ui_extension::menu_node_command_t {
+    class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemProperties> p_this;
         t_size m_source;
 
@@ -160,27 +160,27 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_track_mode(ItemProperties* p_wnd, t_size p_value);
+        MenuNodeTrackMode(ItemProperties* p_wnd, t_size p_value);
         ;
     };
-    class menu_node_autosize : public ui_extension::menu_node_command_t {
+    class ModeNodeAutosize : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemProperties> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_autosize(ItemProperties* p_wnd);
+        ModeNodeAutosize(ItemProperties* p_wnd);
         ;
     };
-    class menu_node_source_popup : public ui_extension::menu_node_popup_t {
+    class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
         pfc::list_t<ui_extension::menu_node_ptr> m_items;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_source_popup(ItemProperties* p_wnd);
+        MenuNodeSourcePopup(ItemProperties* p_wnd);
         ;
     };
 
@@ -239,7 +239,7 @@ private:
 
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles, m_selection_handles;
-    pfc::list_t<field_t> m_fields;
+    pfc::list_t<Field> m_fields;
     bool m_callback_registered{false};
     t_size m_tracking_mode;
 
