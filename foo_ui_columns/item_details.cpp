@@ -53,25 +53,25 @@ cfg_uint cfg_item_details_horizontal_alignment(g_guid_item_details_horizontal_al
 cfg_uint cfg_item_details_vertical_alignment(g_guid_item_details_vertical_alignment, uih::ALIGN_CENTRE);
 cfg_bool cfg_item_details_word_wrapping(g_guid_item_details_word_wrapping, true);
 
-void ItemDetails::menu_node_options::execute()
+void ItemDetails::MenuNodeOptions::execute()
 {
     if (p_this->m_wnd_config)
         SetActiveWindow(p_this->m_wnd_config);
     else {
-        auto p_dialog = new item_details_config_t(
+        auto p_dialog = new ItemDetailsConfig(
             p_this->m_script, p_this->m_edge_style, p_this->m_horizontal_alignment, p_this->m_vertical_alignment);
         p_dialog->run_modeless(GetAncestor(p_this->get_wnd(), GA_ROOT), p_this.get_ptr());
     }
 }
 
-ItemDetails::menu_node_options::menu_node_options(ItemDetails* p_wnd) : p_this(p_wnd) {}
+ItemDetails::MenuNodeOptions::MenuNodeOptions(ItemDetails* p_wnd) : p_this(p_wnd) {}
 
-bool ItemDetails::menu_node_options::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeOptions::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ItemDetails::menu_node_options::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeOptions::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Options";
     p_displayflags = 0;
@@ -84,7 +84,7 @@ bool ItemDetails::have_config_popup() const
 }
 bool ItemDetails::show_config_popup(HWND wnd_parent)
 {
-    item_details_config_t dialog(m_script, m_edge_style, m_horizontal_alignment, m_vertical_alignment);
+    ItemDetailsConfig dialog(m_script, m_edge_style, m_horizontal_alignment, m_vertical_alignment);
     if (dialog.run_modal(wnd_parent)) {
         m_script = dialog.m_script;
         m_edge_style = dialog.m_edge_style;
@@ -141,27 +141,27 @@ void ItemDetails::get_config(stream_writer* p_writer, abort_callback& p_abort) c
 
 void ItemDetails::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_source_popup(this)));
+    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeSourcePopup(this)));
     // p_node = new menu_node_alignment_popup(this);
     // p_hook.add_node(p_node);
-    ui_extension::menu_node_ptr p_node = new menu_node_hscroll(this);
+    ui_extension::menu_node_ptr p_node = new MenuNodeHorizontalScrolling(this);
     p_hook.add_node(p_node);
-    p_node = new menu_node_wwrap(this);
+    p_node = new MenuNodeWordWrap(this);
     p_hook.add_node(p_node);
-    p_node = new menu_node_options(this);
+    p_node = new MenuNodeOptions(this);
     p_hook.add_node(p_node);
 }
 
-ItemDetails::message_window_t ItemDetails::g_message_window;
+ItemDetails::MessageWindow ItemDetails::g_message_window;
 
 std::vector<ItemDetails*> ItemDetails::g_windows;
 
-ItemDetails::message_window_t::class_data& ItemDetails::message_window_t::get_class_data() const
+ItemDetails::MessageWindow::class_data& ItemDetails::MessageWindow::get_class_data() const
 {
     __implement_get_class_data_ex(_T("\r\n{6EB3EA81-7C5E-468d-B507-E5527F52361B}"), _T(""), false, 0, 0, 0, 0);
 }
 
-LRESULT ItemDetails::message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT ItemDetails::MessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE:
@@ -428,7 +428,7 @@ void ItemDetails::refresh_contents(bool reset_scroll_position)
         LOGFONT lf;
         static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
 
-        titleformat_hook_change_font tf_hook(lf);
+        TitleformatHookChangeFont tf_hook(lf);
         pfc::string8_fast_aggressive temp, temp2;
         temp.prealloc(2048);
         temp2.prealloc(2048);
@@ -754,7 +754,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
         static_api_ptr_t<metadb_io_v3>()->register_callback(this);
 
-        m_font_change_info.m_default_font = new font_t;
+        m_font_change_info.m_default_font = new Font;
         m_font_change_info.m_default_font->m_font
             = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
         m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font);
@@ -1149,9 +1149,9 @@ ItemDetails::class_data& ItemDetails::get_class_data() const
 
 uie::window_factory<ItemDetails> g_item_details;
 
-ItemDetails::menu_node_wwrap::menu_node_wwrap(ItemDetails* p_wnd) : p_this(p_wnd) {}
+ItemDetails::MenuNodeWordWrap::MenuNodeWordWrap(ItemDetails* p_wnd) : p_this(p_wnd) {}
 
-void ItemDetails::menu_node_wwrap::execute()
+void ItemDetails::MenuNodeWordWrap::execute()
 {
     p_this->m_word_wrapping = !p_this->m_word_wrapping;
     cfg_item_details_word_wrapping = p_this->m_word_wrapping;
@@ -1161,21 +1161,21 @@ void ItemDetails::menu_node_wwrap::execute()
     p_this->update_now();
 }
 
-bool ItemDetails::menu_node_wwrap::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeWordWrap::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ItemDetails::menu_node_wwrap::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeWordWrap::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Word wrapping";
     p_displayflags = (p_this->m_word_wrapping) ? ui_extension::menu_node_t::state_checked : 0;
     return true;
 }
 
-ItemDetails::menu_node_hscroll::menu_node_hscroll(ItemDetails* p_wnd) : p_this(p_wnd) {}
+ItemDetails::MenuNodeHorizontalScrolling::MenuNodeHorizontalScrolling(ItemDetails* p_wnd) : p_this(p_wnd) {}
 
-void ItemDetails::menu_node_hscroll::execute()
+void ItemDetails::MenuNodeHorizontalScrolling::execute()
 {
     p_this->m_hscroll = !p_this->m_hscroll;
     cfg_item_details_hscroll = p_this->m_hscroll;
@@ -1185,36 +1185,36 @@ void ItemDetails::menu_node_hscroll::execute()
     p_this->update_now();
 }
 
-bool ItemDetails::menu_node_hscroll::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeHorizontalScrolling::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ItemDetails::menu_node_hscroll::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeHorizontalScrolling::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Allow horizontal scrolling";
     p_displayflags = (p_this->m_hscroll) ? ui_extension::menu_node_t::state_checked : 0;
     return true;
 }
 
-ItemDetails::menu_node_alignment_popup::menu_node_alignment_popup(ItemDetails* p_wnd)
+ItemDetails::MenuNodeAlignmentPopup::MenuNodeAlignmentPopup(ItemDetails* p_wnd)
 {
-    m_items.add_item(new menu_node_alignment(p_wnd, 0));
-    m_items.add_item(new menu_node_alignment(p_wnd, 1));
-    m_items.add_item(new menu_node_alignment(p_wnd, 2));
+    m_items.add_item(new MenuNodeAlignment(p_wnd, 0));
+    m_items.add_item(new MenuNodeAlignment(p_wnd, 1));
+    m_items.add_item(new MenuNodeAlignment(p_wnd, 2));
 }
 
-void ItemDetails::menu_node_alignment_popup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemDetails::MenuNodeAlignmentPopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ItemDetails::menu_node_alignment_popup::get_children_count() const
+unsigned ItemDetails::MenuNodeAlignmentPopup::get_children_count() const
 {
     return m_items.get_count();
 }
 
-bool ItemDetails::menu_node_alignment_popup::get_display_data(
+bool ItemDetails::MenuNodeAlignmentPopup::get_display_data(
     pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Alignment";
@@ -1222,12 +1222,12 @@ bool ItemDetails::menu_node_alignment_popup::get_display_data(
     return true;
 }
 
-ItemDetails::menu_node_alignment::menu_node_alignment(ItemDetails* p_wnd, t_size p_value)
+ItemDetails::MenuNodeAlignment::MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value)
     : p_this(p_wnd), m_type(p_value)
 {
 }
 
-void ItemDetails::menu_node_alignment::execute()
+void ItemDetails::MenuNodeAlignment::execute()
 {
     p_this->m_horizontal_alignment = m_type;
     cfg_item_details_horizontal_alignment = m_type;
@@ -1236,19 +1236,19 @@ void ItemDetails::menu_node_alignment::execute()
     p_this->update_now();
 }
 
-bool ItemDetails::menu_node_alignment::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeAlignment::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ItemDetails::menu_node_alignment::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeAlignment::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_type);
     p_displayflags = (m_type == p_this->m_horizontal_alignment) ? ui_extension::menu_node_t::state_radiochecked : 0;
     return true;
 }
 
-const char* ItemDetails::menu_node_alignment::get_name(t_size source)
+const char* ItemDetails::MenuNodeAlignment::get_name(t_size source)
 {
     if (source == 0)
         return "Left";
@@ -1258,58 +1258,58 @@ const char* ItemDetails::menu_node_alignment::get_name(t_size source)
     return "Right";
 }
 
-ItemDetails::menu_node_source_popup::menu_node_source_popup(ItemDetails* p_wnd)
+ItemDetails::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemDetails* p_wnd)
 {
-    m_items.add_item(new menu_node_track_mode(p_wnd, 3));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 0));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 3));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
     m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 4));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 1));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 4));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
 }
 
-void ItemDetails::menu_node_source_popup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemDetails::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ItemDetails::menu_node_source_popup::get_children_count() const
+unsigned ItemDetails::MenuNodeSourcePopup::get_children_count() const
 {
     return m_items.get_count();
 }
 
-bool ItemDetails::menu_node_source_popup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Displayed track";
     p_displayflags = 0;
     return true;
 }
 
-ItemDetails::menu_node_track_mode::menu_node_track_mode(ItemDetails* p_wnd, t_size p_value)
+ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value)
     : p_this(p_wnd), m_source(p_value)
 {
 }
 
-void ItemDetails::menu_node_track_mode::execute()
+void ItemDetails::MenuNodeTrackMode::execute()
 {
     p_this->m_tracking_mode = m_source;
     cfg_item_details_tracking_mode = m_source;
     p_this->on_tracking_mode_change();
 }
 
-bool ItemDetails::menu_node_track_mode::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeTrackMode::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool ItemDetails::menu_node_track_mode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
     p_displayflags = (m_source == p_this->m_tracking_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
     return true;
 }
 
-const char* ItemDetails::menu_node_track_mode::get_name(t_size source)
+const char* ItemDetails::MenuNodeTrackMode::get_name(t_size source)
 {
     if (source == track_playing)
         return "Playing item";

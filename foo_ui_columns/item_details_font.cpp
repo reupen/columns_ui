@@ -2,19 +2,19 @@
 #include "item_details.h"
 #include "config.h"
 
-bool operator==(const font_data_t& item1, const font_data_t& item2)
+bool operator==(const FontData& item1, const FontData& item2)
 {
-    return !font_data_t::g_compare(item1, item2);
+    return !FontData::g_compare(item1, item2);
 }
 
-void font_change_info_t::reset(bool bKeepHandles /*= false*/)
+void FontChangeNotify::reset(bool bKeepHandles /*= false*/)
 {
     if (!bKeepHandles)
         m_fonts.set_size(0);
     m_font_changes.set_size(0);
 }
 
-bool font_change_info_t::find_font(const font_data_t& p_font, t_size& index)
+bool FontChangeNotify::find_font(const FontData& p_font, t_size& index)
 {
     t_size count = m_fonts.get_count();
     for (t_size i = 0; i < count; i++) {
@@ -27,7 +27,7 @@ bool font_change_info_t::find_font(const font_data_t& p_font, t_size& index)
     return false;
 }
 
-titleformat_hook_change_font::titleformat_hook_change_font(const LOGFONT& lf)
+TitleformatHookChangeFont::TitleformatHookChangeFont(const LOGFONT& lf)
 {
     HDC dc = GetDC(nullptr);
     m_default_font_size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
@@ -36,7 +36,7 @@ titleformat_hook_change_font::titleformat_hook_change_font(const LOGFONT& lf)
     m_default_font_face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, tabsize(lf.lfFaceName));
 }
 
-bool titleformat_hook_change_font::process_function(titleformat_text_out* p_out, const char* p_name,
+bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, const char* p_name,
     unsigned p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -82,7 +82,7 @@ bool titleformat_hook_change_font::process_function(titleformat_text_out* p_out,
     return false;
 }
 
-bool titleformat_hook_change_font::process_field(
+bool TitleformatHookChangeFont::process_field(
     titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -99,21 +99,21 @@ bool titleformat_hook_change_font::process_field(
     return false;
 }
 
-void font_code_generator_t::initialise(const LOGFONT& p_lf_default, HWND parent, UINT edit)
+void FontCodeGenerator::initialise(const LOGFONT& p_lf_default, HWND parent, UINT edit)
 {
     m_lf = p_lf_default;
-    uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, string_font_code(m_lf));
+    uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, StringFontCode(m_lf));
 }
 
-void font_code_generator_t::run(HWND parent, UINT edit)
+void FontCodeGenerator::run(HWND parent, UINT edit)
 {
     if (auto font_description = cui::fonts::select_font(parent, m_lf); font_description) {
         m_lf = font_description->log_font;
-        uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, string_font_code(m_lf));
+        uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, StringFontCode(m_lf));
     }
 }
 
-font_code_generator_t::string_font_code::string_font_code(const LOGFONT& lf)
+FontCodeGenerator::StringFontCode::StringFontCode(const LOGFONT& lf)
 {
     prealloc(64);
     HDC dc = GetDC(nullptr);
@@ -132,12 +132,12 @@ font_code_generator_t::string_font_code::string_font_code(const LOGFONT& lf)
     add_string(")");
 }
 
-font_code_generator_t::string_font_code::operator const char*() const
+FontCodeGenerator::StringFontCode::operator const char*() const
 {
     return get_ptr();
 }
 
-void g_parse_font_format_string(const char* str, t_size len, font_data_t& p_out)
+void g_parse_font_format_string(const char* str, t_size len, FontData& p_out)
 {
     t_size ptr = 0;
     while (ptr < len) {

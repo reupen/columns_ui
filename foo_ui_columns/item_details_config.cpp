@@ -2,7 +2,7 @@
 #include "item_details.h"
 #include "config.h"
 
-BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
         /*case DM_GETDEFID:
@@ -152,13 +152,13 @@ BOOL CALLBACK item_details_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, L
     return FALSE;
 }
 
-void item_details_config_t::on_timer()
+void ItemDetailsConfig::on_timer()
 {
     m_this->set_script(m_script);
     kill_timer();
 }
 
-void item_details_config_t::start_timer()
+void ItemDetailsConfig::start_timer()
 {
     kill_timer();
 
@@ -166,7 +166,7 @@ void item_details_config_t::start_timer()
     m_timer_active = true;
 }
 
-void item_details_config_t::kill_timer()
+void ItemDetailsConfig::kill_timer()
 {
     if (m_timer_active) {
         KillTimer(m_wnd, timer_id);
@@ -174,7 +174,7 @@ void item_details_config_t::kill_timer()
     }
 }
 
-void item_details_config_t::run_modeless(HWND wnd, ItemDetails* p_this)
+void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this)
 {
     m_modal = false;
     m_this = p_this;
@@ -182,24 +182,24 @@ void item_details_config_t::run_modeless(HWND wnd, ItemDetails* p_this)
         delete this;
 }
 
-bool item_details_config_t::run_modal(HWND wnd)
+bool ItemDetailsConfig::run_modal(HWND wnd)
 {
     m_modal = true;
     return uDialogBox(IDD_ITEM_DETAILS_OPTIONS, wnd, g_DialogProc, (LPARAM)this) != 0;
 }
 
-item_details_config_t::item_details_config_t(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)
+ItemDetailsConfig::ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)
     : m_script(p_text), m_edge_style(edge_style), m_horizontal_alignment(halign), m_vertical_alignment(valign)
 {
 }
 
-BOOL CALLBACK item_details_config_t::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ItemDetailsConfig::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    item_details_config_t* p_data = nullptr;
+    ItemDetailsConfig* p_data = nullptr;
     if (msg == WM_INITDIALOG) {
-        p_data = reinterpret_cast<item_details_config_t*>(lp);
+        p_data = reinterpret_cast<ItemDetailsConfig*>(lp);
         SetWindowLongPtr(wnd, DWLP_USER, lp);
     } else
-        p_data = reinterpret_cast<item_details_config_t*>(GetWindowLongPtr(wnd, DWLP_USER));
+        p_data = reinterpret_cast<ItemDetailsConfig*>(GetWindowLongPtr(wnd, DWLP_USER));
     return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }
