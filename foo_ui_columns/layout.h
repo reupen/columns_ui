@@ -9,7 +9,7 @@
  * Classes used for hosting panels in the main area of the UI
  */
 
-class cfg_layout_t : public cfg_var {
+class ConfigLayout : public cfg_var {
 public:
     class preset {
     public:
@@ -48,7 +48,7 @@ public:
 
     void reset_presets(); // needs services
 
-    cfg_layout_t(const GUID& p_guid);
+    ConfigLayout(const GUID& p_guid);
 
 private:
     enum { stream_version_current = 0 };
@@ -66,7 +66,7 @@ class LayoutWindow
 public:
     enum { MSG_LAYOUT_SET_FOCUS = WM_USER + 2, MSG_EDIT_PANEL };
 
-    static void g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_out);
+    static void g_get_default_presets(pfc::list_t<ConfigLayout::preset>& p_out);
 
     void refresh_child();
     void relinquish_child();
@@ -78,7 +78,7 @@ public:
     void show_window();
 
     void export_config(stream_writer* p_out, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
-    bool import_config_to_object(stream_reader* p_reader, t_size size, t_uint32 mode, cfg_layout_t::preset& p_out,
+    bool import_config_to_object(stream_reader* p_reader, t_size size, t_uint32 mode, ConfigLayout::preset& p_out,
         pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 
     void show_menu_access_keys();
@@ -137,4 +137,4 @@ private:
 };
 
 extern LayoutWindow g_layout_window;
-extern cfg_layout_t cfg_layout;
+extern ConfigLayout cfg_layout;

@@ -190,12 +190,12 @@ uie::window::ptr node_to_window(Node node)
     return window;
 }
 
-cfg_layout_t::preset preset_to_config_preset(Preset preset)
+ConfigLayout::preset preset_to_config_preset(Preset preset)
 {
     const auto window = node_to_window(preset.node);
     abort_callback_dummy aborter;
 
-    cfg_layout_t::preset preset_default;
+    ConfigLayout::preset preset_default;
     preset_default.m_name.set_string(preset.name.data(), preset.name.size());
     preset_default.m_guid = preset.node.guid;
     stream_writer_memblock_ref conf(preset_default.m_val, true);
@@ -205,19 +205,19 @@ cfg_layout_t::preset preset_to_config_preset(Preset preset)
 
 } // namespace cui::default_presets
 
-cfg_layout_t::cfg_layout_t(const GUID& p_guid)
+ConfigLayout::ConfigLayout(const GUID& p_guid)
     : cfg_var(p_guid)
     , m_active(0) //, m_initialised(false)
     {};
 
-void cfg_layout_t::preset::write(stream_writer* out, abort_callback& p_abort)
+void ConfigLayout::preset::write(stream_writer* out, abort_callback& p_abort)
 {
     out->write_lendian_t(m_guid, p_abort);
     out->write_string(m_name.get_ptr(), p_abort);
     out->write_lendian_t(m_val.get_size(), p_abort);
     out->write(m_val.get_ptr(), m_val.get_size(), p_abort);
 }
-void cfg_layout_t::preset::read(stream_reader* stream, abort_callback& p_abort)
+void ConfigLayout::preset::read(stream_reader* stream, abort_callback& p_abort)
 {
     stream->read_lendian_t(m_guid, p_abort);
     pfc::string8 temp;
@@ -229,20 +229,20 @@ void cfg_layout_t::preset::read(stream_reader* stream, abort_callback& p_abort)
     stream->read(m_val.get_ptr(), m_val.get_size(), p_abort);
 }
 
-void cfg_layout_t::preset::get(uie::splitter_item_ptr& p_out)
+void ConfigLayout::preset::get(uie::splitter_item_ptr& p_out)
 {
     p_out = new uie::splitter_item_simple_t;
     p_out->set_panel_guid(m_guid);
     p_out->set_panel_config_from_ptr(m_val.get_ptr(), m_val.get_size());
 }
 
-void cfg_layout_t::preset::set(const uie::splitter_item_t* item)
+void ConfigLayout::preset::set(const uie::splitter_item_t* item)
 {
     m_guid = item->get_panel_guid();
     item->get_panel_config_to_array(m_val, true);
 }
 
-void cfg_layout_t::get_preset(t_size index, uie::splitter_item_ptr& p_out)
+void ConfigLayout::get_preset(t_size index, uie::splitter_item_ptr& p_out)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
         g_layout_window.get_child(p_out);
@@ -251,7 +251,7 @@ void cfg_layout_t::get_preset(t_size index, uie::splitter_item_ptr& p_out)
     }
 }
 
-void cfg_layout_t::set_preset(t_size index, const uie::splitter_item_t* item)
+void ConfigLayout::set_preset(t_size index, const uie::splitter_item_t* item)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
         g_layout_window.set_child(item);
@@ -261,18 +261,18 @@ void cfg_layout_t::set_preset(t_size index, const uie::splitter_item_t* item)
     }
 }
 
-t_size cfg_layout_t::add_preset(const preset& item)
+t_size ConfigLayout::add_preset(const preset& item)
 {
     return m_presets.add_item(item);
 }
-t_size cfg_layout_t::add_preset(const char* p_name, t_size len)
+t_size ConfigLayout::add_preset(const char* p_name, t_size len)
 {
     preset temp;
     temp.m_name.set_string(p_name, len);
     temp.m_guid = columns_ui::panels::guid_playlist_view_v2;
     return m_presets.add_item(temp);
 }
-void cfg_layout_t::save_active_preset()
+void ConfigLayout::save_active_preset()
 {
     if (m_active < m_presets.get_count() && g_layout_window.get_wnd()) {
         uie::splitter_item_ptr ptr;
@@ -281,7 +281,7 @@ void cfg_layout_t::save_active_preset()
     }
 }
 
-void cfg_layout_t::set_active_preset(t_size index)
+void ConfigLayout::set_active_preset(t_size index)
 {
     if (index < m_presets.get_count() && m_active != index) {
         m_active = index;
@@ -292,7 +292,7 @@ void cfg_layout_t::set_active_preset(t_size index)
     }
 }
 
-t_size cfg_layout_t::delete_preset(t_size index)
+t_size ConfigLayout::delete_preset(t_size index)
 {
     if (index < m_presets.get_count()) {
         if (index == m_active)
@@ -304,7 +304,7 @@ t_size cfg_layout_t::delete_preset(t_size index)
     return m_presets.get_count();
 }
 
-void cfg_layout_t::set_presets(const pfc::list_base_const_t<preset>& presets, t_size active)
+void ConfigLayout::set_presets(const pfc::list_base_const_t<preset>& presets, t_size active)
 {
     if (presets.get_count()) {
         m_presets.remove_all();
@@ -314,13 +314,13 @@ void cfg_layout_t::set_presets(const pfc::list_base_const_t<preset>& presets, t_
     }
 }
 
-void LayoutWindow::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_out)
+void LayoutWindow::g_get_default_presets(pfc::list_t<ConfigLayout::preset>& p_out)
 {
     for (auto&& preset : cui::default_presets::quick_setup_presets)
         p_out.add_item(preset_to_config_preset(preset));
 }
 
-void cfg_layout_t::reset_presets()
+void ConfigLayout::reset_presets()
 {
     if (core_api::are_services_available()) {
         const auto preset = preset_to_config_preset(cui::default_presets::default_preset);
@@ -335,25 +335,25 @@ void cfg_layout_t::reset_presets()
     }
 }
 
-void cfg_layout_t::get_preset_name(t_size index, pfc::string_base& p_out)
+void ConfigLayout::get_preset_name(t_size index, pfc::string_base& p_out)
 {
     if (index < m_presets.get_count()) {
         p_out = m_presets[index].m_name;
     }
 }
-void cfg_layout_t::set_preset_name(t_size index, const char* ptr, t_size len)
+void ConfigLayout::set_preset_name(t_size index, const char* ptr, t_size len)
 {
     if (index < m_presets.get_count()) {
         m_presets[index].m_name.set_string(ptr, len);
     }
 }
 
-const pfc::list_base_const_t<cfg_layout_t::preset>& cfg_layout_t::get_presets() const
+const pfc::list_base_const_t<ConfigLayout::preset>& ConfigLayout::get_presets() const
 {
     return m_presets;
 }
 
-void cfg_layout_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
+void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     out->write_lendian_t(t_uint32(stream_version_current), p_abort);
     out->write_lendian_t(m_active, p_abort);
@@ -375,7 +375,7 @@ void cfg_layout_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
     }
 }
 
-void cfg_layout_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigLayout::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_reader->read_lendian_t(version, p_abort);
@@ -400,7 +400,7 @@ void cfg_layout_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, ab
     }
 }
 
-void cfg_layout_t::get_active_preset_for_use(uie::splitter_item_ptr& p_out)
+void ConfigLayout::get_active_preset_for_use(uie::splitter_item_ptr& p_out)
 {
     if (!m_presets.get_count())
         reset_presets();

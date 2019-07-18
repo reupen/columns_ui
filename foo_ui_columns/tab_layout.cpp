@@ -662,7 +662,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             cfg_layout.get_preset_name(m_active_preset, param.m_text);
             param.m_text << " (copy)";
             if (uDialogBox(IDD_RENAME_PLAYLIST, wnd, RenameProc, reinterpret_cast<LPARAM>(&param))) {
-                cfg_layout_t::preset preset;
+                ConfigLayout::preset preset;
                 preset.m_name = param.m_text;
                 preset.set(m_node_root->m_item->get_ptr());
                 auto preset_index = cfg_layout.add_preset(preset);

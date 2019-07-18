@@ -7,7 +7,7 @@
 // {755971A7-109B-41dc-BED9-5A05CC07C905}
 static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5}};
 
-cfg_layout_t cfg_layout(g_guid_layout);
+ConfigLayout cfg_layout(g_guid_layout);
 
 class window_host_layout : public ui_extension::window_host {
 public:
@@ -356,7 +356,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
 }
 
 bool LayoutWindow::import_config_to_object(stream_reader* p_reader, t_size psize, t_uint32 mode,
-    cfg_layout_t::preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
+    ConfigLayout::preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     // uie::splitter_item_ptr item = new uie::splitter_item_simple_t;
     GUID guid;

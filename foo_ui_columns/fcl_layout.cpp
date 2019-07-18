@@ -33,10 +33,10 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         p_reader->read_lendian_t(active, p_abort);
         p_reader->read_lendian_t(pcount, p_abort);
 
-        pfc::list_t<cfg_layout_t::preset> presets;
+        pfc::list_t<ConfigLayout::preset> presets;
 
         for (t_uint32 j = 0; j < pcount; j++) {
-            cfg_layout_t::preset pres;
+            ConfigLayout::preset pres;
             if (!g_layout_window.import_config_to_object(p_reader, size, type, pres, panels, p_abort))
                 missingpanels = true;
             presets.add_item(pres);
