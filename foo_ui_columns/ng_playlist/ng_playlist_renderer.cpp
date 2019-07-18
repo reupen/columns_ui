@@ -3,7 +3,7 @@
 
 namespace pvt {
 
-void ng_playlist_view_t::render_group_info(HDC dc, t_size index, t_size group_count, const RECT& rc2)
+void PlaylistView::render_group_info(HDC dc, t_size index, t_size group_count, const RECT& rc2)
 {
     if (!m_gdiplus_initialised)
         return;
@@ -42,7 +42,7 @@ void ng_playlist_view_t::render_group_info(HDC dc, t_size index, t_size group_co
     }
 }
 
-void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused,
+void PlaylistView::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused,
     bool b_highlight, bool should_hide_focus, bool b_focused, const RECT* rc_outter_item)
 {
     cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
@@ -149,7 +149,7 @@ void ng_playlist_view_t::render_item(HDC dc, t_size index, int indentation, bool
     }
 }
 
-void ng_playlist_view_t::render_group(
+void PlaylistView::render_group(
     HDC dc, t_size index, t_size group, const char* text, int indentation, t_size level, const RECT& rc)
 {
     cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);

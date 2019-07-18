@@ -28,11 +28,11 @@ public:
             switch (wp) {
             case IDC_SHOWARTWORK:
                 pvt::cfg_show_artwork = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
-                pvt::ng_playlist_view_t::g_on_show_artwork_change();
+                pvt::PlaylistView::g_on_show_artwork_change();
                 break;
             case IDC_ARTWORKREFLECTION:
                 pvt::cfg_artwork_reflection = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
-                pvt::ng_playlist_view_t::g_on_artwork_width_change();
+                pvt::PlaylistView::g_on_artwork_width_change();
                 break;
             case IDC_LOWPRIORITY:
                 pvt::cfg_artwork_lowpriority = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
@@ -40,7 +40,7 @@ public:
             case (EN_CHANGE << 16) | IDC_ARTWORKWIDTH:
                 if (m_initialised) {
                     pvt::cfg_artwork_width = mmh::strtoul_n(string_utf8_from_window((HWND)lp).get_ptr(), pfc_infinite);
-                    pvt::ng_playlist_view_t::g_on_artwork_width_change();
+                    pvt::PlaylistView::g_on_artwork_width_change();
                 }
                 break;
             }

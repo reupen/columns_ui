@@ -47,7 +47,7 @@ static const MainMenuCommand activate_now_playing{activate_now_playing_id, "Acti
 static const MainMenuCommand show_groups{show_groups_id, "Show groups", "Shows or hides playlist view groups.",
     [] {
         pvt::cfg_grouping = !pvt::cfg_grouping;
-        pvt::ng_playlist_view_t::g_on_groups_change();
+        pvt::PlaylistView::g_on_groups_change();
     },
     [] { return static_cast<bool>(pvt::cfg_grouping); }};
 

@@ -79,7 +79,7 @@ public:
                     int new_height = GetDlgItemInt(wnd, IDC_HEIGHT, &result, TRUE);
                     if (result)
                         settings::playlist_view_item_padding = new_height;
-                    pvt::ng_playlist_view_t::g_on_vertical_item_padding_change();
+                    pvt::PlaylistView::g_on_vertical_item_padding_change();
                 }
 
             } break;
@@ -93,43 +93,43 @@ public:
             case IDC_TOOLTIPS:
                 cfg_tooltip = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 EnableWindow(GetDlgItem(wnd, IDC_TOOLTIPS_CLIPPED), cfg_tooltip);
-                pvt::ng_playlist_view_t::g_on_show_tooltips_change();
+                pvt::PlaylistView::g_on_show_tooltips_change();
                 break;
 
             case IDC_SELECTION_MODEL:
                 cfg_alternative_sel = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::g_on_alternate_selection_change();
+                pvt::PlaylistView::g_on_alternate_selection_change();
                 break;
             case IDC_SORT_ARROWS:
                 cfg_show_sort_arrows = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::g_on_show_sort_indicators_change();
+                pvt::PlaylistView::g_on_show_sort_indicators_change();
                 break;
             case IDC_TOOLTIPS_CLIPPED:
                 cfg_tooltips_clipped = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::g_on_show_tooltips_change();
+                pvt::PlaylistView::g_on_show_tooltips_change();
                 break;
 
             case IDC_ELLIPSIS:
                 cfg_ellipsis = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::s_redraw_all();
+                pvt::PlaylistView::s_redraw_all();
                 break;
 
             case IDC_HEADER: {
                 cfg_header = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::g_on_show_header_change();
+                pvt::PlaylistView::g_on_show_header_change();
             } break;
             case IDC_NOHSCROLL: {
                 cfg_nohscroll = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::g_on_autosize_change();
+                pvt::PlaylistView::g_on_autosize_change();
             } break;
 
             case IDC_HHTRACK: {
                 cfg_header_hottrack = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                pvt::ng_playlist_view_t::g_on_sorting_enabled_change();
+                pvt::PlaylistView::g_on_sorting_enabled_change();
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLEDGE: {
                 cfg_frame = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
-                pvt::ng_playlist_view_t::g_on_edge_style_change();
+                pvt::PlaylistView::g_on_edge_style_change();
             } break;
             case IDC_INLINE_MODE: {
                 main_window::config_set_inline_metafield_edit_mode(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
