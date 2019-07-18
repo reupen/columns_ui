@@ -2,7 +2,7 @@
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
 
-static class tab_pview_artwork : public PreferencesTab {
+static class TabPlaylistViewArtwork : public PreferencesTab {
     void refresh_me(HWND wnd)
     {
         SendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, pvt::cfg_show_artwork, 0);
