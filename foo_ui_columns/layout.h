@@ -60,7 +60,7 @@ private:
     // bool m_initialised;
 };
 
-class layout_window
+class LayoutWindow
     : public ui_helpers::container_window
     , private uih::MessageHook {
 public:
@@ -91,7 +91,7 @@ public:
     void set_layout_editing_active(bool b_val);
     bool get_layout_editing_active();
 
-    layout_window() = default;
+    LayoutWindow() = default;
 
 private:
     class live_edit_data_t {
@@ -136,5 +136,5 @@ private:
     live_edit_data_t m_live_edit_data;
 };
 
-extern layout_window g_layout_window;
+extern LayoutWindow g_layout_window;
 extern cfg_layout_t cfg_layout;

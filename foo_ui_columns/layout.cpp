@@ -54,18 +54,18 @@ public:
 
 ui_extension::window_host_factory_single<window_host_layout> g_window_host_layout_factory;
 
-bool layout_window::set_focus()
+bool LayoutWindow::set_focus()
 {
     return __set_focus_recur(m_child);
 }
 
-void layout_window::show_window()
+void LayoutWindow::show_window()
 {
     ShowWindow(m_child_wnd, SW_SHOWNORMAL);
     ShowWindow(get_wnd(), SW_SHOWNORMAL);
 }
 
-bool layout_window::__set_focus_recur(const uie::window_ptr& p_wnd)
+bool LayoutWindow::__set_focus_recur(const uie::window_ptr& p_wnd)
 {
     service_ptr_t<uie::playlist_window> p_playlist_wnd;
     service_ptr_t<uie::splitter_window> p_splitter_wnd;
@@ -90,12 +90,12 @@ bool layout_window::__set_focus_recur(const uie::window_ptr& p_wnd)
     return false;
 }
 
-void layout_window::show_menu_access_keys()
+void LayoutWindow::show_menu_access_keys()
 {
     return __show_menu_access_keys_recur(m_child);
 }
 
-void layout_window::__show_menu_access_keys_recur(const uie::window_ptr& p_wnd)
+void LayoutWindow::__show_menu_access_keys_recur(const uie::window_ptr& p_wnd)
 {
     service_ptr_t<uie::menu_window> p_menu_wnd;
     service_ptr_t<uie::splitter_window> p_splitter_wnd;
@@ -114,17 +114,17 @@ void layout_window::__show_menu_access_keys_recur(const uie::window_ptr& p_wnd)
     }
 }
 
-void layout_window::hide_menu_access_keys()
+void LayoutWindow::hide_menu_access_keys()
 {
     __hide_menu_access_keys_recur(m_child);
 }
 
-bool layout_window::on_menu_char(unsigned short c)
+bool LayoutWindow::on_menu_char(unsigned short c)
 {
     return __on_menu_char_recur(m_child, c);
 }
 
-bool layout_window::__on_menu_char_recur(const uie::window_ptr& p_wnd, unsigned short c)
+bool LayoutWindow::__on_menu_char_recur(const uie::window_ptr& p_wnd, unsigned short c)
 {
     service_ptr_t<uie::menu_window> p_menu_wnd;
     service_ptr_t<uie::splitter_window> p_splitter_wnd;
@@ -145,12 +145,12 @@ bool layout_window::__on_menu_char_recur(const uie::window_ptr& p_wnd, unsigned 
     return false;
 }
 
-bool layout_window::set_menu_focus()
+bool LayoutWindow::set_menu_focus()
 {
     return __set_menu_focus_recur(m_child);
 }
 
-bool layout_window::__set_menu_focus_recur(const uie::window_ptr& p_wnd)
+bool LayoutWindow::__set_menu_focus_recur(const uie::window_ptr& p_wnd)
 {
     bool ret = false;
     service_ptr_t<uie::menu_window> p_menu_wnd;
@@ -180,7 +180,7 @@ bool layout_window::__set_menu_focus_recur(const uie::window_ptr& p_wnd)
     return ret;
 }
 
-void layout_window::set_layout_editing_active(bool b_val)
+void LayoutWindow::set_layout_editing_active(bool b_val)
 {
     if (b_val) {
         if (!m_layout_editing_active)
@@ -192,12 +192,12 @@ void layout_window::set_layout_editing_active(bool b_val)
         m_layout_editing_active = false;
     }
 }
-bool layout_window::get_layout_editing_active()
+bool LayoutWindow::get_layout_editing_active()
 {
     return m_layout_editing_active;
 }
 
-void layout_window::enter_layout_editing_mode()
+void LayoutWindow::enter_layout_editing_mode()
 {
     if (get_wnd()) {
         uih::register_message_hook(uih::MessageHookType::type_get_message, this);
@@ -206,19 +206,19 @@ void layout_window::enter_layout_editing_mode()
     //__enter_layout_editing_mode_recur(m_child);
 }
 
-void layout_window::exit_layout_editing_mode()
+void LayoutWindow::exit_layout_editing_mode()
 {
     uih::deregister_message_hook(uih::MessageHookType::type_get_message, this);
     uih::deregister_message_hook(uih::MessageHookType::type_mouse, this);
     //__exit_layout_editing_mode_recur(m_child);
 }
 
-bool layout_window::is_menu_focused()
+bool LayoutWindow::is_menu_focused()
 {
     return __is_menu_focused_recur(m_child);
 }
 
-bool layout_window::__is_menu_focused_recur(const uie::window_ptr& p_wnd)
+bool LayoutWindow::__is_menu_focused_recur(const uie::window_ptr& p_wnd)
 {
     service_ptr_t<uie::menu_window> p_menu_wnd;
     service_ptr_t<uie::splitter_window> p_splitter_wnd;
@@ -241,14 +241,14 @@ bool layout_window::__is_menu_focused_recur(const uie::window_ptr& p_wnd)
     return false;
 }
 
-HWND layout_window::get_previous_menu_focus_window() const
+HWND LayoutWindow::get_previous_menu_focus_window() const
 {
     HWND ret = nullptr;
     __get_previous_menu_focus_window_recur(m_child, ret);
     return ret;
 }
 
-bool layout_window::__get_previous_menu_focus_window_recur(const uie::window_ptr& p_wnd, HWND& wnd_previous) const
+bool LayoutWindow::__get_previous_menu_focus_window_recur(const uie::window_ptr& p_wnd, HWND& wnd_previous) const
 {
     service_ptr_t<uie::menu_window_v2> p_menu_wnd;
     service_ptr_t<uie::splitter_window> p_splitter_wnd;
@@ -273,7 +273,7 @@ bool layout_window::__get_previous_menu_focus_window_recur(const uie::window_ptr
     return false;
 }
 
-void layout_window::__hide_menu_access_keys_recur(const uie::window_ptr& p_wnd)
+void LayoutWindow::__hide_menu_access_keys_recur(const uie::window_ptr& p_wnd)
 {
     service_ptr_t<uie::menu_window> p_menu_wnd;
     service_ptr_t<uie::splitter_window> p_splitter_wnd;
@@ -292,7 +292,7 @@ void layout_window::__hide_menu_access_keys_recur(const uie::window_ptr& p_wnd)
     }
 }
 
-void layout_window::get_child(uie::splitter_item_ptr& p_out)
+void LayoutWindow::get_child(uie::splitter_item_ptr& p_out)
 {
     p_out = new uie::splitter_item_simple_t;
     p_out->set_panel_guid(m_child_guid);
@@ -304,7 +304,7 @@ void layout_window::get_child(uie::splitter_item_ptr& p_out)
     } else
         p_out->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 }
-void layout_window::set_child(const uie::splitter_item_t* item)
+void LayoutWindow::set_child(const uie::splitter_item_t* item)
 {
     if (get_wnd()) {
         SendMessage(get_wnd(), WM_SETREDRAW, FALSE, 0);
@@ -355,7 +355,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
     }
 }
 
-bool layout_window::import_config_to_object(stream_reader* p_reader, t_size psize, t_uint32 mode,
+bool LayoutWindow::import_config_to_object(stream_reader* p_reader, t_size psize, t_uint32 mode,
     cfg_layout_t::preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     // uie::splitter_item_ptr item = new uie::splitter_item_simple_t;
@@ -407,7 +407,7 @@ bool layout_window::import_config_to_object(stream_reader* p_reader, t_size psiz
     // p_out.set(item);
 }
 
-void layout_window::export_config(
+void LayoutWindow::export_config(
     stream_writer* p_out, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
@@ -469,7 +469,7 @@ void layout_window::export_config(
     }
 }
 
-void layout_window::create_child()
+void LayoutWindow::create_child()
 {
     RECT rc;
     GetClientRect(get_wnd(), &rc);
@@ -489,7 +489,7 @@ void layout_window::create_child()
         }
     }
 }
-void layout_window::destroy_child()
+void LayoutWindow::destroy_child()
 {
     if (m_child_wnd && m_child.is_valid()) {
         abort_callback_dummy p_abort;
@@ -499,14 +499,14 @@ void layout_window::destroy_child()
     }
 }
 
-void layout_window::relinquish_child()
+void LayoutWindow::relinquish_child()
 {
     m_child_wnd = nullptr;
     m_child.release();
     m_child_data.set_size(0);
 }
 
-void layout_window::refresh_child()
+void LayoutWindow::refresh_child()
 {
     uie::splitter_item_ptr item;
     cfg_layout.get_active_preset_for_use(item);
@@ -519,7 +519,7 @@ void layout_window::refresh_child()
     }
 }
 
-void layout_window::run_live_edit_base_delayed(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr>& p_hierarchy)
+void LayoutWindow::run_live_edit_base_delayed(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr>& p_hierarchy)
 {
     m_live_edit_data.m_hierarchy = p_hierarchy;
     m_live_edit_data.m_wnd = wnd;
@@ -559,7 +559,7 @@ void g_get_panels_info(const pfc::list_t<uie::window::ptr>& p_panels, uie::windo
     p_out.sort_by_category_and_name();
 }
 
-void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
+void LayoutWindow::run_live_edit_base(const live_edit_data_t& p_data)
 {
     if (m_trans_fill.get_wnd())
         return;
@@ -798,7 +798,7 @@ void layout_window::run_live_edit_base(const live_edit_data_t& p_data)
     }
 }
 
-bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
+bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
 {
     if (p_type == uih::MessageHookType::type_get_message) {
         auto* lpmsg = (LPMSG)lp;
@@ -865,7 +865,7 @@ bool layout_window::on_hooked_message(uih::MessageHookType p_type, int code, WPA
     return false;
 }
 
-LRESULT layout_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE:

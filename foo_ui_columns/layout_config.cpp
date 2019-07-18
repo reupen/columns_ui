@@ -314,7 +314,7 @@ void cfg_layout_t::set_presets(const pfc::list_base_const_t<preset>& presets, t_
     }
 }
 
-void layout_window::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_out)
+void LayoutWindow::g_get_default_presets(pfc::list_t<cfg_layout_t::preset>& p_out)
 {
     for (auto&& preset : cui::default_presets::quick_setup_presets)
         p_out.add_item(preset_to_config_preset(preset));
