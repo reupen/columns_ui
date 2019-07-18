@@ -117,7 +117,7 @@ private:
     fields_list_view_t m_field_list;
 };
 
-class selection_properties_t
+class ItemProperties
     : public t_list_view_panel<appearance_client_selection_properties_impl, uie::window>
     , public ui_selection_callback
     , public play_callback
@@ -152,7 +152,7 @@ public:
     bool have_config_popup() const override;
     bool show_config_popup(HWND wnd_parent) override;
     class menu_node_track_mode : public ui_extension::menu_node_command_t {
-        service_ptr_t<selection_properties_t> p_this;
+        service_ptr_t<ItemProperties> p_this;
         t_size m_source;
 
     public:
@@ -160,17 +160,17 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_track_mode(selection_properties_t* p_wnd, t_size p_value);
+        menu_node_track_mode(ItemProperties* p_wnd, t_size p_value);
         ;
     };
     class menu_node_autosize : public ui_extension::menu_node_command_t {
-        service_ptr_t<selection_properties_t> p_this;
+        service_ptr_t<ItemProperties> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_autosize(selection_properties_t* p_wnd);
+        menu_node_autosize(ItemProperties* p_wnd);
         ;
     };
     class menu_node_source_popup : public ui_extension::menu_node_popup_t {
@@ -180,7 +180,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_source_popup(selection_properties_t* p_wnd);
+        menu_node_source_popup(ItemProperties* p_wnd);
         ;
     };
 
@@ -225,7 +225,7 @@ public:
     static void g_on_font_header_change();
     static void g_on_font_groups_change();
 
-    selection_properties_t();
+    ItemProperties();
 
 private:
     void register_callback();
@@ -235,7 +235,7 @@ private:
     void on_tracking_mode_change();
     bool check_process_on_selection_changed();
 
-    static std::vector<selection_properties_t*> g_windows;
+    static std::vector<ItemProperties*> g_windows;
 
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles, m_selection_handles;
