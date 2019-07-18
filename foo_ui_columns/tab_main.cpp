@@ -6,7 +6,7 @@
 
 extern HWND g_rebar;
 
-static class tab_main : public PreferencesTab {
+static class TabMain : public PreferencesTab {
 public:
     bool m_initialised{};
 
