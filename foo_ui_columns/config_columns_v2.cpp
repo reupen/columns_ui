@@ -20,18 +20,18 @@ struct ColumnTimes {
 
 class edit_column_window_options : public ColumnTab {
 public:
-    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
     using self_t = edit_column_window_options;
     HWND create(HWND wnd) override { return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this); }
     // virtual const char * get_name()=0;
-    edit_column_window_options(column_t::ptr column)
+    edit_column_window_options(PlaylistViewColumn::ptr column)
         : initialising(false), editproc(nullptr), m_wnd(nullptr), m_column(std::move(column)){};
 
     bool initialising;
     WNDPROC editproc;
     HWND m_wnd;
 
-    column_t::ptr m_column;
+    PlaylistViewColumn::ptr m_column;
 
     void set_detail_enabled(HWND wnd, BOOL show)
     {
@@ -82,7 +82,7 @@ public:
         set_detail_enabled(wnd, m_column.is_valid());
     }
 
-    void set_column(const column_t::ptr& column) override
+    void set_column(const PlaylistViewColumn::ptr& column) override
     {
         if (m_column.get_ptr() != column.get_ptr()) {
             m_column = column;
@@ -227,14 +227,14 @@ class DisplayScriptTab : public ColumnTab {
 public:
     using SelfType = DisplayScriptTab;
 
-    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
 
     HWND create(HWND wnd) override
     {
         return uCreateDialog(IDD_COLUMN_DISPLAY_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
     }
 
-    void set_column(const column_t::ptr& column) override
+    void set_column(const PlaylistViewColumn::ptr& column) override
     {
         if (m_column.get_ptr() != column.get_ptr()) {
             m_column = column;
@@ -242,7 +242,7 @@ public:
         }
     }
 
-    explicit DisplayScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit DisplayScriptTab(PlaylistViewColumn::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -305,21 +305,21 @@ private:
     cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     HWND m_wnd;
     bool initialising;
-    column_t::ptr m_column;
+    PlaylistViewColumn::ptr m_column;
 };
 
 class StyleScriptTab : public ColumnTab {
 public:
     using SelfType = StyleScriptTab;
 
-    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
 
     HWND create(HWND wnd) override
     {
         return uCreateDialog(IDD_COLUMN_STYLE_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
     }
 
-    void set_column(const column_t::ptr& column) override
+    void set_column(const PlaylistViewColumn::ptr& column) override
     {
         if (m_column.get_ptr() != column.get_ptr()) {
             m_column = column;
@@ -327,7 +327,7 @@ public:
         }
     }
 
-    explicit StyleScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit StyleScriptTab(PlaylistViewColumn::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -399,21 +399,21 @@ private:
     cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     HWND m_wnd;
     bool initialising;
-    column_t::ptr m_column;
+    PlaylistViewColumn::ptr m_column;
 };
 
 class SortingScriptTab : public ColumnTab {
 public:
     using SelfType = SortingScriptTab;
 
-    void get_column(column_t::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
 
     HWND create(HWND wnd) override
     {
         return uCreateDialog(IDD_COLUMN_SORTING_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
     }
 
-    void set_column(const column_t::ptr& column) override
+    void set_column(const PlaylistViewColumn::ptr& column) override
     {
         if (m_column.get_ptr() != column.get_ptr()) {
             m_column = column;
@@ -421,7 +421,7 @@ public:
         }
     }
 
-    explicit SortingScriptTab(column_t::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit SortingScriptTab(PlaylistViewColumn::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -490,7 +490,7 @@ private:
     cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     HWND m_wnd;
     bool initialising;
-    column_t::ptr m_column;
+    PlaylistViewColumn::ptr m_column;
 };
 
 // {0A7A2845-06A4-4c15-B09F-A6EBEE86335D}
@@ -524,7 +524,7 @@ void TabColumns::make_child()
     if (cfg_child_column < count && cfg_child_column >= 0) {
         int item = ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED);
 
-        column_t::ptr column;
+        PlaylistViewColumn::ptr column;
         if (item != -1)
             column = m_columns[item];
 
@@ -630,7 +630,7 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     int& idx = item;
                     auto wnd_lv = HWND(wp);
                     if (cmd == ID_NEW) {
-                        column_t::ptr temp = new column_t;
+                        PlaylistViewColumn::ptr temp = new PlaylistViewColumn;
                         temp->name = "New Column";
                         t_size insert = m_columns.insert_item(
                             temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
@@ -692,7 +692,7 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case MSG_SELECTION_CHANGED: {
         int item = (ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED));
         m_child->set_column(
-            item != -1 && item >= 0 && (t_size)item < m_columns.get_count() ? m_columns[item] : column_t::ptr());
+            item != -1 && item >= 0 && (t_size)item < m_columns.get_count() ? m_columns[item] : PlaylistViewColumn::ptr());
     }
         return 0;
     case MSG_COLUMN_NAME_CHANGED: {
@@ -772,7 +772,7 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
             // if (true)
             {
-                column_t::ptr temp = new column_t;
+                PlaylistViewColumn::ptr temp = new PlaylistViewColumn;
                 temp->name = "New Column";
                 t_size insert = m_columns.insert_item(
                     temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());

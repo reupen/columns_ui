@@ -1,8 +1,8 @@
 #ifndef _COLUMNS_2_H_
 #define _COLUMNS_2_H_
 
-class column_base_t : public pfc::refcounted_object_root {
-    using self_t = column_base_t;
+class PlaylistViewColumnBase : public pfc::refcounted_object_root {
+    using self_t = PlaylistViewColumnBase;
 
 public:
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
@@ -21,9 +21,9 @@ public:
     bool show{true};
     pfc::string8 edit_field;
 
-    column_base_t() = default;
+    PlaylistViewColumnBase() = default;
 
-    column_base_t(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
+    PlaylistViewColumnBase(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
         bool b_use_custom_sort, const char* p_sort_spec, int p_width, alignment p_align,
         playlist_filter_type p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
         const char* p_edit_field)
@@ -49,8 +49,8 @@ enum class ColumnStreamVersion {
 
 };
 
-class column_t : public column_base_t {
-    using self_t = column_t;
+class PlaylistViewColumn : public PlaylistViewColumnBase {
+    using self_t = PlaylistViewColumn;
 
 public:
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
@@ -62,22 +62,22 @@ public:
     void read_extra(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback);
     void write_extra(stream_writer* writer, abort_callback& abortCallback) const;
 
-    column_t() = default;
+    PlaylistViewColumn() = default;
 
-    column_t(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
+    PlaylistViewColumn(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
         bool b_use_custom_sort, const char* p_sort_spec, unsigned p_width, alignment p_align,
         playlist_filter_type p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
         const char* p_edit_field)
-        : column_base_t(pname, pspec, b_use_custom_colour, p_colour_spec, b_use_custom_sort, p_sort_spec, p_width,
+        : PlaylistViewColumnBase(pname, pspec, b_use_custom_colour, p_colour_spec, b_use_custom_sort, p_sort_spec, p_width,
               p_align, p_filter_type, p_filter_string, p_parts, b_show, p_edit_field)
     {
     }
 
-    column_t(const column_t&) = default;
-    column_t& operator=(const column_t&) = default;
-    column_t(column_t&&) = default;
-    column_t& operator=(column_t&&) = default;
-    ~column_t() = default;
+    PlaylistViewColumn(const PlaylistViewColumn&) = default;
+    PlaylistViewColumn& operator=(const PlaylistViewColumn&) = default;
+    PlaylistViewColumn(PlaylistViewColumn&&) = default;
+    PlaylistViewColumn& operator=(PlaylistViewColumn&&) = default;
+    ~PlaylistViewColumn() = default;
 
 private:
     service_ptr_t<titleformat_object> to_display;
@@ -85,30 +85,30 @@ private:
     service_ptr_t<titleformat_object> to_sort;
 };
 
-using column_list_cref_t = const pfc::list_base_const_t<column_t::ptr>&;
+using ColumnListCRef = const pfc::list_base_const_t<PlaylistViewColumn::ptr>&;
 
-class column_list_t : public pfc::list_t<column_t::ptr> {
+class ColumnList : public pfc::list_t<PlaylistViewColumn::ptr> {
 public:
-    void set_entries_ref(column_list_cref_t entries)
+    void set_entries_ref(ColumnListCRef entries)
     {
         remove_all();
         add_items(entries);
     }
 
-    void set_entries_copy(column_list_cref_t entries, bool keep_reference_to_source_items = false)
+    void set_entries_copy(ColumnListCRef entries, bool keep_reference_to_source_items = false)
     {
         // remove_all();
         t_size count = entries.get_count();
         set_count(count);
         for (t_size i = 0; i < count; i++) {
-            column_t::ptr item = new column_t(*entries[i].get_ptr());
+            PlaylistViewColumn::ptr item = new PlaylistViewColumn(*entries[i].get_ptr());
             if (keep_reference_to_source_items)
                 item->source_item = entries[i];
             (*this)[i] = item;
         }
     }
 
-    void set_widths(column_list_cref_t entries)
+    void set_widths(ColumnListCRef entries)
     {
         // remove_all();
         t_size count = get_count();
@@ -131,19 +131,19 @@ public:
     bool move(t_size from, t_size to);
 };
 
-class cfg_columns_t
+class ConfigColumns
     : public cfg_var
-    , public column_list_t {
+    , public ColumnList {
 public:
     void reset();
 
-    cfg_columns_t(const GUID& p_guid, ColumnStreamVersion streamVersion);
+    ConfigColumns(const GUID& p_guid, ColumnStreamVersion streamVersion);
 
 protected:
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
     void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
 };
 
-extern cfg_columns_t g_columns;
+extern ConfigColumns g_columns;
 
 #endif

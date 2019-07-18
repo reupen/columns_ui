@@ -72,7 +72,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_size count;
         reader.read_item(count);
-        column_list_t newcolumns;
+        ColumnList newcolumns;
         for (t_size i = 0; i < count; i++) {
             t_uint32 column_id;
             t_uint32 column_size;
@@ -80,7 +80,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
             reader.read_item(column_id);
             reader.read_item(column_size);
 
-            column_t::ptr item = new column_t;
+            PlaylistViewColumn::ptr item = new PlaylistViewColumn;
 
             fbh::fcl::Reader reader2(reader, column_size, p_abort);
 

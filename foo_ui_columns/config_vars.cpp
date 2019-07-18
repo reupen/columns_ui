@@ -151,7 +151,7 @@ cfg_string cfg_playlist_switcher_tagz(
 // {F006EC50-7F52-4037-9D48-7447BBF742AA}
 static const GUID guid_columns = {0xf006ec50, 0x7f52, 0x4037, {0x9d, 0x48, 0x74, 0x47, 0xbb, 0xf7, 0x42, 0xaa}};
 
-cfg_columns_t g_columns(guid_columns, ColumnStreamVersion::streamVersion0);
+ConfigColumns g_columns(guid_columns, ColumnStreamVersion::streamVersion0);
 
 ConfigWindowPlacement cfg_window_placement_columns(
     GUID{0x8bdb3caa, 0x6544, 0x07a6, {0x89, 0x67, 0xf8, 0x13, 0x3a, 0x80, 0x75, 0xbb}});

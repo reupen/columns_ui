@@ -42,7 +42,7 @@ void double_to_string(double blah, pfc::string_base& p_out, int points = 10, boo
     }
 }
 
-void speedtest(column_list_cref_t columns, bool b_global)
+void speedtest(ColumnListCRef columns, bool b_global)
 {
     static_api_ptr_t<playlist_manager> playlist_api;
     static_api_ptr_t<titleformat_compiler> titleformat_api;
