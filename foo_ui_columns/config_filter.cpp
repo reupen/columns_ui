@@ -3,10 +3,10 @@
 #include "filter_config_var.h"
 #include "config.h"
 
-class t_list_view_filter : public uih::ListView {
+class FieldList : public uih::ListView {
 public:
     t_size m_edit_index, m_edit_column;
-    t_list_view_filter() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite){};
+    FieldList() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite){};
 
     void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl) override
     {
@@ -78,11 +78,11 @@ public:
 private:
 };
 
-static class tab_filter_fields : public preferences_tab {
-    t_list_view_filter m_field_list;
+static class TabFilterFields : public preferences_tab {
+    FieldList m_field_list;
 
 public:
-    tab_filter_fields() = default;
+    TabFilterFields() = default;
 
     void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
     {
@@ -226,9 +226,9 @@ private:
     bool m_initialising{false};
 } g_tab_filter_fields;
 
-static class tab_filter_appearance : public preferences_tab {
+static class TabFilterAppearance : public preferences_tab {
 public:
-    tab_filter_appearance() = default;
+    TabFilterAppearance() = default;
 
     void on_init_dialog(HWND wnd)
     {
@@ -299,9 +299,9 @@ private:
     bool m_initialising{false};
 } g_tab_filter_appearance;
 
-static class tab_filter_behaviour : public preferences_tab {
+static class TabFilterBehaviour : public preferences_tab {
 public:
-    tab_filter_behaviour() = default;
+    TabFilterBehaviour() = default;
 
     void on_init_dialog(HWND wnd)
     {
