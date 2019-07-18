@@ -21,7 +21,7 @@ enum {
     ID_RECYCLER_BASE
 };
 
-LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_NCCREATE: {

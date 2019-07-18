@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "playlist_tabs.h"
 
-HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::QueryInterface(
+HRESULT STDMETHODCALLTYPE PlaylistTabs::playlists_tabs_drop_target::QueryInterface(
     REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
@@ -19,11 +19,11 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
     }
     return E_NOINTERFACE;
 }
-ULONG STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::AddRef()
+ULONG STDMETHODCALLTYPE PlaylistTabs::playlists_tabs_drop_target::AddRef()
 {
     return InterlockedIncrement(&drop_ref_count);
 }
-ULONG STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::Release()
+ULONG STDMETHODCALLTYPE PlaylistTabs::playlists_tabs_drop_target::Release()
 {
     LONG rv = InterlockedDecrement(&drop_ref_count);
     if (!rv) {
@@ -35,7 +35,7 @@ ULONG STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::Re
     return rv;
 }
 
-HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragEnter(
+HRESULT STDMETHODCALLTYPE PlaylistTabs::playlists_tabs_drop_target::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -57,7 +57,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragOver(
+HRESULT STDMETHODCALLTYPE PlaylistTabs::playlists_tabs_drop_target::DragOver(
     DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -127,7 +127,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::DragLeave()
+HRESULT STDMETHODCALLTYPE PlaylistTabs::playlists_tabs_drop_target::DragLeave()
 {
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragLeave();
@@ -140,7 +140,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::Drop(
+HRESULT STDMETHODCALLTYPE PlaylistTabs::playlists_tabs_drop_target::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -326,7 +326,7 @@ HRESULT STDMETHODCALLTYPE playlists_tabs_extension::playlists_tabs_drop_target::
 
     return S_OK;
 }
-playlists_tabs_extension::playlists_tabs_drop_target::playlists_tabs_drop_target(playlists_tabs_extension* p_wnd)
+PlaylistTabs::playlists_tabs_drop_target::playlists_tabs_drop_target(PlaylistTabs* p_wnd)
     : p_list(p_wnd)
 {
     m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC);

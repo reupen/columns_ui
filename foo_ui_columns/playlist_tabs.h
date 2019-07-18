@@ -10,7 +10,7 @@ void g_on_tabs_font_change();
 void remove_playlist_helper(t_size index);
 constexpr unsigned SWITCH_TIMER_ID = 670u;
 
-class playlists_tabs_extension
+class PlaylistTabs
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2>
     , public playlist_callback {
 public:
@@ -37,10 +37,10 @@ public:
 
         void relinquish_ownership(HWND wnd) override;
         ;
-        void set_this(playlists_tabs_extension* ptr);
+        void set_this(PlaylistTabs* ptr);
 
     private:
-        service_ptr_t<playlists_tabs_extension> m_this;
+        service_ptr_t<PlaylistTabs> m_this;
     };
 
 private:
@@ -65,15 +65,15 @@ private:
     class_data& get_class_data() const override;
 
 public:
-    static pfc::ptr_list_t<playlists_tabs_extension> list_wnd;
+    static pfc::ptr_list_t<PlaylistTabs> list_wnd;
 
     HWND wnd_tabs{nullptr};
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-    playlists_tabs_extension() = default;
+    PlaylistTabs() = default;
 
-    ~playlists_tabs_extension();
+    ~PlaylistTabs();
 
     class playlists_tabs_drop_target : public IDropTarget {
     public:
@@ -85,14 +85,14 @@ public:
         HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
         HRESULT STDMETHODCALLTYPE DragLeave() override;
         HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
-        playlists_tabs_drop_target(playlists_tabs_extension* p_wnd);
+        playlists_tabs_drop_target(PlaylistTabs* p_wnd);
 
     private:
         bool m_last_rmb{};
         bool m_is_accepted_type{};
         long drop_ref_count{};
         POINTL last_over{};
-        service_ptr_t<playlists_tabs_extension> p_list;
+        service_ptr_t<PlaylistTabs> p_list;
         pfc::com_ptr_t<IDataObject> m_DataObject;
         mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
     };
@@ -190,6 +190,6 @@ private:
     MINMAXINFO mmi{};
 };
 
-extern ui_extension::window_host_factory<playlists_tabs_extension::window_host_impl> g_tab_host;
+extern ui_extension::window_host_factory<PlaylistTabs::window_host_impl> g_tab_host;
 
 #endif
