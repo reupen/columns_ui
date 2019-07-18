@@ -707,6 +707,9 @@
     <ClInclude Include="filter_config_var.h">
       <Filter>Filter</Filter>
     </ClInclude>
+    <ClInclude Include="menu_mnemonics.h">
+      <Filter>Menu toolbar</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">

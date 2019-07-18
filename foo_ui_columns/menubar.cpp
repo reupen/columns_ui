@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "menu_mnemonics.h"
 
 cfg_int cfg_fullsizemenu(GUID{0xe880f267, 0x73de, 0x7952, {0x5b, 0x79, 0xb5, 0xda, 0x77, 0x28, 0x6d, 0xb6}}, 0);
 
@@ -9,89 +10,6 @@ enum {
     MSG_SHOW_MENUACC = WM_USER + 2,
     MSG_CREATE_MENU = WM_USER + 3,
     MSG_SIZE_LIMIT_CHANGE
-};
-
-// from menu_manager.cpp
-class MnemonicManager {
-    pfc::string8_fast_aggressive used;
-    bool is_used(unsigned c)
-    {
-        char temp[8];
-        temp[pfc::utf8_encode_char(uCharLower(c), temp)] = 0;
-        return !!strstr(used, temp);
-    }
-
-    static bool is_alphanumeric(char c)
-    {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
-    }
-
-    void insert(const char* src, unsigned idx, pfc::string_base& out)
-    {
-        out.reset();
-        out.add_string(src, idx);
-        out.add_string("&");
-        out.add_string(src + idx);
-        used.add_char(uCharLower(src[idx]));
-    }
-
-public:
-    bool check_string(const char* src)
-    { // check for existing mnemonics
-        const char* ptr = src;
-        while (ptr = strchr(ptr, '&')) {
-            if (ptr[1] == '&')
-                ptr += 2;
-            else {
-                unsigned c = 0;
-                if (pfc::utf8_decode_char(ptr + 1, c) > 0) {
-                    if (!is_used(c))
-                        used.add_char(uCharLower(c));
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-    bool process_string(const char* src, pfc::string_base& out) // returns if changed
-    {
-        if (check_string(src)) {
-            out = src;
-            return false;
-        }
-        unsigned idx = 0;
-        while (src[idx] == ' ')
-            idx++;
-        while (src[idx]) {
-            if (is_alphanumeric(src[idx]) && !is_used(src[idx])) {
-                insert(src, idx, out);
-                return true;
-            }
-
-            while (src[idx] && src[idx] != ' ' && src[idx] != '\t')
-                idx++;
-            if (src[idx] == '\t')
-                break;
-            while (src[idx] == ' ')
-                idx++;
-        }
-
-        // no success picking first letter of one of words
-        idx = 0;
-        while (src[idx]) {
-            if (src[idx] == '\t')
-                break;
-            if (is_alphanumeric(src[idx]) && !is_used(src[idx])) {
-                insert(src, idx, out);
-                return true;
-            }
-            idx++;
-        }
-
-        // giving up
-        out = src;
-        return false;
-    }
 };
 
 class MainMenuRootGroup {

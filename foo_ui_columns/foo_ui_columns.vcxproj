@@ -471,6 +471,7 @@
     <ClInclude Include="filter_utils.h" />
     <ClInclude Include="font_utils.h" />
     <ClInclude Include="help.h" />
+    <ClInclude Include="menu_mnemonics.h" />
     <ClInclude Include="migrate.h" />
     <ClInclude Include="panel_menu_item.h" />
     <ClInclude Include="playlist_view_tfhooks.h" />
