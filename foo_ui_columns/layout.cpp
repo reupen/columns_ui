@@ -9,7 +9,7 @@ static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a
 
 ConfigLayout cfg_layout(g_guid_layout);
 
-class window_host_layout : public ui_extension::window_host {
+class LayoutWindowHost : public ui_extension::window_host {
 public:
     const GUID& get_host_guid() const override
     {
@@ -52,7 +52,7 @@ public:
     void relinquish_ownership(HWND wnd) override { g_layout_window.relinquish_child(); }
 };
 
-ui_extension::window_host_factory_single<window_host_layout> g_window_host_layout_factory;
+ui_extension::window_host_factory_single<LayoutWindowHost> g_window_host_layout_factory;
 
 bool LayoutWindow::set_focus()
 {
@@ -527,9 +527,9 @@ void LayoutWindow::run_live_edit_base_delayed(HWND wnd, POINT pt, pfc::list_t<ui
     PostMessage(get_wnd(), MSG_EDIT_PANEL, NULL, NULL);
 }
 
-class panel_list_t : public pfc::list_t<uie::window::ptr> {
+class PanelList : public pfc::list_t<uie::window::ptr> {
 public:
-    panel_list_t()
+    PanelList()
     {
         service_enum_t<ui_extension::window> e;
         uie::window_ptr l;
@@ -559,7 +559,7 @@ void g_get_panels_info(const pfc::list_t<uie::window::ptr>& p_panels, uie::windo
     p_out.sort_by_category_and_name();
 }
 
-void LayoutWindow::run_live_edit_base(const live_edit_data_t& p_data)
+void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
 {
     if (m_trans_fill.get_wnd())
         return;
@@ -591,7 +591,7 @@ void LayoutWindow::run_live_edit_base(const live_edit_data_t& p_data)
     ShowWindow(wnd_over, SW_SHOWNOACTIVATE);
 
     HMENU menu = CreatePopupMenu();
-    panel_list_t panel_list;
+    PanelList panel_list;
     pfc::list_t<uie::window::ptr> supported_panels(panel_list);
     pfc::bit_array_bittable mask_remove(supported_panels.get_count());
     if (p_container_v2.is_valid())

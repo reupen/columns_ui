@@ -94,7 +94,7 @@ public:
     LayoutWindow() = default;
 
 private:
-    class live_edit_data_t {
+    class LiveEditData {
     public:
         pfc::list_t<uie::window::ptr> m_hierarchy;
         POINT m_point;
@@ -107,7 +107,7 @@ private:
     void exit_layout_editing_mode();
     uih::TranslucentFillWindow m_trans_fill;
     void run_live_edit_base_delayed(HWND wnd, POINT pt, pfc::list_t<uie::window::ptr>& p_hierarchy);
-    void run_live_edit_base(const live_edit_data_t& p_data);
+    void run_live_edit_base(const LiveEditData& p_data);
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 
     class_data& get_class_data() const override
@@ -133,7 +133,7 @@ private:
     pfc::array_t<t_uint8> m_child_data;
     HWND m_child_wnd{nullptr};
     bool m_layout_editing_active{false};
-    live_edit_data_t m_live_edit_data;
+    LiveEditData m_live_edit_data;
 };
 
 extern LayoutWindow g_layout_window;
