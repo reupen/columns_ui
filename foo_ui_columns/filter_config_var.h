@@ -4,9 +4,9 @@
 
 namespace filter_panel {
 
-class cfg_fields_t
+class ConfigFields
     : public cfg_var
-    , public pfc::list_t<field_t> {
+    , public pfc::list_t<Field> {
 public:
     enum { stream_version_current = 0 };
 
@@ -21,10 +21,10 @@ public:
     void fix_name(const char* p_name, pfc::string8& p_out);
     void fix_name(pfc::string8& p_name);
 
-    cfg_fields_t(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
+    ConfigFields(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
 };
 
-class cfg_favouriteslist
+class ConfigFavourites
     : public cfg_var
     , public pfc::list_t<pfc::string8> {
 public:
@@ -34,14 +34,14 @@ public:
     bool have_item(const char* p_item);
     bool find_item(const char* p_item, t_size& index);
 
-    cfg_favouriteslist(const GUID& p_guid) : cfg_var(p_guid) {}
+    ConfigFavourites(const GUID& p_guid) : cfg_var(p_guid) {}
 };
 
-extern cfg_favouriteslist cfg_favourites;
+extern ConfigFavourites cfg_favourites;
 extern cfg_string cfg_sort_string;
 extern cfg_bool cfg_sort, cfg_autosend, cfg_orderedbysplitters, cfg_showemptyitems, cfg_showsearchclearbutton;
 extern cfg_int cfg_doubleclickaction, cfg_middleclickaction, cfg_edgestyle;
-extern cfg_fields_t cfg_field_list;
+extern ConfigFields cfg_field_list;
 extern fbh::ConfigInt32DpiAware cfg_vertical_item_padding;
 extern fbh::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators, cfg_reverse_sort_tracks;
 

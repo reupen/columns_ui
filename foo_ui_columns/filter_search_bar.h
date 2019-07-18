@@ -5,10 +5,10 @@
 
 namespace filter_panel {
 
-class filter_search_bar : public uie::container_uie_window_v2 {
+class FilterSearchToolbar : public uie::container_uie_window_v2 {
 public:
     static bool g_activate();
-    static bool g_filter_search_bar_has_stream(filter_search_bar const* p_seach_bar, const filter_stream_t* p_stream);
+    static bool g_filter_search_bar_has_stream(FilterSearchToolbar const* p_seach_bar, const FilterStream* p_stream);
     static void s_on_favourites_change();
 
     template <class TStream>
@@ -83,7 +83,7 @@ private:
     int m_toolbar_cx{};
     int m_toolbar_cy{};
 
-    static pfc::ptr_list_t<filter_search_bar> g_active_instances;
+    static pfc::ptr_list_t<FilterSearchToolbar> g_active_instances;
 };
 
 }; // namespace filter_panel

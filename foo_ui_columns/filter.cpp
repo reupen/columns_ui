@@ -10,7 +10,7 @@ const GUID g_guid_filter_items_font_client{0xd93f1ef3, 0x4aee, 0x4632, {0xb5, 0x
 const GUID g_guid_filter_header_font_client{
     0xfca8752b, 0xc064, 0x41c4, {0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34}};
 
-bool filter_stream_t::is_visible()
+bool FilterStream::is_visible()
 {
     for (t_size i = 0, count = m_windows.get_count(); i < count; i++)
         if (!m_windows[i]->is_visible())
@@ -66,7 +66,7 @@ void FilterPanel::g_on_orderedbysplitters_change()
     t_size count = g_streams.get_count();
     for (t_size i = 0; i < count; i++) {
         if (g_streams[i]->m_windows.get_count()) {
-            filter_search_bar::g_initialise_filter_stream(g_streams[i]);
+            FilterSearchToolbar::g_initialise_filter_stream(g_streams[i]);
             pfc::list_t<FilterPanel*> windows;
             g_streams[i]->m_windows[0]->get_windows(windows);
             if (windows.get_count())
@@ -80,7 +80,7 @@ void FilterPanel::g_on_fields_change()
     g_load_fields();
     for (auto& window : g_windows) {
         t_size field_index = window->get_field_index();
-        window->set_field(field_index == pfc_infinite ? field_data_t() : g_field_data[field_index], true);
+        window->set_field(field_index == pfc_infinite ? FieldData() : g_field_data[field_index], true);
     }
 }
 
@@ -133,7 +133,7 @@ void FilterPanel::g_on_show_sort_indicators_change()
         window->set_show_sort_indicators(cfg_show_sort_indicators);
 }
 
-void FilterPanel::g_on_field_query_change(const field_t& field)
+void FilterPanel::g_on_field_query_change(const Field& field)
 {
     t_size field_index = g_get_field_index_by_name(field.m_name);
     if (field_index != pfc_infinite) {
@@ -205,7 +205,7 @@ void FilterPanel::g_redraw_all()
     for (auto& window : g_windows)
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 }
-void FilterPanel::g_on_new_field(const field_t& field)
+void FilterPanel::g_on_new_field(const Field& field)
 {
     if (!g_windows.empty()) {
         t_size index = g_field_data.get_count();
@@ -250,7 +250,7 @@ void FilterPanel::g_on_field_removed(t_size index)
             for (t_size j = 0; j < subcount; j++) {
                 t_size this_index = windows[j]->get_field_index();
                 if (index == this_index) {
-                    windows[j]->set_field(field_data_t());
+                    windows[j]->set_field(FieldData());
                     if (!b_found) {
                         index_found = j;
                         b_found = true;
@@ -328,7 +328,7 @@ FilterPanel* FilterPanel::get_next_window()
     return window_index + 1 < window_count ? windows[window_index + 1] : nullptr;
 }
 
-void FilterPanel::g_create_field_data(const field_t& field, field_data_t& p_out)
+void FilterPanel::g_create_field_data(const Field& field, FieldData& p_out)
 {
     p_out.m_name = field.m_name;
     p_out.m_last_sort_direction = field.m_last_sort_direction;
@@ -358,7 +358,7 @@ void FilterPanel::g_load_fields()
     t_size count = filter_panel::cfg_field_list.get_count();
     g_field_data.set_count(count);
     for (t_size i = 0; i < count; i++) {
-        const field_t& field = filter_panel::cfg_field_list[i];
+        const Field& field = filter_panel::cfg_field_list[i];
         g_create_field_data(field, g_field_data[i]);
     }
 }
@@ -412,7 +412,7 @@ void FilterPanel::get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_aggre
     }
 }
 
-void FilterPanel::set_field(const field_data_t& field, bool b_force)
+void FilterPanel::set_field(const FieldData& field, bool b_force)
 {
     if (b_force || stricmp_utf8(field.m_name, m_field_data.m_name)) {
         m_pending_sort_direction = field.m_last_sort_direction;
@@ -456,7 +456,7 @@ t_size FilterPanel::get_highlight_item()
 
 bool FilterPanel::notify_on_keyboard_keydown_search()
 {
-    return filter_search_bar::g_activate();
+    return FilterSearchToolbar::g_activate();
 }
 
 bool FilterPanel::do_drag_drop(WPARAM wp)
@@ -694,7 +694,7 @@ void FilterPanel::notify_on_kill_focus(HWND wnd_receiving)
     m_selection_holder.release();
 }
 
-void node_t::ensure_handles_sorted()
+void Node::ensure_handles_sorted()
 {
     if (!m_handles_sorted) {
         sort_tracks(m_handles);
@@ -702,7 +702,7 @@ void node_t::ensure_handles_sorted()
     }
 }
 
-void node_t::remove_handles(metadb_handle_list_cref to_remove)
+void Node::remove_handles(metadb_handle_list_cref to_remove)
 {
     pfc::array_staticsize_t<bool> remove_mask(m_handles.get_count());
     pfc::fill_array_t(remove_mask, false);
@@ -720,12 +720,12 @@ void node_t::remove_handles(metadb_handle_list_cref to_remove)
     m_handles.remove_mask(remove_mask.get_ptr());
 }
 
-int node_t::g_compare(const node_t& i1, const WCHAR* i2)
+int Node::g_compare(const Node& i1, const WCHAR* i2)
 {
     return StrCmpLogicalW(i1.m_value, i2);
 }
 
-int node_t::g_compare_ptr_with_node(const node_t& i1, const node_t& i2)
+int Node::g_compare_ptr_with_node(const Node& i1, const Node& i2)
 {
     return StrCmpLogicalW(i1.m_value, i2.m_value);
 }
@@ -748,14 +748,14 @@ void FilterPanel::refresh_stream()
         if (stream_index != pfc_infinite)
             g_streams[stream_index]->m_windows.add_item(this);
         else {
-            filter_stream_t::ptr streamnew = new filter_stream_t;
+            FilterStream::ptr streamnew = new FilterStream;
             streamnew->m_windows.add_item(this);
             stream_index = g_streams.add_item(streamnew);
         }
         m_stream = g_streams[stream_index];
     } else {
         if (!g_streams.get_count()) {
-            m_stream = new filter_stream_t;
+            m_stream = new FilterStream;
             g_streams.add_item(m_stream);
         } else
             m_stream = g_streams[0];
@@ -897,16 +897,16 @@ uie::window_factory<FilterPanel> g_filter;
 std::vector<FilterPanel*> FilterPanel::g_windows;
 bool FilterPanel::g_showemptyitems = false;
 
-pfc::list_t<field_data_t> FilterPanel::g_field_data;
+pfc::list_t<FieldData> FilterPanel::g_field_data;
 
-pfc::list_t<filter_stream_t::ptr> FilterPanel::g_streams;
+pfc::list_t<FilterStream::ptr> FilterPanel::g_streams;
 
 // {4D6774AF-C292-44ac-8A8F-3B0855DCBDF4}
-const GUID appearance_client_filter_impl::g_guid
+const GUID AppearanceClient::g_guid
     = {0x4d6774af, 0xc292, 0x44ac, {0x8a, 0x8f, 0x3b, 0x8, 0x55, 0xdc, 0xbd, 0xf4}};
 
 namespace {
-cui::colours::client::factory<appearance_client_filter_impl> g_appearance_client_impl;
+cui::colours::client::factory<AppearanceClient> g_appearance_client_impl;
 }
 
 class font_client_filter : public cui::fonts::client {
@@ -932,7 +932,7 @@ public:
 font_client_filter::factory<font_client_filter> g_font_client_filter;
 font_header_client_filter::factory<font_header_client_filter> g_font_header_client_filter;
 
-void appearance_client_filter_impl::on_colour_changed(t_size mask) const
+void AppearanceClient::on_colour_changed(t_size mask) const
 {
     FilterPanel::g_redraw_all();
 }

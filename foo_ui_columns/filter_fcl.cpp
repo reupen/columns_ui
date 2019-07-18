@@ -195,7 +195,7 @@ class FavouritesDataSet : public cui::fcl::dataset {
         filter_panel::cfg_favourites.remove_all();
         filter_panel::cfg_favourites.add_items(imported_favourites);
 
-        filter_panel::filter_search_bar::s_on_favourites_change();
+        filter_panel::FilterSearchToolbar::s_on_favourites_change();
     }
 
     pfc::array_t<uint8_t> write_favourite(pfc::string8& favourite, abort_callback& aborter) const
@@ -260,7 +260,7 @@ class FieldsDataSet : public cui::fcl::dataset {
     {
         uint32_t count{};
         p_reader->read_lendian_t(count, p_abort);
-        pfc::array_staticsize_t<filter_panel::field_t> imported_fields{count};
+        pfc::array_staticsize_t<filter_panel::Field> imported_fields{count};
 
         for (auto i : ranges::view::iota(0, count)) {
             uint32_t field_size{};
@@ -276,7 +276,7 @@ class FieldsDataSet : public cui::fcl::dataset {
         filter_panel::FilterPanel::g_on_fields_change();
     }
 
-    pfc::array_t<uint8_t> write_field(filter_panel::field_t& field, abort_callback& aborter) const
+    pfc::array_t<uint8_t> write_field(filter_panel::Field& field, abort_callback& aborter) const
     {
         pfc::array_t<uint8_t> data;
         stream_writer_memblock_ref writer(data);
@@ -288,9 +288,9 @@ class FieldsDataSet : public cui::fcl::dataset {
         return data;
     }
 
-    filter_panel::field_t read_field(stream_reader* reader, t_size size, abort_callback& aborter)
+    filter_panel::Field read_field(stream_reader* reader, t_size size, abort_callback& aborter)
     {
-        filter_panel::field_t field;
+        filter_panel::Field field;
         fbh::fcl::Reader fcl_reader(reader, size, aborter);
         t_uint32 element_id;
         t_uint32 element_size;

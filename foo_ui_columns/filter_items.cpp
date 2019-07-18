@@ -32,7 +32,7 @@ void FilterPanel::populate_list_from_chain(
         new_selection[0] = b_all_was_selected;
         for (t_size i = 0; i < count; i++) {
             t_size index;
-            if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare, previous_nodes[i].get_ptr(),
+            if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare, previous_nodes[i].get_ptr(),
                     1, index, get_sort_direction())) {
                 new_selection[index] = true;
                 b_found = true;
@@ -64,10 +64,10 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
 
     m_nodes[0].m_handles.add_items(added_tracks);
 
-    pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
+    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
     make_data_entries(added_tracks, data_entries, g_showemptyitems);
 
-    const data_entry_t* p_data = data_entries.get_ptr();
+    const DataEntry* p_data = data_entries.get_ptr();
     const auto count{data_entries.get_count()};
 
     for (size_t i{0}; i < count; i++) {
@@ -77,7 +77,7 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
         const auto handles_count = 1 + i - start;
 
         t_size index_item;
-        const auto exact_match = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare,
+        const auto exact_match = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare,
             p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
 
         if (exact_match) {
@@ -93,7 +93,7 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
                 tracks_for_next_window.add_items_fromptr(
                     m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
         } else {
-            node_t node;
+            Node node;
             node.m_value = p_data[start].m_text.get_ptr();
             node.m_handles.set_count(handles_count);
 
@@ -131,10 +131,10 @@ void FilterPanel::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     const auto nothing_or_all_node_selected = get_nothing_or_all_node_selected();
     m_nodes[0].remove_handles(removed_tracks);
 
-    pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
+    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
     make_data_entries(removed_tracks, data_entries, g_showemptyitems);
 
-    const data_entry_t* p_data = data_entries.get_ptr();
+    const DataEntry* p_data = data_entries.get_ptr();
     const size_t count = data_entries.get_count();
     pfc::array_t<bool> mask_nodes;
     mask_nodes.set_count(m_nodes.get_count());
@@ -147,7 +147,7 @@ void FilterPanel::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
         const auto group_size = 1 + i - start;
 
         size_t index_item;
-        const auto exact_match = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare,
+        const auto exact_match = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare,
             p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
 
         if (exact_match) {
@@ -210,7 +210,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     const auto modified_tracks_count = modified_tracks.get_count();
     const auto nothing_or_all_node_selected = get_nothing_or_all_node_selected();
 
-    pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
+    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
     data_entries.prealloc(modified_tracks_count);
 
     metadb_handle_list_t<pfc::alloc_fast_aggressive> tracks_for_next_window;
@@ -223,7 +223,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
         m_nodes[node_index].remove_handles(modified_tracks);
     }
 
-    const data_entry_t* p_data = data_entries.get_ptr();
+    const DataEntry* p_data = data_entries.get_ptr();
     const auto data_entries_count = data_entries.get_count();
 
     for (size_t i{0}; i < data_entries_count; i++) {
@@ -233,7 +233,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
         const auto handles_count = 1 + i - start;
 
         size_t index_item;
-        const auto exact_match = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, node_t::g_compare,
+        const auto exact_match = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare,
             p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
 
         if (exact_match) {
@@ -250,7 +250,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
                 tracks_for_next_window.add_items_fromptr(
                     m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
         } else {
-            node_t node;
+            Node node;
             node.m_value = p_data[start].m_text.get_ptr();
             node.m_handles.set_count(handles_count);
 
@@ -295,9 +295,9 @@ void FilterPanel::on_items_modified(const pfc::list_base_const_t<metadb_handle_p
 }
 
 size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks,
-    pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive>& p_out, bool b_show_empty)
+    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive>& p_out, bool b_show_empty)
 {
-    class handle_info_t {
+    class HandleInfo {
     public:
         metadb_info_container::ptr m_info;
         t_size m_value_count{};
@@ -313,7 +313,7 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
     if (m_field_data.m_use_script) {
         titleformat_object_wrapper to(m_field_data.m_script);
         p_out.set_count(track_count);
-        data_entry_t* pp_out = p_out.get_ptr();
+        DataEntry* pp_out = p_out.get_ptr();
         std::atomic<size_t> node_count{0};
         concurrency::parallel_for(
             size_t{0}, track_count, [&node_count, &to, tracks_ptr, b_show_empty, pp_out](size_t i) {
@@ -329,9 +329,9 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
             });
         p_out.set_count(node_count);
     } else {
-        pfc::list_t<handle_info_t> infos;
+        pfc::list_t<HandleInfo> infos;
         infos.set_count(track_count);
-        handle_info_t* p_infos = infos.get_ptr();
+        HandleInfo* p_infos = infos.get_ptr();
 
         t_size counter = 0, field_count = m_field_data.m_fields.get_count();
 
@@ -352,7 +352,7 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
 
         p_out.set_count(counter);
 
-        data_entry_t* pp_out = p_out.get_ptr();
+        DataEntry* pp_out = p_out.get_ptr();
         std::atomic<size_t> out_counter{0};
 
         concurrency::parallel_for(
@@ -370,10 +370,10 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
         p_out.set_count(out_counter);
     }
 
-    mmh::in_place_sort(p_out, data_entry_t::g_compare, false, get_sort_direction(), true);
+    mmh::in_place_sort(p_out, DataEntry::g_compare, false, get_sort_direction(), true);
     const auto data_entries_count{p_out.get_count()};
 
-    data_entry_t* p_data = p_out.get_ptr();
+    DataEntry* p_data = p_out.get_ptr();
     concurrency::combinable<size_t> counts;
     concurrency::parallel_for(size_t{0}, data_entries_count, [&counts, p_data, data_entries_count](size_t i) {
         if (i + 1 == data_entries_count) {
@@ -393,18 +393,18 @@ void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& han
     clear_all_items();
     m_nodes.remove_all();
 
-    pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive> data_entries;
+    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
 
     const auto node_count = make_data_entries(handles, data_entries, g_showemptyitems);
 
     pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
     items.prealloc(node_count);
 
-    data_entry_t* p_data = data_entries.get_ptr();
+    DataEntry* p_data = data_entries.get_ptr();
     const size_t data_entries_count{data_entries.get_count()};
 
     m_nodes.set_count(node_count + 1);
-    node_t* p_nodes = m_nodes.get_ptr();
+    Node* p_nodes = m_nodes.get_ptr();
     p_nodes[0].m_handles.add_items(handles);
     p_nodes[0].m_value.set_string(L"All");
 
@@ -435,7 +435,7 @@ void FilterPanel::notify_sort_column(t_size index, bool b_descending, bool b_sel
         mmh::Permutation sort_permuation(node_count - 1);
         const auto* nodes = m_nodes.get_ptr();
         ++nodes;
-        mmh::sort_get_permutation(nodes, sort_permuation, node_t::g_compare_ptr_with_node, false, b_descending, true);
+        mmh::sort_get_permutation(nodes, sort_permuation, Node::g_compare_ptr_with_node, false, b_descending, true);
 
         m_nodes.reorder_partial(1, sort_permuation.get_ptr(), node_count - 1);
 

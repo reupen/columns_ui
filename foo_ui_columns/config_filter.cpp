@@ -52,7 +52,7 @@ public:
         if (m_edit_index < filter_panel::cfg_field_list.get_count()) {
             pfc::string8& dest = m_edit_column ? filter_panel::cfg_field_list[m_edit_index].m_field
                                                : filter_panel::cfg_field_list[m_edit_index].m_name;
-            filter_panel::field_t field_old = filter_panel::cfg_field_list[m_edit_index];
+            filter_panel::Field field_old = filter_panel::cfg_field_list[m_edit_index];
             if (strcmp(dest, value) != 0) {
                 pfc::string8 valueReal = value;
                 if (m_edit_column == 0)
@@ -166,7 +166,7 @@ public:
                 }
             } break;
             case IDC_NEW: {
-                filter_panel::field_t temp;
+                filter_panel::Field temp;
                 temp.m_name = "<enter name here>";
                 temp.m_field = "<enter field here>";
                 t_size index = filter_panel::cfg_field_list.add_item(temp);
