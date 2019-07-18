@@ -3,7 +3,7 @@
 #include "main_window.h"
 #include "rebar.h"
 
-class export_layout : public cui::fcl::dataset_v2 {
+class LayoutDataSet : public cui::fcl::dataset_v2 {
     void get_name(pfc::string_base& p_out) const override { p_out = "Layout"; }
     const GUID& get_guid() const override
     {
@@ -62,10 +62,10 @@ class export_layout : public cui::fcl::dataset_v2 {
     [[nodiscard]] double get_import_priority() const override { return -100.0; }
 };
 
-cui::fcl::dataset_factory<export_layout> g_export_layout_t;
+cui::fcl::dataset_factory<LayoutDataSet> g_export_layout_t;
 
 extern cfg_rebar g_cfg_rebar;
-class export_toolbars : public cui::fcl::dataset_v2 {
+class ToolbarLayoutDataSet : public cui::fcl::dataset_v2 {
     void get_name(pfc::string_base& p_out) const override { p_out = "Toolbars"; }
     const GUID& get_guid() const override
     {
@@ -93,9 +93,9 @@ class export_toolbars : public cui::fcl::dataset_v2 {
     [[nodiscard]] double get_import_priority() const override { return -100.0; }
 };
 
-cui::fcl::dataset_factory<export_toolbars> g_export_toolbars_t;
+cui::fcl::dataset_factory<ToolbarLayoutDataSet> g_export_toolbars_t;
 
-class export_layout_misc : public cui::fcl::dataset {
+class MiscLayoutDataSet : public cui::fcl::dataset {
     enum t_colour_pview_identifiers {
         identifier_status,
         identifier_status_pane,
@@ -148,4 +148,4 @@ class export_layout_misc : public cui::fcl::dataset {
         on_show_status_pane_change();
     }
 };
-cui::fcl::dataset_factory<export_layout_misc> g_export_layout_misc;
+cui::fcl::dataset_factory<MiscLayoutDataSet> g_export_layout_misc;
