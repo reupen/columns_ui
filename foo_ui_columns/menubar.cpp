@@ -138,7 +138,7 @@ public:
     }
 };
 
-class menu_extension
+class MenuToolbar
     : public ui_extension::container_uie_window_t<uie::menu_window_v2>
     , uih::MessageHook {
     static const TCHAR* class_name;
@@ -199,35 +199,35 @@ public:
     bool is_menu_focused() const override;
     HWND get_previous_focus_window() const override;
 
-    menu_extension();
-    ~menu_extension();
+    MenuToolbar();
+    ~MenuToolbar();
 };
 
-bool menu_extension::hooked = false;
+bool MenuToolbar::hooked = false;
 
-menu_extension::menu_extension() : p_manager(nullptr){};
+MenuToolbar::MenuToolbar() : p_manager(nullptr){};
 
-menu_extension::~menu_extension() = default;
+MenuToolbar::~MenuToolbar() = default;
 
-const TCHAR* menu_extension::class_name = _T("{76E6DB50-0DE3-4f30-A7E4-93FD628B1401}");
+const TCHAR* MenuToolbar::class_name = _T("{76E6DB50-0DE3-4f30-A7E4-93FD628B1401}");
 
-bool menu_extension::is_menu_focused() const
+bool MenuToolbar::is_menu_focused() const
 {
     return GetFocus() == wnd_menu;
 }
 
-HWND menu_extension::get_previous_focus_window() const
+HWND MenuToolbar::get_previous_focus_window() const
 {
     return wnd_prev_focus;
 }
 
-LRESULT WINAPI menu_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI MenuToolbar::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    auto p_this = reinterpret_cast<menu_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    auto p_this = reinterpret_cast<MenuToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
-LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
@@ -422,7 +422,7 @@ LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-LRESULT WINAPI menu_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI MenuToolbar::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_KILLFOCUS: {
@@ -473,12 +473,12 @@ LRESULT WINAPI menu_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return uCallWindowProc(menuproc, wnd, msg, wp, lp);
 }
 
-void menu_extension::make_menu(unsigned idx)
+void MenuToolbar::make_menu(unsigned idx)
 {
     if (idx == actual_active || hooked || idx < 1 || idx > m_buttons.get_count())
         return;
 
-    service_ptr_t<menu_extension> dummy = this; // menu command may delete us
+    service_ptr_t<MenuToolbar> dummy = this; // menu command may delete us
 
     actual_active = idx;
 
@@ -583,7 +583,7 @@ void menu_extension::make_menu(unsigned idx)
     actual_active = 0;
 }
 
-bool menu_extension::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
+bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
 {
     static POINT last_pt;
 
@@ -667,28 +667,28 @@ bool menu_extension::on_hooked_message(uih::MessageHookType p_type, int code, WP
     return false;
 }
 
-void menu_extension::get_name(pfc::string_base& out) const
+void MenuToolbar::get_name(pfc::string_base& out) const
 {
     out.set_string("Menu");
 }
-void menu_extension::get_category(pfc::string_base& out) const
+void MenuToolbar::get_category(pfc::string_base& out) const
 {
     out.set_string("Toolbars");
 }
 
-void menu_extension::set_focus()
+void MenuToolbar::set_focus()
 {
     {
         SetFocus(wnd_menu);
     }
 }
-void menu_extension::show_accelerators()
+void MenuToolbar::show_accelerators()
 {
     {
         show_menu_acc();
     }
 }
-void menu_extension::hide_accelerators()
+void MenuToolbar::hide_accelerators()
 {
     {
         if (GetFocus() != wnd_menu)
@@ -696,7 +696,7 @@ void menu_extension::hide_accelerators()
     }
 }
 
-bool menu_extension::on_menuchar(unsigned short chr)
+bool MenuToolbar::on_menuchar(unsigned short chr)
 {
     {
         UINT id;
@@ -709,7 +709,7 @@ bool menu_extension::on_menuchar(unsigned short chr)
 }
 
 // {76E6DB50-0DE3-4f30-A7E4-93FD628B1401}
-const GUID menu_extension::extension_guid
+const GUID MenuToolbar::extension_guid
     = {0x76e6db50, 0xde3, 0x4f30, {0xa7, 0xe4, 0x93, 0xfd, 0x62, 0x8b, 0x14, 0x1}};
 
-ui_extension::window_factory<menu_extension> blah;
+ui_extension::window_factory<MenuToolbar> blah;
