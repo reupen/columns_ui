@@ -5,7 +5,7 @@
 #include "list_view_panel.h"
 
 class PlaylistSwitcher
-    : public t_list_view_panel<appearance_client_ps_impl, uie::window>
+    : public t_list_view_panel<PlaylistSwitcherColoursClient, uie::window>
     , private playlist_callback
     , private play_callback {
     enum {
@@ -29,7 +29,7 @@ class PlaylistSwitcher
 
     enum { TIMER_SWITCH = TIMER_BASE };
 
-    class IDropSource_t : public IDropSource {
+    class DropSource : public IDropSource {
         long refcount;
         service_ptr_t<PlaylistSwitcher> m_window;
         DWORD m_initial_key_state;
@@ -40,10 +40,10 @@ class PlaylistSwitcher
         ULONG STDMETHODCALLTYPE Release() override;
         HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState) override;
         HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect) override;
-        IDropSource_t(PlaylistSwitcher* p_window, DWORD initial_key_state);
+        DropSource(PlaylistSwitcher* p_window, DWORD initial_key_state);
     };
 
-    class IDropTarget_t : public IDropTarget {
+    class DropTarget : public IDropTarget {
     public:
         HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;
         ULONG STDMETHODCALLTYPE AddRef() override;
@@ -54,7 +54,7 @@ class PlaylistSwitcher
         HRESULT STDMETHODCALLTYPE DragLeave() override;
         HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
 
-        IDropTarget_t(PlaylistSwitcher* p_window);
+        DropTarget(PlaylistSwitcher* p_window);
 
     private:
         long drop_ref_count;

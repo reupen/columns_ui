@@ -23,12 +23,12 @@ public:
 font_client_switcher::factory<font_client_switcher> g_font_client_switcher;
 
 // {EB38A997-3B5F-4126-8746-262AA9C1F94B}
-const GUID appearance_client_ps_impl::g_guid
+const GUID PlaylistSwitcherColoursClient::g_guid
     = {0xeb38a997, 0x3b5f, 0x4126, {0x87, 0x46, 0x26, 0x2a, 0xa9, 0xc1, 0xf9, 0x4b}};
 
-appearance_client_ps_impl::factory<appearance_client_ps_impl> g_appearance_client_ps_impl;
+PlaylistSwitcherColoursClient::factory<PlaylistSwitcherColoursClient> g_appearance_client_ps_impl;
 
-void appearance_client_ps_impl::on_colour_changed(t_size mask) const
+void PlaylistSwitcherColoursClient::on_colour_changed(t_size mask) const
 {
     PlaylistSwitcher::g_redraw_all();
 }
