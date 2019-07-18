@@ -17,7 +17,7 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { playlist_switcher_t::g_on_font_items_change(); }
+    void on_font_changed() const override { PlaylistSwitcher::g_on_font_items_change(); }
 };
 
 font_client_switcher::factory<font_client_switcher> g_font_client_switcher;
@@ -30,5 +30,5 @@ appearance_client_ps_impl::factory<appearance_client_ps_impl> g_appearance_clien
 
 void appearance_client_ps_impl::on_colour_changed(t_size mask) const
 {
-    playlist_switcher_t::g_redraw_all();
+    PlaylistSwitcher::g_redraw_all();
 }

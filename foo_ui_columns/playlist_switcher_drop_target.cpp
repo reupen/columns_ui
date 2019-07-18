@@ -55,7 +55,7 @@ bool g_get_folder_name(IDataObject* pDataObj, pfc::string8& p_out)
     return ret;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::IDropTarget_t::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
         return E_INVALIDARG;
@@ -73,12 +73,12 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::QueryInterface(REF
     return E_NOINTERFACE;
 }
 
-ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::AddRef()
+ULONG STDMETHODCALLTYPE PlaylistSwitcher::IDropTarget_t::AddRef()
 {
     return InterlockedIncrement(&drop_ref_count);
 }
 
-ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Release()
+ULONG STDMETHODCALLTYPE PlaylistSwitcher::IDropTarget_t::Release()
 {
     LONG rv = InterlockedDecrement(&drop_ref_count);
     if (!rv) {
@@ -87,7 +87,7 @@ ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Release()
     return rv;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragEnter(
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::IDropTarget_t::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -121,7 +121,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragEnter(
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::IDropTarget_t::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
@@ -234,7 +234,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragOver(DWORD grf
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave()
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::IDropTarget_t::DragLeave()
 {
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragLeave();
@@ -257,7 +257,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::DragLeave()
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::IDropTarget_t::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -398,7 +398,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
                     class delayed_drop_target_processer_t : public process_locations_notify {
                     public:
                         playlist_position_reference_tracker m_insertIndexTracker;
-                        service_ptr_t<playlist_switcher_t> m_window;
+                        service_ptr_t<PlaylistSwitcher> m_window;
                         bool m_new_playlist{false};
                         pfc::string8 m_playlist_name;
 
@@ -457,7 +457,7 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropTarget_t::Drop(
     return S_OK;
 }
 
-playlist_switcher_t::IDropTarget_t::IDropTarget_t(playlist_switcher_t* p_window)
+PlaylistSwitcher::IDropTarget_t::IDropTarget_t(PlaylistSwitcher* p_window)
     : drop_ref_count(0), m_last_rmb(false), m_is_playlists(false), m_is_accepted_type(false), m_window(p_window)
 {
     m_ole_api = standard_api_create_t<ole_interaction_v2>();
