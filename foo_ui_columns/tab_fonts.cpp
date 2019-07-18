@@ -127,7 +127,7 @@ void tab_appearance_fonts::update_font_desc()
 {
     LOGFONT lf;
     get_font(lf);
-    uSetWindowText(GetDlgItem(m_wnd, IDC_FONT_DESC), string_font_desc(lf));
+    uSetWindowText(GetDlgItem(m_wnd, IDC_FONT_DESC), StringFontDesc(lf));
 }
 
 void tab_appearance_fonts::update_change()
