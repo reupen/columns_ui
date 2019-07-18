@@ -34,7 +34,7 @@ service_ptr_t<mainmenu_manager> g_menu_playback;
 service_ptr_t<contextmenu_manager> g_main_nowplaying;
 } // namespace systray_contextmenus
 
-get_msg_hook_t g_get_msg_hook;
+GetMsgHook g_get_msg_hook;
 static HWND wnd_last;
 
 LRESULT cui::MainWindow::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -167,7 +167,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             create_systray_icon();
 
         HRESULT hr = OleInitialize(nullptr);
-        pfc::com_ptr_t<drop_handler_interface> drop_handler = new drop_handler_interface;
+        pfc::com_ptr_t<MainWindowDropTarget> drop_handler = new MainWindowDropTarget;
         RegisterDragDrop(m_wnd, drop_handler.get_ptr());
 
         create_child_windows();

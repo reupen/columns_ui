@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "main_window.h"
 
-class config_object_notify_columns : public config_object_notify {
+class AlwaysOnTopNotifyReceiver : public config_object_notify {
     unsigned get_watched_object_count() override { return 1; }
     GUID get_watched_object(unsigned p_index) override { return standard_config_objects::bool_ui_always_on_top; };
     void on_watched_object_changed(const service_ptr_t<config_object>& p_object) override
@@ -29,5 +29,5 @@ class config_object_notify_columns : public config_object_notify {
 
 };*/
 
-service_factory_single_t<config_object_notify_columns> hj;
+service_factory_single_t<AlwaysOnTopNotifyReceiver> hj;
 // service_factory_single_t<titleformat_config_callback_columns> hjc;
