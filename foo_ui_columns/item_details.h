@@ -160,7 +160,7 @@ private:
     LOGFONT m_lf{};
 };
 
-class item_details_t
+class ItemDetails
     : public uie::container_ui_extension
     , public ui_selection_callback
     , public play_callback
@@ -197,7 +197,7 @@ public:
     bool g_track_mode_includes_selection(t_size mode);
 
     class menu_node_track_mode : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+        service_ptr_t<ItemDetails> p_this;
         t_size m_source;
 
     public:
@@ -205,7 +205,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_track_mode(item_details_t* p_wnd, t_size p_value);
+        menu_node_track_mode(ItemDetails* p_wnd, t_size p_value);
         ;
     };
 
@@ -216,12 +216,12 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_source_popup(item_details_t* p_wnd);
+        menu_node_source_popup(ItemDetails* p_wnd);
         ;
     };
 
     class menu_node_alignment : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+        service_ptr_t<ItemDetails> p_this;
         t_size m_type;
 
     public:
@@ -229,7 +229,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_alignment(item_details_t* p_wnd, t_size p_value);
+        menu_node_alignment(ItemDetails* p_wnd, t_size p_value);
         ;
     };
 
@@ -240,39 +240,39 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_alignment_popup(item_details_t* p_wnd);
+        menu_node_alignment_popup(ItemDetails* p_wnd);
         ;
     };
 
     class menu_node_options : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+        service_ptr_t<ItemDetails> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_options(item_details_t* p_wnd);
+        menu_node_options(ItemDetails* p_wnd);
         ;
     };
     class menu_node_hscroll : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+        service_ptr_t<ItemDetails> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_hscroll(item_details_t* p_wnd);
+        menu_node_hscroll(ItemDetails* p_wnd);
         ;
     };
 
     class menu_node_wwrap : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+        service_ptr_t<ItemDetails> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_wwrap(item_details_t* p_wnd);
+        menu_node_wwrap(ItemDetails* p_wnd);
         ;
     };
 
@@ -349,7 +349,7 @@ public:
 
     void set_config_wnd(HWND wnd);
 
-    item_details_t();
+    ItemDetails();
 
 private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
@@ -385,7 +385,7 @@ private:
     void on_font_change();
     void on_colours_change();
 
-    static std::vector<item_details_t*> g_windows;
+    static std::vector<ItemDetails*> g_windows;
 
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles;
@@ -433,7 +433,7 @@ public:
     font_code_generator_t m_font_code_generator;
     bool m_modal{};
     bool m_timer_active{};
-    service_ptr_t<item_details_t> m_this;
+    service_ptr_t<ItemDetails> m_this;
     HWND m_wnd{};
 
     enum { timer_id = 100 };
@@ -442,7 +442,7 @@ public:
     item_details_config_t(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign);
 
     bool run_modal(HWND wnd);
-    void run_modeless(HWND wnd, item_details_t* p_this);
+    void run_modeless(HWND wnd, ItemDetails* p_this);
 
 private:
     void kill_timer();

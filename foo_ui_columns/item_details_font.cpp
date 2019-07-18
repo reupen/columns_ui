@@ -178,7 +178,7 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { item_details_t::g_on_font_change(); }
+    void on_font_changed() const override { ItemDetails::g_on_font_change(); }
 };
 
 class colour_client_item_details : public cui::colours::client {
@@ -195,7 +195,7 @@ public:
     bool get_themes_supported() const override { return false; };
 
     void on_bool_changed(t_size mask) const override{};
-    void on_colour_changed(t_size mask) const override { item_details_t::g_on_colours_change(); };
+    void on_colour_changed(t_size mask) const override { ItemDetails::g_on_colours_change(); };
 };
 
 namespace {

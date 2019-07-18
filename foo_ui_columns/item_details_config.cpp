@@ -174,7 +174,7 @@ void item_details_config_t::kill_timer()
     }
 }
 
-void item_details_config_t::run_modeless(HWND wnd, item_details_t* p_this)
+void item_details_config_t::run_modeless(HWND wnd, ItemDetails* p_this)
 {
     m_modal = false;
     m_this = p_this;
