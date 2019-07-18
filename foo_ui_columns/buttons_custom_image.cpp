@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-void toolbar_extension::button::custom_image::get_path(pfc::string8& p_out) const
+void ButtonsToolbar::button::custom_image::get_path(pfc::string8& p_out) const
 {
     p_out.reset();
 
@@ -21,7 +21,7 @@ void toolbar_extension::button::custom_image::get_path(pfc::string8& p_out) cons
         p_out << pfc::string_directory(fb2kexe) << "\\";
     p_out += m_path;
 }
-void toolbar_extension::button::custom_image::write(stream_writer* out, abort_callback& p_abort) const
+void ButtonsToolbar::button::custom_image::write(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_string(m_path, p_abort);
     out->write_lendian_t(m_mask_type, p_abort);
@@ -30,7 +30,7 @@ void toolbar_extension::button::custom_image::write(stream_writer* out, abort_ca
     } else if (m_mask_type == uie::MASK_COLOUR)
         out->write_lendian_t(m_mask_colour, p_abort);
 }
-void toolbar_extension::button::custom_image::read(
+void ButtonsToolbar::button::custom_image::read(
     t_config_version p_version, stream_reader* reader, abort_callback& p_abort)
 {
     pfc::string8 temp;
@@ -44,7 +44,7 @@ void toolbar_extension::button::custom_image::read(
         reader->read_lendian_t(m_mask_colour, p_abort);
 }
 
-void toolbar_extension::button::custom_image::read_from_file(t_config_version p_version, const char* p_base,
+void ButtonsToolbar::button::custom_image::read_from_file(t_config_version p_version, const char* p_base,
     const char* p_name, stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
 {
     // t_filesize p_start = p_file->get_position(p_abort);
@@ -260,7 +260,7 @@ void toolbar_extension::button::custom_image::read_from_file(t_config_version p_
     }
 }
 
-void toolbar_extension::button::custom_image::write_to_file(
+void ButtonsToolbar::button::custom_image::write_to_file(
     stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file.write_lendian_t(I_BUTTON_MASK_TYPE, p_abort);

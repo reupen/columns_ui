@@ -4,35 +4,35 @@
 
 #define ID_BUTTONS 2001
 
-toolbar_extension::class_data& toolbar_extension::get_class_data() const
+ButtonsToolbar::class_data& ButtonsToolbar::get_class_data() const
 {
     __implement_get_class_data_child_ex(class_name, true, false);
 }
 
-const GUID& toolbar_extension::get_extension_guid() const
+const GUID& ButtonsToolbar::get_extension_guid() const
 {
     return extension_guid;
 }
 
-toolbar_extension::config_param::config_param()
+ButtonsToolbar::config_param::config_param()
     : m_button_list(*this)
 {
 }
 
-void toolbar_extension::get_menu_items(ui_extension::menu_hook_t& p_hook)
+void ButtonsToolbar::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
     ui_extension::menu_node_ptr p_node(new uie::menu_node_configure(this, "Buttons options"));
     p_hook.add_node(p_node);
 }
 
-unsigned toolbar_extension::get_type() const
+unsigned ButtonsToolbar::get_type() const
 {
     return ui_extension::type_toolbar;
 }
 
-void toolbar_extension::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ButtonsToolbar::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
-    toolbar_extension::config_param param;
+    ButtonsToolbar::config_param param;
     param.m_selection = nullptr;
     param.m_child = nullptr;
     param.m_active = 0;
@@ -44,7 +44,7 @@ void toolbar_extension::import_config(stream_reader* p_reader, t_size p_size, ab
     configure(param.m_buttons, param.m_text_below, param.m_appearance);
 };
 
-void toolbar_extension::export_config(stream_writer* p_writer, abort_callback& p_abort) const
+void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     config_param param;
     param.m_selection = nullptr;
@@ -58,10 +58,10 @@ void toolbar_extension::export_config(stream_writer* p_writer, abort_callback& p
 }
 
 // {AFD89390-8E1F-434c-B9C5-A4C1261BB792}
-const GUID toolbar_extension::g_guid_fcb
+const GUID ButtonsToolbar::g_guid_fcb
     = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 
-void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
+void ButtonsToolbar::reset_buttons(pfc::list_base_t<button>& p_buttons)
 {
     const std::initializer_list<std::tuple<GUID, t_type, t_show, const char*>> default_buttons{
         {standard_commands::guid_main_stop, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
@@ -92,16 +92,16 @@ void toolbar_extension::reset_buttons(pfc::list_base_t<button>& p_buttons)
     }
 }
 
-toolbar_extension::toolbar_extension()
+ButtonsToolbar::ButtonsToolbar()
 {
     reset_buttons(m_buttons);
 };
 
-toolbar_extension::~toolbar_extension() = default;
+ButtonsToolbar::~ButtonsToolbar() = default;
 
-const TCHAR* toolbar_extension::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFFE56A16}");
+const TCHAR* ButtonsToolbar::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFFE56A16}");
 
-void toolbar_extension::create_toolbar()
+void ButtonsToolbar::create_toolbar()
 {
     pfc::array_t<TBBUTTON> tbb;
     tbb.set_size(m_buttons.get_count());
@@ -301,7 +301,7 @@ void toolbar_extension::create_toolbar()
     }
 }
 
-void toolbar_extension::destroy_toolbar()
+void ButtonsToolbar::destroy_toolbar()
 {
     t_size count = m_buttons.get_count();
     for (t_size i = 0; i < count; i++)
@@ -318,7 +318,7 @@ void toolbar_extension::destroy_toolbar()
     m_buttons.remove_all();
 }
 
-LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     if (msg == WM_CREATE) {
         wnd_host = wnd;
@@ -517,16 +517,16 @@ LRESULT toolbar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void toolbar_extension::get_name(pfc::string_base& out) const
+void ButtonsToolbar::get_name(pfc::string_base& out) const
 {
     out.set_string("Buttons");
 }
-void toolbar_extension::get_category(pfc::string_base& out) const
+void ButtonsToolbar::get_category(pfc::string_base& out) const
 {
     out.set_string("Toolbars");
 }
 
-void toolbar_extension::get_config(stream_writer* out, abort_callback& p_abort) const
+void ButtonsToolbar::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     unsigned count = m_buttons.get_count();
     out->write_lendian_t(VERSION_CURRENT, p_abort);
@@ -538,7 +538,7 @@ void toolbar_extension::get_config(stream_writer* out, abort_callback& p_abort) 
     }
 }
 
-void toolbar_extension::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ButtonsToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (!p_size)
         return;
@@ -563,7 +563,7 @@ void toolbar_extension::set_config(stream_reader* p_reader, t_size p_size, abort
     }
 }
 
-BOOL CALLBACK toolbar_extension::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ButtonsToolbar::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -578,7 +578,7 @@ BOOL CALLBACK toolbar_extension::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp
     }
 }
 
-BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:
@@ -672,7 +672,7 @@ BOOL CALLBACK toolbar_extension::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, 
     return FALSE;
 }
 
-bool toolbar_extension::show_config_popup(HWND wnd_parent)
+bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
 {
     config_param param;
     param.m_selection = nullptr;
@@ -691,7 +691,7 @@ bool toolbar_extension::show_config_popup(HWND wnd_parent)
 }
 
 // {D8E65660-64ED-42e7-850B-31D828C25294}
-const GUID toolbar_extension::extension_guid
+const GUID ButtonsToolbar::extension_guid
     = {0xd8e65660, 0x64ed, 0x42e7, {0x85, 0xb, 0x31, 0xd8, 0x28, 0xc2, 0x52, 0x94}};
 
-ui_extension::window_factory<toolbar_extension> blah;
+ui_extension::window_factory<ButtonsToolbar> blah;

@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-class toolbar_extension : public ui_extension::container_ui_extension {
+class ToolbarWindow : public ui_extension::container_ui_extension {
     static const TCHAR* class_name;
     int width{0};
     int height{0};
@@ -80,12 +80,12 @@ public:
 
             void on_command_state_change(unsigned p_new_state) override{};
 
-            service_ptr_t<toolbar_extension> m_this;
+            service_ptr_t<ToolbarWindow> m_this;
             unsigned id{0};
 
         public:
             callback_impl& operator=(const callback_impl& p_source);
-            void set_wnd(toolbar_extension* p_source);
+            void set_wnd(ToolbarWindow* p_source);
             void set_id(const unsigned i);
             callback_impl() = default;
         } m_callback;
@@ -132,8 +132,8 @@ public:
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
-    toolbar_extension();
-    ~toolbar_extension();
+    ToolbarWindow();
+    ~ToolbarWindow();
 
     static const GUID extension_guid;
 
@@ -289,8 +289,8 @@ class command_picker_param {
 public:
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_group{toolbar_extension::TYPE_SEPARATOR};
-    unsigned m_filter{toolbar_extension::FILTER_ACTIVE_SELECTION};
+    unsigned m_group{ToolbarWindow::TYPE_SEPARATOR};
+    unsigned m_filter{ToolbarWindow::FILTER_ACTIVE_SELECTION};
 };
 
 class command_picker_data {
@@ -306,10 +306,10 @@ class command_picker_data {
     HWND wnd_group{};
     HWND wnd_filter{};
     HWND wnd_command{};
-    unsigned m_group{toolbar_extension::TYPE_SEPARATOR};
+    unsigned m_group{ToolbarWindow::TYPE_SEPARATOR};
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_filter{toolbar_extension::FILTER_ACTIVE_SELECTION};
+    unsigned m_filter{ToolbarWindow::FILTER_ACTIVE_SELECTION};
 
     bool __populate_mainmenu_dynamic_recur(
         command_data& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root);
@@ -328,31 +328,31 @@ public:
 
 namespace pfc {
 template <>
-class traits_t<toolbar_extension::t_image_identifiers> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_image_identifiers> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_custom_image_identifiers> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_custom_image_identifiers> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_identifier_button> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_identifier_button> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_identifier> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_identifier> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_appearance> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_appearance> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_config_version> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_config_version> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_show> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_show> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_filter> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_filter> : public traits_rawobject {
 };
 template <>
-class traits_t<toolbar_extension::t_type> : public traits_rawobject {
+class traits_t<ToolbarWindow::t_type> : public traits_rawobject {
 };
 template <>
 class traits_t<uie::t_mask> : public traits_rawobject {

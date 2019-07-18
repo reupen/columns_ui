@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-void toolbar_extension::config_param::export_to_stream(stream_writer* p_file, bool b_paths, abort_callback& p_abort)
+void ButtonsToolbar::config_param::export_to_stream(stream_writer* p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file->write_lendian_t(g_guid_fcb, p_abort);
     p_file->write_lendian_t(VERSION_CURRENT, p_abort);
@@ -32,7 +32,7 @@ void toolbar_extension::config_param::export_to_stream(stream_writer* p_file, bo
     }
 }
 
-void toolbar_extension::config_param::export_to_file(const char* p_path, bool b_paths)
+void ButtonsToolbar::config_param::export_to_file(const char* p_path, bool b_paths)
 {
     try {
         abort_callback_impl p_abort;
@@ -46,7 +46,7 @@ void toolbar_extension::config_param::export_to_file(const char* p_path, bool b_
     }
 }
 
-void toolbar_extension::config_param::import_from_stream(stream_reader* p_file, bool add, abort_callback& p_abort)
+void ButtonsToolbar::config_param::import_from_stream(stream_reader* p_file, bool add, abort_callback& p_abort)
 {
     const char* profilepath = core_api::get_profile_path();
     if (!profilepath)
@@ -114,7 +114,7 @@ void toolbar_extension::config_param::import_from_stream(stream_reader* p_file, 
         }
     }
 }
-void toolbar_extension::config_param::import_from_file(const char* p_path, bool add)
+void ButtonsToolbar::config_param::import_from_file(const char* p_path, bool add)
 {
     try {
         abort_callback_impl p_abort;
@@ -128,7 +128,7 @@ void toolbar_extension::config_param::import_from_file(const char* p_path, bool 
     }
 }
 
-void toolbar_extension::config_param::on_selection_change(t_size index)
+void ButtonsToolbar::config_param::on_selection_change(t_size index)
 {
     m_selection = index != pfc_infinite && index < m_buttons.get_count() ? &m_buttons[index] : nullptr;
     m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
@@ -150,7 +150,7 @@ void toolbar_extension::config_param::on_selection_change(t_size index)
     SendMessage(m_child, MSG_BUTTON_CHANGE, 0, 0);
 }
 
-void toolbar_extension::config_param::populate_buttons_list()
+void ButtonsToolbar::config_param::populate_buttons_list()
 {
     unsigned count = m_buttons.get_count();
 
@@ -166,7 +166,7 @@ void toolbar_extension::config_param::populate_buttons_list()
     m_button_list.insert_items(0, count, items.get_ptr());
 }
 
-void toolbar_extension::config_param::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
+void ButtonsToolbar::config_param::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
 {
     unsigned real_count = m_buttons.get_count();
 
@@ -186,7 +186,7 @@ void toolbar_extension::config_param::refresh_buttons_list_items(t_size index, t
     m_button_list.replace_items(index, items, b_update_display);
 }
 
-BOOL CALLBACK toolbar_extension::config_param::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ButtonsToolbar::config_param::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     config_param* ptr = nullptr;
     switch (msg) {
@@ -201,7 +201,7 @@ BOOL CALLBACK toolbar_extension::config_param::g_ConfigPopupProc(HWND wnd, UINT 
     return ptr ? ptr->ConfigPopupProc(wnd, msg, wp, lp) : FALSE;
 }
 
-BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL ButtonsToolbar::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -346,7 +346,7 @@ BOOL toolbar_extension::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM
                     MB_YESNO)
                 == IDYES) {
                 m_button_list.remove_items(pfc::bit_array_true(), false);
-                toolbar_extension::reset_buttons(m_buttons);
+                ButtonsToolbar::reset_buttons(m_buttons);
                 populate_buttons_list();
             }
         } break;
