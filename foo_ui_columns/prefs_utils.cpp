@@ -119,7 +119,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_ite
 }
 
 void on_menu_combo_change(
-    HWND wnd, LPARAM lp, cfg_menu_item& cfg_menu_store, menu_item_cache& p_cache, unsigned ID_DESC)
+    HWND wnd, LPARAM lp, ConfigMenuItem& cfg_menu_store, menu_item_cache& p_cache, unsigned ID_DESC)
 {
     auto wnd_combo = (HWND)lp;
 

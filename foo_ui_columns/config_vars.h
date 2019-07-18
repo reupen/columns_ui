@@ -15,15 +15,15 @@ extern advconfig_checkbox_factory advbool_close_to_notification_icon;
 extern cfg_bool cfg_playlist_tabs_middle_click;
 } // namespace cui::config
 
-class cfg_window_placement_t : public cfg_struct_t<WINDOWPLACEMENT> {
+class ConfigWindowPlacement : public cfg_struct_t<WINDOWPLACEMENT> {
     using cfg_struct_t<WINDOWPLACEMENT>::operator=;
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
 
 public:
-    cfg_window_placement_t(const GUID& p_guid);
+    ConfigWindowPlacement(const GUID& p_guid);
 };
 
-class cfg_menu_item : public cfg_struct_t<menu_item_identifier> {
+class ConfigMenuItem : public cfg_struct_t<menu_item_identifier> {
 public:
     using cfg_struct_t<menu_item_identifier>::operator=;
     using cfg_struct_t<menu_item_identifier>::operator menu_item_identifier;
@@ -32,11 +32,11 @@ public:
         menu_item_identifier temp;
         *this = temp;
     }
-    explicit cfg_menu_item(const GUID& p_guid, const menu_item_identifier& p_val)
+    explicit ConfigMenuItem(const GUID& p_guid, const menu_item_identifier& p_val)
         : cfg_struct_t<menu_item_identifier>(p_guid, p_val){};
-    explicit cfg_menu_item(const GUID& p_guid, const GUID& p_val, const GUID& psub = pfc::guid_null)
+    explicit ConfigMenuItem(const GUID& p_guid, const GUID& p_val, const GUID& psub = pfc::guid_null)
         : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier{p_val, psub}){};
-    explicit cfg_menu_item(const GUID& p_guid) : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier{}){};
+    explicit ConfigMenuItem(const GUID& p_guid) : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier{}){};
 };
 
 namespace settings {
@@ -49,7 +49,7 @@ extern fbh::ConfigInt32DpiAware playlist_switcher_item_padding, playlist_view_it
 } // namespace settings
 
 extern cfg_string cfg_playlist_switcher_tagz;
-extern cfg_menu_item cfg_playlist_double;
+extern ConfigMenuItem cfg_playlist_double;
 
 extern cfg_int cfg_global, cfg_cur_prefs_col, cfg_header_hottrack, cfg_sortsel, cfg_global_sort, cfg_vis, cfg_vis2,
     cfg_vis_edge, cfg_lock, cfg_header, cfg_drop_at_end, cfg_mclick, cfg_mclick2, cfg_balloon, cfg_scroll_h_no_v,
@@ -67,6 +67,6 @@ extern cfg_bool cfg_go_to_tray;
 extern cfg_string cfg_tray_icon_path, cfg_export, cfg_import, cfg_custom_buttons_path, cfg_globalstring, cfg_colour,
     cfg_pgenstring;
 
-extern cfg_menu_item cfg_statusdbl;
+extern ConfigMenuItem cfg_statusdbl;
 
-extern cfg_window_placement_t cfg_window_placement_columns;
+extern ConfigWindowPlacement cfg_window_placement_columns;
