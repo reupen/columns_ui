@@ -4,7 +4,7 @@
 #include "prefs_utils.h"
 #include "playlist_item_helpers.h"
 
-static class tab_display2 : public PreferencesTab {
+static class TabPlaylistViewGeneral : public PreferencesTab {
     void refresh_me(HWND wnd)
     {
         SendDlgItemMessage(wnd, IDC_HEADER, BM_SETCHECK, cfg_header, 0);
