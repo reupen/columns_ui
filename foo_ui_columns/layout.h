@@ -11,7 +11,7 @@
 
 class ConfigLayout : public cfg_var {
 public:
-    class preset {
+    class Preset {
     public:
         pfc::array_t<t_uint8> m_val;
         GUID m_guid{};
@@ -26,7 +26,7 @@ public:
     unsigned get_active() { return m_active; }
 
     /** from configuration, not from ui */
-    const pfc::list_base_const_t<preset>& get_presets() const;
+    const pfc::list_base_const_t<Preset>& get_presets() const;
 
     void get_preset(t_size index, uie::splitter_item_ptr& p_out);
     void set_preset(t_size index, const uie::splitter_item_t* item);
@@ -37,11 +37,11 @@ public:
     t_size delete_preset(t_size index);
 
     t_size add_preset(const char* p_name, t_size len = pfc_infinite);
-    t_size add_preset(const preset& item);
+    t_size add_preset(const Preset& item);
     void set_active_preset(t_size index);
     void save_active_preset();
 
-    void set_presets(const pfc::list_base_const_t<preset>& presets, t_size active);
+    void set_presets(const pfc::list_base_const_t<Preset>& presets, t_size active);
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
 
     void set_data_raw(stream_reader*, unsigned p_sizehint, abort_callback& p_abort) override;
@@ -53,7 +53,7 @@ public:
 private:
     enum { stream_version_current = 0 };
 
-    pfc::list_t<preset> m_presets;
+    pfc::list_t<Preset> m_presets;
 
     unsigned m_active;
 
@@ -66,7 +66,7 @@ class LayoutWindow
 public:
     enum { MSG_LAYOUT_SET_FOCUS = WM_USER + 2, MSG_EDIT_PANEL };
 
-    static void g_get_default_presets(pfc::list_t<ConfigLayout::preset>& p_out);
+    static void g_get_default_presets(pfc::list_t<ConfigLayout::Preset>& p_out);
 
     void refresh_child();
     void relinquish_child();
@@ -78,7 +78,7 @@ public:
     void show_window();
 
     void export_config(stream_writer* p_out, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
-    bool import_config_to_object(stream_reader* p_reader, t_size size, t_uint32 mode, ConfigLayout::preset& p_out,
+    bool import_config_to_object(stream_reader* p_reader, t_size size, t_uint32 mode, ConfigLayout::Preset& p_out,
         pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 
     void show_menu_access_keys();

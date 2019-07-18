@@ -190,12 +190,12 @@ uie::window::ptr node_to_window(Node node)
     return window;
 }
 
-ConfigLayout::preset preset_to_config_preset(Preset preset)
+ConfigLayout::Preset preset_to_config_preset(Preset preset)
 {
     const auto window = node_to_window(preset.node);
     abort_callback_dummy aborter;
 
-    ConfigLayout::preset preset_default;
+    ConfigLayout::Preset preset_default;
     preset_default.m_name.set_string(preset.name.data(), preset.name.size());
     preset_default.m_guid = preset.node.guid;
     stream_writer_memblock_ref conf(preset_default.m_val, true);
@@ -210,14 +210,14 @@ ConfigLayout::ConfigLayout(const GUID& p_guid)
     , m_active(0) //, m_initialised(false)
     {};
 
-void ConfigLayout::preset::write(stream_writer* out, abort_callback& p_abort)
+void ConfigLayout::Preset::write(stream_writer* out, abort_callback& p_abort)
 {
     out->write_lendian_t(m_guid, p_abort);
     out->write_string(m_name.get_ptr(), p_abort);
     out->write_lendian_t(m_val.get_size(), p_abort);
     out->write(m_val.get_ptr(), m_val.get_size(), p_abort);
 }
-void ConfigLayout::preset::read(stream_reader* stream, abort_callback& p_abort)
+void ConfigLayout::Preset::read(stream_reader* stream, abort_callback& p_abort)
 {
     stream->read_lendian_t(m_guid, p_abort);
     pfc::string8 temp;
@@ -229,14 +229,14 @@ void ConfigLayout::preset::read(stream_reader* stream, abort_callback& p_abort)
     stream->read(m_val.get_ptr(), m_val.get_size(), p_abort);
 }
 
-void ConfigLayout::preset::get(uie::splitter_item_ptr& p_out)
+void ConfigLayout::Preset::get(uie::splitter_item_ptr& p_out)
 {
     p_out = new uie::splitter_item_simple_t;
     p_out->set_panel_guid(m_guid);
     p_out->set_panel_config_from_ptr(m_val.get_ptr(), m_val.get_size());
 }
 
-void ConfigLayout::preset::set(const uie::splitter_item_t* item)
+void ConfigLayout::Preset::set(const uie::splitter_item_t* item)
 {
     m_guid = item->get_panel_guid();
     item->get_panel_config_to_array(m_val, true);
@@ -261,13 +261,13 @@ void ConfigLayout::set_preset(t_size index, const uie::splitter_item_t* item)
     }
 }
 
-t_size ConfigLayout::add_preset(const preset& item)
+t_size ConfigLayout::add_preset(const Preset& item)
 {
     return m_presets.add_item(item);
 }
 t_size ConfigLayout::add_preset(const char* p_name, t_size len)
 {
-    preset temp;
+    Preset temp;
     temp.m_name.set_string(p_name, len);
     temp.m_guid = columns_ui::panels::guid_playlist_view_v2;
     return m_presets.add_item(temp);
@@ -304,7 +304,7 @@ t_size ConfigLayout::delete_preset(t_size index)
     return m_presets.get_count();
 }
 
-void ConfigLayout::set_presets(const pfc::list_base_const_t<preset>& presets, t_size active)
+void ConfigLayout::set_presets(const pfc::list_base_const_t<Preset>& presets, t_size active)
 {
     if (presets.get_count()) {
         m_presets.remove_all();
@@ -314,7 +314,7 @@ void ConfigLayout::set_presets(const pfc::list_base_const_t<preset>& presets, t_
     }
 }
 
-void LayoutWindow::g_get_default_presets(pfc::list_t<ConfigLayout::preset>& p_out)
+void LayoutWindow::g_get_default_presets(pfc::list_t<ConfigLayout::Preset>& p_out)
 {
     for (auto&& preset : cui::default_presets::quick_setup_presets)
         p_out.add_item(preset_to_config_preset(preset));
@@ -348,7 +348,7 @@ void ConfigLayout::set_preset_name(t_size index, const char* ptr, t_size len)
     }
 }
 
-const pfc::list_base_const_t<ConfigLayout::preset>& ConfigLayout::get_presets() const
+const pfc::list_base_const_t<ConfigLayout::Preset>& ConfigLayout::get_presets() const
 {
     return m_presets;
 }
@@ -385,7 +385,7 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, ab
         unsigned count;
         p_reader->read_lendian_t(count, p_abort);
         for (unsigned n = 0; n < count; n++) {
-            preset temp;
+            Preset temp;
             temp.read(p_reader, p_abort);
             m_presets.add_item(temp);
         }

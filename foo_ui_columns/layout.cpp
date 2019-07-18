@@ -356,7 +356,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
 }
 
 bool LayoutWindow::import_config_to_object(stream_reader* p_reader, t_size psize, t_uint32 mode,
-    ConfigLayout::preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
+    ConfigLayout::Preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     // uie::splitter_item_ptr item = new uie::splitter_item_simple_t;
     GUID guid;
