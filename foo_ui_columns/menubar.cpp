@@ -12,7 +12,7 @@ enum {
 };
 
 // from menu_manager.cpp
-class mnemonic_manager {
+class MnemonicManager {
     pfc::string8_fast_aggressive used;
     bool is_used(unsigned c)
     {
@@ -94,23 +94,23 @@ public:
     }
 };
 
-class mainmenu_root_group {
+class MainMenuRootGroup {
 public:
     pfc::string8 m_name;
     pfc::array_t<TCHAR> m_name_with_accelerators;
     GUID m_guid{};
     t_uint32 m_sort_priority{NULL};
 
-    mainmenu_root_group() = default;
+    MainMenuRootGroup() = default;
 
-    static t_size g_compare(const mainmenu_root_group& p_item1, const mainmenu_root_group& p_item2)
+    static t_size g_compare(const MainMenuRootGroup& p_item1, const MainMenuRootGroup& p_item2)
     {
         return pfc::compare_t(p_item1.m_sort_priority, p_item2.m_sort_priority);
     }
-    static void g_get_root_items(pfc::list_base_t<mainmenu_root_group>& p_out)
+    static void g_get_root_items(pfc::list_base_t<MainMenuRootGroup>& p_out)
     {
         p_out.remove_all();
-        mnemonic_manager mnemonics;
+        MnemonicManager mnemonics;
 
         service_enum_t<mainmenu_group> e;
         service_ptr_t<mainmenu_group> ptr;
@@ -119,7 +119,7 @@ public:
         while (e.next(ptr)) {
             if (ptr->get_parent() == pfc::guid_null) {
                 if (ptr->service_query_t(ptrp)) {
-                    mainmenu_root_group item;
+                    MainMenuRootGroup item;
                     pfc::string8 name;
                     ptrp->get_display_string(name);
                     item.m_guid = ptrp->get_guid();
@@ -165,7 +165,7 @@ public:
 
     HWND wnd_menu{nullptr};
     HWND wnd_prev_focus{nullptr};
-    pfc::list_t<mainmenu_root_group> m_buttons;
+    pfc::list_t<MainMenuRootGroup> m_buttons;
 
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -233,7 +233,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         initialised = true;
 
-        mainmenu_root_group::g_get_root_items(m_buttons);
+        MainMenuRootGroup::g_get_root_items(m_buttons);
         t_size button_count = m_buttons.get_count();
 
         pfc::array_t<TBBUTTON> tbb;
