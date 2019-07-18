@@ -4,7 +4,7 @@
 #include "main_window.h"
 #include "status_bar.h"
 
-static class tab_status : public PreferencesTab {
+static class TabStatus : public PreferencesTab {
 public:
     bool m_initialised{};
     menu_item_cache* m_cache{};
