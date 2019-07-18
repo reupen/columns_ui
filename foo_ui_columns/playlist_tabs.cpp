@@ -23,7 +23,7 @@ void remove_playlist_helper(t_size index)
 }
 
 ui_extension::window_factory<PlaylistTabs> blah;
-ui_extension::window_host_factory<PlaylistTabs::window_host_impl> g_tab_host;
+ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;
 
 HFONT PlaylistTabs::g_font = nullptr;
 
@@ -34,7 +34,7 @@ void PlaylistTabs::get_supported_panels(
     g_tab_host.instance_create(temp);
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
-        (static_cast<PlaylistTabs::window_host_impl*>(ptr.get_ptr()))->set_this(this);
+        (static_cast<PlaylistTabs::WindowHost*>(ptr.get_ptr()))->set_this(this);
     t_size count = p_windows.get_count();
     for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
@@ -805,7 +805,7 @@ void g_on_tabs_font_change()
     PlaylistTabs::on_font_change();
 }
 
-class font_client_switcher_tabs : public cui::fonts::client {
+class PlaylistTabsFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_playlist_switcher_tabs_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist tabs"; }
@@ -815,14 +815,14 @@ public:
     void on_font_changed() const override { PlaylistTabs::on_font_change(); }
 };
 
-font_client_switcher_tabs::factory<font_client_switcher_tabs> g_font_client_switcher_tabs;
+PlaylistTabsFontClient::factory<PlaylistTabsFontClient> g_font_client_switcher_tabs;
 
-void PlaylistTabs::window_host_impl::set_this(PlaylistTabs* ptr)
+void PlaylistTabs::WindowHost::set_this(PlaylistTabs* ptr)
 {
     m_this = ptr;
 }
 
-void PlaylistTabs::window_host_impl::relinquish_ownership(HWND wnd)
+void PlaylistTabs::WindowHost::relinquish_ownership(HWND wnd)
 {
     m_this->m_child_wnd = nullptr;
     m_this->m_host.release();
@@ -830,51 +830,51 @@ void PlaylistTabs::window_host_impl::relinquish_ownership(HWND wnd)
     m_this->reset_size_limits();
 }
 
-bool PlaylistTabs::window_host_impl::override_status_text_create(
+bool PlaylistTabs::WindowHost::override_status_text_create(
     service_ptr_t<ui_status_text_override>& p_out)
 {
     static_api_ptr_t<ui_control> api;
     return m_this->get_host()->override_status_text_create(p_out);
 }
 
-const GUID& PlaylistTabs::window_host_impl::get_host_guid() const
+const GUID& PlaylistTabs::WindowHost::get_host_guid() const
 {
     // {20789B52-4998-43ae-9B20-CCFD3BFBEEBD}
     static const GUID guid = {0x20789b52, 0x4998, 0x43ae, {0x9b, 0x20, 0xcc, 0xfd, 0x3b, 0xfb, 0xee, 0xbd}};
     return guid;
 }
 
-void PlaylistTabs::window_host_impl::on_size_limit_change(HWND wnd, unsigned flags)
+void PlaylistTabs::WindowHost::on_size_limit_change(HWND wnd, unsigned flags)
 {
     m_this->on_child_position_change();
 }
 
-bool PlaylistTabs::window_host_impl::get_show_shortcuts() const
+bool PlaylistTabs::WindowHost::get_show_shortcuts() const
 {
     return m_this->get_host()->get_keyboard_shortcuts_enabled();
 }
 
-bool PlaylistTabs::window_host_impl::get_keyboard_shortcuts_enabled() const
+bool PlaylistTabs::WindowHost::get_keyboard_shortcuts_enabled() const
 {
     return m_this->get_host()->get_keyboard_shortcuts_enabled();
 }
 
-bool PlaylistTabs::window_host_impl::set_window_visibility(HWND wnd, bool visibility)
+bool PlaylistTabs::WindowHost::set_window_visibility(HWND wnd, bool visibility)
 {
     return false;
 }
 
-bool PlaylistTabs::window_host_impl::is_visibility_modifiable(HWND wnd, bool desired_visibility) const
+bool PlaylistTabs::WindowHost::is_visibility_modifiable(HWND wnd, bool desired_visibility) const
 {
     return false;
 }
 
-bool PlaylistTabs::window_host_impl::is_visible(HWND wnd) const
+bool PlaylistTabs::WindowHost::is_visible(HWND wnd) const
 {
     return true;
 }
 
-bool PlaylistTabs::window_host_impl::request_resize(
+bool PlaylistTabs::WindowHost::request_resize(
     HWND wnd, unsigned flags, unsigned width, unsigned height)
 {
     if (flags == ui_extension::size_height && is_resize_supported(wnd)) {
@@ -892,7 +892,7 @@ bool PlaylistTabs::window_host_impl::request_resize(
     return false;
 }
 
-unsigned PlaylistTabs::window_host_impl::is_resize_supported(HWND wnd) const
+unsigned PlaylistTabs::WindowHost::is_resize_supported(HWND wnd) const
 {
     // We won't support ui_extension::size_width since we can't reliably detect multiline tab shit
     return (m_this->get_host()->is_resize_supported(m_this->get_wnd()) & ui_extension::size_height);

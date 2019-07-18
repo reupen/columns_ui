@@ -15,7 +15,7 @@ class PlaylistTabs
     , public playlist_callback {
 public:
     enum : uint32_t { MSG_RESET_SIZE_LIMITS = WM_USER + 3 };
-    class window_host_impl : public ui_extension::window_host {
+    class WindowHost : public ui_extension::window_host {
     public:
         unsigned is_resize_supported(HWND wnd) const override;
 
@@ -75,7 +75,7 @@ public:
 
     ~PlaylistTabs();
 
-    class playlists_tabs_drop_target : public IDropTarget {
+    class PlaylistTabsDropTarget : public IDropTarget {
     public:
         HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;
         ULONG STDMETHODCALLTYPE AddRef() override;
@@ -85,7 +85,7 @@ public:
         HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
         HRESULT STDMETHODCALLTYPE DragLeave() override;
         HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
-        playlists_tabs_drop_target(PlaylistTabs* p_wnd);
+        PlaylistTabsDropTarget(PlaylistTabs* p_wnd);
 
     private:
         bool m_last_rmb{};
@@ -180,7 +180,7 @@ private:
 
     GUID m_child_guid{};
     pfc::array_t<t_uint8> m_child_data;
-    service_ptr_t<window_host_impl> m_host;
+    service_ptr_t<WindowHost> m_host;
     ui_extension::window_ptr m_child;
     HWND m_child_wnd{nullptr};
     HWND m_host_wnd{nullptr};
@@ -190,6 +190,6 @@ private:
     MINMAXINFO mmi{};
 };
 
-extern ui_extension::window_host_factory<PlaylistTabs::window_host_impl> g_tab_host;
+extern ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;
 
 #endif
