@@ -7,9 +7,9 @@ class tab_appearance_fonts : public preferences_tab {
     HWND m_wnd{nullptr};
     HWND m_wnd_colours_mode{nullptr};
     HWND m_wnd_colours_element{nullptr};
-    fonts_manager_data::entry_ptr_t m_element_ptr;
+    FontsManagerData::entry_ptr_t m_element_ptr;
     cui::fonts::client::ptr m_element_api;
-    fonts_client_list_t m_fonts_client_list;
+    FontsClientList m_fonts_client_list;
 
 public:
     void refresh_me(HWND wnd);

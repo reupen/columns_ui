@@ -1,6 +1,6 @@
 #pragma once
 
-class colours_manager_data : public cfg_var {
+class ColoursManagerData : public cfg_var {
 public:
     static const GUID g_cfg_guid;
     enum { cfg_version = 0 };
@@ -50,7 +50,7 @@ public:
 
     void find_by_guid(const GUID& p_guid, entry_ptr_t& p_out);
 
-    colours_manager_data();
+    ColoursManagerData();
 
     void register_common_callback(cui::colours::common_callback* p_callback);
     void deregister_common_callback(cui::colours::common_callback* p_callback);

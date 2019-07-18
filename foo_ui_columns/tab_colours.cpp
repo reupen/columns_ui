@@ -54,7 +54,7 @@ BOOL tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             wnd, uih::WindowPosition{x_col_2, y_start + y_spacing * 2, 18, 14}, nullptr, true);
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
-        colours_client_list_t::g_get_list(m_colours_client_list);
+        ColoursClientList::g_get_list(m_colours_client_list);
         t_size count = m_colours_client_list.get_count();
         for (t_size i = 0; i < count; i++)
             ComboBox_AddString(
@@ -158,7 +158,7 @@ void tab_appearance::on_colour_changed()
         g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
         t_size count = m_colours_client_list.get_count();
         for (t_size i = 0; i < count; i++) {
-            colours_manager_data::entry_ptr_t p_data;
+            ColoursManagerData::entry_ptr_t p_data;
             g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_global)
                 m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);

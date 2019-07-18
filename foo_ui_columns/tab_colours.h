@@ -15,9 +15,9 @@ class tab_appearance : public preferences_tab {
     uih::FillWindow g_fill_selection_background_inactive;
     uih::FillWindow g_fill_active_item_frame;
     GUID m_element_guid{};
-    colours_manager_data::entry_ptr_t m_element_ptr;
+    ColoursManagerData::entry_ptr_t m_element_ptr;
     cui::colours::client::ptr m_element_api;
-    colours_client_list_t m_colours_client_list;
+    ColoursClientList m_colours_client_list;
 
 public:
     void refresh_me(HWND wnd);
