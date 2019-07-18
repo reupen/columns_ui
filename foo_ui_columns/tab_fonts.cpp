@@ -2,31 +2,31 @@
 
 #include "tab_fonts.h"
 
-bool tab_appearance_fonts::is_active()
+bool TabFonts::is_active()
 {
     return m_wnd != nullptr;
 }
 
-bool tab_appearance_fonts::get_help_url(pfc::string_base& p_out)
+bool TabFonts::get_help_url(pfc::string_base& p_out)
 {
     p_out = "http://yuo.be/wiki/columns_ui:config:colours_and_fonts:fonts";
     return true;
 }
 
-const char* tab_appearance_fonts::get_name()
+const char* TabFonts::get_name()
 {
     return "Fonts";
 }
 
-HWND tab_appearance_fonts::create(HWND wnd)
+HWND TabFonts::create(HWND wnd)
 {
     return m_helper.create(
         wnd, IDD_PREFS_FONTS, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
-void tab_appearance_fonts::apply() {}
+void TabFonts::apply() {}
 
-BOOL tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -102,7 +102,7 @@ BOOL tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return 0;
 }
 
-void tab_appearance_fonts::on_font_changed()
+void TabFonts::on_font_changed()
 {
     if (m_element_api.is_valid())
         m_element_api->on_font_changed();
@@ -123,19 +123,19 @@ void tab_appearance_fonts::on_font_changed()
     }
 }
 
-void tab_appearance_fonts::update_font_desc()
+void TabFonts::update_font_desc()
 {
     LOGFONT lf;
     get_font(lf);
     uSetWindowText(GetDlgItem(m_wnd, IDC_FONT_DESC), StringFontDesc(lf));
 }
 
-void tab_appearance_fonts::update_change()
+void TabFonts::update_change()
 {
     EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_FONT), m_element_ptr->font_mode == cui::fonts::font_mode_custom);
 }
 
-void tab_appearance_fonts::get_font(LOGFONT& lf)
+void TabFonts::get_font(LOGFONT& lf)
 {
     t_size index_element = ComboBox_GetCurSel(m_wnd_colours_element);
     if (index_element <= 1)
@@ -144,7 +144,7 @@ void tab_appearance_fonts::get_font(LOGFONT& lf)
         static_api_ptr_t<cui::fonts::manager>()->get_font(m_element_api->get_client_guid(), lf);
 }
 
-void tab_appearance_fonts::update_mode_combobox()
+void TabFonts::update_mode_combobox()
 {
     ComboBox_ResetContent(m_wnd_colours_mode);
     t_size index;
@@ -165,7 +165,7 @@ void tab_appearance_fonts::update_mode_combobox()
         m_wnd_colours_mode, uih::combo_box_find_item_by_data(m_wnd_colours_mode, m_element_ptr->font_mode));
 }
 
-void tab_appearance_fonts::refresh_me(HWND wnd)
+void TabFonts::refresh_me(HWND wnd)
 {
     initialising = true;
     initialising = false;

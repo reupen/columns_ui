@@ -3,31 +3,31 @@
 #include "tab_colours.h"
 #include "main_window.h"
 
-bool tab_appearance::is_active()
+bool TabColours::is_active()
 {
     return m_wnd != nullptr;
 }
 
-bool tab_appearance::get_help_url(pfc::string_base& p_out)
+bool TabColours::get_help_url(pfc::string_base& p_out)
 {
     p_out = "http://yuo.be/wiki/columns_ui:config:colours_and_fonts:colours";
     return true;
 }
 
-const char* tab_appearance::get_name()
+const char* TabColours::get_name()
 {
     return "Colours";
 }
 
-HWND tab_appearance::create(HWND wnd)
+HWND TabColours::create(HWND wnd)
 {
     return m_helper.create(
         wnd, IDD_PREFS_COLOURS, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
-void tab_appearance::apply() {}
+void TabColours::apply() {}
 
-BOOL tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -150,7 +150,7 @@ BOOL tab_appearance::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return 0;
 }
 
-void tab_appearance::on_colour_changed()
+void TabColours::on_colour_changed()
 {
     if (m_element_api.is_valid())
         m_element_api->on_colour_changed(cui::colours::colour_flag_all);
@@ -166,7 +166,7 @@ void tab_appearance::on_colour_changed()
     }
 }
 
-void tab_appearance::update_mode_combobox()
+void TabColours::update_mode_combobox()
 {
     ComboBox_ResetContent(m_wnd_colours_mode);
     t_size index;
@@ -187,7 +187,7 @@ void tab_appearance::update_mode_combobox()
         m_wnd_colours_mode, uih::combo_box_find_item_by_data(m_wnd_colours_mode, m_element_ptr->colour_mode));
 }
 
-void tab_appearance::update_buttons()
+void TabColours::update_buttons()
 {
     EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_TEXT_BACK), get_change_colour_enabled(cui::colours::colour_background));
     EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_TEXT_FORE), get_change_colour_enabled(cui::colours::colour_text));
@@ -219,7 +219,7 @@ void tab_appearance::update_buttons()
                    || (m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame)));
 }
 
-bool tab_appearance::get_colour_patch_enabled(cui::colours::colour_identifier_t p_identifier)
+bool TabColours::get_colour_patch_enabled(cui::colours::colour_identifier_t p_identifier)
 {
     cui::colours::helper colour_helper(m_element_guid);
 
@@ -238,7 +238,7 @@ bool tab_appearance::get_colour_patch_enabled(cui::colours::colour_identifier_t 
     return !m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier));
 }
 
-bool tab_appearance::get_change_colour_enabled(cui::colours::colour_identifier_t p_identifier)
+bool TabColours::get_change_colour_enabled(cui::colours::colour_identifier_t p_identifier)
 {
     if (p_identifier == cui::colours::colour_active_item_frame)
         return m_element_ptr->colour_mode == cui::colours::colour_mode_custom
@@ -250,7 +250,7 @@ bool tab_appearance::get_change_colour_enabled(cui::colours::colour_identifier_t
         && (!m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier))));
 }
 
-void tab_appearance::update_fills()
+void TabColours::update_fills()
 {
     cui::colours::helper p_manager(m_element_guid);
     if (p_manager.get_themed() && (!m_element_api.is_valid() || m_element_api->get_themes_supported())) {
@@ -276,7 +276,7 @@ void tab_appearance::update_fills()
         GetDlgItem(m_wnd, IDC_CUSTOM_FRAME), p_manager.get_bool(cui::colours::bool_use_custom_active_item_frame));
 }
 
-void tab_appearance::refresh_me(HWND wnd)
+void TabColours::refresh_me(HWND wnd)
 {
     initialising = true;
     initialising = false;

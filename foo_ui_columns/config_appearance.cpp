@@ -43,8 +43,8 @@ void appearance_message_window_t::g_initialise()
 
 ColoursManagerData g_colours_manager_data;
 FontsManagerData g_fonts_manager_data;
-tab_appearance g_tab_appearance;
-tab_appearance_fonts g_tab_appearance_fonts;
+TabColours g_tab_appearance;
+TabFonts g_tab_appearance_fonts;
 
 class colours_manager_instance_impl : public cui::colours::manager_instance {
 public:
