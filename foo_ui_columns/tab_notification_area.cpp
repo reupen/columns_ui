@@ -2,7 +2,7 @@
 #include "config.h"
 #include "notification_area.h"
 
-static class tab_sys : public PreferencesTab {
+static class TabNotificationArea : public PreferencesTab {
 public:
     bool m_initialised{};
 
