@@ -1,6 +1,6 @@
 #pragma once
 
-class preferences_tab {
+class PreferencesTab {
 public:
     virtual HWND create(HWND wnd) = 0;
     virtual const char* get_name() = 0;
@@ -30,9 +30,9 @@ private:
 
 } // namespace cui::prefs
 
-class config_host_generic : public preferences_page {
+class PreferencesTabsHost : public preferences_page {
 public:
-    config_host_generic(const char* p_name, preferences_tab* const* const p_tabs, size_t p_tab_count,
+    PreferencesTabsHost(const char* p_name, PreferencesTab* const* const p_tabs, size_t p_tab_count,
         const GUID& p_guid, const GUID& p_parent_guid, cfg_int* const p_active_tab)
         : m_child(nullptr)
         , m_name(p_name)
@@ -89,7 +89,7 @@ private:
     HWND m_child;
     const char* m_name;
     const GUID &m_guid, &m_parent_guid;
-    preferences_tab* const* const m_tabs;
+    PreferencesTab* const* const m_tabs;
     const size_t m_tab_count;
     cfg_int& m_active_tab;
     HWND m_wnd, m_wnd_tabs;

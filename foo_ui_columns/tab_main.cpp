@@ -6,7 +6,7 @@
 
 extern HWND g_rebar;
 
-static class tab_main : public preferences_tab {
+static class tab_main : public PreferencesTab {
 public:
     bool m_initialised{};
 
@@ -113,7 +113,7 @@ public:
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 } g_tab_main;
 
-preferences_tab* g_get_tab_main()
+PreferencesTab* g_get_tab_main()
 {
     return &g_tab_main;
 }

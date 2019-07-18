@@ -11,7 +11,7 @@ public:
     virtual void get_column(column_t::ptr& p_out) = 0;
 };
 
-class TabColumns : public preferences_tab {
+class TabColumns : public PreferencesTab {
 private:
     HWND m_wnd_child{nullptr};
     HWND m_wnd{nullptr};

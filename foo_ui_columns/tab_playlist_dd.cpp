@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "config.h"
 
-static class tab_playlist_dd : public preferences_tab {
+static class tab_playlist_dd : public PreferencesTab {
     static bool initialised;
 
     static void refresh_me(HWND wnd)
@@ -90,7 +90,7 @@ private:
 
 bool tab_playlist_dd::initialised = false;
 
-preferences_tab* g_get_tab_playlist_dd()
+PreferencesTab* g_get_tab_playlist_dd()
 {
     return &g_tab_playlist_dd;
 }

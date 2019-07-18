@@ -3,7 +3,7 @@
 #include "config_appearance.h"
 #include "config.h"
 
-class tab_appearance_fonts : public preferences_tab {
+class tab_appearance_fonts : public PreferencesTab {
     HWND m_wnd{nullptr};
     HWND m_wnd_colours_mode{nullptr};
     HWND m_wnd_colours_element{nullptr};

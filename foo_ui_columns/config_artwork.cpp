@@ -24,7 +24,7 @@ ArtworkSource g_artwork_sources[] = {
     ArtworkSource(artwork_panel::cfg_artist_scripts, "Artist picture"),
 };
 
-static class TabArtwork : public preferences_tab {
+static class TabArtwork : public PreferencesTab {
 public:
     TabArtwork() = default;
 
@@ -356,7 +356,7 @@ private:
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 } g_tab_artwork;
 
-preferences_tab* g_get_tab_artwork()
+PreferencesTab* g_get_tab_artwork()
 {
     return &g_tab_artwork;
 }

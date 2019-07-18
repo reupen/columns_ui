@@ -22,17 +22,17 @@ extern const GUID ng_playlist_header;
 extern const GUID filter_header;
 } // namespace fonts
 
-preferences_tab* g_get_tab_layout();
-preferences_tab* g_get_tab_artwork();
-preferences_tab* g_get_tab_display2();
-preferences_tab* g_get_tab_pview_artwork();
-preferences_tab* g_get_tab_sys();
-preferences_tab* g_get_tab_playlist_switcher();
-preferences_tab* g_get_tab_playlist_tabs();
-preferences_tab* g_get_tab_playlist_dd();
-preferences_tab* g_get_tab_main();
-preferences_tab* g_get_tab_status();
-preferences_tab* g_get_tab_global();
+PreferencesTab* g_get_tab_layout();
+PreferencesTab* g_get_tab_artwork();
+PreferencesTab* g_get_tab_display2();
+PreferencesTab* g_get_tab_pview_artwork();
+PreferencesTab* g_get_tab_sys();
+PreferencesTab* g_get_tab_playlist_switcher();
+PreferencesTab* g_get_tab_playlist_tabs();
+PreferencesTab* g_get_tab_playlist_dd();
+PreferencesTab* g_get_tab_main();
+PreferencesTab* g_get_tab_status();
+PreferencesTab* g_get_tab_global();
 
 void refresh_appearance_prefs();
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
@@ -126,9 +126,9 @@ public:
 
 namespace cui {
 namespace prefs {
-extern service_factory_single_t<config_host_generic> page_main;
-extern service_factory_single_t<config_host_generic> page_playlist_view;
-extern service_factory_single_t<config_host_generic> page_playlist_switcher;
-extern service_factory_single_t<config_host_generic> page_filters;
+extern service_factory_single_t<PreferencesTabsHost> page_main;
+extern service_factory_single_t<PreferencesTabsHost> page_playlist_view;
+extern service_factory_single_t<PreferencesTabsHost> page_playlist_switcher;
+extern service_factory_single_t<PreferencesTabsHost> page_filters;
 } // namespace preferences
 } // namespace cui

@@ -14,20 +14,20 @@ cfg_int cfg_child_playlist(GUID{0xbc6c99d4, 0x51c1, 0xf76e, {0x10, 0x9c, 0x62, 0
 
 pvt::preferences_tab_impl g_tab_grouping;
 
-static preferences_tab* g_tabs[] = {
+static PreferencesTab* g_tabs[] = {
     g_get_tab_main(),
     g_get_tab_status(),
     g_get_tab_sys(),
     g_get_tab_artwork(),
 };
 
-static preferences_tab* g_tabs_panels[] = {
+static PreferencesTab* g_tabs_panels[] = {
     g_get_tab_playlist_switcher(),
     g_get_tab_playlist_tabs(),
     g_get_tab_playlist_dd(),
 };
 
-static preferences_tab* g_tabs_playlist_view[] = {
+static PreferencesTab* g_tabs_playlist_view[] = {
     g_get_tab_display2(),
     g_get_tab_pview_artwork(),
     &g_tab_grouping,
@@ -59,11 +59,11 @@ const GUID& config_get_main_guid()
 
 namespace cui {
 namespace prefs {
-service_factory_single_t<config_host_generic> page_main("Columns UI", g_tabs, tabsize(g_tabs),
+service_factory_single_t<PreferencesTabsHost> page_main("Columns UI", g_tabs, tabsize(g_tabs),
     g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
-service_factory_single_t<config_host_generic> page_playlist_view("Playlist view", g_tabs_playlist_view,
+service_factory_single_t<PreferencesTabsHost> page_playlist_view("Playlist view", g_tabs_playlist_view,
     tabsize(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
-service_factory_single_t<config_host_generic> page_playlist_switcher("Playlist switcher", g_tabs_panels,
+service_factory_single_t<PreferencesTabsHost> page_playlist_switcher("Playlist switcher", g_tabs_panels,
     tabsize(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
 } // namespace preferences
 } // namespace cui
