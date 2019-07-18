@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-void ButtonsToolbar::config_param::export_to_stream(stream_writer* p_file, bool b_paths, abort_callback& p_abort)
+void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file->write_lendian_t(g_guid_fcb, p_abort);
     p_file->write_lendian_t(VERSION_CURRENT, p_abort);
@@ -32,7 +32,7 @@ void ButtonsToolbar::config_param::export_to_stream(stream_writer* p_file, bool 
     }
 }
 
-void ButtonsToolbar::config_param::export_to_file(const char* p_path, bool b_paths)
+void ButtonsToolbar::ConfigParam::export_to_file(const char* p_path, bool b_paths)
 {
     try {
         abort_callback_impl p_abort;
@@ -46,7 +46,7 @@ void ButtonsToolbar::config_param::export_to_file(const char* p_path, bool b_pat
     }
 }
 
-void ButtonsToolbar::config_param::import_from_stream(stream_reader* p_file, bool add, abort_callback& p_abort)
+void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool add, abort_callback& p_abort)
 {
     const char* profilepath = core_api::get_profile_path();
     if (!profilepath)
@@ -75,7 +75,7 @@ void ButtonsToolbar::config_param::import_from_stream(stream_reader* p_file, boo
             throw "Fcb version is newer than component";
         while (true) //! p_file.is_eof(p_abort)
         {
-            t_identifier id;
+            Identifier id;
             try {
                 p_file->read_lendian_t(id, p_abort);
             } catch (exception_io_data_truncation const&) {
@@ -100,7 +100,7 @@ void ButtonsToolbar::config_param::import_from_stream(stream_reader* p_file, boo
                 unsigned count;
                 p_file->read_lendian_t(count, p_abort);
                 for (unsigned n = 0; n < count; n++) {
-                    button temp{};
+                    Button temp{};
                     unsigned size_button;
                     p_file->read_lendian_t(size_button, p_abort);
                     pfc::string_formatter formatter;
@@ -114,7 +114,7 @@ void ButtonsToolbar::config_param::import_from_stream(stream_reader* p_file, boo
         }
     }
 }
-void ButtonsToolbar::config_param::import_from_file(const char* p_path, bool add)
+void ButtonsToolbar::ConfigParam::import_from_file(const char* p_path, bool add)
 {
     try {
         abort_callback_impl p_abort;
@@ -128,7 +128,7 @@ void ButtonsToolbar::config_param::import_from_file(const char* p_path, bool add
     }
 }
 
-void ButtonsToolbar::config_param::on_selection_change(t_size index)
+void ButtonsToolbar::ConfigParam::on_selection_change(t_size index)
 {
     m_selection = index != pfc_infinite && index < m_buttons.get_count() ? &m_buttons[index] : nullptr;
     m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
@@ -150,7 +150,7 @@ void ButtonsToolbar::config_param::on_selection_change(t_size index)
     SendMessage(m_child, MSG_BUTTON_CHANGE, 0, 0);
 }
 
-void ButtonsToolbar::config_param::populate_buttons_list()
+void ButtonsToolbar::ConfigParam::populate_buttons_list()
 {
     unsigned count = m_buttons.get_count();
 
@@ -166,7 +166,7 @@ void ButtonsToolbar::config_param::populate_buttons_list()
     m_button_list.insert_items(0, count, items.get_ptr());
 }
 
-void ButtonsToolbar::config_param::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
+void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
 {
     unsigned real_count = m_buttons.get_count();
 
@@ -186,22 +186,22 @@ void ButtonsToolbar::config_param::refresh_buttons_list_items(t_size index, t_si
     m_button_list.replace_items(index, items, b_update_display);
 }
 
-BOOL CALLBACK ButtonsToolbar::config_param::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ButtonsToolbar::ConfigParam::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    config_param* ptr = nullptr;
+    ConfigParam* ptr = nullptr;
     switch (msg) {
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd, DWLP_USER, lp);
-        ptr = reinterpret_cast<config_param*>(lp);
+        ptr = reinterpret_cast<ConfigParam*>(lp);
         break;
     default:
-        ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+        ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
         break;
     }
     return ptr ? ptr->ConfigPopupProc(wnd, msg, wp, lp) : FALSE;
 }
 
-BOOL ButtonsToolbar::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -298,27 +298,27 @@ BOOL ButtonsToolbar::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp
             return TRUE;
         case (CBN_SELCHANGE << 16) | IDC_SHOW: {
             if (m_selection) {
-                m_selection->m_show = (t_show)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+                m_selection->m_show = (Show)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
             }
         } break;
         case (CBN_SELCHANGE << 16) | IDC_TEXT_LOCATION: {
             m_text_below = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0) != 0;
         } break;
         case (CBN_SELCHANGE << 16) | IDC_APPEARANCE: {
-            m_appearance = (t_appearance)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+            m_appearance = (Appearance)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
         } break;
         case IDC_ADD: {
-            command_picker_data p_temp;
-            command_picker_param p_data{};
+            CommandPickerData p_temp;
+            CommandPickerParam p_data{};
             p_temp.set_data(p_data);
             if (uDialogBox(IDD_BUTTON_COMMAND_PICKER, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
-                t_size index = m_buttons.add_item(button{});
+                t_size index = m_buttons.add_item(Button{});
 
                 p_temp.get_data(p_data);
-                m_buttons[index].m_type = (t_type)p_data.m_group;
+                m_buttons[index].m_type = (Type)p_data.m_group;
                 m_buttons[index].m_guid = p_data.m_guid;
                 m_buttons[index].m_subcommand = p_data.m_subcommand;
-                m_buttons[index].m_filter = (t_filter)p_data.m_filter;
+                m_buttons[index].m_filter = (Filter)p_data.m_filter;
 
                 pfc::string8_fast_aggressive name;
                 // m_buttons[index].get_name(name);
@@ -453,16 +453,16 @@ BOOL ButtonsToolbar::config_param::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp
         } break;
         case IDC_PICK: {
             if (m_selection) {
-                command_picker_data p_temp;
-                command_picker_param p_data{
+                CommandPickerData p_temp;
+                CommandPickerParam p_data{
                     m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter};
                 p_temp.set_data(p_data);
                 if (uDialogBox(IDD_BUTTON_COMMAND_PICKER, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
                     p_temp.get_data(p_data);
-                    m_selection->m_type = (t_type)p_data.m_group;
+                    m_selection->m_type = (Type)p_data.m_group;
                     m_selection->m_guid = p_data.m_guid;
                     m_selection->m_subcommand = p_data.m_subcommand;
-                    m_selection->m_filter = (t_filter)p_data.m_filter;
+                    m_selection->m_filter = (Filter)p_data.m_filter;
                     m_selection->m_interface.release();
 
                     unsigned idx = m_button_list.get_selected_item_single();

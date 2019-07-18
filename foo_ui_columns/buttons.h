@@ -2,7 +2,7 @@
 
 #include "stdafx.h"
 
-class ToolbarWindow : public ui_extension::container_ui_extension {
+class ButtonsToolbar : public ui_extension::container_ui_extension {
     static const TCHAR* class_name;
     int width{0};
     int height{0};
@@ -19,35 +19,35 @@ class ToolbarWindow : public ui_extension::container_ui_extension {
     ULONG_PTR m_gdiplus_instance{};
 
 public:
-    enum t_filter : uint32_t {
+    enum Filter : uint32_t {
         FILTER_NONE,
         FILTER_PLAYING,
         FILTER_PLAYLIST,
         FILTER_ACTIVE_SELECTION,
     };
 
-    enum t_type : uint32_t {
+    enum Type : uint32_t {
         TYPE_SEPARATOR,
         TYPE_BUTTON,
         TYPE_MENU_ITEM_CONTEXT,
         TYPE_MENU_ITEM_MAIN,
     };
 
-    enum t_show : uint32_t {
+    enum Show : uint32_t {
         SHOW_IMAGE,
         SHOW_IMAGE_TEXT,
         SHOW_TEXT,
     };
 
-    enum t_appearance : uint32_t {
+    enum Appearance : uint32_t {
         APPEARANCE_NORMAL,
         APPEARANCE_FLAT,
         APPEARANCE_NOEDGE,
     };
 
-    class button {
+    class Button {
     public:
-        class custom_image {
+        class CustomImage {
         public:
             pfc::string_simple m_path;
             pfc::string_simple m_mask_path;
@@ -62,35 +62,35 @@ public:
                 stream_reader* p_file, unsigned p_size, abort_callback& p_abort);
         };
 
-        t_type m_type{TYPE_SEPARATOR};
-        t_filter m_filter{FILTER_ACTIVE_SELECTION};
-        t_show m_show{SHOW_IMAGE};
+        Type m_type{TYPE_SEPARATOR};
+        Filter m_filter{FILTER_ACTIVE_SELECTION};
+        Show m_show{SHOW_IMAGE};
         GUID m_guid{};
         GUID m_subcommand{};
         bool m_use_custom{false};
         bool m_use_custom_hot{false};
         bool m_use_custom_text{false};
         pfc::string_simple m_text;
-        custom_image m_custom_image;
-        custom_image m_custom_hot_image;
+        CustomImage m_custom_image;
+        CustomImage m_custom_hot_image;
         service_ptr_t<uie::button> m_interface;
 
-        class callback_impl : public uie::button_callback {
+        class ButtonStateCallback : public uie::button_callback {
             void on_button_state_change(unsigned p_new_state) override; // see t_button_state
 
             void on_command_state_change(unsigned p_new_state) override{};
 
-            service_ptr_t<ToolbarWindow> m_this;
+            service_ptr_t<ButtonsToolbar> m_this;
             unsigned id{0};
 
         public:
-            callback_impl& operator=(const callback_impl& p_source);
-            void set_wnd(ToolbarWindow* p_source);
+            ButtonStateCallback& operator=(const ButtonStateCallback& p_source);
+            void set_wnd(ButtonsToolbar* p_source);
             void set_id(const unsigned i);
-            callback_impl() = default;
+            ButtonStateCallback() = default;
         } m_callback;
 
-        void set(const button& p_source);
+        void set(const Button& p_source);
 
         void write(stream_writer* out, abort_callback& p_abort) const;
 
@@ -106,7 +106,7 @@ public:
             unsigned p_size, abort_callback& p_abort);
     };
 
-    class button_image {
+    class ButtonImage {
         HBITMAP m_bm{nullptr};
         HICON m_icon{nullptr};
         ui_extension::t_mask m_mask_type{uie::MASK_NONE};
@@ -114,14 +114,14 @@ public:
         COLORREF m_mask_colour{0};
 
     public:
-        button_image() = default;
-        button_image(const button_image&) = delete;
-        button_image& operator=(const button_image&) = delete;
-        button_image(button_image&&) = delete;
-        button_image& operator=(button_image&&) = delete;
-        ~button_image();
+        ButtonImage() = default;
+        ButtonImage(const ButtonImage&) = delete;
+        ButtonImage& operator=(const ButtonImage&) = delete;
+        ButtonImage(ButtonImage&&) = delete;
+        ButtonImage& operator=(ButtonImage&&) = delete;
+        ~ButtonImage();
         bool is_valid();
-        void load(const button::custom_image& p_image);
+        void load(const Button::CustomImage& p_image);
         void load(const service_ptr_t<uie::button>& p_in, COLORREF colour_btnface, unsigned cx, unsigned cy);
         unsigned add_to_imagelist(HIMAGELIST iml);
         void get_size(SIZE& p_out);
@@ -132,8 +132,8 @@ public:
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
-    ToolbarWindow();
-    ~ToolbarWindow();
+    ButtonsToolbar();
+    ~ButtonsToolbar();
 
     static const GUID extension_guid;
 
@@ -143,20 +143,20 @@ public:
 
     void get_category(pfc::string_base& out) const override;
 
-    class config_param {
+    class ConfigParam {
     public:
         // service_ptr_t<toolbar_extension> m_this;
-        class t_button_list_view : public uih::ListView {
-            config_param& m_param;
+        class ButtonsList : public uih::ListView {
+            ConfigParam& m_param;
             static CLIPFORMAT g_clipformat();
             struct DDData {
                 t_uint32 version;
                 HWND wnd;
             };
-            class IDropTarget_buttons_list : public IDropTarget {
+            class ButtonsListDropTarget : public IDropTarget {
                 long drop_ref_count;
                 bool last_rmb;
-                t_button_list_view* m_button_list_view;
+                ButtonsList* m_button_list_view;
                 mmh::ComPtr<IDataObject> m_DataObject;
                 mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
                 // pfc::string
@@ -171,7 +171,7 @@ public:
                 HRESULT STDMETHODCALLTYPE DragLeave() override;
                 HRESULT STDMETHODCALLTYPE Drop(
                     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect) override;
-                IDropTarget_buttons_list(t_button_list_view* p_blv);
+                ButtonsListDropTarget(ButtonsList* p_blv);
             };
             void notify_on_initialisation() override;
             void notify_on_create() override;
@@ -181,18 +181,18 @@ public:
             bool do_drag_drop(WPARAM wp) override;
 
         public:
-            t_button_list_view(config_param& p_param) : m_param(p_param){};
+            ButtonsList(ConfigParam& p_param) : m_param(p_param){};
         } m_button_list;
 
         modal_dialog_scope m_scope;
         // uih::ListView m_button_list;
-        button* m_selection{nullptr};
+        Button* m_selection{nullptr};
         HWND m_wnd{nullptr}, m_child{nullptr};
         unsigned m_active{0};
-        button::custom_image* m_image{nullptr};
-        pfc::list_t<button> m_buttons;
+        Button::CustomImage* m_image{nullptr};
+        pfc::list_t<Button> m_buttons;
         bool m_text_below{false};
-        t_appearance m_appearance{APPEARANCE_NORMAL};
+        Appearance m_appearance{APPEARANCE_NORMAL};
         void export_to_file(const char* p_path, bool b_paths = false);
         void import_from_file(const char* p_path, bool add);
         void export_to_stream(stream_writer* p_writer, bool b_paths, abort_callback& p_abort);
@@ -205,7 +205,7 @@ public:
         void populate_buttons_list();
         void refresh_buttons_list_items(t_size index, t_size count, bool b_update_display = true);
 
-        config_param();
+        ConfigParam();
     };
 
     static BOOL CALLBACK ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -215,7 +215,7 @@ public:
     bool show_config_popup(HWND wnd_parent) override;
 
     template <class List>
-    void configure(List&& buttons, bool text_below, t_appearance appearance)
+    void configure(List&& buttons, bool text_below, Appearance appearance)
     {
         const auto was_initialised = initialised;
         if (was_initialised) {
@@ -237,12 +237,12 @@ public:
 
     unsigned get_type() const override;
 
-    pfc::list_t<button> m_buttons;
+    pfc::list_t<Button> m_buttons;
 
     bool m_text_below{false};
-    t_appearance m_appearance{APPEARANCE_NORMAL};
+    Appearance m_appearance{APPEARANCE_NORMAL};
 
-    static void reset_buttons(pfc::list_base_t<button>& p_buttons);
+    static void reset_buttons(pfc::list_base_t<Button>& p_buttons);
 
     void get_config(stream_writer* data, abort_callback& p_abort) const override;
     void set_config(stream_reader* p_reader, t_size p_sizehint, abort_callback& p_abort) override;
@@ -253,12 +253,12 @@ public:
 
     static const GUID g_guid_fcb;
 
-    enum t_identifier {
+    enum Identifier {
         I_TEXT_BELOW,
         I_APPEARANCE,
         I_BUTTONS,
     };
-    enum t_identifier_button {
+    enum ButtonIdentifier {
         I_BUTTON_TYPE,
         I_BUTTON_FILTER,
         I_BUTTON_SHOW,
@@ -276,51 +276,51 @@ public:
         I_BUTTON_SUBCOMMAND
     };
 
-    enum t_custom_image_identifiers {
+    enum CustomImageIdentifier {
         I_CUSTOM_BUTTON_PATH,
         I_CUSTOM_BUTTON_MASK_PATH,
         // I_BUTTON_MASK_TYPE=8
     };
 
-    enum t_image_identifiers { IMAGE_NAME, IMAGE_DATA, IMAGE_PATH };
+    enum ImageIdentifier { IMAGE_NAME, IMAGE_DATA, IMAGE_PATH };
 };
 
-class command_picker_param {
+class CommandPickerParam {
 public:
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_group{ToolbarWindow::TYPE_SEPARATOR};
-    unsigned m_filter{ToolbarWindow::FILTER_ACTIVE_SELECTION};
+    unsigned m_group{ButtonsToolbar::TYPE_SEPARATOR};
+    unsigned m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
 };
 
-class command_picker_data {
+class CommandPickerData {
     modal_dialog_scope m_scope;
-    class command_data {
+    class CommandData {
     public:
         GUID m_guid{};
         GUID m_subcommand{};
         pfc::string8 m_desc;
     };
-    std::vector<std::unique_ptr<command_data>> m_data;
+    std::vector<std::unique_ptr<CommandData>> m_data;
     HWND m_wnd{};
     HWND wnd_group{};
     HWND wnd_filter{};
     HWND wnd_command{};
-    unsigned m_group{ToolbarWindow::TYPE_SEPARATOR};
+    unsigned m_group{ButtonsToolbar::TYPE_SEPARATOR};
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_filter{ToolbarWindow::FILTER_ACTIVE_SELECTION};
+    unsigned m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
 
     bool __populate_mainmenu_dynamic_recur(
-        command_data& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root);
+        CommandData& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root);
     bool __populate_commands_recur(
-        command_data& data, pfc::string_base& full, contextmenu_item_node* p_node, bool b_root);
+        CommandData& data, pfc::string_base& full, contextmenu_item_node* p_node, bool b_root);
     void populate_commands();
     void update_description();
 
 public:
-    void set_data(const command_picker_param& p_data);
-    void get_data(command_picker_param& p_data) const;
+    void set_data(const CommandPickerParam& p_data);
+    void get_data(CommandPickerParam& p_data) const;
     void initialise(HWND wnd);
     void deinitialise(HWND wnd);
     BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -328,31 +328,31 @@ public:
 
 namespace pfc {
 template <>
-class traits_t<ToolbarWindow::t_image_identifiers> : public traits_rawobject {
+class traits_t<ButtonsToolbar::ImageIdentifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_custom_image_identifiers> : public traits_rawobject {
+class traits_t<ButtonsToolbar::CustomImageIdentifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_identifier_button> : public traits_rawobject {
+class traits_t<ButtonsToolbar::ButtonIdentifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_identifier> : public traits_rawobject {
+class traits_t<ButtonsToolbar::Identifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_appearance> : public traits_rawobject {
+class traits_t<ButtonsToolbar::Appearance> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_config_version> : public traits_rawobject {
+class traits_t<ButtonsToolbar::t_config_version> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_show> : public traits_rawobject {
+class traits_t<ButtonsToolbar::Show> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_filter> : public traits_rawobject {
+class traits_t<ButtonsToolbar::Filter> : public traits_rawobject {
 };
 template <>
-class traits_t<ToolbarWindow::t_type> : public traits_rawobject {
+class traits_t<ButtonsToolbar::Type> : public traits_rawobject {
 };
 template <>
 class traits_t<uie::t_mask> : public traits_rawobject {

@@ -1,13 +1,13 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-CLIPFORMAT ButtonsToolbar::config_param::t_button_list_view::g_clipformat()
+CLIPFORMAT ButtonsToolbar::ConfigParam::ButtonsList::g_clipformat()
 {
     static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIListViewStandardClipFormat");
     return cf;
 }
 
-void ButtonsToolbar::config_param::t_button_list_view::notify_on_initialisation()
+void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 {
     set_single_selection(true);
 
@@ -17,23 +17,23 @@ void ButtonsToolbar::config_param::t_button_list_view::notify_on_initialisation(
 
     set_columns(columns);
 }
-void ButtonsToolbar::config_param::t_button_list_view::notify_on_create()
+void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_create()
 {
-    pfc::com_ptr_t<IDropTarget_buttons_list> IDT_blv = new IDropTarget_buttons_list(this);
+    pfc::com_ptr_t<ButtonsListDropTarget> IDT_blv = new ButtonsListDropTarget(this);
     RegisterDragDrop(get_wnd(), IDT_blv.get_ptr());
 }
-void ButtonsToolbar::config_param::t_button_list_view::notify_on_destroy()
+void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_destroy()
 {
     RevokeDragDrop(get_wnd());
 }
-void ButtonsToolbar::config_param::t_button_list_view::notify_on_selection_change(
+void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_selection_change(
     const pfc::bit_array& p_affected, const pfc::bit_array& p_status, notification_source_t p_notification_source)
 {
     t_size index = get_selected_item_single();
     m_param.on_selection_change(index);
 }
 
-bool ButtonsToolbar::config_param::t_button_list_view::do_drag_drop(WPARAM wp)
+bool ButtonsToolbar::ConfigParam::ButtonsList::do_drag_drop(WPARAM wp)
 {
     UINT cf = g_clipformat();
     mmh::ComPtr<IDataObject> pDO = new CDataObject;

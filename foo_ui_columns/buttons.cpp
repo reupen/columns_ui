@@ -14,7 +14,7 @@ const GUID& ButtonsToolbar::get_extension_guid() const
     return extension_guid;
 }
 
-ButtonsToolbar::config_param::config_param()
+ButtonsToolbar::ConfigParam::ConfigParam()
     : m_button_list(*this)
 {
 }
@@ -32,7 +32,7 @@ unsigned ButtonsToolbar::get_type() const
 
 void ButtonsToolbar::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
-    ButtonsToolbar::config_param param;
+    ButtonsToolbar::ConfigParam param;
     param.m_selection = nullptr;
     param.m_child = nullptr;
     param.m_active = 0;
@@ -46,7 +46,7 @@ void ButtonsToolbar::import_config(stream_reader* p_reader, t_size p_size, abort
 
 void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
-    config_param param;
+    ConfigParam param;
     param.m_selection = nullptr;
     param.m_buttons = m_buttons;
     param.m_child = nullptr;
@@ -61,9 +61,9 @@ void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_ab
 const GUID ButtonsToolbar::g_guid_fcb
     = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 
-void ButtonsToolbar::reset_buttons(pfc::list_base_t<button>& p_buttons)
+void ButtonsToolbar::reset_buttons(pfc::list_base_t<Button>& p_buttons)
 {
-    const std::initializer_list<std::tuple<GUID, t_type, t_show, const char*>> default_buttons{
+    const std::initializer_list<std::tuple<GUID, Type, Show, const char*>> default_buttons{
         {standard_commands::guid_main_stop, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
         {standard_commands::guid_main_pause, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
         {standard_commands::guid_main_play, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
@@ -80,7 +80,7 @@ void ButtonsToolbar::reset_buttons(pfc::list_base_t<button>& p_buttons)
 
     for (auto&& default_button : default_buttons) {
         const auto& [guid, type, show, text] = default_button;
-        button temp{};
+        Button temp{};
         temp.m_type = type;
         temp.m_show = show;
         temp.m_guid = guid;
@@ -106,8 +106,8 @@ void ButtonsToolbar::create_toolbar()
     pfc::array_t<TBBUTTON> tbb;
     tbb.set_size(m_buttons.get_count());
 
-    std::vector<button_image> images(m_buttons.get_count());
-    std::vector<button_image> images_hot(m_buttons.get_count());
+    std::vector<ButtonImage> images(m_buttons.get_count());
+    std::vector<ButtonImage> images_hot(m_buttons.get_count());
 
     memset(tbb.get_ptr(), 0, tbb.get_size() * sizeof(*tbb.get_ptr()));
 
@@ -556,7 +556,7 @@ void ButtonsToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_ca
         p_reader->read_lendian_t(count, p_abort);
         m_buttons.remove_all();
         for (unsigned n = 0; n < count; n++) {
-            button temp;
+            Button temp;
             temp.read(p_version, p_reader, p_abort);
             m_buttons.add_item(temp);
         }
@@ -568,11 +568,11 @@ BOOL CALLBACK ButtonsToolbar::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, L
     switch (msg) {
     case WM_INITDIALOG: {
         SetWindowLongPtr(wnd, DWLP_USER, lp);
-        auto* ptr = reinterpret_cast<command_picker_data*>(lp);
+        auto* ptr = reinterpret_cast<CommandPickerData*>(lp);
         return ptr->on_message(wnd, msg, wp, lp);
     }
     default: {
-        auto* ptr = reinterpret_cast<command_picker_data*>(GetWindowLongPtr(wnd, DWLP_USER));
+        auto* ptr = reinterpret_cast<CommandPickerData*>(GetWindowLongPtr(wnd, DWLP_USER));
         return ptr->on_message(wnd, msg, wp, lp);
     }
     }
@@ -584,7 +584,7 @@ BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPA
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd, DWLP_USER, lp);
         {
-            auto* ptr = reinterpret_cast<config_param*>(lp);
+            auto* ptr = reinterpret_cast<ConfigParam*>(lp);
 
             uSendDlgItemMessageText(wnd, IDC_IMAGE_TYPE, CB_ADDSTRING, 0, "Default");
             uSendDlgItemMessageText(wnd, IDC_IMAGE_TYPE, CB_ADDSTRING, 0, "Custom");
@@ -593,7 +593,7 @@ BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPA
         }
         return TRUE;
     case MSG_COMMAND_CHANGE: {
-        auto* ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+        auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
         if (ptr->m_selection) {
             bool& b_custom = (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom);
             bool b_enable = ptr->m_selection && ptr->m_selection->m_type != TYPE_SEPARATOR;
@@ -603,7 +603,7 @@ BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPA
         }
     } break;
     case MSG_BUTTON_CHANGE: {
-        auto* ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+        auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
         bool b_custom = ptr->m_selection
             ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom)
             : false;
@@ -622,7 +622,7 @@ BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPA
     case WM_COMMAND:
         switch (wp) {
         case (CBN_SELCHANGE << 16) | IDC_IMAGE_TYPE: {
-            auto* ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
             if (ptr->m_selection && ptr->m_image) {
                 unsigned idx = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
                 if (idx != CB_ERR && ptr->m_selection) {
@@ -637,13 +637,13 @@ BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPA
             }
         } break;
         case (EN_CHANGE << 16) | IDC_IMAGE_PATH: {
-            auto* ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
             if (ptr->m_image) {
                 ptr->m_image->m_path = string_utf8_from_window((HWND)lp);
             }
         } break;
         case IDC_BROWSE: {
-            auto* ptr = reinterpret_cast<config_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
             bool b_custom = ptr->m_selection
                 ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom)
                 : false;
@@ -674,7 +674,7 @@ BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPA
 
 bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
 {
-    config_param param;
+    ConfigParam param;
     param.m_selection = nullptr;
     param.m_buttons = m_buttons;
     param.m_child = nullptr;
@@ -683,7 +683,7 @@ bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
     param.m_text_below = m_text_below;
     param.m_appearance = m_appearance;
     bool rv = !!uDialogBox(
-        IDD_BUTTONS_OPTIONS, wnd_parent, config_param::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
+        IDD_BUTTONS_OPTIONS, wnd_parent, ConfigParam::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
     if (rv) {
         configure(param.m_buttons, param.m_text_below, param.m_appearance);
     }

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-ButtonsToolbar::button_image::~button_image()
+ButtonsToolbar::ButtonImage::~ButtonImage()
 {
     if (m_bm)
         DeleteBitmap(m_bm);
@@ -10,11 +10,11 @@ ButtonsToolbar::button_image::~button_image()
     if (m_icon)
         DestroyIcon(m_icon);
 }
-bool ButtonsToolbar::button_image::is_valid()
+bool ButtonsToolbar::ButtonImage::is_valid()
 {
     return m_bm != nullptr;
 }
-void ButtonsToolbar::button_image::load(const button::custom_image& p_image)
+void ButtonsToolbar::ButtonImage::load(const Button::CustomImage& p_image)
 {
     m_mask_type = p_image.m_mask_type;
     m_mask_colour = p_image.m_mask_colour;
@@ -57,7 +57,7 @@ void ButtonsToolbar::button_image::load(const button::custom_image& p_image)
     } else if (!m_icon)
         console::printf("failed loading image \"%s\"", fullPath.get_ptr());
 }
-void ButtonsToolbar::button_image::load(
+void ButtonsToolbar::ButtonImage::load(
     const service_ptr_t<uie::button>& p_in, COLORREF colour_btnface, unsigned cx, unsigned cy)
 {
     uie::button_v2::ptr inv2;
@@ -71,7 +71,7 @@ void ButtonsToolbar::button_image::load(
     } else
         m_bm = p_in->get_item_bitmap(0, colour_btnface, m_mask_type, m_mask_colour, m_bm_mask);
 }
-unsigned ButtonsToolbar::button_image::add_to_imagelist(HIMAGELIST iml)
+unsigned ButtonsToolbar::ButtonImage::add_to_imagelist(HIMAGELIST iml)
 {
     unsigned rv = -1;
     if (m_icon) {
@@ -91,7 +91,7 @@ unsigned ButtonsToolbar::button_image::add_to_imagelist(HIMAGELIST iml)
     }
     return rv;
 }
-void ButtonsToolbar::button_image::get_size(SIZE& p_out)
+void ButtonsToolbar::ButtonImage::get_size(SIZE& p_out)
 {
     p_out.cx = 0;
     p_out.cy = 0;
