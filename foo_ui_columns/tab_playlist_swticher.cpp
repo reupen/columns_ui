@@ -2,7 +2,7 @@
 #include "playlist_switcher_v2.h"
 #include "config.h"
 
-static class tab_playlist_switcher : public PreferencesTab {
+static class TabPlaylistSwitcher : public PreferencesTab {
 public:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {

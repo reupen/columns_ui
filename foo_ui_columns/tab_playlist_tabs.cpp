@@ -3,7 +3,7 @@
 #include "playlist_tabs.h"
 #include "config.h"
 
-static class tab_playlist_tabs : public PreferencesTab {
+static class TabPlaylistTabs : public PreferencesTab {
 public:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {

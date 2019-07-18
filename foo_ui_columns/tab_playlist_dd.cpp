@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "config.h"
 
-static class tab_playlist_dd : public PreferencesTab {
+static class TabPlaylistSwitcherDragAndDrop : public PreferencesTab {
     static bool initialised;
 
     static void refresh_me(HWND wnd)
@@ -88,7 +88,7 @@ private:
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_playlist_dd;
 
-bool tab_playlist_dd::initialised = false;
+bool TabPlaylistSwitcherDragAndDrop::initialised = false;
 
 PreferencesTab* g_get_tab_playlist_dd()
 {
