@@ -31,7 +31,7 @@ static preferences_tab* g_tabs_playlist_view[] = {
     g_get_tab_display2(),
     g_get_tab_pview_artwork(),
     &g_tab_grouping,
-    &tab_columns_v3::get_instance(),
+    &TabColumns::get_instance(),
     g_get_tab_global(),
 };
 

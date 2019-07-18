@@ -692,7 +692,7 @@ bool ng_playlist_view_t::notify_on_contextmenu_header(const POINT& pt, const HDH
     } else if (cmd == IDM_SEL_DES) {
         sort_by_column(index, true, true);
     } else if (cmd == IDM_EDIT_COLUMN) {
-        tab_columns_v3::get_instance().show_column(column_index_display_to_actual(index));
+        TabColumns::get_instance().show_column(column_index_display_to_actual(index));
     } else if (cmd == IDM_AUTOSIZE) {
         cfg_nohscroll = cfg_nohscroll == 0;
         pvt::ng_playlist_view_t::g_on_autosize_change();

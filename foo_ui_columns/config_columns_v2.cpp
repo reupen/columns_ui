@@ -9,7 +9,7 @@ extern cfg_int g_cur_tab;
 extern cfg_uint g_last_colour;
 
 enum { MSG_COLUMN_NAME_CHANGED = WM_USER + 2, MSG_SELECTION_CHANGED };
-struct column_times {
+struct ColumnTimes {
     service_ptr_t<titleformat_object> to_display;
     service_ptr_t<titleformat_object> to_colour;
     double time_display_compile;
@@ -18,7 +18,7 @@ struct column_times {
     double time_colour;
 };
 
-class edit_column_window_options : public column_tab {
+class edit_column_window_options : public ColumnTab {
 public:
     void get_column(column_t::ptr& p_out) override { p_out = m_column; };
     using self_t = edit_column_window_options;
@@ -223,7 +223,7 @@ void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
     }
 }
 
-class DisplayScriptTab : public column_tab {
+class DisplayScriptTab : public ColumnTab {
 public:
     using SelfType = DisplayScriptTab;
 
@@ -308,7 +308,7 @@ private:
     column_t::ptr m_column;
 };
 
-class StyleScriptTab : public column_tab {
+class StyleScriptTab : public ColumnTab {
 public:
     using SelfType = StyleScriptTab;
 
@@ -402,7 +402,7 @@ private:
     column_t::ptr m_column;
 };
 
-class SortingScriptTab : public column_tab {
+class SortingScriptTab : public ColumnTab {
 public:
     using SelfType = SortingScriptTab;
 
@@ -498,7 +498,7 @@ const GUID g_guid_cfg_child_column = {0xa7a2845, 0x6a4, 0x4c15, {0xb0, 0x9f, 0xa
 
 cfg_uint cfg_child_column(g_guid_cfg_child_column, 0);
 
-void tab_columns_v3::make_child()
+void TabColumns::make_child()
 {
     // HWND wnd_destroy = child;
     if (m_wnd_child) {
@@ -548,7 +548,7 @@ void tab_columns_v3::make_child()
     // SetWindowPos(wnd_tab,GetDlgItem(m_wnd, IDC_GROUPBOX),0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
 }
 
-void tab_columns_v3::refresh_me(HWND wnd, bool init)
+void TabColumns::refresh_me(HWND wnd, bool init)
 {
     initialising = true;
     HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
@@ -577,7 +577,7 @@ void tab_columns_v3::refresh_me(HWND wnd, bool init)
     ListView_SetColumnWidth(wnd_lv, 0, RECT_CX(rc_lv));
 }
 
-BOOL tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -848,7 +848,7 @@ BOOL tab_columns_v3::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return 0;
 }
 
-void tab_columns_v3::apply()
+void TabColumns::apply()
 {
     g_columns.set_entries_copy(m_columns);
     for (size_t i = 0, count = m_columns.get_count(); i < count; i++)
@@ -856,7 +856,7 @@ void tab_columns_v3::apply()
     pvt::ng_playlist_view_t::g_on_columns_change();
 }
 
-void tab_columns_v3::show_column(size_t index)
+void TabColumns::show_column(size_t index)
 {
     if (m_wnd_lv) {
         const auto& column_to_activate = g_columns[index];

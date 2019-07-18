@@ -10,7 +10,7 @@ cfg_uint g_last_colour(GUID{0xd352a60a, 0x4d87, 0x07b9, {0x09, 0x07, 0x03, 0xa1,
 
 EditorFontNotify g_editor_font_notify;
 
-struct column_times {
+struct ColumnTimes {
     service_ptr_t<titleformat_object> to_display;
     service_ptr_t<titleformat_object> to_colour;
     double time_display_compile{};
@@ -54,7 +54,7 @@ void speedtest(column_list_cref_t columns, bool b_global)
     bool b_column_times_valid = false;
 
     unsigned column_count = columns.get_count();
-    pfc::array_t<column_times> times_columns;
+    pfc::array_t<ColumnTimes> times_columns;
     times_columns.set_size(column_count);
 
     {
