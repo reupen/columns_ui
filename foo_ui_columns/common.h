@@ -10,13 +10,13 @@
  * Some common functions and enumerations
  */
 
-enum playlist_filter_type {
+enum PlaylistFilterType {
     FILTER_NONE = 0,
     FILTER_SHOW,
     FILTER_HIDE,
 };
 
-enum alignment {
+enum Alignment {
     ALIGN_LEFT,
     ALIGN_CENTRE,
     ALIGN_RIGHT,
@@ -24,10 +24,10 @@ enum alignment {
 
 namespace pfc {
 template <>
-class traits_t<playlist_filter_type> : public traits_rawobject {
+class traits_t<PlaylistFilterType> : public traits_rawobject {
 };
 template <>
-class traits_t<alignment> : public traits_rawobject {
+class traits_t<Alignment> : public traits_rawobject {
 };
 } // namespace pfc
 

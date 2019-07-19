@@ -126,12 +126,12 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
                 case identifier_alignment: {
                     t_uint32 temp;
                     reader2.read_item(temp);
-                    item->align = ((alignment)temp);
+                    item->align = ((Alignment)temp);
                 } break;
                 case identifier_filter_type: {
                     t_uint32 temp;
                     reader2.read_item(temp);
-                    item->filter_type = ((playlist_filter_type)temp);
+                    item->filter_type = ((PlaylistFilterType)temp);
                 } break;
                 case identifier_use_sort:
                     reader2.read_item(item->use_custom_sort);
@@ -272,7 +272,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
                         case identifier_playlist_filter_mode: {
                             t_uint32 temp;
                             reader2.read_item(temp);
-                            item.filter_type = (playlist_filter_type&)temp;
+                            item.filter_type = (PlaylistFilterType&)temp;
                         } break;
                         case identifier_playlist_filter_string:
                             reader2.read_item(item.filter_playlists, group_element_size);
