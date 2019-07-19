@@ -7,17 +7,17 @@
 #include <windowsx.h>
 #include <commctrl.h>
 
-class seek_bar_extension : public ui_extension::container_ui_extension {
+class SeekBarToolbar : public ui_extension::container_ui_extension {
     bool initialised{false};
     uih::Trackbar m_child;
 
-    class track_bar_host_impl : public uih::TrackbarCallback {
+    class SeekBarTrackbarCallback : public uih::TrackbarCallback {
         void on_position_change(unsigned pos, bool b_tracking) override;
         void get_tooltip_text(unsigned pos, uih::TrackbarString& out) override;
     } m_track_bar_host;
 
 public:
-    static pfc::ptr_list_t<seek_bar_extension> windows;
+    static pfc::ptr_list_t<SeekBarToolbar> windows;
 
     HWND wnd_seekbar{nullptr};
 
@@ -26,8 +26,8 @@ public:
     void disable_seek();
     void update_seek();
     void update_seek_pos();
-    seek_bar_extension();
-    ~seek_bar_extension();
+    SeekBarToolbar();
+    ~SeekBarToolbar();
 
     class_data& get_class_data() const override
     {
