@@ -3,17 +3,17 @@
 #include "setup_dialog.h"
 #include "main_window.h"
 
-BOOL CALLBACK setup_dialog_t::g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK QuickSetupDialog::g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    setup_dialog_t* p_data = nullptr;
+    QuickSetupDialog* p_data = nullptr;
     if (msg == WM_INITDIALOG) {
-        p_data = reinterpret_cast<setup_dialog_t*>(lp);
+        p_data = reinterpret_cast<QuickSetupDialog*>(lp);
         SetWindowLongPtr(wnd, DWLP_USER, lp);
     } else
-        p_data = reinterpret_cast<setup_dialog_t*>(GetWindowLongPtr(wnd, DWLP_USER));
+        p_data = reinterpret_cast<QuickSetupDialog*>(GetWindowLongPtr(wnd, DWLP_USER));
     return p_data ? p_data->SetupDialogProc(wnd, msg, wp, lp) : FALSE;
 }
-BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -172,8 +172,8 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return FALSE;
 }
 
-void setup_dialog_t::g_run()
+void QuickSetupDialog::g_run()
 {
-    setup_dialog_t::ptr_t dialog = new setup_dialog_t;
+    QuickSetupDialog::ptr_t dialog = new QuickSetupDialog;
     uCreateDialog(IDD_QUICK_SETUP, cui::main_window.get_wnd(), g_SetupDialogProc, (LPARAM)dialog.get_ptr());
 }
