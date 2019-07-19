@@ -3,8 +3,7 @@
 #include "main_window.h"
 
 #if 1
-class spectrum_vis_callback;
-class spectrum_extension;
+class SpectrumAnalyserVisualisation;
 
 extern cfg_int cfg_vis_edge;
 
@@ -28,7 +27,7 @@ cfg_int cfg_vis_mode(GUID{0x3341d306, 0xf8b6, 0x6c60, {0xbd, 0x7e, 0xe4, 0xc5, 0
 cfg_int cfg_scale(g_guid_scale, scale_logarithmic);
 cfg_int cfg_vertical_scale(g_guid_vertical_scale, scale_logarithmic);
 
-class spectrum_extension
+class SpectrumAnalyserVisualisation
     : public ui_extension::visualisation
     , public play_callback {
     ui_extension::visualisation_host_ptr p_host;
@@ -47,13 +46,13 @@ public:
 
     t_size m_scale, m_vertical_scale;
 
-    static pfc::ptr_list_t<spectrum_extension> list_vis;
+    static pfc::ptr_list_t<SpectrumAnalyserVisualisation> list_vis;
 
     void flush_brushes();
 
-    spectrum_extension();
+    SpectrumAnalyserVisualisation();
 
-    ~spectrum_extension();
+    ~SpectrumAnalyserVisualisation();
 
     static const GUID extension_guid;
 
@@ -74,9 +73,9 @@ public:
 
     void get_config(stream_writer* data, abort_callback& p_abort) const override;
 
-    static pfc::ptr_list_t<spectrum_extension> g_visualisations;
+    static pfc::ptr_list_t<SpectrumAnalyserVisualisation> g_visualisations;
 
-    static void g_register_stream(spectrum_extension* p_ext)
+    static void g_register_stream(SpectrumAnalyserVisualisation* p_ext)
     {
         if (!g_visualisations.have_item(p_ext)) {
             // console::printf("registering %x",p_ext);
@@ -87,7 +86,7 @@ public:
         }
     }
 
-    static void g_deregister_stream(spectrum_extension* p_ext, bool b_paused = false)
+    static void g_deregister_stream(SpectrumAnalyserVisualisation* p_ext, bool b_paused = false)
     {
         // console::printf("deregistering %x",p_ext);
         g_visualisations.remove_item(p_ext);
@@ -102,10 +101,9 @@ public:
         }
     }
 
-    static bool g_is_stream_active(spectrum_extension* p_ext) { return g_visualisations.have_item(p_ext); }
+    static bool g_is_stream_active(SpectrumAnalyserVisualisation* p_ext) { return g_visualisations.have_item(p_ext); }
 
-    friend class spectrum_vis_callback;
-    friend class spec_param;
+    friend class SpectrumAnalyserConfigData;
 
 private:
     static UINT_PTR g_timer_refcount;
@@ -153,23 +151,23 @@ private:
     void FB2KAPI on_volume_change(float p_new_val) override{};
 };
 
-UINT_PTR spectrum_extension::g_timer = NULL;
-UINT_PTR spectrum_extension::g_timer_refcount = NULL;
-service_ptr_t<visualisation_stream> spectrum_extension::g_stream;
+UINT_PTR SpectrumAnalyserVisualisation::g_timer = NULL;
+UINT_PTR SpectrumAnalyserVisualisation::g_timer_refcount = NULL;
+service_ptr_t<visualisation_stream> SpectrumAnalyserVisualisation::g_stream;
 
-pfc::ptr_list_t<spectrum_extension> spectrum_extension::list_vis;
-pfc::ptr_list_t<spectrum_extension> spectrum_extension::g_visualisations;
+pfc::ptr_list_t<SpectrumAnalyserVisualisation> SpectrumAnalyserVisualisation::list_vis;
+pfc::ptr_list_t<SpectrumAnalyserVisualisation> SpectrumAnalyserVisualisation::g_visualisations;
 
-spectrum_extension::spectrum_extension()
+SpectrumAnalyserVisualisation::SpectrumAnalyserVisualisation()
     : cr_fore(cfg_vis2)
     , cr_back(cfg_vis)
     , mode(cfg_vis_mode)
     , m_scale(cfg_scale)
     , m_vertical_scale(cfg_vertical_scale){};
 
-spectrum_extension::~spectrum_extension() = default;
+SpectrumAnalyserVisualisation::~SpectrumAnalyserVisualisation() = default;
 
-void spectrum_extension::flush_brushes()
+void SpectrumAnalyserVisualisation::flush_brushes()
 {
     if (br_background) {
         DeleteObject(br_background);
@@ -181,7 +179,7 @@ void spectrum_extension::flush_brushes()
     }
 }
 
-void spectrum_extension::paint_background(HDC dc, const RECT* rc_client)
+void SpectrumAnalyserVisualisation::paint_background(HDC dc, const RECT* rc_client)
 {
     if (!br_background)
         br_background = CreateSolidBrush(cr_back);
@@ -189,7 +187,7 @@ void spectrum_extension::paint_background(HDC dc, const RECT* rc_client)
     FillRect(dc, rc_client, br_background);
 }
 
-void spectrum_extension::enable(const ui_extension::visualisation_host_ptr& p_vis_host)
+void SpectrumAnalyserVisualisation::enable(const ui_extension::visualisation_host_ptr& p_vis_host)
 {
     p_host = p_vis_host;
     b_active = true;
@@ -212,7 +210,7 @@ void spectrum_extension::enable(const ui_extension::visualisation_host_ptr& p_vi
         g_register_stream(this);
 }
 
-void spectrum_extension::disable()
+void SpectrumAnalyserVisualisation::disable()
 {
     b_active = false;
 
@@ -228,14 +226,14 @@ void spectrum_extension::disable()
     p_host.release();
 }
 
-class spec_param {
+class SpectrumAnalyserConfigData {
 public:
     modal_dialog_scope m_scope;
     COLORREF cr_fore;
     COLORREF cr_back;
     unsigned mode;
     t_size m_scale, m_vertical_scale;
-    spectrum_extension* ptr;
+    SpectrumAnalyserVisualisation* ptr;
     HBRUSH br_fore;
     HBRUSH br_back;
     unsigned frame;
@@ -254,8 +252,8 @@ public:
             br_fore = nullptr;
         }
     }
-    spec_param(COLORREF fore, COLORREF back, unsigned p_mode, t_size scale, t_size vertical_scale,
-        spectrum_extension* p_spec, bool p_show_frame = false, unsigned p_frame = 0)
+    SpectrumAnalyserConfigData(COLORREF fore, COLORREF back, unsigned p_mode, t_size scale, t_size vertical_scale,
+        SpectrumAnalyserVisualisation* p_spec, bool p_show_frame = false, unsigned p_frame = 0)
         : cr_fore(fore)
         , cr_back(back)
         , mode(p_mode)
@@ -268,11 +266,11 @@ public:
         , b_show_frame(p_show_frame)
     {
     }
-    spec_param(const spec_param&) = delete;
-    spec_param& operator=(const spec_param&) = delete;
-    spec_param(spec_param&&) = delete;
-    spec_param& operator=(spec_param&&) = delete;
-    ~spec_param()
+    SpectrumAnalyserConfigData(const SpectrumAnalyserConfigData&) = delete;
+    SpectrumAnalyserConfigData& operator=(const SpectrumAnalyserConfigData&) = delete;
+    SpectrumAnalyserConfigData(SpectrumAnalyserConfigData&&) = delete;
+    SpectrumAnalyserConfigData& operator=(SpectrumAnalyserConfigData&&) = delete;
+    ~SpectrumAnalyserConfigData()
     {
         flush_back();
         flush_fore();
@@ -285,7 +283,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd, DWLP_USER, lp);
         {
-            auto* ptr = reinterpret_cast<spec_param*>(lp);
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(lp);
             ptr->m_scope.initialize(FindOwningPopup(wnd));
             SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, ptr->ptr->mode == MODE_BARS, 0);
             HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
@@ -314,7 +312,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
         return TRUE;
     case WM_CTLCOLORSTATIC: {
-        auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+        auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
         if (GetDlgItem(wnd, IDC_PATCH_FORE) == (HWND)lp) {
             auto dc = (HDC)wp;
             if (!ptr->br_fore) {
@@ -337,7 +335,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             EndDialog(wnd, 0);
             return TRUE;
         case IDC_CHANGE_BACK: {
-            auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             COLORREF COLOR = ptr->cr_back;
             COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_BACK), GetSysColor(COLOR_3DFACE), 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -348,7 +346,7 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         } break;
         case IDC_CHANGE_FORE: {
-            auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             COLORREF COLOR = ptr->cr_fore;
             COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_TEXT), GetSysColor(COLOR_3DSHADOW), 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0};
@@ -359,23 +357,23 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         } break;
         case IDC_BARS: {
-            auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             ptr->mode = (SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != TRUE ? MODE_STANDARD : MODE_BARS);
         } break;
         case IDC_FRAME_COMBO | (CBN_SELCHANGE << 16): {
-            auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             ptr->frame = ComboBox_GetCurSel(HWND(lp));
         } break;
         case IDC_SCALE | (CBN_SELCHANGE << 16): {
-            auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             ptr->m_scale = ComboBox_GetCurSel(HWND(lp));
         } break;
         case IDC_VERTICAL_SCALE | (CBN_SELCHANGE << 16): {
-            auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             ptr->m_vertical_scale = ComboBox_GetCurSel(HWND(lp));
         } break;
         case IDOK: {
-            auto* ptr = reinterpret_cast<spec_param*>(GetWindowLongPtr(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             EndDialog(wnd, 1);
         }
             return TRUE;
@@ -387,9 +385,9 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 }
 
-bool spectrum_extension::show_config_popup(HWND wnd_parent)
+bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
-    spec_param param(cr_fore, cr_back, mode, m_scale, m_vertical_scale, this);
+    SpectrumAnalyserConfigData param(cr_fore, cr_back, mode, m_scale, m_vertical_scale, this);
     bool rv = !!uDialogBox(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
     if (rv) {
         cr_fore = param.cr_fore;
@@ -410,7 +408,7 @@ bool spectrum_extension::show_config_popup(HWND wnd_parent)
     return rv;
 }
 
-void CALLBACK spectrum_extension::g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time)
+void CALLBACK SpectrumAnalyserVisualisation::g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time)
 {
     g_refresh_all();
 }
@@ -453,7 +451,7 @@ t_size g_scale_value_single(double val, t_size count, bool b_log)
     return ret;
 }
 
-void spectrum_extension::refresh(const audio_chunk* p_chunk)
+void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
 {
     ui_extension::visualisation_host::painter_ptr ps;
     p_host->create_painter(ps);
@@ -535,7 +533,7 @@ void spectrum_extension::refresh(const audio_chunk* p_chunk)
     ps.release();
 }
 
-void spectrum_extension::g_refresh_all()
+void SpectrumAnalyserVisualisation::g_refresh_all()
 {
     double p_time = NULL;
     g_stream->get_absolute_time(p_time);
@@ -544,20 +542,20 @@ void spectrum_extension::g_refresh_all()
     unsigned fft_size = 4096;
     bool ret = g_stream->get_spectrum_absolute(p_chunk, p_time, fft_size);
 
-    unsigned count = spectrum_extension::g_visualisations.get_count();
+    unsigned count = SpectrumAnalyserVisualisation::g_visualisations.get_count();
     for (unsigned n = 0; n < count; n++) {
-        spectrum_extension* vis_ext = spectrum_extension::g_visualisations[n];
+        SpectrumAnalyserVisualisation* vis_ext = SpectrumAnalyserVisualisation::g_visualisations[n];
         if (ret)
             vis_ext->refresh(&p_chunk);
     }
 }
 
-void spectrum_extension::get_name(pfc::string_base& out) const
+void SpectrumAnalyserVisualisation::get_name(pfc::string_base& out) const
 {
     out.set_string("Spectrum analyser");
 }
 
-void spectrum_extension::set_config(stream_reader* r, t_size p_size, abort_callback& p_abort)
+void SpectrumAnalyserVisualisation::set_config(stream_reader* r, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
         r->read_lendian_t(cr_fore, p_abort);
@@ -571,7 +569,7 @@ void spectrum_extension::set_config(stream_reader* r, t_size p_size, abort_callb
     }
 }
 
-void spectrum_extension::get_config(stream_writer* data, abort_callback& p_abort) const
+void SpectrumAnalyserVisualisation::get_config(stream_writer* data, abort_callback& p_abort) const
 {
     data->write_lendian_t(cr_fore, p_abort);
     data->write_lendian_t(cr_back, p_abort);
@@ -581,14 +579,14 @@ void spectrum_extension::get_config(stream_writer* data, abort_callback& p_abort
 }
 
 // {D947777C-94C7-409a-B02C-9B0EB9E374FA}
-const GUID spectrum_extension::extension_guid
+const GUID SpectrumAnalyserVisualisation::extension_guid
     = {0xd947777c, 0x94c7, 0x409a, {0xb0, 0x2c, 0x9b, 0xe, 0xb9, 0xe3, 0x74, 0xfa}};
 
-ui_extension::visualisation_factory<spectrum_extension> blah;
+ui_extension::visualisation_factory<SpectrumAnalyserVisualisation> blah;
 
-class window_visualisation_spectrum : public window_visualisation {
-    const GUID& get_visualisation_guid() const override { return spectrum_extension::extension_guid; }
-    const GUID& get_extension_guid() const override { return spectrum_extension::extension_guid; }
+class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
+    const GUID& get_visualisation_guid() const override { return SpectrumAnalyserVisualisation::extension_guid; }
+    const GUID& get_extension_guid() const override { return SpectrumAnalyserVisualisation::extension_guid; }
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override
     {
         p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_configure(this)));
@@ -621,12 +619,12 @@ class window_visualisation_spectrum : public window_visualisation {
     bool show_config_popup(HWND wnd_parent) override
     {
         uie::visualisation_ptr p_vis;
-        service_ptr_t<spectrum_extension> p_this;
+        service_ptr_t<SpectrumAnalyserVisualisation> p_this;
         get_vis_ptr(p_vis);
         if (p_vis.is_valid())
-            p_this = static_cast<spectrum_extension*>(p_vis.get_ptr());
+            p_this = static_cast<SpectrumAnalyserVisualisation*>(p_vis.get_ptr());
 
-        service_ptr_t<spectrum_extension> p_temp = p_this;
+        service_ptr_t<SpectrumAnalyserVisualisation> p_temp = p_this;
         if (!p_temp.is_valid())
             uie::visualization::create_by_guid(
                 get_visualisation_guid(), reinterpret_cast<uie::visualisation_ptr&>(p_temp));
@@ -641,7 +639,7 @@ class window_visualisation_spectrum : public window_visualisation {
             }
         }
 
-        spec_param param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
+        SpectrumAnalyserConfigData param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
             p_temp.get_ptr(), true, get_frame_style());
 
         bool rv = !!uDialogBox(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
@@ -673,5 +671,5 @@ class window_visualisation_spectrum : public window_visualisation {
     }
 };
 
-ui_extension::window_factory<window_visualisation_spectrum> blahg;
+ui_extension::window_factory<SpectrumAnalyserVisualisationPanel> blahg;
 #endif
