@@ -4,10 +4,10 @@
 
 // extern HBITMAP buttons_images;
 
-extern rebar_window* g_rebar_window;
+extern RebarWindow* g_rebar_window;
 extern HWND g_rebar;
-extern cfg_rebar g_cfg_rebar;
-extern cfg_band_cache_t cfg_band_cache;
+extern ConfigRebar g_cfg_rebar;
+extern ConfigBandCache cfg_band_cache;
 
 constexpr const auto default_toolbar_width = 21;
 constexpr const auto default_toolbar_height = 21;
@@ -30,7 +30,7 @@ void create_rebar()
 {
     if (cfg_toolbars) {
         if (!g_rebar_window) {
-            g_rebar_window = new rebar_window;
+            g_rebar_window = new RebarWindow;
             cfg_band_cache.get_band_cache(g_rebar_window->cache);
             g_rebar = g_rebar_window->init();
             if (!g_rebar) {
@@ -42,7 +42,7 @@ void create_rebar()
         destroy_rebar();
 }
 
-void cfg_rebar::export_config(
+void ConfigRebar::export_config(
     stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
@@ -61,7 +61,7 @@ void cfg_rebar::export_config(
     }
 }
 
-void cfg_rebar::import_config(
+void ConfigRebar::import_config(
     stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     t_uint32 version;
@@ -96,11 +96,11 @@ void cfg_rebar::import_config(
     }
 }
 
-void band_cache::add_entry(const GUID& guid, unsigned width)
+void BandCache::add_entry(const GUID& guid, unsigned width)
 {
     unsigned count = get_count();
     for (unsigned n = 0; n < count; n++) {
-        band_cache_entry& p_bce = (*this)[n];
+        BandCacheEntry& p_bce = (*this)[n];
         if (p_bce.guid == guid) {
             p_bce.width = width;
             return;
@@ -109,7 +109,7 @@ void band_cache::add_entry(const GUID& guid, unsigned width)
     add_item({guid, width});
 }
 
-unsigned band_cache::get_width(const GUID& guid)
+unsigned BandCache::get_width(const GUID& guid)
 {
     unsigned rv = 100;
     unsigned count = get_count();
@@ -122,7 +122,7 @@ unsigned band_cache::get_width(const GUID& guid)
     return rv;
 }
 
-void band_cache::write(stream_writer* out, abort_callback& p_abort)
+void BandCache::write(stream_writer* out, abort_callback& p_abort)
 {
     unsigned count = get_count();
     out->write_lendian_t(count, p_abort);
@@ -133,7 +133,7 @@ void band_cache::write(stream_writer* out, abort_callback& p_abort)
     }
 }
 
-void band_cache::read(stream_reader* data, abort_callback& p_abort)
+void BandCache::read(stream_reader* data, abort_callback& p_abort)
 {
     remove_all();
     unsigned count;
@@ -143,43 +143,43 @@ void band_cache::read(stream_reader* data, abort_callback& p_abort)
         unsigned width;
         data->read_lendian_t(guid, p_abort);
         data->read_lendian_t(width, p_abort);
-        band_cache_entry item;
+        BandCacheEntry item;
         item.guid = guid;
         item.width = width;
         add_item(item);
     }
 }
 
-void cfg_band_cache_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
+void ConfigBandCache::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     if (g_rebar_window)
         entries.copy(g_rebar_window->cache);
     return entries.write(out, p_abort);
 }
 
-void cfg_band_cache_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigBandCache::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
 {
     return entries.read(p_reader, p_abort);
 }
 
-void cfg_band_cache_t::get_band_cache(band_cache& out)
+void ConfigBandCache::get_band_cache(BandCache& out)
 {
     out.remove_all();
     out.add_items(entries);
 }
 
-void cfg_band_cache_t::set_band_cache(band_cache& in)
+void ConfigBandCache::set_band_cache(BandCache& in)
 {
     entries.remove_all();
     entries.add_items(in);
 }
 
-void cfg_band_cache_t::reset()
+void ConfigBandCache::reset()
 {
     entries.remove_all();
 }
 
-void cfg_rebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
+void ConfigRebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     if (g_rebar_window) {
         g_rebar_window->refresh_band_configs();
@@ -203,7 +203,7 @@ void cfg_rebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
     }
 }
 
-void cfg_rebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigRebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
 {
     m_entries.clear();
 
@@ -237,7 +237,7 @@ void cfg_rebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort
     }
 }
 
-void cfg_rebar::reset()
+void ConfigRebar::reset()
 {
     m_entries = {
         {cui::toolbars::guid_menu, 9999},
@@ -251,7 +251,7 @@ void cfg_rebar::reset()
 // {3D3C8D68-3AB9-4ad5-A4FA-22427ABAEBF4}
 static const GUID rebar_guid = {0x3d3c8d68, 0x3ab9, 0x4ad5, {0xa4, 0xfa, 0x22, 0x42, 0x7a, 0xba, 0xeb, 0xf4}};
 
-class ui_ext_host_rebar : public ui_extension::window_host_with_control {
+class RebarWindowHost : public ui_extension::window_host_with_control {
 public:
     void get_name(pfc::string_base& out) const override { out.set_string("Columns UI/Toolbars"); };
 
@@ -327,9 +327,9 @@ public:
     };
 };
 
-ui_extension::window_host_factory_single<ui_ext_host_rebar> g_ui_ext_host_rebar;
+ui_extension::window_host_factory_single<RebarWindowHost> g_ui_ext_host_rebar;
 
-HWND rebar_window::init()
+HWND RebarWindow::init()
 {
     HWND rv = nullptr;
 
@@ -348,7 +348,7 @@ HWND rebar_window::init()
     return rv;
 }
 
-void rebar_window::refresh_band_configs()
+void RebarWindow::refresh_band_configs()
 {
     for (auto&& band : m_bands) {
         if (band.m_wnd && band.m_window.is_valid()) {
@@ -363,7 +363,7 @@ void rebar_window::refresh_band_configs()
     }
 }
 
-bool rebar_window::on_menu_char(unsigned short c)
+bool RebarWindow::on_menu_char(unsigned short c)
 {
     bool rv = false;
     for (auto&& band : m_bands) {
@@ -379,7 +379,7 @@ bool rebar_window::on_menu_char(unsigned short c)
     return rv;
 }
 
-void rebar_window::show_accelerators()
+void RebarWindow::show_accelerators()
 {
     for (auto&& band : m_bands) {
         if (band.m_window.is_valid() && band.m_wnd) {
@@ -391,7 +391,7 @@ void rebar_window::show_accelerators()
     }
 }
 
-void rebar_window::hide_accelerators()
+void RebarWindow::hide_accelerators()
 {
     for (auto&& band : m_bands) {
         if (band.m_window.is_valid() && band.m_wnd) {
@@ -403,7 +403,7 @@ void rebar_window::hide_accelerators()
     }
 }
 
-bool rebar_window::is_menu_focused()
+bool RebarWindow::is_menu_focused()
 {
     for (auto&& band : m_bands) {
         if (band.m_window.is_valid() && band.m_wnd) {
@@ -417,7 +417,7 @@ bool rebar_window::is_menu_focused()
     return false;
 }
 
-bool rebar_window::get_previous_menu_focus_window(HWND& wnd_previous) const
+bool RebarWindow::get_previous_menu_focus_window(HWND& wnd_previous) const
 {
     for (auto&& band : m_bands) {
         if (band.m_window.is_valid() && band.m_wnd) {
@@ -433,7 +433,7 @@ bool rebar_window::get_previous_menu_focus_window(HWND& wnd_previous) const
     return false;
 }
 
-bool rebar_window::set_menu_focus()
+bool RebarWindow::set_menu_focus()
 {
     bool rv = false;
 
@@ -453,13 +453,13 @@ bool rebar_window::set_menu_focus()
     return rv;
 }
 
-void rebar_window::on_themechanged()
+void RebarWindow::on_themechanged()
 {
     SetWindowPos(wnd_rebar, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOZORDER | SWP_NOSIZE | SWP_FRAMECHANGED);
     RedrawWindow(wnd_rebar, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
 }
 
-void rebar_window::save_bands()
+void RebarWindow::save_bands()
 {
     REBARBANDINFO rbbi;
     memset(&rbbi, 0, sizeof(rbbi));
@@ -492,13 +492,13 @@ void rebar_window::save_bands()
     }
 }
 
-bool rebar_window::check_band(const GUID& id)
+bool RebarWindow::check_band(const GUID& id)
 {
     return std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_guid == id; })
         != m_bands.end();
 }
 
-bool rebar_window::find_band(const GUID& id, unsigned& out)
+bool RebarWindow::find_band(const GUID& id, unsigned& out)
 {
     const auto iterator
         = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_guid == id; });
@@ -507,7 +507,7 @@ bool rebar_window::find_band(const GUID& id, unsigned& out)
     return iterator != m_bands.end();
 }
 
-bool rebar_window::delete_band(const GUID& id)
+bool RebarWindow::delete_band(const GUID& id)
 {
     unsigned n = 0;
     bool rv = find_band(id, n);
@@ -516,7 +516,7 @@ bool rebar_window::delete_band(const GUID& id)
     return rv;
 }
 
-void rebar_window::destroy_bands()
+void RebarWindow::destroy_bands()
 {
     abort_callback_dummy abortCallbackDummy;
 
@@ -541,20 +541,20 @@ void rebar_window::destroy_bands()
     }
 }
 
-void rebar_window::destroy()
+void RebarWindow::destroy()
 {
     destroy_bands();
     DestroyWindow(wnd_rebar);
     wnd_rebar = nullptr;
 }
 
-void rebar_window::update_bands()
+void RebarWindow::update_bands()
 {
     refresh_bands(false);
     uih::rebar_show_all_bands(wnd_rebar);
 }
 
-void rebar_window::delete_band(unsigned n)
+void RebarWindow::delete_band(unsigned n)
 {
     if (n < m_bands.size()) {
         SendMessage(wnd_rebar, RB_SHOWBAND, n, FALSE);
@@ -570,7 +570,7 @@ void rebar_window::delete_band(unsigned n)
     }
 }
 
-void rebar_window::delete_band(HWND wnd, bool destroy)
+void RebarWindow::delete_band(HWND wnd, bool destroy)
 {
     auto iter = g_rebar_window->find_band_by_hwnd(wnd);
     if (iter != m_bands.end()) {
@@ -587,19 +587,19 @@ void rebar_window::delete_band(HWND wnd, bool destroy)
     }
 }
 
-void rebar_window::add_band(const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
+void RebarWindow::add_band(const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
     m_bands.emplace_back(guid, width, false, p_ext);
     refresh_bands(false);
 }
 
-void rebar_window::insert_band(unsigned idx, const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
+void RebarWindow::insert_band(unsigned idx, const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
     m_bands.emplace(m_bands.begin() + idx, guid, width, false, p_ext);
     refresh_bands(false);
 }
 
-void rebar_window::update_band(unsigned n, bool size)
+void RebarWindow::update_band(unsigned n, bool size)
 {
     ui_extension::window_ptr p_ext = m_bands[n].m_window;
     if (p_ext.is_valid()) {
@@ -638,7 +638,7 @@ void rebar_window::update_band(unsigned n, bool size)
     }
 }
 
-void rebar_window::refresh_bands(bool force_destroy_bands)
+void RebarWindow::refresh_bands(bool force_destroy_bands)
 {
     abort_callback_dummy aborter;
 
@@ -720,7 +720,7 @@ void rebar_window::refresh_bands(bool force_destroy_bands)
     fix_z_order();
 }
 
-void rebar_window::fix_z_order()
+void RebarWindow::fix_z_order()
 {
     const auto dwp = BeginDeferWindowPos(m_bands.size());
     for (auto&& band : m_bands) {

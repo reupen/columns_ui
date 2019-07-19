@@ -64,7 +64,7 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
 
 cui::fcl::dataset_factory<LayoutDataSet> g_export_layout_t;
 
-extern cfg_rebar g_cfg_rebar;
+extern ConfigRebar g_cfg_rebar;
 class ToolbarLayoutDataSet : public cui::fcl::dataset_v2 {
     void get_name(pfc::string_base& p_out) const override { p_out = "Toolbars"; }
     const GUID& get_guid() const override

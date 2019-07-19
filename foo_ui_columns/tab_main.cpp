@@ -74,7 +74,7 @@ public:
                         _T("Warning! This will reset the toolbars to the default state. Continue?"),
                         _T("Reset toolbars?"), MB_YESNO)
                     == IDYES) {
-                    extern cfg_rebar g_cfg_rebar;
+                    extern ConfigRebar g_cfg_rebar;
 
                     if (cui::main_window.get_wnd())
                         destroy_rebar();
