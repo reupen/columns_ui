@@ -6,7 +6,7 @@ enum orientation_t {
     vertical,
 };
 
-class splitter_window_impl
+class FlatSplitterPanel
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
 public:
     virtual orientation_t get_orientation() const = 0;
@@ -39,7 +39,7 @@ public:
     bool set_config_item(unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
 
     class splitter_host_impl : public ui_extension::window_host_ex {
-        service_ptr_t<splitter_window_impl> m_this;
+        service_ptr_t<FlatSplitterPanel> m_this;
 
     public:
         const GUID& get_host_guid() const override;
@@ -64,7 +64,7 @@ public:
         bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override;
         bool set_window_visibility(HWND wnd, bool visibility) override;
 
-        void set_window_ptr(splitter_window_impl* p_ptr);
+        void set_window_ptr(FlatSplitterPanel* p_ptr);
 
         void relinquish_ownership(HWND wnd) override;
     };
@@ -96,13 +96,13 @@ private:
             panel_container(panel* p_panel);
             ;
             ~panel_container();
-            void set_window_ptr(splitter_window_impl* p_ptr);
+            void set_window_ptr(FlatSplitterPanel* p_ptr);
             void enter_autohide_hook();
             // private:
             class_data& get_class_data() const override;
             LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
             void on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs) override;
-            service_ptr_t<splitter_window_impl> m_this;
+            service_ptr_t<FlatSplitterPanel> m_this;
 
             HTHEME m_theme;
             panel* m_panel;
@@ -197,10 +197,10 @@ private:
     static gdi_object_t<HFONT>::ptr_t g_font_menu_horizontal;
     static gdi_object_t<HFONT>::ptr_t g_font_menu_vertical;
     static unsigned g_count;
-    static pfc::ptr_list_t<splitter_window_impl> g_instances;
+    static pfc::ptr_list_t<FlatSplitterPanel> g_instances;
 
 public:
-    splitter_window_impl() = default;
+    FlatSplitterPanel() = default;
 
     //
 };

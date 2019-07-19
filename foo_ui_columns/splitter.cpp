@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "splitter.h"
 
-pfc::ptr_list_t<splitter_window_impl> splitter_window_impl::g_instances;
+pfc::ptr_list_t<FlatSplitterPanel> FlatSplitterPanel::g_instances;
 
 void g_get_panel_list(uie::window_info_list_simple& p_out, uie::window_host_ptr& p_host)
 {
@@ -58,7 +58,7 @@ void clip_minmaxinfo(MINMAXINFO& mmi)
     mmi.ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, MAXSHORT);
 }
 
-class splitter_window_horizontal : public splitter_window_impl {
+class splitter_window_horizontal : public FlatSplitterPanel {
     class_data& get_class_data() const override
     {
         __implement_get_class_data_ex(_T("{72FACC90-BB7E-4733-8449-D7537232AD26}"), _T(""), false, 0,
@@ -74,7 +74,7 @@ class splitter_window_horizontal : public splitter_window_impl {
     orientation_t get_orientation() const override { return horizontal; }
 };
 
-class splitter_window_vertical : public splitter_window_impl {
+class splitter_window_vertical : public FlatSplitterPanel {
     class_data& get_class_data() const override
     {
         __implement_get_class_data_ex(_T("{77653A44-66D1-49e0-9A7A-1C71898C0441}"), _T(""), false, 0,
@@ -93,7 +93,7 @@ class splitter_window_vertical : public splitter_window_impl {
 uie::window_factory<splitter_window_horizontal> g_splitter_window_horizontal;
 uie::window_factory<splitter_window_vertical> g_splitter_window_vertical;
 
-splitter_window_impl::panel::ptr splitter_window_impl::panel::null_ptr = splitter_window_impl::panel::ptr();
+FlatSplitterPanel::panel::ptr FlatSplitterPanel::panel::null_ptr = FlatSplitterPanel::panel::ptr();
 
 #if 0
 template <orientation_t t_orientation>

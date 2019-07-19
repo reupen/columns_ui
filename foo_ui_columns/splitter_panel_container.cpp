@@ -4,12 +4,12 @@
 
 #define HOST_AUTOHIDE_TIMER_ID 672
 
-bool splitter_window_impl::panel::panel_container::test_autohide_window(HWND wnd)
+bool FlatSplitterPanel::panel::panel_container::test_autohide_window(HWND wnd)
 {
     return IsChild(get_wnd(), wnd) || wnd == get_wnd() || wnd == m_this->get_wnd();
 }
 
-void splitter_window_impl::panel::panel_container::on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs)
+void FlatSplitterPanel::panel::panel_container::on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs)
 {
     if (msg == WM_MOUSEMOVE && m_this.is_valid() && MonitorFromPoint(mllhs.pt, MONITOR_DEFAULTTONULL)) {
         unsigned index = m_this->m_panels.find_item(m_panel);
@@ -39,7 +39,7 @@ void splitter_window_impl::panel::panel_container::on_hooked_message(WPARAM msg,
     }
 }
 
-LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT FlatSplitterPanel::panel::panel_container::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_NCCREATE:
@@ -303,7 +303,7 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
                 DestroyMenu(menu);
 
                 if (cmd == IDM_CLOSE && p_panel->m_child.is_valid()) {
-                    service_ptr_t<splitter_window_impl> p_this = m_this;
+                    service_ptr_t<FlatSplitterPanel> p_this = m_this;
                     p_panel->destroy();
                     p_this->m_panels.remove_by_idx(index);
                     p_this->get_host()->on_size_limit_change(p_this->get_wnd(), uie::size_limit_all);
@@ -336,14 +336,14 @@ LRESULT splitter_window_impl::panel::panel_container::on_message(HWND wnd, UINT 
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-splitter_window_impl::panel::panel_container::class_data&
-splitter_window_impl::panel::panel_container::get_class_data() const
+FlatSplitterPanel::panel::panel_container::class_data&
+FlatSplitterPanel::panel::panel_container::get_class_data() const
 {
     __implement_get_class_data_ex(_T("foo_ui_columns_splitter_panel_child_container"), _T(""), false, NULL,
         WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT, CS_DBLCLKS);
 }
 
-void splitter_window_impl::panel::panel_container::enter_autohide_hook()
+void FlatSplitterPanel::panel::panel_container::enter_autohide_hook()
 {
     if (!m_hook_active) {
         fbh::LowLevelMouseHookManager::s_get_instance().register_hook(this);
@@ -351,14 +351,14 @@ void splitter_window_impl::panel::panel_container::enter_autohide_hook()
     }
 }
 
-void splitter_window_impl::panel::panel_container::set_window_ptr(splitter_window_impl* p_ptr)
+void FlatSplitterPanel::panel::panel_container::set_window_ptr(FlatSplitterPanel* p_ptr)
 {
     m_this = p_ptr;
 }
 
-splitter_window_impl::panel::panel_container::~panel_container() = default;
+FlatSplitterPanel::panel::panel_container::~panel_container() = default;
 
-splitter_window_impl::panel::panel_container::panel_container(panel* p_panel)
+FlatSplitterPanel::panel::panel_container::panel_container(panel* p_panel)
     : m_theme(nullptr), m_panel(p_panel), m_hook_active(false), m_timer_active(false)
 {
 }
