@@ -20,7 +20,7 @@ bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback
 HBITMAP g_get_nocover_bitmap(t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
 void set_font_size(bool up);
 
-class playlist_callback_base : public playlist_callback {
+class BasePlaylistCallback : public playlist_callback {
 public:
     void initialise_playlist_callback(t_uint32 p_flags = playlist_callback::flag_all)
     {
@@ -74,8 +74,8 @@ public:
 };
 
 template <class item_t>
-class playlist_cache_t
-    : private playlist_callback_base
+class PlaylistCache
+    : private BasePlaylistCallback
     , public pfc::list_t<item_t> {
     void on_playlist_created(t_size p_index, const char* p_name, t_size p_name_len) override
     {
@@ -91,35 +91,35 @@ public:
     void initialise_playlist_callback()
     {
         this->set_count(static_api_ptr_t<playlist_manager>()->get_playlist_count());
-        playlist_callback_base::initialise_playlist_callback();
+        BasePlaylistCallback::initialise_playlist_callback();
     }
-    using playlist_callback_base::deinitialise_playlist_callback;
+    using BasePlaylistCallback::deinitialise_playlist_callback;
 };
 
-class playlist_cache_item_t {
+class PlaylistCacheItem {
 public:
     bool m_initialised{false};
     t_size m_scroll_position{NULL};
-    playlist_cache_item_t() = default;
+    PlaylistCacheItem() = default;
 };
 
-class column_data_t {
+class ColumnData {
 public:
     titleformat_object::ptr m_display_script;
     titleformat_object::ptr m_style_script;
     titleformat_object::ptr m_sort_script;
 };
 
-class completion_notify_artwork_base_t : public pfc::refcounted_object_root {
+class BaseArtworkCompletionNotify : public pfc::refcounted_object_root {
 public:
-    using ptr_t = pfc::refcounted_object_ptr_t<completion_notify_artwork_base_t>;
+    using ptr_t = pfc::refcounted_object_ptr_t<BaseArtworkCompletionNotify>;
 
-    virtual void on_completion(const pfc::rcptr_t<class artwork_reader_ng_t>& p_reader) = 0;
+    virtual void on_completion(const pfc::rcptr_t<class ArtworkReader>& p_reader) = 0;
 
 private:
 };
 
-class artwork_reader_ng_t : public mmh::Thread {
+class ArtworkReader : public mmh::Thread {
 public:
     bool is_aborting() { return m_abort.is_aborting(); }
     void abort() { m_abort.abort(); }
@@ -132,7 +132,7 @@ public:
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
         const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
-        const completion_notify_artwork_base_t::ptr_t& p_notify, class artwork_reader_manager_ng_t* const p_manager)
+        const BaseArtworkCompletionNotify::ptr_t& p_notify, class ArtworkReaderManager* const p_manager)
     {
         m_requestIds = p_requestIds;
         m_repositories = p_repositories;
@@ -145,7 +145,7 @@ public:
         m_manager = p_manager;
         m_native_artwork_reader_mode = native_artwork_reader_mode;
     }
-    void send_completion_notification(const pfc::rcptr_t<artwork_reader_ng_t>& p_this)
+    void send_completion_notification(const pfc::rcptr_t<ArtworkReader>& p_this)
     {
         if (m_notify.is_valid()) {
             m_notify->on_completion(p_this);
@@ -165,16 +165,16 @@ private:
     COLORREF m_back{RGB(255, 255, 255)};
     bool m_reflection{false};
     metadb_handle_ptr m_handle;
-    completion_notify_artwork_base_t::ptr_t m_notify;
+    BaseArtworkCompletionNotify::ptr_t m_notify;
     bool m_succeeded{false};
     t_size m_native_artwork_reader_mode{artwork_panel::fb2k_artwork_embedded_and_external};
     abort_callback_impl m_abort;
-    pfc::refcounted_object_ptr_t<class artwork_reader_manager_ng_t> m_manager;
+    pfc::refcounted_object_ptr_t<class ArtworkReaderManager> m_manager;
 };
 
-class artwork_reader_manager_ng_t : public pfc::refcounted_object_root {
+class ArtworkReaderManager : public pfc::refcounted_object_root {
 public:
-    using ptr = pfc::refcounted_object_ptr_t<artwork_reader_manager_ng_t>;
+    using ptr = pfc::refcounted_object_ptr_t<ArtworkReaderManager>;
     void add_type(const GUID& p_what) { m_requestIds.add_item(p_what); }
     void abort_task(t_size index)
     {
@@ -209,15 +209,15 @@ public:
 
     enum { max_readers = 4 };
 
-    void request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<artwork_reader_ng_t>& p_out, t_size cx, t_size cy,
-        COLORREF cr_back, bool b_reflection, completion_notify_artwork_base_t::ptr_t p_notify);
+    void request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<ArtworkReader>& p_out, t_size cx, t_size cy,
+        COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify);
 
     void flush_pending()
     {
         t_size count = m_current_readers.get_count(), count_pending = m_pending_readers.get_count();
         if (count < max_readers) {
             if (count_pending) {
-                pfc::rcptr_t<artwork_reader_ng_t> p_reader = m_pending_readers[count_pending - 1];
+                pfc::rcptr_t<ArtworkReader> p_reader = m_pending_readers[count_pending - 1];
                 m_pending_readers.remove_by_idx(count_pending - 1);
                 if (pvt::cfg_artwork_lowpriority)
                     p_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
@@ -250,17 +250,17 @@ public:
         }
     }
 
-    void on_reader_completion(const artwork_reader_ng_t* ptr);
-    void on_reader_abort(const artwork_reader_ng_t* ptr);
+    void on_reader_completion(const ArtworkReader* ptr);
+    void on_reader_abort(const ArtworkReader* ptr);
 
-    artwork_reader_manager_ng_t() = default;
+    ArtworkReaderManager() = default;
 
     void request_nocover_image(pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx, t_size cy,
         COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
     void flush_nocover() { m_nocover_bitmap.release(); }
 
 private:
-    bool find_aborting_reader(const artwork_reader_ng_t* ptr, t_size& index)
+    bool find_aborting_reader(const ArtworkReader* ptr, t_size& index)
     {
         t_size count = m_aborting_readers.get_count();
         for (t_size i = 0; i < count; i++)
@@ -270,7 +270,7 @@ private:
             }
         return false;
     }
-    bool find_current_reader(const artwork_reader_ng_t* ptr, t_size& index)
+    bool find_current_reader(const ArtworkReader* ptr, t_size& index)
     {
         t_size count = m_current_readers.get_count();
         for (t_size i = 0; i < count; i++)
@@ -280,9 +280,9 @@ private:
             }
         return false;
     }
-    pfc::list_t<pfc::rcptr_t<artwork_reader_ng_t>> m_aborting_readers;
-    pfc::list_t<pfc::rcptr_t<artwork_reader_ng_t>> m_current_readers;
-    pfc::list_t<pfc::rcptr_t<artwork_reader_ng_t>> m_pending_readers;
+    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_aborting_readers;
+    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_current_readers;
+    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_pending_readers;
 
     pfc::chain_list_v2_t<GUID> m_requestIds;
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
@@ -292,7 +292,7 @@ private:
     t_size m_nocover_cx{0}, m_nocover_cy{0};
 };
 
-class appearance_client_ngpv_impl : public cui::colours::client {
+class ColoursClient : public cui::colours::client {
 public:
     static const GUID g_guid;
 
@@ -313,12 +313,12 @@ public:
 };
 
 class PlaylistView
-    : public t_list_view_panel<appearance_client_ngpv_impl, uie::playlist_window>
+    : public t_list_view_panel<ColoursClient, uie::playlist_window>
     , playlist_callback_single
-    , playlist_callback_base {
+    , BasePlaylistCallback {
     friend class NgTfThread;
 
-    class ng_global_mesage_window : public ui_helpers::container_window {
+    class SharedMesageWindow : public ui_helpers::container_window {
         class_data& get_class_data() const override
         {
             __implement_get_class_data_ex(_T("NGPV_GMW"), _T(""), false, 0, 0, 0, 0);
@@ -344,7 +344,7 @@ public:
     ~PlaylistView();
 
     static std::vector<PlaylistView*> g_windows;
-    static ng_global_mesage_window g_global_mesage_window;
+    static SharedMesageWindow g_global_mesage_window;
 
     static void g_on_groups_change();
     static void g_on_columns_change();
@@ -386,11 +386,11 @@ private:
     static const GUID g_extension_guid;
     enum { timer_date_change = TIMER_BASE };
 
-    class item_group_ng_t : public Group {
+    class PlaylistViewGroup : public Group {
     public:
-        using self_t = item_group_ng_t;
+        using self_t = PlaylistViewGroup;
         using ptr = pfc::refcounted_object_ptr_t<self_t>;
-        style_data_cell_t::ptr m_style_data;
+        SharedCellStyleData::ptr m_style_data;
 
         bool m_artwork_load_attempted{false};
         bool m_artwork_load_succeeded{false};
@@ -398,16 +398,16 @@ private:
         // album_art_data_ptr m_artwork_data;
         pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t> m_artwork_bitmap; // cached for display
 
-        item_group_ng_t() = default;
+        PlaylistViewGroup() = default;
         ;
     };
 
-    class item_ng_t : public Item {
+    class PlaylistViewItem : public Item {
     public:
-        using self_t = item_ng_t;
+        using self_t = PlaylistViewItem;
         using ptr = pfc::refcounted_object_ptr_t<self_t>;
         style_data_t m_style_data;
-        item_group_ng_t* get_group(t_size index) { return static_cast<item_group_ng_t*>(m_groups[index].get_ptr()); }
+        PlaylistViewGroup* get_group(t_size index) { return static_cast<PlaylistViewGroup*>(m_groups[index].get_ptr()); }
         t_size get_group_count() { return m_groups.get_count(); }
     };
     virtual void flush_artwork_images()
@@ -420,7 +420,7 @@ private:
         for (t_size i = 0; i < count; i++) {
             t_size cg = get_item(i)->get_group_count();
             if (cg) {
-                item_group_ng_t* ptr = get_item(i)->get_group(cg - 1);
+                PlaylistViewGroup* ptr = get_item(i)->get_group(cg - 1);
                 // ptr->m_data_to_bitmap_attempted = false;
                 ptr->m_artwork_load_succeeded = false;
                 ptr->m_artwork_load_attempted = false;
@@ -436,14 +436,14 @@ private:
         g_on_artwork_width_change(nullptr /*this*/);
     }
     void on_artwork_read_complete(
-        const item_group_ng_t::ptr& p_group, const pfc::rcptr_t<artwork_reader_ng_t>& p_reader)
+        const PlaylistViewGroup::ptr& p_group, const pfc::rcptr_t<ArtworkReader>& p_reader)
     {
         if (!p_reader->is_aborting()) {
             t_size count = get_item_count(), group_count = m_scripts.get_count();
 
             if (group_count) {
                 for (t_size i = 0; i < count; i++) {
-                    auto* item = static_cast<item_ng_t*>(get_item(i));
+                    auto* item = static_cast<PlaylistViewItem*>(get_item(i));
                     if (item->get_group(group_count - 1) == p_group.get_ptr()) {
                         if (p_reader->get_content().query(album_art_ids::cover_front, p_group->m_artwork_bitmap)) {
                             p_group->m_artwork_load_succeeded = true;
@@ -456,16 +456,16 @@ private:
         }
     }
 
-    class completion_notify_artwork_t : public completion_notify_artwork_base_t {
+    class ArtworkCompletionNotify : public BaseArtworkCompletionNotify {
     public:
-        using ptr_t = pfc::refcounted_object_ptr_t<completion_notify_artwork_t>;
+        using ptr_t = pfc::refcounted_object_ptr_t<ArtworkCompletionNotify>;
 
-        void on_completion(const pfc::rcptr_t<artwork_reader_ng_t>& p_reader) override
+        void on_completion(const pfc::rcptr_t<ArtworkReader>& p_reader) override
         {
             m_window->on_artwork_read_complete(m_group, p_reader);
         }
 
-        item_group_ng_t::ptr m_group;
+        PlaylistViewGroup::ptr m_group;
         service_ptr_t<PlaylistView> m_window;
 
     private:
@@ -477,11 +477,11 @@ private:
     void refresh_all_items_text(bool b_update_display = true);
     void update_items(t_size index, t_size count, bool b_update_display = true);
 
-    Item* storage_create_item() override { return new item_ng_t; }
+    Item* storage_create_item() override { return new PlaylistViewItem; }
 
-    Group* storage_create_group() override { return new item_group_ng_t; }
+    Group* storage_create_group() override { return new PlaylistViewGroup; }
 
-    item_ng_t* get_item(t_size index) { return static_cast<item_ng_t*>(uih::ListView::get_item(index)); }
+    PlaylistViewItem* get_item(t_size index) { return static_cast<PlaylistViewItem*>(uih::ListView::get_item(index)); }
 
     void notify_update_item_data(t_size index) override;
 
@@ -515,18 +515,18 @@ private:
 
     // Temp fix to avoid playlist_callback virtual functions being hidden by those of
     // playlist_callback_single
-    using playlist_callback_base::on_item_ensure_visible;
-    using playlist_callback_base::on_item_focus_change;
-    using playlist_callback_base::on_items_added;
-    using playlist_callback_base::on_items_modified;
-    using playlist_callback_base::on_items_modified_fromplayback;
-    using playlist_callback_base::on_items_removed;
-    using playlist_callback_base::on_items_removing;
-    using playlist_callback_base::on_items_reordered;
-    using playlist_callback_base::on_items_replaced;
-    using playlist_callback_base::on_items_selection_change;
-    using playlist_callback_base::on_playlist_locked;
-    using playlist_callback_base::on_playlist_renamed;
+    using BasePlaylistCallback::on_item_ensure_visible;
+    using BasePlaylistCallback::on_item_focus_change;
+    using BasePlaylistCallback::on_items_added;
+    using BasePlaylistCallback::on_items_modified;
+    using BasePlaylistCallback::on_items_modified_fromplayback;
+    using BasePlaylistCallback::on_items_removed;
+    using BasePlaylistCallback::on_items_removing;
+    using BasePlaylistCallback::on_items_reordered;
+    using BasePlaylistCallback::on_items_replaced;
+    using BasePlaylistCallback::on_items_selection_change;
+    using BasePlaylistCallback::on_playlist_locked;
+    using BasePlaylistCallback::on_playlist_renamed;
 
     void on_playlist_activate(t_size p_old, t_size p_new) override
     {
@@ -652,7 +652,7 @@ private:
     void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 
     service_list_t<titleformat_object> m_scripts;
-    pfc::list_t<column_data_t> m_column_data;
+    pfc::list_t<ColumnData> m_column_data;
     pfc::array_t<bool> m_column_mask;
     pfc::list_t<pfc::string8> m_edit_fields;
     pfc::string8 m_edit_field;
@@ -670,16 +670,16 @@ private:
     UINT_PTR m_mainmenu_manager_base{NULL};
     UINT_PTR m_contextmenu_manager_base{NULL};
 
-    playlist_cache_t<playlist_cache_item_t> m_playlist_cache;
+    PlaylistCache<PlaylistCacheItem> m_playlist_cache;
 
-    artwork_reader_manager_ng_t::ptr m_artwork_manager;
+    ArtworkReaderManager::ptr m_artwork_manager;
     ui_selection_holder::ptr m_selection_holder;
 
     // pfc::list_t<group_t> m_groups;
     // pfc::list_t<style_data_t> m_style_data;
 };
 
-class IDropTarget_playlist : public IDropTarget {
+class PlaylistViewDropTarget : public IDropTarget {
 public:
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;
     ULONG STDMETHODCALLTYPE AddRef() override;
@@ -688,7 +688,7 @@ public:
     HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
     HRESULT STDMETHODCALLTYPE DragLeave() override;
     HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
-    IDropTarget_playlist(PlaylistView* playlist);
+    PlaylistViewDropTarget(PlaylistView* playlist);
 
 private:
     HRESULT UpdateDropDescription(IDataObject* pDataObj, DWORD pdwEffect);
@@ -701,7 +701,7 @@ private:
     mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
 };
 
-class IDropSource_playlist : public IDropSource {
+class PlaylistViewDropSource : public IDropSource {
     long refcount;
     service_ptr_t<PlaylistView> p_playlist;
     DWORD m_initial_key_state;
@@ -712,10 +712,10 @@ public:
     ULONG STDMETHODCALLTYPE Release() override;
     HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState) override;
     HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect) override;
-    IDropSource_playlist(PlaylistView* playlist, DWORD initial_key_state);
+    PlaylistViewDropSource(PlaylistView* playlist, DWORD initial_key_state);
 };
 
-class preferences_tab_impl : public PreferencesTab {
+class GroupsPreferencesTab : public PreferencesTab {
 public:
     HWND create(HWND wnd) override
     {

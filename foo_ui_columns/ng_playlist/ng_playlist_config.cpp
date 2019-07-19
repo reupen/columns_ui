@@ -9,7 +9,7 @@ namespace pvt {
 
 struct edit_view_param {
     unsigned idx{};
-    group_t value;
+    Group value;
     bool b_new{};
 };
 
@@ -65,7 +65,7 @@ static bool run_edit_view(edit_view_param& param, HWND parent)
     return uDialogBox(IDD_EDIT_GROUP, parent, EditViewProc, reinterpret_cast<LPARAM>(&param)) != 0;
 }
 
-BOOL preferences_tab_impl::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:
@@ -152,7 +152,7 @@ BOOL preferences_tab_impl::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             p.idx = -1;
             if (run_edit_view(p, wnd)) {
                 HWND list = uGetDlgItem(wnd, IDC_GROUPS);
-                unsigned n = g_groups.add_group(group_t(p.value));
+                unsigned n = g_groups.add_group(Group(p.value));
                 uih::list_view_insert_item_text(list, n, 0, p.value.string.get_ptr());
                 ListView_SetItemState(list, n, LVIS_SELECTED, LVIS_SELECTED);
             }

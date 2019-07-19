@@ -1,8 +1,8 @@
 #pragma once
 
-class global_variable {
+class GlobalVariable {
 public:
-    global_variable(const char* p_name, t_size p_name_length, const char* p_value, t_size p_value_length)
+    GlobalVariable(const char* p_name, t_size p_name_length, const char* p_value, t_size p_value_length)
         : m_name(p_name, p_name_length), m_value(p_value, p_value_length)
     {
     }
@@ -14,7 +14,7 @@ private:
     pfc::string_simple m_name, m_value;
 };
 
-class global_variable_list : public pfc::ptr_list_t<global_variable> {
+class GlobalVariableList : public pfc::ptr_list_t<GlobalVariable> {
 public:
     const char* find_by_name(const char* p_name, unsigned length)
     {
@@ -28,15 +28,15 @@ public:
     }
     void add_item(const char* p_name, unsigned p_name_length, const char* p_value, unsigned p_value_length)
     {
-        auto var = new global_variable(p_name, p_name_length, p_value, p_value_length);
-        pfc::ptr_list_t<global_variable>::add_item(var);
+        auto var = new GlobalVariable(p_name, p_name_length, p_value, p_value_length);
+        pfc::ptr_list_t<GlobalVariable>::add_item(var);
     }
-    ~global_variable_list() { delete_all(); }
+    ~GlobalVariableList() { delete_all(); }
 };
 
 template <bool set = true, bool get = true>
-class titleformat_hook_set_global : public titleformat_hook {
-    global_variable_list& p_vars;
+class SetGlobalTitleformatHook : public titleformat_hook {
+    GlobalVariableList& p_vars;
 
 public:
     bool process_field(
@@ -87,10 +87,10 @@ public:
         return false;
     }
 
-    titleformat_hook_set_global(global_variable_list& vars) : p_vars(vars) {};
+    SetGlobalTitleformatHook(GlobalVariableList& vars) : p_vars(vars) {};
 };
 
-class titleformat_hook_date : public titleformat_hook {
+class DateTitleformatHook : public titleformat_hook {
     const SYSTEMTIME* p_st;
     pfc::array_t<char> year, month, day, dayofweek, hour, julian;
 
@@ -99,12 +99,12 @@ public:
         titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
     bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
-    titleformat_hook_date(const SYSTEMTIME* st = nullptr) : p_st(st){};
+    DateTitleformatHook(const SYSTEMTIME* st = nullptr) : p_st(st){};
 };
 
-class titleformat_hook_splitter_pt3 : public titleformat_hook {
+class SplitterTitleformatHook : public titleformat_hook {
 public:
-    titleformat_hook_splitter_pt3(titleformat_hook* p_hook1, titleformat_hook* p_hook2, titleformat_hook* p_hook3,
+    SplitterTitleformatHook(titleformat_hook* p_hook1, titleformat_hook* p_hook2, titleformat_hook* p_hook3,
         titleformat_hook* p_hook4 = nullptr)
         : m_hook1(p_hook1), m_hook2(p_hook2), m_hook3(p_hook3), m_hook4(p_hook4){};
     bool process_field(
@@ -116,7 +116,7 @@ private:
     titleformat_hook *m_hook1, *m_hook2, *m_hook3, *m_hook4;
 };
 
-class titleformat_hook_playlist_name : public titleformat_hook {
+class PlaylistNameTitleformatHook : public titleformat_hook {
     bool m_initialised{false};
     pfc::string8 m_name;
 
@@ -130,5 +130,5 @@ public:
     {
         return false;
     };
-    titleformat_hook_playlist_name() = default;
+    PlaylistNameTitleformatHook() = default;
 };

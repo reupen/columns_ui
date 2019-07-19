@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "playlist_view_tfhooks.h"
 
-bool titleformat_hook_playlist_name::process_field(
+bool PlaylistNameTitleformatHook::process_field(
     titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
 {
     if (p_name_length && *p_name == '_') {
@@ -17,7 +17,7 @@ bool titleformat_hook_playlist_name::process_field(
     return false;
 }
 
-void titleformat_hook_playlist_name::initialise()
+void PlaylistNameTitleformatHook::initialise()
 {
     if (!m_initialised) {
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_name(m_name);
@@ -74,7 +74,7 @@ int date_to_julian(const SYSTEMTIME* st)
     return (year / 4 - year / 100 + year / 400) + (year * 365) + yeardays + day + 1721395 + 29;
 }
 
-bool titleformat_hook_date::process_field(
+bool DateTitleformatHook::process_field(
     titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -147,7 +147,7 @@ bool titleformat_hook_date::process_field(
     return false;
 }
 
-bool titleformat_hook_splitter_pt3::process_field(
+bool SplitterTitleformatHook::process_field(
     titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -166,7 +166,7 @@ bool titleformat_hook_splitter_pt3::process_field(
     return false;
 }
 
-bool titleformat_hook_splitter_pt3::process_function(titleformat_text_out* p_out, const char* p_name,
+bool SplitterTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name,
     unsigned p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -185,7 +185,7 @@ bool titleformat_hook_splitter_pt3::process_function(titleformat_text_out* p_out
     return false;
 }
 
-bool titleformat_hook_date::process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+bool DateTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
     titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;

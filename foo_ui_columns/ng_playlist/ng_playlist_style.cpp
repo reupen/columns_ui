@@ -5,8 +5,8 @@
 
 namespace pvt {
 namespace style_cache_manager {
-pfc::list_t<style_data_cell_t*> m_objects;
-void g_add_object(const style_data_cell_info_t& p_data, style_data_cell_t::ptr& p_out)
+pfc::list_t<SharedCellStyleData*> m_objects;
+void g_add_object(const CellStyleData& p_data, SharedCellStyleData::ptr& p_out)
 {
     t_size count = m_objects.get_count();
     for (t_size i = 0; i < count; i++)
@@ -14,33 +14,33 @@ void g_add_object(const style_data_cell_info_t& p_data, style_data_cell_t::ptr& 
             p_out = m_objects[i];
             return;
         }
-    p_out = new style_data_cell_t(p_data);
+    p_out = new SharedCellStyleData(p_data);
     // console::formatter() << "added style obj: " << m_objects.add_item(p_out.get_ptr());
     m_objects.add_item(p_out.get_ptr());
 }
-void g_remove_object(style_data_cell_t* p_object)
+void g_remove_object(SharedCellStyleData* p_object)
 {
     m_objects.remove_item(p_object);
     // console::formatter() << "removed style obj";
 }
 } // namespace style_cache_manager
 
-style_data_cell_t::~style_data_cell_t()
+SharedCellStyleData::~SharedCellStyleData()
 {
     style_cache_manager::g_remove_object(this);
 }
 
-style_data_cell_info_t style_data_cell_info_t::g_create_default()
+CellStyleData CellStyleData::g_create_default()
 {
-    cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
-    return style_data_cell_info_t(p_helper.get_colour(cui::colours::colour_text),
+    cui::colours::helper p_helper(ColoursClient::g_guid);
+    return CellStyleData(p_helper.get_colour(cui::colours::colour_text),
         p_helper.get_colour(cui::colours::colour_selection_text), p_helper.get_colour(cui::colours::colour_background),
         p_helper.get_colour(cui::colours::colour_selection_background),
         p_helper.get_colour(cui::colours::colour_inactive_selection_text),
         p_helper.get_colour(cui::colours::colour_inactive_selection_background));
 }
 
-bool titleformat_hook_style_v2::process_field(
+bool StyleTitleformatHook::process_field(
     titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -113,7 +113,7 @@ bool titleformat_hook_style_v2::process_field(
                 return true;
             }
             if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "themed", pfc_infinite)) {
-                cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
+                cui::colours::helper p_helper(ColoursClient::g_guid);
                 if (p_helper.get_themed()) {
                     p_out->write(titleformat_inputtypes::unknown, "1", 1);
                     p_found_flag = true;
@@ -143,7 +143,7 @@ bool titleformat_hook_style_v2::process_field(
     return false;
 }
 
-bool titleformat_hook_style_v2::process_function(titleformat_text_out* p_out, const char* p_name,
+bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name,
     unsigned p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;

@@ -37,9 +37,9 @@ const GUID g_artwork_lowpriority = {0xcb1c1c5d, 0x4f99, 0x4c24, {0xb2, 0x39, 0xa
 const GUID g_guid_grouping = {0xa28cc736, 0x2b8b, 0x484c, {0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57}};
 
 std::vector<PlaylistView*> PlaylistView::g_windows;
-PlaylistView::ng_global_mesage_window PlaylistView::g_global_mesage_window;
+PlaylistView::SharedMesageWindow PlaylistView::g_global_mesage_window;
 
-cfg_groups_t g_groups(g_groups_guid);
+ConfigGroups g_groups(g_groups_guid);
 
 cfg_bool cfg_show_artwork(g_show_artwork_guid, false), cfg_artwork_reflection(g_artwork_reflection, true),
     cfg_artwork_lowpriority(g_artwork_lowpriority, true);
@@ -47,17 +47,17 @@ cfg_bool cfg_show_artwork(g_show_artwork_guid, false), cfg_artwork_reflection(g_
 fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { cui::button_items::ShowGroupsButton::s_on_change(); });
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
 
-void cfg_groups_t::swap(t_size index1, t_size index2)
+void ConfigGroups::swap(t_size index1, t_size index2)
 {
     m_groups.swap_items(index1, index2);
     PlaylistView::g_on_groups_change();
 }
-void cfg_groups_t::replace_group(t_size index, const group_t& p_group)
+void ConfigGroups::replace_group(t_size index, const Group& p_group)
 {
     m_groups.replace_item(index, p_group);
     PlaylistView::g_on_groups_change();
 }
-t_size cfg_groups_t::add_group(const group_t& p_group, bool notify_playlist_views)
+t_size ConfigGroups::add_group(const Group& p_group, bool notify_playlist_views)
 {
     t_size ret = m_groups.add_item(p_group);
     if (notify_playlist_views)
@@ -65,7 +65,7 @@ t_size cfg_groups_t::add_group(const group_t& p_group, bool notify_playlist_view
     return ret;
 }
 
-void cfg_groups_t::set_groups(const pfc::list_base_const_t<group_t>& p_groups, bool b_update_views)
+void ConfigGroups::set_groups(const pfc::list_base_const_t<Group>& p_groups, bool b_update_views)
 {
     m_groups.remove_all();
     m_groups.add_items(p_groups);
@@ -73,7 +73,7 @@ void cfg_groups_t::set_groups(const pfc::list_base_const_t<group_t>& p_groups, b
         PlaylistView::g_on_groups_change();
 }
 
-void cfg_groups_t::remove_group(t_size index)
+void ConfigGroups::remove_group(t_size index)
 {
     m_groups.remove_by_idx(index);
     PlaylistView::g_on_groups_change();
@@ -214,7 +214,7 @@ void PlaylistView::refresh_columns()
             }
         }
         if (b_valid) {
-            column_data_t temp;
+            ColumnData temp;
             columns.add_item(Column(source->name, source->width, source->parts, (uih::alignment)source->align));
             p_compiler->compile_safe(temp.m_display_script, source->spec);
             if (source->use_custom_colour)
@@ -439,23 +439,23 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
 
         for (n = 0; n < count; n++) {
             if (!b_selection_only || mask[n]) {
-                global_variable_list extra_items;
+                GlobalVariableList extra_items;
 
                 {
-                    titleformat_hook_date tf_hook_date(&st);
-                    titleformat_hook_playlist_name tf_hook_playlist_name;
+                    DateTitleformatHook tf_hook_date(&st);
+                    PlaylistNameTitleformatHook tf_hook_playlist_name;
 
                     if (extra) {
-                        titleformat_hook_set_global<true, false> tf_hook_set_global(extra_items);
-                        titleformat_hook_splitter_pt3 tf_hook(
+                        SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
+                        SplitterTitleformatHook tf_hook(
                             &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
                         pfc::string8 output;
                         m_playlist_api->activeplaylist_item_format_title(
                             n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
                     }
 
-                    titleformat_hook_set_global<false, true> tf_hook_get_global(extra_items);
-                    titleformat_hook_splitter_pt3 tf_hook(
+                    SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
+                    SplitterTitleformatHook tf_hook(
                         extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
                         m_column_data[index].m_sort_script, nullptr, play_control::display_level_none);
@@ -533,7 +533,7 @@ void PlaylistView::notify_on_initialisation()
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
-    m_artwork_manager = new artwork_reader_manager_ng_t;
+    m_artwork_manager = new ArtworkReaderManager;
     m_artwork_manager->initialise();
     m_artwork_manager->add_type(album_art_ids::cover_front);
     m_artwork_manager->set_script(album_art_ids::cover_front, artwork_panel::cfg_front_scripts);
@@ -554,7 +554,7 @@ void PlaylistView::notify_on_create()
 
     m_playlist_api->register_callback(static_cast<playlist_callback_single*>(this), playlist_callback::flag_all);
 
-    pfc::com_ptr_t<IDropTarget_playlist> IDT_playlist = new IDropTarget_playlist(this);
+    pfc::com_ptr_t<PlaylistViewDropTarget> IDT_playlist = new PlaylistViewDropTarget(this);
     RegisterDragDrop(get_wnd(), IDT_playlist.get_ptr());
 
     if (g_windows.empty())
@@ -830,30 +830,30 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 void PlaylistView::notify_update_item_data(t_size index)
 {
     string_array& p_out = get_item_subitems(index);
-    item_ng_t* p_item = get_item(index);
+    PlaylistViewItem* p_item = get_item(index);
 
     t_size group_index = 0, group_count = 0;
     // uih::ListView::get_item_group(index, get_group_count()-1, group_index, group_count);
 
     pfc::string8_fast_aggressive temp, str_dummy;
     temp.prealloc(32);
-    global_variable_list globals;
+    GlobalVariableList globals;
     bool b_global = m_script_global.is_valid();
     SYSTEMTIME st;
     memset(&st, 0, sizeof(SYSTEMTIME));
     GetLocalTime(&st);
 
-    titleformat_hook_date tf_hook_date(&st);
-    titleformat_hook_playlist_name tf_hook_playlist_name;
+    DateTitleformatHook tf_hook_date(&st);
+    PlaylistNameTitleformatHook tf_hook_playlist_name;
 
     if (b_global) {
-        titleformat_hook_set_global<true, false> tf_hook_set_global(globals);
-        titleformat_hook_splitter_pt3 tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+        SetGlobalTitleformatHook<true, false> tf_hook_set_global(globals);
+        SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
         m_playlist_api->activeplaylist_item_format_title(
             index, &tf_hook, str_dummy, m_script_global, nullptr, play_control::display_level_all);
     }
 
-    style_data_cell_info_t style_data_item = style_data_cell_info_t::g_create_default();
+    CellStyleData style_data_item = CellStyleData::g_create_default();
 
     bool colour_global_av = false;
     t_size i, count = m_column_data.get_count(), count_display_groups = get_item_display_group_count(index);
@@ -863,15 +863,15 @@ void PlaylistView::notify_update_item_data(t_size index)
     metadb_handle_ptr ptr;
     m_playlist_api->activeplaylist_get_item_handle(ptr, index);
 
-    titleformat_hook_set_global<false, true> tf_hook_get_global(globals);
+    SetGlobalTitleformatHook<false, true> tf_hook_get_global(globals);
 
     t_size item_index = get_item_display_index(index);
     for (i = 0; i < count_display_groups; i++) {
         t_size count_groups = p_item->get_group_count();
-        style_data_cell_info_t style_data_group = style_data_cell_info_t::g_create_default();
+        CellStyleData style_data_group = CellStyleData::g_create_default();
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
-            titleformat_hook_style_v2 tf_hook_style(style_data_group, item_index - i - 1, true);
-            titleformat_hook_splitter_pt3 tf_hook(
+            StyleTitleformatHook tf_hook_style(style_data_group, item_index - i - 1, true);
+            SplitterTitleformatHook tf_hook(
                 &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             ptr->format_title(&tf_hook, temp, m_script_global_style, nullptr);
         }
@@ -881,22 +881,22 @@ void PlaylistView::notify_update_item_data(t_size index)
 
     for (i = 0; i < count; i++) {
         {
-            titleformat_hook_splitter_pt3 tf_hook(
+            SplitterTitleformatHook tf_hook(
                 b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
             m_playlist_api->activeplaylist_item_format_title(
                 index, &tf_hook, temp, m_column_data[i].m_display_script, nullptr, playback_control::display_level_all);
             p_out[i] = temp;
         }
 
-        style_data_cell_info_t style_temp = style_data_cell_info_t::g_create_default();
+        CellStyleData style_temp = CellStyleData::g_create_default();
 
         bool b_custom = m_column_data[i].m_style_script.is_valid();
 
         {
             if (!colour_global_av) {
                 if (m_script_global_style.is_valid()) {
-                    titleformat_hook_style_v2 tf_hook_style(style_data_item, item_index);
-                    titleformat_hook_splitter_pt3 tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
+                    StyleTitleformatHook tf_hook_style(style_data_item, item_index);
+                    SplitterTitleformatHook tf_hook(&tf_hook_style, b_global ? &tf_hook_get_global : nullptr,
                         &tf_hook_date, &tf_hook_playlist_name);
                     m_playlist_api->activeplaylist_item_format_title(
                         index, &tf_hook, temp, m_script_global_style, nullptr, play_control::display_level_all);
@@ -908,8 +908,8 @@ void PlaylistView::notify_update_item_data(t_size index)
         }
         if (b_custom) {
             if (m_column_data[i].m_style_script.is_valid()) {
-                titleformat_hook_style_v2 tf_hook_style(style_temp, item_index);
-                titleformat_hook_splitter_pt3 tf_hook(
+                StyleTitleformatHook tf_hook_style(style_temp, item_index);
+                SplitterTitleformatHook tf_hook(
                     &tf_hook_style, b_global ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
                 m_playlist_api->activeplaylist_item_format_title(
                     index, &tf_hook, temp, m_column_data[i].m_style_script, nullptr, play_control::display_level_all);
@@ -1121,9 +1121,9 @@ const GUID PlaylistView::g_extension_guid
 uie::window_factory<PlaylistView> g_pvt;
 
 // {C882D3AC-C014-44df-9C7E-2DADF37645A0}
-const GUID appearance_client_ngpv_impl::g_guid
+const GUID ColoursClient::g_guid
     = {0xc882d3ac, 0xc014, 0x44df, {0x9c, 0x7e, 0x2d, 0xad, 0xf3, 0x76, 0x45, 0xa0}};
-appearance_client_ngpv_impl::factory<appearance_client_ngpv_impl> g_appearance_client_ngpv_impl;
+ColoursClient::factory<ColoursClient> g_appearance_client_ngpv_impl;
 
 // {19F8E0B3-E822-4f07-B200-D4A67E4872F9}
 const GUID g_guid_items_font = {0x19f8e0b3, 0xe822, 0x4f07, {0xb2, 0x0, 0xd4, 0xa6, 0x7e, 0x48, 0x72, 0xf9}};
@@ -1168,7 +1168,7 @@ font_client_ngpv::factory<font_client_ngpv> g_font_client_ngpv;
 font_header_client_ngpv::factory<font_header_client_ngpv> g_font_header_client_ngpv;
 font_group_header_client_ngpv::factory<font_group_header_client_ngpv> g_font_group_header_client_ngpv;
 
-void appearance_client_ngpv_impl::on_colour_changed(t_size mask) const
+void ColoursClient::on_colour_changed(t_size mask) const
 {
     if (cfg_show_artwork && cfg_artwork_reflection && (mask & (cui::colours::colour_flag_background)))
         PlaylistView::g_flush_artwork();

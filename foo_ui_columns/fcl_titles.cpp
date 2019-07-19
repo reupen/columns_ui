@@ -197,14 +197,14 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
         stream_writer_memblock groups_sw;
         fbh::fcl::Writer groups_writer(&groups_sw, p_abort);
 
-        const pfc::list_base_const_t<pvt::group_t>& groups = pvt::g_groups.get_groups();
+        const pfc::list_base_const_t<pvt::Group>& groups = pvt::g_groups.get_groups();
         t_size count = groups.get_count();
         pfc::string8 temp;
 
         groups_writer.write_raw(count);
 
         for (t_size i = 0; i < count; i++) {
-            const pvt::group_t& group = groups[i];
+            const pvt::Group& group = groups[i];
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
             w.write_item(identifier_script, group.string);
@@ -224,7 +224,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
         t_uint32 element_id;
         t_uint32 element_size;
 
-        pfc::list_t<pvt::group_t> newgroups;
+        pfc::list_t<pvt::Group> newgroups;
         bool b_groups_set = false;
 
         while (reader.get_remaining()) {
@@ -254,7 +254,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
                     reader.read_item(group_id);
                     reader.read_item(group_size);
 
-                    pvt::group_t item;
+                    pvt::Group item;
 
                     fbh::fcl::Reader reader2(reader, group_size, p_abort);
 
