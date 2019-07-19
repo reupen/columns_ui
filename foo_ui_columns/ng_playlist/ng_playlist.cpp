@@ -928,7 +928,7 @@ const style_data_t& PlaylistView::get_style_data(t_size index)
 }
 bool PlaylistView::notify_on_middleclick(bool on_item, t_size index)
 {
-    return cui::playlist_item_helpers::mclick_action::run(cfg_playlist_middle_action, on_item, index);
+    return cui::playlist_item_helpers::MiddleClickActionManager::run(cfg_playlist_middle_action, on_item, index);
 }
 bool PlaylistView::notify_on_doubleleftclick_nowhere()
 {

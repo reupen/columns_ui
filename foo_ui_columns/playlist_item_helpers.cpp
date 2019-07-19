@@ -24,18 +24,18 @@ void action_add_to_queue(bool on_item, unsigned idx)
 
 void action_none(bool on_on_item, unsigned idx) {}
 
-pma mclick_action::g_pma_actions[] = {
+MiddleLickAction MiddleClickActionManager::g_pma_actions[] = {
     {"(None)", 0, action_none},
     {"Remove track from playlist", 1, action_remove_track},
     {"Add to playback queue", 2, action_add_to_queue},
 };
 
-unsigned mclick_action::get_count()
+unsigned MiddleClickActionManager::get_count()
 {
     return tabsize(g_pma_actions);
 }
 
-unsigned mclick_action::id_to_idx(unsigned id)
+unsigned MiddleClickActionManager::id_to_idx(unsigned id)
 {
     unsigned count = tabsize(g_pma_actions);
     for (unsigned n = 0; n < count; n++) {
