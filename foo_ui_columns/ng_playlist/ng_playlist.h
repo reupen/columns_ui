@@ -313,7 +313,7 @@ public:
 };
 
 class PlaylistView
-    : public t_list_view_panel<ColoursClient, uie::playlist_window>
+    : public ListViewPanelBase<ColoursClient, uie::playlist_window>
     , playlist_callback_single
     , BasePlaylistCallback {
     friend class NgTfThread;

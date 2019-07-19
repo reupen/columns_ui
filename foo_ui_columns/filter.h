@@ -76,7 +76,7 @@ public:
 };
 
 class FilterPanel
-    : public t_list_view_panel<AppearanceClient, uie::window>
+    : public ListViewPanelBase<AppearanceClient, uie::window>
     , fbh::LibraryCallback {
     friend class FilterSearchToolbar;
 
