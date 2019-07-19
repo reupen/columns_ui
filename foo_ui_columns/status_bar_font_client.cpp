@@ -9,7 +9,7 @@ static const GUID font_client_status_guid
 
 HFONT g_status_font = nullptr;
 
-class font_client_status : public cui::fonts::client {
+class StatusBarFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return font_client_status_guid; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Status bar"; }
@@ -19,7 +19,7 @@ public:
     void on_font_changed() const override { on_status_font_change(); }
 };
 
-font_client_status::factory<font_client_status> g_font_client_status;
+StatusBarFontClient::factory<StatusBarFontClient> g_font_client_status;
 
 void on_status_font_change()
 {
