@@ -3,19 +3,19 @@
 
 void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out);
 
-class status_pane
+class StatusPane
     : public ui_helpers::container_window
     , private playlist_callback_single
     , play_callback {
-    class volume_panel_attributes {
+    class StatusPaneVolumeBarAttributes {
     public:
         static const TCHAR* get_class_name() { return _T("volume_toolbar_pain"); }
         static bool get_show_caption() { return false; }
         static COLORREF get_background_colour() { return -1; /*RGB(230,230,255);*/ }
     };
-    volume_control_t<false, false, volume_panel_attributes> m_volume_control;
+    volume_control_t<false, false, StatusPaneVolumeBarAttributes> m_volume_control;
 
-    class titleformat_hook_impl : public titleformat_hook {
+    class StatusPaneTitleformatHook : public titleformat_hook {
     public:
         bool process_field(
             titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override
@@ -36,7 +36,7 @@ class status_pane
             return false;
         }
 
-        titleformat_hook_impl() = default;
+        StatusPaneTitleformatHook() = default;
 
     private:
     };
@@ -160,7 +160,7 @@ class status_pane
             service_ptr_t<titleformat_object> to_status;
             static_api_ptr_t<titleformat_compiler>()->compile_safe(
                 to_status, main_window::config_status_bar_script.get());
-            titleformat_hook_impl tf_hook;
+            StatusPaneTitleformatHook tf_hook;
             play_api->playback_format_title_ex(
                 track, &tf_hook, playing1, to_status, nullptr, play_control::display_level_all);
 
@@ -172,7 +172,7 @@ class status_pane
     void get_length_data(bool& p_selection, t_size& p_count, pfc::string_base& p_out);
 
 public:
-    status_pane() = default;
+    StatusPane() = default;
     t_size get_ideal_height()
     {
         return uGetFontHeight(m_font) * 2 + uih::scale_dpi_value(2) + uih::scale_dpi_value(4)

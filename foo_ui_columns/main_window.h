@@ -55,7 +55,7 @@ void on_show_status_change();
 void on_show_status_pane_change();
 void on_show_toolbars_change();
 
-extern class status_pane g_status_pane;
+extern class StatusPane g_status_pane;
 extern class RebarWindow* g_rebar_window;
 
 namespace taskbar_buttons {

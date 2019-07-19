@@ -2,7 +2,7 @@
 
 #include "status_pane.h"
 
-LRESULT status_pane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {

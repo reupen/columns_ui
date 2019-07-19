@@ -17,7 +17,7 @@
 RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
 cui::MainWindow cui::main_window;
-status_pane g_status_pane;
+StatusPane g_status_pane;
 
 HIMAGELIST g_imagelist = nullptr;
 
