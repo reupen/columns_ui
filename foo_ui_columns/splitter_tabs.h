@@ -1,9 +1,9 @@
 #ifndef _SPLITTER_TABS_H_
 #define _SPLITTER_TABS_H_
 
-class splitter_window_tabs_impl
+class TabStackPanel
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
-    using t_self = splitter_window_tabs_impl;
+    using t_self = TabStackPanel;
 
 public:
     class_data& get_class_data() const override;
@@ -64,27 +64,27 @@ public:
 
     void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
 
-    class splitter_host_impl;
+    class TabStackSplitterHost;
 
-    struct t_size_limit {
+    struct SizeLimit {
         unsigned min_height{0};
         unsigned max_height{0};
         unsigned min_width{0};
         unsigned max_width{0};
-        t_size_limit() = default;
+        SizeLimit() = default;
         ;
     };
-    class panel : public pfc::refcounted_object_root {
+    class Panel : public pfc::refcounted_object_root {
     public:
         GUID m_guid{};
         HWND m_wnd{nullptr};
         pfc::array_t<t_uint8> m_child_data;
-        t_size_limit m_size_limits;
+        SizeLimit m_size_limits;
         uie::window_ptr m_child;
         bool m_use_custom_title{false};
         pfc::string8 m_custom_title;
-        service_ptr_t<splitter_window_tabs_impl> m_this;
-        void set_splitter_window_ptr(splitter_window_tabs_impl* ptr) { m_this = ptr; }
+        service_ptr_t<TabStackPanel> m_this;
+        void set_splitter_window_ptr(TabStackPanel* ptr) { m_this = ptr; }
 
         uie::splitter_item_full_v2_t* create_splitter_item();
 
@@ -98,10 +98,10 @@ public:
         void _export(stream_writer* out, abort_callback& p_abort);
         void import(stream_reader* t, abort_callback& p_abort);
 
-        service_ptr_t<class splitter_host_impl> m_interface;
+        service_ptr_t<class TabStackSplitterHost> m_interface;
     };
 
-    class panel_list : public pfc::list_t<pfc::refcounted_object_ptr_t<panel>> {
+    class PanelList : public pfc::list_t<pfc::refcounted_object_ptr_t<Panel>> {
     public:
         // bool move_up(unsigned idx);
         // bool move_down(unsigned idx);
@@ -119,8 +119,8 @@ public:
     void destroy_children();
     void adjust_rect(bool b_larger, RECT* rc);
     void set_styles(bool visible = true);
-    panel_list m_panels;
-    panel_list m_active_panels;
+    PanelList m_panels;
+    PanelList m_active_panels;
     HWND m_wnd_tabs{nullptr};
     t_size m_active_tab{(std::numeric_limits<size_t>::max)()};
     static std::vector<service_ptr_t<t_self>> g_windows;
@@ -136,7 +136,7 @@ public:
     void on_active_tab_changing(t_size index_from);
     void on_active_tab_changed(t_size index_to);
 
-    splitter_window_tabs_impl() = default;
+    TabStackPanel() = default;
 };
 
 #endif

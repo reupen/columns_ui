@@ -4,8 +4,8 @@
 // {6F000FC4-3F86-4fc5-80EA-F7AA4D9551E6}
 const GUID g_guid_splitter_tabs = {0x6f000fc4, 0x3f86, 0x4fc5, {0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6}};
 
-class splitter_window_tabs_impl::splitter_host_impl : public ui_extension::window_host {
-    service_ptr_t<splitter_window_tabs_impl> m_this;
+class TabStackPanel::TabStackSplitterHost : public ui_extension::window_host {
+    service_ptr_t<TabStackPanel> m_this;
 
 public:
     const GUID& get_host_guid() const override
@@ -24,7 +24,7 @@ public:
     {
         unsigned index;
         if (m_this->m_panels.find_by_wnd(wnd, index)) {
-            pfc::refcounted_object_ptr_t<splitter_window_tabs_impl::panel> p_ext = m_this->m_panels[index];
+            pfc::refcounted_object_ptr_t<TabStackPanel::Panel> p_ext = m_this->m_panels[index];
             MINMAXINFO mmi;
             memset(&mmi, 0, sizeof(MINMAXINFO));
             mmi.ptMaxTrackSize.x = MAXLONG;
@@ -103,13 +103,13 @@ public:
         return rv;
     }
 
-    void set_window_ptr(splitter_window_tabs_impl* p_ptr) { m_this = p_ptr; }
+    void set_window_ptr(TabStackPanel* p_ptr) { m_this = p_ptr; }
 
     void relinquish_ownership(HWND wnd) override
     {
         unsigned index;
         if (m_this->m_active_panels.find_by_wnd(wnd, index)) {
-            pfc::refcounted_object_ptr_t<splitter_window_tabs_impl::panel> p_ext = m_this->m_active_panels[index];
+            pfc::refcounted_object_ptr_t<TabStackPanel::Panel> p_ext = m_this->m_active_panels[index];
 
             {
                 /*if (GetAncestor(wnd, GA_PARENT) == m_this->get_wnd())
@@ -132,16 +132,16 @@ public:
     }
 };
 
-ui_extension::window_host_factory<splitter_window_tabs_impl::splitter_host_impl> g_splitter_tabs_host;
+ui_extension::window_host_factory<TabStackPanel::TabStackSplitterHost> g_splitter_tabs_host;
 
-void splitter_window_tabs_impl::get_supported_panels(
+void TabStackPanel::get_supported_panels(
     const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_splitter_tabs_host.instance_create(temp);
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
-        (static_cast<splitter_window_tabs_impl::splitter_host_impl*>(ptr.get_ptr()))->set_window_ptr(this);
+        (static_cast<TabStackPanel::TabStackSplitterHost*>(ptr.get_ptr()))->set_window_ptr(this);
     t_size count = p_windows.get_count();
     for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
@@ -149,7 +149,7 @@ void splitter_window_tabs_impl::get_supported_panels(
 
 void clip_minmaxinfo(MINMAXINFO& mmi);
 
-bool splitter_window_tabs_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_out)
+bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
 {
     unsigned count = get_count();
     for (unsigned n = 0; n < count; n++) {
@@ -161,7 +161,7 @@ bool splitter_window_tabs_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_ou
     return false;
 }
 
-uie::splitter_item_full_v2_t* splitter_window_tabs_impl::panel::create_splitter_item()
+uie::splitter_item_full_v2_t* TabStackPanel::Panel::create_splitter_item()
 {
     auto ret = new uie::splitter_item_full_v2_impl_t;
     ret->set_panel_guid(m_guid);
@@ -182,7 +182,7 @@ uie::splitter_item_full_v2_t* splitter_window_tabs_impl::panel::create_splitter_
     return ret;
 }
 
-void splitter_window_tabs_impl::panel::set_from_splitter_item(const uie::splitter_item_t* p_source)
+void TabStackPanel::Panel::set_from_splitter_item(const uie::splitter_item_t* p_source)
 {
     if (m_wnd)
         destroy();
@@ -196,7 +196,7 @@ void splitter_window_tabs_impl::panel::set_from_splitter_item(const uie::splitte
     p_source->get_panel_config_to_array(m_child_data, true);
 }
 
-void splitter_window_tabs_impl::panel::destroy()
+void TabStackPanel::Panel::destroy()
 {
     if (m_child.is_valid()) {
         m_child->destroy_window();
@@ -207,7 +207,7 @@ void splitter_window_tabs_impl::panel::destroy()
     m_interface.release();
 }
 
-void splitter_window_tabs_impl::panel::read(stream_reader* t, abort_callback& p_abort)
+void TabStackPanel::Panel::read(stream_reader* t, abort_callback& p_abort)
 {
     t->read_lendian_t(m_guid, p_abort);
     unsigned size;
@@ -218,7 +218,7 @@ void splitter_window_tabs_impl::panel::read(stream_reader* t, abort_callback& p_
     t->read_string(m_custom_title, p_abort);
 }
 
-void splitter_window_tabs_impl::panel::write(stream_writer* out, abort_callback& p_abort)
+void TabStackPanel::Panel::write(stream_writer* out, abort_callback& p_abort)
 {
     if (m_child.is_valid()) {
         m_child_data.set_size(0);
@@ -230,7 +230,7 @@ void splitter_window_tabs_impl::panel::write(stream_writer* out, abort_callback&
     out->write_lendian_t(m_use_custom_title, p_abort);
     out->write_string(m_custom_title, p_abort);
 }
-void splitter_window_tabs_impl::panel::_export(stream_writer* out, abort_callback& p_abort)
+void TabStackPanel::Panel::_export(stream_writer* out, abort_callback& p_abort)
 {
     stream_writer_memblock child_exported_data;
     uie::window_ptr ptr = m_child;
@@ -251,7 +251,7 @@ void splitter_window_tabs_impl::panel::_export(stream_writer* out, abort_callbac
     out->write_lendian_t(m_use_custom_title, p_abort);
     out->write_string(m_custom_title, p_abort);
 }
-void splitter_window_tabs_impl::panel::import(stream_reader* t, abort_callback& p_abort)
+void TabStackPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
 {
     t->read_lendian_t(m_guid, p_abort);
     unsigned size;
@@ -274,35 +274,35 @@ void splitter_window_tabs_impl::panel::import(stream_reader* t, abort_callback& 
     //    throw pfc::exception_not_implemented();
 }
 
-splitter_window_tabs_impl::class_data& splitter_window_tabs_impl::get_class_data() const
+TabStackPanel::class_data& TabStackPanel::get_class_data() const
 {
     __implement_get_class_data_ex(_T("{5CB67C98-B77F-4926-A79F-49D9B21B9705}"), _T(""), false, 0,
         WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
 }
-void splitter_window_tabs_impl::get_name(pfc::string_base& p_out) const
+void TabStackPanel::get_name(pfc::string_base& p_out) const
 {
     p_out = "Tab stack";
 }
-const GUID& splitter_window_tabs_impl::get_extension_guid() const
+const GUID& TabStackPanel::get_extension_guid() const
 {
     // {5CB67C98-B77F-4926-A79F-49D9B21B9705}
     static const GUID rv = {0x5cb67c98, 0xb77f, 0x4926, {0xa7, 0x9f, 0x49, 0xd9, 0xb2, 0x1b, 0x97, 0x5}};
     return rv;
 }
-void splitter_window_tabs_impl::get_category(pfc::string_base& p_out) const
+void TabStackPanel::get_category(pfc::string_base& p_out) const
 {
     p_out = "Splitters";
 }
-unsigned splitter_window_tabs_impl::get_type() const
+unsigned TabStackPanel::get_type() const
 {
     return ui_extension::type_layout | uie::type_splitter;
 };
 
-unsigned splitter_window_tabs_impl::get_panel_count() const
+unsigned TabStackPanel::get_panel_count() const
 {
     return m_panels.get_count();
 };
-uie::splitter_item_t* splitter_window_tabs_impl::get_panel(unsigned index) const
+uie::splitter_item_t* TabStackPanel::get_panel(unsigned index) const
 {
     if (index < m_panels.get_count()) {
         return m_panels[index]->create_splitter_item();
@@ -310,12 +310,12 @@ uie::splitter_item_t* splitter_window_tabs_impl::get_panel(unsigned index) const
     return nullptr;
 };
 
-bool splitter_window_tabs_impl::get_config_item_supported(unsigned index, const GUID& p_type) const
+bool TabStackPanel::get_config_item_supported(unsigned index, const GUID& p_type) const
 {
     return p_type == uie::splitter_window::bool_use_custom_title || p_type == uie::splitter_window::string_custom_title;
 }
 
-bool splitter_window_tabs_impl::get_config_item(
+bool TabStackPanel::get_config_item(
     unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
 {
     if (index < m_panels.get_count()) {
@@ -331,7 +331,7 @@ bool splitter_window_tabs_impl::get_config_item(
     return false;
 }
 
-bool splitter_window_tabs_impl::set_config_item(
+bool TabStackPanel::set_config_item(
     unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
 {
     if (index < m_panels.get_count()) {
@@ -347,7 +347,7 @@ bool splitter_window_tabs_impl::set_config_item(
     return false;
 };
 
-void splitter_window_tabs_impl::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
+void TabStackPanel::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
         t_uint32 version;
@@ -360,14 +360,14 @@ void splitter_window_tabs_impl::set_config(stream_reader* config, t_size p_size,
             config->read_lendian_t(count, p_abort);
 
             for (unsigned n = 0; n < count; n++) {
-                pfc::refcounted_object_ptr_t<panel> temp = new panel;
+                pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
                 temp->read(config, p_abort);
                 m_panels.add_item(temp);
             }
         }
     }
 };
-void splitter_window_tabs_impl::get_config(stream_writer* out, abort_callback& p_abort) const
+void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t((t_uint32)stream_version_current, p_abort);
     unsigned count = m_panels.get_count();
@@ -378,7 +378,7 @@ void splitter_window_tabs_impl::get_config(stream_writer* out, abort_callback& p
     }
 };
 
-void splitter_window_tabs_impl::export_config(stream_writer* p_writer, abort_callback& p_abort) const
+void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t((t_uint32)stream_version_current, p_abort);
     unsigned count = m_panels.get_count();
@@ -389,7 +389,7 @@ void splitter_window_tabs_impl::export_config(stream_writer* p_writer, abort_cal
     }
 };
 
-void splitter_window_tabs_impl::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void TabStackPanel::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     t_uint32 version;
     p_reader->read_lendian_t(version, p_abort);
@@ -401,7 +401,7 @@ void splitter_window_tabs_impl::import_config(stream_reader* p_reader, t_size p_
         p_reader->read_lendian_t(count, p_abort);
 
         for (unsigned n = 0; n < count; n++) {
-            pfc::refcounted_object_ptr_t<panel> temp = new panel;
+            pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
             temp->import(p_reader, p_abort);
             m_panels.add_item(temp);
         }
@@ -416,7 +416,7 @@ void clip_sizelimit(uie::size_limit_t& mmi)
     mmi.min_width = min(mmi.min_width, MAXSHORT);
 }
 
-void splitter_window_tabs_impl::update_size_limits()
+void TabStackPanel::update_size_limits()
 {
     m_size_limits = uie::size_limit_t();
 
@@ -452,7 +452,7 @@ void splitter_window_tabs_impl::update_size_limits()
     m_size_limits.max_height = RECT_CY(rcmax);
 }
 
-void splitter_window_tabs_impl::adjust_rect(bool b_larger, RECT* rc)
+void TabStackPanel::adjust_rect(bool b_larger, RECT* rc)
 {
     // TabCtrl_AdjustRect(m_wnd_tabs, b_larger, rc);
 
@@ -469,7 +469,7 @@ void splitter_window_tabs_impl::adjust_rect(bool b_larger, RECT* rc)
     }
 }
 
-void splitter_window_tabs_impl::set_styles(bool visible)
+void TabStackPanel::set_styles(bool visible)
 {
     if (m_wnd_tabs) {
         long flags = WS_CHILD | TCS_HOTTRACK | TCS_TABS | (false ? TCS_MULTILINE | TCS_RIGHTJUSTIFY : TCS_SINGLELINE)
@@ -480,7 +480,7 @@ void splitter_window_tabs_impl::set_styles(bool visible)
     }
 }
 
-LRESULT splitter_window_tabs_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
@@ -586,7 +586,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPA
 
         {
             if (b_found && index < m_active_panels.get_count()) {
-                pfc::refcounted_object_ptr_t<panel> p_panel = m_active_panels[index];
+                pfc::refcounted_object_ptr_t<Panel> p_panel = m_active_panels[index];
 
                 pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
                     = new ui_extension::menu_hook_impl;
@@ -647,7 +647,7 @@ LRESULT splitter_window_tabs_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPA
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void splitter_window_tabs_impl::refresh_children()
+void TabStackPanel::refresh_children()
 {
     unsigned count = m_panels.get_count();
     for (unsigned n = 0; n < count; n++) {
@@ -666,7 +666,7 @@ void splitter_window_tabs_impl::refresh_children()
                 g_splitter_tabs_host.instance_create(temp);
                 uie::window_host_ptr ptr;
                 if (temp->service_query_t(ptr)) {
-                    m_panels[n]->m_interface = static_cast<splitter_host_impl*>(ptr.get_ptr());
+                    m_panels[n]->m_interface = static_cast<TabStackSplitterHost*>(ptr.get_ptr());
                     m_panels[n]->m_interface->set_window_ptr(this);
                 }
             }
@@ -749,20 +749,20 @@ void splitter_window_tabs_impl::refresh_children()
     }
 }
 
-void splitter_window_tabs_impl::destroy_children()
+void TabStackPanel::destroy_children()
 {
     unsigned count = m_panels.get_count();
     for (unsigned n = 0; n < count; n++) {
-        pfc::refcounted_object_ptr_t<panel> pal = m_panels[n];
+        pfc::refcounted_object_ptr_t<Panel> pal = m_panels[n];
         pal->destroy();
     }
     m_active_panels.remove_all();
 }
 
-void splitter_window_tabs_impl::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
+void TabStackPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index <= m_panels.get_count()) {
-        pfc::refcounted_object_ptr_t<panel> temp = new panel;
+        pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
         temp->set_from_splitter_item(p_item);
         m_panels.insert_item(temp, index);
 
@@ -771,7 +771,7 @@ void splitter_window_tabs_impl::insert_panel(unsigned index, const uie::splitter
     }
 };
 
-void splitter_window_tabs_impl::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
+void TabStackPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index < m_panels.get_count()) {
         if (get_wnd())
@@ -783,7 +783,7 @@ void splitter_window_tabs_impl::replace_panel(unsigned index, const uie::splitte
             TabCtrl_DeleteItem(m_wnd_tabs, activeindex);
         }
 
-        pfc::refcounted_object_ptr_t<panel> temp = new panel;
+        pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
         temp->set_from_splitter_item(p_item);
         m_panels.replace_item(index, temp);
 
@@ -792,7 +792,7 @@ void splitter_window_tabs_impl::replace_panel(unsigned index, const uie::splitte
     }
 };
 
-void splitter_window_tabs_impl::remove_panel(unsigned index)
+void TabStackPanel::remove_panel(unsigned index)
 {
     if (index < m_panels.get_count()) {
         t_size activeindex = m_active_panels.find_item(m_panels[index]);
@@ -805,7 +805,7 @@ void splitter_window_tabs_impl::remove_panel(unsigned index)
     }
 };
 
-void splitter_window_tabs_impl::create_tabs()
+void TabStackPanel::create_tabs()
 {
     g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs);
     RECT rc;
@@ -819,23 +819,23 @@ void splitter_window_tabs_impl::create_tabs()
     // SetWindowTheme(m_wnd_tabs, L"BrowserTab", NULL);
     SendMessage(m_wnd_tabs, WM_SETFONT, (WPARAM)g_font.get(), MAKELPARAM(0, 0));
 }
-void splitter_window_tabs_impl::destroy_tabs()
+void TabStackPanel::destroy_tabs()
 {
     DestroyWindow(m_wnd_tabs);
     m_wnd_tabs = nullptr;
     g_font.release();
 }
-uie::window_factory<splitter_window_tabs_impl> g_splitter_window_tabs;
-std::vector<service_ptr_t<splitter_window_tabs_impl::t_self>> splitter_window_tabs_impl::g_windows;
+uie::window_factory<TabStackPanel> g_splitter_window_tabs;
+std::vector<service_ptr_t<TabStackPanel::t_self>> TabStackPanel::g_windows;
 
-void splitter_window_tabs_impl::g_on_font_change()
+void TabStackPanel::g_on_font_change()
 {
     for (auto& window : g_windows) {
         window->on_font_change();
     }
 }
 
-void splitter_window_tabs_impl::on_font_change()
+void TabStackPanel::on_font_change()
 {
     if (m_wnd_tabs) {
         if (g_font.is_valid()) {
@@ -852,7 +852,7 @@ void splitter_window_tabs_impl::on_font_change()
         }
     }
 }
-void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
+void TabStackPanel::on_size_changed(unsigned width, unsigned height)
 {
     HDWP dwp = BeginDeferWindowPos(m_active_panels.get_count() + 1);
     if (m_wnd_tabs)
@@ -870,13 +870,13 @@ void splitter_window_tabs_impl::on_size_changed(unsigned width, unsigned height)
     }
     EndDeferWindowPos(dwp);
 }
-void splitter_window_tabs_impl::on_size_changed()
+void TabStackPanel::on_size_changed()
 {
     RECT rc;
     GetClientRect(get_wnd(), &rc);
     on_size_changed(RECT_CX(rc), RECT_CY(rc));
 }
-void splitter_window_tabs_impl::on_active_tab_changing(t_size index_from)
+void TabStackPanel::on_active_tab_changing(t_size index_from)
 {
     if (index_from != pfc_infinite && index_from < m_active_panels.get_count() && m_active_panels[index_from]->m_wnd) {
         // if (GetFocus() == m_active_panels[index_from]->m_wnd || IsChild(m_active_panels[index_from]->m_wnd,
@@ -888,7 +888,7 @@ void splitter_window_tabs_impl::on_active_tab_changing(t_size index_from)
         ShowWindow(m_active_panels[index_from]->m_wnd, SW_HIDE);
     }
 };
-void splitter_window_tabs_impl::on_active_tab_changed(t_size index_to)
+void TabStackPanel::on_active_tab_changed(t_size index_to)
 {
     if (index_to < m_active_panels.get_count() && m_active_panels[index_to]->m_wnd) {
         ShowWindow(m_active_panels[index_to]->m_wnd, SW_SHOW);
@@ -897,13 +897,13 @@ void splitter_window_tabs_impl::on_active_tab_changed(t_size index_to)
         m_active_tab = pfc_infinite;
 }
 
-LRESULT WINAPI splitter_window_tabs_impl::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI TabStackPanel::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    auto p_this = reinterpret_cast<splitter_window_tabs_impl*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    auto p_this = reinterpret_cast<TabStackPanel*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->on_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
-LRESULT WINAPI splitter_window_tabs_impl::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_GETDLGCODE:
@@ -927,7 +927,7 @@ LRESULT WINAPI splitter_window_tabs_impl::on_hooked_message(HWND wnd, UINT msg, 
             // unsigned scroll_lines = GetNumScrollLines();
 
             HWND wnd_child = GetWindow(wnd, GW_CHILD);
-            WCHAR str_class[129];
+            WCHAR str_class[129]; 
             memset(str_class, 0, sizeof(str_class));
             if (wnd_child && RealGetWindowClass(wnd_child, str_class, tabsize(str_class) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
@@ -973,14 +973,14 @@ LRESULT WINAPI splitter_window_tabs_impl::on_hooked_message(HWND wnd, UINT msg, 
     return uCallWindowProc(m_tab_proc, wnd, msg, wp, lp);
 }
 
-class font_client_splitter_tabs : public cui::fonts::client {
+class TabStackFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_splitter_tabs; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Tab stack"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_labels; }
 
-    void on_font_changed() const override { splitter_window_tabs_impl::g_on_font_change(); }
+    void on_font_changed() const override { TabStackPanel::g_on_font_change(); }
 };
 
-font_client_splitter_tabs::factory<font_client_splitter_tabs> g_font_client_splitter_tabs;
+TabStackFontClient::factory<TabStackFontClient> g_font_client_splitter_tabs;
