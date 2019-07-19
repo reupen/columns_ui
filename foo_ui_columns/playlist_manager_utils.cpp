@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "playlist_manager_utils.h"
 
-playlist_format_name_t::titleformat_hook_playlist_t::titleformat_hook_playlist_t(
+StringPlaylistFormatName::PlaylistSwitcherTitleformatHook::PlaylistSwitcherTitleformatHook(
     unsigned p_index, const char* p_name, t_size p_playing)
     : m_name(p_name)
     , m_playing(p_playing == p_index)
@@ -18,18 +18,18 @@ playlist_format_name_t::titleformat_hook_playlist_t::titleformat_hook_playlist_t
     m_active = m_api->get_active_playlist() == p_index;
 };
 
-playlist_format_name_t::playlist_format_name_t(unsigned p_index, const char* src, t_size p_playing)
+StringPlaylistFormatName::StringPlaylistFormatName(unsigned p_index, const char* src, t_size p_playing)
 {
     if (cfg_playlist_switcher_use_tagz) {
         service_ptr_t<titleformat_object> to_temp;
         static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, cfg_playlist_switcher_tagz);
-        titleformat_hook_playlist_t tf_hook(p_index, src, p_playing);
+        PlaylistSwitcherTitleformatHook tf_hook(p_index, src, p_playing);
         to_temp->run(&tf_hook, *this, nullptr);
     } else
         set_string(src);
 }
 
-bool playlist_format_name_t::titleformat_hook_playlist_t::process_field(
+bool StringPlaylistFormatName::PlaylistSwitcherTitleformatHook::process_field(
     titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -104,7 +104,7 @@ bool playlist_format_name_t::titleformat_hook_playlist_t::process_field(
 
 namespace playlist_manager_utils {
 
-class rename_param {
+class RenameParam {
 public:
     modal_dialog_scope m_scope;
     pfc::string8* m_text{};
@@ -116,7 +116,7 @@ static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd, DWLP_USER, lp);
         {
-            auto* ptr = (rename_param*)lp;
+            auto* ptr = (RenameParam*)lp;
             ptr->m_scope.initialize(FindOwningPopup(wnd));
             pfc::string_formatter formatter;
             formatter << R"(Rename playlist: ")" << *ptr->m_text << R"(")";
@@ -127,7 +127,7 @@ static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_COMMAND:
         switch (wp) {
         case IDOK: {
-            auto* ptr = (rename_param*)GetWindowLong(wnd, DWLP_USER);
+            auto* ptr = (RenameParam*)GetWindowLong(wnd, DWLP_USER);
             uGetDlgItemText(wnd, IDC_EDIT, *ptr->m_text);
             EndDialog(wnd, 1);
         } break;
@@ -145,7 +145,7 @@ static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 static bool rename_dialog(pfc::string8* text, HWND parent)
 {
-    rename_param param;
+    RenameParam param;
     param.m_text = text;
     return !!uDialogBox(IDD_RENAME_PLAYLIST, parent, RenameProc, (LPARAM)(&param));
 }
