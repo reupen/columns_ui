@@ -20,16 +20,16 @@ bool mainmenunode_subguid_to_path(
 void mainpath_from_guid(const GUID& p_guid, const GUID& p_subguid, pfc::string_base& p_out, bool b_short = false);
 }; // namespace menu_helpers
 
-struct menu_item_identifier {
+struct MenuItemIdentifier {
     GUID m_command{};
     GUID m_subcommand{};
 };
 
-bool operator==(const menu_item_identifier& p1, const menu_item_identifier& p2);
-bool operator!=(const menu_item_identifier& p1, const menu_item_identifier& p2);
+bool operator==(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2);
+bool operator!=(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2);
 
 class menu_item_cache {
-    class menu_item_info : public menu_item_identifier {
+    class menu_item_info : public MenuItemIdentifier {
     public:
         pfc::string8 m_name;
         pfc::string8 m_desc;

@@ -82,7 +82,7 @@ bool colour_picker(HWND wnd, COLORREF& out, COLORREF custom)
     return rv;
 }
 
-void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const menu_item_identifier& p_item,
+void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItemIdentifier& p_item,
     menu_item_cache& p_cache, bool insert_none)
 {
     HWND wnd_combo = GetDlgItem(wnd, ID);
@@ -127,7 +127,7 @@ void on_menu_combo_change(
     unsigned cache_idx = SendMessage(wnd_combo, CB_GETITEMDATA, SendMessage(wnd_combo, CB_GETCURSEL, 0, 0), 0);
 
     if (cache_idx == -1) {
-        cfg_menu_store = menu_item_identifier();
+        cfg_menu_store = MenuItemIdentifier();
     } else if (cache_idx < p_cache.get_count()) {
         cfg_menu_store = p_cache.get_item(cache_idx);
     }

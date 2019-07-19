@@ -1,12 +1,12 @@
 #include "stdafx.h"
 #include "menu_helpers.h"
 
-bool operator==(const menu_item_identifier& p1, const menu_item_identifier& p2)
+bool operator==(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2)
 {
     return p1.m_command == p2.m_command && p1.m_subcommand == p2.m_subcommand;
 }
 
-bool operator!=(const menu_item_identifier& p1, const menu_item_identifier& p2)
+bool operator!=(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2)
 {
     return !(p1 == p2);
 }
