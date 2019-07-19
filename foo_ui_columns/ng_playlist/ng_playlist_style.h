@@ -3,16 +3,16 @@
 namespace pvt {
 class CellStyleData {
 public:
-    colour text_colour;
-    colour selected_text_colour;
-    colour background_colour;
-    colour selected_background_colour;
-    colour selected_text_colour_non_focus;
-    colour selected_background_colour_non_focus;
-    colour frame_left;
-    colour frame_top;
-    colour frame_right;
-    colour frame_bottom;
+    Colour text_colour;
+    Colour selected_text_colour;
+    Colour background_colour;
+    Colour selected_background_colour;
+    Colour selected_text_colour_non_focus;
+    Colour selected_background_colour_non_focus;
+    Colour frame_left;
+    Colour frame_top;
+    Colour frame_right;
+    Colour frame_bottom;
     bool use_frame_left : 1;
     bool use_frame_top : 1;
     bool use_frame_right : 1;
