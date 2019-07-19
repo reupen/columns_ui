@@ -13,7 +13,7 @@ class StatusPane
         static bool get_show_caption() { return false; }
         static COLORREF get_background_colour() { return -1; /*RGB(230,230,255);*/ }
     };
-    volume_control_t<false, false, StatusPaneVolumeBarAttributes> m_volume_control;
+    VolumeBar<false, false, StatusPaneVolumeBarAttributes> m_volume_control;
 
     class StatusPaneTitleformatHook : public titleformat_hook {
     public:

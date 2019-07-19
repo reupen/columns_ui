@@ -13,10 +13,10 @@
 #include "main_window.h"
 
 template <bool b_vertical, bool b_popup, typename t_attributes, class t_base = ui_helpers::container_window>
-class volume_control_t
+class VolumeBar
     : public t_base
     , private play_callback {
-    class track_bar_volume : public uih::Trackbar {
+    class VolumeTrackBar : public uih::Trackbar {
         void get_channel_rect(RECT* rc) const override
         {
             if (b_popup)
@@ -119,13 +119,13 @@ class volume_control_t
                 }
             }
         }
-        volume_control_t<b_vertical, b_popup, t_attributes, t_base>* m_this;
+        VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
 
     public:
-        track_bar_volume(volume_control_t<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this){};
+        VolumeTrackBar(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this){};
     } m_child;
 
-    class track_bar_host_impl : public uih::TrackbarCallback {
+    class VolumeTrackBarCallback : public uih::TrackbarCallback {
         void on_position_change(unsigned pos, bool b_tracking) override
         {
             const auto volume = position_to_volume(pos);
@@ -147,10 +147,10 @@ class volume_control_t
             }
             return false;
         }
-        volume_control_t<b_vertical, b_popup, t_attributes, t_base>* m_this;
+        VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
 
     public:
-        track_bar_host_impl(volume_control_t<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this){};
+        VolumeTrackBarCallback(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this){};
     } m_track_bar_host;
 
 public:
@@ -302,12 +302,12 @@ public:
         return DefWindowProc(wnd, msg, wp, lp);
     }
 
-    volume_control_t() : m_child(this), m_track_bar_host(this) {}
-    volume_control_t(const volume_control_t&) = delete;
-    volume_control_t& operator=(const volume_control_t&) = delete;
-    volume_control_t(volume_control_t&&) = delete;
-    volume_control_t& operator=(volume_control_t&&) = delete;
-    ~volume_control_t() = default;
+    VolumeBar() : m_child(this), m_track_bar_host(this) {}
+    VolumeBar(const VolumeBar&) = delete;
+    VolumeBar& operator=(const VolumeBar&) = delete;
+    VolumeBar(VolumeBar&&) = delete;
+    VolumeBar& operator=(VolumeBar&&) = delete;
+    ~VolumeBar() = default;
 
     ui_helpers::container_window::class_data& get_class_data() const override
     {
@@ -370,13 +370,13 @@ private:
     bool m_using_gdiplus{false};
 };
 
-class volume_popup_class_name {
+class PopupVolumeBarAttributes {
 public:
     static const TCHAR* get_class_name() { return _T("volume_popup"); }
     static bool get_show_caption() { return true; }
     static COLORREF get_background_colour() { return -1; }
 };
 
-using volume_popup_t = volume_control_t<true, true, volume_popup_class_name>;
+using volume_popup_t = VolumeBar<true, true, PopupVolumeBarAttributes>;
 
 #endif

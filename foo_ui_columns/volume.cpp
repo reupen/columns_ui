@@ -1,15 +1,15 @@
 #include "stdafx.h"
 #include "volume.h"
 
-class volume_panel_class_name {
+class VolumeBarToolbarAttributes {
 public:
     static const TCHAR* get_class_name() { return _T("volume_toolbar"); }
     static bool get_show_caption() { return false; }
     static COLORREF get_background_colour() { return -1; }
 };
 
-class volume_control_panel
-    : public volume_control_t<false, false, volume_panel_class_name, uie::container_ui_extension_t<>> {
+class VolumeBarToolbar
+    : public VolumeBar<false, false, VolumeBarToolbarAttributes, uie::container_ui_extension_t<>> {
     const GUID& get_extension_guid() const override
     {
         // {B3259290-CB68-4d37-B0F1-8094862A9524}
@@ -23,4 +23,4 @@ class volume_control_panel
     unsigned get_type() const override { return uie::type_toolbar; }
 };
 
-uie::window_factory<volume_control_panel> g_volume_panel;
+uie::window_factory<VolumeBarToolbar> g_volume_panel;
