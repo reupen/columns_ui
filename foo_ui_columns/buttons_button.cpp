@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-void toolbar_extension::button::callback_impl::on_button_state_change(unsigned p_new_state) // see t_button_state
+void ButtonsToolbar::Button::ButtonStateCallback::on_button_state_change(unsigned p_new_state) // see t_button_state
 {
     unsigned state = SendMessage(m_this->wnd_toolbar, TB_GETSTATE, id, 0);
     if (p_new_state & uie::BUTTON_STATE_ENABLED)
@@ -15,22 +15,22 @@ void toolbar_extension::button::callback_impl::on_button_state_change(unsigned p
     SendMessage(m_this->wnd_toolbar, TB_SETSTATE, id, MAKELONG(state, 0));
 };
 
-toolbar_extension::button::callback_impl& toolbar_extension::button::callback_impl::operator=(
-    const callback_impl& p_source)
+ButtonsToolbar::Button::ButtonStateCallback& ButtonsToolbar::Button::ButtonStateCallback::operator=(
+    const ButtonStateCallback& p_source)
 {
     m_this = p_source.m_this;
     return *this;
 }
-void toolbar_extension::button::callback_impl::set_wnd(toolbar_extension* p_source)
+void ButtonsToolbar::Button::ButtonStateCallback::set_wnd(ButtonsToolbar* p_source)
 {
     m_this = p_source;
 }
-void toolbar_extension::button::callback_impl::set_id(const unsigned i)
+void ButtonsToolbar::Button::ButtonStateCallback::set_id(const unsigned i)
 {
     id = i;
 }
 
-void toolbar_extension::button::set(const toolbar_extension::button& p_source)
+void ButtonsToolbar::Button::set(const ButtonsToolbar::Button& p_source)
 {
     m_guid = p_source.m_guid;
     m_subcommand = p_source.m_subcommand;
@@ -47,7 +47,7 @@ void toolbar_extension::button::set(const toolbar_extension::button& p_source)
     m_text = p_source.m_text;
 }
 
-void toolbar_extension::button::write(stream_writer* out, abort_callback& p_abort) const
+void ButtonsToolbar::Button::write(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t(m_type, p_abort);
     out->write_lendian_t(m_filter, p_abort);
@@ -67,10 +67,10 @@ void toolbar_extension::button::write(stream_writer* out, abort_callback& p_abor
         out->write_string(m_text, p_abort);
 }
 
-void toolbar_extension::button::read(
-    toolbar_extension::t_config_version p_version, stream_reader* reader, abort_callback& p_abort)
+void ButtonsToolbar::Button::read(
+    ButtonsToolbar::t_config_version p_version, stream_reader* reader, abort_callback& p_abort)
 {
-    *this = button{};
+    *this = Button{};
 
     reader->read_lendian_t(m_type, p_abort);
     reader->read_lendian_t(m_filter, p_abort);
@@ -93,7 +93,7 @@ void toolbar_extension::button::read(
         m_text = temp;
     }
 }
-void toolbar_extension::button::get_display_text(pfc::string_base& p_out) // display
+void ButtonsToolbar::Button::get_display_text(pfc::string_base& p_out) // display
 {
     p_out.reset();
     if (m_use_custom_text)
@@ -101,7 +101,7 @@ void toolbar_extension::button::get_display_text(pfc::string_base& p_out) // dis
     else
         get_short_name(p_out);
 }
-void toolbar_extension::button::get_short_name(pfc::string_base& p_out) // tooltip
+void ButtonsToolbar::Button::get_short_name(pfc::string_base& p_out) // tooltip
 {
     p_out.reset();
     if (m_type == TYPE_BUTTON)
@@ -114,7 +114,7 @@ void toolbar_extension::button::get_short_name(pfc::string_base& p_out) // toolt
         menu_helpers::contextpath_from_guid(m_guid, m_subcommand, p_out, true);
 }
 
-void toolbar_extension::button::get_name_type(pfc::string_base& p_out) // config
+void ButtonsToolbar::Button::get_name_type(pfc::string_base& p_out) // config
 {
     p_out.reset();
     if (m_type == TYPE_BUTTON) {
@@ -128,7 +128,7 @@ void toolbar_extension::button::get_name_type(pfc::string_base& p_out) // config
     }
 }
 
-void toolbar_extension::button::get_name_name(pfc::string_base& p_out) // config
+void ButtonsToolbar::Button::get_name_name(pfc::string_base& p_out) // config
 {
     p_out.reset();
     if (m_type == TYPE_BUTTON) {
@@ -148,7 +148,7 @@ void toolbar_extension::button::get_name_name(pfc::string_base& p_out) // config
         p_out += temp;
     }
 }
-void toolbar_extension::button::get_name(pfc::string_base& p_out) // config
+void ButtonsToolbar::Button::get_name(pfc::string_base& p_out) // config
 {
     p_out.reset();
     if (m_type == TYPE_BUTTON) {
@@ -172,13 +172,13 @@ void toolbar_extension::button::get_name(pfc::string_base& p_out) // config
     }
 }
 
-void toolbar_extension::button::read_from_file(t_config_version p_version, const char* p_base, const char* p_name,
+void ButtonsToolbar::Button::read_from_file(t_config_version p_version, const char* p_base, const char* p_name,
     stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
 {
     // t_filesize p_start = p_file->get_position(p_abort);
     t_size read = 0;
     while (read < p_size /* && !p_file->is_eof(p_abort)*/) {
-        t_identifier_button id;
+        ButtonIdentifier id;
         p_file->read_lendian_t(id, p_abort);
         unsigned size;
         p_file->read_lendian_t(size, p_abort);
@@ -230,7 +230,7 @@ void toolbar_extension::button::read_from_file(t_config_version p_version, const
     }
 }
 
-void toolbar_extension::button::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
+void ButtonsToolbar::Button::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file.write_lendian_t(I_BUTTON_TYPE, p_abort);
     p_file.write_lendian_t(sizeof(m_type), p_abort);

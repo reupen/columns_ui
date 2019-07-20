@@ -2,36 +2,36 @@
 
 #include "colours_manager_data.h"
 
-void colours_manager_data::g_on_common_bool_changed(t_size mask)
+void ColoursManagerData::g_on_common_bool_changed(t_size mask)
 {
     t_size count = m_callbacks.get_count();
     for (t_size i = 0; i < count; i++)
         m_callbacks[i]->on_bool_changed(mask);
 }
 
-void colours_manager_data::g_on_common_colour_changed(t_size mask)
+void ColoursManagerData::g_on_common_colour_changed(t_size mask)
 {
     t_size count = m_callbacks.get_count();
     for (t_size i = 0; i < count; i++)
         m_callbacks[i]->on_colour_changed(mask);
 }
 
-void colours_manager_data::deregister_common_callback(cui::colours::common_callback* p_callback)
+void ColoursManagerData::deregister_common_callback(cui::colours::common_callback* p_callback)
 {
     m_callbacks.remove_item(p_callback);
 }
 
-void colours_manager_data::register_common_callback(cui::colours::common_callback* p_callback)
+void ColoursManagerData::register_common_callback(cui::colours::common_callback* p_callback)
 {
     m_callbacks.add_item(p_callback);
 }
 
-colours_manager_data::colours_manager_data() : cfg_var(g_cfg_guid)
+ColoursManagerData::ColoursManagerData() : cfg_var(g_cfg_guid)
 {
     m_global_entry = new entry_t(true);
 }
 
-void colours_manager_data::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
+void ColoursManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
 {
     if (p_guid == pfc::guid_null) {
         p_out = m_global_entry;
@@ -49,7 +49,7 @@ void colours_manager_data::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
     m_entries.add_item(p_out);
 }
 
-void colours_manager_data::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ColoursManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
@@ -66,7 +66,7 @@ void colours_manager_data::set_data_raw(stream_reader* p_stream, t_size p_sizehi
     }
 }
 
-void colours_manager_data::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
+void ColoursManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
     pfc::list_t<GUID> clients;
     {
@@ -91,13 +91,13 @@ void colours_manager_data::get_data_raw(stream_writer* p_stream, abort_callback&
             m_entries[i]->write(p_stream, p_abort);
 }
 
-colours_manager_data::entry_t::entry_t(bool b_global /*= false*/)
+ColoursManagerData::entry_t::entry_t(bool b_global /*= false*/)
     : colour_mode(b_global ? cui::colours::colour_mode_themed : cui::colours::colour_mode_global)
 {
     reset_colors();
 }
 
-void colours_manager_data::entry_t::reset_colors()
+void ColoursManagerData::entry_t::reset_colors()
 {
     text = cui::colours::g_get_system_color(cui::colours::colour_text);
     selection_text = cui::colours::g_get_system_color(cui::colours::colour_selection_text);
@@ -112,7 +112,7 @@ void colours_manager_data::entry_t::reset_colors()
     use_custom_active_item_frame = false;
 }
 
-void colours_manager_data::entry_t::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
+void ColoursManagerData::entry_t::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
 {
     p_stream->read_lendian_t(guid, p_abort);
     p_stream->read_lendian_t((t_uint32&)colour_mode, p_abort);
@@ -126,7 +126,7 @@ void colours_manager_data::entry_t::read(t_uint32 version, stream_reader* p_stre
     p_stream->read_lendian_t(use_custom_active_item_frame, p_abort);
 }
 
-void colours_manager_data::entry_t::import(
+void ColoursManagerData::entry_t::import(
     stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -175,7 +175,7 @@ void colours_manager_data::entry_t::import(
     }
 }
 
-void colours_manager_data::entry_t::_export(stream_writer* p_stream, abort_callback& p_abort)
+void ColoursManagerData::entry_t::_export(stream_writer* p_stream, abort_callback& p_abort)
 {
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
@@ -193,7 +193,7 @@ void colours_manager_data::entry_t::_export(stream_writer* p_stream, abort_callb
         out.write_item(identifier_custom_active_item_frame, active_item_frame);
 }
 
-void colours_manager_data::entry_t::write(stream_writer* p_stream, abort_callback& p_abort)
+void ColoursManagerData::entry_t::write(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t(guid, p_abort);
     p_stream->write_lendian_t((t_uint32)colour_mode, p_abort);

@@ -7,20 +7,20 @@ namespace artwork_panel {
 extern cfg_uint cfg_fb2k_artwork_mode;
 extern cfg_objList<pfc::string8> cfg_front_scripts, cfg_back_scripts, cfg_disc_scripts, cfg_artist_scripts;
 
-class artwork_panel_t
+class ArtworkPanel
     : public uie::container_ui_extension_t<> /*, public now_playing_album_art_receiver*/
     , public play_callback
     , public playlist_callback_single
     , public ui_selection_callback {
 public:
-    class completion_notify_forwarder : public completion_notify {
+    class CompletionNotifyForwarder : public completion_notify {
     public:
         void on_completion(unsigned p_code) override;
-        completion_notify_forwarder(artwork_panel_t* p_this);
+        CompletionNotifyForwarder(ArtworkPanel* p_this);
         ;
 
     private:
-        service_ptr_t<artwork_panel_t> m_this;
+        service_ptr_t<ArtworkPanel> m_this;
     };
 
     const GUID& get_extension_guid() const override;
@@ -86,13 +86,13 @@ public:
 
     void force_reload_artwork();
 
-    artwork_panel_t();
+    ArtworkPanel();
 
 private:
     class_data& get_class_data() const override;
 
-    class menu_node_track_mode : public ui_extension::menu_node_command_t {
-        service_ptr_t<artwork_panel_t> p_this;
+    class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
+        service_ptr_t<ArtworkPanel> p_this;
         t_size m_source;
 
     public:
@@ -100,12 +100,12 @@ private:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_track_mode(artwork_panel_t* p_wnd, t_size p_value);
+        MenuNodeTrackMode(ArtworkPanel* p_wnd, t_size p_value);
         ;
     };
 
-    class menu_node_artwork_type : public ui_extension::menu_node_command_t {
-        service_ptr_t<artwork_panel_t> p_this;
+    class MenuNodeArtworkType : public ui_extension::menu_node_command_t {
+        service_ptr_t<ArtworkPanel> p_this;
         t_size m_type;
 
     public:
@@ -113,56 +113,56 @@ private:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_artwork_type(artwork_panel_t* p_wnd, t_size p_value);
+        MenuNodeArtworkType(ArtworkPanel* p_wnd, t_size p_value);
         ;
     };
 
-    class menu_node_source_popup : public ui_extension::menu_node_popup_t {
+    class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
         pfc::list_t<ui_extension::menu_node_ptr> m_items;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_source_popup(artwork_panel_t* p_wnd);
+        MenuNodeSourcePopup(ArtworkPanel* p_wnd);
         ;
     };
 
-    class menu_node_type_popup : public ui_extension::menu_node_popup_t {
+    class MenuNodeTypePopup : public ui_extension::menu_node_popup_t {
         pfc::list_t<ui_extension::menu_node_ptr> m_items;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_type_popup(artwork_panel_t* p_wnd);
+        MenuNodeTypePopup(ArtworkPanel* p_wnd);
         ;
     };
-    class menu_node_preserve_aspect_ratio : public ui_extension::menu_node_command_t {
-        service_ptr_t<artwork_panel_t> p_this;
+    class MenuNodePreserveAspectRatio : public ui_extension::menu_node_command_t {
+        service_ptr_t<ArtworkPanel> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_preserve_aspect_ratio(artwork_panel_t* p_wnd);
+        MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd);
         ;
     };
 
-    class menu_node_options : public ui_extension::menu_node_command_t {
+    class MenuNodeOptions : public ui_extension::menu_node_command_t {
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
     };
-    class menu_node_lock_type : public ui_extension::menu_node_command_t {
-        service_ptr_t<artwork_panel_t> p_this;
+    class MenuNodeLockType : public ui_extension::menu_node_command_t {
+        service_ptr_t<ArtworkPanel> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_lock_type(artwork_panel_t* p_wnd);
+        MenuNodeLockType(ArtworkPanel* p_wnd);
         ;
     };
 
@@ -183,7 +183,7 @@ private:
     bool m_gdiplus_initialised{false};
 
     // pfc::rcptr_t<CCustomAlbumArtLoader> m_artwork_loader;
-    pfc::refcounted_object_ptr_t<artwork_reader_manager_t> m_artwork_loader;
+    pfc::refcounted_object_ptr_t<ArtworkReaderManager> m_artwork_loader;
     // now_playing_album_art_manager m_nowplaying_artwork_loader;
     pfc::rcptr_t<Gdiplus::Bitmap> m_image;
     gdi_object_t<HBITMAP>::ptr_t m_bitmap;
@@ -192,7 +192,7 @@ private:
     bool m_preserve_aspect_ratio, m_lock_type{false};
     metadb_handle_list m_selection_handles;
 
-    static std::vector<artwork_panel_t*> g_windows;
+    static std::vector<ArtworkPanel*> g_windows;
 };
 
 } // namespace artwork_panel

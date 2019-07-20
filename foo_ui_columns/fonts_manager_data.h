@@ -1,7 +1,7 @@
 #pragma once
 #include "font_utils.h"
 
-class fonts_manager_data : public cfg_var {
+class FontsManagerData : public cfg_var {
 public:
     static const GUID g_cfg_guid;
     enum { cfg_version = 0 };
@@ -46,5 +46,5 @@ public:
 
     pfc::ptr_list_t<cui::fonts::common_callback> m_callbacks;
 
-    fonts_manager_data();
+    FontsManagerData();
 };

@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::QueryInterface(
+HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::QueryInterface(
     REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
@@ -19,18 +19,18 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     }
     return E_NOINTERFACE;
 }
-ULONG STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::AddRef()
+ULONG STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::AddRef()
 {
     return InterlockedIncrement(&drop_ref_count);
 }
-ULONG STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::Release()
+ULONG STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::Release()
 {
     LONG rv = InterlockedDecrement(&drop_ref_count);
     if (!rv)
         delete this;
     return rv;
 }
-bool toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::check_do(IDataObject* pDO)
+bool ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::check_do(IDataObject* pDO)
 {
     bool rv = false;
     FORMATETC fe;
@@ -50,7 +50,7 @@ bool toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_li
     }
     return rv;
 }
-HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::DragEnter(
+HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     // console::formatter() << "DragEnter";
@@ -66,7 +66,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     }
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::DragOver(
+HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::DragOver(
     DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     // console::formatter() << "DragOver";
@@ -121,7 +121,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
 
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::DragLeave()
+HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::DragLeave()
 {
     // console::formatter() << "DragLeave";
     if (m_DropTargetHelper.is_valid())
@@ -133,7 +133,7 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     m_DataObject.release();
     return S_OK;
 }
-HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::Drop(
+HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -185,8 +185,8 @@ HRESULT STDMETHODCALLTYPE toolbar_extension::config_param::t_button_list_view::I
     m_button_list_view->destroy_timer_scroll_down();
     return S_OK;
 }
-toolbar_extension::config_param::t_button_list_view::IDropTarget_buttons_list::IDropTarget_buttons_list(
-    toolbar_extension::config_param::t_button_list_view* p_blv)
+ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::ButtonsListDropTarget(
+    ButtonsToolbar::ConfigParam::ButtonsList* p_blv)
     : drop_ref_count(0), last_rmb(false), m_button_list_view(p_blv)
 {
     m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);

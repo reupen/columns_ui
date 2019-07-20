@@ -34,7 +34,7 @@ BOOL tab_appearance_fonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_wnd_colours_mode = GetDlgItem(wnd, IDC_COLOURS_MODE);
         m_wnd_colours_element = GetDlgItem(wnd, IDC_COLOURS_ELEMENT);
 
-        fonts_client_list_t::g_get_list(m_fonts_client_list);
+        FontsClientList::g_get_list(m_fonts_client_list);
 
         ComboBox_AddString(m_wnd_colours_element, L"Common (list items)");
         ComboBox_AddString(m_wnd_colours_element, L"Common (labels)");
@@ -112,7 +112,7 @@ void tab_appearance_fonts::on_font_changed()
             g_fonts_manager_data.g_on_common_font_changed(1 << index_element);
             t_size count = m_fonts_client_list.get_count();
             for (t_size i = 0; i < count; i++) {
-                fonts_manager_data::entry_ptr_t p_data;
+                FontsManagerData::entry_ptr_t p_data;
                 g_fonts_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
                 if (index_element == 0 && p_data->font_mode == cui::fonts::font_mode_common_items) {
                     m_fonts_client_list[i].m_ptr->on_font_changed();

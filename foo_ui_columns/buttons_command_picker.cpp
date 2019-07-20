@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "buttons.h"
 
-bool command_picker_data::__populate_mainmenu_dynamic_recur(
-    command_data& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root)
+bool CommandPickerData::__populate_mainmenu_dynamic_recur(
+    CommandData& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root)
 {
     if (ptr_node.is_valid()) {
         switch (ptr_node->get_type()) {
@@ -15,7 +15,7 @@ bool command_picker_data::__populate_mainmenu_dynamic_recur(
                 subfull.add_byte('/');
             subfull.add_string(subname);
 
-            auto p_data = std::make_unique<command_data>(data);
+            auto p_data = std::make_unique<CommandData>(data);
             p_data->m_subcommand = ptr_node->get_guid();
             ptr_node->get_description(p_data->m_desc);
 
@@ -47,8 +47,8 @@ bool command_picker_data::__populate_mainmenu_dynamic_recur(
     }
     return false;
 }
-bool command_picker_data::__populate_commands_recur(
-    command_data& data, pfc::string_base& full, contextmenu_item_node* p_node, bool b_root)
+bool CommandPickerData::__populate_commands_recur(
+    CommandData& data, pfc::string_base& full, contextmenu_item_node* p_node, bool b_root)
 {
     if (p_node) {
         if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP) {
@@ -76,7 +76,7 @@ bool command_picker_data::__populate_commands_recur(
                 subfull.add_byte('/');
             subfull.add_string(subname);
 
-            auto p_data = std::make_unique<command_data>(data);
+            auto p_data = std::make_unique<CommandData>(data);
             p_data->m_subcommand = p_node->get_guid();
             p_node->get_description(p_data->m_desc);
 
@@ -89,7 +89,7 @@ bool command_picker_data::__populate_commands_recur(
     }
     return false;
 }
-void command_picker_data::populate_commands()
+void CommandPickerData::populate_commands()
 {
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
     m_data.clear();
@@ -107,7 +107,7 @@ void command_picker_data::populate_commands()
                     pfc::ptrholder_t<contextmenu_item_node_root> p_node(ptr->instantiate_item(
                         p_service_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list));
 
-                    command_data data;
+                    CommandData data;
                     data.m_guid = ptr->get_item_guid(p_service_item_index);
 
                     pfc::string8 name, full;
@@ -120,7 +120,7 @@ void command_picker_data::populate_commands()
                             full.add_byte('/');
                         full.add_string(name);
 
-                        auto p_data = std::make_unique<command_data>(data);
+                        auto p_data = std::make_unique<CommandData>(data);
                         ptr->get_item_description(p_service_item_index, p_data->m_desc);
                         auto& data_item = m_data.emplace_back(std::move(p_data));
 
@@ -143,7 +143,7 @@ void command_picker_data::populate_commands()
                 unsigned p_service_item_count = ptr->get_command_count();
                 for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
                      p_service_item_index++) {
-                    command_data data;
+                    CommandData data;
                     data.m_guid = ptr->get_command(p_service_item_index);
                     pfc::string8 name, full;
                     ptr->get_name(p_service_item_index, name);
@@ -167,7 +167,7 @@ void command_picker_data::populate_commands()
                         mainmenu_node::ptr ptr_node = ptr_v2->dynamic_instantiate(p_service_item_index);
                         __populate_mainmenu_dynamic_recur(data, ptr_node, full, true);
                     } else {
-                        auto p_data = std::make_unique<command_data>(data);
+                        auto p_data = std::make_unique<CommandData>(data);
                         ptr->get_description(p_service_item_index, p_data->m_desc);
                         auto& data_item = m_data.emplace_back(std::move(p_data));
                         unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, full);
@@ -182,7 +182,7 @@ void command_picker_data::populate_commands()
         while (e.next(ptr)) {
             service_ptr_t<uie::custom_button> p_button;
             if (ptr->get_guid_type() == uie::BUTTON_GUID_BUTTON && ptr->service_query_t(p_button)) {
-                auto p_data = std::make_unique<command_data>();
+                auto p_data = std::make_unique<CommandData>();
                 p_data->m_guid = ptr->get_item_guid();
                 p_button->get_description(p_data->m_desc);
                 auto& data_item = m_data.emplace_back(std::move(p_data));
@@ -196,7 +196,7 @@ void command_picker_data::populate_commands()
     unsigned count = SendMessage(wnd_command, LB_GETCOUNT, 0, 0);
     for (unsigned n = 0; n < count; n++) {
         LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, n, 0);
-        command_data* p_data = ((command_data*)ret);
+        CommandData* p_data = ((CommandData*)ret);
 
         if (ret != LB_ERR && p_data->m_guid == m_guid && p_data->m_subcommand == m_subcommand) {
             SendMessage(wnd_command, LB_SETCURSEL, n, 0);
@@ -206,34 +206,34 @@ void command_picker_data::populate_commands()
     }
     SendMessage(wnd_command, WM_SETREDRAW, TRUE, 0);
 }
-void command_picker_data::update_description()
+void CommandPickerData::update_description()
 {
     LRESULT p_command = SendMessage(wnd_command, LB_GETCURSEL, 0, 0);
     if (p_command != LB_ERR) {
         LRESULT p_data = SendMessage(wnd_command, LB_GETITEMDATA, p_command, 0);
         if (p_data != LB_ERR)
-            uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, ((command_data*)p_data)->m_desc);
+            uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, ((CommandData*)p_data)->m_desc);
         else
             uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, "");
     } else
         uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, "");
 }
 
-void command_picker_data::set_data(const command_picker_param& p_data)
+void CommandPickerData::set_data(const CommandPickerParam& p_data)
 {
     m_group = p_data.m_group;
     m_guid = p_data.m_guid;
     m_subcommand = p_data.m_subcommand;
     m_filter = p_data.m_filter;
 }
-void command_picker_data::get_data(command_picker_param& p_data) const
+void CommandPickerData::get_data(CommandPickerParam& p_data) const
 {
     p_data.m_group = m_group;
     p_data.m_guid = m_guid;
     p_data.m_subcommand = m_subcommand;
     p_data.m_filter = m_filter;
 }
-void command_picker_data::initialise(HWND wnd)
+void CommandPickerData::initialise(HWND wnd)
 {
     m_wnd = wnd;
     wnd_group = GetDlgItem(wnd, IDC_GROUP);
@@ -252,14 +252,14 @@ void command_picker_data::initialise(HWND wnd)
 
     SendMessage(wnd_group, LB_SETCURSEL, m_group, 0);
 }
-void command_picker_data::deinitialise(HWND wnd)
+void CommandPickerData::deinitialise(HWND wnd)
 {
     SendMessage(wnd_group, LB_RESETCONTENT, 0, 0);
     SendMessage(wnd_filter, LB_RESETCONTENT, 0, 0);
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
     m_data.clear();
 }
-BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CommandPickerData::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -303,7 +303,7 @@ BOOL command_picker_data::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             LRESULT p_command = SendMessage(wnd_command, LB_GETCURSEL, 0, 0);
             if (p_command != LB_ERR) {
                 LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, p_command, 0);
-                auto* p_data = (command_data*)ret;
+                auto* p_data = (CommandData*)ret;
                 if (ret != LB_ERR) {
                     m_guid = p_data->m_guid;
                     m_subcommand = p_data->m_subcommand;

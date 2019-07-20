@@ -216,7 +216,7 @@ public:
                 break;
             case IDC_EDGESTYLE | (CBN_SELCHANGE << 16):
                 artwork_panel::cfg_edge_style = ComboBox_GetCurSel((HWND)lp);
-                artwork_panel::artwork_panel_t::g_on_edge_style_change();
+                artwork_panel::ArtworkPanel::g_on_edge_style_change();
                 break;
             case IDC_ADD: {
                 RECT rc;

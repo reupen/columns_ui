@@ -3,7 +3,7 @@
 /** Creates toggle buttons from standard config objects */
 #define __DEFINE_MENU_BUTTON(_namespace, _guid_command, _guid_config)                                                 \
     namespace _namespace {                                                                                            \
-    class menu_command_button_t : public uie::button {                                                                \
+    class MenuCommandButton : public uie::button {                                                                    \
         virtual const GUID& get_item_guid() const { return _guid_command; }                                           \
         virtual HBITMAP get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, uie::t_mask& p_mask_type,  \
             COLORREF& cr_mask, HBITMAP& bm_mask) const                                                                \
@@ -19,7 +19,7 @@
         virtual void register_callback(uie::button_callback& p_callback) { m_callbacks.add_item(&p_callback); };      \
         virtual void deregister_callback(uie::button_callback& p_callback) { m_callbacks.remove_item(&p_callback); }; \
         pfc::ptr_list_t<uie::button_callback> m_callbacks;                                                            \
-        static pfc::ptr_list_t<menu_command_button_t> m_buttons;                                                      \
+        static pfc::ptr_list_t<MenuCommandButton> m_buttons;                                                          \
                                                                                                                       \
     public:                                                                                                           \
         static void g_on_state_change(bool b_enabled)                                                                 \
@@ -34,15 +34,15 @@
                 }                                                                                                     \
             }                                                                                                         \
         }                                                                                                             \
-        menu_command_button_t() { m_buttons.add_item(this); }                                                         \
-        ~menu_command_button_t() { m_buttons.remove_item(this); }                                                     \
-        menu_command_button_t(const menu_command_button_t&) = delete;                                                 \
-        menu_command_button_t& operator=(const menu_command_button_t&) = delete;                                      \
-        menu_command_button_t(menu_command_button_t&&) = delete;                                                      \
-        menu_command_button_t& operator=(menu_command_button_t&&) = delete;                                           \
+        MenuCommandButton() { m_buttons.add_item(this); }                                                             \
+        ~MenuCommandButton() { m_buttons.remove_item(this); }                                                         \
+        MenuCommandButton(const MenuCommandButton&) = delete;                                                         \
+        MenuCommandButton& operator=(const MenuCommandButton&) = delete;                                              \
+        MenuCommandButton(MenuCommandButton&&) = delete;                                                              \
+        MenuCommandButton& operator=(MenuCommandButton&&) = delete;                                                   \
     };                                                                                                                \
-    pfc::ptr_list_t<menu_command_button_t> menu_command_button_t::m_buttons;                                          \
-    uie::button_factory<menu_command_button_t> g_menu_command_button;                                                 \
+    pfc::ptr_list_t<MenuCommandButton> MenuCommandButton::m_buttons;                                                  \
+    uie::button_factory<MenuCommandButton> g_menu_command_button;                                                     \
     class config_object_notify_impl : public config_object_notify {                                                   \
     public:                                                                                                           \
         virtual t_size get_watched_object_count() { return 1; }                                                       \
@@ -52,7 +52,7 @@
             bool val = false;                                                                                         \
             try {                                                                                                     \
                 p_object->get_data_bool(val);                                                                         \
-                menu_command_button_t::g_on_state_change(val);                                                        \
+                MenuCommandButton::g_on_state_change(val);                                                            \
             } catch (exception_io const&) {                                                                           \
             };                                                                                                        \
         }                                                                                                             \
@@ -70,7 +70,7 @@ __DEFINE_MENU_BUTTON(d, standard_commands::guid_main_always_on_top, standard_con
 
 /**Defines icons for buttons */
 template <const GUID& MenutItemID, INT IconID>
-class button_menu_item_with_bitmap : public uie::button_v2 {
+class ButtonMenuItemWithBitmap : public uie::button_v2 {
     const GUID& get_item_guid() const override { return MenutItemID; }
 
     HANDLE get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, unsigned cx_hint, unsigned cy_hint,
@@ -83,15 +83,15 @@ class button_menu_item_with_bitmap : public uie::button_v2 {
     }
 };
 
-uie::button_factory<button_menu_item_with_bitmap<standard_commands::guid_main_stop, IDI_STOP>> g_button_stop;
-uie::button_factory<button_menu_item_with_bitmap<standard_commands::guid_main_open, IDI_OPEN>> g_button_open;
-uie::button_factory<button_menu_item_with_bitmap<standard_commands::guid_main_play, IDI_PLAY>> g_button_play;
-uie::button_factory<button_menu_item_with_bitmap<standard_commands::guid_main_pause, IDI_PAUSE>> g_button_pause;
-uie::button_factory<button_menu_item_with_bitmap<standard_commands::guid_main_next, IDI_NEXT>> g_button_next;
-uie::button_factory<button_menu_item_with_bitmap<standard_commands::guid_main_previous, IDI_PREV>> g_button_previous;
-uie::button_factory<button_menu_item_with_bitmap<standard_commands::guid_main_random, IDI_RAND>> g_button_random;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_stop, IDI_STOP>> g_button_stop;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_open, IDI_OPEN>> g_button_open;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_play, IDI_PLAY>> g_button_play;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_pause, IDI_PAUSE>> g_button_pause;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_next, IDI_NEXT>> g_button_next;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_previous, IDI_PREV>> g_button_previous;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_random, IDI_RAND>> g_button_random;
 
-class button_blank : public ui_extension::custom_button {
+class ButtonBlank : public ui_extension::custom_button {
     const GUID& get_item_guid() const override
     {
         // {A8FE61BA-A055-4a53-A588-9DDA92ED7312}
@@ -118,7 +118,7 @@ class button_blank : public ui_extension::custom_button {
     uie::t_button_guid get_guid_type() const override { return uie::BUTTON_GUID_BUTTON; }
 };
 
-ui_extension::button_factory<button_blank> g_blank;
+ui_extension::button_factory<ButtonBlank> g_blank;
 
 #if 0
 /** Prototype stop button that was disabled when not playing. Was abandoned. */

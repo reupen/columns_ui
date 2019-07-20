@@ -38,7 +38,7 @@ class export_colours : public cui::fcl::dataset {
         abort_callback& p_abort) override
     {
         static_api_ptr_t<cui::fonts::manager> api;
-        colours_manager_data::entry_ptr_t colour_manager_entry;
+        ColoursManagerData::entry_ptr_t colour_manager_entry;
         g_colours_manager_data.find_by_guid(pfc::guid_null, colour_manager_entry);
 
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
