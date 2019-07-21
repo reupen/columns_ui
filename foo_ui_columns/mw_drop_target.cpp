@@ -7,12 +7,12 @@ extern HWND g_status;
 
 bool g_last_rmb = false;
 
-drop_handler_interface::drop_handler_interface()
+MainWindowDropTarget::MainWindowDropTarget()
 {
     m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 }
 
-bool drop_handler_interface::check_window_allowed(HWND wnd)
+bool MainWindowDropTarget::check_window_allowed(HWND wnd)
 {
     return wnd
         && (wnd == cui::main_window.get_wnd() || wnd == g_rebar || (g_rebar && IsChild(g_rebar, wnd))
@@ -20,7 +20,7 @@ bool drop_handler_interface::check_window_allowed(HWND wnd)
                || wnd == g_status);
 }
 
-HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(
+HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -85,7 +85,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::Drop(
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE drop_handler_interface::DragLeave()
+HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragLeave()
 {
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragLeave();
@@ -97,7 +97,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragLeave()
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE drop_handler_interface::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
+HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
@@ -129,7 +129,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragOver(DWORD grfKeyState, PO
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE drop_handler_interface::DragEnter(
+HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -161,7 +161,7 @@ HRESULT STDMETHODCALLTYPE drop_handler_interface::DragEnter(
     return S_OK; //??
 }
 
-ULONG STDMETHODCALLTYPE drop_handler_interface::Release()
+ULONG STDMETHODCALLTYPE MainWindowDropTarget::Release()
 {
     LONG rv = InterlockedDecrement(&drop_ref_count);
     if (!rv) {
@@ -173,12 +173,12 @@ ULONG STDMETHODCALLTYPE drop_handler_interface::Release()
     return rv;
 }
 
-ULONG STDMETHODCALLTYPE drop_handler_interface::AddRef()
+ULONG STDMETHODCALLTYPE MainWindowDropTarget::AddRef()
 {
     return InterlockedIncrement(&drop_ref_count);
 }
 
-HRESULT STDMETHODCALLTYPE drop_handler_interface::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
+HRESULT STDMETHODCALLTYPE MainWindowDropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
         return E_INVALIDARG;

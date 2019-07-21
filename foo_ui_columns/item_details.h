@@ -21,31 +21,31 @@ extern cfg_uint cfg_item_details_horizontal_alignment;
 extern cfg_uint cfg_item_details_vertical_alignment;
 extern cfg_bool cfg_item_details_word_wrapping;
 
-class line_info_t {
+class LineInfo {
 public:
     t_size m_bytes{NULL};
     t_size m_raw_bytes{NULL};
 
-    line_info_t() = default;
+    LineInfo() = default;
 };
 
-class display_line_info_t : public line_info_t {
+class DisplayLineInfo : public LineInfo {
 public:
     t_size m_width{0};
     t_size m_height{0};
 
-    display_line_info_t() = default;
+    DisplayLineInfo() = default;
 };
 
-class font_data_t {
+class FontData {
 public:
     pfc::string8 m_face;
     t_size m_point{10};
     bool m_bold{false}, m_underline{false}, m_italic{false};
 
-    font_data_t() = default;
+    FontData() = default;
 
-    static int g_compare(const font_data_t& item1, const font_data_t& item2)
+    static int g_compare(const FontData& item1, const FontData& item2)
     {
         int ret = stricmp_utf8(item1.m_face, item2.m_face);
         if (ret == 0)
@@ -60,51 +60,51 @@ public:
     }
 };
 
-bool operator==(const font_data_t& item1, const font_data_t& item2);
+bool operator==(const FontData& item1, const FontData& item2);
 
-class font_change_data_t {
+class FontChangeData {
 public:
-    font_data_t m_font_data;
+    FontData m_font_data;
     bool m_reset{false};
     t_size m_character_index{NULL};
 
-    font_change_data_t() = default;
+    FontChangeData() = default;
 };
 
-using font_change_data_list_t = pfc::list_t<font_change_data_t, pfc::alloc_fast_aggressive>;
+using font_change_data_list_t = pfc::list_t<FontChangeData, pfc::alloc_fast_aggressive>;
 
-using line_info_list_t = pfc::list_t<line_info_t, pfc::alloc_fast_aggressive>;
-using display_line_info_list_t = pfc::list_t<display_line_info_t, pfc::alloc_fast_aggressive>;
+using line_info_list_t = pfc::list_t<LineInfo, pfc::alloc_fast_aggressive>;
+using display_line_info_list_t = pfc::list_t<DisplayLineInfo, pfc::alloc_fast_aggressive>;
 
-void g_parse_font_format_string(const char* str, t_size len, font_data_t& p_out);
+void g_parse_font_format_string(const char* str, t_size len, FontData& p_out);
 void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_new_text, font_change_data_list_t& p_out);
 
-class font_t : public pfc::refcounted_object_root {
+class Font : public pfc::refcounted_object_root {
 public:
-    using ptr_t = pfc::refcounted_object_ptr_t<font_t>;
+    using ptr_t = pfc::refcounted_object_ptr_t<Font>;
 
-    font_data_t m_data;
+    FontData m_data;
 
     gdi_object_t<HFONT>::ptr_t m_font;
     t_size m_height{};
     // font_t (const font_t & p_font) : m_font(p_font.m_font), m_height(p_font.m_height), m_data(p_font.m_data) {};
 };
 
-using font_list_t = pfc::list_t<font_t::ptr_t>;
+using font_list_t = pfc::list_t<Font::ptr_t>;
 
-class font_change_info_t {
+class FontChangeNotify {
 public:
     class font_change_entry_t {
     public:
         t_size m_text_index{};
-        font_t::ptr_t m_font;
+        Font::ptr_t m_font;
     };
 
     font_list_t m_fonts;
     pfc::array_t<font_change_entry_t> m_font_changes;
-    font_t::ptr_t m_default_font;
+    Font::ptr_t m_default_font;
 
-    bool find_font(const font_data_t& p_font, t_size& index);
+    bool find_font(const FontData& p_font, t_size& index);
 
     void reset(bool bKeepHandles = false);
 };
@@ -112,25 +112,25 @@ public:
 // void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text, line_info_list_t & indices, t_size
 // line_height, SIZE & sz, bool b_word_wrapping = false, t_size max_width = pfc_infinite);
 void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_new, const line_info_list_t& rawLines,
-    display_line_info_list_t& displayLines, const font_change_info_t& p_font_data, t_size line_height, SIZE& sz,
+    display_line_info_list_t& displayLines, const FontChangeNotify& p_font_data, t_size line_height, SIZE& sz,
     bool b_word_wrapping = false, t_size max_width = pfc_infinite);
 // void get_multiline_text_dimensions_const(HDC dc, const char * text, const line_info_list_t & indices, t_size
 // line_height, SIZE & sz, bool b_word_wrapping = false, t_size max_width = pfc_infinite);
 void g_get_multiline_text_dimensions_const(HDC dc, const char* text, const line_info_list_t& indices,
-    const font_change_info_t& p_font_data, t_size line_height, SIZE& sz, bool b_word_wrapping = false,
+    const FontChangeNotify& p_font_data, t_size line_height, SIZE& sz, bool b_word_wrapping = false,
     t_size max_width = pfc_infinite);
 void g_get_text_multiline_data(const char* text, pfc::string8_fast_aggressive& p_out,
-    pfc::list_t<line_info_t, pfc::alloc_fast_aggressive>& indices);
+    pfc::list_t<LineInfo, pfc::alloc_fast_aggressive>& indices);
 
-void g_parse_font_format_string(const char* str, t_size len, font_data_t& p_out);
+void g_parse_font_format_string(const char* str, t_size len, FontData& p_out);
 void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_new_text, font_change_data_list_t& p_out);
-void g_get_text_font_info(const font_change_data_list_t& p_data, font_change_info_t& p_info);
+void g_get_text_font_info(const font_change_data_list_t& p_data, FontChangeNotify& p_info);
 
 void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_height, const char* text,
-    const font_change_info_t& p_font_data, const display_line_info_list_t& newLineDataWrapped, const SIZE& sz,
+    const FontChangeNotify& p_font_data, const display_line_info_list_t& newLineDataWrapped, const SIZE& sz,
     COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping);
 
-class titleformat_hook_change_font : public titleformat_hook {
+class TitleformatHookChangeFont : public titleformat_hook {
 public:
     bool process_field(
         titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
@@ -138,18 +138,18 @@ public:
     bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
-    titleformat_hook_change_font(const LOGFONT& lf);
+    TitleformatHookChangeFont(const LOGFONT& lf);
 
 private:
     pfc::string8 m_default_font_face;
     t_size m_default_font_size;
 };
 
-class font_code_generator_t {
-    class string_font_code : private pfc::string8_fast_aggressive {
+class FontCodeGenerator {
+    class StringFontCode : private pfc::string8_fast_aggressive {
     public:
         operator const char*() const;
-        string_font_code(const LOGFONT& lf);
+        StringFontCode(const LOGFONT& lf);
     };
 
 public:
@@ -160,18 +160,18 @@ private:
     LOGFONT m_lf{};
 };
 
-class item_details_t
+class ItemDetails
     : public uie::container_ui_extension
     , public ui_selection_callback
     , public play_callback
     , public playlist_callback_single
     , public metadb_io_callback_dynamic {
-    class message_window_t : public ui_helpers::container_window {
+    class MessageWindow : public ui_helpers::container_window {
         class_data& get_class_data() const override;
         LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     };
 
-    static message_window_t g_message_window;
+    static MessageWindow g_message_window;
 
     enum {
         MSG_REFRESH = WM_USER + 2,
@@ -196,8 +196,8 @@ public:
 
     bool g_track_mode_includes_selection(t_size mode);
 
-    class menu_node_track_mode : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+    class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
+        service_ptr_t<ItemDetails> p_this;
         t_size m_source;
 
     public:
@@ -205,23 +205,23 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_track_mode(item_details_t* p_wnd, t_size p_value);
+        MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value);
         ;
     };
 
-    class menu_node_source_popup : public ui_extension::menu_node_popup_t {
+    class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
         pfc::list_t<ui_extension::menu_node_ptr> m_items;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_source_popup(item_details_t* p_wnd);
+        MenuNodeSourcePopup(ItemDetails* p_wnd);
         ;
     };
 
-    class menu_node_alignment : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+    class MenuNodeAlignment : public ui_extension::menu_node_command_t {
+        service_ptr_t<ItemDetails> p_this;
         t_size m_type;
 
     public:
@@ -229,50 +229,50 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_alignment(item_details_t* p_wnd, t_size p_value);
+        MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value);
         ;
     };
 
-    class menu_node_alignment_popup : public ui_extension::menu_node_popup_t {
+    class MenuNodeAlignmentPopup : public ui_extension::menu_node_popup_t {
         pfc::list_t<ui_extension::menu_node_ptr> m_items;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
-        menu_node_alignment_popup(item_details_t* p_wnd);
+        MenuNodeAlignmentPopup(ItemDetails* p_wnd);
         ;
     };
 
-    class menu_node_options : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+    class MenuNodeOptions : public ui_extension::menu_node_command_t {
+        service_ptr_t<ItemDetails> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_options(item_details_t* p_wnd);
+        MenuNodeOptions(ItemDetails* p_wnd);
         ;
     };
-    class menu_node_hscroll : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+    class MenuNodeHorizontalScrolling : public ui_extension::menu_node_command_t {
+        service_ptr_t<ItemDetails> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_hscroll(item_details_t* p_wnd);
+        MenuNodeHorizontalScrolling(ItemDetails* p_wnd);
         ;
     };
 
-    class menu_node_wwrap : public ui_extension::menu_node_command_t {
-        service_ptr_t<item_details_t> p_this;
+    class MenuNodeWordWrap : public ui_extension::menu_node_command_t {
+        service_ptr_t<ItemDetails> p_this;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        menu_node_wwrap(item_details_t* p_wnd);
+        MenuNodeWordWrap(ItemDetails* p_wnd);
         ;
     };
 
@@ -349,7 +349,7 @@ public:
 
     void set_config_wnd(HWND wnd);
 
-    item_details_t();
+    ItemDetails();
 
 private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
@@ -385,7 +385,7 @@ private:
     void on_font_change();
     void on_colours_change();
 
-    static std::vector<item_details_t*> g_windows;
+    static std::vector<ItemDetails*> g_windows;
 
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles;
@@ -399,7 +399,7 @@ private:
     t_size m_tracking_mode;
 
     bool m_font_change_info_valid{false};
-    font_change_info_t m_font_change_info;
+    FontChangeNotify m_font_change_info;
     font_change_data_list_t m_font_change_data;
 
     line_info_list_t m_line_info;
@@ -424,25 +424,25 @@ private:
     // HWND m_wnd_richedit;
 };
 
-class item_details_config_t {
+class ItemDetailsConfig {
 public:
     pfc::string8 m_script;
     uint32_t m_edge_style{};
     uint32_t m_horizontal_alignment{};
     uint32_t m_vertical_alignment{};
-    font_code_generator_t m_font_code_generator;
+    FontCodeGenerator m_font_code_generator;
     bool m_modal{};
     bool m_timer_active{};
-    service_ptr_t<item_details_t> m_this;
+    service_ptr_t<ItemDetails> m_this;
     HWND m_wnd{};
 
     enum { timer_id = 100 };
 
     static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    item_details_config_t(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign);
+    ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign);
 
     bool run_modal(HWND wnd);
-    void run_modeless(HWND wnd, item_details_t* p_this);
+    void run_modeless(HWND wnd, ItemDetails* p_this);
 
 private:
     void kill_timer();

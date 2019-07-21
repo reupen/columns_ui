@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "item_properties.h"
 
-BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -118,7 +118,7 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
             }
         } break;
         case IDC_NEW: {
-            field_t temp;
+            Field temp;
             temp.m_name_friendly = "<enter name here>";
             temp.m_name = "<ENTER FIELD HERE>";
             t_size index = m_fields.add_item(temp);
@@ -161,12 +161,12 @@ BOOL CALLBACK selection_properties_config_t::on_message(HWND wnd, UINT msg, WPAR
     return FALSE;
 }
 
-bool selection_properties_config_t::run_modal(HWND wnd)
+bool ItemPropertiesConfig::run_modal(HWND wnd)
 {
     return uDialogBox(IDD_ITEM_PROPS_OPTIONS, wnd, g_DialogProc, (LPARAM)this) != 0;
 }
 
-selection_properties_config_t::selection_properties_config_t(pfc::list_t<field_t> p_fields, t_size edge_style,
+ItemPropertiesConfig::ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style,
     t_uint32 info_sections_mask, bool b_show_columns, bool b_show_groups)
     : m_fields(std::move(p_fields))
     , m_edge_style(edge_style)
@@ -178,13 +178,13 @@ selection_properties_config_t::selection_properties_config_t(pfc::list_t<field_t
 {
 }
 
-BOOL CALLBACK selection_properties_config_t::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL CALLBACK ItemPropertiesConfig::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    selection_properties_config_t* p_data = nullptr;
+    ItemPropertiesConfig* p_data = nullptr;
     if (msg == WM_INITDIALOG) {
-        p_data = reinterpret_cast<selection_properties_config_t*>(lp);
+        p_data = reinterpret_cast<ItemPropertiesConfig*>(lp);
         SetWindowLongPtr(wnd, DWLP_USER, lp);
     } else
-        p_data = reinterpret_cast<selection_properties_config_t*>(GetWindowLongPtr(wnd, DWLP_USER));
+        p_data = reinterpret_cast<ItemPropertiesConfig*>(GetWindowLongPtr(wnd, DWLP_USER));
     return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }

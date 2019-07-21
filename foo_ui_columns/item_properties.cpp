@@ -43,8 +43,8 @@ cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
 cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_show_group_titles, true);
 
-const info_section_t g_info_sections[] = {info_section_t(0, "Location"), info_section_t(1, "General"),
-    info_section_t(2, "ReplayGain"), info_section_t(3, "Playback statistics"), info_section_t(4, "Other")};
+const InfoSection g_info_sections[] = {InfoSection(0, "Location"), InfoSection(1, "General"),
+    InfoSection(2, "ReplayGain"), InfoSection(3, "Playback statistics"), InfoSection(4, "Other")};
 
 t_size g_get_info_secion_index_by_name(const char* p_name)
 {
@@ -81,36 +81,36 @@ public:
 };
 #endif
 
-selection_properties_t::message_window_t selection_properties_t::g_message_window;
+ItemProperties::MessageWindow ItemProperties::g_message_window;
 
-std::vector<selection_properties_t*> selection_properties_t::g_windows;
+std::vector<ItemProperties*> ItemProperties::g_windows;
 
 // {862F8A37-16E0-4a74-B27E-2B73DB567D0F}
-const GUID appearance_client_selection_properties_impl::g_guid
+const GUID ItemPropertiesColoursClient::g_guid
     = {0x862f8a37, 0x16e0, 0x4a74, {0xb2, 0x7e, 0x2b, 0x73, 0xdb, 0x56, 0x7d, 0xf}};
 
 namespace {
-cui::colours::client::factory<appearance_client_selection_properties_impl> g_appearance_client_impl;
+cui::colours::client::factory<ItemPropertiesColoursClient> g_appearance_client_impl;
 };
 
-void selection_properties_t::g_redraw_all()
+void ItemProperties::g_redraw_all()
 {
     for (auto& window : g_windows)
         window->invalidate_all();
 }
 
-selection_properties_t::message_window_t::class_data& selection_properties_t::message_window_t::get_class_data() const
+ItemProperties::MessageWindow::class_data& ItemProperties::MessageWindow::get_class_data() const
 {
     __implement_get_class_data_ex(_T("{9D0A0408-59AC-4a96-A3EF-FF26B7B7C118}"), _T(""), false, 0, 0, 0, 0);
 }
 
-LRESULT selection_properties_t::message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT ItemProperties::MessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE:
         break;
     case WM_ACTIVATEAPP:
-        selection_properties_t::g_on_app_activate(wp != 0);
+        ItemProperties::g_on_app_activate(wp != 0);
         break;
     case WM_DESTROY:
         break;
@@ -118,12 +118,12 @@ LRESULT selection_properties_t::message_window_t::on_message(HWND wnd, UINT msg,
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void selection_properties_t::g_on_app_activate(bool b_activated)
+void ItemProperties::g_on_app_activate(bool b_activated)
 {
     for (auto& window : g_windows)
         window->on_app_activate(b_activated);
 }
-void selection_properties_t::on_app_activate(bool b_activated)
+void ItemProperties::on_app_activate(bool b_activated)
 {
     if (b_activated) {
         if (GetFocus() != get_wnd())
@@ -133,24 +133,24 @@ void selection_properties_t::on_app_activate(bool b_activated)
     }
 }
 
-const GUID& selection_properties_t::get_extension_guid() const
+const GUID& ItemProperties::get_extension_guid() const
 {
     return g_guid_selection_properties;
 }
-void selection_properties_t::get_name(pfc::string_base& p_out) const
+void ItemProperties::get_name(pfc::string_base& p_out) const
 {
     p_out = "Item properties";
 }
-void selection_properties_t::get_category(pfc::string_base& p_out) const
+void ItemProperties::get_category(pfc::string_base& p_out) const
 {
     p_out = "Panels";
 }
-unsigned selection_properties_t::get_type() const
+unsigned ItemProperties::get_type() const
 {
     return uie::type_panel;
 }
 
-void selection_properties_t::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ItemProperties::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (!p_size)
         return;
@@ -196,7 +196,7 @@ void selection_properties_t::set_config(stream_reader* p_reader, t_size p_size, 
     p_reader->read_lendian_t(m_column_field_width.dpi, p_abort);
 }
 
-void selection_properties_t::get_config(stream_writer* p_writer, abort_callback& p_abort) const
+void ItemProperties::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(t_size(config_version_current), p_abort);
     t_size count = m_fields.get_count();
@@ -219,7 +219,7 @@ void selection_properties_t::get_config(stream_writer* p_writer, abort_callback&
     p_writer->write_lendian_t(m_column_field_width.dpi, p_abort);
 }
 
-void selection_properties_t::notify_on_initialisation()
+void ItemProperties::notify_on_initialisation()
 {
     set_autosize(m_autosizing_columns);
     LOGFONT lf;
@@ -233,7 +233,7 @@ void selection_properties_t::notify_on_initialisation()
     set_show_header(m_show_column_titles);
     set_group_level_indentation_enabled(false);
 }
-void selection_properties_t::notify_on_create()
+void ItemProperties::notify_on_create()
 {
     pfc::list_t<Column> columns;
     columns.add_item(Column("Field", m_column_name_width, 0));
@@ -251,7 +251,7 @@ void selection_properties_t::notify_on_create()
         g_message_window.create(nullptr);
     g_windows.push_back(this);
 }
-void selection_properties_t::notify_on_destroy()
+void ItemProperties::notify_on_destroy()
 {
     g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
     if (g_windows.empty())
@@ -266,13 +266,13 @@ void selection_properties_t::notify_on_destroy()
     m_selection_holder.release();
 }
 
-void selection_properties_t::notify_on_set_focus(HWND wnd_lost)
+void ItemProperties::notify_on_set_focus(HWND wnd_lost)
 {
     deregister_callback();
     m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
     m_selection_holder->set_selection(m_handles);
 }
-void selection_properties_t::notify_on_kill_focus(HWND wnd_receiving)
+void ItemProperties::notify_on_kill_focus(HWND wnd_receiving)
 {
     m_selection_holder.release();
     register_callback();
@@ -288,23 +288,23 @@ void selection_properties_t::notify_on_kill_focus(HWND wnd_receiving)
     }*/
 }
 
-void selection_properties_t::register_callback()
+void ItemProperties::register_callback()
 {
     if (!m_callback_registered)
         g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
     m_callback_registered = true;
 }
-void selection_properties_t::deregister_callback()
+void ItemProperties::deregister_callback()
 {
     if (m_callback_registered)
         static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
     m_callback_registered = false;
 }
 
-class metadata_aggregator_t {
+class MetadataAggregator {
 public:
     enum { max_values = 16 };
-    class metadata_field_t {
+    class MetadataField {
     public:
         pfc::string8 m_name;
         pfc::list_t<pfc::string8> m_values;
@@ -325,11 +325,11 @@ public:
             }
         }
 
-        metadata_field_t(const char* field) : m_name(field){};
-        metadata_field_t() = default;
+        MetadataField(const char* field) : m_name(field){};
+        MetadataField() = default;
     };
 
-    static int g_compare_field(const metadata_field_t& str2, const char* str1)
+    static int g_compare_field(const MetadataField& str2, const char* str1)
     {
         return stricmp_utf8(str2.m_name, str1);
     }
@@ -397,23 +397,23 @@ public:
             }
         }
     }
-    void set_fields(pfc::list_t<field_t>& p_source)
+    void set_fields(pfc::list_t<Field>& p_source)
     {
         t_size count = p_source.get_count();
         m_fields.set_count(count);
         for (t_size i = 0; i < count; i++)
             m_fields[i].m_name = p_source[i].m_name;
     }
-    pfc::list_t<metadata_field_t> m_fields;
+    pfc::list_t<MetadataField> m_fields;
 
 private:
 };
 
-void selection_properties_t::refresh_contents()
+void ItemProperties::refresh_contents()
 {
     bool b_redraw = disable_redrawing();
 
-    metadata_aggregator_t metadata_aggregator;
+    MetadataAggregator metadata_aggregator;
     pfc::list_t<uih::ListView::InsertItem> items;
     t_size i, count = m_handles.get_count();
     metadata_aggregator.set_fields(m_fields);
@@ -450,7 +450,7 @@ void selection_properties_t::refresh_contents()
     }
 
     {
-        track_property_callback_itemproperties props;
+        ItemPropertiesTrackPropertyCallback props;
         track_property_provider::ptr ptr;
         if (m_handles.get_count()) {
             service_enum_t<track_property_provider> e;
@@ -491,7 +491,7 @@ void selection_properties_t::refresh_contents()
         enable_redrawing();
 }
 
-void selection_properties_t::on_playback_new_track(metadb_handle_ptr p_track)
+void ItemProperties::on_playback_new_track(metadb_handle_ptr p_track)
 {
     if (m_tracking_mode == track_nowplaying || m_tracking_mode == track_automatic) {
         m_handles.remove_all();
@@ -500,7 +500,7 @@ void selection_properties_t::on_playback_new_track(metadb_handle_ptr p_track)
     }
 }
 
-void selection_properties_t::on_playback_stop(play_control::t_stop_reason p_reason)
+void ItemProperties::on_playback_stop(play_control::t_stop_reason p_reason)
 {
     if (p_reason != play_control::stop_reason_starting_another && p_reason != play_control::stop_reason_shutting_down) {
         if (m_tracking_mode == track_nowplaying || m_tracking_mode == track_automatic) {
@@ -513,7 +513,7 @@ void selection_properties_t::on_playback_stop(play_control::t_stop_reason p_reas
     }
 }
 
-void selection_properties_t::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
+void ItemProperties::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
 {
     if (!p_fromhook) {
         bool b_refresh = false;
@@ -529,7 +529,7 @@ void selection_properties_t::on_changed_sorted(metadb_handle_list_cref p_items_s
     }
 }
 
-bool selection_properties_t::check_process_on_selection_changed()
+bool ItemProperties::check_process_on_selection_changed()
 {
     HWND wnd_focus = GetFocus();
     if (wnd_focus == nullptr)
@@ -540,7 +540,7 @@ bool selection_properties_t::check_process_on_selection_changed()
     return processid == GetCurrentProcessId();
 }
 
-void selection_properties_t::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
+void ItemProperties::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
 {
     if (check_process_on_selection_changed()) {
         if (g_ui_selection_manager_is_now_playing_fallback())
@@ -562,7 +562,7 @@ void selection_properties_t::on_selection_changed(const pfc::list_base_const_t<m
     // console::formatter() << "Selection properties panel refreshed in: " << timer.query() << " seconds";
 }
 
-void selection_properties_t::on_tracking_mode_change()
+void ItemProperties::on_tracking_mode_change()
 {
     m_handles.remove_all();
     if (m_tracking_mode == track_selection
@@ -577,36 +577,36 @@ void selection_properties_t::on_tracking_mode_change()
     refresh_contents();
 }
 
-class font_client_selection_properties : public cui::fonts::client {
+class ItemsFontClientItemProperties : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_selection_properties_items_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Items"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { selection_properties_t::g_on_font_items_change(); }
+    void on_font_changed() const override { ItemProperties::g_on_font_items_change(); }
 };
 
-class font_header_client_selection_properties : public cui::fonts::client {
+class HeaderFontClientItemProperties : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_selection_properties_header_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Column titles"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { selection_properties_t::g_on_font_header_change(); }
+    void on_font_changed() const override { ItemProperties::g_on_font_header_change(); }
 };
 
-class font_group_client_selection_properties : public cui::fonts::client {
+class GroupClientItemProperties : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_selection_properties_group_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Group titles"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { selection_properties_t::g_on_font_groups_change(); }
+    void on_font_changed() const override { ItemProperties::g_on_font_groups_change(); }
 };
-void selection_properties_t::g_on_font_items_change()
+void ItemProperties::g_on_font_items_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
@@ -615,7 +615,7 @@ void selection_properties_t::g_on_font_items_change()
     }
 }
 
-void selection_properties_t::g_on_font_groups_change()
+void ItemProperties::g_on_font_groups_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
@@ -624,7 +624,7 @@ void selection_properties_t::g_on_font_groups_change()
     }
 }
 
-void selection_properties_t::g_on_font_header_change()
+void ItemProperties::g_on_font_header_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
@@ -633,7 +633,7 @@ void selection_properties_t::g_on_font_header_change()
     }
 }
 
-selection_properties_t::selection_properties_t()
+ItemProperties::ItemProperties()
     : m_tracking_mode(cfg_selection_properties_tracking_mode)
     , m_info_sections_mask(cfg_selection_properties_info_sections)
     , m_show_column_titles(cfg_selection_poperties_show_column_titles)
@@ -642,22 +642,22 @@ selection_properties_t::selection_properties_t()
     , m_edit_column(pfc_infinite)
     , m_edit_index(pfc_infinite)
 {
-    m_fields.add_item(field_t("Artist", "ARTIST"));
-    m_fields.add_item(field_t("Title", "TITLE"));
-    m_fields.add_item(field_t("Album", "ALBUM"));
-    m_fields.add_item(field_t("Date", "DATE"));
-    m_fields.add_item(field_t("Genre", "GENRE"));
-    m_fields.add_item(field_t("Composer", "COMPOSER"));
-    m_fields.add_item(field_t("Performer", "PERFORMER"));
-    m_fields.add_item(field_t("Album Artist", "ALBUM ARTIST"));
-    m_fields.add_item(field_t("Track Number", "TRACKNUMBER"));
-    m_fields.add_item(field_t("Total Tracks", "TOTALTRACKS"));
-    m_fields.add_item(field_t("Disc Number", "DISCNUMBER"));
-    m_fields.add_item(field_t("Total Discs", "TOTALDISCS"));
-    m_fields.add_item(field_t("Comment", "COMMENT"));
+    m_fields.add_item(Field("Artist", "ARTIST"));
+    m_fields.add_item(Field("Title", "TITLE"));
+    m_fields.add_item(Field("Album", "ALBUM"));
+    m_fields.add_item(Field("Date", "DATE"));
+    m_fields.add_item(Field("Genre", "GENRE"));
+    m_fields.add_item(Field("Composer", "COMPOSER"));
+    m_fields.add_item(Field("Performer", "PERFORMER"));
+    m_fields.add_item(Field("Album Artist", "ALBUM ARTIST"));
+    m_fields.add_item(Field("Track Number", "TRACKNUMBER"));
+    m_fields.add_item(Field("Total Tracks", "TOTALTRACKS"));
+    m_fields.add_item(Field("Disc Number", "DISCNUMBER"));
+    m_fields.add_item(Field("Total Discs", "TOTALDISCS"));
+    m_fields.add_item(Field("Comment", "COMMENT"));
 }
 
-void selection_properties_t::notify_save_inline_edit(const char* value)
+void ItemProperties::notify_save_inline_edit(const char* value)
 {
     static_api_ptr_t<metadb_io_v2> tagger_api;
     if (strcmp(value, "<mixed values>") != 0) {
@@ -722,7 +722,7 @@ void selection_properties_t::notify_save_inline_edit(const char* value)
     m_edit_handles.remove_all();
 }
 
-bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
@@ -756,7 +756,7 @@ bool selection_properties_t::notify_create_inline_edit(const pfc::list_base_cons
     return false;
 }
 
-void selection_properties_t::g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out)
+void ItemProperties::g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out)
 {
     t_size meta_index = p_info.meta_find(field);
     if (meta_index != pfc_infinite) {
@@ -766,13 +766,13 @@ void selection_properties_t::g_print_field(const char* field, const file_info& p
     }
 }
 
-bool selection_properties_t::notify_before_create_inline_edit(
+bool ItemProperties::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
     return m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count();
 }
 
-void selection_properties_t::notify_on_column_size_change(t_size index, int new_width)
+void ItemProperties::notify_on_column_size_change(t_size index, int new_width)
 {
     if (index == 0)
         m_column_name_width = new_width;
@@ -780,32 +780,32 @@ void selection_properties_t::notify_on_column_size_change(t_size index, int new_
         m_column_field_width = new_width;
 }
 
-bool selection_properties_t::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
+bool ItemProperties::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
     uie::window_ptr p_this = this;
     bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
     return ret;
 }
 
-bool selection_properties_t::notify_on_keyboard_keydown_copy()
+bool ItemProperties::notify_on_keyboard_keydown_copy()
 {
     copy_selected_items_as_text(1);
     return true;
 }
 
-void selection_properties_t::get_menu_items(ui_extension::menu_hook_t& p_hook)
+void ItemProperties::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    ui_extension::menu_node_ptr p_node = new menu_node_source_popup(this);
+    ui_extension::menu_node_ptr p_node = new MenuNodeSourcePopup(this);
     p_hook.add_node(p_node);
-    p_node = new menu_node_autosize(this);
+    p_node = new ModeNodeAutosize(this);
     p_hook.add_node(p_node);
     p_node = new uie::menu_node_configure(this);
     p_hook.add_node(p_node);
 }
 
-bool selection_properties_t::show_config_popup(HWND wnd_parent)
+bool ItemProperties::show_config_popup(HWND wnd_parent)
 {
-    selection_properties_config_t dialog(
+    ItemPropertiesConfig dialog(
         m_fields, m_edge_style, m_info_sections_mask, m_show_column_titles, m_show_group_titles);
     if (dialog.run_modal(wnd_parent)) {
         m_fields = dialog.m_fields;
@@ -835,40 +835,40 @@ bool selection_properties_t::show_config_popup(HWND wnd_parent)
     return false;
 }
 
-bool selection_properties_t::have_config_popup() const
+bool ItemProperties::have_config_popup() const
 {
     return true;
 }
 
 namespace {
-font_client_selection_properties::factory<font_client_selection_properties> g_font_client_selection_properties;
-font_header_client_selection_properties::factory<font_header_client_selection_properties>
+ItemsFontClientItemProperties::factory<ItemsFontClientItemProperties> g_font_client_selection_properties;
+HeaderFontClientItemProperties::factory<HeaderFontClientItemProperties>
     g_font_header_client_selection_properties;
-font_group_client_selection_properties::factory<font_group_client_selection_properties>
+GroupClientItemProperties::factory<GroupClientItemProperties>
     g_font_group_client_selection_properties;
 } // namespace
-uie::window_factory<selection_properties_t> g_selection_properties;
+uie::window_factory<ItemProperties> g_selection_properties;
 
-selection_properties_t::menu_node_source_popup::menu_node_source_popup(selection_properties_t* p_wnd)
+ItemProperties::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemProperties* p_wnd)
 {
-    m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 0));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
     // m_items.add_item(new uie::menu_node_separator_t());
     // m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 1));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
 }
 
-void selection_properties_t::menu_node_source_popup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemProperties::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned selection_properties_t::menu_node_source_popup::get_children_count() const
+unsigned ItemProperties::MenuNodeSourcePopup::get_children_count() const
 {
     return m_items.get_count();
 }
 
-bool selection_properties_t::menu_node_source_popup::get_display_data(
+bool ItemProperties::MenuNodeSourcePopup::get_display_data(
     pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Tracking mode";
@@ -876,20 +876,20 @@ bool selection_properties_t::menu_node_source_popup::get_display_data(
     return true;
 }
 
-selection_properties_t::menu_node_autosize::menu_node_autosize(selection_properties_t* p_wnd) : p_this(p_wnd) {}
+ItemProperties::ModeNodeAutosize::ModeNodeAutosize(ItemProperties* p_wnd) : p_this(p_wnd) {}
 
-void selection_properties_t::menu_node_autosize::execute()
+void ItemProperties::ModeNodeAutosize::execute()
 {
     p_this->m_autosizing_columns = !p_this->m_autosizing_columns;
     p_this->set_autosize(p_this->m_autosizing_columns);
 }
 
-bool selection_properties_t::menu_node_autosize::get_description(pfc::string_base& p_out) const
+bool ItemProperties::ModeNodeAutosize::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool selection_properties_t::menu_node_autosize::get_display_data(
+bool ItemProperties::ModeNodeAutosize::get_display_data(
     pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Auto-sizing columns";
@@ -897,24 +897,24 @@ bool selection_properties_t::menu_node_autosize::get_display_data(
     return true;
 }
 
-selection_properties_t::menu_node_track_mode::menu_node_track_mode(selection_properties_t* p_wnd, t_size p_value)
+ItemProperties::MenuNodeTrackMode::MenuNodeTrackMode(ItemProperties* p_wnd, t_size p_value)
     : p_this(p_wnd), m_source(p_value)
 {
 }
 
-void selection_properties_t::menu_node_track_mode::execute()
+void ItemProperties::MenuNodeTrackMode::execute()
 {
     p_this->m_tracking_mode = m_source;
     cfg_selection_properties_tracking_mode = m_source;
     p_this->on_tracking_mode_change();
 }
 
-bool selection_properties_t::menu_node_track_mode::get_description(pfc::string_base& p_out) const
+bool ItemProperties::MenuNodeTrackMode::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool selection_properties_t::menu_node_track_mode::get_display_data(
+bool ItemProperties::MenuNodeTrackMode::get_display_data(
     pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
@@ -922,7 +922,7 @@ bool selection_properties_t::menu_node_track_mode::get_display_data(
     return true;
 }
 
-const char* selection_properties_t::menu_node_track_mode::get_name(t_size source)
+const char* ItemProperties::MenuNodeTrackMode::get_name(t_size source)
 {
     if (source == track_nowplaying)
         return "Playing item";
@@ -933,9 +933,9 @@ const char* selection_properties_t::menu_node_track_mode::get_name(t_size source
     return "";
 }
 
-track_property_callback_itemproperties::track_property_callback_itemproperties() : m_values(tabsize(g_info_sections)) {}
+ItemPropertiesTrackPropertyCallback::ItemPropertiesTrackPropertyCallback() : m_values(tabsize(g_info_sections)) {}
 
-void track_property_callback_itemproperties::sort()
+void ItemPropertiesTrackPropertyCallback::sort()
 {
     t_size count = m_values.get_size();
     for (t_size i = 0; i < count; i++) {
@@ -945,12 +945,12 @@ void track_property_callback_itemproperties::sort()
     }
 }
 
-bool track_property_callback_itemproperties::is_group_wanted(const char* p_group)
+bool ItemPropertiesTrackPropertyCallback::is_group_wanted(const char* p_group)
 {
     return true;
 }
 
-void track_property_callback_itemproperties::set_property(
+void ItemPropertiesTrackPropertyCallback::set_property(
     const char* p_group, double p_sortpriority, const char* p_name, const char* p_value)
 {
     t_size index = g_get_info_secion_index_by_name(p_group);
@@ -958,13 +958,13 @@ void track_property_callback_itemproperties::set_property(
         m_values[index].add_item(track_property_t(p_sortpriority, p_name, p_value));
 }
 
-track_property_callback_itemproperties::track_property_t::track_property_t(
+ItemPropertiesTrackPropertyCallback::track_property_t::track_property_t(
     double p_sortpriority, const char* p_name, const char* p_value)
     : m_name(p_name), m_value(p_value), m_sortpriority(p_sortpriority)
 {
 }
 
-int track_property_callback_itemproperties::track_property_t::g_compare(self_t const& a, self_t const& b)
+int ItemPropertiesTrackPropertyCallback::track_property_t::g_compare(self_t const& a, self_t const& b)
 {
     int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
     if (!ret)
@@ -973,7 +973,7 @@ int track_property_callback_itemproperties::track_property_t::g_compare(self_t c
     return ret;
 }
 
-void appearance_client_selection_properties_impl::on_colour_changed(t_size mask) const
+void ItemPropertiesColoursClient::on_colour_changed(t_size mask) const
 {
-    selection_properties_t::g_redraw_all();
+    ItemProperties::g_redraw_all();
 }

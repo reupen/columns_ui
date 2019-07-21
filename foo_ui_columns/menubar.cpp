@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "menu_mnemonics.h"
 
 cfg_int cfg_fullsizemenu(GUID{0xe880f267, 0x73de, 0x7952, {0x5b, 0x79, 0xb5, 0xda, 0x77, 0x28, 0x6d, 0xb6}}, 0);
 
@@ -11,106 +12,23 @@ enum {
     MSG_SIZE_LIMIT_CHANGE
 };
 
-// from menu_manager.cpp
-class mnemonic_manager {
-    pfc::string8_fast_aggressive used;
-    bool is_used(unsigned c)
-    {
-        char temp[8];
-        temp[pfc::utf8_encode_char(uCharLower(c), temp)] = 0;
-        return !!strstr(used, temp);
-    }
-
-    static bool is_alphanumeric(char c)
-    {
-        return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') || (c >= '0' && c <= '9');
-    }
-
-    void insert(const char* src, unsigned idx, pfc::string_base& out)
-    {
-        out.reset();
-        out.add_string(src, idx);
-        out.add_string("&");
-        out.add_string(src + idx);
-        used.add_char(uCharLower(src[idx]));
-    }
-
-public:
-    bool check_string(const char* src)
-    { // check for existing mnemonics
-        const char* ptr = src;
-        while (ptr = strchr(ptr, '&')) {
-            if (ptr[1] == '&')
-                ptr += 2;
-            else {
-                unsigned c = 0;
-                if (pfc::utf8_decode_char(ptr + 1, c) > 0) {
-                    if (!is_used(c))
-                        used.add_char(uCharLower(c));
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-    bool process_string(const char* src, pfc::string_base& out) // returns if changed
-    {
-        if (check_string(src)) {
-            out = src;
-            return false;
-        }
-        unsigned idx = 0;
-        while (src[idx] == ' ')
-            idx++;
-        while (src[idx]) {
-            if (is_alphanumeric(src[idx]) && !is_used(src[idx])) {
-                insert(src, idx, out);
-                return true;
-            }
-
-            while (src[idx] && src[idx] != ' ' && src[idx] != '\t')
-                idx++;
-            if (src[idx] == '\t')
-                break;
-            while (src[idx] == ' ')
-                idx++;
-        }
-
-        // no success picking first letter of one of words
-        idx = 0;
-        while (src[idx]) {
-            if (src[idx] == '\t')
-                break;
-            if (is_alphanumeric(src[idx]) && !is_used(src[idx])) {
-                insert(src, idx, out);
-                return true;
-            }
-            idx++;
-        }
-
-        // giving up
-        out = src;
-        return false;
-    }
-};
-
-class mainmenu_root_group {
+class MainMenuRootGroup {
 public:
     pfc::string8 m_name;
     pfc::array_t<TCHAR> m_name_with_accelerators;
     GUID m_guid{};
     t_uint32 m_sort_priority{NULL};
 
-    mainmenu_root_group() = default;
+    MainMenuRootGroup() = default;
 
-    static t_size g_compare(const mainmenu_root_group& p_item1, const mainmenu_root_group& p_item2)
+    static t_size g_compare(const MainMenuRootGroup& p_item1, const MainMenuRootGroup& p_item2)
     {
         return pfc::compare_t(p_item1.m_sort_priority, p_item2.m_sort_priority);
     }
-    static void g_get_root_items(pfc::list_base_t<mainmenu_root_group>& p_out)
+    static void g_get_root_items(pfc::list_base_t<MainMenuRootGroup>& p_out)
     {
         p_out.remove_all();
-        mnemonic_manager mnemonics;
+        MnemonicManager mnemonics;
 
         service_enum_t<mainmenu_group> e;
         service_ptr_t<mainmenu_group> ptr;
@@ -119,7 +37,7 @@ public:
         while (e.next(ptr)) {
             if (ptr->get_parent() == pfc::guid_null) {
                 if (ptr->service_query_t(ptrp)) {
-                    mainmenu_root_group item;
+                    MainMenuRootGroup item;
                     pfc::string8 name;
                     ptrp->get_display_string(name);
                     item.m_guid = ptrp->get_guid();
@@ -138,7 +56,7 @@ public:
     }
 };
 
-class menu_extension
+class MenuToolbar
     : public ui_extension::container_uie_window_t<uie::menu_window_v2>
     , uih::MessageHook {
     static const TCHAR* class_name;
@@ -165,7 +83,7 @@ public:
 
     HWND wnd_menu{nullptr};
     HWND wnd_prev_focus{nullptr};
-    pfc::list_t<mainmenu_root_group> m_buttons;
+    pfc::list_t<MainMenuRootGroup> m_buttons;
 
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -199,41 +117,41 @@ public:
     bool is_menu_focused() const override;
     HWND get_previous_focus_window() const override;
 
-    menu_extension();
-    ~menu_extension();
+    MenuToolbar();
+    ~MenuToolbar();
 };
 
-bool menu_extension::hooked = false;
+bool MenuToolbar::hooked = false;
 
-menu_extension::menu_extension() : p_manager(nullptr){};
+MenuToolbar::MenuToolbar() : p_manager(nullptr){};
 
-menu_extension::~menu_extension() = default;
+MenuToolbar::~MenuToolbar() = default;
 
-const TCHAR* menu_extension::class_name = _T("{76E6DB50-0DE3-4f30-A7E4-93FD628B1401}");
+const TCHAR* MenuToolbar::class_name = _T("{76E6DB50-0DE3-4f30-A7E4-93FD628B1401}");
 
-bool menu_extension::is_menu_focused() const
+bool MenuToolbar::is_menu_focused() const
 {
     return GetFocus() == wnd_menu;
 }
 
-HWND menu_extension::get_previous_focus_window() const
+HWND MenuToolbar::get_previous_focus_window() const
 {
     return wnd_prev_focus;
 }
 
-LRESULT WINAPI menu_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI MenuToolbar::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    auto p_this = reinterpret_cast<menu_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    auto p_this = reinterpret_cast<MenuToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
-LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
         initialised = true;
 
-        mainmenu_root_group::g_get_root_items(m_buttons);
+        MainMenuRootGroup::g_get_root_items(m_buttons);
         t_size button_count = m_buttons.get_count();
 
         pfc::array_t<TBBUTTON> tbb;
@@ -422,7 +340,7 @@ LRESULT menu_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-LRESULT WINAPI menu_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI MenuToolbar::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_KILLFOCUS: {
@@ -473,12 +391,12 @@ LRESULT WINAPI menu_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return uCallWindowProc(menuproc, wnd, msg, wp, lp);
 }
 
-void menu_extension::make_menu(unsigned idx)
+void MenuToolbar::make_menu(unsigned idx)
 {
     if (idx == actual_active || hooked || idx < 1 || idx > m_buttons.get_count())
         return;
 
-    service_ptr_t<menu_extension> dummy = this; // menu command may delete us
+    service_ptr_t<MenuToolbar> dummy = this; // menu command may delete us
 
     actual_active = idx;
 
@@ -583,7 +501,7 @@ void menu_extension::make_menu(unsigned idx)
     actual_active = 0;
 }
 
-bool menu_extension::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
+bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
 {
     static POINT last_pt;
 
@@ -667,28 +585,28 @@ bool menu_extension::on_hooked_message(uih::MessageHookType p_type, int code, WP
     return false;
 }
 
-void menu_extension::get_name(pfc::string_base& out) const
+void MenuToolbar::get_name(pfc::string_base& out) const
 {
     out.set_string("Menu");
 }
-void menu_extension::get_category(pfc::string_base& out) const
+void MenuToolbar::get_category(pfc::string_base& out) const
 {
     out.set_string("Toolbars");
 }
 
-void menu_extension::set_focus()
+void MenuToolbar::set_focus()
 {
     {
         SetFocus(wnd_menu);
     }
 }
-void menu_extension::show_accelerators()
+void MenuToolbar::show_accelerators()
 {
     {
         show_menu_acc();
     }
 }
-void menu_extension::hide_accelerators()
+void MenuToolbar::hide_accelerators()
 {
     {
         if (GetFocus() != wnd_menu)
@@ -696,7 +614,7 @@ void menu_extension::hide_accelerators()
     }
 }
 
-bool menu_extension::on_menuchar(unsigned short chr)
+bool MenuToolbar::on_menuchar(unsigned short chr)
 {
     {
         UINT id;
@@ -709,7 +627,7 @@ bool menu_extension::on_menuchar(unsigned short chr)
 }
 
 // {76E6DB50-0DE3-4f30-A7E4-93FD628B1401}
-const GUID menu_extension::extension_guid
+const GUID MenuToolbar::extension_guid
     = {0x76e6db50, 0xde3, 0x4f30, {0xa7, 0xe4, 0x93, 0xfd, 0x62, 0x8b, 0x14, 0x1}};
 
-ui_extension::window_factory<menu_extension> blah;
+ui_extension::window_factory<MenuToolbar> blah;

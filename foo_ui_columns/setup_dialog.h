@@ -12,7 +12,7 @@
 #include "layout.h"
 
 class setup_dialog_t : public pfc::refcounted_object_root {
-    pfc::list_t<cfg_layout_t::preset> m_presets;
+    pfc::list_t<ConfigLayout::Preset> m_presets;
     uie::splitter_item_ptr m_previous_layout;
     cui::colours::colour_mode_t m_previous_colour_mode{columns_ui::colours::colour_mode_themed};
     bool m_previous_show_artwork{};

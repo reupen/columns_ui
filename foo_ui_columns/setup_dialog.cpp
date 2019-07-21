@@ -57,7 +57,7 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         cfg_layout.get_preset(cfg_layout.get_active(), m_previous_layout);
 
-        layout_window::g_get_default_presets(m_presets);
+        LayoutWindow::g_get_default_presets(m_presets);
 
         LVITEM lvi;
         memset(&lvi, 0, sizeof(LVITEM));

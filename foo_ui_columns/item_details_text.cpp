@@ -22,7 +22,7 @@ void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_ne
             bool b_tab = false;
 
             if ((b_tab = *ptr == '\t') || *ptr == '\x7') {
-                font_change_data_t temp;
+                FontChangeData temp;
                 t_size count = ptr - start;
                 ptr++;
 
@@ -58,7 +58,7 @@ void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_ne
     }
 }
 
-void g_get_text_font_info(const font_change_data_list_t& p_data, font_change_info_t& p_info)
+void g_get_text_font_info(const font_change_data_list_t& p_data, FontChangeNotify& p_info)
 {
     t_size count = p_data.get_count();
     if (count) {
@@ -96,7 +96,7 @@ void g_get_text_font_info(const font_change_data_list_t& p_data, font_change_inf
                     if (index < maskKeepFonts.get_count())
                         maskKeepFonts[index] = true;
                 } else {
-                    font_t::ptr_t font = new font_t;
+                    Font::ptr_t font = new Font;
                     font->m_font = CreateFontIndirect(&lf);
                     font->m_height = uGetFontHeight(font->m_font);
                     font->m_data = p_data[i].m_font_data;
@@ -152,7 +152,7 @@ bool g_text_ptr_skip_font_change(const char*& ptr)
 }
 
 void g_get_text_multiline_data(const char* text, pfc::string8_fast_aggressive& p_out,
-    pfc::list_t<line_info_t, pfc::alloc_fast_aggressive>& indices)
+    pfc::list_t<LineInfo, pfc::alloc_fast_aggressive>& indices)
 {
     indices.remove_all();
     p_out.prealloc(strlen(text));
@@ -169,7 +169,7 @@ void g_get_text_multiline_data(const char* text, pfc::string8_fast_aggressive& p
             }
         }
 
-        line_info_t temp;
+        LineInfo temp;
         temp.m_raw_bytes = counter;
         // if (*ptr)
         indices.add_item(temp /*p_out.get_length()*/);
@@ -318,7 +318,7 @@ bool text_ptr_find_break(
 #define ELLIPSIS_LEN 3
 
 void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_new, const line_info_list_t& rawLines,
-    display_line_info_list_t& displayLines, const font_change_info_t& p_font_data, t_size line_height, SIZE& sz,
+    display_line_info_list_t& displayLines, const FontChangeNotify& p_font_data, t_size line_height, SIZE& sz,
     bool b_word_wrapping, t_size max_width)
 {
     const int half_padding_size = uih::scale_dpi_value(2);
@@ -538,7 +538,7 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
                     // inc--;
                 }
 
-                display_line_info_t temp;
+                DisplayLineInfo temp;
                 temp.m_raw_bytes = inc;
                 temp.m_bytes = temp.m_raw_bytes;
                 if (b_skipped) {
@@ -664,7 +664,7 @@ void get_multiline_text_dimensions_const(HDC dc, const char * text, const line_i
 #endif
 
 void g_get_multiline_text_dimensions_const(HDC dc, const char* text, const line_info_list_t& newLineData,
-    const font_change_info_t& p_font_data, t_size line_height, SIZE& sz, bool b_word_wrapping, t_size width)
+    const FontChangeNotify& p_font_data, t_size line_height, SIZE& sz, bool b_word_wrapping, t_size width)
 {
     pfc::string8_fast_aggressive rawText = text;
     display_line_info_list_t newLineDataWrapped;
@@ -673,7 +673,7 @@ void g_get_multiline_text_dimensions_const(HDC dc, const char* text, const line_
 }
 
 void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_height, const char* text,
-    const font_change_info_t& p_font_data, const display_line_info_list_t& newLineDataWrapped, const SIZE& sz,
+    const FontChangeNotify& p_font_data, const display_line_info_list_t& newLineDataWrapped, const SIZE& sz,
     COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping)
 {
     pfc::string8_fast_aggressive rawText = text;

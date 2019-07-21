@@ -53,38 +53,38 @@ cfg_uint cfg_item_details_horizontal_alignment(g_guid_item_details_horizontal_al
 cfg_uint cfg_item_details_vertical_alignment(g_guid_item_details_vertical_alignment, uih::ALIGN_CENTRE);
 cfg_bool cfg_item_details_word_wrapping(g_guid_item_details_word_wrapping, true);
 
-void item_details_t::menu_node_options::execute()
+void ItemDetails::MenuNodeOptions::execute()
 {
     if (p_this->m_wnd_config)
         SetActiveWindow(p_this->m_wnd_config);
     else {
-        auto p_dialog = new item_details_config_t(
+        auto p_dialog = new ItemDetailsConfig(
             p_this->m_script, p_this->m_edge_style, p_this->m_horizontal_alignment, p_this->m_vertical_alignment);
         p_dialog->run_modeless(GetAncestor(p_this->get_wnd(), GA_ROOT), p_this.get_ptr());
     }
 }
 
-item_details_t::menu_node_options::menu_node_options(item_details_t* p_wnd) : p_this(p_wnd) {}
+ItemDetails::MenuNodeOptions::MenuNodeOptions(ItemDetails* p_wnd) : p_this(p_wnd) {}
 
-bool item_details_t::menu_node_options::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeOptions::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool item_details_t::menu_node_options::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeOptions::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Options";
     p_displayflags = 0;
     return true;
 }
 
-bool item_details_t::have_config_popup() const
+bool ItemDetails::have_config_popup() const
 {
     return true;
 }
-bool item_details_t::show_config_popup(HWND wnd_parent)
+bool ItemDetails::show_config_popup(HWND wnd_parent)
 {
-    item_details_config_t dialog(m_script, m_edge_style, m_horizontal_alignment, m_vertical_alignment);
+    ItemDetailsConfig dialog(m_script, m_edge_style, m_horizontal_alignment, m_vertical_alignment);
     if (dialog.run_modal(wnd_parent)) {
         m_script = dialog.m_script;
         m_edge_style = dialog.m_edge_style;
@@ -106,7 +106,7 @@ bool item_details_t::show_config_popup(HWND wnd_parent)
     return false;
 }
 
-void item_details_t::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ItemDetails::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
         t_size version;
@@ -127,7 +127,7 @@ void item_details_t::set_config(stream_reader* p_reader, t_size p_size, abort_ca
     }
 }
 
-void item_details_t::get_config(stream_writer* p_writer, abort_callback& p_abort) const
+void ItemDetails::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t((t_size)stream_version_current, p_abort);
     p_writer->write_string(m_script, p_abort);
@@ -139,35 +139,35 @@ void item_details_t::get_config(stream_writer* p_writer, abort_callback& p_abort
     p_writer->write_lendian_t(m_vertical_alignment, p_abort);
 }
 
-void item_details_t::get_menu_items(ui_extension::menu_hook_t& p_hook)
+void ItemDetails::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    p_hook.add_node(ui_extension::menu_node_ptr(new menu_node_source_popup(this)));
+    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeSourcePopup(this)));
     // p_node = new menu_node_alignment_popup(this);
     // p_hook.add_node(p_node);
-    ui_extension::menu_node_ptr p_node = new menu_node_hscroll(this);
+    ui_extension::menu_node_ptr p_node = new MenuNodeHorizontalScrolling(this);
     p_hook.add_node(p_node);
-    p_node = new menu_node_wwrap(this);
+    p_node = new MenuNodeWordWrap(this);
     p_hook.add_node(p_node);
-    p_node = new menu_node_options(this);
+    p_node = new MenuNodeOptions(this);
     p_hook.add_node(p_node);
 }
 
-item_details_t::message_window_t item_details_t::g_message_window;
+ItemDetails::MessageWindow ItemDetails::g_message_window;
 
-std::vector<item_details_t*> item_details_t::g_windows;
+std::vector<ItemDetails*> ItemDetails::g_windows;
 
-item_details_t::message_window_t::class_data& item_details_t::message_window_t::get_class_data() const
+ItemDetails::MessageWindow::class_data& ItemDetails::MessageWindow::get_class_data() const
 {
     __implement_get_class_data_ex(_T("\r\n{6EB3EA81-7C5E-468d-B507-E5527F52361B}"), _T(""), false, 0, 0, 0, 0);
 }
 
-LRESULT item_details_t::message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT ItemDetails::MessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE:
         break;
     case WM_ACTIVATEAPP:
-        item_details_t::g_on_app_activate(wp != 0);
+        ItemDetails::g_on_app_activate(wp != 0);
         break;
     case WM_DESTROY:
         break;
@@ -175,12 +175,12 @@ LRESULT item_details_t::message_window_t::on_message(HWND wnd, UINT msg, WPARAM 
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void item_details_t::g_on_app_activate(bool b_activated)
+void ItemDetails::g_on_app_activate(bool b_activated)
 {
     for (auto& window : g_windows)
         window->on_app_activate(b_activated);
 }
-void item_details_t::on_app_activate(bool b_activated)
+void ItemDetails::on_app_activate(bool b_activated)
 {
     if (b_activated) {
         if (GetFocus() != get_wnd())
@@ -190,37 +190,37 @@ void item_details_t::on_app_activate(bool b_activated)
     }
 }
 
-const GUID& item_details_t::get_extension_guid() const
+const GUID& ItemDetails::get_extension_guid() const
 {
     return g_guid_item_details;
 }
-void item_details_t::get_name(pfc::string_base& p_out) const
+void ItemDetails::get_name(pfc::string_base& p_out) const
 {
     p_out = "Item details";
 }
-void item_details_t::get_category(pfc::string_base& p_out) const
+void ItemDetails::get_category(pfc::string_base& p_out) const
 {
     p_out = "Panels";
 }
-unsigned item_details_t::get_type() const
+unsigned ItemDetails::get_type() const
 {
     return uie::type_panel;
 }
 
-void item_details_t::register_callback()
+void ItemDetails::register_callback()
 {
     if (!m_callback_registered)
         g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
     m_callback_registered = true;
 }
-void item_details_t::deregister_callback()
+void ItemDetails::deregister_callback()
 {
     if (m_callback_registered)
         static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
     m_callback_registered = false;
 }
 
-void item_details_t::update_scrollbar_range(bool b_set_pos)
+void ItemDetails::update_scrollbar_range(bool b_set_pos)
 {
     // if (m_update_scrollbar_range_in_progress) return;
 
@@ -352,7 +352,7 @@ void item_details_t::update_scrollbar_range(bool b_set_pos)
 #endif
 }
 
-void item_details_t::set_handles(const metadb_handle_list& handles)
+void ItemDetails::set_handles(const metadb_handle_list& handles)
 {
     const auto old_handles = std::move(m_handles);
     m_handles = handles;
@@ -367,7 +367,7 @@ void item_details_t::set_handles(const metadb_handle_list& handles)
     refresh_contents();
 }
 
-void item_details_t::request_full_file_info()
+void ItemDetails::request_full_file_info()
 {
     if (m_full_file_info_requested)
         return;
@@ -381,13 +381,13 @@ void item_details_t::request_full_file_info()
     if (filesystem::g_is_remote_or_unrecognized(handle->get_path()))
         return;
     m_full_file_info_request = std::make_unique<cui::helpers::FullFileInfoRequest>(
-        std::move(handle), [self = service_ptr_t<item_details_t>{this}](auto&& request) {
+        std::move(handle), [self = service_ptr_t<ItemDetails>{this}](auto&& request) {
             self->on_full_file_info_request_completion(std::forward<decltype(request)>(request));
         });
     m_full_file_info_request->queue();
 }
 
-void item_details_t::on_full_file_info_request_completion(std::shared_ptr<cui::helpers::FullFileInfoRequest> request)
+void ItemDetails::on_full_file_info_request_completion(std::shared_ptr<cui::helpers::FullFileInfoRequest> request)
 {
     if (m_full_file_info_request == request) {
         m_full_file_info_request.reset();
@@ -400,14 +400,14 @@ void item_details_t::on_full_file_info_request_completion(std::shared_ptr<cui::h
     release_aborted_full_file_info_requests();
 }
 
-void item_details_t::release_aborted_full_file_info_requests()
+void ItemDetails::release_aborted_full_file_info_requests()
 {
     const auto erase_iterator = std::remove_if(m_aborting_full_file_info_requests.begin(),
         m_aborting_full_file_info_requests.end(), [](auto&& item) { return item->is_ready(); });
     m_aborting_full_file_info_requests.erase(erase_iterator, m_aborting_full_file_info_requests.end());
 }
 
-void item_details_t::release_all_full_file_info_requests()
+void ItemDetails::release_all_full_file_info_requests()
 {
     if (m_full_file_info_request) {
         m_full_file_info_request->abort();
@@ -420,7 +420,7 @@ void item_details_t::release_all_full_file_info_requests()
     m_aborting_full_file_info_requests.clear();
 }
 
-void item_details_t::refresh_contents(bool reset_scroll_position)
+void ItemDetails::refresh_contents(bool reset_scroll_position)
 {
     // DisableRedrawing noRedraw(get_wnd());
     bool b_Update = true;
@@ -428,7 +428,7 @@ void item_details_t::refresh_contents(bool reset_scroll_position)
         LOGFONT lf;
         static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
 
-        titleformat_hook_change_font tf_hook(lf);
+        TitleformatHookChangeFont tf_hook(lf);
         pfc::string8_fast_aggressive temp, temp2;
         temp.prealloc(2048);
         temp2.prealloc(2048);
@@ -475,7 +475,7 @@ void item_details_t::refresh_contents(bool reset_scroll_position)
     }
 }
 
-void item_details_t::update_display_info(HDC dc)
+void ItemDetails::update_display_info(HDC dc)
 {
     if (!m_display_info_valid) {
         RECT rc;
@@ -490,7 +490,7 @@ void item_details_t::update_display_info(HDC dc)
     }
 }
 
-void item_details_t::update_display_info()
+void ItemDetails::update_display_info()
 {
     if (!m_display_info_valid) {
         HDC dc = GetDC(get_wnd());
@@ -500,7 +500,7 @@ void item_details_t::update_display_info()
         ReleaseDC(get_wnd(), dc);
     }
 }
-void item_details_t::reset_display_info()
+void ItemDetails::reset_display_info()
 {
     m_current_display_text.force_reset();
     m_display_line_info.remove_all();
@@ -508,7 +508,7 @@ void item_details_t::reset_display_info()
     m_display_info_valid = false;
 }
 
-void item_details_t::update_font_change_info()
+void ItemDetails::update_font_change_info()
 {
     if (!m_font_change_info_valid) {
         g_get_text_font_info(m_font_change_data, m_font_change_info);
@@ -517,14 +517,14 @@ void item_details_t::update_font_change_info()
     }
 }
 
-void item_details_t::reset_font_change_info()
+void ItemDetails::reset_font_change_info()
 {
     m_font_change_data.remove_all();
     m_font_change_info.reset();
     m_font_change_info_valid = false;
 }
 
-void item_details_t::on_playback_new_track(metadb_handle_ptr p_track)
+void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track)
 {
     if (g_track_mode_includes_now_playing(m_tracking_mode)) {
         m_nowplaying_active = true;
@@ -532,38 +532,38 @@ void item_details_t::on_playback_new_track(metadb_handle_ptr p_track)
     }
 }
 
-void item_details_t::on_playback_seek(double p_time)
+void ItemDetails::on_playback_seek(double p_time)
 {
     if (m_nowplaying_active)
         refresh_contents(false);
 }
-void item_details_t::on_playback_pause(bool p_state)
+void ItemDetails::on_playback_pause(bool p_state)
 {
     if (m_nowplaying_active)
         refresh_contents(false);
 }
-void item_details_t::on_playback_edited(metadb_handle_ptr p_track)
+void ItemDetails::on_playback_edited(metadb_handle_ptr p_track)
 {
     if (m_nowplaying_active)
         refresh_contents(false);
 }
-void item_details_t::on_playback_dynamic_info(const file_info& p_info)
+void ItemDetails::on_playback_dynamic_info(const file_info& p_info)
 {
     if (m_nowplaying_active)
         refresh_contents(false);
 }
-void item_details_t::on_playback_dynamic_info_track(const file_info& p_info)
+void ItemDetails::on_playback_dynamic_info_track(const file_info& p_info)
 {
     if (m_nowplaying_active)
         refresh_contents(false);
 }
-void item_details_t::on_playback_time(double p_time)
+void ItemDetails::on_playback_time(double p_time)
 {
     if (m_nowplaying_active)
         refresh_contents(false);
 }
 
-void item_details_t::on_playback_stop(play_control::t_stop_reason p_reason)
+void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
 {
     if (g_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
@@ -579,7 +579,7 @@ void item_details_t::on_playback_stop(play_control::t_stop_reason p_reason)
     }
 }
 
-void item_details_t::on_playlist_switch()
+void ItemDetails::on_playlist_switch()
 {
     if (g_track_mode_includes_plalist(m_tracking_mode)
         && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
@@ -588,7 +588,7 @@ void item_details_t::on_playlist_switch()
         set_handles(handles);
     }
 }
-void item_details_t::on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
+void ItemDetails::on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
 {
     if (g_track_mode_includes_plalist(m_tracking_mode)
         && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
@@ -598,7 +598,7 @@ void item_details_t::on_items_selection_change(const pfc::bit_array& p_affected,
     }
 }
 
-void item_details_t::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
+void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
 {
     if (!p_fromhook && !m_nowplaying_active) {
         bool b_refresh = false;
@@ -614,7 +614,7 @@ void item_details_t::on_changed_sorted(metadb_handle_list_cref p_items_sorted, b
     }
 }
 
-bool item_details_t::check_process_on_selection_changed()
+bool ItemDetails::check_process_on_selection_changed()
 {
     HWND wnd_focus = GetFocus();
     if (wnd_focus == nullptr)
@@ -625,7 +625,7 @@ bool item_details_t::check_process_on_selection_changed()
     return processid == GetCurrentProcessId();
 }
 
-void item_details_t::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
+void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
 {
     if (check_process_on_selection_changed()) {
         if (g_ui_selection_manager_is_now_playing_fallback())
@@ -645,7 +645,7 @@ void item_details_t::on_selection_changed(const pfc::list_base_const_t<metadb_ha
     // console::formatter() << "Selection properties panel refreshed in: " << timer.query() << " seconds";
 }
 
-void item_details_t::on_tracking_mode_change()
+void ItemDetails::on_tracking_mode_change()
 {
     metadb_handle_list handles;
 
@@ -664,24 +664,24 @@ void item_details_t::on_tracking_mode_change()
     set_handles(handles);
 }
 
-void item_details_t::update_now()
+void ItemDetails::update_now()
 {
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW);
 }
 
-void item_details_t::invalidate_all(bool b_update)
+void ItemDetails::invalidate_all(bool b_update)
 {
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | (b_update ? RDW_UPDATENOW : NULL));
 }
 
-void item_details_t::on_size()
+void ItemDetails::on_size()
 {
     RECT rc;
     GetClientRect(get_wnd(), &rc);
     on_size(RECT_CX(rc), RECT_CY(rc));
 }
 
-void item_details_t::on_size(t_size cx, t_size cy)
+void ItemDetails::on_size(t_size cx, t_size cy)
 {
     reset_display_info();
 
@@ -706,7 +706,7 @@ void item_details_t::on_size(t_size cx, t_size cy)
     }
 }
 
-void item_details_t::scroll(INT SB, int position, bool b_absolute)
+void ItemDetails::scroll(INT SB, int position, bool b_absolute)
 {
     SCROLLINFO si, si2;
     memset(&si, 0, sizeof(SCROLLINFO));
@@ -742,7 +742,7 @@ void item_details_t::scroll(INT SB, int position, bool b_absolute)
     }
 }
 
-LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
@@ -754,7 +754,7 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
         static_api_ptr_t<metadb_io_v3>()->register_callback(this);
 
-        m_font_change_info.m_default_font = new font_t;
+        m_font_change_info.m_default_font = new Font;
         m_font_change_info.m_default_font->m_font
             = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
         m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font);
@@ -976,21 +976,21 @@ LRESULT item_details_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void item_details_t::g_on_font_change()
+void ItemDetails::g_on_font_change()
 {
     for (auto& window : g_windows) {
         window->on_font_change();
     }
 }
 
-void item_details_t::g_on_colours_change()
+void ItemDetails::g_on_colours_change()
 {
     for (auto& window : g_windows) {
         window->on_colours_change();
     }
 }
 
-void item_details_t::on_font_change()
+void ItemDetails::on_font_change()
 {
     m_font_change_info.m_default_font->m_font
         = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
@@ -1001,12 +1001,12 @@ void item_details_t::on_font_change()
     update_now();
     */
 }
-void item_details_t::on_colours_change()
+void ItemDetails::on_colours_change()
 {
     invalidate_all();
 }
 
-item_details_t::item_details_t()
+ItemDetails::ItemDetails()
     : m_tracking_mode(cfg_item_details_tracking_mode)
     , m_script(cfg_item_details_script)
     , m_horizontal_alignment(cfg_item_details_horizontal_alignment)
@@ -1019,12 +1019,12 @@ item_details_t::item_details_t()
 {
 }
 
-void item_details_t::set_config_wnd(HWND wnd)
+void ItemDetails::set_config_wnd(HWND wnd)
 {
     m_wnd_config = wnd;
 }
 
-void item_details_t::set_script(const char* p_script)
+void ItemDetails::set_script(const char* p_script)
 {
     m_script = p_script;
 
@@ -1037,7 +1037,7 @@ void item_details_t::set_script(const char* p_script)
     }
 }
 
-void item_details_t::on_edge_style_change()
+void ItemDetails::on_edge_style_change()
 {
     long flags = 0;
 
@@ -1049,7 +1049,7 @@ void item_details_t::on_edge_style_change()
     SetWindowPos(get_wnd(), nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 }
 
-void item_details_t::set_edge_style(t_size edge_style)
+void ItemDetails::set_edge_style(t_size edge_style)
 {
     m_edge_style = edge_style;
     if (get_wnd()) {
@@ -1057,7 +1057,7 @@ void item_details_t::set_edge_style(t_size edge_style)
     }
 }
 
-void item_details_t::set_vertical_alignment(t_size vertical_alignment)
+void ItemDetails::set_vertical_alignment(t_size vertical_alignment)
 {
     if (get_wnd()) {
         m_vertical_alignment = vertical_alignment;
@@ -1067,7 +1067,7 @@ void item_details_t::set_vertical_alignment(t_size vertical_alignment)
     }
 }
 
-void item_details_t::set_horizontal_alignment(t_size horizontal_alignment)
+void ItemDetails::set_horizontal_alignment(t_size horizontal_alignment)
 {
     if (get_wnd()) {
         m_horizontal_alignment = horizontal_alignment;
@@ -1077,65 +1077,65 @@ void item_details_t::set_horizontal_alignment(t_size horizontal_alignment)
     }
 }
 
-void item_details_t::on_playback_order_changed(t_size p_new_index) {}
+void ItemDetails::on_playback_order_changed(t_size p_new_index) {}
 
-void item_details_t::on_default_format_changed() {}
+void ItemDetails::on_default_format_changed() {}
 
-void item_details_t::on_playlist_locked(bool p_locked) {}
+void ItemDetails::on_playlist_locked(bool p_locked) {}
 
-void item_details_t::on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) {}
+void ItemDetails::on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) {}
 
-void item_details_t::on_item_ensure_visible(t_size p_idx) {}
+void ItemDetails::on_item_ensure_visible(t_size p_idx) {}
 
-void item_details_t::on_items_replaced(
+void ItemDetails::on_items_replaced(
     const pfc::bit_array& p_mask, const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data)
 {
 }
 
-void item_details_t::on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level)
+void ItemDetails::on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level)
 {
 }
 
-void item_details_t::on_items_modified(const pfc::bit_array& p_mask) {}
+void ItemDetails::on_items_modified(const pfc::bit_array& p_mask) {}
 
-void item_details_t::on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
+void ItemDetails::on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
 
-void item_details_t::on_items_removing(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
+void ItemDetails::on_items_removing(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
 
-void item_details_t::on_items_reordered(const t_size* p_order, t_size p_count) {}
+void ItemDetails::on_items_reordered(const t_size* p_order, t_size p_count) {}
 
-void item_details_t::on_items_added(
+void ItemDetails::on_items_added(
     t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
 {
 }
 
-void item_details_t::on_item_focus_change(t_size p_from, t_size p_to) {}
+void ItemDetails::on_item_focus_change(t_size p_from, t_size p_to) {}
 
-void item_details_t::on_volume_change(float p_new_val) {}
+void ItemDetails::on_volume_change(float p_new_val) {}
 
-void item_details_t::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
+void ItemDetails::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
 
-bool item_details_t::g_track_mode_includes_selection(t_size mode)
+bool ItemDetails::g_track_mode_includes_selection(t_size mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-bool item_details_t::g_track_mode_includes_auto(t_size mode)
+bool ItemDetails::g_track_mode_includes_auto(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-bool item_details_t::g_track_mode_includes_plalist(t_size mode)
+bool ItemDetails::g_track_mode_includes_plalist(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-bool item_details_t::g_track_mode_includes_now_playing(t_size mode)
+bool ItemDetails::g_track_mode_includes_now_playing(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
 
-item_details_t::class_data& item_details_t::get_class_data() const
+ItemDetails::class_data& ItemDetails::get_class_data() const
 {
     DWORD flags = 0;
     if (m_edge_style == 1)
@@ -1147,11 +1147,11 @@ item_details_t::class_data& item_details_t::get_class_data() const
     //__implement_get_class_data(L"", false);
 }
 
-uie::window_factory<item_details_t> g_item_details;
+uie::window_factory<ItemDetails> g_item_details;
 
-item_details_t::menu_node_wwrap::menu_node_wwrap(item_details_t* p_wnd) : p_this(p_wnd) {}
+ItemDetails::MenuNodeWordWrap::MenuNodeWordWrap(ItemDetails* p_wnd) : p_this(p_wnd) {}
 
-void item_details_t::menu_node_wwrap::execute()
+void ItemDetails::MenuNodeWordWrap::execute()
 {
     p_this->m_word_wrapping = !p_this->m_word_wrapping;
     cfg_item_details_word_wrapping = p_this->m_word_wrapping;
@@ -1161,21 +1161,21 @@ void item_details_t::menu_node_wwrap::execute()
     p_this->update_now();
 }
 
-bool item_details_t::menu_node_wwrap::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeWordWrap::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool item_details_t::menu_node_wwrap::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeWordWrap::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Word wrapping";
     p_displayflags = (p_this->m_word_wrapping) ? ui_extension::menu_node_t::state_checked : 0;
     return true;
 }
 
-item_details_t::menu_node_hscroll::menu_node_hscroll(item_details_t* p_wnd) : p_this(p_wnd) {}
+ItemDetails::MenuNodeHorizontalScrolling::MenuNodeHorizontalScrolling(ItemDetails* p_wnd) : p_this(p_wnd) {}
 
-void item_details_t::menu_node_hscroll::execute()
+void ItemDetails::MenuNodeHorizontalScrolling::execute()
 {
     p_this->m_hscroll = !p_this->m_hscroll;
     cfg_item_details_hscroll = p_this->m_hscroll;
@@ -1185,36 +1185,36 @@ void item_details_t::menu_node_hscroll::execute()
     p_this->update_now();
 }
 
-bool item_details_t::menu_node_hscroll::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeHorizontalScrolling::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool item_details_t::menu_node_hscroll::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeHorizontalScrolling::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Allow horizontal scrolling";
     p_displayflags = (p_this->m_hscroll) ? ui_extension::menu_node_t::state_checked : 0;
     return true;
 }
 
-item_details_t::menu_node_alignment_popup::menu_node_alignment_popup(item_details_t* p_wnd)
+ItemDetails::MenuNodeAlignmentPopup::MenuNodeAlignmentPopup(ItemDetails* p_wnd)
 {
-    m_items.add_item(new menu_node_alignment(p_wnd, 0));
-    m_items.add_item(new menu_node_alignment(p_wnd, 1));
-    m_items.add_item(new menu_node_alignment(p_wnd, 2));
+    m_items.add_item(new MenuNodeAlignment(p_wnd, 0));
+    m_items.add_item(new MenuNodeAlignment(p_wnd, 1));
+    m_items.add_item(new MenuNodeAlignment(p_wnd, 2));
 }
 
-void item_details_t::menu_node_alignment_popup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemDetails::MenuNodeAlignmentPopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned item_details_t::menu_node_alignment_popup::get_children_count() const
+unsigned ItemDetails::MenuNodeAlignmentPopup::get_children_count() const
 {
     return m_items.get_count();
 }
 
-bool item_details_t::menu_node_alignment_popup::get_display_data(
+bool ItemDetails::MenuNodeAlignmentPopup::get_display_data(
     pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Alignment";
@@ -1222,12 +1222,12 @@ bool item_details_t::menu_node_alignment_popup::get_display_data(
     return true;
 }
 
-item_details_t::menu_node_alignment::menu_node_alignment(item_details_t* p_wnd, t_size p_value)
+ItemDetails::MenuNodeAlignment::MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value)
     : p_this(p_wnd), m_type(p_value)
 {
 }
 
-void item_details_t::menu_node_alignment::execute()
+void ItemDetails::MenuNodeAlignment::execute()
 {
     p_this->m_horizontal_alignment = m_type;
     cfg_item_details_horizontal_alignment = m_type;
@@ -1236,19 +1236,19 @@ void item_details_t::menu_node_alignment::execute()
     p_this->update_now();
 }
 
-bool item_details_t::menu_node_alignment::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeAlignment::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool item_details_t::menu_node_alignment::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeAlignment::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_type);
     p_displayflags = (m_type == p_this->m_horizontal_alignment) ? ui_extension::menu_node_t::state_radiochecked : 0;
     return true;
 }
 
-const char* item_details_t::menu_node_alignment::get_name(t_size source)
+const char* ItemDetails::MenuNodeAlignment::get_name(t_size source)
 {
     if (source == 0)
         return "Left";
@@ -1258,58 +1258,58 @@ const char* item_details_t::menu_node_alignment::get_name(t_size source)
     return "Right";
 }
 
-item_details_t::menu_node_source_popup::menu_node_source_popup(item_details_t* p_wnd)
+ItemDetails::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemDetails* p_wnd)
 {
-    m_items.add_item(new menu_node_track_mode(p_wnd, 3));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 0));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 3));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
     m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new menu_node_track_mode(p_wnd, 2));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 4));
-    m_items.add_item(new menu_node_track_mode(p_wnd, 1));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 4));
+    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
 }
 
-void item_details_t::menu_node_source_popup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemDetails::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned item_details_t::menu_node_source_popup::get_children_count() const
+unsigned ItemDetails::MenuNodeSourcePopup::get_children_count() const
 {
     return m_items.get_count();
 }
 
-bool item_details_t::menu_node_source_popup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Displayed track";
     p_displayflags = 0;
     return true;
 }
 
-item_details_t::menu_node_track_mode::menu_node_track_mode(item_details_t* p_wnd, t_size p_value)
+ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value)
     : p_this(p_wnd), m_source(p_value)
 {
 }
 
-void item_details_t::menu_node_track_mode::execute()
+void ItemDetails::MenuNodeTrackMode::execute()
 {
     p_this->m_tracking_mode = m_source;
     cfg_item_details_tracking_mode = m_source;
     p_this->on_tracking_mode_change();
 }
 
-bool item_details_t::menu_node_track_mode::get_description(pfc::string_base& p_out) const
+bool ItemDetails::MenuNodeTrackMode::get_description(pfc::string_base& p_out) const
 {
     return false;
 }
 
-bool item_details_t::menu_node_track_mode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
     p_displayflags = (m_source == p_this->m_tracking_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
     return true;
 }
 
-const char* item_details_t::menu_node_track_mode::get_name(t_size source)
+const char* ItemDetails::MenuNodeTrackMode::get_name(t_size source)
 {
     if (source == track_playing)
         return "Playing item";

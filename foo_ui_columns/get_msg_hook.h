@@ -9,7 +9,7 @@
  * Class used for hooking message loops
  */
 
-class get_msg_hook_t : public uih::MessageHook {
+class GetMsgHook : public uih::MessageHook {
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 
 public:
