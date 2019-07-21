@@ -3,7 +3,7 @@
 #include "playlist_tabs.h"
 #include "config.h"
 
-static class tab_playlist_tabs : public preferences_tab {
+static class TabPlaylistTabs : public PreferencesTab {
 public:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
@@ -57,7 +57,7 @@ private:
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_playlist_tabs;
 
-preferences_tab* g_get_tab_playlist_tabs()
+PreferencesTab* g_get_tab_playlist_tabs()
 {
     return &g_tab_playlist_tabs;
 }

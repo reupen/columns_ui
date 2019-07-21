@@ -45,7 +45,7 @@ void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
     //    playlist_api->remove_playlist(index+1);
 }
 
-void g_get_search_bar_sibling_streams(filter_search_bar const* p_serach_bar, pfc::list_t<filter_stream_t::ptr>& p_out)
+void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, pfc::list_t<FilterStream::ptr>& p_out)
 {
     if (cfg_orderedbysplitters && p_serach_bar->get_wnd() && p_serach_bar->get_host().is_valid()) {
         pfc::list_t<uie::window_ptr> siblings;
@@ -63,7 +63,7 @@ void g_get_search_bar_sibling_streams(filter_search_bar const* p_serach_bar, pfc
             uie::splitter_window_ptr p_splitter;
 
             if (p_window->get_extension_guid() == cui::panels::guid_filter) {
-                auto* p_filter = static_cast<filter_panel_t*>(p_window.get_ptr());
+                auto* p_filter = static_cast<FilterPanel*>(p_window.get_ptr());
                 if (!p_out.have_item(p_filter->m_stream.get_ptr()))
                     p_out.add_item(p_filter->m_stream);
             } else if (p_window->service_query_t(p_splitter)) {
@@ -82,13 +82,13 @@ void g_get_search_bar_sibling_streams(filter_search_bar const* p_serach_bar, pfc
     }
 }
 
-pfc::ptr_list_t<filter_search_bar> filter_search_bar::g_active_instances;
+pfc::ptr_list_t<FilterSearchToolbar> FilterSearchToolbar::g_active_instances;
 
 namespace {
-uie::window_factory<filter_search_bar> g_filter_search_bar;
+uie::window_factory<FilterSearchToolbar> g_filter_search_bar;
 };
 
-void filter_search_bar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
         t_size version;
@@ -98,13 +98,13 @@ void filter_search_bar::set_config(stream_reader* p_reader, t_size p_size, abort
         }
     }
 };
-void filter_search_bar::get_config(stream_writer* p_writer, abort_callback& p_abort) const
+void FilterSearchToolbar::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(t_size(config_version_current), p_abort);
     p_writer->write_lendian_t(m_show_clear_button, p_abort);
 }
 
-void filter_search_bar::get_menu_items(uie::menu_hook_t& p_hook)
+void FilterSearchToolbar::get_menu_items(uie::menu_hook_t& p_hook)
 {
     p_hook.add_node(new uie::simple_command_menu_node("Show clear button", "Shows or hides the clear button",
         m_show_clear_button ? uie::menu_node_t::state_checked : 0, [this, ref = ptr{this}] {
@@ -113,7 +113,7 @@ void filter_search_bar::get_menu_items(uie::menu_hook_t& p_hook)
         }));
 }
 
-void filter_search_bar::on_show_clear_button_change()
+void FilterSearchToolbar::on_show_clear_button_change()
 {
     TBBUTTONINFO tbbi;
     memset(&tbbi, 0, sizeof(tbbi));
@@ -133,7 +133,7 @@ void filter_search_bar::on_show_clear_button_change()
     on_size();
 }
 
-bool filter_search_bar::g_activate()
+bool FilterSearchToolbar::g_activate()
 {
     if (g_active_instances.get_count()) {
         g_active_instances[0]->activate();
@@ -142,35 +142,35 @@ bool filter_search_bar::g_activate()
     return false;
 }
 
-bool filter_search_bar::g_filter_search_bar_has_stream(
-    filter_search_bar const* p_seach_bar, const filter_stream_t* p_stream)
+bool FilterSearchToolbar::g_filter_search_bar_has_stream(
+    FilterSearchToolbar const* p_seach_bar, const FilterStream* p_stream)
 {
-    pfc::list_t<filter_stream_t::ptr> p_streams;
+    pfc::list_t<FilterStream::ptr> p_streams;
     g_get_search_bar_sibling_streams(p_seach_bar, p_streams);
-    return p_streams.have_item(const_cast<filter_stream_t*>(p_stream)); // meh
+    return p_streams.have_item(const_cast<FilterStream*>(p_stream)); // meh
 }
 
-void filter_search_bar::s_on_favourites_change()
+void FilterSearchToolbar::s_on_favourites_change()
 {
     for (size_t i{0}; i < g_active_instances.get_count(); ++i) {
         g_active_instances[i]->refresh_favourites(false);
     }
 }
 
-void filter_search_bar::activate()
+void FilterSearchToolbar::activate()
 {
     m_wnd_last_focused = GetFocus();
     SetFocus(m_search_editbox);
 }
 
-void filter_search_bar::on_size(t_size cx, t_size cy)
+void FilterSearchToolbar::on_size(t_size cx, t_size cy)
 {
     // RECT rc_tbb = {0};
     // SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 0, (LPARAM)(&rc_tbb));
     SetWindowPos(m_search_editbox, nullptr, 0, 0, cx - m_toolbar_cx, 200, SWP_NOZORDER);
     SetWindowPos(m_wnd_toolbar, nullptr, cx - m_toolbar_cx, 0, m_toolbar_cx, cy, SWP_NOZORDER);
 }
-void filter_search_bar::on_search_editbox_change()
+void FilterSearchToolbar::on_search_editbox_change()
 {
     if (m_query_timer_active)
         KillTimer(get_wnd(), TIMER_QUERY);
@@ -178,12 +178,12 @@ void filter_search_bar::on_search_editbox_change()
     m_query_timer_active = true;
     update_favourite_icon();
 }
-void filter_search_bar::commit_search_results(const char* str, bool b_force_autosend, bool b_stream_update)
+void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_autosend, bool b_stream_update)
 {
-    pfc::list_t<filter_stream_t::ptr> p_streams;
+    pfc::list_t<FilterStream::ptr> p_streams;
     g_get_search_bar_sibling_streams(this, p_streams);
     if (p_streams.get_count() == 0)
-        p_streams = filter_panel_t::g_streams;
+        p_streams = FilterPanel::g_streams;
 
     t_size stream_count = p_streams.get_count();
     bool b_diff = strcmp(m_active_search_string, str) != 0;
@@ -211,7 +211,7 @@ void filter_search_bar::commit_search_results(const char* str, bool b_force_auto
 
         bool b_autosent = false;
         for (t_size i = 0; i < stream_count; i++) {
-            filter_stream_t::ptr p_stream = p_streams[i];
+            FilterStream::ptr p_stream = p_streams[i];
 
             p_stream->m_source_overriden = !b_reset;
             p_stream->m_source_handles = m_active_handles;
@@ -220,7 +220,7 @@ void filter_search_bar::commit_search_results(const char* str, bool b_force_auto
                 t_size filter_count = p_stream->m_windows.get_count();
                 if (filter_count) {
                     bool b_stream_visible = p_stream->is_visible(); // mask_visible.get(i);
-                    pfc::list_t<filter_panel_t*> ordered_windows;
+                    pfc::list_t<FilterPanel*> ordered_windows;
                     p_stream->m_windows[0]->get_windows(ordered_windows);
                     if (ordered_windows.get_count()) {
                         if (b_diff)
@@ -239,7 +239,7 @@ void filter_search_bar::commit_search_results(const char* str, bool b_force_auto
     }
 }
 
-LRESULT filter_search_bar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE:
@@ -361,7 +361,7 @@ LRESULT filter_search_bar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void filter_search_bar::refresh_favourites(bool is_initial)
+void FilterSearchToolbar::refresh_favourites(bool is_initial)
 {
     if (!is_initial)
         ComboBox_ResetContent(m_search_editbox);
@@ -375,7 +375,7 @@ void filter_search_bar::refresh_favourites(bool is_initial)
         update_favourite_icon();
 }
 
-void filter_search_bar::update_favourite_icon(const char* p_new)
+void FilterSearchToolbar::update_favourite_icon(const char* p_new)
 {
     bool new_state = cfg_favourites.have_item(p_new ? p_new : string_utf8_from_window(m_search_editbox));
     if (m_favourite_state != new_state) {
@@ -391,7 +391,7 @@ void filter_search_bar::update_favourite_icon(const char* p_new)
     }
 }
 
-void filter_search_bar::create_edit()
+void FilterSearchToolbar::create_edit()
 {
     m_favourite_state = false;
 
@@ -483,13 +483,13 @@ void filter_search_bar::create_edit()
     on_size();
 }
 
-LRESULT WINAPI filter_search_bar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI FilterSearchToolbar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    auto p_this = reinterpret_cast<filter_search_bar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    auto p_this = reinterpret_cast<FilterSearchToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
-LRESULT filter_search_bar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_KILLFOCUS:

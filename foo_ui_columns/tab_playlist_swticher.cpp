@@ -2,7 +2,7 @@
 #include "playlist_switcher_v2.h"
 #include "config.h"
 
-static class tab_playlist_switcher : public preferences_tab {
+static class TabPlaylistSwitcher : public PreferencesTab {
 public:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
@@ -74,7 +74,7 @@ private:
 
 } g_tab_playlist_switcher;
 
-preferences_tab* g_get_tab_playlist_switcher()
+PreferencesTab* g_get_tab_playlist_switcher()
 {
     return &g_tab_playlist_switcher;
 }

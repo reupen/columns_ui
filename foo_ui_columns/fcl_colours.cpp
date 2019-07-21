@@ -4,7 +4,7 @@
 #include "config.h"
 #include "tab_colours.h"
 
-class export_colours : public cui::fcl::dataset {
+class ColoursDataSet : public cui::fcl::dataset {
     enum t_colour_pview_identifiers {
         colours_pview_mode,
         colours_pview_background,
@@ -140,9 +140,9 @@ class export_colours : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<export_colours> g_export_colours_t;
+cui::fcl::dataset_factory<ColoursDataSet> g_export_colours_t;
 
-class export_colours_switcher : public cui::fcl::dataset {
+class PlaylistSwitcherAppearanceDataSet : public cui::fcl::dataset {
     enum t_colour_switcher_identifiers {
         colours_switcher_mode, // not used
         colours_switcher_background,
@@ -227,9 +227,9 @@ class export_colours_switcher : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<export_colours_switcher> g_export_colours_switcher_t;
+cui::fcl::dataset_factory<PlaylistSwitcherAppearanceDataSet> g_export_colours_switcher_t;
 
-class export_misc_fonts : public cui::fcl::dataset {
+class FontsDataSet : public cui::fcl::dataset {
     enum t_colour_pview_identifiers {
         font_status,
     };
@@ -280,4 +280,4 @@ class export_misc_fonts : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<export_misc_fonts> g_export_misc_fonts_t;
+cui::fcl::dataset_factory<FontsDataSet> g_export_misc_fonts_t;

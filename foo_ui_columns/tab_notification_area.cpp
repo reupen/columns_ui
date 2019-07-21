@@ -2,7 +2,7 @@
 #include "config.h"
 #include "notification_area.h"
 
-static class tab_sys : public preferences_tab {
+static class TabNotificationArea : public PreferencesTab {
 public:
     bool m_initialised{};
 
@@ -90,7 +90,7 @@ public:
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_sys;
 
-preferences_tab* g_get_tab_sys()
+PreferencesTab* g_get_tab_sys()
 {
     return &g_tab_sys;
 }

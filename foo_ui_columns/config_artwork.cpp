@@ -8,25 +8,25 @@ extern cfg_uint cfg_fb2k_artwork_mode, cfg_edge_style;
 void g_on_repository_change();
 } // namespace artwork_panel
 
-class artwork_source_t {
+class ArtworkSource {
 public:
     cfg_objList<pfc::string8>* m_scripts;
     const char* m_name;
 
-    artwork_source_t(cfg_objList<pfc::string8>& p_scripts, const char* p_name)
+    ArtworkSource(cfg_objList<pfc::string8>& p_scripts, const char* p_name)
         : m_scripts(&p_scripts), m_name(p_name){};
 };
 
-artwork_source_t g_artwork_sources[] = {
-    artwork_source_t(artwork_panel::cfg_front_scripts, "Front cover"),
-    artwork_source_t(artwork_panel::cfg_back_scripts, "Back cover"),
-    artwork_source_t(artwork_panel::cfg_disc_scripts, "Disc cover"),
-    artwork_source_t(artwork_panel::cfg_artist_scripts, "Artist picture"),
+ArtworkSource g_artwork_sources[] = {
+    ArtworkSource(artwork_panel::cfg_front_scripts, "Front cover"),
+    ArtworkSource(artwork_panel::cfg_back_scripts, "Back cover"),
+    ArtworkSource(artwork_panel::cfg_disc_scripts, "Disc cover"),
+    ArtworkSource(artwork_panel::cfg_artist_scripts, "Artist picture"),
 };
 
-static class tab_artwork : public preferences_tab {
+static class TabArtwork : public PreferencesTab {
 public:
-    tab_artwork() = default;
+    TabArtwork() = default;
 
     static t_size get_combined_index(t_size index, t_size subindex)
     {
@@ -73,10 +73,10 @@ public:
         get_group_combined_index(index, combined_index_start, count);
     }
 
-    class t_list_view_artwork : public uih::ListView {
+    class ListViewArtwork : public uih::ListView {
     public:
         t_size m_edit_index, m_edit_subindex, m_edit_combined_index;
-        t_list_view_artwork()
+        ListViewArtwork()
             : m_edit_index(pfc_infinite), m_edit_subindex(pfc_infinite), m_edit_combined_index(pfc_infinite){};
 
         void notify_on_create() override
@@ -356,7 +356,7 @@ private:
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 } g_tab_artwork;
 
-preferences_tab* g_get_tab_artwork()
+PreferencesTab* g_get_tab_artwork()
 {
     return &g_tab_artwork;
 }

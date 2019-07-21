@@ -43,8 +43,8 @@ void appearance_message_window_t::g_initialise()
 
 ColoursManagerData g_colours_manager_data;
 FontsManagerData g_fonts_manager_data;
-tab_appearance g_tab_appearance;
-tab_appearance_fonts g_tab_appearance_fonts;
+TabColours g_tab_appearance;
+TabFonts g_tab_appearance_fonts;
 
 class colours_manager_instance_impl : public cui::colours::manager_instance {
 public:
@@ -270,7 +270,7 @@ void refresh_appearance_prefs()
     }
 }
 
-static preferences_tab* g_tabs_appearance[] = {&g_tab_appearance, &g_tab_appearance_fonts};
+static PreferencesTab* g_tabs_appearance[] = {&g_tab_appearance, &g_tab_appearance_fonts};
 
 // {FA25D859-C808-485d-8AB7-FCC10F29ECE5}
 const GUID g_guid_cfg_child_appearance = {0xfa25d859, 0xc808, 0x485d, {0x8a, 0xb7, 0xfc, 0xc1, 0xf, 0x29, 0xec, 0xe5}};
@@ -281,7 +281,7 @@ cfg_int cfg_child_appearance(g_guid_cfg_child_appearance, 0);
 constexpr const GUID g_guid_colour_preferences
     = {0x41e6d7ed, 0xa1dc, 0x4d84, {0x9b, 0xc9, 0x35, 0x2d, 0xaf, 0x77, 0x88, 0xb0}};
 
-static service_factory_single_t<config_host_generic> g_config_tabs("Colours and fonts", g_tabs_appearance,
+static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and fonts", g_tabs_appearance,
     tabsize(g_tabs_appearance), g_guid_colour_preferences, g_guid_columns_ui_preferences_page, &cfg_child_appearance);
 
 class fcl_colours_t : public cui::fcl::dataset {

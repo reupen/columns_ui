@@ -4,7 +4,7 @@
 #include "prefs_utils.h"
 #include "playlist_item_helpers.h"
 
-static class tab_display2 : public preferences_tab {
+static class TabPlaylistViewGeneral : public PreferencesTab {
     void refresh_me(HWND wnd)
     {
         SendDlgItemMessage(wnd, IDC_HEADER, BM_SETCHECK, cfg_header, 0);
@@ -156,7 +156,7 @@ private:
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_display2;
 
-preferences_tab* g_get_tab_display2()
+PreferencesTab* g_get_tab_display2()
 {
     return &g_tab_display2;
 }

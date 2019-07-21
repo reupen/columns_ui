@@ -715,7 +715,7 @@ public:
     IDropSource_playlist(ng_playlist_view_t* playlist, DWORD initial_key_state);
 };
 
-class preferences_tab_impl : public preferences_tab {
+class preferences_tab_impl : public PreferencesTab {
 public:
     HWND create(HWND wnd) override
     {

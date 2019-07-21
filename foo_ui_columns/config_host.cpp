@@ -3,7 +3,7 @@
 #include "config_host.h"
 #include "prefs_utils.h"
 
-void config_host_generic::make_child()
+void PreferencesTabsHost::make_child()
 {
     destroy_child();
 
@@ -34,14 +34,14 @@ void config_host_generic::make_child()
     // UpdateWindow(child);
 }
 
-BOOL config_host_generic::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL PreferencesTabsHost::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    config_host_generic* p_instance;
+    PreferencesTabsHost* p_instance;
     if (msg == WM_INITDIALOG) {
-        p_instance = reinterpret_cast<config_host_generic*>(lp);
+        p_instance = reinterpret_cast<PreferencesTabsHost*>(lp);
         SetWindowLongPtr(wnd, DWLP_USER, lp);
     } else
-        p_instance = reinterpret_cast<config_host_generic*>(GetWindowLongPtr(wnd, DWLP_USER));
+        p_instance = reinterpret_cast<PreferencesTabsHost*>(GetWindowLongPtr(wnd, DWLP_USER));
     return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
 }
 
@@ -103,7 +103,7 @@ void PreferencesTabHelper::on_ncdestroy()
 
 } // namespace cui::prefs
 
-void config_host_generic::show_tab(const char* tab_name)
+void PreferencesTabsHost::show_tab(const char* tab_name)
 {
     for (size_t n = 0; n < m_tab_count; n++) {
         if (!strcmp(m_tabs[n]->get_name(), tab_name)) {
@@ -121,7 +121,7 @@ void config_host_generic::show_tab(const char* tab_name)
     }
 }
 
-BOOL config_host_generic::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL PreferencesTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {

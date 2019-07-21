@@ -19,7 +19,7 @@ public:
     LayoutTabNode() : m_item(pfc::rcnew_t<uie::splitter_item_ptr>()) {}
 };
 
-class LayoutTab : public preferences_tab {
+class LayoutTab : public PreferencesTab {
 public:
     HWND create(HWND wnd) override;
     const char* get_name() override;

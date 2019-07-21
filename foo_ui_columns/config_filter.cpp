@@ -3,10 +3,10 @@
 #include "filter_config_var.h"
 #include "config.h"
 
-class t_list_view_filter : public uih::ListView {
+class FieldList : public uih::ListView {
 public:
     t_size m_edit_index, m_edit_column;
-    t_list_view_filter() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite){};
+    FieldList() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite){};
 
     void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl) override
     {
@@ -52,7 +52,7 @@ public:
         if (m_edit_index < filter_panel::cfg_field_list.get_count()) {
             pfc::string8& dest = m_edit_column ? filter_panel::cfg_field_list[m_edit_index].m_field
                                                : filter_panel::cfg_field_list[m_edit_index].m_name;
-            filter_panel::field_t field_old = filter_panel::cfg_field_list[m_edit_index];
+            filter_panel::Field field_old = filter_panel::cfg_field_list[m_edit_index];
             if (strcmp(dest, value) != 0) {
                 pfc::string8 valueReal = value;
                 if (m_edit_column == 0)
@@ -66,9 +66,9 @@ public:
                 }
                 replace_items(m_edit_index, items);
                 if (m_edit_column == 0)
-                    filter_panel::filter_panel_t::g_on_field_title_change(field_old.m_name, valueReal);
+                    filter_panel::FilterPanel::g_on_field_title_change(field_old.m_name, valueReal);
                 else
-                    filter_panel::filter_panel_t::g_on_field_query_change(filter_panel::cfg_field_list[m_edit_index]);
+                    filter_panel::FilterPanel::g_on_field_query_change(filter_panel::cfg_field_list[m_edit_index]);
             }
         }
         m_edit_column = pfc_infinite;
@@ -78,11 +78,11 @@ public:
 private:
 };
 
-static class tab_filter_fields : public preferences_tab {
-    t_list_view_filter m_field_list;
+static class TabFilterFields : public PreferencesTab {
+    FieldList m_field_list;
 
 public:
-    tab_filter_fields() = default;
+    TabFilterFields() = default;
 
     void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
     {
@@ -140,7 +140,7 @@ public:
                         index++;
                     if (index && filter_panel::cfg_field_list.get_count()) {
                         filter_panel::cfg_field_list.swap_items(index, index - 1);
-                        filter_panel::filter_panel_t::g_on_fields_swapped(index, index - 1);
+                        filter_panel::FilterPanel::g_on_fields_swapped(index, index - 1);
 
                         pfc::list_t<uih::ListView::InsertItem> items;
                         get_insert_items(index - 1, 2, items);
@@ -156,7 +156,7 @@ public:
                         index++;
                     if (index + 1 < count && index + 1 < filter_panel::cfg_field_list.get_count()) {
                         filter_panel::cfg_field_list.swap_items(index, index + 1);
-                        filter_panel::filter_panel_t::g_on_fields_swapped(index, index + 1);
+                        filter_panel::FilterPanel::g_on_fields_swapped(index, index + 1);
 
                         pfc::list_t<uih::ListView::InsertItem> items;
                         get_insert_items(index, 2, items);
@@ -166,11 +166,11 @@ public:
                 }
             } break;
             case IDC_NEW: {
-                filter_panel::field_t temp;
+                filter_panel::Field temp;
                 temp.m_name = "<enter name here>";
                 temp.m_field = "<enter field here>";
                 t_size index = filter_panel::cfg_field_list.add_item(temp);
-                filter_panel::filter_panel_t::g_on_new_field(temp);
+                filter_panel::FilterPanel::g_on_new_field(temp);
 
                 pfc::list_t<uih::ListView::InsertItem> items;
                 get_insert_items(index, 1, items);
@@ -194,7 +194,7 @@ public:
                     if (index < count && index < filter_panel::cfg_field_list.get_count()) {
                         filter_panel::cfg_field_list.remove_by_idx(index);
                         m_field_list.remove_item(index);
-                        filter_panel::filter_panel_t::g_on_field_removed(index);
+                        filter_panel::FilterPanel::g_on_field_removed(index);
                         t_size new_count = m_field_list.get_item_count();
                         if (new_count) {
                             if (index < new_count)
@@ -226,9 +226,9 @@ private:
     bool m_initialising{false};
 } g_tab_filter_fields;
 
-static class tab_filter_appearance : public preferences_tab {
+static class TabFilterAppearance : public PreferencesTab {
 public:
-    tab_filter_appearance() = default;
+    TabFilterAppearance() = default;
 
     void on_init_dialog(HWND wnd)
     {
@@ -261,22 +261,22 @@ public:
             switch (wp) {
             case IDC_FILTERS_SHOW_COLUMN_TITLES:
                 filter_panel::cfg_show_column_titles = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::filter_panel_t::g_on_show_column_titles_change();
+                filter_panel::FilterPanel::g_on_show_column_titles_change();
                 break;
             case IDC_FILTERS_SHOW_SORT_INDICATORS:
                 filter_panel::cfg_show_sort_indicators = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::filter_panel_t::g_on_show_sort_indicators_change();
+                filter_panel::FilterPanel::g_on_show_sort_indicators_change();
                 break;
             case IDC_PADDING | EN_CHANGE << 16:
                 if (!m_initialising) {
                     filter_panel::cfg_vertical_item_padding
                         = strtol(string_utf8_from_window(reinterpret_cast<HWND>(lp)).get_ptr(), nullptr, 10);
-                    filter_panel::filter_panel_t::g_on_vertical_item_padding_change();
+                    filter_panel::FilterPanel::g_on_vertical_item_padding_change();
                 }
                 break;
             case IDC_EDGESTYLE | CBN_SELCHANGE << 16:
                 filter_panel::cfg_edgestyle = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-                filter_panel::filter_panel_t::g_on_edgestyle_change();
+                filter_panel::FilterPanel::g_on_edgestyle_change();
                 break;
             }
         }
@@ -299,9 +299,9 @@ private:
     bool m_initialising{false};
 } g_tab_filter_appearance;
 
-static class tab_filter_behaviour : public preferences_tab {
+static class TabFilterBehaviour : public PreferencesTab {
 public:
-    tab_filter_behaviour() = default;
+    TabFilterBehaviour() = default;
 
     void on_init_dialog(HWND wnd)
     {
@@ -366,18 +366,18 @@ public:
                 break;
             case IDC_FILTERS_ALLOW_SORTING:
                 filter_panel::cfg_allow_sorting = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::filter_panel_t::g_on_allow_sorting_change();
+                filter_panel::FilterPanel::g_on_allow_sorting_change();
                 break;
             case IDC_SHOWEMPTY:
                 filter_panel::cfg_showemptyitems = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::filter_panel_t::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems);
+                filter_panel::FilterPanel::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems);
                 break;
             case IDC_SORT_STRING | EN_CHANGE << 16:
                 filter_panel::cfg_sort_string = string_utf8_from_window(reinterpret_cast<HWND>(lp));
                 break;
             case IDC_PRECEDENCE | CBN_SELCHANGE << 16:
                 filter_panel::cfg_orderedbysplitters = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)) == 0;
-                filter_panel::filter_panel_t::g_on_orderedbysplitters_change();
+                filter_panel::FilterPanel::g_on_orderedbysplitters_change();
                 break;
             case IDC_MIDDLE | CBN_SELCHANGE << 16:
                 filter_panel::cfg_middleclickaction = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
@@ -406,11 +406,11 @@ private:
     bool m_initialising{false};
 } g_tab_filter_behaviour;
 
-preferences_tab* g_tabs_filters[] = {&g_tab_filter_behaviour, &g_tab_filter_appearance, &g_tab_filter_fields};
+PreferencesTab* g_tabs_filters[] = {&g_tab_filter_behaviour, &g_tab_filter_appearance, &g_tab_filter_fields};
 
 cfg_int cfg_child_filters({0xe57a430e, 0x51bb, 0x4fcc, {0xb0, 0xbc, 0x9d, 0x22, 0x8b, 0x89, 0x1a, 0x17}}, 0);
 
 constexpr GUID guid_filters_page = {0x71a480e2, 0x9007, 0x4315, {0x8d, 0xf3, 0x81, 0x63, 0x6c, 0x74, 0xa, 0xad}};
 
-service_factory_single_t<config_host_generic> page_filters("Filters", g_tabs_filters, tabsize(g_tabs_filters),
+service_factory_single_t<PreferencesTabsHost> page_filters("Filters", g_tabs_filters, tabsize(g_tabs_filters),
     guid_filters_page, g_guid_columns_ui_preferences_page, &cfg_child_filters);

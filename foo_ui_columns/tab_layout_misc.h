@@ -3,7 +3,7 @@
 
 namespace cui::prefs {
 
-class LayoutMiscTab : public preferences_tab {
+class LayoutMiscTab : public PreferencesTab {
 public:
     HWND create(HWND wnd) override;
     const char* get_name() override;

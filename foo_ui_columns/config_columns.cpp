@@ -8,9 +8,9 @@ cfg_int g_cur_tab(GUID{0x1f7903e5, 0x9523, 0xac7e, {0xd4, 0xea, 0x13, 0xdd, 0xe5
 
 cfg_uint g_last_colour(GUID{0xd352a60a, 0x4d87, 0x07b9, {0x09, 0x07, 0x03, 0xa1, 0xe0, 0x08, 0x03, 0x2f}}, 0);
 
-editor_font_notify g_editor_font_notify;
+EditorFontNotify g_editor_font_notify;
 
-struct column_times {
+struct ColumnTimes {
     service_ptr_t<titleformat_object> to_display;
     service_ptr_t<titleformat_object> to_colour;
     double time_display_compile{};
@@ -54,7 +54,7 @@ void speedtest(column_list_cref_t columns, bool b_global)
     bool b_column_times_valid = false;
 
     unsigned column_count = columns.get_count();
-    pfc::array_t<column_times> times_columns;
+    pfc::array_t<ColumnTimes> times_columns;
     times_columns.set_size(column_count);
 
     {

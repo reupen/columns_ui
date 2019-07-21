@@ -4,7 +4,7 @@
 
 namespace filter_panel {
 
-class appearance_client_filter_impl : public cui::colours::client {
+class AppearanceClient : public cui::colours::client {
 public:
     static const GUID g_guid;
 
@@ -17,14 +17,14 @@ public:
     void on_bool_changed(t_size mask) const override {}
 };
 
-class field_t {
+class Field {
 public:
     pfc::string8 m_name;
     pfc::string8 m_field;
     bool m_last_sort_direction{};
 };
 
-class node_t {
+class Node {
 public:
     metadb_handle_list_t<pfc::alloc_fast_aggressive> m_handles;
     pfc::string_simple_t<WCHAR> m_value;
@@ -33,11 +33,11 @@ public:
     void ensure_handles_sorted();
     void remove_handles(metadb_handle_list_cref to_remove);
 
-    static int g_compare(const node_t& i1, const WCHAR* i2);
-    static int g_compare_ptr_with_node(const node_t& i1, const node_t& i2);
+    static int g_compare(const Node& i1, const WCHAR* i2);
+    static int g_compare_ptr_with_node(const Node& i1, const Node& i2);
 };
 
-class field_data_t {
+class FieldData {
 public:
     bool m_use_script{};
     bool m_last_sort_direction{};
@@ -46,28 +46,28 @@ public:
     pfc::list_t<pfc::string8> m_fields;
 
     bool is_empty() const { return !m_use_script && !m_fields.get_count(); }
-    void reset() { *this = field_data_t(); }
+    void reset() { *this = FieldData(); }
 };
 
-class data_entry_t {
+class DataEntry {
 public:
     metadb_handle_ptr m_handle;
     pfc::array_t<WCHAR> m_text;
 
     bool m_same_as_next{};
 
-    static int g_compare(const data_entry_t& i1, const data_entry_t& i2)
+    static int g_compare(const DataEntry& i1, const DataEntry& i2)
     {
         return StrCmpLogicalW(i1.m_text.get_ptr(), i2.m_text.get_ptr());
     }
 };
 
-class filter_stream_t : public pfc::refcounted_object_root {
+class FilterStream : public pfc::refcounted_object_root {
 public:
-    using self_t = filter_stream_t;
+    using self_t = FilterStream;
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
     /** Unordered */
-    pfc::ptr_list_t<class filter_panel_t> m_windows;
+    pfc::ptr_list_t<class FilterPanel> m_windows;
 
     bool m_source_overriden{false};
     metadb_handle_list m_source_handles;
@@ -75,10 +75,10 @@ public:
     bool is_visible();
 };
 
-class filter_panel_t
-    : public t_list_view_panel<appearance_client_filter_impl, uie::window>
+class FilterPanel
+    : public t_list_view_panel<AppearanceClient, uie::window>
     , fbh::LibraryCallback {
-    friend class filter_search_bar;
+    friend class FilterSearchToolbar;
 
 public:
     enum { TIMER_QUERY = TIMER_BASE };
@@ -102,17 +102,17 @@ public:
     static void g_on_show_column_titles_change();
     static void g_on_allow_sorting_change();
     static void g_on_show_sort_indicators_change();
-    static void g_on_field_query_change(const field_t& field);
+    static void g_on_field_query_change(const Field& field);
     static void g_on_showemptyitems_change(bool b_val, bool update_filters = true);
     static void g_on_edgestyle_change();
     static void g_on_font_items_change();
     static void g_on_font_header_change();
     static void g_redraw_all();
-    static void g_on_new_field(const field_t& field);
+    static void g_on_new_field(const Field& field);
     static void g_on_fields_swapped(t_size index_1, t_size index_2);
     static void g_on_field_removed(t_size index);
 
-    ~filter_panel_t() = default;
+    ~FilterPanel() = default;
 
     bool is_visible() const
     {
@@ -127,30 +127,30 @@ public:
     void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
-    filter_stream_t::ptr m_stream;
+    FilterStream::ptr m_stream;
 
 private:
     static const GUID g_extension_guid;
-    static pfc::list_t<filter_stream_t::ptr> g_streams;
-    static std::vector<filter_panel_t*> g_windows;
-    static pfc::list_t<field_data_t> g_field_data;
+    static pfc::list_t<FilterStream::ptr> g_streams;
+    static std::vector<FilterPanel*> g_windows;
+    static pfc::list_t<FieldData> g_field_data;
 
-    field_data_t m_field_data;
+    FieldData m_field_data;
 
-    static void g_create_field_data(const field_t& field, field_data_t& p_out);
+    static void g_create_field_data(const Field& field, FieldData& p_out);
     static void g_load_fields();
-    static void g_update_subsequent_filters(const pfc::list_base_const_t<filter_panel_t*>& windows, t_size index,
+    static void g_update_subsequent_filters(const pfc::list_base_const_t<FilterPanel*>& windows, t_size index,
         bool b_check_needs_update = false, bool b_update_playlist = true);
 
     t_size get_field_index();
-    void set_field(const field_data_t& field, bool b_force = false);
-    void get_windows(pfc::list_base_t<filter_panel_t*>& windows);
-    filter_panel_t* get_next_window();
+    void set_field(const FieldData& field, bool b_force = false);
+    void get_windows(pfc::list_base_t<FilterPanel*>& windows);
+    FilterPanel* get_next_window();
 
     void get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out);
     void update_subsequent_filters(bool b_allow_autosend = true);
     size_t make_data_entries(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& handles,
-        pfc::list_t<data_entry_t, pfc::alloc_fast_aggressive>& p_out, bool b_show_empty);
+        pfc::list_t<DataEntry, pfc::alloc_fast_aggressive>& p_out, bool b_show_empty);
     void populate_list(const metadb_handle_list_t<pfc::alloc_fast>& handles);
     void populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain);
     void refresh(bool b_allow_autosend = true);
@@ -210,7 +210,7 @@ private:
     pfc::string8 m_edit_previous_value;
     pfc::list_t<pfc::string8> m_edit_fields;
     metadb_handle_list m_edit_handles;
-    pfc::list_t<node_t> m_nodes;
+    pfc::list_t<Node> m_nodes;
     bool m_show_search{false};
     bool m_pending_sort_direction{false};
     contextmenu_manager::ptr m_contextmenu_manager;

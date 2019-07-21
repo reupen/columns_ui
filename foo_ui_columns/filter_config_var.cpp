@@ -19,7 +19,7 @@ const GUID g_guid_show_column_titles{0x236dcbf0, 0x3cc, 0x4d67, {0xa4, 0x5b, 0x2
 const GUID g_guid_allow_sorting{0x874794a3, 0x904c, 0x4fda, {0x8d, 0xf6, 0x2a, 0xda, 0x1, 0xe3, 0x69, 0x7a}};
 const GUID g_guid_show_sort_indicators{0x71e31f54, 0xf410, 0x4f76, {0x84, 0x6d, 0x85, 0x86, 0x72, 0x3e, 0xcc, 0x8a}};
 
-cfg_fields_t cfg_field_list(guid_cfg_fields);
+ConfigFields cfg_field_list(guid_cfg_fields);
 
 cfg_string cfg_sort_string(g_guid_cfg_sort_string, "%album artist% - %album% - %discnumber% - %tracknumber% - %title%");
 cfg_bool cfg_sort(g_guid_cfg_sort, true);
@@ -38,9 +38,9 @@ fbh::ConfigBool cfg_reverse_sort_tracks(
 
 cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 
-cfg_favouriteslist cfg_favourites(g_guid_favouritequeries);
+ConfigFavourites cfg_favourites(g_guid_favouritequeries);
 
-void cfg_fields_t::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ConfigFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
@@ -75,7 +75,7 @@ void cfg_fields_t::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abor
         }
     }
 }
-void cfg_fields_t::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
+void ConfigFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t((t_uint32)stream_version_current, p_abort);
     t_uint32 i, count = gsl::narrow<uint32_t>(get_count());
@@ -97,7 +97,7 @@ void cfg_fields_t::get_data_raw(stream_writer* p_stream, abort_callback& p_abort
         p_stream->write(field_writer.m_data.get_ptr(), field_writer.m_data.get_size(), p_abort);
     }
 }
-void cfg_fields_t::reset()
+void ConfigFields::reset()
 {
     set_count(3);
     t_size i = 0;
@@ -109,7 +109,7 @@ void cfg_fields_t::reset()
     (*this)[i].m_name = ((*this)[i].m_field = "Album");
 }
 
-bool cfg_fields_t::have_name(const char* p_name)
+bool ConfigFields::have_name(const char* p_name)
 {
     t_size count = get_count();
     for (t_size i = 0; i < count; i++)
@@ -118,7 +118,7 @@ bool cfg_fields_t::have_name(const char* p_name)
     return false;
 }
 
-bool cfg_fields_t::find_by_name(const char* p_name, size_t& p_index)
+bool ConfigFields::find_by_name(const char* p_name, size_t& p_index)
 {
     t_size count = get_count();
     for (t_size i = 0; i < count; i++)
@@ -129,7 +129,7 @@ bool cfg_fields_t::find_by_name(const char* p_name, size_t& p_index)
     return false;
 }
 
-void cfg_fields_t::fix_name(const char* p_name, pfc::string8& p_out)
+void ConfigFields::fix_name(const char* p_name, pfc::string8& p_out)
 {
     t_size i = 0;
     p_out = p_name;
@@ -138,12 +138,12 @@ void cfg_fields_t::fix_name(const char* p_name, pfc::string8& p_out)
         p_out << p_name << " (" << (++i) << ")";
     }
 }
-void cfg_fields_t::fix_name(pfc::string8& p_name)
+void ConfigFields::fix_name(pfc::string8& p_name)
 {
     fix_name(pfc::string8(p_name), p_name);
 }
 
-void cfg_favouriteslist::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
+void ConfigFavourites::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
     t_uint32 m = gsl::narrow<t_uint32>(get_count()), v = 0;
     p_stream->write_lendian_t(v, p_abort);
@@ -152,7 +152,7 @@ void cfg_favouriteslist::get_data_raw(stream_writer* p_stream, abort_callback& p
         p_stream->write_string(get_item(n), p_abort);
 }
 
-void cfg_favouriteslist::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ConfigFavourites::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
     t_uint32 count, version;
     p_stream->read_lendian_t(version, p_abort);
@@ -167,7 +167,7 @@ void cfg_favouriteslist::set_data_raw(stream_reader* p_stream, t_size p_sizehint
     }
 }
 
-bool cfg_favouriteslist::have_item(const char* p_item)
+bool ConfigFavourites::have_item(const char* p_item)
 {
     t_size count = get_count();
     for (t_size i = 0; i < count; i++)
@@ -176,7 +176,7 @@ bool cfg_favouriteslist::have_item(const char* p_item)
     return false;
 }
 
-bool cfg_favouriteslist::find_item(const char* p_item, t_size& index)
+bool ConfigFavourites::find_item(const char* p_item, t_size& index)
 {
     t_size count = get_count();
     for (t_size i = 0; i < count; i++)

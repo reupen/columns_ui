@@ -4,7 +4,7 @@
 #include "main_window.h"
 #include "status_bar.h"
 
-static class tab_status : public preferences_tab {
+static class TabStatus : public PreferencesTab {
 public:
     bool m_initialised{};
     menu_item_cache* m_cache{};
@@ -84,7 +84,7 @@ public:
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2, IDC_TITLE3}};
 } g_tab_status;
 
-preferences_tab* g_get_tab_status()
+PreferencesTab* g_get_tab_status()
 {
     return &g_tab_status;
 }

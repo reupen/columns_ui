@@ -22,17 +22,17 @@ extern const GUID ng_playlist_header;
 extern const GUID filter_header;
 } // namespace fonts
 
-preferences_tab* g_get_tab_layout();
-preferences_tab* g_get_tab_artwork();
-preferences_tab* g_get_tab_display2();
-preferences_tab* g_get_tab_pview_artwork();
-preferences_tab* g_get_tab_sys();
-preferences_tab* g_get_tab_playlist_switcher();
-preferences_tab* g_get_tab_playlist_tabs();
-preferences_tab* g_get_tab_playlist_dd();
-preferences_tab* g_get_tab_main();
-preferences_tab* g_get_tab_status();
-preferences_tab* g_get_tab_global();
+PreferencesTab* g_get_tab_layout();
+PreferencesTab* g_get_tab_artwork();
+PreferencesTab* g_get_tab_display2();
+PreferencesTab* g_get_tab_pview_artwork();
+PreferencesTab* g_get_tab_sys();
+PreferencesTab* g_get_tab_playlist_switcher();
+PreferencesTab* g_get_tab_playlist_tabs();
+PreferencesTab* g_get_tab_playlist_dd();
+PreferencesTab* g_get_tab_main();
+PreferencesTab* g_get_tab_status();
+PreferencesTab* g_get_tab_global();
 
 void refresh_appearance_prefs();
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);
@@ -41,7 +41,7 @@ void preview_to_console(const char* spec, bool extra);
 
 extern cui::fonts::ConfigFontDescription cfg_editor_font;
 
-class editor_font_notify {
+class EditorFontNotify {
     HFONT g_edit_font{nullptr};
     HWND wnd{nullptr};
     void _set()
@@ -79,12 +79,12 @@ public:
         _release();
     }
 
-    editor_font_notify() = default;
-    editor_font_notify(const editor_font_notify&) = delete;
-    editor_font_notify& operator=(const editor_font_notify&) = delete;
-    editor_font_notify(editor_font_notify&&) = delete;
-    editor_font_notify& operator=(editor_font_notify&&) = delete;
-    ~editor_font_notify()
+    EditorFontNotify() = default;
+    EditorFontNotify(const EditorFontNotify&) = delete;
+    EditorFontNotify& operator=(const EditorFontNotify&) = delete;
+    EditorFontNotify(EditorFontNotify&&) = delete;
+    EditorFontNotify& operator=(EditorFontNotify&&) = delete;
+    ~EditorFontNotify()
     {
         if (g_edit_font) {
             DeleteObject(g_edit_font);
@@ -94,7 +94,7 @@ public:
 };
 void speedtest(column_list_cref_t columns, bool b_global);
 
-extern editor_font_notify g_editor_font_notify;
+extern EditorFontNotify g_editor_font_notify;
 extern cfg_uint g_last_colour;
 extern const GUID g_guid_columns_ui_preferences_page;
 
@@ -103,10 +103,10 @@ void on_global_colours_change();
 cui::colours::colour_mode_t g_get_global_colour_mode();
 void g_set_global_colour_mode(cui::colours::colour_mode_t p_mode);
 
-class string_font_desc : private pfc::string8_fast_aggressive {
+class StringFontDesc : private pfc::string8_fast_aggressive {
 public:
     operator const char*() const { return get_ptr(); }
-    string_font_desc(const LOGFONT& lf)
+    StringFontDesc(const LOGFONT& lf)
     {
         prealloc(64);
         HDC dc = GetDC(nullptr);
@@ -126,9 +126,9 @@ public:
 
 namespace cui {
 namespace prefs {
-extern service_factory_single_t<config_host_generic> page_main;
-extern service_factory_single_t<config_host_generic> page_playlist_view;
-extern service_factory_single_t<config_host_generic> page_playlist_switcher;
-extern service_factory_single_t<config_host_generic> page_filters;
+extern service_factory_single_t<PreferencesTabsHost> page_main;
+extern service_factory_single_t<PreferencesTabsHost> page_playlist_view;
+extern service_factory_single_t<PreferencesTabsHost> page_playlist_switcher;
+extern service_factory_single_t<PreferencesTabsHost> page_filters;
 } // namespace preferences
 } // namespace cui

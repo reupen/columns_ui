@@ -1,8 +1,8 @@
 #pragma once
 
-class column_tab : public pfc::refcounted_object_root {
+class ColumnTab : public pfc::refcounted_object_root {
 public:
-    using self_t = column_tab;
+    using self_t = ColumnTab;
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
     virtual HWND create(HWND wnd) = 0;
     // virtual void destroy(HWND wnd)=0;
@@ -11,18 +11,18 @@ public:
     virtual void get_column(column_t::ptr& p_out) = 0;
 };
 
-class tab_columns_v3 : public preferences_tab {
+class TabColumns : public PreferencesTab {
 private:
     HWND m_wnd_child{nullptr};
     HWND m_wnd{nullptr};
     HWND m_wnd_lv{nullptr};
-    column_tab::ptr m_child;
+    ColumnTab::ptr m_child;
     // edit_column_window_options m_tab_options;
     // edit_column_window_scripts m_tab_scripts;
 public:
-    static tab_columns_v3& get_instance()
+    static TabColumns& get_instance()
     {
-        static tab_columns_v3 tab_columns_v3_;
+        static TabColumns tab_columns_v3_;
         return tab_columns_v3_;
     }
 
@@ -46,7 +46,7 @@ public:
     }
 
 private:
-    tab_columns_v3() = default;
+    TabColumns() = default;
 
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
     column_list_t m_columns;
