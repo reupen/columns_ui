@@ -112,7 +112,7 @@ BOOL preferences_tab_impl::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         switch (wp) {
         case IDC_GROUPING: {
             cfg_grouping = Button_GetCheck(HWND(lp)) == BST_CHECKED;
-            ng_playlist_view_t::g_on_groups_change();
+            PlaylistView::g_on_groups_change();
         } break;
         case IDC_GROUP_UP: {
             HWND list = uGetDlgItem(wnd, IDC_GROUPS);

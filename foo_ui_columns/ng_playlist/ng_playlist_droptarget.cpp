@@ -284,7 +284,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::Drop(
                 class delayed_drop_target_processer_t : public process_locations_notify {
                 public:
                     playlist_position_reference_tracker m_insertIndexTracker;
-                    service_ptr_t<ng_playlist_view_t> p_playlist;
+                    service_ptr_t<PlaylistView> p_playlist;
 
                     void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override
                     {
@@ -321,7 +321,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::Drop(
 
     return S_OK;
 }
-IDropTarget_playlist::IDropTarget_playlist(ng_playlist_view_t* playlist)
+IDropTarget_playlist::IDropTarget_playlist(PlaylistView* playlist)
     : drop_ref_count(0), last_rmb(false), m_is_accepted_type(false), p_playlist(playlist)
 {
     m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);

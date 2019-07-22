@@ -72,7 +72,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_size count;
         reader.read_item(count);
-        column_list_t newcolumns;
+        ColumnList newcolumns;
         for (t_size i = 0; i < count; i++) {
             t_uint32 column_id;
             t_uint32 column_size;
@@ -80,7 +80,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
             reader.read_item(column_id);
             reader.read_item(column_size);
 
-            column_t::ptr item = new column_t;
+            PlaylistViewColumn::ptr item = new PlaylistViewColumn;
 
             fbh::fcl::Reader reader2(reader, column_size, p_abort);
 
@@ -153,7 +153,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
         }
 
         g_columns.set_entries_ref(newcolumns);
-        pvt::ng_playlist_view_t::g_on_columns_change();
+        pvt::PlaylistView::g_on_columns_change();
     }
 };
 
@@ -295,7 +295,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
 
         if (b_groups_set)
             pvt::g_groups.set_groups(newgroups, false);
-        pvt::ng_playlist_view_t::g_on_groups_change();
+        pvt::PlaylistView::g_on_groups_change();
         // pvt::ng_playlist_view_t::g_on_show_artwork_change();
         // pvt::ng_playlist_view_t::g_on_artwork_width_change();
     }
@@ -370,10 +370,10 @@ class PlaylistViewMiscDataSet : public cui::fcl::dataset {
             }
         }
 
-        pvt::ng_playlist_view_t::g_on_autosize_change();
-        pvt::ng_playlist_view_t::g_on_vertical_item_padding_change();
-        pvt::ng_playlist_view_t::g_on_show_header_change();
-        pvt::ng_playlist_view_t::g_update_all_items();
+        pvt::PlaylistView::g_on_autosize_change();
+        pvt::PlaylistView::g_on_vertical_item_padding_change();
+        pvt::PlaylistView::g_on_show_header_change();
+        pvt::PlaylistView::g_update_all_items();
     }
 };
 

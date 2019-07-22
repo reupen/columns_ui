@@ -107,8 +107,8 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             g_set_global_colour_mode(m_previous_colour_mode);
             pvt::cfg_show_artwork = m_previous_show_artwork;
             pvt::cfg_grouping = m_previous_show_grouping;
-            pvt::ng_playlist_view_t::g_on_show_artwork_change();
-            pvt::ng_playlist_view_t::g_on_groups_change();
+            pvt::PlaylistView::g_on_show_artwork_change();
+            pvt::PlaylistView::g_on_groups_change();
         case IDOK:
             DestroyWindow(wnd);
             return 0;
@@ -130,8 +130,8 @@ BOOL setup_dialog_t::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (selection == 0)
                 pvt::cfg_grouping = false;
 
-            pvt::ng_playlist_view_t::g_on_show_artwork_change();
-            pvt::ng_playlist_view_t::g_on_groups_change();
+            pvt::PlaylistView::g_on_show_artwork_change();
+            pvt::PlaylistView::g_on_groups_change();
 
         } break;
         }

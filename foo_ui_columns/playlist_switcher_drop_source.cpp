@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
-bool playlist_switcher_t::do_drag_drop(WPARAM wp)
+bool PlaylistSwitcher::do_drag_drop(WPARAM wp)
 {
     pfc::bit_array_bittable mask(get_item_count());
     get_selection_state(mask);
@@ -23,7 +23,7 @@ bool playlist_switcher_t::do_drag_drop(WPARAM wp)
     return true;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::QueryInterface(REFIID iid, void** ppvObject)
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropSource::QueryInterface(REFIID iid, void** ppvObject)
 {
     if (ppvObject == nullptr)
         return E_INVALIDARG;
@@ -40,11 +40,11 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::QueryInterface(REF
     }
     return E_NOINTERFACE;
 }
-ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::AddRef()
+ULONG STDMETHODCALLTYPE PlaylistSwitcher::DropSource::AddRef()
 {
     return InterlockedIncrement(&refcount);
 }
-ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::Release()
+ULONG STDMETHODCALLTYPE PlaylistSwitcher::DropSource::Release()
 {
     LONG rv = InterlockedDecrement(&refcount);
     if (!rv) {
@@ -53,7 +53,7 @@ ULONG STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::Release()
     return rv;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState)
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropSource::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState)
 {
     if (fEscapePressed || ((m_initial_key_state & MK_LBUTTON) && (grfKeyState & MK_RBUTTON))) {
         return DRAGDROP_S_CANCEL;
@@ -65,10 +65,10 @@ HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::QueryContinueDrag(
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE playlist_switcher_t::IDropSource_t::GiveFeedback(DWORD dwEffect)
+HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropSource::GiveFeedback(DWORD dwEffect)
 {
     return DRAGDROP_S_USEDEFAULTCURSORS;
 }
 
-playlist_switcher_t::IDropSource_t::IDropSource_t(playlist_switcher_t* p_window, DWORD initial_key_state)
+PlaylistSwitcher::DropSource::DropSource(PlaylistSwitcher* p_window, DWORD initial_key_state)
     : refcount(0), m_window(p_window), m_initial_key_state(initial_key_state){};

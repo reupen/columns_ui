@@ -36,8 +36,8 @@ const GUID g_artwork_lowpriority = {0xcb1c1c5d, 0x4f99, 0x4c24, {0xb2, 0x39, 0xa
 // {A28CC736-2B8B-484c-B7A9-4CC312DBD357}
 const GUID g_guid_grouping = {0xa28cc736, 0x2b8b, 0x484c, {0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57}};
 
-std::vector<ng_playlist_view_t*> ng_playlist_view_t::g_windows;
-ng_playlist_view_t::ng_global_mesage_window ng_playlist_view_t::g_global_mesage_window;
+std::vector<PlaylistView*> PlaylistView::g_windows;
+PlaylistView::ng_global_mesage_window PlaylistView::g_global_mesage_window;
 
 cfg_groups_t g_groups(g_groups_guid);
 
@@ -50,18 +50,18 @@ fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
 void cfg_groups_t::swap(t_size index1, t_size index2)
 {
     m_groups.swap_items(index1, index2);
-    ng_playlist_view_t::g_on_groups_change();
+    PlaylistView::g_on_groups_change();
 }
 void cfg_groups_t::replace_group(t_size index, const group_t& p_group)
 {
     m_groups.replace_item(index, p_group);
-    ng_playlist_view_t::g_on_groups_change();
+    PlaylistView::g_on_groups_change();
 }
 t_size cfg_groups_t::add_group(const group_t& p_group, bool notify_playlist_views)
 {
     t_size ret = m_groups.add_item(p_group);
     if (notify_playlist_views)
-        ng_playlist_view_t::g_on_groups_change();
+        PlaylistView::g_on_groups_change();
     return ret;
 }
 
@@ -70,13 +70,13 @@ void cfg_groups_t::set_groups(const pfc::list_base_const_t<group_t>& p_groups, b
     m_groups.remove_all();
     m_groups.add_items(p_groups);
     if (b_update_views)
-        ng_playlist_view_t::g_on_groups_change();
+        PlaylistView::g_on_groups_change();
 }
 
 void cfg_groups_t::remove_group(t_size index)
 {
     m_groups.remove_by_idx(index);
-    ng_playlist_view_t::g_on_groups_change();
+    PlaylistView::g_on_groups_change();
 }
 
 void set_font_size(bool up)
@@ -90,17 +90,17 @@ void set_font_size(bool up)
     api->set_font(pvt::g_guid_items_font, lf_ng);
 }
 
-ng_playlist_view_t::ng_playlist_view_t() : m_dragging_initial_playlist(pfc_infinite){};
+PlaylistView::PlaylistView() : m_dragging_initial_playlist(pfc_infinite){};
 
-ng_playlist_view_t::~ng_playlist_view_t() = default;
+PlaylistView::~PlaylistView() = default;
 
-void ng_playlist_view_t::populate_list()
+void PlaylistView::populate_list()
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     m_playlist_api->activeplaylist_get_all_items(data);
     on_items_added(0, data, pfc::bit_array_false());
 }
-void ng_playlist_view_t::refresh_groups(bool b_update_columns)
+void PlaylistView::refresh_groups(bool b_update_columns)
 {
     static_api_ptr_t<titleformat_compiler> p_compiler;
     service_ptr_t<titleformat_object> p_script, p_script_group;
@@ -134,7 +134,7 @@ void ng_playlist_view_t::refresh_groups(bool b_update_columns)
     set_group_count(used_count, b_update_columns);
 }
 
-t_size ng_playlist_view_t::column_index_display_to_actual(t_size display_index)
+t_size PlaylistView::column_index_display_to_actual(t_size display_index)
 {
     t_size count = m_column_mask.get_count(), counter = 0;
     for (t_size i = 0; i < count; i++) {
@@ -145,7 +145,7 @@ t_size ng_playlist_view_t::column_index_display_to_actual(t_size display_index)
     throw pfc::exception_bug_check();
 }
 
-t_size ng_playlist_view_t::column_index_actual_to_display(t_size actual_index)
+t_size PlaylistView::column_index_actual_to_display(t_size actual_index)
 {
     t_size count = m_column_mask.get_count(), counter = 0;
     for (t_size i = 0; i < count; i++) {
@@ -158,7 +158,7 @@ t_size ng_playlist_view_t::column_index_actual_to_display(t_size actual_index)
     return pfc_infinite;
     // throw pfc::exception_bug_check();
 }
-void ng_playlist_view_t::on_column_widths_change()
+void PlaylistView::on_column_widths_change()
 {
     t_size count = m_column_mask.get_count();
     pfc::list_t<int> widths;
@@ -168,13 +168,13 @@ void ng_playlist_view_t::on_column_widths_change()
     set_column_widths(widths);
 }
 
-void ng_playlist_view_t::g_on_column_widths_change(const ng_playlist_view_t* p_skip)
+void PlaylistView::g_on_column_widths_change(const PlaylistView* p_skip)
 {
     for (auto& window : g_windows)
         if (window != p_skip)
             window->on_column_widths_change();
 }
-void ng_playlist_view_t::refresh_columns()
+void PlaylistView::refresh_columns()
 {
     static_api_ptr_t<titleformat_compiler> p_compiler;
     service_ptr_t<titleformat_object> p_script, p_script_group;
@@ -195,7 +195,7 @@ void ng_playlist_view_t::refresh_columns()
     t_size count = g_columns.get_count();
     m_column_mask.set_size(count);
     for (t_size i = 0; i < count; i++) {
-        column_t* source = g_columns[i].get_ptr();
+        PlaylistViewColumn* source = g_columns[i].get_ptr();
         bool b_valid = false;
         if (source->show) {
             switch (source->filter_type) {
@@ -231,12 +231,12 @@ void ng_playlist_view_t::refresh_columns()
     set_columns(columns);
 }
 
-void ng_playlist_view_t::g_on_groups_change()
+void PlaylistView::g_on_groups_change()
 {
     for (auto& window : g_windows)
         window->on_groups_change();
 }
-void ng_playlist_view_t::on_groups_change()
+void PlaylistView::on_groups_change()
 {
     if (get_wnd()) {
         clear_all_items();
@@ -245,7 +245,7 @@ void ng_playlist_view_t::on_groups_change()
     }
 }
 
-void ng_playlist_view_t::update_all_items(bool b_update_display)
+void PlaylistView::update_all_items(bool b_update_display)
 {
     static_api_ptr_t<titleformat_compiler> p_compiler;
     service_ptr_t<titleformat_object> p_script, p_script_group;
@@ -259,12 +259,12 @@ void ng_playlist_view_t::update_all_items(bool b_update_display)
 
     refresh_all_items_text(b_update_display);
 }
-void ng_playlist_view_t::refresh_all_items_text(bool b_update_display)
+void PlaylistView::refresh_all_items_text(bool b_update_display)
 {
     update_items(0, get_item_count(), false);
     invalidate_all();
 }
-void ng_playlist_view_t::update_items(t_size index, t_size count, bool b_update_display)
+void PlaylistView::update_items(t_size index, t_size count, bool b_update_display)
 {
     for (t_size i = 0; i < count; i++) {
         t_size cg = get_item(i + index)->get_group_count();
@@ -274,22 +274,22 @@ void ng_playlist_view_t::update_items(t_size index, t_size count, bool b_update_
     }
     uih::ListView::update_items(index, count, b_update_display);
 }
-void ng_playlist_view_t::g_on_autosize_change()
+void PlaylistView::g_on_autosize_change()
 {
     for (auto& window : g_windows)
         window->set_autosize(cfg_nohscroll != 0);
 }
-void ng_playlist_view_t::g_on_show_artwork_change()
+void PlaylistView::g_on_show_artwork_change()
 {
     for (auto& window : g_windows)
         window->set_show_group_info_area(cfg_show_artwork);
 }
-void ng_playlist_view_t::g_on_alternate_selection_change()
+void PlaylistView::g_on_alternate_selection_change()
 {
     for (auto& window : g_windows)
         window->set_alternate_selection_model(cfg_alternative_sel != 0);
 }
-void ng_playlist_view_t::g_on_artwork_width_change(const ng_playlist_view_t* p_skip)
+void PlaylistView::g_on_artwork_width_change(const PlaylistView* p_skip)
 {
     for (auto& window : g_windows) {
         if (window != p_skip) {
@@ -299,7 +299,7 @@ void ng_playlist_view_t::g_on_artwork_width_change(const ng_playlist_view_t* p_s
         }
     }
 }
-void ng_playlist_view_t::g_flush_artwork(bool b_redraw, const ng_playlist_view_t* p_skip)
+void PlaylistView::g_flush_artwork(bool b_redraw, const PlaylistView* p_skip)
 {
     for (auto& window : g_windows) {
         if (window != p_skip) {
@@ -309,7 +309,7 @@ void ng_playlist_view_t::g_flush_artwork(bool b_redraw, const ng_playlist_view_t
         }
     }
 }
-void ng_playlist_view_t::g_on_artwork_repositories_change()
+void PlaylistView::g_on_artwork_repositories_change()
 {
     for (auto& window : g_windows) {
         if (window->m_artwork_manager.is_valid()) {
@@ -317,80 +317,80 @@ void ng_playlist_view_t::g_on_artwork_repositories_change()
         }
     }
 }
-void ng_playlist_view_t::g_on_vertical_item_padding_change()
+void PlaylistView::g_on_vertical_item_padding_change()
 {
     for (auto& window : g_windows)
         window->set_vertical_item_padding(settings::playlist_view_item_padding);
 }
-void ng_playlist_view_t::g_on_font_change()
+void PlaylistView::g_on_font_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_items_font, lf);
     for (auto& window : g_windows)
         window->set_font(&lf);
 }
-void ng_playlist_view_t::g_on_header_font_change()
+void PlaylistView::g_on_header_font_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_header_font, lf);
     for (auto& window : g_windows)
         window->set_header_font(&lf);
 }
-void ng_playlist_view_t::g_on_group_header_font_change()
+void PlaylistView::g_on_group_header_font_change()
 {
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_group_header_font, lf);
     for (auto& window : g_windows)
         window->set_group_font(&lf);
 }
-void ng_playlist_view_t::g_update_all_items()
+void PlaylistView::g_update_all_items()
 {
     for (auto& window : g_windows)
         window->update_all_items();
 }
-void ng_playlist_view_t::g_on_show_header_change()
+void PlaylistView::g_on_show_header_change()
 {
     for (auto& window : g_windows)
         window->set_show_header(cfg_header != 0);
 }
-void ng_playlist_view_t::g_on_sorting_enabled_change()
+void PlaylistView::g_on_sorting_enabled_change()
 {
     for (auto& window : g_windows)
         window->set_sorting_enabled(cfg_header_hottrack != 0);
 }
-void ng_playlist_view_t::g_on_show_sort_indicators_change()
+void PlaylistView::g_on_show_sort_indicators_change()
 {
     for (auto& window : g_windows)
         window->set_show_sort_indicators(cfg_show_sort_arrows != 0);
 }
-void ng_playlist_view_t::g_on_edge_style_change()
+void PlaylistView::g_on_edge_style_change()
 {
     for (auto& window : g_windows)
         window->set_edge_style(cfg_frame);
 }
-void ng_playlist_view_t::g_on_time_change()
+void PlaylistView::g_on_time_change()
 {
     for (auto& window : g_windows)
         window->on_time_change();
 }
-void ng_playlist_view_t::g_on_show_tooltips_change()
+void PlaylistView::g_on_show_tooltips_change()
 {
     for (auto& window : g_windows) {
         window->set_show_tooltips(cfg_tooltip != 0);
         window->set_limit_tooltips_to_clipped_items(cfg_tooltips_clipped != 0);
     }
 }
-void ng_playlist_view_t::g_on_playback_follows_cursor_change(bool b_val)
+void PlaylistView::g_on_playback_follows_cursor_change(bool b_val)
 {
     for (auto& window : g_windows)
         window->set_always_show_focus(b_val);
 }
-void ng_playlist_view_t::g_on_columns_change()
+void PlaylistView::g_on_columns_change()
 {
     for (auto& window : g_windows)
         window->on_columns_change();
 }
-void ng_playlist_view_t::on_columns_change()
+void PlaylistView::on_columns_change()
 {
     if (get_wnd()) {
         clear_all_items();
@@ -399,7 +399,7 @@ void ng_playlist_view_t::on_columns_change()
     }
 }
 
-void ng_playlist_view_t::s_redraw_all()
+void PlaylistView::s_redraw_all()
 {
     for (auto&& window : g_windows)
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
@@ -409,7 +409,7 @@ int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
 {
     return StrCmpLogicalW(a.get_ptr(), b.get_ptr());
 }
-void ng_playlist_view_t::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
+void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
 {
     unsigned active_playlist = m_playlist_api->get_active_playlist();
     if (active_playlist != -1
@@ -506,7 +506,7 @@ void ng_playlist_view_t::notify_sort_column(t_size index, bool b_descending, boo
         }
     }
 }
-void ng_playlist_view_t::notify_on_initialisation()
+void PlaylistView::notify_on_initialisation()
 {
     set_group_info_area_size(
         cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
@@ -545,7 +545,7 @@ void ng_playlist_view_t::notify_on_initialisation()
     refresh_columns();
     refresh_groups();
 }
-void ng_playlist_view_t::notify_on_create()
+void PlaylistView::notify_on_create()
 {
     pfc::hires_timer timer;
     timer.start();
@@ -567,7 +567,7 @@ void ng_playlist_view_t::notify_on_create()
     formatter << "Playlist view initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
 }
 
-void ng_playlist_view_t::notify_on_destroy()
+void PlaylistView::notify_on_destroy()
 {
     g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
     if (g_windows.empty())
@@ -595,16 +595,16 @@ void ng_playlist_view_t::notify_on_destroy()
     }
 }
 
-void ng_playlist_view_t::notify_on_set_focus(HWND wnd_lost)
+void PlaylistView::notify_on_set_focus(HWND wnd_lost)
 {
     m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
     m_selection_holder->set_playlist_selection_tracking();
 }
-void ng_playlist_view_t::notify_on_kill_focus(HWND wnd_receiving)
+void PlaylistView::notify_on_kill_focus(HWND wnd_receiving)
 {
     m_selection_holder.release();
 }
-bool ng_playlist_view_t::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& hittest)
+bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& hittest)
 {
     uie::window_ptr p_this_temp = this;
     enum {
@@ -695,21 +695,21 @@ bool ng_playlist_view_t::notify_on_contextmenu_header(const POINT& pt, const HDH
         TabColumns::get_instance().show_column(column_index_display_to_actual(index));
     } else if (cmd == IDM_AUTOSIZE) {
         cfg_nohscroll = cfg_nohscroll == 0;
-        pvt::ng_playlist_view_t::g_on_autosize_change();
+        pvt::PlaylistView::g_on_autosize_change();
     } else if (cmd == IDM_PREFS) {
         static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
     } else if (cmd == IDM_ARTWORK) {
         cfg_show_artwork = !cfg_show_artwork;
-        pvt::ng_playlist_view_t::g_on_show_artwork_change();
+        pvt::PlaylistView::g_on_show_artwork_change();
     } else if (cmd >= IDM_CUSTOM_BASE) {
         if (t_size(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
             g_columns[cmd - IDM_CUSTOM_BASE]->show = !g_columns[cmd - IDM_CUSTOM_BASE]->show; // g_columns
-            pvt::ng_playlist_view_t::g_on_columns_change();
+            pvt::PlaylistView::g_on_columns_change();
         }
     }
     return true;
 }
-void ng_playlist_view_t::notify_on_menu_select(WPARAM wp, LPARAM lp)
+void PlaylistView::notify_on_menu_select(WPARAM wp, LPARAM lp)
 {
     if (HIWORD(wp) & MF_POPUP) {
         m_status_text_override.release();
@@ -743,7 +743,7 @@ void ng_playlist_view_t::notify_on_menu_select(WPARAM wp, LPARAM lp)
     }
 }
 
-bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
+bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     enum {
         ID_PLAY = 1,
@@ -827,7 +827,7 @@ bool ng_playlist_view_t::notify_on_contextmenu(const POINT& pt, bool from_keyboa
     return true;
 }
 
-void ng_playlist_view_t::notify_update_item_data(t_size index)
+void PlaylistView::notify_update_item_data(t_size index)
 {
     string_array& p_out = get_item_subitems(index);
     item_ng_t* p_item = get_item(index);
@@ -919,25 +919,25 @@ void ng_playlist_view_t::notify_update_item_data(t_size index)
     }
 }
 
-const style_data_t& ng_playlist_view_t::get_style_data(t_size index)
+const style_data_t& PlaylistView::get_style_data(t_size index)
 {
     if (get_item(index)->m_style_data.get_count() != get_column_count()) {
         notify_update_item_data(index);
     }
     return get_item(index)->m_style_data;
 }
-bool ng_playlist_view_t::notify_on_middleclick(bool on_item, t_size index)
+bool PlaylistView::notify_on_middleclick(bool on_item, t_size index)
 {
     return cui::playlist_item_helpers::mclick_action::run(cfg_playlist_middle_action, on_item, index);
 }
-bool ng_playlist_view_t::notify_on_doubleleftclick_nowhere()
+bool PlaylistView::notify_on_doubleleftclick_nowhere()
 {
     if (cfg_playlist_double.get_value().m_command != pfc::guid_null)
         return mainmenu_commands::g_execute(cfg_playlist_double.get_value().m_command);
     return false;
 }
 
-void ng_playlist_view_t::get_insert_items(
+void PlaylistView::get_insert_items(
     /*t_size p_playlist, */ t_size start, t_size count, InsertItemsContainer& items)
 {
     items.set_count(count);
@@ -961,13 +961,13 @@ void ng_playlist_view_t::get_insert_items(
     });
 }
 
-void ng_playlist_view_t::flush_items()
+void PlaylistView::flush_items()
 {
     InsertItemsContainer items;
     get_insert_items(0, m_playlist_api->activeplaylist_get_item_count(), items);
     replace_items(0, items);
 }
-void ng_playlist_view_t::reset_items()
+void PlaylistView::reset_items()
 {
     clear_all_items();
     InsertItemsContainer items;
@@ -975,7 +975,7 @@ void ng_playlist_view_t::reset_items()
     insert_items(0, items.get_size(), items.get_ptr());
 }
 
-t_size ng_playlist_view_t::get_highlight_item()
+t_size PlaylistView::get_highlight_item()
 {
     if (static_api_ptr_t<play_control>()->is_playing()) {
         t_size playing_index, playing_playlist;
@@ -986,61 +986,61 @@ t_size ng_playlist_view_t::get_highlight_item()
     return pfc_infinite;
 }
 
-bool ng_playlist_view_t::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
+bool PlaylistView::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp)
 {
     uie::window_ptr p_this = this;
     bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
     return ret;
 };
-bool ng_playlist_view_t::notify_on_keyboard_keydown_remove()
+bool PlaylistView::notify_on_keyboard_keydown_remove()
 {
     m_playlist_api->activeplaylist_undo_backup();
     m_playlist_api->activeplaylist_remove_selection();
     return true;
 };
 
-bool ng_playlist_view_t::notify_on_keyboard_keydown_search()
+bool PlaylistView::notify_on_keyboard_keydown_search()
 {
     return standard_commands::main_playlist_search();
 };
 
-bool ng_playlist_view_t::notify_on_keyboard_keydown_undo()
+bool PlaylistView::notify_on_keyboard_keydown_undo()
 {
     m_playlist_api->activeplaylist_undo_restore();
     return true;
 };
-bool ng_playlist_view_t::notify_on_keyboard_keydown_redo()
+bool PlaylistView::notify_on_keyboard_keydown_redo()
 {
     m_playlist_api->activeplaylist_redo_restore();
     return true;
 };
-bool ng_playlist_view_t::notify_on_keyboard_keydown_cut()
+bool PlaylistView::notify_on_keyboard_keydown_cut()
 {
     return playlist_utils::cut();
 };
-bool ng_playlist_view_t::notify_on_keyboard_keydown_copy()
+bool PlaylistView::notify_on_keyboard_keydown_copy()
 {
     return playlist_utils::copy();
 };
-bool ng_playlist_view_t::notify_on_keyboard_keydown_paste()
+bool PlaylistView::notify_on_keyboard_keydown_paste()
 {
     return playlist_utils::paste_at_focused_item(get_wnd());
 };
 
-t_size ng_playlist_view_t::storage_get_focus_item()
+t_size PlaylistView::storage_get_focus_item()
 {
     return static_api_ptr_t<playlist_manager>()->activeplaylist_get_focus_item();
 }
-void ng_playlist_view_t::storage_set_focus_item(t_size index)
+void PlaylistView::storage_set_focus_item(t_size index)
 {
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
     static_api_ptr_t<playlist_manager>()->activeplaylist_set_focus_item(index);
 }
-void ng_playlist_view_t::storage_get_selection_state(pfc::bit_array_var& out)
+void PlaylistView::storage_get_selection_state(pfc::bit_array_var& out)
 {
     static_api_ptr_t<playlist_manager>()->activeplaylist_get_selection_mask(out);
 }
-bool ng_playlist_view_t::storage_set_selection_state(
+bool PlaylistView::storage_set_selection_state(
     const pfc::bit_array& p_affected, const pfc::bit_array& p_status, pfc::bit_array_var* p_changed)
 {
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
@@ -1066,16 +1066,16 @@ bool ng_playlist_view_t::storage_set_selection_state(
     api->activeplaylist_set_selection(p_affected, p_status);
     return b_changed;
 }
-bool ng_playlist_view_t::storage_get_item_selected(t_size index)
+bool PlaylistView::storage_get_item_selected(t_size index)
 {
     return static_api_ptr_t<playlist_manager>()->activeplaylist_is_item_selected(index);
 }
-t_size ng_playlist_view_t::storage_get_selection_count(t_size max)
+t_size PlaylistView::storage_get_selection_count(t_size max)
 {
     return static_api_ptr_t<playlist_manager>()->activeplaylist_get_selection_count(max);
 }
 
-void ng_playlist_view_t::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
+void PlaylistView::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
 {
     if (b_keyboard && b_ctrl) {
         t_size active = m_playlist_api->get_active_playlist();
@@ -1085,40 +1085,40 @@ void ng_playlist_view_t::execute_default_action(t_size index, t_size column, boo
         m_playlist_api->activeplaylist_execute_default_action(index);
     }
 };
-void ng_playlist_view_t::move_selection(int delta)
+void PlaylistView::move_selection(int delta)
 {
     m_playlist_api->activeplaylist_undo_backup();
     m_playlist_api->activeplaylist_move_selection(delta);
 }
 
-const GUID& ng_playlist_view_t::get_extension_guid() const
+const GUID& PlaylistView::get_extension_guid() const
 {
     return g_extension_guid;
 }
 
-void ng_playlist_view_t::get_name(pfc::string_base& out) const
+void PlaylistView::get_name(pfc::string_base& out) const
 {
     out.set_string("Playlist view");
 }
-bool ng_playlist_view_t::get_short_name(pfc::string_base& out) const
+bool PlaylistView::get_short_name(pfc::string_base& out) const
 {
     out.set_string("Playlist");
     return true;
 }
-void ng_playlist_view_t::get_category(pfc::string_base& out) const
+void PlaylistView::get_category(pfc::string_base& out) const
 {
     out.set_string("Playlist Views");
 }
-unsigned ng_playlist_view_t::get_type() const
+unsigned PlaylistView::get_type() const
 {
     return uie::type_panel | uie::type_playlist;
 }
 
 // {FB059406-5F14-4bd0-8A11-4242854CBBA5}
-const GUID ng_playlist_view_t::g_extension_guid
+const GUID PlaylistView::g_extension_guid
     = {0xfb059406, 0x5f14, 0x4bd0, {0x8a, 0x11, 0x42, 0x42, 0x85, 0x4c, 0xbb, 0xa5}};
 
-uie::window_factory<ng_playlist_view_t> g_pvt;
+uie::window_factory<PlaylistView> g_pvt;
 
 // {C882D3AC-C014-44df-9C7E-2DADF37645A0}
 const GUID appearance_client_ngpv_impl::g_guid
@@ -1141,7 +1141,7 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { ng_playlist_view_t::g_on_font_change(); }
+    void on_font_changed() const override { PlaylistView::g_on_font_change(); }
 };
 
 class font_header_client_ngpv : public cui::fonts::client {
@@ -1151,7 +1151,7 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { ng_playlist_view_t::g_on_header_font_change(); }
+    void on_font_changed() const override { PlaylistView::g_on_header_font_change(); }
 };
 
 class font_group_header_client_ngpv : public cui::fonts::client {
@@ -1161,7 +1161,7 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { ng_playlist_view_t::g_on_group_header_font_change(); }
+    void on_font_changed() const override { PlaylistView::g_on_group_header_font_change(); }
 };
 
 font_client_ngpv::factory<font_client_ngpv> g_font_client_ngpv;
@@ -1171,8 +1171,8 @@ font_group_header_client_ngpv::factory<font_group_header_client_ngpv> g_font_gro
 void appearance_client_ngpv_impl::on_colour_changed(t_size mask) const
 {
     if (cfg_show_artwork && cfg_artwork_reflection && (mask & (cui::colours::colour_flag_background)))
-        ng_playlist_view_t::g_flush_artwork();
-    ng_playlist_view_t::g_update_all_items();
+        PlaylistView::g_flush_artwork();
+    PlaylistView::g_update_all_items();
 }
 
 } // namespace pvt

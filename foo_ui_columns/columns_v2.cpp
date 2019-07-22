@@ -2,7 +2,7 @@
 #include "playlist_view_tfhooks.h"
 #include "columns_v2.h"
 
-void column_t::read(stream_reader* reader, abort_callback& abortCallback)
+void PlaylistViewColumn::read(stream_reader* reader, abort_callback& abortCallback)
 {
     width.dpi = uih::get_system_dpi_cached().cx;
     reader->read_string(name, abortCallback);
@@ -20,14 +20,14 @@ void column_t::read(stream_reader* reader, abort_callback& abortCallback)
     reader->read_string(edit_field, abortCallback);
 }
 
-void column_t::read_extra(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback)
+void PlaylistViewColumn::read_extra(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback)
 {
     if (streamVersion >= ColumnStreamVersion::streamVersion1) {
         reader->read_lendian_t(width.dpi, abortCallback);
     }
 }
 
-void column_t::write(stream_writer* out, abort_callback& abortCallback) const
+void PlaylistViewColumn::write(stream_writer* out, abort_callback& abortCallback) const
 {
     out->write_string(name.get_ptr(), abortCallback);
     out->write_string(spec.get_ptr(), abortCallback);
@@ -44,12 +44,12 @@ void column_t::write(stream_writer* out, abort_callback& abortCallback) const
     out->write_string(edit_field, abortCallback);
 }
 
-void column_t::write_extra(stream_writer* out, abort_callback& abortCallback) const
+void PlaylistViewColumn::write_extra(stream_writer* out, abort_callback& abortCallback) const
 {
     out->write_lendian_t(width.dpi, abortCallback);
 }
 
-bool column_list_t::move_up(t_size idx)
+bool ColumnList::move_up(t_size idx)
 {
     unsigned count = get_count();
     if (idx > 0 && idx < count) {
@@ -61,7 +61,7 @@ bool column_list_t::move_up(t_size idx)
     return false;
 }
 
-bool column_list_t::move(t_size from, t_size to)
+bool ColumnList::move(t_size from, t_size to)
 {
     unsigned count = get_count();
     unsigned n = from;
@@ -88,7 +88,7 @@ bool column_list_t::move(t_size from, t_size to)
     return rv;
 }
 
-bool column_list_t::move_down(t_size idx)
+bool ColumnList::move_down(t_size idx)
 {
     unsigned count = get_count();
     if (idx >= 0 && idx < (count - 1)) {
@@ -100,7 +100,7 @@ bool column_list_t::move_down(t_size idx)
     return false;
 }
 
-void cfg_columns_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
+void ConfigColumns::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     // if (!cfg_nohscroll) playlist_view::g_save_columns(); FIXME
 
@@ -122,15 +122,15 @@ void cfg_columns_t::get_data_raw(stream_writer* out, abort_callback& p_abort)
     }
 }
 
-void cfg_columns_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigColumns::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
 {
-    pfc::list_t<column_t::ptr> items;
+    pfc::list_t<PlaylistViewColumn::ptr> items;
     ColumnStreamVersion streamVersion = ColumnStreamVersion::streamVersion0;
 
     t_uint32 num;
     p_reader->read_lendian_t(num, p_abort);
     for (t_size i = 0; i < num; i++) {
-        column_t::ptr item = new column_t;
+        PlaylistViewColumn::ptr item = new PlaylistViewColumn;
         item->read(p_reader, p_abort);
         items.add_item(item);
     }
@@ -156,23 +156,23 @@ void cfg_columns_t::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, a
     set_entries_ref(items);
 }
 
-void cfg_columns_t::reset()
+void ConfigColumns::reset()
 {
     remove_all();
-    add_item(new column_t(
+    add_item(new PlaylistViewColumn(
         "Artist", "[%artist%]", false, "", false, "", 180, ALIGN_LEFT, FILTER_NONE, "", 180, true, "ARTIST"));
-    add_item(new column_t(
+    add_item(new PlaylistViewColumn(
         "#", "[%tracknumber%]", false, "", false, "", 18, ALIGN_RIGHT, FILTER_NONE, "", 18, true, "TRACKNUMBER"));
     add_item(
-        new column_t("Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
+        new PlaylistViewColumn("Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
     add_item(
-        new column_t("Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
-    add_item(new column_t("Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"));
-    add_item(new column_t("Length", "[%_time_elapsed% / ]%_length%", false, "", true, "$num(%_length_seconds%,6)", 60,
+        new PlaylistViewColumn("Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
+    add_item(new PlaylistViewColumn("Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"));
+    add_item(new PlaylistViewColumn("Length", "[%_time_elapsed% / ]%_length%", false, "", true, "$num(%_length_seconds%,6)", 60,
         ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
 }
 
-cfg_columns_t::cfg_columns_t(const GUID& p_guid, ColumnStreamVersion streamVersion) : cfg_var(p_guid)
+ConfigColumns::ConfigColumns(const GUID& p_guid, ColumnStreamVersion streamVersion) : cfg_var(p_guid)
 {
     reset();
 }

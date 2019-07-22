@@ -7,8 +7,8 @@ public:
     virtual HWND create(HWND wnd) = 0;
     // virtual void destroy(HWND wnd)=0;
     // virtual const char * get_name()=0;
-    virtual void set_column(const column_t::ptr& column) = 0;
-    virtual void get_column(column_t::ptr& p_out) = 0;
+    virtual void set_column(const PlaylistViewColumn::ptr& column) = 0;
+    virtual void get_column(PlaylistViewColumn::ptr& p_out) = 0;
 };
 
 class TabColumns : public PreferencesTab {
@@ -49,6 +49,6 @@ private:
     TabColumns() = default;
 
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
-    column_list_t m_columns;
+    ColumnList m_columns;
     bool initialising{false};
 };

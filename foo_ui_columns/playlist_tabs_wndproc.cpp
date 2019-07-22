@@ -21,7 +21,7 @@ enum {
     ID_RECYCLER_BASE
 };
 
-LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_NCCREATE: {
@@ -31,7 +31,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
     case WM_CREATE: {
         initialised = true;
         list_wnd.add_item(this);
-        pfc::com_ptr_t<playlists_tabs_drop_target> m_drop_target = new playlists_tabs_drop_target(this);
+        pfc::com_ptr_t<PlaylistTabsDropTarget> m_drop_target = new PlaylistTabsDropTarget(this);
         RegisterDragDrop(wnd, m_drop_target.get_ptr());
 
         create_tabs();
@@ -41,7 +41,7 @@ LRESULT playlists_tabs_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPAR
         g_tab_host.instance_create(p_temp);
 
         // Well simple reinterpret_cast without this mess should work fine but this is "correct"
-        m_host = static_cast<window_host_impl*>(p_temp.get_ptr());
+        m_host = static_cast<WindowHost*>(p_temp.get_ptr());
         if (m_host.is_valid()) {
             m_host->set_this(this);
             create_child();

@@ -92,7 +92,7 @@ public:
         }
     }
 };
-void speedtest(column_list_cref_t columns, bool b_global);
+void speedtest(ColumnListCRef columns, bool b_global);
 
 extern EditorFontNotify g_editor_font_notify;
 extern cfg_uint g_last_colour;

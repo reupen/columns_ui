@@ -1,7 +1,7 @@
 #ifndef _COLUMNS_UI_PLAYLIST_SWITCHER_H_
 #define _COLUMNS_UI_PLAYLIST_SWITCHER_H_
 
-class appearance_client_ps_impl : public cui::colours::client {
+class PlaylistSwitcherColoursClient : public cui::colours::client {
 public:
     static const GUID g_guid;
 

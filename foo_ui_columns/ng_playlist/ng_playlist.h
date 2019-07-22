@@ -312,7 +312,7 @@ public:
     void on_bool_changed(t_size mask) const override{};
 };
 
-class ng_playlist_view_t
+class PlaylistView
     : public t_list_view_panel<appearance_client_ngpv_impl, uie::playlist_window>
     , playlist_callback_single
     , playlist_callback_base {
@@ -330,7 +330,7 @@ class ng_playlist_view_t
             case WM_CREATE:
                 break;
             case WM_TIMECHANGE:
-                ng_playlist_view_t::g_on_time_change();
+                PlaylistView::g_on_time_change();
                 break;
             case WM_DESTROY:
                 break;
@@ -340,21 +340,21 @@ class ng_playlist_view_t
     };
 
 public:
-    ng_playlist_view_t();
-    ~ng_playlist_view_t();
+    PlaylistView();
+    ~PlaylistView();
 
-    static std::vector<ng_playlist_view_t*> g_windows;
+    static std::vector<PlaylistView*> g_windows;
     static ng_global_mesage_window g_global_mesage_window;
 
     static void g_on_groups_change();
     static void g_on_columns_change();
-    static void g_on_column_widths_change(const ng_playlist_view_t* p_skip = nullptr);
+    static void g_on_column_widths_change(const PlaylistView* p_skip = nullptr);
     static void g_update_all_items();
     static void g_on_autosize_change();
     static void g_on_show_artwork_change();
     static void g_on_alternate_selection_change();
-    static void g_on_artwork_width_change(const ng_playlist_view_t* p_skip = nullptr);
-    static void g_flush_artwork(bool b_redraw = false, const ng_playlist_view_t* p_skip = nullptr);
+    static void g_on_artwork_width_change(const PlaylistView* p_skip = nullptr);
+    static void g_flush_artwork(bool b_redraw = false, const PlaylistView* p_skip = nullptr);
     static void g_on_artwork_repositories_change();
     static void g_on_vertical_item_padding_change();
     static void g_on_show_header_change();
@@ -466,7 +466,7 @@ private:
         }
 
         item_group_ng_t::ptr m_group;
-        service_ptr_t<ng_playlist_view_t> m_window;
+        service_ptr_t<PlaylistView> m_window;
 
     private:
     };
@@ -581,7 +581,7 @@ private:
         t_size act_from = column_index_display_to_actual(index_from);
         t_size act_to = column_index_display_to_actual(index_to);
         g_columns.move(act_from, act_to);
-        pvt::ng_playlist_view_t::g_on_columns_change();
+        pvt::PlaylistView::g_on_columns_change();
     }
 
     bool notify_on_timer(UINT_PTR timerid) override
@@ -688,7 +688,7 @@ public:
     HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
     HRESULT STDMETHODCALLTYPE DragLeave() override;
     HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
-    IDropTarget_playlist(ng_playlist_view_t* playlist);
+    IDropTarget_playlist(PlaylistView* playlist);
 
 private:
     HRESULT UpdateDropDescription(IDataObject* pDataObj, DWORD pdwEffect);
@@ -696,14 +696,14 @@ private:
     long drop_ref_count;
     bool last_rmb;
     bool m_is_accepted_type;
-    service_ptr_t<ng_playlist_view_t> p_playlist;
+    service_ptr_t<PlaylistView> p_playlist;
     pfc::com_ptr_t<IDataObject> m_DataObject;
     mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
 };
 
 class IDropSource_playlist : public IDropSource {
     long refcount;
-    service_ptr_t<ng_playlist_view_t> p_playlist;
+    service_ptr_t<PlaylistView> p_playlist;
     DWORD m_initial_key_state;
 
 public:
@@ -712,7 +712,7 @@ public:
     ULONG STDMETHODCALLTYPE Release() override;
     HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState) override;
     HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect) override;
-    IDropSource_playlist(ng_playlist_view_t* playlist, DWORD initial_key_state);
+    IDropSource_playlist(PlaylistView* playlist, DWORD initial_key_state);
 };
 
 class preferences_tab_impl : public PreferencesTab {

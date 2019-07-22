@@ -2,13 +2,13 @@
 #include "ng_playlist.h"
 
 namespace pvt {
-bool ng_playlist_view_t::notify_before_create_inline_edit(
+bool PlaylistView::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
     return (!b_source_mouse || main_window::config_get_inline_metafield_edit_mode() != main_window::mode_disabled)
         && column < m_edit_fields.get_count() && strlen(m_edit_fields[column]);
 };
-bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
@@ -49,7 +49,7 @@ bool ng_playlist_view_t::notify_create_inline_edit(const pfc::list_base_const_t<
     }
     return true;
 };
-void ng_playlist_view_t::notify_save_inline_edit(const char* value)
+void PlaylistView::notify_save_inline_edit(const char* value)
 {
     static_api_ptr_t<metadb_io_v2> tagger_api;
     if (strcmp(value, "<multiple values>") != 0) {
@@ -82,7 +82,7 @@ void ng_playlist_view_t::notify_save_inline_edit(const char* value)
         }
     }
 };
-void ng_playlist_view_t::notify_exit_inline_edit()
+void PlaylistView::notify_exit_inline_edit()
 {
     m_edit_field.reset();
     m_edit_handles.remove_all();

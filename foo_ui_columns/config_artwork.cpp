@@ -151,7 +151,7 @@ public:
         {
             if (m_changed) {
                 artwork_panel::g_on_repository_change();
-                pvt::ng_playlist_view_t::g_on_artwork_repositories_change();
+                pvt::PlaylistView::g_on_artwork_repositories_change();
                 m_changed = false;
             }
         }

@@ -17,18 +17,18 @@ public:
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
 
-    void on_font_changed() const override { playlist_switcher_t::g_on_font_items_change(); }
+    void on_font_changed() const override { PlaylistSwitcher::g_on_font_items_change(); }
 };
 
 font_client_switcher::factory<font_client_switcher> g_font_client_switcher;
 
 // {EB38A997-3B5F-4126-8746-262AA9C1F94B}
-const GUID appearance_client_ps_impl::g_guid
+const GUID PlaylistSwitcherColoursClient::g_guid
     = {0xeb38a997, 0x3b5f, 0x4126, {0x87, 0x46, 0x26, 0x2a, 0xa9, 0xc1, 0xf9, 0x4b}};
 
-appearance_client_ps_impl::factory<appearance_client_ps_impl> g_appearance_client_ps_impl;
+PlaylistSwitcherColoursClient::factory<PlaylistSwitcherColoursClient> g_appearance_client_ps_impl;
 
-void appearance_client_ps_impl::on_colour_changed(t_size mask) const
+void PlaylistSwitcherColoursClient::on_colour_changed(t_size mask) const
 {
-    playlist_switcher_t::g_redraw_all();
+    PlaylistSwitcher::g_redraw_all();
 }

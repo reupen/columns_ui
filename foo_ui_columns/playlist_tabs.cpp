@@ -22,25 +22,25 @@ void remove_playlist_helper(t_size index)
     api->remove_playlist_switch(index);
 }
 
-ui_extension::window_factory<playlists_tabs_extension> blah;
-ui_extension::window_host_factory<playlists_tabs_extension::window_host_impl> g_tab_host;
+ui_extension::window_factory<PlaylistTabs> blah;
+ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;
 
-HFONT playlists_tabs_extension::g_font = nullptr;
+HFONT PlaylistTabs::g_font = nullptr;
 
-void playlists_tabs_extension::get_supported_panels(
+void PlaylistTabs::get_supported_panels(
     const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_tab_host.instance_create(temp);
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
-        (static_cast<playlists_tabs_extension::window_host_impl*>(ptr.get_ptr()))->set_this(this);
+        (static_cast<PlaylistTabs::WindowHost*>(ptr.get_ptr()))->set_this(this);
     t_size count = p_windows.get_count();
     for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
-bool playlists_tabs_extension::is_point_ours(
+bool PlaylistTabs::is_point_ours(
     HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy)
 {
     if (wnd_point == get_wnd() || IsChild(get_wnd(), wnd_point)) {
@@ -69,7 +69,7 @@ bool playlists_tabs_extension::is_point_ours(
     return false;
 };
 
-void playlists_tabs_extension::on_font_change()
+void PlaylistTabs::on_font_change()
 {
     if (g_font != nullptr) {
         unsigned count = list_wnd.get_count();
@@ -94,9 +94,9 @@ void playlists_tabs_extension::on_font_change()
     }
 }
 
-pfc::ptr_list_t<playlists_tabs_extension> playlists_tabs_extension::list_wnd;
+pfc::ptr_list_t<PlaylistTabs> PlaylistTabs::list_wnd;
 
-void playlists_tabs_extension::kill_switch_timer()
+void PlaylistTabs::kill_switch_timer()
 {
     if (m_switch_timer) {
         m_switch_timer = false;
@@ -104,7 +104,7 @@ void playlists_tabs_extension::kill_switch_timer()
     }
 }
 
-void playlists_tabs_extension::switch_to_playlist_delayed2(unsigned idx)
+void PlaylistTabs::switch_to_playlist_delayed2(unsigned idx)
 {
     // if have a timer already and idxs re same dont bother
     if (!(m_switch_timer && idx == m_switch_playlist)) {
@@ -116,15 +116,15 @@ void playlists_tabs_extension::switch_to_playlist_delayed2(unsigned idx)
     }
 }
 
-playlists_tabs_extension::~playlists_tabs_extension() = default;
+PlaylistTabs::~PlaylistTabs() = default;
 
-LRESULT WINAPI playlists_tabs_extension::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI PlaylistTabs::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    auto p_this = reinterpret_cast<playlists_tabs_extension*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    auto p_this = reinterpret_cast<PlaylistTabs*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
 }
 
-void playlists_tabs_extension::create_child()
+void PlaylistTabs::create_child()
 {
     destroy_child();
     if (m_host.is_valid()) {
@@ -151,7 +151,7 @@ void playlists_tabs_extension::create_child()
     }
 }
 
-void playlists_tabs_extension::destroy_child()
+void PlaylistTabs::destroy_child()
 {
     if (m_child.is_valid()) {
         m_child->destroy_window();
@@ -163,7 +163,7 @@ void playlists_tabs_extension::destroy_child()
     }
 }
 
-bool playlists_tabs_extension::create_tabs()
+bool PlaylistTabs::create_tabs()
 {
     bool rv = false;
     bool force_close = false;
@@ -230,30 +230,30 @@ bool playlists_tabs_extension::create_tabs()
     return rv;
 }
 
-const GUID& playlists_tabs_extension::get_extension_guid() const
+const GUID& PlaylistTabs::get_extension_guid() const
 {
     return extension_guid;
 }
 
-void playlists_tabs_extension::get_name(pfc::string_base& out) const
+void PlaylistTabs::get_name(pfc::string_base& out) const
 {
     out.set_string("Playlist tabs");
 }
-void playlists_tabs_extension::get_category(pfc::string_base& out) const
+void PlaylistTabs::get_category(pfc::string_base& out) const
 {
     out.set_string("Splitters");
 }
-bool playlists_tabs_extension::get_short_name(pfc::string_base& out) const
+bool PlaylistTabs::get_short_name(pfc::string_base& out) const
 {
     out.set_string("Playlist tabs");
     return true;
 }
 
 // {ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}
-const GUID playlists_tabs_extension::extension_guid
+const GUID PlaylistTabs::extension_guid
     = {0xabb72d0d, 0xdbf0, 0x4bba, {0x8c, 0x68, 0x33, 0x57, 0xeb, 0xe0, 0x7a, 0x4d}};
 
-LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_GETDLGCODE:
@@ -402,7 +402,7 @@ LRESULT WINAPI playlists_tabs_extension::hook(HWND wnd, UINT msg, WPARAM wp, LPA
     return uCallWindowProc(tabproc, wnd, msg, wp, lp);
 }
 
-void playlists_tabs_extension::on_child_position_change()
+void PlaylistTabs::on_child_position_change()
 {
     reset_size_limits();
     get_host()->on_size_limit_change(get_wnd(),
@@ -411,7 +411,7 @@ void playlists_tabs_extension::on_child_position_change()
     // on_size();
 }
 
-void playlists_tabs_extension::get_config(stream_writer* out, abort_callback& p_abort) const
+void PlaylistTabs::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t(m_child_guid, p_abort);
     if (m_child.is_valid()) {
@@ -427,7 +427,7 @@ void playlists_tabs_extension::get_config(stream_writer* out, abort_callback& p_
     }
 }
 
-void playlists_tabs_extension::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
+void PlaylistTabs::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
         config->read_lendian_t(m_child_guid, p_abort);
@@ -439,7 +439,7 @@ void playlists_tabs_extension::set_config(stream_reader* config, t_size p_size, 
     }
 }
 
-void playlists_tabs_extension::export_config(stream_writer* p_writer, abort_callback& p_abort) const
+void PlaylistTabs::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     abort_callback_dummy abortCallback;
     p_writer->write_lendian_t(m_child_guid, p_abort);
@@ -461,7 +461,7 @@ void playlists_tabs_extension::export_config(stream_writer* p_writer, abort_call
     p_writer->write(data.get_ptr(), data.get_size(), p_abort);
 }
 
-void playlists_tabs_extension::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void PlaylistTabs::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
         p_reader->read_lendian_t(m_child_guid, p_abort);
@@ -484,7 +484,7 @@ void playlists_tabs_extension::import_config(stream_reader* p_reader, t_size p_s
     }
 }
 
-uie::splitter_item_t* playlists_tabs_extension::get_panel(unsigned index) const
+uie::splitter_item_t* PlaylistTabs::get_panel(unsigned index) const
 {
     auto ptr = new uie::splitter_item_simple_t;
     ptr->set_panel_guid(m_child_guid);
@@ -498,17 +498,17 @@ uie::splitter_item_t* playlists_tabs_extension::get_panel(unsigned index) const
     return ptr;
 }
 
-unsigned playlists_tabs_extension::get_maximum_panel_count() const
+unsigned PlaylistTabs::get_maximum_panel_count() const
 {
     return 1;
 }
 
-unsigned playlists_tabs_extension::get_panel_count() const
+unsigned PlaylistTabs::get_panel_count() const
 {
     return m_child_guid != pfc::guid_null ? 1 : 0;
 }
 
-void playlists_tabs_extension::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
+void PlaylistTabs::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index == 0 && m_child_guid != pfc::guid_null) {
         if (initialised)
@@ -524,7 +524,7 @@ void playlists_tabs_extension::replace_panel(unsigned index, const uie::splitter
     }
 }
 
-void playlists_tabs_extension::remove_panel(unsigned index)
+void PlaylistTabs::remove_panel(unsigned index)
 {
     if (index == 0 && m_child_guid != pfc::guid_null) {
         if (initialised)
@@ -538,7 +538,7 @@ void playlists_tabs_extension::remove_panel(unsigned index)
     }
 }
 
-void playlists_tabs_extension::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
+void PlaylistTabs::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index == 0 && m_child_guid == pfc::guid_null) {
         if (initialised)
@@ -554,12 +554,12 @@ void playlists_tabs_extension::insert_panel(unsigned index, const uie::splitter_
     }
 }
 
-unsigned playlists_tabs_extension::get_type() const
+unsigned PlaylistTabs::get_type() const
 {
     return ui_extension::type_layout | uie::type_splitter;
 }
 
-void playlists_tabs_extension::on_size(unsigned cx, unsigned cy)
+void PlaylistTabs::on_size(unsigned cx, unsigned cy)
 {
     if (wnd_tabs) {
         SetWindowPos(wnd_tabs, nullptr, 0, 0, cx, cy, SWP_NOZORDER);
@@ -578,14 +578,14 @@ void playlists_tabs_extension::on_size(unsigned cx, unsigned cy)
     }
 }
 
-void playlists_tabs_extension::on_size()
+void PlaylistTabs::on_size()
 {
     RECT rc;
     GetWindowRect(get_wnd(), &rc);
     on_size(rc.right - rc.left, rc.bottom - rc.top);
 }
 
-void playlists_tabs_extension::adjust_rect(bool b_larger, RECT* rc)
+void PlaylistTabs::adjust_rect(bool b_larger, RECT* rc)
 {
     if (b_larger) {
         RECT rc_child = *rc;
@@ -600,7 +600,7 @@ void playlists_tabs_extension::adjust_rect(bool b_larger, RECT* rc)
     }
 }
 
-void playlists_tabs_extension::reset_size_limits()
+void PlaylistTabs::reset_size_limits()
 {
     memset(&mmi, 0, sizeof(mmi));
     if (m_child_wnd) {
@@ -652,7 +652,7 @@ void playlists_tabs_extension::reset_size_limits()
     }
 }
 
-void playlists_tabs_extension::set_styles(bool visible /*= true*/)
+void PlaylistTabs::set_styles(bool visible /*= true*/)
 {
     if (wnd_tabs) {
         long flags = WS_CHILD | TCS_HOTTRACK | TCS_TABS
@@ -665,40 +665,40 @@ void playlists_tabs_extension::set_styles(bool visible /*= true*/)
     }
 }
 
-void playlists_tabs_extension::on_playlist_locked(unsigned int, bool) {}
+void PlaylistTabs::on_playlist_locked(unsigned int, bool) {}
 
-void playlists_tabs_extension::on_playback_order_changed(unsigned int) {}
+void PlaylistTabs::on_playback_order_changed(unsigned int) {}
 
-void playlists_tabs_extension::on_default_format_changed() {}
+void PlaylistTabs::on_default_format_changed() {}
 
-void playlists_tabs_extension::on_playlists_removing(const pfc::bit_array&, unsigned int, unsigned int) {}
+void PlaylistTabs::on_playlists_removing(const pfc::bit_array&, unsigned int, unsigned int) {}
 
-void playlists_tabs_extension::on_item_ensure_visible(unsigned int, unsigned int) {}
+void PlaylistTabs::on_item_ensure_visible(unsigned int, unsigned int) {}
 
-void playlists_tabs_extension::on_items_replaced(
+void PlaylistTabs::on_items_replaced(
     unsigned int, const pfc::bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&)
 {
 }
 
-void playlists_tabs_extension::on_items_modified_fromplayback(
+void PlaylistTabs::on_items_modified_fromplayback(
     unsigned int, const pfc::bit_array&, play_control::t_display_level)
 {
 }
 
-void playlists_tabs_extension::on_items_modified(unsigned int, const pfc::bit_array&) {}
+void PlaylistTabs::on_items_modified(unsigned int, const pfc::bit_array&) {}
 
-void playlists_tabs_extension::on_item_focus_change(unsigned int, unsigned int, unsigned int) {}
+void PlaylistTabs::on_item_focus_change(unsigned int, unsigned int, unsigned int) {}
 
-void playlists_tabs_extension::on_items_selection_change(unsigned int, const pfc::bit_array&, const pfc::bit_array&) {}
+void PlaylistTabs::on_items_selection_change(unsigned int, const pfc::bit_array&, const pfc::bit_array&) {}
 
-void playlists_tabs_extension::on_items_reordered(unsigned int, const unsigned int*, unsigned int) {}
+void PlaylistTabs::on_items_reordered(unsigned int, const unsigned int*, unsigned int) {}
 
-void playlists_tabs_extension::on_items_added(
+void PlaylistTabs::on_items_added(
     unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr>&, const pfc::bit_array&)
 {
 }
 
-void playlists_tabs_extension::on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len)
+void PlaylistTabs::on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len)
 {
     if (wnd_tabs) {
         uTabCtrl_InsertItemText(wnd_tabs, p_index, pfc::string8(p_new_name, p_new_name_len), false);
@@ -707,7 +707,7 @@ void playlists_tabs_extension::on_playlist_renamed(unsigned p_index, const char*
     }
 }
 
-void playlists_tabs_extension::on_playlists_removed(
+void PlaylistTabs::on_playlists_removed(
     const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
 {
     bool need_move = false;
@@ -730,7 +730,7 @@ void playlists_tabs_extension::on_playlists_removed(
         on_size();
 }
 
-void playlists_tabs_extension::on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len)
+void PlaylistTabs::on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len)
 {
     if (wnd_tabs) {
         uTabCtrl_InsertItemText(wnd_tabs, p_index, pfc::string8(p_name, p_name_len));
@@ -741,7 +741,7 @@ void playlists_tabs_extension::on_playlist_created(unsigned p_index, const char*
         on_size();
 }
 
-void playlists_tabs_extension::on_playlists_reorder(const unsigned* p_order, unsigned p_count)
+void PlaylistTabs::on_playlists_reorder(const unsigned* p_order, unsigned p_count)
 {
     if (wnd_tabs) {
         static_api_ptr_t<playlist_manager> playlist_api;
@@ -759,24 +759,24 @@ void playlists_tabs_extension::on_playlists_reorder(const unsigned* p_order, uns
     }
 }
 
-void playlists_tabs_extension::on_playlist_activate(unsigned p_old, unsigned p_new)
+void PlaylistTabs::on_playlist_activate(unsigned p_old, unsigned p_new)
 {
     if (wnd_tabs) {
         TabCtrl_SetCurSel(wnd_tabs, p_new);
     }
 }
 
-void FB2KAPI playlists_tabs_extension::on_items_removed(
+void FB2KAPI PlaylistTabs::on_items_removed(
     unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
 {
 }
 
-void FB2KAPI playlists_tabs_extension::on_items_removing(
+void FB2KAPI PlaylistTabs::on_items_removing(
     unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
 {
 }
 
-playlists_tabs_extension::class_data& playlists_tabs_extension::get_class_data() const
+PlaylistTabs::class_data& PlaylistTabs::get_class_data() const
 {
     __implement_get_class_data_ex(_T("{ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}"), _T(""), false, 0,
         WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
@@ -784,17 +784,17 @@ playlists_tabs_extension::class_data& playlists_tabs_extension::get_class_data()
 
 void g_on_autohide_tabs_change()
 {
-    unsigned count = playlists_tabs_extension::list_wnd.get_count();
+    unsigned count = PlaylistTabs::list_wnd.get_count();
     for (unsigned n = 0; n < count; n++) {
-        playlists_tabs_extension::list_wnd[n]->create_tabs();
+        PlaylistTabs::list_wnd[n]->create_tabs();
     }
 }
 
 void g_on_multiline_tabs_change()
 {
-    unsigned count = playlists_tabs_extension::list_wnd.get_count();
+    unsigned count = PlaylistTabs::list_wnd.get_count();
     for (unsigned n = 0; n < count; n++) {
-        playlists_tabs_extension* p_tabs = playlists_tabs_extension::list_wnd[n];
+        PlaylistTabs* p_tabs = PlaylistTabs::list_wnd[n];
         p_tabs->set_styles();
         p_tabs->on_size();
     }
@@ -802,27 +802,27 @@ void g_on_multiline_tabs_change()
 
 void g_on_tabs_font_change()
 {
-    playlists_tabs_extension::on_font_change();
+    PlaylistTabs::on_font_change();
 }
 
-class font_client_switcher_tabs : public cui::fonts::client {
+class PlaylistTabsFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_playlist_switcher_tabs_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist tabs"; }
 
     cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_labels; }
 
-    void on_font_changed() const override { playlists_tabs_extension::on_font_change(); }
+    void on_font_changed() const override { PlaylistTabs::on_font_change(); }
 };
 
-font_client_switcher_tabs::factory<font_client_switcher_tabs> g_font_client_switcher_tabs;
+PlaylistTabsFontClient::factory<PlaylistTabsFontClient> g_font_client_switcher_tabs;
 
-void playlists_tabs_extension::window_host_impl::set_this(playlists_tabs_extension* ptr)
+void PlaylistTabs::WindowHost::set_this(PlaylistTabs* ptr)
 {
     m_this = ptr;
 }
 
-void playlists_tabs_extension::window_host_impl::relinquish_ownership(HWND wnd)
+void PlaylistTabs::WindowHost::relinquish_ownership(HWND wnd)
 {
     m_this->m_child_wnd = nullptr;
     m_this->m_host.release();
@@ -830,51 +830,51 @@ void playlists_tabs_extension::window_host_impl::relinquish_ownership(HWND wnd)
     m_this->reset_size_limits();
 }
 
-bool playlists_tabs_extension::window_host_impl::override_status_text_create(
+bool PlaylistTabs::WindowHost::override_status_text_create(
     service_ptr_t<ui_status_text_override>& p_out)
 {
     static_api_ptr_t<ui_control> api;
     return m_this->get_host()->override_status_text_create(p_out);
 }
 
-const GUID& playlists_tabs_extension::window_host_impl::get_host_guid() const
+const GUID& PlaylistTabs::WindowHost::get_host_guid() const
 {
     // {20789B52-4998-43ae-9B20-CCFD3BFBEEBD}
     static const GUID guid = {0x20789b52, 0x4998, 0x43ae, {0x9b, 0x20, 0xcc, 0xfd, 0x3b, 0xfb, 0xee, 0xbd}};
     return guid;
 }
 
-void playlists_tabs_extension::window_host_impl::on_size_limit_change(HWND wnd, unsigned flags)
+void PlaylistTabs::WindowHost::on_size_limit_change(HWND wnd, unsigned flags)
 {
     m_this->on_child_position_change();
 }
 
-bool playlists_tabs_extension::window_host_impl::get_show_shortcuts() const
+bool PlaylistTabs::WindowHost::get_show_shortcuts() const
 {
     return m_this->get_host()->get_keyboard_shortcuts_enabled();
 }
 
-bool playlists_tabs_extension::window_host_impl::get_keyboard_shortcuts_enabled() const
+bool PlaylistTabs::WindowHost::get_keyboard_shortcuts_enabled() const
 {
     return m_this->get_host()->get_keyboard_shortcuts_enabled();
 }
 
-bool playlists_tabs_extension::window_host_impl::set_window_visibility(HWND wnd, bool visibility)
+bool PlaylistTabs::WindowHost::set_window_visibility(HWND wnd, bool visibility)
 {
     return false;
 }
 
-bool playlists_tabs_extension::window_host_impl::is_visibility_modifiable(HWND wnd, bool desired_visibility) const
+bool PlaylistTabs::WindowHost::is_visibility_modifiable(HWND wnd, bool desired_visibility) const
 {
     return false;
 }
 
-bool playlists_tabs_extension::window_host_impl::is_visible(HWND wnd) const
+bool PlaylistTabs::WindowHost::is_visible(HWND wnd) const
 {
     return true;
 }
 
-bool playlists_tabs_extension::window_host_impl::request_resize(
+bool PlaylistTabs::WindowHost::request_resize(
     HWND wnd, unsigned flags, unsigned width, unsigned height)
 {
     if (flags == ui_extension::size_height && is_resize_supported(wnd)) {
@@ -892,7 +892,7 @@ bool playlists_tabs_extension::window_host_impl::request_resize(
     return false;
 }
 
-unsigned playlists_tabs_extension::window_host_impl::is_resize_supported(HWND wnd) const
+unsigned PlaylistTabs::WindowHost::is_resize_supported(HWND wnd) const
 {
     // We won't support ui_extension::size_width since we can't reliably detect multiline tab shit
     return (m_this->get_host()->is_resize_supported(m_this->get_wnd()) & ui_extension::size_height);

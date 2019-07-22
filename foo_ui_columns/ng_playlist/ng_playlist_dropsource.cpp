@@ -2,7 +2,7 @@
 #include "ng_playlist.h"
 
 namespace pvt {
-bool ng_playlist_view_t::do_drag_drop(WPARAM wp)
+bool PlaylistView::do_drag_drop(WPARAM wp)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     m_playlist_api->activeplaylist_get_selected_items(data);
@@ -77,7 +77,7 @@ HRESULT STDMETHODCALLTYPE IDropSource_playlist::GiveFeedback(DWORD dwEffect)
     return DRAGDROP_S_USEDEFAULTCURSORS;
 }
 
-IDropSource_playlist::IDropSource_playlist(ng_playlist_view_t* playlist, DWORD initial_key_state)
+IDropSource_playlist::IDropSource_playlist(PlaylistView* playlist, DWORD initial_key_state)
     : refcount(0), p_playlist(playlist), m_initial_key_state(initial_key_state){};
 
 } // namespace pvt

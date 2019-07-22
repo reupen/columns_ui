@@ -4,8 +4,8 @@
 #include "playlist_switcher.h"
 #include "list_view_panel.h"
 
-class playlist_switcher_t
-    : public t_list_view_panel<appearance_client_ps_impl, uie::window>
+class PlaylistSwitcher
+    : public t_list_view_panel<PlaylistSwitcherColoursClient, uie::window>
     , private playlist_callback
     , private play_callback {
     enum {
@@ -29,9 +29,9 @@ class playlist_switcher_t
 
     enum { TIMER_SWITCH = TIMER_BASE };
 
-    class IDropSource_t : public IDropSource {
+    class DropSource : public IDropSource {
         long refcount;
-        service_ptr_t<playlist_switcher_t> m_window;
+        service_ptr_t<PlaylistSwitcher> m_window;
         DWORD m_initial_key_state;
 
     public:
@@ -40,10 +40,10 @@ class playlist_switcher_t
         ULONG STDMETHODCALLTYPE Release() override;
         HRESULT STDMETHODCALLTYPE QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState) override;
         HRESULT STDMETHODCALLTYPE GiveFeedback(DWORD dwEffect) override;
-        IDropSource_t(playlist_switcher_t* p_window, DWORD initial_key_state);
+        DropSource(PlaylistSwitcher* p_window, DWORD initial_key_state);
     };
 
-    class IDropTarget_t : public IDropTarget {
+    class DropTarget : public IDropTarget {
     public:
         HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;
         ULONG STDMETHODCALLTYPE AddRef() override;
@@ -54,14 +54,14 @@ class playlist_switcher_t
         HRESULT STDMETHODCALLTYPE DragLeave() override;
         HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
 
-        IDropTarget_t(playlist_switcher_t* p_window);
+        DropTarget(PlaylistSwitcher* p_window);
 
     private:
         long drop_ref_count;
         bool m_last_rmb;
         bool m_is_playlists;
         bool m_is_accepted_type;
-        service_ptr_t<playlist_switcher_t> m_window;
+        service_ptr_t<PlaylistSwitcher> m_window;
         pfc::com_ptr_t<IDataObject> m_DataObject;
         service_ptr_t<ole_interaction_v2> m_ole_api;
         service_ptr_t<playlist_manager_v4> m_playlist_api;
@@ -306,7 +306,7 @@ public:
     }
     unsigned get_type() const override { return uie::type_panel; }
 
-    playlist_switcher_t() : m_playing_playlist(pfc_infinite){};
+    PlaylistSwitcher() : m_playing_playlist(pfc_infinite){};
 
 private:
     contextmenu_manager::ptr m_contextmenu_manager;
@@ -326,5 +326,5 @@ private:
     service_ptr_t<playback_control> m_playback_api;
 
     static const GUID g_guid_font;
-    static std::vector<playlist_switcher_t*> g_windows;
+    static std::vector<PlaylistSwitcher*> g_windows;
 };
