@@ -5,7 +5,7 @@ extern fbh::ConfigString config_status_bar_script;
 extern fbh::ConfigString config_notification_icon_script;
 extern fbh::ConfigString config_main_window_title_script;
 
-enum metafield_edit_mode_t { mode_disabled, mode_columns };
+enum MetafieldEditingMode { mode_disabled, mode_columns };
 
 void config_set_inline_metafield_edit_mode(t_uint32 value);
 t_uint32 config_get_inline_metafield_edit_mode();

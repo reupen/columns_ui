@@ -294,7 +294,7 @@ class fcl_colours_t : public cui::fcl::dataset {
         static const GUID guid = {0x165946e7, 0x6165, 0x4680, {0xa0, 0x8e, 0x84, 0xb5, 0x76, 0x84, 0x58, 0xe8}};
         return guid;
     }
-    enum identifiers_t {
+    enum Identifier {
         identifier_global_entry,
         identifier_client_entries,
         identifier_client_entry = 0,
@@ -399,7 +399,7 @@ class fcl_fonts_t : public cui::fcl::dataset {
         static const GUID guid = {0xa806a9cd, 0x4117, 0x43da, {0x80, 0x5e, 0xfe, 0x4e, 0xb3, 0x48, 0xc9, 0xc}};
         return guid;
     }
-    enum identifiers_t {
+    enum Identifier {
         identifier_global_items,
         identifier_global_labels,
         identifier_client_entries,

@@ -1,7 +1,7 @@
 #ifndef _COLUMNS_SPLITTER_H_
 #define _COLUMNS_SPLITTER_H_
 
-enum orientation_t {
+enum Orientation {
     horizontal,
     vertical,
 };
@@ -9,7 +9,7 @@ enum orientation_t {
 class FlatSplitterPanel
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
 public:
-    virtual orientation_t get_orientation() const = 0;
+    virtual Orientation get_orientation() const = 0;
     static unsigned g_get_caption_size();
     void get_category(pfc::string_base& p_out) const override;
     unsigned get_type() const override;
@@ -51,7 +51,7 @@ public:
         ;
 
         // unsigned get_orientation();
-        orientation_t get_orientation() const;
+        Orientation get_orientation() const;
 
         unsigned is_resize_supported(HWND wnd) const override;
 

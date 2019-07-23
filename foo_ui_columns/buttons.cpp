@@ -547,7 +547,7 @@ void ButtonsToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_ca
         throw pfc::exception_bug_check(
             "uie::window::set_config() cannot be called once the window has been initialised.");
 
-    t_config_version p_version;
+    ConfigVersion p_version;
     unsigned count = m_buttons.get_count();
     p_reader->read_lendian_t(p_version, p_abort);
     if (p_version <= VERSION_CURRENT) {

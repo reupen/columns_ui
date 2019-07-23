@@ -180,7 +180,7 @@ class ItemDetails
     class_data& get_class_data() const override;
 
 public:
-    enum track_mode_t {
+    enum TrackingMode {
         track_auto_playlist_playing,
         track_playlist,
         track_playing,

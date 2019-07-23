@@ -2,7 +2,7 @@
 
 namespace artwork_panel {
 
-enum fb2k_artwork_mode_t {
+enum Fb2KArtworkMode {
     fb2k_artwork_disabled,
     fb2k_artwork_embedded,
     fb2k_artwork_embedded_and_external,

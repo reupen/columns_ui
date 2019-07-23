@@ -96,7 +96,7 @@ class ToolbarLayoutDataSet : public cui::fcl::dataset_v2 {
 cui::fcl::dataset_factory<ToolbarLayoutDataSet> g_export_toolbars_t;
 
 class MiscLayoutDataSet : public cui::fcl::dataset {
-    enum t_colour_pview_identifiers {
+    enum ItemID {
         identifier_status,
         identifier_status_pane,
         identifier_allow_locked_panel_resizing

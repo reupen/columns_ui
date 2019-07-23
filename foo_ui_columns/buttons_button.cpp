@@ -68,7 +68,7 @@ void ButtonsToolbar::Button::write(stream_writer* out, abort_callback& p_abort) 
 }
 
 void ButtonsToolbar::Button::read(
-    ButtonsToolbar::t_config_version p_version, stream_reader* reader, abort_callback& p_abort)
+    ButtonsToolbar::ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
 {
     *this = Button{};
 
@@ -172,7 +172,7 @@ void ButtonsToolbar::Button::get_name(pfc::string_base& p_out) // config
     }
 }
 
-void ButtonsToolbar::Button::read_from_file(t_config_version p_version, const char* p_base, const char* p_name,
+void ButtonsToolbar::Button::read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name,
     stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
 {
     // t_filesize p_start = p_file->get_position(p_abort);

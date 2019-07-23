@@ -1070,7 +1070,7 @@ unsigned FlatSplitterPanel::FlatSplitterPanelHost::is_resize_supported(HWND wnd)
     return get_orientation() == vertical ? ui_extension::size_height : uie::size_width;
 }
 
-orientation_t FlatSplitterPanel::FlatSplitterPanelHost::get_orientation() const
+Orientation FlatSplitterPanel::FlatSplitterPanelHost::get_orientation() const
 {
     return m_this.is_valid() ? m_this->get_orientation() : vertical;
 }

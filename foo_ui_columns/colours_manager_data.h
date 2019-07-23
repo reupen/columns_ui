@@ -8,7 +8,7 @@ public:
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
     class entry_t : public pfc::refcounted_object_root {
     public:
-        enum t_export_identifiers {
+        enum ExportItemID {
             identifier_guid,
             identifier_mode,
             identifier_background,

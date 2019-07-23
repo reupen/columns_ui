@@ -9,10 +9,10 @@ cui::fcl::group_impl_factory fclgroupcommon(
     cui::fcl::groups::titles_common, "Common Scripts", "Common Scripts", cui::fcl::groups::title_scripts);
 
 class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
-    enum t_identifiers {
+    enum ItemID {
         identifier_column,
     };
-    enum t_columns {
+    enum ColumnItemID {
         identifier_name,
         identifier_display,
         identifier_sort,
@@ -160,7 +160,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
 cui::fcl::dataset_factory<PlaylistViewColumnsDataSet> g_export_columns_t;
 
 class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
-    enum t_identifiers {
+    enum ItemID {
         identifier_groups,
         identifier_show_groups,
         /*identifier_show_artwork, //Need somewhere to stick these
@@ -168,9 +168,9 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
         identifier_artwork_reflection,*/
     };
 
-    enum t_group_identifiers { identifier_group };
+    enum GroupItemID { identifier_group };
 
-    enum t_columns {
+    enum GroupSubItemID {
         identifier_script,
         identifier_playlist_filter_mode,
         identifier_playlist_filter_string,
@@ -304,7 +304,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
 cui::fcl::dataset_factory<PlaylistViewGroupsDataSet> g_export_groups_t;
 
 class PlaylistViewMiscDataSet : public cui::fcl::dataset {
-    enum t_identifiers {
+    enum ItemID {
         identifier_global_script,
         identifier_style_script,
         identifier_show_header,
@@ -380,7 +380,7 @@ class PlaylistViewMiscDataSet : public cui::fcl::dataset {
 cui::fcl::dataset_factory<PlaylistViewMiscDataSet> g_export_pview_t;
 
 class TitlesDataSet : public cui::fcl::dataset {
-    enum t_identifiers {
+    enum ItemID {
         identifier_main_window_title,
         identifier_status_bar,
         identifier_notification_icon_tooltip,

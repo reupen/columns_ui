@@ -512,14 +512,14 @@ void FilterPanel::get_selection_handles(
     }
 }
 
-void FilterPanel::do_selection_action(action_t action)
+void FilterPanel::do_selection_action(Action action)
 {
     pfc::bit_array_bittable mask(m_nodes.get_count());
     get_selection_state(mask);
     do_items_action(mask, action);
 }
 
-void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, action_t action)
+void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, Action action)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(m_nodes.get_count());
@@ -596,14 +596,14 @@ void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, action_t action
 
 void FilterPanel::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
 {
-    auto action = static_cast<action_t>(cfg_doubleclickaction.get_value());
+    auto action = static_cast<Action>(cfg_doubleclickaction.get_value());
     do_selection_action(action);
 }
 
 bool FilterPanel::notify_on_middleclick(bool on_item, t_size index)
 {
     if (cfg_middleclickaction && on_item && index < m_nodes.get_count()) {
-        auto action = static_cast<action_t>(cfg_middleclickaction.get_value() - 1);
+        auto action = static_cast<Action>(cfg_middleclickaction.get_value() - 1);
         do_items_action(pfc::bit_array_one(index), action);
         return true;
     }
