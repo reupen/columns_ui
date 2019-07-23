@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "splitter.h"
 
-LRESULT splitter_window_impl::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_NCCREATE:

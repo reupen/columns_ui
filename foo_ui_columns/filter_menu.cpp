@@ -143,7 +143,7 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     if (cmd >= ID_BASE)
         manager->execute_by_id(cmd - ID_BASE);
     else if (cmd > 0)
-        do_selection_action((action_t)(cmd - 1));
+        do_selection_action((Action)(cmd - 1));
 
     return true;
 }

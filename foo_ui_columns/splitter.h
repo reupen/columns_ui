@@ -1,15 +1,15 @@
 #ifndef _COLUMNS_SPLITTER_H_
 #define _COLUMNS_SPLITTER_H_
 
-enum orientation_t {
+enum Orientation {
     horizontal,
     vertical,
 };
 
-class splitter_window_impl
+class FlatSplitterPanel
     : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
 public:
-    virtual orientation_t get_orientation() const = 0;
+    virtual Orientation get_orientation() const = 0;
     static unsigned g_get_caption_size();
     void get_category(pfc::string_base& p_out) const override;
     unsigned get_type() const override;
@@ -38,8 +38,8 @@ public:
 
     bool set_config_item(unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
 
-    class splitter_host_impl : public ui_extension::window_host_ex {
-        service_ptr_t<splitter_window_impl> m_this;
+    class FlatSplitterPanelHost : public ui_extension::window_host_ex {
+        service_ptr_t<FlatSplitterPanel> m_this;
 
     public:
         const GUID& get_host_guid() const override;
@@ -51,7 +51,7 @@ public:
         ;
 
         // unsigned get_orientation();
-        orientation_t get_orientation() const;
+        Orientation get_orientation() const;
 
         unsigned is_resize_supported(HWND wnd) const override;
 
@@ -64,7 +64,7 @@ public:
         bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override;
         bool set_window_visibility(HWND wnd, bool visibility) override;
 
-        void set_window_ptr(splitter_window_impl* p_ptr);
+        void set_window_ptr(FlatSplitterPanel* p_ptr);
 
         void relinquish_ownership(HWND wnd) override;
     };
@@ -77,35 +77,35 @@ public:
     static void g_on_size_change();
 
 private:
-    struct t_size_limit {
+    struct SizeLimit {
         unsigned min_height{0};
         unsigned max_height{0};
         unsigned min_width{0};
         unsigned max_width{0};
-        t_size_limit() = default;
+        SizeLimit() = default;
         ;
     };
-    class panel : public pfc::refcounted_object_root {
+    class Panel : public pfc::refcounted_object_root {
     public:
-        class panel_container
+        class PanelContainer
             : public ui_helpers::container_window
             , private fbh::LowLevelMouseHookManager::HookCallback {
         public:
             enum { MSG_AUTOHIDE_END = WM_USER + 2 };
 
-            panel_container(panel* p_panel);
+            PanelContainer(Panel* p_panel);
             ;
-            ~panel_container();
-            void set_window_ptr(splitter_window_impl* p_ptr);
+            ~PanelContainer();
+            void set_window_ptr(FlatSplitterPanel* p_ptr);
             void enter_autohide_hook();
             // private:
             class_data& get_class_data() const override;
             LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
             void on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs) override;
-            service_ptr_t<splitter_window_impl> m_this;
+            service_ptr_t<FlatSplitterPanel> m_this;
 
             HTHEME m_theme;
-            panel* m_panel;
+            Panel* m_panel;
 
             bool m_hook_active;
             bool m_timer_active;
@@ -123,13 +123,13 @@ private:
         HWND m_wnd_child{nullptr};
         bool m_show_caption{true};
         pfc::array_t<t_uint8> m_child_data;
-        t_size_limit m_size_limits;
+        SizeLimit m_size_limits;
         uie::window_ptr m_child;
         bool m_show_toggle_area{false};
         bool m_use_custom_title{false};
         pfc::string8 m_custom_title;
 
-        service_ptr_t<class splitter_host_impl> m_interface;
+        service_ptr_t<class FlatSplitterPanelHost> m_interface;
 
         uih::IntegerAndDpi<uint32_t> m_size{150};
 
@@ -150,12 +150,12 @@ private:
         void on_size(unsigned cx, unsigned cy);
 
         void destroy();
-        panel();
+        Panel();
 
-        using ptr = pfc::refcounted_object_ptr_t<panel>;
+        using ptr = pfc::refcounted_object_ptr_t<Panel>;
         static ptr null_ptr;
     };
-    class panel_list : public pfc::list_t<pfc::refcounted_object_ptr_t<panel>> {
+    class PanelList : public pfc::list_t<pfc::refcounted_object_ptr_t<Panel>> {
     public:
         bool find_by_wnd(HWND wnd, unsigned& p_out);
         bool find_by_wnd_child(HWND wnd, unsigned& p_out);
@@ -187,7 +187,7 @@ private:
     void destroy_children();
 
     // unsigned get_orientation();
-    panel_list m_panels;
+    PanelList m_panels;
     HWND m_wnd{nullptr};
 
     int m_last_position{NULL};
@@ -197,10 +197,10 @@ private:
     static gdi_object_t<HFONT>::ptr_t g_font_menu_horizontal;
     static gdi_object_t<HFONT>::ptr_t g_font_menu_vertical;
     static unsigned g_count;
-    static pfc::ptr_list_t<splitter_window_impl> g_instances;
+    static pfc::ptr_list_t<FlatSplitterPanel> g_instances;
 
 public:
-    splitter_window_impl() = default;
+    FlatSplitterPanel() = default;
 
     //
 };

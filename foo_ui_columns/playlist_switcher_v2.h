@@ -5,7 +5,7 @@
 #include "list_view_panel.h"
 
 class PlaylistSwitcher
-    : public t_list_view_panel<PlaylistSwitcherColoursClient, uie::window>
+    : public ListViewPanelBase<PlaylistSwitcherColoursClient, uie::window>
     , private playlist_callback
     , private play_callback {
     enum {

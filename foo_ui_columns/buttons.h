@@ -7,7 +7,7 @@ class ButtonsToolbar : public ui_extension::container_ui_extension {
     int width{0};
     int height{0};
 
-    enum t_config_version { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
+    enum ConfigVersion { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
 
     /** For config dialog */
     enum { MSG_BUTTON_CHANGE = WM_USER + 2, MSG_COMMAND_CHANGE = WM_USER + 3 };
@@ -56,9 +56,9 @@ public:
 
             void get_path(pfc::string8& p_out) const;
             void write(stream_writer* out, abort_callback& p_abort) const;
-            void read(t_config_version p_version, stream_reader* reader, abort_callback& p_abort);
+            void read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort);
             void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
-            void read_from_file(t_config_version p_version, const char* p_base, const char* p_name,
+            void read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name,
                 stream_reader* p_file, unsigned p_size, abort_callback& p_abort);
         };
 
@@ -94,7 +94,7 @@ public:
 
         void write(stream_writer* out, abort_callback& p_abort) const;
 
-        void read(t_config_version p_version, stream_reader* reader, abort_callback& p_abort);
+        void read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort);
         void get_display_text(pfc::string_base& p_out); // display
         void get_short_name(pfc::string_base& p_out); // tooltip
 
@@ -102,7 +102,7 @@ public:
         void get_name_name(pfc::string_base& p_out); // config
         void get_name(pfc::string_base& p_out); // config
         void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
-        void read_from_file(t_config_version p_version, const char* p_base, const char* p_name, stream_reader* p_file,
+        void read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
             unsigned p_size, abort_callback& p_abort);
     };
 
@@ -343,7 +343,7 @@ template <>
 class traits_t<ButtonsToolbar::Appearance> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::t_config_version> : public traits_rawobject {
+class traits_t<ButtonsToolbar::ConfigVersion> : public traits_rawobject {
 };
 template <>
 class traits_t<ButtonsToolbar::Show> : public traits_rawobject {

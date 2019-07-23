@@ -5,7 +5,7 @@
 #include "tab_colours.h"
 
 class ColoursDataSet : public cui::fcl::dataset {
-    enum t_colour_pview_identifiers {
+    enum ItemID {
         colours_pview_mode,
         colours_pview_background,
         colours_pview_selection_background,
@@ -143,7 +143,7 @@ class ColoursDataSet : public cui::fcl::dataset {
 cui::fcl::dataset_factory<ColoursDataSet> g_export_colours_t;
 
 class PlaylistSwitcherAppearanceDataSet : public cui::fcl::dataset {
-    enum t_colour_switcher_identifiers {
+    enum ItemID {
         colours_switcher_mode, // not used
         colours_switcher_background,
         colours_switcher_selection_background,
@@ -230,7 +230,7 @@ class PlaylistSwitcherAppearanceDataSet : public cui::fcl::dataset {
 cui::fcl::dataset_factory<PlaylistSwitcherAppearanceDataSet> g_export_colours_switcher_t;
 
 class FontsDataSet : public cui::fcl::dataset {
-    enum t_colour_pview_identifiers {
+    enum ItemID {
         font_status,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Misc fonts"; }

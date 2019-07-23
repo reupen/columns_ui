@@ -13,14 +13,14 @@ const char* strchr_n(const char* src, char c, unsigned len)
     return nullptr;
 }
 
-void colour::set(COLORREF new_colour)
+void Colour::set(COLORREF new_colour)
 {
     B = LOBYTE(HIWORD(new_colour));
     G = HIBYTE(LOWORD(new_colour));
     R = LOBYTE(LOWORD(new_colour));
 }
 
-string_pn::string_pn(metadb_handle_list_cref handles, const char* format, const char* def)
+StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(metadb_handle_list_cref handles, const char* format, const char* def)
 {
     pfc::string8_fast_aggressive a, b;
     a.prealloc(512);

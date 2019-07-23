@@ -42,14 +42,14 @@ static BOOL CALLBACK EditViewProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_FILTER_TYPE: {
             if (true) {
                 EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING),
-                    ((playlist_filter_type)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0)) != FILTER_NONE);
+                    ((PlaylistFilterType)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0)) != FILTER_NONE);
             }
         } break;
         case IDOK: {
             auto* ptr = reinterpret_cast<edit_view_param*>(GetWindowLongPtr(wnd, DWLP_USER));
             uGetDlgItemText(wnd, IDC_VALUE, ptr->value.string);
             ptr->value.filter_type
-                = ((playlist_filter_type)SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_GETCURSEL, 0, 0));
+                = ((PlaylistFilterType)SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_GETCURSEL, 0, 0));
             ptr->value.filter_playlists = (string_utf8_from_window(wnd, IDC_PLAYLIST_FILTER_STRING));
             EndDialog(wnd, 1);
 

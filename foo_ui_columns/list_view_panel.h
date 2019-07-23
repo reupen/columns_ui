@@ -1,7 +1,7 @@
 #pragma once
 
 template <typename t_appearance_client, typename t_window = uie::window>
-class t_list_view_panel
+class ListViewPanelBase
     : public uih::ListView
     , public t_window {
 public:

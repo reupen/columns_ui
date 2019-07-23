@@ -76,7 +76,7 @@ public:
 };
 
 class FilterPanel
-    : public t_list_view_panel<AppearanceClient, uie::window>
+    : public ListViewPanelBase<AppearanceClient, uie::window>
     , fbh::LibraryCallback {
     friend class FilterSearchToolbar;
 
@@ -85,7 +85,7 @@ public:
 
     enum { config_version_current = 1 };
 
-    enum action_t {
+    enum Action {
         action_send_to_autosend,
         action_send_to_autosend_play,
         action_send_to_new,
@@ -161,8 +161,8 @@ private:
     void get_selection_handles(
         metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out, bool fallback = true, bool b_sort = false);
     bool get_nothing_or_all_node_selected() { return get_selection_count(1) == 0 || get_item_selected(0); }
-    void do_selection_action(action_t action = action_send_to_autosend);
-    void do_items_action(const pfc::bit_array& p_nodes, action_t action = action_send_to_autosend);
+    void do_selection_action(Action action = action_send_to_autosend);
+    void do_items_action(const pfc::bit_array& p_nodes, Action action = action_send_to_autosend);
     void send_results_to_playlist(bool b_play = false);
 
     void update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_data);

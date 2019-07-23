@@ -1,7 +1,7 @@
 #pragma once
 
-class playlist_format_name_t : private pfc::string8 {
-    class titleformat_hook_playlist_t : public titleformat_hook {
+class StringPlaylistFormatName : private pfc::string8 {
+    class PlaylistSwitcherTitleformatHook : public titleformat_hook {
         const char* m_name;
         bool m_locked;
         bool m_playing;
@@ -41,11 +41,11 @@ class playlist_format_name_t : private pfc::string8 {
             p_found_flag = false;
             return false;
         }
-        titleformat_hook_playlist_t(unsigned p_index, const char* p_name, t_size p_playing);
+        PlaylistSwitcherTitleformatHook(unsigned p_index, const char* p_name, t_size p_playing);
     };
 
 public:
-    playlist_format_name_t(unsigned p_index, const char* src, t_size p_playing);
+    StringPlaylistFormatName(unsigned p_index, const char* src, t_size p_playing);
     operator const char*() { return get_ptr(); }
 };
 

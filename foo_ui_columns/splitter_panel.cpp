@@ -1,9 +1,9 @@
 #include "stdafx.h"
 #include "splitter.h"
 
-splitter_window_impl::panel::panel() : m_container(this) {}
+FlatSplitterPanel::Panel::Panel() : m_container(this) {}
 
-void splitter_window_impl::panel::destroy()
+void FlatSplitterPanel::Panel::destroy()
 {
     if (m_child.is_valid()) {
         //            pal.m_child_data.set_size(0);
@@ -19,7 +19,7 @@ void splitter_window_impl::panel::destroy()
         m_container.destroy();
 }
 
-void splitter_window_impl::panel::on_size(unsigned cx, unsigned cy)
+void FlatSplitterPanel::Panel::on_size(unsigned cx, unsigned cy)
 {
     unsigned caption_size = m_show_caption ? g_get_caption_size() : 0;
 
@@ -42,7 +42,7 @@ void splitter_window_impl::panel::on_size(unsigned cx, unsigned cy)
     }
 }
 
-void splitter_window_impl::panel::on_size()
+void FlatSplitterPanel::Panel::on_size()
 {
     RECT rc;
     if (GetClientRect(m_wnd, &rc)) {
@@ -50,7 +50,7 @@ void splitter_window_impl::panel::on_size()
     }
 }
 
-void splitter_window_impl::panel::set_hidden(bool val)
+void FlatSplitterPanel::Panel::set_hidden(bool val)
 {
     m_hidden = val;
     if (m_container.m_this.is_valid()) {
@@ -59,7 +59,7 @@ void splitter_window_impl::panel::set_hidden(bool val)
     }
 }
 
-void splitter_window_impl::panel::read(stream_reader* t, abort_callback& p_abort)
+void FlatSplitterPanel::Panel::read(stream_reader* t, abort_callback& p_abort)
 {
     t->read_lendian_t(m_guid, p_abort);
     t->read_lendian_t(m_caption_orientation, p_abort);
@@ -82,7 +82,7 @@ void splitter_window_impl::panel::read(stream_reader* t, abort_callback& p_abort
     t->read_string(m_custom_title, p_abort);
 }
 
-void splitter_window_impl::panel::import(stream_reader* t, abort_callback& p_abort)
+void FlatSplitterPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
 {
     t->read_lendian_t(m_guid, p_abort);
     t->read_lendian_t(m_caption_orientation, p_abort);
@@ -116,19 +116,19 @@ void splitter_window_impl::panel::import(stream_reader* t, abort_callback& p_abo
     //    throw pfc::exception_not_implemented();
 }
 
-void splitter_window_impl::panel::read_extra(stream_reader* reader, abort_callback& p_abort)
+void FlatSplitterPanel::Panel::read_extra(stream_reader* reader, abort_callback& p_abort)
 {
     reader->read_lendian_t(m_size.value, p_abort);
     reader->read_lendian_t(m_size.dpi, p_abort);
 }
 
-void splitter_window_impl::panel::write_extra(stream_writer* writer, abort_callback& p_abort)
+void FlatSplitterPanel::Panel::write_extra(stream_writer* writer, abort_callback& p_abort)
 {
     writer->write_lendian_t(m_size.value, p_abort);
     writer->write_lendian_t(m_size.dpi, p_abort);
 }
 
-void splitter_window_impl::panel::write(stream_writer* out, abort_callback& p_abort)
+void FlatSplitterPanel::Panel::write(stream_writer* out, abort_callback& p_abort)
 {
     if (m_child.is_valid()) {
         m_child->get_config_to_array(m_child_data, p_abort, true);
@@ -147,7 +147,7 @@ void splitter_window_impl::panel::write(stream_writer* out, abort_callback& p_ab
     out->write_string(m_custom_title, p_abort);
 }
 
-void splitter_window_impl::panel::_export(stream_writer* out, abort_callback& p_abort)
+void FlatSplitterPanel::Panel::_export(stream_writer* out, abort_callback& p_abort)
 {
     stream_writer_memblock child_exported_data;
     uie::window_ptr ptr = m_child;
@@ -176,7 +176,7 @@ void splitter_window_impl::panel::_export(stream_writer* out, abort_callback& p_
     out->write_string(m_custom_title, p_abort);
 }
 
-void splitter_window_impl::panel::set_from_splitter_item(const uie::splitter_item_t* p_source)
+void FlatSplitterPanel::Panel::set_from_splitter_item(const uie::splitter_item_t* p_source)
 {
     if (m_wnd)
         destroy();
@@ -201,7 +201,7 @@ void splitter_window_impl::panel::set_from_splitter_item(const uie::splitter_ite
     p_source->get_panel_config_to_array(m_child_data, true);
 }
 
-uie::splitter_item_full_v2_t* splitter_window_impl::panel::create_splitter_item(bool b_set_ptr /*= true*/)
+uie::splitter_item_full_v2_t* FlatSplitterPanel::Panel::create_splitter_item(bool b_set_ptr /*= true*/)
 {
     auto ret = new uie::splitter_item_full_v2_impl_t;
     ret->m_autohide = m_autohide;
@@ -223,7 +223,7 @@ uie::splitter_item_full_v2_t* splitter_window_impl::panel::create_splitter_item(
     return ret;
 }
 
-bool splitter_window_impl::panel_list::find_by_wnd_child(HWND wnd, unsigned& p_out)
+bool FlatSplitterPanel::PanelList::find_by_wnd_child(HWND wnd, unsigned& p_out)
 {
     unsigned count = get_count();
     for (unsigned n = 0; n < count; n++) {
@@ -235,7 +235,7 @@ bool splitter_window_impl::panel_list::find_by_wnd_child(HWND wnd, unsigned& p_o
     return false;
 }
 
-bool splitter_window_impl::panel_list::find_by_wnd(HWND wnd, unsigned& p_out)
+bool FlatSplitterPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
 {
     unsigned count = get_count();
     for (unsigned n = 0; n < count; n++) {

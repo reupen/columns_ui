@@ -304,7 +304,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
                     playlist_name.replace_char('_', ' ', 0);
                 if (!named && cfg_pgen_tf)
                     new_idx = playlist_api->create_playlist(
-                        string_pn(data, cfg_pgenstring), pfc_infinite, newPlaylistIndex);
+                        StringFormatCommonTrackTitle(data, cfg_pgenstring), pfc_infinite, newPlaylistIndex);
 
                 else
                     new_idx = playlist_api->create_playlist(playlist_name, pfc_infinite, newPlaylistIndex);

@@ -23,7 +23,7 @@ extern HTHEME thm_status;
 
 extern volume_popup_t volume_popup_window;
 
-enum t_parts : uint32_t {
+enum StatusBarPart : uint32_t {
     t_parts_none = 0,
     t_parts_all = 0xffffffff,
     t_part_main = 1 << 0,

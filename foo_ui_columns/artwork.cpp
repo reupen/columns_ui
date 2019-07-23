@@ -28,7 +28,7 @@ static const GUID g_guid_cfg_disc_scripts
 static const GUID g_guid_cfg_artist_scripts
     = {0xc1e7da7e, 0x1d3a, 0x4f30, {0x83, 0x84, 0xe, 0x47, 0xc4, 0x9b, 0x6d, 0xd9}};
 
-enum track_mode_t {
+enum TrackingMode {
     track_auto_playlist_playing,
     track_playlist,
     track_playing,

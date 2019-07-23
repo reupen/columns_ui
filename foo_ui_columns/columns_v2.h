@@ -14,8 +14,8 @@ public:
     bool use_custom_sort{false};
     pfc::string8 sort_spec;
     uih::IntegerAndDpi<int32_t> width{100};
-    alignment align{ALIGN_LEFT};
-    playlist_filter_type filter_type{FILTER_NONE};
+    Alignment align{ALIGN_LEFT};
+    PlaylistFilterType filter_type{FILTER_NONE};
     pfc::string8 filter;
     t_uint32 parts{1};
     bool show{true};
@@ -24,8 +24,8 @@ public:
     PlaylistViewColumnBase() = default;
 
     PlaylistViewColumnBase(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
-        bool b_use_custom_sort, const char* p_sort_spec, int p_width, alignment p_align,
-        playlist_filter_type p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
+        bool b_use_custom_sort, const char* p_sort_spec, int p_width, Alignment p_align,
+        PlaylistFilterType p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
         const char* p_edit_field)
         : name(pname)
         , spec(pspec)
@@ -65,8 +65,8 @@ public:
     PlaylistViewColumn() = default;
 
     PlaylistViewColumn(const char* pname, const char* pspec, bool b_use_custom_colour, const char* p_colour_spec,
-        bool b_use_custom_sort, const char* p_sort_spec, unsigned p_width, alignment p_align,
-        playlist_filter_type p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
+        bool b_use_custom_sort, const char* p_sort_spec, unsigned p_width, Alignment p_align,
+        PlaylistFilterType p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
         const char* p_edit_field)
         : PlaylistViewColumnBase(pname, pspec, b_use_custom_colour, p_colour_spec, b_use_custom_sort, p_sort_spec, p_width,
               p_align, p_filter_type, p_filter_string, p_parts, b_show, p_edit_field)

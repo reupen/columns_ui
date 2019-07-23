@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "splitter.h"
 
-pfc::ptr_list_t<splitter_window_impl> splitter_window_impl::g_instances;
+pfc::ptr_list_t<FlatSplitterPanel> FlatSplitterPanel::g_instances;
 
 void g_get_panel_list(uie::window_info_list_simple& p_out, uie::window_host_ptr& p_host)
 {
@@ -58,7 +58,7 @@ void clip_minmaxinfo(MINMAXINFO& mmi)
     mmi.ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, MAXSHORT);
 }
 
-class splitter_window_horizontal : public splitter_window_impl {
+class HorizontalSplitterPanel : public FlatSplitterPanel {
     class_data& get_class_data() const override
     {
         __implement_get_class_data_ex(_T("{72FACC90-BB7E-4733-8449-D7537232AD26}"), _T(""), false, 0,
@@ -71,10 +71,10 @@ class splitter_window_horizontal : public splitter_window_impl {
         static const GUID rv = {0x8fa0bc24, 0x882a, 0x4fff, {0x8a, 0x3b, 0x21, 0x5e, 0xa7, 0xfb, 0xd0, 0x7f}};
         return rv;
     }
-    orientation_t get_orientation() const override { return horizontal; }
+    Orientation get_orientation() const override { return horizontal; }
 };
 
-class splitter_window_vertical : public splitter_window_impl {
+class VerticalSplitterPanel : public FlatSplitterPanel {
     class_data& get_class_data() const override
     {
         __implement_get_class_data_ex(_T("{77653A44-66D1-49e0-9A7A-1C71898C0441}"), _T(""), false, 0,
@@ -87,13 +87,13 @@ class splitter_window_vertical : public splitter_window_impl {
         static const GUID rv = {0x77653a44, 0x66d1, 0x49e0, {0x9a, 0x7a, 0x1c, 0x71, 0x89, 0x8c, 0x4, 0x41}};
         return rv;
     }
-    orientation_t get_orientation() const override { return vertical; }
+    Orientation get_orientation() const override { return vertical; }
 };
 
-uie::window_factory<splitter_window_horizontal> g_splitter_window_horizontal;
-uie::window_factory<splitter_window_vertical> g_splitter_window_vertical;
+uie::window_factory<HorizontalSplitterPanel> g_splitter_window_horizontal;
+uie::window_factory<VerticalSplitterPanel> g_splitter_window_vertical;
 
-splitter_window_impl::panel::ptr splitter_window_impl::panel::null_ptr = splitter_window_impl::panel::ptr();
+FlatSplitterPanel::Panel::ptr FlatSplitterPanel::Panel::null_ptr = FlatSplitterPanel::Panel::ptr();
 
 #if 0
 template <orientation_t t_orientation>

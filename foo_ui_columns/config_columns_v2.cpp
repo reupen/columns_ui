@@ -130,12 +130,12 @@ public:
             switch (wp) {
             case (CBN_SELCHANGE << 16) | IDC_ALIGNMENT: {
                 if (!initialising && m_column.is_valid()) {
-                    m_column->align = ((alignment)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
+                    m_column->align = ((Alignment)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
                 }
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_FILTER_TYPE: {
                 if (!initialising && m_column.is_valid()) {
-                    m_column->filter_type = ((playlist_filter_type)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
+                    m_column->filter_type = ((PlaylistFilterType)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
                     EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), m_column->filter_type != FILTER_NONE);
                 }
             } break;

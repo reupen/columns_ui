@@ -118,7 +118,7 @@ private:
 };
 
 class ItemProperties
-    : public t_list_view_panel<ItemPropertiesColoursClient, uie::window>
+    : public ListViewPanelBase<ItemPropertiesColoursClient, uie::window>
     , public ui_selection_callback
     , public play_callback
     , public metadb_io_callback_dynamic {

@@ -410,7 +410,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                                 if (m_new_playlist) {
                                     if (!m_playlist_name.length()) {
                                         if (cfg_pgen_tf)
-                                            m_playlist_name = string_pn(p_items, cfg_pgenstring);
+                                            m_playlist_name = StringFormatCommonTrackTitle(p_items, cfg_pgenstring);
                                         else
                                             m_playlist_name = "Untitled";
                                     }

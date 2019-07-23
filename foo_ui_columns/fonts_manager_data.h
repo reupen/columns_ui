@@ -10,7 +10,7 @@ public:
 
     class entry_t : public pfc::refcounted_object_root {
     public:
-        enum identifier_t {
+        enum ItemID {
             identifier_guid,
             identifier_mode,
             identifier_font,

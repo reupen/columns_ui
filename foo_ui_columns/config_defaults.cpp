@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "main_window.h"
 
-COLORREF get_default_colour(colours::t_colours index, bool themed)
+COLORREF get_default_colour(colours::ColourID index, bool themed)
 {
     switch (index) {
     case colours::COLOUR_TEXT:

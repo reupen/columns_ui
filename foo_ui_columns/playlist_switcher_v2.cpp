@@ -15,7 +15,7 @@ void PlaylistSwitcher::get_insert_items(t_size base, t_size count, pfc::list_t<u
         p_out[i].m_subitems.set_count(1);
         pfc::string8 temp;
         m_playlist_api->playlist_get_name(i + base, temp);
-        p_out[i].m_subitems[0].set_string(playlist_format_name_t(i + base, temp, get_playing_playlist()));
+        p_out[i].m_subitems[0].set_string(StringPlaylistFormatName(i + base, temp, get_playing_playlist()));
     }
 }
 

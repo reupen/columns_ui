@@ -2,17 +2,17 @@
 
 namespace cui::playlist_item_helpers {
 
-using pma_action = void (*)(bool, unsigned int);
+using MiddleClickFunction = void (*)(bool, unsigned int);
 
-struct pma {
+struct MiddleLickAction {
     const char* name;
     unsigned id;
-    pma_action p_run;
+    MiddleClickFunction p_run;
 };
 
-class mclick_action {
+class MiddleClickActionManager {
 public:
-    static pma g_pma_actions[];
+    static MiddleLickAction g_pma_actions[];
     static unsigned id_to_idx(unsigned id);
 
     static bool run(unsigned id, bool on_item, unsigned idx)

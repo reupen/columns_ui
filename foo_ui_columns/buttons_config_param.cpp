@@ -69,7 +69,7 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
         p_file->read_lendian_t(temp, p_abort);
         if (temp != g_guid_fcb)
             throw exception_io_data();
-        t_config_version vers;
+        ConfigVersion vers;
         p_file->read_lendian_t(vers, p_abort);
         if (vers > VERSION_CURRENT)
             throw "Fcb version is newer than component";

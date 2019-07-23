@@ -23,20 +23,20 @@ public:
     ConfigWindowPlacement(const GUID& p_guid);
 };
 
-class ConfigMenuItem : public cfg_struct_t<menu_item_identifier> {
+class ConfigMenuItem : public cfg_struct_t<MenuItemIdentifier> {
 public:
-    using cfg_struct_t<menu_item_identifier>::operator=;
-    using cfg_struct_t<menu_item_identifier>::operator menu_item_identifier;
+    using cfg_struct_t<MenuItemIdentifier>::operator=;
+    using cfg_struct_t<MenuItemIdentifier>::operator MenuItemIdentifier;
     void reset()
     {
-        menu_item_identifier temp;
+        MenuItemIdentifier temp;
         *this = temp;
     }
-    explicit ConfigMenuItem(const GUID& p_guid, const menu_item_identifier& p_val)
-        : cfg_struct_t<menu_item_identifier>(p_guid, p_val){};
+    explicit ConfigMenuItem(const GUID& p_guid, const MenuItemIdentifier& p_val)
+        : cfg_struct_t<MenuItemIdentifier>(p_guid, p_val){};
     explicit ConfigMenuItem(const GUID& p_guid, const GUID& p_val, const GUID& psub = pfc::guid_null)
-        : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier{p_val, psub}){};
-    explicit ConfigMenuItem(const GUID& p_guid) : cfg_struct_t<menu_item_identifier>(p_guid, menu_item_identifier{}){};
+        : cfg_struct_t<MenuItemIdentifier>(p_guid, MenuItemIdentifier{p_val, psub}){};
+    explicit ConfigMenuItem(const GUID& p_guid) : cfg_struct_t<MenuItemIdentifier>(p_guid, MenuItemIdentifier{}){};
 };
 
 namespace settings {

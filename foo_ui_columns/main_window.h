@@ -11,7 +11,7 @@
  */
 
 namespace colours {
-enum t_colours {
+enum ColourID {
     COLOUR_TEXT,
     COLOUR_SELECTED_TEXT,
     COLOUR_BACK,
@@ -22,7 +22,7 @@ enum t_colours {
 };
 };
 
-COLORREF get_default_colour(colours::t_colours index, bool themed = false);
+COLORREF get_default_colour(colours::ColourID index, bool themed = false);
 
 /** Main window UI control IDs */
 #define ID_REBAR 2100
@@ -55,7 +55,7 @@ void on_show_status_change();
 void on_show_status_pane_change();
 void on_show_toolbars_change();
 
-extern class status_pane g_status_pane;
+extern class StatusPane g_status_pane;
 extern class RebarWindow* g_rebar_window;
 
 namespace taskbar_buttons {
