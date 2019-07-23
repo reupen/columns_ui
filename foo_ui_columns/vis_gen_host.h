@@ -2,11 +2,11 @@
 #define _COLUMNS_VIS_GEN_HOST_H_
 
 #if 1
-class window_visualisation : public ui_extension::container_ui_extension {
+class VisualisationPanel : public ui_extension::container_ui_extension {
     static const wchar_t* class_name;
     bool initialised{false};
     pfc::array_t<t_uint8> m_data;
-    service_ptr_t<class window_visualisation_interface> m_interface;
+    service_ptr_t<class VisualisationPanelInterface> m_interface;
     uie::visualisation_ptr p_vis;
     unsigned m_frame;
     HBITMAP bm_display{nullptr};
@@ -16,7 +16,7 @@ class window_visualisation : public ui_extension::container_ui_extension {
 public:
     HBITMAP get_bitmap() const { return bm_display; }
     const RECT* get_rect_client() { return &rc_client; }
-    static pfc::ptr_list_t<window_visualisation> list_vis;
+    static pfc::ptr_list_t<VisualisationPanel> list_vis;
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
@@ -31,9 +31,9 @@ public:
         __implement_get_class_data_ex(class_name, _T(""), false, 0, WS_CHILD | WS_CLIPCHILDREN, flags, 0);
     }
 
-    window_visualisation();
+    VisualisationPanel();
 
-    ~window_visualisation();
+    ~VisualisationPanel();
 
     void flush_bitmap();
     void make_bitmap(HDC hdc = nullptr);
@@ -60,7 +60,7 @@ public:
             p_vis->get_config_to_array(p_out, abortCallback);
         }
     }
-    friend class window_visualisation_interface;
+    friend class VisualisationPanelInterface;
 
     // override me
 

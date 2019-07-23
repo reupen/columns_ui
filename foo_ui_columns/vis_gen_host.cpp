@@ -2,22 +2,22 @@
 #include "vis_gen_host.h"
 
 #if 1
-class window_visualisation_interface : public ui_extension::visualisation_host {
-    service_ptr_t<window_visualisation> p_wnd;
+class VisualisationPanelInterface : public ui_extension::visualisation_host {
+    service_ptr_t<VisualisationPanel> p_wnd;
 
 public:
-    class painter_impl : public uie::visualisation_host::painter_t {
+    class Painter : public uie::visualisation_host::painter_t {
         HDC m_dc;
         RECT m_rect;
         HGDIOBJ m_gdiobj;
-        service_ptr_t<window_visualisation> m_wnd;
+        service_ptr_t<VisualisationPanel> m_wnd;
 
     public:
         HDC get_device_context() const override { return m_dc; };
 
         const RECT* get_area() const override { return &m_rect; };
 
-        painter_impl(window_visualisation* p_wnd) : m_gdiobj(nullptr), m_wnd(p_wnd)
+        Painter(VisualisationPanel* p_wnd) : m_gdiobj(nullptr), m_wnd(p_wnd)
         {
             m_dc = CreateCompatibleDC(nullptr);
             if (!p_wnd->get_bitmap())
@@ -26,12 +26,12 @@ public:
             m_rect = *p_wnd->get_rect_client();
         }
 
-        painter_impl(const painter_impl&) = delete;
-        painter_impl& operator=(const painter_impl&) = delete;
-        painter_impl(painter_impl&&) = delete;
-        painter_impl& operator=(painter_impl&&) = delete;
+        Painter(const Painter&) = delete;
+        Painter& operator=(const Painter&) = delete;
+        Painter(Painter&&) = delete;
+        Painter& operator=(Painter&&) = delete;
 
-        ~painter_impl() override
+        ~Painter() override
         {
             HWND wnd = m_wnd->get_wnd();
             HDC dc = GetDC(wnd);
@@ -45,31 +45,31 @@ public:
     void create_painter(painter_ptr& p_out) override
     {
         if (p_wnd->get_wnd()) {
-            p_out = new painter_impl(p_wnd.get_ptr());
+            p_out = new Painter(p_wnd.get_ptr());
         }
     }
 
-    static void g_create(service_ptr_t<window_visualisation_interface>& p_out, window_visualisation* wnd);
+    static void g_create(service_ptr_t<VisualisationPanelInterface>& p_out, VisualisationPanel* wnd);
 };
 
-ui_extension::visualisation_host_factory<window_visualisation_interface> g_window_visualisation_interface;
+ui_extension::visualisation_host_factory<VisualisationPanelInterface> g_window_visualisation_interface;
 
-void window_visualisation_interface::g_create(
-    service_ptr_t<window_visualisation_interface>& p_out, window_visualisation* wnd)
+void VisualisationPanelInterface::g_create(
+    service_ptr_t<VisualisationPanelInterface>& p_out, VisualisationPanel* wnd)
 {
     g_window_visualisation_interface.instance_create((service_ptr_t<service_base>&)p_out);
     p_out->p_wnd = wnd;
 }
 
-const wchar_t* window_visualisation::class_name = L"{ED4F644F-26AB-4aa0-809D-0D8F25352C5F}";
+const wchar_t* VisualisationPanel::class_name = L"{ED4F644F-26AB-4aa0-809D-0D8F25352C5F}";
 
-pfc::ptr_list_t<window_visualisation> window_visualisation::list_vis;
+pfc::ptr_list_t<VisualisationPanel> VisualisationPanel::list_vis;
 
-window_visualisation::window_visualisation() : m_frame(cfg_vis_edge) {}
+VisualisationPanel::VisualisationPanel() : m_frame(cfg_vis_edge) {}
 
-window_visualisation::~window_visualisation() = default;
+VisualisationPanel::~VisualisationPanel() = default;
 
-void window_visualisation::set_frame_style(unsigned p_type)
+void VisualisationPanel::set_frame_style(unsigned p_type)
 {
     m_frame = p_type;
     if (m_wnd) {
@@ -84,7 +84,7 @@ void window_visualisation::set_frame_style(unsigned p_type)
     }
 }
 
-void window_visualisation::make_bitmap(HDC hdc)
+void VisualisationPanel::make_bitmap(HDC hdc)
 {
     if (!bm_display) {
         //        RECT rc_client;
@@ -104,7 +104,7 @@ void window_visualisation::make_bitmap(HDC hdc)
     }
 }
 
-void window_visualisation::flush_bitmap()
+void VisualisationPanel::flush_bitmap()
 {
     if (bm_display) {
         DeleteObject(bm_display);
@@ -112,7 +112,7 @@ void window_visualisation::flush_bitmap()
     }
 }
 
-LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT VisualisationPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
@@ -132,7 +132,7 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         ui_extension::visualisation::create_by_guid(get_visualisation_guid(), p_vis);
         if (p_vis.is_valid()) {
             GetClientRect(wnd, &rc_client);
-            window_visualisation_interface::g_create(m_interface, this);
+            VisualisationPanelInterface::g_create(m_interface, this);
             try {
                 abort_callback_dummy p_abort;
                 p_vis->set_config_from_ptr(m_data.get_ptr(), m_data.get_size(), p_abort);
@@ -192,14 +192,14 @@ LRESULT window_visualisation::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void window_visualisation::get_name(pfc::string_base& out) const
+void VisualisationPanel::get_name(pfc::string_base& out) const
 {
     uie::visualization_ptr ptr;
     uie::visualization::create_by_guid(get_visualisation_guid(), ptr);
     ptr->get_name(out);
 }
 
-void window_visualisation::get_category(pfc::string_base& out) const
+void VisualisationPanel::get_category(pfc::string_base& out) const
 {
     out.set_string("Visualisations");
 }

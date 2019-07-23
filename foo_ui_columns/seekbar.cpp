@@ -5,20 +5,20 @@
 
 #define ID_SEEK 2005
 
-pfc::ptr_list_t<seek_bar_extension> seek_bar_extension::windows;
+pfc::ptr_list_t<SeekBarToolbar> SeekBarToolbar::windows;
 
-void seek_bar_extension::track_bar_host_impl::on_position_change(unsigned pos, bool b_tracking)
+void SeekBarToolbar::SeekBarTrackbarCallback::on_position_change(unsigned pos, bool b_tracking)
 {
     if (!b_tracking || (GetKeyState(VK_SHIFT) & KF_UP))
         static_api_ptr_t<play_control>()->playback_seek(pos / 10.0);
 }
 
-void seek_bar_extension::track_bar_host_impl::get_tooltip_text(unsigned pos, uih::TrackbarString& out)
+void SeekBarToolbar::SeekBarTrackbarCallback::get_tooltip_text(unsigned pos, uih::TrackbarString& out)
 {
     out = pfc::stringcvt::string_os_from_utf8(pfc::format_time_ex(pos / 10.0, 1));
 };
 
-void seek_bar_extension::update_seekbars(bool positions_only)
+void SeekBarToolbar::update_seekbars(bool positions_only)
 {
     unsigned n, count = windows.get_count();
     if (positions_only) {
@@ -32,9 +32,9 @@ void seek_bar_extension::update_seekbars(bool positions_only)
     }
 }
 
-unsigned seek_bar_extension::g_seek_timer = 0;
+unsigned SeekBarToolbar::g_seek_timer = 0;
 
-void seek_bar_extension::update_seek_timer()
+void SeekBarToolbar::update_seek_timer()
 {
     if (windows.get_count() && static_api_ptr_t<playback_control>()->is_playing()) {
         if (!g_seek_timer) {
@@ -46,7 +46,7 @@ void seek_bar_extension::update_seek_timer()
     }
 }
 
-void seek_bar_extension::update_seek_pos()
+void SeekBarToolbar::update_seek_pos()
 {
     if (wnd_seekbar == nullptr)
         return;
@@ -68,19 +68,19 @@ void seek_bar_extension::update_seek_pos()
     }
 }
 
-VOID CALLBACK seek_bar_extension::SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time)
+VOID CALLBACK SeekBarToolbar::SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time)
 {
     if (windows.get_count() && static_api_ptr_t<playback_control>()->is_playing())
         update_seekbars(true);
 }
 
-void seek_bar_extension::disable_seek()
+void SeekBarToolbar::disable_seek()
 {
     m_child.set_position(0);
     m_child.set_enabled(false);
 }
 
-void seek_bar_extension::update_seek()
+void SeekBarToolbar::update_seek()
 {
     if (wnd_seekbar == nullptr)
         return;
@@ -112,10 +112,10 @@ void seek_bar_extension::update_seek()
     }
 }
 
-seek_bar_extension::seek_bar_extension() = default;
+SeekBarToolbar::SeekBarToolbar() = default;
 ;
 
-seek_bar_extension::~seek_bar_extension()
+SeekBarToolbar::~SeekBarToolbar()
 {
     if (initialised) {
         windows.remove_item(this);
@@ -123,7 +123,7 @@ seek_bar_extension::~seek_bar_extension()
     }
 }
 
-LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
@@ -143,7 +143,7 @@ LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             update_seek_timer();
         }
 
-        seek_bar_extension::update_seek_timer();
+        SeekBarToolbar::update_seek_timer();
         ShowWindow(wnd_seekbar, SW_SHOWNORMAL);
         break;
     }
@@ -173,26 +173,26 @@ LRESULT seek_bar_extension::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-const GUID& seek_bar_extension::get_extension_guid() const
+const GUID& SeekBarToolbar::get_extension_guid() const
 {
     // {678FE380-ABBB-4c72-A0B3-72E769671125}
     static const GUID extension_guid = {0x678fe380, 0xabbb, 0x4c72, {0xa0, 0xb3, 0x72, 0xe7, 0x69, 0x67, 0x11, 0x25}};
     return extension_guid;
 }
 
-void seek_bar_extension::get_name(pfc::string_base& out) const
+void SeekBarToolbar::get_name(pfc::string_base& out) const
 {
     out.set_string("Seekbar");
 }
 
-void seek_bar_extension::get_category(pfc::string_base& out) const
+void SeekBarToolbar::get_category(pfc::string_base& out) const
 {
     out.set_string("Toolbars");
 }
 
-unsigned seek_bar_extension::get_type() const
+unsigned SeekBarToolbar::get_type() const
 {
     return ui_extension::type_toolbar;
 };
 
-ui_extension::window_factory<seek_bar_extension> blue;
+ui_extension::window_factory<SeekBarToolbar> blue;

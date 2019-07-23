@@ -30,7 +30,7 @@ bool PlaylistView::do_drag_drop(WPARAM wp)
     return true;
 }
 
-HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryInterface(REFIID iid, void** ppvObject)
+HRESULT STDMETHODCALLTYPE PlaylistViewDropSource::QueryInterface(REFIID iid, void** ppvObject)
 {
     if (ppvObject == nullptr)
         return E_INVALIDARG;
@@ -47,11 +47,11 @@ HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryInterface(REFIID iid, void*
     }
     return E_NOINTERFACE;
 }
-ULONG STDMETHODCALLTYPE IDropSource_playlist::AddRef()
+ULONG STDMETHODCALLTYPE PlaylistViewDropSource::AddRef()
 {
     return InterlockedIncrement(&refcount);
 }
-ULONG STDMETHODCALLTYPE IDropSource_playlist::Release()
+ULONG STDMETHODCALLTYPE PlaylistViewDropSource::Release()
 {
     LONG rv = InterlockedDecrement(&refcount);
     if (!rv) {
@@ -60,7 +60,7 @@ ULONG STDMETHODCALLTYPE IDropSource_playlist::Release()
     return rv;
 }
 
-HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState)
+HRESULT STDMETHODCALLTYPE PlaylistViewDropSource::QueryContinueDrag(BOOL fEscapePressed, DWORD grfKeyState)
 {
     if (fEscapePressed || ((m_initial_key_state & MK_LBUTTON) && (grfKeyState & MK_RBUTTON))) {
         return DRAGDROP_S_CANCEL;
@@ -72,12 +72,12 @@ HRESULT STDMETHODCALLTYPE IDropSource_playlist::QueryContinueDrag(BOOL fEscapePr
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE IDropSource_playlist::GiveFeedback(DWORD dwEffect)
+HRESULT STDMETHODCALLTYPE PlaylistViewDropSource::GiveFeedback(DWORD dwEffect)
 {
     return DRAGDROP_S_USEDEFAULTCURSORS;
 }
 
-IDropSource_playlist::IDropSource_playlist(PlaylistView* playlist, DWORD initial_key_state)
+PlaylistViewDropSource::PlaylistViewDropSource(PlaylistView* playlist, DWORD initial_key_state)
     : refcount(0), p_playlist(playlist), m_initial_key_state(initial_key_state){};
 
 } // namespace pvt

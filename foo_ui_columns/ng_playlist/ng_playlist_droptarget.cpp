@@ -2,7 +2,7 @@
 #include "ng_playlist.h"
 
 namespace pvt {
-HRESULT STDMETHODCALLTYPE IDropTarget_playlist::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
+HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
         return E_INVALIDARG;
@@ -20,12 +20,12 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::QueryInterface(REFIID riid, LPVO
     return E_NOINTERFACE;
 }
 
-ULONG STDMETHODCALLTYPE IDropTarget_playlist::AddRef()
+ULONG STDMETHODCALLTYPE PlaylistViewDropTarget::AddRef()
 {
     return InterlockedIncrement(&drop_ref_count);
 }
 
-ULONG STDMETHODCALLTYPE IDropTarget_playlist::Release()
+ULONG STDMETHODCALLTYPE PlaylistViewDropTarget::Release()
 {
     LONG rv = InterlockedDecrement(&drop_ref_count);
     if (!rv) {
@@ -34,7 +34,7 @@ ULONG STDMETHODCALLTYPE IDropTarget_playlist::Release()
     return rv;
 }
 
-HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragEnter(
+HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     m_DataObject = pDataObj;
@@ -63,7 +63,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragEnter(
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
+HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper.is_valid())
@@ -127,7 +127,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragOver(DWORD grfKeyState, POIN
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave()
+HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragLeave()
 {
     if (m_DropTargetHelper.is_valid())
         m_DropTargetHelper->DragLeave();
@@ -139,7 +139,7 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::DragLeave()
     return S_OK;
 }
 
-HRESULT STDMETHODCALLTYPE IDropTarget_playlist::Drop(
+HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
@@ -321,12 +321,12 @@ HRESULT STDMETHODCALLTYPE IDropTarget_playlist::Drop(
 
     return S_OK;
 }
-IDropTarget_playlist::IDropTarget_playlist(PlaylistView* playlist)
+PlaylistViewDropTarget::PlaylistViewDropTarget(PlaylistView* playlist)
     : drop_ref_count(0), last_rmb(false), m_is_accepted_type(false), p_playlist(playlist)
 {
     m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
 }
-HRESULT IDropTarget_playlist::UpdateDropDescription(IDataObject* pDataObj, DWORD pdwEffect)
+HRESULT PlaylistViewDropTarget::UpdateDropDescription(IDataObject* pDataObj, DWORD pdwEffect)
 {
     static_api_ptr_t<playlist_manager> playlist_api;
     DROPIMAGETYPE dit = DROPIMAGE_INVALID;

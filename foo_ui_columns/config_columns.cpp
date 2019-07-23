@@ -65,7 +65,7 @@ void speedtest(ColumnListCRef columns, bool b_global)
             }
     }
 
-    global_variable_list p_vars;
+    GlobalVariableList p_vars;
 
     double time_compile_global = 0, time_compile_global_colour = 0, time_global = 0, time_colour = 0;
 
@@ -125,8 +125,8 @@ void speedtest(ColumnListCRef columns, bool b_global)
                             pfc::hires_timer timer;
                             timer.start();
                             {
-                                titleformat_hook_set_global<true, false> tf_hook_set_global(p_vars);
-                                titleformat_hook_date tf_hook_date(&st);
+                                SetGlobalTitleformatHook<true, false> tf_hook_set_global(p_vars);
+                                DateTitleformatHook tf_hook_date(&st);
                                 titleformat_hook_impl_splitter tf_hook(&tf_hook_set_global, &tf_hook_date);
                                 playlist_api->activeplaylist_item_format_title(
                                     tracks[j], &tf_hook, str_temp, to_global, nullptr, play_control::display_level_all);
@@ -144,13 +144,13 @@ void speedtest(ColumnListCRef columns, bool b_global)
                 if (b_global_colour_used)
                     for (unsigned i = 0; i < 10; i++) {
                         for (unsigned j = 0; j < 16; j++) {
-                            auto style_info = pvt::style_data_cell_info_t::g_create_default();
+                            auto style_info = pvt::CellStyleData::g_create_default();
                             pfc::hires_timer timer;
                             timer.start();
-                            pvt::titleformat_hook_style_v2 tf_hook_style(style_info, 0);
-                            titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars);
-                            titleformat_hook_date tf_hook_date(&st);
-                            titleformat_hook_splitter_pt3 tf_hook(
+                            pvt::StyleTitleformatHook tf_hook_style(style_info, 0);
+                            SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
+                            DateTitleformatHook tf_hook_date(&st);
+                            SplitterTitleformatHook tf_hook(
                                 &tf_hook_style, b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
 
                             playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp,
@@ -178,8 +178,8 @@ void speedtest(ColumnListCRef columns, bool b_global)
                         for (unsigned j = 0; j < 16; j++) {
                             pfc::hires_timer timer;
                             timer.start();
-                            titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars);
-                            titleformat_hook_date tf_hook_date(&st);
+                            SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
+                            DateTitleformatHook tf_hook_date(&st);
                             titleformat_hook_impl_splitter tf_hook(
                                 b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
 
@@ -208,13 +208,13 @@ void speedtest(ColumnListCRef columns, bool b_global)
                         time_temp = 0;
                         for (i = 0; i < 10; i++) {
                             for (unsigned j = 0; j < 16; j++) {
-                                auto style_info = pvt::style_data_cell_info_t::g_create_default();
+                                auto style_info = pvt::CellStyleData::g_create_default();
                                 pfc::hires_timer timer;
                                 timer.start();
-                                pvt::titleformat_hook_style_v2 tf_hook_style(style_info, 0);
-                                titleformat_hook_set_global<false, true> tf_hook_set_global(p_vars);
-                                titleformat_hook_date tf_hook_date(&st);
-                                titleformat_hook_splitter_pt3 tf_hook(
+                                pvt::StyleTitleformatHook tf_hook_style(style_info, 0);
+                                SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
+                                DateTitleformatHook tf_hook_date(&st);
+                                SplitterTitleformatHook tf_hook(
                                     &tf_hook_style, b_global ? &tf_hook_set_global : nullptr, &tf_hook_date);
 
                                 playlist_api->activeplaylist_item_format_title(tracks[j], &tf_hook, str_temp,

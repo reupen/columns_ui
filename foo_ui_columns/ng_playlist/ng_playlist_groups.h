@@ -2,11 +2,11 @@
 
 namespace pvt {
 
-class group_t {
+class Group {
 public:
-    group_t(const char* p_string, playlist_filter_type p_filter_type = FILTER_NONE, const char* p_filter = "")
+    Group(const char* p_string, playlist_filter_type p_filter_type = FILTER_NONE, const char* p_filter = "")
         : string(p_string), filter_type(p_filter_type), filter_playlists(p_filter){};
-    group_t() = default;
+    Group() = default;
     void write(stream_writer* p_stream, abort_callback& p_abort)
     {
         p_stream->write_string(string.get_ptr(), p_abort);
@@ -28,19 +28,19 @@ public:
 private:
 };
 
-class cfg_groups_t : public cfg_var {
+class ConfigGroups : public cfg_var {
     enum { stream_version_current = 1 };
 
 public:
-    const pfc::list_base_const_t<group_t>& get_groups() const { return m_groups; }
-    t_size add_group(const group_t& p_group, bool notify_playlist_views = true);
+    const pfc::list_base_const_t<Group>& get_groups() const { return m_groups; }
+    t_size add_group(const Group& p_group, bool notify_playlist_views = true);
     void remove_group(t_size index);
-    void replace_group(t_size index, const group_t& p_group);
+    void replace_group(t_size index, const Group& p_group);
     void swap(t_size index1, t_size index2);
-    void set_groups(const pfc::list_base_const_t<group_t>& p_groups, bool b_update_views = true);
-    cfg_groups_t(const GUID& p_guid) : cfg_var(p_guid)
+    void set_groups(const pfc::list_base_const_t<Group>& p_groups, bool b_update_views = true);
+    ConfigGroups(const GUID& p_guid) : cfg_var(p_guid)
     {
-        add_group(group_t("$if2(%album artist%,<no artist>)[ / %album%]"), false);
+        add_group(Group("$if2(%album artist%,<no artist>)[ / %album%]"), false);
     };
 
 private:
@@ -65,7 +65,7 @@ private:
                 m_groups[i].read(version, p_stream, p_abort);
         }
     }
-    pfc::list_t<group_t> m_groups;
+    pfc::list_t<Group> m_groups;
 };
-extern cfg_groups_t g_groups;
+extern ConfigGroups g_groups;
 } // namespace pvt

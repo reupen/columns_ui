@@ -38,10 +38,10 @@ HBITMAP g_get_nocover_bitmap(t_size cx, t_size cy, COLORREF cr_back, bool b_refl
     return ret;
 }
 
-void artwork_reader_manager_ng_t::request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<artwork_reader_ng_t>& p_out,
-    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, completion_notify_artwork_base_t::ptr_t p_notify)
+void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<ArtworkReader>& p_out,
+    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
 {
-    pfc::rcptr_t<artwork_reader_ng_t> p_new_reader = pfc::rcnew_t<artwork_reader_ng_t>();
+    pfc::rcptr_t<ArtworkReader> p_new_reader = pfc::rcnew_t<ArtworkReader>();
     p_new_reader->initialise(m_requestIds, m_repositories, artwork_panel::cfg_fb2k_artwork_mode, p_handle, cx, cy,
         cr_back, b_reflection, p_notify, this);
     m_pending_readers.add_item(p_new_reader);
@@ -49,7 +49,7 @@ void artwork_reader_manager_ng_t::request(const metadb_handle_ptr& p_handle, pfc
     flush_pending();
 }
 
-void artwork_reader_manager_ng_t::on_reader_completion(const artwork_reader_ng_t* ptr)
+void ArtworkReaderManager::on_reader_completion(const ArtworkReader* ptr)
 {
     t_size index;
     if (find_current_reader(ptr, index)) {
@@ -64,12 +64,12 @@ void artwork_reader_manager_ng_t::on_reader_completion(const artwork_reader_ng_t
     }
     flush_pending();
 }
-void artwork_reader_manager_ng_t::on_reader_abort(const artwork_reader_ng_t* ptr)
+void ArtworkReaderManager::on_reader_abort(const ArtworkReader* ptr)
 {
     on_reader_completion(ptr);
 }
 
-class artwork_reader_notification_t : public main_thread_callback {
+class ArtworkReaderNotification : public main_thread_callback {
 public:
     void callback_run() override
     {
@@ -79,9 +79,9 @@ public:
             m_manager->on_reader_completion(m_reader);
     }
 
-    static void g_run(artwork_reader_manager_ng_t* p_manager, bool p_aborted, const artwork_reader_ng_t* p_reader)
+    static void g_run(ArtworkReaderManager* p_manager, bool p_aborted, const ArtworkReader* p_reader)
     {
-        service_ptr_t<artwork_reader_notification_t> ptr = new service_impl_t<artwork_reader_notification_t>;
+        service_ptr_t<ArtworkReaderNotification> ptr = new service_impl_t<ArtworkReaderNotification>;
         ptr->m_aborted = p_aborted;
         ptr->m_reader = p_reader;
         ptr->m_manager = p_manager;
@@ -90,11 +90,11 @@ public:
     }
 
     bool m_aborted;
-    const artwork_reader_ng_t* m_reader;
-    pfc::refcounted_object_ptr_t<artwork_reader_manager_ng_t> m_manager;
+    const ArtworkReader* m_reader;
+    pfc::refcounted_object_ptr_t<ArtworkReaderManager> m_manager;
 };
 
-DWORD artwork_reader_ng_t::on_thread()
+DWORD ArtworkReader::on_thread()
 {
     TRACK_CALL_TEXT("artwork_reader_ng_t::on_thread");
     bool b_aborted = false;
@@ -114,7 +114,7 @@ DWORD artwork_reader_ng_t::on_thread()
         ret = -1;
     }
     // send this first so thread gets closed first
-    artwork_reader_notification_t::g_run(m_manager.get_ptr(), b_aborted, this);
+    ArtworkReaderNotification::g_run(m_manager.get_ptr(), b_aborted, this);
     /*if (!b_aborted)
     {
     if (m_notify.is_valid())
@@ -126,7 +126,7 @@ DWORD artwork_reader_ng_t::on_thread()
     return ret;
 }
 
-unsigned artwork_reader_ng_t::read_artwork(abort_callback& p_abort)
+unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("artwork_reader_ng_t::read_artwork");
     m_bitmaps.remove_all();
@@ -412,8 +412,8 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item, t_size item_group
     t_size group_count = m_scripts.get_count();
     HBITMAP ret = nullptr;
     if (group_count) {
-        auto* item = static_cast<item_ng_t*>(get_item(index_item));
-        item_group_ng_t* group = item->get_group(group_count - 1);
+        auto* item = static_cast<PlaylistViewItem*>(get_item(index_item));
+        PlaylistViewGroup* group = item->get_group(group_count - 1);
         if (group->m_artwork_load_attempted) {
             // group->m_artwork_data.release();
             // return NULL;
@@ -446,14 +446,14 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item, t_size item_group
                 cy-= (1*padding);
             else cy =0;*/
 
-            completion_notify_artwork_t::ptr_t ptr = new completion_notify_artwork_t;
+            ArtworkCompletionNotify::ptr_t ptr = new ArtworkCompletionNotify;
             ptr->m_group = group;
             ptr->m_window = this;
             metadb_handle_ptr handle;
             m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
-            pfc::rcptr_t<artwork_reader_ng_t> p_reader;
+            pfc::rcptr_t<ArtworkReader> p_reader;
             m_artwork_manager->request(handle, p_reader, cx, cy,
-                cui::colours::helper(appearance_client_ngpv_impl::g_guid).get_colour(cui::colours::colour_background),
+                cui::colours::helper(ColoursClient::g_guid).get_colour(cui::colours::colour_background),
                 cfg_artwork_reflection, ptr.get_ptr());
             group->m_artwork_load_attempted = true;
         }
@@ -461,7 +461,7 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item, t_size item_group
     return ret;
 }
 
-void artwork_reader_manager_ng_t::request_nocover_image(pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx,
+void ArtworkReaderManager::request_nocover_image(pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx,
     t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
     insync(m_nocover_sync);

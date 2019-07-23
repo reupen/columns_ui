@@ -45,7 +45,7 @@ void PlaylistView::render_group_info(HDC dc, t_size index, t_size group_count, c
 void PlaylistView::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused,
     bool b_highlight, bool should_hide_focus, bool b_focused, const RECT* rc_outter_item)
 {
-    cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
+    cui::colours::helper p_helper(ColoursClient::g_guid);
 
     RECT rc_inner = *rc_outter_item;
     rc_inner.left += indentation;
@@ -152,12 +152,12 @@ void PlaylistView::render_item(HDC dc, t_size index, int indentation, bool b_sel
 void PlaylistView::render_group(
     HDC dc, t_size index, t_size group, const char* text, int indentation, t_size level, const RECT& rc)
 {
-    cui::colours::helper p_helper(appearance_client_ngpv_impl::g_guid);
+    cui::colours::helper p_helper(ColoursClient::g_guid);
     bool b_theme_enabled = p_helper.get_themed();
 
     int text_width = NULL;
 
-    item_group_ng_t* item = get_item(index)->get_group(group);
+    PlaylistViewGroup* item = get_item(index)->get_group(group);
     if (!item->m_style_data.is_valid())
         notify_update_item_data(index);
 

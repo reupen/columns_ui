@@ -1,7 +1,7 @@
 #pragma once
 
 namespace pvt {
-class style_data_cell_info_t {
+class CellStyleData {
 public:
     colour text_colour;
     colour selected_text_colour;
@@ -18,9 +18,9 @@ public:
     bool use_frame_right : 1;
     bool use_frame_bottom : 1;
 
-    static style_data_cell_info_t g_create_default();
+    static CellStyleData g_create_default();
 
-    void set(const style_data_cell_info_t* in)
+    void set(const CellStyleData* in)
     {
         text_colour = in->text_colour;
         selected_text_colour = in->selected_text_colour;
@@ -38,10 +38,10 @@ public:
         use_frame_bottom = in->use_frame_bottom;
     }
 
-    style_data_cell_info_t()
+    CellStyleData()
         : use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false){};
 
-    style_data_cell_info_t(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus,
+    CellStyleData(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus,
         COLORREF sel_no_focus)
         : use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false)
     {
@@ -53,9 +53,9 @@ public:
         selected_background_colour_non_focus.set(sel_no_focus);
     }
 
-    bool is_equal(const style_data_cell_info_t& c2)
+    bool is_equal(const CellStyleData& c2)
     {
-        const style_data_cell_info_t& c1 = *this;
+        const CellStyleData& c1 = *this;
         return (c1.text_colour == c2.text_colour && c1.selected_text_colour == c2.selected_text_colour
             && c1.background_colour == c2.background_colour
             && c1.selected_background_colour == c2.selected_background_colour
@@ -69,32 +69,32 @@ public:
             && (c1.use_frame_right ? c1.frame_right == c2.frame_right : true));
     }
 };
-class style_data_cell_t
+class SharedCellStyleData
     : public pfc::refcounted_object_root
-    , public style_data_cell_info_t {
+    , public CellStyleData {
 public:
-    using self_t = style_data_cell_t;
+    using self_t = SharedCellStyleData;
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
 
-    style_data_cell_t(const style_data_cell_info_t& in) : style_data_cell_info_t(in) {}
-    style_data_cell_t(const style_data_cell_t&) = delete;
-    style_data_cell_t& operator=(const style_data_cell_t&) = delete;
-    style_data_cell_t(style_data_cell_t&&) = delete;
-    style_data_cell_t& operator=(style_data_cell_t&&) = delete;
-    ~style_data_cell_t() override;
+    SharedCellStyleData(const CellStyleData& in) : CellStyleData(in) {}
+    SharedCellStyleData(const SharedCellStyleData&) = delete;
+    SharedCellStyleData& operator=(const SharedCellStyleData&) = delete;
+    SharedCellStyleData(SharedCellStyleData&&) = delete;
+    SharedCellStyleData& operator=(SharedCellStyleData&&) = delete;
+    ~SharedCellStyleData() override;
 };
 
 namespace style_cache_manager {
-void g_add_object(const style_data_cell_info_t& p_data, style_data_cell_t::ptr& p_out);
-void g_remove_object(style_data_cell_t* p_object);
+void g_add_object(const CellStyleData& p_data, SharedCellStyleData::ptr& p_out);
+void g_remove_object(SharedCellStyleData* p_object);
 } // namespace style_cache_manager
-using style_data_t = pfc::array_t<style_data_cell_t::ptr>;
+using style_data_t = pfc::array_t<SharedCellStyleData::ptr>;
 
-class titleformat_hook_style_v2 : public titleformat_hook {
-    style_data_cell_info_t p_default_colours;
+class StyleTitleformatHook : public titleformat_hook {
+    CellStyleData p_default_colours;
     pfc::array_t<char> text, selected_text, back, selected_back, selected_back_no_focus, selected_text_no_focus,
         m_index_text;
-    style_data_cell_info_t& p_colours;
+    CellStyleData& p_colours;
     t_size m_index;
     bool m_is_group;
 
@@ -104,7 +104,7 @@ public:
     bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
-    titleformat_hook_style_v2(style_data_cell_info_t& vars, t_size index, bool b_is_group = false)
+    StyleTitleformatHook(CellStyleData& vars, t_size index, bool b_is_group = false)
         : p_default_colours(vars), p_colours(vars), m_index(index), m_is_group(b_is_group){};
 };
 } // namespace pvt

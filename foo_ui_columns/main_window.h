@@ -56,7 +56,7 @@ void on_show_status_pane_change();
 void on_show_toolbars_change();
 
 extern class status_pane g_status_pane;
-extern class rebar_window* g_rebar_window;
+extern class RebarWindow* g_rebar_window;
 
 namespace taskbar_buttons {
 enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };

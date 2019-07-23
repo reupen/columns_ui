@@ -14,7 +14,7 @@
 #include "status_bar.h"
 #include "migrate.h"
 
-rebar_window* g_rebar_window = nullptr;
+RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
 cui::MainWindow cui::main_window;
 status_pane g_status_pane;
