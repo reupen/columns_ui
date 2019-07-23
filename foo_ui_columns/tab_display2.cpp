@@ -37,7 +37,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            m_menu_cache = new menu_item_cache;
+            m_menu_cache = new MenuItemCache;
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "None");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Sunken");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Grey");
@@ -152,7 +152,7 @@ public:
 
 private:
     bool m_initialised{};
-    menu_item_cache* m_menu_cache{};
+    MenuItemCache* m_menu_cache{};
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_display2;
 

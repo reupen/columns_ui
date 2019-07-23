@@ -83,7 +83,7 @@ bool colour_picker(HWND wnd, COLORREF& out, COLORREF custom)
 }
 
 void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItemIdentifier& p_item,
-    menu_item_cache& p_cache, bool insert_none)
+    MenuItemCache& p_cache, bool insert_none)
 {
     HWND wnd_combo = GetDlgItem(wnd, ID);
 
@@ -119,7 +119,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItem
 }
 
 void on_menu_combo_change(
-    HWND wnd, LPARAM lp, ConfigMenuItem& cfg_menu_store, menu_item_cache& p_cache, unsigned ID_DESC)
+    HWND wnd, LPARAM lp, ConfigMenuItem& cfg_menu_store, MenuItemCache& p_cache, unsigned ID_DESC)
 {
     auto wnd_combo = (HWND)lp;
 

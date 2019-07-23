@@ -389,7 +389,7 @@ namespace {
 service_factory_t<ColoursDataSet> g_fcl_colours_t;
 };
 
-class fcl_fonts_t : public cui::fcl::dataset {
+class FontsDataSet : public cui::fcl::dataset {
     enum { stream_version = 0 };
     void get_name(pfc::string_base& p_out) const override { p_out = "Fonts (unified)"; }
     const GUID& get_group() const override { return cui::fcl::groups::colours_and_fonts; }
@@ -476,7 +476,7 @@ class fcl_fonts_t : public cui::fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref element_reader(data2);
-                        g_fonts_manager_data.m_entries[i] = new FontsManagerData::entry_t;
+                        g_fonts_manager_data.m_entries[i] = new FontsManagerData::Entry;
                         g_fonts_manager_data.m_entries[i]->import(&element_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
@@ -497,7 +497,7 @@ class fcl_fonts_t : public cui::fcl::dataset {
 };
 
 namespace {
-service_factory_t<fcl_fonts_t> g_fcl_fonts_t;
+service_factory_t<FontsDataSet> g_fcl_fonts_t;
 };
 
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}

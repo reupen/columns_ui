@@ -94,14 +94,14 @@ using font_list_t = pfc::list_t<Font::ptr_t>;
 
 class FontChangeNotify {
 public:
-    class font_change_entry_t {
+    class FontChangeEntry {
     public:
         t_size m_text_index{};
         Font::ptr_t m_font;
     };
 
     font_list_t m_fonts;
-    pfc::array_t<font_change_entry_t> m_font_changes;
+    pfc::array_t<FontChangeEntry> m_font_changes;
     Font::ptr_t m_default_font;
 
     bool find_font(const FontData& p_font, t_size& index);

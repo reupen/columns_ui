@@ -28,18 +28,18 @@ struct MenuItemIdentifier {
 bool operator==(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2);
 bool operator!=(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2);
 
-class menu_item_cache {
-    class menu_item_info : public MenuItemIdentifier {
+class MenuItemCache {
+    class MenuItemInfo : public MenuItemIdentifier {
     public:
         pfc::string8 m_name;
         pfc::string8 m_desc;
     };
 
 public:
-    menu_item_cache();
-    const menu_item_info& get_item(unsigned n) const;
+    MenuItemCache();
+    const MenuItemInfo& get_item(unsigned n) const;
     unsigned get_count() { return m_data.get_count(); }
 
 private:
-    pfc::ptr_list_t<menu_item_info> m_data;
+    pfc::ptr_list_t<MenuItemInfo> m_data;
 };

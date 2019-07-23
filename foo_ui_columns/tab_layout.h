@@ -26,7 +26,7 @@ public:
     bool get_help_url(pfc::string_base& p_out) override;
 
 private:
-    class rename_param {
+    class RenameData {
     public:
         pfc::string8 m_text;
         pfc::string8 m_title;
