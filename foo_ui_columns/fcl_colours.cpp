@@ -4,7 +4,7 @@
 #include "config.h"
 #include "tab_colours.h"
 
-class ColoursDataSet : public cui::fcl::dataset {
+class PlaylistViewAppearanceDataSet : public cui::fcl::dataset {
     enum ItemID {
         colours_pview_mode,
         colours_pview_background,
@@ -140,7 +140,7 @@ class ColoursDataSet : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<ColoursDataSet> g_export_colours_t;
+cui::fcl::dataset_factory<PlaylistViewAppearanceDataSet> g_export_colours_t;
 
 class PlaylistSwitcherAppearanceDataSet : public cui::fcl::dataset {
     enum ItemID {
@@ -229,7 +229,7 @@ class PlaylistSwitcherAppearanceDataSet : public cui::fcl::dataset {
 
 cui::fcl::dataset_factory<PlaylistSwitcherAppearanceDataSet> g_export_colours_switcher_t;
 
-class FontsDataSet : public cui::fcl::dataset {
+class LegacyFontsDataSet : public cui::fcl::dataset {
     enum ItemID {
         font_status,
     };
@@ -280,4 +280,4 @@ class FontsDataSet : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<FontsDataSet> g_export_misc_fonts_t;
+cui::fcl::dataset_factory<LegacyFontsDataSet> g_export_misc_fonts_t;
