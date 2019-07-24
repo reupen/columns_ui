@@ -940,7 +940,7 @@ void ItemPropertiesTrackPropertyCallback::sort()
     t_size count = m_values.get_size();
     for (t_size i = 0; i < count; i++) {
         mmh::Permutation perm(m_values[i].get_count());
-        mmh::sort_get_permutation(m_values[i].get_ptr(), perm, track_property_t::g_compare, false);
+        mmh::sort_get_permutation(m_values[i].get_ptr(), perm, TrackProperty::g_compare, false);
         m_values[i].reorder(perm.get_ptr());
     }
 }
@@ -955,16 +955,16 @@ void ItemPropertiesTrackPropertyCallback::set_property(
 {
     t_size index = g_get_info_secion_index_by_name(p_group);
     if (index != pfc_infinite)
-        m_values[index].add_item(track_property_t(p_sortpriority, p_name, p_value));
+        m_values[index].add_item(TrackProperty(p_sortpriority, p_name, p_value));
 }
 
-ItemPropertiesTrackPropertyCallback::track_property_t::track_property_t(
+ItemPropertiesTrackPropertyCallback::TrackProperty::TrackProperty(
     double p_sortpriority, const char* p_name, const char* p_value)
     : m_name(p_name), m_value(p_value), m_sortpriority(p_sortpriority)
 {
 }
 
-int ItemPropertiesTrackPropertyCallback::track_property_t::g_compare(self_t const& a, self_t const& b)
+int ItemPropertiesTrackPropertyCallback::TrackProperty::g_compare(self_t const& a, self_t const& b)
 {
     int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
     if (!ret)

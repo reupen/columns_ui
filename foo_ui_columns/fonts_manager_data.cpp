@@ -5,11 +5,11 @@
 
 FontsManagerData::FontsManagerData() : cfg_var(g_cfg_guid)
 {
-    m_common_items_entry = new entry_t;
+    m_common_items_entry = new Entry;
     uGetIconFont(&m_common_items_entry->font_description.log_font);
     m_common_items_entry->font_description.estimate_point_size();
 
-    m_common_labels_entry = new entry_t;
+    m_common_labels_entry = new Entry;
     uGetMenuFont(&m_common_labels_entry->font_description.log_font);
     m_common_labels_entry->font_description.estimate_point_size();
 }
@@ -41,7 +41,7 @@ void FontsManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
         }
     }
     {
-        p_out = new entry_t;
+        p_out = new Entry;
         p_out->guid = p_guid;
         cui::fonts::client::ptr ptr;
         if (cui::fonts::client::create_by_guid(p_guid, ptr)) {
@@ -65,7 +65,7 @@ void FontsManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, 
         p_stream->read_lendian_t(count, p_abort);
         m_entries.remove_all();
         for (t_size i = 0; i < count; i++) {
-            entry_ptr_t ptr = new entry_t;
+            entry_ptr_t ptr = new Entry;
             ptr->read(version, p_stream, p_abort);
             m_entries.add_item(ptr);
         }
@@ -118,18 +118,18 @@ void FontsManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_a
             m_entries[i]->write_extra_data(p_stream, p_abort);
 }
 
-FontsManagerData::entry_t::entry_t()
+FontsManagerData::Entry::Entry()
 {
     reset_fonts();
 }
 
-void FontsManagerData::entry_t::reset_fonts()
+void FontsManagerData::Entry::reset_fonts()
 {
     uGetIconFont(&font_description.log_font);
     font_description.estimate_point_size();
 }
 
-void FontsManagerData::entry_t::import(
+void FontsManagerData::Entry::import(
     stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -161,7 +161,7 @@ void FontsManagerData::entry_t::import(
     }
 }
 
-void FontsManagerData::entry_t::_export(stream_writer* p_stream, abort_callback& p_abort)
+void FontsManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_abort)
 {
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
@@ -172,7 +172,7 @@ void FontsManagerData::entry_t::_export(stream_writer* p_stream, abort_callback&
     out.write_item(identifier_point_size_tenths, font_description.point_size_tenths);
 }
 
-void FontsManagerData::entry_t::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
+void FontsManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
 {
     p_stream->read_lendian_t(guid, p_abort);
     p_stream->read_lendian_t((t_uint32&)font_mode, p_abort);
@@ -180,7 +180,7 @@ void FontsManagerData::entry_t::read(t_uint32 version, stream_reader* p_stream, 
     font_description.estimate_point_size();
 }
 
-void FontsManagerData::entry_t::read_extra_data(stream_reader* stream, abort_callback& aborter)
+void FontsManagerData::Entry::read_extra_data(stream_reader* stream, abort_callback& aborter)
 {
     uint32_t size{};
     stream->read_lendian_t(size, aborter);
@@ -189,21 +189,21 @@ void FontsManagerData::entry_t::read_extra_data(stream_reader* stream, abort_cal
     limited_reader.read_lendian_t(font_description.point_size_tenths, aborter);
 }
 
-LOGFONT FontsManagerData::entry_t::get_normalised_font()
+LOGFONT FontsManagerData::Entry::get_normalised_font()
 {
     LOGFONT lf{font_description.log_font};
     lf.lfHeight = -MulDiv(font_description.point_size_tenths, uih::get_system_dpi_cached().cy, 720);
     return lf;
 }
 
-void FontsManagerData::entry_t::write(stream_writer* p_stream, abort_callback& p_abort)
+void FontsManagerData::Entry::write(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t(guid, p_abort);
     p_stream->write_lendian_t((t_uint32)font_mode, p_abort);
     cui::fonts::write_font(p_stream, font_description.log_font, p_abort);
 }
 
-void FontsManagerData::entry_t::write_extra_data(stream_writer* stream, abort_callback& aborter)
+void FontsManagerData::Entry::write_extra_data(stream_writer* stream, abort_callback& aborter)
 {
     stream_writer_memblock item_stream;
     item_stream.write_lendian_t(font_description.point_size_tenths, aborter);

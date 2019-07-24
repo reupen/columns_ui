@@ -34,16 +34,16 @@ static HTREEITEM insert_item(
 
 class FCLDialog {
 public:
-    class t_node {
+    class Node {
     public:
         HTREEITEM item{nullptr};
         cui::fcl::group_ptr group;
         bool checked{true};
-        t_node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)){};
-        t_node() = default;
+        Node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)){};
+        Node() = default;
     };
     // cui::fcl::group_list m_groups;
-    pfc::list_t<t_node> m_nodes;
+    pfc::list_t<Node> m_nodes;
     void g_populate_tree(HWND wnd_tree, cui::fcl::group_list& list, const cui::fcl::group_list_filtered& filtered,
         HTREEITEM ti_parent = TVI_ROOT)
     {
@@ -52,7 +52,7 @@ public:
             pfc::string8 name;
             filtered[i]->get_name(name);
             HTREEITEM item = treeview::insert_item(wnd_tree, name, m_nodes.get_count(), ti_parent);
-            m_nodes.add_item(t_node(item, filtered[i]));
+            m_nodes.add_item(Node(item, filtered[i]));
             TreeView_SetCheckState(wnd_tree, item, TRUE);
             cui::fcl::group_list_filtered filtered2(list, filtered[i]->get_guid());
             list.remove_by_guid(filtered[i]->get_guid());
@@ -195,12 +195,12 @@ cui::fcl::group_impl_factory g_group_colours(
 cui::fcl::group_impl_factory g_group_titles(
     cui::fcl::groups::title_scripts, "Title Scripts", "The titleformatting scripts");
 
-class t_panel_info {
+class PanelInfo {
 public:
     GUID guid{};
     pfc::string8 name;
 };
-class panel_info_list : public pfc::list_t<t_panel_info> {
+class PanelInfoList : public pfc::list_t<PanelInfo> {
 public:
     bool get_name_by_guid(const GUID& guid, pfc::string8& p_out)
     {
@@ -214,11 +214,11 @@ public:
     }
 };
 
-class t_import_results_data {
+class ImportResultsData {
 public:
-    panel_info_list m_items;
+    PanelInfoList m_items;
     bool m_aborted;
-    t_import_results_data(panel_info_list items, bool baborted) : m_items(std::move(items)), m_aborted(baborted){};
+    ImportResultsData(PanelInfoList items, bool baborted) : m_items(std::move(items)), m_aborted(baborted){};
 };
 
 BOOL CALLBACK g_ImportResultsProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -229,7 +229,7 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetWindowText(wnd, _T("FCL import results"));
         HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
         uih::list_view_set_explorer_theme(wnd_lv);
-        auto* p_data = reinterpret_cast<t_import_results_data*>(lp);
+        auto* p_data = reinterpret_cast<ImportResultsData*>(lp);
 
         SetWindowText(GetDlgItem(wnd, IDC_CAPTION),
             (p_data->m_aborted
@@ -280,7 +280,7 @@ PFC_DECLARE_EXCEPTION(exception_fcl_dependentpanelmissing, pfc::exception, "Miss
 
 void g_import_layout(HWND wnd, const char* path, bool quiet)
 {
-    class t_import_feedback_impl
+    class ImportFeedbackReceiver
         : public cui::fcl::t_import_feedback
         , public pfc::list_t<GUID> {
     public:
@@ -288,9 +288,9 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
     };
 
     // pfc::list_t<t_required_panel> required_panels;
-    panel_info_list panel_info;
+    PanelInfoList panel_info;
     try {
-        class t_dataset {
+        class RawDataSet {
         public:
             GUID guid{};
             pfc::array_t<t_uint8> data;
@@ -315,7 +315,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             t_size count;
             p_file->read_lendian_t(count, p_abort);
             for (t_size i = 0; i < count; i++) {
-                t_panel_info info;
+                PanelInfo info;
                 p_file->read_lendian_t(info.guid, p_abort);
                 p_file->read_string(info.name, p_abort);
                 panel_info.add_item(info);
@@ -349,7 +349,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             pfc::array_t<pfc::array_t<t_uint32>> panel_indices;
             panel_indices.set_count(count);
 
-            std::vector<t_dataset> datasets;
+            std::vector<RawDataSet> datasets;
             datasets.resize(count);
 
             for (auto i : ranges::view::iota(0, count)) {
@@ -380,7 +380,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             }
 
             cui::fcl::dataset_list export_items;
-            t_import_feedback_impl feed;
+            ImportFeedbackReceiver feed;
 
             uih::DisableRedrawScope p_NoRedraw(cui::main_window.get_wnd());
 
@@ -400,7 +400,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
         }
     } catch (const exception_aborted&) {
     } catch (const exception_fcl_dependentpanelmissing&) {
-        t_import_results_data data(panel_info, true);
+        ImportResultsData data(panel_info, true);
         ShowWindow(uCreateDialog(IDD_RESULTS, wnd, g_ImportResultsProc, (LPARAM)&data), SW_SHOWNORMAL);
     } catch (const pfc::exception& ex) {
         popup_message::g_show(ex.what(), "Error");
@@ -416,7 +416,7 @@ void g_import_layout(HWND wnd)
     }
 }
 
-class t_export_feedback_impl
+class ExportFeedbackReceiver
     : public cui::fcl::t_export_feedback
     , public pfc::list_t<GUID> {
 public:
@@ -445,7 +445,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
     if (path.is_empty())
         throw pfc::exception_bug_check();
 
-    t_export_feedback_impl feedback;
+    ExportFeedbackReceiver feedback;
     pfc::list_t<GUID> groups;
 
     if (!is_quiet) {
@@ -470,7 +470,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
         {
             cui::fcl::dataset_list export_items;
             t_size count = export_items.get_count();
-            pfc::array_t<t_export_feedback_impl> feeds;
+            pfc::array_t<ExportFeedbackReceiver> feeds;
             feeds.set_count(count);
             for (t_size i = 0; i < count; i++) {
                 if (is_quiet || groups.have_item(export_items[i]->get_group())) {

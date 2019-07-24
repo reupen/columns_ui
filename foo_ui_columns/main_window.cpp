@@ -313,7 +313,7 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
     return false;
 }
 
-class playlist_callback_single_columns : public playlist_callback_single_static {
+class MainWindowPlaylistCallback : public playlist_callback_single_static {
 public:
     void on_items_added(
         unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
@@ -369,7 +369,7 @@ public:
 
     unsigned get_flags() override { return playlist_callback_single::flag_all; }
 };
-static service_factory_single_t<playlist_callback_single_columns> asdf2;
+static service_factory_single_t<MainWindowPlaylistCallback> asdf2;
 
 void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
 {
@@ -443,7 +443,7 @@ void on_show_toolbars_change()
     }
 }
 
-class control_impl : public columns_ui::control {
+class UIControl : public columns_ui::control {
 public:
     bool get_string(const GUID& p_guid, pfc::string_base& p_out) const override
     {
@@ -455,4 +455,4 @@ public:
     }
 };
 
-service_factory_single_t<control_impl> g_control_impl;
+service_factory_single_t<UIControl> g_control_impl;

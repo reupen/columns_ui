@@ -43,7 +43,7 @@
     };                                                                                                                \
     pfc::ptr_list_t<MenuCommandButton> MenuCommandButton::m_buttons;                                                  \
     uie::button_factory<MenuCommandButton> g_menu_command_button;                                                     \
-    class config_object_notify_impl : public config_object_notify {                                                   \
+    class MenuCommandConfigObjectNotify : public config_object_notify {                                               \
     public:                                                                                                           \
         virtual t_size get_watched_object_count() { return 1; }                                                       \
         virtual GUID get_watched_object(t_size p_index) { return _guid_config; }                                      \
@@ -57,7 +57,7 @@
             };                                                                                                        \
         }                                                                                                             \
     };                                                                                                                \
-    service_factory_t<config_object_notify_impl> g_config_object_notify_impl;                                         \
+    service_factory_t<MenuCommandConfigObjectNotify> g_menu_command_config_object_notify;                             \
     }
 
 __DEFINE_MENU_BUTTON(

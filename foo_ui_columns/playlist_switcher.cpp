@@ -10,7 +10,7 @@ cfg_struct_t<LOGFONT> cfg_plist_font(
 const GUID g_guid_playlist_switcher_font
     = {0x70a5c273, 0x67ab, 0x4bb6, {0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd}};
 
-class font_client_switcher : public cui::fonts::client {
+class PlaylistSwitcherFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_playlist_switcher_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist switcher"; }
@@ -20,7 +20,7 @@ public:
     void on_font_changed() const override { PlaylistSwitcher::g_on_font_items_change(); }
 };
 
-font_client_switcher::factory<font_client_switcher> g_font_client_switcher;
+PlaylistSwitcherFontClient::factory<PlaylistSwitcherFontClient> g_font_client_switcher;
 
 // {EB38A997-3B5F-4126-8746-262AA9C1F94B}
 const GUID PlaylistSwitcherColoursClient::g_guid

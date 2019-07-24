@@ -41,16 +41,16 @@ extern const InfoSection g_info_sections[5];
 
 class ItemPropertiesTrackPropertyCallback : public track_property_callback_v2 {
 public:
-    class track_property_t {
+    class TrackProperty {
     public:
-        using self_t = track_property_t;
+        using self_t = TrackProperty;
         pfc::string8 m_name, m_value;
         double m_sortpriority{0};
 
         static int g_compare(self_t const& a, self_t const& b);
 
-        track_property_t(double p_sortpriority, const char* p_name, const char* p_value);
-        track_property_t() = default;
+        TrackProperty(double p_sortpriority, const char* p_name, const char* p_value);
+        TrackProperty() = default;
     };
 
     void set_property(const char* p_group, double p_sortpriority, const char* p_name, const char* p_value) override;
@@ -73,7 +73,7 @@ public:
     void sort();
 
     ItemPropertiesTrackPropertyCallback();
-    pfc::array_staticsize_t<pfc::list_t<track_property_t>> m_values;
+    pfc::array_staticsize_t<pfc::list_t<TrackProperty>> m_values;
 };
 
 class ItemPropertiesColoursClient : public cui::colours::client {

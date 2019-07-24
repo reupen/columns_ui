@@ -18,13 +18,13 @@ struct ColumnTimes {
     double time_colour;
 };
 
-class edit_column_window_options : public ColumnTab {
+class EditColumnWindowOptions : public ColumnTab {
 public:
     void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
-    using self_t = edit_column_window_options;
+    using self_t = EditColumnWindowOptions;
     HWND create(HWND wnd) override { return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this); }
     // virtual const char * get_name()=0;
-    edit_column_window_options(PlaylistViewColumn::ptr column)
+    EditColumnWindowOptions(PlaylistViewColumn::ptr column)
         : initialising(false), editproc(nullptr), m_wnd(nullptr), m_column(std::move(column)){};
 
     bool initialising;
@@ -529,7 +529,7 @@ void TabColumns::make_child()
             column = m_columns[item];
 
         if (cfg_child_column == 0)
-            m_child = new edit_column_window_options(column);
+            m_child = new EditColumnWindowOptions(column);
         else if (cfg_child_column == 1)
             m_child = new DisplayScriptTab(column);
         else if (cfg_child_column == 2)

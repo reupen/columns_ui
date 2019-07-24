@@ -6,7 +6,7 @@ public:
     enum { cfg_version = 0 };
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
-    class entry_t : public pfc::refcounted_object_root {
+    class Entry : public pfc::refcounted_object_root {
     public:
         enum ExportItemID {
             identifier_guid,
@@ -42,9 +42,9 @@ public:
         virtual void import(stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort);
         void read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort);
         void reset_colors();
-        entry_t(bool b_global = false);
+        Entry(bool b_global = false);
     };
-    using entry_ptr_t = pfc::refcounted_object_ptr_t<entry_t>;
+    using entry_ptr_t = pfc::refcounted_object_ptr_t<Entry>;
     pfc::list_t<entry_ptr_t> m_entries;
     entry_ptr_t m_global_entry;
 

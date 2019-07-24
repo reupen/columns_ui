@@ -1134,7 +1134,7 @@ const GUID g_guid_header_font = {0x30fbd64c, 0x2031, 0x4f0b, {0xa9, 0x37, 0xf2, 
 // {FB127FFA-1B35-4572-9C1A-4B96A5C5D537}
 const GUID g_guid_group_header_font = {0xfb127ffa, 0x1b35, 0x4572, {0x9c, 0x1a, 0x4b, 0x96, 0xa5, 0xc5, 0xd5, 0x37}};
 
-class font_client_ngpv : public cui::fonts::client {
+class PlaylistViewItemFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_items_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Items"; }
@@ -1144,7 +1144,7 @@ public:
     void on_font_changed() const override { PlaylistView::g_on_font_change(); }
 };
 
-class font_header_client_ngpv : public cui::fonts::client {
+class PlaylistViewHeaderFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_header_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Column titles"; }
@@ -1154,7 +1154,7 @@ public:
     void on_font_changed() const override { PlaylistView::g_on_header_font_change(); }
 };
 
-class font_group_header_client_ngpv : public cui::fonts::client {
+class PlaylistViewGroupFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_group_header_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Group titles"; }
@@ -1164,9 +1164,9 @@ public:
     void on_font_changed() const override { PlaylistView::g_on_group_header_font_change(); }
 };
 
-font_client_ngpv::factory<font_client_ngpv> g_font_client_ngpv;
-font_header_client_ngpv::factory<font_header_client_ngpv> g_font_header_client_ngpv;
-font_group_header_client_ngpv::factory<font_group_header_client_ngpv> g_font_group_header_client_ngpv;
+PlaylistViewItemFontClient::factory<PlaylistViewItemFontClient> g_font_client_ngpv;
+PlaylistViewHeaderFontClient::factory<PlaylistViewHeaderFontClient> g_font_header_client_ngpv;
+PlaylistViewGroupFontClient::factory<PlaylistViewGroupFontClient> g_font_group_header_client_ngpv;
 
 void ColoursClient::on_colour_changed(t_size mask) const
 {

@@ -529,7 +529,7 @@ std::vector<ArtworkPanel*> ArtworkPanel::g_windows;
 
 uie::window_factory<ArtworkPanel> g_artwork_panel;
 
-class appearance_client_artwork_impl : public cui::colours::client {
+class ArtworkColoursClient : public cui::colours::client {
 public:
     static const GUID g_guid;
 
@@ -545,7 +545,7 @@ public:
 };
 
 namespace {
-cui::colours::client::factory<appearance_client_artwork_impl> g_appearance_client_impl;
+cui::colours::client::factory<ArtworkColoursClient> g_appearance_client_impl;
 };
 
 ArtworkPanel::CompletionNotifyForwarder::CompletionNotifyForwarder(ArtworkPanel* p_this) : m_this(p_this) {}

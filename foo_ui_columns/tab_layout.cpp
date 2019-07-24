@@ -588,7 +588,7 @@ BOOL LayoutTab::RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd, DWLP_USER, lp);
         {
-            auto* ptr = reinterpret_cast<rename_param*>(lp);
+            auto* ptr = reinterpret_cast<RenameData*>(lp);
             ptr->m_scope.initialize(FindOwningPopup(wnd));
             uSetWindowText(wnd, (ptr->m_title));
             uSetDlgItemText(wnd, IDC_EDIT, ptr->m_text);
@@ -597,7 +597,7 @@ BOOL LayoutTab::RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_COMMAND:
         switch (wp) {
         case IDOK: {
-            auto* ptr = reinterpret_cast<rename_param*>(GetWindowLong(wnd, DWLP_USER));
+            auto* ptr = reinterpret_cast<RenameData*>(GetWindowLong(wnd, DWLP_USER));
             uGetDlgItemText(wnd, IDC_EDIT, ptr->m_text);
             EndDialog(wnd, 1);
         } break;
@@ -646,7 +646,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             switch_to_preset(wnd, SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
             break;
         case IDC_NEW_PRESET: {
-            rename_param param;
+            RenameData param;
             param.m_title = "New preset: Enter name";
             param.m_text = "New preset";
             if (uDialogBox(IDD_RENAME_PLAYLIST, wnd, RenameProc, reinterpret_cast<LPARAM>(&param))) {
@@ -657,7 +657,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         } break;
         case IDC_DUPLICATE_PRESET: {
-            rename_param param;
+            RenameData param;
             param.m_title = "Duplicate preset: Enter name";
             cfg_layout.get_preset_name(m_active_preset, param.m_text);
             param.m_text << " (copy)";
@@ -673,7 +673,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         } break;
         case IDC_RENAME_PRESET: {
-            rename_param param;
+            RenameData param;
             param.m_title = "Rename preset: Enter name";
             cfg_layout.get_preset_name(m_active_preset, param.m_text);
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);

@@ -7,7 +7,7 @@
 static class TabStatus : public PreferencesTab {
 public:
     bool m_initialised{};
-    menu_item_cache* m_cache{};
+    MenuItemCache* m_cache{};
 
     static void refresh_me(HWND wnd)
     {
@@ -24,7 +24,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            m_cache = new menu_item_cache;
+            m_cache = new MenuItemCache;
 
             populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, *m_cache, false);
 

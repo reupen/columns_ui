@@ -171,7 +171,7 @@ void g_parse_font_format_string(const char* str, t_size len, FontData& p_out)
     }
 }
 
-class font_client_item_details : public cui::fonts::client {
+class ItemDetailsFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_item_details_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item details"; }
@@ -181,7 +181,7 @@ public:
     void on_font_changed() const override { ItemDetails::g_on_font_change(); }
 };
 
-class colour_client_item_details : public cui::colours::client {
+class ItemDetailsColoursClient : public cui::colours::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_item_details_colour_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item details"; }
@@ -199,6 +199,6 @@ public:
 };
 
 namespace {
-font_client_item_details::factory<font_client_item_details> g_font_client_item_details;
-colour_client_item_details::factory<colour_client_item_details> g_colour_client_item_details;
+ItemDetailsFontClient::factory<ItemDetailsFontClient> g_font_client_item_details;
+ItemDetailsColoursClient::factory<ItemDetailsColoursClient> g_colour_client_item_details;
 } // namespace

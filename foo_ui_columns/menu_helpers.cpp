@@ -11,7 +11,7 @@ bool operator!=(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2)
     return !(p1 == p2);
 }
 
-menu_item_cache::menu_item_cache()
+MenuItemCache::MenuItemCache()
 {
     service_enum_t<mainmenu_commands> e;
     service_ptr_t<mainmenu_commands> ptr;
@@ -22,7 +22,7 @@ menu_item_cache::menu_item_cache()
             unsigned p_service_item_count = ptr->get_command_count();
             for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
                  p_service_item_index++) {
-                menu_item_info info;
+                MenuItemInfo info;
 
                 info.m_command = ptr->get_command(p_service_item_index);
 
@@ -69,7 +69,7 @@ menu_item_cache::menu_item_cache()
                 }
                 else*/
                 {
-                    auto p_info = new menu_item_info(info);
+                    auto p_info = new MenuItemInfo(info);
                     ptr->get_description(p_service_item_index, p_info->m_desc);
                     p_info->m_name = full;
 
@@ -80,7 +80,7 @@ menu_item_cache::menu_item_cache()
     }
 }
 
-const menu_item_cache::menu_item_info& menu_item_cache::get_item(unsigned n) const
+const MenuItemCache::MenuItemInfo& MenuItemCache::get_item(unsigned n) const
 {
     return *m_data[n];
 }

@@ -19,7 +19,7 @@
 
 #if 1
 
-class appearance_message_window_t : public ui_helpers::container_window_autorelease_t {
+class AppearanceMessageWindow : public ui_helpers::container_window_autorelease_t {
 public:
     class_data& get_class_data() const override
     {
@@ -29,13 +29,13 @@ public:
     static bool g_initialised;
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 };
-bool appearance_message_window_t::g_initialised = false;
+bool AppearanceMessageWindow::g_initialised = false;
 // pfc::rcptr_t<appearance_message_window_t> g_appearance_message_window;
 
-void appearance_message_window_t::g_initialise()
+void AppearanceMessageWindow::g_initialise()
 {
     if (!g_initialised) {
-        auto ptr = new appearance_message_window_t;
+        auto ptr = new AppearanceMessageWindow;
         ptr->create(HWND_MESSAGE);
         g_initialised = true;
     }
@@ -46,16 +46,16 @@ FontsManagerData g_fonts_manager_data;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
 
-class colours_manager_instance_impl : public cui::colours::manager_instance {
+class ColoursManagerInstance : public cui::colours::manager_instance {
 public:
-    colours_manager_instance_impl(const GUID& p_client_guid)
+    ColoursManagerInstance(const GUID& p_client_guid)
     {
         g_colours_manager_data.find_by_guid(p_client_guid, m_entry);
         g_colours_manager_data.find_by_guid(pfc::guid_null, m_global_entry);
     }
     COLORREF get_colour(const cui::colours::colour_identifier_t& p_identifier) const override
     {
-        appearance_message_window_t::g_initialise();
+        AppearanceMessageWindow::g_initialise();
         ColoursManagerData::entry_ptr_t p_entry
             = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
         if (p_entry->colour_mode == cui::colours::colour_mode_system
@@ -103,11 +103,11 @@ private:
     ColoursManagerData::entry_ptr_t m_global_entry;
 };
 
-class colours_manager_impl : public cui::colours::manager {
+class ColoursManager : public cui::colours::manager {
 public:
     void create_instance(const GUID& p_client_guid, cui::colours::manager_instance::ptr& p_out) override
     {
-        p_out = new service_impl_t<colours_manager_instance_impl>(p_client_guid);
+        p_out = new service_impl_t<ColoursManagerInstance>(p_client_guid);
     }
     void register_common_callback(cui::colours::common_callback* p_callback) override
     {
@@ -121,11 +121,11 @@ public:
 private:
 };
 
-class fonts_manager_impl : public cui::fonts::manager {
+class FontsManager : public cui::fonts::manager {
 public:
     void get_font(const GUID& p_guid, LOGFONT& p_out) const override
     {
-        appearance_message_window_t::g_initialise();
+        AppearanceMessageWindow::g_initialise();
         FontsManagerData::entry_ptr_t p_entry;
         g_fonts_manager_data.find_by_guid(p_guid, p_entry);
         if (p_entry->font_mode == cui::fonts::font_mode_common_items)
@@ -177,8 +177,8 @@ private:
 };
 
 namespace {
-service_factory_single_t<colours_manager_impl> g_colours_manager;
-service_factory_t<fonts_manager_impl> g_fonts_manager;
+service_factory_single_t<ColoursManager> g_colours_manager;
+service_factory_t<FontsManager> g_fonts_manager;
 }; // namespace
 
 cui::colours::colour_mode_t g_get_global_colour_mode()
@@ -284,7 +284,7 @@ constexpr const GUID g_guid_colour_preferences
 static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and fonts", g_tabs_appearance,
     tabsize(g_tabs_appearance), g_guid_colour_preferences, g_guid_columns_ui_preferences_page, &cfg_child_appearance);
 
-class fcl_colours_t : public cui::fcl::dataset {
+class ColoursDataSet : public cui::fcl::dataset {
     enum { stream_version = 0 };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours (unified)"; }
     const GUID& get_group() const override { return cui::fcl::groups::colours_and_fonts; }
@@ -362,7 +362,7 @@ class fcl_colours_t : public cui::fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref colour_reader(data2);
-                        g_colours_manager_data.m_entries[i] = new ColoursManagerData::entry_t;
+                        g_colours_manager_data.m_entries[i] = new ColoursManagerData::Entry;
                         g_colours_manager_data.m_entries[i]->import(&colour_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
@@ -386,10 +386,10 @@ class fcl_colours_t : public cui::fcl::dataset {
 };
 
 namespace {
-service_factory_t<fcl_colours_t> g_fcl_colours_t;
+service_factory_t<ColoursDataSet> g_fcl_colours_t;
 };
 
-class fcl_fonts_t : public cui::fcl::dataset {
+class FontsDataSet : public cui::fcl::dataset {
     enum { stream_version = 0 };
     void get_name(pfc::string_base& p_out) const override { p_out = "Fonts (unified)"; }
     const GUID& get_group() const override { return cui::fcl::groups::colours_and_fonts; }
@@ -476,7 +476,7 @@ class fcl_fonts_t : public cui::fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref element_reader(data2);
-                        g_fonts_manager_data.m_entries[i] = new FontsManagerData::entry_t;
+                        g_fonts_manager_data.m_entries[i] = new FontsManagerData::Entry;
                         g_fonts_manager_data.m_entries[i]->import(&element_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
@@ -497,7 +497,7 @@ class fcl_fonts_t : public cui::fcl::dataset {
 };
 
 namespace {
-service_factory_t<fcl_fonts_t> g_fcl_fonts_t;
+service_factory_t<FontsDataSet> g_fcl_fonts_t;
 };
 
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}
@@ -508,7 +508,7 @@ const GUID ColoursManagerData::g_cfg_guid
 const GUID FontsManagerData::g_cfg_guid
     = {0x6b71f91c, 0x6b7e, 0x4dbe, {0xb2, 0x7b, 0xc4, 0x93, 0xaa, 0x51, 0x3f, 0xd0}};
 
-LRESULT appearance_message_window_t::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT AppearanceMessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_SYSCOLORCHANGE: {

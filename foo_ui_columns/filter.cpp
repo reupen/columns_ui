@@ -909,7 +909,7 @@ namespace {
 cui::colours::client::factory<AppearanceClient> g_appearance_client_impl;
 }
 
-class font_client_filter : public cui::fonts::client {
+class FilterItemFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_filter_items_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel: Items"; }
@@ -919,7 +919,7 @@ public:
     void on_font_changed() const override { FilterPanel::g_on_font_items_change(); }
 };
 
-class font_header_client_filter : public cui::fonts::client {
+class FilterHeaderFontClient : public cui::fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_filter_header_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel: Column titles"; }
@@ -929,8 +929,8 @@ public:
     void on_font_changed() const override { FilterPanel::g_on_font_header_change(); }
 };
 
-font_client_filter::factory<font_client_filter> g_font_client_filter;
-font_header_client_filter::factory<font_header_client_filter> g_font_header_client_filter;
+FilterItemFontClient::factory<FilterItemFontClient> g_font_client_filter;
+FilterHeaderFontClient::factory<FilterHeaderFontClient> g_font_header_client_filter;
 
 void AppearanceClient::on_colour_changed(t_size mask) const
 {

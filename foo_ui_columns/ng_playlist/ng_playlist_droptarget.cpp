@@ -281,7 +281,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                 if (b_redraw)
                     p_playlist->enable_redrawing();
             } else {
-                class delayed_drop_target_processer_t : public process_locations_notify {
+                class DelayedDropTargetProcesser : public process_locations_notify {
                 public:
                     playlist_position_reference_tracker m_insertIndexTracker;
                     service_ptr_t<PlaylistView> p_playlist;
@@ -307,8 +307,8 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                     void on_aborted() override {}
                 };
 
-                service_ptr_t<delayed_drop_target_processer_t> ptr
-                    = new service_impl_t<delayed_drop_target_processer_t>;
+                service_ptr_t<DelayedDropTargetProcesser> ptr
+                    = new service_impl_t<DelayedDropTargetProcesser>;
                 ptr->p_playlist = p_playlist;
                 ptr->m_insertIndexTracker.m_playlist = playlist_api->get_active_playlist();
                 ptr->m_insertIndexTracker.m_item = idx;
