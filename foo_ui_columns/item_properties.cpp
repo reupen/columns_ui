@@ -56,31 +56,6 @@ t_size g_get_info_secion_index_by_name(const char* p_name)
     return 4;
 }
 
-t_size g_get_info_secion_index_by_id(t_size id)
-{
-    t_size count = tabsize(g_info_sections);
-    for (t_size i = 0; i < count; i++) {
-        if (g_info_sections[i].id == id)
-            return i;
-    }
-    return pfc_infinite;
-}
-
-#if 0
-class track_property_callback_getgroups : public track_property_callback_v2 {
-public:
-    virtual void set_property(const char * p_group,double p_sortpriority,const char * p_name,const char * p_value)
-    {
-    }
-    virtual bool is_group_wanted(const char * p_group)
-    {
-        m_groups.add_item(p_group);
-        return false;
-    }
-    pfc::list_t< pfc::string8 > m_groups;
-};
-#endif
-
 ItemProperties::MessageWindow ItemProperties::g_message_window;
 
 std::vector<ItemProperties*> ItemProperties::g_windows;
@@ -276,16 +251,6 @@ void ItemProperties::notify_on_kill_focus(HWND wnd_receiving)
 {
     m_selection_holder.release();
     register_callback();
-
-    /*if (wnd_receiving == NULL)
-    register_callback();
-    else
-    {
-    DWORD processid = NULL;
-    GetWindowThreadProcessId (wnd_receiving, &processid);
-    if (processid == NULL || processid == GetCurrentProcessId())
-    register_callback();
-    }*/
 }
 
 void ItemProperties::register_callback()
@@ -310,10 +275,6 @@ public:
         pfc::list_t<pfc::string8> m_values;
         bool m_truncated{false};
 
-        /*static g_compare_entry (const char * str1, const pfc::string8 & str2)
-        {
-        }*/
-
         void add_value(const char* p_value)
         {
             t_size index;
@@ -329,55 +290,6 @@ public:
         MetadataField() = default;
     };
 
-    static int g_compare_field(const MetadataField& str2, const char* str1)
-    {
-        return stricmp_utf8(str2.m_name, str1);
-    }
-
-    void add_field(const char* p_field, const char* p_value)
-    {
-        t_size index;
-        if (!m_fields.bsearch_t(g_compare_field, p_field, index)) {
-            // m_fields.insert_item(metadata_field_t(p_field), index);
-        } else
-            m_fields[index].add_value(p_value);
-    }
-
-    void process_file_info(const file_info* p_info)
-    {
-        t_size count_field = p_info->meta_get_count();
-        for (t_size index_field = 0; index_field < count_field; index_field++) {
-            const char* p_field = p_info->meta_enum_name(index_field);
-            t_size value_count = p_info->meta_enum_value_count(index_field);
-            for (t_size index_value = 0; index_value < value_count; index_value++) {
-                add_field(p_field, p_info->meta_enum_value(index_field, index_value));
-            }
-        }
-    }
-
-#if 0
-    void process_track_properties (const metadb_handle_list & tracks)
-    {
-        {
-            track_property_callback_itemproperties props;
-            track_property_provider::ptr ptr;
-            service_enum_t<track_property_provider> e;
-            while (e.next(ptr))
-                ptr->enumerate_properties(tracks,props);
-
-            t_size index_field, count_field = m_fields.get_count();
-            for (index_field=0; index_field<count_field; index_field++)
-            {
-                t_size index;
-                if (props.find_field(m_fields[index_field].m_name, index))
-                {
-                    m_fields[index_field].add_value(props.m_values[index].m_value);
-                }
-            }
-        }
-    }
-#endif
-
     void process_file_info_v2(const file_info* p_info)
     {
         t_size count_field = m_fields.get_count();
@@ -388,12 +300,6 @@ public:
                 for (t_size index_value = 0; index_value < value_count; index_value++) {
                     m_fields[index_field].add_value(p_info->meta_enum_value(index_field_meta, index_value));
                 }
-            } else {
-                /*t_size index_field_info = p_info->info_find(m_fields[index_field].m_name);
-                if (index_field_info != pfc_infinite)
-                {
-                    m_fields[index_field].add_value(p_info->info_enum_value(index_field_info));
-                }*/
             }
         }
     }
@@ -405,8 +311,6 @@ public:
             m_fields[i].m_name = p_source[i].m_name;
     }
     pfc::list_t<MetadataField> m_fields;
-
-private:
 };
 
 void ItemProperties::refresh_contents()
@@ -417,58 +321,52 @@ void ItemProperties::refresh_contents()
     pfc::list_t<uih::ListView::InsertItem> items;
     t_size i, count = m_handles.get_count();
     metadata_aggregator.set_fields(m_fields);
-    {
-        // metadata_aggregator.process_track_properties(m_handles);
-    } {
-        for (i = 0; i < count; i++) {
-            metadb_info_container::ptr p_info;
-            if (m_handles[i]->get_info_ref(p_info)) {
-                metadata_aggregator.process_file_info_v2(&p_info->info());
-            }
-        }
-    }
-    {
-        count = metadata_aggregator.m_fields.get_count();
-        for (i = 0; i < count; i++) {
-            uih::ListView::InsertItem item(2, 1);
-            pfc::string8 temp;
-            item.m_subitems[0] = m_fields[i].m_name_friendly;
-            temp.reset();
-            t_size count_values = metadata_aggregator.m_fields[i].m_values.get_count();
-            for (t_size j = 0; j < count_values; j++) {
-                temp << metadata_aggregator.m_fields[i].m_values[j];
-                if (j + 1 != count_values)
-                    temp << "; ";
-            }
-            if (metadata_aggregator.m_fields[i].m_truncated)
-                temp << "; "
-                        "\xe2\x80\xa6";
-            item.m_subitems[1] = temp;
-            item.m_groups[0] = "Metadata";
-            items.add_item(item);
+
+    for (i = 0; i < count; i++) {
+        metadb_info_container::ptr p_info;
+        if (m_handles[i]->get_info_ref(p_info)) {
+            metadata_aggregator.process_file_info_v2(&p_info->info());
         }
     }
 
-    {
-        ItemPropertiesTrackPropertyCallback props;
-        track_property_provider::ptr ptr;
-        if (m_handles.get_count()) {
-            service_enum_t<track_property_provider> e;
-            while (e.next(ptr))
-                ptr->enumerate_properties(m_handles, props);
+    count = metadata_aggregator.m_fields.get_count();
+    for (i = 0; i < count; i++) {
+        uih::ListView::InsertItem item(2, 1);
+        pfc::string8 temp;
+        item.m_subitems[0] = m_fields[i].m_name_friendly;
+        temp.reset();
+        t_size count_values = metadata_aggregator.m_fields[i].m_values.get_count();
+        for (t_size j = 0; j < count_values; j++) {
+            temp << metadata_aggregator.m_fields[i].m_values[j];
+            if (j + 1 != count_values)
+                temp << "; ";
         }
+        if (metadata_aggregator.m_fields[i].m_truncated)
+            temp << "; "
+                    "\xe2\x80\xa6";
+        item.m_subitems[1] = temp;
+        item.m_groups[0] = "Metadata";
+        items.add_item(item);
+    }
 
-        t_size count_group = props.m_values.get_size();
-        for (t_size index_group = 0; index_group < count_group; index_group++) {
-            t_size count_field = props.m_values[index_group].get_count();
-            for (t_size index_field = 0; index_field < count_field; index_field++) {
-                if (m_info_sections_mask & (1 << (g_info_sections[index_group].id))) {
-                    uih::ListView::InsertItem item(2, 1);
-                    item.m_subitems[0] = props.m_values[index_group][index_field].m_name;
-                    item.m_subitems[1] = props.m_values[index_group][index_field].m_value;
-                    item.m_groups[0] = g_info_sections[index_group].name;
-                    items.add_item(item);
-                }
+    ItemPropertiesTrackPropertyCallback props;
+    track_property_provider::ptr ptr;
+    if (m_handles.get_count()) {
+        service_enum_t<track_property_provider> e;
+        while (e.next(ptr))
+            ptr->enumerate_properties(m_handles, props);
+    }
+
+    t_size count_group = props.m_values.get_size();
+    for (t_size index_group = 0; index_group < count_group; index_group++) {
+        t_size count_field = props.m_values[index_group].get_count();
+        for (t_size index_field = 0; index_field < count_field; index_field++) {
+            if (m_info_sections_mask & (1 << (g_info_sections[index_group].id))) {
+                uih::ListView::InsertItem item(2, 1);
+                item.m_subitems[0] = props.m_values[index_group][index_field].m_name;
+                item.m_subitems[1] = props.m_values[index_group][index_field].m_value;
+                item.m_groups[0] = g_info_sections[index_group].name;
+                items.add_item(item);
             }
         }
     }

@@ -35,7 +35,6 @@ private:
 };
 
 t_size g_get_info_secion_index_by_name(const char* p_name);
-t_size g_get_info_secion_index_by_id(t_size id);
 
 extern const InfoSection g_info_sections[5];
 
