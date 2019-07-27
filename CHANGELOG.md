@@ -1,5 +1,9 @@
 # Change log
 
+## 1.1.0
+
+* The component is now compiled using Visual Studio 2019 16.2.
+
 ## 1.1.0-beta.1
 
 * Custom fonts now scale when the display scaling factor (DPI) changes. [[#159](https://github.com/reupen/columns_ui/pull/159)]
