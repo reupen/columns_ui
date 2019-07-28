@@ -35,16 +35,23 @@ void PlaylistView::on_items_reordered(/*t_size p_playlist, */ const t_size* p_or
 ; // changes selection too; doesnt actually change set of items that are selected or item having focus, just changes
   // their order
 
-void PlaylistView::on_items_removed(/*t_size p_playlist, */ const pfc::bit_array& p_mask, t_size p_old_count,
-    t_size p_new_count){/*(if (p_playlist == 0)*/
-    {clear_sort_column();
-remove_items(p_mask, false);
-refresh_all_items_text(false);
-invalidate_all();
-// reset_items();
+void PlaylistView::on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count)
+{
+    clear_sort_column();
+
+    if (p_new_count == 0) {
+        remove_all_items(false);
+        // Delay repainting as the removal of all items is often followed by the addition of items
+        invalidate_all(false);
+        return;
+    }
+
+    remove_items(p_mask, false);
+    refresh_all_items_text(false);
+
+    invalidate_all();
 }
-}
-;
+
 void PlaylistView::on_items_selection_change(
     /*t_size p_playlist, */ const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
 {

@@ -262,7 +262,7 @@ void PlaylistView::update_all_items(bool b_update_display)
 void PlaylistView::refresh_all_items_text(bool b_update_display)
 {
     update_items(0, get_item_count(), false);
-    invalidate_all();
+    invalidate_all(b_update_display);
 }
 void PlaylistView::update_items(t_size index, t_size count, bool b_update_display)
 {

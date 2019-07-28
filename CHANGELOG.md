@@ -1,5 +1,9 @@
 # Change log
 
+## 1.2.0-beta.1 (in development)
+
+* ...
+
 ## 1.1.0
 
 * The component is now compiled using Visual Studio 2019 16.2.
