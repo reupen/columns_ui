@@ -34,46 +34,9 @@ public:
 private:
 };
 
-t_size g_get_info_secion_index_by_name(const char* p_name);
+t_size g_get_info_section_id_by_name(const char* p_name);
 
 extern const InfoSection g_info_sections[5];
-
-class ItemPropertiesTrackPropertyCallback : public track_property_callback_v2 {
-public:
-    class TrackProperty {
-    public:
-        using self_t = TrackProperty;
-        pfc::string8 m_name, m_value;
-        double m_sortpriority{0};
-
-        static int g_compare(self_t const& a, self_t const& b);
-
-        TrackProperty(double p_sortpriority, const char* p_name, const char* p_value);
-        TrackProperty() = default;
-    };
-
-    void set_property(const char* p_group, double p_sortpriority, const char* p_name, const char* p_value) override;
-#if 0
-    bool find_field(const char * name, t_size & index)
-    {
-        t_size i, count = m_values.get_count();
-        for (i = 0; i < count; i++)
-        {
-            if (!stricmp_utf8(m_values[i].m_name, name))
-            {
-                index = i;
-                return true;
-            }
-        }
-        return false;
-    }
-#endif
-    bool is_group_wanted(const char* p_group) override;
-    void sort();
-
-    ItemPropertiesTrackPropertyCallback();
-    pfc::array_staticsize_t<pfc::list_t<TrackProperty>> m_values;
-};
 
 class ItemPropertiesColoursClient : public cui::colours::client {
 public:
