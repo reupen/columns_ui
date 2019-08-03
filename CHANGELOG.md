@@ -1,8 +1,26 @@
 # Change log
 
-## 1.2.0-beta.1 (in development)
+## 1.2.0-beta.1
 
-* ...
+* Flickering in the playlist view was reduced when all items are replaced (e.g. when using Filters) [[#198](https://github.com/reupen/columns_ui/pull/198)]
+
+* The time it takes Item properties to update was reduced for very large selections. [[#199](https://github.com/reupen/columns_ui/pull/199)]
+
+* Values of metadata fields are no longer sorted alphabetically in Item properties; instead they retain their order of appearance in the selected tracks. [[#199](https://github.com/reupen/columns_ui/pull/199), [#205](https://github.com/reupen/columns_ui/pull/205)]
+
+* The order of fields in non-metadata sections in Item properties is now ordered as specified by foobar2000 (or other track property providers). [[#199](https://github.com/reupen/columns_ui/pull/199)]
+
+* A possible crash on foobar2000 exit was fixed. [[#200](https://github.com/reupen/columns_ui/pull/200)]
+
+* The 'Edit this column' playlist view command (and other Columns UI commands that open Preferences) now behave correctly if Preferences is already open, and the desired page had previously been navigated to. [[#201](https://github.com/reupen/columns_ui/pull/201)]
+
+* The names of some context menu commands were corrected in the Buttons toolbar. [[#202](https://github.com/reupen/columns_ui/pull/202)]
+
+* A bug was fixed where playlist items were not centred correctly in the playlist view when e.g. double-clicking on the status bar. [[#203](https://github.com/reupen/columns_ui/pull/203), [ui_helpers#27](https://github.com/reupen/ui_helpers/pull/27)]
+
+* A bug was fixed where rearranging buttons in Buttons toolbar options by dragging them did not reorder them correctly. [[#204](https://github.com/reupen/columns_ui/pull/204)]
+
+* Filter panels now update when right-clicking on items. [[#206](https://github.com/reupen/columns_ui/pull/206)]
 
 ## 1.1.0
 
