@@ -867,9 +867,8 @@ void TabColumns::show_column(size_t index)
                 break;
             }
         }
-        standard_commands::main_preferences();
     } else {
         cfg_cur_prefs_col = index;
-        cui::prefs::page_playlist_view.get_static_instance().show_tab("Columns");
     }
+    cui::prefs::page_playlist_view.get_static_instance().show_tab("Columns");
 }
