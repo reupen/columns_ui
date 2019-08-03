@@ -658,7 +658,7 @@ void FilterPanel::notify_on_selection_change(
         update_subsequent_filters();
         if (m_selection_holder.is_valid()) {
             metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-            get_selection_handles(handles, false);
+            get_selection_handles(handles, false, true);
             m_selection_holder->set_selection(handles);
         }
     }
@@ -686,7 +686,7 @@ void FilterPanel::notify_on_set_focus(HWND wnd_lost)
 {
     m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-    get_selection_handles(handles, false);
+    get_selection_handles(handles, false, true);
     m_selection_holder->set_selection(handles);
 }
 void FilterPanel::notify_on_kill_focus(HWND wnd_receiving)
