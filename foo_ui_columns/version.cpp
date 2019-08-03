@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#define VERSION "1.2.0-dev"
+#define VERSION "1.2.0-beta.1"
 
 #ifndef __clang__
 #define DATE ", Date "__DATE__
