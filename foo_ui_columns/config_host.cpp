@@ -105,6 +105,8 @@ void PreferencesTabHelper::on_ncdestroy()
 
 void PreferencesTabsHost::show_tab(const char* tab_name)
 {
+    const auto previous_tab = m_active_tab.get_value();
+
     for (size_t n = 0; n < m_tab_count; n++) {
         if (!strcmp(m_tabs[n]->get_name(), tab_name)) {
             m_active_tab = n;
@@ -112,13 +114,15 @@ void PreferencesTabsHost::show_tab(const char* tab_name)
         }
     }
 
-    if (m_wnd_tabs) {
+    if (m_wnd_tabs && previous_tab != m_active_tab) {
         TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);
-        make_child();
-        standard_commands::main_preferences();
-    } else {
-        static_api_ptr_t<ui_control>()->show_preferences(get_guid());
+
+        // See WM_WINDOWPOSCHANGED comment below
+        if (IsWindowVisible(m_wnd))
+            make_child();
     }
+
+    static_api_ptr_t<ui_control>()->show_preferences(get_guid());
 }
 
 BOOL PreferencesTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
