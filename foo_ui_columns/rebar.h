@@ -50,7 +50,7 @@ class ConfigRebar : public cfg_var {
 private:
     enum class StreamVersion : uint32_t { Version0 = 0, Version1 = 1, VersionCurrent = Version1 };
 
-    std::vector<RebarBandInfo> m_entries;
+    std::vector<RebarBandState> m_entries;
 
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
     void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
@@ -63,7 +63,7 @@ public:
 
     explicit ConfigRebar(const GUID& p_guid) : cfg_var(p_guid) { reset(); };
 
-    const std::vector<RebarBandInfo>& get_rebar_info() { return m_entries; }
+    const std::vector<RebarBandState>& get_rebar_info() { return m_entries; }
 
     template <typename Container>
     void set_rebar_info(Container&& in)
@@ -92,7 +92,9 @@ public:
     HWND init();
 
     void refresh_band_configs();
-    const std::vector<RebarBandInfo>& get_bands() const { return m_bands; }
+    const std::vector<RebarBand>& get_bands() const { return m_bands; }
+
+    [[nodiscard]] std::vector<RebarBandState> get_band_states() const;
 
     void add_band(
         const GUID& guid, unsigned width = 100, const ui_extension::window_ptr& p_ext = ui_extension::window_ptr_null);
@@ -135,7 +137,7 @@ private:
      */
     void fix_z_order();
 
-    std::vector<RebarBandInfo> m_bands;
+    std::vector<RebarBand> m_bands;
 
     friend class RebarWindowHost;
 };

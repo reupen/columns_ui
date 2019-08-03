@@ -17,7 +17,7 @@ void destroy_rebar(bool save_config)
     if (g_rebar_window) {
         g_rebar_window->destroy();
         if (save_config) {
-            g_cfg_rebar.set_rebar_info(g_rebar_window->get_bands());
+            g_cfg_rebar.set_rebar_info(g_rebar_window->get_band_states());
             cfg_band_cache.set_band_cache(g_rebar_window->cache);
         }
         delete g_rebar_window;
@@ -50,7 +50,7 @@ void ConfigRebar::export_config(
 
     if (g_rebar_window) {
         g_rebar_window->refresh_band_configs();
-        m_entries = g_rebar_window->get_bands();
+        set_rebar_info(g_rebar_window->get_band_states());
     }
 
     t_size count = m_entries.size();
@@ -65,14 +65,14 @@ void ConfigRebar::import_config(
     stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     t_uint32 version;
-    std::vector<RebarBandInfo> new_entries;
+    std::vector<RebarBandState> new_entries;
     p_reader->read_lendian_t(version, p_abort);
     if (version > 0)
         throw exception_io_unsupported_format();
     t_size count;
     p_reader->read_lendian_t(count, p_abort);
     for (t_size i = 0; i < count; i++) {
-        RebarBandInfo item;
+        RebarBandState item;
         item.import_from_fcl_stream(p_reader, mode, p_abort);
 
         uie::window_ptr ptr;
@@ -183,7 +183,7 @@ void ConfigRebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     if (g_rebar_window) {
         g_rebar_window->refresh_band_configs();
-        m_entries = g_rebar_window->get_bands();
+        set_rebar_info(g_rebar_window->get_band_states());
     }
 
     auto num = gsl::narrow<uint32_t>(m_entries.size());
@@ -211,7 +211,7 @@ void ConfigRebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abo
     p_reader->read_lendian_t(itemCount, p_abort);
 
     for (uint32_t i = 0; i < itemCount; i++) {
-        RebarBandInfo item;
+        RebarBandState item;
         item.read_from_stream(p_reader, p_abort);
         m_entries.push_back(std::move(item));
     }
@@ -281,7 +281,7 @@ public:
             auto iterator = g_rebar_window->find_band_by_hwnd(wnd);
             if (iterator != g_rebar_window->m_bands.end()) {
                 const auto index = std::distance(g_rebar_window->m_bands.begin(), iterator);
-                iterator->m_width = width;
+                iterator->m_state.m_width = width;
                 g_rebar_window->update_band(index, true);
                 return true;
             }
@@ -333,7 +333,13 @@ HWND RebarWindow::init()
 {
     HWND rv = nullptr;
 
-    m_bands = g_cfg_rebar.get_rebar_info();
+    auto& band_states = g_cfg_rebar.get_rebar_info();
+    m_bands.reserve(band_states.size());
+
+    /// Using ranges::view::transform here seems to make VS 2019 freeze
+    for (auto&& band_state : band_states) {
+        m_bands.emplace_back(RebarBand{band_state});
+    }
 
     if (!wnd_rebar) {
         rv = wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
@@ -354,8 +360,8 @@ void RebarWindow::refresh_band_configs()
         if (band.m_wnd && band.m_window.is_valid()) {
             try {
                 abort_callback_dummy aborter;
-                stream_writer_memblock_ref writer(band.m_config);
-                band.m_config.set_size(0);
+                stream_writer_memblock_ref writer(band.m_state.m_config);
+                band.m_state.m_config.set_size(0);
                 band.m_window->get_config(&writer, aborter);
             } catch (const exception_io&) {
             }
@@ -480,8 +486,8 @@ void RebarWindow::save_bands()
             const auto band_index = static_cast<uint32_t>(rbbi.lParam);
             if (b_OK && band_index < count) {
                 order[n] = band_index;
-                m_bands[band_index].m_width = rbbi.cx;
-                m_bands[band_index].m_break_before_band = ((rbbi.fStyle & RBBS_BREAK) != 0);
+                m_bands[band_index].m_state.m_width = rbbi.cx;
+                m_bands[band_index].m_state.m_break_before_band = ((rbbi.fStyle & RBBS_BREAK) != 0);
             } else
                 b_death = true;
         }
@@ -494,14 +500,14 @@ void RebarWindow::save_bands()
 
 bool RebarWindow::check_band(const GUID& id)
 {
-    return std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_guid == id; })
+    return std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_state.m_guid == id; })
         != m_bands.end();
 }
 
 bool RebarWindow::find_band(const GUID& id, unsigned& out)
 {
     const auto iterator
-        = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_guid == id; });
+        = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_state.m_guid == id; });
 
     out = std::distance(m_bands.begin(), iterator);
     return iterator != m_bands.end();
@@ -527,8 +533,8 @@ void RebarWindow::destroy_bands()
             SendMessage(wnd_rebar, RB_SHOWBAND, 0, FALSE);
             SendMessage(wnd_rebar, RB_DELETEBAND, 0, 0);
             if (band.m_window.is_valid()) {
-                band.m_config.set_size(0);
-                stream_writer_memblock_ref data(band.m_config);
+                band.m_state.m_config.set_size(0);
+                stream_writer_memblock_ref data(band.m_state.m_config);
                 try {
                     band.m_window->get_config(&data, abortCallbackDummy);
                 } catch (const pfc::exception&) {
@@ -564,7 +570,7 @@ void RebarWindow::delete_band(unsigned n)
             p_ext->destroy_window();
             p_ext.release();
         }
-        cache.add_entry(m_bands[n].m_guid, m_bands[n].m_width);
+        cache.add_entry(m_bands[n].m_state.m_guid, m_bands[n].m_state.m_width);
         m_bands.erase(m_bands.begin() + n);
         refresh_bands(false);
     }
@@ -581,21 +587,32 @@ void RebarWindow::delete_band(HWND wnd, bool destroy)
             if (destroy)
                 iter->m_window->destroy_window();
         }
-        cache.add_entry(iter->m_guid, iter->m_width);
+        cache.add_entry(iter->m_state.m_guid, iter->m_state.m_width);
         m_bands.erase(iter);
         refresh_bands(false);
     }
 }
 
+std::vector<RebarBandState> RebarWindow::get_band_states() const
+{
+    /// Using ranges::view::transform here seems to make VS 2019 freeze
+    std::vector<RebarBandState> band_states;
+    band_states.reserve(m_bands.size());
+    for (auto&& band : m_bands)
+        band_states.emplace_back(band.m_state);
+
+    return band_states;
+}
+
 void RebarWindow::add_band(const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
-    m_bands.emplace_back(guid, width, false, p_ext);
+    m_bands.emplace_back(RebarBand{RebarBandState{guid, width}, p_ext});
     refresh_bands(false);
 }
 
 void RebarWindow::insert_band(unsigned idx, const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
-    m_bands.emplace(m_bands.begin() + idx, guid, width, false, p_ext);
+    m_bands.emplace(m_bands.begin() + idx, RebarBand{RebarBandState{guid, width}, p_ext});
     refresh_bands(false);
 }
 
@@ -628,7 +645,7 @@ void RebarWindow::update_band(unsigned n, bool size)
 
         if (size) {
             rbbi.fMask |= RBBIM_SIZE;
-            rbbi.cx = m_bands[n].m_width;
+            rbbi.cx = m_bands[n].m_state.m_width;
         }
 
         uRebar_InsertItem(wnd_rebar, n, &rbbi, false);
@@ -658,7 +675,7 @@ void RebarWindow::refresh_bands(bool force_destroy_bands)
             ui_extension::window_ptr p_ext = band.m_window;
             bool b_new = false;
             if (!p_ext.is_valid()) {
-                ui_extension::window::create_by_guid(band.m_guid, p_ext);
+                ui_extension::window::create_by_guid(band.m_state.m_guid, p_ext);
                 b_new = true;
             }
 
@@ -667,7 +684,7 @@ void RebarWindow::refresh_bands(bool force_destroy_bands)
                 if (b_new) {
                     try {
                         p_ext->set_config_from_ptr(
-                            band.m_config.get_ptr(), band.m_config.get_size(), aborter);
+                            band.m_state.m_config.get_ptr(), band.m_state.m_config.get_size(), aborter);
                     } catch (const exception_io& e) {
                         console::formatter formatter;
                         formatter << "Error setting panel config: " << e.what();
@@ -701,9 +718,9 @@ void RebarWindow::refresh_bands(bool force_destroy_bands)
 
         if (band.m_wnd) {
             rbbi.fMask |= RBBIM_SIZE | RBBIM_CHILD | RBBIM_HEADERSIZE | RBBIM_LPARAM | RBBIM_STYLE;
-            rbbi.cx = m_bands[n].m_width;
-            rbbi.fStyle = RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS
-                | (band.m_break_before_band ? RBBS_BREAK : 0) | (cfg_lock ? RBBS_NOGRIPPER : 0);
+            rbbi.cx = m_bands[n].m_state.m_width;
+            rbbi.fStyle = RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS | (band.m_state.m_break_before_band ? RBBS_BREAK : 0)
+                | (cfg_lock ? RBBS_NOGRIPPER : 0);
             rbbi.lParam = n;
             rbbi.hwndChild = band.m_wnd;
             rbbi.cxHeader = cfg_lock ? 5 : 9;

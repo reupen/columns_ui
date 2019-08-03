@@ -2,19 +2,19 @@
 
 #include "rebar_band.h"
 
-void RebarBandInfo::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_type, abort_callback& aborter) const
+void RebarBandState::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_type, abort_callback& aborter) const
 {
-    uie::window_ptr ptr = m_window;
-    if (!ptr.is_valid()) {
-        if (uie::window::create_by_guid(m_guid, ptr)) {
-            // if (fcl_type==cui::fcl::type_public)
-            try {
-                ptr->set_config_from_ptr(m_config.get_ptr(), m_config.get_size(), aborter);
-            } catch (const exception_io&) {
-            } // FIXME: Why?
-        } else
-            throw cui::fcl::exception_missing_panel();
-    }
+    uie::window_ptr ptr;
+
+    if (uie::window::create_by_guid(m_guid, ptr)) {
+        // if (fcl_type==cui::fcl::type_public)
+        try {
+            ptr->set_config_from_ptr(m_config.get_ptr(), m_config.get_size(), aborter);
+        } catch (const exception_io&) {
+        } // FIXME: Why?
+    } else
+        throw cui::fcl::exception_missing_panel();
+
     stream_writer_memblock w;
     if (fcl_type == cui::fcl::type_public)
         ptr->export_config(&w, aborter);
@@ -28,10 +28,8 @@ void RebarBandInfo::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_typ
     writer->write(w.m_data.get_ptr(), size, aborter);
 }
 
-void RebarBandInfo::import_from_fcl_stream(stream_reader* reader, t_uint32 fcl_type, abort_callback& aborter)
+void RebarBandState::import_from_fcl_stream(stream_reader* reader, t_uint32 fcl_type, abort_callback& aborter)
 {
-    if (m_window.is_valid())
-        throw pfc::exception_bug_check();
     reader->read_lendian_t(m_guid, aborter);
     uint32_t width_;
     reader->read_lendian_t(width_, aborter);
@@ -59,7 +57,7 @@ void RebarBandInfo::import_from_fcl_stream(stream_reader* reader, t_uint32 fcl_t
     }
 }
 
-void RebarBandInfo::write_to_stream(stream_writer* writer, abort_callback& aborter) const
+void RebarBandState::write_to_stream(stream_writer* writer, abort_callback& aborter) const
 {
     writer->write_lendian_t(m_guid, aborter);
     writer->write_lendian_t(m_width.get_scaled_value(), aborter);
@@ -69,7 +67,7 @@ void RebarBandInfo::write_to_stream(stream_writer* writer, abort_callback& abort
     writer->write(m_config.get_ptr(), size, aborter);
 }
 
-void RebarBandInfo::read_from_stream(stream_reader* reader, abort_callback& aborter)
+void RebarBandState::read_from_stream(stream_reader* reader, abort_callback& aborter)
 {
     reader->read_lendian_t(m_guid, aborter);
     uint32_t width_;
@@ -86,13 +84,13 @@ void RebarBandInfo::read_from_stream(stream_reader* reader, abort_callback& abor
     }
 }
 
-void RebarBandInfo::write_extra(stream_writer* writer, abort_callback& aborter) const
+void RebarBandState::write_extra(stream_writer* writer, abort_callback& aborter) const
 {
     writer->write_lendian_t(m_width.value, aborter);
     writer->write_lendian_t(m_width.dpi, aborter);
 }
 
-void RebarBandInfo::read_extra(stream_reader* reader, abort_callback& aborter)
+void RebarBandState::read_extra(stream_reader* reader, abort_callback& aborter)
 {
     reader->read_lendian_t(m_width.value, aborter);
     reader->read_lendian_t(m_width.dpi, aborter);
