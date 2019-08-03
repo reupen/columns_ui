@@ -312,9 +312,9 @@ class CommandPickerData {
     unsigned m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
 
     bool __populate_mainmenu_dynamic_recur(
-        CommandData& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root);
+        CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root);
     bool __populate_commands_recur(
-        CommandData& data, pfc::string_base& full, contextmenu_item_node* p_node, bool b_root);
+        CommandData& data, std::list<std::string> name_parts, contextmenu_item_node* p_node, bool b_root);
     void populate_commands();
     void update_description();
 

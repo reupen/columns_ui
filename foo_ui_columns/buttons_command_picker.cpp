@@ -2,18 +2,16 @@
 #include "buttons.h"
 
 bool CommandPickerData::__populate_mainmenu_dynamic_recur(
-    CommandData& data, const mainmenu_node::ptr& ptr_node, pfc::string_base& full, bool b_root)
+    CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root)
 {
     if (ptr_node.is_valid()) {
+        pfc::string8 name_part;
+        t_uint32 flags;
+        ptr_node->get_display(name_part, flags);
+
         switch (ptr_node->get_type()) {
         case mainmenu_node::type_command: {
-            pfc::string8 subfull = full, subname;
-            t_uint32 flags;
-            ptr_node->get_display(subname, flags);
-
-            if (subfull.length() && subfull.get_ptr()[subfull.length() - 1] != '/')
-                subfull.add_byte('/');
-            subfull.add_string(subname);
+            name_parts.emplace_back(name_part);
 
             auto p_data = std::make_unique<CommandData>(data);
             p_data->m_subcommand = ptr_node->get_guid();
@@ -21,23 +19,18 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
 
             auto& data_item = m_data.emplace_back(std::move(p_data));
 
-            unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, subfull);
+            auto path = mmh::join(name_parts, "/");
+            unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, path.c_str());
             SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
         }
             return true;
         case mainmenu_node::type_group: {
-            pfc::string8 name, subfull = full;
-            if (!b_root) {
-                t_uint32 flags;
-                ptr_node->get_display(name, flags);
-                if (subfull.length() && subfull.get_ptr()[subfull.length() - 1] != '/')
-                    subfull.add_byte('/');
-                subfull.add_string(name);
-            }
+            if (!b_root)
+                name_parts.emplace_back(name_part);
 
             for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
                 mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
-                __populate_mainmenu_dynamic_recur(data, ptr_child, subfull, false);
+                __populate_mainmenu_dynamic_recur(data, ptr_child, name_parts, false);
             }
         }
             return true;
@@ -48,47 +41,38 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
     return false;
 }
 bool CommandPickerData::__populate_commands_recur(
-    CommandData& data, pfc::string_base& full, contextmenu_item_node* p_node, bool b_root)
+    CommandData& data, std::list<std::string> name_parts, contextmenu_item_node* p_node, bool b_root)
 {
     if (p_node) {
-        if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP) {
-            pfc::string8 name, subfull = full;
-            unsigned dummy;
-            p_node->get_display_data(
-                name, dummy, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
-            if (subfull.length() && subfull.get_ptr()[subfull.length() - 1] != '/')
-                subfull.add_byte('/');
-            subfull.add_string(name);
+        pfc::string8 name = menu_helpers::get_context_menu_node_name(p_node);
+        if (!name.is_empty())
+            name_parts.emplace_back(name);
 
-            unsigned child_count = p_node->get_children_count();
+        if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP) {
+            const unsigned child_count = p_node->get_children_count();
+
             for (unsigned child = 0; child < child_count; child++) {
                 contextmenu_item_node* p_child = p_node->get_child(child);
-                __populate_commands_recur(data, subfull, p_child, false);
+                __populate_commands_recur(data, name_parts, p_child, false);
             }
             return true;
         }
         if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && !b_root) {
-            pfc::string8 subfull = full, subname;
-            unsigned dummy;
-            p_node->get_display_data(
-                subname, dummy, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
-            if (subfull.length() && subfull.get_ptr()[subfull.length() - 1] != '/')
-                subfull.add_byte('/');
-            subfull.add_string(subname);
-
             auto p_data = std::make_unique<CommandData>(data);
             p_data->m_subcommand = p_node->get_guid();
             p_node->get_description(p_data->m_desc);
 
             auto& data_item = m_data.emplace_back(std::move(p_data));
 
-            unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, subfull);
+            const auto path = mmh::join(name_parts, "/");
+            unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, path.c_str());
             SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
             return true;
         }
     }
     return false;
 }
+
 void CommandPickerData::populate_commands()
 {
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
@@ -110,21 +94,22 @@ void CommandPickerData::populate_commands()
                     CommandData data;
                     data.m_guid = ptr->get_item_guid(p_service_item_index);
 
-                    pfc::string8 name, full;
-                    ptr->get_item_default_path(p_service_item_index, full);
+                    std::list<std::string> name_parts;
+                    menu_helpers::get_context_menu_item_parent_names(ptr, name_parts);
 
-                    if (p_node.is_valid() && __populate_commands_recur(data, full, p_node.get_ptr(), true)) {
+                    if (p_node.is_valid() && __populate_commands_recur(data, name_parts, p_node.get_ptr(), true)) {
                     } else {
+                        pfc::string8 name;
                         ptr->get_item_name(p_service_item_index, name);
-                        if (full.length() && full[full.length() - 1] != '/')
-                            full.add_byte('/');
-                        full.add_string(name);
+
+                        name_parts.emplace_back(name);
 
                         auto p_data = std::make_unique<CommandData>(data);
                         ptr->get_item_description(p_service_item_index, p_data->m_desc);
                         auto& data_item = m_data.emplace_back(std::move(p_data));
 
-                        unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, full);
+                        const auto path = mmh::join(name_parts, "/");
+                        unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, path.c_str());
                         SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
                         //                            n++;
                     }
@@ -145,32 +130,31 @@ void CommandPickerData::populate_commands()
                      p_service_item_index++) {
                     CommandData data;
                     data.m_guid = ptr->get_command(p_service_item_index);
-                    pfc::string8 name, full;
+
+                    pfc::string8 name;
                     ptr->get_name(p_service_item_index, name);
+                    std::list<std::string> name_parts{name.get_ptr()};
+
                     {
                         pfc::list_t<pfc::string8> levels;
                         GUID parent = ptr->get_parent();
                         while (parent != pfc::guid_null) {
                             pfc::string8 parentname;
                             if (menu_helpers::maingroupname_from_guid(GUID(parent), parentname, parent))
-                                levels.insert_item(parentname, 0);
-                        }
-                        unsigned count = levels.get_count();
-                        for (unsigned i = 0; i < count; i++) {
-                            full.add_string(levels[i]);
-                            full.add_byte('/');
+                                name_parts.emplace_front(parentname);
                         }
                     }
-                    full.add_string(name);
 
                     if (ptr_v2.is_valid() && ptr_v2->is_command_dynamic(p_service_item_index)) {
                         mainmenu_node::ptr ptr_node = ptr_v2->dynamic_instantiate(p_service_item_index);
-                        __populate_mainmenu_dynamic_recur(data, ptr_node, full, true);
+                        __populate_mainmenu_dynamic_recur(data, ptr_node, name_parts, true);
                     } else {
                         auto p_data = std::make_unique<CommandData>(data);
                         ptr->get_description(p_service_item_index, p_data->m_desc);
                         auto& data_item = m_data.emplace_back(std::move(p_data));
-                        unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, full);
+
+                        auto path = mmh::join(name_parts, "/");
+                        unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, path.c_str());
                         SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
                     }
                 }

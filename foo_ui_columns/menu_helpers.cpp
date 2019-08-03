@@ -86,7 +86,7 @@ const MenuItemCache::MenuItemInfo& MenuItemCache::get_item(unsigned n) const
 }
 
 namespace menu_helpers {
-auto get_context_menu_node_name(contextmenu_item_node* p_node)
+pfc::string8 get_context_menu_node_name(contextmenu_item_node* p_node)
 {
     pfc::string8 name;
     unsigned _;
@@ -159,7 +159,7 @@ auto get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand)
     if (p_subcommand == GUID{}) {
         pfc::string8 part_name;
         menu_item->get_item_name(menu_item_index, part_name);
-        item_parts.emplace_front(part_name.c_str());
+        item_parts.emplace_back(part_name.c_str());
     } else {
         pfc::ptrholder_t<contextmenu_item_node_root> p_node = menu_item->instantiate_item(
             menu_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
