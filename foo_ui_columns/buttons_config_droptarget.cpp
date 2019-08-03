@@ -143,7 +143,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
     *pdwEffect = DROPEFFECT_NONE;
     if (check_do(pDataObj /*, pdwEffect*/)) {
         *pdwEffect = DROPEFFECT_MOVE;
-        t_size index = m_button_list_view->get_selected_item_single(); // meh
+        const t_size old_index = m_button_list_view->get_selected_item_single(); // meh
 
         uih::ListView::t_hit_test_result hi;
 
@@ -158,24 +158,27 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_below_items)
             new_index = hi.insertion_index;
 
-        if (new_index != pfc_infinite && new_index > index)
+        if (new_index != pfc_infinite && new_index > old_index)
             --new_index;
 
-        if (new_index != pfc_infinite && index != pfc_infinite && new_index != index
-            && index < m_button_list_view->m_param.m_buttons.get_count()) {
-            t_size button_count = m_button_list_view->m_param.m_buttons.get_count(),
-                   abs_delta = abs(int(index) - int(new_index));
-            int direction = new_index > index ? -1 : 1;
+        if (new_index != pfc_infinite && old_index != pfc_infinite && new_index != old_index
+            && old_index < m_button_list_view->m_param.m_buttons.get_count()) {
+            const size_t button_count = m_button_list_view->m_param.m_buttons.get_count();
+
+            const int step = new_index > old_index ? 1 : -1;
             mmh::Permutation perm(button_count);
-            for (t_size i = 0; i < abs_delta; i++)
-                perm.swap_items(new_index + direction * (i), new_index + direction * (i + 1));
+
+            for (t_size i = old_index; i != new_index; i += step)
+                perm.swap_items(i, i + step);
 
             m_button_list_view->m_param.m_buttons.reorder(perm.get_ptr());
 
             // blaarrgg, designed in the dark ages
             m_button_list_view->m_param.m_selection = &m_button_list_view->m_param.m_buttons[new_index];
 
-            m_button_list_view->m_param.refresh_buttons_list_items(min(index, new_index), abs_delta + 1);
+            const size_t first_index = (std::min)(old_index, new_index);
+            const size_t last_index = (std::max)(old_index, new_index);
+            m_button_list_view->m_param.refresh_buttons_list_items(first_index, last_index - first_index + 1);
             m_button_list_view->set_item_selected_single(new_index);
         }
     }
