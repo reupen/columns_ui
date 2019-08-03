@@ -46,40 +46,15 @@ cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_sh
 const InfoSection g_info_sections[] = {InfoSection(0, "Location"), InfoSection(1, "General"),
     InfoSection(2, "ReplayGain"), InfoSection(3, "Playback statistics"), InfoSection(4, "Other")};
 
-t_size g_get_info_secion_index_by_name(const char* p_name)
+t_size g_get_info_section_index_by_name(const char* p_name)
 {
-    t_size count = tabsize(g_info_sections);
+    const t_size count = tabsize(g_info_sections);
     for (t_size i = 0; i < count; i++) {
         if (!stricmp_utf8(p_name, g_info_sections[i].name))
             return i;
     }
     return 4;
 }
-
-t_size g_get_info_secion_index_by_id(t_size id)
-{
-    t_size count = tabsize(g_info_sections);
-    for (t_size i = 0; i < count; i++) {
-        if (g_info_sections[i].id == id)
-            return i;
-    }
-    return pfc_infinite;
-}
-
-#if 0
-class track_property_callback_getgroups : public track_property_callback_v2 {
-public:
-    virtual void set_property(const char * p_group,double p_sortpriority,const char * p_name,const char * p_value)
-    {
-    }
-    virtual bool is_group_wanted(const char * p_group)
-    {
-        m_groups.add_item(p_group);
-        return false;
-    }
-    pfc::list_t< pfc::string8 > m_groups;
-};
-#endif
 
 ItemProperties::MessageWindow ItemProperties::g_message_window;
 
@@ -157,7 +132,7 @@ void ItemProperties::set_config(stream_reader* p_reader, t_size p_size, abort_ca
 
     t_size version;
     p_reader->read_lendian_t(version, p_abort);
-    
+
     if (version > config_version_current)
         return;
 
@@ -188,7 +163,7 @@ void ItemProperties::set_config(stream_reader* p_reader, t_size p_size, abort_ca
     p_reader->read_lendian_t(m_info_sections_mask, p_abort);
     p_reader->read_lendian_t(m_show_column_titles, p_abort);
     p_reader->read_lendian_t(m_show_group_titles, p_abort);
-    
+
     if (version < 5)
         return;
 
@@ -276,16 +251,6 @@ void ItemProperties::notify_on_kill_focus(HWND wnd_receiving)
 {
     m_selection_holder.release();
     register_callback();
-
-    /*if (wnd_receiving == NULL)
-    register_callback();
-    else
-    {
-    DWORD processid = NULL;
-    GetWindowThreadProcessId (wnd_receiving, &processid);
-    if (processid == NULL || processid == GetCurrentProcessId())
-    register_callback();
-    }*/
 }
 
 void ItemProperties::register_callback()
@@ -301,175 +266,208 @@ void ItemProperties::deregister_callback()
     m_callback_registered = false;
 }
 
-class MetadataAggregator {
+class MetadataFieldValueAggregator {
 public:
-    enum { max_values = 16 };
-    class MetadataField {
-    public:
-        pfc::string8 m_name;
-        pfc::list_t<pfc::string8> m_values;
-        bool m_truncated{false};
+    bool process_file_info(const char* field, const file_info* info)
+    {
+        if (m_truncated)
+            return false;
 
-        /*static g_compare_entry (const char * str1, const pfc::string8 & str2)
-        {
-        }*/
+        const t_size field_index = info->meta_find(field);
 
-        void add_value(const char* p_value)
-        {
-            t_size index;
-            if (!m_values.bsearch_t(stricmp_utf8, p_value, index)) {
-                if (m_values.get_count() < max_values)
-                    m_values.insert_item(p_value, index);
-                else
-                    m_truncated = true;
-            }
+        if (field_index == (std::numeric_limits<size_t>::max)())
+            return true;
+
+        const t_size value_count = info->meta_enum_value_count(field_index);
+
+        for (auto value_index : ranges::view::iota(0, value_count)) {
+            const auto value = info->meta_enum_value(field_index, value_index);
+            add_value(value);
         }
-
-        MetadataField(const char* field) : m_name(field){};
-        MetadataField() = default;
-    };
-
-    static int g_compare_field(const MetadataField& str2, const char* str1)
-    {
-        return stricmp_utf8(str2.m_name, str1);
+        return !m_truncated;
     }
 
-    void add_field(const char* p_field, const char* p_value)
-    {
-        t_size index;
-        if (!m_fields.bsearch_t(g_compare_field, p_field, index)) {
-            // m_fields.insert_item(metadata_field_t(p_field), index);
-        } else
-            m_fields[index].add_value(p_value);
-    }
-
-    void process_file_info(const file_info* p_info)
-    {
-        t_size count_field = p_info->meta_get_count();
-        for (t_size index_field = 0; index_field < count_field; index_field++) {
-            const char* p_field = p_info->meta_enum_name(index_field);
-            t_size value_count = p_info->meta_enum_value_count(index_field);
-            for (t_size index_value = 0; index_value < value_count; index_value++) {
-                add_field(p_field, p_info->meta_enum_value(index_field, index_value));
-            }
-        }
-    }
-
-#if 0
-    void process_track_properties (const metadb_handle_list & tracks)
-    {
-        {
-            track_property_callback_itemproperties props;
-            track_property_provider::ptr ptr;
-            service_enum_t<track_property_provider> e;
-            while (e.next(ptr))
-                ptr->enumerate_properties(tracks,props);
-
-            t_size index_field, count_field = m_fields.get_count();
-            for (index_field=0; index_field<count_field; index_field++)
-            {
-                t_size index;
-                if (props.find_field(m_fields[index_field].m_name, index))
-                {
-                    m_fields[index_field].add_value(props.m_values[index].m_value);
-                }
-            }
-        }
-    }
-#endif
-
-    void process_file_info_v2(const file_info* p_info)
-    {
-        t_size count_field = m_fields.get_count();
-        for (t_size index_field = 0; index_field < count_field; index_field++) {
-            t_size index_field_meta = p_info->meta_find(m_fields[index_field].m_name);
-            if (index_field_meta != pfc_infinite) {
-                t_size value_count = p_info->meta_enum_value_count(index_field_meta);
-                for (t_size index_value = 0; index_value < value_count; index_value++) {
-                    m_fields[index_field].add_value(p_info->meta_enum_value(index_field_meta, index_value));
-                }
-            } else {
-                /*t_size index_field_info = p_info->info_find(m_fields[index_field].m_name);
-                if (index_field_info != pfc_infinite)
-                {
-                    m_fields[index_field].add_value(p_info->info_enum_value(index_field_info));
-                }*/
-            }
-        }
-    }
-    void set_fields(pfc::list_t<Field>& p_source)
-    {
-        t_size count = p_source.get_count();
-        m_fields.set_count(count);
-        for (t_size i = 0; i < count; i++)
-            m_fields[i].m_name = p_source[i].m_name;
-    }
-    pfc::list_t<MetadataField> m_fields;
+    std::vector<std::string> m_values;
+    bool m_truncated{false};
 
 private:
+    void add_value(const char* p_value)
+    {
+        if (m_values.size() >= max_values)
+            return;
+
+        auto has_value = [p_value](auto&& value) { return !stricmp_utf8(p_value, value.c_str()); };
+
+        if (ranges::any_of(m_values, has_value))
+            return;
+
+        m_values.emplace_back(p_value);
+
+        if (m_values.size() == max_values)
+            m_truncated = true;
+    }
+
+    static constexpr size_t max_values = 16;
+};
+
+class TrackPropertyCallback : public track_property_callback_v2 {
+public:
+    class TrackProperty {
+    public:
+        using Self = TrackProperty;
+
+        pfc::string8 m_name;
+        pfc::string8 m_value;
+        double m_sortpriority{0};
+
+        static int s_compare(Self const& a, Self const& b)
+        {
+            int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
+            if (!ret)
+                ret = StrCmpLogicalW(
+                    pfc::stringcvt::string_wide_from_utf8(a.m_name), pfc::stringcvt::string_wide_from_utf8(b.m_name));
+            return ret;
+        }
+    };
+
+    TrackPropertyCallback(std::vector<std::string>& fields) : m_fields(fields) {}
+
+    void set_property(const char* p_group, double p_sortpriority, const char* p_name, const char* p_value) override
+    {
+        if (!is_group_wanted(p_group))
+            return;
+
+        const size_t index = g_get_info_section_index_by_name(p_group);
+        m_value_map[index].emplace_back(TrackProperty{p_name, p_value, p_sortpriority});
+    }
+
+    bool is_group_wanted(const char* p_group) override
+    {
+        return ranges::any_of(m_fields, [p_group](auto&& section) { return !stricmp_utf8(p_group, section.c_str()); });
+    }
+
+    void sort()
+    {
+        for (auto&& [index, values] : m_value_map) {
+            mmh::Permutation perm(values.size());
+            mmh::sort_get_permutation(values.data(), perm, TrackProperty::s_compare, false);
+            mmh::destructive_reorder(values, perm);
+        }
+    }
+
+    std::unordered_map<uint32_t, std::vector<TrackProperty>> m_value_map;
+    std::vector<std::string>& m_fields;
+};
+
+template <class Container>
+class TrackPropertyInfoSourceProvider : public track_property_provider_v3_info_source {
+public:
+    TrackPropertyInfoSourceProvider(Container& items) : m_items(items) {}
+    metadb_info_container::ptr get_info(size_t index) override { return m_items[index]; }
+
+private:
+    Container& m_items;
 };
 
 void ItemProperties::refresh_contents()
 {
     bool b_redraw = disable_redrawing();
 
-    MetadataAggregator metadata_aggregator;
+    size_t field_count = m_fields.get_count();
+
+    std::vector<MetadataFieldValueAggregator> metadata_aggregators;
+    metadata_aggregators.resize(field_count);
+
     pfc::list_t<uih::ListView::InsertItem> items;
     t_size i, count = m_handles.get_count();
-    metadata_aggregator.set_fields(m_fields);
-    {
-        // metadata_aggregator.process_track_properties(m_handles);
-    } {
-        for (i = 0; i < count; i++) {
-            metadb_info_container::ptr p_info;
-            if (m_handles[i]->get_info_ref(p_info)) {
-                metadata_aggregator.process_file_info_v2(&p_info->info());
-            }
+
+    std::vector<metadb_info_container::ptr> info_refs;
+    info_refs.resize(count);
+
+    for (i = 0; i < count; i++)
+        m_handles[i]->get_info_ref(info_refs[i]);
+
+    concurrency::parallel_for(size_t{0}, field_count, [&metadata_aggregators, &info_refs, this](auto&& field_index) {
+        auto& metadata_aggregator = metadata_aggregators[field_index];
+
+        for (size_t i = 0; i < m_handles.get_count(); i++) {
+            auto&& info_ref = info_refs[i];
+
+            if (!info_ref.is_valid())
+                continue;
+
+            if (!metadata_aggregator.process_file_info(m_fields[field_index].m_name, &info_ref->info()))
+                break;
         }
+    });
+
+    for (i = 0; i < field_count; i++) {
+        auto& field = m_fields[i];
+        auto& aggregator = metadata_aggregators[i];
+
+        uih::ListView::InsertItem item(2, 1);
+        pfc::string8 temp;
+        item.m_subitems[0] = field.m_name_friendly;
+        temp.reset();
+
+        t_size count_values = aggregator.m_values.size();
+
+        for (t_size j = 0; j < count_values; j++) {
+            temp << aggregator.m_values[j].c_str();
+            if (j + 1 != count_values)
+                temp << "; ";
+        }
+
+        if (aggregator.m_truncated)
+            temp << "; "
+                    "\xe2\x80\xa6";
+
+        item.m_subitems[1] = temp;
+        item.m_groups[0] = "Metadata";
+        items.add_item(item);
     }
-    {
-        count = metadata_aggregator.m_fields.get_count();
-        for (i = 0; i < count; i++) {
-            uih::ListView::InsertItem item(2, 1);
-            pfc::string8 temp;
-            item.m_subitems[0] = m_fields[i].m_name_friendly;
-            temp.reset();
-            t_size count_values = metadata_aggregator.m_fields[i].m_values.get_count();
-            for (t_size j = 0; j < count_values; j++) {
-                temp << metadata_aggregator.m_fields[i].m_values[j];
-                if (j + 1 != count_values)
-                    temp << "; ";
-            }
-            if (metadata_aggregator.m_fields[i].m_truncated)
-                temp << "; "
-                        "\xe2\x80\xa6";
-            item.m_subitems[1] = temp;
-            item.m_groups[0] = "Metadata";
-            items.add_item(item);
+
+    std::vector<std::string> info_sections;
+    for (auto&& info_section : g_info_sections) {
+        if (m_info_sections_mask & (1 << (info_section.id))) {
+            info_sections.emplace_back(info_section.name);
         }
     }
 
-    {
-        ItemPropertiesTrackPropertyCallback props;
+    TrackPropertyCallback props(info_sections);
+
+    if (m_handles.get_count()) {
+        service_list_t<track_property_provider> providers;
+        service_enum_t<track_property_provider> e;
         track_property_provider::ptr ptr;
-        if (m_handles.get_count()) {
-            service_enum_t<track_property_provider> e;
-            while (e.next(ptr))
-                ptr->enumerate_properties(m_handles, props);
+        while (e.next(ptr)) {
+            providers.add_item(ptr);
         }
 
-        t_size count_group = props.m_values.get_size();
-        for (t_size index_group = 0; index_group < count_group; index_group++) {
-            t_size count_field = props.m_values[index_group].get_count();
-            for (t_size index_field = 0; index_field < count_field; index_field++) {
-                if (m_info_sections_mask & (1 << (g_info_sections[index_group].id))) {
-                    uih::ListView::InsertItem item(2, 1);
-                    item.m_subitems[0] = props.m_values[index_group][index_field].m_name;
-                    item.m_subitems[1] = props.m_values[index_group][index_field].m_value;
-                    item.m_groups[0] = g_info_sections[index_group].name;
-                    items.add_item(item);
+        concurrency::parallel_for(
+            size_t{0}, providers.get_count(), [&providers, &props, &info_refs, this](auto&& index) {
+                auto&& ptr = providers[index];
+
+                if (track_property_provider_v3::ptr ptr_v3; ptr->service_query_t(ptr_v3)) {
+                    TrackPropertyInfoSourceProvider source(info_refs);
+                    ptr_v3->enumerate_properties_v3(m_handles, source, props);
+                } else if (track_property_provider_v2::ptr ptr_v2; ptr->service_query_t(ptr_v2)) {
+                    ptr_v2->enumerate_properties_v2(m_handles, props);
+                } else {
+                    ptr->enumerate_properties(m_handles, props);
                 }
-            }
+            });
+    }
+
+    props.sort();
+
+    for (auto&& [group_index, values] : props.m_value_map) {
+        for (auto&& value : values) {
+            uih::ListView::InsertItem item(2, 1);
+            item.m_subitems[0] = value.m_name;
+            item.m_subitems[1] = value.m_value;
+            item.m_groups[0] = g_info_sections[group_index].name;
+            items.add_item(item);
         }
     }
 
@@ -555,11 +553,6 @@ void ItemProperties::on_selection_changed(const pfc::list_base_const_t<metadb_ha
         m_handles = m_selection_handles;
         refresh_contents();
     }
-
-    // pfc::hires_timer timer;
-    // timer.start();
-
-    // console::formatter() << "Selection properties panel refreshed in: " << timer.query() << " seconds";
 }
 
 void ItemProperties::on_tracking_mode_change()
@@ -842,10 +835,8 @@ bool ItemProperties::have_config_popup() const
 
 namespace {
 ItemsFontClientItemProperties::factory<ItemsFontClientItemProperties> g_font_client_selection_properties;
-HeaderFontClientItemProperties::factory<HeaderFontClientItemProperties>
-    g_font_header_client_selection_properties;
-GroupClientItemProperties::factory<GroupClientItemProperties>
-    g_font_group_client_selection_properties;
+HeaderFontClientItemProperties::factory<HeaderFontClientItemProperties> g_font_header_client_selection_properties;
+GroupClientItemProperties::factory<GroupClientItemProperties> g_font_group_client_selection_properties;
 } // namespace
 uie::window_factory<ItemProperties> g_selection_properties;
 
@@ -868,8 +859,7 @@ unsigned ItemProperties::MenuNodeSourcePopup::get_children_count() const
     return m_items.get_count();
 }
 
-bool ItemProperties::MenuNodeSourcePopup::get_display_data(
-    pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemProperties::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Tracking mode";
     p_displayflags = 0;
@@ -889,8 +879,7 @@ bool ItemProperties::ModeNodeAutosize::get_description(pfc::string_base& p_out) 
     return false;
 }
 
-bool ItemProperties::ModeNodeAutosize::get_display_data(
-    pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemProperties::ModeNodeAutosize::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Auto-sizing columns";
     p_displayflags = (p_this->m_autosizing_columns) ? ui_extension::menu_node_t::state_checked : 0;
@@ -914,8 +903,7 @@ bool ItemProperties::MenuNodeTrackMode::get_description(pfc::string_base& p_out)
     return false;
 }
 
-bool ItemProperties::MenuNodeTrackMode::get_display_data(
-    pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemProperties::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
     p_displayflags = (m_source == p_this->m_tracking_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
@@ -931,46 +919,6 @@ const char* ItemProperties::MenuNodeTrackMode::get_name(t_size source)
     if (source == track_automatic)
         return "Automatic";
     return "";
-}
-
-ItemPropertiesTrackPropertyCallback::ItemPropertiesTrackPropertyCallback() : m_values(tabsize(g_info_sections)) {}
-
-void ItemPropertiesTrackPropertyCallback::sort()
-{
-    t_size count = m_values.get_size();
-    for (t_size i = 0; i < count; i++) {
-        mmh::Permutation perm(m_values[i].get_count());
-        mmh::sort_get_permutation(m_values[i].get_ptr(), perm, TrackProperty::g_compare, false);
-        m_values[i].reorder(perm.get_ptr());
-    }
-}
-
-bool ItemPropertiesTrackPropertyCallback::is_group_wanted(const char* p_group)
-{
-    return true;
-}
-
-void ItemPropertiesTrackPropertyCallback::set_property(
-    const char* p_group, double p_sortpriority, const char* p_name, const char* p_value)
-{
-    t_size index = g_get_info_secion_index_by_name(p_group);
-    if (index != pfc_infinite)
-        m_values[index].add_item(TrackProperty(p_sortpriority, p_name, p_value));
-}
-
-ItemPropertiesTrackPropertyCallback::TrackProperty::TrackProperty(
-    double p_sortpriority, const char* p_name, const char* p_value)
-    : m_name(p_name), m_value(p_value), m_sortpriority(p_sortpriority)
-{
-}
-
-int ItemPropertiesTrackPropertyCallback::TrackProperty::g_compare(self_t const& a, self_t const& b)
-{
-    int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
-    if (!ret)
-        ret = StrCmpLogicalW(
-            pfc::stringcvt::string_wide_from_utf8(a.m_name), pfc::stringcvt::string_wide_from_utf8(b.m_name));
-    return ret;
 }
 
 void ItemPropertiesColoursClient::on_colour_changed(t_size mask) const
