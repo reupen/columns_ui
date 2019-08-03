@@ -653,14 +653,11 @@ void FilterPanel::send_results_to_playlist(bool b_play)
 void FilterPanel::notify_on_selection_change(
     const pfc::bit_array& p_affected, const pfc::bit_array& p_status, notification_source_t p_notification_source)
 {
-    if (p_notification_source != notification_source_rmb) {
-        // send_results_to_playlist();
-        update_subsequent_filters();
-        if (m_selection_holder.is_valid()) {
-            metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-            get_selection_handles(handles, false, true);
-            m_selection_holder->set_selection(handles);
-        }
+    update_subsequent_filters();
+    if (m_selection_holder.is_valid()) {
+        metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
+        get_selection_handles(handles, false, true);
+        m_selection_holder->set_selection(handles);
     }
 }
 void FilterPanel::update_first_node_text(bool b_update)
