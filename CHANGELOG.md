@@ -2,7 +2,7 @@
 
 ## 1.2.0-beta.1
 
-* The time it takes Item properties to update was reduced for very large selections. [[#199](https://github.com/reupen/columns_ui/pull/199)]
+* The time it takes Item properties to update was reduced for very large selections. [[#199](https://github.com/reupen/columns_ui/pull/199), [#209](https://github.com/reupen/columns_ui/pull/209)]
 
 * Flickering in the playlist view was reduced when all items are replaced (e.g. when using Filters) [[#198](https://github.com/reupen/columns_ui/pull/198)]
 
