@@ -385,16 +385,13 @@ void ItemProperties::refresh_contents()
     info_refs.resize(count);
 
     for (i = 0; i < count; i++)
-        m_handles[i]->get_info_ref(info_refs[i]);
+        info_refs[i] = m_handles[i]->get_info_ref();
 
     concurrency::parallel_for(size_t{0}, field_count, [&metadata_aggregators, &info_refs, this](auto&& field_index) {
         auto& metadata_aggregator = metadata_aggregators[field_index];
 
         for (size_t i = 0; i < m_handles.get_count(); i++) {
             auto&& info_ref = info_refs[i];
-
-            if (!info_ref.is_valid())
-                continue;
 
             if (!metadata_aggregator.process_file_info(m_fields[field_index].m_name, &info_ref->info()))
                 break;
