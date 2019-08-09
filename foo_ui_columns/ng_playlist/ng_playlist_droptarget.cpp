@@ -89,14 +89,13 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragOver(DWORD grfKeyState, PO
     UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
 
     if (p_playlist->get_wnd()) {
-        uih::ListView::t_hit_test_result hi;
+        uih::ListView::HitTestResult hi;
 
         {
             POINT ptt = pti;
             ScreenToClient(p_playlist->get_wnd(), &ptt);
 
-            RECT rc_items;
-            p_playlist->get_items_rect(&rc_items);
+            RECT rc_items = p_playlist->get_items_rect();
 
             rc_items.top += p_playlist->get_item_height();
             rc_items.bottom -= p_playlist->get_item_height();
@@ -115,9 +114,10 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragOver(DWORD grfKeyState, PO
                 p_playlist->set_insert_mark(p_playlist->get_item_count());
             else {
                 p_playlist->hit_test_ex(ptt, hi);
-                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-                    || hi.result == uih::ListView::hit_test_obscured_below
-                    || hi.result == uih::ListView::hit_test_below_items)
+                if (hi.category == uih::ListView::HitTestCategory::OnUnobscuredItem
+                    || hi.category == uih::ListView::HitTestCategory::OnGroupHeader
+                    || hi.category == uih::ListView::HitTestCategory::OnItemObscuredBelow
+                    || hi.category == uih::ListView::HitTestCategory::NotOnItem)
                     p_playlist->set_insert_mark(hi.insertion_index);
                 else
                     p_playlist->remove_insert_mark();
@@ -209,7 +209,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
             static_api_ptr_t<playlist_manager> playlist_api;
 
             t_size idx = playlist_api->activeplaylist_get_item_count();
-            uih::ListView::t_hit_test_result hi;
+            uih::ListView::HitTestResult hi;
 
             {
                 POINT ptt = pti;
@@ -218,10 +218,11 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                 p_playlist->hit_test_ex(ptt, hi);
             }
 
-            if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-                || hi.result == uih::ListView::hit_test_obscured_below
-                || hi.result == uih::ListView::hit_test_obscured_above
-                || hi.result == uih::ListView::hit_test_below_items) {
+            if (hi.category == uih::ListView::HitTestCategory::OnUnobscuredItem
+                || hi.category == uih::ListView::HitTestCategory::OnGroupHeader
+                || hi.category == uih::ListView::HitTestCategory::OnItemObscuredBelow
+                || hi.category == uih::ListView::HitTestCategory::OnItemObscuredAbove
+                || hi.category == uih::ListView::HitTestCategory::NotOnItem) {
                 idx = hi.insertion_index;
             }
 

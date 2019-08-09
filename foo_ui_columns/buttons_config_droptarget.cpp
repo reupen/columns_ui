@@ -86,14 +86,13 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
         // console::formatter() << pfc::format_hex(hr);
     }
     if (m_button_list_view->get_wnd()) {
-        uih::ListView::t_hit_test_result hi;
+        uih::ListView::HitTestResult hi;
 
         {
             POINT ptt = pti;
             ScreenToClient(m_button_list_view->get_wnd(), &ptt);
 
-            RECT rc_items;
-            m_button_list_view->get_items_rect(&rc_items);
+            RECT rc_items = m_button_list_view->get_items_rect();
 
             rc_items.top += m_button_list_view->get_item_height();
             rc_items.bottom -= m_button_list_view->get_item_height();
@@ -109,9 +108,8 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
                 m_button_list_view->destroy_timer_scroll_down();
             {
                 m_button_list_view->hit_test_ex(ptt, hi);
-                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-                    || hi.result == uih::ListView::hit_test_obscured_below
-                    || hi.result == uih::ListView::hit_test_below_items)
+                if (hi.category == HitTestCategory::OnUnobscuredItem || hi.category == HitTestCategory::OnGroupHeader
+                    || hi.category == HitTestCategory::OnItemObscuredBelow || hi.category == HitTestCategory::NotOnItem)
                     m_button_list_view->set_insert_mark(hi.insertion_index);
                 else
                     m_button_list_view->remove_insert_mark();
@@ -145,7 +143,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
         *pdwEffect = DROPEFFECT_MOVE;
         const t_size old_index = m_button_list_view->get_selected_item_single(); // meh
 
-        uih::ListView::t_hit_test_result hi;
+        uih::ListView::HitTestResult hi;
 
         POINT ptt = pt;
         ScreenToClient(m_button_list_view->get_wnd(), &ptt);
@@ -154,8 +152,8 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
 
         t_size new_index = pfc_infinite;
 
-        if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-            || hi.result == uih::ListView::hit_test_obscured_below || hi.result == uih::ListView::hit_test_below_items)
+        if (hi.category == HitTestCategory::OnUnobscuredItem || hi.category == HitTestCategory::OnGroupHeader
+            || hi.category == HitTestCategory::OnItemObscuredBelow || hi.category == HitTestCategory::NotOnItem)
             new_index = hi.insertion_index;
 
         if (new_index != pfc_infinite && new_index > old_index)

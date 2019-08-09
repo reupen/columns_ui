@@ -149,14 +149,13 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::DragOver(DWORD grfKeySta
     pti.y = ptl.y;
     pti.x = ptl.x;
     if (m_window->get_wnd()) {
-        uih::ListView::t_hit_test_result hi;
+        uih::ListView::HitTestResult hi;
 
         {
             POINT ptt = pti;
             ScreenToClient(m_window->get_wnd(), &ptt);
 
-            RECT rc_items;
-            m_window->get_items_rect(&rc_items);
+            RECT rc_items = m_window->get_items_rect();
 
             rc_items.top += m_window->get_item_height();
             rc_items.bottom -= m_window->get_item_height();
@@ -183,8 +182,8 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::DragOver(DWORD grfKeySta
             else*/
             {
                 m_window->hit_test_ex(ptt, hi);
-                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-                    || hi.result == uih::ListView::hit_test_obscured_below) {
+                if (hi.category == HitTestCategory::OnUnobscuredItem || hi.category == HitTestCategory::OnGroupHeader
+                    || hi.category == HitTestCategory::OnItemObscuredBelow) {
                     if (m_is_playlists) {
                         m_window->set_insert_mark(hi.insertion_index);
                         m_window->destroy_switch_timer();
@@ -208,7 +207,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::DragOver(DWORD grfKeySta
                             uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
                         }
                     }
-                } else if (hi.result == uih::ListView::hit_test_below_items) {
+                } else if (hi.category == HitTestCategory::NotOnItem) {
                     m_window->remove_highlight_item();
                     m_window->set_insert_mark(hi.insertion_index);
                     m_window->destroy_switch_timer();
@@ -291,7 +290,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
         bool process = !ui_drop_item_callback::g_on_drop(pDataObj);
 
         if (process) {
-            uih::ListView::t_hit_test_result hi;
+            uih::ListView::HitTestResult hi;
             {
                 POINT ptt = pti;
                 ScreenToClient(m_window->get_wnd(), &ptt);
@@ -307,10 +306,11 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                         = m_window->m_dragging && m_window->m_DataObject == pDataObj && *pdwEffect == DROPEFFECT_MOVE)
                        || SUCCEEDED(m_ole_api->parse_dataobject_playlists(pDataObj, data)))) {
                 if (b_internal_move) {
-                    if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-                        || hi.result == uih::ListView::hit_test_obscured_below
-                        || hi.result == uih::ListView::hit_test_obscured_above
-                        || hi.result == uih::ListView::hit_test_below_items) {
+                    if (hi.category == HitTestCategory::OnUnobscuredItem
+                        || hi.category == HitTestCategory::OnGroupHeader
+                        || hi.category == HitTestCategory::OnItemObscuredBelow
+                        || hi.category == HitTestCategory::OnItemObscuredAbove
+                        || hi.category == HitTestCategory::NotOnItem) {
                         t_size count = m_playlist_api->get_playlist_count();
                         order_helper order(count);
                         {
@@ -341,10 +341,11 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                     {
                         t_size index_insert = m_playlist_api->get_playlist_count();
 
-                        if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-                            || hi.result == uih::ListView::hit_test_obscured_below
-                            || hi.result == uih::ListView::hit_test_obscured_above
-                            || hi.result == uih::ListView::hit_test_below_items)
+                        if (hi.category == HitTestCategory::OnUnobscuredItem
+                            || hi.category == HitTestCategory::OnGroupHeader
+                            || hi.category == HitTestCategory::OnItemObscuredBelow
+                            || hi.category == HitTestCategory::OnItemObscuredAbove
+                            || hi.category == HitTestCategory::NotOnItem)
                             index_insert = hi.insertion_index;
 
                         t_size index_activate = NULL;
@@ -381,12 +382,12 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                 bool create_new = true;
                 t_size idx = pfc_infinite;
 
-                if (hi.result == uih::ListView::hit_test_on || hi.result == uih::ListView::hit_test_on_group
-                    || hi.result == uih::ListView::hit_test_obscured_below
-                    || hi.result == uih::ListView::hit_test_obscured_above) {
+                if (hi.category == HitTestCategory::OnUnobscuredItem || hi.category == HitTestCategory::OnGroupHeader
+                    || hi.category == HitTestCategory::OnItemObscuredBelow
+                    || hi.category == HitTestCategory::OnItemObscuredAbove) {
                     create_new = isAltDown;
                     idx = create_new ? hi.insertion_index : hi.index;
-                } else if (hi.result == uih::ListView::hit_test_below_items) {
+                } else if (hi.category == HitTestCategory::NotOnItem) {
                     create_new = true;
                 }
 
