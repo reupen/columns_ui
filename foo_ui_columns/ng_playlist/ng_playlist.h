@@ -473,9 +473,9 @@ private:
 
     HBITMAP request_group_artwork(t_size index_item, t_size item_group_count);
 
-    void update_all_items(bool b_update_display = true);
-    void refresh_all_items_text(bool b_update_display = true);
-    void update_items(t_size index, t_size count, bool b_update_display = true);
+    void update_all_items();
+    void refresh_all_items_text();
+    void update_items(t_size index, t_size count);
 
     Item* storage_create_item() override { return new PlaylistViewItem; }
 

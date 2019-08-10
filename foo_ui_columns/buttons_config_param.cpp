@@ -183,7 +183,7 @@ void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_siz
         m_buttons[n].get_name_type(name);
         items[n - index].m_subitems[1] = name;
     }
-    m_button_list.replace_items(index, items, b_update_display);
+    m_button_list.replace_items(index, items);
 }
 
 BOOL CALLBACK ButtonsToolbar::ConfigParam::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -345,7 +345,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                     _T("This will reset all your buttons to the default buttons. Continue?"), _T("Reset buttons"),
                     MB_YESNO)
                 == IDYES) {
-                m_button_list.remove_items(pfc::bit_array_true(), false);
+                m_button_list.remove_items(pfc::bit_array_true());
                 ButtonsToolbar::reset_buttons(m_buttons);
                 populate_buttons_list();
             }
@@ -426,7 +426,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 pfc::string8 path;
                 if (uGetOpenFileName(wnd, "fcb Files (*.fcb)|*.fcb|All Files (*.*)|*.*", 0, "fcb", "Open file", nullptr,
                         path, FALSE)) {
-                    m_button_list.remove_items(pfc::bit_array_true(), false);
+                    m_button_list.remove_items(pfc::bit_array_true());
 
                     HWND wnd_show = GetDlgItem(wnd, IDC_SHOW);
                     HWND wnd_text = GetDlgItem(wnd, IDC_TEXT_LOCATION);

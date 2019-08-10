@@ -259,7 +259,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
 
             m_nodes.insert_item(node, index_item);
             InsertItem item;
-            insert_items(index_item, 1, &item, false);
+            insert_items(index_item, 1, &item);
         }
     }
 
@@ -272,7 +272,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
         mask_nodes[node_index] = m_nodes[node_index].m_handles.get_count() == 0;
     }
     m_nodes.remove_mask(mask_nodes.get_ptr());
-    remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()), true);
+    remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()));
     update_first_node_text(true);
 
     if (next_window) {
