@@ -21,7 +21,7 @@ void PlaylistSwitcher::get_insert_items(t_size base, t_size count, pfc::list_t<u
 
 void PlaylistSwitcher::refresh_all_items()
 {
-    remove_items(pfc::bit_array_true(), false);
+    remove_items(pfc::bit_array_true());
 
     add_items(0, m_playlist_api->get_playlist_count());
 
@@ -34,7 +34,7 @@ void PlaylistSwitcher::refresh_items(t_size base, t_size count, bool b_update)
 {
     pfc::list_t<uih::ListView::InsertItem> items_insert;
     get_insert_items(base, count, items_insert);
-    replace_items(base, items_insert, b_update);
+    replace_items(base, items_insert);
 }
 
 void PlaylistSwitcher::add_items(t_size base, t_size count)

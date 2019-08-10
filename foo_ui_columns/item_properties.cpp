@@ -473,13 +473,13 @@ void ItemProperties::refresh_contents()
     if (new_count && old_count) {
         pfc::list_t<uih::ListView::InsertItem> items_replace;
         items_replace.add_items_fromptr(items.get_ptr(), min(new_count, old_count));
-        uih::ListView::replace_items(0, items_replace, false);
+        uih::ListView::replace_items(0, items_replace);
     }
 
     if (new_count > old_count) {
-        uih::ListView::insert_items(old_count, items.get_count() - old_count, items.get_ptr() + old_count, false);
+        uih::ListView::insert_items(old_count, items.get_count() - old_count, items.get_ptr() + old_count);
     } else if (new_count < old_count) {
-        uih::ListView::remove_items(pfc::bit_array_range(new_count, old_count - new_count), false);
+        uih::ListView::remove_items(pfc::bit_array_range(new_count, old_count - new_count));
     }
 
     if (b_redraw)
@@ -811,7 +811,7 @@ bool ItemProperties::show_config_popup(HWND wnd_parent)
                 m_show_group_titles = dialog.m_show_groups;
                 cfg_selection_poperties_show_group_titles = m_show_group_titles;
 
-                remove_items(pfc::bit_array_true(), false);
+                remove_items(pfc::bit_array_true());
                 set_group_count(m_show_group_titles ? 1 : 0);
             }
 

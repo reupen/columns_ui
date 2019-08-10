@@ -10,10 +10,8 @@ void PlaylistView::on_items_added(/*unsigned p_playlist, */ unsigned start,
         clear_sort_column();
         InsertItemsContainer items;
         get_insert_items(start, p_data.get_count(), items);
-        insert_items(start, items.get_count(), items.get_ptr(), false);
-        refresh_all_items_text(false);
-        invalidate_all();
-        // reset_items();
+        insert_items(start, items.get_count(), items.get_ptr());
+        refresh_all_items_text();
     }
 }
 void PlaylistView::on_items_reordered(/*t_size p_playlist, */ const t_size* p_order, t_size p_count){
@@ -40,16 +38,12 @@ void PlaylistView::on_items_removed(const pfc::bit_array& p_mask, t_size p_old_c
     clear_sort_column();
 
     if (p_new_count == 0) {
-        remove_all_items(false);
-        // Delay repainting as the removal of all items is often followed by the addition of items
-        invalidate_all(false);
+        remove_all_items();
         return;
     }
 
-    remove_items(p_mask, false);
-    refresh_all_items_text(false);
-
-    invalidate_all();
+    remove_items(p_mask);
+    refresh_all_items_text();
 }
 
 void PlaylistView::on_items_selection_change(
@@ -57,7 +51,7 @@ void PlaylistView::on_items_selection_change(
 {
     /*(if (p_playlist == 0)*/
     if (!m_ignore_callback) {
-        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
     }
 };
 void PlaylistView::on_item_focus_change(/*t_size p_playlist, */ t_size p_from, t_size p_to)

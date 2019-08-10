@@ -245,7 +245,7 @@ void PlaylistView::on_groups_change()
     }
 }
 
-void PlaylistView::update_all_items(bool b_update_display)
+void PlaylistView::update_all_items()
 {
     static_api_ptr_t<titleformat_compiler> p_compiler;
     service_ptr_t<titleformat_object> p_script, p_script_group;
@@ -257,14 +257,13 @@ void PlaylistView::update_all_items(bool b_update_display)
         p_compiler->compile_safe(m_script_global, cfg_globalstring);
     p_compiler->compile_safe(m_script_global_style, cfg_colour);
 
-    refresh_all_items_text(b_update_display);
+    refresh_all_items_text();
 }
-void PlaylistView::refresh_all_items_text(bool b_update_display)
+void PlaylistView::refresh_all_items_text()
 {
-    update_items(0, get_item_count(), false);
-    invalidate_all(b_update_display);
+    update_items(0, get_item_count());
 }
-void PlaylistView::update_items(t_size index, t_size count, bool b_update_display)
+void PlaylistView::update_items(t_size index, t_size count)
 {
     for (t_size i = 0; i < count; i++) {
         t_size cg = get_item(i + index)->get_group_count();
@@ -272,7 +271,7 @@ void PlaylistView::update_items(t_size index, t_size count, bool b_update_displa
             get_item(i + index)->get_group(j)->m_style_data.release();
         get_item(i + index)->m_style_data.set_count(0);
     }
-    uih::ListView::update_items(index, count, b_update_display);
+    uih::ListView::update_items(index, count);
 }
 void PlaylistView::g_on_autosize_change()
 {
@@ -402,7 +401,7 @@ void PlaylistView::on_columns_change()
 void PlaylistView::s_redraw_all()
 {
     for (auto&& window : g_windows)
-        RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+        RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
 int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
