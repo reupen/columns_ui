@@ -1,5 +1,19 @@
 # Change log
 
+## 1.2.0-beta.2
+
+* A problem was fixed where it was not possible to click exactly at the top of each item in the playlist view and in other list views. [[#210](https://github.com/reupen/columns_ui/pull/210), [ui_helpers#28](https://github.com/reupen/ui_helpers/pull/28)]
+
+* Flickering and similar effects during updates were further reduced in the playlist view and other list views. [[#211](https://github.com/reupen/columns_ui/pull/211), [ui_helpers#29](https://github.com/reupen/ui_helpers/pull/29)]
+
+* A regression was fixed where playlist and other list view tooltips were not aligned with the left edge of the text underneath them.
+  
+  This fix mainly applies to left-aligned columns and alignment may still not be perfect for centre- and right-aligned columns. [[#212](https://github.com/reupen/columns_ui/pull/212), [ui_helpers#30](https://github.com/reupen/ui_helpers/pull/30)]
+
+* The height of tooltips in the playlist and other list views no longer scales with the vertical item padding setting.
+   
+  As a result, tooltips have a more appropriate height for large and negative vertical item paddings. [[#212](https://github.com/reupen/columns_ui/pull/212), [ui_helpers#30](https://github.com/reupen/ui_helpers/pull/30)]
+
 ## 1.2.0-beta.1
 
 * The time it takes Item properties to update was reduced for very large selections. [[#199](https://github.com/reupen/columns_ui/pull/199), [#209](https://github.com/reupen/columns_ui/pull/209)]
