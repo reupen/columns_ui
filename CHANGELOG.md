@@ -1,5 +1,9 @@
 # Change log
 
+## 1.2.0-beta.3
+
+* A problem was fixed where it was not possible to double-click on the first few visible items in the playlist view and in other list views. [[#214](https://github.com/reupen/columns_ui/pull/214), [ui_helpers#31](https://github.com/reupen/ui_helpers/pull/31)]
+
 ## 1.2.0-beta.2
 
 * A problem was fixed where it was not possible to click exactly at the top of each item in the playlist view and in other list views. [[#210](https://github.com/reupen/columns_ui/pull/210), [ui_helpers#28](https://github.com/reupen/ui_helpers/pull/28)]
