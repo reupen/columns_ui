@@ -175,5 +175,6 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 void QuickSetupDialog::g_run()
 {
     QuickSetupDialog::ptr_t dialog = new QuickSetupDialog;
-    uCreateDialog(IDD_QUICK_SETUP, cui::main_window.get_wnd(), g_SetupDialogProc, (LPARAM)dialog.get_ptr());
+    CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_QUICK_SETUP), cui::main_window.get_wnd(),
+        g_SetupDialogProc, reinterpret_cast<LPARAM>(dialog.get_ptr()));
 }

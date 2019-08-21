@@ -22,7 +22,11 @@ class EditColumnWindowOptions : public ColumnTab {
 public:
     void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
     using self_t = EditColumnWindowOptions;
-    HWND create(HWND wnd) override { return uCreateDialog(IDD_COLUMN_OPTIONS, wnd, g_on_message, (LPARAM)this); }
+    HWND create(HWND wnd) override
+    {
+        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_OPTIONS), wnd, g_on_message,
+            reinterpret_cast<LPARAM>(this));
+    }
     // virtual const char * get_name()=0;
     EditColumnWindowOptions(PlaylistViewColumn::ptr column)
         : initialising(false), editproc(nullptr), m_wnd(nullptr), m_column(std::move(column)){};
@@ -231,7 +235,8 @@ public:
 
     HWND create(HWND wnd) override
     {
-        return uCreateDialog(IDD_COLUMN_DISPLAY_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
+        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_DISPLAY_SCRIPT), wnd,
+            s_on_message, reinterpret_cast<LPARAM>(this));
     }
 
     void set_column(const PlaylistViewColumn::ptr& column) override
@@ -316,7 +321,8 @@ public:
 
     HWND create(HWND wnd) override
     {
-        return uCreateDialog(IDD_COLUMN_STYLE_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
+        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_STYLE_SCRIPT), wnd,
+            s_on_message, reinterpret_cast<LPARAM>(this));
     }
 
     void set_column(const PlaylistViewColumn::ptr& column) override
@@ -410,7 +416,8 @@ public:
 
     HWND create(HWND wnd) override
     {
-        return uCreateDialog(IDD_COLUMN_SORTING_SCRIPT, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
+        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_SORTING_SCRIPT), wnd,
+            s_on_message, reinterpret_cast<LPARAM>(this));
     }
 
     void set_column(const PlaylistViewColumn::ptr& column) override

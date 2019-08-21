@@ -48,7 +48,8 @@ public:
 
     HWND create(HWND parent) override
     {
-        return uCreateDialog(IDD_PREFS_TAB_HOST, parent, g_on_message, reinterpret_cast<LPARAM>(this));
+        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_PREFS_TAB_HOST), parent, g_on_message,
+            reinterpret_cast<LPARAM>(this));
     }
 
     const char* get_name() override { return m_name; }
