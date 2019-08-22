@@ -388,8 +388,11 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
     SpectrumAnalyserConfigData param(cr_fore, cr_back, mode, m_scale, m_vertical_scale, this);
-    bool rv = !!uDialogBox(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
-    if (rv) {
+    const auto dialog_result
+        = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_SPECTRUM_ANALYSER_OPTIONS), wnd_parent,
+            SpectrumPopupProc, reinterpret_cast<LPARAM>(&param));
+
+    if (dialog_result > 0) {
         cr_fore = param.cr_fore;
         cfg_vis2 = param.cr_fore;
         cr_back = param.cr_back;
@@ -404,8 +407,9 @@ bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
             flush_brushes();
             clear();
         }
+        return true;
     }
-    return rv;
+    return false;
 }
 
 void CALLBACK SpectrumAnalyserVisualisation::g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time)
@@ -642,8 +646,11 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
         SpectrumAnalyserConfigData param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
             p_temp.get_ptr(), true, get_frame_style());
 
-        bool rv = !!uDialogBox(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent, SpectrumPopupProc, (LPARAM)(&param));
-        if (rv) {
+        const auto dialog_result
+            = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_SPECTRUM_ANALYSER_OPTIONS), wnd_parent,
+                SpectrumPopupProc, reinterpret_cast<LPARAM>(&param));
+
+        if (dialog_result > 0) {
             p_temp->cr_fore = param.cr_fore;
             cfg_vis2 = param.cr_fore;
             p_temp->cr_back = param.cr_back;
@@ -666,8 +673,9 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
                 } catch (pfc::exception&) {
                 }
             }
+            return true;
         }
-        return rv;
+        return false;
     }
 };
 

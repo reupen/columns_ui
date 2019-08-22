@@ -681,12 +681,15 @@ bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
     param.m_image = nullptr;
     param.m_text_below = m_text_below;
     param.m_appearance = m_appearance;
-    bool rv = !!uDialogBox(
-        IDD_BUTTONS_OPTIONS, wnd_parent, ConfigParam::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
-    if (rv) {
+
+    const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_BUTTONS_OPTIONS),
+        wnd_parent, ConfigParam::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
+
+    if (dialog_result > 0) {
         configure(param.m_buttons, param.m_text_below, param.m_appearance);
+        return true;
     }
-    return rv;
+    return false;
 }
 
 // {D8E65660-64ED-42e7-850B-31D828C25294}

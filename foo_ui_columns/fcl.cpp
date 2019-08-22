@@ -375,7 +375,10 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
 
             FCLDialog pFCLDialog(true, datasetsguids);
             if (!quiet) {
-                if (!uDialogBox(IDD_FCL_IMPORT, wnd, FCLDialog::g_FCLDialogProc, (LPARAM)&pFCLDialog))
+                const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_FCL_IMPORT),
+                    wnd, FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog));
+
+                if (dialog_result <= 0)
                     throw exception_aborted();
             }
 
@@ -435,9 +438,13 @@ public:
 void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
 {
     FCLDialog pFCLDialog;
-    if (!is_quiet
-        && !uDialogBox(IDD_FCL_EXPORT, wnd, FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog)))
-        return;
+    if (!is_quiet) {
+        const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_FCL_EXPORT), wnd,
+            FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog));
+
+        if (dialog_result <= 0)
+            return;
+    }
 
     if (path.is_empty()
         && !uGetOpenFileName(

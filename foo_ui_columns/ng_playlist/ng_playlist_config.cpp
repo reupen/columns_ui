@@ -62,7 +62,9 @@ static BOOL CALLBACK EditViewProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 static bool run_edit_view(edit_view_param& param, HWND parent)
 {
-    return uDialogBox(IDD_EDIT_GROUP, parent, EditViewProc, reinterpret_cast<LPARAM>(&param)) != 0;
+    const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_EDIT_GROUP), parent,
+        EditViewProc, reinterpret_cast<LPARAM>(&param));
+    return dialog_result > 0;
 }
 
 BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

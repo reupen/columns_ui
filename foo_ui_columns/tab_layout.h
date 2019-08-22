@@ -26,13 +26,6 @@ public:
     bool get_help_url(pfc::string_base& p_out) override;
 
 private:
-    class RenameData {
-    public:
-        pfc::string8 m_text;
-        pfc::string8 m_title;
-        modal_dialog_scope m_scope;
-    };
-
     static HTREEITEM insert_item_in_tree_view(
         HWND wnd_tree, const char* sz_text, LPARAM data, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
     static void get_panel_list(uie::window_info_list_simple& p_out);
@@ -45,8 +38,6 @@ private:
     static void __populate_tree(
         HWND wnd_tree, LayoutTabNode::ptr p_node, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
     static void print_index_out_of_range();
-
-    static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     void remove_item(HWND wnd, HTREEITEM ti);
     void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);

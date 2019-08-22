@@ -302,7 +302,11 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
             CommandPickerData p_temp;
             CommandPickerParam p_data{};
             p_temp.set_data(p_data);
-            if (uDialogBox(IDD_BUTTON_COMMAND_PICKER, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
+
+            const auto dialog_result = DialogBoxParam(mmh::get_current_instance(),
+                MAKEINTRESOURCE(IDD_BUTTON_COMMAND_PICKER), wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp));
+
+            if (dialog_result > 0) {
                 t_size index = m_buttons.add_item(Button{});
 
                 p_temp.get_data(p_data);
@@ -446,7 +450,12 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 CommandPickerParam p_data{
                     m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter};
                 p_temp.set_data(p_data);
-                if (uDialogBox(IDD_BUTTON_COMMAND_PICKER, wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp))) {
+
+                const auto dialog_result
+                    = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_BUTTON_COMMAND_PICKER), wnd,
+                        ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp));
+
+                if (dialog_result > 0) {
                     p_temp.get_data(p_data);
                     m_selection->m_type = (Type)p_data.m_group;
                     m_selection->m_guid = p_data.m_guid;
