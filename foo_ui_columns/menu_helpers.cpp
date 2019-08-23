@@ -165,28 +165,20 @@ auto get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand)
             menu_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
 
         if (!__contextpath_from_guid_recur(p_node.get_ptr(), p_subcommand, item_parts, true))
-            item_parts.emplace_back("Unknown command");
+            item_parts.emplace_back("Unknown");
     }
 
     return item_parts;
 }
 
-void contextpath_from_guid(GUID p_guid, GUID p_subcommand, pfc::string_base& p_out, bool b_short)
+std::string contextpath_from_guid(GUID p_guid, GUID p_subcommand, bool b_short)
 {
     auto name_parts = get_context_menu_item_name_parts(p_guid, p_subcommand);
 
-    if (b_short) {
-        p_out = (*--name_parts.end()).data();
-        return;
-    }
+    if (b_short)
+        return *--name_parts.end();
 
-    p_out.reset();
-
-    for (auto&& part : name_parts) {
-        if (!p_out.is_empty())
-            p_out << "/";
-        p_out << part.data();
-    }
+    return mmh::join(name_parts, "/");
 }
 
 bool maingroupname_from_guid(GUID p_guid, pfc::string_base& p_out, GUID& parentout)

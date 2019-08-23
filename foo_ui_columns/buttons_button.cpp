@@ -111,7 +111,7 @@ void ButtonsToolbar::Button::get_short_name(pfc::string_base& p_out) // tooltip
     else if (m_type == TYPE_MENU_ITEM_MAIN)
         p_out = menu_helpers::mainpath_from_guid(m_guid, m_subcommand, true).c_str();
     else
-        menu_helpers::contextpath_from_guid(m_guid, m_subcommand, p_out, true);
+        p_out = menu_helpers::contextpath_from_guid(m_guid, m_subcommand, true).c_str();
 }
 
 void ButtonsToolbar::Button::get_name_type(pfc::string_base& p_out) // config
@@ -141,9 +141,7 @@ void ButtonsToolbar::Button::get_name_name(pfc::string_base& p_out) // config
     else if (m_type == TYPE_MENU_ITEM_MAIN) {
         p_out += menu_helpers::mainpath_from_guid(m_guid, m_subcommand).c_str();
     } else {
-        pfc::string8 temp;
-        menu_helpers::contextpath_from_guid(m_guid, m_subcommand, temp);
-        p_out += temp;
+        p_out = menu_helpers::contextpath_from_guid(m_guid, m_subcommand).c_str();
     }
 }
 void ButtonsToolbar::Button::get_name(pfc::string_base& p_out) // config
@@ -161,10 +159,8 @@ void ButtonsToolbar::Button::get_name(pfc::string_base& p_out) // config
         p_out = "[Main menu item] ";
         p_out += menu_helpers::mainpath_from_guid(m_guid, m_subcommand).c_str();
     } else {
-        pfc::string8 temp;
-        menu_helpers::contextpath_from_guid(m_guid, m_subcommand, temp);
         p_out = "[Context menu item] ";
-        p_out += temp;
+        p_out += menu_helpers::contextpath_from_guid(m_guid, m_subcommand).c_str();
     }
 }
 
