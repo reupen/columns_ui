@@ -140,7 +140,7 @@ void CommandPickerData::populate_commands()
                         GUID parent = ptr->get_parent();
                         while (parent != pfc::guid_null) {
                             pfc::string8 parentname;
-                            if (menu_helpers::maingroupname_from_guid(GUID(parent), parentname, parent))
+                            if (menu_helpers::maingroupname_from_guid(parent, parentname, parent))
                                 name_parts.emplace_front(parentname);
                         }
                     }

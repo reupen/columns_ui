@@ -109,7 +109,7 @@ void ButtonsToolbar::Button::get_short_name(pfc::string_base& p_out) // tooltip
     else if (m_type == TYPE_SEPARATOR)
         p_out = "Separator";
     else if (m_type == TYPE_MENU_ITEM_MAIN)
-        menu_helpers::mainpath_from_guid(m_guid, m_subcommand, p_out, true);
+        p_out = menu_helpers::mainpath_from_guid(m_guid, m_subcommand, true).c_str();
     else
         menu_helpers::contextpath_from_guid(m_guid, m_subcommand, p_out, true);
 }
@@ -139,9 +139,7 @@ void ButtonsToolbar::Button::get_name_name(pfc::string_base& p_out) // config
     } else if (m_type == TYPE_SEPARATOR)
         p_out = "-";
     else if (m_type == TYPE_MENU_ITEM_MAIN) {
-        pfc::string8 temp;
-        menu_helpers::mainpath_from_guid(m_guid, m_subcommand, temp);
-        p_out += temp;
+        p_out += menu_helpers::mainpath_from_guid(m_guid, m_subcommand).c_str();
     } else {
         pfc::string8 temp;
         menu_helpers::contextpath_from_guid(m_guid, m_subcommand, temp);
@@ -160,10 +158,8 @@ void ButtonsToolbar::Button::get_name(pfc::string_base& p_out) // config
     } else if (m_type == TYPE_SEPARATOR)
         p_out = "[Separator]";
     else if (m_type == TYPE_MENU_ITEM_MAIN) {
-        pfc::string8 temp;
         p_out = "[Main menu item] ";
-        menu_helpers::mainpath_from_guid(m_guid, m_subcommand, temp);
-        p_out += temp;
+        p_out += menu_helpers::mainpath_from_guid(m_guid, m_subcommand).c_str();
     } else {
         pfc::string8 temp;
         menu_helpers::contextpath_from_guid(m_guid, m_subcommand, temp);
