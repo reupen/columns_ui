@@ -21,6 +21,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include <concurrent_vector.h>
 #include <io.h>
 #include <ppl.h>
 #include <share.h>

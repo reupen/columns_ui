@@ -330,7 +330,10 @@ public:
         }
     };
 
-    TrackPropertyCallback(std::vector<std::string>& fields) : m_fields(fields) {}
+    TrackPropertyCallback(std::vector<std::string>& fields) : m_fields(fields)
+    {
+        m_section_values.resize(tabsize(g_info_sections));
+    }
 
     void set_property(const char* p_group, double p_sortpriority, const char* p_name, const char* p_value) override
     {
@@ -338,7 +341,7 @@ public:
             return;
 
         const size_t index = g_get_info_section_index_by_name(p_group);
-        m_value_map[index].emplace_back(TrackProperty{p_name, p_value, p_sortpriority});
+        m_section_values[index].push_back({p_name, p_value, p_sortpriority});
     }
 
     bool is_group_wanted(const char* p_group) override
@@ -348,14 +351,11 @@ public:
 
     void sort()
     {
-        for (auto&& [index, values] : m_value_map) {
-            mmh::Permutation perm(values.size());
-            mmh::sort_get_permutation(values.data(), perm, TrackProperty::s_compare, false);
-            mmh::destructive_reorder(values, perm);
-        }
+        for (auto&& values : m_section_values)
+            ranges::sort(values, TrackProperty::s_compare);
     }
 
-    std::unordered_map<uint32_t, std::vector<TrackProperty>> m_value_map;
+    std::vector<concurrency::concurrent_vector<TrackProperty>> m_section_values;
     std::vector<std::string>& m_fields;
 };
 
@@ -458,7 +458,9 @@ void ItemProperties::refresh_contents()
 
     props.sort();
 
-    for (auto&& [group_index, values] : props.m_value_map) {
+    for (auto group_index : ranges::view::iota(size_t{0}, props.m_section_values.size())) {
+        auto&& values = props.m_section_values[group_index];
+
         for (auto&& value : values) {
             uih::ListView::InsertItem item(2, 1);
             item.m_subitems[0] = value.m_name;
