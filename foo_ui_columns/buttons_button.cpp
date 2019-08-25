@@ -93,83 +93,53 @@ void ButtonsToolbar::Button::read(
         m_text = temp;
     }
 }
-void ButtonsToolbar::Button::get_display_text(pfc::string_base& p_out) // display
+
+std::string ButtonsToolbar::Button::get_display_text() const
 {
-    p_out.reset();
     if (m_use_custom_text)
-        p_out = m_text;
-    else
-        get_short_name(p_out);
-}
-void ButtonsToolbar::Button::get_short_name(pfc::string_base& p_out) // tooltip
-{
-    p_out.reset();
-    if (m_type == TYPE_BUTTON)
-        uie::custom_button::g_button_get_name(m_guid, p_out);
-    else if (m_type == TYPE_SEPARATOR)
-        p_out = "Separator";
-    else if (m_type == TYPE_MENU_ITEM_MAIN)
-        menu_helpers::mainpath_from_guid(m_guid, m_subcommand, p_out, true);
-    else
-        menu_helpers::contextpath_from_guid(m_guid, m_subcommand, p_out, true);
+        return m_text.c_str();
+
+    return get_name(true);
 }
 
-void ButtonsToolbar::Button::get_name_type(pfc::string_base& p_out) // config
+std::string ButtonsToolbar::Button::get_type_desc() const
 {
-    p_out.reset();
-    if (m_type == TYPE_BUTTON) {
-        p_out = "Button";
-    } else if (m_type == TYPE_SEPARATOR)
-        p_out = "Separator";
-    else if (m_type == TYPE_MENU_ITEM_MAIN) {
-        p_out = "Main menu item";
-    } else {
-        p_out = "Context menu item";
+    switch (m_type) {
+    case TYPE_BUTTON:
+        return "Button";
+    case TYPE_SEPARATOR:
+        return "Separator";
+    case TYPE_MENU_ITEM_CONTEXT:
+        return "Context menu item";
+    case TYPE_MENU_ITEM_MAIN:
+        return "Main menu item";
+    default:
+        return "Unknown";
     }
 }
 
-void ButtonsToolbar::Button::get_name_name(pfc::string_base& p_out) // config
+std::string ButtonsToolbar::Button::get_name(bool short_form) const
 {
-    p_out.reset();
-    if (m_type == TYPE_BUTTON) {
+    switch (m_type) {
+    case TYPE_BUTTON: {
         pfc::string8 temp;
-        if (uie::custom_button::g_button_get_name(m_guid, temp)) {
-            p_out += temp;
-        }
-    } else if (m_type == TYPE_SEPARATOR)
-        p_out = "-";
-    else if (m_type == TYPE_MENU_ITEM_MAIN) {
-        pfc::string8 temp;
-        menu_helpers::mainpath_from_guid(m_guid, m_subcommand, temp);
-        p_out += temp;
-    } else {
-        pfc::string8 temp;
-        menu_helpers::contextpath_from_guid(m_guid, m_subcommand, temp);
-        p_out += temp;
+        uie::custom_button::g_button_get_name(m_guid, temp);
+        return temp.c_str();
+    }
+    case TYPE_SEPARATOR:
+        return "-";
+    case TYPE_MENU_ITEM_CONTEXT:
+        return menu_helpers::contextpath_from_guid(m_guid, m_subcommand, short_form);
+    case TYPE_MENU_ITEM_MAIN:
+        return menu_helpers::mainpath_from_guid(m_guid, m_subcommand, short_form);
+    default:
+        return "Unknown";
     }
 }
-void ButtonsToolbar::Button::get_name(pfc::string_base& p_out) // config
+
+std::string ButtonsToolbar::Button::get_name_with_type() const
 {
-    p_out.reset();
-    if (m_type == TYPE_BUTTON) {
-        p_out = "[Button] ";
-        pfc::string8 temp;
-        if (uie::custom_button::g_button_get_name(m_guid, temp)) {
-            p_out += temp;
-        }
-    } else if (m_type == TYPE_SEPARATOR)
-        p_out = "[Separator]";
-    else if (m_type == TYPE_MENU_ITEM_MAIN) {
-        pfc::string8 temp;
-        p_out = "[Main menu item] ";
-        menu_helpers::mainpath_from_guid(m_guid, m_subcommand, temp);
-        p_out += temp;
-    } else {
-        pfc::string8 temp;
-        menu_helpers::contextpath_from_guid(m_guid, m_subcommand, temp);
-        p_out = "[Context menu item] ";
-        p_out += temp;
-    }
+    return "["s + get_type_desc() + "] "s + get_name();
 }
 
 void ButtonsToolbar::Button::read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name,

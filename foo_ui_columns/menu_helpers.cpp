@@ -33,7 +33,7 @@ MenuItemCache::MenuItemCache()
                     GUID parent = ptr->get_parent();
                     while (parent != pfc::guid_null) {
                         pfc::string8 parentname;
-                        if (menu_helpers::maingroupname_from_guid(GUID(parent), parentname, parent))
+                        if (menu_helpers::maingroupname_from_guid(parent, parentname, parent))
                             levels.insert_item(parentname, 0);
                     }
                     unsigned count = levels.get_count();
@@ -143,53 +143,54 @@ void get_context_menu_item_parent_names(const contextmenu_item::ptr& menu_item, 
     }
 }
 
-auto get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand)
+std::list<std::string> get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand, bool short_form)
 {
-    std::list<std::string> item_parts;
     contextmenu_item::ptr menu_item;
     size_t menu_item_index{};
 
     if (!menu_item_resolver::g_resolve_context_command(p_guid, menu_item, menu_item_index)) {
-        item_parts.emplace_back("Unknown command");
-        return item_parts;
+        return {"Unknown command"};
     }
 
-    get_context_menu_item_parent_names(menu_item, item_parts);
+    std::list<std::string> parent_parts;
+    get_context_menu_item_parent_names(menu_item, parent_parts);
+
+    std::list<std::string> item_parts;
 
     if (p_subcommand == GUID{}) {
+        if (!short_form)
+            item_parts.splice(item_parts.begin(), parent_parts);
+
         pfc::string8 part_name;
         menu_item->get_item_name(menu_item_index, part_name);
         item_parts.emplace_back(part_name.c_str());
     } else {
-        pfc::ptrholder_t<contextmenu_item_node_root> p_node = menu_item->instantiate_item(
+        item_parts.splice(item_parts.begin(), parent_parts);
+
+        const pfc::ptrholder_t<contextmenu_item_node_root> p_node = menu_item->instantiate_item(
             menu_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
 
         if (!__contextpath_from_guid_recur(p_node.get_ptr(), p_subcommand, item_parts, true))
-            item_parts.emplace_back("Unknown command");
-    }
+            item_parts.emplace_back("Unknown");
 
+        if (short_form) {
+            if (item_parts.size() > 2) {
+                auto erase_end = item_parts.end();
+                std::advance(erase_end, -2);
+                item_parts.erase(item_parts.begin(), erase_end);
+            }
+        }
+    }
     return item_parts;
 }
 
-void contextpath_from_guid(GUID p_guid, GUID p_subcommand, pfc::string_base& p_out, bool b_short)
+std::string contextpath_from_guid(GUID p_guid, GUID p_subcommand, bool short_form)
 {
-    auto name_parts = get_context_menu_item_name_parts(p_guid, p_subcommand);
-
-    if (b_short) {
-        p_out = (*--name_parts.end()).data();
-        return;
-    }
-
-    p_out.reset();
-
-    for (auto&& part : name_parts) {
-        if (!p_out.is_empty())
-            p_out << "/";
-        p_out << part.data();
-    }
+    auto name_parts = get_context_menu_item_name_parts(p_guid, p_subcommand, short_form);
+    return mmh::join(name_parts, "/");
 }
 
-bool maingroupname_from_guid(const GUID& p_guid, pfc::string_base& p_out, GUID& parentout)
+bool maingroupname_from_guid(GUID p_guid, pfc::string_base& p_out, GUID& parentout)
 {
     p_out.reset();
     parentout = pfc::guid_null;
@@ -250,44 +251,48 @@ bool mainmenunode_subguid_to_path(
     }
     return false;
 }
-void mainpath_from_guid(const GUID& p_guid, const GUID& p_subguid, pfc::string_base& p_out, bool b_short)
+std::string mainpath_from_guid(GUID p_guid, GUID p_subguid, bool b_short)
 {
-    p_out.reset();
     service_enum_t<mainmenu_commands> e;
     service_ptr_t<mainmenu_commands> ptr;
 
     while (e.next(ptr)) {
         service_ptr_t<mainmenu_commands_v2> ptr_v2;
         ptr->service_query_t(ptr_v2);
-        unsigned p_service_item_count = ptr->get_command_count();
-        for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count; p_service_item_index++) {
-            if (p_guid == ptr->get_command(p_service_item_index)) {
+        const auto command_count = ptr->get_command_count();
+
+        for (uint32_t command_index{0}; command_index < command_count; ++command_index) {
+            if (p_guid == ptr->get_command(command_index)) {
+                std::list<std::string> name_parts;
+
                 pfc::string8 name;
-                ptr->get_name(p_service_item_index, name);
-                if (p_subguid != pfc::guid_null && ptr_v2.is_valid()
-                    && ptr_v2->is_command_dynamic(p_service_item_index)) {
+                ptr->get_name(command_index, name);
+                name_parts.emplace_back(name);
+
+                if (p_subguid != pfc::guid_null) {
                     pfc::string8 name_sub;
-                    mainmenu_node::ptr ptr_node = ptr_v2->dynamic_instantiate(p_service_item_index);
-                    mainmenunode_subguid_to_path(ptr_node, p_subguid, name_sub, true);
-                    name << "/" << name_sub;
+                    if (ptr_v2.is_valid() && ptr_v2->is_command_dynamic(command_index)) {
+                        const auto node = ptr_v2->dynamic_instantiate(command_index);
+                        mainmenunode_subguid_to_path(node, p_subguid, name_sub, true);
+                    }
+                    if (name_sub.is_empty())
+                        name_parts.emplace_back("Unknown");
+                    else
+                        name_parts.emplace_back(name_sub);
                 }
+
                 if (!b_short) {
-                    pfc::list_t<pfc::string8> levels;
                     GUID parent = ptr->get_parent();
                     while (parent != pfc::guid_null) {
                         pfc::string8 parentname;
-                        if (maingroupname_from_guid(GUID(parent), parentname, parent))
-                            levels.insert_item(parentname, 0);
-                    }
-                    unsigned count = levels.get_count();
-                    for (unsigned i = 0; i < count; i++) {
-                        p_out.add_string(levels[i]);
-                        p_out.add_byte('/');
+                        if (maingroupname_from_guid(parent, parentname, parent))
+                            name_parts.emplace_front(parentname);
                     }
                 }
-                p_out.add_string(name);
+                return mmh::join(name_parts, "/");
             }
         }
     }
+    return "Unknown command";
 }
 }; // namespace menu_helpers
