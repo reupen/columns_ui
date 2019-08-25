@@ -143,41 +143,50 @@ void get_context_menu_item_parent_names(const contextmenu_item::ptr& menu_item, 
     }
 }
 
-auto get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand)
+std::list<std::string> get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand, bool short_form)
 {
-    std::list<std::string> item_parts;
     contextmenu_item::ptr menu_item;
     size_t menu_item_index{};
 
     if (!menu_item_resolver::g_resolve_context_command(p_guid, menu_item, menu_item_index)) {
-        item_parts.emplace_back("Unknown command");
-        return item_parts;
+        return {"Unknown command"};
     }
 
-    get_context_menu_item_parent_names(menu_item, item_parts);
+    std::list<std::string> parent_parts;
+    get_context_menu_item_parent_names(menu_item, parent_parts);
+
+    std::list<std::string> item_parts;
 
     if (p_subcommand == GUID{}) {
+        if (!short_form)
+            item_parts.splice(item_parts.begin(), parent_parts);
+
         pfc::string8 part_name;
         menu_item->get_item_name(menu_item_index, part_name);
         item_parts.emplace_back(part_name.c_str());
     } else {
-        pfc::ptrholder_t<contextmenu_item_node_root> p_node = menu_item->instantiate_item(
+        item_parts.splice(item_parts.begin(), parent_parts);
+
+        const pfc::ptrholder_t<contextmenu_item_node_root> p_node = menu_item->instantiate_item(
             menu_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list);
 
         if (!__contextpath_from_guid_recur(p_node.get_ptr(), p_subcommand, item_parts, true))
             item_parts.emplace_back("Unknown");
-    }
 
+        if (short_form) {
+            if (item_parts.size() > 2) {
+                auto erase_end = item_parts.end();
+                std::advance(erase_end, -2);
+                item_parts.erase(item_parts.begin(), erase_end);
+            }
+        }
+    }
     return item_parts;
 }
 
-std::string contextpath_from_guid(GUID p_guid, GUID p_subcommand, bool b_short)
+std::string contextpath_from_guid(GUID p_guid, GUID p_subcommand, bool short_form)
 {
-    auto name_parts = get_context_menu_item_name_parts(p_guid, p_subcommand);
-
-    if (b_short)
-        return *--name_parts.end();
-
+    auto name_parts = get_context_menu_item_name_parts(p_guid, p_subcommand, short_form);
     return mmh::join(name_parts, "/");
 }
 
