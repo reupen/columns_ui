@@ -825,7 +825,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 unsigned long part = lpnmm->dwItemSpec;
 
                 if (part == 0)
-                    mainmenu_commands::g_execute(cfg_statusdbl.get_value().m_command);
+                    cui::helpers::execute_main_menu_command(cfg_statusdbl);
                 // standard_commands::main_highlight_playing();
                 else if (cfg_show_vol && part == status_bar::u_vol_pos) {
                     // static_api_ptr_t<ui_control>()->show_preferences(preferences_page::guid_playback);

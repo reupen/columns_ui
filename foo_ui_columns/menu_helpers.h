@@ -40,4 +40,11 @@ namespace cui::helpers {
 
 std::vector<MenuItemInfo> get_main_menu_items();
 
+inline bool execute_main_menu_command(MenuItemIdentifier command)
+{
+    if (command.m_subcommand != GUID{})
+        return mainmenu_commands::g_execute_dynamic(command.m_command, command.m_subcommand);
+
+    return mainmenu_commands::g_execute(command.m_command);
+}
 }

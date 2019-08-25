@@ -932,7 +932,7 @@ bool PlaylistView::notify_on_middleclick(bool on_item, t_size index)
 bool PlaylistView::notify_on_doubleleftclick_nowhere()
 {
     if (cfg_playlist_double.get_value().m_command != pfc::guid_null)
-        return mainmenu_commands::g_execute(cfg_playlist_double.get_value().m_command);
+        return cui::helpers::execute_main_menu_command(cfg_playlist_double);
     return false;
 }
 
