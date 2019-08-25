@@ -37,7 +37,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            m_menu_cache = new MenuItemCache;
+            m_menu_cache = cui::helpers::get_main_menu_items();
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "None");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Sunken");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Grey");
@@ -46,7 +46,7 @@ public:
             //        SendDlgItemMessage(wnd,IDC_SPINPL,UDM_SETRANGE32,-100,100);
             //        SendDlgItemMessage(wnd,IDC_SPINSEL,UDM_SETRANGE32,0,3);
 
-            populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, *m_menu_cache, true);
+            populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, m_menu_cache, true);
 
             unsigned count = cui::playlist_item_helpers::MiddleClickActionManager::get_count();
             for (unsigned n = 0; n < count; n++) {
@@ -64,10 +64,10 @@ public:
         }
 
         break;
-        case WM_DESTROY: {
+        case WM_DESTROY:
             m_initialised = false;
-            delete m_menu_cache;
-        } break;
+            m_menu_cache.clear();
+            break;
         case WM_COMMAND:
             switch (wp) {
             case IDC_DROP_AT_END: {
@@ -84,7 +84,7 @@ public:
 
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_DOUBLE: {
-                on_menu_combo_change(wnd, lp, cfg_playlist_double, *m_menu_cache, IDC_MENU_DESC);
+                on_menu_combo_change(wnd, lp, cfg_playlist_double, m_menu_cache, IDC_MENU_DESC);
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_MIDDLE: {
                 cfg_playlist_middle_action
@@ -152,7 +152,7 @@ public:
 
 private:
     bool m_initialised{};
-    MenuItemCache* m_menu_cache{};
+    std::vector<MenuItemInfo> m_menu_cache;
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_display2;
 

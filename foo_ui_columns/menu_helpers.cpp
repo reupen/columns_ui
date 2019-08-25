@@ -11,79 +11,45 @@ bool operator!=(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2)
     return !(p1 == p2);
 }
 
-MenuItemCache::MenuItemCache()
+namespace cui::helpers {
+
+std::vector<MenuItemInfo> get_main_menu_items()
 {
+    std::vector<MenuItemInfo> main_item_infos;
+
     service_enum_t<mainmenu_commands> e;
     service_ptr_t<mainmenu_commands> ptr;
 
     while (e.next(ptr)) {
-        // if (ptr->get_type() == menu_item::TYPE_MAIN)
-        {
-            unsigned p_service_item_count = ptr->get_command_count();
-            for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
-                 p_service_item_index++) {
-                MenuItemInfo info;
+        const auto command_count = ptr->get_command_count();
+        for (uint32_t command_index{}; command_index < command_count; command_index++) {
+            MenuItemInfo info;
 
-                info.m_command = ptr->get_command(p_service_item_index);
+            info.m_command = ptr->get_command(command_index);
 
-                pfc::string8 name, full;
-                ptr->get_name(p_service_item_index, name);
-                {
-                    pfc::list_t<pfc::string8> levels;
-                    GUID parent = ptr->get_parent();
-                    while (parent != pfc::guid_null) {
-                        pfc::string8 parentname;
-                        if (menu_helpers::maingroupname_from_guid(parent, parentname, parent))
-                            levels.insert_item(parentname, 0);
-                    }
-                    unsigned count = levels.get_count();
-                    for (unsigned i = 0; i < count; i++) {
-                        full.add_string(levels[i]);
-                        full.add_byte('/');
-                    }
-                }
-                full.add_string(name);
+            std::list<std::string> name_parts;
 
-                /*if (p_node.is_valid() && p_node->get_type() == menu_item_node::TYPE_POPUP)
-                {
-                unsigned child, child_count = p_node->get_children_count();
-                for (child=0;child<child_count;child++)
-                {
-                menu_item_node * p_child = p_node->get_child(child);
-                if (p_child->get_type() == menu_item_node::TYPE_COMMAND)
-                {
-                pfc::string8 subfull = full,subname;
-                unsigned dummy;
-                p_child->get_display_data(subname, dummy, metadb_handle_list(), pfc::guid_null);
-                subfull.add_byte('/');
-                subfull.add_string(subname);
+            pfc::string8 name;
+            ptr->get_name(command_index, name);
+            name_parts.emplace_back(name);
 
-                menu_item_info * p_info = new(std::nothrow) menu_item_info (info);
-                p_info->m_subcommand = p_child->get_guid();
-                p_child->get_description(p_info->m_desc);
-                p_info->m_name = subfull;
-
-                m_data.add_item(p_info);
-                }
-                }
-                }
-                else*/
-                {
-                    auto p_info = new MenuItemInfo(info);
-                    ptr->get_description(p_service_item_index, p_info->m_desc);
-                    p_info->m_name = full;
-
-                    m_data.add_item(p_info);
-                }
+            GUID parent = ptr->get_parent();
+            while (parent != pfc::guid_null) {
+                pfc::string8 parentname;
+                if (menu_helpers::maingroupname_from_guid(parent, parentname, parent))
+                    name_parts.emplace_front(parentname);
             }
+
+            ptr->get_description(command_index, info.m_desc);
+            info.m_name = mmh::join(name_parts, "/").c_str();
+
+            main_item_infos.emplace_back(info);
         }
     }
+    return main_item_infos;
 }
 
-const MenuItemCache::MenuItemInfo& MenuItemCache::get_item(unsigned n) const
-{
-    return *m_data[n];
-}
+} // namespace cui::helpers
 
 namespace menu_helpers {
 pfc::string8 get_context_menu_node_name(contextmenu_item_node* p_node)

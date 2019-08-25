@@ -83,11 +83,11 @@ bool colour_picker(HWND wnd, COLORREF& out, COLORREF custom)
 }
 
 void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItemIdentifier& p_item,
-    MenuItemCache& p_cache, bool insert_none)
+    const std::vector<MenuItemInfo>& p_cache, bool insert_none)
 {
     HWND wnd_combo = GetDlgItem(wnd, ID);
 
-    unsigned count = p_cache.get_count();
+    unsigned count = p_cache.size();
     pfc::string8_fast_aggressive temp;
     unsigned idx_none = 0;
     if (insert_none) {
@@ -99,12 +99,12 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItem
     pfc::string8 desc;
 
     for (unsigned n = 0; n < count; n++) {
-        unsigned idx = uSendMessageText(wnd_combo, CB_ADDSTRING, 0, p_cache.get_item(n).m_name);
+        unsigned idx = uSendMessageText(wnd_combo, CB_ADDSTRING, 0, p_cache[n].m_name);
         SendMessage(wnd_combo, CB_SETITEMDATA, idx, n);
 
-        if (sel == -1 && p_cache.get_item(n) == p_item) {
+        if (sel == -1 && p_cache[n] == p_item) {
             sel = idx;
-            desc = p_cache.get_item(n).m_desc;
+            desc = p_cache[n].m_desc;
         } else if (sel != -1 && idx <= sel)
             sel++;
 
@@ -119,7 +119,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItem
 }
 
 void on_menu_combo_change(
-    HWND wnd, LPARAM lp, ConfigMenuItem& cfg_menu_store, MenuItemCache& p_cache, unsigned ID_DESC)
+    HWND wnd, LPARAM lp, ConfigMenuItem& cfg_menu_store, const std::vector<MenuItemInfo>& p_cache, unsigned ID_DESC)
 {
     auto wnd_combo = (HWND)lp;
 
@@ -128,14 +128,14 @@ void on_menu_combo_change(
 
     if (cache_idx == -1) {
         cfg_menu_store = MenuItemIdentifier();
-    } else if (cache_idx < p_cache.get_count()) {
-        cfg_menu_store = p_cache.get_item(cache_idx);
+    } else if (cache_idx < p_cache.size()) {
+        cfg_menu_store = p_cache[cache_idx];
     }
 
     pfc::string8 desc;
     // if (cfg_menu_store != pfc::guid_null) menu_helpers::get_description(menu_item::TYPE_MAIN, cfg_menu_store, desc);
-    uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0,
-        cache_idx < p_cache.get_count() ? p_cache.get_item(cache_idx).m_desc.get_ptr() : "");
+    uSendDlgItemMessageText(
+        wnd, ID_DESC, WM_SETTEXT, 0, cache_idx < p_cache.size() ? p_cache[cache_idx].m_desc.get_ptr() : "");
 }
 
 namespace cui::prefs {

@@ -31,18 +31,13 @@ struct MenuItemIdentifier {
 bool operator==(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2);
 bool operator!=(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2);
 
-class MenuItemCache {
-    class MenuItemInfo : public MenuItemIdentifier {
-    public:
-        pfc::string8 m_name;
-        pfc::string8 m_desc;
-    };
-
+class MenuItemInfo : public MenuItemIdentifier {
 public:
-    MenuItemCache();
-    const MenuItemInfo& get_item(unsigned n) const;
-    unsigned get_count() { return m_data.get_count(); }
-
-private:
-    pfc::ptr_list_t<MenuItemInfo> m_data;
+    pfc::string8 m_name;
+    pfc::string8 m_desc;
 };
+namespace cui::helpers {
+
+std::vector<MenuItemInfo> get_main_menu_items();
+
+}

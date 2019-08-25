@@ -7,7 +7,7 @@
 static class TabStatus : public PreferencesTab {
 public:
     bool m_initialised{};
-    MenuItemCache* m_cache{};
+    std::vector<MenuItemInfo> m_cache{};
 
     static void refresh_me(HWND wnd)
     {
@@ -24,27 +24,26 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            m_cache = new MenuItemCache;
+            m_cache = cui::helpers::get_main_menu_items();
 
-            populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, *m_cache, false);
+            populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, m_cache, false);
 
             refresh_me(wnd);
             m_initialised = true;
         }
 
         break;
-        case WM_DESTROY: {
-            delete m_cache;
-            m_cache = nullptr;
+        case WM_DESTROY:
             m_initialised = false;
-        } break;
+            m_cache.clear();
+            break;
         case WM_COMMAND:
             switch (wp) {
             case (EN_CHANGE << 16) | IDC_STRING:
                 main_window::config_status_bar_script.set(string_utf8_from_window((HWND)lp));
                 break;
             case (CBN_SELCHANGE << 16) | IDC_MENU_DBLCLK: {
-                on_menu_combo_change(wnd, lp, cfg_statusdbl, *m_cache, IDC_MENU_DESC);
+                on_menu_combo_change(wnd, lp, cfg_statusdbl, m_cache, IDC_MENU_DESC);
             } break;
             case IDC_SHOW_LOCK: {
                 main_window::config_set_status_show_lock(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
