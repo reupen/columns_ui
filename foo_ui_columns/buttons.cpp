@@ -222,9 +222,8 @@ void ButtonsToolbar::create_toolbar()
 
                 if (/*m_text_below || (tbb[n].fsStyle & BTNS_SHOWTEXT) */ m_buttons[n].m_show == SHOW_TEXT
                     || m_buttons[n].m_show == SHOW_IMAGE_TEXT) {
-                    pfc::string8 temp;
-                    m_buttons[n].get_display_text(temp);
-                    pfc::stringcvt::string_os_from_utf8 str_conv(temp);
+                    const auto display_text = m_buttons[n].get_display_text();
+                    pfc::stringcvt::string_os_from_utf8 str_conv(display_text.c_str());
                     pfc::array_t<TCHAR, pfc::alloc_fast_aggressive> name;
                     name.prealloc(str_conv.length() + 4);
                     name.append_fromptr(str_conv.get_ptr(), str_conv.length());
@@ -389,9 +388,9 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             auto lpnmtbgit = (LPNMTBGETINFOTIP)lp;
             if (!m_buttons[lpnmtbgit->iItem].m_interface.is_valid()
                 || (m_buttons[lpnmtbgit->iItem].m_interface->get_button_state() & uie::BUTTON_STATE_SHOW_TOOLTIP)) {
-                pfc::string8 temp;
-                m_buttons[lpnmtbgit->iItem].get_short_name(temp);
-                StringCchCopy(lpnmtbgit->pszText, lpnmtbgit->cchTextMax, pfc::stringcvt::string_wide_from_utf8(temp));
+                const auto text = m_buttons[lpnmtbgit->iItem].get_name(true);
+                StringCchCopy(
+                    lpnmtbgit->pszText, lpnmtbgit->cchTextMax, pfc::stringcvt::string_wide_from_utf8(text.c_str()));
             }
         } break;
         case TBN_DROPDOWN: {

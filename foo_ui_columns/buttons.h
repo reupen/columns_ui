@@ -95,12 +95,11 @@ public:
         void write(stream_writer* out, abort_callback& p_abort) const;
 
         void read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort);
-        void get_display_text(pfc::string_base& p_out); // display
-        void get_short_name(pfc::string_base& p_out); // tooltip
+        std::string get_display_text() const;
 
-        void get_name_type(pfc::string_base& p_out); // config
-        void get_name_name(pfc::string_base& p_out); // config
-        void get_name(pfc::string_base& p_out); // config
+        std::string get_type_desc() const;
+        std::string get_name(bool short_form = false) const;
+        std::string get_name_with_type() const;
         void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
         void read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
             unsigned p_size, abort_callback& p_abort);

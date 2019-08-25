@@ -132,11 +132,8 @@ void ButtonsToolbar::ConfigParam::on_selection_change(t_size index)
 {
     m_selection = index != pfc_infinite && index < m_buttons.get_count() ? &m_buttons[index] : nullptr;
     m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
-    pfc::string8 temp;
-    if (m_selection) {
-        m_selection->get_name(temp);
-    }
-    uSendDlgItemMessageText(m_wnd, IDC_COMMAND_DESC, WM_SETTEXT, 0, temp);
+    std::string command_desc = m_selection ? m_selection->get_name_with_type() : ""s;
+    uSendDlgItemMessageText(m_wnd, IDC_COMMAND_DESC, WM_SETTEXT, 0, command_desc.c_str());
     SendDlgItemMessage(m_wnd, IDC_SHOW, CB_SETCURSEL, m_selection ? m_selection->m_show : -1, 0);
 
     bool b_enable = index != pfc_infinite && m_selection && m_selection->m_type != TYPE_SEPARATOR;
@@ -154,14 +151,11 @@ void ButtonsToolbar::ConfigParam::populate_buttons_list()
 {
     unsigned count = m_buttons.get_count();
 
-    pfc::string8_fast_aggressive name;
     pfc::array_staticsize_t<uih::ListView::InsertItem> items(count);
     for (unsigned n = 0; n < count; n++) {
         items[n].m_subitems.set_size(2);
-        m_buttons[n].get_name_name(name);
-        items[n].m_subitems[0] = name;
-        m_buttons[n].get_name_type(name);
-        items[n].m_subitems[1] = name;
+        items[n].m_subitems[0] = m_buttons[n].get_name().c_str();
+        items[n].m_subitems[1] = m_buttons[n].get_type_desc().c_str();
     }
     m_button_list.insert_items(0, count, items.get_ptr());
 }
@@ -173,15 +167,12 @@ void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_siz
     if (index + count > real_count)
         count = real_count - index;
 
-    pfc::string8_fast_aggressive name;
     pfc::list_t<uih::ListView::InsertItem> items;
     items.set_count(count);
     for (unsigned n = index; n < index + count; n++) {
         items[n - index].m_subitems.set_size(2);
-        m_buttons[n].get_name_name(name);
-        items[n - index].m_subitems[0] = name;
-        m_buttons[n].get_name_type(name);
-        items[n - index].m_subitems[1] = name;
+        items[n - index].m_subitems[0] = m_buttons[n].get_name().c_str();
+        items[n - index].m_subitems[1] = m_buttons[n].get_type_desc().c_str();
     }
     m_button_list.replace_items(index, items);
 }
@@ -326,10 +317,8 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
 
                 uih::ListView::InsertItem item;
                 item.m_subitems.set_size(2);
-                m_buttons[index].get_name_name(name);
-                item.m_subitems[0] = name;
-                m_buttons[index].get_name_type(name);
-                item.m_subitems[1] = name;
+                item.m_subitems[0] = m_buttons[index].get_name().c_str();
+                item.m_subitems[1] = m_buttons[index].get_type_desc().c_str();
                 t_size index_list = m_button_list.get_item_count();
                 m_button_list.insert_items(index_list, 1, &item);
                 m_button_list.set_item_selected_single(index_list);
@@ -469,11 +458,9 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                     if (idx != pfc_infinite) {
                         refresh_buttons_list_items(idx, 1);
 
-                        pfc::string8 name;
+                        const auto name = m_buttons[idx].get_name_with_type();
 
-                        m_buttons[idx].get_name(name);
-
-                        uSendDlgItemMessageText(wnd, IDC_COMMAND_DESC, WM_SETTEXT, 0, name);
+                        uSendDlgItemMessageText(wnd, IDC_COMMAND_DESC, WM_SETTEXT, 0, name.c_str());
                     }
                     bool b_enable = m_selection->m_type != TYPE_SEPARATOR;
                     EnableWindow(GetDlgItem(wnd, IDC_SHOW), m_selection->m_type != TYPE_SEPARATOR);
