@@ -1,5 +1,19 @@
 # Change log
 
+## 1.2.0-rc.1
+
+* A potential crash when the Item properties panel was refreshing its contents was fixed. [[#218](https://github.com/reupen/columns_ui/pull/218)]
+
+* A problem was fixed where the buttons toolbar options dialog box may have shown blank or incomplete command names for buttons linked to unknown main menu items.
+  
+  They will now say 'Unknown command', or end in '/Unknown' if they are dynamic commands. [[#219](https://github.com/reupen/columns_ui/pull/219)]
+
+* Tooltips and the button text of buttons linked to dynamic context menu items now include the parent item (e.g. 'Convert/…' instead of '…'). [[#219](https://github.com/reupen/columns_ui/pull/219)]
+
+* The status bar and status pane double-click action setting now handles dynamic main menu items correctly. [[#220](https://github.com/reupen/columns_ui/pull/220)]
+
+* The playlist view empty area double-click action setting now handles dynamic main menu items correctly. [[#220](https://github.com/reupen/columns_ui/pull/220)]
+
 ## 1.2.0-beta.3
 
 * A problem was fixed where it was not possible to double-click on the first few visible items in the playlist view and in other list views. [[#214](https://github.com/reupen/columns_ui/pull/214), [ui_helpers#31](https://github.com/reupen/ui_helpers/pull/31)]
