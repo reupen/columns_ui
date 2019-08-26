@@ -48,7 +48,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_LBUTTONDBLCLK:
-        mainmenu_commands::g_execute(cfg_statusdbl.get_value().m_command);
+        cui::helpers::execute_main_menu_command(cfg_statusdbl);
         return 0;
     case WM_PRINTCLIENT: {
         if (lp & PRF_ERASEBKGND) {

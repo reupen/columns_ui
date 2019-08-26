@@ -22,7 +22,6 @@ public:
             break;
         case WM_DESTROY:
             m_initialised = false;
-            delete m_menu_cache;
             break;
         case WM_COMMAND:
             switch (wp) {
@@ -61,7 +60,6 @@ public:
 
 private:
     bool m_initialised{};
-    MenuItemCache* m_menu_cache{};
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_pview_artwork;
 

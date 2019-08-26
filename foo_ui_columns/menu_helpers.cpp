@@ -11,79 +11,103 @@ bool operator!=(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2)
     return !(p1 == p2);
 }
 
-MenuItemCache::MenuItemCache()
+namespace cui::helpers {
+
+std::vector<MenuItemInfo> get_dynamic_main_menu_node_items(
+    GUID command_id, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts)
 {
-    service_enum_t<mainmenu_commands> e;
-    service_ptr_t<mainmenu_commands> ptr;
+    pfc::string8 name_part;
+    t_uint32 flags;
+    ptr_node->get_display(name_part, flags);
 
-    while (e.next(ptr)) {
-        // if (ptr->get_type() == menu_item::TYPE_MAIN)
-        {
-            unsigned p_service_item_count = ptr->get_command_count();
-            for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
-                 p_service_item_index++) {
-                MenuItemInfo info;
+    switch (ptr_node->get_type()) {
+    case mainmenu_node::type_command: {
+        name_parts.emplace_back(name_part);
 
-                info.m_command = ptr->get_command(p_service_item_index);
+        const auto path = mmh::join(name_parts, "/");
+        pfc::string8 desc;
+        ptr_node->get_description(desc);
 
-                pfc::string8 name, full;
-                ptr->get_name(p_service_item_index, name);
-                {
-                    pfc::list_t<pfc::string8> levels;
-                    GUID parent = ptr->get_parent();
-                    while (parent != pfc::guid_null) {
-                        pfc::string8 parentname;
-                        if (menu_helpers::maingroupname_from_guid(parent, parentname, parent))
-                            levels.insert_item(parentname, 0);
-                    }
-                    unsigned count = levels.get_count();
-                    for (unsigned i = 0; i < count; i++) {
-                        full.add_string(levels[i]);
-                        full.add_byte('/');
-                    }
-                }
-                full.add_string(name);
+        MenuItemInfo menu_item{
+            {command_id, ptr_node->get_guid()},
+            path.c_str(),
+            desc,
+        };
 
-                /*if (p_node.is_valid() && p_node->get_type() == menu_item_node::TYPE_POPUP)
-                {
-                unsigned child, child_count = p_node->get_children_count();
-                for (child=0;child<child_count;child++)
-                {
-                menu_item_node * p_child = p_node->get_child(child);
-                if (p_child->get_type() == menu_item_node::TYPE_COMMAND)
-                {
-                pfc::string8 subfull = full,subname;
-                unsigned dummy;
-                p_child->get_display_data(subname, dummy, metadb_handle_list(), pfc::guid_null);
-                subfull.add_byte('/');
-                subfull.add_string(subname);
+        return {std::move(menu_item)};
+    }
+    case mainmenu_node::type_group: {
+        std::vector<MenuItemInfo> collected_items;
+        if (!name_part.is_empty())
+            name_parts.emplace_back(name_part);
 
-                menu_item_info * p_info = new(std::nothrow) menu_item_info (info);
-                p_info->m_subcommand = p_child->get_guid();
-                p_child->get_description(p_info->m_desc);
-                p_info->m_name = subfull;
-
-                m_data.add_item(p_info);
-                }
-                }
-                }
-                else*/
-                {
-                    auto p_info = new MenuItemInfo(info);
-                    ptr->get_description(p_service_item_index, p_info->m_desc);
-                    p_info->m_name = full;
-
-                    m_data.add_item(p_info);
-                }
+        for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
+            mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
+            if (ptr_child.is_valid()) {
+                auto child_items = get_dynamic_main_menu_node_items(command_id, ptr_child, name_parts);
+                collected_items.insert(collected_items.begin(), std::make_move_iterator(child_items.begin()),
+                    std::make_move_iterator(child_items.end()));
             }
         }
+        return collected_items;
+    }
+    default:
+        return {};
     }
 }
 
-const MenuItemCache::MenuItemInfo& MenuItemCache::get_item(unsigned n) const
+/**
+ * \todo This code should be shared with the buttons toolbar.
+ */
+std::vector<MenuItemInfo> get_main_menu_items()
 {
-    return *m_data[n];
+    std::vector<MenuItemInfo> main_item_infos;
+
+    service_enum_t<mainmenu_commands> enumerator;
+    service_ptr_t<mainmenu_commands> commands;
+
+    while (enumerator.next(commands)) {
+        service_ptr_t<mainmenu_commands_v2> commands_v2;
+        commands->service_query_t(commands_v2);
+
+        const auto command_count = commands->get_command_count();
+        for (uint32_t command_index{}; command_index < command_count; command_index++) {
+            const auto command_id = commands->get_command(command_index);
+
+            std::list<std::string> name_parts;
+
+            GUID parent_id = commands->get_parent();
+            while (parent_id != pfc::guid_null) {
+                pfc::string8 parent_name;
+                if (menu_helpers::maingroupname_from_guid(parent_id, parent_name, parent_id))
+                    name_parts.emplace_front(parent_name);
+            }
+
+            const auto is_dynamic_node = commands_v2.is_valid() && commands_v2->is_command_dynamic(command_index);
+
+            if (is_dynamic_node) {
+                mainmenu_node::ptr node = commands_v2->dynamic_instantiate(command_index);
+                auto child_items = get_dynamic_main_menu_node_items(command_id, node, name_parts);
+                main_item_infos.insert(main_item_infos.begin(), std::make_move_iterator(child_items.begin()),
+                    std::make_move_iterator(child_items.end()));
+            } else {
+                pfc::string8 name;
+                commands->get_name(command_index, name);
+                name_parts.emplace_back(name);
+
+                MenuItemInfo info;
+                info.m_command = command_id;
+                commands->get_description(command_index, info.m_desc);
+                info.m_name = mmh::join(name_parts, "/").c_str();
+
+                main_item_infos.emplace_back(std::move(info));
+            }
+        }
+    }
+    return main_item_infos;
 }
+
+} // namespace cui::helpers
 
 namespace menu_helpers {
 pfc::string8 get_context_menu_node_name(contextmenu_item_node* p_node)
