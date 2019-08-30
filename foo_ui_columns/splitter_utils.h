@@ -14,7 +14,7 @@ template <typename SplitterItem>
 void copy_splitter_item_to_clipboard(const SplitterItem* item)
 {
     auto data = serialise_splitter_item(item);
-    if (!SetClipboardDataBlock(get_splitter_item_clipboard_format(), data)) {
+    if (!uih::set_clipboard_data(get_splitter_item_clipboard_format(), data.get_ptr(), data.get_size())) {
         auto message = "Error setting clipboard data: "s + helpers::get_last_win32_error_message().get_ptr();
         throw exception_io(message.c_str());
     }
