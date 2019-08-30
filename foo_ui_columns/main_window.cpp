@@ -48,6 +48,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         return nullptr;
     }
 
+    warn_if_ui_hacks_installed();
+
     migrate::v100::migrate();
 
     if (main_window::config_get_is_first_run()) {
@@ -207,6 +209,20 @@ void cui::MainWindow::update_taskbar_buttons(bool update)
 void cui::MainWindow::queue_taskbar_button_update(bool update)
 {
     fb2k::inMainThread([update, this] { update_taskbar_buttons(update); });
+}
+
+void cui::MainWindow::warn_if_ui_hacks_installed()
+{
+    constexpr auto ui_hacks_warning
+        = u8"Columns UI detected that the UI Hacks (foo_ui_hacks) component is installed. UI Hacks "
+          u8"interferes with normal Columns UI operation and should be uninstalled to avoid problems.";
+
+    HMODULE ui_hacks_module = nullptr;
+    const auto is_ui_hacks_installed
+        = GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT, L"foo_ui_hacks.dll", &ui_hacks_module);
+
+    if (is_ui_hacks_installed)
+        console::print(ui_hacks_warning);
 }
 
 void cui::MainWindow::on_create()
