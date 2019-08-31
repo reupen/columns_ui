@@ -579,9 +579,6 @@
     <ProjectReference Include="..\foobar2000\SDK\foobar2000_SDK.vcxproj">
       <Project>{e8091321-d79d-4575-86ef-064ea1a4a20d}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\foobar2000\helpers\foobar2000_sdk_helpers.vcxproj">
-      <Project>{ee47764e-a202-4f85-a767-abdab4aff35f}</Project>
-    </ProjectReference>
     <ProjectReference Include="..\mmh\mmh.vcxproj">
       <Project>{c90a19c3-554d-4037-b4d3-bd12c1f1ad86}</Project>
     </ProjectReference>

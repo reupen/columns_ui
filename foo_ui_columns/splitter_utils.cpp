@@ -85,7 +85,7 @@ pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_t* item)
     return serialise_splitter_item(normalised_item.get());
 }
 
-std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(gsl::span<t_uint8> data)
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(gsl::span<const t_uint8> data)
 {
     auto item = std::make_unique<uie::splitter_item_full_v3_impl_t>();
     stream_reader_memblock_ref reader(data.data(), data.size());
@@ -146,12 +146,12 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipbo
 {
     if (!is_splitter_item_in_clipboard())
         throw exception_io("Clipboard does not contain a panel");
-    pfc::array_t<uint8_t> data;
-    if (!GetClipboardDataBlock(get_splitter_item_clipboard_format(), data)) {
+    const auto data = uih::get_clipboard_data(get_splitter_item_clipboard_format());
+    if (!data) {
         auto message = "Error getting data from clipboard: "s + helpers::get_last_win32_error_message().get_ptr();
         throw exception_io(message.c_str());
     }
-    return deserialise_splitter_item({data.get_ptr(), gsl::narrow<gsl::span<t_uint8>::index_type>(data.get_size())});
+    return deserialise_splitter_item({data->data(), gsl::narrow<gsl::span<t_uint8>::index_type>(data->size())});
 }
 
 std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipboard_safe(HWND wnd)
