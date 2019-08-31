@@ -50,7 +50,8 @@ HWND PreferencesTabHelper::create(
     HWND wnd, UINT id, std::function<BOOL(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback)
 {
     m_on_message_callback = std::move(on_message_callback);
-    return uCreateDialog(id, wnd, s_on_message, reinterpret_cast<LPARAM>(this));
+    return CreateDialogParam(
+        mmh::get_current_instance(), MAKEINTRESOURCE(id), wnd, s_on_message, reinterpret_cast<LPARAM>(this));
 }
 
 BOOL PreferencesTabHelper::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

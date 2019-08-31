@@ -178,7 +178,9 @@ void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this)
 {
     m_modal = false;
     m_this = p_this;
-    if (!uCreateDialog(IDD_ITEM_DETAILS_OPTIONS, wnd, g_DialogProc, (LPARAM)this))
+    const auto wnd_options = CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_ITEM_DETAILS_OPTIONS),
+        wnd, g_DialogProc, reinterpret_cast<LPARAM>(this));
+    if (!wnd_options)
         delete this;
 }
 

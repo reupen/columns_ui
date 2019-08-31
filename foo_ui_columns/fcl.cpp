@@ -401,7 +401,9 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
     } catch (const exception_aborted&) {
     } catch (const exception_fcl_dependentpanelmissing&) {
         ImportResultsData data(panel_info, true);
-        ShowWindow(uCreateDialog(IDD_RESULTS, wnd, g_ImportResultsProc, (LPARAM)&data), SW_SHOWNORMAL);
+        const auto wnd_results = CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_RESULTS), wnd,
+            g_ImportResultsProc, reinterpret_cast<LPARAM>(&data));
+        ShowWindow(wnd_results, SW_SHOWNORMAL);
     } catch (const pfc::exception& ex) {
         popup_message::g_show(ex.what(), "Error");
     }
