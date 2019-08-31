@@ -163,7 +163,9 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
 
 bool ItemPropertiesConfig::run_modal(HWND wnd)
 {
-    return uDialogBox(IDD_ITEM_PROPS_OPTIONS, wnd, g_DialogProc, (LPARAM)this) != 0;
+    const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_ITEM_PROPS_OPTIONS), wnd,
+        g_DialogProc, reinterpret_cast<LPARAM>(this));
+    return dialog_result > 0;
 }
 
 ItemPropertiesConfig::ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style,

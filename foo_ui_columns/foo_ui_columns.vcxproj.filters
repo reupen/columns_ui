@@ -503,6 +503,9 @@
     <ClCompile Include="tab_playlist_tabs.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
+    <ClCompile Include="rename_dialog.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
@@ -709,6 +712,9 @@
     </ClInclude>
     <ClInclude Include="menu_mnemonics.h">
       <Filter>Menu toolbar</Filter>
+    </ClInclude>
+    <ClInclude Include="rename_dialog.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

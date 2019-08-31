@@ -187,7 +187,9 @@ void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this)
 bool ItemDetailsConfig::run_modal(HWND wnd)
 {
     m_modal = true;
-    return uDialogBox(IDD_ITEM_DETAILS_OPTIONS, wnd, g_DialogProc, (LPARAM)this) != 0;
+    const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_ITEM_DETAILS_OPTIONS),
+        wnd, g_DialogProc, reinterpret_cast<LPARAM>(this));
+    return dialog_result > 0;
 }
 
 ItemDetailsConfig::ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)

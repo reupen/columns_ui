@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "playlist_manager_utils.h"
+#include "rename_dialog.h"
 
 StringPlaylistFormatName::PlaylistSwitcherTitleformatHook::PlaylistSwitcherTitleformatHook(
     unsigned p_index, const char* p_name, t_size p_playing)
@@ -104,65 +105,25 @@ bool StringPlaylistFormatName::PlaylistSwitcherTitleformatHook::process_field(
 
 namespace playlist_manager_utils {
 
-class RenameParam {
-public:
-    modal_dialog_scope m_scope;
-    pfc::string8* m_text{};
-};
-
-static BOOL CALLBACK RenameProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_INITDIALOG:
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-        {
-            auto* ptr = (RenameParam*)lp;
-            ptr->m_scope.initialize(FindOwningPopup(wnd));
-            pfc::string_formatter formatter;
-            formatter << R"(Rename playlist: ")" << *ptr->m_text << R"(")";
-            uSetWindowText(wnd, formatter);
-            uSetDlgItemText(wnd, IDC_EDIT, ptr->m_text->get_ptr());
-        }
-        return 1;
-    case WM_COMMAND:
-        switch (wp) {
-        case IDOK: {
-            auto* ptr = (RenameParam*)GetWindowLong(wnd, DWLP_USER);
-            uGetDlgItemText(wnd, IDC_EDIT, *ptr->m_text);
-            EndDialog(wnd, 1);
-        } break;
-        case IDCANCEL:
-            EndDialog(wnd, 0);
-            break;
-        }
-        break;
-    case WM_CLOSE:
-        EndDialog(wnd, 0);
-        break;
-    }
-    return 0;
-}
-
-static bool rename_dialog(pfc::string8* text, HWND parent)
-{
-    RenameParam param;
-    param.m_text = text;
-    return !!uDialogBox(IDD_RENAME_PLAYLIST, parent, RenameProc, (LPARAM)(&param));
-}
-
 void rename_playlist(size_t index, HWND wnd_parent)
 {
     static_api_ptr_t<playlist_manager> playlist_api;
-    pfc::string8 temp;
-    if (playlist_api->playlist_get_name(index, temp)) {
-        if (rename_dialog(&temp, wnd_parent)) { // fucko: dialogobx has a messgeloop, someone might have called
-                                                // switcher api funcs in the meanwhile
-            size_t num = playlist_api->get_playlist_count();
-            if (index < num) {
-                playlist_api->playlist_rename(index, temp, temp.length());
-            }
-        }
-    }
+    pfc::string8 current_name;
+
+    if (!playlist_api->playlist_get_name(index, current_name))
+        return;
+
+    pfc::string8 title;
+    title << "Rename playlist: " << current_name;
+
+    // Note: The playlist could be moved etc. while the dialog is displayed
+    playlist_position_reference_tracker playlist_position_tracker(false);
+    playlist_position_tracker.m_playlist = index;
+
+    const auto new_name = cui::helpers::show_rename_dialog_box(wnd_parent, title, current_name);
+
+    if (new_name && playlist_position_tracker.m_playlist != (std::numeric_limits<size_t>::max)())
+        playlist_api->playlist_rename(playlist_position_tracker.m_playlist, *new_name, new_name->length());
 }
 
 bool check_clipboard()

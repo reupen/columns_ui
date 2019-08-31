@@ -267,6 +267,7 @@
     <ClCompile Include="filter_fcl.cpp" />
     <ClCompile Include="ng_playlist\config_object_callbacks.cpp" />
     <ClCompile Include="notification_area_callbacks.cpp" />
+    <ClCompile Include="rename_dialog.cpp" />
     <ClCompile Include="seekbar_callbacks.cpp" />
     <ClCompile Include="status_bar_callbacks.cpp" />
     <ClCompile Include="status_bar_font_client.cpp" />
@@ -517,6 +518,7 @@
     <ClInclude Include="notification_area.h" />
     <ClInclude Include="playlist_item_helpers.h" />
     <ClInclude Include="rebar_band.h" />
+    <ClInclude Include="rename_dialog.h" />
     <ClInclude Include="splitter_utils.h" />
     <ClInclude Include="tab_layout.h" />
     <ClInclude Include="tab_layout_misc.h" />
