@@ -1,5 +1,13 @@
 # Change log
 
+## 1.2.0-rc.2
+
+* A crash when Item properties was used with Playback Statistics 2.x was fixed. [[#227](https://github.com/reupen/columns_ui/pull/227)]
+
+* A warning is now output to the foobar2000 console if UI Hacks is installed (due to problems it’s known to cause). [[#224](https://github.com/reupen/columns_ui/pull/224)]
+
+* The component is now compiled using foobar2000 SDK 2019-07-26. [[#225](https://github.com/reupen/columns_ui/pull/225), [#226](https://github.com/reupen/columns_ui/pull/226)]
+
 ## 1.2.0-rc.1
 
 * A potential crash when the Item properties panel was refreshing its contents was fixed. [[#218](https://github.com/reupen/columns_ui/pull/218)]
