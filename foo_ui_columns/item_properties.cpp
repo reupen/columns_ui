@@ -310,27 +310,27 @@ private:
     static constexpr size_t max_values = 16;
 };
 
+class TrackProperty {
+public:
+    using Self = TrackProperty;
+
+    pfc::string8 m_name;
+    pfc::string8 m_value;
+    double m_sortpriority{0};
+
+    static int s_compare(Self const& a, Self const& b)
+    {
+        int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
+        if (!ret)
+            ret = StrCmpLogicalW(
+                pfc::stringcvt::string_wide_from_utf8(a.m_name), pfc::stringcvt::string_wide_from_utf8(b.m_name));
+        return ret;
+    }
+};
+
 class TrackPropertyCallback : public track_property_callback_v2 {
 public:
-    class TrackProperty {
-    public:
-        using Self = TrackProperty;
-
-        pfc::string8 m_name;
-        pfc::string8 m_value;
-        double m_sortpriority{0};
-
-        static int s_compare(Self const& a, Self const& b)
-        {
-            int ret = pfc::compare_t(a.m_sortpriority, b.m_sortpriority);
-            if (!ret)
-                ret = StrCmpLogicalW(
-                    pfc::stringcvt::string_wide_from_utf8(a.m_name), pfc::stringcvt::string_wide_from_utf8(b.m_name));
-            return ret;
-        }
-    };
-
-    TrackPropertyCallback(std::vector<std::string>& fields) : m_fields(fields)
+    TrackPropertyCallback(const std::vector<std::string>& fields) : m_fields(fields)
     {
         m_section_values.resize(tabsize(g_info_sections));
     }
@@ -356,7 +356,7 @@ public:
     }
 
     std::vector<concurrency::concurrent_vector<TrackProperty>> m_section_values;
-    std::vector<std::string>& m_fields;
+    const std::vector<std::string>& m_fields;
 };
 
 template <class Container>
@@ -368,6 +368,53 @@ public:
 private:
     Container& m_items;
 };
+
+std::vector<concurrency::concurrent_vector<TrackProperty>> get_track_properties(
+    const std::vector<metadb_info_container::ptr>& info_refs, const std::vector<std::string>& info_sections,
+    const metadb_handle_list& tracks)
+{
+    if (!tracks.get_count())
+        return {};
+
+    TrackPropertyCallback props(info_sections);
+
+    std::vector<track_property_provider::ptr> main_thread_providers;
+    std::vector<track_property_provider_v4::ptr> thread_safe_providers;
+    service_enum_t<track_property_provider> provider_enumerator;
+
+    track_property_provider::ptr enumerator_value;
+
+    while (provider_enumerator.next(enumerator_value)) {
+        track_property_provider_v4::ptr provider_v4;
+
+        if (enumerator_value->service_query_t(provider_v4))
+            thread_safe_providers.emplace_back(std::move(provider_v4));
+        else
+            main_thread_providers.emplace_back(std::move(enumerator_value));
+    }
+
+    TrackPropertyInfoSourceProvider info_source(info_refs);
+
+    for (auto&& provider : main_thread_providers) {
+        if (track_property_provider_v3::ptr provider_v3; provider->service_query_t(provider_v3)) {
+            provider_v3->enumerate_properties_v3(tracks, info_source, props);
+        } else if (track_property_provider_v2::ptr provider_v2; provider->service_query_t(provider_v2)) {
+            provider_v2->enumerate_properties_v2(tracks, props);
+        } else {
+            provider->enumerate_properties(tracks, props);
+        }
+    }
+
+    concurrency::parallel_for(
+        size_t{0}, thread_safe_providers.size(), [&thread_safe_providers, &props, &info_source, &tracks](auto&& index) {
+            auto&& provider = thread_safe_providers[index];
+            provider->enumerate_properties_v4(tracks, info_source, props, fb2k::noAbort);
+        });
+
+    props.sort();
+
+    return std::move(props.m_section_values);
+}
 
 void ItemProperties::refresh_contents()
 {
@@ -431,35 +478,10 @@ void ItemProperties::refresh_contents()
         }
     }
 
-    TrackPropertyCallback props(info_sections);
+    auto track_properties = get_track_properties(info_refs, info_sections, m_handles);
 
-    if (m_handles.get_count()) {
-        service_list_t<track_property_provider> providers;
-        service_enum_t<track_property_provider> e;
-        track_property_provider::ptr ptr;
-        while (e.next(ptr)) {
-            providers.add_item(ptr);
-        }
-
-        concurrency::parallel_for(
-            size_t{0}, providers.get_count(), [&providers, &props, &info_refs, this](auto&& index) {
-                auto&& ptr = providers[index];
-
-                if (track_property_provider_v3::ptr ptr_v3; ptr->service_query_t(ptr_v3)) {
-                    TrackPropertyInfoSourceProvider source(info_refs);
-                    ptr_v3->enumerate_properties_v3(m_handles, source, props);
-                } else if (track_property_provider_v2::ptr ptr_v2; ptr->service_query_t(ptr_v2)) {
-                    ptr_v2->enumerate_properties_v2(m_handles, props);
-                } else {
-                    ptr->enumerate_properties(m_handles, props);
-                }
-            });
-    }
-
-    props.sort();
-
-    for (auto group_index : ranges::view::iota(size_t{0}, props.m_section_values.size())) {
-        auto&& values = props.m_section_values[group_index];
+    for (auto group_index : ranges::view::iota(size_t{0}, track_properties.size())) {
+        auto&& values = track_properties[group_index];
 
         for (auto&& value : values) {
             uih::ListView::InsertItem item(2, 1);
