@@ -84,6 +84,7 @@ public:
 
 private:
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static void warn_if_ui_hacks_installed();
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void on_create();
