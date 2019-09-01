@@ -2,7 +2,7 @@
 
 http://yuo.be/columns_ui
 
-[![Build status](https://ci.appveyor.com/api/projects/status/h1iqjogb73f3yqp1/branch/master?svg=true)](https://ci.appveyor.com/project/reupen/columns-ui/branch/master)
+[![Build Status](https://reupen.visualstudio.com/Columns%20UI/_apis/build/status/reupen.columns_ui?branchName=master)](https://reupen.visualstudio.com/Columns%20UI/_build/latest?definitionId=3&branchName=master)
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
 
