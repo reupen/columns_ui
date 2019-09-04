@@ -1,5 +1,9 @@
 # Change log
 
+## 1.2.0
+
+* There were no changes from version 1.2.0-rc.2.
+
 ## 1.2.0-rc.2
 
 * A crash when Item properties was used with Playback Statistics 2.x was fixed. [[#227](https://github.com/reupen/columns_ui/pull/227)]
