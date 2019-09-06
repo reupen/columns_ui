@@ -27,19 +27,20 @@ public:
 
 private:
     static HTREEITEM insert_item_in_tree_view(
-        HWND wnd_tree, const char* sz_text, LPARAM data, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
+        HWND wnd_tree, const char* sz_text, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
     static void get_panel_list(uie::window_info_list_simple& p_out);
     static HTREEITEM tree_view_get_child_by_index(HWND wnd_tv, HTREEITEM ti, unsigned index);
     static unsigned tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti);
-    static void populate_tree(HWND wnd, const uie::splitter_item_t* item, LayoutTabNode::ptr p_node,
-        HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
-    static void populate_tree(
-        HWND wnd, LayoutTabNode::ptr p_node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
-    static void __populate_tree(
+    [[nodiscard]] static std::unordered_map<HTREEITEM, LayoutTabNode::ptr> __populate_tree(
         HWND wnd_tree, LayoutTabNode::ptr p_node, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
     static void print_index_out_of_range();
 
-    void remove_item(HWND wnd, HTREEITEM ti);
+    void populate_tree(HWND wnd, const uie::splitter_item_t* item, LayoutTabNode::ptr p_node,
+        HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
+    void populate_tree(
+        HWND wnd, LayoutTabNode::ptr p_node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
+    void remove_tree_item(HWND wnd_tv, HTREEITEM ti);
+    void remove_node(HWND wnd, HTREEITEM ti);
     void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);
     void copy_item(HWND wnd, HTREEITEM ti);
     bool _fix_single_instance_recur(uie::splitter_window_ptr& p_window);
@@ -96,6 +97,7 @@ private:
     bool m_initialised{};
     bool m_changed{};
     unsigned m_active_preset{};
+    std::unordered_map<HTREEITEM, LayoutTabNode::ptr> m_node_map;
     LayoutTabNode::ptr m_node_root;
     PreferencesTabHelper m_helper{IDC_TITLE1};
 };
