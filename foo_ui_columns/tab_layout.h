@@ -6,9 +6,9 @@
 
 namespace cui::prefs {
 
-class LayoutTabNode : public pfc::refcounted_object_root {
+class LayoutTabNode {
 public:
-    using ptr = pfc::refcounted_object_ptr_t<LayoutTabNode>;
+    using ptr = std::shared_ptr<LayoutTabNode>;
 
     bool have_item(const GUID& p_guid);
 

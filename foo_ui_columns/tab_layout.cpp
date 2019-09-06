@@ -135,7 +135,7 @@ std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
             unsigned count = p_splitter->get_panel_count();
             for (unsigned n = 0; n < count; n++) {
                 // pfc::rcptr_t<uie::splitter_item_ptr> p_child = pfc::rcnew_t<uie::splitter_item_ptr>();
-                LayoutTabNode::ptr p_child_node = new LayoutTabNode;
+                auto p_child_node = std::make_shared<LayoutTabNode>();
                 p_node->m_children.insert_item(p_child_node, n);
 
                 // uie::splitter_item_ptr child;
@@ -156,7 +156,7 @@ void LayoutTab::remove_node(HWND wnd, HTREEITEM ti)
     if (!ti_parent)
         return;
 
-    LayoutTabNode::ptr p_parent_node = m_node_map.at(ti_parent);
+    auto p_parent_node = m_node_map.at(ti_parent);
     unsigned index = tree_view_get_child_index(wnd_tv, ti);
     if (index < p_parent_node->m_children.get_count()) {
         p_parent_node->m_children.remove_by_idx(index);
@@ -172,10 +172,10 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
 
     // uie::splitter_item_simple_t p_item;
     // p_item.set_panel_guid(p_guid);
-    LayoutTabNode::ptr p_node = new LayoutTabNode;
+    auto p_node = std::make_shared<LayoutTabNode>();
     *p_node->m_item = new uie::splitter_item_simple_t;
     p_node->m_item->get_ptr()->set_panel_guid(p_guid);
-    LayoutTabNode::ptr p_parent = m_node_map.at(ti_parent);
+    auto p_parent = m_node_map.at(ti_parent);
     service_ptr_t<uie::splitter_window> p_splitter;
     if (p_parent->m_window.is_valid() && p_parent->m_window->service_query_t(p_splitter)) {
         unsigned index
@@ -192,7 +192,7 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
 void LayoutTab::copy_item(HWND wnd, HTREEITEM ti)
 {
     HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    LayoutTabNode::ptr p_node = m_node_map.at(ti);
+    auto p_node = m_node_map.at(ti);
     splitter_utils::copy_splitter_item_to_clipboard_safe(wnd, p_node->m_item->get_ptr());
 }
 
@@ -276,8 +276,7 @@ bool LayoutTab::fix_paste_item(uie::splitter_item_full_v3_impl_t& item)
 void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
     HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    LayoutTabNode::ptr p_node = new LayoutTabNode;
-
+    auto p_node = std::make_shared<LayoutTabNode>();
     auto splitter_item = splitter_utils::get_splitter_item_from_clipboard_safe(wnd);
 
     if (!splitter_item || !fix_paste_item(*splitter_item))
@@ -285,7 +284,7 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
 
     *p_node->m_item = splitter_item.release();
 
-    LayoutTabNode::ptr p_parent = m_node_map.at(ti_parent);
+    auto p_parent = m_node_map.at(ti_parent);
     service_ptr_t<uie::splitter_window> p_splitter;
     if (p_parent->m_window.is_valid() && p_parent->m_window->service_query_t(p_splitter)) {
         unsigned index{};
@@ -309,7 +308,7 @@ void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
     HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
     HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
 
-    LayoutTabNode::ptr p_parent_node = m_node_map.at(ti_parent);
+    auto p_parent_node = m_node_map.at(ti_parent);
     unsigned index = tree_view_get_child_index(wnd_tv, ti);
     if (up) {
         if (index > 0) {
@@ -346,7 +345,7 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
     HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
     HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
 
-    LayoutTabNode::ptr p_node = m_node_map.at(ti);
+    auto p_node = m_node_map.at(ti);
     LayoutTabNode::ptr p_parent_node;
     if (ti_parent)
         p_parent_node = m_node_map.at(ti_parent);
@@ -374,7 +373,7 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
             p_node->m_children.remove_all();
 
             unsigned index = tree_view_get_child_index(wnd_tv, ti);
-            if (p_parent_node.is_valid()) {
+            if (p_parent_node) {
                 if (index < p_parent_node->m_children.get_count())
                     p_parent_node->m_splitter->replace_panel(
                         index, p_parent_node->m_children[index]->m_item->get_ptr());
@@ -425,7 +424,7 @@ void LayoutTab::save_item(HWND wnd, HTREEITEM ti)
     }
     HTREEITEM parent = TreeView_GetParent(wnd_tv, ti);
     if (parent) {
-        LayoutTabNode::ptr p_parent_node = m_node_map.at(parent);
+        auto p_parent_node = m_node_map.at(parent);
         service_ptr_t<uie::splitter_window> p_splitter;
         if (p_parent_node->m_window.is_valid() && p_parent_node->m_window->service_query_t(p_splitter)) {
             unsigned index = tree_view_get_child_index(wnd_tv, ti);
@@ -449,8 +448,8 @@ void LayoutTab::set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& gui
     if (!ti_parent)
         return;
 
-    LayoutTabNode::ptr p_node = m_node_map.at(ti);
-    LayoutTabNode::ptr p_node_parent = m_node_map.at(ti_parent);
+    auto p_node = m_node_map.at(ti);
+    auto p_node_parent = m_node_map.at(ti_parent);
     unsigned index = tree_view_get_child_index(wnd_tv, ti);
     if (index < p_node_parent->m_splitter->get_panel_count()) {
         abort_callback_dummy abortCallback;
@@ -477,8 +476,8 @@ void LayoutTab::run_configure(HWND wnd)
     if (!ti_parent)
         return;
 
-    LayoutTabNode::ptr p_node = m_node_map.at(ti);
-    LayoutTabNode::ptr p_node_parent = m_node_map.at(ti_parent);
+    auto p_node = m_node_map.at(ti);
+    auto p_node_parent = m_node_map.at(ti_parent);
     unsigned index = tree_view_get_child_index(wnd_tv, ti);
     if (index < p_node_parent->m_splitter->get_panel_count()) {
         if (p_node->m_window.is_valid() && p_node->m_window->show_config_popup(wnd)) {
@@ -489,7 +488,7 @@ void LayoutTab::run_configure(HWND wnd)
 
 void LayoutTab::initialise_tree(HWND wnd)
 {
-    m_node_root = new LayoutTabNode;
+    m_node_root = std::make_shared<LayoutTabNode>();
     cfg_layout.get_preset(m_active_preset, *m_node_root->m_item);
     // g_layout_window.get_child(*g_node_root->m_item);
     populate_tree(wnd, m_node_root->m_item->get_ptr(), m_node_root);
@@ -498,7 +497,7 @@ void LayoutTab::initialise_tree(HWND wnd)
 void LayoutTab::deinitialise_tree(HWND wnd)
 {
     TreeView_DeleteAllItems(GetDlgItem(wnd, IDC_TREE));
-    m_node_root.release();
+    m_node_root.reset();
     m_node_map.clear();
 }
 
@@ -719,8 +718,8 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 auto param = (LPNMTREEVIEW)hdr;
                 if (param->itemNew.hItem) {
-                    LayoutTabNode::ptr p_node = m_node_map.at(param->itemNew.hItem);
-                    LayoutTabNode::ptr p_parent_node = nullptr;
+                    auto p_node = m_node_map.at(param->itemNew.hItem);
+                    LayoutTabNode::ptr p_parent_node;
 
                     HTREEITEM ti_parent = TreeView_GetParent(param->hdr.hwndFrom, param->itemNew.hItem);
 
@@ -731,7 +730,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                     configure = p_node->m_window.is_valid() && p_node->m_window->have_config_popup();
 
-                    if (p_parent_node.is_valid() && index < p_parent_node->m_splitter->get_panel_count()) {
+                    if (p_parent_node && index < p_parent_node->m_splitter->get_panel_count()) {
                         hidden = p_parent_node->m_splitter->get_config_item_supported(
                             index, uie::splitter_window::bool_hidden);
                         locked = p_parent_node->m_splitter->get_config_item_supported(
@@ -838,7 +837,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 unsigned index = tree_view_get_child_index(wnd_tv, ti.hItem);
 
-                LayoutTabNode::ptr p_node = m_node_map.at(ti.hItem);
+                auto p_node = m_node_map.at(ti.hItem);
                 LayoutTabNode::ptr p_parent_node;
 
                 service_ptr_t<uie::splitter_window> p_splitter;
@@ -907,9 +906,9 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (ti_parent) {
                     if (GetMenuItemCount(menu))
                         AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
-                    if (p_parent_node.is_valid() && index)
+                    if (p_parent_node && index)
                         AppendMenu(menu, MF_STRING, ID_MOVE_UP, _T("Move up"));
-                    if (p_parent_node.is_valid() && index + 1 < p_parent_node->m_splitter->get_panel_count())
+                    if (p_parent_node && index + 1 < p_parent_node->m_splitter->get_panel_count())
                         AppendMenu(menu, MF_STRING, ID_MOVE_DOWN, _T("Move down"));
                     AppendMenu(menu, MF_STRING, ID_REMOVE, _T("Remove panel"));
                 }
