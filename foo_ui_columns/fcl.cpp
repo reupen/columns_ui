@@ -352,7 +352,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             std::vector<RawDataSet> datasets;
             datasets.resize(count);
 
-            for (auto i : ranges::view::iota(0, count)) {
+            for (auto i : ranges::view::iota(size_t{0}, count)) {
                 // GUID guiditem;
                 pfc::string8 name;
                 p_file->read_lendian_t(datasets[i].guid, p_abort);
@@ -387,7 +387,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
 
             uih::DisableRedrawScope p_NoRedraw(cui::main_window.get_wnd());
 
-            for (auto export_item_index : ranges::view::iota(0, export_items.get_count())) {
+            for (auto export_item_index : ranges::view::iota(size_t{0}, export_items.get_count())) {
                 auto ptr = export_items[export_item_index];
                 auto data_set_iter
                     = ranges::find_if(datasets, [&ptr](auto&& data_set) { return data_set.guid == ptr->get_guid(); });

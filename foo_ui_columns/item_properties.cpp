@@ -280,7 +280,7 @@ public:
 
         const t_size value_count = info->meta_enum_value_count(field_index);
 
-        for (auto value_index : ranges::view::iota(0, value_count)) {
+        for (auto value_index : ranges::view::iota(size_t{0}, value_count)) {
             const auto value = info->meta_enum_value(field_index, value_index);
             add_value(value);
         }
