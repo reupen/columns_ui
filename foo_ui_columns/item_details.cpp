@@ -429,7 +429,8 @@ void ItemDetails::refresh_contents(bool reset_scroll_position)
         static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
 
         TitleformatHookChangeFont tf_hook(lf);
-        pfc::string8_fast_aggressive temp, temp2;
+        pfc::string8_fast_aggressive temp;
+        pfc::string8_fast_aggressive temp2;
         temp.prealloc(2048);
         temp2.prealloc(2048);
         if (m_nowplaying_active) {
@@ -708,7 +709,8 @@ void ItemDetails::on_size(t_size cx, t_size cy)
 
 void ItemDetails::scroll(INT SB, int position, bool b_absolute)
 {
-    SCROLLINFO si, si2;
+    SCROLLINFO si;
+    SCROLLINFO si2;
     memset(&si, 0, sizeof(SCROLLINFO));
     si.cbSize = sizeof(si);
     si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;
@@ -857,7 +859,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_HSCROLL:
     case WM_VSCROLL: {
         UINT SB = msg == WM_VSCROLL ? SB_VERT : SB_HORZ;
-        SCROLLINFO si, si2;
+        SCROLLINFO si;
+        SCROLLINFO si2;
         memset(&si, 0, sizeof(SCROLLINFO));
         si.cbSize = sizeof(si);
         si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;

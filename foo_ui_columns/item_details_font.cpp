@@ -45,8 +45,12 @@ bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, co
         case 2:
         case 3: {
             bool b_have_flags = p_params->get_param_count() == 3;
-            const char *face, *pointsize, *flags;
-            t_size face_length, pointsize_length, flags_length;
+            const char* face;
+            const char* pointsize;
+            const char* flags;
+            t_size face_length;
+            t_size pointsize_length;
+            t_size flags_length;
             p_params->get_param(0, face, face_length);
             p_params->get_param(1, pointsize, pointsize_length);
             if (b_have_flags)

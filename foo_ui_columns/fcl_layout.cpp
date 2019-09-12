@@ -29,7 +29,8 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         p_reader->read_lendian_t(version, p_abort);
         if (version > 0)
             throw pfc::exception("Need new columns ui");
-        t_uint32 pcount, active;
+        t_uint32 pcount;
+        t_uint32 active;
         p_reader->read_lendian_t(active, p_abort);
         p_reader->read_lendian_t(pcount, p_abort);
 

@@ -133,7 +133,8 @@ void ButtonsToolbar::create_toolbar()
 
         bool b_need_hot = false;
 
-        unsigned n, count = tbb.get_size();
+        unsigned n;
+        unsigned count = tbb.get_size();
         for (n = 0; n < count; n++) {
             if (m_buttons[n].m_use_custom_hot) {
                 b_need_hot = true;
@@ -371,7 +372,8 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     else if (msg == WM_USER + 2) {
         if (wnd_toolbar && wp < m_buttons.get_count() && m_buttons[wp].m_interface.is_valid()) {
-            unsigned state = m_buttons[wp].m_interface->get_button_state(), tbstate = 0;
+            unsigned state = m_buttons[wp].m_interface->get_button_state();
+            unsigned tbstate = 0;
             if (state & uie::BUTTON_STATE_PRESSED) {
                 PostMessage(wnd_toolbar, TB_PRESSBUTTON, wp, MAKELONG(TRUE, 0));
             }

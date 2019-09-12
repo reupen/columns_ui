@@ -266,7 +266,8 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
     pfc::map_t<GUID, album_art_data_ptr> content_previous = m_content;
     m_content.remove_all();
 
-    bool b_opened = false, b_extracter_attempted = false;
+    bool b_opened = false;
+    bool b_extracter_attempted = false;
     album_art_extractor_instance_ptr p_extractor;
     album_art_extractor_instance_v2::ptr artwork_api_v2;
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;

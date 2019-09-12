@@ -103,13 +103,16 @@ void PlaylistView::populate_list()
 void PlaylistView::refresh_groups(bool b_update_columns)
 {
     static_api_ptr_t<titleformat_compiler> p_compiler;
-    service_ptr_t<titleformat_object> p_script, p_script_group;
+    service_ptr_t<titleformat_object> p_script;
+    service_ptr_t<titleformat_object> p_script_group;
     m_scripts.remove_all();
 
-    pfc::string8 filter, playlist_name;
+    pfc::string8 filter;
+    pfc::string8 playlist_name;
     m_playlist_api->activeplaylist_get_name(playlist_name);
 
-    t_size count = cfg_grouping ? g_groups.get_groups().get_count() : 0, used_count = 0;
+    t_size count = cfg_grouping ? g_groups.get_groups().get_count() : 0;
+    t_size used_count = 0;
     for (t_size i = 0; i < count; i++) {
         bool b_valid = false;
         switch (g_groups.get_groups()[i].filter_type) {
@@ -136,7 +139,8 @@ void PlaylistView::refresh_groups(bool b_update_columns)
 
 t_size PlaylistView::column_index_display_to_actual(t_size display_index)
 {
-    t_size count = m_column_mask.get_count(), counter = 0;
+    t_size count = m_column_mask.get_count();
+    t_size counter = 0;
     for (t_size i = 0; i < count; i++) {
         if (m_column_mask[i])
             if (counter++ == display_index)
@@ -147,7 +151,8 @@ t_size PlaylistView::column_index_display_to_actual(t_size display_index)
 
 t_size PlaylistView::column_index_actual_to_display(t_size actual_index)
 {
-    t_size count = m_column_mask.get_count(), counter = 0;
+    t_size count = m_column_mask.get_count();
+    t_size counter = 0;
     for (t_size i = 0; i < count; i++) {
         if (m_column_mask[i]) {
             counter++;
@@ -177,7 +182,8 @@ void PlaylistView::g_on_column_widths_change(const PlaylistView* p_skip)
 void PlaylistView::refresh_columns()
 {
     static_api_ptr_t<titleformat_compiler> p_compiler;
-    service_ptr_t<titleformat_object> p_script, p_script_group;
+    service_ptr_t<titleformat_object> p_script;
+    service_ptr_t<titleformat_object> p_script_group;
     m_script_global.release();
     m_script_global_style.release();
 
@@ -185,7 +191,8 @@ void PlaylistView::refresh_columns()
     m_edit_fields.remove_all();
     pfc::list_t<Column> columns;
 
-    pfc::string8 filter, playlist_name;
+    pfc::string8 filter;
+    pfc::string8 playlist_name;
     m_playlist_api->activeplaylist_get_name(playlist_name);
 
     if (cfg_global)
@@ -248,7 +255,8 @@ void PlaylistView::on_groups_change()
 void PlaylistView::update_all_items()
 {
     static_api_ptr_t<titleformat_compiler> p_compiler;
-    service_ptr_t<titleformat_object> p_script, p_script_group;
+    service_ptr_t<titleformat_object> p_script;
+    service_ptr_t<titleformat_object> p_script_group;
 
     m_script_global.release();
     m_script_global_style.release();
@@ -414,7 +422,8 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
     if (active_playlist != -1
         && (!m_playlist_api->playlist_lock_is_present(active_playlist)
                || !(m_playlist_api->playlist_lock_get_filter_mask(active_playlist) & playlist_lock::filter_reorder))) {
-        unsigned n, count = m_playlist_api->activeplaylist_get_item_count();
+        unsigned n;
+        unsigned count = m_playlist_api->activeplaylist_get_item_count();
 
         pfc::list_t<pfc::array_t<WCHAR>, pfc::alloc_fast_aggressive> data;
         pfc::list_t<t_size, pfc::alloc_fast_aggressive> source_indices;
@@ -642,7 +651,8 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         static_api_ptr_t<playlist_manager> playlist_api;
         playlist_api->activeplaylist_get_name(playlist_name);
 
-        pfc::string8_fast_aggressive filter, name;
+        pfc::string8_fast_aggressive filter;
+        pfc::string8_fast_aggressive name;
 
         int e = g_columns.get_count();
         for (int s = 0; s < e; s++) {
@@ -831,10 +841,12 @@ void PlaylistView::notify_update_item_data(t_size index)
     string_array& p_out = get_item_subitems(index);
     PlaylistViewItem* p_item = get_item(index);
 
-    t_size group_index = 0, group_count = 0;
+    t_size group_index = 0;
+    t_size group_count = 0;
     // uih::ListView::get_item_group(index, get_group_count()-1, group_index, group_count);
 
-    pfc::string8_fast_aggressive temp, str_dummy;
+    pfc::string8_fast_aggressive temp;
+    pfc::string8_fast_aggressive str_dummy;
     temp.prealloc(32);
     GlobalVariableList globals;
     bool b_global = m_script_global.is_valid();
@@ -855,7 +867,9 @@ void PlaylistView::notify_update_item_data(t_size index)
     CellStyleData style_data_item = CellStyleData::g_create_default();
 
     bool colour_global_av = false;
-    t_size i, count = m_column_data.get_count(), count_display_groups = get_item_display_group_count(index);
+    t_size i;
+    t_size count = m_column_data.get_count();
+    t_size count_display_groups = get_item_display_group_count(index);
     p_out.set_count(count);
     get_item(index)->m_style_data.set_count(count);
 
@@ -977,7 +991,8 @@ void PlaylistView::reset_items()
 t_size PlaylistView::get_highlight_item()
 {
     if (static_api_ptr_t<play_control>()->is_playing()) {
-        t_size playing_index, playing_playlist;
+        t_size playing_index;
+        t_size playing_playlist;
         m_playlist_api->get_playing_item_location(&playing_playlist, &playing_index);
         if (playing_playlist == m_playlist_api->get_active_playlist())
             return playing_index;

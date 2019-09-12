@@ -360,7 +360,9 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             memset(str_class, 0, sizeof(str_class));
             if (wnd_child && RealGetWindowClass(wnd_child, str_class, tabsize(str_class) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
-                INT min = NULL, max = NULL, index = NULL;
+                INT min = NULL;
+                INT max = NULL;
+                INT index = NULL;
                 BOOL err = FALSE;
                 SendMessage(wnd_child, UDM_GETRANGE32, (WPARAM)&min, (LPARAM)&max);
                 index = SendMessage(wnd_child, UDM_GETPOS32, (WPARAM)NULL, (LPARAM)&err);
@@ -749,7 +751,8 @@ void PlaylistTabs::on_playlists_reorder(const unsigned* p_order, unsigned p_coun
 
         for (unsigned n = 0; n < p_count; n++) {
             if (n != (unsigned)p_order[n]) {
-                pfc::string8 temp, temp2;
+                pfc::string8 temp;
+                pfc::string8 temp2;
                 playlist_api->playlist_get_name(n, temp);
 
                 uTabCtrl_InsertItemText(wnd_tabs, n, temp, false);

@@ -55,7 +55,8 @@ private:
 
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override
     {
-        t_size count, version;
+        t_size count;
+        t_size version;
         p_stream->read_lendian_t(version, p_abort);
         if (version <= stream_version_current) {
             m_groups.remove_all();

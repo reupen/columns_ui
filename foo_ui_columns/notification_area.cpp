@@ -13,7 +13,8 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
         metadb_handle_ptr track;
         static_api_ptr_t<play_control> play_api;
         play_api->get_now_playing(track);
-        pfc::string8 sys, title;
+        pfc::string8 sys;
+        pfc::string8 title;
 
         if (track.is_valid()) {
             service_ptr_t<titleformat_object> to_systray;

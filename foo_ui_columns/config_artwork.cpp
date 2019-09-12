@@ -30,7 +30,8 @@ public:
 
     static t_size get_combined_index(t_size index, t_size subindex)
     {
-        t_size i = 0, ret = 0;
+        t_size i = 0;
+        t_size ret = 0;
         while (i < tabsize(g_artwork_sources) && i < index) {
             ret += g_artwork_sources[i].m_scripts->get_count();
             i++;
@@ -102,7 +103,8 @@ public:
         {
             t_size indices_count = indices.get_count();
             if (indices_count == 1) {
-                t_size index, subindex;
+                t_size index;
+                t_size subindex;
                 if (get_separated_index(indices[0], index, subindex)) {
                     m_edit_index = index;
                     m_edit_subindex = subindex;
@@ -225,7 +227,8 @@ public:
 
                 enum { IDM_FRONT = 1 };
 
-                t_size index, indexcount = tabsize(g_artwork_sources);
+                t_size index;
+                t_size indexcount = tabsize(g_artwork_sources);
                 for (index = 0; index < indexcount; index++) {
                     AppendMenuW(menu, (MF_STRING), index + 1,
                         pfc::stringcvt::string_wide_from_utf8(g_artwork_sources[index].m_name));
@@ -255,13 +258,15 @@ public:
                     pfc::bit_array_bittable mask(m_source_list.get_item_count());
                     m_source_list.get_selection_state(mask);
                     // bool b_found = false;
-                    t_size combined_index = 0, count = m_source_list.get_item_count();
+                    t_size combined_index = 0;
+                    t_size count = m_source_list.get_item_count();
                     while (combined_index < count) {
                         if (mask[combined_index])
                             break;
                         combined_index++;
                     }
-                    t_size index, subindex;
+                    t_size index;
+                    t_size subindex;
                     if (combined_index < count && get_separated_index(combined_index, index, subindex)) {
                         g_artwork_sources[index].m_scripts->remove_by_idx(subindex);
                         m_source_list.remove_item(combined_index);
@@ -285,7 +290,10 @@ public:
                             combined_index++;
                     }
 
-                    t_size index, subindex, combined_index_start, count;
+                    t_size index;
+                    t_size subindex;
+                    t_size combined_index_start;
+                    t_size count;
 
                     get_group_from_combined_index(combined_index, index, subindex, combined_index_start, count);
 
@@ -314,7 +322,10 @@ public:
                             combined_index++;
                     }
 
-                    t_size index, subindex, combined_index_start, count;
+                    t_size index;
+                    t_size subindex;
+                    t_size combined_index_start;
+                    t_size count;
 
                     get_group_from_combined_index(combined_index, index, subindex, combined_index_start, count);
 

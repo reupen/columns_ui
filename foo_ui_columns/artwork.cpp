@@ -444,7 +444,8 @@ void ArtworkPanel::refresh_cached_bitmap()
     RECT rc;
     GetClientRect(get_wnd(), &rc);
     if (RECT_CX(rc) && RECT_CY(rc) && m_image.is_valid()) {
-        HDC dc = nullptr, dcc = nullptr;
+        HDC dc = nullptr;
+        HDC dcc = nullptr;
         dc = GetDC(get_wnd());
         dcc = CreateCompatibleDC(dc);
 
@@ -464,7 +465,8 @@ void ArtworkPanel::refresh_cached_bitmap()
 
         double ar_source = (double)m_image->GetWidth() / (double)m_image->GetHeight();
         double ar_dest = (double)RECT_CX(rc) / (double)RECT_CY(rc);
-        unsigned cx = RECT_CX(rc), cy = RECT_CY(rc);
+        unsigned cx = RECT_CX(rc);
+        unsigned cy = RECT_CY(rc);
 
         graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
         graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);

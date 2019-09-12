@@ -58,7 +58,9 @@ void FlatSplitterPanel::destroy_children()
 
 void FlatSplitterPanel::refresh_children()
 {
-    unsigned n, count = m_panels.get_count(), size_cumulative = 0;
+    unsigned n;
+    unsigned count = m_panels.get_count();
+    unsigned size_cumulative = 0;
     pfc::array_t<bool> new_items;
     new_items.set_count(count);
     new_items.fill_null();
@@ -263,7 +265,9 @@ void FlatSplitterPanel::get_panels_sizes(
         unsigned parts;
     };
 
-    unsigned n, count = m_panels.get_count(), height_allocated = 0;
+    unsigned n;
+    unsigned count = m_panels.get_count();
+    unsigned height_allocated = 0;
 
     if (count) {
         pfc::array_t<t_size_info> size_info;
@@ -480,7 +484,8 @@ int FlatSplitterPanel::override_size(unsigned& panel, int delta)
             bool is_down = delta > 0; // new_height > m_panels[panel].height;
 
             if (is_up /*&& !m_panels[panel].locked*/) {
-                unsigned diff_abs = 0, diff_avail = abs(delta);
+                unsigned diff_abs = 0;
+                unsigned diff_avail = abs(delta);
 
                 unsigned n = panel + 1;
                 while (n < count && diff_abs < diff_avail) {
@@ -555,7 +560,8 @@ int FlatSplitterPanel::override_size(unsigned& panel, int delta)
                 return (abs(delta) - obtained);
             }
             if (is_down /*&& !m_panels[panel].locked*/) {
-                unsigned diff_abs = 0, diff_avail = abs(delta);
+                unsigned diff_abs = 0;
+                unsigned diff_avail = abs(delta);
 
                 n = panel + 1;
                 while (n > 0 && diff_abs < diff_avail) {
@@ -644,7 +650,8 @@ void FlatSplitterPanel::start_autohide_dehide(unsigned p_panel, bool b_next_too)
     auto& panel_after = b_have_next ? m_panels[p_panel + 1] : Panel::null_ptr;
     if ((panel_before->m_autohide && !panel_before->m_container.m_hook_active)
         || (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active)) {
-        bool a1 = false, a2 = false;
+        bool a1 = false;
+        bool a2 = false;
         if (panel_before->m_autohide && !panel_before->m_container.m_hook_active) {
             panel_before->m_hidden = false;
             a1 = true;
@@ -862,7 +869,8 @@ void FlatSplitterPanel::export_config(stream_writer* p_writer, abort_callback& p
 void FlatSplitterPanel::write_config(stream_writer* p_writer, bool is_export, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(static_cast<t_uint32>(stream_version_current), p_abort);
-    unsigned i, count = m_panels.get_count();
+    unsigned i;
+    unsigned count = m_panels.get_count();
     p_writer->write_lendian_t(count, p_abort);
     for (i = 0; i < count; i++) {
         if (is_export)

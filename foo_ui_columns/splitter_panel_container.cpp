@@ -14,7 +14,8 @@ void FlatSplitterPanel::Panel::PanelContainer::on_hooked_message(WPARAM msg, con
     if (msg == WM_MOUSEMOVE && m_this.is_valid() && MonitorFromPoint(mllhs.pt, MONITOR_DEFAULTTONULL)) {
         unsigned index = m_this->m_panels.find_item(m_panel);
         if (index != pfc_infinite) {
-            HWND wnd_capture = GetCapture(), wnd_pt = WindowFromPoint(mllhs.pt);
+            HWND wnd_capture = GetCapture();
+            HWND wnd_pt = WindowFromPoint(mllhs.pt);
             POINT pt = mllhs.pt;
             ScreenToClient(m_this->get_wnd(), &pt);
             // if (!hwnd)
@@ -102,7 +103,8 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         if (m_this.is_valid()) {
             unsigned index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->m_panels[index]->m_show_caption) {
-                RECT rc_client, rc_dummy;
+                RECT rc_client;
+                RECT rc_dummy;
                 GetClientRect(wnd, &rc_client);
 
                 unsigned caption_size = g_get_caption_size();
@@ -148,7 +150,8 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
     }
     case WM_ERASEBKGND: {
         RECT rc_caption = {0, 0, 0, 0};
-        RECT rc_fill, rc_client;
+        RECT rc_fill;
+        RECT rc_client;
         GetClientRect(wnd, &rc_client);
         if (m_this.is_valid()) {
             unsigned index = 0;

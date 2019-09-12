@@ -22,7 +22,8 @@ void Colour::set(COLORREF new_colour)
 
 StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(metadb_handle_list_cref handles, const char* format, const char* def)
 {
-    pfc::string8_fast_aggressive a, b;
+    pfc::string8_fast_aggressive a;
+    pfc::string8_fast_aggressive b;
     a.prealloc(512);
     b.prealloc(512);
     unsigned count = handles.get_count();
@@ -79,7 +80,8 @@ void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr>& 
     pfc::string_formatter ext;
     service_enum_t<playlist_loader> e;
     service_ptr_t<playlist_loader> ptr;
-    unsigned def_index = 0, n = 0;
+    unsigned def_index = 0;
+    unsigned n = 0;
 
     while (e.next(ptr)) {
         if (ptr->can_write()) {

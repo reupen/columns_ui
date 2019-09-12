@@ -45,7 +45,8 @@ void ConfigFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abor
     t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
-        t_uint32 count, i;
+        t_uint32 count;
+        t_uint32 i;
         p_stream->read_lendian_t(count, p_abort);
         set_count(count);
         for (i = 0; i < count; i++) {
@@ -78,7 +79,8 @@ void ConfigFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abor
 void ConfigFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t((t_uint32)stream_version_current, p_abort);
-    t_uint32 i, count = gsl::narrow<uint32_t>(get_count());
+    t_uint32 i;
+    t_uint32 count = gsl::narrow<uint32_t>(get_count());
     p_stream->write_lendian_t(count, p_abort);
     for (i = 0; i < count; i++) {
         const auto& field = (*this)[i];
@@ -145,7 +147,8 @@ void ConfigFields::fix_name(pfc::string8& p_name)
 
 void ConfigFavourites::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
-    t_uint32 m = gsl::narrow<t_uint32>(get_count()), v = 0;
+    t_uint32 m = gsl::narrow<t_uint32>(get_count());
+    t_uint32 v = 0;
     p_stream->write_lendian_t(v, p_abort);
     p_stream->write_lendian_t(m, p_abort);
     for (t_uint32 n = 0; n < m; n++)
@@ -154,7 +157,8 @@ void ConfigFavourites::get_data_raw(stream_writer* p_stream, abort_callback& p_a
 
 void ConfigFavourites::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 count, version;
+    t_uint32 count;
+    t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= 0) {
         p_stream->read_lendian_t(count, p_abort);

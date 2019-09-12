@@ -27,7 +27,8 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         uih::list_view_set_explorer_theme(wnd_lv);
 
-        RECT rc_work, rc_dialog;
+        RECT rc_work;
+        RECT rc_dialog;
         SystemParametersInfo(SPI_GETWORKAREA, NULL, &rc_work, NULL);
         GetWindowRect(wnd, &rc_dialog);
 

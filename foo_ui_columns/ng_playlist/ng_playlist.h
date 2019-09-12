@@ -214,7 +214,8 @@ public:
 
     void flush_pending()
     {
-        t_size count = m_current_readers.get_count(), count_pending = m_pending_readers.get_count();
+        t_size count = m_current_readers.get_count();
+        t_size count_pending = m_pending_readers.get_count();
         if (count < max_readers) {
             if (count_pending) {
                 pfc::rcptr_t<ArtworkReader> p_reader = m_pending_readers[count_pending - 1];
@@ -439,7 +440,8 @@ private:
         const PlaylistViewGroup::ptr& p_group, const pfc::rcptr_t<ArtworkReader>& p_reader)
     {
         if (!p_reader->is_aborting()) {
-            t_size count = get_item_count(), group_count = m_scripts.get_count();
+            t_size count = get_item_count();
+            t_size group_count = m_scripts.get_count();
 
             if (group_count) {
                 for (t_size i = 0; i < count; i++) {

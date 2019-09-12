@@ -330,8 +330,10 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
         }
     } else if (!stricmp_utf8_ex(p_name, p_name_length, "offset_colour", pfc_infinite)) {
         if (p_params->get_param_count() == 3) {
-            const char *p_val, *p_val2;
-            unsigned p_val_length, p_val2_length;
+            const char* p_val;
+            const char* p_val2;
+            unsigned p_val_length;
+            unsigned p_val2_length;
             p_params->get_param(0, p_val, p_val_length);
             int colour = mmh::strtoul_n(p_val, p_val_length, 0x10);
             p_params->get_param(1, p_val2, p_val2_length);

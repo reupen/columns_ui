@@ -409,7 +409,8 @@ void FilterSearchToolbar::create_edit()
         0, 0, 0, 0, get_wnd(), (HMENU)id_toolbar, core_api::get_my_instance(), nullptr);
     // SetWindowTheme(m_wnd_toolbar, L"SearchButton", NULL);
 
-    const unsigned cx = GetSystemMetrics(SM_CXSMICON), cy = GetSystemMetrics(SM_CYSMICON);
+    const unsigned cx = GetSystemMetrics(SM_CXSMICON);
+    const unsigned cy = GetSystemMetrics(SM_CYSMICON);
 
     m_imagelist = ImageList_Create(cx, cy, ILC_COLOR32, 0, 3);
 

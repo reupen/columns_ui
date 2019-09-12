@@ -82,7 +82,8 @@ public:
     }
     bool set_window_visibility(HWND wnd, bool visibility) override
     {
-        bool rv = false, b_usvisible = true;
+        bool rv = false;
+        bool b_usvisible = true;
         if (!m_this->get_host()->is_visible(m_this->get_wnd()))
             b_usvisible = m_this->get_host()->set_window_visibility(m_this->get_wnd(), visibility);
         if (b_usvisible && visibility) {
@@ -560,7 +561,8 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (pt.x == -1 && pt.y == -1)
             GetMessagePos(&pt);
 
-        POINT pt_client = pt, pt_client_tabs = pt;
+        POINT pt_client = pt;
+        POINT pt_client_tabs = pt;
 
         ScreenToClient(wnd, &pt_client);
 
@@ -623,7 +625,8 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 on_active_tab_changed(TabCtrl_GetCurSel(m_wnd_tabs));
                 if (m_active_tab != pfc_infinite && m_active_tab < m_active_panels.get_count()
                     && GetFocus() != m_wnd_tabs) {
-                    HWND wnd_root = GetAncestor(m_wnd_tabs, GA_ROOT), wnd_focus = nullptr;
+                    HWND wnd_root = GetAncestor(m_wnd_tabs, GA_ROOT);
+                    HWND wnd_focus = nullptr;
                     if (wnd_root) {
                         wnd_focus = m_active_panels[m_active_tab]->m_wnd;
                         if (!(GetWindowLongPtr(wnd_focus, GWL_STYLE) & WS_TABSTOP))
@@ -931,7 +934,9 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
             memset(str_class, 0, sizeof(str_class));
             if (wnd_child && RealGetWindowClass(wnd_child, str_class, tabsize(str_class) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
-                INT min = NULL, max = NULL, index = NULL;
+                INT min = NULL;
+                INT max = NULL;
+                INT index = NULL;
                 BOOL err = FALSE;
                 SendMessage(wnd_child, UDM_GETRANGE32, (WPARAM)&min, (LPARAM)&max);
                 index = SendMessage(wnd_child, UDM_GETPOS32, (WPARAM)NULL, (LPARAM)&err);
