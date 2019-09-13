@@ -1,7 +1,7 @@
 variables:
   solution: vc16/columns_ui-public.sln
   llvmMsBuildArgs: /p:PlatformToolset=llvm;UseLldLink=False;UseLlvmLib=False;SpectreMitigation=
-  vcpkgPackages: 'ms-gsl range-v3'
+  vcpkgInstallArgs: 'ms-gsl range-v3 --overlay-ports=$(System.DefaultWorkingDirectory)\ports'
 jobs:
 - template: job-build.yml
   parameters:
@@ -16,7 +16,7 @@ jobs:
     name: vs2019_llvm
     platform: Win32
     solution: ${{ variables.solution }}
-    vcpkgPackages: ${{ variables.vcpkgPackages }}
+    vcpkgInstallArgs: ${{ variables.vcpkgInstallArgs }}
     vmImage: windows-2019
 - template: job-build.yml
   parameters:
@@ -29,5 +29,5 @@ jobs:
     name: vs2019_v142
     platform: Win32
     solution: ${{ variables.solution }}
-    vcpkgPackages: ${{ variables.vcpkgPackages }}
+    vcpkgInstallArgs: ${{ variables.vcpkgInstallArgs }}
     vmImage: windows-2019

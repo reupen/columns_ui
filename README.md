@@ -29,8 +29,10 @@ git clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
 .\bootstrap-vcpkg.bat
 .\vcpkg integrate install
-.\vcpkg install ms-gsl range-v3
+.\vcpkg install ms-gsl range-v3 --overlay-ports=..\columns_ui\ports
 ```
+
+(Note: Change the `..\columns_ui\ports` path in the `.\vcpkg install` command as necessary.)
 
 ### Building using the Visual Studio IDE
 Open `vc16/columns_ui-public.sln` in Visual Studio 2019.
