@@ -21,7 +21,8 @@ struct ColumnTimes {
 
 void double_to_string(double blah, pfc::string_base& p_out, int points = 10, bool ms = true)
 {
-    int decimal, sign;
+    int decimal;
+    int sign;
     pfc::array_t<char> buffer;
     buffer.set_size(_CVTBUFSIZE);
     buffer.fill_null();
@@ -67,7 +68,10 @@ void speedtest(ColumnListCRef columns, bool b_global)
 
     GlobalVariableList p_vars;
 
-    double time_compile_global = 0, time_compile_global_colour = 0, time_global = 0, time_colour = 0;
+    double time_compile_global = 0;
+    double time_compile_global_colour = 0;
+    double time_global = 0;
+    double time_colour = 0;
 
     service_ptr_t<titleformat_object> to_global;
     service_ptr_t<titleformat_object> to_global_colour;

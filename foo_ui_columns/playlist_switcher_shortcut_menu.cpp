@@ -11,7 +11,8 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     playlist_position_reference_tracker indexTracked(false);
     indexTracked.m_playlist = index;
 
-    t_size num = m_playlist_api->get_playlist_count(), active = m_playlist_api->get_active_playlist();
+    t_size num = m_playlist_api->get_playlist_count();
+    t_size active = m_playlist_api->get_active_playlist();
     bool b_index_valid = index < num;
 
     if (b_index_valid)

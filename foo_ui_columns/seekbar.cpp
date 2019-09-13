@@ -20,7 +20,8 @@ void SeekBarToolbar::SeekBarTrackbarCallback::get_tooltip_text(unsigned pos, uih
 
 void SeekBarToolbar::update_seekbars(bool positions_only)
 {
-    unsigned n, count = windows.get_count();
+    unsigned n;
+    unsigned count = windows.get_count();
     if (positions_only) {
         for (n = 0; n < count; n++)
             if (windows[n]->get_wnd())
@@ -54,7 +55,8 @@ void SeekBarToolbar::update_seek_pos()
     static_api_ptr_t<play_control> play_api;
 
     if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
-        double position = 0, length = 0;
+        double position = 0;
+        double length = 0;
         position = play_api->playback_get_position();
         length = play_api->playback_get_length();
 
@@ -88,7 +90,8 @@ void SeekBarToolbar::update_seek()
     static_api_ptr_t<play_control> play_api;
 
     if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
-        double position = 0, length = 0;
+        double position = 0;
+        double length = 0;
         position = play_api->playback_get_position();
         length = play_api->playback_get_length();
 

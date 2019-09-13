@@ -152,7 +152,8 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     t_uint32 get_command_count() override { return cfg_layout.get_presets().get_count(); }
     GUID get_command(t_uint32 p_index) override
     {
-        pfc::string8 name, buff;
+        pfc::string8 name;
+        pfc::string8 buff;
         get_name(p_index, name);
         buff << "[View/Layout] " << name;
         return static_api_ptr_t<hasher_md5>()->process_single_guid(buff.get_ptr(), buff.get_length());

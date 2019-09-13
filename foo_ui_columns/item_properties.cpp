@@ -426,7 +426,8 @@ void ItemProperties::refresh_contents()
     metadata_aggregators.resize(field_count);
 
     pfc::list_t<uih::ListView::InsertItem> items;
-    t_size i, count = m_handles.get_count();
+    t_size i;
+    t_size count = m_handles.get_count();
 
     std::vector<metadb_info_container::ptr> info_refs;
     info_refs.resize(count);
@@ -492,7 +493,8 @@ void ItemProperties::refresh_contents()
         }
     }
 
-    t_size old_count = get_item_count(), new_count = items.get_count();
+    t_size old_count = get_item_count();
+    t_size new_count = items.get_count();
 
     if (new_count && old_count) {
         pfc::list_t<uih::ListView::InsertItem> items_replace;
@@ -676,7 +678,8 @@ void ItemProperties::notify_save_inline_edit(const char* value)
     static_api_ptr_t<metadb_io_v2> tagger_api;
     if (strcmp(value, "<mixed values>") != 0) {
         pfc::list_t<pfc::string8> values;
-        const char *ptr = value, *start = ptr;
+        const char* ptr = value;
+        const char* start = ptr;
         while (*ptr) {
             start = ptr;
             while (*ptr != ';' && *ptr)
@@ -746,7 +749,8 @@ bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<t_si
         m_edit_field = m_fields[m_edit_index].m_name;
         m_edit_handles = m_handles;
 
-        pfc::string8_fast_aggressive text, temp;
+        pfc::string8_fast_aggressive text;
+        pfc::string8_fast_aggressive temp;
         {
             metadb_info_container::ptr p_info;
             if (m_edit_handles[0]->get_info_ref(p_info))

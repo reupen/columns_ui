@@ -11,7 +11,8 @@ bool LayoutTabNode::have_item(const GUID& p_guid)
 {
     if (m_item->get_ptr()->get_panel_guid() == p_guid)
         return true;
-    unsigned n, count;
+    unsigned n;
+    unsigned count;
     for (n = 0, count = m_children.get_count(); n < count; n++) {
         if (m_children[n]->have_item(p_guid))
             return true;
@@ -202,7 +203,8 @@ bool LayoutTab::_fix_single_instance_recur(uie::splitter_window_ptr& p_window)
         return false;
 
     bool modified = false;
-    t_size i, count = p_window->get_panel_count();
+    t_size i;
+    t_size count = p_window->get_panel_count();
     pfc::array_staticsize_t<bool> mask(count);
 
     for (i = 0; i < count; i++) {
@@ -875,7 +877,8 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (p_splitter.is_valid() && p_node->m_children.get_count() < p_splitter->get_maximum_panel_count()) {
                     HMENU menu_change_base = CreatePopupMenu();
                     HMENU popup = nullptr;
-                    unsigned count = panels.get_count(), last = 0;
+                    unsigned count = panels.get_count();
+                    unsigned last = 0;
                     for (unsigned n = 0; n < count; n++) {
                         if (!panels[n].prefer_multiple_instances || !m_node_root->have_item(panels[n].guid)) {
                             if (!popup || uStringCompare(panels[last].category, panels[n].category)) {

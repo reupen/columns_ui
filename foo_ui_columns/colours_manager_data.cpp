@@ -77,7 +77,9 @@ void ColoursManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p
     }
 
     pfc::array_t<bool> mask;
-    t_size i, count = m_entries.get_count(), counter = 0;
+    t_size i;
+    t_size count = m_entries.get_count();
+    t_size counter = 0;
     mask.set_count(count);
     for (i = 0; i < count; i++)
         if (mask[i] = clients.have_item(m_entries[i]->guid))

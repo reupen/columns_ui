@@ -569,7 +569,8 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         throw pfc::exception_bug_check();
 
     uie::window::ptr p_window = p_data.m_hierarchy[hierarchy_count - 1];
-    uie::splitter_window_ptr p_container, p_splitter;
+    uie::splitter_window_ptr p_container;
+    uie::splitter_window_ptr p_splitter;
     uie::splitter_window_v2_ptr p_container_v2;
 
     if (p_window.is_valid())

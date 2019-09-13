@@ -210,7 +210,8 @@ t_size get_text_ptr_length_colour(const char * ptr, t_size ptr_length)
 
 t_size g_get_text_ptr_characters_colour(const char* ptr, t_size ptr_length)
 {
-    t_size i = 0, charCount = 0;
+    t_size i = 0;
+    t_size charCount = 0;
 
     while (ptr[i] && i < ptr_length) {
         while (ptr[i] && i < ptr_length && ptr[i] != '\x3') {
@@ -235,7 +236,8 @@ t_size g_get_text_ptr_characters_colour(const char* ptr, t_size ptr_length)
 
 t_size g_increase_text_ptr_colour(const char* ptr, t_size ptr_length, t_size count)
 {
-    t_size i = 0, charCount = 0;
+    t_size i = 0;
+    t_size charCount = 0;
 
     while (ptr[i] && i < ptr_length && charCount < count) {
         while (ptr[i] && i < ptr_length && charCount < count && ptr[i] != '\x3') {
@@ -271,7 +273,10 @@ t_size utf8_char_prev_len(const char * str, t_size ptr)
 bool text_ptr_find_break(
     const char* ptr, t_size length, t_size desiredPositionChar, t_size& positionChar, t_size& positionByte)
 {
-    t_size i = 0, charPos = 0, prevSpaceByte = pfc_infinite, prevSpaceChar = pfc_infinite;
+    t_size i = 0;
+    t_size charPos = 0;
+    t_size prevSpaceByte = pfc_infinite;
+    t_size prevSpaceChar = pfc_infinite;
 
     while (i < length /* && ptr[i] != ' '*/) {
         if (i < length && ptr[i] == ' ') {
@@ -327,7 +332,8 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
     displayLines.prealloc(rawLines.get_count() * 2);
     sz.cx = 0;
     sz.cy = 0;
-    t_size i, count = rawLines.get_count();
+    t_size i;
+    t_size count = rawLines.get_count();
     displayLines.set_count(count);
     for (i = 0; i < count; i++) {
         displayLines[i].m_raw_bytes = rawLines[i].m_raw_bytes;
@@ -367,8 +373,11 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
             t_size ptrStart = ptr;
 
             bool bWrapped = false;
-            t_size textWrappedPtr = 0, ptrLengthNoColours = 0, ptrLength = 0; // no colour codes
-            t_size ptrTextWidth = 0, ptrCharacterExtent = 0;
+            t_size textWrappedPtr = 0;
+            t_size ptrLengthNoColours = 0;
+            t_size ptrLength = 0; // no colour codes
+            t_size ptrTextWidth = 0;
+            t_size ptrCharacterExtent = 0;
 
             t_size lineTotalChars = g_get_text_ptr_characters_colour(&text[ptr], ptrRemaining);
             pfc::array_t<INT, pfc::alloc_fast_aggressive> character_extents;
@@ -477,7 +486,8 @@ void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_
             }
 
             bool b_skipped = false;
-            t_size wrapChar = 0, wrapByte = 0;
+            t_size wrapChar = 0;
+            t_size wrapByte = 0;
             if (bWrapped) {
                 if (text_ptr_find_break(&text[ptrStart], ptrLength + (ptr - ptrStart),
                         (textWrappedPtr ? textWrappedPtr - 1 : 0)
@@ -696,7 +706,9 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
     t_size fontChangesCount = p_font_data.m_font_changes.get_count();
     t_size fontPtr = 0;
 
-    t_size i, count = newLineDataWrapped.get_count(), start = 0; //(rc.top<0?(0-rc.top)/line_height : 0);
+    t_size i;
+    t_size count = newLineDataWrapped.get_count();
+    t_size start = 0; //(rc.top<0?(0-rc.top)/line_height : 0);
 
     RECT rc_line = rc;
     const t_size ySkip = rc.top < 0 ? 0 - rc.top : 0; // Hackish - meh
@@ -774,7 +786,8 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
         rc_line.left = rc.left + min(RECT_CX(rc), half_padding_size);
         rc_line.right = rc.right - min(RECT_CX(rc), half_padding_size);
 
-        t_size widthLine = RECT_CX(rc_line), widthLineText = newLineDataWrapped[i].m_width;
+        t_size widthLine = RECT_CX(rc_line);
+        t_size widthLineText = newLineDataWrapped[i].m_width;
 
         if (widthLineText < widthLine) {
             if (align == uih::ALIGN_CENTRE)

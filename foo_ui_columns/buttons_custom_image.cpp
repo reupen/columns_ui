@@ -272,7 +272,8 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(
         p_file.write_lendian_t(m_path.length(), p_abort);
         p_file.write(m_path.get_ptr(), m_path.length(), p_abort);
     } else {
-        pfc::string8 realPath, canPath;
+        pfc::string8 realPath;
+        pfc::string8 canPath;
         try {
             p_file.write_lendian_t(I_BUTTON_CUSTOM_IMAGE_DATA, p_abort);
 

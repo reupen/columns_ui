@@ -234,7 +234,8 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 static_api_ptr_t<playlist_manager_v3> playlist_api;
 
-                unsigned num = playlist_api->get_playlist_count(), active = playlist_api->get_active_playlist();
+                unsigned num = playlist_api->get_playlist_count();
+                unsigned active = playlist_api->get_active_playlist();
                 bool b_index_valid = idx < num;
 
                 metadb_handle_list_t<pfc::alloc_fast_aggressive> data;

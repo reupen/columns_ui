@@ -277,7 +277,8 @@ void FilterPanel::refresh(bool b_allow_autosend)
 
 t_size FilterPanel::get_field_index()
 {
-    t_size count = g_field_data.get_count(), ret = pfc_infinite;
+    t_size count = g_field_data.get_count();
+    t_size ret = pfc_infinite;
     for (t_size i = 0; i < count; i++)
         if (!stricmp_utf8(g_field_data[i].m_name, m_field_data.m_name)) {
             ret = i;
@@ -523,7 +524,8 @@ void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, Action action)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(m_nodes.get_count());
-    t_size i, count = m_nodes.get_count();
+    t_size i;
+    t_size count = m_nodes.get_count();
     for (i = 0; i < count; i++)
         if (p_nodes[i])
             handles.add_items(m_nodes[i].m_handles);

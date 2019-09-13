@@ -89,7 +89,8 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
             break;
         case IDC_UP: {
             if (m_field_list.get_selection_count(2) == 1) {
-                t_size index = 0, count = m_field_list.get_item_count();
+                t_size index = 0;
+                t_size count = m_field_list.get_item_count();
                 while (!m_field_list.get_item_selected(index) && index < count)
                     index++;
                 if (index && m_fields.get_count()) {
@@ -104,7 +105,8 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         } break;
         case IDC_DOWN: {
             if (m_field_list.get_selection_count(2) == 1) {
-                t_size index = 0, count = m_field_list.get_item_count();
+                t_size index = 0;
+                t_size count = m_field_list.get_item_count();
                 while (!m_field_list.get_item_selected(index) && index < count)
                     index++;
                 if (index + 1 < count && index + 1 < m_fields.get_count()) {
@@ -136,7 +138,8 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
                 pfc::bit_array_bittable mask(m_field_list.get_item_count());
                 m_field_list.get_selection_state(mask);
                 // bool b_found = false;
-                t_size index = 0, count = m_field_list.get_item_count();
+                t_size index = 0;
+                t_size count = m_field_list.get_item_count();
                 while (index < count) {
                     if (mask[index])
                         break;

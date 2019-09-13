@@ -89,7 +89,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (SUCCEEDED(p_ITaskbarList.instantiate(CLSID_TaskbarList))) {
             m_taskbar_list = p_ITaskbarList;
             if (m_taskbar_list.is_valid() && SUCCEEDED(m_taskbar_list->HrInit())) {
-                const unsigned cx = GetSystemMetrics(SM_CXSMICON), cy = GetSystemMetrics(SM_CYSMICON);
+                const unsigned cx = GetSystemMetrics(SM_CXSMICON);
+                const unsigned cy = GetSystemMetrics(SM_CYSMICON);
 
                 g_imagelist_taskbar = ImageList_Create(cx, cy, ILC_COLOR32, 0, 6);
 
@@ -624,7 +625,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                                 systray_contextmenus::ID_NOW_PLAYING_BASE,
                                 systray_contextmenus::ID_BASE_FILE_PREFS - 1);
 
-                            pfc::string8_fast_aggressive title, name, title2, title3;
+                            pfc::string8_fast_aggressive title;
+                            pfc::string8_fast_aggressive name;
+                            pfc::string8_fast_aggressive title2;
+                            pfc::string8_fast_aggressive title3;
                             static_api_ptr_t<play_control> play_api;
                             metadb_handle_ptr track;
                             if (play_api->get_now_playing(track)) {
@@ -775,7 +779,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     parts[u_parts - 1] = rc.right - GetSystemMetrics(SM_CXVSCROLL);
                 }
 
-                unsigned part = -1, n = 0;
+                unsigned part = -1;
+                unsigned n = 0;
                 for (n = 0; n < u_parts; n++) {
                     if ((unsigned)lpnmm->pt.x < parts[n]) {
                         part = n;

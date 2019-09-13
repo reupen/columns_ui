@@ -223,7 +223,9 @@ void set_part_sizes(unsigned p_parts)
 
         m_parts.add_item(-1); // dummy
 
-        pfc::string8 text_lock, text_volume, text_length;
+        pfc::string8 text_lock;
+        pfc::string8 text_volume;
+        pfc::string8 text_length;
         static_api_ptr_t<playlist_manager> playlist_api;
         unsigned active = playlist_api->get_active_playlist();
 
@@ -261,7 +263,8 @@ void set_part_sizes(unsigned p_parts)
 
         m_parts[0] = rc2.right - rc2.left;
 
-        unsigned n, count = m_parts.get_count();
+        unsigned n;
+        unsigned count = m_parts.get_count();
         for (n = 1; n < count; n++)
             m_parts[0] -= m_parts[n];
 

@@ -131,7 +131,8 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     TRACK_CALL_TEXT("artwork_reader_ng_t::read_artwork");
     m_bitmaps.remove_all();
 
-    bool b_loaded = false, b_extracter_attempted = false;
+    bool b_loaded = false;
+    bool b_extracter_attempted = false;
     album_art_extractor_instance_ptr p_extractor;
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
 
@@ -289,15 +290,18 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 
 HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
 {
-    HDC dc = nullptr, dcc = nullptr;
+    HDC dc = nullptr;
+    HDC dcc = nullptr;
     dc = GetDC(nullptr);
     dcc = CreateCompatibleDC(dc);
     // cy = bm.GetHeight();
     if (b_reflection)
         cy = cx; //(cy*11 -7) / 14;
-    t_size ocx = cx, ocy = cy;
+    t_size ocx = cx;
+    t_size ocy = cy;
 
-    t_size cx_source = bm.GetWidth(), cy_source = bm.GetHeight();
+    t_size cx_source = bm.GetWidth();
+    t_size cy_source = bm.GetHeight();
 
     double ar_source = (double)cx_source / (double)cy_source;
     double ar_dest = (double)ocx / (double)ocy;
@@ -437,7 +441,8 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item, t_size item_group
                 ret = *group->m_artwork_bitmap;
             }
         } else {
-            t_size cx = get_group_info_area_width(), cy = get_group_info_area_height();
+            t_size cx = get_group_info_area_width();
+            t_size cy = get_group_info_area_height();
             /*t_size padding=get_default_indentation_step();
             if (cx>padding)
                 cx-=padding;

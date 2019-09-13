@@ -214,7 +214,8 @@ public:
             if (numSelected == 1) {
                 pfc::bit_array_bittable mask(get_item_count());
                 get_selection_state(mask);
-                t_size index = 0, count = get_item_count();
+                t_size index = 0;
+                t_size count = get_item_count();
                 while (index < count) {
                     if (mask[index])
                         break;

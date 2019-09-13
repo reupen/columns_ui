@@ -420,7 +420,8 @@ void CALLBACK SpectrumAnalyserVisualisation::g_timer_proc(HWND wnd, UINT msg, UI
 void g_scale_value(
     t_size source_count, t_size index, t_size dest_count, t_size& source_start, t_size& source_end, bool b_log)
 {
-    double start, end;
+    double start;
+    double end;
     if (b_log) {
         static constexpr auto power = 500;
         static const double exp0 = pow(power, 0);
@@ -477,7 +478,8 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                     t_size channel_count = p_chunk->get_channels();
                     for (t_size i = 0; i < totalbars; i++) {
                         double val = 0;
-                        t_size starti, endi;
+                        t_size starti;
+                        t_size endi;
                         g_scale_value(sample_count, i, totalbars, starti, endi, m_scale == scale_logarithmic);
                         for (t_size j = starti; j <= endi; j++) {
                             if (j < sample_count) {
@@ -511,7 +513,8 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                 t_size channel_count = p_chunk->get_channels();
                 for (t_size i = 0; i < (t_size)rc_client->right; i++) {
                     double val = 0;
-                    t_size starti, endi;
+                    t_size starti;
+                    t_size endi;
                     g_scale_value(sample_count, i, rc_client->right, starti, endi, m_scale == scale_logarithmic);
                     for (t_size j = starti; j <= endi; j++) {
                         if (j < sample_count) {

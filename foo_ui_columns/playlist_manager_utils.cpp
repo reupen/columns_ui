@@ -160,7 +160,8 @@ bool cut(const pfc::bit_array& mask)
 bool cut(const pfc::list_base_const_t<t_size>& indices)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
-    t_size count = indices.get_count(), playlist_count = m_playlist_api->get_playlist_count();
+    t_size count = indices.get_count();
+    t_size playlist_count = m_playlist_api->get_playlist_count();
     pfc::bit_array_bittable mask(playlist_count);
     for (t_size i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
@@ -183,7 +184,8 @@ bool copy(const pfc::bit_array& mask)
 bool copy(const pfc::list_base_const_t<t_size>& indices)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
-    t_size count = indices.get_count(), playlist_count = m_playlist_api->get_playlist_count();
+    t_size count = indices.get_count();
+    t_size playlist_count = m_playlist_api->get_playlist_count();
     pfc::bit_array_bittable mask(playlist_count);
     for (t_size i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
