@@ -870,7 +870,7 @@ void PlaylistView::notify_update_item_data(t_size index)
     t_size i;
     t_size count = m_column_data.get_count();
     t_size count_display_groups = get_item_display_group_count(index);
-    p_out.set_count(count);
+    p_out.resize(count);
     get_item(index)->m_style_data.set_count(count);
 
     metadb_handle_ptr ptr;
@@ -966,7 +966,7 @@ void PlaylistView::get_insert_items(
     concurrency::parallel_for(size_t{0}, count, [this, &items, &handles, group_count](size_t index) {
         pfc::string8_fast temp;
         temp.prealloc(32);
-        items[index].m_groups.set_size(group_count);
+        items[index].m_groups.resize(group_count);
         for (size_t i = 0; i < group_count; i++) {
             handles[index]->format_title(nullptr, temp, m_scripts[i], nullptr);
             items[index].m_groups[i] = temp;

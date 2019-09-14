@@ -88,7 +88,7 @@ public:
     {
         items.set_count(count);
         for (t_size i = 0; i < count; i++) {
-            items[i].m_subitems.set_size(2);
+            items[i].m_subitems.resize(2);
             items[i].m_subitems[0] = filter_panel::cfg_field_list[base + i].m_name;
             items[i].m_subitems[1] = filter_panel::cfg_field_list[base + i].m_field;
         }

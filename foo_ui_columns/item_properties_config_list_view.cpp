@@ -60,7 +60,7 @@ void FieldsList::get_insert_items(t_size base, t_size count, pfc::list_t<uih::Li
 {
     items.set_count(count);
     for (t_size i = 0; i < count; i++) {
-        items[i].m_subitems.set_size(2);
+        items[i].m_subitems.resize(2);
         items[i].m_subitems[0] = m_fields[base + i].m_name_friendly;
         items[i].m_subitems[1] = m_fields[base + i].m_name;
     }

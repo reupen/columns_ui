@@ -445,7 +445,7 @@ void FilterPanel::set_field(const FieldData& field, bool b_force)
 void FilterPanel::notify_update_item_data(t_size index)
 {
     auto& subitems = get_item_subitems(index);
-    subitems.set_size(1);
+    subitems.resize(1);
 
     subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value);
 }

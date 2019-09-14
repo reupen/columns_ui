@@ -153,7 +153,7 @@ void ButtonsToolbar::ConfigParam::populate_buttons_list()
 
     pfc::array_staticsize_t<uih::ListView::InsertItem> items(count);
     for (unsigned n = 0; n < count; n++) {
-        items[n].m_subitems.set_size(2);
+        items[n].m_subitems.resize(2);
         items[n].m_subitems[0] = m_buttons[n].get_name().c_str();
         items[n].m_subitems[1] = m_buttons[n].get_type_desc().c_str();
     }
@@ -170,7 +170,7 @@ void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_siz
     pfc::list_t<uih::ListView::InsertItem> items;
     items.set_count(count);
     for (unsigned n = index; n < index + count; n++) {
-        items[n - index].m_subitems.set_size(2);
+        items[n - index].m_subitems.resize(2);
         items[n - index].m_subitems[0] = m_buttons[n].get_name().c_str();
         items[n - index].m_subitems[1] = m_buttons[n].get_type_desc().c_str();
     }
@@ -320,7 +320,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 // unsigned idx = uSendDlgItemMessageText(wnd, IDC_BUTTON_LIST, LB_ADDSTRING, 0, name);
 
                 uih::ListView::InsertItem item;
-                item.m_subitems.set_size(2);
+                item.m_subitems.resize(2);
                 item.m_subitems[0] = m_buttons[index].get_name().c_str();
                 item.m_subitems[1] = m_buttons[index].get_type_desc().c_str();
                 t_size index_list = m_button_list.get_item_count();

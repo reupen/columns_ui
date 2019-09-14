@@ -127,8 +127,8 @@ public:
                     pfc::list_t<uih::ListView::InsertItem> items;
                     items.set_count(1);
                     {
-                        items[0].m_groups.set_size(1);
-                        items[0].m_subitems.set_size(1);
+                        items[0].m_groups.resize(1);
+                        items[0].m_subitems.resize(1);
 
                         items[0].m_groups[0] = g_artwork_sources[m_edit_index].m_name;
                         items[0].m_subitems[0] = dest;
@@ -173,8 +173,8 @@ public:
             pfc::array_t<uih::ListView::InsertItem> items;
             items.set_count(subindexcount);
             for (t_size subindex = 0; subindex < subindexcount; subindex++) {
-                items[subindex].m_groups.set_size(1);
-                items[subindex].m_subitems.set_size(1);
+                items[subindex].m_groups.resize(1);
+                items[subindex].m_subitems.resize(1);
                 items[subindex].m_groups[0] = g_artwork_sources[index].m_name;
                 items[subindex].m_subitems[0] = (*g_artwork_sources[index].m_scripts)[subindex];
             }
