@@ -409,7 +409,7 @@ private:
         using ptr = pfc::refcounted_object_ptr_t<self_t>;
         style_data_t m_style_data;
         PlaylistViewGroup* get_group(t_size index) { return static_cast<PlaylistViewGroup*>(m_groups[index].get_ptr()); }
-        t_size get_group_count() { return m_groups.get_count(); }
+        t_size get_group_count() { return m_groups.size(); }
     };
     virtual void flush_artwork_images()
     {
