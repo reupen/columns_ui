@@ -187,3 +187,5 @@ Release.Win32
 *.opendb
 *.db
 .vs
+
+/foo_ui_columns/version.h
