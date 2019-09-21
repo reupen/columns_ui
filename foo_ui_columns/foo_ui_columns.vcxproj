@@ -125,7 +125,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
-      <Command>powershell -File ..\scripts\pre-build.ps1</Command>
+      <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -168,7 +168,7 @@
       <FullProgramDatabaseFile>true</FullProgramDatabaseFile>
     </Link>
     <PreBuildEvent>
-      <Command>powershell -File ..\scripts\pre-build.ps1</Command>
+      <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -211,7 +211,7 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>powershell -File ..\scripts\pre-build.ps1</Command>
+      <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
@@ -253,7 +253,7 @@
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
     </Link>
     <PreBuildEvent>
-      <Command>powershell -File ..\scripts\pre-build.ps1</Command>
+      <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
   </ItemDefinitionGroup>
