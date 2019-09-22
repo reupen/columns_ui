@@ -75,19 +75,19 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
-    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(SolutionDir)$(Configuration)\$(TargetName).fb2k-component;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
-    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(SolutionDir)$(Configuration)\$(TargetName).fb2k-component;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
-    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(SolutionDir)$(Configuration)\$(TargetName).fb2k-component;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(ProjectDir);</IncludePath>
-    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
+    <ExtensionsToDeleteOnClean>$(ProjectDir)version.h;$(SolutionDir)$(Configuration)\$(TargetName).fb2k-component;$(ExtensionsToDeleteOnClean)</ExtensionsToDeleteOnClean>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>
@@ -132,6 +132,10 @@
       <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>powershell -File ..\scripts\post-build.ps1 -ComponentPath $(TargetPath) -OutputDir $(TargetDir)</Command>
+      <Message>Creating archive...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Midl>
@@ -175,6 +179,10 @@
       <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>powershell -File ..\scripts\post-build.ps1 -ComponentPath $(TargetPath) -OutputDir $(TargetDir)</Command>
+      <Message>Creating archive...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Midl>
@@ -218,6 +226,10 @@
       <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>powershell -File ..\scripts\post-build.ps1 -ComponentPath $(TargetPath) -OutputDir $(TargetDir)</Command>
+      <Message>Creating archive...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Midl>
@@ -260,6 +272,10 @@
       <Command>powershell -File ..\scripts\pre-build.ps1 -TemplatePath version.h.template -OutputPath version.h</Command>
       <Message>Setting version number...</Message>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>powershell -File ..\scripts\post-build.ps1 -ComponentPath $(TargetPath) -OutputDir $(TargetDir)</Command>
+      <Message>Creating archive...</Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include=".\artwork_helpers.cpp" />
