@@ -827,6 +827,7 @@
       <Filter>Resources</Filter>
     </None>
     <None Include=".clang-format" />
+    <None Include="version.h.template" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include=".\foo_ui_columns.rc">
