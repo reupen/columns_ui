@@ -1,12 +1,11 @@
 variables:
   solution: vc16/columns_ui-public.sln
-  llvmMsBuildArgs: /p:PlatformToolset=llvm;UseLldLink=False;UseLlvmLib=False;SpectreMitigation=
+  llvmMsBuildArgs: /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;SpectreMitigation=
   vcpkgInstallArgs: 'ms-gsl range-v3 --overlay-ports=$(System.DefaultWorkingDirectory)\ports'
 jobs:
 - template: job-build.yml
   parameters:
     displayName: VS 2019 LLVM
-    installLlvm: 'true'
     matrix:
       Debug:
         configuration: Debug
