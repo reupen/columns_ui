@@ -3,19 +3,15 @@
 
 namespace pvt {
 
-void PlaylistView::render_group_info(HDC dc, t_size index, t_size group_count, const RECT& rc2)
+void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, t_size index, RECT rc)
 {
-    if (!m_gdiplus_initialised)
-        return;
-    HBITMAP bm = request_group_artwork(index, group_count);
+    HBITMAP bm = m_playlist_view->request_group_artwork(index);
 
     if (bm) {
-        HDC dcc = CreateCompatibleDC(dc);
+        HDC dcc = CreateCompatibleDC(context.dc);
         BITMAP bminfo;
         memset(&bminfo, 0, sizeof(bminfo));
         GetObject(bm, sizeof(BITMAP), &bminfo);
-
-        RECT rc = rc2;
 
         /*t_size padding=get_default_indentation_step();
 
@@ -36,22 +32,18 @@ void PlaylistView::render_group_info(HDC dc, t_size index, t_size group_count, c
         rc_bitmap.bottom = rc_bitmap.top + min(bminfo.bmHeight, RECT_CY(rc));
 
         HBITMAP bm_old = SelectBitmap(dcc, bm);
-        BitBlt(dc, rc_bitmap.left, rc_bitmap.top, RECT_CX(rc_bitmap), RECT_CY(rc_bitmap), dcc, 0, 0, SRCCOPY);
+        BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, RECT_CX(rc_bitmap), RECT_CY(rc_bitmap), dcc, 0, 0, SRCCOPY);
         SelectBitmap(dcc, bm_old);
         DeleteDC(dcc);
     }
 }
 
-void PlaylistView::render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused,
-    bool b_highlight, bool should_hide_focus, bool b_focused, const RECT* rc_outter_item)
+void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size index,
+    std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
+    bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc)
 {
     cui::colours::helper p_helper(ColoursClient::g_guid);
 
-    RECT rc_inner = *rc_outter_item;
-    rc_inner.left += indentation;
-    const RECT* rc = &rc_inner;
-
-    const Item* item = get_item(index);
     int theme_state = NULL;
     if (b_selected)
         theme_state = (b_highlight ? LISS_HOTSELECTED : (b_window_focused ? LISS_SELECTED : LISS_SELECTEDNOTFOCUS));
@@ -60,118 +52,118 @@ void PlaylistView::render_item(HDC dc, t_size index, int indentation, bool b_sel
 
     bool b_theme_enabled = p_helper.get_themed();
     // NB Third param of IsThemePartDefined "must be 0". But this works.
-    bool b_themed = b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_LISTITEM, theme_state);
+    bool b_themed = b_theme_enabled && context.list_view_theme
+        && IsThemePartDefined(context.list_view_theme, LVP_LISTITEM, theme_state);
 
-    const style_data_t& style_data = get_style_data(index);
+    const style_data_t& style_data = m_playlist_view->get_style_data(index);
 
     COLORREF cr_text = NULL;
     if (b_themed && theme_state) {
-        cr_text = GetThemeSysColor(get_theme(), b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
+        cr_text = GetThemeSysColor(context.list_view_theme, b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
         {
-            if (IsThemeBackgroundPartiallyTransparent(get_theme(), LVP_LISTITEM, theme_state))
-                DrawThemeParentBackground(get_wnd(), dc, rc);
-            DrawThemeBackground(get_theme(), dc, LVP_LISTITEM, theme_state, rc, nullptr);
+            if (IsThemeBackgroundPartiallyTransparent(context.list_view_theme, LVP_LISTITEM, theme_state))
+                DrawThemeParentBackground(context.wnd, context.dc, &rc);
+            DrawThemeBackground(context.list_view_theme, context.dc, LVP_LISTITEM, theme_state, &rc, nullptr);
         }
     }
 
-    RECT rc_subitem = *rc_outter_item;
-    t_size countk = get_column_count();
+    RECT rc_subitem = rc;
 
-    for (t_size k = 0; k < countk; k++) {
-        rc_subitem.right = rc_subitem.left + get_column_display_width(k);
-        if (k == 0)
-            rc_subitem.left += indentation;
+    for (t_size column_index = 0; column_index < sub_items.size(); column_index++) {
+        auto& sub_item = sub_items[column_index];
+        auto& sub_style_data = style_data[column_index];
 
+        rc_subitem.right = rc_subitem.left + sub_item.width;
         if (!(b_themed && theme_state)) {
             if (b_selected)
-                cr_text = !b_window_focused ? style_data[k]->selected_text_colour_non_focus
-                                            : style_data[k]->selected_text_colour;
+                cr_text = !b_window_focused ? sub_style_data->selected_text_colour_non_focus
+                                            : sub_style_data->selected_text_colour;
             else
-                cr_text = style_data[k]->text_colour;
+                cr_text = sub_style_data->text_colour;
 
             COLORREF cr_back;
             if (b_selected)
-                cr_back = !b_window_focused ? style_data[k]->selected_background_colour_non_focus
-                                            : style_data[k]->selected_background_colour;
+                cr_back = !b_window_focused ? sub_style_data->selected_background_colour_non_focus
+                                            : sub_style_data->selected_background_colour;
             else
-                cr_back = style_data[k]->background_colour;
+                cr_back = sub_style_data->background_colour;
 
-            FillRect(dc, &rc_subitem, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cr_back)));
+            FillRect(context.dc, &rc_subitem, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cr_back)));
         }
-        uih::text_out_colours_tab(dc, get_item_text(index, k), strlen(get_item_text(index, k)), uih::scale_dpi_value(1),
-            uih::scale_dpi_value(3), &rc_subitem, b_selected, cr_text, true, true, cfg_ellipsis != 0,
-            get_column_alignment(k));
+        uih::text_out_colours_tab(context.dc, sub_item.text.data(), sub_item.text.size(),
+            uih::scale_dpi_value(1) + (column_index == 0 ? indentation : 0), uih::scale_dpi_value(3), &rc_subitem,
+            b_selected, cr_text, true, true, cfg_ellipsis != 0, sub_item.alignment);
 
         const auto frame_width = uih::scale_dpi_value(1);
 
-        if (style_data[k]->use_frame_left) {
-            HPEN pen = CreatePen(PS_SOLID, frame_width, style_data[k]->frame_left);
-            auto pen_old = (HPEN)SelectObject(dc, pen);
+        if (sub_style_data->use_frame_left) {
+            HPEN pen = CreatePen(PS_SOLID, frame_width, sub_style_data->frame_left);
+            auto pen_old = (HPEN)SelectObject(context.dc, pen);
 
-            MoveToEx(dc, rc_subitem.left, rc_subitem.top, nullptr);
-            LineTo(dc, rc_subitem.left, rc_subitem.bottom);
-            SelectObject(dc, pen_old);
+            MoveToEx(context.dc, rc_subitem.left, rc_subitem.top, nullptr);
+            LineTo(context.dc, rc_subitem.left, rc_subitem.bottom);
+            SelectObject(context.dc, pen_old);
             DeleteObject(pen);
         }
-        if (style_data[k]->use_frame_top) {
-            HPEN pen = CreatePen(PS_SOLID, frame_width, style_data[k]->frame_top);
-            auto pen_old = (HPEN)SelectObject(dc, pen);
+        if (sub_style_data->use_frame_top) {
+            HPEN pen = CreatePen(PS_SOLID, frame_width, sub_style_data->frame_top);
+            auto pen_old = (HPEN)SelectObject(context.dc, pen);
 
-            MoveToEx(dc, rc_subitem.left, rc_subitem.top, nullptr);
-            LineTo(dc, rc_subitem.right, rc_subitem.top);
-            SelectObject(dc, pen_old);
+            MoveToEx(context.dc, rc_subitem.left, rc_subitem.top, nullptr);
+            LineTo(context.dc, rc_subitem.right, rc_subitem.top);
+            SelectObject(context.dc, pen_old);
             DeleteObject(pen);
         }
-        if (style_data[k]->use_frame_right) {
-            HPEN pen = CreatePen(PS_SOLID, frame_width, style_data[k]->frame_right);
-            auto pen_old = (HPEN)SelectObject(dc, pen);
+        if (sub_style_data->use_frame_right) {
+            HPEN pen = CreatePen(PS_SOLID, frame_width, sub_style_data->frame_right);
+            auto pen_old = (HPEN)SelectObject(context.dc, pen);
 
-            MoveToEx(dc, rc_subitem.right - frame_width, rc_subitem.top, nullptr);
-            LineTo(dc, rc_subitem.right - frame_width, rc_subitem.bottom);
-            SelectObject(dc, pen_old);
+            MoveToEx(context.dc, rc_subitem.right - frame_width, rc_subitem.top, nullptr);
+            LineTo(context.dc, rc_subitem.right - frame_width, rc_subitem.bottom);
+            SelectObject(context.dc, pen_old);
             DeleteObject(pen);
         }
-        if (style_data[k]->use_frame_bottom) {
-            HPEN pen = CreatePen(PS_SOLID, frame_width, style_data[k]->frame_bottom);
-            auto pen_old = (HPEN)SelectObject(dc, pen);
+        if (sub_style_data->use_frame_bottom) {
+            HPEN pen = CreatePen(PS_SOLID, frame_width, sub_style_data->frame_bottom);
+            auto pen_old = (HPEN)SelectObject(context.dc, pen);
 
-            MoveToEx(dc, rc_subitem.right - frame_width, rc_subitem.bottom - frame_width, nullptr);
-            LineTo(dc, rc_subitem.left - frame_width, rc_subitem.bottom - frame_width);
-            SelectObject(dc, pen_old);
+            MoveToEx(context.dc, rc_subitem.right - frame_width, rc_subitem.bottom - frame_width, nullptr);
+            LineTo(context.dc, rc_subitem.left - frame_width, rc_subitem.bottom - frame_width);
+            SelectObject(context.dc, pen_old);
             DeleteObject(pen);
         }
         rc_subitem.left = rc_subitem.right;
     }
     if (b_focused) {
-        ColourData colour_data{};
-        render_get_colour_data(colour_data);
-        render_focus_rect_default(colour_data, dc, should_hide_focus, *rc);
+        render_focus_rect(context, should_hide_focus, rc);
     }
 }
 
-void PlaylistView::render_group(
-    HDC dc, t_size index, t_size group, const char* text, int indentation, t_size level, const RECT& rc)
+void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index,
+    std::string_view text, int indentation, t_size level, RECT rc)
 {
     cui::colours::helper p_helper(ColoursClient::g_guid);
     bool b_theme_enabled = p_helper.get_themed();
 
     int text_width = NULL;
 
-    PlaylistViewGroup* item = get_item(index)->get_group(group);
-    if (!item->m_style_data.is_valid())
-        notify_update_item_data(index);
+    const auto* group = m_playlist_view->get_item(item_index)->get_group(group_index);
+    if (!group->m_style_data.is_valid())
+        m_playlist_view->notify_update_item_data(item_index);
 
     COLORREF cr = NULL;
-    if (!(b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_GROUPHEADER, NULL)
-            && SUCCEEDED(GetThemeColor(get_theme(), LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
-        cr = item->m_style_data->text_colour;
+    if (!(b_theme_enabled && context.list_view_theme
+            && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADER, NULL)
+            && SUCCEEDED(
+                GetThemeColor(context.list_view_theme, LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
+        cr = group->m_style_data->text_colour;
 
     {
-        gdi_object_t<HBRUSH>::ptr_t br = CreateSolidBrush(item->m_style_data->background_colour);
-        FillRect(dc, &rc, br);
+        gdi_object_t<HBRUSH>::ptr_t br = CreateSolidBrush(group->m_style_data->background_colour);
+        FillRect(context.dc, &rc, br);
     }
 
-    uih::text_out_colours_tab(dc, text, strlen(text), uih::scale_dpi_value(1) + indentation * level,
+    uih::text_out_colours_tab(context.dc, text.data(), text.size(), uih::scale_dpi_value(1) + indentation * level,
         uih::scale_dpi_value(3), &rc, false, cr, true, true, true, uih::ALIGN_LEFT, nullptr, true, true, &text_width);
 
     auto cx = (LONG)min(text_width, MAXLONG);
@@ -181,18 +173,22 @@ void PlaylistView::render_group(
         rc.top + RECT_CY(rc) / 2 - uih::scale_dpi_value(1) / 2 + uih::scale_dpi_value(1)};
 
     if (rc_line.right > rc_line.left) {
-        if (b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_GROUPHEADERLINE, NULL)
-            && SUCCEEDED(DrawThemeBackground(get_theme(), dc, LVP_GROUPHEADERLINE, LVGH_OPEN, &rc_line, nullptr))) {
+        if (b_theme_enabled && context.list_view_theme
+            && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADERLINE, NULL)
+            && SUCCEEDED(DrawThemeBackground(
+                context.list_view_theme, context.dc, LVP_GROUPHEADERLINE, LVGH_OPEN, &rc_line, nullptr))) {
         } else {
             COLORREF cr = NULL;
-            if (!(b_theme_enabled && get_theme() && IsThemePartDefined(get_theme(), LVP_GROUPHEADER, NULL)
-                    && SUCCEEDED(GetThemeColor(get_theme(), LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
-                cr = item->m_style_data->text_colour;
+            if (!(b_theme_enabled && context.list_view_theme
+                    && IsThemePartDefined(context.list_view_theme, LVP_GROUPHEADER, NULL)
+                    && SUCCEEDED(GetThemeColor(
+                        context.list_view_theme, LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
+                cr = group->m_style_data->text_colour;
             gdi_object_t<HPEN>::ptr_t pen = CreatePen(PS_SOLID, uih::scale_dpi_value(1), cr);
-            HPEN pen_old = SelectPen(dc, pen);
-            MoveToEx(dc, rc_line.left, rc_line.top, nullptr);
-            LineTo(dc, rc_line.right, rc_line.top);
-            SelectPen(dc, pen_old);
+            HPEN pen_old = SelectPen(context.dc, pen);
+            MoveToEx(context.dc, rc_line.left, rc_line.top, nullptr);
+            LineTo(context.dc, rc_line.right, rc_line.top);
+            SelectPen(context.dc, pen_old);
         }
     }
 }

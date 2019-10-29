@@ -313,11 +313,28 @@ public:
     void on_bool_changed(t_size mask) const override{};
 };
 
+class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
+public:
+    PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {};
+
+    void render_group_info(uih::lv::RendererContext context, t_size index, RECT rc) override;
+
+    void render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index, std::string_view text,
+        int indentation, t_size level, RECT rc) override;
+
+    void render_item(uih::lv::RendererContext context, t_size index, std::vector<uih::lv::RendererSubItem> sub_items,
+        int indentation, bool b_selected, bool b_window_focused, bool b_highlight, bool should_hide_focus,
+        bool b_focused, RECT rc) override;
+
+    class PlaylistView* m_playlist_view;
+};
+
 class PlaylistView
     : public ListViewPanelBase<ColoursClient, uie::playlist_window>
     , playlist_callback_single
     , BasePlaylistCallback {
     friend class NgTfThread;
+    friend class PlaylistViewRenderer;
 
     class SharedMesageWindow : public ui_helpers::container_window {
         class_data& get_class_data() const override
@@ -473,7 +490,7 @@ private:
     private:
     };
 
-    HBITMAP request_group_artwork(t_size index_item, t_size item_group_count);
+    HBITMAP request_group_artwork(t_size index_item);
 
     void update_all_items();
     void refresh_all_items_text();
@@ -644,12 +661,6 @@ private:
 
     void notify_on_set_focus(HWND wnd_lost) override;
     void notify_on_kill_focus(HWND wnd_receiving) override;
-
-    void render_group_info(HDC dc, t_size index, t_size group_count, const RECT& rc2) override;
-    void render_item(HDC dc, t_size index, int indentation, bool b_selected, bool b_window_focused, bool b_highlight,
-        bool should_hide_focus, bool b_focused, const RECT* rc) override;
-    void render_group(
-        HDC dc, t_size index, t_size group, const char* text, int indentation, t_size level, const RECT& rc) override;
 
     void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 

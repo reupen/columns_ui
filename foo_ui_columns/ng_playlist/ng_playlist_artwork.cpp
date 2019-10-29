@@ -411,8 +411,11 @@ HBITMAP g_create_hbitmap_from_data(
     return ret;
 }
 
-HBITMAP PlaylistView::request_group_artwork(t_size index_item, t_size item_group_count)
+HBITMAP PlaylistView::request_group_artwork(t_size index_item)
 {
+    if (!m_gdiplus_initialised)
+        return nullptr;
+
     t_size group_count = m_scripts.get_count();
     HBITMAP ret = nullptr;
     if (group_count) {
