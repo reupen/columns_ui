@@ -38,7 +38,7 @@ static const GUID g_guid_selection_poperties_show_group_titles
     = {0xb84886a5, 0x4510, 0x42d0, {0x83, 0x7a, 0x33, 0xe5, 0x53, 0x60, 0xc2, 0x4e}};
 
 cfg_uint cfg_selection_properties_tracking_mode(g_guid_selection_properties_tracking_mode, 0);
-cfg_uint cfg_selection_properties_edge_style(g_guid_selection_poperties_edge_style, 2);
+cfg_uint cfg_selection_properties_edge_style(g_guid_selection_poperties_edge_style, 0);
 cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_sections, 1 + 2 + 4 + 8 + 16);
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
 cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_show_group_titles, true);

@@ -1,5 +1,9 @@
 # Change log
 
+## Development version
+
+* All built-in panels now have a default edge style of 'none'.
+
 ## 1.2.0
 
 * There were no changes from version 1.2.0-rc.2.
