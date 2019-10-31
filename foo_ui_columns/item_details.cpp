@@ -41,7 +41,7 @@ const GUID g_guid_item_details_edge_style
     = {0xe944e1bf, 0x822, 0x4141, {0xb4, 0x17, 0x1f, 0x25, 0x9d, 0x73, 0x8a, 0xbc}};
 
 cfg_uint cfg_item_details_tracking_mode(g_guid_item_details_tracking_mode, 0);
-cfg_uint cfg_item_details_edge_style(g_guid_item_details_edge_style, 2);
+cfg_uint cfg_item_details_edge_style(g_guid_item_details_edge_style, 0);
 #if 0
 cfg_string cfg_item_details_script(g_guid_item_details_script, "[%artist%]$crlf()[%title%]$crlf()[%album%][$crlf()$crlf()%lyrics%]");
 #else

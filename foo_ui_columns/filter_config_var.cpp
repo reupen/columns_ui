@@ -28,7 +28,7 @@ cfg_bool cfg_orderedbysplitters(g_guid_orderedbysplitters, true);
 cfg_bool cfg_showemptyitems(g_guid_showemptyitems, false);
 cfg_int cfg_doubleclickaction(g_guid_doubleclickaction, 1);
 cfg_int cfg_middleclickaction(g_guid_middleclickaction, 0);
-cfg_int cfg_edgestyle(g_guid_edgestyle, 2);
+cfg_int cfg_edgestyle(g_guid_edgestyle, 0);
 fbh::ConfigInt32DpiAware cfg_vertical_item_padding(g_guid_itempadding, 4);
 fbh::ConfigBool cfg_show_column_titles(g_guid_show_column_titles, true);
 fbh::ConfigBool cfg_allow_sorting(g_guid_allow_sorting, true);
