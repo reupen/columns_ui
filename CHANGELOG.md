@@ -4,6 +4,8 @@
 
 * All built-in panels now have a default edge style of 'none'.
 
+* The component is now compiled using foobar2000 SDK 2019-09-18. [[#243](https://github.com/reupen/columns_ui/pull/243)]
+
 ## 1.2.0
 
 * There were no changes from version 1.2.0-rc.2.
