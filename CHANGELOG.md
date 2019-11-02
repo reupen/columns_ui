@@ -2,6 +2,8 @@
 
 ## Development version
 
+* A bug was fixed where, when typing the name of an item in a list view to jump to that item, the space key would not jump to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
+
 * All built-in panels now have a default edge style of 'none'.
 
 * The Windows notification icon is now disabled by default. [[#245](https://github.com/reupen/columns_ui/pull/245)]
