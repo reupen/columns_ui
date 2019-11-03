@@ -13,12 +13,14 @@
 #include <complex>
 #include <future>
 #include <iostream>
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string_view>
 #include <utility>
 #include <unordered_map>
+#include <variant>
 #include <vector>
 
 #include <concurrent_vector.h>
@@ -61,5 +63,4 @@
 #include "config_vars.h"
 #include "config_defaults.h"
 
-using namespace std::chrono_literals;
-using namespace std::string_literals;
+using namespace std::literals;

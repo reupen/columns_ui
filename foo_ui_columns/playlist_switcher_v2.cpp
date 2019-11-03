@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
+#include "playlist_switcher_title_formatting.h"
 
 // {70A5C273-67AB-4bb6-B61C-F7975A6871FD}
 const GUID PlaylistSwitcher::g_guid_font
@@ -13,9 +14,7 @@ void PlaylistSwitcher::get_insert_items(t_size base, t_size count, pfc::list_t<u
 
     for (t_size i = 0; i < count; i++) {
         p_out[i].m_subitems.resize(1);
-        pfc::string8 temp;
-        m_playlist_api->playlist_get_name(i + base, temp);
-        p_out[i].m_subitems[0].set_string(StringPlaylistFormatName(i + base, temp, get_playing_playlist()));
+        p_out[i].m_subitems[0].set_string(cui::format_playlist_title(i + base));
     }
 }
 
