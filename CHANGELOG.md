@@ -6,6 +6,8 @@
 
 * All built-in panels now have a default edge style of 'none'.
 
+* The playlist switcher configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]
+
 * The Windows notification icon is now disabled by default. [[#245](https://github.com/reupen/columns_ui/pull/245)]
 
 * The component is now compiled using foobar2000 SDK 2019-09-18. [[#243](https://github.com/reupen/columns_ui/pull/243)]
