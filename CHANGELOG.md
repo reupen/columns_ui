@@ -4,6 +4,8 @@
 
 * A bug was fixed where, when typing the name of an item in a list view to jump to that item, the space key would not jump to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
 
+* Various bugs relating to the display of ellipses in truncated text containing colour codes were fixed. [[#249](https://github.com/reupen/columns_ui/pull/249), [ui_helpers#42](https://github.com/reupen/ui_helpers/pull/42), [ui_helpers#43](https://github.com/reupen/ui_helpers/pull/43)]
+
 * All built-in panels now have a default edge style of 'none'.
 
 * The playlist switcher configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]
