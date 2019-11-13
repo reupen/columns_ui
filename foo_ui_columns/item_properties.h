@@ -3,10 +3,14 @@
 #include "list_view_panel.h"
 
 struct InfoSection {
-    t_uint32 id;
-    const char* name;
-    InfoSection(t_uint32 p_id, const char* p_name) : id(p_id), name(p_name){};
+    // The ID is used for settings storage (in case we reorder the sections etc.)
+    int id{};
+    const char* name{};
+    bool is_unknown_section_default{};
 };
+
+constexpr std::array<InfoSection, 5> g_info_sections{
+    {{0, "Location"}, {1, "General"}, {2, "ReplayGain"}, {3, "Playback statistics"}, {4, "All other sections", true}}};
 
 class Field {
 public:
@@ -35,8 +39,6 @@ private:
 };
 
 t_size g_get_info_section_id_by_name(const char* p_name);
-
-extern const InfoSection g_info_sections[5];
 
 class ItemPropertiesColoursClient : public cui::colours::client {
 public:

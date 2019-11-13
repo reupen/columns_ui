@@ -43,19 +43,6 @@ cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
 cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_show_group_titles, true);
 
-const InfoSection g_info_sections[] = {InfoSection(0, "Location"), InfoSection(1, "General"),
-    InfoSection(2, "ReplayGain"), InfoSection(3, "Playback statistics"), InfoSection(4, "Other")};
-
-t_size g_get_info_section_index_by_name(const char* p_name)
-{
-    const t_size count = tabsize(g_info_sections);
-    for (t_size i = 0; i < count; i++) {
-        if (!stricmp_utf8(p_name, g_info_sections[i].name))
-            return i;
-    }
-    return 4;
-}
-
 ItemProperties::MessageWindow ItemProperties::g_message_window;
 
 std::vector<ItemProperties*> ItemProperties::g_windows;
@@ -330,9 +317,10 @@ public:
 
 class TrackPropertyCallback : public track_property_callback_v2 {
 public:
-    TrackPropertyCallback(const std::vector<std::string>& fields) : m_fields(fields)
+    TrackPropertyCallback(const std::vector<std::string>& fields, bool include_unknown_sections)
+        : m_fields(fields), m_include_unknown_sections(include_unknown_sections)
     {
-        m_section_values.resize(tabsize(g_info_sections));
+        m_known_sections.resize(g_info_sections.size());
     }
 
     void set_property(const char* p_group, double p_sortpriority, const char* p_name, const char* p_value) override
@@ -340,23 +328,68 @@ public:
         if (!is_group_wanted(p_group))
             return;
 
-        const size_t index = g_get_info_section_index_by_name(p_group);
-        m_section_values[index].push_back({p_name, p_value, p_sortpriority});
+        auto section = ranges::find_if(g_info_sections, [p_group](auto&& section) {
+            return !section.is_unknown_section_default && !stricmp_utf8(p_group, section.name);
+        });
+
+        if (section != g_info_sections.end()) {
+            auto index = std::distance(g_info_sections.begin(), section);
+            m_known_sections[index].push_back({p_name, p_value, p_sortpriority});
+        } else {
+            m_unknown_sections[p_group].push_back({p_name, p_value, p_sortpriority});
+        }
     }
 
     bool is_group_wanted(const char* p_group) override
     {
-        return ranges::any_of(m_fields, [p_group](auto&& section) { return !stricmp_utf8(p_group, section.c_str()); });
+        auto is_known_section = ranges::any_of(g_info_sections, [p_group](auto&& section) {
+            return !section.is_unknown_section_default && !stricmp_utf8(p_group, section.name);
+        });
+
+        if (is_known_section)
+            return ranges::any_of(
+                m_fields, [p_group](auto&& section) { return !stricmp_utf8(p_group, section.c_str()); });
+
+        return m_include_unknown_sections;
     }
 
-    void sort()
+    auto to_sorted_vector()
     {
-        for (auto&& values : m_section_values)
+        std::vector<std::tuple<std::string, concurrency::concurrent_vector<TrackProperty>>> all_sections;
+        std::vector<std::tuple<std::string, concurrency::concurrent_vector<TrackProperty>>> unknown_sections;
+
+        for (auto&& [index, values] : ranges::view::enumerate(m_known_sections)) {
+            if (values.empty())
+                continue;
+
             ranges::sort(values, TrackProperty::s_compare);
+
+            all_sections.emplace_back(g_info_sections[index].name, std::move(values));
+        }
+
+        for (auto&& [name, values] : m_unknown_sections) {
+            ranges::sort(values, TrackProperty::s_compare);
+
+            unknown_sections.emplace_back(name, std::move(values));
+        }
+
+        ranges::sort(unknown_sections, [](auto&& left, auto&& right) {
+            auto&& [left_name, _left_values] = left;
+            auto&& [right_name, _right_values] = right;
+            return stricmp_utf8(left_name.data(), right_name.data()) < 0;
+        });
+
+        ranges::push_back(all_sections, unknown_sections);
+
+        return all_sections;
     }
 
-    std::vector<concurrency::concurrent_vector<TrackProperty>> m_section_values;
+private:
+    std::vector<concurrency::concurrent_vector<TrackProperty>> m_known_sections;
+    concurrency::concurrent_unordered_map<std::string, concurrency::concurrent_vector<TrackProperty>>
+        m_unknown_sections;
     const std::vector<std::string>& m_fields;
+    bool m_include_unknown_sections{};
 };
 
 template <class Container>
@@ -369,14 +402,14 @@ private:
     Container& m_items;
 };
 
-std::vector<concurrency::concurrent_vector<TrackProperty>> get_track_properties(
+decltype(std::declval<TrackPropertyCallback>().to_sorted_vector()) get_track_properties(
     const std::vector<metadb_info_container::ptr>& info_refs, const std::vector<std::string>& info_sections,
-    const metadb_handle_list& tracks)
+    bool include_unknown_sections, const metadb_handle_list& tracks)
 {
     if (!tracks.get_count())
         return {};
 
-    TrackPropertyCallback props(info_sections);
+    TrackPropertyCallback props(info_sections, include_unknown_sections);
 
     std::vector<track_property_provider::ptr> main_thread_providers;
     std::vector<track_property_provider_v4::ptr> thread_safe_providers;
@@ -411,9 +444,7 @@ std::vector<concurrency::concurrent_vector<TrackProperty>> get_track_properties(
             provider->enumerate_properties_v4(tracks, info_source, props, fb2k::noAbort);
         });
 
-    props.sort();
-
-    return std::move(props.m_section_values);
+    return props.to_sorted_vector();
 }
 
 void ItemProperties::refresh_contents()
@@ -472,23 +503,26 @@ void ItemProperties::refresh_contents()
         items.add_item(item);
     }
 
+    bool include_unknown_sections{};
+
     std::vector<std::string> info_sections;
     for (auto&& info_section : g_info_sections) {
         if (m_info_sections_mask & (1 << (info_section.id))) {
-            info_sections.emplace_back(info_section.name);
+            if (info_section.is_unknown_section_default)
+                include_unknown_sections = true;
+            else
+                info_sections.emplace_back(info_section.name);
         }
     }
 
-    auto track_properties = get_track_properties(info_refs, info_sections, m_handles);
+    auto track_properties = get_track_properties(info_refs, info_sections, include_unknown_sections, m_handles);
 
-    for (auto group_index : ranges::view::iota(size_t{0}, track_properties.size())) {
-        auto&& values = track_properties[group_index];
-
+    for (auto&& [section, values] : track_properties) {
         for (auto&& value : values) {
             uih::ListView::InsertItem item(2, 1);
             item.m_subitems[0] = value.m_name;
             item.m_subitems[1] = value.m_value;
-            item.m_groups[0] = g_info_sections[group_index].name;
+            item.m_groups[0] = section.c_str();
             items.add_item(item);
         }
     }

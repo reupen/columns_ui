@@ -23,6 +23,7 @@
 #include <variant>
 #include <vector>
 
+#include <concurrent_unordered_map.h>
 #include <concurrent_vector.h>
 #include <io.h>
 #include <ppl.h>
