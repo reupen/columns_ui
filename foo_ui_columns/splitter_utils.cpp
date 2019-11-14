@@ -107,6 +107,7 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(gsl
 
     pfc::string8 title;
     reader.read_string(title, aborter);
+    item->set_title(title, title.get_length());
 
     uint32_t panel_data_size{};
     reader.read_lendian_t(panel_data_size, aborter);
