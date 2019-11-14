@@ -14,6 +14,8 @@
 
 * The default information sections displayed by the Item properties panel were changed. [[#251]](https://github.com/reupen/columns_ui/pull/251)
 
+* The default metadata field titles in the Item properties panel now use sentence case. [[#251]](https://github.com/reupen/columns_ui/pull/251)
+
 * The Windows notification icon is now disabled by default. [[#245](https://github.com/reupen/columns_ui/pull/245)]
 
 * The component is now compiled using foobar2000 SDK 2019-09-18. [[#243](https://github.com/reupen/columns_ui/pull/243)]

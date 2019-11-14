@@ -699,11 +699,11 @@ ItemProperties::ItemProperties()
     m_fields.add_item(Field("Genre", "GENRE"));
     m_fields.add_item(Field("Composer", "COMPOSER"));
     m_fields.add_item(Field("Performer", "PERFORMER"));
-    m_fields.add_item(Field("Album Artist", "ALBUM ARTIST"));
-    m_fields.add_item(Field("Track Number", "TRACKNUMBER"));
-    m_fields.add_item(Field("Total Tracks", "TOTALTRACKS"));
-    m_fields.add_item(Field("Disc Number", "DISCNUMBER"));
-    m_fields.add_item(Field("Total Discs", "TOTALDISCS"));
+    m_fields.add_item(Field("Album artist", "ALBUM ARTIST"));
+    m_fields.add_item(Field("Track number", "TRACKNUMBER"));
+    m_fields.add_item(Field("Total tracks", "TOTALTRACKS"));
+    m_fields.add_item(Field("Disc number", "DISCNUMBER"));
+    m_fields.add_item(Field("Total discs", "TOTALDISCS"));
     m_fields.add_item(Field("Comment", "COMMENT"));
 }
 
