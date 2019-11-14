@@ -19,10 +19,9 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         GetClientRect(wnd_lv, &rc);
         uih::list_view_insert_column_text(wnd_lv, 0, L"", RECT_CX(rc));
 
-        t_size count = tabsize(g_info_sections);
-        for (t_size i = 0; i < count; i++) {
-            uih::list_view_insert_item_text(wnd_lv, i, 0, g_info_sections[i].name);
-            ListView_SetCheckState(wnd_lv, i, (m_info_sections_mask & (1 << g_info_sections[i].id)) ? TRUE : FALSE);
+        for (auto&& [index, section] : ranges::view::enumerate(g_info_sections)) {
+            uih::list_view_insert_item_text(wnd_lv, index, 0, section.name);
+            ListView_SetCheckState(wnd_lv, index, (m_info_sections_mask & (1 << section.id)) ? TRUE : FALSE);
         }
 
         HWND wnd_combo = GetDlgItem(wnd, IDC_EDGESTYLE);
@@ -54,7 +53,8 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
             switch (lpnm->code) {
             case LVN_ITEMCHANGED: {
                 auto lpnmlv = (LPNMLISTVIEW)lp;
-                if (!m_initialising && lpnmlv->iItem < tabsize(g_info_sections) && (lpnmlv->uChanged & LVIF_STATE)) {
+                if (!m_initialising && lpnmlv->iItem < gsl::narrow<int>(g_info_sections.size())
+                    && (lpnmlv->uChanged & LVIF_STATE)) {
                     m_info_sections_mask = m_info_sections_mask & ~(1 << g_info_sections[lpnmlv->iItem].id);
 
                     // if (((((UINT)(lpnmlv->uNewState & LVIS_STATEIMAGEMASK )) >> 12) -1))
