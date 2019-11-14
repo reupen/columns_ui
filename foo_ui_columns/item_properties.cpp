@@ -39,7 +39,7 @@ static const GUID g_guid_selection_poperties_show_group_titles
 
 cfg_uint cfg_selection_properties_tracking_mode(g_guid_selection_properties_tracking_mode, 0);
 cfg_uint cfg_selection_properties_edge_style(g_guid_selection_poperties_edge_style, 0);
-cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_sections, 1 + 2 + 4 + 8 + 16);
+cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_sections, 1 + 2 + 4);
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
 cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_show_group_titles, true);
 
@@ -699,11 +699,11 @@ ItemProperties::ItemProperties()
     m_fields.add_item(Field("Genre", "GENRE"));
     m_fields.add_item(Field("Composer", "COMPOSER"));
     m_fields.add_item(Field("Performer", "PERFORMER"));
-    m_fields.add_item(Field("Album Artist", "ALBUM ARTIST"));
-    m_fields.add_item(Field("Track Number", "TRACKNUMBER"));
-    m_fields.add_item(Field("Total Tracks", "TOTALTRACKS"));
-    m_fields.add_item(Field("Disc Number", "DISCNUMBER"));
-    m_fields.add_item(Field("Total Discs", "TOTALDISCS"));
+    m_fields.add_item(Field("Album artist", "ALBUM ARTIST"));
+    m_fields.add_item(Field("Track number", "TRACKNUMBER"));
+    m_fields.add_item(Field("Total tracks", "TOTALTRACKS"));
+    m_fields.add_item(Field("Disc number", "DISCNUMBER"));
+    m_fields.add_item(Field("Total discs", "TOTALDISCS"));
     m_fields.add_item(Field("Comment", "COMMENT"));
 }
 
