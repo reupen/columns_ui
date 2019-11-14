@@ -59,8 +59,12 @@ msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc16\columns_ui
 
 ### Using the Clang compiler (experimental)
 
-Columns UI can be also compiled using recent versions of Clang. [Download and install LLVM](http://llvm.org/releases/download.html) and the [LLVM Compiler Toolchain Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.llvm-toolchain). In a (x86 or x64) VS 2017 Native Tools command prompt, run:
+Columns UI can be also compiled using the version of Clang distributed with Visual Studio. 
+
+(Note that Clang is not installed by default – in the Visual Studio 2019 installer, you will need to select the Clang compiler and the Clang build tools components.)
+
+With these installed, open a Developer Command Prompt for VS 2019 from the start menu, switch to the Columns UI source directory and run:
 
 ```
-msbuild /m /p:PlatformToolset=llvm;UseLldLink=false;Platform=Win32;Configuration=Release /t:Rebuild vc16\columns_ui-public.sln
+msbuild /m /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;Platform=Win32;Configuration=Release /t:Rebuild vc16\columns_ui-public.sln
 ```

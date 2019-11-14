@@ -1,7 +1,6 @@
 parameters:
   name: ''
   displayName: ''
-  installLlvm: ''
   matrix: {}
   msBuildArgs: ''
   platform: ''
@@ -14,7 +13,6 @@ jobs:
   pool:
     vmImage: ${{ parameters.vmImage }}
   variables:
-    installLlvm: ${{ parameters.installLlvm }}
     msBuildArgs: ${{ parameters.msBuildArgs }}
     platform: ${{ parameters.platform }}
     solution: ${{ parameters.solution }}
@@ -25,14 +23,6 @@ jobs:
   steps:
   - checkout: self
     submodules: recursive
-  - powershell: |
-      Set-PSDebug -Trace 1
-      choco install llvm
-      Invoke-WebRequest https://yuo.be/ci/azure-llvm-msbuild-vs2019.zip -OutFile azure-llvm-msbuild-vs2019.zip
-      Expand-Archive azure-llvm-msbuild-vs2019.zip azure-llvm-msbuild-vs2019
-      cmd /c azure-llvm-msbuild-vs2019\install-enterprise.bat
-    condition: variables.installLlvm
-    displayName: Install LLVM
   - powershell: |
       Set-PSDebug -Trace 1
       vcpkg version
