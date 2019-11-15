@@ -35,13 +35,16 @@ private:
     static unsigned tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti);
     [[nodiscard]] static std::unordered_map<HTREEITEM, LayoutTabNode::ptr> __populate_tree(
         HWND wnd_tree, LayoutTabNode::ptr p_node, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
+    [[nodiscard]] static std::unordered_map<HTREEITEM, LayoutTabNode::ptr> __repopulate_node(
+        HWND wnd_tree, LayoutTabNode::ptr node, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
     static void print_index_out_of_range();
 
     void populate_tree(HWND wnd, const uie::splitter_item_t* item, LayoutTabNode::ptr p_node,
         HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
     void populate_tree(
         HWND wnd, LayoutTabNode::ptr p_node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
-    void remove_tree_item(HWND wnd_tv, HTREEITEM ti);
+    void repopulate_node(
+        HWND wnd, LayoutTabNode::ptr node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
     void remove_node(HWND wnd, HTREEITEM ti);
     void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);
     void copy_item(HWND wnd, HTREEITEM ti);

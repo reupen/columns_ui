@@ -7,6 +7,18 @@
 #include "splitter_utils.h"
 
 namespace cui::prefs {
+
+template <class Destination, class Source>
+void merge_maps(Destination& target, Source& source)
+{
+    target.merge(source);
+    assert(source.empty());
+    for (auto&& [key, value] : source) {
+        target.insert_or_assign(key, std::move(value));
+    }
+    source.clear();
+}
+
 bool LayoutTabNode::have_item(const GUID& p_guid)
 {
     if (m_item->get_ptr()->get_panel_guid() == p_guid)
@@ -85,7 +97,7 @@ void LayoutTab::populate_tree(
     SendMessage(wnd_tree, WM_SETREDRAW, FALSE, NULL);
     auto node_map = __populate_tree(wnd_tree, p_node, ti_parent, ti_after);
     SendMessage(wnd_tree, WM_SETREDRAW, TRUE, NULL);
-    m_node_map.merge(node_map);
+    merge_maps(m_node_map, node_map);
 }
 
 void LayoutTab::populate_tree(HWND wnd, LayoutTabNode::ptr p_node, HTREEITEM ti_parent, HTREEITEM ti_after)
@@ -94,13 +106,16 @@ void LayoutTab::populate_tree(HWND wnd, LayoutTabNode::ptr p_node, HTREEITEM ti_
     SendMessage(wnd_tree, WM_SETREDRAW, FALSE, NULL);
     auto node_map = __populate_tree(wnd_tree, p_node, ti_parent, ti_after);
     SendMessage(wnd_tree, WM_SETREDRAW, TRUE, NULL);
-    m_node_map.merge(node_map);
+    merge_maps(m_node_map, node_map);
 }
 
-void LayoutTab::remove_tree_item(HWND wnd_tv, HTREEITEM ti)
+void LayoutTab::repopulate_node(HWND wnd, LayoutTabNode::ptr node, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
-    TreeView_DeleteItem(wnd_tv, ti);
-    m_node_map.erase(ti);
+    HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
+    SendMessage(wnd_tree, WM_SETREDRAW, FALSE, NULL);
+    auto node_map = __repopulate_node(wnd_tree, node, ti_parent, ti_after);
+    SendMessage(wnd_tree, WM_SETREDRAW, TRUE, NULL);
+    merge_maps(m_node_map, node_map);
 }
 
 std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
@@ -142,8 +157,34 @@ std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
                 // uie::splitter_item_ptr child;
                 p_splitter->get_panel(n, *p_child_node->m_item);
                 auto child_node_map = __populate_tree(wnd_tree, p_child_node, ti_item);
-                node_map.merge(child_node_map);
+                merge_maps(node_map, child_node_map);
             }
+        }
+    }
+
+    return node_map;
+}
+
+std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__repopulate_node(
+    HWND wnd_tree, LayoutTabNode::ptr node, HTREEITEM ti_parent, HTREEITEM ti_after)
+{
+    std::unordered_map<HTREEITEM, LayoutTabNode::ptr> node_map;
+    const auto window = node->m_window;
+    pfc::string8 sz_text;
+
+    if (window.is_valid())
+        window->get_name(sz_text);
+    else
+        sz_text = "<unknown>";
+
+    const auto ti_item = insert_item_in_tree_view(wnd_tree, sz_text, ti_parent, ti_after, node->m_expanded);
+
+    if (ti_item) {
+        node_map[ti_item] = node;
+
+        for (auto&& child : node->m_children) {
+            auto child_node_map = __populate_tree(wnd_tree, child, ti_item);
+            merge_maps(node_map, child_node_map);
         }
     }
 
@@ -162,7 +203,7 @@ void LayoutTab::remove_node(HWND wnd, HTREEITEM ti)
     if (index < p_parent_node->m_children.get_count()) {
         p_parent_node->m_children.remove_by_idx(index);
         p_parent_node->m_splitter->remove_panel(index);
-        remove_tree_item(wnd_tv, ti);
+        TreeView_DeleteItem(wnd_tv, ti);
         save_item(wnd, ti_parent);
     }
 }
@@ -317,8 +358,11 @@ void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
             p_parent_node->m_splitter->move_up(index);
             p_parent_node->m_children.swap_items(index, index - 1);
             HTREEITEM ti_prev = TreeView_GetPrevSibling(wnd_tv, ti);
-            remove_tree_item(wnd_tv, ti_prev);
-            populate_tree(wnd, p_parent_node->m_children[index], ti_parent, ti);
+            TreeView_DeleteItem(wnd_tv, ti_prev);
+
+            const auto child_node = p_parent_node->m_children[index];
+            repopulate_node(wnd, child_node, ti_parent, ti);
+
             save_item(wnd, ti_parent);
         }
     }
@@ -330,8 +374,11 @@ void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
             HTREEITEM ti_prev = TreeView_GetPrevSibling(wnd_tv, ti);
             if (!ti_prev)
                 ti_prev = TVI_FIRST;
-            remove_tree_item(wnd_tv, ti_next);
-            populate_tree(wnd, p_parent_node->m_children[index], ti_parent, ti_prev);
+            TreeView_DeleteItem(wnd_tv, ti_next);
+
+            const auto child_node = p_parent_node->m_children[index];
+            repopulate_node(wnd, child_node, ti_parent, ti_prev);
+
             save_item(wnd, ti_parent);
         }
     }
@@ -384,11 +431,11 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
                 HTREEITEM ti_prev = TreeView_GetPrevSibling(wnd_tv, ti);
                 if (!ti_prev)
                     ti_prev = TVI_FIRST;
-                remove_tree_item(wnd_tv, ti);
+                TreeView_DeleteItem(wnd_tv, ti);
                 populate_tree(wnd, p_node->m_item->get_ptr(), p_node, ti_parent, ti_prev);
                 save_item(wnd, ti_parent);
             } else {
-                remove_tree_item(wnd_tv, ti);
+                TreeView_DeleteItem(wnd_tv, ti);
                 populate_tree(wnd, p_node->m_item->get_ptr(), p_node);
                 m_changed = true;
             }
@@ -399,8 +446,9 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
 void LayoutTab::change_base(HWND wnd, const GUID& p_guid)
 {
     HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    TreeView_DeleteAllItems(wnd_tv);
     m_node_map.clear();
+    // Note: This sends TVN_DELETED notifications
+    TreeView_DeleteAllItems(wnd_tv);
     m_node_root->m_children.remove_all();
 
     m_node_root->m_item->get_ptr()->set_panel_guid(p_guid);
@@ -427,11 +475,11 @@ void LayoutTab::save_item(HWND wnd, HTREEITEM ti)
     HTREEITEM parent = TreeView_GetParent(wnd_tv, ti);
     if (parent) {
         auto p_parent_node = m_node_map.at(parent);
-        service_ptr_t<uie::splitter_window> p_splitter;
-        if (p_parent_node->m_window.is_valid() && p_parent_node->m_window->service_query_t(p_splitter)) {
+        auto splitter = p_parent_node->m_splitter;
+        if (splitter.is_valid()) {
             unsigned index = tree_view_get_child_index(wnd_tv, ti);
-            if (index < p_splitter->get_panel_count()) {
-                p_splitter->replace_panel(index, p_node->m_item->get_ptr());
+            if (index < splitter->get_panel_count()) {
+                splitter->replace_panel(index, p_node->m_item->get_ptr());
                 save_item(wnd, parent);
             }
         }
@@ -498,9 +546,10 @@ void LayoutTab::initialise_tree(HWND wnd)
 
 void LayoutTab::deinitialise_tree(HWND wnd)
 {
+    m_node_map.clear();
+    // Note: This sends TVN_DELETED notifications
     TreeView_DeleteAllItems(GetDlgItem(wnd, IDC_TREE));
     m_node_root.reset();
-    m_node_map.clear();
 }
 
 void LayoutTab::apply()
@@ -701,6 +750,11 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 auto param = reinterpret_cast<LPNMTREEVIEW>(hdr);
                 auto node = m_node_map.at(param->itemNew.hItem);
                 node->m_expanded = (param->itemNew.state & TVIS_EXPANDED) != 0;
+                break;
+            }
+            case TVN_DELETEITEM: {
+                auto param = reinterpret_cast<LPNMTREEVIEW>(hdr);
+                m_node_map.erase(param->itemOld.hItem);
                 break;
             }
             case TVN_SELCHANGED: {
