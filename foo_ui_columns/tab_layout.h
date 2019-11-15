@@ -16,6 +16,8 @@ public:
     service_ptr_t<uie::splitter_window> m_splitter;
     pfc::list_t<ptr> m_children;
     pfc::rcptr_t<uie::splitter_item_ptr> m_item;
+    bool m_expanded{true};
+
     LayoutTabNode() : m_item(pfc::rcnew_t<uie::splitter_item_ptr>()) {}
 };
 
@@ -27,7 +29,7 @@ public:
 
 private:
     static HTREEITEM insert_item_in_tree_view(
-        HWND wnd_tree, const char* sz_text, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
+        HWND wnd_tree, const char* sz_text, HTREEITEM ti_parent, HTREEITEM ti_after, bool is_expanded);
     static void get_panel_list(uie::window_info_list_simple& p_out);
     static HTREEITEM tree_view_get_child_by_index(HWND wnd_tv, HTREEITEM ti, unsigned index);
     static unsigned tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti);
