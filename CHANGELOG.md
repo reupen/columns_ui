@@ -10,6 +10,8 @@
 
 * A bug was fixed where, when a panel with a custom title was copied and pasted, the custom title would not be set on the pasted panel. [[#253](https://github.com/reupen/columns_ui/pull/253)]
 
+* The expansion state of items in the layout tree on the Layout preferences page is now fully preserved when moving items up and down. [[#255](https://github.com/reupen/columns_ui/pull/255)]
+
 * All built-in panels now have a default edge style of 'none'.
 
 * The playlist switcher configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]

@@ -21,7 +21,7 @@ bool LayoutTabNode::have_item(const GUID& p_guid)
 }
 
 HTREEITEM LayoutTab::insert_item_in_tree_view(
-    HWND wnd_tree, const char* sz_text, HTREEITEM ti_parent, HTREEITEM ti_after)
+    HWND wnd_tree, const char* sz_text, HTREEITEM ti_parent, HTREEITEM ti_after, bool is_expanded)
 {
     uTVINSERTSTRUCT is;
     memset(&is, 0, sizeof(is));
@@ -29,7 +29,7 @@ HTREEITEM LayoutTab::insert_item_in_tree_view(
     is.hInsertAfter = ti_after;
     is.item.mask = TVIF_TEXT | TVIF_PARAM | TVIF_STATE;
     is.item.pszText = const_cast<char*>(sz_text);
-    is.item.state = TVIS_EXPANDED;
+    is.item.state = is_expanded ? TVIS_EXPANDED : 0;
     is.item.stateMask = TVIS_EXPANDED;
     return uTreeView_InsertItem(wnd_tree, &is);
 }
@@ -126,7 +126,7 @@ std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
 
     HTREEITEM ti_item = nullptr;
 
-    if ((ti_item = insert_item_in_tree_view(wnd_tree, sz_text, ti_parent, ti_after))) {
+    if ((ti_item = insert_item_in_tree_view(wnd_tree, sz_text, ti_parent, ti_after, p_node->m_expanded))) {
         node_map[ti_item] = p_node;
         p_node->m_window = p_wnd;
 
@@ -696,7 +696,14 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         switch (hdr->idFrom) {
         case IDC_TREE:
-            if (hdr->code == TVN_SELCHANGED) {
+            switch (hdr->code) {
+            case TVN_ITEMEXPANDED: {
+                auto param = reinterpret_cast<LPNMTREEVIEW>(hdr);
+                auto node = m_node_map.at(param->itemNew.hItem);
+                node->m_expanded = (param->itemNew.state & TVIS_EXPANDED) != 0;
+                break;
+            }
+            case TVN_SELCHANGED: {
                 TRACK_CALL_TEXT("tab_layout::TVN_SELCHANGED");
 
                 bool hidden = false;
@@ -803,8 +810,9 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 uSendDlgItemMessageText(wnd, IDC_CUSTOM_TITLE, WM_SETTEXT, NULL, custom_title_val);
                 SendDlgItemMessage(wnd, IDC_CAPTIONSTYLE, CB_SETCURSEL, orientation_val, 0);
                 m_initialising = false;
+                break;
             }
-            break;
+            }
         }
     } break;
     case WM_CONTEXTMENU: {
