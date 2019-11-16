@@ -4,6 +4,8 @@
 
 * The Item properties panel can now display custom information sections from third-party components. [[#251](https://github.com/reupen/columns_ui/pull/251)]
 
+* Support for selecting all text using the Ctrl-A keyboard shortcut when using inline field editing in list views was added. (Note that Windows 10 1809 and newer already supported this keyboard shortcut natively.) [[#246](https://github.com/reupen/columns_ui/pull/256), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/44)]
+
 * A bug was fixed where, when typing the name of an item in a list view to jump to that item, the space key would not jump to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
 
 * Various bugs relating to the display of ellipses in truncated text containing colour codes were fixed. [[#249](https://github.com/reupen/columns_ui/pull/249), [ui_helpers#42](https://github.com/reupen/ui_helpers/pull/42), [ui_helpers#43](https://github.com/reupen/ui_helpers/pull/43)]
