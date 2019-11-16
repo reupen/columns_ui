@@ -18,6 +18,8 @@
 
 * All built-in panels now have a default edge style of 'none'.
 
+* Tooltips are now enabled in the playlist view by default. [[#257]](https://github.com/reupen/columns_ui/pull/257)
+
 * The playlist switcher configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]
 
 * The default information sections displayed by the Item properties panel were changed. [[#251]](https://github.com/reupen/columns_ui/pull/251)
