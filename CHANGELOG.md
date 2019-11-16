@@ -34,7 +34,7 @@
 
 ### Internal changes
 
-* The internal state management of the layout tree on the Layout preferences page was reworked. [[#231](https://github.com/reupen/columns_ui/pull/231), [#256](https://github.com/reupen/columns_ui/pull/256)]
+* The internal state management of the layout tree on the Layout preferences page was reworked. [[#231](https://github.com/reupen/columns_ui/pull/231), [#256](https://github.com/reupen/columns_ui/pull/256), [#260](https://github.com/reupen/columns_ui/pull/260)]
 
 * The component is now compiled using foobar2000 SDK 2019-09-18. [[#243](https://github.com/reupen/columns_ui/pull/243)]
 
