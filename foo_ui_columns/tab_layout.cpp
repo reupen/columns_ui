@@ -87,16 +87,6 @@ unsigned LayoutTab::tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti)
     return n;
 }
 
-void LayoutTab::populate_tree(
-    HWND wnd, const uie::splitter_item_t* item, LayoutTabNode::ptr p_node, HTREEITEM ti_parent, HTREEITEM ti_after)
-{
-    HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
-    SendMessage(wnd_tree, WM_SETREDRAW, FALSE, NULL);
-    auto node_map = __populate_tree(wnd_tree, p_node, ti_parent, ti_after);
-    SendMessage(wnd_tree, WM_SETREDRAW, TRUE, NULL);
-    merge_maps(m_node_map, node_map);
-}
-
 void LayoutTab::populate_tree(HWND wnd, LayoutTabNode::ptr p_node, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
     HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
@@ -222,7 +212,7 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
         if (index <= p_parent->m_children.get_count()) {
             p_splitter->insert_panel(index, p_node->m_item->get_ptr());
             p_parent->m_children.insert_item(p_node, index);
-            populate_tree(wnd, p_node->m_item->get_ptr(), p_node, ti_parent, ti_after);
+            populate_tree(wnd, p_node, ti_parent, ti_after);
             save_item(wnd, ti_parent);
         }
     }
@@ -337,7 +327,7 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
         if (index <= p_parent->m_children.get_count()) {
             p_splitter->insert_panel(index, p_node->m_item->get_ptr());
             p_parent->m_children.insert_item(p_node, index);
-            populate_tree(wnd, p_node->m_item->get_ptr(), p_node, ti_parent, ti_after);
+            populate_tree(wnd, p_node, ti_parent, ti_after);
             save_item(wnd, ti_parent);
         }
     }
@@ -429,11 +419,11 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
                 if (!ti_prev)
                     ti_prev = TVI_FIRST;
                 TreeView_DeleteItem(wnd_tv, ti);
-                populate_tree(wnd, p_node->m_item->get_ptr(), p_node, ti_parent, ti_prev);
+                populate_tree(wnd, p_node, ti_parent, ti_prev);
                 save_item(wnd, ti_parent);
             } else {
                 TreeView_DeleteItem(wnd_tv, ti);
-                populate_tree(wnd, p_node->m_item->get_ptr(), p_node);
+                populate_tree(wnd, p_node);
                 m_changed = true;
             }
         }
@@ -451,7 +441,7 @@ void LayoutTab::change_base(HWND wnd, const GUID& p_guid)
     m_node_root->m_item->get_ptr()->set_panel_guid(p_guid);
     m_node_root->m_window.release();
     m_node_root->m_splitter.release();
-    populate_tree(wnd, m_node_root->m_item->get_ptr(), m_node_root);
+    populate_tree(wnd, m_node_root);
     m_changed = true;
 }
 
@@ -538,7 +528,7 @@ void LayoutTab::initialise_tree(HWND wnd)
     m_node_root = std::make_shared<LayoutTabNode>();
     cfg_layout.get_preset(m_active_preset, *m_node_root->m_item);
     // g_layout_window.get_child(*g_node_root->m_item);
-    populate_tree(wnd, m_node_root->m_item->get_ptr(), m_node_root);
+    populate_tree(wnd, m_node_root);
 }
 
 void LayoutTab::deinitialise_tree(HWND wnd)
