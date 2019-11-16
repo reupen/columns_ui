@@ -11,12 +11,9 @@ namespace cui::prefs {
 template <class Destination, class Source>
 void merge_maps(Destination& target, Source& source)
 {
-    target.merge(source);
-    assert(source.empty());
-    for (auto&& [key, value] : source) {
-        target.insert_or_assign(key, std::move(value));
-    }
-    source.clear();
+    source.merge(target);
+    assert(target.empty());
+    target.swap(source);
 }
 
 bool LayoutTabNode::have_item(const GUID& p_guid)
