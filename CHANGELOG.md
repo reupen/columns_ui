@@ -1,34 +1,44 @@
 # Change log
 
-## Development version
+## 1.3.0 (in development)
+
+### Features
 
 * The Item properties panel can now display custom information sections from third-party components. [[#251](https://github.com/reupen/columns_ui/pull/251)]
 
 * Support for selecting all text using the Ctrl-A keyboard shortcut when using inline field editing in list views was added. (Note that Windows 10 1809 and newer already supported this keyboard shortcut natively.) [[#246](https://github.com/reupen/columns_ui/pull/256), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/44)]
 
-* A bug was fixed where, when typing the name of an item in a list view to jump to that item, the space key would not jump to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
+* Various default settings were updated:
 
-* Various bugs relating to the display of ellipses in truncated text containing colour codes were fixed. [[#249](https://github.com/reupen/columns_ui/pull/249), [ui_helpers#42](https://github.com/reupen/ui_helpers/pull/42), [ui_helpers#43](https://github.com/reupen/ui_helpers/pull/43)]
+    * All built-in panels now have a default edge style of 'none'. [[#242]](https://github.com/reupen/columns_ui/pull/242)
 
-* A bug was fixed where, when a panel with a custom title was copied and pasted, the custom title would not be set on the pasted panel. [[#253](https://github.com/reupen/columns_ui/pull/253)]
+    * The Windows notification icon is now disabled by default. [[#245](https://github.com/reupen/columns_ui/pull/245)]
 
-* Various Bugs leading to misbehaviour and possible crashes when making changes to the layout tree on the Layout preferences page were fixed. [[#256](https://github.com/reupen/columns_ui/pull/256)]
+    * Tooltips are now enabled in the playlist view by default. [[#257]](https://github.com/reupen/columns_ui/pull/257)
+
+    * The playlist switcher default configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]
+
+    * The default information sections displayed by the Item properties panel were changed. [[#253]](https://github.com/reupen/columns_ui/pull/253)
+
+    * The default metadata field titles in the Item properties panel now use sentence case. [[#253]](https://github.com/reupen/columns_ui/pull/253)
+
+### Bug fixes
 
 * The expansion state of items in the layout tree on the Layout preferences page is now fully preserved when moving items up and down. [[#255](https://github.com/reupen/columns_ui/pull/255)]
 
-* All built-in panels now have a default edge style of 'none'.
+* When typing the name of an item in a list view to jump to that item, the space key now correctly jumps to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
 
-* Tooltips are now enabled in the playlist view by default. [[#257]](https://github.com/reupen/columns_ui/pull/257)
+* Various bugs relating to the display of ellipses in truncated text containing colour codes were fixed. [[#249](https://github.com/reupen/columns_ui/pull/249), [ui_helpers#42](https://github.com/reupen/ui_helpers/pull/42), [ui_helpers#43](https://github.com/reupen/ui_helpers/pull/43)]
 
-* The playlist switcher configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]
+* When a panel with a custom title is copied and pasted, the custom title is now correctly set on the pasted panel. [[#253](https://github.com/reupen/columns_ui/pull/253)]
 
-* The default information sections displayed by the Item properties panel were changed. [[#251]](https://github.com/reupen/columns_ui/pull/251)
+### Internal changes
 
-* The default metadata field titles in the Item properties panel now use sentence case. [[#251]](https://github.com/reupen/columns_ui/pull/251)
-
-* The Windows notification icon is now disabled by default. [[#245](https://github.com/reupen/columns_ui/pull/245)]
+* The internal state management of the layout tree on the Layout preferences page was reworked. [[#231](https://github.com/reupen/columns_ui/pull/231), [#256](https://github.com/reupen/columns_ui/pull/256)]
 
 * The component is now compiled using foobar2000 SDK 2019-09-18. [[#243](https://github.com/reupen/columns_ui/pull/243)]
+
+* The component is now compiled using Visual Studio 2019 16.3.
 
 ## 1.2.0
 
