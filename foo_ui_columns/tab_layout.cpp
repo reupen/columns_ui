@@ -112,10 +112,9 @@ unsigned LayoutTab::tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti)
 
 void LayoutTab::populate_tree(HWND wnd, const LayoutTabNode::ptr& node, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
-    HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
-    SendMessage(wnd_tree, WM_SETREDRAW, FALSE, NULL);
-    auto node_map = __populate_tree(wnd_tree, node, ti_parent, ti_after);
-    SendMessage(wnd_tree, WM_SETREDRAW, TRUE, NULL);
+    SendMessage(m_wnd_tree, WM_SETREDRAW, FALSE, NULL);
+    auto node_map = __populate_tree(m_wnd_tree, node, ti_parent, ti_after);
+    SendMessage(m_wnd_tree, WM_SETREDRAW, TRUE, NULL);
     merge_maps(m_node_map, node_map);
 }
 
@@ -139,25 +138,22 @@ std::unordered_map<HTREEITEM, LayoutTabNode::ptr> LayoutTab::__populate_tree(
 
 void LayoutTab::remove_node(HWND wnd, HTREEITEM ti)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
+    HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
     if (!ti_parent)
         return;
 
     auto p_parent_node = m_node_map.at(ti_parent);
-    unsigned index = tree_view_get_child_index(wnd_tv, ti);
+    unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
     if (index < p_parent_node->m_children.size()) {
         p_parent_node->m_children.erase(p_parent_node->m_children.begin() + index);
         p_parent_node->m_splitter->remove_panel(index);
-        TreeView_DeleteItem(wnd_tv, ti);
+        TreeView_DeleteItem(m_wnd_tree, ti);
         save_item(wnd, ti_parent);
     }
 }
 
 void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-
     // uie::splitter_item_simple_t p_item;
     // p_item.set_panel_guid(p_guid);
     auto p_node = std::make_shared<LayoutTabNode>();
@@ -169,7 +165,7 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
         auto& parent_children = p_parent->m_children;
 
         unsigned index
-            = ti_after != TVI_LAST ? tree_view_get_child_index(wnd_tv, ti_after) + 1 : parent_children.size();
+            = ti_after != TVI_LAST ? tree_view_get_child_index(m_wnd_tree, ti_after) + 1 : parent_children.size();
         if (index <= parent_children.size()) {
             p_splitter->insert_panel(index, p_node->m_item->get_ptr());
             parent_children.insert(parent_children.begin() + index, p_node);
@@ -181,7 +177,6 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
 
 void LayoutTab::copy_item(HWND wnd, HTREEITEM ti)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
     auto p_node = m_node_map.at(ti);
     splitter_utils::copy_splitter_item_to_clipboard_safe(wnd, p_node->m_item->get_ptr());
 }
@@ -266,7 +261,6 @@ bool LayoutTab::fix_paste_item(uie::splitter_item_full_v3_impl_t& item)
 
 void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
     auto p_node = std::make_shared<LayoutTabNode>();
     auto splitter_item = splitter_utils::get_splitter_item_from_clipboard_safe(wnd);
 
@@ -284,7 +278,7 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
         if (ti_after == TVI_LAST)
             index = parent_children.size();
         else
-            index = tree_view_get_child_index(wnd_tv, ti_after) + 1;
+            index = tree_view_get_child_index(m_wnd_tree, ti_after) + 1;
 
         if (index <= parent_children.size()) {
             p_splitter->insert_panel(index, p_node->m_item->get_ptr());
@@ -297,18 +291,17 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
 
 void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
+    HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
 
     auto p_parent_node = m_node_map.at(ti_parent);
     auto& parent_children = p_parent_node->m_children;
-    unsigned index = tree_view_get_child_index(wnd_tv, ti);
+    unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
     if (up) {
         if (index > 0) {
             p_parent_node->m_splitter->move_up(index);
             std::swap(parent_children[index], parent_children[index - 1]);
-            HTREEITEM ti_prev = TreeView_GetPrevSibling(wnd_tv, ti);
-            TreeView_DeleteItem(wnd_tv, ti_prev);
+            HTREEITEM ti_prev = TreeView_GetPrevSibling(m_wnd_tree, ti);
+            TreeView_DeleteItem(m_wnd_tree, ti_prev);
 
             const auto child_node = parent_children[index];
             populate_tree(wnd, child_node, ti_parent, ti);
@@ -320,11 +313,11 @@ void LayoutTab::move_item(HWND wnd, HTREEITEM ti, bool up)
         if (index + 1 < parent_children.size()) {
             p_parent_node->m_splitter->move_down(index);
             std::swap(parent_children[index], parent_children[index + 1]);
-            HTREEITEM ti_next = TreeView_GetNextSibling(wnd_tv, ti);
-            HTREEITEM ti_prev = TreeView_GetPrevSibling(wnd_tv, ti);
+            HTREEITEM ti_next = TreeView_GetNextSibling(m_wnd_tree, ti);
+            HTREEITEM ti_prev = TreeView_GetPrevSibling(m_wnd_tree, ti);
             if (!ti_prev)
                 ti_prev = TVI_FIRST;
-            TreeView_DeleteItem(wnd_tv, ti_next);
+            TreeView_DeleteItem(m_wnd_tree, ti_next);
 
             const auto child_node = parent_children[index];
             populate_tree(wnd, child_node, ti_parent, ti_prev);
@@ -347,8 +340,7 @@ void LayoutTab::build_node_and_populate_tree(HWND wnd, LayoutTabNode::ptr node, 
 
 void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
+    HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
 
     auto old_node = m_node_map.at(ti);
     LayoutTabNode::ptr p_parent_node;
@@ -378,7 +370,7 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
             new_node->m_item->get_ptr()->set_panel_guid(p_guid);
             new_node->m_item->get_ptr()->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
 
-            unsigned index = tree_view_get_child_index(wnd_tv, ti);
+            unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
             if (p_parent_node) {
                 ranges::replace(p_parent_node->m_children, old_node, new_node);
                 if (index < p_parent_node->m_children.size())
@@ -386,14 +378,14 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
                         index, p_parent_node->m_children[index]->m_item->get_ptr());
                 else
                     print_index_out_of_range();
-                HTREEITEM ti_prev = TreeView_GetPrevSibling(wnd_tv, ti);
+                HTREEITEM ti_prev = TreeView_GetPrevSibling(m_wnd_tree, ti);
                 if (!ti_prev)
                     ti_prev = TVI_FIRST;
-                TreeView_DeleteItem(wnd_tv, ti);
+                TreeView_DeleteItem(m_wnd_tree, ti);
                 build_node_and_populate_tree(wnd, new_node, ti_parent, ti_prev);
                 save_item(wnd, ti_parent);
             } else {
-                TreeView_DeleteItem(wnd_tv, ti);
+                TreeView_DeleteItem(m_wnd_tree, ti);
                 build_node_and_populate_tree(wnd, new_node);
                 m_changed = true;
             }
@@ -403,10 +395,9 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
 
 void LayoutTab::change_base(HWND wnd, const GUID& p_guid)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
     m_node_map.clear();
     // Note: This sends TVN_DELETED notifications
-    TreeView_DeleteAllItems(wnd_tv);
+    TreeView_DeleteAllItems(m_wnd_tree);
     m_node_root->m_children.clear();
 
     m_node_root->m_item->get_ptr()->set_panel_guid(p_guid);
@@ -418,8 +409,6 @@ void LayoutTab::change_base(HWND wnd, const GUID& p_guid)
 
 void LayoutTab::save_item(HWND wnd, HTREEITEM ti)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-
     auto p_node = m_node_map.at(ti);
     if (p_node->m_window.is_valid()) {
         stream_writer_memblock conf;
@@ -430,12 +419,12 @@ void LayoutTab::save_item(HWND wnd, HTREEITEM ti)
         }
         p_node->m_item->get_ptr()->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
     }
-    HTREEITEM parent = TreeView_GetParent(wnd_tv, ti);
+    HTREEITEM parent = TreeView_GetParent(m_wnd_tree, ti);
     if (parent) {
         auto p_parent_node = m_node_map.at(parent);
         auto splitter = p_parent_node->m_splitter;
         if (splitter.is_valid()) {
-            unsigned index = tree_view_get_child_index(wnd_tv, ti);
+            unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
             if (index < splitter->get_panel_count()) {
                 splitter->replace_panel(index, p_node->m_item->get_ptr());
                 save_item(wnd, parent);
@@ -447,18 +436,17 @@ void LayoutTab::save_item(HWND wnd, HTREEITEM ti)
 
 void LayoutTab::set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& guid, stream_reader* val)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
     if (!ti)
         return;
 
-    HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
+    HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
 
     if (!ti_parent)
         return;
 
     auto p_node = m_node_map.at(ti);
     auto p_node_parent = m_node_map.at(ti_parent);
-    unsigned index = tree_view_get_child_index(wnd_tv, ti);
+    unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
     if (index < p_node_parent->m_splitter->get_panel_count()) {
         abort_callback_dummy abortCallback;
         p_node_parent->m_splitter->set_config_item(index, guid, val, abortCallback);
@@ -469,24 +457,22 @@ void LayoutTab::set_item_property_stream(HWND wnd, HTREEITEM ti, const GUID& gui
 
 void LayoutTab::set_item_property_stream(HWND wnd, const GUID& guid, stream_reader* val)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    set_item_property_stream(wnd, TreeView_GetSelection(wnd_tv), guid, val);
+    set_item_property_stream(wnd, TreeView_GetSelection(m_wnd_tree), guid, val);
 }
 
 void LayoutTab::run_configure(HWND wnd)
 {
-    HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
-    HTREEITEM ti = TreeView_GetSelection(wnd_tv);
+    HTREEITEM ti = TreeView_GetSelection(m_wnd_tree);
     if (!ti)
         return;
 
-    HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti);
+    HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti);
     if (!ti_parent)
         return;
 
     auto p_node = m_node_map.at(ti);
     auto p_node_parent = m_node_map.at(ti_parent);
-    unsigned index = tree_view_get_child_index(wnd_tv, ti);
+    unsigned index = tree_view_get_child_index(m_wnd_tree, ti);
     if (index < p_node_parent->m_splitter->get_panel_count()) {
         if (p_node->m_window.is_valid() && p_node->m_window->show_config_popup(wnd)) {
             save_item(wnd, ti);
@@ -506,7 +492,7 @@ void LayoutTab::deinitialise_tree(HWND wnd)
 {
     m_node_map.clear();
     // Note: This sends TVN_DELETED notifications
-    TreeView_DeleteAllItems(GetDlgItem(wnd, IDC_TREE));
+    TreeView_DeleteAllItems(m_wnd_tree);
     m_node_root.reset();
 }
 
@@ -547,7 +533,8 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        uih::tree_view_set_explorer_theme(GetDlgItem(wnd, IDC_TREE));
+        m_wnd_tree = GetDlgItem(wnd, IDC_TREE);
+        uih::tree_view_set_explorer_theme(m_wnd_tree);
         cfg_layout.save_active_preset();
         if (!cfg_layout.get_presets().get_count())
             cfg_layout.reset_presets();
@@ -568,6 +555,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DESTROY:
         m_initialised = false;
         apply();
+        m_wnd_tree = nullptr;
         deinitialise_tree(wnd);
         break;
     case WM_COMMAND:
@@ -828,36 +816,35 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_CONTEXTMENU: {
-        if ((HWND)wp == GetDlgItem(wnd, IDC_TREE)) {
+        if ((HWND)wp == m_wnd_tree) {
             TRACK_CALL_TEXT("tab_layout::WM_CONTEXTMENU");
 
-            HWND wnd_tv = GetDlgItem(wnd, IDC_TREE);
             POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
-            HTREEITEM treeitem = TreeView_GetSelection(wnd_tv);
+            HTREEITEM treeitem = TreeView_GetSelection(m_wnd_tree);
 
             TVHITTESTINFO ti;
             memset(&ti, 0, sizeof(ti));
 
             if (pt.x == -1 && pt.y == -1) {
                 RECT rc;
-                TreeView_GetItemRect(wnd_tv, treeitem, &rc, TRUE);
+                TreeView_GetItemRect(m_wnd_tree, treeitem, &rc, TRUE);
                 ti.pt.x = rc.left;
                 ti.pt.y = rc.top + (rc.bottom - rc.top) / 2;
                 pt = ti.pt;
-                MapWindowPoints(wnd_tv, HWND_DESKTOP, &pt, 1);
+                MapWindowPoints(m_wnd_tree, HWND_DESKTOP, &pt, 1);
             } else {
                 ti.pt = pt;
-                ScreenToClient(wnd_tv, &ti.pt);
+                ScreenToClient(m_wnd_tree, &ti.pt);
             }
-            SendMessage(wnd_tv, TVM_HITTEST, 0, (long)&ti);
+            SendMessage(m_wnd_tree, TVM_HITTEST, 0, (long)&ti);
             if (ti.hItem) {
                 enum { ID_REMOVE = 1, ID_MOVE_UP, ID_MOVE_DOWN, ID_COPY, ID_PASTE, ID_CHANGE_BASE };
                 unsigned ID_INSERT_BASE = ID_CHANGE_BASE + 1;
-                HTREEITEM ti_parent = TreeView_GetParent(wnd_tv, ti.hItem);
+                HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti.hItem);
 
-                SendMessage(wnd_tv, TVM_SELECTITEM, TVGN_CARET, (long)ti.hItem);
+                SendMessage(m_wnd_tree, TVM_SELECTITEM, TVGN_CARET, (long)ti.hItem);
 
-                unsigned index = tree_view_get_child_index(wnd_tv, ti.hItem);
+                unsigned index = tree_view_get_child_index(m_wnd_tree, ti.hItem);
 
                 auto p_node = m_node_map.at(ti.hItem);
                 LayoutTabNode::ptr p_parent_node;

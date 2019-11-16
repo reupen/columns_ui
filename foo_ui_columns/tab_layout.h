@@ -97,6 +97,7 @@ private:
 
     BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
+    HWND m_wnd_tree{};
     bool m_initialising{};
     bool m_initialised{};
     bool m_changed{};
