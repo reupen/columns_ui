@@ -11,12 +11,14 @@ public:
     using ptr = std::shared_ptr<LayoutTabNode>;
 
     bool have_item(const GUID& p_guid);
+    void build();
 
+    pfc::string8 m_name;
+    bool m_expanded{true};
     uie::window_ptr m_window;
     service_ptr_t<uie::splitter_window> m_splitter;
-    pfc::list_t<ptr> m_children;
+    std::vector<ptr> m_children;
     pfc::rcptr_t<uie::splitter_item_ptr> m_item;
-    bool m_expanded{true};
 
     LayoutTabNode() : m_item(pfc::rcnew_t<uie::splitter_item_ptr>()) {}
 };
@@ -33,18 +35,15 @@ private:
     static void get_panel_list(uie::window_info_list_simple& p_out);
     static HTREEITEM tree_view_get_child_by_index(HWND wnd_tv, HTREEITEM ti, unsigned index);
     static unsigned tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti);
+
     [[nodiscard]] static std::unordered_map<HTREEITEM, LayoutTabNode::ptr> __populate_tree(
-        HWND wnd_tree, LayoutTabNode::ptr p_node, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
-    [[nodiscard]] static std::unordered_map<HTREEITEM, LayoutTabNode::ptr> __repopulate_node(
-        HWND wnd_tree, LayoutTabNode::ptr node, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
+        HWND wnd_tree, const LayoutTabNode::ptr& node, HTREEITEM ti_parent, HTREEITEM ti_after = TVI_LAST);
     static void print_index_out_of_range();
 
-    void populate_tree(HWND wnd, const uie::splitter_item_t* item, LayoutTabNode::ptr p_node,
-        HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
-    void populate_tree(
-        HWND wnd, LayoutTabNode::ptr p_node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
-    void repopulate_node(
+    void build_node_and_populate_tree(
         HWND wnd, LayoutTabNode::ptr node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
+    void populate_tree(
+        HWND wnd, const LayoutTabNode::ptr& node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
     void remove_node(HWND wnd, HTREEITEM ti);
     void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);
     void copy_item(HWND wnd, HTREEITEM ti);
@@ -98,6 +97,7 @@ private:
 
     BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
+    HWND m_wnd_tree{};
     bool m_initialising{};
     bool m_initialised{};
     bool m_changed{};
