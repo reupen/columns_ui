@@ -494,6 +494,8 @@ void LayoutTab::deinitialise_tree(HWND wnd)
     // Note: This sends TVN_DELETED notifications
     TreeView_DeleteAllItems(m_wnd_tree);
     m_node_root.reset();
+
+    on_tree_selection_change(nullptr);
 }
 
 void LayoutTab::apply()
@@ -706,110 +708,8 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             case TVN_SELCHANGED: {
                 TRACK_CALL_TEXT("tab_layout::TVN_SELCHANGED");
 
-                bool hidden = false;
-                bool locked = false;
-                bool orientation = false;
-                bool caption = false;
-                bool autohide = false;
-                bool configure = false;
-                bool toggle = false;
-                bool use_custom_title = false;
-                bool custom_title = false;
-
-                bool hidden_val = false;
-                bool locked_val = false;
-                unsigned orientation_val = 0;
-                bool caption_val = false;
-                bool autohide_val = false;
-                bool toggle_val = false;
-                bool use_custom_title_val = false;
-                pfc::string8 custom_title_val;
-
-                auto param = (LPNMTREEVIEW)hdr;
-                if (param->itemNew.hItem) {
-                    auto p_node = m_node_map.at(param->itemNew.hItem);
-                    LayoutTabNode::ptr p_parent_node;
-
-                    HTREEITEM ti_parent = TreeView_GetParent(param->hdr.hwndFrom, param->itemNew.hItem);
-
-                    if (ti_parent) {
-                        p_parent_node = m_node_map.at(ti_parent);
-                    }
-                    unsigned index = tree_view_get_child_index(param->hdr.hwndFrom, param->itemNew.hItem);
-
-                    configure = p_node->m_window.is_valid() && p_node->m_window->have_config_popup();
-
-                    if (p_parent_node && index < p_parent_node->m_splitter->get_panel_count()) {
-                        hidden = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::bool_hidden);
-                        locked = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::bool_locked);
-                        orientation = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::uint32_orientation);
-                        autohide = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::bool_autohide);
-                        caption = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::bool_show_caption);
-                        toggle = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::bool_show_toggle_area);
-                        use_custom_title = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::bool_use_custom_title);
-                        bool cust_title_supported = p_parent_node->m_splitter->get_config_item_supported(
-                            index, uie::splitter_window::string_custom_title);
-                        custom_title = use_custom_title && cust_title_supported;
-
-                        if (hidden)
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::bool_hidden, hidden_val);
-                        if (locked)
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::bool_locked, locked_val);
-                        if (orientation)
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::uint32_orientation, orientation_val);
-                        if (autohide)
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::bool_autohide, autohide_val);
-                        if (caption)
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::bool_show_caption, caption_val);
-                        if (toggle)
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::bool_show_toggle_area, toggle_val);
-                        if (use_custom_title)
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::bool_use_custom_title, use_custom_title_val);
-                        if (!use_custom_title_val)
-                            custom_title = false;
-                        if (cust_title_supported) {
-                            stream_writer_memblock str;
-                            p_parent_node->m_splitter->get_config_item(
-                                index, uie::splitter_window::string_custom_title, &str);
-                            abort_callback_dummy abortCallback;
-                            stream_reader_memblock_ref(str.m_data.get_ptr(), str.m_data.get_size())
-                                .read_string(custom_title_val, abortCallback);
-                        }
-                    }
-                }
-                m_initialising = true;
-                EnableWindow(GetDlgItem(wnd, IDC_HIDDEN), hidden);
-                EnableWindow(GetDlgItem(wnd, IDC_LOCKED), locked);
-                EnableWindow(GetDlgItem(wnd, IDC_CAPTIONSTYLE), orientation);
-                EnableWindow(GetDlgItem(wnd, IDC_CONFIGURE), configure);
-                EnableWindow(GetDlgItem(wnd, IDC_CAPTION), caption);
-                EnableWindow(GetDlgItem(wnd, IDC_AUTOHIDE), autohide);
-                EnableWindow(GetDlgItem(wnd, IDC_TOGGLE_AREA), toggle);
-                EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_TITLE), use_custom_title);
-                EnableWindow(GetDlgItem(wnd, IDC_CUSTOM_TITLE), custom_title);
-                Button_SetCheck(GetDlgItem(wnd, IDC_CAPTION), caption_val);
-                Button_SetCheck(GetDlgItem(wnd, IDC_LOCKED), locked_val);
-                Button_SetCheck(GetDlgItem(wnd, IDC_HIDDEN), hidden_val);
-                Button_SetCheck(GetDlgItem(wnd, IDC_AUTOHIDE), autohide_val);
-                Button_SetCheck(GetDlgItem(wnd, IDC_TOGGLE_AREA), toggle_val);
-                Button_SetCheck(GetDlgItem(wnd, IDC_USE_CUSTOM_TITLE), use_custom_title_val);
-                uSendDlgItemMessageText(wnd, IDC_CUSTOM_TITLE, WM_SETTEXT, NULL, custom_title_val);
-                SendDlgItemMessage(wnd, IDC_CAPTIONSTYLE, CB_SETCURSEL, orientation_val, 0);
-                m_initialising = false;
+                auto param = reinterpret_cast<LPNMTREEVIEW>(hdr);
+                on_tree_selection_change(param->itemNew.hItem);
                 break;
             }
             }
@@ -958,6 +858,95 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     }
     return 0;
+}
+
+struct GUIDHasher {
+    std::size_t operator()(const GUID& value) const
+    {
+        const auto hashes = {std::hash<unsigned long>()(value.Data1), std::hash<unsigned short>()(value.Data2),
+            std::hash<unsigned short>()(value.Data3),
+            std::hash<uint64_t>()(*reinterpret_cast<const uint64_t*>(&value.Data4[0]))};
+        return ranges::accumulate(hashes, size_t{}, std::bit_xor<size_t>());
+    }
+};
+
+void LayoutTab::on_tree_selection_change(HTREEITEM tree_item)
+{
+    if (!m_initialised)
+        return;
+
+    const std::initializer_list<std::tuple<GUID, int>> bool_item_and_control_ids = {
+        {uie::splitter_window::bool_hidden, IDC_HIDDEN},
+        {uie::splitter_window::bool_locked, IDC_LOCKED},
+        {uie::splitter_window::bool_autohide, IDC_AUTOHIDE},
+        {uie::splitter_window::bool_show_caption, IDC_CAPTION},
+        {uie::splitter_window::bool_show_toggle_area, IDC_TOGGLE_AREA},
+        {uie::splitter_window::bool_use_custom_title, IDC_USE_CUSTOM_TITLE},
+    };
+
+    const std::initializer_list<std::tuple<GUID, int>> other_item_and_control_ids
+        = {{uie::splitter_window::uint32_orientation, IDC_CAPTIONSTYLE},
+            {uie::splitter_window::string_custom_title, IDC_CUSTOM_TITLE}};
+
+    const auto all_item_and_control_ids = ranges::view::concat(bool_item_and_control_ids, other_item_and_control_ids);
+
+    std::unordered_map<GUID, bool, GUIDHasher> supported_map;
+    std::unordered_map<GUID, bool, GUIDHasher> enable_map;
+    std::unordered_map<GUID, bool, GUIDHasher> bool_value_map;
+    bool enable_configure = false;
+    unsigned orientation = 0;
+    pfc::string8 custom_title;
+
+    if (tree_item) {
+        LayoutTabNode::ptr parent_node;
+        const auto node = m_node_map.at(tree_item);
+        const unsigned index = tree_view_get_child_index(m_wnd_tree, tree_item);
+
+        if (const auto ti_parent = TreeView_GetParent(m_wnd_tree, tree_item); ti_parent)
+            parent_node = m_node_map.at(ti_parent);
+
+        enable_configure = node->m_window.is_valid() && node->m_window->have_config_popup();
+
+        if (parent_node && index < parent_node->m_splitter->get_panel_count()) {
+            for (auto&& [item_id, _] : all_item_and_control_ids) {
+                supported_map[item_id] = parent_node->m_splitter->get_config_item_supported(index, item_id);
+            }
+
+            for (auto&& [item_id, _] : bool_item_and_control_ids) {
+                if (supported_map[item_id])
+                    parent_node->m_splitter->get_config_item(index, item_id, bool_value_map[item_id]);
+            }
+
+            if (supported_map[uie::splitter_window::uint32_orientation])
+                parent_node->m_splitter->get_config_item(index, uie::splitter_window::uint32_orientation, orientation);
+
+            if (supported_map[uie::splitter_window::string_custom_title]) {
+                stream_writer_memblock str;
+                parent_node->m_splitter->get_config_item(index, uie::splitter_window::string_custom_title, &str);
+                stream_reader_memblock_ref(str.m_data.get_ptr(), str.m_data.get_size())
+                    .read_string(custom_title, fb2k::noAbort);
+            }
+
+            enable_map = supported_map;
+            enable_map[uie::splitter_window::string_custom_title]
+                = supported_map[uie::splitter_window::bool_use_custom_title]
+                && supported_map[uie::splitter_window::string_custom_title]
+                && bool_value_map[uie::splitter_window::bool_use_custom_title];
+        }
+    }
+    m_initialising = true;
+
+    for (auto&& [item_id, control_id] : all_item_and_control_ids)
+        EnableWindow(m_helper.get_control_wnd(control_id), enable_map[item_id]);
+
+    EnableWindow(m_helper.get_control_wnd(IDC_CONFIGURE), enable_configure);
+
+    for (auto&& [item_id, control_id] : bool_item_and_control_ids)
+        Button_SetCheck(m_helper.get_control_wnd(control_id), bool_value_map[item_id] ? BST_CHECKED : BST_UNCHECKED);
+
+    uSendDlgItemMessageText(m_helper.get_wnd(), IDC_CUSTOM_TITLE, WM_SETTEXT, NULL, custom_title);
+    SendDlgItemMessage(m_helper.get_wnd(), IDC_CAPTIONSTYLE, CB_SETCURSEL, orientation, 0);
+    m_initialising = false;
 }
 
 HWND LayoutTab::create(HWND wnd)
