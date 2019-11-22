@@ -6,6 +6,8 @@
 
 * The Item properties panel can now display custom information sections from third-party components. [[#251](https://github.com/reupen/columns_ui/pull/251)]
 
+* A main menu item for showing and hiding artwork in the playlist view was added. [[#262](https://github.com/reupen/columns_ui/pull/262)]
+
 * Support for selecting all text using the Ctrl-A keyboard shortcut when using inline field editing in list views was added. (Note that Windows 10 1809 and newer already supported this keyboard shortcut natively.) [[#246](https://github.com/reupen/columns_ui/pull/256), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/44)]
 
 * Various default settings were updated:

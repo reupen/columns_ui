@@ -54,4 +54,11 @@ struct ShowGroupsButtonArgs {
 
 using ShowGroupsButton = PushButton<ShowGroupsButtonArgs>;
 
+struct ShowArtworkButtonArgs {
+    static bool state() { return pvt::cfg_show_artwork; }
+    static constexpr GUID id = main_menu::commands::show_artwork_id;
+};
+
+using ShowArtworkButton = PushButton<ShowArtworkButtonArgs>;
+
 } // namespace cui::button_items
