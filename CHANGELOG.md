@@ -26,6 +26,8 @@
 
 * The expansion state of items in the layout tree on the Layout preferences page is now fully preserved when moving items up and down. [[#255](https://github.com/reupen/columns_ui/pull/255)]
 
+* Panel options on the Layout preferences page are now always correctly disabled after the tree selection is cleared (such as after selecting a different preset). [[#261](https://github.com/reupen/columns_ui/pull/261)]
+
 * When typing the name of an item in a list view to jump to that item, the space key now correctly jumps to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
 
 * Various bugs relating to the display of ellipses in truncated text containing colour codes were fixed. [[#249](https://github.com/reupen/columns_ui/pull/249), [ui_helpers#42](https://github.com/reupen/ui_helpers/pull/42), [ui_helpers#43](https://github.com/reupen/ui_helpers/pull/43)]

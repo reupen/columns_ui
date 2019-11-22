@@ -96,6 +96,7 @@ private:
     void switch_to_preset(HWND wnd, unsigned index);
 
     BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    void on_tree_selection_change(HTREEITEM tree_item);
 
     HWND m_wnd_tree{};
     bool m_initialising{};
