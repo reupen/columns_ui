@@ -41,10 +41,12 @@ PlaylistView::SharedMesageWindow PlaylistView::g_global_mesage_window;
 
 ConfigGroups g_groups(g_groups_guid);
 
-cfg_bool cfg_show_artwork(g_show_artwork_guid, false), cfg_artwork_reflection(g_artwork_reflection, true),
-    cfg_artwork_lowpriority(g_artwork_lowpriority, true);
+cfg_bool cfg_artwork_reflection(g_artwork_reflection, true);
+cfg_bool cfg_artwork_lowpriority(g_artwork_lowpriority, true);
 
 fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { cui::button_items::ShowGroupsButton::s_on_change(); });
+fbh::ConfigBool cfg_show_artwork(
+    g_show_artwork_guid, false, [](auto&&) { cui::button_items::ShowArtworkButton::s_on_change(); });
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
 
 void ConfigGroups::swap(t_size index1, t_size index2)

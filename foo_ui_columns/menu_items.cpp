@@ -12,6 +12,7 @@ namespace groups {
 constexpr GUID view_columns_part = {0xae078354, 0x60ea, 0x48a9, {0x94, 0x5, 0xda, 0xa, 0xef, 0x0, 0xc5, 0x8d}};
 constexpr GUID view_playlist_popup = {0x16610091, 0x8bd9, 0x4e38, {0x9d, 0xe5, 0x43, 0x29, 0xbe, 0x14, 0x12, 0x1b}};
 constexpr GUID playlist_font_part = {0xcef3f5a, 0x2c3, 0x4865, {0x8f, 0x62, 0x37, 0x92, 0x80, 0xe4, 0xec, 0x3a}};
+constexpr GUID playlist_settings_part = {0xfee5a195, 0xd907, 0x4475, {0x8c, 0xdc, 0xdc, 0x17, 0x61, 0x4, 0xb8, 0xa8}};
 constexpr GUID playlist_misc_part = {0xf74d3c19, 0x91cc, 0x4179, {0x95, 0x4a, 0x7b, 0xe5, 0x4e, 0x9b, 0xbc, 0x80}};
 constexpr GUID view_layout_popup = {0x533fdc34, 0xee1b, 0x4317, {0x9d, 0xc, 0x48, 0x9e, 0xe1, 0x21, 0x5d, 0x9f}};
 constexpr GUID view_layout_commands = {0x964c3b5a, 0x1908, 0x4407, {0x9b, 0x8e, 0xfc, 0x73, 0x31, 0xa9, 0x9e, 0xd1}};
@@ -26,11 +27,14 @@ static mainmenu_group_popup_factory g_mainmenu_group_view_playlist_popup(
 static mainmenu_group_popup_factory g_mainmenu_group_view_layout_popup(
     view_layout_popup, view_columns_part, mainmenu_commands::sort_priority_base + 1, "Layout");
 
-static mainmenu_group_factory g_mainmenu_group_playlist_font_part(
-    playlist_font_part, view_playlist_popup, mainmenu_commands::sort_priority_base);
-
 static mainmenu_group_factory g_mainmenu_group_playlisy_misc_part(
-    playlist_misc_part, view_playlist_popup, mainmenu_commands::sort_priority_base + 1);
+    playlist_misc_part, view_playlist_popup, mainmenu_commands::sort_priority_base);
+
+static mainmenu_group_factory g_mainmenu_group_playlist_settings_part(
+    playlist_settings_part, view_playlist_popup, mainmenu_commands::sort_priority_base + 1);
+
+static mainmenu_group_factory g_mainmenu_group_playlist_font_part(
+    playlist_font_part, view_playlist_popup, mainmenu_commands::sort_priority_base + 2);
 
 static mainmenu_group_factory g_mainmenu_group_view_layout_commands_part(
     view_layout_commands, view_layout_popup, mainmenu_commands::sort_priority_base);
@@ -50,6 +54,14 @@ static const MainMenuCommand show_groups{show_groups_id, "Show groups", "Shows o
         pvt::PlaylistView::g_on_groups_change();
     },
     [] { return static_cast<bool>(pvt::cfg_grouping); }};
+
+static const MainMenuCommand show_artwork{show_artwork_id, "Show artwork",
+    "Shows or hides playlist view artwork in groups.",
+    [] {
+        pvt::cfg_show_artwork = !pvt::cfg_show_artwork;
+        pvt::PlaylistView::g_on_show_artwork_change();
+    },
+    [] { return pvt::cfg_show_artwork.get(); }};
 
 static const MainMenuCommand decrease_font{
     {0xf2bc9f43, 0xf709, 0x4f6f, {0x9c, 0x65, 0x78, 0x73, 0x3b, 0x8, 0xc7, 0x77}}, "Decrease font size",
@@ -145,8 +157,11 @@ static service_factory_single_t<MainMenuCommands> mainmenu_commands_layout(
 static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_misc(
     groups::playlist_misc_part, mainmenu_commands::sort_priority_dontcare, activate_now_playing);
 
+static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_settings(
+    groups::playlist_settings_part, mainmenu_commands::sort_priority_dontcare, show_groups, show_artwork);
+
 static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_font(
-    groups::view_playlist_popup, mainmenu_commands::sort_priority_dontcare, show_groups, increase_font, decrease_font);
+    groups::playlist_font_part, mainmenu_commands::sort_priority_dontcare, increase_font, decrease_font);
 
 class MainMenuLayoutPresets : public mainmenu_commands {
     t_uint32 get_command_count() override { return cfg_layout.get_presets().get_count(); }
