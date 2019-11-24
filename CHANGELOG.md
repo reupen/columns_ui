@@ -4,6 +4,8 @@
 
 ### Features
 
+* In-line metadata editing in the playlist view now supports multiple field values (separated by semicolons). [[#263](https://github.com/reupen/columns_ui/pull/263)]
+
 * The Item properties panel can now display custom information sections from third-party components. [[#251](https://github.com/reupen/columns_ui/pull/251)]
 
 * A main menu item for showing and hiding artwork in the playlist view was added. [[#262](https://github.com/reupen/columns_ui/pull/262)]
