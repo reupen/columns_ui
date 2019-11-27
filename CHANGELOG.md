@@ -28,6 +28,8 @@
 
 ### Bug fixes
 
+* A crash when dragging items over a playlist with a very long name was fixed. [[#264](https://github.com/reupen/columns_ui/pull/264), [ui_helpers#46](https://github.com/reupen/ui_helpers/pull/46)]
+
 * The expansion state of items in the layout tree on the Layout preferences page is now fully preserved when moving items up and down. [[#255](https://github.com/reupen/columns_ui/pull/255)]
 
 * Panel options on the Layout preferences page are now always correctly disabled after the tree selection is cleared (such as after selecting a different preset). [[#261](https://github.com/reupen/columns_ui/pull/261)]
