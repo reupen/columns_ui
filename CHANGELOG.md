@@ -1,26 +1,26 @@
 # Change log
 
-## 1.3.0 (in development)
+## 1.3.0-beta.1
 
 ### Features
 
-* In-line metadata editing in the playlist view now supports multiple field values (separated by semicolons). [[#263](https://github.com/reupen/columns_ui/pull/263)]
+* When using in-line field editing in the playlist view, it’s now possible to enter multiple field values by separating values with semicolons. [[#263](https://github.com/reupen/columns_ui/pull/263)]
+
+* When using in-line field editing in list views such as the playlist view, all text in the edit box can now be selected by pressing Ctrl-A. (Note that Windows 10 1809 and newer already supported this keyboard shortcut natively.) [[#257](https://github.com/reupen/columns_ui/pull/257), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/44)]
 
 * The Item properties panel can now display custom information sections from third-party components. [[#251](https://github.com/reupen/columns_ui/pull/251)]
 
 * A main menu item for showing and hiding artwork in the playlist view was added. [[#262](https://github.com/reupen/columns_ui/pull/262)]
 
-* Support for selecting all text using the Ctrl-A keyboard shortcut when using inline field editing in list views was added. (Note that Windows 10 1809 and newer already supported this keyboard shortcut natively.) [[#246](https://github.com/reupen/columns_ui/pull/256), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/44)]
-
 * Various default settings were updated:
 
-    * All built-in panels now have a default edge style of 'none'. [[#242]](https://github.com/reupen/columns_ui/pull/242)
+    * All built-in panels now have a default edge style of ‘none’. [[#242]](https://github.com/reupen/columns_ui/pull/242)
 
     * The Windows notification icon is now disabled by default. [[#245](https://github.com/reupen/columns_ui/pull/245)]
 
-    * Tooltips are now enabled in the playlist view by default. [[#257]](https://github.com/reupen/columns_ui/pull/257)
+    * Tooltips are now enabled in the playlist view by default. [[#258]](https://github.com/reupen/columns_ui/pull/258)
 
-    * The playlist switcher default configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]
+    * The default playlist switcher configuration now includes a playing indicator in playlist titles. [[#248](https://github.com/reupen/columns_ui/pull/248)]
 
     * The default information sections displayed by the Item properties panel were changed. [[#253]](https://github.com/reupen/columns_ui/pull/253)
 
@@ -30,15 +30,15 @@
 
 * A crash when dragging items over a playlist with a very long name was fixed. [[#264](https://github.com/reupen/columns_ui/pull/264), [ui_helpers#46](https://github.com/reupen/ui_helpers/pull/46)]
 
+* When typing the name of an item in a list view to jump to that item, the space key now correctly jumps to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
+
+* Various bugs relating to the display of ellipses in truncated text containing colour codes were fixed. [[#250](https://github.com/reupen/columns_ui/pull/250), [ui_helpers#42](https://github.com/reupen/ui_helpers/pull/42), [ui_helpers#43](https://github.com/reupen/ui_helpers/pull/43)]
+
 * The expansion state of items in the layout tree on the Layout preferences page is now fully preserved when moving items up and down. [[#255](https://github.com/reupen/columns_ui/pull/255)]
 
 * Panel options on the Layout preferences page are now always correctly disabled after the tree selection is cleared (such as after selecting a different preset). [[#261](https://github.com/reupen/columns_ui/pull/261)]
 
-* When typing the name of an item in a list view to jump to that item, the space key now correctly jumps to matching items. [[#246](https://github.com/reupen/columns_ui/pull/246), [ui_helpers#41](https://github.com/reupen/ui_helpers/pull/41)]
-
-* Various bugs relating to the display of ellipses in truncated text containing colour codes were fixed. [[#249](https://github.com/reupen/columns_ui/pull/249), [ui_helpers#42](https://github.com/reupen/ui_helpers/pull/42), [ui_helpers#43](https://github.com/reupen/ui_helpers/pull/43)]
-
-* When a panel with a custom title is copied and pasted, the custom title is now correctly set on the pasted panel. [[#253](https://github.com/reupen/columns_ui/pull/253)]
+* When a panel with a custom title is copied and pasted, the custom title is now correctly set on the pasted panel. [[#254](https://github.com/reupen/columns_ui/pull/254)]
 
 ### Internal changes
 
