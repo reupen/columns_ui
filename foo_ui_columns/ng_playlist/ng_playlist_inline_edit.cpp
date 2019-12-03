@@ -10,7 +10,7 @@ std::string_view trim_string(std::string_view value)
     const auto start = value.find_first_not_of(' ');
     const auto end = value.find_last_not_of(' ');
 
-    if (start > end)
+    if (start > end || start == std::string_view::npos)
         return ""sv;
 
     return value.substr(start, end - start + 1);

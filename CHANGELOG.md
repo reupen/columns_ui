@@ -1,5 +1,11 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+* A crash was fixed when using in-line field editing in the playlist view and setting a field to an empty string. [[#266](https://github.com/reupen/columns_ui/pull/266)]
+
 ## 1.3.0-beta.1
 
 ### Features
