@@ -2,6 +2,10 @@
 
 ## Development version
 
+### Features
+
+* When using in-line field editing in the playlist view, empty field values are no longer written to the file when saving changes. (If no field values are entered, the field is now removed from the file.) [[#266](https://github.com/reupen/columns_ui/pull/266)]
+
 ### Bug fixes
 
 * A crash was fixed when using in-line field editing in the playlist view and setting a field to an empty string. [[#266](https://github.com/reupen/columns_ui/pull/266)]

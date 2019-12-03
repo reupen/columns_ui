@@ -122,9 +122,14 @@ void PlaylistView::notify_save_inline_edit(const char* value)
     for (;;) {
         const size_t index = value_view.find(";"sv, offset);
         const auto substr = value_view.substr(offset, index - offset);
-        values.emplace_back(trim_string(substr));
+        const auto trimmed_substr = trim_string(substr);
+
+        if (trimmed_substr.length() > 0)
+            values.emplace_back(trimmed_substr);
+
         if (index == std::string_view::npos)
             break;
+
         offset = index + 1;
     }
 
