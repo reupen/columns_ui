@@ -10,7 +10,7 @@ std::string_view trim_string(std::string_view value)
     const auto start = value.find_first_not_of(' ');
     const auto end = value.find_last_not_of(' ');
 
-    if (start > end)
+    if (start > end || start == std::string_view::npos)
         return ""sv;
 
     return value.substr(start, end - start + 1);
@@ -75,24 +75,22 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<t_size
 
     m_edit_field = m_edit_fields[column];
 
-    bool matching = true;
-
     for (t_size i = 0; i < indices_count; i++) {
         if (!m_playlist_api->activeplaylist_get_item_handle(m_edit_handles[i], indices[i]))
             return false;
+    }
 
-        metadb_info_container::ptr info_container;
-        if (!m_edit_handles[i]->get_info_ref(info_container))
-            return false;
+    bool matching = true;
+
+    for (t_size i = 0; i < indices_count; i++) {
+        metadb_info_container::ptr info_container = m_edit_handles[i]->get_info_ref();
 
         auto& info = info_container->info();
-
         auto item_values = get_info_field_values(info, m_edit_field.get_ptr());
 
         if (i == 0) {
             values = item_values;
         } else if (item_values != values) {
-            p_text = "<multiple values>";
             matching = false;
             break;
         }
@@ -100,6 +98,8 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<t_size
 
     if (matching) {
         p_text = mmh::join<decltype(values)&, std::string_view, std::string>(values, "; "sv).c_str();
+    } else {
+        p_text = "<multiple values>";
     }
 
     try {
@@ -122,9 +122,14 @@ void PlaylistView::notify_save_inline_edit(const char* value)
     for (;;) {
         const size_t index = value_view.find(";"sv, offset);
         const auto substr = value_view.substr(offset, index - offset);
-        values.emplace_back(trim_string(substr));
+        const auto trimmed_substr = trim_string(substr);
+
+        if (trimmed_substr.length() > 0)
+            values.emplace_back(trimmed_substr);
+
         if (index == std::string_view::npos)
             break;
+
         offset = index + 1;
     }
 
