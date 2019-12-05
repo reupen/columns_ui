@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 1.3.0-rc.1
 
 ### Features
 
@@ -13,6 +13,10 @@
 * A crash was fixed when using in-line field editing in the playlist view and setting a field to an empty string. [[#266](https://github.com/reupen/columns_ui/pull/266)]
 
 * A crash was fixed when saving changes after using in-line field editing in the playlist view on more than two tracks with initially differing field values. [[#266](https://github.com/reupen/columns_ui/pull/266)]
+
+### Internal changes
+
+* The component is now compiled using Visual Studio 2019 16.4.
 
 ## 1.3.0-beta.1
 
