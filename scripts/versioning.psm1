@@ -1,41 +1,57 @@
-function Get-GitDescription {
-    $description_regex = '^v(?<version>.+)-(?<distance>\d+)-g(?<commit>[0-9a-f]{7})(-(?<dirty>dirty))?$'
+class Version {
+    [string]$BaseVersion;
+    [int]$Distance;
+    [string]$CommitHash;
+    [bool]$Dirty;
 
-    Try {
-        $description = git describe --tags --dirty --match 'v[0-9]*' --long
-    } Catch {
-        return $null
+    Version([string]$BaseVersion, [int]$Distance, [string]$CommitHash, [bool]$Dirty) {
+        $this.BaseVersion = $BaseVersion
+        $this.Distance = $Distance
+        $this.CommitHash = $CommitHash
+        $this.Dirty = $Dirty
     }
+
+    [string]ToString() {
+        $annotations = @()
     
-    If (-not ($description -match $description_regex)) {
-        return $null
+        if ($this.Distance) {
+            $annotations += @($this.Distance, "g$($this.CommitHash)")
+        }
+    
+        if ($this.Dirty) {
+            $annotations += 'dirty'
+        }
+    
+        if ($annotations) {
+            $joinedAnnotations = $annotations -Join '.'
+            return "$($this.BaseVersion)+$joinedAnnotations"
+        }
+    
+        return $this.BaseVersion
     }
 
-    return $Matches
+    [bool]IsRelease() {
+        return $this.Distance -eq 0 -and -not $this.Dirty
+    }
+
+    static [Version]FromGit() {
+        $descriptionRegex = '^v(?<version>.+)-(?<distance>\d+)-g(?<commit>[0-9a-f]{7})(-(?<dirty>dirty))?$'
+
+        $description = git describe --tags --dirty --match 'v[0-9]*' --long
+        
+        If (-not ($description -match $descriptionRegex)) {
+            throw
+        }
+    
+        return [Version]::new($Matches.version, [int]$Matches.distance, $Matches.commit, [bool]$Matches.dirty)
+    }
 }
 
 function Get-Version {
-    $description = Get-GitDescription
-    
-    if (-not $description) {
-        return '0.0.0+unknown'
+    try {
+        return [Version]::FromGit()
     }
-
-    $base_version = $description.version
-    $annotations = @()
-
-    if ([int]$description.distance) {
-        $annotations += @($description.distance, "g$($description.commit)")
+    catch {
+        return [Version]::new(0, 0, 'unknown', $false)
     }
-
-    if ($description.dirty) {
-        $annotations += @($description.dirty)
-    }
-
-    if ($annotations) {
-        $joined_annotations = $annotations -Join '.'
-        return "$base_version+$joined_annotations"
-    }
-
-    return $base_version
 }
