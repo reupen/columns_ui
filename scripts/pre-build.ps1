@@ -1,6 +1,6 @@
 Param(
-    [Parameter(Mandatory=$true)][String]$TemplatePath,
-    [Parameter(Mandatory=$true)][String]$OutputPath
+    [Parameter(Mandatory=$true)][string]$TemplatePath,
+    [Parameter(Mandatory=$true)][string]$OutputPath
 )
 
 Import-Module "$PSScriptRoot\versioning"
