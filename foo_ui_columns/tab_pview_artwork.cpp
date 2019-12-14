@@ -7,7 +7,6 @@ static class TabPlaylistViewArtwork : public PreferencesTab {
     {
         SendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, pvt::cfg_show_artwork, 0);
         SendDlgItemMessage(wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, pvt::cfg_artwork_reflection, 0);
-        SendDlgItemMessage(wnd, IDC_LOWPRIORITY, BM_SETCHECK, pvt::cfg_artwork_lowpriority, 0);
         SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETRANGE32, 0, MAXLONG);
         SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETPOS32, NULL, pvt::cfg_artwork_width);
     }
@@ -32,9 +31,6 @@ public:
             case IDC_ARTWORKREFLECTION:
                 pvt::cfg_artwork_reflection = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
                 pvt::PlaylistView::g_on_artwork_width_change();
-                break;
-            case IDC_LOWPRIORITY:
-                pvt::cfg_artwork_lowpriority = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
                 break;
             case (EN_CHANGE << 16) | IDC_ARTWORKWIDTH:
                 if (m_initialised) {

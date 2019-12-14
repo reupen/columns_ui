@@ -158,7 +158,6 @@
 #define IDC_MENU_DBLCLK                 1053
 #define IDC_REMOVE_UNDERSCORES          1053
 #define IDC_APPEARANCE                  1053
-#define IDC_LOWPRIORITY                 1053
 #define IDC_IMAGE_SIZE                  1054
 #define IDC_TEXT                        1055
 #define IDC_USE_CUSTOM_TEXT             1056
