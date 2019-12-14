@@ -102,7 +102,6 @@
 #define IDC_MCLICK3                     1023
 #define IDC_ELLIPSIS                    1023
 #define IDC_PLDRAG                      1024
-#define IDC_TOOLTIPS                    1025
 #define IDC_PLAYLIST_TABS_MCLICK        1025
 #define IDC_ACTIVATE_TARGET             1026
 #define IDC_TOOLTIPS_CLIPPED            1026

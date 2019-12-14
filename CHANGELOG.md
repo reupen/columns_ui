@@ -6,6 +6,8 @@
 
 * The playlist view ‘Low artwork reader thready priority’ setting was removed; a low thread priority is now always used. [[#270](https://github.com/reupen/columns_ui/pull/270)]
 
+* The ability to display tooltips for non-truncated text in the playlist view was removed. [[#271](https://github.com/reupen/columns_ui/pull/271)]
+
 ### Internal changes
 
 * The component is now compiled using foobar2000 SDK 2019-11-29. [[#271](https://github.com/reupen/columns_ui/pull/271)]
