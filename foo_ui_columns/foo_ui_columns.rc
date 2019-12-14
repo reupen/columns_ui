@@ -606,8 +606,6 @@ BEGIN
     CONTROL         "",IDC_ARTWORKWIDTHSPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,113,69,12,10
     LTEXT           "px",-1,103,71,9,8
     CONTROL         "Show reflection",IDC_ARTWORKREFLECTION,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,49,65,10
-    CONTROL         "Low artwork reader thread priority",IDC_LOWPRIORITY,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,91,127,10
     LTEXT           "Artwork",IDC_TITLE1,7,4,313,16
 END
 

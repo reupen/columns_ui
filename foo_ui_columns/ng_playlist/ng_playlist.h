@@ -9,7 +9,7 @@
 namespace pvt {
 extern const GUID g_guid_items_font, g_guid_header_font, g_guid_group_header_font;
 
-extern cfg_bool cfg_artwork_reflection, cfg_artwork_lowpriority;
+extern cfg_bool cfg_artwork_reflection;
 extern fbh::ConfigUint32DpiAware cfg_artwork_width;
 extern fbh::ConfigBool cfg_grouping;
 extern fbh::ConfigBool cfg_show_artwork;
@@ -221,8 +221,7 @@ public:
             if (count_pending) {
                 pfc::rcptr_t<ArtworkReader> p_reader = m_pending_readers[count_pending - 1];
                 m_pending_readers.remove_by_idx(count_pending - 1);
-                if (pvt::cfg_artwork_lowpriority)
-                    p_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
+                p_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
                 p_reader->create_thread();
                 m_current_readers.add_item(p_reader);
             }

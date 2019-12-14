@@ -1,5 +1,11 @@
 # Change log
 
+## Development version
+
+### Removals
+
+* The playlist view ‘Low artwork reader thready priority’ setting was removed; a low thread priority is now always used. [[#270](https://github.com/reupen/columns_ui/pull/270)]
+
 ## 1.3.0
 
 * There were no changes from version 1.3.0-rc.1.
