@@ -19,10 +19,8 @@ static class TabPlaylistViewGeneral : public PreferencesTab {
         SendDlgItemMessage(wnd, IDC_SELECTION_MODEL, BM_SETCHECK, cfg_alternative_sel, 0);
         // SendDlgItemMessage(wnd,IDC_HORIZ_WHEEL,BM_SETCHECK,cfg_scroll_h_no_v,0);
 
-        SendDlgItemMessage(wnd, IDC_TOOLTIPS, BM_SETCHECK, cfg_tooltip, 0);
         // SendDlgItemMessage(wnd,IDC_SORTSELONLY,BM_SETCHECK,cfg_sortsel,0);
         SendDlgItemMessage(wnd, IDC_TOOLTIPS_CLIPPED, BM_SETCHECK, cfg_tooltips_clipped, 0);
-        EnableWindow(GetDlgItem(wnd, IDC_TOOLTIPS_CLIPPED), cfg_tooltip);
 
         SendDlgItemMessage(wnd, IDC_HHTRACK, BM_SETCHECK, cfg_header_hottrack, 0);
 
@@ -90,12 +88,6 @@ public:
                 cfg_playlist_middle_action
                     = SendMessage((HWND)lp, CB_GETITEMDATA, SendMessage((HWND)lp, CB_GETCURSEL, 0, 0), 0);
             } break;
-            case IDC_TOOLTIPS:
-                cfg_tooltip = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                EnableWindow(GetDlgItem(wnd, IDC_TOOLTIPS_CLIPPED), cfg_tooltip);
-                pvt::PlaylistView::g_on_show_tooltips_change();
-                break;
-
             case IDC_SELECTION_MODEL:
                 cfg_alternative_sel = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 pvt::PlaylistView::g_on_alternate_selection_change();

@@ -385,8 +385,7 @@ void PlaylistView::g_on_time_change()
 void PlaylistView::g_on_show_tooltips_change()
 {
     for (auto& window : g_windows) {
-        window->set_show_tooltips(cfg_tooltip != 0);
-        window->set_limit_tooltips_to_clipped_items(cfg_tooltips_clipped != 0);
+        window->set_show_tooltips(cfg_tooltips_clipped != 0);
     }
 }
 void PlaylistView::g_on_playback_follows_cursor_change(bool b_val)
@@ -536,8 +535,7 @@ void PlaylistView::notify_on_initialisation()
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);
     set_edge_style(cfg_frame);
-    set_show_tooltips(cfg_tooltip != 0);
-    set_limit_tooltips_to_clipped_items(cfg_tooltips_clipped != 0);
+    set_show_tooltips(cfg_tooltips_clipped != 0);
     set_alternate_selection_model(cfg_alternative_sel != 0);
     set_allow_header_rearrange(true);
 
