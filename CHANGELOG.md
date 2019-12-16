@@ -36,6 +36,10 @@
 
 ## 1.3.0-beta.1
 
+### Removals
+
+* Support for foobar2000 1.3 was removed. foobar2000 1.4 is now the minimum version required.
+
 ### Features
 
 * When using in-line field editing in the playlist view, it’s now possible to enter multiple field values by separating values with semicolons. [[#263](https://github.com/reupen/columns_ui/pull/263)]
