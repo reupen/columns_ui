@@ -336,7 +336,7 @@ HWND RebarWindow::init()
     auto& band_states = g_cfg_rebar.get_rebar_info();
     m_bands.reserve(band_states.size());
 
-    /// Using ranges::view::transform here seems to make VS 2019 freeze
+    /// Using ranges::views::transform here seems to make VS 2019 freeze
     for (auto&& band_state : band_states) {
         m_bands.emplace_back(RebarBand{band_state});
     }
@@ -595,7 +595,7 @@ void RebarWindow::delete_band(HWND wnd, bool destroy)
 
 std::vector<RebarBandState> RebarWindow::get_band_states() const
 {
-    /// Using ranges::view::transform here seems to make VS 2019 freeze
+    /// Using ranges::views::transform here seems to make VS 2019 freeze
     std::vector<RebarBandState> band_states;
     band_states.reserve(m_bands.size());
     for (auto&& band : m_bands)

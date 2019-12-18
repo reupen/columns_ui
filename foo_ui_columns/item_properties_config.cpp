@@ -19,7 +19,7 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         GetClientRect(wnd_lv, &rc);
         uih::list_view_insert_column_text(wnd_lv, 0, L"", RECT_CX(rc));
 
-        for (auto&& [index, section] : ranges::view::enumerate(g_info_sections)) {
+        for (auto&& [index, section] : ranges::views::enumerate(g_info_sections)) {
             uih::list_view_insert_item_text(wnd_lv, index, 0, section.name);
             ListView_SetCheckState(wnd_lv, index, (m_info_sections_mask & (1 << section.id)) ? TRUE : FALSE);
         }

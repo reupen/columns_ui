@@ -267,7 +267,7 @@ public:
 
         const t_size value_count = info->meta_enum_value_count(field_index);
 
-        for (auto value_index : ranges::view::iota(size_t{0}, value_count)) {
+        for (auto value_index : ranges::views::iota(size_t{0}, value_count)) {
             const auto value = info->meta_enum_value(field_index, value_index);
             add_value(value);
         }
@@ -358,7 +358,7 @@ public:
         std::vector<std::tuple<std::string, concurrency::concurrent_vector<TrackProperty>>> all_sections;
         std::vector<std::tuple<std::string, concurrency::concurrent_vector<TrackProperty>>> unknown_sections;
 
-        for (auto&& [index, values] : ranges::view::enumerate(m_known_sections)) {
+        for (auto&& [index, values] : ranges::views::enumerate(m_known_sections)) {
             if (values.empty())
                 continue;
 
