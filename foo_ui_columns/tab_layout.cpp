@@ -35,7 +35,7 @@ void LayoutTabNode::build()
         m_name = "<unknown>";
 
     if (m_window.is_valid() && m_window->service_query_t(m_splitter)) {
-        for (auto i : ranges::view::iota(size_t{0}, m_splitter->get_panel_count())) {
+        for (auto i : ranges::views::iota(size_t{0}, m_splitter->get_panel_count())) {
             auto& child = m_children.emplace_back(std::make_shared<LayoutTabNode>());
             m_splitter->get_panel(i, *child->m_item);
 
@@ -888,7 +888,7 @@ void LayoutTab::on_tree_selection_change(HTREEITEM tree_item)
         = {{uie::splitter_window::uint32_orientation, IDC_CAPTIONSTYLE},
             {uie::splitter_window::string_custom_title, IDC_CUSTOM_TITLE}};
 
-    const auto all_item_and_control_ids = ranges::view::concat(bool_item_and_control_ids, other_item_and_control_ids);
+    const auto all_item_and_control_ids = ranges::views::concat(bool_item_and_control_ids, other_item_and_control_ids);
 
     std::unordered_map<GUID, bool, GUIDHasher> supported_map;
     std::unordered_map<GUID, bool, GUIDHasher> enable_map;

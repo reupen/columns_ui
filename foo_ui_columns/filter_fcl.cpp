@@ -167,7 +167,7 @@ class FavouritesDataSet : public cui::fcl::dataset {
         const auto count = gsl::narrow<uint32_t>(filter_panel::cfg_favourites.get_count());
         p_writer->write_lendian_t(count, p_abort);
 
-        for (auto i : ranges::view::iota(0u, count)) {
+        for (auto i : ranges::views::iota(0u, count)) {
             auto& favourite = filter_panel::cfg_favourites[i];
             auto data = write_favourite(favourite, p_abort);
 
@@ -183,7 +183,7 @@ class FavouritesDataSet : public cui::fcl::dataset {
         p_reader->read_lendian_t(count, p_abort);
         pfc::array_staticsize_t<pfc::string8> imported_favourites{count};
 
-        for (auto i : ranges::view::iota(0u, count)) {
+        for (auto i : ranges::views::iota(0u, count)) {
             uint32_t favourite_data_size{};
             p_reader->read_lendian_t(favourite_data_size, p_abort);
             pfc::array_staticsize_t<uint8_t> favourite_data(favourite_data_size);
@@ -245,7 +245,7 @@ class FieldsDataSet : public cui::fcl::dataset {
         const auto count = gsl::narrow<uint32_t>(filter_panel::cfg_field_list.get_count());
         p_writer->write_lendian_t(count, p_abort);
 
-        for (auto i : ranges::view::iota(0u, count)) {
+        for (auto i : ranges::views::iota(0u, count)) {
             auto& field = filter_panel::cfg_field_list[i];
             auto data = write_field(field, p_abort);
 
@@ -262,7 +262,7 @@ class FieldsDataSet : public cui::fcl::dataset {
         p_reader->read_lendian_t(count, p_abort);
         pfc::array_staticsize_t<filter_panel::Field> imported_fields{count};
 
-        for (auto i : ranges::view::iota(0u, count)) {
+        for (auto i : ranges::views::iota(0u, count)) {
             uint32_t field_size{};
             p_reader->read_lendian_t(field_size, p_abort);
             pfc::array_staticsize_t<uint8_t> field_data(field_size);

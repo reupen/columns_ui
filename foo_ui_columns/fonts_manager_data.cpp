@@ -97,7 +97,7 @@ void FontsManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_a
     size_t counter = 0;
     mask.set_count(count);
 
-    for (auto&& i : ranges::view::iota(size_t{0}, count))
+    for (auto&& i : ranges::views::iota(size_t{0}, count))
         if ((mask[i] = clients.have_item(m_entries[i]->guid)))
             counter++;
 
@@ -106,14 +106,14 @@ void FontsManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_a
     m_common_labels_entry->write(p_stream, p_abort);
     p_stream->write_lendian_t(counter, p_abort);
 
-    for (auto&& i : ranges::view::iota(size_t{0}, count))
+    for (auto&& i : ranges::views::iota(size_t{0}, count))
         if (mask[i])
             m_entries[i]->write(p_stream, p_abort);
 
     m_common_items_entry->write_extra_data(p_stream, p_abort);
     m_common_labels_entry->write_extra_data(p_stream, p_abort);
 
-    for (auto&& i : ranges::view::iota(size_t{0}, count))
+    for (auto&& i : ranges::views::iota(size_t{0}, count))
         if (mask[i])
             m_entries[i]->write_extra_data(p_stream, p_abort);
 }
