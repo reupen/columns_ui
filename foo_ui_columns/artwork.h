@@ -185,7 +185,7 @@ private:
     // pfc::rcptr_t<CCustomAlbumArtLoader> m_artwork_loader;
     pfc::refcounted_object_ptr_t<ArtworkReaderManager> m_artwork_loader;
     // now_playing_album_art_manager m_nowplaying_artwork_loader;
-    pfc::rcptr_t<Gdiplus::Bitmap> m_image;
+    std::unique_ptr<Gdiplus::Bitmap> m_image;
     gdi_object_t<HBITMAP>::ptr_t m_bitmap;
     t_size m_position{0};
     t_size m_track_mode;

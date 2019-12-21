@@ -18,7 +18,11 @@ Visual Studio 2019 is required to build Columns UI. You can use the [free commun
 
 ### Installing external dependencies
 
-The Microsoft Guideline Support Library (GSL) and range-v3 are required to build Columns UI.
+The following libraries are required to build Columns UI:
+
+- Microsoft Guideline Support Library (GSL)
+- Microsoft Windows Implementation Library (WIL)
+- range-v3
 
 The recommended way to install them is using [vcpkg](https://github.com/Microsoft/vcpkg).
 
@@ -29,7 +33,7 @@ git clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
 .\bootstrap-vcpkg.bat
 .\vcpkg integrate install
-.\vcpkg install ms-gsl range-v3 --overlay-ports=..\columns_ui\ports
+.\vcpkg install ms-gsl wil range-v3 --overlay-ports=..\columns_ui\ports
 ```
 
 (Note: Change the `..\columns_ui\ports` path in the `.\vcpkg install` command as necessary.)

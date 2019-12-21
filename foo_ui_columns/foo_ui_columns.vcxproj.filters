@@ -512,6 +512,9 @@
     <ClCompile Include="playlist_switcher_title_formatting.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
+    <ClCompile Include="wic.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
@@ -727,6 +730,9 @@
     </ClInclude>
     <ClInclude Include="playlist_switcher_title_formatting.h">
       <Filter>Playlist switcher</Filter>
+    </ClInclude>
+    <ClInclude Include="wic.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

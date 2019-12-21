@@ -6,19 +6,20 @@
  * \author musicmusic
  * \date March 2015
  *
- * Contains helper functions for loading PNG images using Gdiplus
+ * Contains helper functions for Gdiplus
  */
 
 #include "stdafx.h"
 
-class CheckGdiplusStatus {
-public:
-    static void g_CheckGdiplusStatus(Gdiplus::Status pStatus);
-    void operator<<(const Gdiplus::Status pStatus) { g_CheckGdiplusStatus(pStatus); }
-};
+namespace cui::gdip {
 
-HBITMAP g_CreateHbitmapFromGdiplusBitmapData32bpp(const Gdiplus::BitmapData& pBitmapData);
-HBITMAP g_load_png_gdiplus_throw(
-    HDC dc, const char* fn, unsigned target_cx = pfc_infinite, unsigned target_cy = pfc_infinite);
-HBITMAP g_load_png_gdiplus(
-    HDC dc, const char* fn, unsigned target_cx = pfc_infinite, unsigned target_cy = pfc_infinite);
+/**
+ * Creates a GDI+ Bitmap from an array of bytes, without needing to keep the data around once
+ * the Bitmap instance has been created.
+ */
+std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_32bpp_data(
+    unsigned width, unsigned height, unsigned stride, const uint8_t* data, size_t size);
+
+void check_status(Gdiplus::Status status);
+
+} // namespace cui::gdip
