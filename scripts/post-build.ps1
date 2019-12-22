@@ -11,7 +11,7 @@ $inputBaseName = [io.path]::GetFileNameWithoutExtension($ComponentPath)
 
 $verionPart = ''
 
-if ($version -and $version.IsRelease()) {
+if ($version -and ($version.IsRelease() -or $Env:TF_BUILD -eq 'True')) {
     $verionPart = "-$version"
 }
 

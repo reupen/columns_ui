@@ -17,6 +17,14 @@ class Version {
         if ($this.Distance) {
             $annotations += @($this.Distance, "g$($this.CommitHash)")
         }
+
+        if ($Env:TF_BUILD -eq 'True') {
+            $annotations += 'azure'
+        }
+    
+        if ($Env:BUILD_BUILDID) {
+            $annotations += "b$Env:BUILD_BUILDID"
+        }
     
         if ($this.Dirty) {
             $annotations += 'dirty'
