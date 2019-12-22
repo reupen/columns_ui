@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "buttons.h"
+#include "wic.h"
 
 ButtonsToolbar::ButtonImage::~ButtonImage()
 {
@@ -14,8 +15,11 @@ bool ButtonsToolbar::ButtonImage::is_valid()
 {
     return m_bm != nullptr;
 }
+
 void ButtonsToolbar::ButtonImage::load(const Button::CustomImage& p_image)
 {
+    TRACK_CALL_TEXT("cui::ButtonsToolbar::ButtonImage::load");
+
     m_mask_type = p_image.m_mask_type;
     m_mask_colour = p_image.m_mask_colour;
 
@@ -29,9 +33,12 @@ void ButtonsToolbar::ButtonImage::load(const Button::CustomImage& p_image)
         m_icon = (HICON)uLoadImage(core_api::get_my_instance(), fullPath, IMAGE_ICON, GetSystemMetrics(SM_CXSMICON),
             GetSystemMetrics(SM_CYSMICON), LR_LOADFROMFILE);
     else {
-        m_bm = g_load_png_gdiplus(nullptr, fullPath);
-        // g_load_png_wic(0, p_image.m_path);
-        // read_png(0, p_image.m_path);
+        try {
+            m_bm = cui::wic::create_hbitmap_from_path(p_image.m_path).release();
+        } catch (const std::exception& ex) {
+            fbh::print_to_console(u8"Buttons toolbar – loading image failed: ", ex.what());
+            m_bm = nullptr;
+        }
     }
     if (m_bm) {
         switch (p_image.m_mask_type) {

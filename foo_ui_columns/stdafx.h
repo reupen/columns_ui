@@ -46,6 +46,9 @@
 #include <wincodec.h>
 #include <strsafe.h>
 
+#include <wil/com.h>
+#include <wil/resource.h>
+
 #include "../foobar2000/SDK/foobar2000.h"
 #include "../foobar2000/SDK/core_api.h"
 #include "../foobar2000/helpers/playlist_position_reference_tracker.h"

@@ -654,10 +654,11 @@ BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPA
                     || (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY))
                     temp.reset();
 
-                if (uGetOpenFileName(wnd,
-                        "Image Files (*.bmp;*.png;*.gif;*.tiff;*.ico)|*.bmp;*.png;*.gif;*.tiff;*.ico|All Files "
-                        "(*.*)|*.*",
-                        0, "png", "Choose image", nullptr, temp, FALSE)) {
+                constexpr auto extension_mask
+                    = "Image Files (*.bmp;*.gif;*.ico;*.png;*.tiff;*.webp)|*.bmp;*.gif;*.ico;*.png;*.tiff;*.webp|All "
+                      "Files (*.*)|*.*";
+
+                if (uGetOpenFileName(wnd, extension_mask, 0, "png", "Choose image", nullptr, temp, FALSE)) {
                     ptr->m_image->m_path = temp;
                     uSendDlgItemMessageText(
                         wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (true) ? ptr->m_image->m_path.get_ptr() : "");

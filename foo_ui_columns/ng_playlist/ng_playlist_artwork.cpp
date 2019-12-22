@@ -1,5 +1,6 @@
 #include "../stdafx.h"
 #include "ng_playlist.h"
+#include "wic.h"
 
 namespace pvt {
 bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback& p_abort)
@@ -38,8 +39,8 @@ HBITMAP g_get_nocover_bitmap(t_size cx, t_size cy, COLORREF cr_back, bool b_refl
     return ret;
 }
 
-void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<ArtworkReader>& p_out,
-    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
+void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<ArtworkReader>& p_out, t_size cx,
+    t_size cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
 {
     pfc::rcptr_t<ArtworkReader> p_new_reader = pfc::rcnew_t<ArtworkReader>();
     p_new_reader->initialise(m_requestIds, m_repositories, artwork_panel::cfg_fb2k_artwork_mode, p_handle, cx, cy,
@@ -158,8 +159,8 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
                         else
                             realPath << pfc::string_directory(m_handle->get_path()) << "\\" << path;
 
-                        bool b_search = (realPath.find_first('*') != pfc_infinite)
-                            || (realPath.find_first('?') != pfc_infinite);
+                        bool b_search
+                            = (realPath.find_first('*') != pfc_infinite) || (realPath.find_first('?') != pfc_infinite);
                         bool b_search_matched = false;
 
                         if (b_search) {
@@ -201,8 +202,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
                                             filesystem::g_get_canonical_path(
                                                 realPathExt << realPath << "." << image_extensions[i], canPath);
                                             if (!filesystem::g_is_remote_or_unrecognized(canPath)) {
-                                                filesystem::g_open(
-                                                    file, canPath, filesystem::open_mode_read, p_abort);
+                                                filesystem::g_open(file, canPath, filesystem::open_mode_read, p_abort);
                                                 break;
                                             }
                                         } catch (exception_io const&) {
@@ -210,8 +210,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
                                     }
                                 }
                                 if (file.is_valid()) {
-                                    service_ptr_t<album_art_data_impl> ptr
-                                        = new service_impl_t<album_art_data_impl>;
+                                    service_ptr_t<album_art_data_impl> ptr = new service_impl_t<album_art_data_impl>;
                                     ptr->from_stream(
                                         file.get_ptr(), gsl::narrow<t_size>(file->get_size_ex(p_abort)), p_abort);
                                     b_found = true;
@@ -247,8 +246,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
                 try {
                     if (!b_extracter_attempted) {
                         b_extracter_attempted = true;
-                        p_extractor
-                            = artwork_panel::g_get_album_art_extractor_instance(m_handle->get_path(), p_abort);
+                        p_extractor = artwork_panel::g_get_album_art_extractor_instance(m_handle->get_path(), p_abort);
                     }
                     if (p_extractor.is_valid()) {
                         data = p_extractor->query(*walk, p_abort);
@@ -397,18 +395,22 @@ HBITMAP g_create_hbitmap_from_data(
     const album_art_data_ptr& data, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
 {
     HBITMAP ret = nullptr;
-    pfc::com_ptr_t<mmh::IStreamMemblock> pStream
-        = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
-    // m_image.release();
-    // flush_cached_bitmap();
-    {
-        Gdiplus::Bitmap bm(pStream.get_ptr());
-        pStream.release();
-        if (bm.GetLastStatus() == Gdiplus::Ok) {
-            ret = g_create_hbitmap_from_image(bm, cx, cy, cr_back, b_reflection);
-        }
+
+    cui::wic::BitmapData bitmap_data{};
+    try {
+        bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
+    } catch (const std::exception& ex) {
+        fbh::print_to_console(u8"Playlist view – loading image failed: ", ex.what());
+        return nullptr;
     }
-    return ret;
+
+    const auto bitmap = cui::gdip::create_bitmap_from_32bpp_data(
+        bitmap_data.width, bitmap_data.height, bitmap_data.stride, bitmap_data.data.data(), bitmap_data.data.size());
+
+    if (!bitmap)
+        return nullptr;
+
+    return g_create_hbitmap_from_image(*bitmap, cx, cy, cr_back, b_reflection);
 }
 
 HBITMAP PlaylistView::request_group_artwork(t_size index_item)

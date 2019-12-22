@@ -2,6 +2,7 @@
 
 #include "artwork.h"
 #include "config.h"
+#include "wic.h"
 
 namespace artwork_panel {
 // {A24038C7-C055-45ed-B631-CC8FD2A22473}
@@ -166,7 +167,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
         static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
         m_selection_handles.remove_all();
-        m_image.release();
+        m_image.reset();
         m_bitmap.release();
         if (m_gdiplus_initialised)
             Gdiplus::GdiplusShutdown(m_gdiplus_instance);
@@ -392,7 +393,7 @@ void ArtworkPanel::show_emptycover()
             pfc::com_ptr_t<mmh::IStreamMemblock> pStream
                 = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
             {
-                m_image = pfc::rcnew_t<Gdiplus::Bitmap>(pStream.get_ptr());
+                m_image = std::make_unique<Gdiplus::Bitmap>(pStream.get_ptr());
                 pStream.release();
                 if (m_image->GetLastStatus() == Gdiplus::Ok) {
                     flush_cached_bitmap();
@@ -408,42 +409,49 @@ void ArtworkPanel::show_emptycover()
 
 bool ArtworkPanel::refresh_image(t_size index)
 {
-    if (m_artwork_loader.is_valid() && m_artwork_loader->IsReady()) {
-        album_art_data_ptr data;
-        if (m_artwork_loader->Query(g_artwork_types[index], data))
-        // if (m_nowplaying_artwork_loader.get_data(m_position, data))
-        {
-            pfc::com_ptr_t<mmh::IStreamMemblock> pStream
-                = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
-            /// m_image.release();
-            /// flush_cached_bitmap();
-            {
-                m_image = pfc::rcnew_t<Gdiplus::Bitmap>(pStream.get_ptr());
-                pStream.release();
-                if (m_image->GetLastStatus() == Gdiplus::Ok) {
-                    flush_cached_bitmap();
-                    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
-                    return true;
-                }
-            }
-        }
+    TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
+
+    flush_image();
+
+    if (!m_artwork_loader.is_valid() || !m_artwork_loader->IsReady())
+        return false;
+
+    album_art_data_ptr data;
+    if (!m_artwork_loader->Query(g_artwork_types[index], data))
+        return false;
+
+    cui::wic::BitmapData bitmap_data{};
+    try {
+        bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
+    } catch (const std::exception& ex) {
+        fbh::print_to_console(u8"Artwork panel – loading image failed: ", ex.what());
+        return false;
     }
-    return false;
+
+    m_image = cui::gdip::create_bitmap_from_32bpp_data(
+        bitmap_data.width, bitmap_data.height, bitmap_data.stride, bitmap_data.data.data(), bitmap_data.data.size());
+
+    if (!m_image)
+        return false;
+
+    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+    return true;
 }
+
 void ArtworkPanel::flush_cached_bitmap()
 {
     m_bitmap.release();
 }
 void ArtworkPanel::flush_image()
 {
-    m_image.release();
+    m_image.reset();
     flush_cached_bitmap();
 }
 void ArtworkPanel::refresh_cached_bitmap()
 {
     RECT rc;
     GetClientRect(get_wnd(), &rc);
-    if (RECT_CX(rc) && RECT_CY(rc) && m_image.is_valid()) {
+    if (RECT_CX(rc) && RECT_CY(rc) && m_image) {
         HDC dc = nullptr;
         HDC dcc = nullptr;
         dc = GetDC(get_wnd());

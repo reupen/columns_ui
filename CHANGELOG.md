@@ -8,6 +8,12 @@
 
 * The ability to display tooltips for non-truncated text in the playlist view was removed. [[#271](https://github.com/reupen/columns_ui/pull/271)]
 
+### Features
+
+* The Windows Imaging Component is now used to load button images, and artwork in the arwork panel and playlist view.
+  
+  This change adds WebP support on Windows 10 1809 and newer. (On older versions of Windows, [the Google WebP codec](https://storage.googleapis.com/downloads.webmproject.org/releases/webp/WebpCodecSetup.exe) can be installed to add WebP support.) [[#272](https://github.com/reupen/columns_ui/pull/272)]
+
 ### Internal changes
 
 * The component is now compiled using foobar2000 SDK 2019-11-29. [[#271](https://github.com/reupen/columns_ui/pull/271)]
