@@ -62,10 +62,10 @@ class PlaylistSwitcher
         bool m_is_playlists;
         bool m_is_accepted_type;
         service_ptr_t<PlaylistSwitcher> m_window;
-        pfc::com_ptr_t<IDataObject> m_DataObject;
+        wil::com_ptr_t<IDataObject> m_DataObject;
         service_ptr_t<ole_interaction_v2> m_ole_api;
         service_ptr_t<playlist_manager_v4> m_playlist_api;
-        mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
+        wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
     };
 
 public:
@@ -319,7 +319,7 @@ private:
     pfc::rcptr_t<playlist_position_reference_tracker> m_switch_playlist;
 
     bool m_dragging{false};
-    pfc::com_ptr_t<IDataObject> m_DataObject;
+    wil::com_ptr_t<IDataObject> m_DataObject;
 
     pfc::rcptr_t<playlist_position_reference_tracker> m_edit_playlist;
     t_size m_playing_playlist;

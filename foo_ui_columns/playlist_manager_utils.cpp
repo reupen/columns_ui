@@ -28,13 +28,13 @@ void rename_playlist(size_t index, HWND wnd_parent)
 bool check_clipboard()
 {
     static_api_ptr_t<ole_interaction> api;
-    pfc::com_ptr_t<IDataObject> pDO;
+    wil::com_ptr_t<IDataObject> pDO;
 
-    HRESULT hr = OleGetClipboard(pDO.receive_ptr());
+    HRESULT hr = OleGetClipboard(&pDO);
     if (FAILED(hr))
         return false;
 
-    hr = api->check_dataobject_playlists(pDO);
+    hr = api->check_dataobject_playlists(pDO.get());
     return SUCCEEDED(hr);
 }
 bool cut(const pfc::bit_array& mask)
@@ -96,18 +96,18 @@ bool paste(HWND wnd, t_size index_insert)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
     static_api_ptr_t<ole_interaction> api;
-    pfc::com_ptr_t<IDataObject> pDO;
+    wil::com_ptr_t<IDataObject> pDO;
 
-    HRESULT hr = OleGetClipboard(pDO.receive_ptr());
+    HRESULT hr = OleGetClipboard(&pDO);
     if (FAILED(hr))
         return false;
 
     playlist_dataobject_desc_impl data;
-    hr = api->check_dataobject_playlists(pDO);
+    hr = api->check_dataobject_playlists(pDO.get());
     if (FAILED(hr))
         return false;
 
-    hr = api->parse_dataobject_playlists(pDO, data);
+    hr = api->parse_dataobject_playlists(pDO.get(), data);
     if (FAILED(hr))
         return false;
 

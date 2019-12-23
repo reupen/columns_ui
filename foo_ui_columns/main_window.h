@@ -94,7 +94,7 @@ private:
     void update_taskbar_buttons(bool update);
 
     pfc::string8 m_window_title;
-    mmh::ComPtr<ITaskbarList3> m_taskbar_list;
+    wil::com_ptr_t<ITaskbarList3> m_taskbar_list;
     HWND m_wnd{};
     user_interface::HookProc_t m_hook_proc{};
     bool m_should_handle_multimedia_keys{true};

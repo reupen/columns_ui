@@ -19,8 +19,8 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_create()
 {
-    pfc::com_ptr_t<ButtonsListDropTarget> IDT_blv = new ButtonsListDropTarget(this);
-    RegisterDragDrop(get_wnd(), IDT_blv.get_ptr());
+    wil::com_ptr_t<ButtonsListDropTarget> IDT_blv = new ButtonsListDropTarget(this);
+    RegisterDragDrop(get_wnd(), IDT_blv.get());
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_destroy()
 {
@@ -36,13 +36,13 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_selection_change(
 bool ButtonsToolbar::ConfigParam::ButtonsList::do_drag_drop(WPARAM wp)
 {
     UINT cf = g_clipformat();
-    mmh::ComPtr<IDataObject> pDO = new CDataObject;
+    wil::com_ptr_t<IDataObject> pDO = new CDataObject;
 
     DDData data = {0, get_wnd()};
-    uih::ole::set_blob(pDO, cf, &data, sizeof(data));
+    uih::ole::set_blob(pDO.get(), cf, &data, sizeof(data));
 
     DWORD drop_effect = DROPEFFECT_NONE;
-    uih::ole::do_drag_drop(get_wnd(), wp, pDO, DROPEFFECT_MOVE, NULL, &drop_effect);
+    uih::ole::do_drag_drop(get_wnd(), wp, pDO.get(), DROPEFFECT_MOVE, NULL, &drop_effect);
 
     return true;
 }

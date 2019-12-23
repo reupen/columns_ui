@@ -9,7 +9,7 @@ bool g_last_rmb = false;
 
 MainWindowDropTarget::MainWindowDropTarget()
 {
-    m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
+    m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }
 
 bool MainWindowDropTarget::check_window_allowed(HWND wnd)
@@ -24,7 +24,7 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
     static_api_ptr_t<playlist_manager> playlist_api;
@@ -76,51 +76,51 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(
         data.remove_all();
     }
 
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragLeave();
-    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
 
-    m_DataObject.release();
+    m_DataObject.reset();
 
     return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragLeave()
 {
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragLeave();
-    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
 
     last_over.x = 0;
     last_over.y = 0;
-    m_DataObject.release();
+    m_DataObject.reset();
     return S_OK;
 }
 
 HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
     g_last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 
     HWND wnd = WindowFromPoint(pt);
     bool is_allowed_window = check_window_allowed(wnd);
-    bool uid_handled = ui_drop_item_callback::g_is_accepted_type(m_DataObject, pdwEffect);
+    bool uid_handled = ui_drop_item_callback::g_is_accepted_type(m_DataObject.get(), pdwEffect);
 
     // if (last_over.x != pt.x || last_over.y != pt.y)
     if (!uid_handled) {
         if (is_allowed_window
-            && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(m_DataObject)) {
+            && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(m_DataObject.get())) {
             *pdwEffect = DROPEFFECT_COPY;
 
             pfc::string8 name;
             static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
-            uih::ole::set_drop_description(m_DataObject, DROPIMAGE_COPY, "Add to %1", name);
+            uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to %1", name);
         } else {
             *pdwEffect = DROPEFFECT_NONE;
-            uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
         }
     }
 
@@ -133,7 +133,7 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragEnter(cui::main_window.get_wnd(), pDataObj, &pt, *pdwEffect);
 
     m_DataObject = pDataObj;
@@ -155,7 +155,7 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragEnter(
             uih::ole::set_drop_description(pDataObj, DROPIMAGE_COPY, "Add to %1", name);
         } else {
             *pdwEffect = DROPEFFECT_NONE;
-            uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
         }
     }
     return S_OK; //??

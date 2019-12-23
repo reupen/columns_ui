@@ -177,7 +177,7 @@ void cui::MainWindow::set_title(const char* ptr)
 
 void cui::MainWindow::update_taskbar_buttons(bool update)
 {
-    if (m_wnd && m_taskbar_list.is_valid()) {
+    if (m_wnd && m_taskbar_list) {
         static_api_ptr_t<playback_control> play_api;
 
         bool b_is_playing = play_api->is_playing();

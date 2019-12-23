@@ -85,28 +85,25 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 
     if (WM_TASKBARBUTTONCREATED && msg == WM_TASKBARBUTTONCREATED) {
-        mmh::ComPtr<ITaskbarList> p_ITaskbarList;
-        if (SUCCEEDED(p_ITaskbarList.instantiate(CLSID_TaskbarList))) {
-            m_taskbar_list = p_ITaskbarList;
-            if (m_taskbar_list.is_valid() && SUCCEEDED(m_taskbar_list->HrInit())) {
-                const unsigned cx = GetSystemMetrics(SM_CXSMICON);
-                const unsigned cy = GetSystemMetrics(SM_CYSMICON);
+        auto taskbar_list = wil::CoCreateInstanceNoThrow<ITaskbarList3>(CLSID_TaskbarList);
+        if (taskbar_list && SUCCEEDED(taskbar_list->HrInit())) {
+            const unsigned cx = GetSystemMetrics(SM_CXSMICON);
+            const unsigned cy = GetSystemMetrics(SM_CYSMICON);
 
-                g_imagelist_taskbar = ImageList_Create(cx, cy, ILC_COLOR32, 0, 6);
+            g_imagelist_taskbar = ImageList_Create(cx, cy, ILC_COLOR32, 0, 6);
 
-                t_size i = 0;
+            t_size i = 0;
 
-                for (i = 0; i < 6; i++) {
-                    auto icon = (HICON)LoadImage(
-                        core_api::get_my_instance(), MAKEINTRESOURCE(g_taskbar_bitmaps[i]), IMAGE_ICON, cx, cy, NULL);
-                    ImageList_ReplaceIcon(g_imagelist_taskbar, -1, icon);
-                    DestroyIcon(icon);
-                }
+            for (i = 0; i < 6; i++) {
+                auto icon = (HICON)LoadImage(
+                    core_api::get_my_instance(), MAKEINTRESOURCE(g_taskbar_bitmaps[i]), IMAGE_ICON, cx, cy, NULL);
+                ImageList_ReplaceIcon(g_imagelist_taskbar, -1, icon);
+                DestroyIcon(icon);
+            }
 
-                if (SUCCEEDED(m_taskbar_list->ThumbBarSetImageList(wnd, g_imagelist_taskbar))) {
-                    queue_taskbar_button_update(false);
-                } else
-                    m_taskbar_list.release();
+            if (SUCCEEDED(taskbar_list->ThumbBarSetImageList(wnd, g_imagelist_taskbar))) {
+                queue_taskbar_button_update(false);
+                m_taskbar_list = taskbar_list;
             }
         }
     }
@@ -168,8 +165,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             create_systray_icon();
 
         HRESULT hr = OleInitialize(nullptr);
-        pfc::com_ptr_t<MainWindowDropTarget> drop_handler = new MainWindowDropTarget;
-        RegisterDragDrop(m_wnd, drop_handler.get_ptr());
+        wil::com_ptr_t<MainWindowDropTarget> drop_handler = new MainWindowDropTarget;
+        RegisterDragDrop(m_wnd, drop_handler.get());
 
         create_child_windows();
 
@@ -188,7 +185,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         destroy_rebar(false);
         status_bar::destroy_status_window();
-        m_taskbar_list.release();
+        m_taskbar_list.reset();
         RevokeDragDrop(m_wnd);
         destroy_systray_icon();
         on_destroy();

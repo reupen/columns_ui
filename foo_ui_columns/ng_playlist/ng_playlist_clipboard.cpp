@@ -6,13 +6,13 @@ namespace playlist_utils {
 bool check_clipboard()
 {
     static_api_ptr_t<ole_interaction> api;
-    pfc::com_ptr_t<IDataObject> pDO;
-    if (FAILED(OleGetClipboard(pDO.receive_ptr())))
+    wil::com_ptr_t<IDataObject> pDO;
+    if (FAILED(OleGetClipboard(&pDO)))
         return false;
 
     bool b_native;
     DWORD dummy = DROPEFFECT_COPY;
-    if (FAILED(api->check_dataobject(pDO, dummy, b_native)))
+    if (FAILED(api->check_dataobject(pDO.get(), dummy, b_native)))
         return false;
 
     return b_native;
@@ -57,20 +57,20 @@ bool paste(HWND wnd, size_t index)
 {
     static_api_ptr_t<playlist_manager> playlist_api;
     static_api_ptr_t<ole_interaction> ole_api;
-    pfc::com_ptr_t<IDataObject> pDO;
+    wil::com_ptr_t<IDataObject> pDO;
 
-    if (FAILED(OleGetClipboard(pDO.receive_ptr())))
+    if (FAILED(OleGetClipboard(&pDO)))
         return false;
 
     dropped_files_data_impl data;
     metadb_handle_list handles;
     bool b_native;
     DWORD dummy = DROPEFFECT_COPY;
-    HRESULT hr = ole_api->check_dataobject(pDO, dummy, b_native);
+    HRESULT hr = ole_api->check_dataobject(pDO.get(), dummy, b_native);
     if (FAILED(hr))
         return false;
 
-    hr = ole_api->parse_dataobject(pDO, data);
+    hr = ole_api->parse_dataobject(pDO.get(), data);
     if (FAILED(hr))
         return false;
 

@@ -41,7 +41,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragEnter(
     last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
 
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragEnter(p_playlist->get_wnd(), pDataObj, &pt, *pdwEffect);
 
     bool uid_handled = ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect);
@@ -54,10 +54,10 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragEnter(
                 = p_playlist->m_dragging && p_playlist->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL))
                 ? DROPEFFECT_MOVE
                 : DROPEFFECT_COPY;
-            UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
+            UpdateDropDescription(m_DataObject.get(), *pdwEffect);
         } else {
             *pdwEffect = DROPEFFECT_NONE;
-            uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
         }
     }
     return S_OK;
@@ -66,7 +66,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragEnter(
 HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragOver(DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
     last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
@@ -76,17 +76,17 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragOver(DWORD grfKeyState, PO
 
     if (!m_is_accepted_type) {
         *pdwEffect = DROPEFFECT_NONE;
-        uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+        uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
         return S_OK;
     }
 
-    if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get_ptr(), pdwEffect))
+    if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get(), pdwEffect))
         return S_OK;
 
     *pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == m_DataObject && (0 == (grfKeyState & MK_CONTROL))
         ? DROPEFFECT_MOVE
         : DROPEFFECT_COPY;
-    UpdateDropDescription(m_DataObject.get_ptr(), *pdwEffect);
+    UpdateDropDescription(m_DataObject.get(), *pdwEffect);
 
     if (p_playlist->get_wnd()) {
         uih::ListView::HitTestResult hi;
@@ -129,13 +129,13 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragOver(DWORD grfKeyState, PO
 
 HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragLeave()
 {
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragLeave();
-    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
     p_playlist->remove_insert_mark();
     p_playlist->destroy_timer_scroll_up();
     p_playlist->destroy_timer_scroll_down();
-    m_DataObject.release();
+    m_DataObject.reset();
     return S_OK;
 }
 
@@ -143,13 +143,13 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
     *pdwEffect = p_playlist->m_dragging && p_playlist->m_DataObject == pDataObj && (0 == (grfKeyState & MK_CONTROL))
         ? DROPEFFECT_MOVE
         : DROPEFFECT_COPY;
-    m_DataObject.release();
+    m_DataObject.reset();
     p_playlist->destroy_timer_scroll_up();
     p_playlist->destroy_timer_scroll_down();
 
@@ -325,7 +325,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
 PlaylistViewDropTarget::PlaylistViewDropTarget(PlaylistView* playlist)
     : drop_ref_count(0), last_rmb(false), m_is_accepted_type(false), p_playlist(playlist)
 {
-    m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
+    m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }
 HRESULT PlaylistViewDropTarget::UpdateDropDescription(IDataObject* pDataObj, DWORD pdwEffect)
 {

@@ -14,10 +14,10 @@ bool PlaylistSwitcher::do_drag_drop(WPARAM wp)
     if (pDataObject.is_valid()) {
         DWORD blah = DROPEFFECT_NONE;
         m_dragging = true;
-        m_DataObject = pDataObject;
+        m_DataObject = pDataObject.get_ptr();
         HRESULT hr = uih::ole::do_drag_drop(
             get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
-        m_DataObject.release();
+        m_DataObject.reset();
         m_dragging = false;
     }
     return true;
