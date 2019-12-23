@@ -394,7 +394,7 @@ public:
     unsigned get_type() const override;
 
     bool m_dragging{false};
-    pfc::com_ptr_t<IDataObject> m_DataObject;
+    wil::com_ptr_t<IDataObject> m_DataObject;
     t_size m_dragging_initial_playlist;
 
 protected:
@@ -710,8 +710,8 @@ private:
     bool last_rmb;
     bool m_is_accepted_type;
     service_ptr_t<PlaylistView> p_playlist;
-    pfc::com_ptr_t<IDataObject> m_DataObject;
-    mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
+    wil::com_ptr_t<IDataObject> m_DataObject;
+    wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
 };
 
 class PlaylistViewDropSource : public IDropSource {

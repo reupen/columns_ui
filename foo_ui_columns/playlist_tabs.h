@@ -93,8 +93,8 @@ public:
         long drop_ref_count{};
         POINTL last_over{};
         service_ptr_t<PlaylistTabs> p_list;
-        pfc::com_ptr_t<IDataObject> m_DataObject;
-        mmh::ComPtr<IDropTargetHelper> m_DropTargetHelper;
+        wil::com_ptr_t<IDataObject> m_DataObject;
+        wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
     };
 
     void FB2KAPI on_items_removing(

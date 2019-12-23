@@ -8,21 +8,20 @@ bool PlaylistView::do_drag_drop(WPARAM wp)
     m_playlist_api->activeplaylist_get_selected_items(data);
     if (data.get_count() > 0) {
         static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
-        mmh::ComPtr<IDataObject> pDataObject;
-        pDataObject.attach(incoming_api->create_dataobject(data));
+        auto pDataObject = incoming_api->create_dataobject_ex(data);
         if (pDataObject.is_valid()) {
             // pfc::com_ptr_t<IAsyncOperation> pAsyncOperation;
             // HRESULT hr = pDataObject->QueryInterface(IID_IAsyncOperation, (void**)pAsyncOperation.receive_ptr());
             DWORD blah = DROPEFFECT_NONE;
             {
                 m_dragging = true;
-                m_DataObject = pDataObject;
+                m_DataObject = pDataObject.get_ptr();
                 m_dragging_initial_playlist = m_playlist_api->get_active_playlist();
                 HRESULT hr = uih::ole::do_drag_drop(
-                    get_wnd(), wp, pDataObject, DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
+                    get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
 
                 m_dragging = false;
-                m_DataObject.release();
+                m_DataObject.reset();
                 m_dragging_initial_playlist = pfc_infinite;
             }
         }

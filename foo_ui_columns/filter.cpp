@@ -467,13 +467,12 @@ bool FilterPanel::do_drag_drop(WPARAM wp)
     if (data.get_count() > 0) {
         sort_tracks(data);
         static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
-        IDataObject* pDataObject = incoming_api->create_dataobject(data);
-        if (pDataObject) {
+        auto pDataObject = incoming_api->create_dataobject_ex(data);
+        if (pDataObject.is_valid()) {
             m_drag_item_count = data.get_count();
             DWORD blah = DROPEFFECT_NONE;
             HRESULT hr = uih::ole::do_drag_drop(
-                get_wnd(), wp, pDataObject, DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
-            pDataObject->Release();
+                get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
             m_drag_item_count = 0;
         }
     }

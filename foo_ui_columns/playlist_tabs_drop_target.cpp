@@ -39,7 +39,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragEnter(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragEnter(p_list->get_wnd(), pDataObj, &pt, *pdwEffect);
     m_DataObject = pDataObj;
 
@@ -62,10 +62,10 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
 {
     POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
-    if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get_ptr(), pdwEffect))
+    if (ui_drop_item_callback::g_is_accepted_type(m_DataObject.get(), pdwEffect))
         return S_OK;
 
     *pdwEffect = DROPEFFECT_COPY;
@@ -76,7 +76,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
 
         if (!m_is_accepted_type) {
             *pdwEffect = DROPEFFECT_NONE;
-            uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+            uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
             return S_OK;
         }
 
@@ -114,11 +114,11 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
                 if (idx != -1 && !isAltDown) {
                     pfc::string8 name;
                     static_api_ptr_t<playlist_manager>()->playlist_get_name(idx, name);
-                    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to %1", name);
+                    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to %1", name);
                 } else
-                    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+                    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to new playlist", "");
             } else
-                uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_COPY, "Add to new playlist", "");
+                uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to new playlist", "");
         }
         if ((!p_list->wnd_tabs || wnd != p_list->wnd_tabs))
             p_list->kill_switch_timer();
@@ -129,13 +129,13 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
 
 HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragLeave()
 {
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragLeave();
     last_over.x = 0;
     last_over.y = 0;
     p_list->kill_switch_timer();
-    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
-    m_DataObject.release();
+    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
+    m_DataObject.reset();
 
     return S_OK;
 }
@@ -145,16 +145,16 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 {
     POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
     p_list->kill_switch_timer();
-    m_DataObject.release();
+    m_DataObject.reset();
     last_over.x = 0;
     last_over.y = 0;
 
     if (!m_is_accepted_type) {
-        uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+        uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
         return S_OK;
     }
 
@@ -329,5 +329,5 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 PlaylistTabs::PlaylistTabsDropTarget::PlaylistTabsDropTarget(PlaylistTabs* p_wnd)
     : p_list(p_wnd)
 {
-    m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC);
+    m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }

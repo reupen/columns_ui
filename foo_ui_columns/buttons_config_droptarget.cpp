@@ -57,11 +57,11 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
     m_DataObject = pDataObj;
     last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragEnter(m_button_list_view->get_wnd(), pDataObj, &pt, *pdwEffect);
     *pdwEffect = DROPEFFECT_NONE;
     if (check_do(pDataObj /*, pdwEffect*/)) {
-        uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_MOVE, "Move", "");
+        uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_MOVE, "Move", "");
         *pdwEffect = DROPEFFECT_MOVE;
     }
     return S_OK;
@@ -71,7 +71,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
 {
     // console::formatter() << "DragOver";
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
     last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
@@ -80,9 +80,9 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
     pti.x = ptl.x;
 
     *pdwEffect = DROPEFFECT_NONE;
-    if (check_do(m_DataObject /*, pdwEffect*/)) {
+    if (check_do(m_DataObject.get() /*, pdwEffect*/)) {
         *pdwEffect = DROPEFFECT_MOVE;
-        HRESULT hr = uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_MOVE, "Move", "");
+        HRESULT hr = uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_MOVE, "Move", "");
         // console::formatter() << pfc::format_hex(hr);
     }
     if (m_button_list_view->get_wnd()) {
@@ -122,20 +122,20 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
 HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::DragLeave()
 {
     // console::formatter() << "DragLeave";
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->DragLeave();
-    uih::ole::set_drop_description(m_DataObject.get_ptr(), DROPIMAGE_INVALID, "", "");
+    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
     m_button_list_view->remove_insert_mark();
     m_button_list_view->destroy_timer_scroll_up();
     m_button_list_view->destroy_timer_scroll_down();
-    m_DataObject.release();
+    m_DataObject.reset();
     return S_OK;
 }
 HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::Drop(
     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect)
 {
     POINT pt = {ptl.x, ptl.y};
-    if (m_DropTargetHelper.is_valid())
+    if (m_DropTargetHelper)
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
     *pdwEffect = DROPEFFECT_NONE;
@@ -180,7 +180,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             m_button_list_view->set_item_selected_single(new_index);
         }
     }
-    m_DataObject.release();
+    m_DataObject.reset();
     m_button_list_view->remove_insert_mark();
     m_button_list_view->destroy_timer_scroll_up();
     m_button_list_view->destroy_timer_scroll_down();
@@ -190,5 +190,5 @@ ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::ButtonsListDrop
     ButtonsToolbar::ConfigParam::ButtonsList* p_blv)
     : drop_ref_count(0), last_rmb(false), m_button_list_view(p_blv)
 {
-    m_DropTargetHelper.instantiate(CLSID_DragDropHelper, nullptr, CLSCTX_INPROC_SERVER);
+    m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }

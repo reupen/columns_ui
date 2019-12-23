@@ -390,11 +390,11 @@ void ArtworkPanel::show_emptycover()
     if (m_artwork_loader.is_valid() && m_artwork_loader->IsReady()) {
         album_art_data_ptr data;
         if (m_artwork_loader->QueryEmptyCover(data)) {
-            pfc::com_ptr_t<mmh::IStreamMemblock> pStream
+            wil::com_ptr_t<mmh::IStreamMemblock> pStream
                 = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
             {
-                m_image = std::make_unique<Gdiplus::Bitmap>(pStream.get_ptr());
-                pStream.release();
+                m_image = std::make_unique<Gdiplus::Bitmap>(pStream.get());
+                pStream.reset();
                 if (m_image->GetLastStatus() == Gdiplus::Ok) {
                     flush_cached_bitmap();
                     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);

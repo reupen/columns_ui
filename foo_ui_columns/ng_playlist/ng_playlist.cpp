@@ -562,8 +562,8 @@ void PlaylistView::notify_on_create()
 
     m_playlist_api->register_callback(static_cast<playlist_callback_single*>(this), playlist_callback::flag_all);
 
-    pfc::com_ptr_t<PlaylistViewDropTarget> IDT_playlist = new PlaylistViewDropTarget(this);
-    RegisterDragDrop(get_wnd(), IDT_playlist.get_ptr());
+    wil::com_ptr_t<PlaylistViewDropTarget> IDT_playlist = new PlaylistViewDropTarget(this);
+    RegisterDragDrop(get_wnd(), IDT_playlist.get());
 
     if (g_windows.empty())
         g_global_mesage_window.create(nullptr);
