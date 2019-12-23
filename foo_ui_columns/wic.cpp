@@ -19,7 +19,7 @@ wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_data(const void* data, siz
 
     wil::com_ptr_t<IWICBitmapDecoder> bitmap_decoder;
     check_hresult(imaging_factory->CreateDecoderFromStream(
-        stream.get(), nullptr, WICDecodeMetadataCacheOnDemand, bitmap_decoder.addressof()));
+        stream.get(), nullptr, WICDecodeMetadataCacheOnDemand, &bitmap_decoder));
 
     return bitmap_decoder;
 }
@@ -32,7 +32,7 @@ wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_path(std::string_view path
 
     wil::com_ptr_t<IWICBitmapDecoder> bitmap_decoder;
     check_hresult(imaging_factory->CreateDecoderFromFilename(
-        utf16_path.get_ptr(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, bitmap_decoder.addressof()));
+        utf16_path.get_ptr(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &bitmap_decoder));
 
     return bitmap_decoder;
 }
@@ -40,11 +40,10 @@ wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_path(std::string_view path
 wil::com_ptr_t<IWICBitmapSource> get_image_frame(const wil::com_ptr_t<IWICBitmapDecoder>& bitmap_decoder)
 {
     wil::com_ptr_t<IWICBitmapFrameDecode> bitmap_frame_decode;
-    check_hresult(bitmap_decoder->GetFrame(0, bitmap_frame_decode.addressof()));
+    check_hresult(bitmap_decoder->GetFrame(0, &bitmap_frame_decode));
 
     wil::com_ptr_t<IWICBitmapSource> converted_bitmap;
-    check_hresult(
-        WICConvertBitmapSource(GUID_WICPixelFormat32bppBGRA, bitmap_frame_decode.get(), converted_bitmap.addressof()));
+    check_hresult(WICConvertBitmapSource(GUID_WICPixelFormat32bppBGRA, bitmap_frame_decode.get(), &converted_bitmap));
 
     return converted_bitmap;
 }
