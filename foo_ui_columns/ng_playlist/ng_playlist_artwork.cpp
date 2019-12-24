@@ -39,10 +39,10 @@ HBITMAP g_get_nocover_bitmap(t_size cx, t_size cy, COLORREF cr_back, bool b_refl
     return ret;
 }
 
-void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<ArtworkReader>& p_out, t_size cx,
+void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, t_size cx,
     t_size cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
 {
-    pfc::rcptr_t<ArtworkReader> p_new_reader = pfc::rcnew_t<ArtworkReader>();
+    auto p_new_reader = std::make_shared<ArtworkReader>();
     p_new_reader->initialise(m_requestIds, m_repositories, artwork_panel::cfg_fb2k_artwork_mode, p_handle, cx, cy,
         cr_back, b_reflection, p_notify, this);
     m_pending_readers.add_item(p_new_reader);
@@ -263,7 +263,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
         }
         if (data.is_valid()) {
             m_bitmaps.set(*walk,
-                pfc::rcnew_t<gdi_object_t<HBITMAP>::ptr_t>(
+                std::make_shared<gdi_object_t<HBITMAP>::ptr_t>(
                     g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection)));
             GdiFlush();
         }
@@ -274,9 +274,9 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     {
         auto walk = m_requestIds.first();
         if (walk.is_valid() && !m_bitmaps.have_item(*walk)) {
-            pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t> bm;
+            std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t> bm;
             m_manager->request_nocover_image(bm, m_cx, m_cy, m_back, m_reflection, p_abort);
-            if (bm.is_valid() && bm->is_valid()) {
+            if (bm && bm->is_valid()) {
                 m_bitmaps.set(*walk, bm);
                 GdiFlush();
             }
@@ -426,8 +426,7 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item)
         if (group->m_artwork_load_attempted) {
             // group->m_artwork_data.release();
             // return NULL;
-            if (group->m_artwork_load_succeeded && group->m_artwork_bitmap.is_valid()
-                && group->m_artwork_bitmap->is_valid()) {
+            if (group->m_artwork_load_succeeded && group->m_artwork_bitmap && group->m_artwork_bitmap->is_valid()) {
                 /*if (!group->m_artwork_bitmap.is_valid() && !group->m_data_to_bitmap_attempted)
                 {
                 t_size cx=get_group_info_area_size(),cy;
@@ -461,7 +460,7 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item)
             ptr->m_window = this;
             metadb_handle_ptr handle;
             m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
-            pfc::rcptr_t<ArtworkReader> p_reader;
+            std::shared_ptr<ArtworkReader> p_reader;
             m_artwork_manager->request(handle, p_reader, cx, cy,
                 cui::colours::helper(ColoursClient::g_guid).get_colour(cui::colours::colour_background),
                 cfg_artwork_reflection, ptr.get_ptr());
@@ -471,16 +470,16 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item)
     return ret;
 }
 
-void ArtworkReaderManager::request_nocover_image(pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx,
+void ArtworkReaderManager::request_nocover_image(std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx,
     t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
     insync(m_nocover_sync);
-    if (m_nocover_bitmap.is_valid() && m_nocover_bitmap->is_valid() && m_nocover_cx == cx && m_nocover_cy == cy)
+    if (m_nocover_bitmap && m_nocover_bitmap->is_valid() && m_nocover_cx == cx && m_nocover_cy == cy)
         p_out = m_nocover_bitmap;
     else {
         HBITMAP bm = g_get_nocover_bitmap(cx, cy, cr_back, b_reflection, p_abort);
         if (bm) {
-            m_nocover_bitmap = pfc::rcnew_t<gdi_object_t<HBITMAP>::ptr_t>(bm);
+            m_nocover_bitmap = std::make_shared<gdi_object_t<HBITMAP>::ptr_t>(bm);
             p_out = m_nocover_bitmap;
             m_nocover_cx = cx;
             m_nocover_cy = cy;

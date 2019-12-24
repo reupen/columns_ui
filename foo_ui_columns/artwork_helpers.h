@@ -77,8 +77,8 @@ public:
 
 private:
     bool find_aborting_reader(const ArtworkReader* ptr, t_size& index);
-    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_aborting_readers;
-    pfc::rcptr_t<ArtworkReader> m_current_reader;
+    pfc::list_t<std::shared_ptr<ArtworkReader>> m_aborting_readers;
+    std::shared_ptr<ArtworkReader> m_current_reader;
     // album_art_manager_instance_ptr m_api;
 
     pfc::chain_list_v2_t<GUID> m_requestIds;

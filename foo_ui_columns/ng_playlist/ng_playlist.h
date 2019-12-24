@@ -115,7 +115,7 @@ class BaseArtworkCompletionNotify : public pfc::refcounted_object_root {
 public:
     using ptr_t = pfc::refcounted_object_ptr_t<BaseArtworkCompletionNotify>;
 
-    virtual void on_completion(const pfc::rcptr_t<class ArtworkReader>& p_reader) = 0;
+    virtual void on_completion(const std::shared_ptr<class ArtworkReader>& p_reader) = 0;
 
 private:
 };
@@ -128,7 +128,7 @@ public:
     // only called when thread closed
     bool did_succeed() { return m_succeeded; }
     bool is_ready() { return !is_thread_open(); }
-    const pfc::map_t<GUID, pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>>& get_content() const { return m_bitmaps; }
+    const pfc::map_t<GUID, std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>>& get_content() const { return m_bitmaps; }
 
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
@@ -146,7 +146,7 @@ public:
         m_manager = p_manager;
         m_native_artwork_reader_mode = native_artwork_reader_mode;
     }
-    void send_completion_notification(const pfc::rcptr_t<ArtworkReader>& p_this)
+    void send_completion_notification(const std::shared_ptr<ArtworkReader>& p_this)
     {
         if (m_notify.is_valid()) {
             m_notify->on_completion(p_this);
@@ -160,7 +160,7 @@ private:
     unsigned read_artwork(abort_callback& p_abort);
 
     pfc::chain_list_v2_t<GUID> m_requestIds;
-    pfc::map_t<GUID, pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>> m_bitmaps;
+    pfc::map_t<GUID, std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>> m_bitmaps;
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
     t_size m_cx{0}, m_cy{0};
     COLORREF m_back{RGB(255, 255, 255)};
@@ -210,7 +210,7 @@ public:
 
     enum { max_readers = 4 };
 
-    void request(const metadb_handle_ptr& p_handle, pfc::rcptr_t<ArtworkReader>& p_out, t_size cx, t_size cy,
+    void request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, t_size cx, t_size cy,
         COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify);
 
     void flush_pending()
@@ -219,7 +219,7 @@ public:
         t_size count_pending = m_pending_readers.get_count();
         if (count < max_readers) {
             if (count_pending) {
-                pfc::rcptr_t<ArtworkReader> p_reader = m_pending_readers[count_pending - 1];
+                std::shared_ptr<ArtworkReader> p_reader = m_pending_readers[count_pending - 1];
                 m_pending_readers.remove_by_idx(count_pending - 1);
                 p_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
                 p_reader->create_thread();
@@ -247,7 +247,7 @@ public:
 
         {
             insync(m_nocover_sync);
-            m_nocover_bitmap.release();
+            m_nocover_bitmap.reset();
         }
     }
 
@@ -256,9 +256,9 @@ public:
 
     ArtworkReaderManager() = default;
 
-    void request_nocover_image(pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx, t_size cy,
+    void request_nocover_image(std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx, t_size cy,
         COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
-    void flush_nocover() { m_nocover_bitmap.release(); }
+    void flush_nocover() { m_nocover_bitmap.reset(); }
 
 private:
     bool find_aborting_reader(const ArtworkReader* ptr, t_size& index)
@@ -281,15 +281,15 @@ private:
             }
         return false;
     }
-    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_aborting_readers;
-    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_current_readers;
-    pfc::list_t<pfc::rcptr_t<ArtworkReader>> m_pending_readers;
+    pfc::list_t<std::shared_ptr<ArtworkReader>> m_aborting_readers;
+    pfc::list_t<std::shared_ptr<ArtworkReader>> m_current_readers;
+    pfc::list_t<std::shared_ptr<ArtworkReader>> m_pending_readers;
 
     pfc::chain_list_v2_t<GUID> m_requestIds;
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
 
     critical_section m_nocover_sync;
-    pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t> m_nocover_bitmap;
+    std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t> m_nocover_bitmap;
     t_size m_nocover_cx{0}, m_nocover_cy{0};
 };
 
@@ -414,7 +414,7 @@ private:
         bool m_artwork_load_succeeded{false};
         // bool m_data_to_bitmap_attempted;
         // album_art_data_ptr m_artwork_data;
-        pfc::rcptr_t<gdi_object_t<HBITMAP>::ptr_t> m_artwork_bitmap; // cached for display
+        std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t> m_artwork_bitmap; // cached for display
 
         PlaylistViewGroup() = default;
         ;
@@ -442,7 +442,7 @@ private:
                 // ptr->m_data_to_bitmap_attempted = false;
                 ptr->m_artwork_load_succeeded = false;
                 ptr->m_artwork_load_attempted = false;
-                ptr->m_artwork_bitmap.release();
+                ptr->m_artwork_bitmap.reset();
             }
         }
     }
@@ -453,8 +453,7 @@ private:
         // flush_artwork_images();
         g_on_artwork_width_change(nullptr /*this*/);
     }
-    void on_artwork_read_complete(
-        const PlaylistViewGroup::ptr& p_group, const pfc::rcptr_t<ArtworkReader>& p_reader)
+    void on_artwork_read_complete(const PlaylistViewGroup::ptr& p_group, const std::shared_ptr<ArtworkReader>& p_reader)
     {
         if (!p_reader->is_aborting()) {
             t_size count = get_item_count();
@@ -479,7 +478,7 @@ private:
     public:
         using ptr_t = pfc::refcounted_object_ptr_t<ArtworkCompletionNotify>;
 
-        void on_completion(const pfc::rcptr_t<ArtworkReader>& p_reader) override
+        void on_completion(const std::shared_ptr<ArtworkReader>& p_reader) override
         {
             m_window->on_artwork_read_complete(m_group, p_reader);
         }

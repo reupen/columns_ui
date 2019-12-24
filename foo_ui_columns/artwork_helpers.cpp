@@ -69,9 +69,9 @@ void artwork_panel::ArtworkReaderManager::deinitialise()
         m_aborting_readers[i - 1]->wait_for_and_release_thread();
         m_aborting_readers.remove_by_idx(i - 1);
     }
-    if (m_current_reader.is_valid()) {
+    if (m_current_reader) {
         m_current_reader->wait_for_and_release_thread();
-        m_current_reader.release();
+        m_current_reader.reset();
     }
     m_emptycover.release();
 }
@@ -97,11 +97,11 @@ bool artwork_panel::ArtworkReaderManager::Query(const GUID& p_what, album_art_da
 void artwork_panel::ArtworkReaderManager::Request(
     const metadb_handle_ptr& p_handle, completion_notify_ptr p_notify /*= NULL*/)
 {
-    pfc::rcptr_t<ArtworkReader> ptr_prev = m_current_reader;
-    bool b_prev_valid = ptr_prev.is_valid() && !ptr_prev->is_thread_open() && ptr_prev->did_succeed();
+    std::shared_ptr<ArtworkReader> ptr_prev = m_current_reader;
+    bool b_prev_valid = ptr_prev && !ptr_prev->is_thread_open() && ptr_prev->did_succeed();
     abort_current_task();
     {
-        m_current_reader = pfc::rcnew_t<ArtworkReader>();
+        m_current_reader = std::make_shared<ArtworkReader>();
         m_current_reader->initialise(m_requestIds,
             b_prev_valid ? ptr_prev->get_content() : pfc::map_t<GUID, album_art_data_ptr>(), m_repositories,
             !m_emptycover.is_valid(), cfg_fb2k_artwork_mode, p_handle, p_notify, this);
@@ -112,13 +112,13 @@ void artwork_panel::ArtworkReaderManager::Request(
 
 bool artwork_panel::ArtworkReaderManager::IsReady()
 {
-    return m_current_reader.is_valid() && !m_current_reader->is_thread_open();
+    return m_current_reader && !m_current_reader->is_thread_open();
 }
 
 void artwork_panel::ArtworkReaderManager::Reset()
 {
     abort_current_task();
-    m_current_reader.release();
+    m_current_reader.reset();
     m_emptycover.release();
 }
 
@@ -137,11 +137,11 @@ void artwork_panel::ArtworkReaderManager::SetScript(const GUID& p_what, const pf
 
 void artwork_panel::ArtworkReaderManager::abort_current_task()
 {
-    if (m_current_reader.is_valid()) {
+    if (m_current_reader) {
         if (m_current_reader->is_thread_open()) {
             m_current_reader->abort();
             m_aborting_readers.add_item(m_current_reader);
-            m_current_reader.release();
+            m_current_reader.reset();
         }
     }
 }
@@ -173,7 +173,7 @@ void artwork_panel::ArtworkReaderNotification::callback_run()
 
 void artwork_panel::ArtworkReaderManager::on_reader_completion(DWORD state, const ArtworkReader* ptr)
 {
-    if (m_current_reader.is_valid() && ptr == &*m_current_reader) {
+    if (m_current_reader && ptr == &*m_current_reader) {
         m_current_reader->wait_for_and_release_thread();
         if (m_current_reader->get_emptycover().is_valid())
             m_emptycover = m_current_reader->get_emptycover();

@@ -80,15 +80,15 @@ public:
         if (m_switch_timer_active) {
             KillTimer(get_wnd(), TIMER_SWITCH);
             m_switch_timer_active = false;
-            m_switch_playlist.release();
+            m_switch_playlist.reset();
         }
     }
     void set_switch_timer(t_size index)
     {
-        if (!m_switch_timer_active || !m_switch_playlist.is_valid() || m_switch_playlist->m_playlist != index) {
+        if (!m_switch_timer_active || !m_switch_playlist || m_switch_playlist->m_playlist != index) {
             if (index != m_playlist_api->get_active_playlist()) {
                 destroy_switch_timer();
-                m_switch_playlist = pfc::rcnew_t<playlist_position_reference_tracker>(false);
+                m_switch_playlist = std::make_shared<playlist_position_reference_tracker>(false);
                 m_switch_playlist->m_playlist = index;
                 SetTimer(get_wnd(), TIMER_SWITCH, cfg_autoswitch_delay, nullptr);
                 m_switch_timer_active = true;
@@ -99,7 +99,7 @@ public:
     bool notify_on_timer(UINT_PTR timerid) override
     {
         if (timerid == TIMER_SWITCH) {
-            t_size index = m_switch_playlist.is_valid() ? m_switch_playlist->m_playlist : pfc_infinite;
+            t_size index = m_switch_playlist ? m_switch_playlist->m_playlist : pfc_infinite;
             destroy_switch_timer();
             if (index != pfc_infinite)
                 m_playlist_api->set_active_playlist(index);
@@ -316,12 +316,12 @@ private:
     ui_selection_holder::ptr m_selection_holder;
 
     bool m_switch_timer_active{false};
-    pfc::rcptr_t<playlist_position_reference_tracker> m_switch_playlist;
+    std::shared_ptr<playlist_position_reference_tracker> m_switch_playlist;
 
     bool m_dragging{false};
     wil::com_ptr_t<IDataObject> m_DataObject;
 
-    pfc::rcptr_t<playlist_position_reference_tracker> m_edit_playlist;
+    std::shared_ptr<playlist_position_reference_tracker> m_edit_playlist;
     t_size m_playing_playlist;
     service_ptr_t<playlist_manager_v3> m_playlist_api;
     service_ptr_t<playback_control> m_playback_api;
