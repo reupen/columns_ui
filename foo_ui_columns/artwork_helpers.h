@@ -24,7 +24,7 @@ public:
         const pfc::map_t<GUID, album_art_data_ptr>& p_content_previous,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
         t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
-        class ArtworkReaderManager* const p_manager);
+        std::shared_ptr<class ArtworkReaderManager> p_manager);
     void run_notification_thisthread(DWORD state);
 
 protected:
@@ -45,10 +45,10 @@ private:
     album_art_data_ptr m_emptycover;
     t_size m_native_artwork_reader_mode{fb2k_artwork_embedded_and_external};
     abort_callback_impl m_abort;
-    pfc::refcounted_object_ptr_t<class ArtworkReaderManager> m_manager;
+    std::shared_ptr<class ArtworkReaderManager> m_manager;
 };
 
-class ArtworkReaderManager : public pfc::refcounted_object_root {
+class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
 public:
     void AddType(const GUID& p_what);
     void abort_current_task();
@@ -92,12 +92,12 @@ public:
     void callback_run() override;
 
     static void g_run(
-        ArtworkReaderManager* p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader);
+        std::shared_ptr<ArtworkReaderManager> p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader);
 
     bool m_aborted;
     DWORD m_ret;
     const ArtworkReader* m_reader;
-    pfc::refcounted_object_ptr_t<ArtworkReaderManager> m_manager;
+    std::shared_ptr<ArtworkReaderManager> m_manager;
 };
 
 bool g_get_album_art_extractor_interface(service_ptr_t<album_art_extractor>& out, const char* path);

@@ -14,7 +14,7 @@ void artwork_panel::ArtworkReader::initialise(const pfc::chain_list_v2_t<GUID>& 
     const pfc::map_t<GUID, album_art_data_ptr>& p_content_previous,
     const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
     t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
-    class ArtworkReaderManager* const p_manager)
+    std::shared_ptr<class ArtworkReaderManager> p_manager)
 {
     m_requestIds = p_requestIds;
     m_content = p_content_previous;
@@ -22,7 +22,7 @@ void artwork_panel::ArtworkReader::initialise(const pfc::chain_list_v2_t<GUID>& 
     m_read_emptycover = b_read_emptycover;
     m_handle = p_handle;
     m_notify = p_notify;
-    m_manager = p_manager;
+    m_manager = std::move(p_manager);
     m_native_artwork_reader_mode = b_native_artwork_reader_mode;
 }
 
@@ -104,7 +104,7 @@ void artwork_panel::ArtworkReaderManager::Request(
         m_current_reader = std::make_shared<ArtworkReader>();
         m_current_reader->initialise(m_requestIds,
             b_prev_valid ? ptr_prev->get_content() : pfc::map_t<GUID, album_art_data_ptr>(), m_repositories,
-            !m_emptycover.is_valid(), cfg_fb2k_artwork_mode, p_handle, p_notify, this);
+            !m_emptycover.is_valid(), cfg_fb2k_artwork_mode, p_handle, p_notify, shared_from_this());
         m_current_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
         m_current_reader->create_thread();
     }
@@ -152,12 +152,12 @@ void artwork_panel::ArtworkReaderManager::AddType(const GUID& p_what)
 }
 
 void artwork_panel::ArtworkReaderNotification::g_run(
-    ArtworkReaderManager* p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader)
+    std::shared_ptr<ArtworkReaderManager> p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader)
 {
     service_ptr_t<ArtworkReaderNotification> ptr = new service_impl_t<ArtworkReaderNotification>;
     ptr->m_aborted = p_aborted;
     ptr->m_reader = p_reader;
-    ptr->m_manager = p_manager;
+    ptr->m_manager = std::move(p_manager);
     ptr->m_ret = ret;
 
     static_api_ptr_t<main_thread_callback_manager>()->add_callback(ptr.get_ptr());
@@ -228,7 +228,7 @@ DWORD artwork_panel::ArtworkReader::on_thread()
         ret = -1;
     }
     // send this first so thread gets closed first
-    ArtworkReaderNotification::g_run(m_manager.get_ptr(), b_aborted, ret, this);
+    ArtworkReaderNotification::g_run(m_manager, b_aborted, ret, this);
     /*if (!b_aborted)
     {
     if (m_notify.is_valid())
