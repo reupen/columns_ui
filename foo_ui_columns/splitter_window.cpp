@@ -10,7 +10,7 @@ gdi_object_t<HFONT>::ptr_t FlatSplitterPanel::g_font_menu_vertical;
 void FlatSplitterPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index <= m_panels.get_count()) {
-        pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
+        auto temp = std::make_shared<Panel>();
         temp->set_from_splitter_item(p_item);
         m_panels.insert_item(temp, index);
 
@@ -25,7 +25,7 @@ void FlatSplitterPanel::replace_panel(unsigned index, const uie::splitter_item_t
     if (index < m_panels.get_count()) {
         if (get_wnd())
             m_panels[index]->destroy();
-        pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
+        auto temp = std::make_shared<Panel>();
         temp->set_from_splitter_item(p_item);
         m_panels.replace_item(index, temp);
 
@@ -38,7 +38,7 @@ void FlatSplitterPanel::destroy_children()
 {
     unsigned count = m_panels.get_count();
     for (unsigned n = 0; n < count; n++) {
-        pfc::refcounted_object_ptr_t<Panel> pal = m_panels[n];
+        std::shared_ptr<Panel> pal = m_panels[n];
         if (pal->m_child.is_valid()) {
             //            pal->m_child_data.set_size(0);
             //            stream_writer_memblock_ref blah(pal->m_child_data);
@@ -203,7 +203,7 @@ bool FlatSplitterPanel::find_by_divider_pt(POINT& pt, unsigned& p_out)
 {
     unsigned count = m_panels.get_count();
     for (unsigned n = 0; n < count; n++) {
-        pfc::refcounted_object_ptr_t<Panel> p_item = m_panels.get_item(n);
+        std::shared_ptr<Panel> p_item = m_panels.get_item(n);
 
         if (p_item->m_wnd_child) {
             RECT rc_area;
@@ -900,7 +900,7 @@ void FlatSplitterPanel::read_config(stream_reader* config, t_size p_size, bool i
 
             unsigned i;
             for (i = 0; i < count; i++) {
-                pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
+                auto temp = std::make_shared<Panel>();
                 if (is_import)
                     temp->import(config, p_abort);
                 else
@@ -984,7 +984,7 @@ void FlatSplitterPanel::FlatSplitterPanelHost::relinquish_ownership(HWND wnd)
 {
     unsigned index;
     if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
-        pfc::refcounted_object_ptr_t<FlatSplitterPanel::Panel> p_ext = m_this->m_panels[index];
+        std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
 
         {
             if (GetAncestor(wnd, GA_PARENT) == p_ext->m_wnd) {
@@ -1087,7 +1087,7 @@ void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, un
 {
     unsigned index;
     if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
-        pfc::refcounted_object_ptr_t<FlatSplitterPanel::Panel> p_ext = m_this->m_panels[index];
+        std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
         MINMAXINFO mmi;
         memset(&mmi, 0, sizeof(MINMAXINFO));
         mmi.ptMaxTrackSize.x = MAXLONG;
