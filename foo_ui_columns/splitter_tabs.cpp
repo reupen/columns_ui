@@ -24,7 +24,7 @@ public:
     {
         unsigned index;
         if (m_this->m_panels.find_by_wnd(wnd, index)) {
-            pfc::refcounted_object_ptr_t<TabStackPanel::Panel> p_ext = m_this->m_panels[index];
+            std::shared_ptr<TabStackPanel::Panel> p_ext = m_this->m_panels[index];
             MINMAXINFO mmi;
             memset(&mmi, 0, sizeof(MINMAXINFO));
             mmi.ptMaxTrackSize.x = MAXLONG;
@@ -110,7 +110,7 @@ public:
     {
         unsigned index;
         if (m_this->m_active_panels.find_by_wnd(wnd, index)) {
-            pfc::refcounted_object_ptr_t<TabStackPanel::Panel> p_ext = m_this->m_active_panels[index];
+            std::shared_ptr<TabStackPanel::Panel> p_ext = m_this->m_active_panels[index];
 
             {
                 /*if (GetAncestor(wnd, GA_PARENT) == m_this->get_wnd())
@@ -361,7 +361,7 @@ void TabStackPanel::set_config(stream_reader* config, t_size p_size, abort_callb
             config->read_lendian_t(count, p_abort);
 
             for (unsigned n = 0; n < count; n++) {
-                pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
+                auto temp = std::make_shared<Panel>();
                 temp->read(config, p_abort);
                 m_panels.add_item(temp);
             }
@@ -402,7 +402,7 @@ void TabStackPanel::import_config(stream_reader* p_reader, t_size p_size, abort_
         p_reader->read_lendian_t(count, p_abort);
 
         for (unsigned n = 0; n < count; n++) {
-            pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
+            auto temp = std::make_shared<Panel>();
             temp->import(p_reader, p_abort);
             m_panels.add_item(temp);
         }
@@ -588,7 +588,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         {
             if (b_found && index < m_active_panels.get_count()) {
-                pfc::refcounted_object_ptr_t<Panel> p_panel = m_active_panels[index];
+                std::shared_ptr<Panel> p_panel = m_active_panels[index];
 
                 pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
                     = new ui_extension::menu_hook_impl;
@@ -756,7 +756,7 @@ void TabStackPanel::destroy_children()
 {
     unsigned count = m_panels.get_count();
     for (unsigned n = 0; n < count; n++) {
-        pfc::refcounted_object_ptr_t<Panel> pal = m_panels[n];
+        std::shared_ptr<Panel> pal = m_panels[n];
         pal->destroy();
     }
     m_active_panels.remove_all();
@@ -765,7 +765,7 @@ void TabStackPanel::destroy_children()
 void TabStackPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
     if (index <= m_panels.get_count()) {
-        pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
+        auto temp = std::make_shared<Panel>();
         temp->set_from_splitter_item(p_item);
         m_panels.insert_item(temp, index);
 
@@ -786,7 +786,7 @@ void TabStackPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_
             TabCtrl_DeleteItem(m_wnd_tabs, activeindex);
         }
 
-        pfc::refcounted_object_ptr_t<Panel> temp = new Panel;
+        auto temp = std::make_shared<Panel>();
         temp->set_from_splitter_item(p_item);
         m_panels.replace_item(index, temp);
 
