@@ -130,7 +130,7 @@ void ConfigColumns::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, a
     t_uint32 num;
     p_reader->read_lendian_t(num, p_abort);
     for (t_size i = 0; i < num; i++) {
-        PlaylistViewColumn::ptr item = new PlaylistViewColumn;
+        PlaylistViewColumn::ptr item = std::make_shared<PlaylistViewColumn>();
         item->read(p_reader, p_abort);
         items.add_item(item);
     }
@@ -159,17 +159,18 @@ void ConfigColumns::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, a
 void ConfigColumns::reset()
 {
     remove_all();
-    add_item(new PlaylistViewColumn(
+    add_item(std::make_shared<PlaylistViewColumn>(
         "Artist", "[%artist%]", false, "", false, "", 180, ALIGN_LEFT, FILTER_NONE, "", 180, true, "ARTIST"));
-    add_item(new PlaylistViewColumn(
+    add_item(std::make_shared<PlaylistViewColumn>(
         "#", "[%tracknumber%]", false, "", false, "", 18, ALIGN_RIGHT, FILTER_NONE, "", 18, true, "TRACKNUMBER"));
-    add_item(
-        new PlaylistViewColumn("Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
-    add_item(
-        new PlaylistViewColumn("Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
-    add_item(new PlaylistViewColumn("Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"));
-    add_item(new PlaylistViewColumn("Length", "[%_time_elapsed% / ]%_length%", false, "", true, "$num(%_length_seconds%,6)", 60,
-        ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
+    add_item(std::make_shared<PlaylistViewColumn>(
+        "Title", "[%title%]", false, "", false, "", 300, ALIGN_LEFT, FILTER_NONE, "", 300, true, "TITLE"));
+    add_item(std::make_shared<PlaylistViewColumn>(
+        "Album", "[%album%]", false, "", false, "", 200, ALIGN_LEFT, FILTER_NONE, "", 200, true, "ALBUM"));
+    add_item(std::make_shared<PlaylistViewColumn>(
+        "Date", "[%date%]", false, "", false, "", 60, ALIGN_LEFT, FILTER_NONE, "", 60, true, "DATE"));
+    add_item(std::make_shared<PlaylistViewColumn>("Length", "[%_time_elapsed% / ]%_length%", false, "", true,
+        "$num(%_length_seconds%,6)", 60, ALIGN_RIGHT, FILTER_NONE, "", 60, true, ""));
 }
 
 ConfigColumns::ConfigColumns(const GUID& p_guid, ColumnStreamVersion streamVersion) : cfg_var(p_guid)

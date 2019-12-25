@@ -58,8 +58,8 @@ public:
         EnableWindow(GetDlgItem(wnd, IDC_PARTS), show);
         EnableWindow(GetDlgItem(wnd, IDC_SHOW_COLUMN), show);
         EnableWindow(GetDlgItem(wnd, IDC_ALIGNMENT), show);
-        EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING),
-            show && m_column.is_valid() && m_column->filter_type != FILTER_NONE);
+        EnableWindow(
+            GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), show && m_column && m_column->filter_type != FILTER_NONE);
         EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_TYPE), show);
         EnableWindow(GetDlgItem(wnd, IDC_EDITFIELD), show);
     }
@@ -68,7 +68,7 @@ public:
     {
         initialising = true;
 
-        if (m_column.is_valid()) {
+        if (m_column) {
             uSendDlgItemMessageText(wnd, IDC_NAME, WM_SETTEXT, 0, m_column->name);
             uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, m_column->filter);
             uSendDlgItemMessageText(wnd, IDC_EDITFIELD, WM_SETTEXT, 0, m_column->edit_field);
@@ -83,12 +83,12 @@ public:
 
         initialising = false;
 
-        set_detail_enabled(wnd, m_column.is_valid());
+        set_detail_enabled(wnd, static_cast<bool>(m_column));
     }
 
     void set_column(const PlaylistViewColumn::ptr& column) override
     {
-        if (m_column.get_ptr() != column.get_ptr()) {
+        if (m_column != column) {
             m_column = column;
             refresh_me(m_wnd);
         }
@@ -133,23 +133,23 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case (CBN_SELCHANGE << 16) | IDC_ALIGNMENT: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->align = ((Alignment)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
                 }
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_FILTER_TYPE: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->filter_type = ((PlaylistFilterType)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0));
                     EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), m_column->filter_type != FILTER_NONE);
                 }
             } break;
             case IDC_SHOW_COLUMN: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->show = ((SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_SORT: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->sort_spec = (string_utf8_from_window((HWND)lp));
                 }
             } break;
@@ -157,27 +157,27 @@ public:
                 colour_code_gen(wnd, IDC_COLOUR, true, false);
                 break;
             case (EN_CHANGE << 16) | IDC_WIDTH: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->width = (GetDlgItemInt(wnd, IDC_WIDTH, nullptr, false));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_PARTS: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->parts = (GetDlgItemInt(wnd, IDC_PARTS, nullptr, false));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_PLAYLIST_FILTER_STRING: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->filter = (string_utf8_from_window((HWND)lp));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_EDITFIELD: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->edit_field = (string_utf8_from_window((HWND)lp));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_NAME: {
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->name = string_utf8_from_window((HWND)lp);
                     SendMessage(GetAncestor(wnd, GA_PARENT), MSG_COLUMN_NAME_CHANGED, NULL, NULL);
                 }
@@ -241,7 +241,7 @@ public:
 
     void set_column(const PlaylistViewColumn::ptr& column) override
     {
-        if (m_column.get_ptr() != column.get_ptr()) {
+        if (m_column != column) {
             m_column = column;
             update_controls();
         }
@@ -265,12 +265,12 @@ private:
     {
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
-        if (m_column.is_valid()) {
+        if (m_column) {
             uSetWindowText(edit_control(), m_column->spec);
         } else {
             uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
         }
-        EnableWindow(edit_control(), m_column.is_valid());
+        EnableWindow(edit_control(), m_column ? TRUE : FALSE);
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -297,7 +297,7 @@ private:
                 colour_code_gen(wnd, IDC_COLOUR, true, false);
                 break;
             case EN_CHANGE << 16 | IDC_DISPLAY_SCRIPT:
-                if (!initialising && m_column.is_valid())
+                if (!initialising && m_column)
                     m_column->spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
                 break;
             }
@@ -327,7 +327,7 @@ public:
 
     void set_column(const PlaylistViewColumn::ptr& column) override
     {
-        if (m_column.get_ptr() != column.get_ptr()) {
+        if (m_column != column) {
             m_column = column;
             update_controls();
         }
@@ -351,15 +351,15 @@ private:
     {
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
-        if (m_column.is_valid()) {
+        if (m_column) {
             uSetWindowText(edit_control(), m_column->colour_spec);
             Button_SetCheck(custom_colour_control(), m_column->use_custom_colour ? BST_CHECKED : BST_UNCHECKED);
         } else {
             uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
             Button_SetCheck(custom_colour_control(), BST_UNCHECKED);
         }
-        EnableWindow(edit_control(), m_column.is_valid());
-        EnableWindow(custom_colour_control(), m_column.is_valid());
+        EnableWindow(edit_control(), m_column ? TRUE : FALSE);
+        EnableWindow(custom_colour_control(), m_column ? TRUE : FALSE);
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -386,12 +386,12 @@ private:
                 colour_code_gen(wnd, IDC_COLOUR, true, false);
                 break;
             case IDC_CUSTOM_COLOUR:
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->use_custom_colour = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 }
                 break;
             case EN_CHANGE << 16 | IDC_STYLE_SCRIPT:
-                if (!initialising && m_column.is_valid())
+                if (!initialising && m_column)
                     m_column->colour_spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
                 break;
             }
@@ -422,7 +422,7 @@ public:
 
     void set_column(const PlaylistViewColumn::ptr& column) override
     {
-        if (m_column.get_ptr() != column.get_ptr()) {
+        if (m_column != column) {
             m_column = column;
             update_controls();
         }
@@ -446,15 +446,15 @@ private:
     {
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
 
-        if (m_column.is_valid()) {
+        if (m_column) {
             uSetWindowText(edit_control(), m_column->sort_spec);
             Button_SetCheck(custom_sorting_control(), m_column->use_custom_sort ? BST_CHECKED : BST_UNCHECKED);
         } else {
             uSendMessageText(edit_control(), WM_SETTEXT, 0, "");
             Button_SetCheck(custom_sorting_control(), BST_UNCHECKED);
         }
-        EnableWindow(edit_control(), m_column.is_valid());
-        EnableWindow(custom_sorting_control(), m_column.is_valid());
+        EnableWindow(edit_control(), m_column ? TRUE : FALSE);
+        EnableWindow(custom_sorting_control(), m_column ? TRUE : FALSE);
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -478,12 +478,12 @@ private:
                 show_title_formatting_help_menu(wnd, IDC_SORTING_SCRIPT);
                 break;
             case IDC_CUSTOM_SORT:
-                if (!initialising && m_column.is_valid()) {
+                if (!initialising && m_column) {
                     m_column->use_custom_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 }
                 break;
             case EN_CHANGE << 16 | IDC_SORTING_SCRIPT:
-                if (!initialising && m_column.is_valid())
+                if (!initialising && m_column)
                     m_column->sort_spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
                 break;
             }
@@ -637,7 +637,7 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     int& idx = item;
                     auto wnd_lv = HWND(wp);
                     if (cmd == ID_NEW) {
-                        PlaylistViewColumn::ptr temp = new PlaylistViewColumn;
+                        PlaylistViewColumn::ptr temp = std::make_shared<PlaylistViewColumn>();
                         temp->name = "New Column";
                         t_size insert = m_columns.insert_item(
                             temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
@@ -779,7 +779,7 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
             // if (true)
             {
-                PlaylistViewColumn::ptr temp = new PlaylistViewColumn;
+                PlaylistViewColumn::ptr temp = std::make_shared<PlaylistViewColumn>();
                 temp->name = "New Column";
                 t_size insert = m_columns.insert_item(
                     temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());

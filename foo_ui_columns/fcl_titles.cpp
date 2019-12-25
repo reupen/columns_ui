@@ -80,7 +80,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
             reader.read_item(column_id);
             reader.read_item(column_size);
 
-            PlaylistViewColumn::ptr item = new PlaylistViewColumn;
+            PlaylistViewColumn::ptr item = std::make_shared<PlaylistViewColumn>();
 
             fbh::fcl::Reader reader2(reader, column_size, p_abort);
 

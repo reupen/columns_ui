@@ -1,12 +1,8 @@
 #ifndef _COLUMNS_2_H_
 #define _COLUMNS_2_H_
 
-class PlaylistViewColumnBase : public pfc::refcounted_object_root {
-    using self_t = PlaylistViewColumnBase;
-
+class PlaylistViewColumnBase {
 public:
-    using ptr = pfc::refcounted_object_ptr_t<self_t>;
-
     pfc::string8 name;
     pfc::string8 spec;
     bool use_custom_colour{false};
@@ -53,7 +49,7 @@ class PlaylistViewColumn : public PlaylistViewColumnBase {
     using self_t = PlaylistViewColumn;
 
 public:
-    using ptr = pfc::refcounted_object_ptr_t<self_t>;
+    using ptr = std::shared_ptr<self_t>;
 
     ptr source_item;
 
@@ -101,7 +97,7 @@ public:
         t_size count = entries.get_count();
         set_count(count);
         for (t_size i = 0; i < count; i++) {
-            PlaylistViewColumn::ptr item = new PlaylistViewColumn(*entries[i].get_ptr());
+            PlaylistViewColumn::ptr item = std::make_shared<PlaylistViewColumn>(*entries[i].get());
             if (keep_reference_to_source_items)
                 item->source_item = entries[i];
             (*this)[i] = item;

@@ -204,7 +204,7 @@ void PlaylistView::refresh_columns()
     t_size count = g_columns.get_count();
     m_column_mask.set_size(count);
     for (t_size i = 0; i < count; i++) {
-        PlaylistViewColumn* source = g_columns[i].get_ptr();
+        PlaylistViewColumn* source = g_columns[i].get();
         bool b_valid = false;
         if (source->show) {
             switch (source->filter_type) {
