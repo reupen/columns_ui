@@ -133,7 +133,7 @@ public:
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
         const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
-        const BaseArtworkCompletionNotify::ptr_t& p_notify, class ArtworkReaderManager* const p_manager)
+        const BaseArtworkCompletionNotify::ptr_t& p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
     {
         m_requestIds = p_requestIds;
         m_repositories = p_repositories;
@@ -143,7 +143,7 @@ public:
         m_cy = cy;
         m_reflection = b_reflection;
         m_back = cr_back;
-        m_manager = p_manager;
+        m_manager = std::move(p_manager);
         m_native_artwork_reader_mode = native_artwork_reader_mode;
     }
     void send_completion_notification(const std::shared_ptr<ArtworkReader>& p_this)
@@ -170,12 +170,11 @@ private:
     bool m_succeeded{false};
     t_size m_native_artwork_reader_mode{artwork_panel::fb2k_artwork_embedded_and_external};
     abort_callback_impl m_abort;
-    pfc::refcounted_object_ptr_t<class ArtworkReaderManager> m_manager;
+    std::shared_ptr<class ArtworkReaderManager> m_manager;
 };
 
-class ArtworkReaderManager : public pfc::refcounted_object_root {
+class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
 public:
-    using ptr = pfc::refcounted_object_ptr_t<ArtworkReaderManager>;
     void add_type(const GUID& p_what) { m_requestIds.add_item(p_what); }
     void abort_task(t_size index)
     {
@@ -430,7 +429,7 @@ private:
     };
     virtual void flush_artwork_images()
     {
-        if (m_artwork_manager.is_valid()) {
+        if (m_artwork_manager) {
             m_artwork_manager->abort_current_tasks();
             m_artwork_manager->flush_nocover();
         }
@@ -684,7 +683,7 @@ private:
 
     PlaylistCache<PlaylistCacheItem> m_playlist_cache;
 
-    ArtworkReaderManager::ptr m_artwork_manager;
+    std::shared_ptr<ArtworkReaderManager> m_artwork_manager;
     ui_selection_holder::ptr m_selection_holder;
 
     // pfc::list_t<group_t> m_groups;

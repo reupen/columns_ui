@@ -44,7 +44,7 @@ void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::share
 {
     auto p_new_reader = std::make_shared<ArtworkReader>();
     p_new_reader->initialise(m_requestIds, m_repositories, artwork_panel::cfg_fb2k_artwork_mode, p_handle, cx, cy,
-        cr_back, b_reflection, p_notify, this);
+        cr_back, b_reflection, p_notify, shared_from_this());
     m_pending_readers.add_item(p_new_reader);
     p_out = p_new_reader;
     flush_pending();
@@ -80,19 +80,19 @@ public:
             m_manager->on_reader_completion(m_reader);
     }
 
-    static void g_run(ArtworkReaderManager* p_manager, bool p_aborted, const ArtworkReader* p_reader)
+    static void g_run(std::shared_ptr<ArtworkReaderManager> p_manager, bool p_aborted, const ArtworkReader* p_reader)
     {
         service_ptr_t<ArtworkReaderNotification> ptr = new service_impl_t<ArtworkReaderNotification>;
         ptr->m_aborted = p_aborted;
         ptr->m_reader = p_reader;
-        ptr->m_manager = p_manager;
+        ptr->m_manager = std::move(p_manager);
 
         static_api_ptr_t<main_thread_callback_manager>()->add_callback(ptr.get_ptr());
     }
 
     bool m_aborted;
     const ArtworkReader* m_reader;
-    pfc::refcounted_object_ptr_t<ArtworkReaderManager> m_manager;
+    std::shared_ptr<ArtworkReaderManager> m_manager;
 };
 
 DWORD ArtworkReader::on_thread()
@@ -115,7 +115,7 @@ DWORD ArtworkReader::on_thread()
         ret = -1;
     }
     // send this first so thread gets closed first
-    ArtworkReaderNotification::g_run(m_manager.get_ptr(), b_aborted, this);
+    ArtworkReaderNotification::g_run(m_manager, b_aborted, this);
     /*if (!b_aborted)
     {
     if (m_notify.is_valid())
