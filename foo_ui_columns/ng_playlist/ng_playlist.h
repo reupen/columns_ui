@@ -111,10 +111,11 @@ public:
     titleformat_object::ptr m_sort_script;
 };
 
-class BaseArtworkCompletionNotify : public pfc::refcounted_object_root {
+class BaseArtworkCompletionNotify {
 public:
-    using ptr_t = pfc::refcounted_object_ptr_t<BaseArtworkCompletionNotify>;
+    using ptr_t = std::shared_ptr<BaseArtworkCompletionNotify>;
 
+    virtual ~BaseArtworkCompletionNotify() = default;
     virtual void on_completion(const std::shared_ptr<class ArtworkReader>& p_reader) = 0;
 
 private:
@@ -133,12 +134,12 @@ public:
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
         const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
-        const BaseArtworkCompletionNotify::ptr_t& p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
+        BaseArtworkCompletionNotify::ptr_t p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
     {
         m_requestIds = p_requestIds;
         m_repositories = p_repositories;
         m_handle = p_handle;
-        m_notify = p_notify;
+        m_notify = std::move(p_notify);
         m_cx = cx;
         m_cy = cy;
         m_reflection = b_reflection;
@@ -148,7 +149,7 @@ public:
     }
     void send_completion_notification(const std::shared_ptr<ArtworkReader>& p_this)
     {
-        if (m_notify.is_valid()) {
+        if (m_notify) {
             m_notify->on_completion(p_this);
         }
     }
@@ -475,7 +476,7 @@ private:
 
     class ArtworkCompletionNotify : public BaseArtworkCompletionNotify {
     public:
-        using ptr_t = pfc::refcounted_object_ptr_t<ArtworkCompletionNotify>;
+        using ptr_t = std::shared_ptr<ArtworkCompletionNotify>;
 
         void on_completion(const std::shared_ptr<ArtworkReader>& p_reader) override
         {
@@ -484,8 +485,6 @@ private:
 
         PlaylistViewGroup::ptr m_group;
         service_ptr_t<PlaylistView> m_window;
-
-    private:
     };
 
     HBITMAP request_group_artwork(t_size index_item);

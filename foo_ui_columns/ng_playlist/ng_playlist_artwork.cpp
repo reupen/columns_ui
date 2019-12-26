@@ -44,7 +44,7 @@ void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::share
 {
     auto p_new_reader = std::make_shared<ArtworkReader>();
     p_new_reader->initialise(m_requestIds, m_repositories, artwork_panel::cfg_fb2k_artwork_mode, p_handle, cx, cy,
-        cr_back, b_reflection, p_notify, shared_from_this());
+        cr_back, b_reflection, std::move(p_notify), shared_from_this());
     m_pending_readers.add_item(p_new_reader);
     p_out = p_new_reader;
     flush_pending();
@@ -455,7 +455,7 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item)
                 cy-= (1*padding);
             else cy =0;*/
 
-            ArtworkCompletionNotify::ptr_t ptr = new ArtworkCompletionNotify;
+            ArtworkCompletionNotify::ptr_t ptr = std::make_shared<ArtworkCompletionNotify>();
             ptr->m_group = group;
             ptr->m_window = this;
             metadb_handle_ptr handle;
@@ -463,7 +463,7 @@ HBITMAP PlaylistView::request_group_artwork(t_size index_item)
             std::shared_ptr<ArtworkReader> p_reader;
             m_artwork_manager->request(handle, p_reader, cx, cy,
                 cui::colours::helper(ColoursClient::g_guid).get_colour(cui::colours::colour_background),
-                cfg_artwork_reflection, ptr.get_ptr());
+                cfg_artwork_reflection, std::move(ptr));
             group->m_artwork_load_attempted = true;
         }
     }
