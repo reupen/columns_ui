@@ -756,7 +756,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
         static_api_ptr_t<metadb_io_v3>()->register_callback(this);
 
-        m_font_change_info.m_default_font = new Font;
+        m_font_change_info.m_default_font = std::make_shared<Font>();
         m_font_change_info.m_default_font->m_font
             = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
         m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font);
@@ -783,7 +783,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (g_windows.empty())
             g_message_window.destroy();
 
-        m_font_change_info.m_default_font.release();
+        m_font_change_info.m_default_font.reset();
 
         static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
         static_api_ptr_t<metadb_io_v3>()->unregister_callback(this);
