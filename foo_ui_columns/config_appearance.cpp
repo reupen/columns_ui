@@ -362,7 +362,7 @@ class ColoursDataSet : public cui::fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref colour_reader(data2);
-                        g_colours_manager_data.m_entries[i] = new ColoursManagerData::Entry;
+                        g_colours_manager_data.m_entries[i] = std::make_shared<ColoursManagerData::Entry>();
                         g_colours_manager_data.m_entries[i]->import(&colour_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
