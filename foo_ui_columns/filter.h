@@ -62,10 +62,10 @@ public:
     }
 };
 
-class FilterStream : public pfc::refcounted_object_root {
+class FilterStream {
 public:
     using self_t = FilterStream;
-    using ptr = pfc::refcounted_object_ptr_t<self_t>;
+    using ptr = std::shared_ptr<self_t>;
     /** Unordered */
     pfc::ptr_list_t<class FilterPanel> m_windows;
 
