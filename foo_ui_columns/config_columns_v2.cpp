@@ -512,7 +512,7 @@ void TabColumns::make_child()
         ShowWindow(m_wnd_child, SW_HIDE);
         DestroyWindow(m_wnd_child);
         m_wnd_child = nullptr;
-        m_child.release();
+        m_child.reset();
     }
 
     HWND wnd_tab = GetDlgItem(m_wnd, IDC_TAB1);
@@ -536,13 +536,13 @@ void TabColumns::make_child()
             column = m_columns[item];
 
         if (cfg_child_column == 0)
-            m_child = new EditColumnWindowOptions(column);
+            m_child = std::make_unique<EditColumnWindowOptions>(column);
         else if (cfg_child_column == 1)
-            m_child = new DisplayScriptTab(column);
+            m_child = std::make_unique<DisplayScriptTab>(column);
         else if (cfg_child_column == 2)
-            m_child = new StyleScriptTab(column);
+            m_child = std::make_unique<StyleScriptTab>(column);
         else if (cfg_child_column == 3)
-            m_child = new SortingScriptTab(column);
+            m_child = std::make_unique<SortingScriptTab>(column);
         m_wnd_child = m_child->create(m_wnd);
     }
 
@@ -693,7 +693,7 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (m_wnd_child) {
             DestroyWindow(m_wnd_child);
             m_wnd_child = nullptr;
-            m_child.release();
+            m_child.reset();
         }
     } break;
     case MSG_SELECTION_CHANGED: {
@@ -716,7 +716,7 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             switch (lpnm->code) {
             case LVN_ITEMCHANGED: {
                 auto lpnmlv = (LPNMLISTVIEW)lp;
-                if (m_child.is_valid()) {
+                if (m_child) {
                     if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (t_size)lpnmlv->iItem < m_columns.get_count()) {
                         if ((lpnmlv->uNewState & LVIS_SELECTED) != (lpnmlv->uOldState & LVIS_SELECTED))
                             PostMessage(wnd, MSG_SELECTION_CHANGED, NULL, NULL);
