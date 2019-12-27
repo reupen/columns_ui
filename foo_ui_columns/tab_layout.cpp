@@ -860,16 +860,6 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return 0;
 }
 
-struct GUIDHasher {
-    std::size_t operator()(const GUID& value) const
-    {
-        const auto hashes = {std::hash<unsigned long>()(value.Data1), std::hash<unsigned short>()(value.Data2),
-            std::hash<unsigned short>()(value.Data3),
-            std::hash<uint64_t>()(*reinterpret_cast<const uint64_t*>(&value.Data4[0]))};
-        return ranges::accumulate(hashes, size_t{}, std::bit_xor<size_t>());
-    }
-};
-
 void LayoutTab::on_tree_selection_change(HTREEITEM tree_item)
 {
     if (!m_initialised)
@@ -890,9 +880,9 @@ void LayoutTab::on_tree_selection_change(HTREEITEM tree_item)
 
     const auto all_item_and_control_ids = ranges::views::concat(bool_item_and_control_ids, other_item_and_control_ids);
 
-    std::unordered_map<GUID, bool, GUIDHasher> supported_map;
-    std::unordered_map<GUID, bool, GUIDHasher> enable_map;
-    std::unordered_map<GUID, bool, GUIDHasher> bool_value_map;
+    std::unordered_map<GUID, bool, mmh::GUIDHasher> supported_map;
+    std::unordered_map<GUID, bool, mmh::GUIDHasher> enable_map;
+    std::unordered_map<GUID, bool, mmh::GUIDHasher> bool_value_map;
     bool enable_configure = false;
     unsigned orientation = 0;
     pfc::string8 custom_title;
