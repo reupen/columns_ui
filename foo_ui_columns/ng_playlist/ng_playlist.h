@@ -14,11 +14,13 @@ extern fbh::ConfigUint32DpiAware cfg_artwork_width;
 extern fbh::ConfigBool cfg_grouping;
 extern fbh::ConfigBool cfg_show_artwork;
 
-HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection);
-HBITMAP g_create_hbitmap_from_data(
+wil::unique_hbitmap g_create_hbitmap_from_image(
+    Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection);
+wil::unique_hbitmap g_create_hbitmap_from_data(
     const album_art_data_ptr& data, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection);
 bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback& p_abort);
-HBITMAP g_get_nocover_bitmap(t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
+wil::unique_hbitmap g_get_nocover_bitmap(
+    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
 void set_font_size(bool up);
 
 class BasePlaylistCallback : public playlist_callback {
@@ -129,7 +131,7 @@ public:
     // only called when thread closed
     bool did_succeed() { return m_succeeded; }
     bool is_ready() { return !is_thread_open(); }
-    const pfc::map_t<GUID, std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>>& get_content() const { return m_bitmaps; }
+    const pfc::map_t<GUID, wil::shared_hbitmap>& get_content() const { return m_bitmaps; }
 
     void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
         const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
@@ -161,7 +163,7 @@ private:
     unsigned read_artwork(abort_callback& p_abort);
 
     pfc::chain_list_v2_t<GUID> m_requestIds;
-    pfc::map_t<GUID, std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>> m_bitmaps;
+    pfc::map_t<GUID, wil::shared_hbitmap> m_bitmaps;
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
     t_size m_cx{0}, m_cy{0};
     COLORREF m_back{RGB(255, 255, 255)};
@@ -256,8 +258,8 @@ public:
 
     ArtworkReaderManager() = default;
 
-    void request_nocover_image(std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx, t_size cy,
-        COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
+    wil::shared_hbitmap request_nocover_image(
+        t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
     void flush_nocover() { m_nocover_bitmap.reset(); }
 
 private:
@@ -289,7 +291,7 @@ private:
     pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
 
     critical_section m_nocover_sync;
-    std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t> m_nocover_bitmap;
+    wil::shared_hbitmap m_nocover_bitmap;
     t_size m_nocover_cx{0}, m_nocover_cy{0};
 };
 
@@ -414,7 +416,7 @@ private:
         bool m_artwork_load_succeeded{false};
         // bool m_data_to_bitmap_attempted;
         // album_art_data_ptr m_artwork_data;
-        std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t> m_artwork_bitmap; // cached for display
+        wil::shared_hbitmap m_artwork_bitmap; // cached for display
 
         PlaylistViewGroup() = default;
         ;
@@ -487,7 +489,7 @@ private:
         service_ptr_t<PlaylistView> m_window;
     };
 
-    HBITMAP request_group_artwork(t_size index_item);
+    wil::shared_hbitmap request_group_artwork(t_size index_item);
 
     void update_all_items();
     void refresh_all_items_text();

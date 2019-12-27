@@ -17,12 +17,13 @@ bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback
     FreeResource(handle);
     return ret;
 }
-HBITMAP g_get_nocover_bitmap(t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
+wil::unique_hbitmap g_get_nocover_bitmap(
+    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
     album_art_extractor_instance_v2::ptr p_extractor = static_api_ptr_t<album_art_manager_v2>()->open_stub(p_abort);
 
     album_art_data_ptr data;
-    HBITMAP ret = nullptr;
+    wil::unique_hbitmap ret;
     try {
         // FIXME: hardcoded to front cover
         data = p_extractor->query(album_art_ids::cover_front, p_abort);
@@ -262,9 +263,8 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
             }
         }
         if (data.is_valid()) {
-            m_bitmaps.set(*walk,
-                std::make_shared<gdi_object_t<HBITMAP>::ptr_t>(
-                    g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection)));
+            wil::shared_hbitmap bitmap = g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection);
+            m_bitmaps.set(*walk, bitmap);
             GdiFlush();
         }
     }
@@ -274,9 +274,8 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     {
         auto walk = m_requestIds.first();
         if (walk.is_valid() && !m_bitmaps.have_item(*walk)) {
-            std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t> bm;
-            m_manager->request_nocover_image(bm, m_cx, m_cy, m_back, m_reflection, p_abort);
-            if (bm && bm->is_valid()) {
+            auto bm = m_manager->request_nocover_image(m_cx, m_cy, m_back, m_reflection, p_abort);
+            if (bm) {
                 m_bitmaps.set(*walk, bm);
                 GdiFlush();
             }
@@ -286,7 +285,8 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     return 1;
 }
 
-HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
+wil::unique_hbitmap g_create_hbitmap_from_image(
+    Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
 {
     HDC dc = nullptr;
     HDC dcc = nullptr;
@@ -315,8 +315,8 @@ HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap& bm, t_size& cx, t_size& cy,
         cx++;
 
     t_size reflect_cy = b_reflection ? (cy * 3) / 11 : 0;
-    HBITMAP bitmap = CreateCompatibleBitmap(dc, cx, cy + reflect_cy);
-    HBITMAP bm_old = SelectBitmap(dcc, bitmap);
+    wil::unique_hbitmap bitmap(CreateCompatibleBitmap(dc, cx, cy + reflect_cy));
+    HBITMAP bm_old = SelectBitmap(dcc, bitmap.get());
 
     unsigned err = 0;
     Gdiplus::Graphics graphics(dcc);
@@ -350,7 +350,7 @@ HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap& bm, t_size& cx, t_size& cy,
         }
 
         {
-            Gdiplus::Bitmap scaled(bitmap, nullptr);
+            Gdiplus::Bitmap scaled(bitmap.get(), nullptr);
             if (reflect_cy) {
                 Gdiplus::Rect rectref(0, cy, cx, reflect_cy);
                 Gdiplus::Color cr_end(255, LOBYTE(LOWORD(cr_back)), HIBYTE(LOWORD(cr_back)), LOBYTE(HIWORD(cr_back)));
@@ -391,11 +391,9 @@ HBITMAP g_create_hbitmap_from_image(Gdiplus::Bitmap& bm, t_size& cx, t_size& cy,
     return bitmap;
 }
 
-HBITMAP g_create_hbitmap_from_data(
+wil::unique_hbitmap g_create_hbitmap_from_data(
     const album_art_data_ptr& data, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
 {
-    HBITMAP ret = nullptr;
-
     cui::wic::BitmapData bitmap_data{};
     try {
         bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
@@ -413,78 +411,57 @@ HBITMAP g_create_hbitmap_from_data(
     return g_create_hbitmap_from_image(*bitmap, cx, cy, cr_back, b_reflection);
 }
 
-HBITMAP PlaylistView::request_group_artwork(t_size index_item)
+wil::shared_hbitmap PlaylistView::request_group_artwork(t_size index_item)
 {
     if (!m_gdiplus_initialised)
         return nullptr;
 
-    t_size group_count = m_scripts.get_count();
-    HBITMAP ret = nullptr;
-    if (group_count) {
-        auto* item = static_cast<PlaylistViewItem*>(get_item(index_item));
-        PlaylistViewGroup* group = item->get_group(group_count - 1);
-        if (group->m_artwork_load_attempted) {
-            // group->m_artwork_data.release();
-            // return NULL;
-            if (group->m_artwork_load_succeeded && group->m_artwork_bitmap && group->m_artwork_bitmap->is_valid()) {
-                /*if (!group->m_artwork_bitmap.is_valid() && !group->m_data_to_bitmap_attempted)
-                {
-                t_size cx=get_group_info_area_size(),cy;
-                t_size padding=get_default_indentation_step();
-                if (cx>padding)
-                cx-=padding;
-                else cx =0;
-                cy = cx;//item_group_count*get_item_height();
-                //if (cy>3)
-                //    cy-=3;
-                //else cy =0;
-                group->m_artwork_bitmap = g_create_hbitmap_from_data(group->m_artwork_data, cx, cy);
-                group->m_data_to_bitmap_attempted = true;
-                group->m_artwork_data.release();
-                }*/
-                ret = *group->m_artwork_bitmap;
-            }
-        } else {
-            t_size cx = get_group_info_area_width();
-            t_size cy = get_group_info_area_height();
-            /*t_size padding=get_default_indentation_step();
-            if (cx>padding)
-                cx-=padding;
-            else cx =0;
-            if (cy>(1*padding))
-                cy-= (1*padding);
-            else cy =0;*/
+    const t_size group_count = m_scripts.get_count();
+    if (group_count == 0)
+        return nullptr;
 
-            ArtworkCompletionNotify::ptr_t ptr = std::make_shared<ArtworkCompletionNotify>();
-            ptr->m_group = group;
-            ptr->m_window = this;
-            metadb_handle_ptr handle;
-            m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
-            std::shared_ptr<ArtworkReader> p_reader;
-            m_artwork_manager->request(handle, p_reader, cx, cy,
-                cui::colours::helper(ColoursClient::g_guid).get_colour(cui::colours::colour_background),
-                cfg_artwork_reflection, std::move(ptr));
-            group->m_artwork_load_attempted = true;
-        }
+    auto* item = static_cast<PlaylistViewItem*>(get_item(index_item));
+    PlaylistViewGroup* group = item->get_group(group_count - 1);
+
+    if (!group->m_artwork_load_attempted) {
+        t_size cx = get_group_info_area_width();
+        t_size cy = get_group_info_area_height();
+
+        ArtworkCompletionNotify::ptr_t ptr = std::make_shared<ArtworkCompletionNotify>();
+        ptr->m_group = group;
+        ptr->m_window = this;
+        metadb_handle_ptr handle;
+        m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
+        std::shared_ptr<ArtworkReader> p_reader;
+        m_artwork_manager->request(handle, p_reader, cx, cy,
+            cui::colours::helper(ColoursClient::g_guid).get_colour(cui::colours::colour_background),
+            cfg_artwork_reflection, std::move(ptr));
+        group->m_artwork_load_attempted = true;
+        return nullptr;
     }
-    return ret;
+
+    if (group->m_artwork_load_succeeded && group->m_artwork_bitmap) {
+        return group->m_artwork_bitmap;
+    }
+
+    return nullptr;
 }
 
-void ArtworkReaderManager::request_nocover_image(std::shared_ptr<gdi_object_t<HBITMAP>::ptr_t>& p_out, t_size cx,
-    t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
+wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(
+    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
     insync(m_nocover_sync);
-    if (m_nocover_bitmap && m_nocover_bitmap->is_valid() && m_nocover_cx == cx && m_nocover_cy == cy)
-        p_out = m_nocover_bitmap;
-    else {
-        HBITMAP bm = g_get_nocover_bitmap(cx, cy, cr_back, b_reflection, p_abort);
-        if (bm) {
-            m_nocover_bitmap = std::make_shared<gdi_object_t<HBITMAP>::ptr_t>(bm);
-            p_out = m_nocover_bitmap;
-            m_nocover_cx = cx;
-            m_nocover_cy = cy;
-        }
+    if (m_nocover_bitmap && m_nocover_cx == cx && m_nocover_cy == cy)
+        return m_nocover_bitmap;
+
+    auto bm = g_get_nocover_bitmap(cx, cy, cr_back, b_reflection, p_abort);
+    if (bm) {
+        m_nocover_cx = cx;
+        m_nocover_cy = cy;
+        m_nocover_bitmap = std::move(bm);
+        return m_nocover_bitmap;
     }
+    return nullptr;
 }
 
 }; // namespace pvt
