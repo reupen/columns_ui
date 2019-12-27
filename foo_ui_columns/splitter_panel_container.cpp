@@ -12,7 +12,7 @@ bool FlatSplitterPanel::Panel::PanelContainer::test_autohide_window(HWND wnd)
 void FlatSplitterPanel::Panel::PanelContainer::on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs)
 {
     if (msg == WM_MOUSEMOVE && m_this.is_valid() && MonitorFromPoint(mllhs.pt, MONITOR_DEFAULTTONULL)) {
-        unsigned index = m_this->m_panels.find_item(m_panel);
+        unsigned index = m_this->m_panels.find_item(m_panel->shared_from_this());
         if (index != pfc_infinite) {
             HWND wnd_capture = GetCapture();
             HWND wnd_pt = WindowFromPoint(mllhs.pt);
@@ -269,7 +269,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         if (m_this.is_valid()) {
             unsigned index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index)) {
-                pfc::refcounted_object_ptr_t<Panel> p_panel = m_this->m_panels[index];
+                std::shared_ptr<Panel> p_panel = m_this->m_panels[index];
 
                 AppendMenu(
                     menu, (MF_STRING | (p_panel->m_show_caption ? MF_CHECKED : 0)), IDM_CAPTION, _T("Show &caption"));

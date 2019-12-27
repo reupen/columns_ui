@@ -28,7 +28,7 @@ void ColoursManagerData::register_common_callback(cui::colours::common_callback*
 
 ColoursManagerData::ColoursManagerData() : cfg_var(g_cfg_guid)
 {
-    m_global_entry = new Entry(true);
+    m_global_entry = std::make_shared<Entry>(true);
 }
 
 void ColoursManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
@@ -44,7 +44,7 @@ void ColoursManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
             return;
         }
     }
-    p_out = new Entry;
+    p_out = std::make_shared<Entry>();
     p_out->guid = p_guid;
     m_entries.add_item(p_out);
 }
@@ -59,7 +59,7 @@ void ColoursManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint
         p_stream->read_lendian_t(count, p_abort);
         m_entries.remove_all();
         for (t_size i = 0; i < count; i++) {
-            entry_ptr_t ptr = new Entry;
+            entry_ptr_t ptr = std::make_shared<Entry>();
             ptr->read(version, p_stream, p_abort);
             m_entries.add_item(ptr);
         }

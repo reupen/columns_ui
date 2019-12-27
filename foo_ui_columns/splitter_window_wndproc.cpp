@@ -302,7 +302,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         t_size n, count = m_panels.get_count();
         for (n = 0; n + 1<count; n++)
         {
-            pfc::refcounted_object_ptr_t<panel> p_item = m_panels.get_item(n);
+            std::shared_ptr<Panel> p_item = m_panels.get_item(n);
 
             if (p_item->m_wnd_child)
             {
@@ -364,7 +364,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 {
                     if (cmd >= ID_ADD_BASE && cmd < panels.get_count() + ID_ADD_BASE)
                     {
-                        pfc::refcounted_object_ptr_t<panel> ptr = new panel;
+                        auto ptr = std::make_shared<Panel>();
                         ptr->m_guid = panels[cmd - ID_ADD_BASE].guid;
                         m_panels.add_item(ptr);
                         refresh_children();

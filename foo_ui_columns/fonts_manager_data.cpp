@@ -5,11 +5,11 @@
 
 FontsManagerData::FontsManagerData() : cfg_var(g_cfg_guid)
 {
-    m_common_items_entry = new Entry;
+    m_common_items_entry = std::make_shared<Entry>();
     uGetIconFont(&m_common_items_entry->font_description.log_font);
     m_common_items_entry->font_description.estimate_point_size();
 
-    m_common_labels_entry = new Entry;
+    m_common_labels_entry = std::make_shared<FontsManagerData::Entry>();
     uGetMenuFont(&m_common_labels_entry->font_description.log_font);
     m_common_labels_entry->font_description.estimate_point_size();
 }
@@ -41,7 +41,7 @@ void FontsManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
         }
     }
     {
-        p_out = new Entry;
+        p_out = std::make_shared<FontsManagerData::Entry>();
         p_out->guid = p_guid;
         cui::fonts::client::ptr ptr;
         if (cui::fonts::client::create_by_guid(p_guid, ptr)) {
@@ -65,7 +65,7 @@ void FontsManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, 
         p_stream->read_lendian_t(count, p_abort);
         m_entries.remove_all();
         for (t_size i = 0; i < count; i++) {
-            entry_ptr_t ptr = new Entry;
+            entry_ptr_t ptr = std::make_shared<Entry>();
             ptr->read(version, p_stream, p_abort);
             m_entries.add_item(ptr);
         }

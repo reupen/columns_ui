@@ -8,7 +8,7 @@ public:
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
 
-    class Entry : public pfc::refcounted_object_root {
+    class Entry {
     public:
         enum ItemID {
             identifier_guid,
@@ -32,7 +32,7 @@ public:
 
         Entry();
     };
-    using entry_ptr_t = pfc::refcounted_object_ptr_t<Entry>;
+    using entry_ptr_t = std::shared_ptr<Entry>;
     pfc::list_t<entry_ptr_t> m_entries;
     entry_ptr_t m_common_items_entry;
     entry_ptr_t m_common_labels_entry;

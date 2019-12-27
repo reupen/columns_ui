@@ -1,9 +1,9 @@
 #pragma once
 
-class ColumnTab : public pfc::refcounted_object_root {
+class ColumnTab {
 public:
-    using self_t = ColumnTab;
-    using ptr = pfc::refcounted_object_ptr_t<self_t>;
+    virtual ~ColumnTab() = default;
+
     virtual HWND create(HWND wnd) = 0;
     // virtual void destroy(HWND wnd)=0;
     // virtual const char * get_name()=0;
@@ -16,7 +16,7 @@ private:
     HWND m_wnd_child{nullptr};
     HWND m_wnd{nullptr};
     HWND m_wnd_lv{nullptr};
-    ColumnTab::ptr m_child;
+    std::unique_ptr<ColumnTab> m_child;
     // edit_column_window_options m_tab_options;
     // edit_column_window_scripts m_tab_scripts;
 public:

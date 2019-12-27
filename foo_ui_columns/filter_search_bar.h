@@ -8,14 +8,14 @@ namespace filter_panel {
 class FilterSearchToolbar : public uie::container_uie_window_v2 {
 public:
     static bool g_activate();
-    static bool g_filter_search_bar_has_stream(FilterSearchToolbar const* p_seach_bar, const FilterStream* p_stream);
+    static bool g_filter_search_bar_has_stream(
+        FilterSearchToolbar const* p_seach_bar, const FilterStream::ptr& p_stream);
     static void s_on_favourites_change();
 
-    template <class TStream>
-    static void g_initialise_filter_stream(const TStream& p_stream)
+    static void g_initialise_filter_stream(const FilterStream::ptr& p_stream)
     {
         for (t_size i = 0, count = g_active_instances.get_count(); i < count; i++) {
-            if (!cfg_orderedbysplitters || g_filter_search_bar_has_stream(g_active_instances[i], p_stream.get_ptr())) {
+            if (!cfg_orderedbysplitters || g_filter_search_bar_has_stream(g_active_instances[i], p_stream)) {
                 if (!g_active_instances[i]->m_active_search_string.is_empty()) {
                     p_stream->m_source_overriden = true;
                     p_stream->m_source_handles = g_active_instances[i]->m_active_handles;

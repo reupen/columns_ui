@@ -73,7 +73,7 @@ BOOL TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DESTROY: {
         m_colours_client_list.remove_all();
         m_element_guid = pfc::guid_null;
-        m_element_ptr.release();
+        m_element_ptr.reset();
         m_element_api.release();
         m_wnd = nullptr;
     } break;

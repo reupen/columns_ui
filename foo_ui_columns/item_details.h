@@ -79,9 +79,9 @@ using display_line_info_list_t = pfc::list_t<DisplayLineInfo, pfc::alloc_fast_ag
 void g_parse_font_format_string(const char* str, t_size len, FontData& p_out);
 void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_new_text, font_change_data_list_t& p_out);
 
-class Font : public pfc::refcounted_object_root {
+class Font {
 public:
-    using ptr_t = pfc::refcounted_object_ptr_t<Font>;
+    using ptr_t = std::shared_ptr<Font>;
 
     FontData m_data;
 

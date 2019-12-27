@@ -74,7 +74,7 @@ public:
         SizeLimit() = default;
         ;
     };
-    class Panel : public pfc::refcounted_object_root {
+    class Panel {
     public:
         GUID m_guid{};
         HWND m_wnd{nullptr};
@@ -101,7 +101,7 @@ public:
         service_ptr_t<class TabStackSplitterHost> m_interface;
     };
 
-    class PanelList : public pfc::list_t<pfc::refcounted_object_ptr_t<Panel>> {
+    class PanelList : public pfc::list_t<std::shared_ptr<Panel>> {
     public:
         // bool move_up(unsigned idx);
         // bool move_down(unsigned idx);

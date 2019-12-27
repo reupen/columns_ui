@@ -204,7 +204,7 @@ void PlaylistView::refresh_columns()
     t_size count = g_columns.get_count();
     m_column_mask.set_size(count);
     for (t_size i = 0; i < count; i++) {
-        PlaylistViewColumn* source = g_columns[i].get_ptr();
+        PlaylistViewColumn* source = g_columns[i].get();
         bool b_valid = false;
         if (source->show) {
             switch (source->filter_type) {
@@ -321,7 +321,7 @@ void PlaylistView::g_flush_artwork(bool b_redraw, const PlaylistView* p_skip)
 void PlaylistView::g_on_artwork_repositories_change()
 {
     for (auto& window : g_windows) {
-        if (window->m_artwork_manager.is_valid()) {
+        if (window->m_artwork_manager) {
             window->m_artwork_manager->set_script(album_art_ids::cover_front, artwork_panel::cfg_front_scripts);
         }
     }
@@ -541,7 +541,7 @@ void PlaylistView::notify_on_initialisation()
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
-    m_artwork_manager = new ArtworkReaderManager;
+    m_artwork_manager = std::make_shared<ArtworkReaderManager>();
     m_artwork_manager->initialise();
     m_artwork_manager->add_type(album_art_ids::cover_front);
     m_artwork_manager->set_script(album_art_ids::cover_front, artwork_panel::cfg_front_scripts);
@@ -592,7 +592,7 @@ void PlaylistView::notify_on_destroy()
     m_column_mask.set_size(0);
 
     m_artwork_manager->deinitialise();
-    m_artwork_manager.release();
+    m_artwork_manager.reset();
 
     m_selection_holder.release();
 

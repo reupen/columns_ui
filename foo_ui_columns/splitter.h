@@ -85,7 +85,7 @@ private:
         SizeLimit() = default;
         ;
     };
-    class Panel : public pfc::refcounted_object_root {
+    class Panel : public std::enable_shared_from_this<Panel> {
     public:
         class PanelContainer
             : public ui_helpers::container_window
@@ -152,10 +152,10 @@ private:
         void destroy();
         Panel();
 
-        using ptr = pfc::refcounted_object_ptr_t<Panel>;
+        using ptr = std::shared_ptr<Panel>;
         static ptr null_ptr;
     };
-    class PanelList : public pfc::list_t<pfc::refcounted_object_ptr_t<Panel>> {
+    class PanelList : public pfc::list_t<std::shared_ptr<Panel>> {
     public:
         bool find_by_wnd(HWND wnd, unsigned& p_out);
         bool find_by_wnd_child(HWND wnd, unsigned& p_out);

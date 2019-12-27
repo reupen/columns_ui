@@ -64,7 +64,7 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
 
             if (p_window->get_extension_guid() == cui::panels::guid_filter) {
                 auto* p_filter = static_cast<FilterPanel*>(p_window.get_ptr());
-                if (!p_out.have_item(p_filter->m_stream.get_ptr()))
+                if (!p_out.have_item(p_filter->m_stream))
                     p_out.add_item(p_filter->m_stream);
             } else if (p_window->service_query_t(p_splitter)) {
                 t_size splitter_child_count = p_splitter->get_panel_count();
@@ -143,11 +143,11 @@ bool FilterSearchToolbar::g_activate()
 }
 
 bool FilterSearchToolbar::g_filter_search_bar_has_stream(
-    FilterSearchToolbar const* p_seach_bar, const FilterStream* p_stream)
+    FilterSearchToolbar const* p_seach_bar, const FilterStream::ptr& p_stream)
 {
     pfc::list_t<FilterStream::ptr> p_streams;
     g_get_search_bar_sibling_streams(p_seach_bar, p_streams);
-    return p_streams.have_item(const_cast<FilterStream*>(p_stream)); // meh
+    return p_streams.have_item(p_stream);
 }
 
 void FilterSearchToolbar::s_on_favourites_change()

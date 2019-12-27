@@ -18,9 +18,9 @@ public:
     uie::window_ptr m_window;
     service_ptr_t<uie::splitter_window> m_splitter;
     std::vector<ptr> m_children;
-    pfc::rcptr_t<uie::splitter_item_ptr> m_item;
+    std::shared_ptr<uie::splitter_item_ptr> m_item;
 
-    LayoutTabNode() : m_item(pfc::rcnew_t<uie::splitter_item_ptr>()) {}
+    LayoutTabNode() : m_item(std::make_shared<uie::splitter_item_ptr>()) {}
 };
 
 class LayoutTab : public PreferencesTab {

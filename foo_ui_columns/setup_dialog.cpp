@@ -17,7 +17,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        m_this = this;
+        m_this = shared_from_this();
 
         modeless_dialog_manager::g_add(wnd);
 
@@ -166,7 +166,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_NCDESTROY:
         SetWindowLongPtr(wnd, DWLP_USER, NULL);
-        m_this.release();
+        m_this.reset();
         return FALSE;
     }
 
@@ -175,7 +175,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void QuickSetupDialog::g_run()
 {
-    QuickSetupDialog::ptr_t dialog = new QuickSetupDialog;
+    QuickSetupDialog::ptr_t dialog = std::make_shared<QuickSetupDialog>();
     CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_QUICK_SETUP), cui::main_window.get_wnd(),
-        g_SetupDialogProc, reinterpret_cast<LPARAM>(dialog.get_ptr()));
+        g_SetupDialogProc, reinterpret_cast<LPARAM>(dialog.get()));
 }

@@ -362,7 +362,7 @@ class ColoursDataSet : public cui::fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref colour_reader(data2);
-                        g_colours_manager_data.m_entries[i] = new ColoursManagerData::Entry;
+                        g_colours_manager_data.m_entries[i] = std::make_shared<ColoursManagerData::Entry>();
                         g_colours_manager_data.m_entries[i]->import(&colour_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
@@ -476,7 +476,7 @@ class FontsDataSet : public cui::fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref element_reader(data2);
-                        g_fonts_manager_data.m_entries[i] = new FontsManagerData::Entry;
+                        g_fonts_manager_data.m_entries[i] = std::make_shared<FontsManagerData::Entry>();
                         g_fonts_manager_data.m_entries[i]->import(&element_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
@@ -529,10 +529,10 @@ LRESULT AppearanceMessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
         }
     } break;
     case WM_SETTINGCHANGE:
-        if ((wp == SPI_GETICONTITLELOGFONT && g_fonts_manager_data.m_common_items_entry.is_valid()
+        if ((wp == SPI_GETICONTITLELOGFONT && g_fonts_manager_data.m_common_items_entry
                 && g_fonts_manager_data.m_common_items_entry->font_mode == cui::fonts::font_mode_system)
-            || (wp == SPI_GETNONCLIENTMETRICS && g_fonts_manager_data.m_common_labels_entry.is_valid()
-                   && g_fonts_manager_data.m_common_labels_entry->font_mode == cui::fonts::font_mode_system)) {
+            || (wp == SPI_GETNONCLIENTMETRICS && g_fonts_manager_data.m_common_labels_entry
+                && g_fonts_manager_data.m_common_labels_entry->font_mode == cui::fonts::font_mode_system)) {
             FontsClientList m_fonts_client_list;
             FontsClientList::g_get_list(m_fonts_client_list);
             t_size count = m_fonts_client_list.get_count();

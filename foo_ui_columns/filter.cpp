@@ -730,7 +730,7 @@ int Node::g_compare_ptr_with_node(const Node& i1, const Node& i2)
 
 void FilterPanel::refresh_stream()
 {
-    m_stream.release();
+    m_stream.reset();
     if (cfg_orderedbysplitters) {
         t_size stream_index = pfc_infinite;
         uie::window_host_ex::ptr hostex;
@@ -746,14 +746,14 @@ void FilterPanel::refresh_stream()
         if (stream_index != pfc_infinite)
             g_streams[stream_index]->m_windows.add_item(this);
         else {
-            FilterStream::ptr streamnew = new FilterStream;
+            FilterStream::ptr streamnew = std::make_shared<FilterStream>();
             streamnew->m_windows.add_item(this);
             stream_index = g_streams.add_item(streamnew);
         }
         m_stream = g_streams[stream_index];
     } else {
         if (!g_streams.get_count()) {
-            m_stream = new FilterStream;
+            m_stream = std::make_shared<FilterStream>();
             g_streams.add_item(m_stream);
         } else
             m_stream = g_streams[0];
@@ -860,7 +860,7 @@ void FilterPanel::notify_on_destroy()
     m_stream->m_windows.remove_item(this);
     if (m_stream->m_windows.get_count() == 0)
         g_streams.remove_item(m_stream);
-    m_stream.release();
+    m_stream.reset();
 
     g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
     if (g_windows.empty())
