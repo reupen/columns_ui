@@ -243,7 +243,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
 {
     switch (msg) {
     case WM_CREATE:
-        m_font = uCreateIconFont();
+        m_font.reset(uCreateIconFont());
         create_edit();
         g_active_instances.add_item(this);
         break;
@@ -251,7 +251,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
         g_active_instances.remove_item(this);
         if (!core_api::is_shutting_down())
             commit_search_results("");
-        m_font.release();
+        m_font.reset();
         m_active_handles.remove_all();
         m_active_search_string.reset();
         if (m_imagelist) {

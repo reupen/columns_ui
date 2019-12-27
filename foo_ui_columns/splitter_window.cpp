@@ -4,8 +4,8 @@
 ui_extension::window_host_factory<FlatSplitterPanel::FlatSplitterPanelHost> g_splitter_host_vert;
 
 unsigned FlatSplitterPanel::g_count = 0;
-gdi_object_t<HFONT>::ptr_t FlatSplitterPanel::g_font_menu_horizontal;
-gdi_object_t<HFONT>::ptr_t FlatSplitterPanel::g_font_menu_vertical;
+wil::unique_hfont FlatSplitterPanel::g_font_menu_horizontal;
+wil::unique_hfont FlatSplitterPanel::g_font_menu_vertical;
 
 void FlatSplitterPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
@@ -975,7 +975,7 @@ void FlatSplitterPanel::get_category(pfc::string_base& p_out) const
 
 unsigned FlatSplitterPanel::g_get_caption_size()
 {
-    unsigned rv = uGetFontHeight(g_font_menu_horizontal);
+    unsigned rv = uGetFontHeight(g_font_menu_horizontal.get());
     rv += 9;
     return rv;
 }

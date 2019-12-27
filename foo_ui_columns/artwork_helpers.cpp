@@ -73,7 +73,7 @@ void artwork_panel::ArtworkReaderManager::deinitialise()
         m_current_reader->wait_for_and_release_thread();
         m_current_reader.reset();
     }
-    m_emptycover.release();
+    m_emptycover.reset();
 }
 
 void artwork_panel::ArtworkReaderManager::initialise() {}
@@ -119,14 +119,14 @@ void artwork_panel::ArtworkReaderManager::Reset()
 {
     abort_current_task();
     m_current_reader.reset();
-    m_emptycover.release();
+    m_emptycover.reset();
 }
 
 void artwork_panel::ArtworkReaderManager::ResetRepository()
 {
     abort_current_task();
     m_repositories.remove_all();
-    m_emptycover.release();
+    m_emptycover.reset();
 }
 
 void artwork_panel::ArtworkReaderManager::SetScript(const GUID& p_what, const pfc::list_t<pfc::string8>& script)

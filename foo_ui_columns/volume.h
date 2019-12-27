@@ -36,7 +36,7 @@ class VolumeBar
         void draw_background(HDC dc, const RECT* rc) const override
         {
             if (t_attributes::get_background_colour() != -1)
-                FillRect(dc, rc, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(t_attributes::get_background_colour())));
+                FillRect(dc, rc, wil::unique_hbrush(CreateSolidBrush(t_attributes::get_background_colour())).get());
             else
                 uih::Trackbar::draw_background(dc, rc);
         }
@@ -187,7 +187,7 @@ public:
                     m_using_gdiplus = true;
             }
             if (t_attributes::get_show_caption())
-                m_font_caption = uCreateMenuFont(b_vertical);
+                m_font_caption.reset(uCreateMenuFont(b_vertical));
 
             m_child.set_callback(&m_track_bar_host);
             m_child.set_show_tooltips(true);
@@ -263,7 +263,7 @@ public:
                 RECT rc_caption = {0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom};
 
                 if (IntersectRect(&rc_dummy, &rc_caption, &ps.rcPaint)) {
-                    HFONT old = SelectFont(dc, m_font_caption);
+                    HFONT old = SelectFont(dc, m_font_caption.get());
                     uDrawPanelTitle(dc, &rc_caption, "Volume", 6, b_vertical, false);
                     SelectFont(dc, old);
                 }
@@ -290,7 +290,7 @@ public:
             static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
             m_child.destroy();
             if (t_attributes::get_show_caption())
-                m_font_caption.release();
+                m_font_caption.reset();
 
             if (!b_popup && m_using_gdiplus) {
                 Gdiplus::GdiplusShutdown(m_Gdiplus_token);
@@ -337,17 +337,17 @@ public:
     {
         if (!t_attributes::get_show_caption())
             return 0;
-        gdi_object_t<HFONT>::ptr_t fnt = uCreateMenuFont();
-        unsigned rv = g_get_caption_size(fnt);
+        wil::unique_hfont fnt(uCreateMenuFont());
+        unsigned rv = g_get_caption_size(fnt.get());
         return rv;
     }
 
 private:
-    unsigned get_caption_size() const { return g_get_caption_size(m_font_caption); }
+    unsigned get_caption_size() const { return g_get_caption_size(m_font_caption.get()); }
     bool get_caption_extent(SIZE& p_out) const
     {
         HDC dc = GetDC(this->get_wnd());
-        HFONT old = SelectFont(dc, m_font_caption);
+        HFONT old = SelectFont(dc, m_font_caption.get());
         bool ret = uGetTextExtentPoint32(dc, "Volume", 6, &p_out) != 0;
         SelectFont(dc, old);
         ReleaseDC(this->get_wnd(), dc);
@@ -365,7 +365,7 @@ private:
     void FB2KAPI on_playback_time(double p_time) override{};
     void FB2KAPI on_volume_change(float p_new_val) override { update_position(p_new_val); }
 
-    gdi_object_t<HFONT>::ptr_t m_font_caption;
+    wil::unique_hfont m_font_caption;
     ULONG_PTR m_Gdiplus_token{NULL};
     bool m_using_gdiplus{false};
 };

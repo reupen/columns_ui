@@ -8,7 +8,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         ShowWindow(m_volume_control.create(wnd), SW_SHOWNORMAL);
 
-        m_font = cui::fonts::helper(g_guid_font).get_font();
+        m_font.reset(cui::fonts::helper(g_guid_font).get_font());
         m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
 
         update_playlist_data();
@@ -23,7 +23,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         m_volume_control.destroy();
 
-        m_font.release();
+        m_font.reset();
         if (m_theme) {
             CloseThemeData(m_theme);
             m_theme = nullptr;
@@ -63,7 +63,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uih::PaintScope ps(wnd);
         uih::MemoryDC dc(ps);
 
-        const auto font_height = uGetFontHeight(m_font);
+        const auto font_height = uGetFontHeight(m_font.get());
         const auto line_height = font_height + uih::scale_dpi_value(3);
 
         RECT rc_client{};
@@ -85,7 +85,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         rc_line_2.top = rc_line_1.bottom;
         rc_line_2.bottom = rc_line_2.top + line_height;
 
-        HFONT fnt_old = SelectFont(dc, m_font);
+        HFONT fnt_old = SelectFont(dc, m_font.get());
 
         const char* placeholder = "999999999 items selected";
         const auto default_text_colour = GetSysColor(COLOR_BTNTEXT);

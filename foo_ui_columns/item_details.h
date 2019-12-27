@@ -85,7 +85,7 @@ public:
 
     FontData m_data;
 
-    gdi_object_t<HFONT>::ptr_t m_font;
+    wil::unique_hfont m_font;
     t_size m_height{};
     // font_t (const font_t & p_font) : m_font(p_font.m_font), m_height(p_font.m_height), m_data(p_font.m_data) {};
 };

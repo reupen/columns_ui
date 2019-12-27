@@ -97,8 +97,8 @@ void g_get_text_font_info(const font_change_data_list_t& p_data, FontChangeNotif
                         maskKeepFonts[index] = true;
                 } else {
                     Font::ptr_t font = std::make_shared<Font>();
-                    font->m_font = CreateFontIndirect(&lf);
-                    font->m_height = uGetFontHeight(font->m_font);
+                    font->m_font.reset(CreateFontIndirect(&lf));
+                    font->m_height = uGetFontHeight(font->m_font.get());
                     font->m_data = p_data[i].m_font_data;
                     index = p_info.m_fonts.add_item(font);
                     // maskKeepFonts.add_item(true);

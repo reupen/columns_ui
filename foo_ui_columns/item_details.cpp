@@ -757,9 +757,9 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<metadb_io_v3>()->register_callback(this);
 
         m_font_change_info.m_default_font = std::make_shared<Font>();
-        m_font_change_info.m_default_font->m_font
-            = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
-        m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font);
+        m_font_change_info.m_default_font->m_font.reset(
+            static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client));
+        m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font.get());
 
         if (g_windows.empty())
             g_message_window.create(nullptr);
@@ -938,8 +938,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         const int client_height = RECT_CY(rc_client);
 
-        FillRect(dc_mem, &rc,
-            gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(p_helper.get_colour(cui::colours::colour_background))));
+        auto background_colour = p_helper.get_colour(cui::colours::colour_background);
+        FillRect(dc_mem, &rc, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
 
         int line_height = uGetTextHeight(dc_mem) + uih::scale_dpi_value(2);
 
@@ -995,8 +995,8 @@ void ItemDetails::g_on_colours_change()
 
 void ItemDetails::on_font_change()
 {
-    m_font_change_info.m_default_font->m_font
-        = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client);
+    m_font_change_info.m_default_font->m_font.reset(
+        static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client));
     refresh_contents(false);
     /*
     invalidate_all(false);

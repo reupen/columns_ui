@@ -186,7 +186,7 @@ private:
     std::shared_ptr<ArtworkReaderManager> m_artwork_loader;
     // now_playing_album_art_manager m_nowplaying_artwork_loader;
     std::unique_ptr<Gdiplus::Bitmap> m_image;
-    gdi_object_t<HBITMAP>::ptr_t m_bitmap;
+    wil::unique_hbitmap m_bitmap;
     t_size m_position{0};
     t_size m_track_mode;
     bool m_preserve_aspect_ratio, m_lock_type{false};

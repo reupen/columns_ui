@@ -168,7 +168,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
         m_selection_handles.remove_all();
         m_image.reset();
-        m_bitmap.release();
+        m_bitmap.reset();
         if (m_gdiplus_initialised)
             Gdiplus::GdiplusShutdown(m_gdiplus_instance);
         m_gdiplus_initialised = false;
@@ -205,20 +205,21 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         RECT rc;
         GetClientRect(wnd, &rc);
         if (m_gdiplus_initialised) {
-            if (!m_bitmap.is_valid())
+            if (!m_bitmap)
                 refresh_cached_bitmap();
 
-            if (m_bitmap.is_valid()) {
+            if (m_bitmap) {
                 HDC dcc = CreateCompatibleDC(dc);
 
-                HBITMAP bm_old = SelectBitmap(dcc, m_bitmap);
+                HBITMAP bm_old = SelectBitmap(dcc, m_bitmap.get());
                 BitBlt(dc, 0, 0, RECT_CX(rc), RECT_CY(rc), dcc, 0, 0, SRCCOPY);
                 SelectBitmap(dcc, bm_old);
                 DeleteDC(dcc);
             } else {
-                FillRect(ps.hdc, &rc,
-                    gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(
-                        cui::colours::helper(g_guid_colour_client).get_colour(cui::colours::colour_background))));
+                auto background_colour
+                    = cui::colours::helper(g_guid_colour_client).get_colour(cui::colours::colour_background);
+                const wil::unique_hbrush background_brush(CreateSolidBrush(background_colour));
+                FillRect(ps.hdc, &rc, background_brush.get());
                 /*HTHEME thm = OpenThemeData(g_main_window, L"FLYOUT");
                 DrawThemeBackground(thm, dc,     FLYOUT_DIVIDER    , 0, &rc, NULL);
                 CloseThemeData(thm);*/
@@ -440,7 +441,7 @@ bool ArtworkPanel::refresh_image(t_size index)
 
 void ArtworkPanel::flush_cached_bitmap()
 {
-    m_bitmap.release();
+    m_bitmap.reset();
 }
 void ArtworkPanel::flush_image()
 {
@@ -457,9 +458,9 @@ void ArtworkPanel::refresh_cached_bitmap()
         dc = GetDC(get_wnd());
         dcc = CreateCompatibleDC(dc);
 
-        m_bitmap = CreateCompatibleBitmap(dc, RECT_CX(rc), RECT_CY(rc));
+        m_bitmap.reset(CreateCompatibleBitmap(dc, RECT_CX(rc), RECT_CY(rc)));
 
-        HBITMAP bm_old = SelectBitmap(dcc, m_bitmap);
+        HBITMAP bm_old = SelectBitmap(dcc, m_bitmap.get());
 
         unsigned err = 0;
         Gdiplus::Graphics graphics(dcc);
@@ -513,7 +514,7 @@ void ArtworkPanel::refresh_cached_bitmap()
         DeleteDC(dcc);
         ReleaseDC(get_wnd(), dc);
     } else
-        m_bitmap.release();
+        m_bitmap.reset();
 }
 
 void ArtworkPanel::g_on_colours_change()

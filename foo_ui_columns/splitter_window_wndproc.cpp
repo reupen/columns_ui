@@ -10,16 +10,16 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_CREATE:
         if (!g_count++) {
-            g_font_menu_horizontal = uCreateMenuFont();
-            g_font_menu_vertical = uCreateMenuFont(true);
+            g_font_menu_horizontal.reset(uCreateMenuFont());
+            g_font_menu_vertical.reset(uCreateMenuFont(true));
         }
         refresh_children();
         break;
     case WM_DESTROY:
         destroy_children();
         if (!--g_count) {
-            g_font_menu_horizontal.release();
-            g_font_menu_vertical.release();
+            g_font_menu_horizontal.reset();
+            g_font_menu_vertical.reset();
         }
         break;
     case WM_NCDESTROY:
@@ -297,7 +297,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         PAINTSTRUCT ps;
         BeginPaint(wnd, &ps);
         COLORREF cr = GetSysColor(COLOR_3DFACE);
-        gdi_object_t<HBRUSH>::ptr_t br_line = CreateSolidBrush(/*RGB(226, 226, 226)*/cr);
+        wil::unique_hbrush br_line(CreateSolidBrush(/*RGB(226, 226, 226)*/cr));
 
         t_size n, count = m_panels.get_count();
         for (n = 0; n + 1<count; n++)
@@ -322,7 +322,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     //FillRect(ps.hdc, &rc_area, GetSysColorBrush(COLOR_WINDOW));
                     //rc_area.right--;
                 }
-                FillRect(ps.hdc, &rc_area, br_line);
+                FillRect(ps.hdc, &rc_area, br_line.get());
             }
         }
 

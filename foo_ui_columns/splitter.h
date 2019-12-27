@@ -194,8 +194,8 @@ private:
     unsigned m_panel_dragging{NULL};
     bool m_panel_dragging_valid{false};
 
-    static gdi_object_t<HFONT>::ptr_t g_font_menu_horizontal;
-    static gdi_object_t<HFONT>::ptr_t g_font_menu_vertical;
+    static wil::unique_hfont g_font_menu_horizontal;
+    static wil::unique_hfont g_font_menu_vertical;
     static unsigned g_count;
     static pfc::ptr_list_t<FlatSplitterPanel> g_instances;
 
