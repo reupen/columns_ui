@@ -5,37 +5,26 @@ namespace pvt {
 
 void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, t_size index, RECT rc)
 {
-    HBITMAP bm = m_playlist_view->request_group_artwork(index);
+    const auto bm = m_playlist_view->request_group_artwork(index);
 
-    if (bm) {
-        HDC dcc = CreateCompatibleDC(context.dc);
-        BITMAP bminfo;
-        memset(&bminfo, 0, sizeof(bminfo));
-        GetObject(bm, sizeof(BITMAP), &bminfo);
+    if (!bm)
+        return;
 
-        /*t_size padding=get_default_indentation_step();
+    HDC dcc = CreateCompatibleDC(context.dc);
+    BITMAP bminfo;
+    memset(&bminfo, 0, sizeof(bminfo));
+    GetObject(bm.get(), sizeof(BITMAP), &bminfo);
 
-        if (RECT_CX(rc)<padding)
-            rc.right=rc.left;
-        else
-            rc.right-=padding;
+    RECT rc_bitmap;
+    rc_bitmap.left = rc.left + (RECT_CX(rc) - bminfo.bmWidth) / 2;
+    rc_bitmap.top = rc.top;
+    rc_bitmap.right = rc_bitmap.left + min(bminfo.bmWidth, RECT_CX(rc));
+    rc_bitmap.bottom = rc_bitmap.top + min(bminfo.bmHeight, RECT_CY(rc));
 
-        if (RECT_CY(rc)<padding)
-            rc.bottom=rc.left;
-        else
-            rc.bottom-=padding;*/
-
-        RECT rc_bitmap;
-        rc_bitmap.left = rc.left + (RECT_CX(rc) - bminfo.bmWidth) / 2;
-        rc_bitmap.top = rc.top;
-        rc_bitmap.right = rc_bitmap.left + min(bminfo.bmWidth, RECT_CX(rc));
-        rc_bitmap.bottom = rc_bitmap.top + min(bminfo.bmHeight, RECT_CY(rc));
-
-        HBITMAP bm_old = SelectBitmap(dcc, bm);
-        BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, RECT_CX(rc_bitmap), RECT_CY(rc_bitmap), dcc, 0, 0, SRCCOPY);
-        SelectBitmap(dcc, bm_old);
-        DeleteDC(dcc);
-    }
+    HBITMAP bm_old = SelectBitmap(dcc, bm.get());
+    BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, RECT_CX(rc_bitmap), RECT_CY(rc_bitmap), dcc, 0, 0, SRCCOPY);
+    SelectBitmap(dcc, bm_old);
+    DeleteDC(dcc);
 }
 
 void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size index,
@@ -88,7 +77,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size 
             else
                 cr_back = sub_style_data->background_colour;
 
-            FillRect(context.dc, &rc_subitem, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cr_back)));
+            FillRect(context.dc, &rc_subitem, wil::unique_hbrush(CreateSolidBrush(cr_back)).get());
         }
         uih::text_out_colours_tab(context.dc, sub_item.text.data(), sub_item.text.size(),
             uih::scale_dpi_value(1) + (column_index == 0 ? indentation : 0), uih::scale_dpi_value(3), &rc_subitem,
@@ -159,8 +148,8 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
         cr = group->m_style_data->text_colour;
 
     {
-        gdi_object_t<HBRUSH>::ptr_t br = CreateSolidBrush(group->m_style_data->background_colour);
-        FillRect(context.dc, &rc, br);
+        wil::unique_hbrush br(CreateSolidBrush(group->m_style_data->background_colour));
+        FillRect(context.dc, &rc, br.get());
     }
 
     uih::text_out_colours_tab(context.dc, text.data(), text.size(), uih::scale_dpi_value(1) + indentation * level,
@@ -184,8 +173,8 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
                     && SUCCEEDED(GetThemeColor(
                         context.list_view_theme, LVP_GROUPHEADER, LVGH_OPEN, TMT_HEADING1TEXTCOLOR, &cr))))
                 cr = group->m_style_data->text_colour;
-            gdi_object_t<HPEN>::ptr_t pen = CreatePen(PS_SOLID, uih::scale_dpi_value(1), cr);
-            HPEN pen_old = SelectPen(context.dc, pen);
+            wil::unique_hpen pen(CreatePen(PS_SOLID, uih::scale_dpi_value(1), cr));
+            HPEN pen_old = SelectPen(context.dc, pen.get());
             MoveToEx(context.dc, rc_line.left, rc_line.top, nullptr);
             LineTo(context.dc, rc_line.right, rc_line.top);
             SelectPen(context.dc, pen_old);

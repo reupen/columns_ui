@@ -130,7 +130,7 @@ public:
     void update_size_limits();
     void on_font_change();
     static void g_on_font_change();
-    gdi_object_t<HFONT>::ptr_t g_font;
+    wil::unique_hfont g_font;
     void on_size_changed(unsigned width, unsigned height);
     void on_size_changed();
     void on_active_tab_changing(t_size index_from);

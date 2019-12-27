@@ -76,7 +76,7 @@ private:
     bool m_show_clear_button{cfg_showsearchclearbutton};
     pfc::string8 m_active_search_string;
     metadb_handle_list m_active_handles;
-    gdi_object_t<HFONT>::ptr_t m_font;
+    wil::unique_hfont m_font;
     HIMAGELIST m_imagelist{};
     int m_combo_cx{};
     int m_combo_cy{};

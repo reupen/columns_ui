@@ -810,7 +810,7 @@ void TabStackPanel::remove_panel(unsigned index)
 
 void TabStackPanel::create_tabs()
 {
-    g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs);
+    g_font.reset(static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs));
     RECT rc;
     GetClientRect(get_wnd(), &rc);
     DWORD flags = WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE
@@ -826,7 +826,7 @@ void TabStackPanel::destroy_tabs()
 {
     DestroyWindow(m_wnd_tabs);
     m_wnd_tabs = nullptr;
-    g_font.release();
+    g_font.reset();
 }
 uie::window_factory<TabStackPanel> g_splitter_window_tabs;
 std::vector<service_ptr_t<TabStackPanel::t_self>> TabStackPanel::g_windows;
@@ -841,11 +841,11 @@ void TabStackPanel::g_on_font_change()
 void TabStackPanel::on_font_change()
 {
     if (m_wnd_tabs) {
-        if (g_font.is_valid()) {
+        if (g_font) {
             SendMessage(m_wnd_tabs, WM_SETFONT, (WPARAM)0, MAKELPARAM(0, 0));
         }
 
-        g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs);
+        g_font.reset(static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_splitter_tabs));
 
         if (m_wnd_tabs) {
             SendMessage(m_wnd_tabs, WM_SETFONT, (WPARAM)g_font.get(), MAKELPARAM(1, 0));

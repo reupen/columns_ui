@@ -20,7 +20,7 @@ StatusPaneFontClient::factory<StatusPaneFontClient> g_font_client_status_pane;
 
 void StatusPane::on_font_changed()
 {
-    m_font = cui::fonts::helper(g_guid_font).get_font();
+    m_font.reset(cui::fonts::helper(g_guid_font).get_font());
     cui::main_window.resize_child_windows();
 }
 
@@ -29,7 +29,7 @@ void StatusPane::render_background(HDC dc, const RECT& rc)
     COLORREF cr = GetSysColor(COLOR_BTNFACE);
     COLORREF cr2 = GetSysColor(COLOR_3DDKSHADOW);
 
-    FillRect(dc, &rc, gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cr)));
+    FillRect(dc, &rc, wil::unique_hbrush(CreateSolidBrush(cr)).get());
 
     if (m_theme) {
         COLORREF cr_back = cr2;

@@ -175,7 +175,7 @@ public:
     StatusPane() = default;
     t_size get_ideal_height()
     {
-        return uGetFontHeight(m_font) * 2 + uih::scale_dpi_value(2) + uih::scale_dpi_value(4)
+        return uGetFontHeight(m_font.get()) * 2 + uih::scale_dpi_value(2) + uih::scale_dpi_value(4)
             + uih::scale_dpi_value(3) * 2;
     }
     void enter_menu_mode(const char* p_text)
@@ -204,6 +204,6 @@ private:
     pfc::string8_fast_aggressive playing1;
     pfc::string8 m_menu_text;
     bool m_menu_active{false};
-    gdi_object_t<HFONT>::ptr_t m_font;
+    wil::unique_hfont m_font;
     HTHEME m_theme{nullptr};
 };

@@ -130,7 +130,8 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                     uGetWindowText(wnd, text);
 
                     HFONT old = SelectFont(dc,
-                        m_panel->m_caption_orientation == horizontal ? g_font_menu_horizontal : g_font_menu_vertical);
+                        m_panel->m_caption_orientation == horizontal ? g_font_menu_horizontal.get()
+                                                                     : g_font_menu_vertical.get());
                     // rc_caption.left += 11;
                     uDrawPanelTitle(dc, &rc_caption, text, text.length(),
                         m_this->m_panels[index]->m_caption_orientation == vertical, false);
