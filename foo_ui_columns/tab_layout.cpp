@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "tab_layout.h"
+#include "functional.h"
 #include "layout.h"
 #include "config.h"
 #include "rename_dialog.h"
@@ -880,9 +881,9 @@ void LayoutTab::on_tree_selection_change(HTREEITEM tree_item)
 
     const auto all_item_and_control_ids = ranges::views::concat(bool_item_and_control_ids, other_item_and_control_ids);
 
-    std::unordered_map<GUID, bool, mmh::GUIDHasher> supported_map;
-    std::unordered_map<GUID, bool, mmh::GUIDHasher> enable_map;
-    std::unordered_map<GUID, bool, mmh::GUIDHasher> bool_value_map;
+    std::unordered_map<GUID, bool> supported_map;
+    std::unordered_map<GUID, bool> enable_map;
+    std::unordered_map<GUID, bool> bool_value_map;
     bool enable_configure = false;
     unsigned orientation = 0;
     pfc::string8 custom_title;

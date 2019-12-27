@@ -59,7 +59,9 @@
 #include "../fbh/stdafx.h"
 #include "../pfc/range_based_for.h"
 
+#include "functional.h"
 #include "resource.h"
+
 #include "utf8api.h"
 #include "helpers.h"
 #include "config_items.h"

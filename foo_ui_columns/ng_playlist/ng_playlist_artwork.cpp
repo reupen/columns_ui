@@ -106,11 +106,11 @@ DWORD ArtworkReader::on_thread()
         m_abort.check();
         m_succeeded = true;
     } catch (const exception_aborted&) {
-        m_bitmaps.remove_all();
+        m_bitmaps.clear();
         b_aborted = true;
         ret = ERROR_PROCESS_ABORTED;
     } catch (pfc::exception const& e) {
-        m_bitmaps.remove_all();
+        m_bitmaps.clear();
         console::formatter formatter;
         formatter << "Album Art loading failure: " << e.what();
         ret = -1;
@@ -131,7 +131,7 @@ DWORD ArtworkReader::on_thread()
 unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("artwork_reader_ng_t::read_artwork");
-    m_bitmaps.remove_all();
+    m_bitmaps.clear();
 
     bool b_loaded = false;
     bool b_extracter_attempted = false;
@@ -142,8 +142,9 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
         bool b_found = false;
         album_art_data_ptr data;
         try {
-            pfc::list_t<pfc::string8> to;
-            if (m_repositories.query(*walk, to)) {
+            auto repo_iter = m_repositories.find(*walk);
+            if (repo_iter != m_repositories.end()) {
+                auto& to = repo_iter->second;
                 pfc::string8 path;
                 t_size count = to.get_count();
                 for (t_size i = 0; i < count && !b_found; i++) {
@@ -264,7 +265,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
         }
         if (data.is_valid()) {
             wil::shared_hbitmap bitmap = g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection);
-            m_bitmaps.set(*walk, bitmap);
+            m_bitmaps.insert_or_assign(*walk, std::move(bitmap));
             GdiFlush();
         }
     }
@@ -273,10 +274,10 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     // if (!b_found)
     {
         auto walk = m_requestIds.first();
-        if (walk.is_valid() && !m_bitmaps.have_item(*walk)) {
+        if (walk.is_valid() && !m_bitmaps.count(*walk)) {
             auto bm = m_manager->request_nocover_image(m_cx, m_cy, m_back, m_reflection, p_abort);
             if (bm) {
-                m_bitmaps.set(*walk, bm);
+                m_bitmaps.insert_or_assign(*walk, std::move(bm));
                 GdiFlush();
             }
         }
