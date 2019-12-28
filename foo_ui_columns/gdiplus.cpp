@@ -18,7 +18,7 @@ std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_32bpp_data(
 
     assert(image_data.Height == height);
     assert(image_data.Width == width);
-    assert(image_data.Stride >= width * 4);
+    assert(gsl::narrow_cast<unsigned>(std::abs(image_data.Stride)) >= width * 4);
 
     const uint8_t* src = data;
     uint8_t* dst = static_cast<uint8_t*>(image_data.Scan0);
