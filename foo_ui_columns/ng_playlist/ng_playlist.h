@@ -131,14 +131,13 @@ public:
     // only called when thread closed
     bool did_succeed() { return m_succeeded; }
     bool is_ready() { return !is_thread_open(); }
-    const pfc::map_t<GUID, wil::shared_hbitmap>& get_content() const { return m_bitmaps; }
+    const std::unordered_map<GUID, wil::shared_hbitmap>& get_content() const { return m_bitmaps; }
 
-    void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
-        const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
-        const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
-        BaseArtworkCompletionNotify::ptr_t p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
+    void initialise(const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories,
+        t_size native_artwork_reader_mode, const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back,
+        bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify,
+        std::shared_ptr<class ArtworkReaderManager> p_manager)
     {
-        m_requestIds = p_requestIds;
         m_repositories = p_repositories;
         m_handle = p_handle;
         m_notify = std::move(p_notify);
@@ -162,9 +161,8 @@ protected:
 private:
     unsigned read_artwork(abort_callback& p_abort);
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
-    pfc::map_t<GUID, wil::shared_hbitmap> m_bitmaps;
-    pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
+    std::unordered_map<GUID, wil::shared_hbitmap> m_bitmaps;
+    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     t_size m_cx{0}, m_cy{0};
     COLORREF m_back{RGB(255, 255, 255)};
     bool m_reflection{false};
@@ -178,7 +176,6 @@ private:
 
 class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
 public:
-    void add_type(const GUID& p_what) { m_requestIds.add_item(p_what); }
     void abort_task(t_size index)
     {
         {
@@ -199,13 +196,13 @@ public:
     void set_script(const GUID& p_what, const pfc::list_t<pfc::string8>& script)
     {
         // abort_current_tasks();
-        m_repositories.set(p_what, script);
+        m_repositories.insert_or_assign(p_what, script);
     }
 
     void reset_repository()
     {
         abort_current_tasks();
-        m_repositories.remove_all();
+        m_repositories.clear();
     }
 
     void reset() { abort_current_tasks(); }
@@ -287,8 +284,7 @@ private:
     pfc::list_t<std::shared_ptr<ArtworkReader>> m_current_readers;
     pfc::list_t<std::shared_ptr<ArtworkReader>> m_pending_readers;
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
-    pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
+    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
 
     critical_section m_nocover_sync;
     wil::shared_hbitmap m_nocover_bitmap;
@@ -465,7 +461,11 @@ private:
                 for (t_size i = 0; i < count; i++) {
                     auto* item = static_cast<PlaylistViewItem*>(get_item(i));
                     if (item->get_group(group_count - 1) == p_group.get_ptr()) {
-                        if (p_reader->get_content().query(album_art_ids::cover_front, p_group->m_artwork_bitmap)) {
+                        auto&& content = p_reader->get_content();
+                        auto content_iter = content.find(album_art_ids::cover_front);
+
+                        if (content_iter != content.end()) {
+                            p_group->m_artwork_bitmap = content_iter->second;
                             p_group->m_artwork_load_succeeded = true;
                             invalidate_item_group_info_area(i);
                         }

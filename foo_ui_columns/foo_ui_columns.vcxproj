@@ -498,6 +498,7 @@
     <ClInclude Include="filter_config_var.h" />
     <ClInclude Include="filter_utils.h" />
     <ClInclude Include="font_utils.h" />
+    <ClInclude Include="functional.h" />
     <ClInclude Include="help.h" />
     <ClInclude Include="menu_mnemonics.h" />
     <ClInclude Include="migrate.h" />

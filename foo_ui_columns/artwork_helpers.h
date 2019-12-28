@@ -15,14 +15,14 @@ public:
 
     // only called when thread closed
     bool did_succeed();
-    const pfc::map_t<GUID, album_art_data_ptr>& get_content() const;
+    const std::unordered_map<GUID, album_art_data_ptr>& get_content() const;
     const album_art_data_ptr& get_emptycover() const;
 
     ArtworkReader() = default;
 
-    void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
-        const pfc::map_t<GUID, album_art_data_ptr>& p_content_previous,
-        const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
+    void initialise(const std::vector<GUID>& p_requestIds,
+        const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous,
+        const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
         t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
         std::shared_ptr<class ArtworkReaderManager> p_manager);
     void run_notification_thisthread(DWORD state);
@@ -32,12 +32,12 @@ protected:
 
 private:
     unsigned read_artwork(abort_callback& p_abort);
-    bool isContentEqual(
-        const pfc::map_t<GUID, album_art_data_ptr>& content1, const pfc::map_t<GUID, album_art_data_ptr>& content2);
+    bool isContentEqual(const std::unordered_map<GUID, album_art_data_ptr>& content1,
+        const std::unordered_map<GUID, album_art_data_ptr>& content2);
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
-    pfc::map_t<GUID, album_art_data_ptr> m_content;
-    pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
+    std::vector<GUID> m_requestIds;
+    std::unordered_map<GUID, album_art_data_ptr> m_content;
+    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     metadb_handle_ptr m_handle;
     completion_notify_ptr m_notify;
     bool m_succeeded{false};
@@ -81,9 +81,9 @@ private:
     std::shared_ptr<ArtworkReader> m_current_reader;
     // album_art_manager_instance_ptr m_api;
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
-    pfc::map_t<GUID, album_art_data_ptr> m_content;
-    pfc::map_t<GUID, pfc::list_t<pfc::string8>> m_repositories;
+    std::vector<GUID> m_requestIds;
+    std::unordered_map<GUID, album_art_data_ptr> m_content;
+    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     album_art_data_ptr m_emptycover;
 };
 

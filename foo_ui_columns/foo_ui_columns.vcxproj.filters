@@ -734,6 +734,9 @@
     <ClInclude Include="wic.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="functional.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".\buttons2.bmp">

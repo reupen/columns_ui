@@ -10,9 +10,9 @@ void artwork_panel::ArtworkReader::run_notification_thisthread(DWORD state)
     m_notify.release();
 }
 
-void artwork_panel::ArtworkReader::initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
-    const pfc::map_t<GUID, album_art_data_ptr>& p_content_previous,
-    const pfc::map_t<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
+void artwork_panel::ArtworkReader::initialise(const std::vector<GUID>& p_requestIds,
+    const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous,
+    const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
     t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
     std::shared_ptr<class ArtworkReaderManager> p_manager)
 {
@@ -31,7 +31,7 @@ const album_art_data_ptr& artwork_panel::ArtworkReader::get_emptycover() const
     return m_emptycover;
 }
 
-const pfc::map_t<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_content() const
+const std::unordered_map<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_content() const
 {
     return m_content;
 }
@@ -89,7 +89,12 @@ bool artwork_panel::ArtworkReaderManager::QueryEmptyCover(album_art_data_ptr& p_
 bool artwork_panel::ArtworkReaderManager::Query(const GUID& p_what, album_art_data_ptr& p_data)
 {
     if (IsReady() && m_current_reader->did_succeed()) {
-        return m_current_reader->get_content().query(p_what, p_data);
+        auto&& content = m_current_reader->get_content();
+        auto content_iter = content.find(p_what);
+        if (content_iter != content.end()) {
+            p_data = content_iter->second;
+            return true;
+        }
     }
     return false;
 }
@@ -103,7 +108,7 @@ void artwork_panel::ArtworkReaderManager::Request(
     {
         m_current_reader = std::make_shared<ArtworkReader>();
         m_current_reader->initialise(m_requestIds,
-            b_prev_valid ? ptr_prev->get_content() : pfc::map_t<GUID, album_art_data_ptr>(), m_repositories,
+            b_prev_valid ? ptr_prev->get_content() : std::unordered_map<GUID, album_art_data_ptr>(), m_repositories,
             !m_emptycover.is_valid(), cfg_fb2k_artwork_mode, p_handle, p_notify, shared_from_this());
         m_current_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
         m_current_reader->create_thread();
@@ -125,14 +130,14 @@ void artwork_panel::ArtworkReaderManager::Reset()
 void artwork_panel::ArtworkReaderManager::ResetRepository()
 {
     abort_current_task();
-    m_repositories.remove_all();
+    m_repositories.clear();
     m_emptycover.reset();
 }
 
 void artwork_panel::ArtworkReaderManager::SetScript(const GUID& p_what, const pfc::list_t<pfc::string8>& script)
 {
     abort_current_task();
-    m_repositories.set(p_what, script);
+    m_repositories.insert_or_assign(p_what, script);
 }
 
 void artwork_panel::ArtworkReaderManager::abort_current_task()
@@ -148,7 +153,7 @@ void artwork_panel::ArtworkReaderManager::abort_current_task()
 
 void artwork_panel::ArtworkReaderManager::AddType(const GUID& p_what)
 {
-    m_requestIds.add_item(p_what);
+    m_requestIds.emplace_back(p_what);
 }
 
 void artwork_panel::ArtworkReaderNotification::g_run(
@@ -192,19 +197,23 @@ void artwork_panel::ArtworkReaderManager::on_reader_abort(const ArtworkReader* p
     on_reader_completion(ERROR_PROCESS_ABORTED, ptr);
 }
 
-bool artwork_panel::ArtworkReader::isContentEqual(
-    const pfc::map_t<GUID, album_art_data_ptr>& content1, const pfc::map_t<GUID, album_art_data_ptr>& content2)
+bool artwork_panel::ArtworkReader::isContentEqual(const std::unordered_map<GUID, album_art_data_ptr>& content1,
+    const std::unordered_map<GUID, album_art_data_ptr>& content2)
 {
-    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
-        if (content1.have_item(*walk) != content2.have_item(*walk))
+    for (auto&& artwork_id : m_requestIds) {
+        const auto content1_iter = content1.find(artwork_id);
+        const auto content2_iter = content2.find(artwork_id);
+
+        const bool found1 = content1_iter != content1.end();
+        const bool found2 = content2_iter != content2.end();
+
+        if (found1 != found2)
+            return false;
+
+        if (!found1 || !album_art_data::equals(*content1_iter->second, *content2_iter->second))
             return false;
     }
 
-    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
-        album_art_data_ptr ptr1, ptr2;
-        if (!(content1.query(*walk, ptr1) && content2.query(*walk, ptr2) && album_art_data::equals(*ptr1, *ptr2)))
-            return false;
-    }
     return true;
 }
 
@@ -218,11 +227,11 @@ DWORD artwork_panel::ArtworkReader::on_thread()
         m_abort.check();
         m_succeeded = true;
     } catch (const exception_aborted&) {
-        m_content.remove_all();
+        m_content.clear();
         b_aborted = true;
         ret = ERROR_PROCESS_ABORTED;
     } catch (pfc::exception const& e) {
-        m_content.remove_all();
+        m_content.clear();
         console::formatter formatter;
         formatter << "Album Art loading failure: " << e.what();
         ret = -1;
@@ -263,8 +272,8 @@ album_art_extractor_instance_ptr artwork_panel::g_get_album_art_extractor_instan
 unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("artwork_reader_v2_t::read_artwork");
-    pfc::map_t<GUID, album_art_data_ptr> content_previous = m_content;
-    m_content.remove_all();
+    std::unordered_map<GUID, album_art_data_ptr> content_previous = m_content;
+    m_content.clear();
 
     bool b_opened = false;
     bool b_extracter_attempted = false;
@@ -272,11 +281,12 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
     album_art_extractor_instance_v2::ptr artwork_api_v2;
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
 
-    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
+    for (auto&& artwork_id : m_requestIds) {
         bool b_found = false;
         try {
-            pfc::list_t<pfc::string8> to;
-            if (m_repositories.query(*walk, to)) {
+            auto repo_iter = m_repositories.find(artwork_id);
+            if (repo_iter != m_repositories.end()) {
+                auto& to = repo_iter->second;
                 t_size count = to.get_count();
                 for (t_size i = 0; i < count && !b_found; i++) {
                     pfc::string8 path;
@@ -356,7 +366,7 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
                                         file.get_ptr(), gsl::narrow<t_size>(file->get_size_ex(p_abort)), p_abort);
                                     b_found = true;
                                     album_art_data_ptr data = ptr;
-                                    m_content.set(*walk, data);
+                                    m_content.insert_or_assign(artwork_id, data);
                                 }
                             }
                         }
@@ -372,17 +382,14 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
             {
                 if (!b_opened) {
                     pfc::list_t<GUID> guids;
-                    pfc::chain_list_v2_t<GUID>::const_iterator walk1 = m_requestIds.first();
-                    for (; walk1.is_valid(); ++walk1) {
-                        guids.add_item(*walk1);
-                    }
+                    guids.add_items_fromptr(m_requestIds.data(), m_requestIds.size());
                     artwork_api_v2 = p_album_art_manager_v2->open(
                         pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
                     b_opened = true;
                 }
                 try {
-                    album_art_data_ptr data = artwork_api_v2->query(*walk, p_abort);
-                    m_content.set(*walk, data);
+                    album_art_data_ptr data = artwork_api_v2->query(artwork_id, p_abort);
+                    m_content.insert_or_assign(artwork_id, data);
                     b_found = true;
                 } catch (const exception_aborted&) {
                     throw;
@@ -400,8 +407,8 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
                         p_extractor = g_get_album_art_extractor_instance(m_handle->get_path(), p_abort);
                     }
                     if (p_extractor.is_valid()) {
-                        album_art_data_ptr data = p_extractor->query(*walk, p_abort);
-                        m_content.set(*walk, data);
+                        album_art_data_ptr data = p_extractor->query(artwork_id, p_abort);
+                        m_content.insert_or_assign(artwork_id, data);
                         b_found = true;
                     }
                 } catch (const exception_aborted&) {
