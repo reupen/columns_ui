@@ -51,23 +51,11 @@ bool artwork_panel::ArtworkReader::is_aborting()
     return m_abort.is_aborting();
 }
 
-bool artwork_panel::ArtworkReaderManager::find_aborting_reader(const ArtworkReader* ptr, t_size& index)
-{
-    t_size count = m_aborting_readers.get_count();
-    for (t_size i = 0; i < count; i++)
-        if (&*m_aborting_readers[i] == ptr) {
-            index = i;
-            return true;
-        }
-    return false;
-}
-
 void artwork_panel::ArtworkReaderManager::deinitialise()
 {
-    t_size i = m_aborting_readers.get_count();
-    for (; i; i--) {
-        m_aborting_readers[i - 1]->wait_for_and_release_thread();
-        m_aborting_readers.remove_by_idx(i - 1);
+    for (auto iter = m_aborting_readers.begin(); iter != m_aborting_readers.end();) {
+        (*iter)->wait_for_and_release_thread();
+        iter = m_aborting_readers.erase(iter);
     }
     if (m_current_reader) {
         m_current_reader->wait_for_and_release_thread();
@@ -145,7 +133,7 @@ void artwork_panel::ArtworkReaderManager::abort_current_task()
     if (m_current_reader) {
         if (m_current_reader->is_thread_open()) {
             m_current_reader->abort();
-            m_aborting_readers.add_item(m_current_reader);
+            m_aborting_readers.emplace_back(m_current_reader);
             m_current_reader.reset();
         }
     }
@@ -185,10 +173,10 @@ void artwork_panel::ArtworkReaderManager::on_reader_completion(DWORD state, cons
         m_current_reader->run_notification_thisthread(state);
         // m_current_reader.release();
     } else {
-        t_size index;
-        if (find_aborting_reader(ptr, index)) {
-            m_aborting_readers[index]->wait_for_and_release_thread();
-            m_aborting_readers.remove_by_idx(index);
+        auto iter = ranges::find_if(m_aborting_readers, [ptr](auto&& reader) { return &*reader == ptr; });
+        if (iter != ranges::end(m_aborting_readers)) {
+            (*iter)->wait_for_and_release_thread();
+            m_aborting_readers.erase(iter);
         }
     }
 }
