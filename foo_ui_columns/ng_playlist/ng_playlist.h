@@ -133,12 +133,11 @@ public:
     bool is_ready() { return !is_thread_open(); }
     const std::unordered_map<GUID, wil::shared_hbitmap>& get_content() const { return m_bitmaps; }
 
-    void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
-        const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories, t_size native_artwork_reader_mode,
-        const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
-        BaseArtworkCompletionNotify::ptr_t p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
+    void initialise(const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories,
+        t_size native_artwork_reader_mode, const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back,
+        bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify,
+        std::shared_ptr<class ArtworkReaderManager> p_manager)
     {
-        m_requestIds = p_requestIds;
         m_repositories = p_repositories;
         m_handle = p_handle;
         m_notify = std::move(p_notify);
@@ -162,7 +161,6 @@ protected:
 private:
     unsigned read_artwork(abort_callback& p_abort);
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
     std::unordered_map<GUID, wil::shared_hbitmap> m_bitmaps;
     std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     t_size m_cx{0}, m_cy{0};
@@ -178,7 +176,6 @@ private:
 
 class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
 public:
-    void add_type(const GUID& p_what) { m_requestIds.add_item(p_what); }
     void abort_task(t_size index)
     {
         {
@@ -287,7 +284,6 @@ private:
     pfc::list_t<std::shared_ptr<ArtworkReader>> m_current_readers;
     pfc::list_t<std::shared_ptr<ArtworkReader>> m_pending_readers;
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
     std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
 
     critical_section m_nocover_sync;

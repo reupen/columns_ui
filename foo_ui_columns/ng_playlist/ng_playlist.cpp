@@ -543,7 +543,6 @@ void PlaylistView::notify_on_initialisation()
     m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
     m_artwork_manager = std::make_shared<ArtworkReaderManager>();
     m_artwork_manager->initialise();
-    m_artwork_manager->add_type(album_art_ids::cover_front);
     m_artwork_manager->set_script(album_art_ids::cover_front, artwork_panel::cfg_front_scripts);
 
     m_playlist_api = standard_api_create_t<playlist_manager>();
