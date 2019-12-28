@@ -61,7 +61,7 @@ void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_ab
 const GUID ButtonsToolbar::g_guid_fcb
     = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 
-void ButtonsToolbar::reset_buttons(pfc::list_base_t<Button>& p_buttons)
+void ButtonsToolbar::reset_buttons(std::vector<Button>& p_buttons)
 {
     const std::initializer_list<std::tuple<GUID, Type, Show, const char*>> default_buttons{
         {standard_commands::guid_main_stop, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
@@ -76,7 +76,7 @@ void ButtonsToolbar::reset_buttons(pfc::list_base_t<Button>& p_buttons)
         {cui::main_menu::commands::toggle_live_editing_id, TYPE_MENU_ITEM_MAIN, SHOW_TEXT, "Live layout editing"},
     };
 
-    p_buttons.remove_all();
+    p_buttons.clear();
 
     for (auto&& default_button : default_buttons) {
         const auto& [guid, type, show, text] = default_button;
@@ -88,7 +88,7 @@ void ButtonsToolbar::reset_buttons(pfc::list_base_t<Button>& p_buttons)
             temp.m_use_custom_text = true;
             temp.m_text = text;
         }
-        p_buttons.add_item(temp);
+        p_buttons.emplace_back(std::move(temp));
     }
 }
 
@@ -104,10 +104,10 @@ const TCHAR* ButtonsToolbar::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFFE56
 void ButtonsToolbar::create_toolbar()
 {
     pfc::array_t<TBBUTTON> tbb;
-    tbb.set_size(m_buttons.get_count());
+    tbb.set_size(m_buttons.size());
 
-    std::vector<ButtonImage> images(m_buttons.get_count());
-    std::vector<ButtonImage> images_hot(m_buttons.get_count());
+    std::vector<ButtonImage> images(m_buttons.size());
+    std::vector<ButtonImage> images_hot(m_buttons.size());
 
     memset(tbb.get_ptr(), 0, tbb.get_size() * sizeof(*tbb.get_ptr()));
 
@@ -303,7 +303,7 @@ void ButtonsToolbar::create_toolbar()
 
 void ButtonsToolbar::destroy_toolbar()
 {
-    t_size count = m_buttons.get_count();
+    t_size count = m_buttons.size();
     for (t_size i = 0; i < count; i++)
         if (m_buttons[i].m_interface.is_valid())
             m_buttons[i].m_interface->deregister_callback(m_buttons[i].m_callback);
@@ -315,7 +315,7 @@ void ButtonsToolbar::destroy_toolbar()
         ImageList_Destroy(iml);
     if (iml_hot)
         ImageList_Destroy(iml_hot);
-    m_buttons.remove_all();
+    m_buttons.clear();
 }
 
 LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -343,7 +343,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
 
             RECT rc = {0, 0, 0, 0};
-            t_size count = m_buttons.get_count();
+            t_size count = m_buttons.size();
             int cx = lpwp->cx;
             int cy = lpwp->cy;
             int extra = 0;
@@ -356,12 +356,12 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } else if (msg == WM_SIZE) {
     } else if (msg == WM_GETMINMAXINFO) {
-        if (m_buttons.get_count()) {
+        if (m_buttons.size()) {
             auto mmi = LPMINMAXINFO(lp);
 
             RECT rc = {0, 0, 0, 0};
 
-            if (SendMessage(wnd_toolbar, TB_GETITEMRECT, m_buttons.get_count() - 1, (LPARAM)(&rc))) {
+            if (SendMessage(wnd_toolbar, TB_GETITEMRECT, m_buttons.size() - 1, (LPARAM)(&rc))) {
                 mmi->ptMinTrackSize.x = rc.right;
                 mmi->ptMinTrackSize.y = rc.bottom;
                 mmi->ptMaxTrackSize.y = rc.bottom;
@@ -371,7 +371,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 
     else if (msg == WM_USER + 2) {
-        if (wnd_toolbar && wp < m_buttons.get_count() && m_buttons[wp].m_interface.is_valid()) {
+        if (wnd_toolbar && wp < m_buttons.size() && m_buttons[wp].m_interface.is_valid()) {
             unsigned state = m_buttons[wp].m_interface->get_button_state();
             unsigned tbstate = 0;
             if (state & uie::BUTTON_STATE_PRESSED) {
@@ -418,7 +418,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 return (CDRF_NOTIFYITEMDRAW);
             case CDDS_ITEMPREPAINT: {
                 if (m_appearance != APPEARANCE_NOEDGE && !m_text_below && lptbcd->nmcd.dwItemSpec >= 0
-                    && lptbcd->nmcd.dwItemSpec < m_buttons.get_count()
+                    && lptbcd->nmcd.dwItemSpec < m_buttons.size()
                     && m_buttons[lptbcd->nmcd.dwItemSpec].m_show == SHOW_TEXT) {
                     DLLVERSIONINFO2 dvi;
                     HRESULT hr = uih::get_comctl32_version(dvi);
@@ -444,7 +444,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         } break;
         }
     } else if (msg == WM_COMMAND) {
-        if (wp >= 0 && wp < m_buttons.get_count()) {
+        if (wp >= 0 && wp < m_buttons.size()) {
             GUID caller = pfc::guid_null;
             metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
             switch (m_buttons[wp].m_filter) {
@@ -493,7 +493,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ScreenToClient(wnd_toolbar, &pt);
                 int lresult = SendMessage(wnd_toolbar, TB_HITTEST, 0, (LPARAM)&pt);
                 if (lresult >= 0 && // not a separator
-                    (unsigned)lresult < m_buttons.get_count() && // safety
+                    (unsigned)lresult < m_buttons.size() && // safety
                     m_buttons[lresult].m_interface.is_valid())
 
                 {
@@ -529,7 +529,7 @@ void ButtonsToolbar::get_category(pfc::string_base& out) const
 
 void ButtonsToolbar::get_config(stream_writer* out, abort_callback& p_abort) const
 {
-    unsigned count = m_buttons.get_count();
+    unsigned count = m_buttons.size();
     out->write_lendian_t(VERSION_CURRENT, p_abort);
     out->write_lendian_t(m_text_below, p_abort);
     out->write_lendian_t(m_appearance, p_abort);
@@ -549,17 +549,17 @@ void ButtonsToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_ca
             "uie::window::set_config() cannot be called once the window has been initialised.");
 
     ConfigVersion p_version;
-    unsigned count = m_buttons.get_count();
+    unsigned count = m_buttons.size();
     p_reader->read_lendian_t(p_version, p_abort);
     if (p_version <= VERSION_CURRENT) {
         p_reader->read_lendian_t(m_text_below, p_abort);
         p_reader->read_lendian_t(m_appearance, p_abort);
         p_reader->read_lendian_t(count, p_abort);
-        m_buttons.remove_all();
+        m_buttons.clear();
         for (unsigned n = 0; n < count; n++) {
             Button temp;
             temp.read(p_version, p_reader, p_abort);
-            m_buttons.add_item(temp);
+            m_buttons.emplace_back(std::move(temp));
         }
     }
 }

@@ -6,7 +6,7 @@ void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b
     p_file->write_lendian_t(g_guid_fcb, p_abort);
     p_file->write_lendian_t(VERSION_CURRENT, p_abort);
 
-    unsigned count = m_buttons.get_count();
+    unsigned count = m_buttons.size();
 
     p_file->write_lendian_t(I_TEXT_BELOW, p_abort);
     p_file->write_lendian_t(sizeof(m_text_below), p_abort);
@@ -62,7 +62,7 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
     // if (pos != -1)
     //    str_base.truncate(pos);
     if (!add)
-        m_buttons.remove_all();
+        m_buttons.clear();
 
     {
         GUID temp;
@@ -106,7 +106,7 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
                     pfc::string_formatter formatter;
                     temp.read_from_file(vers, str_base, formatter << dirname, p_file, size_button, p_abort);
                     //                        assert(n < 7);
-                    m_buttons.add_item(temp);
+                    m_buttons.emplace_back(std::move(temp));
                 }
 
             } break;
@@ -130,7 +130,7 @@ void ButtonsToolbar::ConfigParam::import_from_file(const char* p_path, bool add)
 
 void ButtonsToolbar::ConfigParam::on_selection_change(t_size index)
 {
-    m_selection = index != pfc_infinite && index < m_buttons.get_count() ? &m_buttons[index] : nullptr;
+    m_selection = index != pfc_infinite && index < m_buttons.size() ? &m_buttons[index] : nullptr;
     m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
     std::string command_desc = m_selection ? m_selection->get_name_with_type() : ""s;
     uSendDlgItemMessageText(m_wnd, IDC_COMMAND_DESC, WM_SETTEXT, 0, command_desc.c_str());
@@ -149,7 +149,7 @@ void ButtonsToolbar::ConfigParam::on_selection_change(t_size index)
 
 void ButtonsToolbar::ConfigParam::populate_buttons_list()
 {
-    unsigned count = m_buttons.get_count();
+    unsigned count = m_buttons.size();
 
     pfc::array_staticsize_t<uih::ListView::InsertItem> items(count);
     for (unsigned n = 0; n < count; n++) {
@@ -162,7 +162,7 @@ void ButtonsToolbar::ConfigParam::populate_buttons_list()
 
 void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
 {
-    unsigned real_count = m_buttons.get_count();
+    unsigned real_count = m_buttons.size();
 
     if (index + count > real_count)
         count = real_count - index;
@@ -307,13 +307,13 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 MAKEINTRESOURCE(IDD_BUTTON_COMMAND_PICKER), wnd, ConfigCommandProc, reinterpret_cast<LPARAM>(&p_temp));
 
             if (dialog_result > 0) {
-                t_size index = m_buttons.add_item(Button{});
+                auto& button = m_buttons.emplace_back(Button{});
 
                 p_temp.get_data(p_data);
-                m_buttons[index].m_type = (Type)p_data.m_group;
-                m_buttons[index].m_guid = p_data.m_guid;
-                m_buttons[index].m_subcommand = p_data.m_subcommand;
-                m_buttons[index].m_filter = (Filter)p_data.m_filter;
+                button.m_type = (Type)p_data.m_group;
+                button.m_guid = p_data.m_guid;
+                button.m_subcommand = p_data.m_subcommand;
+                button.m_filter = (Filter)p_data.m_filter;
 
                 pfc::string8_fast_aggressive name;
                 // m_buttons[index].get_name(name);
@@ -321,8 +321,8 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
 
                 uih::ListView::InsertItem item;
                 item.m_subitems.resize(2);
-                item.m_subitems[0] = m_buttons[index].get_name().c_str();
-                item.m_subitems[1] = m_buttons[index].get_type_desc().c_str();
+                item.m_subitems[0] = button.get_name().c_str();
+                item.m_subitems[1] = button.get_type_desc().c_str();
                 t_size index_list = m_button_list.get_item_count();
                 m_button_list.insert_items(index_list, 1, &item);
                 m_button_list.set_item_selected_single(index_list);
@@ -347,7 +347,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
             t_size index = m_button_list.get_selected_item_single();
             if (index != pfc_infinite) {
                 m_button_list.remove_item(index);
-                m_buttons.remove_by_idx(index);
+                m_buttons.erase(m_buttons.begin() + index);
                 if (index < m_button_list.get_item_count())
                     m_button_list.set_item_selected_single(index);
                 else if (index)
@@ -359,7 +359,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         {
             t_size index = m_button_list.get_selected_item_single();
 
-            if (index != pfc_infinite && index < m_buttons.get_count() && index)
+            if (index != pfc_infinite && index < m_buttons.size() && index)
             {
                 m_buttons.swap_items(index, index - 1);
 
@@ -375,7 +375,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         case IDC_DOWN:
         {
             t_size index = m_button_list.get_selected_item_single();
-            if (index != pfc_infinite && index + 1 < m_buttons.get_count())
+            if (index != pfc_infinite && index + 1 < m_buttons.size())
             {
                 m_buttons.swap_items(index, index + 1);
 
