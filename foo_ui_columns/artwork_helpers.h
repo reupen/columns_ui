@@ -20,7 +20,7 @@ public:
 
     ArtworkReader() = default;
 
-    void initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
+    void initialise(const std::vector<GUID>& p_requestIds,
         const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous,
         const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
         t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
@@ -35,7 +35,7 @@ private:
     bool isContentEqual(const std::unordered_map<GUID, album_art_data_ptr>& content1,
         const std::unordered_map<GUID, album_art_data_ptr>& content2);
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
+    std::vector<GUID> m_requestIds;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     metadb_handle_ptr m_handle;
@@ -81,7 +81,7 @@ private:
     std::shared_ptr<ArtworkReader> m_current_reader;
     // album_art_manager_instance_ptr m_api;
 
-    pfc::chain_list_v2_t<GUID> m_requestIds;
+    std::vector<GUID> m_requestIds;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     album_art_data_ptr m_emptycover;

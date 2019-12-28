@@ -10,7 +10,7 @@ void artwork_panel::ArtworkReader::run_notification_thisthread(DWORD state)
     m_notify.release();
 }
 
-void artwork_panel::ArtworkReader::initialise(const pfc::chain_list_v2_t<GUID>& p_requestIds,
+void artwork_panel::ArtworkReader::initialise(const std::vector<GUID>& p_requestIds,
     const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous,
     const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
     t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
@@ -153,7 +153,7 @@ void artwork_panel::ArtworkReaderManager::abort_current_task()
 
 void artwork_panel::ArtworkReaderManager::AddType(const GUID& p_what)
 {
-    m_requestIds.add_item(p_what);
+    m_requestIds.emplace_back(p_what);
 }
 
 void artwork_panel::ArtworkReaderNotification::g_run(
@@ -200,9 +200,9 @@ void artwork_panel::ArtworkReaderManager::on_reader_abort(const ArtworkReader* p
 bool artwork_panel::ArtworkReader::isContentEqual(const std::unordered_map<GUID, album_art_data_ptr>& content1,
     const std::unordered_map<GUID, album_art_data_ptr>& content2)
 {
-    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
-        const auto content1_iter = content1.find(*walk);
-        const auto content2_iter = content2.find(*walk);
+    for (auto&& artwork_id : m_requestIds) {
+        const auto content1_iter = content1.find(artwork_id);
+        const auto content2_iter = content2.find(artwork_id);
 
         const bool found1 = content1_iter != content1.end();
         const bool found2 = content2_iter != content2.end();
@@ -281,10 +281,10 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
     album_art_extractor_instance_v2::ptr artwork_api_v2;
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
 
-    for (auto walk = m_requestIds.first(); walk.is_valid(); ++walk) {
+    for (auto&& artwork_id : m_requestIds) {
         bool b_found = false;
         try {
-            auto repo_iter = m_repositories.find(*walk);
+            auto repo_iter = m_repositories.find(artwork_id);
             if (repo_iter != m_repositories.end()) {
                 auto& to = repo_iter->second;
                 t_size count = to.get_count();
@@ -366,7 +366,7 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
                                         file.get_ptr(), gsl::narrow<t_size>(file->get_size_ex(p_abort)), p_abort);
                                     b_found = true;
                                     album_art_data_ptr data = ptr;
-                                    m_content.insert_or_assign(*walk, data);
+                                    m_content.insert_or_assign(artwork_id, data);
                                 }
                             }
                         }
@@ -382,17 +382,14 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
             {
                 if (!b_opened) {
                     pfc::list_t<GUID> guids;
-                    pfc::chain_list_v2_t<GUID>::const_iterator walk1 = m_requestIds.first();
-                    for (; walk1.is_valid(); ++walk1) {
-                        guids.add_item(*walk1);
-                    }
+                    guids.add_items_fromptr(m_requestIds.data(), m_requestIds.size());
                     artwork_api_v2 = p_album_art_manager_v2->open(
                         pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
                     b_opened = true;
                 }
                 try {
-                    album_art_data_ptr data = artwork_api_v2->query(*walk, p_abort);
-                    m_content.insert_or_assign(*walk, data);
+                    album_art_data_ptr data = artwork_api_v2->query(artwork_id, p_abort);
+                    m_content.insert_or_assign(artwork_id, data);
                     b_found = true;
                 } catch (const exception_aborted&) {
                     throw;
@@ -410,8 +407,8 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
                         p_extractor = g_get_album_art_extractor_instance(m_handle->get_path(), p_abort);
                     }
                     if (p_extractor.is_valid()) {
-                        album_art_data_ptr data = p_extractor->query(*walk, p_abort);
-                        m_content.insert_or_assign(*walk, data);
+                        album_art_data_ptr data = p_extractor->query(artwork_id, p_abort);
+                        m_content.insert_or_assign(artwork_id, data);
                         b_found = true;
                     }
                 } catch (const exception_aborted&) {
