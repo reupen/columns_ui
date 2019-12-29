@@ -138,8 +138,9 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         if (!s_icon_font)
             s_icon_font = uCreateIconFont();
 
-        m_wnd_combo = CreateWindowEx(0, WC_COMBOBOX, nullptr, CBS_DROPDOWNLIST | WS_CHILD | WS_VISIBLE | WS_TABSTOP, 0,
-            0, uih::scale_dpi_value(initial_width), uih::scale_dpi_value(initial_height), wnd,
+        m_wnd_combo = CreateWindowEx(0, WC_COMBOBOX, nullptr,
+            CBS_DROPDOWNLIST | WS_CHILD | WS_TABSTOP | WS_VISIBLE | WS_VSCROLL, 0, 0,
+            uih::scale_dpi_value(initial_width), uih::scale_dpi_value(initial_height), wnd,
             reinterpret_cast<HMENU>(ID_COMBOBOX), core_api::get_my_instance(), nullptr);
 
         m_initialised = true;
