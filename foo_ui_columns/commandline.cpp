@@ -29,27 +29,27 @@ class CommandLineSingleFileHelper {
 public:
     CommandLineSingleFileHelper(const char* error_title, const char* no_files_error, const char* too_many_files_error)
         : m_error_title{error_title}, m_no_files_error{no_files_error}, m_too_many_files_error{too_many_files_error} {};
-    void reset() { m_files.remove_all(); }
-    void add_file(const char* url) { m_files.add_item(url); }
+    void reset() { m_files.clear(); }
+    void add_file(const char* url) { m_files.emplace_back(url); }
     bool validate_files()
     {
         const auto main_window = core_api::get_main_window();
-        if (m_files.get_count() == 0) {
+        if (m_files.empty()) {
             static_api_ptr_t<ui_control>()->activate();
             fbh::show_info_box(main_window, m_error_title, m_no_files_error, OIC_ERROR);
             return false;
         }
-        if (m_files.get_count() > 1) {
+        if (m_files.size() > 1) {
             static_api_ptr_t<ui_control>()->activate();
             fbh::show_info_box(main_window, m_error_title, m_too_many_files_error, OIC_ERROR);
             return false;
         }
         return true;
     }
-    const char* get_file() { return m_files.get_count() ? m_files[0].get_ptr() : nullptr; }
+    const char* get_file() { return m_files.empty() ? nullptr : m_files[0].get_ptr(); }
 
 private:
-    pfc::list_t<pfc::string8> m_files;
+    std::vector<pfc::string8> m_files;
     const char* m_error_title;
     const char* m_no_files_error;
     const char* m_too_many_files_error;
