@@ -336,18 +336,18 @@ void FilterPanel::g_create_field_data(const Field& field, FieldData& p_out)
     if (strchr(field.m_field, '$') || strchr(field.m_field, '%')) {
         p_out.m_use_script = true;
         p_out.m_script = field.m_field;
-        p_out.m_fields.remove_all();
+        p_out.m_fields.clear();
     } else {
         p_out.m_use_script = false;
         p_out.m_script.reset();
-        p_out.m_fields.remove_all();
+        p_out.m_fields.clear();
         const char* ptr = field.m_field;
         while (*ptr) {
             const char* start = ptr;
             while (*ptr && *ptr != ';')
                 ptr++;
             if (ptr > start)
-                p_out.m_fields.add_item(pfc::string8(start, ptr - start));
+                p_out.m_fields.emplace_back(pfc::string8(start, ptr - start));
             while (*ptr == ';')
                 ptr++;
         }
