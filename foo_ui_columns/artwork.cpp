@@ -796,12 +796,12 @@ const char* ArtworkPanel::MenuNodeArtworkType::get_name(t_size source)
 
 ArtworkPanel::MenuNodeSourcePopup::MenuNodeSourcePopup(ArtworkPanel* p_wnd)
 {
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 3));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 0));
-    m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 2));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 4));
-    m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
+    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 3));
+    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 0));
+    m_items.emplace_back(new uie::menu_node_separator_t());
+    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 2));
+    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 4));
+    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 1));
 }
 
 void ArtworkPanel::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
@@ -811,7 +811,7 @@ void ArtworkPanel::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_no
 
 unsigned ArtworkPanel::MenuNodeSourcePopup::get_children_count() const
 {
-    return m_items.get_count();
+    return m_items.size();
 }
 
 bool ArtworkPanel::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
@@ -823,11 +823,11 @@ bool ArtworkPanel::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out
 
 ArtworkPanel::MenuNodeTypePopup::MenuNodeTypePopup(ArtworkPanel* p_wnd)
 {
-    m_items.add_item(new MenuNodeArtworkType(p_wnd, 0));
+    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 0));
     // m_items.add_item(new uie::menu_node_separator_t());
-    m_items.add_item(new MenuNodeArtworkType(p_wnd, 1));
-    m_items.add_item(new MenuNodeArtworkType(p_wnd, 2));
-    m_items.add_item(new MenuNodeArtworkType(p_wnd, 3));
+    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 1));
+    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 2));
+    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 3));
 }
 
 void ArtworkPanel::MenuNodeTypePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
@@ -837,7 +837,7 @@ void ArtworkPanel::MenuNodeTypePopup::get_child(unsigned p_index, uie::menu_node
 
 unsigned ArtworkPanel::MenuNodeTypePopup::get_children_count() const
 {
-    return m_items.get_count();
+    return m_items.size();
 }
 
 bool ArtworkPanel::MenuNodeTypePopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const

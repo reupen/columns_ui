@@ -43,9 +43,9 @@ public:
     bool m_last_sort_direction{};
     pfc::string8 m_script;
     pfc::string8 m_name;
-    pfc::list_t<pfc::string8> m_fields;
+    std::vector<pfc::string8> m_fields;
 
-    bool is_empty() const { return !m_use_script && !m_fields.get_count(); }
+    bool is_empty() const { return !m_use_script && m_fields.empty(); }
     void reset() { *this = FieldData(); }
 };
 
@@ -208,7 +208,7 @@ private:
     ui_selection_holder::ptr m_selection_holder;
     t_size m_drag_item_count{0};
     pfc::string8 m_edit_previous_value;
-    pfc::list_t<pfc::string8> m_edit_fields;
+    std::vector<pfc::string8> m_edit_fields;
     metadb_handle_list m_edit_handles;
     pfc::list_t<Node> m_nodes;
     bool m_show_search{false};

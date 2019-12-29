@@ -160,8 +160,8 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             --new_index;
 
         if (new_index != pfc_infinite && old_index != pfc_infinite && new_index != old_index
-            && old_index < m_button_list_view->m_param.m_buttons.get_count()) {
-            const size_t button_count = m_button_list_view->m_param.m_buttons.get_count();
+            && old_index < m_button_list_view->m_param.m_buttons.size()) {
+            const size_t button_count = m_button_list_view->m_param.m_buttons.size();
 
             const int step = new_index > old_index ? 1 : -1;
             mmh::Permutation perm(button_count);
@@ -169,7 +169,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             for (t_size i = old_index; i != new_index; i += step)
                 perm.swap_items(i, i + step);
 
-            m_button_list_view->m_param.m_buttons.reorder(perm.get_ptr());
+            mmh::destructive_reorder(m_button_list_view->m_param.m_buttons, perm);
 
             // blaarrgg, designed in the dark ages
             m_button_list_view->m_param.m_selection = &m_button_list_view->m_param.m_buttons[new_index];

@@ -334,7 +334,7 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
         HandleInfo* p_infos = infos.get_ptr();
 
         t_size counter = 0;
-        t_size field_count = m_field_data.m_fields.get_count();
+        t_size field_count = m_field_data.m_fields.size();
 
         for (size_t i{0}; i < track_count; i++) {
             if (tracks_ptr[i]->get_info_ref(p_infos[i].m_info)) {

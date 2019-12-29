@@ -136,7 +136,6 @@ void CommandPickerData::populate_commands()
                     std::list<std::string> name_parts{name.get_ptr()};
 
                     {
-                        pfc::list_t<pfc::string8> levels;
                         GUID parent = ptr->get_parent();
                         while (parent != pfc::guid_null) {
                             pfc::string8 parentname;

@@ -6,14 +6,14 @@ namespace filter_panel {
 bool FilterPanel::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
-    return !m_field_data.m_use_script && m_field_data.m_fields.get_count() && column == 0 && indices.get_count() == 1
+    return !m_field_data.m_use_script && !m_field_data.m_fields.empty() && column == 0 && indices.get_count() == 1
         && indices[0] != 0;
 };
 bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
-    if (!m_field_data.m_use_script && m_field_data.m_fields.get_count() && indices_count == 1
+    if (!m_field_data.m_use_script && !m_field_data.m_fields.empty() && indices_count == 1
         && indices[0] < m_nodes.get_count()) {
         m_edit_handles = m_nodes[indices[0]].m_handles;
 
@@ -43,7 +43,7 @@ void FilterPanel::notify_save_inline_edit(const char* value)
             infos_ptr.add_item(&infos[i]);
             if (!mask[i]) {
                 bool b_remove = true;
-                t_size jcount = m_edit_fields.get_count();
+                t_size jcount = m_edit_fields.size();
                 for (t_size j = 0; j < jcount; j++) {
                     t_size field_index = infos[i].meta_find(m_edit_fields[j]);
                     if (field_index != pfc_infinite) {
@@ -76,7 +76,7 @@ void FilterPanel::notify_save_inline_edit(const char* value)
 };
 void FilterPanel::notify_exit_inline_edit()
 {
-    m_edit_fields.remove_all();
+    m_edit_fields.clear();
     m_edit_handles.remove_all();
     m_edit_previous_value.reset();
 };

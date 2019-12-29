@@ -189,7 +189,7 @@ public:
         HWND m_wnd{nullptr}, m_child{nullptr};
         unsigned m_active{0};
         Button::CustomImage* m_image{nullptr};
-        pfc::list_t<Button> m_buttons;
+        std::vector<Button> m_buttons;
         bool m_text_below{false};
         Appearance m_appearance{APPEARANCE_NORMAL};
         void export_to_file(const char* p_path, bool b_paths = false);
@@ -236,12 +236,12 @@ public:
 
     unsigned get_type() const override;
 
-    pfc::list_t<Button> m_buttons;
+    std::vector<Button> m_buttons;
 
     bool m_text_below{false};
     Appearance m_appearance{APPEARANCE_NORMAL};
 
-    static void reset_buttons(pfc::list_base_t<Button>& p_buttons);
+    static void reset_buttons(std::vector<Button>& p_buttons);
 
     void get_config(stream_writer* data, abort_callback& p_abort) const override;
     void set_config(stream_reader* p_reader, t_size p_sizehint, abort_callback& p_abort) override;

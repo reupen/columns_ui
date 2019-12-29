@@ -43,7 +43,7 @@ public:
         Node() = default;
     };
     // cui::fcl::group_list m_groups;
-    pfc::list_t<Node> m_nodes;
+    std::vector<Node> m_nodes;
     void g_populate_tree(HWND wnd_tree, cui::fcl::group_list& list, const cui::fcl::group_list_filtered& filtered,
         HTREEITEM ti_parent = TVI_ROOT)
     {
@@ -51,8 +51,8 @@ public:
         for (t_size i = 0; i < count; i++) {
             pfc::string8 name;
             filtered[i]->get_name(name);
-            HTREEITEM item = treeview::insert_item(wnd_tree, name, m_nodes.get_count(), ti_parent);
-            m_nodes.add_item(Node(item, filtered[i]));
+            HTREEITEM item = treeview::insert_item(wnd_tree, name, m_nodes.size(), ti_parent);
+            m_nodes.emplace_back(Node(item, filtered[i]));
             TreeView_SetCheckState(wnd_tree, item, TRUE);
             cui::fcl::group_list_filtered filtered2(list, filtered[i]->get_guid());
             list.remove_by_guid(filtered[i]->get_guid());
@@ -100,26 +100,25 @@ public:
             cui::fcl::group_list m_groups;
             if (m_import) {
                 cui::fcl::dataset_list datasets;
-                pfc::list_t<GUID> groupslist;
+                std::unordered_set<GUID> groupslist;
                 t_size count = datasets.get_count();
                 for (t_size j = 0; j < count; j++) {
-                    if (m_filter.have_item(datasets[j]->get_guid())) {
+                    if (m_filter.count(datasets[j]->get_guid()) > 0) {
                         GUID guid = datasets[j]->get_group();
-                        if (!groupslist.have_item(guid))
-                            groupslist.add_item(guid);
+                        groupslist.emplace(guid);
 
                         cui::fcl::group_ptr ptr;
                         while (m_groups.find_by_guid(guid, ptr)) {
                             guid = ptr->get_parent_guid();
-                            if (guid == GUID{} || groupslist.have_item(guid))
+                            if (guid == GUID{} || groupslist.count(guid) > 0)
                                 break;
-                            groupslist.add_item(guid);
+                            groupslist.emplace(guid);
                         }
                     }
                 }
                 t_size i = m_groups.get_count();
                 for (; i; i--)
-                    if (!groupslist.have_item(m_groups[i - 1]->get_guid()))
+                    if (groupslist.count(m_groups[i - 1]->get_guid()) == 0)
                         m_groups.remove_by_idx(i - 1);
             }
             m_groups.sort_by_name();
@@ -134,7 +133,7 @@ public:
             switch (wp) {
             case IDOK: {
                 HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
-                t_size count = m_nodes.get_count();
+                t_size count = m_nodes.size();
                 for (t_size i = 0; i < count; i++) {
                     m_nodes[i].checked = 0 != TreeView_GetCheckState(wnd_tree, m_nodes[i].item);
                 }
@@ -168,7 +167,7 @@ public:
     }
     bool have_node_checked(const GUID& pguid)
     {
-        t_size count = m_nodes.get_count();
+        t_size count = m_nodes.size();
         for (t_size i = 0; i < count; i++) {
             if (m_nodes[i].group->get_guid() == pguid)
                 return m_nodes[i].checked;
@@ -176,16 +175,15 @@ public:
         return false;
     }
     t_uint32 get_mode() const { return m_mode; }
-    FCLDialog(bool b_import = false, const pfc::list_base_const_t<GUID>& p_list = pfc::list_t<GUID>())
-        : m_import(b_import)
+    FCLDialog(bool b_import = false, std::unordered_set<GUID> p_list = {})
+        : m_import(b_import), m_filter(std::move(p_list))
     {
-        m_filter.add_items(p_list);
-    };
+    }
 
 private:
     t_uint32 m_mode{0};
     bool m_import;
-    pfc::list_t<GUID> m_filter;
+    std::unordered_set<GUID> m_filter;
 };
 
 cui::fcl::group_impl_factory g_group_toolbars(cui::fcl::groups::toolbars, "Toolbar Layout", "The toolbar layout");
@@ -369,11 +367,11 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                 p_file->read(datasets[i].data.get_ptr(), size, p_abort);
             }
 
-            pfc::list_t<GUID> datasetsguids;
+            std::unordered_set<GUID> datasetsguids;
             for (auto&& data_set : datasets)
-                datasetsguids.add_item(data_set.guid);
+                datasetsguids.emplace(data_set.guid);
 
-            FCLDialog pFCLDialog(true, datasetsguids);
+            FCLDialog pFCLDialog(true, std::move(datasetsguids));
             if (!quiet) {
                 const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_FCL_IMPORT),
                     wnd, FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog));
@@ -458,7 +456,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
     pfc::list_t<GUID> groups;
 
     if (!is_quiet) {
-        const t_size count = pFCLDialog.m_nodes.get_count();
+        const t_size count = pFCLDialog.m_nodes.size();
         for (t_size i = 0; i < count; i++)
             if (pFCLDialog.m_nodes[i].checked)
                 groups.add_item(pFCLDialog.m_nodes[i].group->get_guid());

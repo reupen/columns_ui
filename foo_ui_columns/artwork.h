@@ -118,7 +118,7 @@ private:
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
-        pfc::list_t<ui_extension::menu_node_ptr> m_items;
+        std::vector<ui_extension::menu_node_ptr> m_items;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
@@ -129,7 +129,7 @@ private:
     };
 
     class MenuNodeTypePopup : public ui_extension::menu_node_popup_t {
-        pfc::list_t<ui_extension::menu_node_ptr> m_items;
+        std::vector<ui_extension::menu_node_ptr> m_items;
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
