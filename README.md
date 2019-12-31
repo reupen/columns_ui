@@ -1,10 +1,16 @@
 # Columns UI
 
-http://yuo.be/columns_ui
-
-[![Build Status](https://reupen.visualstudio.com/Columns%20UI/_apis/build/status/reupen.columns_ui?branchName=master)](https://reupen.visualstudio.com/Columns%20UI/_build/latest?definitionId=3&branchName=master)
+[![Build status](https://reupen.visualstudio.com/Columns%20UI/_apis/build/status/reupen.columns_ui?branchName=master)](https://reupen.visualstudio.com/Columns%20UI/_build/latest?definitionId=3&branchName=master)
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
+
+## Downloads
+
+Releases can be downloaded from the [Columns UI home page](http://yuo.be/columns-ui).
+
+The latest development version can be downloaded by clicking on the Azure Pipelines link above, and then Artifacts. Development versions may be buggier than formal releases; if you encounter problems, please open an issue.
+
+## Development
 
 To clone the repo and dependencies, [download and install Git](https://git-scm.com/downloads), and then run:
 
@@ -12,11 +18,11 @@ To clone the repo and dependencies, [download and install Git](https://git-scm.c
 
 This repo makes use of Git submodules. If you're not familiar with them, [check out the guide here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
-## Build instructions
+### Build instructions
 
 Visual Studio 2019 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/) (select the Desktop development with C++ workload during installation).
 
-### Installing external dependencies
+#### Installing external dependencies
 
 The following libraries are required to build Columns UI:
 
@@ -38,14 +44,14 @@ cd vcpkg
 
 (Note: Change the `..\columns_ui\ports` path in the `.\vcpkg install` command as necessary.)
 
-### Building using the Visual Studio IDE
+#### Building using the Visual Studio IDE
 Open `vc16/columns_ui-public.sln` in Visual Studio 2019.
 
 Select the Release configuration and the Win32 platform, and build the solution.
 
 If the build is successful, `foo_ui_columns.dll` will be output in `vc16\Release`.
 
-### Building using MSBuild on the command line
+#### Building using MSBuild on the command line
 
 You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2019 (in the start menu), run:
 
@@ -61,7 +67,7 @@ For a clean build, run:
 msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc16\columns_ui-public.sln
 ```
 
-### Using the Clang compiler (experimental)
+#### Using the Clang compiler (experimental)
 
 Columns UI can be also compiled using the version of Clang distributed with Visual Studio. 
 

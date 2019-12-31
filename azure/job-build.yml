@@ -37,3 +37,9 @@ jobs:
       platform: $(platform)
       configuration: $(configuration)
       msbuildArgs: /m $(msBuildArgs)
+  - task: PublishPipelineArtifact@1
+    displayName: Publish artefacts
+    condition: variables.publish
+    inputs:
+      targetPath: $(System.DefaultWorkingDirectory)
+      artifactName: $(Agent.JobName)

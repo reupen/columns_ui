@@ -25,6 +25,7 @@ jobs:
         configuration: Debug
       Release:
         configuration: Release
+        publish: true
     name: vs2019_v142
     platform: Win32
     solution: ${{ variables.solution }}
