@@ -16,7 +16,7 @@
 
 ### Internal changes
 
-* The component is now compiled using foobar2000 SDK 2019-11-29. [[#271](https://github.com/reupen/columns_ui/pull/271)]
+* The component is now compiled using foobar2000 SDK 2019-12-27. [[#271](https://github.com/reupen/columns_ui/pull/271), [#285](https://github.com/reupen/columns_ui/pull/285)]
 
 ## 1.3.0
 
