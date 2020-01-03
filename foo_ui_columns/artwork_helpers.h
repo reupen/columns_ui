@@ -2,12 +2,6 @@
 
 namespace artwork_panel {
 
-enum Fb2KArtworkMode {
-    fb2k_artwork_disabled,
-    fb2k_artwork_embedded,
-    fb2k_artwork_embedded_and_external,
-};
-
 class ArtworkReader : public mmh::Thread {
 public:
     bool is_aborting();
@@ -21,9 +15,8 @@ public:
     ArtworkReader() = default;
 
     void initialise(const std::vector<GUID>& p_requestIds,
-        const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous,
-        const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories, bool b_read_emptycover,
-        t_size b_native_artwork_reader_mode, const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
+        const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool b_read_emptycover,
+        const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
         std::shared_ptr<class ArtworkReaderManager> p_manager);
     void run_notification_thisthread(DWORD state);
 
@@ -37,13 +30,11 @@ private:
 
     std::vector<GUID> m_requestIds;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
-    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     metadb_handle_ptr m_handle;
     completion_notify_ptr m_notify;
     bool m_succeeded{false};
     bool m_read_emptycover{true};
     album_art_data_ptr m_emptycover;
-    t_size m_native_artwork_reader_mode{fb2k_artwork_embedded_and_external};
     abort_callback_impl m_abort;
     std::shared_ptr<class ArtworkReaderManager> m_manager;
 };
@@ -52,9 +43,6 @@ class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderMa
 public:
     void AddType(const GUID& p_what);
     void abort_current_task();
-    void SetScript(const GUID& p_what, const pfc::list_t<pfc::string8>& script);
-
-    void ResetRepository();
 
     void Reset();
 
@@ -68,8 +56,6 @@ public:
 
     bool QueryEmptyCover(album_art_data_ptr& p_data);
 
-    void initialise();
-
     void deinitialise();
 
     void on_reader_completion(DWORD ret, const ArtworkReader* ptr);
@@ -82,7 +68,6 @@ private:
 
     std::vector<GUID> m_requestIds;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
-    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     album_art_data_ptr m_emptycover;
 };
 

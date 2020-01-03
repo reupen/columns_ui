@@ -499,17 +499,15 @@ STYLE DS_SETFONT | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    LTEXT           "Artwork sources",IDC_TITLE1,7,4,252,16
-    LTEXT           "You can set up sources for artwork here. Enter title formatting scripts that specify absolute or relative paths to the artwork. Do not specify the file extension.",IDC_STATIC,7,29,312,17
-    PUSHBUTTON      "Move up",IDC_UP,7,147,50,14
-    PUSHBUTTON      "Move down",IDC_DOWN,60,147,50,14
-    PUSHBUTTON      "Add...",IDC_ADD,216,147,50,14
-    PUSHBUTTON      "Remove",IDC_REMOVE,269,147,50,14
-    LTEXT           "Built-in foobar2000 artwork reader mode",IDC_STATIC,7,172,138,8
-    COMBOBOX        IDC_FB2KARTWORK,7,183,312,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Artwork view panel",IDC_TITLE2,7,215,252,16
-    LTEXT           "Panel edge style",IDC_STATIC,7,238,55,8
-    COMBOBOX        IDC_EDGESTYLE,7,249,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Artwork view panel",IDC_TITLE2,7,4,252,16
+    LTEXT           "Panel edge style",IDC_STATIC,7,30,55,8
+    COMBOBOX        IDC_EDGESTYLE,7,41,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Artwork sources",IDC_TITLE1,7,77,252,16
+    LTEXT           "Artwork sources are now configured on the Display preferences page. Columns UI no longer has separate artwork source settings.",IDC_STATIC,7,102,312,23
+    PUSHBUTTON      "Go to Display preferences",IDC_OPEN_DISPLAY_PREFERENCES,7,133,148,14
+    LTEXT           "You previously had artwork sources configured in Columns UI. If artwork is no longer displaying correctly, manually copy your previous configuration to Display preferences.",IDC_VIEW_OLD_ARTWORK_SOURCES_TEXT,7,129,312,22
+    PUSHBUTTON      "View previously configured artwork sources",IDC_VIEW_OLD_ARTWORK_SOURCES,7,158,178,14
+    PUSHBUTTON      "Go to Display preferences",IDC_PREVIOUS_OPEN_DISPLAY_PREFERENCES,7,181,179,14
 END
 
 IDD_ITEM_PROPS_OPTIONS DIALOGEX 0, 0, 268, 387

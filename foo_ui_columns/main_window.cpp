@@ -13,6 +13,7 @@
 #include "notification_area.h"
 #include "status_bar.h"
 #include "migrate.h"
+#include "legacy_artwork_config.h"
 
 RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
@@ -122,6 +123,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         SendMessage(m_wnd, MSG_RUN_INITIAL_SETUP, NULL, NULL);
 
     main_window::config_set_is_first_run();
+
+    fb2k::inMainThread(cui::artwork::legacy::prompt_to_reconfigure);
 
     return m_wnd;
 }

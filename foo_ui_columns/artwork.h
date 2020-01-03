@@ -4,8 +4,6 @@
 #include "artwork_helpers.h"
 
 namespace artwork_panel {
-extern cfg_uint cfg_fb2k_artwork_mode;
-extern cfg_objList<pfc::string8> cfg_front_scripts, cfg_back_scripts, cfg_disc_scripts, cfg_artist_scripts;
 
 class ArtworkPanel
     : public uie::container_ui_extension_t<> /*, public now_playing_album_art_receiver*/
@@ -82,7 +80,6 @@ public:
 
     static void g_on_colours_change();
     static void g_on_repository_change();
-    void on_repository_change();
 
     void force_reload_artwork();
 

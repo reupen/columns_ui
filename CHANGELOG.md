@@ -4,6 +4,10 @@
 
 ### Removals
 
+* The artwork source settings in Columns UI were removed and now only the settings on the main Display preferences page are used.
+
+  If Columns UI atwork source settings were in use, you will be prompted to transfer your settings on upgrade. [[#286](https://github.com/reupen/columns_ui/pull/286)]
+
 * The playlist view ‘Low artwork reader thready priority’ setting was removed; a low thread priority is now always used. [[#270](https://github.com/reupen/columns_ui/pull/270)]
 
 * The ability to display tooltips for non-truncated text in the playlist view was removed. [[#271](https://github.com/reupen/columns_ui/pull/271)]

@@ -5,8 +5,6 @@
 #include "wic.h"
 
 namespace artwork_panel {
-// {A24038C7-C055-45ed-B631-CC8FD2A22473}
-const GUID g_guid_fb2k_artwork_mode = {0xa24038c7, 0xc055, 0x45ed, {0xb6, 0x31, 0xcc, 0x8f, 0xd2, 0xa2, 0x24, 0x73}};
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
 const GUID g_guid_track_mode = {0x5c7b29, 0x3915, 0x4b83, {0xa2, 0x83, 0xc0, 0x1a, 0x4e, 0xdc, 0x4f, 0x3a}};
 // {A35E8697-0B8A-4e6f-9DBE-39EC4626524D}
@@ -15,19 +13,6 @@ const GUID g_guid_preserve_aspect_ratio = {0xa35e8697, 0xb8a, 0x4e6f, {0x9d, 0xb
 // {F5C8CE6B-5D68-4ce2-8B9F-874D8EDB03B3}
 const GUID g_guid_edge_style = {0xf5c8ce6b, 0x5d68, 0x4ce2, {0x8b, 0x9f, 0x87, 0x4d, 0x8e, 0xdb, 0x3, 0xb3}};
 
-// {F6E92FCD-7E02-4329-9DA3-D03AEDD66D07}
-static const GUID g_guid_cfg_front_scripts
-    = {0xf6e92fcd, 0x7e02, 0x4329, {0x9d, 0xa3, 0xd0, 0x3a, 0xed, 0xd6, 0x6d, 0x7}};
-// {BD2474FC-2CF9-475f-AC0B-26130541526C}
-static const GUID g_guid_cfg_back_scripts
-    = {0xbd2474fc, 0x2cf9, 0x475f, {0xac, 0xb, 0x26, 0x13, 0x5, 0x41, 0x52, 0x6c}};
-// {70D71DF4-D1FF-4d19-9412-B949690ED43E}
-static const GUID g_guid_cfg_disc_scripts
-    = {0x70d71df4, 0xd1ff, 0x4d19, {0x94, 0x12, 0xb9, 0x49, 0x69, 0xe, 0xd4, 0x3e}};
-
-// {C1E7DA7E-1D3A-4f30-8384-0E47C49B6DD9}
-static const GUID g_guid_cfg_artist_scripts
-    = {0xc1e7da7e, 0x1d3a, 0x4f30, {0x83, 0x84, 0xe, 0x47, 0xc4, 0x9b, 0x6d, 0xd9}};
 
 enum TrackingMode {
     track_auto_playlist_playing,
@@ -57,13 +42,9 @@ bool g_track_mode_includes_selection(t_size mode)
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-cfg_uint cfg_fb2k_artwork_mode(g_guid_fb2k_artwork_mode, fb2k_artwork_embedded_and_external);
 cfg_uint cfg_track_mode(g_guid_track_mode, track_auto_playlist_playing);
 cfg_bool cfg_preserve_aspect_ratio(g_guid_preserve_aspect_ratio, true);
 cfg_uint cfg_edge_style(g_guid_edge_style, 0);
-
-cfg_objList<pfc::string8> cfg_front_scripts(g_guid_cfg_front_scripts), cfg_back_scripts(g_guid_cfg_back_scripts),
-    cfg_disc_scripts(g_guid_cfg_disc_scripts), cfg_artist_scripts(g_guid_cfg_artist_scripts);
 
 // {E32DCBA9-A2BF-4901-AB43-228628071410}
 static const GUID g_guid_colour_client = {0xe32dcba9, 0xa2bf, 0x4901, {0xab, 0x43, 0x22, 0x86, 0x28, 0x7, 0x14, 0x10}};
@@ -124,20 +105,7 @@ unsigned ArtworkPanel::get_type() const
 {
     return uie::type_panel;
 }
-void ArtworkPanel::on_repository_change()
-{
-    if (m_artwork_loader) {
-        m_artwork_loader->ResetRepository();
-        if (cfg_front_scripts.get_count())
-            m_artwork_loader->SetScript(g_artwork_types[0], cfg_front_scripts);
-        if (cfg_back_scripts.get_count())
-            m_artwork_loader->SetScript(g_artwork_types[1], cfg_back_scripts);
-        if (cfg_disc_scripts.get_count())
-            m_artwork_loader->SetScript(g_artwork_types[2], cfg_disc_scripts);
-        if (cfg_artist_scripts.get_count())
-            m_artwork_loader->SetScript(g_artwork_types[3], cfg_artist_scripts);
-    }
-}
+
 LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
@@ -150,8 +118,6 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         t_size count = tabsize(g_artwork_types);
         for (t_size i = 0; i < count; i++)
             m_artwork_loader->AddType(g_artwork_types[i]);
-        on_repository_change();
-        m_artwork_loader->initialise();
         static_api_ptr_t<play_callback_manager>()->register_callback(this,
             play_callback::flag_on_playback_new_track | play_callback::flag_on_playback_stop
                 | play_callback::flag_on_playback_edited,
@@ -522,17 +488,6 @@ void ArtworkPanel::g_on_colours_change()
     for (auto& window : g_windows) {
         window->flush_cached_bitmap();
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
-    }
-}
-
-void g_on_repository_change()
-{
-    ArtworkPanel::g_on_repository_change();
-}
-void ArtworkPanel::g_on_repository_change()
-{
-    for (auto& window : g_windows) {
-        window->on_repository_change();
     }
 }
 

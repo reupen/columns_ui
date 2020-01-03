@@ -515,6 +515,9 @@
     <ClCompile Include="wic.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="legacy_artwork_config.cpp">
+      <Filter>Artwork view</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
@@ -736,6 +739,9 @@
     </ClInclude>
     <ClInclude Include="functional.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="legacy_artwork_config.h">
+      <Filter>Artwork view</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

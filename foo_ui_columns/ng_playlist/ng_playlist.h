@@ -133,12 +133,9 @@ public:
     bool is_ready() { return !is_thread_open(); }
     const std::unordered_map<GUID, wil::shared_hbitmap>& get_content() const { return m_bitmaps; }
 
-    void initialise(const std::unordered_map<GUID, pfc::list_t<pfc::string8>>& p_repositories,
-        t_size native_artwork_reader_mode, const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back,
-        bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify,
-        std::shared_ptr<class ArtworkReaderManager> p_manager)
+    void initialise(const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
+        BaseArtworkCompletionNotify::ptr_t p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
     {
-        m_repositories = p_repositories;
         m_handle = p_handle;
         m_notify = std::move(p_notify);
         m_cx = cx;
@@ -146,7 +143,6 @@ public:
         m_reflection = b_reflection;
         m_back = cr_back;
         m_manager = std::move(p_manager);
-        m_native_artwork_reader_mode = native_artwork_reader_mode;
     }
     void send_completion_notification(const std::shared_ptr<ArtworkReader>& p_this)
     {
@@ -162,14 +158,12 @@ private:
     unsigned read_artwork(abort_callback& p_abort);
 
     std::unordered_map<GUID, wil::shared_hbitmap> m_bitmaps;
-    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
     t_size m_cx{0}, m_cy{0};
     COLORREF m_back{RGB(255, 255, 255)};
     bool m_reflection{false};
     metadb_handle_ptr m_handle;
     BaseArtworkCompletionNotify::ptr_t m_notify;
     bool m_succeeded{false};
-    t_size m_native_artwork_reader_mode{artwork_panel::fb2k_artwork_embedded_and_external};
     abort_callback_impl m_abort;
     std::shared_ptr<class ArtworkReaderManager> m_manager;
 };
@@ -192,17 +186,6 @@ public:
         t_size i = m_current_readers.get_count();
         for (; i; i--)
             abort_task(i - 1);
-    }
-    void set_script(const GUID& p_what, const pfc::list_t<pfc::string8>& script)
-    {
-        // abort_current_tasks();
-        m_repositories.insert_or_assign(p_what, script);
-    }
-
-    void reset_repository()
-    {
-        abort_current_tasks();
-        m_repositories.clear();
     }
 
     void reset() { abort_current_tasks(); }
@@ -283,8 +266,6 @@ private:
     pfc::list_t<std::shared_ptr<ArtworkReader>> m_aborting_readers;
     pfc::list_t<std::shared_ptr<ArtworkReader>> m_current_readers;
     pfc::list_t<std::shared_ptr<ArtworkReader>> m_pending_readers;
-
-    std::unordered_map<GUID, pfc::list_t<pfc::string8>> m_repositories;
 
     critical_section m_nocover_sync;
     wil::shared_hbitmap m_nocover_bitmap;
@@ -371,7 +352,6 @@ public:
     static void g_on_alternate_selection_change();
     static void g_on_artwork_width_change(const PlaylistView* p_skip = nullptr);
     static void g_flush_artwork(bool b_redraw = false, const PlaylistView* p_skip = nullptr);
-    static void g_on_artwork_repositories_change();
     static void g_on_vertical_item_padding_change();
     static void g_on_show_header_change();
     static void g_on_playback_follows_cursor_change(bool b_val);
