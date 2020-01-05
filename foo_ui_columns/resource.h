@@ -238,6 +238,10 @@
 #define IDC_DISPLAY_SCRIPT              1173
 #define IDC_SORTING_SCRIPT              1174
 #define IDC_STYLE_SCRIPT                1175
+#define IDC_OPEN_DISPLAY_PREFERENCES    1176
+#define IDC_VIEW_OLD_ARTWORK_SOURCES    1177
+#define IDC_VIEW_OLD_ARTWORK_SOURCES_TEXT 1178
+#define IDC_PREVIOUS_OPEN_DISPLAY_PREFERENCES 1179
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -247,7 +251,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        158
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1176
+#define _APS_NEXT_CONTROL_VALUE         1179
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

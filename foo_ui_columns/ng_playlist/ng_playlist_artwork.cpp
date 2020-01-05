@@ -44,8 +44,7 @@ void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::share
     t_size cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
 {
     auto p_new_reader = std::make_shared<ArtworkReader>();
-    p_new_reader->initialise(m_repositories, artwork_panel::cfg_fb2k_artwork_mode, p_handle, cx, cy, cr_back,
-        b_reflection, std::move(p_notify), shared_from_this());
+    p_new_reader->initialise(p_handle, cx, cy, cr_back, b_reflection, std::move(p_notify), shared_from_this());
     m_pending_readers.add_item(p_new_reader);
     p_out = p_new_reader;
     flush_pending();
@@ -135,142 +134,27 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 
     m_bitmaps.clear();
 
-    bool b_extracter_attempted = false;
-    album_art_extractor_instance_ptr p_extractor;
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
 
-    bool b_found = false;
     album_art_data_ptr data;
+    auto artwork_api_v2 = p_album_art_manager_v2->open(
+        pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), pfc::list_single_ref_t<GUID>(artwork_type_id), p_abort);
+
     try {
-        auto repo_iter = m_repositories.find(artwork_type_id);
-        if (repo_iter != m_repositories.end()) {
-            auto& to = repo_iter->second;
-            pfc::string8 path;
-            t_size count = to.get_count();
-            for (t_size i = 0; i < count && !b_found; i++) {
-                if (m_handle->format_title_legacy(nullptr, path, to[i], nullptr)) {
-                    const char* image_extensions[] = {"jpg", "jpeg", "gif", "bmp", "png"};
-
-                    t_size i, count = tabsize(image_extensions);
-
-                    bool b_absolute = path.find_first(':') != pfc_infinite || path.get_ptr()[0] == '\\';
-
-                    pfc::string8 realPath;
-                    if (b_absolute)
-                        realPath = path;
-                    else
-                        realPath << pfc::string_directory(m_handle->get_path()) << "\\" << path;
-
-                    bool b_search
-                        = (realPath.find_first('*') != pfc_infinite) || (realPath.find_first('?') != pfc_infinite);
-                    bool b_search_matched = false;
-
-                    if (b_search) {
-                        const char* pMainPath = realPath;
-                        if (!stricmp_utf8_partial(pMainPath, "file://"))
-                            pMainPath += 7;
-                        pfc::string_formatter search_pattern;
-                        puFindFile pSearcher = uFindFirstFile(search_pattern << pMainPath << ".*");
-                        pfc::string8 searchPath = realPath;
-                        realPath.reset();
-                        if (pSearcher) {
-                            do {
-                                const char* pResult = pSearcher->GetFileName();
-                                for (i = 0; i < count; i++) {
-                                    if (!stricmp_utf8(pfc::string_extension(pResult), image_extensions[i])) {
-                                        realPath << pfc::string_directory(searchPath) << "\\" << pResult;
-                                        b_search_matched = true;
-                                        break;
-                                    }
-                                }
-                            } while (!b_search_matched && pSearcher->FindNext());
-                            delete pSearcher;
-                        }
-                    }
-
-                    if (!b_search || b_search_matched) {
-                        {
-                            file::ptr file;
-                            if (b_search) {
-                                pfc::string8 canPath;
-                                filesystem::g_get_canonical_path(realPath, canPath);
-                                if (!filesystem::g_is_remote_or_unrecognized(canPath))
-                                    filesystem::g_open(file, canPath, filesystem::open_mode_read, p_abort);
-                            } else {
-                                for (i = 0; i < count; i++) {
-                                    pfc::string8 canPath;
-                                    try {
-                                        pfc::string_formatter realPathExt;
-                                        filesystem::g_get_canonical_path(
-                                            realPathExt << realPath << "." << image_extensions[i], canPath);
-                                        if (!filesystem::g_is_remote_or_unrecognized(canPath)) {
-                                            filesystem::g_open(file, canPath, filesystem::open_mode_read, p_abort);
-                                            break;
-                                        }
-                                    } catch (exception_io const&) {
-                                    }
-                                }
-                            }
-                            if (file.is_valid()) {
-                                service_ptr_t<album_art_data_impl> ptr = new service_impl_t<album_art_data_impl>;
-                                ptr->from_stream(
-                                    file.get_ptr(), gsl::narrow<t_size>(file->get_size_ex(p_abort)), p_abort);
-                                b_found = true;
-                                data = ptr;
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        data = artwork_api_v2->query(artwork_type_id, p_abort);
     } catch (const exception_aborted&) {
         throw;
-    } catch (pfc::exception const&) {
+    } catch (exception_io_not_found const&) {
+    } catch (pfc::exception const& e) {
+        console::formatter formatter;
+        formatter << "Requested Album Art entry could not be retrieved: " << e.what();
     }
-#if 1
-    if (!b_found && m_native_artwork_reader_mode == artwork_panel::fb2k_artwork_embedded_and_external) {
-        album_art_extractor_instance_v2::ptr artwork_api_v2
-            = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle),
-                pfc::list_single_ref_t<GUID>(artwork_type_id), p_abort);
-        {
-            try {
-                data = artwork_api_v2->query(artwork_type_id, p_abort);
-                b_found = true;
-            } catch (const exception_aborted&) {
-                throw;
-            } catch (exception_io_not_found const&) {
-            } catch (pfc::exception const& e) {
-                console::formatter formatter;
-                formatter << "Requested Album Art entry could not be retrieved: " << e.what();
-            }
-        }
-    } else if (!b_found && m_native_artwork_reader_mode == artwork_panel::fb2k_artwork_embedded) {
-        {
-            try {
-                if (!b_extracter_attempted) {
-                    b_extracter_attempted = true;
-                    p_extractor = artwork_panel::g_get_album_art_extractor_instance(m_handle->get_path(), p_abort);
-                }
-                if (p_extractor.is_valid()) {
-                    data = p_extractor->query(artwork_type_id, p_abort);
-                    b_found = true;
-                }
-            } catch (const exception_aborted&) {
-                throw;
-            } catch (exception_io_not_found const&) {
-            } catch (exception_io const& e) {
-                console::formatter formatter;
-                formatter << "Requested Album Art entry could not be retrieved: " << e.what();
-            }
-        }
-    }
+
     if (data.is_valid()) {
         wil::shared_hbitmap bitmap = g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection);
         m_bitmaps.insert_or_assign(artwork_type_id, std::move(bitmap));
         GdiFlush();
     }
-#endif
-#if 1
     if (!m_bitmaps.count(artwork_type_id)) {
         auto bm = m_manager->request_nocover_image(m_cx, m_cy, m_back, m_reflection, p_abort);
         if (bm) {
@@ -278,7 +162,6 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
             GdiFlush();
         }
     }
-#endif
     return 1;
 }
 

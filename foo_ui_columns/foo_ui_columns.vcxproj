@@ -289,6 +289,7 @@
     <ClCompile Include=".\colours_manager_data.cpp" />
     <ClCompile Include=".\columns_v2.cpp" />
     <ClCompile Include="filter_fcl.cpp" />
+    <ClCompile Include="legacy_artwork_config.cpp" />
     <ClCompile Include="ng_playlist\config_object_callbacks.cpp" />
     <ClCompile Include="notification_area_callbacks.cpp" />
     <ClCompile Include="playlist_switcher_title_formatting.cpp" />
@@ -500,6 +501,7 @@
     <ClInclude Include="font_utils.h" />
     <ClInclude Include="functional.h" />
     <ClInclude Include="help.h" />
+    <ClInclude Include="legacy_artwork_config.h" />
     <ClInclude Include="menu_mnemonics.h" />
     <ClInclude Include="migrate.h" />
     <ClInclude Include="panel_menu_item.h" />
