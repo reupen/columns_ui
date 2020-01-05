@@ -98,6 +98,8 @@ public:
 DWORD ArtworkReader::on_thread()
 {
     TRACK_CALL_TEXT("artwork_reader_ng_t::on_thread");
+
+    auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
     bool b_aborted = false;
     DWORD ret = -1;
     try {
