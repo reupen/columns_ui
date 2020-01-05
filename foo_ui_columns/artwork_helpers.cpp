@@ -190,6 +190,8 @@ bool artwork_panel::ArtworkReader::isContentEqual(const std::unordered_map<GUID,
 DWORD artwork_panel::ArtworkReader::on_thread()
 {
     TRACK_CALL_TEXT("artwork_reader_v2_t::on_thread");
+
+    auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
     bool b_aborted = false;
     DWORD ret = -1;
     try {
