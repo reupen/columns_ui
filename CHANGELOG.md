@@ -1,22 +1,22 @@
 # Change log
 
-## Development version
+## 1.4.0-beta.1
 
 ### Removals
 
 * The artwork source settings in Columns UI were removed and now only the settings on the main Display preferences page are used.
 
-  If Columns UI atwork source settings were in use, you will be prompted to transfer your settings on upgrade. [[#286](https://github.com/reupen/columns_ui/pull/286)]
+  If Columns UI artwork source settings were in use, you will be prompted to transfer your settings on upgrade. [[#286](https://github.com/reupen/columns_ui/pull/286)]
 
-* The playlist view ‘Low artwork reader thready priority’ setting was removed; a low thread priority is now always used. [[#270](https://github.com/reupen/columns_ui/pull/270)]
+* The playlist view ‘Low artwork reader thread priority’ setting was removed; a low thread priority is now always used. [[#270](https://github.com/reupen/columns_ui/pull/270)]
 
-* The ability to display tooltips for non-truncated text in the playlist view was removed. [[#271](https://github.com/reupen/columns_ui/pull/271)]
+* The ability to display tooltips for non-truncated text in the playlist view was removed. [[#272](https://github.com/reupen/columns_ui/pull/272)]
 
 ### Features
 
-* The Windows Imaging Component is now used to load button images, and artwork in the arwork panel and playlist view.
+* The Windows Imaging Component is now used to load button images, and artwork in the artwork panel and playlist view.
   
-  This change adds WebP support on Windows 10 1809 and newer. (On older versions of Windows, [the Google WebP codec](https://storage.googleapis.com/downloads.webmproject.org/releases/webp/WebpCodecSetup.exe) can be installed to add WebP support.) [[#272](https://github.com/reupen/columns_ui/pull/272)]
+  This change adds WebP support on Windows 10 1809 and newer. (On older versions of Windows, [the Google WebP codec](https://storage.googleapis.com/downloads.webmproject.org/releases/webp/WebpCodecSetup.exe) can be installed to add WebP support.) [[#276](https://github.com/reupen/columns_ui/pull/276)]
 
 ### Internal changes
 
