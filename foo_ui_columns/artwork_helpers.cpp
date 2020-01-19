@@ -191,7 +191,6 @@ DWORD artwork_panel::ArtworkReader::on_thread()
 {
     TRACK_CALL_TEXT("artwork_reader_v2_t::on_thread");
 
-    auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
     bool b_aborted = false;
     DWORD ret = -1;
     try {
@@ -205,7 +204,7 @@ DWORD artwork_panel::ArtworkReader::on_thread()
     } catch (pfc::exception const& e) {
         m_content.clear();
         console::formatter formatter;
-        formatter << "Album Art loading failure: " << e.what();
+        formatter << u8"Artwork view – unhandled error reading artwork: " << e.what();
         ret = -1;
     }
     // send this first so thread gets closed first
@@ -263,7 +262,7 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
         } catch (exception_io_not_found const&) {
         } catch (exception_io const& e) {
             console::formatter formatter;
-            formatter << "Requested Album Art entry could not be retrieved: " << e.what();
+            formatter << u8"Artwork view – error loading artwork: " << e.what();
         }
     }
 
@@ -277,7 +276,7 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
         } catch (exception_io_not_found const&) {
         } catch (exception_io const& e) {
             console::formatter formatter;
-            formatter << "Requested Album Art entry could not be retrieved: " << e.what();
+            formatter << u8"Artwork view – error loading no-cover image: " << e.what();
         }
         if (!m_emptycover.is_valid() && pvt::g_get_default_nocover_bitmap_data(m_emptycover, p_abort)) {
         }
