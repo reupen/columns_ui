@@ -99,7 +99,6 @@ DWORD ArtworkReader::on_thread()
 {
     TRACK_CALL_TEXT("artwork_reader_ng_t::on_thread");
 
-    auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
     bool b_aborted = false;
     DWORD ret = -1;
     try {
@@ -113,7 +112,7 @@ DWORD ArtworkReader::on_thread()
     } catch (pfc::exception const& e) {
         m_bitmaps.clear();
         console::formatter formatter;
-        formatter << "Album Art loading failure: " << e.what();
+        formatter << u8"Playlist view – unhandled error loading artwork: " << e.what();
         ret = -1;
     }
     // send this first so thread gets closed first
@@ -149,8 +148,12 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     } catch (exception_io_not_found const&) {
     } catch (pfc::exception const& e) {
         console::formatter formatter;
-        formatter << "Requested Album Art entry could not be retrieved: " << e.what();
+        formatter << u8"Playlist view – error loading artwork: " << e.what();
     }
+
+    // Warning: Broken input components can intitialise COM as apartment-threaded. Hence, COM intialisation
+    // is done here, after input components have been called, to avoid conflicts.
+    auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
 
     if (data.is_valid()) {
         wil::shared_hbitmap bitmap = g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection);
