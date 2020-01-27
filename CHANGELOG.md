@@ -21,10 +21,15 @@
 ### Features
 
 * The Windows Imaging Component is now used to load button images, and artwork in the artwork panel and playlist view.
+  
+  On recent versions of Windows 10, this adds support for WebP and HEIF images if the required codecs are installed. These are usually installed automatically, but can also be manually installed from the Microsoft Store:
 
-  This change adds WebP support on Windows 10 1809 and newer. (On older versions of Windows, [the Google WebP codec](https://storage.googleapis.com/downloads.webmproject.org/releases/webp/WebpCodecSetup.exe) can be installed to add WebP support.)
-
-  Note: Currently, when configuring artwork sources in Display preferences, the .webp file extension must be explicitly specified for WebP files to be loaded. (Using `.*` for the file extension will not load WebP files.) [[#276](https://github.com/reupen/columns_ui/pull/276)]
+  - [WebP image extensions](https://www.microsoft.com/en-gb/p/webp-image-extensions/9pg2dk419drg)
+  - [HEIF image extensions](https://www.microsoft.com/en-gb/p/heif-image-extensions/9pmmsr1cgpwg)
+  
+  On older versions of Windows and on Wine, [the Google WebP codec](https://storage.googleapis.com/downloads.webmproject.org/releases/webp/WebpCodecSetup.exe) can be installed for WebP support.
+  
+  Note: Currently, when configuring artwork sources in Display preferences, the .webp or .heif file extension must be explicitly specified for WebP or HEIF files to be loaded. (Using `.*` for the file extension will not load WebP or HEIF files.) [[#276](https://github.com/reupen/columns_ui/pull/276)]
 
 ### Internal changes
 
