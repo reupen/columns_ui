@@ -1,10 +1,10 @@
 # Change log
 
-## Development version
+## 1.4.0-rc.1
 
 ### Bug fixes
 
-* A problem reading artwork from certain input services, such as the Windows Media input service, was worked around. [[#292](https://github.com/reupen/columns_ui/pull/292)]
+* A problem reading artwork from Windows Media files, and using certain third-party input components, was worked around. [[#292](https://github.com/reupen/columns_ui/pull/292)]
 
 ## 1.4.0-beta.1
 
