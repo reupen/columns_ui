@@ -155,7 +155,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     // is done here, after input components have been called, to avoid conflicts.
     auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
 
-    if (data.is_valid()) {
+    if (data.is_valid() && data->get_size() > 0) {
         wil::shared_hbitmap bitmap = g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection);
         m_bitmaps.insert_or_assign(artwork_type_id, std::move(bitmap));
         GdiFlush();

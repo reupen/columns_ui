@@ -1,5 +1,11 @@
 # Change log
 
+## 1.4.0
+
+### Bug fixes
+
+* Zero-length artwork images are now ignored. (Previously, an error was logged in the console when they were encountered.) [[#294](https://github.com/reupen/columns_ui/pull/294)]
+
 ## 1.4.0-rc.1
 
 ### Bug fixes
