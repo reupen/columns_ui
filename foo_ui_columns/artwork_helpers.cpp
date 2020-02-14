@@ -256,7 +256,8 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
     for (auto&& artwork_id : m_requestIds) {
         try {
             album_art_data_ptr data = artwork_api_v2->query(artwork_id, p_abort);
-            m_content.insert_or_assign(artwork_id, data);
+            if (data->get_size() > 0)
+                m_content.insert_or_assign(artwork_id, data);
         } catch (const exception_aborted&) {
             throw;
         } catch (exception_io_not_found const&) {
