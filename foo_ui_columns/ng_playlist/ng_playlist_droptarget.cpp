@@ -232,7 +232,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
             if (p_playlist->m_dragging) {
                 dropped_data.to_handles(data, false, p_playlist->get_wnd());
                 pfc::list_t<bool> selection;
-                mmh::Permutation permutation_move;
+                std::vector<size_t> permutation_move;
 
                 t_size active_playlist = playlist_api->get_active_playlist();
 
@@ -240,23 +240,31 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                     selection.set_size(playlist_api->playlist_get_item_count(p_playlist->m_dragging_initial_playlist));
                     pfc::bit_array_var_table bitsel(selection.get_ptr(), selection.get_count());
                     playlist_api->playlist_get_selection_mask(p_playlist->m_dragging_initial_playlist, bitsel);
-                    permutation_move.set_size(selection.get_count());
+                    permutation_move.resize(selection.get_count());
+                    ranges::iota(permutation_move, size_t{});
 
                     if (p_playlist->m_dragging_initial_playlist == active_playlist) {
                         if (*pdwEffect == DROPEFFECT_MOVE) {
-                            pfc::list_t<t_size, pfc::alloc_fast_aggressive> indices;
-                            indices.prealloc(data.get_count());
-                            t_size count = selection.get_count(); //, counter=0;
-                            for (t_size i = 0; i < count; i++)
+                            t_size count = selection.get_count();
+                            size_t counter{};
+                            for (t_size i = 0; i < count; i++) {
                                 if (selection[i]) {
-                                    indices.add_item(i);
+                                    permutation_move.insert(permutation_move.begin() + idx + counter, i);
+                                    ++counter;
                                 }
-                            permutation_move.insert_items(indices, idx);
-                            selection.insert_items_repeat(false, indices.get_count(), idx);
-                            permutation_move.remove_mask(
-                                pfc::bit_array_table(selection.get_ptr(), selection.get_count()));
-                        } else
+                            }
+
+                            selection.insert_items_repeat(false, counter, idx);
+
+                            for (size_t i{selection.get_size()}; i; --i) {
+                                const auto index = i - 1;
+                                if (selection[index]) {
+                                    permutation_move.erase(permutation_move.begin() + index);
+                                }
+                            }
+                        } else {
                             selection.insert_items_repeat(false, data.get_count(), idx);
+                        }
                     } else if (*pdwEffect == DROPEFFECT_MOVE)
                         playlist_api->playlist_undo_backup(p_playlist->m_dragging_initial_playlist);
                 }
@@ -266,7 +274,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
 
                 if (p_playlist->m_dragging && p_playlist->m_dragging_initial_playlist == active_playlist
                     && *pdwEffect == DROPEFFECT_MOVE) {
-                    playlist_api->activeplaylist_reorder_items(permutation_move.get_ptr(), permutation_move.get_size());
+                    playlist_api->activeplaylist_reorder_items(permutation_move.data(), permutation_move.size());
                 } else {
                     playlist_api->activeplaylist_clear_selection();
                     t_size index_insert = playlist_api->activeplaylist_insert_items(idx, data, pfc::bit_array_true());
