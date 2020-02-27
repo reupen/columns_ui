@@ -316,7 +316,7 @@ void FilterPanel::get_windows(pfc::list_base_t<FilterPanel*>& windows)
         }
         mmh::Permutation permutation(windows.get_count());
         mmh::sort_get_permutation(indices.get_ptr(), permutation, (pfc::compare_t<t_size, t_size>), true, false);
-        windows.reorder(permutation.get_ptr());
+        windows.reorder(permutation.data());
     }
 }
 

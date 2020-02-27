@@ -438,9 +438,9 @@ void FilterPanel::notify_sort_column(t_size index, bool b_descending, bool b_sel
         ++nodes;
         mmh::sort_get_permutation(nodes, sort_permuation, Node::g_compare_ptr_with_node, false, b_descending, true);
 
-        m_nodes.reorder_partial(1, sort_permuation.get_ptr(), node_count - 1);
+        m_nodes.reorder_partial(1, sort_permuation.data(), node_count - 1);
 
-        reorder_items_partial(1, sort_permuation.get_ptr(), node_count - 1);
+        reorder_items_partial(1, sort_permuation.data(), node_count - 1);
         ensure_visible(get_focus_item());
 
         size_t field_index;

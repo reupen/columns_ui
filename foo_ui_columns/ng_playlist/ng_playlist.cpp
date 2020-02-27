@@ -499,9 +499,9 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
             for (n = 0; n < count2; n++) {
                 order2[source_indices[n]] = source_indices[order[n]];
             }
-            m_playlist_api->activeplaylist_reorder_items(order2.get_ptr(), count);
+            m_playlist_api->activeplaylist_reorder_items(order2.data(), count);
         } else
-            m_playlist_api->activeplaylist_reorder_items(order.get_ptr(), count);
+            m_playlist_api->activeplaylist_reorder_items(order.data(), count);
 
         // if (!selection_only)
         {

@@ -167,7 +167,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             mmh::Permutation perm(button_count);
 
             for (t_size i = old_index; i != new_index; i += step)
-                perm.swap_items(i, i + step);
+                std::swap(perm[i], perm[i + step]);
 
             mmh::destructive_reorder(m_button_list_view->m_param.m_buttons, perm);
 
