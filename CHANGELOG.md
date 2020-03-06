@@ -1,5 +1,11 @@
 # Change log
 
+## 1.4.1
+
+### Bug fixes
+
+* A regression in the buttons toolbar, which may have caused the loading of custom images with relative paths to fail, was fixed. [[#298](https://github.com/reupen/columns_ui/pull/298)]
+
 ## 1.4.0
 
 ### Bug fixes
