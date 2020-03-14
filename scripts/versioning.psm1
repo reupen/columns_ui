@@ -18,14 +18,14 @@ class Version {
             $annotations += @($this.Distance, "g$($this.CommitHash)")
         }
 
-        if ($Env:TF_BUILD -eq 'True') {
-            $annotations += 'azure'
+        if ($Env:GITHUB_ACTIONS -eq 'true') {
+            $annotations += 'github'
         }
     
-        if ($Env:BUILD_BUILDID) {
-            $annotations += "b$Env:BUILD_BUILDID"
+        if ($Env:GITHUB_RUN_ID) {
+            $annotations += "r$Env:GITHUB_RUN_ID.$Env:GITHUB_RUN_NUMBER"
         }
-    
+
         if ($this.Dirty) {
             $annotations += 'dirty'
         }
