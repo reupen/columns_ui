@@ -199,7 +199,8 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
         } else if (b_diff) {
             static_api_ptr_t<library_manager>()->get_all_items(m_active_handles);
             try {
-                search_filter::ptr api = static_api_ptr_t<search_filter_manager>()->create(m_active_search_string);
+                auto api = search_filter_manager_v2::get()->create_ex(m_active_search_string,
+                    fb2k::service_new<completion_notify_dummy>(), search_filter_manager_v2::KFlagSuppressNotify);
                 pfc::array_t<bool> data;
                 data.set_size(m_active_handles.get_count());
                 api->test_multi(m_active_handles, data.get_ptr());
