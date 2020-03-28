@@ -10,12 +10,7 @@ CLIPFORMAT ButtonsToolbar::ConfigParam::ButtonsList::g_clipformat()
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 {
     set_single_selection(true);
-
-    pfc::list_t<uih::ListView::Column> columns;
-    columns.add_item(uih::ListView::Column("Name", 300));
-    columns.add_item(uih::ListView::Column("Type", 150));
-
-    set_columns(columns);
+    set_columns({{"Name", 300}, {"Type", 150}});
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_create()
 {

@@ -42,13 +42,7 @@ bool FieldsList::notify_before_create_inline_edit(
 void FieldsList::notify_on_create()
 {
     set_single_selection(true);
-    pfc::list_t<Column> columns;
-    columns.set_count(2);
-    columns[0].m_title = "Name";
-    columns[0].m_size = 150;
-    columns[1].m_title = "Field";
-    columns[1].m_size = 150;
-    uih::ListView::set_columns(columns);
+    uih::ListView::set_columns({{"Name", 150}, {"Field", 150}});
 
     t_size count = m_fields.get_count();
     pfc::list_t<uih::ListView::InsertItem> items;

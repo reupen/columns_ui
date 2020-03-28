@@ -168,10 +168,10 @@ t_size PlaylistView::column_index_actual_to_display(t_size actual_index)
 void PlaylistView::on_column_widths_change()
 {
     t_size count = m_column_mask.get_count();
-    pfc::list_t<int> widths;
+    std::vector<int> widths;
     for (t_size i = 0; i < count; i++)
         if (m_column_mask[i])
-            widths.add_item(g_columns[i]->width);
+            widths.emplace_back(g_columns[i]->width);
     set_column_widths(widths);
 }
 
@@ -191,7 +191,7 @@ void PlaylistView::refresh_columns()
 
     m_column_data.remove_all();
     m_edit_fields.remove_all();
-    pfc::list_t<Column> columns;
+    std::vector<Column> columns;
 
     pfc::string8 filter;
     pfc::string8 playlist_name;
@@ -224,7 +224,7 @@ void PlaylistView::refresh_columns()
         }
         if (b_valid) {
             ColumnData temp;
-            columns.add_item(Column(source->name, source->width, source->parts, (uih::alignment)source->align));
+            columns.emplace_back(source->name, source->width, source->parts, (uih::alignment)source->align);
             p_compiler->compile_safe(temp.m_display_script, source->spec);
             if (source->use_custom_colour)
                 p_compiler->compile_safe(temp.m_style_script, source->colour_spec);

@@ -197,10 +197,7 @@ void ItemProperties::notify_on_initialisation()
 }
 void ItemProperties::notify_on_create()
 {
-    pfc::list_t<Column> columns;
-    columns.add_item(Column("Field", m_column_name_width, 0));
-    columns.add_item(Column("Value", m_column_field_width, 1));
-    set_columns(columns);
+    set_columns({{"Field", m_column_name_width, 0}, {"Value", m_column_field_width, 1}});
     set_group_count(m_show_group_titles ? 1 : 0);
 
     register_callback();

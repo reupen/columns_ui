@@ -45,7 +45,7 @@ void PlaylistSwitcher::add_items(t_size base, t_size count)
 
 void PlaylistSwitcher::refresh_columns()
 {
-    set_columns(pfc::list_single_ref_t<Column>(Column("Name", 100)));
+    set_columns({{"Name", 100}});
 }
 
 void PlaylistSwitcher::move_selection(int delta)
