@@ -768,8 +768,7 @@ void FilterPanel::refresh_groups()
 
 void FilterPanel::refresh_columns()
 {
-    set_columns(pfc::list_single_ref_t<Column>(
-        Column(m_field_data.is_empty() ? "<no field>" : m_field_data.m_name.get_ptr(), 200)));
+    set_columns({{m_field_data.is_empty() ? "<no field>" : m_field_data.m_name.get_ptr(), 200}});
     set_sort_column(0, m_pending_sort_direction);
 }
 

@@ -19,13 +19,7 @@ public:
         const auto client_width = rc.right - rc.left;
 
         set_single_selection(true);
-        pfc::list_t<Column> columns;
-        columns.set_count(2);
-        columns[0].m_title = "Name";
-        columns[0].m_size = client_width/3;
-        columns[1].m_title = "Field";
-        columns[1].m_size = client_width*2/3;
-        uih::ListView::set_columns(columns);
+        uih::ListView::set_columns({{"Name", client_width / 3}, {"Field", client_width * 2 / 3}});
     };
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override
