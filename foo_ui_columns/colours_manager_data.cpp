@@ -191,8 +191,7 @@ void ColoursManagerData::Entry::_export(stream_writer* p_stream, abort_callback&
         out.write_item(identifier_inactive_selection_background, inactive_selection_background);
     }
     out.write_item(identifier_use_custom_active_item_frame, use_custom_active_item_frame);
-    if (use_custom_active_item_frame)
-        out.write_item(identifier_custom_active_item_frame, active_item_frame);
+    out.write_item(identifier_custom_active_item_frame, active_item_frame);
 }
 
 void ColoursManagerData::Entry::write(stream_writer* p_stream, abort_callback& p_abort)
