@@ -1,5 +1,11 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+* Custom Album list panel active item frame colours are now included in exported FCL files. [[#316](https://github.com/reupen/columns_ui/pull/316)]
+
 ## 1.4.1
 
 ### Bug fixes
