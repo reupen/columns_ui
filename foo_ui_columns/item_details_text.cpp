@@ -756,7 +756,7 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
                     } while (ptrC >= rawText && *ptrC != '\x3');
                     if (ptrC >= rawText && *ptrC == '\x3') {
                         uih::text_out_colours_tab(dc, ptrC, ptrCEnd - ptrC + 1, 0, 0, &rc_line, false, cr_text, false,
-                            false, false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
+                            false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
                     }
                     break;
                 }
@@ -819,7 +819,7 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
             RECT rc_font = rc_line;
             int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
             rc_font.bottom -= half_padding_size; // extra/4;
-            BOOL ret = uih::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 0, &rc_font, false, cr_text, false, false,
+            BOOL ret = uih::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 0, &rc_font, false, cr_text, false,
                 false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, &width);
             rc_line.left = width; // width == position actually!!
             ptr += ptrThisCount;
@@ -830,8 +830,8 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
             RECT rc_font = rc_line;
             int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
             rc_font.bottom -= half_padding_size;
-            uih::text_out_colours_tab(dc, ptr, ptrRemaining, 0, 0, &rc_font, false, cr_text, false, false,
-                false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
+            uih::text_out_colours_tab(dc, ptr, ptrRemaining, 0, 0, &rc_font, false, cr_text, false, false && !b_hscroll,
+                uih::ALIGN_LEFT, nullptr, false, false);
         }
 
 #if 0

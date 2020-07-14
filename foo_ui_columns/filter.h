@@ -81,6 +81,8 @@ class FilterPanel
     friend class FilterSearchToolbar;
 
 public:
+    FilterPanel() : ListViewPanelBase(std::make_unique<uih::lv::DefaultRenderer>(true)) {}
+
     enum { TIMER_QUERY = TIMER_BASE };
 
     enum { config_version_current = 1 };
