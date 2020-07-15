@@ -307,7 +307,8 @@ public:
     }
     unsigned get_type() const override { return uie::type_panel; }
 
-    PlaylistSwitcher() : m_playing_playlist(pfc_infinite){};
+    PlaylistSwitcher()
+        : ListViewPanelBase(std::make_unique<uih::lv::DefaultRenderer>(true)), m_playing_playlist(pfc_infinite){};
 
 private:
     contextmenu_manager::ptr m_contextmenu_manager;
