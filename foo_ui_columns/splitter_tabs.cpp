@@ -164,6 +164,8 @@ bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
 
 uie::splitter_item_full_v2_t* TabStackPanel::Panel::create_splitter_item()
 {
+    refresh_child_data();
+
     auto ret = new uie::splitter_item_full_v2_impl_t;
     ret->set_panel_guid(m_guid);
     ret->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
@@ -208,6 +210,12 @@ void TabStackPanel::Panel::destroy()
     m_interface.release();
 }
 
+void TabStackPanel::Panel::refresh_child_data(abort_callback& p_abort)
+{
+    if (m_child.is_valid())
+        m_child_data = m_child->get_config_as_array(p_abort);
+}
+
 void TabStackPanel::Panel::read(stream_reader* t, abort_callback& p_abort)
 {
     t->read_lendian_t(m_guid, p_abort);
@@ -221,10 +229,7 @@ void TabStackPanel::Panel::read(stream_reader* t, abort_callback& p_abort)
 
 void TabStackPanel::Panel::write(stream_writer* out, abort_callback& p_abort)
 {
-    if (m_child.is_valid()) {
-        m_child_data.set_size(0);
-        m_child->get_config_to_array(m_child_data, p_abort);
-    }
+    refresh_child_data(p_abort);
     out->write_lendian_t(m_guid, p_abort);
     out->write_lendian_t(m_child_data.get_size(), p_abort);
     out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);

@@ -413,20 +413,19 @@ void PlaylistTabs::on_child_position_change()
     // on_size();
 }
 
+void PlaylistTabs::refresh_child_data(abort_callback& aborter) const
+{
+    if (m_child.is_valid())
+        m_child_data = m_child->get_config_as_array(aborter);
+}
+
 void PlaylistTabs::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t(m_child_guid, p_abort);
-    if (m_child.is_valid()) {
-        pfc::array_t<t_uint8> data;
-        stream_writer_memblock_ref w(data);
-        abort_callback_dummy abortCallback;
-        m_child->get_config(&w, abortCallback);
-        out->write_lendian_t(data.get_size(), p_abort);
-        out->write(data.get_ptr(), data.get_size(), p_abort);
-    } else {
-        out->write_lendian_t(m_child_data.get_size(), p_abort);
-        out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
-    }
+
+    refresh_child_data();
+    out->write_lendian_t(m_child_data.get_size(), p_abort);
+    out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
 }
 
 void PlaylistTabs::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
@@ -490,7 +489,10 @@ uie::splitter_item_t* PlaylistTabs::get_panel(unsigned index) const
 {
     auto ptr = new uie::splitter_item_simple_t;
     ptr->set_panel_guid(m_child_guid);
+
+    refresh_child_data();
     ptr->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
+
     if (index == 0 && m_child_guid != pfc::guid_null) {
         if (m_child_wnd && m_child.is_valid())
             ptr->set_window_ptr(m_child);

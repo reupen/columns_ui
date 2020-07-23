@@ -137,6 +137,7 @@ private:
 
         void set_from_splitter_item(const uie::splitter_item_t* p_source);
 
+        void refresh_child_data(abort_callback& aborter = fb2k::noAbort);
         void _export(stream_writer* out, abort_callback& p_abort);
         void write(stream_writer* out, abort_callback& p_abort);
         void import(stream_reader* t, abort_callback& p_abort);

@@ -169,8 +169,8 @@ public:
     void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
+    void refresh_child_data(abort_callback& aborter = fb2k::noAbort) const;
     void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
-
     void get_config(stream_writer* out, abort_callback& p_abort) const override;
 
     void on_child_position_change();
@@ -179,7 +179,7 @@ private:
     static HFONT g_font;
 
     GUID m_child_guid{};
-    pfc::array_t<t_uint8> m_child_data;
+    mutable pfc::array_t<t_uint8> m_child_data;
     service_ptr_t<WindowHost> m_host;
     ui_extension::window_ptr m_child;
     HWND m_child_wnd{nullptr};
