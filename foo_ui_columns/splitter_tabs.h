@@ -92,8 +92,8 @@ public:
 
         void destroy();
 
+        void refresh_child_data(abort_callback& p_abort = fb2k::noAbort);
         void read(stream_reader* t, abort_callback& p_abort);
-
         void write(stream_writer* out, abort_callback& p_abort);
         void _export(stream_writer* out, abort_callback& p_abort);
         void import(stream_reader* t, abort_callback& p_abort);

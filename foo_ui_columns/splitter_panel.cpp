@@ -110,7 +110,7 @@ void FlatSplitterPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
             m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
         } catch (const exception_io&) {
         }
-        m_child->get_config_to_array(m_child_data, p_abort, true);
+        refresh_child_data();
     }
     // else
     //    throw pfc::exception_not_implemented();
@@ -130,9 +130,6 @@ void FlatSplitterPanel::Panel::write_extra(stream_writer* writer, abort_callback
 
 void FlatSplitterPanel::Panel::write(stream_writer* out, abort_callback& p_abort)
 {
-    if (m_child.is_valid()) {
-        m_child->get_config_to_array(m_child_data, p_abort, true);
-    }
     out->write_lendian_t(m_guid, p_abort);
     out->write_lendian_t(m_caption_orientation, p_abort);
     out->write_lendian_t(m_locked, p_abort);
@@ -141,10 +138,19 @@ void FlatSplitterPanel::Panel::write(stream_writer* out, abort_callback& p_abort
     out->write_lendian_t(m_autohide, p_abort);
     out->write_lendian_t(m_size.get_scaled_value(), p_abort);
     out->write_lendian_t(m_show_toggle_area, p_abort);
+
+    refresh_child_data();
     out->write_lendian_t(m_child_data.get_size(), p_abort);
     out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
+
     out->write_lendian_t(m_use_custom_title, p_abort);
     out->write_string(m_custom_title, p_abort);
+}
+
+void FlatSplitterPanel::Panel::refresh_child_data(abort_callback& aborter)
+{
+    if (m_child.is_valid())
+        m_child_data = m_child->get_config_as_array(aborter);
 }
 
 void FlatSplitterPanel::Panel::_export(stream_writer* out, abort_callback& p_abort)
@@ -203,6 +209,7 @@ void FlatSplitterPanel::Panel::set_from_splitter_item(const uie::splitter_item_t
 
 uie::splitter_item_full_v2_t* FlatSplitterPanel::Panel::create_splitter_item(bool b_set_ptr /*= true*/)
 {
+    refresh_child_data();
     auto ret = new uie::splitter_item_full_v2_impl_t;
     ret->m_autohide = m_autohide;
     ret->m_caption_orientation = m_caption_orientation;
