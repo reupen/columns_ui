@@ -57,48 +57,28 @@ class VolumeBar
                 uih::Trackbar::draw_channel(dc, rc);
             else {
                 if (m_this->get_using_gdiplus()) {
-                    {
-                        Gdiplus::Graphics graphics(dc);
-                        if (Gdiplus::Ok == graphics.GetLastStatus()) {
-                            graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
+                    Gdiplus::Graphics graphics(dc);
+                    if (Gdiplus::Ok == graphics.GetLastStatus()) {
+                        graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 
-                            COLORREF cr_shadow = GetSysColor(COLOR_3DSHADOW);
-                            COLORREF cr_hilight = GetSysColor(COLOR_3DHILIGHT);
-                            if (0 && get_theme_handle()) {
-                                // GetThemeColor(get_theme_handle(), 0, 0, TMT_EDGEHIGHLIGHTCOLOR, &cr_hilight);
-                                // GetThemeColor(get_theme_handle(), 0, 0, TMT_EDGESHADOWCOLOR, &cr_light);
-                            }
+                        COLORREF cr_shadow = GetSysColor(COLOR_3DSHADOW);
+                        COLORREF cr_hilight = GetSysColor(COLOR_3DHILIGHT);
 
-                            RECT rcdraw(*rc);
+                        RECT rcdraw(*rc);
 
-#if 0
+                        Gdiplus::Color colour_hilight, colour_shadow;
+                        colour_hilight.SetFromCOLORREF(cr_hilight);
+                        colour_shadow.SetFromCOLORREF(cr_shadow);
 
-                            Gdiplus::Point point1(rcdraw.left, rcdraw.bottom-1);
-                            Gdiplus::Point point2(rcdraw.right, rcdraw.top);
-                            Gdiplus::Point point3(rcdraw.right, rcdraw.bottom);
+                        Gdiplus::Pen pen_hilight(colour_hilight);
+                        Gdiplus::Pen pen_shadow(colour_shadow);
 
-                            Gdiplus::Point points[3] = {point1, point2, point3};
-#endif
-
-                            Gdiplus::Color colour_hilight, colour_shadow;
-                            colour_hilight.SetFromCOLORREF(cr_hilight);
-                            colour_shadow.SetFromCOLORREF(cr_shadow);
-
-                            Gdiplus::Pen pen_hilight(colour_hilight);
-                            Gdiplus::Pen pen_shadow(colour_shadow);
-
-                            // Gdiplus::SolidBrush brush_shadow(colour_light);
-
-                            // rcdraw.bottom = max (rcdraw.top, rcdraw.bottom - 2);
-                            // rcdraw.top = min (rcdraw.top + 2, rcdraw.bottom);
-
-                            // graphics.FillPolygon(&brush_shadow, points, 3);
-
-                            graphics.DrawLine(&pen_shadow, rcdraw.left, rcdraw.bottom - 1, rcdraw.right, rcdraw.top);
-                            graphics.DrawLine(&pen_hilight, rcdraw.right, rcdraw.top, rcdraw.right, rcdraw.bottom);
-                            graphics.DrawLine(
-                                &pen_hilight, rcdraw.right, rcdraw.bottom, rcdraw.left - 1, rcdraw.bottom);
-                        }
+                        graphics.DrawLine(&pen_shadow, Gdiplus::Point{rcdraw.left, rcdraw.bottom - 1},
+                            Gdiplus::Point{rcdraw.right, rcdraw.top});
+                        graphics.DrawLine(&pen_hilight, Gdiplus::Point{rcdraw.right, rcdraw.top},
+                            Gdiplus::Point{rcdraw.right, rcdraw.bottom});
+                        graphics.DrawLine(&pen_hilight, Gdiplus::Point{rcdraw.right, rcdraw.bottom},
+                            Gdiplus::Point{rcdraw.left - 1, rcdraw.bottom});
                     }
                 } else {
                     HPEN pn_light = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_3DHILIGHT));
