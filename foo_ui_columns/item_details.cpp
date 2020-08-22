@@ -430,9 +430,8 @@ void ItemDetails::refresh_contents(bool reset_scroll_position)
 
         TitleformatHookChangeFont tf_hook(lf);
         pfc::string8_fast_aggressive temp;
-        pfc::string8_fast_aggressive temp2;
         temp.prealloc(2048);
-        temp2.prealloc(2048);
+
         if (m_nowplaying_active) {
             static_api_ptr_t<playback_control>()->playback_format_title(
                 &tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
@@ -446,25 +445,24 @@ void ItemDetails::refresh_contents(bool reset_scroll_position)
             }
         }
 
-        if (strcmp(temp, m_current_text_raw) != 0) {
-            m_current_text_raw = temp;
+        pfc::stringcvt::string_wide_from_utf8 wide_text(temp);
+        if (std::wstring_view(wide_text.get_ptr(), wide_text.length()) != m_current_text_raw) {
+            m_current_text_raw = wide_text;
 
             m_font_change_data.set_size(0);
             m_font_change_info.reset(true);
             m_font_change_info_valid = false;
 
-            g_get_text_multiline_data(temp, temp2, m_line_info);
-            temp.reset();
+            const auto multiline_text = g_get_text_multiline_data(wide_text, m_line_lengths);
 
-            g_get_text_font_data(temp2, temp, m_font_change_data);
-            m_current_text = temp;
+            m_current_text = g_get_text_font_data(multiline_text.c_str(), m_font_change_data);
         } else
             b_Update = false;
     } else {
-        m_current_text.reset();
-        m_current_text_raw.reset();
+        m_current_text.clear();
+        m_current_text_raw.clear();
         reset_font_change_info();
-        m_line_info.remove_all();
+        m_line_lengths.clear();
     }
 
     if (b_Update) {
@@ -485,8 +483,13 @@ void ItemDetails::update_display_info(HDC dc)
 
         t_size widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
         m_current_display_text = m_current_text;
-        g_get_multiline_text_dimensions(dc, m_current_display_text, m_line_info, m_display_line_info,
-            m_font_change_info, m_font_change_info.m_default_font->m_height, m_display_sz, m_word_wrapping, widthMax);
+
+        auto display_info = g_get_multiline_text_dimensions(
+            dc, m_current_display_text, m_line_lengths, m_font_change_info, m_word_wrapping, widthMax);
+
+        m_display_line_info = std::move(display_info.line_info);
+        m_display_sz = std::move(display_info.sz);
+
         m_display_info_valid = true;
     }
 }
@@ -503,8 +506,8 @@ void ItemDetails::update_display_info()
 }
 void ItemDetails::reset_display_info()
 {
-    m_current_display_text.force_reset();
-    m_display_line_info.remove_all();
+    m_current_display_text.clear();
+    m_display_line_info.clear();
     m_display_sz.cy = (m_display_sz.cx = 0);
     m_display_info_valid = false;
 }
@@ -961,7 +964,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         // p_helper.get_colour(cui::colours::colour_text), true, true, false, uih::ALIGN_LEFT);
         // text_out_multiline(dc_mem, rc_client, line_height, m_current_text,
         // p_helper.get_colour(cui::colours::colour_text), (uih::alignment)m_alignment, m_hscroll, m_word_wrapping);
-        g_text_out_multiline_font(dc_mem, rc_client, line_height, m_current_text, m_font_change_info,
+        g_text_out_multiline_font(dc_mem, rc_client, line_height, m_current_text.c_str(), m_font_change_info,
             m_display_line_info, m_display_sz, p_helper.get_colour(cui::colours::colour_text),
             (uih::alignment)m_horizontal_alignment, m_hscroll, m_word_wrapping);
         SelectFont(dc_mem, fnt_old);

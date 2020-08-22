@@ -2,16 +2,29 @@
 #include "item_details.h"
 #include "config.h"
 
+bool are_strings_equal(std::wstring_view left, std::wstring_view right)
+{
+    return CompareStringEx(LOCALE_NAME_INVARIANT, NORM_IGNORECASE, left.data(), left.length(), right.data(),
+               right.length(), nullptr, nullptr, 0)
+        == CSTR_EQUAL;
+}
+
+bool FontData::s_are_equal(const FontData& item1, const FontData& item2)
+{
+    return are_strings_equal(item1.m_face, item2.m_face) && item1.m_point == item2.m_point
+        && item1.m_bold == item2.m_bold && item1.m_italic == item2.m_italic && item1.m_underline == item2.m_underline;
+}
+
 bool operator==(const FontData& item1, const FontData& item2)
 {
-    return !FontData::g_compare(item1, item2);
+    return FontData::s_are_equal(item1, item2);
 }
 
 void FontChangeNotify::reset(bool bKeepHandles /*= false*/)
 {
     if (!bKeepHandles)
         m_fonts.set_size(0);
-    m_font_changes.set_size(0);
+    m_font_changes.resize(0);
 }
 
 bool FontChangeNotify::find_font(const FontData& p_font, t_size& index)
@@ -141,7 +154,7 @@ FontCodeGenerator::StringFontCode::operator const char*() const
     return get_ptr();
 }
 
-void g_parse_font_format_string(const char* str, t_size len, FontData& p_out)
+void g_parse_font_format_string(const wchar_t* str, t_size len, FontData& p_out)
 {
     t_size ptr = 0;
     while (ptr < len) {
@@ -165,12 +178,12 @@ void g_parse_font_format_string(const char* str, t_size len, FontData& p_out)
         } else if (ptr < len)
             ptr++;
 
-        if (!stricmp_utf8_ex("bold", pfc_infinite, &str[keyStart], keyLen)) {
-            p_out.m_bold = (!valueValid || !stricmp_utf8_ex("true", pfc_infinite, &str[valueStart], valueLen));
-        } else if (!stricmp_utf8_ex("italic", pfc_infinite, &str[keyStart], keyLen)) {
-            p_out.m_italic = (!valueValid || !stricmp_utf8_ex("true", pfc_infinite, &str[valueStart], valueLen));
-        } else if (!stricmp_utf8_ex("underline", pfc_infinite, &str[keyStart], keyLen)) {
-            p_out.m_underline = (!valueValid || !stricmp_utf8_ex("true", pfc_infinite, &str[valueStart], valueLen));
+        if (are_strings_equal(L"bold"sv, {&str[keyStart], keyLen})) {
+            p_out.m_bold = (!valueValid || are_strings_equal(L"true"sv, {&str[valueStart], valueLen}));
+        } else if (are_strings_equal(L"italic"sv, {&str[keyStart], keyLen})) {
+            p_out.m_italic = (!valueValid || are_strings_equal(L"true"sv, {&str[valueStart], valueLen}));
+        } else if (are_strings_equal(L"underline"sv, {&str[keyStart], keyLen})) {
+            p_out.m_underline = (!valueValid || are_strings_equal(L"true"sv, {&str[valueStart], valueLen}));
         }
     }
 }
