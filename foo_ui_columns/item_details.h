@@ -21,43 +21,21 @@ extern cfg_uint cfg_item_details_horizontal_alignment;
 extern cfg_uint cfg_item_details_vertical_alignment;
 extern cfg_bool cfg_item_details_word_wrapping;
 
-class LineInfo {
-public:
-    t_size m_bytes{NULL};
-    t_size m_raw_bytes{NULL};
-
-    LineInfo() = default;
-};
-
-class DisplayLineInfo : public LineInfo {
-public:
-    t_size m_width{0};
-    t_size m_height{0};
-
-    DisplayLineInfo() = default;
+struct DisplayLineInfo {
+    t_size m_length{};
+    int m_width{0};
+    int m_height{0};
 };
 
 class FontData {
 public:
-    pfc::string8 m_face;
+    std::wstring m_face;
     t_size m_point{10};
     bool m_bold{false}, m_underline{false}, m_italic{false};
 
     FontData() = default;
 
-    static int g_compare(const FontData& item1, const FontData& item2)
-    {
-        int ret = stricmp_utf8(item1.m_face, item2.m_face);
-        if (ret == 0)
-            ret = pfc::compare_t(item1.m_point, item2.m_point);
-        if (ret == 0)
-            ret = pfc::compare_t(item1.m_bold, item2.m_bold);
-        if (ret == 0)
-            ret = pfc::compare_t(item1.m_underline, item2.m_underline);
-        if (ret == 0)
-            ret = pfc::compare_t(item1.m_italic, item2.m_italic);
-        return ret;
-    }
+    static bool s_are_equal(const FontData& item1, const FontData& item2);
 };
 
 bool operator==(const FontData& item1, const FontData& item2);
@@ -73,11 +51,8 @@ public:
 
 using font_change_data_list_t = pfc::list_t<FontChangeData, pfc::alloc_fast_aggressive>;
 
-using line_info_list_t = pfc::list_t<LineInfo, pfc::alloc_fast_aggressive>;
-using display_line_info_list_t = pfc::list_t<DisplayLineInfo, pfc::alloc_fast_aggressive>;
-
-void g_parse_font_format_string(const char* str, t_size len, FontData& p_out);
-void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_new_text, font_change_data_list_t& p_out);
+using line_lengths = std::vector<size_t>;
+using display_line_info_list_t = std::vector<DisplayLineInfo>;
 
 class Font {
 public:
@@ -86,7 +61,7 @@ public:
     FontData m_data;
 
     wil::unique_hfont m_font;
-    t_size m_height{};
+    int m_height{};
     // font_t (const font_t & p_font) : m_font(p_font.m_font), m_height(p_font.m_height), m_data(p_font.m_data) {};
 };
 
@@ -101,7 +76,7 @@ public:
     };
 
     font_list_t m_fonts;
-    pfc::array_t<FontChangeEntry> m_font_changes;
+    std::vector<FontChangeEntry> m_font_changes;
     Font::ptr_t m_default_font;
 
     bool find_font(const FontData& p_font, t_size& index);
@@ -111,22 +86,24 @@ public:
 
 // void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text, line_info_list_t & indices, t_size
 // line_height, SIZE & sz, bool b_word_wrapping = false, t_size max_width = pfc_infinite);
-void g_get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive& text_new, const line_info_list_t& rawLines,
-    display_line_info_list_t& displayLines, const FontChangeNotify& p_font_data, t_size line_height, SIZE& sz,
-    bool b_word_wrapping = false, t_size max_width = pfc_infinite);
+
+struct DisplayInfo {
+    SIZE sz{};
+    std::vector<DisplayLineInfo> line_info;
+};
+
+DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, const line_lengths& line_lengths,
+    const FontChangeNotify& font_data, bool b_word_wrapping, int max_width);
+
 // void get_multiline_text_dimensions_const(HDC dc, const char * text, const line_info_list_t & indices, t_size
 // line_height, SIZE & sz, bool b_word_wrapping = false, t_size max_width = pfc_infinite);
-void g_get_multiline_text_dimensions_const(HDC dc, const char* text, const line_info_list_t& indices,
-    const FontChangeNotify& p_font_data, t_size line_height, SIZE& sz, bool b_word_wrapping = false,
-    t_size max_width = pfc_infinite);
-void g_get_text_multiline_data(const char* text, pfc::string8_fast_aggressive& p_out,
-    pfc::list_t<LineInfo, pfc::alloc_fast_aggressive>& indices);
+std::wstring g_get_text_multiline_data(const wchar_t* text, line_lengths& indices);
 
-void g_parse_font_format_string(const char* str, t_size len, FontData& p_out);
-void g_get_text_font_data(const char* p_text, pfc::string8_fast_aggressive& p_new_text, font_change_data_list_t& p_out);
+void g_parse_font_format_string(const wchar_t* str, t_size len, FontData& p_out);
+std::wstring g_get_text_font_data(const wchar_t* p_text, font_change_data_list_t& p_out);
 void g_get_text_font_info(const font_change_data_list_t& p_data, FontChangeNotify& p_info);
 
-void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_height, const char* text,
+void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_height, const wchar_t* text,
     const FontChangeNotify& p_font_data, const display_line_info_list_t& newLineDataWrapped, const SIZE& sz,
     COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping);
 
@@ -402,14 +379,16 @@ private:
     FontChangeNotify m_font_change_info;
     font_change_data_list_t m_font_change_data;
 
-    line_info_list_t m_line_info;
+    line_lengths m_line_lengths;
     display_line_info_list_t m_display_line_info;
     bool m_display_info_valid{false};
 
     SIZE m_display_sz{};
 
-    pfc::string8 m_current_text, m_script, m_current_text_raw;
-    pfc::string8_fast_aggressive m_current_display_text;
+    pfc::string8 m_script;
+    std::wstring m_current_text_raw;
+    std::wstring m_current_text;
+    std::wstring m_current_display_text;
     titleformat_object::ptr m_to;
 
     t_size m_horizontal_alignment, m_vertical_alignment;
