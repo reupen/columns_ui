@@ -310,6 +310,9 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
                 // Note: Despite indications in its documentation otherwise, Uniscribe appears to use UTF-16
                 // code units and not Unicode code points (otherwise this comparison would not work correctly).
                 if (b_word_wrapping && max_chars < fragment.substr(fragment_character_pos).length()) {
+                    std::vector<int> character_extents(fragment.length());
+                    script_string.get_character_logical_extents(character_extents.data());
+
                     // Wrap at the end of the last word within this fragment
                     max_chars = get_text_truncate_point(fragment.substr(fragment_character_pos, max_chars));
 
@@ -318,12 +321,15 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
                     if (max_chars == 0)
                         ++max_chars;
 
+                    line_width += character_extents.at(max_chars - 1);
+
                     const auto* wrapped_line_start = text.data() + last_append_pos;
                     const auto* wrapped_line_end = fragment.data() + fragment_character_pos + max_chars;
 
                     const size_t wrapped_line_length = wrapped_line_end - wrapped_line_start;
 
-                    display_info.line_info.push_back({wrapped_line_length, 0, line_height + vertical_line_padding});
+                    display_info.line_info.push_back(
+                        {wrapped_line_length, line_width, line_height + vertical_line_padding});
 
                     fragment_character_pos += max_chars;
                     last_append_pos = wrapped_line_end - text.data();
@@ -338,8 +344,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
         if (line.empty() || last_append_pos < gsl::narrow<size_t>(line.data() + line.size() - text.data())) {
             const size_t length = line.data() + line.size() - text.data() - last_append_pos;
-            display_info.line_info.push_back(
-                {length, b_word_wrapping ? 0 : line_width, line_height + vertical_line_padding});
+            display_info.line_info.push_back({length, line_width, line_height + vertical_line_padding});
             last_append_pos += length;
         }
     }
