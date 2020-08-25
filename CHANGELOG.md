@@ -1,10 +1,24 @@
 # Change log
 
-## Development version
+## 1.5.0
+
+### Features
+
+* Filter search now allows the use of [time-based expressions](https://wiki.hydrogenaud.io/index.php?title=Foobar2000:Query_syntax#Time_expressions). [[#300](https://github.com/reupen/columns_ui/pull/300)]
+
+  Note that these currently don’t update continuously when results change due to e.g. the system time advancing.
 
 ### Bug fixes
 
 * Custom Album list panel active item frame colours are now included in exported FCL files. [[#316](https://github.com/reupen/columns_ui/pull/316)]
+
+* A crash or other unexpected behaviour when certain emojis were displayed in the Item details panel was fixed. [[#323](https://github.com/reupen/columns_ui/pull/323), [#324](https://github.com/reupen/columns_ui/pull/324)]
+
+  Word-wrapping behaviour may be slightly different from earlier versions as a result of the fix.
+
+* A bug where a panel copied during live editing may have had stale configuration data was fixed. [[#320](https://github.com/reupen/columns_ui/pull/320)]
+
+* The Item properties panel no longer has tab-based alignment and columns enabled, due to the confusing behaviour caused when tab characters are encountered in metadata. [[#319](https://github.com/reupen/columns_ui/pull/319)]
 
 ## 1.4.1
 
