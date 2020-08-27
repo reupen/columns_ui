@@ -1,6 +1,7 @@
 variables:
   solution: vc16/columns_ui-public.sln
   llvmMsBuildArgs: /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;SpectreMitigation=
+  vc142MsBuildArgs: /p:VCToolsVersion=14.25.28610
   vcpkgInstallArgs: 'ms-gsl range-v3 wil --overlay-ports=$(System.DefaultWorkingDirectory)\ports'
 jobs:
 - template: job-build.yml
@@ -26,6 +27,7 @@ jobs:
       Release:
         configuration: Release
         publish: true
+    msBuildArgs: ${{ variables.vc142MsBuildArgs }}
     name: vs2019_v142
     platform: Win32
     solution: ${{ variables.solution }}
