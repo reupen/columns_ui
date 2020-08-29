@@ -1,5 +1,15 @@
 # Change log
 
+## Development version
+
+## Features
+
+* SSE2 instructions are now enabled (and hence are now required). [[#329](https://github.com/reupen/columns_ui/pull/329)]
+
+### Internal changes
+
+* The component is now compiled using foobar2000 SDK 2020-07-28. [[#329](https://github.com/reupen/columns_ui/pull/329)]
+
 ## 1.5.0
 
 ### Features
@@ -19,6 +29,10 @@
 * A bug where a panel copied during live editing may have had stale configuration data was fixed. [[#320](https://github.com/reupen/columns_ui/pull/320)]
 
 * The Item properties panel no longer has tab-based alignment and columns enabled, due to the confusing behaviour caused when tab characters are encountered in metadata. [[#319](https://github.com/reupen/columns_ui/pull/319)]
+
+### Internal changes
+
+* The component is now compiled using Visual Studio 2019 16.6.
 
 ## 1.4.1
 
