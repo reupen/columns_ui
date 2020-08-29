@@ -152,7 +152,7 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipbo
         auto message = "Error getting data from clipboard: "s + helpers::get_last_win32_error_message().get_ptr();
         throw exception_io(message.c_str());
     }
-    return deserialise_splitter_item({data->data(), gsl::narrow<gsl::span<t_uint8>::index_type>(data->size())});
+    return deserialise_splitter_item({data->data(), data->size()});
 }
 
 std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipboard_safe(HWND wnd)
