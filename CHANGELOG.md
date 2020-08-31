@@ -2,9 +2,17 @@
 
 ## Development version
 
-## Features
+### Features
 
 * SSE2 instructions are now enabled (and hence are now required). [[#329](https://github.com/reupen/columns_ui/pull/329)]
+
+* Items details now tries to preserve the scroll position when adjusting settings. [[#335](https://github.com/reupen/columns_ui/pull/335)]
+
+### Bug fixes
+
+* A bug was fixed where it sometimes wasn't possible to scroll to the very bottom of Items details when both horizontal and vertical scroll bars were visible. [[#335](https://github.com/reupen/columns_ui/pull/335)]
+
+* Miscalculated bottom padding in the background of some dialogues at high DPIs was fixed. [[#334](https://github.com/reupen/columns_ui/pull/334)]
 
 ### Internal changes
 

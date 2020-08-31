@@ -336,7 +336,7 @@ private:
     void on_app_activate(bool b_activated);
 
     void set_handles(const metadb_handle_list& handles);
-    void refresh_contents(bool reset_scroll_position = true);
+    void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false);
     void request_full_file_info();
     void on_full_file_info_request_completion(std::shared_ptr<cui::helpers::FullFileInfoRequest> request);
     void release_aborted_full_file_info_requests();
@@ -354,7 +354,14 @@ private:
 
     void invalidate_all(bool b_update = true);
     void update_now();
-    void update_scrollbar_range(bool b_set_pos = true);
+
+    enum class ScrollbarType {
+        vertical = SB_VERT,
+        horizontal = SB_HORZ,
+    };
+
+    void update_scrollbar(ScrollbarType scrollbar_type, bool reset_position);
+    void update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position);
 
     void on_size();
     void on_size(t_size cx, t_size cy);
@@ -364,6 +371,8 @@ private:
 
     static std::vector<ItemDetails*> g_windows;
 
+    size_t m_last_cx{};
+    size_t m_last_cy{};
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles;
     metadb_handle_list m_selection_handles;

@@ -60,6 +60,8 @@
 #include "../fbh/stdafx.h"
 #include "../pfc/range_based_for.h"
 
+using namespace uih::literals::spx;
+
 #include "functional.h"
 #include "resource.h"
 
