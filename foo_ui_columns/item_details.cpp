@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "item_details.h"
 
-//#include <Richedit.h>
-
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
 const GUID g_guid_item_details = {0x59b4f428, 0x26a5, 0x4a51, {0x89, 0xe5, 0x39, 0x45, 0xd3, 0x27, 0xb4, 0xcb}};
 
@@ -220,136 +218,59 @@ void ItemDetails::deregister_callback()
     m_callback_registered = false;
 }
 
-void ItemDetails::update_scrollbar_range(bool b_set_pos)
+void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_position)
 {
-    // if (m_update_scrollbar_range_in_progress) return;
-
-    // pfc::vartoggle_t<bool> vart(m_update_scrollbar_range_in_progress, true);
-    const auto padding_size = uih::scale_dpi_value(2) * 2;
-
-    SCROLLINFO si;
-    memset(&si, 0, sizeof(si));
-    si.cbSize = sizeof(si);
-    SCROLLINFO si2 = si;
-
-    RECT rc;
-    GetClientRect(get_wnd(), &rc);
-
-    RECT rc_old = rc;
-
-    // SIZE & sz = m_display_sz;
-    {
-        update_font_change_info();
-
-        update_display_info();
-    }
-
-    int vMax = 1;
-
-    vMax = m_display_sz.cy ? m_display_sz.cy - 1 : 0;
-    vMax = max(vMax, 1);
-
-    si.fMask = SIF_RANGE | SIF_PAGE;
-    si.nPage = RECT_CY(rc);
-    si.nPage = max(si.nPage, 1);
-
-    si.nMin = 0;
-    si.nMax = vMax;
-    SetScrollInfo(get_wnd(), SB_VERT, &si, TRUE);
-
-#if 1
-    GetClientRect(get_wnd(), &rc);
+    update_font_change_info();
     update_display_info();
 
-    vMax = m_display_sz.cy ? m_display_sz.cy - 1 : 0;
-    vMax = max(vMax, 1);
-#else
-    GetClientRect(get_wnd(), &rc);
-    if (!EqualRect(&rc_old, &rc)) {
-        HDC dc = GetDC(get_wnd());
-        HFONT fnt_old = SelectFont(dc, m_font_change_info.m_default_font->m_font.get());
-        g_get_multiline_text_dimensions_const(dc, m_current_text, m_line_info, m_font_change_info,
-            uGetTextHeight(dc) + 2, sz, m_word_wrapping, RECT_CX(rc) > 4 ? RECT_CX(rc) - 4 : 0);
-        SelectFont(dc, fnt_old);
-        ReleaseDC(get_wnd(), dc);
+    double percentage_scrolled{};
+    if (!reset_position) {
+        SCROLLINFO si_old{};
+        si_old.cbSize = sizeof(si_old);
+        si_old.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
 
-        rc_old = rc;
+        GetScrollInfo(get_wnd(), static_cast<int>(scrollbar_type), &si_old);
 
-        vMax = sz.cy ? sz.cy - 1 : 0;
-        vMax = max(vMax, 1);
-    }
-#endif
-
-    si2.fMask = SIF_PAGE;
-    GetScrollInfo(get_wnd(), SB_VERT, &si2);
-    // bool b_has_vscrollbar = (GetWindowLongPtr(get_wnd(), GWL_STYLE) & WS_VSCROLL) != 0;
-    bool b_need_vscrollbar = vMax >= (int)si2.nPage;
-    // if (b_need_vscrollbar != b_has_vscrollbar)
-    ShowScrollBar(get_wnd(), SB_VERT, b_need_vscrollbar);
-
-    GetClientRect(get_wnd(), &rc);
-    update_display_info();
-
-    /*GetClientRect(get_wnd(), &rc);
-    if (!EqualRect(&rc_old, &rc))
-    {
-        HDC dc = GetDC(get_wnd());
-        HFONT fnt_old = SelectFont(dc, m_font_change_info.m_default_font->m_font.get());
-        get_multiline_text_dimensions_const(dc, m_current_text, m_line_info, m_font_change_info, uGetTextHeight(dc)+2,
-    sz, m_word_wrapping, RECT_CX(rc)>4 ? RECT_CX(rc)-4:0); SelectFont(dc, fnt_old); ReleaseDC(get_wnd(), dc);
-
-        rc_old = rc;
-    }*/
-    int hMax = 1;
-    hMax = (m_hscroll && m_display_sz.cx) ? (m_display_sz.cx + padding_size - 1) : 0;
-    hMax = max(hMax, 1);
-
-    if (b_set_pos)
-        si.fMask |= SIF_POS;
-    si.nPage = RECT_CX(rc);
-    si.nPage = max(si.nPage, 1);
-    si.nMin = 0;
-    si.nMax = hMax;
-
-    if (b_set_pos) {
-        if (m_horizontal_alignment == uih::ALIGN_RIGHT)
-            si.nPos = si.nMax - (si.nPage ? si.nPage - 1 : 0);
-        else if (m_horizontal_alignment == uih::ALIGN_CENTRE)
-            si.nPos = (si.nMax - (si.nPage ? si.nPage - 1 : 0)) / 2;
-        else
-            si.fMask &= ~SIF_POS;
+        if (si_old.nMax > 0)
+            percentage_scrolled = static_cast<double>(si_old.nPos) / static_cast<double>(si_old.nMax);
     }
 
-    SetScrollInfo(get_wnd(), SB_HORZ, &si, TRUE);
+    SCROLLINFO si_new{};
+    si_new.cbSize = sizeof(si_new);
 
-#if 1
-
+    RECT rc{};
     GetClientRect(get_wnd(), &rc);
-    update_display_info();
 
-    hMax = (m_hscroll && m_display_sz.cx) ? (m_display_sz.cx + padding_size - 1) : 0;
-    hMax = max(hMax, 1);
+    si_new.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
+    si_new.nMin = 0;
 
-    /*GetClientRect(get_wnd(), &rc);
-    if (!EqualRect(&rc_old, &rc))
-    {
-        HDC dc = GetDC(get_wnd());
-        HFONT fnt_old = SelectFont(dc, m_font_change_info.m_default_font->m_font.get());
-        get_multiline_text_dimensions_const(dc, m_current_text, m_line_info, m_font_change_info, uGetTextHeight(dc)+2,
-    sz, m_word_wrapping, RECT_CX(rc)>4 ? RECT_CX(rc)-4:0); SelectFont(dc, fnt_old); ReleaseDC(get_wnd(), dc);
+    if (scrollbar_type == ScrollbarType::vertical) {
+        si_new.nPage = (std::max)(RECT_CY(rc), 1l);
+        si_new.nMax = (std::max)(m_display_sz.cy - 1, 1l);
+    } else {
+        const auto padding_size = 2_spx * 2;
+        si_new.nPage = (std::max)(RECT_CX(rc), 1l);
+        si_new.nMax = m_hscroll ? (std::max)(m_display_sz.cx + padding_size - 1, 1l) : 0l;        
+    }
 
-        rc_old = rc;
+    if (si_new.nMax >= gsl::narrow<int>(si_new.nPage)) {
+        if (!reset_position) {
+            si_new.nPos = static_cast<int>(percentage_scrolled * static_cast<double>(si_new.nMax));
+        } else if (scrollbar_type == ScrollbarType::horizontal) {
+            if (m_horizontal_alignment == uih::ALIGN_RIGHT)
+                si_new.nPos = si_new.nMax - gsl::narrow<int>(si_new.nPage) - 1;
+            else if (m_horizontal_alignment == uih::ALIGN_CENTRE)
+                si_new.nPos = (si_new.nMax + 1 - gsl::narrow<int>(si_new.nPage)) / 2;
+        }
+    }
 
-        hMax = (m_hscroll && sz.cx) ? (sz.cx + 4 - 1) : 0;
-        hMax = max (hMax, 1);
-    }*/
+    SetScrollInfo(get_wnd(), static_cast<int>(scrollbar_type), &si_new, TRUE);
+}
 
-    GetScrollInfo(get_wnd(), SB_HORZ, &si2);
-    // bool b_has_hscrollbar = (GetWindowLongPtr(get_wnd(), GWL_STYLE) & WS_VSCROLL) != 0;
-    bool b_need_hscrollbar = hMax >= (int)si2.nPage;
-    // if (b_need_hscrollbar != b_has_hscrollbar)
-    ShowScrollBar(get_wnd(), SB_HORZ, b_need_hscrollbar);
-#endif
+void ItemDetails::update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position)
+{
+    update_scrollbar(ScrollbarType::vertical, reset_vertical_position);
+    update_scrollbar(ScrollbarType::horizontal, reset_horizontal_position);
 }
 
 void ItemDetails::set_handles(const metadb_handle_list& handles)
@@ -364,7 +285,7 @@ void ItemDetails::set_handles(const metadb_handle_list& handles)
         m_full_file_info_requested = false;
         m_full_file_info.reset();
     }
-    refresh_contents();
+    refresh_contents(true, true);
 }
 
 void ItemDetails::request_full_file_info()
@@ -393,7 +314,7 @@ void ItemDetails::on_full_file_info_request_completion(std::shared_ptr<cui::help
         m_full_file_info_request.reset();
         if (get_wnd()) {
             m_full_file_info = request->get_safe("Item details");
-            refresh_contents(false);
+            refresh_contents(false, true);
         }
     }
 
@@ -420,7 +341,7 @@ void ItemDetails::release_all_full_file_info_requests()
     m_aborting_full_file_info_requests.clear();
 }
 
-void ItemDetails::refresh_contents(bool reset_scroll_position)
+void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool reset_horizontal_scroll_position)
 {
     // DisableRedrawing noRedraw(get_wnd());
     bool b_Update = true;
@@ -468,7 +389,7 @@ void ItemDetails::refresh_contents(bool reset_scroll_position)
     if (b_Update) {
         reset_display_info();
 
-        update_scrollbar_range(reset_scroll_position);
+        update_scrollbars(reset_vertical_scroll_position, reset_horizontal_scroll_position);
 
         invalidate_all();
     }
@@ -539,32 +460,32 @@ void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track)
 void ItemDetails::on_playback_seek(double p_time)
 {
     if (m_nowplaying_active)
-        refresh_contents(false);
+        refresh_contents();
 }
 void ItemDetails::on_playback_pause(bool p_state)
 {
     if (m_nowplaying_active)
-        refresh_contents(false);
+        refresh_contents();
 }
 void ItemDetails::on_playback_edited(metadb_handle_ptr p_track)
 {
     if (m_nowplaying_active)
-        refresh_contents(false);
+        refresh_contents();
 }
 void ItemDetails::on_playback_dynamic_info(const file_info& p_info)
 {
     if (m_nowplaying_active)
-        refresh_contents(false);
+        refresh_contents();
 }
 void ItemDetails::on_playback_dynamic_info_track(const file_info& p_info)
 {
     if (m_nowplaying_active)
-        refresh_contents(false);
+        refresh_contents();
 }
 void ItemDetails::on_playback_time(double p_time)
 {
     if (m_nowplaying_active)
-        refresh_contents(false);
+        refresh_contents();
 }
 
 void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
@@ -613,7 +534,7 @@ void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool
                 b_refresh = true;
         }
         if (b_refresh) {
-            refresh_contents(false);
+            refresh_contents();
         }
     }
 }
@@ -688,25 +609,16 @@ void ItemDetails::on_size()
 void ItemDetails::on_size(t_size cx, t_size cy)
 {
     reset_display_info();
-
     invalidate_all(false);
 
-    if (m_word_wrapping) {
-        update_scrollbar_range();
-    } else {
-        SCROLLINFO si;
-        memset(&si, 0, sizeof(si));
-        si.cbSize = sizeof(si);
+    if (cx != m_last_cx) {
+        m_last_cx = cx;
+        update_scrollbar(ScrollbarType::horizontal, false);
+    }
 
-        si.fMask = SIF_PAGE;
-        si.nPage = max(cy, 1);
-        SetScrollInfo(get_wnd(), SB_VERT, &si, TRUE);
-
-        RECT rc;
-        GetClientRect(get_wnd(), &rc); // SetScrollInfo above may trigger a WM_SIZE
-        si.nPage = RECT_CX(rc);
-        si.nPage = max(si.nPage, 1);
-        SetScrollInfo(get_wnd(), SB_HORZ, &si, TRUE);
+    if (m_word_wrapping || cy != m_last_cy) {
+        m_last_cy = cy;
+        update_scrollbar(ScrollbarType::vertical, false);
     }
 }
 
@@ -774,7 +686,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         on_size(/*lpcs->cx, lpcs->cy*/);
         on_tracking_mode_change();
-        refresh_contents();
+        refresh_contents(true, true);
 
         // FIXME
         // m_library_richedit = LoadLibrary(L"Msftedit.dll");
@@ -797,6 +709,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_selection_handles.remove_all();
         m_selection_holder.release();
         m_to.release();
+        m_last_cx = 0;
+        m_last_cy = 0;
     } break;
     case WM_SETFOCUS:
         deregister_callback();
@@ -810,7 +724,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_WINDOWPOSCHANGED: {
         auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE) || (lpwp->flags & SWP_FRAMECHANGED)) {
-            on_size(lpwp->cx, lpwp->cy);
+            on_size();
         }
     } break;
     case WM_MOUSEWHEEL: {
@@ -1000,7 +914,7 @@ void ItemDetails::on_font_change()
 {
     m_font_change_info.m_default_font->m_font.reset(
         static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client));
-    refresh_contents(false);
+    refresh_contents();
     /*
     invalidate_all(false);
     update_scrollbar_range();
@@ -1068,7 +982,7 @@ void ItemDetails::set_vertical_alignment(t_size vertical_alignment)
     if (get_wnd()) {
         m_vertical_alignment = vertical_alignment;
         invalidate_all(false);
-        update_scrollbar_range();
+        update_scrollbars(false, false);
         update_now();
     }
 }
@@ -1078,7 +992,7 @@ void ItemDetails::set_horizontal_alignment(t_size horizontal_alignment)
     if (get_wnd()) {
         m_horizontal_alignment = horizontal_alignment;
         invalidate_all(false);
-        update_scrollbar_range();
+        update_scrollbars(false, true);
         update_now();
     }
 }
@@ -1163,7 +1077,7 @@ void ItemDetails::MenuNodeWordWrap::execute()
     cfg_item_details_word_wrapping = p_this->m_word_wrapping;
     p_this->reset_display_info();
     p_this->invalidate_all(false);
-    p_this->update_scrollbar_range();
+    p_this->update_scrollbars(false, true);
     p_this->update_now();
 }
 
@@ -1187,7 +1101,7 @@ void ItemDetails::MenuNodeHorizontalScrolling::execute()
     cfg_item_details_hscroll = p_this->m_hscroll;
     p_this->reset_display_info();
     p_this->invalidate_all(false);
-    p_this->update_scrollbar_range();
+    p_this->update_scrollbars(false, true);
     p_this->update_now();
 }
 
@@ -1238,7 +1152,7 @@ void ItemDetails::MenuNodeAlignment::execute()
     p_this->m_horizontal_alignment = m_type;
     cfg_item_details_horizontal_alignment = m_type;
     p_this->invalidate_all(false);
-    p_this->update_scrollbar_range();
+    p_this->update_scrollbars(false, true);
     p_this->update_now();
 }
 
