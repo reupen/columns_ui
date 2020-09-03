@@ -10,6 +10,10 @@
 
 ### Bug fixes
 
+* The positioning of lines in Item details when a font change was immediately followed by a colour change was corrected.  [[#338](https://github.com/reupen/columns_ui/pull/338)]
+
+  Additionally, font changes that don’t affect any text (e.g. due to being immediately followed by another font change) now correctly affect the height of the line.
+
 * A bug was fixed where it sometimes wasn't possible to scroll to the very bottom of Items details when both horizontal and vertical scroll bars were visible. [[#335](https://github.com/reupen/columns_ui/pull/335)]
 
 * Miscalculated bottom padding in the background of some dialogues at high DPIs was fixed. [[#334](https://github.com/reupen/columns_ui/pull/334)]

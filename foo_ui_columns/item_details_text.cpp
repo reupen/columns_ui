@@ -272,22 +272,22 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
     for (auto&& [line, fragments] : fragments_by_line) {
         int line_height{gsl::narrow<int>(uGetTextHeight(dc))};
+        bool is_line_height_explicitly_set{};
         int line_width{};
 
         for (auto&& [fragment_index, fragment] : ranges::views::enumerate(fragments)) {
             const size_t character_pos = fragment.data() - text.data();
             size_t fragment_character_pos{};
 
-            while (font_iter != font_changes.end() && font_iter->m_text_index < character_pos)
-                ++font_iter;
-
-            while (font_iter != font_changes.end() && font_iter->m_text_index == character_pos) {
+            while (font_iter != font_changes.end() && font_iter->m_text_index <= character_pos) {
                 selected_font.reset();
                 selected_font = wil::SelectObject(dc, font_iter->m_font->m_font.get());
-                if (fragment_index == 0) {
+                if (fragment_index == 0 && !is_line_height_explicitly_set) {
                     line_height = font_iter->m_font->m_height;
+                    is_line_height_explicitly_set = true;
                 } else {
                     line_height = (std::max)(line_height, font_iter->m_font->m_height);
+                    is_line_height_explicitly_set = true;
                 }
                 ++font_iter;
             }
@@ -333,7 +333,8 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
                     fragment_character_pos += max_chars;
                     last_append_pos = wrapped_line_end - text.data();
-                    line_height = uGetTextHeight(dc);
+                    line_height = gsl::narrow<int>(uGetTextHeight(dc));
+                    is_line_height_explicitly_set = false;
                     line_width = 0;
                 } else {
                     fragment_character_pos += fragment.size();
