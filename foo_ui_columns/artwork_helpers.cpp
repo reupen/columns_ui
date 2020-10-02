@@ -11,21 +11,21 @@ void artwork_panel::ArtworkReader::run_notification_thisthread(DWORD state)
 }
 
 void artwork_panel::ArtworkReader::initialise(const std::vector<GUID>& p_requestIds,
-    const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool b_read_emptycover,
+    const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
     const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
     std::shared_ptr<class ArtworkReaderManager> p_manager)
 {
     m_requestIds = p_requestIds;
     m_content = p_content_previous;
-    m_read_emptycover = b_read_emptycover;
+    m_read_stub_image = read_stub_image;
     m_handle = p_handle;
     m_notify = p_notify;
     m_manager = std::move(p_manager);
 }
 
-const album_art_data_ptr& artwork_panel::ArtworkReader::get_emptycover() const
+const std::unordered_map<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_stub_images() const
 {
-    return m_emptycover;
+    return m_stub_images;
 }
 
 const std::unordered_map<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_content() const
@@ -58,28 +58,39 @@ void artwork_panel::ArtworkReaderManager::deinitialise()
         m_current_reader->wait_for_and_release_thread();
         m_current_reader.reset();
     }
-    m_emptycover.reset();
+    m_stub_images.clear();
 }
 
-bool artwork_panel::ArtworkReaderManager::QueryEmptyCover(album_art_data_ptr& p_data)
+album_art_data_ptr artwork_panel::ArtworkReaderManager::get_stub_image(GUID artwork_type_id)
 {
-    if (IsReady() && m_emptycover.is_valid()) {
-        p_data = m_emptycover;
+    if (!IsReady())
+        return {};
+
+    if (const auto content_iter = m_stub_images.find(artwork_type_id); content_iter != m_stub_images.end()) {
+        return content_iter->second;
     }
-    return p_data.is_valid();
+
+    if (artwork_type_id == album_art_ids::cover_front)
+        return {};
+
+    if (const auto content_iter = m_stub_images.find(album_art_ids::cover_front); content_iter != m_stub_images.end()) {
+        return content_iter->second;
+    }
+
+    return {};
 }
 
-bool artwork_panel::ArtworkReaderManager::Query(const GUID& p_what, album_art_data_ptr& p_data)
+album_art_data_ptr artwork_panel::ArtworkReaderManager::get_image(const GUID& p_what)
 {
-    if (IsReady() && m_current_reader->did_succeed()) {
-        auto&& content = m_current_reader->get_content();
-        auto content_iter = content.find(p_what);
-        if (content_iter != content.end()) {
-            p_data = content_iter->second;
-            return true;
-        }
-    }
-    return false;
+    if (!IsReady() || !m_current_reader->did_succeed())
+        return {};
+
+    auto&& content = m_current_reader->get_content();
+    const auto content_iter = content.find(p_what);
+    if (content_iter != content.end())
+        return content_iter->second;
+
+    return {};
 }
 
 void artwork_panel::ArtworkReaderManager::Request(
@@ -92,7 +103,7 @@ void artwork_panel::ArtworkReaderManager::Request(
         m_current_reader = std::make_shared<ArtworkReader>();
         m_current_reader->initialise(m_requestIds,
             b_prev_valid ? ptr_prev->get_content() : std::unordered_map<GUID, album_art_data_ptr>(),
-            !m_emptycover.is_valid(), p_handle, p_notify, shared_from_this());
+            m_stub_images.empty(), p_handle, p_notify, shared_from_this());
         m_current_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
         m_current_reader->create_thread();
     }
@@ -107,7 +118,7 @@ void artwork_panel::ArtworkReaderManager::Reset()
 {
     abort_current_task();
     m_current_reader.reset();
-    m_emptycover.reset();
+    m_stub_images.clear();
 }
 
 void artwork_panel::ArtworkReaderManager::abort_current_task()
@@ -150,8 +161,8 @@ void artwork_panel::ArtworkReaderManager::on_reader_completion(DWORD state, cons
 {
     if (m_current_reader && ptr == &*m_current_reader) {
         m_current_reader->wait_for_and_release_thread();
-        if (m_current_reader->get_emptycover().is_valid())
-            m_emptycover = m_current_reader->get_emptycover();
+        if (!m_current_reader->get_stub_images().empty())
+            m_stub_images = m_current_reader->get_stub_images();
         m_current_reader->run_notification_thisthread(state);
         // m_current_reader.release();
     } else {
@@ -217,29 +228,24 @@ DWORD artwork_panel::ArtworkReader::on_thread()
     return ret;
 }
 
-bool artwork_panel::g_get_album_art_extractor_interface(service_ptr_t<album_art_extractor>& out, const char* path)
+album_art_data_ptr query_artwork_data(
+    GUID artwork_type_id, album_art_extractor_instance_v2::ptr extractor, abort_callback& aborter)
 {
-    service_enum_t<album_art_extractor> e;
-    album_art_extractor::ptr ptr;
-    pfc::string_extension ext(path);
-    while (e.next(ptr)) {
-        if (ptr->is_our_path(path, ext)) {
-            out = ptr;
-            return true;
-        }
+    try {
+        album_art_data_ptr data = extractor->query(artwork_type_id, aborter);
+
+        if (data->get_size() > 0)
+            return data;
+    } catch (const exception_aborted&) {
+        throw;
+    } catch (exception_album_art_not_found const&) {
+    } catch (exception_io const& ex) {
+        fbh::print_to_console(u8"Artwork view – error loading artwork: ", ex.what());
     }
-    return false;
+
+    return {};
 }
 
-album_art_extractor_instance_ptr artwork_panel::g_get_album_art_extractor_instance(
-    const char* path, abort_callback& p_abort)
-{
-    album_art_extractor::ptr api;
-    if (artwork_panel::g_get_album_art_extractor_interface(api, path)) {
-        return api->open(nullptr, path, p_abort);
-    }
-    throw exception_album_art_not_found();
-}
 unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("artwork_reader_v2_t::read_artwork");
@@ -250,36 +256,32 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
 
     pfc::list_t<GUID> guids;
     guids.add_items_fromptr(m_requestIds.data(), m_requestIds.size());
-    auto artwork_api_v2
+    const auto artwork_api_v2
         = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
 
     for (auto&& artwork_id : m_requestIds) {
-        try {
-            album_art_data_ptr data = artwork_api_v2->query(artwork_id, p_abort);
-            if (data->get_size() > 0)
-                m_content.insert_or_assign(artwork_id, data);
-        } catch (const exception_aborted&) {
-            throw;
-        } catch (exception_io_not_found const&) {
-        } catch (exception_io const& e) {
-            console::formatter formatter;
-            formatter << u8"Artwork view – error loading artwork: " << e.what();
-        }
+        const auto data = query_artwork_data(artwork_id, artwork_api_v2, p_abort);
+
+        if (data.is_valid())
+            m_content.insert_or_assign(artwork_id, data);
     }
 
-    if (m_read_emptycover) {
-        try {
-            auto p_extractor = p_album_art_manager_v2->open_stub(p_abort);
-            // FIXME: We are always using the front no cover image
-            m_emptycover = p_extractor->query(album_art_ids::cover_front, p_abort);
-        } catch (const exception_aborted&) {
-            throw;
-        } catch (exception_io_not_found const&) {
-        } catch (exception_io const& e) {
-            console::formatter formatter;
-            formatter << u8"Artwork view – error loading no-cover image: " << e.what();
+    if (m_read_stub_image) {
+        const auto stub_extractor = p_album_art_manager_v2->open_stub(p_abort);
+
+        for (auto&& artwork_id : m_requestIds) {
+            const auto data = query_artwork_data(artwork_id, stub_extractor, p_abort);
+
+            if (data.is_valid())
+                m_stub_images.insert_or_assign(artwork_id, data);
         }
-        if (!m_emptycover.is_valid() && pvt::g_get_default_nocover_bitmap_data(m_emptycover, p_abort)) {
+
+        if (m_stub_images.find(album_art_ids::cover_front) == m_stub_images.end()) {
+            album_art_data_ptr data;
+            pvt::g_get_default_nocover_bitmap_data(data, p_abort);
+
+            if (data.is_valid())
+                m_stub_images.insert_or_assign(album_art_ids::cover_front, data);
         }
     }
     return isContentEqual(m_content, content_previous) ? 0 : 1;

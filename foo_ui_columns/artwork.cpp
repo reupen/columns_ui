@@ -346,17 +346,17 @@ void ArtworkPanel::on_completion(unsigned p_code)
         }
 
         if (!b_found) {
-            show_emptycover();
+            show_stub_image();
         }
     }
 }
 #endif
 
-void ArtworkPanel::show_emptycover()
+void ArtworkPanel::show_stub_image()
 {
     if (m_artwork_loader && m_artwork_loader->IsReady()) {
-        album_art_data_ptr data;
-        if (m_artwork_loader->QueryEmptyCover(data)) {
+        album_art_data_ptr data = m_artwork_loader->get_stub_image(g_artwork_types[m_position]);
+        if (data.is_valid()) {
             wil::com_ptr_t<mmh::IStreamMemblock> pStream
                 = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
             {
@@ -383,8 +383,8 @@ bool ArtworkPanel::refresh_image(t_size index)
     if (!m_artwork_loader || !m_artwork_loader->IsReady())
         return false;
 
-    album_art_data_ptr data;
-    if (!m_artwork_loader->Query(g_artwork_types[index], data))
+    const auto data = m_artwork_loader->get_image(g_artwork_types[index]);
+    if (data.is_empty())
         return false;
 
     cui::wic::BitmapData bitmap_data{};
@@ -720,10 +720,10 @@ ArtworkPanel::MenuNodeArtworkType::MenuNodeArtworkType(ArtworkPanel* p_wnd, t_si
 
 void ArtworkPanel::MenuNodeArtworkType::execute()
 {
-    if (!p_this->refresh_image(m_type)) {
-        p_this->show_emptycover();
-    }
     p_this->m_position = m_type;
+    if (!p_this->refresh_image(m_type)) {
+        p_this->show_stub_image();
+    }
 }
 
 bool ArtworkPanel::MenuNodeArtworkType::get_description(pfc::string_base& p_out) const
