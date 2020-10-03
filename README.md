@@ -8,7 +8,7 @@ Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPY
 
 Releases can be downloaded from the [Columns UI home page](http://yuo.be/columns-ui).
 
-The latest development version can be downloaded by clicking on the Azure Pipelines link above, and then Artifacts. Development versions may be buggier than formal releases; if you encounter problems, please open an issue.
+The latest development version can be downloaded by clicking on the Azure Pipelines badge above, then '1 published' and then the three dots shown while hovering over 'VS 2019 v142 Release'. Development versions may be buggier than formal releases; if you encounter a problem, please open an issue.
 
 ## Development
 
