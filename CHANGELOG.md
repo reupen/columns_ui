@@ -2,9 +2,15 @@
 
 ## Development version
 
+### Features
+
 * Support for back cover, disc and artist stub images was added to the Artwork view panel. [[#345](https://github.com/reupen/columns_ui/pull/345)]
 
+### Internal changes
+
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]
+
+* The component is now compiled using Visual Studio 2019 16.7.
 
 ## 1.6.0
 

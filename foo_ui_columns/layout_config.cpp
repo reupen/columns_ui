@@ -27,7 +27,7 @@ const Preset default_preset = {"Default",
     }}
 };
 
-const std::initializer_list<Preset> quick_setup_presets = {
+const std::array<Preset, 10> quick_setup_presets = {{
     {"Playlist switcher",
         {columns_ui::panels::guid_horizontal_splitter, {
             {columns_ui::panels::guid_vertical_splitter, {
@@ -155,7 +155,7 @@ const std::initializer_list<Preset> quick_setup_presets = {
             }, true, 125},
         }}
     },
-};
+}};
 // clang-format on
 
 uie::window::ptr node_to_window(Node node)
