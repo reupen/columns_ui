@@ -1,7 +1,0 @@
-<Project>
-  <ItemDefinitionGroup Condition="$(VCToolsVersion) &lt; 14.26">
-    <ClCompile>
-      <AdditionalOptions>-experimental:preprocessor %(AdditionalOptions)</AdditionalOptions>
-    </ClCompile>
-  </ItemDefinitionGroup>
-</Project>

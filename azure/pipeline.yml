@@ -1,7 +1,7 @@
 variables:
   solution: vc16/columns_ui-public.sln
   llvmMsBuildArgs: /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;SpectreMitigation=
-  vc142MsBuildArgs: /p:VCToolsVersion=14.25.28610
+  vc142MsBuildArgs:
   vcpkgInstallArgs: 'ms-gsl range-v3 wil --overlay-ports=$(System.DefaultWorkingDirectory)\ports'
 jobs:
 - template: job-build.yml
