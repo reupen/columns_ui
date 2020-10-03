@@ -173,7 +173,7 @@ private:
     void refresh_cached_bitmap();
     void flush_cached_bitmap();
     bool refresh_image(t_size index);
-    void show_emptycover();
+    void show_stub_image();
     void flush_image();
 
     ULONG_PTR m_gdiplus_instance{NULL};

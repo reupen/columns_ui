@@ -2,6 +2,8 @@
 
 ## Development version
 
+* Support for back cover, disc and artist stub images was added to the Artwork view panel. [[#345](https://github.com/reupen/columns_ui/pull/345)]
+
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]
 
 ## 1.6.0

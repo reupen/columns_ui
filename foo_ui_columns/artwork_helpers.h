@@ -10,12 +10,12 @@ public:
     // only called when thread closed
     bool did_succeed();
     const std::unordered_map<GUID, album_art_data_ptr>& get_content() const;
-    const album_art_data_ptr& get_emptycover() const;
+    const std::unordered_map<GUID, album_art_data_ptr>& get_stub_images() const;
 
     ArtworkReader() = default;
 
     void initialise(const std::vector<GUID>& p_requestIds,
-        const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool b_read_emptycover,
+        const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
         const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
         std::shared_ptr<class ArtworkReaderManager> p_manager);
     void run_notification_thisthread(DWORD state);
@@ -30,11 +30,11 @@ private:
 
     std::vector<GUID> m_requestIds;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
+    std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
     metadb_handle_ptr m_handle;
     completion_notify_ptr m_notify;
     bool m_succeeded{false};
-    bool m_read_emptycover{true};
-    album_art_data_ptr m_emptycover;
+    bool m_read_stub_image{true};
     abort_callback_impl m_abort;
     std::shared_ptr<class ArtworkReaderManager> m_manager;
 };
@@ -52,9 +52,8 @@ public:
     //! advanced to another track with the same album art data).
     void Request(const metadb_handle_ptr& p_handle, completion_notify_ptr p_notify = nullptr);
 
-    bool Query(const GUID& p_what, album_art_data_ptr& p_data);
-
-    bool QueryEmptyCover(album_art_data_ptr& p_data);
+    album_art_data_ptr get_image(const GUID& p_what);
+    album_art_data_ptr get_stub_image(GUID artwork_type_id);
 
     void deinitialise();
 
@@ -68,7 +67,7 @@ private:
 
     std::vector<GUID> m_requestIds;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
-    album_art_data_ptr m_emptycover;
+    std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
 };
 
 class ArtworkReaderNotification : public main_thread_callback {
@@ -83,8 +82,5 @@ public:
     const ArtworkReader* m_reader;
     std::shared_ptr<ArtworkReaderManager> m_manager;
 };
-
-bool g_get_album_art_extractor_interface(service_ptr_t<album_art_extractor>& out, const char* path);
-album_art_extractor_instance_ptr g_get_album_art_extractor_instance(const char* path, abort_callback& p_abort);
 
 }; // namespace artwork_panel
