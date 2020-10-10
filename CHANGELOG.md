@@ -6,6 +6,8 @@
 
 * Support for back cover, disc and artist stub images was added to the Artwork view panel. [[#345](https://github.com/reupen/columns_ui/pull/345)]
 
+* The list view scrolling speed when selecting items or using drag and drop was adjusted to be slower, particularly for short lists such as in Buttons options. [[#349](https://github.com/reupen/columns_ui/pull/349)]
+
 ### Internal changes
 
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]
