@@ -297,7 +297,8 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
                 uih::UniscribeTextRenderer script_string;
 
                 script_string.analyse(dc, fragment.data() + fragment_character_pos,
-                    fragment.length() - fragment_character_pos, (std::max)(max_width - line_width, 0), b_word_wrapping);
+                    fragment.length() - fragment_character_pos, (std::max)(max_width - line_width, 0), b_word_wrapping,
+                    true, line_width);
 
                 if (b_word_wrapping) {
                     max_chars = gsl::narrow<size_t>(script_string.get_output_character_count());
@@ -475,6 +476,8 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
                 rc_line.left += (widthLine - widthLineText);
         }
 
+        auto left_padding = rc_line.left;
+
         while (thisFontChangeCount) {
             int width = NULL;
             t_size ptrThisCount = ptrRemaining;
@@ -496,12 +499,11 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
                 thisFontChangeCount--;
             }
             RECT rc_font = rc_line;
-            int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
-            rc_font.bottom -= half_padding_size; // extra/4;
+            rc_font.bottom -= half_padding_size;
 
             utf8_converter.convert(ptr, ptrThisCount);
-            BOOL ret = uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text,
-                false, false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, &width);
+            BOOL ret = uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false,
+                    false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, &width, rc_line.left - left_padding);
             rc_line.left = width; // width == position actually!!
             ptr += ptrThisCount;
             ptrRemaining -= ptrThisCount;
@@ -509,12 +511,11 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
 
         if (ptrRemaining) {
             RECT rc_font = rc_line;
-            int extra = RECT_CY(rc_font) - uGetTextHeight(dc);
             rc_font.bottom -= half_padding_size;
 
             utf8_converter.convert(ptr, ptrRemaining);
             uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false,
-                false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
+                false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, nullptr, rc_line.left - left_padding);
         }
 
 #if 0
