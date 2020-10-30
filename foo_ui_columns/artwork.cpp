@@ -63,11 +63,14 @@ void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) 
 
 void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeTypePopup(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeSourcePopup(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodePreserveAspectRatio(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeLockType(this)));
-    p_hook.add_node(ui_extension::menu_node_ptr(new MenuNodeOptions()));
+    p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Reload artwork",
+        "Reloads the currently displayed artwork.", 0, [this, self = ptr{this}] { force_reload_artwork(); })));
+    p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_separator_t()));
+    p_hook.add_node(uie::menu_node_ptr(new MenuNodeTypePopup(this)));
+    p_hook.add_node(uie::menu_node_ptr(new MenuNodeSourcePopup(this)));
+    p_hook.add_node(uie::menu_node_ptr(new MenuNodePreserveAspectRatio(this)));
+    p_hook.add_node(uie::menu_node_ptr(new MenuNodeLockType(this)));
+    p_hook.add_node(uie::menu_node_ptr(new MenuNodeOptions()));
 }
 
 ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio){};
