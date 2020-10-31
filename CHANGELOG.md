@@ -12,6 +12,8 @@
 
 * A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from the file system using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351)]
 
+* The Filter panel no longer focuses the first playlist item when using any of the send to playlist commands or actions. This improves compatibility with shuffle playback modes when 'Playback follows cursor' is enabled. [[#352](https://github.com/reupen/columns_ui/pull/352)]
+
 ### Internal changes
 
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]

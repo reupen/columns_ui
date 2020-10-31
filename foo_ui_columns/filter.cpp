@@ -582,15 +582,16 @@ void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, Action action)
         playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
     else {
         playlist_api->playlist_clear_selection(index);
+        const auto item_index = playlist_api->playlist_get_item_count(index);
         playlist_api->playlist_add_items(index, handles, pfc::bit_array_true());
+        playlist_api->playlist_set_focus_item(index, item_index);
     }
-    playlist_api->playlist_set_focus_item(index, playlist_api->playlist_get_item_count(index) - handles.get_count());
 
     if (action != action_add_to_active) {
         playlist_api->set_active_playlist(index);
         if (action == action_send_to_autosend_play || action == action_send_to_new_play) {
             playlist_api->set_playing_playlist(index);
-            playback_api->play_start(play_control::track_command_default);
+            playback_api->start(play_control::track_command_default);
         }
     }
 }
