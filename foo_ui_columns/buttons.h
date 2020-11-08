@@ -208,7 +208,6 @@ public:
     };
 
     static BOOL CALLBACK ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    static BOOL CALLBACK ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     bool have_config_popup() const override { return true; }
     bool show_config_popup(HWND wnd_parent) override;

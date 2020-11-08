@@ -564,21 +564,6 @@ void ButtonsToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_ca
     }
 }
 
-BOOL CALLBACK ButtonsToolbar::ConfigCommandProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_INITDIALOG: {
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-        auto* ptr = reinterpret_cast<CommandPickerData*>(lp);
-        return ptr->on_message(wnd, msg, wp, lp);
-    }
-    default: {
-        auto* ptr = reinterpret_cast<CommandPickerData*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return ptr->on_message(wnd, msg, wp, lp);
-    }
-    }
-}
-
 BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {

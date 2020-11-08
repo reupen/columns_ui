@@ -3,22 +3,10 @@
 #include "setup_dialog.h"
 #include "main_window.h"
 
-BOOL CALLBACK QuickSetupDialog::g_SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    QuickSetupDialog* p_data = nullptr;
-    if (msg == WM_INITDIALOG) {
-        p_data = reinterpret_cast<QuickSetupDialog*>(lp);
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-    } else
-        p_data = reinterpret_cast<QuickSetupDialog*>(GetWindowLongPtr(wnd, DWLP_USER));
-    return p_data ? p_data->SetupDialogProc(wnd, msg, wp, lp) : FALSE;
-}
 BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        m_this = shared_from_this();
-
         modeless_dialog_manager::g_add(wnd);
 
         HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
@@ -27,18 +15,23 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         uih::list_view_set_explorer_theme(wnd_lv);
 
-        RECT rc_work;
-        RECT rc_dialog;
-        SystemParametersInfo(SPI_GETWORKAREA, NULL, &rc_work, NULL);
-        GetWindowRect(wnd, &rc_dialog);
+        const auto monitor = MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST);
+        MONITORINFO monitor_info_ex{};
+        monitor_info_ex.cbSize = sizeof(MONITORINFO);
+        if (GetMonitorInfo(monitor, &monitor_info_ex)) {
+            const auto& rc_work = monitor_info_ex.rcWork;
 
-        const unsigned cx = rc_dialog.right - rc_dialog.left;
-        const unsigned cy = rc_dialog.bottom - rc_dialog.top;
+            RECT rc_dialog{};
+            GetWindowRect(wnd, &rc_dialog);
 
-        unsigned left = (rc_work.right - rc_work.left - cx) / 2;
-        unsigned top = (rc_work.bottom - rc_work.top - cy) / 2;
+            const unsigned cx = rc_dialog.right - rc_dialog.left;
+            const unsigned cy = rc_dialog.bottom - rc_dialog.top;
 
-        SetWindowPos(wnd, nullptr, left, top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+            unsigned left = (rc_work.right - rc_work.left - cx) / 2;
+            unsigned top = (rc_work.bottom - rc_work.top - cy) / 2;
+
+            SetWindowPos(wnd, nullptr, left, top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
+        }
 
         ListView_SetExtendedListViewStyleEx(
             wnd_lv, LVS_EX_FULLROWSELECT | 0x10000000, LVS_EX_FULLROWSELECT | 0x10000000);
@@ -103,22 +96,29 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return TRUE;
     case WM_COMMAND:
         switch (wp) {
-        case IDCANCEL:
-            cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
-            g_set_global_colour_mode(m_previous_colour_mode);
-            pvt::cfg_show_artwork = m_previous_show_artwork;
-            pvt::cfg_grouping = m_previous_show_grouping;
-            pvt::PlaylistView::g_on_show_artwork_change();
-            pvt::PlaylistView::g_on_groups_change();
+        case IDCANCEL: {
+            uih::dpi::with_default_thread_dpi_awareness([&] {
+                cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
+                g_set_global_colour_mode(m_previous_colour_mode);
+                pvt::cfg_show_artwork = m_previous_show_artwork;
+                pvt::cfg_grouping = m_previous_show_grouping;
+                pvt::PlaylistView::g_on_show_artwork_change();
+                pvt::PlaylistView::g_on_groups_change();
+            });
+            DestroyWindow(wnd);
+            return 0;
+        }
         case IDOK:
             DestroyWindow(wnd);
             return 0;
         case (CBN_SELCHANGE << 16) | IDC_THEMING: {
-            t_size selection = ComboBox_GetCurSel(HWND(lp));
-            if (selection == 1)
-                g_set_global_colour_mode(cui::colours::colour_mode_themed);
-            else if (selection == 0)
-                g_set_global_colour_mode(cui::colours::colour_mode_system);
+            const t_size selection = ComboBox_GetCurSel(HWND(lp));
+            uih::dpi::with_default_thread_dpi_awareness([&] {
+                if (selection == 1)
+                    g_set_global_colour_mode(cui::colours::colour_mode_themed);
+                else if (selection == 0)
+                    g_set_global_colour_mode(cui::colours::colour_mode_system);
+            });
         } break;
         case (CBN_SELCHANGE << 16) | IDC_GROUPING: {
             t_size selection = ComboBox_GetCurSel(HWND(lp));
@@ -131,8 +131,10 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (selection == 0)
                 pvt::cfg_grouping = false;
 
-            pvt::PlaylistView::g_on_show_artwork_change();
-            pvt::PlaylistView::g_on_groups_change();
+            uih::dpi::with_default_thread_dpi_awareness([&] {
+                pvt::PlaylistView::g_on_show_artwork_change();
+                pvt::PlaylistView::g_on_groups_change();
+            });
 
         } break;
         }
@@ -151,7 +153,8 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED)) {
                         uie::splitter_item_ptr ptr;
                         m_presets[lpnmlv->iItem].get(ptr);
-                        cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr());
+                        uih::dpi::with_default_thread_dpi_awareness(
+                            [&] { cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr()); });
                     }
                 }
             }
@@ -165,8 +168,6 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         modeless_dialog_manager::g_remove(wnd);
         break;
     case WM_NCDESTROY:
-        SetWindowLongPtr(wnd, DWLP_USER, NULL);
-        m_this.reset();
         return FALSE;
     }
 
@@ -175,7 +176,8 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void QuickSetupDialog::g_run()
 {
-    QuickSetupDialog::ptr_t dialog = std::make_shared<QuickSetupDialog>();
-    CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_QUICK_SETUP), cui::main_window.get_wnd(),
-        g_SetupDialogProc, reinterpret_cast<LPARAM>(dialog.get()));
+    uih::dpi::modeless_dialog_box(
+        IDD_QUICK_SETUP, cui::main_window.get_wnd(), [dialog = std::make_shared<QuickSetupDialog>()](auto&&... args) {
+            return dialog->SetupDialogProc(std::forward<decltype(args)>(args)...);
+        });
 }

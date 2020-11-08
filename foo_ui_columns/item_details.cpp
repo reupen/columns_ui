@@ -56,9 +56,9 @@ void ItemDetails::MenuNodeOptions::execute()
     if (p_this->m_wnd_config)
         SetActiveWindow(p_this->m_wnd_config);
     else {
-        auto p_dialog = new ItemDetailsConfig(
-            p_this->m_script, p_this->m_edge_style, p_this->m_horizontal_alignment, p_this->m_vertical_alignment);
-        p_dialog->run_modeless(GetAncestor(p_this->get_wnd(), GA_ROOT), p_this.get_ptr());
+        ItemDetailsConfig(
+            p_this->m_script, p_this->m_edge_style, p_this->m_horizontal_alignment, p_this->m_vertical_alignment)
+            .run_modeless(GetAncestor(p_this->get_wnd(), GA_ROOT), p_this.get_ptr());
     }
 }
 

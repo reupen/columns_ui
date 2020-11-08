@@ -426,11 +426,13 @@ public:
 
     enum { timer_id = 100 };
 
-    static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign);
 
+    ItemDetailsConfig(const ItemDetailsConfig&) = default;
+    ItemDetailsConfig(ItemDetailsConfig&&) = default;
+
     bool run_modal(HWND wnd);
-    void run_modeless(HWND wnd, ItemDetails* p_this);
+    void run_modeless(HWND wnd, ItemDetails* p_this) &&;
 
 private:
     void kill_timer();
