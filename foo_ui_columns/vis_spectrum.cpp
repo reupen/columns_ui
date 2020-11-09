@@ -277,34 +277,33 @@ public:
     }
 };
 
-static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+static BOOL CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
-    case WM_INITDIALOG:
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-        {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(lp);
-            ptr->m_scope.initialize(FindOwningPopup(wnd));
-            SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, ptr->ptr->mode == MODE_BARS, 0);
-            HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
-            EnableWindow(wnd_combo, ptr->b_show_frame);
-            if (ptr->b_show_frame) {
-                ComboBox_AddString(wnd_combo, _T("None"));
-                ComboBox_AddString(wnd_combo, _T("Sunken"));
-                ComboBox_AddString(wnd_combo, _T("Grey"));
-                ComboBox_SetCurSel(wnd_combo, ptr->frame);
-            }
-            wnd_combo = GetDlgItem(wnd, IDC_SCALE);
-            ComboBox_AddString(wnd_combo, _T("Linear"));
-            ComboBox_AddString(wnd_combo, _T("Logarithmic"));
-            ComboBox_SetCurSel(wnd_combo, ptr->m_scale);
+    case WM_INITDIALOG: {
+        state.m_scope.initialize(FindOwningPopup(wnd));
+        SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, state.ptr->mode == MODE_BARS, 0);
+        HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
+        EnableWindow(wnd_combo, state.b_show_frame);
 
-            wnd_combo = GetDlgItem(wnd, IDC_VERTICAL_SCALE);
-            ComboBox_AddString(wnd_combo, _T("Linear"));
-            ComboBox_AddString(wnd_combo, _T("Logarithmic"));
-            ComboBox_SetCurSel(wnd_combo, ptr->m_vertical_scale);
+        if (state.b_show_frame) {
+            ComboBox_AddString(wnd_combo, _T("None"));
+            ComboBox_AddString(wnd_combo, _T("Sunken"));
+            ComboBox_AddString(wnd_combo, _T("Grey"));
+            ComboBox_SetCurSel(wnd_combo, state.frame);
         }
+
+        wnd_combo = GetDlgItem(wnd, IDC_SCALE);
+        ComboBox_AddString(wnd_combo, _T("Linear"));
+        ComboBox_AddString(wnd_combo, _T("Logarithmic"));
+        ComboBox_SetCurSel(wnd_combo, state.m_scale);
+
+        wnd_combo = GetDlgItem(wnd, IDC_VERTICAL_SCALE);
+        ComboBox_AddString(wnd_combo, _T("Linear"));
+        ComboBox_AddString(wnd_combo, _T("Logarithmic"));
+        ComboBox_SetCurSel(wnd_combo, state.m_vertical_scale);
         return TRUE;
+    }
     case WM_ERASEBKGND:
         SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
         return TRUE;
@@ -312,20 +311,19 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
         return TRUE;
     case WM_CTLCOLORSTATIC: {
-        auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
         if (GetDlgItem(wnd, IDC_PATCH_FORE) == (HWND)lp) {
             auto dc = (HDC)wp;
-            if (!ptr->br_fore) {
-                ptr->br_fore = CreateSolidBrush(ptr->cr_fore);
+            if (!state.br_fore) {
+                state.br_fore = CreateSolidBrush(state.cr_fore);
             }
-            return (BOOL)ptr->br_fore;
+            return (BOOL)state.br_fore;
         }
         if (GetDlgItem(wnd, IDC_PATCH_BACK) == (HWND)lp) {
             auto dc = (HDC)wp;
-            if (!ptr->br_back) {
-                ptr->br_back = CreateSolidBrush(ptr->cr_back);
+            if (!state.br_back) {
+                state.br_back = CreateSolidBrush(state.cr_back);
             }
-            return (BOOL)ptr->br_back;
+            return (BOOL)state.br_back;
         }
         return (BOOL)GetSysColorBrush(COLOR_3DHIGHLIGHT);
     } break;
@@ -335,45 +333,38 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             EndDialog(wnd, 0);
             return TRUE;
         case IDC_CHANGE_BACK: {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
-            COLORREF COLOR = ptr->cr_back;
+            COLORREF COLOR = state.cr_back;
             COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_BACK), GetSysColor(COLOR_3DFACE), 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0};
             if (uChooseColor(&COLOR, wnd, &COLORS[0])) {
-                ptr->cr_back = COLOR;
-                ptr->flush_back();
+                state.cr_back = COLOR;
+                state.flush_back();
                 RedrawWindow(GetDlgItem(wnd, IDC_PATCH_BACK), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
             }
         } break;
         case IDC_CHANGE_FORE: {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
-            COLORREF COLOR = ptr->cr_fore;
+            COLORREF COLOR = state.cr_fore;
             COLORREF COLORS[16] = {get_default_colour(colours::COLOUR_TEXT), GetSysColor(COLOR_3DSHADOW), 0, 0, 0, 0, 0,
                 0, 0, 0, 0, 0, 0, 0, 0, 0};
             if (uChooseColor(&COLOR, wnd, &COLORS[0])) {
-                ptr->cr_fore = COLOR;
-                ptr->flush_fore();
+                state.cr_fore = COLOR;
+                state.flush_fore();
                 RedrawWindow(GetDlgItem(wnd, IDC_PATCH_FORE), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
             }
         } break;
         case IDC_BARS: {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
-            ptr->mode = (SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != TRUE ? MODE_STANDARD : MODE_BARS);
+            state.mode = (SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != TRUE ? MODE_STANDARD : MODE_BARS);
         } break;
         case IDC_FRAME_COMBO | (CBN_SELCHANGE << 16): {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
-            ptr->frame = ComboBox_GetCurSel(HWND(lp));
+            state.frame = ComboBox_GetCurSel(HWND(lp));
         } break;
         case IDC_SCALE | (CBN_SELCHANGE << 16): {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
-            ptr->m_scale = ComboBox_GetCurSel(HWND(lp));
+            state.m_scale = ComboBox_GetCurSel(HWND(lp));
         } break;
         case IDC_VERTICAL_SCALE | (CBN_SELCHANGE << 16): {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
-            ptr->m_vertical_scale = ComboBox_GetCurSel(HWND(lp));
+            state.m_vertical_scale = ComboBox_GetCurSel(HWND(lp));
         } break;
         case IDOK: {
-            auto* ptr = reinterpret_cast<SpectrumAnalyserConfigData*>(GetWindowLongPtr(wnd, DWLP_USER));
             EndDialog(wnd, 1);
         }
             return TRUE;
@@ -388,9 +379,8 @@ static BOOL CALLBACK SpectrumPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
     SpectrumAnalyserConfigData param(cr_fore, cr_back, mode, m_scale, m_vertical_scale, this);
-    const auto dialog_result
-        = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_SPECTRUM_ANALYSER_OPTIONS), wnd_parent,
-            SpectrumPopupProc, reinterpret_cast<LPARAM>(&param));
+    const auto dialog_result = uih::dpi::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
+        [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
 
     if (dialog_result > 0) {
         cr_fore = param.cr_fore;
@@ -649,9 +639,8 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
         SpectrumAnalyserConfigData param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
             p_temp.get_ptr(), true, get_frame_style());
 
-        const auto dialog_result
-            = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_SPECTRUM_ANALYSER_OPTIONS), wnd_parent,
-                SpectrumPopupProc, reinterpret_cast<LPARAM>(&param));
+        const auto dialog_result = uih::dpi::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
+            [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
 
         if (dialog_result > 0) {
             p_temp->cr_fore = param.cr_fore;

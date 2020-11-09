@@ -59,23 +59,7 @@ public:
             g_populate_tree(wnd_tree, list, filtered2, item);
         }
     }
-    static BOOL CALLBACK g_FCLDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        FCLDialog* p_this = nullptr;
-        switch (msg) {
-        case WM_INITDIALOG:
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-            p_this = reinterpret_cast<FCLDialog*>(lp);
-            break;
-        default:
-            p_this = reinterpret_cast<FCLDialog*>(GetWindowLongPtr(wnd, DWLP_USER));
-            break;
-        }
-        if (p_this)
-            return p_this->FCLDialogProc(wnd, msg, wp, lp);
 
-        return FALSE;
-    }
     BOOL CALLBACK FCLDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
@@ -219,7 +203,7 @@ public:
     ImportResultsData(PanelInfoList items, bool baborted) : m_items(std::move(items)), m_aborted(baborted){};
 };
 
-BOOL CALLBACK g_ImportResultsProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+BOOL g_ImportResultsProc(const ImportResultsData& data, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -227,10 +211,9 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetWindowText(wnd, _T("FCL import results"));
         HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
         uih::list_view_set_explorer_theme(wnd_lv);
-        auto* p_data = reinterpret_cast<ImportResultsData*>(lp);
 
         SetWindowText(GetDlgItem(wnd, IDC_CAPTION),
-            (p_data->m_aborted
+            (data.m_aborted
                     ? _T("The layout import was aborted because the following required panels are not installed:")
                     : _T("Some parts of the layout may not have imported because the following panels are not ")
                       _T("installed:")));
@@ -247,11 +230,11 @@ BOOL CALLBACK g_ImportResultsProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         LVITEM lvi;
         memset(&lvi, 0, sizeof(LVITEM));
         lvi.mask = LVIF_TEXT;
-        t_size count = p_data->m_items.get_count();
+        t_size count = data.m_items.get_count();
         for (t_size i = 0; i < count; i++) {
             pfc::string8 temp;
-            uih::list_view_insert_item_text(wnd_lv, i, 0, p_data->m_items[i].name, false);
-            uih::list_view_insert_item_text(wnd_lv, i, 1, pfc::print_guid(p_data->m_items[i].guid), true);
+            uih::list_view_insert_item_text(wnd_lv, i, 0, data.m_items[i].name, false);
+            uih::list_view_insert_item_text(wnd_lv, i, 1, pfc::print_guid(data.m_items[i].guid), true);
         }
         SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
         RedrawWindow(wnd_lv, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
@@ -373,8 +356,10 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
 
             FCLDialog pFCLDialog(true, std::move(datasetsguids));
             if (!quiet) {
-                const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_FCL_IMPORT),
-                    wnd, FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog));
+                const auto dialog_result
+                    = uih::dpi::modal_dialog_box(IDD_FCL_IMPORT, wnd, [&pFCLDialog](auto&&... args) {
+                          return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...);
+                      });
 
                 if (dialog_result <= 0)
                     throw exception_aborted();
@@ -402,8 +387,10 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
     } catch (const exception_aborted&) {
     } catch (const exception_fcl_dependentpanelmissing&) {
         ImportResultsData data(panel_info, true);
-        const auto wnd_results = CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_RESULTS), wnd,
-            g_ImportResultsProc, reinterpret_cast<LPARAM>(&data));
+        const auto wnd_results
+            = uih::dpi::modeless_dialog_box(IDD_RESULTS, wnd, [data{std::move(data)}](auto&&... args) {
+                  return g_ImportResultsProc(data, std::forward<decltype(args)>(args)...);
+              });
         ShowWindow(wnd_results, SW_SHOWNORMAL);
     } catch (const pfc::exception& ex) {
         popup_message::g_show(ex.what(), "Error");
@@ -437,8 +424,8 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
 {
     FCLDialog pFCLDialog;
     if (!is_quiet) {
-        const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_FCL_EXPORT), wnd,
-            FCLDialog::g_FCLDialogProc, reinterpret_cast<LPARAM>(&pFCLDialog));
+        const auto dialog_result = uih::dpi::modal_dialog_box(IDD_FCL_EXPORT, wnd,
+            [&pFCLDialog](auto&&... args) { return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...); });
 
         if (dialog_result <= 0)
             return;

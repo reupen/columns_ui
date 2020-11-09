@@ -61,8 +61,6 @@ BOOL CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
         m_wnd = nullptr;
         if (!m_modal) {
             modeless_dialog_manager::g_remove(wnd);
-            SetWindowLongPtr(wnd, DWLP_USER, NULL);
-            delete this;
         }
         break;
     case WM_ERASEBKGND:
@@ -174,36 +172,24 @@ void ItemDetailsConfig::kill_timer()
     }
 }
 
-void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this)
+void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this) &&
 {
     m_modal = false;
     m_this = p_this;
-    const auto wnd_options = CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_ITEM_DETAILS_OPTIONS),
-        wnd, g_DialogProc, reinterpret_cast<LPARAM>(this));
-    if (!wnd_options)
-        delete this;
+    uih::dpi::modeless_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd, [config{std::move(*this)}](auto&&... args) mutable {
+        return config.on_message(std::forward<decltype(args)>(args)...);
+    });
 }
 
 bool ItemDetailsConfig::run_modal(HWND wnd)
 {
     m_modal = true;
-    const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_ITEM_DETAILS_OPTIONS),
-        wnd, g_DialogProc, reinterpret_cast<LPARAM>(this));
+    const auto dialog_result = uih::dpi::modal_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd,
+        [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     return dialog_result > 0;
 }
 
 ItemDetailsConfig::ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)
     : m_script(p_text), m_edge_style(edge_style), m_horizontal_alignment(halign), m_vertical_alignment(valign)
 {
-}
-
-BOOL CALLBACK ItemDetailsConfig::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    ItemDetailsConfig* p_data = nullptr;
-    if (msg == WM_INITDIALOG) {
-        p_data = reinterpret_cast<ItemDetailsConfig*>(lp);
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-    } else
-        p_data = reinterpret_cast<ItemDetailsConfig*>(GetWindowLongPtr(wnd, DWLP_USER));
-    return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }

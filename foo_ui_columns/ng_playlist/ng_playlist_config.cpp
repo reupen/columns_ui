@@ -13,25 +13,23 @@ struct edit_view_param {
     bool b_new{};
 };
 
-static BOOL CALLBACK EditViewProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+static BOOL CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
         {
-            auto* ptr = reinterpret_cast<edit_view_param*>(lp);
-            SetWindowText(wnd, ptr->b_new ? L"Add New Group" : L"Edit Group");
+        SetWindowText(wnd, state.b_new ? L"Add New Group" : L"Edit Group");
 
-            uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show on all playlists");
-            uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show only on playlists:");
-            uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Hide on playlists:");
+        uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show on all playlists");
+        uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show only on playlists:");
+        uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Hide on playlists:");
 
-            EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), ptr->value.filter_type != FILTER_NONE);
+        EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), state.value.filter_type != FILTER_NONE);
 
-            SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (t_size)ptr->value.filter_type, 0);
-            uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, ptr->value.filter_playlists);
+        SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (t_size)state.value.filter_type, 0);
+        uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, state.value.filter_playlists);
 
-            uSetDlgItemText(wnd, IDC_VALUE, ptr->value.string);
+        uSetDlgItemText(wnd, IDC_VALUE, state.value.string);
         }
         break;
     case WM_COMMAND:
@@ -46,11 +44,10 @@ static BOOL CALLBACK EditViewProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         } break;
         case IDOK: {
-            auto* ptr = reinterpret_cast<edit_view_param*>(GetWindowLongPtr(wnd, DWLP_USER));
-            uGetDlgItemText(wnd, IDC_VALUE, ptr->value.string);
-            ptr->value.filter_type
+            uGetDlgItemText(wnd, IDC_VALUE, state.value.string);
+            state.value.filter_type
                 = ((PlaylistFilterType)SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_GETCURSEL, 0, 0));
-            ptr->value.filter_playlists = (string_utf8_from_window(wnd, IDC_PLAYLIST_FILTER_STRING));
+            state.value.filter_playlists = (string_utf8_from_window(wnd, IDC_PLAYLIST_FILTER_STRING));
             EndDialog(wnd, 1);
 
         } break;
@@ -62,8 +59,9 @@ static BOOL CALLBACK EditViewProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 static bool run_edit_view(edit_view_param& param, HWND parent)
 {
-    const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_EDIT_GROUP), parent,
-        EditViewProc, reinterpret_cast<LPARAM>(&param));
+    const auto dialog_result = uih::dpi::modal_dialog_box(IDD_EDIT_GROUP, parent,
+        [&param](auto&&... args) { return EditViewProc(param, std::forward<decltype(args)>(args)...); });
+
     return dialog_result > 0;
 }
 
