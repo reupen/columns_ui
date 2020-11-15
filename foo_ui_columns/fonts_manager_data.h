@@ -20,7 +20,7 @@ public:
         cui::fonts::FontDescription font_description{};
         cui::fonts::font_mode_t font_mode{cui::fonts::font_mode_system};
 
-        LOGFONT get_normalised_font();
+        LOGFONT get_normalised_font(unsigned dpi = uih::get_system_dpi_cached().cy);
 
         void write(stream_writer* p_stream, abort_callback& p_abort);
         void write_extra_data(stream_writer* p_stream, abort_callback& p_abort);

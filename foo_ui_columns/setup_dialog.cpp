@@ -16,10 +16,10 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uih::list_view_set_explorer_theme(wnd_lv);
 
         const auto monitor = MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST);
-        MONITORINFO monitor_info_ex{};
-        monitor_info_ex.cbSize = sizeof(MONITORINFO);
-        if (GetMonitorInfo(monitor, &monitor_info_ex)) {
-            const auto& rc_work = monitor_info_ex.rcWork;
+        MONITORINFO monitor_info{};
+        monitor_info.cbSize = sizeof(MONITORINFO);
+        if (GetMonitorInfo(monitor, &monitor_info)) {
+            const auto& rc_work = monitor_info.rcWork;
 
             RECT rc_dialog{};
             GetWindowRect(wnd, &rc_dialog);

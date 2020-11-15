@@ -189,10 +189,10 @@ void FontsManagerData::Entry::read_extra_data(stream_reader* stream, abort_callb
     limited_reader.read_lendian_t(font_description.point_size_tenths, aborter);
 }
 
-LOGFONT FontsManagerData::Entry::get_normalised_font()
+LOGFONT FontsManagerData::Entry::get_normalised_font(unsigned dpi)
 {
     LOGFONT lf{font_description.log_font};
-    lf.lfHeight = -MulDiv(font_description.point_size_tenths, uih::get_system_dpi_cached().cy, 720);
+    lf.lfHeight = -MulDiv(font_description.point_size_tenths, dpi, 720);
     return lf;
 }
 

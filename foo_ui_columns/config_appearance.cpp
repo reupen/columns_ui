@@ -136,6 +136,7 @@ public:
             p_out = p_entry->get_normalised_font();
         }
     }
+
     void get_font(const cui::fonts::font_type_t p_type, LOGFONT& p_out) const override
     {
         FontsManagerData::entry_ptr_t p_entry;
@@ -153,6 +154,7 @@ public:
             p_out = p_entry->get_normalised_font();
         }
     }
+
     void set_font(const GUID& p_guid, const LOGFONT& p_font) override
     {
         FontsManagerData::entry_ptr_t p_entry;
@@ -164,21 +166,89 @@ public:
         if (cui::fonts::client::create_by_guid(p_guid, ptr))
             ptr->on_font_changed();
     }
+
     void register_common_callback(cui::fonts::common_callback* p_callback) override
     {
         g_fonts_manager_data.register_common_callback(p_callback);
-    };
+    }
+
     void deregister_common_callback(cui::fonts::common_callback* p_callback) override
     {
         g_fonts_manager_data.deregister_common_callback(p_callback);
-    };
+    }
+};
 
-private:
+class FontsManager2 : public cui::fonts::manager_v2 {
+public:
+    [[nodiscard]] LOGFONT get_client_font(GUID p_guid, unsigned dpi) const override
+    {
+        LOGFONT lf{};
+
+        AppearanceMessageWindow::g_initialise();
+        FontsManagerData::entry_ptr_t p_entry;
+        g_fonts_manager_data.find_by_guid(p_guid, p_entry);
+
+        if (p_entry->font_mode == cui::fonts::font_mode_common_items)
+            return get_common_font(cui::fonts::font_type_items, dpi);
+
+        if (p_entry->font_mode == cui::fonts::font_mode_common_labels)
+            return get_common_font(cui::fonts::font_type_labels, dpi);
+
+        return p_entry->get_normalised_font(dpi);
+    }
+
+    [[nodiscard]] LOGFONT get_common_font(const cui::fonts::font_type_t p_type, unsigned dpi) const override
+    {
+        FontsManagerData::entry_ptr_t entry;
+        if (p_type == cui::fonts::font_type_items)
+            entry = g_fonts_manager_data.m_common_items_entry;
+        else
+            entry = g_fonts_manager_data.m_common_labels_entry;
+
+        if (entry->font_mode == cui::fonts::font_mode_system) {
+            if (p_type == cui::fonts::font_type_items) {
+                LOGFONT lf{};
+                uih::dpi::system_parameters_info_for_dpi(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, dpi);
+                return lf;
+            }
+
+            NONCLIENTMETRICS ncm{};
+            ncm.cbSize = sizeof(NONCLIENTMETRICS);
+            uih::dpi::system_parameters_info_for_dpi(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, dpi);
+            return ncm.lfMenuFont;
+        }
+
+        return entry->get_normalised_font(dpi);
+    }
+
+    void set_client_font(GUID guid, const LOGFONT& p_font, int point_size_tenths) override
+    {
+        FontsManagerData::entry_ptr_t p_entry;
+        g_fonts_manager_data.find_by_guid(guid, p_entry);
+        p_entry->font_mode = cui::fonts::font_mode_custom;
+        p_entry->font_description.log_font = p_font;
+        p_entry->font_description.point_size_tenths = point_size_tenths;
+
+        cui::fonts::client::ptr ptr;
+        if (cui::fonts::client::create_by_guid(guid, ptr))
+            ptr->on_font_changed();
+    }
+
+    void register_common_callback(cui::fonts::common_callback* p_callback) override
+    {
+        g_fonts_manager_data.register_common_callback(p_callback);
+    }
+
+    void deregister_common_callback(cui::fonts::common_callback* p_callback) override
+    {
+        g_fonts_manager_data.deregister_common_callback(p_callback);
+    }
 };
 
 namespace {
 service_factory_single_t<ColoursManager> g_colours_manager;
 service_factory_t<FontsManager> g_fonts_manager;
+service_factory_t<FontsManager2> g_fonts_manager_v2;
 }; // namespace
 
 cui::colours::colour_mode_t g_get_global_colour_mode()
