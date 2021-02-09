@@ -45,7 +45,7 @@ std::optional<pfc::string8> show_rename_dialog_box(HWND wnd_parent, const char* 
     param.m_title = title;
     param.m_text = initial_text;
 
-    const auto dialog_result = uih::dpi::modal_dialog_box(IDD_RENAME_PLAYLIST, wnd_parent,
+    const auto dialog_result = uih::modal_dialog_box(IDD_RENAME_PLAYLIST, wnd_parent,
         [&param](auto&&... args) { return show_rename_dialog_box_proc(param, std::forward<decltype(args)>(args)...); });
 
     if (dialog_result > 0)

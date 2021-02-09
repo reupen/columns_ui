@@ -97,14 +97,13 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_COMMAND:
         switch (wp) {
         case IDCANCEL: {
-            uih::dpi::with_default_thread_dpi_awareness([&] {
-                cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
-                g_set_global_colour_mode(m_previous_colour_mode);
-                pvt::cfg_show_artwork = m_previous_show_artwork;
-                pvt::cfg_grouping = m_previous_show_grouping;
-                pvt::PlaylistView::g_on_show_artwork_change();
-                pvt::PlaylistView::g_on_groups_change();
-            });
+            cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
+            g_set_global_colour_mode(m_previous_colour_mode);
+            pvt::cfg_show_artwork = m_previous_show_artwork;
+            pvt::cfg_grouping = m_previous_show_grouping;
+            pvt::PlaylistView::g_on_show_artwork_change();
+            pvt::PlaylistView::g_on_groups_change();
+
             DestroyWindow(wnd);
             return 0;
         }
@@ -113,13 +112,12 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         case (CBN_SELCHANGE << 16) | IDC_THEMING: {
             const t_size selection = ComboBox_GetCurSel(HWND(lp));
-            uih::dpi::with_default_thread_dpi_awareness([&] {
-                if (selection == 1)
-                    g_set_global_colour_mode(cui::colours::colour_mode_themed);
-                else if (selection == 0)
-                    g_set_global_colour_mode(cui::colours::colour_mode_system);
-            });
-        } break;
+            if (selection == 1)
+                g_set_global_colour_mode(cui::colours::colour_mode_themed);
+            else if (selection == 0)
+                g_set_global_colour_mode(cui::colours::colour_mode_system);
+            break;
+        }
         case (CBN_SELCHANGE << 16) | IDC_GROUPING: {
             t_size selection = ComboBox_GetCurSel(HWND(lp));
             if (selection >= 2)
@@ -131,12 +129,10 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (selection == 0)
                 pvt::cfg_grouping = false;
 
-            uih::dpi::with_default_thread_dpi_awareness([&] {
-                pvt::PlaylistView::g_on_show_artwork_change();
-                pvt::PlaylistView::g_on_groups_change();
-            });
-
-        } break;
+            pvt::PlaylistView::g_on_show_artwork_change();
+            pvt::PlaylistView::g_on_groups_change();
+            break;
+        }
         }
         break;
     case WM_CLOSE:
@@ -153,8 +149,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED)) {
                         uie::splitter_item_ptr ptr;
                         m_presets[lpnmlv->iItem].get(ptr);
-                        uih::dpi::with_default_thread_dpi_awareness(
-                            [&] { cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr()); });
+                        cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr());
                     }
                 }
             }
@@ -176,7 +171,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void QuickSetupDialog::g_run()
 {
-    uih::dpi::modeless_dialog_box(
+    uih::modeless_dialog_box(
         IDD_QUICK_SETUP, cui::main_window.get_wnd(), [dialog = std::make_shared<QuickSetupDialog>()](auto&&... args) {
             return dialog->SetupDialogProc(std::forward<decltype(args)>(args)...);
         });

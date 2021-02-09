@@ -303,7 +303,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
             CommandPickerParam p_data{};
             p_temp.set_data(p_data);
 
-            const auto dialog_result = uih::dpi::modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, wnd,
+            const auto dialog_result = uih::modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, wnd,
                 [&p_temp](auto&&... args) { return p_temp.on_message(std::forward<decltype(args)>(args)...); });
 
             if (dialog_result > 0) {
@@ -451,7 +451,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                     m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter};
                 p_temp.set_data(p_data);
 
-                const auto dialog_result = uih::dpi::modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, wnd,
+                const auto dialog_result = uih::modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, wnd,
                     [&p_temp](auto&&... args) { return p_temp.on_message(std::forward<decltype(args)>(args)...); });
 
                 if (dialog_result > 0) {

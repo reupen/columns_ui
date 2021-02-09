@@ -59,7 +59,7 @@ static BOOL CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg, WP
 
 static bool run_edit_view(edit_view_param& param, HWND parent)
 {
-    const auto dialog_result = uih::dpi::modal_dialog_box(IDD_EDIT_GROUP, parent,
+    const auto dialog_result = uih::modal_dialog_box(IDD_EDIT_GROUP, parent,
         [&param](auto&&... args) { return EditViewProc(param, std::forward<decltype(args)>(args)...); });
 
     return dialog_result > 0;

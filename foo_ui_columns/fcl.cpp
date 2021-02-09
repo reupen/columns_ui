@@ -356,10 +356,9 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
 
             FCLDialog pFCLDialog(true, std::move(datasetsguids));
             if (!quiet) {
-                const auto dialog_result
-                    = uih::dpi::modal_dialog_box(IDD_FCL_IMPORT, wnd, [&pFCLDialog](auto&&... args) {
-                          return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...);
-                      });
+                const auto dialog_result = uih::modal_dialog_box(IDD_FCL_IMPORT, wnd, [&pFCLDialog](auto&&... args) {
+                    return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...);
+                });
 
                 if (dialog_result <= 0)
                     throw exception_aborted();
@@ -387,10 +386,9 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
     } catch (const exception_aborted&) {
     } catch (const exception_fcl_dependentpanelmissing&) {
         ImportResultsData data(panel_info, true);
-        const auto wnd_results
-            = uih::dpi::modeless_dialog_box(IDD_RESULTS, wnd, [data{std::move(data)}](auto&&... args) {
-                  return g_ImportResultsProc(data, std::forward<decltype(args)>(args)...);
-              });
+        const auto wnd_results = uih::modeless_dialog_box(IDD_RESULTS, wnd, [data{std::move(data)}](auto&&... args) {
+            return g_ImportResultsProc(data, std::forward<decltype(args)>(args)...);
+        });
         ShowWindow(wnd_results, SW_SHOWNORMAL);
     } catch (const pfc::exception& ex) {
         popup_message::g_show(ex.what(), "Error");
@@ -424,7 +422,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
 {
     FCLDialog pFCLDialog;
     if (!is_quiet) {
-        const auto dialog_result = uih::dpi::modal_dialog_box(IDD_FCL_EXPORT, wnd,
+        const auto dialog_result = uih::modal_dialog_box(IDD_FCL_EXPORT, wnd,
             [&pFCLDialog](auto&&... args) { return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...); });
 
         if (dialog_result <= 0)

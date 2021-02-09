@@ -379,7 +379,7 @@ static BOOL CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND w
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
     SpectrumAnalyserConfigData param(cr_fore, cr_back, mode, m_scale, m_vertical_scale, this);
-    const auto dialog_result = uih::dpi::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
+    const auto dialog_result = uih::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
         [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
 
     if (dialog_result > 0) {
@@ -639,7 +639,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
         SpectrumAnalyserConfigData param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
             p_temp.get_ptr(), true, get_frame_style());
 
-        const auto dialog_result = uih::dpi::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
+        const auto dialog_result = uih::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
             [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
 
         if (dialog_result > 0) {

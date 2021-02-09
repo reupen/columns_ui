@@ -176,7 +176,7 @@ void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this) &&
 {
     m_modal = false;
     m_this = p_this;
-    uih::dpi::modeless_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd, [config{std::move(*this)}](auto&&... args) mutable {
+    uih::modeless_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd, [config{std::move(*this)}](auto&&... args) mutable {
         return config.on_message(std::forward<decltype(args)>(args)...);
     });
 }
@@ -184,7 +184,7 @@ void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this) &&
 bool ItemDetailsConfig::run_modal(HWND wnd)
 {
     m_modal = true;
-    const auto dialog_result = uih::dpi::modal_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd,
+    const auto dialog_result = uih::modal_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd,
         [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     return dialog_result > 0;
 }
