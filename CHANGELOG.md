@@ -4,10 +4,6 @@
 
 ### Features
 
-* Some dialogue boxes now support per-monitor DPI on Windows 10. [[#354](https://github.com/reupen/columns_ui/pull/354)]
-
-  (The main window doesn’t as yet support per-monitor DPI.)
-
 * Support for back cover, disc and artist stub images was added to the Artwork view panel. [[#345](https://github.com/reupen/columns_ui/pull/345)]
 
 * The list view scrolling speed when selecting items or using drag and drop was adjusted to be slower, particularly for short lists such as in Buttons options. [[#349](https://github.com/reupen/columns_ui/pull/349)]
