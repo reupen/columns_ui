@@ -18,7 +18,9 @@
 
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]
 
-* The component is now compiled using Visual Studio 2019 16.7.
+* The component is now compiled using Visual Studio 2019 16.8.
+
+* The component is now compiled using foobar2000 SDK 2021-01-29. [[#362](https://github.com/reupen/columns_ui/pull/362)]
 
 ## 1.6.0
 
