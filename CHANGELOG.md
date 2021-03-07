@@ -20,7 +20,7 @@
 
 * The component is now compiled using Visual Studio 2019 16.8.
 
-* The component is now compiled using foobar2000 SDK 2021-01-29. [[#362](https://github.com/reupen/columns_ui/pull/362)]
+* The component is now compiled using foobar2000 SDK 2021-02-23. [[#362](https://github.com/reupen/columns_ui/pull/362), [#363](https://github.com/reupen/columns_ui/pull/363)]
 
 ## 1.6.0
 
