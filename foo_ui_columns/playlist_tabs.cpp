@@ -490,7 +490,6 @@ uie::splitter_item_t* PlaylistTabs::get_panel(unsigned index) const
     auto ptr = new uie::splitter_item_simple_t;
     ptr->set_panel_guid(m_child_guid);
 
-    refresh_child_data();
     ptr->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
 
     if (index == 0 && m_child_guid != pfc::guid_null) {
