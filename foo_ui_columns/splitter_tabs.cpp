@@ -164,8 +164,6 @@ bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
 
 uie::splitter_item_full_v2_t* TabStackPanel::Panel::create_splitter_item()
 {
-    refresh_child_data();
-
     auto ret = new uie::splitter_item_full_v2_impl_t;
     ret->set_panel_guid(m_guid);
     ret->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());

@@ -209,7 +209,6 @@ void FlatSplitterPanel::Panel::set_from_splitter_item(const uie::splitter_item_t
 
 uie::splitter_item_full_v2_t* FlatSplitterPanel::Panel::create_splitter_item(bool b_set_ptr /*= true*/)
 {
-    refresh_child_data();
     auto ret = new uie::splitter_item_full_v2_impl_t;
     ret->m_autohide = m_autohide;
     ret->m_caption_orientation = m_caption_orientation;

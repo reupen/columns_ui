@@ -14,6 +14,10 @@
 
 * The Filter panel no longer focuses the first playlist item when using any of the send to playlist commands or actions. This improves compatibility with shuffle playback modes when 'Playback follows cursor' is enabled. [[#352](https://github.com/reupen/columns_ui/pull/352)]
 
+### Bug fixes
+
+* A problem where panels were queried for configuration data too frequently following [#320](https://github.com/reupen/columns_ui/pull/320) was resolved. [[#364](https://github.com/reupen/columns_ui/pull/364)]
+
 ### Internal changes
 
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]

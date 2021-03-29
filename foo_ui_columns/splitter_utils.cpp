@@ -9,6 +9,8 @@ auto normalise_splitter_item(const uie::splitter_item_t* item)
     auto normalised_item = std::make_unique<uie::splitter_item_full_v3_impl_t>();
 
     normalised_item->set_panel_guid(item->get_panel_guid());
+    normalised_item->set_window_ptr(item->get_window_ptr());
+
     stream_writer_memblock panel_data;
     item->get_panel_config(&panel_data);
     normalised_item->set_panel_config_from_ptr(panel_data.m_data.get_ptr(), panel_data.m_data.get_size());
@@ -67,10 +69,9 @@ pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_full_v3_i
     item->get_title(title);
     writer.write_string(title.get_ptr(), aborter);
 
-    stream_writer_memblock panel_data;
-    item->get_panel_config(&panel_data);
-    writer.write_lendian_t(panel_data.m_data.get_size(), aborter);
-    writer.write(panel_data.m_data.get_ptr(), panel_data.m_data.get_size(), aborter);
+    auto panel_data = item->get_panel_config_to_array(true);
+    writer.write_lendian_t(panel_data.get_size(), aborter);
+    writer.write(panel_data.get_ptr(), panel_data.get_size(), aborter);
 
     writer.write_lendian_t(item->m_extra_data_format_id, aborter);
     writer.write_lendian_t(item->m_extra_data.get_size(), aborter);
