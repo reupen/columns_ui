@@ -164,7 +164,6 @@ void artwork_panel::ArtworkReaderManager::on_reader_completion(DWORD state, cons
         if (!m_current_reader->get_stub_images().empty())
             m_stub_images = m_current_reader->get_stub_images();
         m_current_reader->run_notification_thisthread(state);
-        // m_current_reader.release();
     } else {
         auto iter = ranges::find_if(m_aborting_readers, [ptr](auto&& reader) { return &*reader == ptr; });
         if (iter != ranges::end(m_aborting_readers)) {
@@ -218,13 +217,7 @@ DWORD artwork_panel::ArtworkReader::on_thread()
         formatter << u8"Artwork view – unhandled error reading artwork: " << e.what();
         ret = -1;
     }
-    // send this first so thread gets closed first
     ArtworkReaderNotification::g_run(m_manager, b_aborted, ret, this);
-    /*if (!b_aborted)
-    {
-    if (m_notify.is_valid())
-    m_notify->on_completion_async(m_succeeded ? ret : 1);
-    }*/
     return ret;
 }
 

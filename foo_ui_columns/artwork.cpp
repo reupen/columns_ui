@@ -5,8 +5,10 @@
 #include "wic.h"
 
 namespace artwork_panel {
+
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
 const GUID g_guid_track_mode = {0x5c7b29, 0x3915, 0x4b83, {0xa2, 0x83, 0xc0, 0x1a, 0x4e, 0xdc, 0x4f, 0x3a}};
+
 // {A35E8697-0B8A-4e6f-9DBE-39EC4626524D}
 const GUID g_guid_preserve_aspect_ratio = {0xa35e8697, 0xb8a, 0x4e6f, {0x9d, 0xbe, 0x39, 0xec, 0x46, 0x26, 0x52, 0x4d}};
 
@@ -27,7 +29,7 @@ bool g_track_mode_includes_now_playing(t_size mode)
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
 
-bool g_track_mode_includes_plalist(t_size mode)
+bool g_track_mode_includes_playlist(t_size mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
@@ -96,14 +98,17 @@ const GUID& ArtworkPanel::get_extension_guid() const
     static const GUID guid = {0xdeead6ec, 0xf0b9, 0x4919, {0xb1, 0x6d, 0x28, 0xa, 0xed, 0xde, 0x73, 0x43}};
     return guid;
 }
+
 void ArtworkPanel::get_name(pfc::string_base& out) const
 {
     out = "Artwork view";
 }
+
 void ArtworkPanel::get_category(pfc::string_base& out) const
 {
     out = "Panels";
 }
+
 unsigned ArtworkPanel::get_type() const
 {
     return uie::type_panel;
@@ -156,17 +161,13 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_LBUTTONDOWN: {
-        bool b_found = false;
         t_size count = tabsize(g_artwork_types);
         for (t_size i = 1; i < count; i++) {
             if (refresh_image((m_position + i) % (tabsize(g_artwork_types)))) {
                 m_position = (m_position + i) % (tabsize(g_artwork_types));
-                b_found = true;
                 break;
             }
         }
-        // if (!b_found && i+1==count)
-        //    show_emptycover();
     } break;
     case WM_PAINT: {
         PAINTSTRUCT ps;
@@ -189,21 +190,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     = cui::colours::helper(g_guid_colour_client).get_colour(cui::colours::colour_background);
                 const wil::unique_hbrush background_brush(CreateSolidBrush(background_colour));
                 FillRect(ps.hdc, &rc, background_brush.get());
-                /*HTHEME thm = OpenThemeData(g_main_window, L"FLYOUT");
-                DrawThemeBackground(thm, dc,     FLYOUT_DIVIDER    , 0, &rc, NULL);
-                CloseThemeData(thm);*/
             }
-
-            /*Gdiplus::Graphics graphics(ps.hdc);
-
-            if (!m_bitmap.is_valid() || Gdiplus::Ok != graphics.DrawCachedBitmap(&*m_bitmap, 0, 0))
-            {
-            refresh_cached_bitmap();
-            if (!m_bitmap.is_valid() || (Gdiplus::Ok != graphics.DrawCachedBitmap(&*m_bitmap, 0, 0)))
-            FillRect(ps.hdc, &rc,
-            gdi_object_t<HBRUSH>::ptr_t(CreateSolidBrush(cui::colours::helper(g_guid_colour_client).get_colour(cui::colours::colour_background))));
-            }
-            //else FillRect(ps.hdc, &rc, GetSysColorBrush(COLOR_WINDOWTEXT));*/
         }
         EndPaint(wnd, &ps);
     }
@@ -211,6 +198,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
+
 bool g_check_process_on_selection_changed()
 {
     HWND wnd_focus = GetFocus();
@@ -221,6 +209,7 @@ bool g_check_process_on_selection_changed()
     GetWindowThreadProcessId(wnd_focus, &processid);
     return processid == GetCurrentProcessId();
 }
+
 void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
 {
     if (g_check_process_on_selection_changed()) {
@@ -244,7 +233,6 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
     }
 }
 
-#if 1
 void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 {
     if (g_track_mode_includes_now_playing(m_track_mode) && p_reason != play_control::stop_reason_starting_another
@@ -270,17 +258,19 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
         }
     }
 }
+
 void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track)
 {
     if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader)
         m_artwork_loader->Request(p_track, new service_impl_t<CompletionNotifyForwarder>(this));
 }
+
 void ArtworkPanel::force_reload_artwork()
 {
     metadb_handle_ptr handle;
     if (g_track_mode_includes_now_playing(m_track_mode) && static_api_ptr_t<play_control>()->is_playing()) {
         static_api_ptr_t<play_control>()->get_now_playing(handle);
-    } else if (g_track_mode_includes_plalist(m_track_mode)) {
+    } else if (g_track_mode_includes_playlist(m_track_mode)) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
         if (handles.get_count())
@@ -302,7 +292,7 @@ void ArtworkPanel::force_reload_artwork()
 
 void ArtworkPanel::on_playlist_switch()
 {
-    if (g_track_mode_includes_plalist(m_track_mode)
+    if (g_track_mode_includes_playlist(m_track_mode)
         && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
@@ -316,9 +306,10 @@ void ArtworkPanel::on_playlist_switch()
         }
     }
 }
+
 void ArtworkPanel::on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
 {
-    if (g_track_mode_includes_plalist(m_track_mode)
+    if (g_track_mode_includes_playlist(m_track_mode)
         && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
@@ -353,7 +344,6 @@ void ArtworkPanel::on_completion(unsigned p_code)
         }
     }
 }
-#endif
 
 void ArtworkPanel::show_stub_image()
 {
@@ -412,11 +402,13 @@ void ArtworkPanel::flush_cached_bitmap()
 {
     m_bitmap.reset();
 }
+
 void ArtworkPanel::flush_image()
 {
     m_image.reset();
     flush_cached_bitmap();
 }
+
 void ArtworkPanel::refresh_cached_bitmap()
 {
     RECT rc;
@@ -434,12 +426,6 @@ void ArtworkPanel::refresh_cached_bitmap()
         unsigned err = 0;
         Gdiplus::Graphics graphics(dcc);
         err = graphics.GetLastStatus();
-
-        // Gdiplus::Bitmap bm(RECT_CX(rc), RECT_CY(rc), &_graphics);
-        // err = bm.GetLastStatus();
-
-        // Gdiplus::Graphics graphics(&bm);
-        // err = graphics.GetLastStatus();
 
         double ar_source = (double)m_image->GetWidth() / (double)m_image->GetHeight();
         double ar_dest = (double)RECT_CX(rc) / (double)RECT_CY(rc);
@@ -467,7 +453,6 @@ void ArtworkPanel::refresh_cached_bitmap()
         if (m_image->GetWidth() >= 2 && m_image->GetHeight() >= 2) {
             Gdiplus::Rect destRect(INT((RECT_CX(rc) - cx) / 2), INT((RECT_CY(rc) - cy) / 2), cx, cy);
             graphics.SetClip(destRect);
-            // destRect.Inflate(1,1);
             Gdiplus::ImageAttributes imageAttributes;
             imageAttributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
 
@@ -475,8 +460,6 @@ void ArtworkPanel::refresh_cached_bitmap()
                 &imageAttributes);
             err = graphics.GetLastStatus();
         }
-        // m_bitmap = pfc::rcnew_t<Gdiplus::CachedBitmap>(&bm, &_graphics);
-        // err = m_bitmap->GetLastStatus();
 
         SelectBitmap(dcc, bm_old);
 
@@ -558,126 +541,6 @@ void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callba
         }
     }
 }
-
-#if 0
-    class now_playing_album_art_receiver
-    {
-    public:
-        virtual void on_loading(const char * p_path) {}
-        //! @p_data May be null when there is no album art data available for currently played file.
-        virtual void on_data(const char * p_path) {}
-        virtual void on_stopped() {}
-    };
-    class now_playing_album_art_manager
-    {
-    public:
-        enum state_t
-        {
-            state_stopped,state_loading,state_loaded
-        };
-        class now_playing_album_art_callback_impl : public now_playing_album_art_callback_impl_base
-        {
-        public:
-            virtual void on_loading(const char * p_path) 
-            {
-                m_state = state_loading;
-                m_collater->on_loading(p_path);
-            }
-            //! @p_data May be null when there is no album art data available for currently played file.
-            virtual void on_data(const char * p_path,album_art_data_ptr p_data) 
-            {
-                m_data = p_data;
-                m_state = state_loaded;
-                m_collater->on_data(p_path);
-            }
-            virtual void on_stopped()
-            {
-                m_data.release();
-                m_state = state_stopped;
-                m_collater->on_stopped();
-            }
-
-            virtual GUID get_wanted_type() {return g_artwork_types[m_index];}
-
-            now_playing_album_art_callback_impl() : m_state(state_stopped), m_collater(NULL), m_index(NULL) {};
-
-            state_t m_state;
-            album_art_data_ptr m_data;
-            now_playing_album_art_manager * m_collater;
-            t_size m_index;
-        };
-        void on_loading(const char * p_path)
-        {
-            bool b_synchronised = true;
-            t_size i, count = m_callbacks.get_count();
-            for (i=0; i<count; i++)
-                if (m_callbacks[i]->m_state != state_loading)
-                {
-                    b_synchronised = false;
-                    break;
-                }
-            if (b_synchronised)
-            {
-                m_receiver->on_stopped();
-            }
-        }
-        void on_data(const char * p_path) 
-        {
-            bool b_synchronised = true;
-            t_size i, count = m_callbacks.get_count();
-            for (i=0; i<count; i++)
-                if (m_callbacks[i]->m_state != state_loaded)
-                {
-                    b_synchronised = false;
-                    break;
-                }
-            if (b_synchronised)
-            {
-                m_receiver->on_data(p_path);
-            }
-        }
-        void on_stopped()
-        {
-            bool b_synchronised = true;
-            t_size i, count = m_callbacks.get_count();
-            for (i=0; i<count; i++)
-                if (m_callbacks[i]->m_state != state_stopped)
-                {
-                    b_synchronised = false;
-                    break;
-                }
-            if (b_synchronised)
-            {
-                m_receiver->on_stopped();
-            }
-        }
-        bool get_data(t_size index, album_art_data_ptr & p_out)
-        {
-            p_out = m_callbacks[index]->m_data;
-            return p_out.is_valid();
-        }
-        void initialise(now_playing_album_art_receiver * p_receiver)
-        {
-            m_receiver = p_receiver;
-            m_callbacks.set_size(tabsize(g_artwork_types));
-            t_size i, count = m_callbacks.get_count();
-            for (i=0; i<count; i++)
-            {
-                m_callbacks[i] = pfc::rcnew_t<now_playing_album_art_callback_impl>();
-                m_callbacks[i]->m_collater=this;
-                m_callbacks[i]->m_index=i;
-            }
-        }
-        void deinitialise()
-        {
-            m_callbacks.remove_all();
-        }
-        pfc::list_t< pfc::rcptr_t<now_playing_album_art_callback_impl> > m_callbacks;
-        now_playing_album_art_receiver * m_receiver;
-
-        now_playing_album_art_manager() : m_receiver(NULL) {};
-    };
-#endif
 
 ArtworkPanel::MenuNodeTrackMode::MenuNodeTrackMode(ArtworkPanel* p_wnd, t_size p_value)
     : p_this(p_wnd), m_source(p_value)

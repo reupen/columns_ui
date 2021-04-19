@@ -1,12 +1,11 @@
-#ifndef _CUI_ARTWORK_H_
-#define _CUI_ARTWORK_H_
+#pragma once
 
 #include "artwork_helpers.h"
 
 namespace artwork_panel {
 
 class ArtworkPanel
-    : public uie::container_ui_extension_t<> /*, public now_playing_album_art_receiver*/
+    : public uie::container_ui_extension_t<>
     , public play_callback
     , public playlist_callback_single
     , public ui_selection_callback {
@@ -15,8 +14,6 @@ public:
     public:
         void on_completion(unsigned p_code) override;
         CompletionNotifyForwarder(ArtworkPanel* p_this);
-        ;
-
     private:
         service_ptr_t<ArtworkPanel> m_this;
     };
@@ -28,10 +25,6 @@ public:
 
     static void g_on_edge_style_change();
 
-#if 0
-        virtual void on_data(const char * p_path);
-        virtual void on_stopped();
-#else
     void on_playback_new_track(metadb_handle_ptr p_track) override;
     void on_playback_stop(play_control::t_stop_reason p_reason) override;
 
@@ -43,7 +36,6 @@ public:
     void on_playback_dynamic_info_track(const file_info& p_info) override {}
     void on_playback_time(double p_time) override {}
     void on_volume_change(float p_new_val) override {}
-#endif
 
     enum {
         playlist_callback_flags
@@ -79,7 +71,6 @@ public:
     void on_completion(unsigned p_code);
 
     static void g_on_colours_change();
-    static void g_on_repository_change();
 
     void force_reload_artwork();
 
@@ -98,7 +89,6 @@ private:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeTrackMode(ArtworkPanel* p_wnd, t_size p_value);
-        ;
     };
 
     class MenuNodeArtworkType : public ui_extension::menu_node_command_t {
@@ -122,7 +112,6 @@ private:
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeSourcePopup(ArtworkPanel* p_wnd);
-        ;
     };
 
     class MenuNodeTypePopup : public ui_extension::menu_node_popup_t {
@@ -133,7 +122,6 @@ private:
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeTypePopup(ArtworkPanel* p_wnd);
-        ;
     };
     class MenuNodePreserveAspectRatio : public ui_extension::menu_node_command_t {
         service_ptr_t<ArtworkPanel> p_this;
@@ -143,7 +131,6 @@ private:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd);
-        ;
     };
 
     class MenuNodeOptions : public ui_extension::menu_node_command_t {
@@ -160,7 +147,6 @@ private:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeLockType(ArtworkPanel* p_wnd);
-        ;
     };
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;
@@ -179,7 +165,6 @@ private:
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};
 
-    // pfc::rcptr_t<CCustomAlbumArtLoader> m_artwork_loader;
     std::shared_ptr<ArtworkReaderManager> m_artwork_loader;
     // now_playing_album_art_manager m_nowplaying_artwork_loader;
     std::unique_ptr<Gdiplus::Bitmap> m_image;
@@ -193,5 +178,3 @@ private:
 };
 
 } // namespace artwork_panel
-
-#endif //_CUI_ARTWORK_H_
