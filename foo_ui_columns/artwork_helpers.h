@@ -14,7 +14,7 @@ public:
 
     ArtworkReader() = default;
 
-    void initialise(const std::vector<GUID>& p_requestIds,
+    void initialise(const std::vector<GUID>& artwork_type_ids,
         const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
         const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
         std::shared_ptr<class ArtworkReaderManager> p_manager);
@@ -25,10 +25,10 @@ protected:
 
 private:
     unsigned read_artwork(abort_callback& p_abort);
-    bool isContentEqual(const std::unordered_map<GUID, album_art_data_ptr>& content1,
+    bool are_contents_equal(const std::unordered_map<GUID, album_art_data_ptr>& content1,
         const std::unordered_map<GUID, album_art_data_ptr>& content2);
 
-    std::vector<GUID> m_requestIds;
+    std::vector<GUID> m_artwork_type_ids;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
     metadb_handle_ptr m_handle;
@@ -41,31 +41,26 @@ private:
 
 class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
 public:
-    void AddType(const GUID& p_what);
+    void set_types(std::vector<GUID> types);
+
+    void request(const metadb_handle_ptr& p_handle, completion_notify_ptr p_notify = nullptr);
+    bool is_ready();
+    void reset();
     void abort_current_task();
-
-    void Reset();
-
-    bool IsReady();
-
-    //! Completion notify code is 1 when content has changed, 0 when content is the same as before the request (like,
-    //! advanced to another track with the same album art data).
-    void Request(const metadb_handle_ptr& p_handle, completion_notify_ptr p_notify = nullptr);
 
     album_art_data_ptr get_image(const GUID& p_what);
     album_art_data_ptr get_stub_image(GUID artwork_type_id);
 
     void deinitialise();
 
-    void on_reader_completion(DWORD ret, const ArtworkReader* ptr);
+    void on_reader_completion(DWORD state, const ArtworkReader* ptr);
     void on_reader_abort(const ArtworkReader* ptr);
 
 private:
     std::vector<std::shared_ptr<ArtworkReader>> m_aborting_readers;
     std::shared_ptr<ArtworkReader> m_current_reader;
-    // album_art_manager_instance_ptr m_api;
 
-    std::vector<GUID> m_requestIds;
+    std::vector<GUID> m_artwork_type_ids;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
 };
