@@ -92,6 +92,26 @@ void ArtworkPanel::g_on_edge_style_change()
         }
     }
 }
+
+/**
+ * Note: This is not called when there is no artwork to display.
+ *
+ * Additionally, it isn't called when foobar2000 thinks the track belongs to
+ * the same album as the previous track (determined using metadata, not
+ * artwork equivalence).
+ */
+void ArtworkPanel::on_album_art(album_art_data::ptr data)
+{
+    if (!m_artwork_loader || !m_artwork_loader->is_ready()) {
+        m_dynamic_artwork_pending = true;
+        return;
+    }
+
+    if (m_position == 0) {
+        refresh_image(0);
+    }
+}
+
 const GUID& ArtworkPanel::get_extension_guid() const
 {
     // {DEEAD6EC-F0B9-4919-B16D-280AEDDE7343}
@@ -123,6 +143,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         m_artwork_loader = std::make_shared<ArtworkReaderManager>();
         //        m_nowplaying_artwork_loader.initialise(this);
+        now_playing_album_art_notify_manager::get()->add(this);
         m_artwork_loader->set_types(g_artwork_types);
         static_api_ptr_t<play_callback_manager>()->register_callback(this,
             play_callback::flag_on_playback_new_track | play_callback::flag_on_playback_stop
@@ -138,6 +159,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
         static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
         static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
+        now_playing_album_art_notify_manager::get()->remove(this);
         m_selection_handles.remove_all();
         m_image.reset();
         m_bitmap.reset();
@@ -232,6 +254,8 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
 
 void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 {
+    m_dynamic_artwork_pending = false;
+
     if (g_track_mode_includes_now_playing(m_track_mode) && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
         bool b_set = false;
@@ -249,7 +273,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 
         if (!b_set) {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
             if (m_artwork_loader)
                 m_artwork_loader->reset();
         }
@@ -258,8 +282,12 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 
 void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track)
 {
-    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader)
-        m_artwork_loader->request(p_track, new service_impl_t<CompletionNotifyForwarder>(this));
+    m_dynamic_artwork_pending = false;
+    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader) {
+        const auto data = now_playing_album_art_notify_manager::get()->current();
+
+        m_artwork_loader->request(p_track, new service_impl_t<CompletionNotifyForwarder>(this), true);
+    }
 }
 
 void ArtworkPanel::force_reload_artwork()
@@ -323,22 +351,31 @@ void ArtworkPanel::on_items_selection_change(const pfc::bit_array& p_affected, c
 
 void ArtworkPanel::on_completion(unsigned p_code)
 {
-    if (p_code == 1 && get_wnd()) {
-        bool b_found = false;
-        t_size count = g_artwork_types.size();
-        if (m_lock_type)
-            count = min(1, count);
-        for (t_size i = 0; i < count; i++) {
-            if (refresh_image((m_position + i) % g_artwork_types.size())) {
-                m_position = (m_position + i) % g_artwork_types.size();
-                b_found = true;
-                break;
-            }
-        }
+    if (!get_wnd())
+        return;
 
-        if (!b_found) {
-            show_stub_image();
+    const auto is_dynamic_artwork_pending = m_dynamic_artwork_pending && m_position == 0;
+    const auto artwork_changed = p_code == 1;
+
+    if (m_image && !is_dynamic_artwork_pending && !artwork_changed)
+        return;
+
+    m_dynamic_artwork_pending = false;
+
+    bool b_found = false;
+    t_size count = g_artwork_types.size();
+    if (m_lock_type)
+        count = min(1, count);
+    for (t_size i = 0; i < count; i++) {
+        if (refresh_image((m_position + i) % g_artwork_types.size())) {
+            m_position = (m_position + i) % g_artwork_types.size();
+            b_found = true;
+            break;
         }
+    }
+
+    if (!b_found) {
+        show_stub_image();
     }
 }
 
@@ -373,7 +410,7 @@ bool ArtworkPanel::refresh_image(t_size index)
     if (!m_artwork_loader || !m_artwork_loader->is_ready())
         return false;
 
-    const auto data = m_artwork_loader->get_image(g_artwork_types[index]);
+    auto data = m_artwork_loader->get_image(g_artwork_types[index]);
     if (data.is_empty())
         return false;
 

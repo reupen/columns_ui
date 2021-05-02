@@ -12,13 +12,14 @@ void artwork_panel::ArtworkReader::run_notification_thisthread(DWORD state)
 
 void artwork_panel::ArtworkReader::initialise(const std::vector<GUID>& artwork_type_ids,
     const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
-    const metadb_handle_ptr& p_handle, const completion_notify_ptr& p_notify,
+    const metadb_handle_ptr& p_handle, bool is_from_playback, const completion_notify_ptr& p_notify,
     std::shared_ptr<class ArtworkReaderManager> p_manager)
 {
     m_artwork_type_ids = artwork_type_ids;
     m_content = p_content_previous;
     m_read_stub_image = read_stub_image;
     m_handle = p_handle;
+    m_is_from_playback = is_from_playback;
     m_notify = p_notify;
     m_manager = std::move(p_manager);
 }
@@ -26,6 +27,11 @@ void artwork_panel::ArtworkReader::initialise(const std::vector<GUID>& artwork_t
 const std::unordered_map<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_stub_images() const
 {
     return m_stub_images;
+}
+
+void artwork_panel::ArtworkReader::set_image(GUID artwork_type_id, album_art_data_ptr data)
+{
+    m_content.insert_or_assign(artwork_type_id, data);
 }
 
 const std::unordered_map<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_content() const
@@ -85,6 +91,17 @@ album_art_data_ptr artwork_panel::ArtworkReaderManager::get_image(const GUID& p_
     if (!is_ready() || !m_current_reader->did_succeed())
         return {};
 
+    if (p_what == album_art_ids::cover_front && m_current_reader && m_current_reader->is_from_playback()) {
+        const auto api = now_playing_album_art_notify_manager::get();
+
+        if (auto data = api->current(); data.is_valid()) {
+            // Inject the artwork data into the reader, so that the check whether the artwork
+            // has changed when the next track is played (or selected) functions correctly
+            m_current_reader->set_image(album_art_ids::cover_front, data);
+            return data;
+        }
+    }
+
     auto&& content = m_current_reader->get_content();
     const auto content_iter = content.find(p_what);
     if (content_iter != content.end())
@@ -94,19 +111,19 @@ album_art_data_ptr artwork_panel::ArtworkReaderManager::get_image(const GUID& p_
 }
 
 void artwork_panel::ArtworkReaderManager::request(
-    const metadb_handle_ptr& p_handle, completion_notify_ptr p_notify /*= NULL*/)
+    const metadb_handle_ptr& handle, completion_notify_ptr notify, const bool is_from_playback)
 {
     std::shared_ptr<ArtworkReader> ptr_prev = m_current_reader;
-    bool b_prev_valid = ptr_prev && !ptr_prev->is_thread_open() && ptr_prev->did_succeed();
+    const bool is_prev_valid = ptr_prev && !ptr_prev->is_thread_open() && ptr_prev->did_succeed();
+    const auto read_stub_images = m_stub_images.empty();
     abort_current_task();
-    {
-        m_current_reader = std::make_shared<ArtworkReader>();
-        m_current_reader->initialise(m_artwork_type_ids,
-            b_prev_valid ? ptr_prev->get_content() : std::unordered_map<GUID, album_art_data_ptr>(),
-            m_stub_images.empty(), p_handle, p_notify, shared_from_this());
-        m_current_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
-        m_current_reader->create_thread();
-    }
+
+    m_current_reader = std::make_shared<ArtworkReader>();
+    m_current_reader->initialise(m_artwork_type_ids,
+        is_prev_valid ? ptr_prev->get_content() : std::unordered_map<GUID, album_art_data_ptr>(), read_stub_images,
+        handle, is_from_playback, notify, shared_from_this());
+    m_current_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
+    m_current_reader->create_thread();
 }
 
 bool artwork_panel::ArtworkReaderManager::is_ready()
@@ -190,7 +207,7 @@ bool artwork_panel::ArtworkReader::are_contents_equal(const std::unordered_map<G
         if (found1 != found2)
             return false;
 
-        if (!found1 || !album_art_data::equals(*content1_iter->second, *content2_iter->second))
+        if (found1 && !album_art_data::equals(*content1_iter->second, *content2_iter->second))
             return false;
     }
 
@@ -246,9 +263,9 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
     m_content.clear();
 
     static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
-
     pfc::list_t<GUID> guids;
     guids.add_items_fromptr(m_artwork_type_ids.data(), m_artwork_type_ids.size());
+
     const auto artwork_api_v2
         = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
 
@@ -277,5 +294,6 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
                 m_stub_images.insert_or_assign(album_art_ids::cover_front, data);
         }
     }
+
     return are_contents_equal(m_content, content_previous) ? 0 : 1;
 }
