@@ -164,6 +164,7 @@ private:
     bool refresh_image(t_size index);
     void show_stub_image();
     void flush_image();
+    void invalidate_window() const;
 
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};

@@ -177,7 +177,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE)) {
             flush_cached_bitmap();
-            RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
+            invalidate_window();
         }
     } break;
     case WM_LBUTTONDOWN: {
@@ -244,7 +244,7 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
                 m_artwork_loader->request(m_selection_handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
             } else {
                 flush_image();
-                RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+                invalidate_window();
                 if (m_artwork_loader)
                     m_artwork_loader->reset();
             }
@@ -273,7 +273,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 
         if (!b_set) {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+            invalidate_window();
             if (m_artwork_loader)
                 m_artwork_loader->reset();
         }
@@ -309,7 +309,7 @@ void ArtworkPanel::force_reload_artwork()
         m_artwork_loader->request(handle, new service_impl_t<CompletionNotifyForwarder>(this));
     } else {
         flush_image();
-        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+        invalidate_window();
         if (m_artwork_loader)
             m_artwork_loader->reset();
     }
@@ -325,7 +325,7 @@ void ArtworkPanel::on_playlist_switch()
             m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            invalidate_window();
             if (m_artwork_loader)
                 m_artwork_loader->reset();
         }
@@ -342,7 +342,7 @@ void ArtworkPanel::on_items_selection_change(const pfc::bit_array& p_affected, c
             m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            invalidate_window();
             if (m_artwork_loader)
                 m_artwork_loader->reset();
         }
@@ -391,12 +391,12 @@ void ArtworkPanel::show_stub_image()
                 pStream.reset();
                 if (m_image->GetLastStatus() == Gdiplus::Ok) {
                     flush_cached_bitmap();
-                    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+                    invalidate_window();
                 }
             }
         } else {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            invalidate_window();
         }
     }
 }
@@ -428,7 +428,7 @@ bool ArtworkPanel::refresh_image(t_size index)
     if (!m_image)
         return false;
 
-    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+    invalidate_window();
     return true;
 }
 
@@ -441,6 +441,11 @@ void ArtworkPanel::flush_image()
 {
     m_image.reset();
     flush_cached_bitmap();
+}
+
+void ArtworkPanel::invalidate_window() const
+{
+    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
 void ArtworkPanel::refresh_cached_bitmap()
@@ -507,7 +512,7 @@ void ArtworkPanel::g_on_colours_change()
 {
     for (auto& window : g_windows) {
         window->flush_cached_bitmap();
-        RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+        window->invalidate_window();
     }
 }
 
@@ -712,7 +717,7 @@ void ArtworkPanel::MenuNodePreserveAspectRatio::execute()
     p_this->m_preserve_aspect_ratio = !p_this->m_preserve_aspect_ratio;
     cfg_preserve_aspect_ratio = p_this->m_preserve_aspect_ratio;
     p_this->flush_cached_bitmap();
-    RedrawWindow(p_this->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+    p_this->invalidate_window();
 }
 
 bool ArtworkPanel::MenuNodePreserveAspectRatio::get_description(pfc::string_base& p_out) const
