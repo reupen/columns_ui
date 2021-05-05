@@ -636,8 +636,8 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
             }
         }
 
-        SpectrumAnalyserConfigData param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale,
-            p_temp.get_ptr(), true, get_frame_style());
+        SpectrumAnalyserConfigData param(p_temp->cr_fore, p_temp->cr_back, p_temp->mode, p_temp->m_scale,
+            p_temp->m_vertical_scale, p_temp.get_ptr(), true, get_frame_style());
 
         const auto dialog_result = uih::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
             [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });

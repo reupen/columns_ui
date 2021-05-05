@@ -5,7 +5,9 @@ namespace pvt {
 class Group {
 public:
     Group(const char* p_string, PlaylistFilterType p_filter_type = FILTER_NONE, const char* p_filter = "")
-        : string(p_string), filter_type(p_filter_type), filter_playlists(p_filter){};
+        : string(p_string)
+        , filter_type(p_filter_type)
+        , filter_playlists(p_filter){};
     Group() = default;
     void write(stream_writer* p_stream, abort_callback& p_abort)
     {

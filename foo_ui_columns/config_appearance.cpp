@@ -95,7 +95,7 @@ public:
     {
         return m_entry->colour_mode == cui::colours::colour_mode_themed
             || (m_entry->colour_mode == cui::colours::colour_mode_global
-                   && m_global_entry->colour_mode == cui::colours::colour_mode_themed);
+                && m_global_entry->colour_mode == cui::colours::colour_mode_themed);
     }
 
 private:
@@ -571,8 +571,7 @@ service_factory_t<FontsDataSet> g_fcl_fonts_t;
 };
 
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}
-const GUID ColoursManagerData::g_cfg_guid
-    = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
+const GUID ColoursManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
 
 // {6B71F91C-6B7E-4dbe-B27B-C493AA513FD0}
 const GUID FontsManagerData::g_cfg_guid

@@ -502,7 +502,8 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
             rc_font.bottom -= half_padding_size;
 
             utf8_converter.convert(ptr, ptrThisCount);
-            BOOL ret = uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false,
+            BOOL ret
+                = uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false,
                     false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, &width, rc_line.left - left_padding);
             rc_line.left = width; // width == position actually!!
             ptr += ptrThisCount;

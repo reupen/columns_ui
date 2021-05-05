@@ -54,8 +54,7 @@ public:
 
 ui_extension::visualisation_host_factory<VisualisationPanelInterface> g_window_visualisation_interface;
 
-void VisualisationPanelInterface::g_create(
-    service_ptr_t<VisualisationPanelInterface>& p_out, VisualisationPanel* wnd)
+void VisualisationPanelInterface::g_create(service_ptr_t<VisualisationPanelInterface>& p_out, VisualisationPanel* wnd)
 {
     g_window_visualisation_interface.instance_create((service_ptr_t<service_base>&)p_out);
     p_out->p_wnd = wnd;

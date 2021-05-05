@@ -316,8 +316,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                     void on_aborted() override {}
                 };
 
-                service_ptr_t<DelayedDropTargetProcesser> ptr
-                    = new service_impl_t<DelayedDropTargetProcesser>;
+                service_ptr_t<DelayedDropTargetProcesser> ptr = new service_impl_t<DelayedDropTargetProcesser>;
                 ptr->p_playlist = p_playlist;
                 ptr->m_insertIndexTracker.m_playlist = playlist_api->get_active_playlist();
                 ptr->m_insertIndexTracker.m_item = idx;
@@ -331,7 +330,10 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
     return S_OK;
 }
 PlaylistViewDropTarget::PlaylistViewDropTarget(PlaylistView* playlist)
-    : drop_ref_count(0), last_rmb(false), m_is_accepted_type(false), p_playlist(playlist)
+    : drop_ref_count(0)
+    , last_rmb(false)
+    , m_is_accepted_type(false)
+    , p_playlist(playlist)
 {
     m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }

@@ -38,12 +38,14 @@ public:
         use_frame_bottom = in->use_frame_bottom;
     }
 
-    CellStyleData()
-        : use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false){};
+    CellStyleData() : use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false){};
 
     CellStyleData(COLORREF text, COLORREF text_sel, COLORREF back, COLORREF back_sel, COLORREF text_no_focus,
         COLORREF sel_no_focus)
-        : use_frame_left(false), use_frame_top(false), use_frame_right(false), use_frame_bottom(false)
+        : use_frame_left(false)
+        , use_frame_top(false)
+        , use_frame_right(false)
+        , use_frame_bottom(false)
     {
         text_colour.set(text);
         selected_text_colour.set(text_sel);
@@ -105,6 +107,9 @@ public:
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
     StyleTitleformatHook(CellStyleData& vars, t_size index, bool b_is_group = false)
-        : p_default_colours(vars), p_colours(vars), m_index(index), m_is_group(b_is_group){};
+        : p_default_colours(vars)
+        , p_colours(vars)
+        , m_index(index)
+        , m_is_group(b_is_group){};
 };
 } // namespace pvt

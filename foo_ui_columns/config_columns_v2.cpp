@@ -29,7 +29,10 @@ public:
     }
     // virtual const char * get_name()=0;
     EditColumnWindowOptions(PlaylistViewColumn::ptr column)
-        : initialising(false), editproc(nullptr), m_wnd(nullptr), m_column(std::move(column)){};
+        : initialising(false)
+        , editproc(nullptr)
+        , m_wnd(nullptr)
+        , m_column(std::move(column)){};
 
     bool initialising;
     WNDPROC editproc;
@@ -247,7 +250,12 @@ public:
         }
     }
 
-    explicit DisplayScriptTab(PlaylistViewColumn::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit DisplayScriptTab(PlaylistViewColumn::ptr col)
+        : m_wnd(nullptr)
+        , initialising(false)
+        , m_column(std::move(col))
+    {
+    }
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -333,7 +341,9 @@ public:
         }
     }
 
-    explicit StyleScriptTab(PlaylistViewColumn::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit StyleScriptTab(PlaylistViewColumn::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col))
+    {
+    }
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -428,7 +438,12 @@ public:
         }
     }
 
-    explicit SortingScriptTab(PlaylistViewColumn::ptr col) : m_wnd(nullptr), initialising(false), m_column(std::move(col)) {}
+    explicit SortingScriptTab(PlaylistViewColumn::ptr col)
+        : m_wnd(nullptr)
+        , initialising(false)
+        , m_column(std::move(col))
+    {
+    }
 
 private:
     static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -698,8 +713,9 @@ BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case MSG_SELECTION_CHANGED: {
         int item = (ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED));
-        m_child->set_column(
-            item != -1 && item >= 0 && (t_size)item < m_columns.get_count() ? m_columns[item] : PlaylistViewColumn::ptr());
+        m_child->set_column(item != -1 && item >= 0 && (t_size)item < m_columns.get_count()
+                ? m_columns[item]
+                : PlaylistViewColumn::ptr());
     }
         return 0;
     case MSG_COLUMN_NAME_CHANGED: {

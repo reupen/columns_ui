@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "playlist_tabs.h"
 
-HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::QueryInterface(
-    REFIID riid, LPVOID FAR* ppvObject)
+HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
         return E_INVALIDARG;
@@ -326,8 +325,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 
     return S_OK;
 }
-PlaylistTabs::PlaylistTabsDropTarget::PlaylistTabsDropTarget(PlaylistTabs* p_wnd)
-    : p_list(p_wnd)
+PlaylistTabs::PlaylistTabsDropTarget::PlaylistTabsDropTarget(PlaylistTabs* p_wnd) : p_list(p_wnd)
 {
     m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }

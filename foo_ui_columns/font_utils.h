@@ -12,7 +12,8 @@ struct FontDescription {
 class ConfigFontDescription : public cfg_var {
 public:
     ConfigFontDescription(GUID guid, FontDescription font_description)
-        : cfg_var(guid), m_font_description(font_description)
+        : cfg_var(guid)
+        , m_font_description(font_description)
     {
     }
 

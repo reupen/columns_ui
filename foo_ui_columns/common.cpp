@@ -20,7 +20,8 @@ void Colour::set(COLORREF new_colour)
     R = LOBYTE(LOWORD(new_colour));
 }
 
-StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(metadb_handle_list_cref handles, const char* format, const char* def)
+StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(
+    metadb_handle_list_cref handles, const char* format, const char* def)
 {
     pfc::string8_fast_aggressive a;
     pfc::string8_fast_aggressive b;

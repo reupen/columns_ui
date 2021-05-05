@@ -143,8 +143,8 @@ bool StyleTitleformatHook::process_field(
     return false;
 }
 
-bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name,
-    unsigned p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
+bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+    titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;
     if (!stricmp_utf8_ex(p_name, p_name_length, "set_style", pfc_infinite)) {

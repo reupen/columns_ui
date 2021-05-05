@@ -683,10 +683,7 @@ void PlaylistTabs::on_items_replaced(
 {
 }
 
-void PlaylistTabs::on_items_modified_fromplayback(
-    unsigned int, const pfc::bit_array&, play_control::t_display_level)
-{
-}
+void PlaylistTabs::on_items_modified_fromplayback(unsigned int, const pfc::bit_array&, play_control::t_display_level) {}
 
 void PlaylistTabs::on_items_modified(unsigned int, const pfc::bit_array&) {}
 
@@ -710,8 +707,7 @@ void PlaylistTabs::on_playlist_renamed(unsigned p_index, const char* p_new_name,
     }
 }
 
-void PlaylistTabs::on_playlists_removed(
-    const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
+void PlaylistTabs::on_playlists_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
 {
     bool need_move = false;
 
@@ -834,8 +830,7 @@ void PlaylistTabs::WindowHost::relinquish_ownership(HWND wnd)
     m_this->reset_size_limits();
 }
 
-bool PlaylistTabs::WindowHost::override_status_text_create(
-    service_ptr_t<ui_status_text_override>& p_out)
+bool PlaylistTabs::WindowHost::override_status_text_create(service_ptr_t<ui_status_text_override>& p_out)
 {
     static_api_ptr_t<ui_control> api;
     return m_this->get_host()->override_status_text_create(p_out);
@@ -878,8 +873,7 @@ bool PlaylistTabs::WindowHost::is_visible(HWND wnd) const
     return true;
 }
 
-bool PlaylistTabs::WindowHost::request_resize(
-    HWND wnd, unsigned flags, unsigned width, unsigned height)
+bool PlaylistTabs::WindowHost::request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height)
 {
     if (flags == ui_extension::size_height && is_resize_supported(wnd)) {
         if (m_this->wnd_tabs) {

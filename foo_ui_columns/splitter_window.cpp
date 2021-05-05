@@ -87,7 +87,7 @@ void FlatSplitterPanel::refresh_children()
 
             if (p_ext.is_valid()
                 && p_ext->is_available(
-                       uie::window_host_ptr(static_cast<uie::window_host*>(m_panels[n]->m_interface.get_ptr())))) {
+                    uie::window_host_ptr(static_cast<uie::window_host*>(m_panels[n]->m_interface.get_ptr())))) {
                 pfc::string8 name;
                 if (m_panels[n]->m_use_custom_title) {
                     name = m_panels[n]->m_custom_title;
@@ -452,14 +452,12 @@ int FlatSplitterPanel::override_size(unsigned& panel, int delta)
                     = m_panels[n]->m_show_caption && m_panels[n]->m_caption_orientation != get_orientation()
                     ? the_caption_height
                     : 0;
-                unsigned min_height = m_panels[n]->m_hidden
-                    ? 0
-                    : get_orientation() == vertical ? m_panels[n]->m_size_limits.min_height
-                                                    : m_panels[n]->m_size_limits.min_width;
-                unsigned max_height = m_panels[n]->m_hidden
-                    ? 0
-                    : get_orientation() == vertical ? m_panels[n]->m_size_limits.max_height
-                                                    : m_panels[n]->m_size_limits.max_width;
+                unsigned min_height = m_panels[n]->m_hidden ? 0
+                    : get_orientation() == vertical         ? m_panels[n]->m_size_limits.min_height
+                                                            : m_panels[n]->m_size_limits.min_width;
+                unsigned max_height = m_panels[n]->m_hidden ? 0
+                    : get_orientation() == vertical         ? m_panels[n]->m_size_limits.max_height
+                                                            : m_panels[n]->m_size_limits.max_width;
 
                 if (min_height < (unsigned)(0 - caption_height))
                     min_height += caption_height;

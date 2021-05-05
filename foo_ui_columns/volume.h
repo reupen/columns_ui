@@ -301,10 +301,7 @@ public:
         float vol = static_api_ptr_t<playback_control>()->get_volume();
         update_position(vol);
     }
-    void update_position(float p_new_volume)
-    { 
-        m_child.set_position(volume_to_position(p_new_volume));
-    }
+    void update_position(float p_new_volume) { m_child.set_position(volume_to_position(p_new_volume)); }
     static unsigned g_get_caption_size(HFONT fnt)
     {
         if (!t_attributes::get_show_caption())

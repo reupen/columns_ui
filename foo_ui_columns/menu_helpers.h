@@ -47,4 +47,4 @@ inline bool execute_main_menu_command(MenuItemIdentifier command)
 
     return mainmenu_commands::g_execute(command.m_command);
 }
-}
+} // namespace cui::helpers

@@ -59,7 +59,8 @@ BitmapData decode_image(const wil::com_ptr_t<IWICBitmapSource>& bitmap_source)
     image_data.stride = row_size + pixel_size - remainder;
 
     image_data.data.resize(image_data.stride * image_data.height);
-    check_hresult(bitmap_source->CopyPixels(nullptr, image_data.stride, image_data.data.size(), image_data.data.data()));
+    check_hresult(
+        bitmap_source->CopyPixels(nullptr, image_data.stride, image_data.data.size(), image_data.data.data()));
 
     return image_data;
 }

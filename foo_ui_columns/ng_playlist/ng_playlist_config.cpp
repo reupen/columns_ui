@@ -16,8 +16,7 @@ struct edit_view_param {
 static BOOL CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
-    case WM_INITDIALOG:
-        {
+    case WM_INITDIALOG: {
         SetWindowText(wnd, state.b_new ? L"Add New Group" : L"Edit Group");
 
         uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show on all playlists");
@@ -30,8 +29,7 @@ static BOOL CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg, WP
         uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, state.value.filter_playlists);
 
         uSetDlgItemText(wnd, IDC_VALUE, state.value.string);
-        }
-        break;
+    } break;
     case WM_COMMAND:
         switch (wp) {
         case IDCANCEL:

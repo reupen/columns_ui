@@ -20,7 +20,8 @@ void PlaylistViewColumn::read(stream_reader* reader, abort_callback& abortCallba
     reader->read_string(edit_field, abortCallback);
 }
 
-void PlaylistViewColumn::read_extra(stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback)
+void PlaylistViewColumn::read_extra(
+    stream_reader* reader, ColumnStreamVersion streamVersion, abort_callback& abortCallback)
 {
     if (streamVersion >= ColumnStreamVersion::streamVersion1) {
         reader->read_lendian_t(width.dpi, abortCallback);

@@ -35,7 +35,7 @@ public:
                         settings::playlist_switcher_item_padding = new_height;
                     PlaylistSwitcher::g_on_vertical_item_padding_change();
                 }
-            break;
+                break;
             case IDC_MCLICK:
                 cfg_mclick = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 break;

@@ -340,8 +340,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-FlatSplitterPanel::Panel::PanelContainer::class_data&
-FlatSplitterPanel::Panel::PanelContainer::get_class_data() const
+FlatSplitterPanel::Panel::PanelContainer::class_data& FlatSplitterPanel::Panel::PanelContainer::get_class_data() const
 {
     __implement_get_class_data_ex(_T("foo_ui_columns_splitter_panel_child_container"), _T(""), false, NULL,
         WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT, CS_DBLCLKS);
@@ -363,6 +362,9 @@ void FlatSplitterPanel::Panel::PanelContainer::set_window_ptr(FlatSplitterPanel*
 FlatSplitterPanel::Panel::PanelContainer::~PanelContainer() = default;
 
 FlatSplitterPanel::Panel::PanelContainer::PanelContainer(Panel* p_panel)
-    : m_theme(nullptr), m_panel(p_panel), m_hook_active(false), m_timer_active(false)
+    : m_theme(nullptr)
+    , m_panel(p_panel)
+    , m_hook_active(false)
+    , m_timer_active(false)
 {
 }

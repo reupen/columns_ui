@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 /**
- * Contains configuration variable and appearance clients for the legacy playlist view, and other 
+ * Contains configuration variable and appearance clients for the legacy playlist view, and other
  * legacy playlist view configuration variables.
  *
  * These are being temporarily retained, so they are are not lost following an upgrade and a downgrade.

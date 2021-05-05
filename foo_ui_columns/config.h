@@ -130,5 +130,5 @@ extern service_factory_single_t<PreferencesTabsHost> page_main;
 extern service_factory_single_t<PreferencesTabsHost> page_playlist_view;
 extern service_factory_single_t<PreferencesTabsHost> page_playlist_switcher;
 extern service_factory_single_t<PreferencesTabsHost> page_filters;
-} // namespace preferences
+} // namespace prefs
 } // namespace cui

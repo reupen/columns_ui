@@ -315,7 +315,8 @@ public:
 class TrackPropertyCallback : public track_property_callback_v2 {
 public:
     TrackPropertyCallback(const std::vector<std::string>& fields, bool include_unknown_sections)
-        : m_fields(fields), m_include_unknown_sections(include_unknown_sections)
+        : m_fields(fields)
+        , m_include_unknown_sections(include_unknown_sections)
     {
         m_known_sections.resize(g_info_sections.size());
     }
@@ -943,7 +944,8 @@ bool ItemProperties::ModeNodeAutosize::get_display_data(pfc::string_base& p_out,
 }
 
 ItemProperties::MenuNodeTrackMode::MenuNodeTrackMode(ItemProperties* p_wnd, t_size p_value)
-    : p_this(p_wnd), m_source(p_value)
+    : p_this(p_wnd)
+    , m_source(p_value)
 {
 }
 

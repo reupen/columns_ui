@@ -636,7 +636,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                             wnd_focus = GetNextDlgTabItem(wnd_root, m_wnd_tabs, FALSE);
                         if (wnd_focus
                             && (IsChild(m_active_panels[m_active_tab]->m_wnd, wnd_focus)
-                                   || m_active_panels[m_active_tab]->m_wnd == wnd_focus))
+                                || m_active_panels[m_active_tab]->m_wnd == wnd_focus))
                             SetFocus(wnd_focus);
                         else
                             wnd_focus = nullptr;
@@ -679,7 +679,7 @@ void TabStackPanel::refresh_children()
 
             if (p_ext.is_valid()
                 && p_ext->is_available(
-                       uie::window_host_ptr(static_cast<uie::window_host*>(m_panels[n]->m_interface.get_ptr())))) {
+                    uie::window_host_ptr(static_cast<uie::window_host*>(m_panels[n]->m_interface.get_ptr())))) {
                 pfc::string8 name;
                 if (m_panels[n]->m_use_custom_title) {
                     name = m_panels[n]->m_custom_title;
@@ -933,7 +933,7 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
             // unsigned scroll_lines = GetNumScrollLines();
 
             HWND wnd_child = GetWindow(wnd, GW_CHILD);
-            WCHAR str_class[129]; 
+            WCHAR str_class[129];
             memset(str_class, 0, sizeof(str_class));
             if (wnd_child && RealGetWindowClass(wnd_child, str_class, tabsize(str_class) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
