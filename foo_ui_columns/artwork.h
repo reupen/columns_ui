@@ -6,6 +6,7 @@ namespace artwork_panel {
 
 class ArtworkPanel
     : public uie::container_ui_extension_t<>
+    , public now_playing_album_art_notify
     , public play_callback
     , public playlist_callback_single
     , public ui_selection_callback {
@@ -24,6 +25,8 @@ public:
     unsigned get_type() const override;
 
     static void g_on_edge_style_change();
+
+    void on_album_art(album_art_data::ptr data) override;
 
     void on_playback_new_track(metadb_handle_ptr p_track) override;
     void on_playback_stop(play_control::t_stop_reason p_reason) override;
@@ -161,17 +164,19 @@ private:
     bool refresh_image(t_size index);
     void show_stub_image();
     void flush_image();
+    void invalidate_window() const;
 
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};
 
     std::shared_ptr<ArtworkReaderManager> m_artwork_loader;
-    // now_playing_album_art_manager m_nowplaying_artwork_loader;
     std::unique_ptr<Gdiplus::Bitmap> m_image;
     wil::unique_hbitmap m_bitmap;
     t_size m_position{0};
     t_size m_track_mode;
-    bool m_preserve_aspect_ratio, m_lock_type{false};
+    bool m_preserve_aspect_ratio{true};
+    bool m_lock_type{false};
+    bool m_dynamic_artwork_pending{};
     metadb_handle_list m_selection_handles;
 
     static std::vector<ArtworkPanel*> g_windows;

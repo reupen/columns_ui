@@ -51,8 +51,8 @@ cfg_uint cfg_edge_style(g_guid_edge_style, 0);
 // {E32DCBA9-A2BF-4901-AB43-228628071410}
 static const GUID g_guid_colour_client = {0xe32dcba9, 0xa2bf, 0x4901, {0xab, 0x43, 0x22, 0x86, 0x28, 0x7, 0x14, 0x10}};
 
-const GUID g_artwork_types[]
-    = {album_art_ids::cover_front, album_art_ids::cover_back, album_art_ids::disc, album_art_ids::artist};
+const std::vector<GUID> g_artwork_types{
+    album_art_ids::cover_front, album_art_ids::cover_back, album_art_ids::disc, album_art_ids::artist};
 
 void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
@@ -92,6 +92,26 @@ void ArtworkPanel::g_on_edge_style_change()
         }
     }
 }
+
+/**
+ * Note: This is not called when there is no artwork to display.
+ *
+ * Additionally, it isn't called when foobar2000 thinks the track belongs to
+ * the same album as the previous track (determined using metadata, not
+ * artwork equivalence).
+ */
+void ArtworkPanel::on_album_art(album_art_data::ptr data)
+{
+    if (!m_artwork_loader || !m_artwork_loader->is_ready()) {
+        m_dynamic_artwork_pending = true;
+        return;
+    }
+
+    if (m_position == 0) {
+        refresh_image(0);
+    }
+}
+
 const GUID& ArtworkPanel::get_extension_guid() const
 {
     // {DEEAD6EC-F0B9-4919-B16D-280AEDDE7343}
@@ -123,9 +143,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         m_artwork_loader = std::make_shared<ArtworkReaderManager>();
         //        m_nowplaying_artwork_loader.initialise(this);
-        t_size count = tabsize(g_artwork_types);
-        for (t_size i = 0; i < count; i++)
-            m_artwork_loader->AddType(g_artwork_types[i]);
+        now_playing_album_art_notify_manager::get()->add(this);
+        m_artwork_loader->set_types(g_artwork_types);
         static_api_ptr_t<play_callback_manager>()->register_callback(this,
             play_callback::flag_on_playback_new_track | play_callback::flag_on_playback_stop
                 | play_callback::flag_on_playback_edited,
@@ -140,6 +159,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
         static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
         static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
+        now_playing_album_art_notify_manager::get()->remove(this);
         m_selection_handles.remove_all();
         m_image.reset();
         m_bitmap.reset();
@@ -157,14 +177,14 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE)) {
             flush_cached_bitmap();
-            RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
+            invalidate_window();
         }
     } break;
     case WM_LBUTTONDOWN: {
-        t_size count = tabsize(g_artwork_types);
+        const t_size count = g_artwork_types.size();
         for (t_size i = 1; i < count; i++) {
-            if (refresh_image((m_position + i) % (tabsize(g_artwork_types)))) {
-                m_position = (m_position + i) % (tabsize(g_artwork_types));
+            if (refresh_image((m_position + i) % count)) {
+                m_position = (m_position + i) % count;
                 break;
             }
         }
@@ -221,13 +241,12 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
         if (g_track_mode_includes_selection(m_track_mode)
             && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
             if (m_selection_handles.get_count()) {
-                m_artwork_loader->Request(
-                    m_selection_handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+                m_artwork_loader->request(m_selection_handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
             } else {
                 flush_image();
-                RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+                invalidate_window();
                 if (m_artwork_loader)
-                    m_artwork_loader->Reset();
+                    m_artwork_loader->reset();
             }
         }
     }
@@ -235,6 +254,8 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
 
 void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 {
+    m_dynamic_artwork_pending = false;
+
     if (g_track_mode_includes_now_playing(m_track_mode) && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
         bool b_set = false;
@@ -246,23 +267,27 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
         }
 
         if (handles.get_count()) {
-            m_artwork_loader->Request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+            m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
             b_set = true;
         }
 
         if (!b_set) {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            invalidate_window();
             if (m_artwork_loader)
-                m_artwork_loader->Reset();
+                m_artwork_loader->reset();
         }
     }
 }
 
 void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track)
 {
-    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader)
-        m_artwork_loader->Request(p_track, new service_impl_t<CompletionNotifyForwarder>(this));
+    m_dynamic_artwork_pending = false;
+    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader) {
+        const auto data = now_playing_album_art_notify_manager::get()->current();
+
+        m_artwork_loader->request(p_track, new service_impl_t<CompletionNotifyForwarder>(this), true);
+    }
 }
 
 void ArtworkPanel::force_reload_artwork()
@@ -281,12 +306,12 @@ void ArtworkPanel::force_reload_artwork()
     }
 
     if (handle.is_valid()) {
-        m_artwork_loader->Request(handle, new service_impl_t<CompletionNotifyForwarder>(this));
+        m_artwork_loader->request(handle, new service_impl_t<CompletionNotifyForwarder>(this));
     } else {
         flush_image();
-        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+        invalidate_window();
         if (m_artwork_loader)
-            m_artwork_loader->Reset();
+            m_artwork_loader->reset();
     }
 }
 
@@ -297,12 +322,12 @@ void ArtworkPanel::on_playlist_switch()
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
-            m_artwork_loader->Request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+            m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            invalidate_window();
             if (m_artwork_loader)
-                m_artwork_loader->Reset();
+                m_artwork_loader->reset();
         }
     }
 }
@@ -314,40 +339,49 @@ void ArtworkPanel::on_items_selection_change(const pfc::bit_array& p_affected, c
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
-            m_artwork_loader->Request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+            m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            invalidate_window();
             if (m_artwork_loader)
-                m_artwork_loader->Reset();
+                m_artwork_loader->reset();
         }
     }
 }
 
 void ArtworkPanel::on_completion(unsigned p_code)
 {
-    if (p_code == 1 && get_wnd()) {
-        bool b_found = false;
-        t_size count = tabsize(g_artwork_types);
-        if (m_lock_type)
-            count = min(1, count);
-        for (t_size i = 0; i < count; i++) {
-            if (refresh_image((m_position + i) % (tabsize(g_artwork_types)))) {
-                m_position = (m_position + i) % (tabsize(g_artwork_types));
-                b_found = true;
-                break;
-            }
-        }
+    if (!get_wnd())
+        return;
 
-        if (!b_found) {
-            show_stub_image();
+    const auto is_dynamic_artwork_pending = m_dynamic_artwork_pending && m_position == 0;
+    const auto artwork_changed = p_code == 1;
+
+    if (m_image && !is_dynamic_artwork_pending && !artwork_changed)
+        return;
+
+    m_dynamic_artwork_pending = false;
+
+    bool b_found = false;
+    t_size count = g_artwork_types.size();
+    if (m_lock_type)
+        count = min(1, count);
+    for (t_size i = 0; i < count; i++) {
+        if (refresh_image((m_position + i) % g_artwork_types.size())) {
+            m_position = (m_position + i) % g_artwork_types.size();
+            b_found = true;
+            break;
         }
+    }
+
+    if (!b_found) {
+        show_stub_image();
     }
 }
 
 void ArtworkPanel::show_stub_image()
 {
-    if (m_artwork_loader && m_artwork_loader->IsReady()) {
+    if (m_artwork_loader && m_artwork_loader->is_ready()) {
         album_art_data_ptr data = m_artwork_loader->get_stub_image(g_artwork_types[m_position]);
         if (data.is_valid()) {
             wil::com_ptr_t<mmh::IStreamMemblock> pStream
@@ -357,12 +391,12 @@ void ArtworkPanel::show_stub_image()
                 pStream.reset();
                 if (m_image->GetLastStatus() == Gdiplus::Ok) {
                     flush_cached_bitmap();
-                    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+                    invalidate_window();
                 }
             }
         } else {
             flush_image();
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+            invalidate_window();
         }
     }
 }
@@ -373,10 +407,10 @@ bool ArtworkPanel::refresh_image(t_size index)
 
     flush_image();
 
-    if (!m_artwork_loader || !m_artwork_loader->IsReady())
+    if (!m_artwork_loader || !m_artwork_loader->is_ready())
         return false;
 
-    const auto data = m_artwork_loader->get_image(g_artwork_types[index]);
+    auto data = m_artwork_loader->get_image(g_artwork_types[index]);
     if (data.is_empty())
         return false;
 
@@ -394,7 +428,7 @@ bool ArtworkPanel::refresh_image(t_size index)
     if (!m_image)
         return false;
 
-    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+    invalidate_window();
     return true;
 }
 
@@ -407,6 +441,11 @@ void ArtworkPanel::flush_image()
 {
     m_image.reset();
     flush_cached_bitmap();
+}
+
+void ArtworkPanel::invalidate_window() const
+{
+    RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
 void ArtworkPanel::refresh_cached_bitmap()
@@ -473,7 +512,7 @@ void ArtworkPanel::g_on_colours_change()
 {
     for (auto& window : g_windows) {
         window->flush_cached_bitmap();
-        RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+        window->invalidate_window();
     }
 }
 
@@ -534,7 +573,7 @@ void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callba
                 p_reader->read_lendian_t(m_lock_type, p_abort);
                 if (version >= 3) {
                     p_reader->read_lendian_t(m_position, p_abort);
-                    if (m_position >= tabsize(g_artwork_types))
+                    if (m_position >= g_artwork_types.size())
                         m_position = 0;
                 }
             }
@@ -678,7 +717,7 @@ void ArtworkPanel::MenuNodePreserveAspectRatio::execute()
     p_this->m_preserve_aspect_ratio = !p_this->m_preserve_aspect_ratio;
     cfg_preserve_aspect_ratio = p_this->m_preserve_aspect_ratio;
     p_this->flush_cached_bitmap();
-    RedrawWindow(p_this->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_INVALIDATE);
+    p_this->invalidate_window();
 }
 
 bool ArtworkPanel::MenuNodePreserveAspectRatio::get_description(pfc::string_base& p_out) const
