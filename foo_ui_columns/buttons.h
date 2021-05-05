@@ -58,8 +58,8 @@ public:
             void write(stream_writer* out, abort_callback& p_abort) const;
             void read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort);
             void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
-            void read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name,
-                stream_reader* p_file, unsigned p_size, abort_callback& p_abort);
+            void read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
+                unsigned p_size, abort_callback& p_abort);
         };
 
         Type m_type{TYPE_SEPARATOR};

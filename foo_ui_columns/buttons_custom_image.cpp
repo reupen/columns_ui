@@ -30,8 +30,7 @@ void ButtonsToolbar::Button::CustomImage::write(stream_writer* out, abort_callba
     } else if (m_mask_type == uie::MASK_COLOUR)
         out->write_lendian_t(m_mask_colour, p_abort);
 }
-void ButtonsToolbar::Button::CustomImage::read(
-    ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
+void ButtonsToolbar::Button::CustomImage::read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
 {
     pfc::string8 temp;
     reader->read_string(temp, p_abort);
@@ -260,8 +259,7 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
     }
 }
 
-void ButtonsToolbar::Button::CustomImage::write_to_file(
-    stream_writer& p_file, bool b_paths, abort_callback& p_abort)
+void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file.write_lendian_t(I_BUTTON_MASK_TYPE, p_abort);
     p_file.write_lendian_t(sizeof(m_mask_type), p_abort);

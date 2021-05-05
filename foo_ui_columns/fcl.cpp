@@ -160,7 +160,8 @@ public:
     }
     t_uint32 get_mode() const { return m_mode; }
     FCLDialog(bool b_import = false, std::unordered_set<GUID> p_list = {})
-        : m_import(b_import), m_filter(std::move(p_list))
+        : m_import(b_import)
+        , m_filter(std::move(p_list))
     {
     }
 
@@ -431,7 +432,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
 
     if (path.is_empty()
         && !uGetOpenFileName(
-               wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", nullptr, path, TRUE))
+            wnd, "Columns UI Layout (*.fcl)|*.fcl|All Files (*.*)|*.*", 0, "fcl", "Save as", nullptr, path, TRUE))
         return;
 
     if (path.is_empty())

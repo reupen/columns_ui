@@ -15,7 +15,6 @@ const GUID g_guid_preserve_aspect_ratio = {0xa35e8697, 0xb8a, 0x4e6f, {0x9d, 0xb
 // {F5C8CE6B-5D68-4ce2-8B9F-874D8EDB03B3}
 const GUID g_guid_edge_style = {0xf5c8ce6b, 0x5d68, 0x4ce2, {0x8b, 0x9f, 0x87, 0x4d, 0x8e, 0xdb, 0x3, 0xb3}};
 
-
 enum TrackingMode {
     track_auto_playlist_playing,
     track_playlist,
@@ -582,7 +581,8 @@ void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callba
 }
 
 ArtworkPanel::MenuNodeTrackMode::MenuNodeTrackMode(ArtworkPanel* p_wnd, t_size p_value)
-    : p_this(p_wnd), m_source(p_value)
+    : p_this(p_wnd)
+    , m_source(p_value)
 {
 }
 
@@ -619,7 +619,8 @@ const char* ArtworkPanel::MenuNodeTrackMode::get_name(t_size source)
 }
 
 ArtworkPanel::MenuNodeArtworkType::MenuNodeArtworkType(ArtworkPanel* p_wnd, t_size p_value)
-    : p_this(p_wnd), m_type(p_value)
+    : p_this(p_wnd)
+    , m_type(p_value)
 {
 }
 
@@ -707,10 +708,7 @@ bool ArtworkPanel::MenuNodeTypePopup::get_display_data(pfc::string_base& p_out, 
     return true;
 }
 
-ArtworkPanel::MenuNodePreserveAspectRatio::MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd)
-    : p_this(p_wnd)
-{
-}
+ArtworkPanel::MenuNodePreserveAspectRatio::MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd) : p_this(p_wnd) {}
 
 void ArtworkPanel::MenuNodePreserveAspectRatio::execute()
 {

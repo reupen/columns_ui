@@ -15,6 +15,7 @@ public:
     public:
         void on_completion(unsigned p_code) override;
         CompletionNotifyForwarder(ArtworkPanel* p_this);
+
     private:
         service_ptr_t<ArtworkPanel> m_this;
     };

@@ -30,7 +30,8 @@ auto get_info_field_values(const file_info& info, std::string_view field)
 class InlineEditFileInfoFilter : public file_info_filter {
 public:
     InlineEditFileInfoFilter(std::string field, std::vector<std::string> new_values)
-        : m_field(std::move(field)), m_new_values(std::move(new_values))
+        : m_field(std::move(field))
+        , m_new_values(std::move(new_values))
     {
     }
 

@@ -14,10 +14,7 @@ const GUID& ButtonsToolbar::get_extension_guid() const
     return extension_guid;
 }
 
-ButtonsToolbar::ConfigParam::ConfigParam()
-    : m_button_list(*this)
-{
-}
+ButtonsToolbar::ConfigParam::ConfigParam() : m_button_list(*this) {}
 
 void ButtonsToolbar::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
@@ -58,8 +55,7 @@ void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_ab
 }
 
 // {AFD89390-8E1F-434c-B9C5-A4C1261BB792}
-const GUID ButtonsToolbar::g_guid_fcb
-    = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
+const GUID ButtonsToolbar::g_guid_fcb = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
 
 void ButtonsToolbar::reset_buttons(std::vector<Button>& p_buttons)
 {

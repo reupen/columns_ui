@@ -33,10 +33,8 @@ public:
         return true;
     }
 
-    bool operator()(const std::function<std::string()>& value) const
-    {
-        return (*this)(value());
-    }
+    bool operator()(const std::function<std::string()>& value) const { return (*this)(value()); }
+
 private:
     titleformat_text_out* m_out{};
 };

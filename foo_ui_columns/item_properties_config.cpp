@@ -171,8 +171,8 @@ bool ItemPropertiesConfig::run_modal(HWND wnd)
     return dialog_result > 0;
 }
 
-ItemPropertiesConfig::ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style,
-    t_uint32 info_sections_mask, bool b_show_columns, bool b_show_groups)
+ItemPropertiesConfig::ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style, t_uint32 info_sections_mask,
+    bool b_show_columns, bool b_show_groups)
     : m_fields(std::move(p_fields))
     , m_edge_style(edge_style)
     , m_info_sections_mask(info_sections_mask)

@@ -28,7 +28,9 @@ public:
 class CommandLineSingleFileHelper {
 public:
     CommandLineSingleFileHelper(const char* error_title, const char* no_files_error, const char* too_many_files_error)
-        : m_error_title{error_title}, m_no_files_error{no_files_error}, m_too_many_files_error{too_many_files_error} {};
+        : m_error_title{error_title}
+        , m_no_files_error{no_files_error}
+        , m_too_many_files_error{too_many_files_error} {};
     void reset() { m_files.clear(); }
     void add_file(const char* url) { m_files.emplace_back(url); }
     bool validate_files()
@@ -62,8 +64,8 @@ public:
 
     ImportCommandLineHandler()
         : m_single_file_helper{u8"Import configuration – Columns UI", u8"No file to import specified.",
-              u8"Too many files to import specified. You can only import one file at a time, "
-              "and should use double quotes around paths containing spaces."}
+            u8"Too many files to import specified. You can only import one file at a time, "
+            "and should use double quotes around paths containing spaces."}
     {
     }
 
@@ -114,8 +116,8 @@ public:
 
     ExportCommandLineHandler()
         : m_single_file_helper{u8"Export configuration – Columns UI", u8"No file to export to specified.",
-              u8"Too many destination files specified. You must specify only one destination path, "
-              "and should use double quotes around paths containing spaces."}
+            u8"Too many destination files specified. You must specify only one destination path, "
+            "and should use double quotes around paths containing spaces."}
     {
     }
 

@@ -17,7 +17,7 @@ void PlaylistView::on_items_added(/*unsigned p_playlist, */ unsigned start,
 void PlaylistView::on_items_reordered(/*t_size p_playlist, */ const t_size* p_order, t_size p_count){
     /*(if (p_playlist ==0)*/
     {clear_sort_column();
-        for (t_size i = 0; i < p_count; i++) {
+for (t_size i = 0; i < p_count; i++) {
     t_size start = i;
     while (i < p_count && p_order[i] != i) {
         i++;

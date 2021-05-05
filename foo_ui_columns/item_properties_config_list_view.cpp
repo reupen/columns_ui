@@ -61,6 +61,8 @@ void FieldsList::get_insert_items(t_size base, t_size count, pfc::list_t<uih::Li
 }
 
 FieldsList::FieldsList(pfc::list_t<Field>& p_fields)
-    : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite), m_fields(p_fields)
+    : m_edit_index(pfc_infinite)
+    , m_edit_column(pfc_infinite)
+    , m_fields(p_fields)
 {
 }

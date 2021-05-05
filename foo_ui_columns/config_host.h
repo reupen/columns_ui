@@ -34,8 +34,8 @@ private:
 
 class PreferencesTabsHost : public preferences_page {
 public:
-    PreferencesTabsHost(const char* p_name, PreferencesTab* const* const p_tabs, size_t p_tab_count,
-        const GUID& p_guid, const GUID& p_parent_guid, cfg_int* const p_active_tab)
+    PreferencesTabsHost(const char* p_name, PreferencesTab* const* const p_tabs, size_t p_tab_count, const GUID& p_guid,
+        const GUID& p_parent_guid, cfg_int* const p_active_tab)
         : m_child(nullptr)
         , m_name(p_name)
         , m_guid(p_guid)

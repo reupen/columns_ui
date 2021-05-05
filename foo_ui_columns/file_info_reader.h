@@ -6,7 +6,8 @@ class FullFileInfoRequest : public std::enable_shared_from_this<FullFileInfoRequ
 public:
     using CallbackFunction = void(std::shared_ptr<FullFileInfoRequest>);
     FullFileInfoRequest(metadb_handle_ptr track, std::function<CallbackFunction> callback)
-        : m_track(std::move(track)), m_callback(std::move(callback))
+        : m_track(std::move(track))
+        , m_callback(std::move(callback))
     {
     }
     void queue();

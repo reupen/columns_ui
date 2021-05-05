@@ -521,10 +521,10 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto cy_drag = std::abs(GetSystemMetrics(SM_CYDRAG));
         if ((m_rmb_is_dragging && wp & MK_RBUTTON
                 && (std::abs(drag_start.x - GET_X_LPARAM(lp)) > cx_drag
-                       || std::abs(drag_start.y - GET_Y_LPARAM(lp)) > cy_drag))
+                    || std::abs(drag_start.y - GET_Y_LPARAM(lp)) > cy_drag))
             || (g_drag_lmb && (wp & MK_LBUTTON) && (wp & MK_CONTROL)
-                   && (std::abs(drag_start_lmb.x - GET_X_LPARAM(lp)) > 3
-                          || std::abs(drag_start_lmb.y - GET_Y_LPARAM(lp)) > 3))) {
+                && (std::abs(drag_start_lmb.x - GET_X_LPARAM(lp)) > 3
+                    || std::abs(drag_start_lmb.y - GET_Y_LPARAM(lp)) > 3))) {
             static_api_ptr_t<playlist_manager> playlist_api;
             metadb_handle_list data;
             playlist_api->activeplaylist_get_selected_items(data);

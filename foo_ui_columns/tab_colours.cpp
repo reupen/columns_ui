@@ -216,7 +216,7 @@ void TabColours::update_buttons()
     EnableWindow(GetDlgItem(m_wnd, IDC_CUSTOM_FRAME),
         m_element_ptr->colour_mode != cui::colours::colour_mode_global
             && (!m_element_api.is_valid()
-                   || (m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame)));
+                || (m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame)));
 }
 
 bool TabColours::get_colour_patch_enabled(cui::colours::colour_identifier_t p_identifier)
@@ -245,7 +245,7 @@ bool TabColours::get_change_colour_enabled(cui::colours::colour_identifier_t p_i
             && (!m_element_api.is_valid() || m_element_api->get_supported_colours() & (1 << p_identifier))
             && ((!m_element_api.is_valid()
                     || !(m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame))
-                   || cui::colours::helper(m_element_guid).get_bool(cui::colours::bool_use_custom_active_item_frame));
+                || cui::colours::helper(m_element_guid).get_bool(cui::colours::bool_use_custom_active_item_frame));
     return (m_element_ptr->colour_mode == cui::colours::colour_mode_custom
         && (!m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier))));
 }

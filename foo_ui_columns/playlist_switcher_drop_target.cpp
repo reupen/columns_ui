@@ -304,7 +304,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
             if (m_is_playlists
                 && ((b_internal_move
                         = m_window->m_dragging && m_window->m_DataObject == pDataObj && *pdwEffect == DROPEFFECT_MOVE)
-                       || SUCCEEDED(m_ole_api->parse_dataobject_playlists(pDataObj, data)))) {
+                    || SUCCEEDED(m_ole_api->parse_dataobject_playlists(pDataObj, data)))) {
                 if (b_internal_move) {
                     if (hi.category == HitTestCategory::OnUnobscuredItem
                         || hi.category == HitTestCategory::OnGroupHeader
@@ -435,8 +435,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                         DelayedDropTargetProcesser() : m_insertIndexTracker(false){};
                     };
 
-                    service_ptr_t<DelayedDropTargetProcesser> ptr
-                        = new service_impl_t<DelayedDropTargetProcesser>;
+                    service_ptr_t<DelayedDropTargetProcesser> ptr = new service_impl_t<DelayedDropTargetProcesser>;
                     ptr->m_window = m_window;
                     ptr->m_insertIndexTracker.m_playlist = idx;
                     ptr->m_new_playlist = create_new;
@@ -459,7 +458,11 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
 }
 
 PlaylistSwitcher::DropTarget::DropTarget(PlaylistSwitcher* p_window)
-    : drop_ref_count(0), m_last_rmb(false), m_is_playlists(false), m_is_accepted_type(false), m_window(p_window)
+    : drop_ref_count(0)
+    , m_last_rmb(false)
+    , m_is_playlists(false)
+    , m_is_accepted_type(false)
+    , m_window(p_window)
 {
     m_ole_api = standard_api_create_t<ole_interaction_v2>();
     m_playlist_api = standard_api_create_t<playlist_manager_v4>();

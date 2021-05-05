@@ -221,16 +221,16 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
             Gdiplus::Rect destRect(0, 0, cx, cy);
             graphics.DrawImage(&bm, destRect, 0, 0, cx_source, cy_source, Gdiplus::UnitPixel, &imageAttributes);
 #else
-                if (cx_source == cx && cy_source == cy) {
-                    Gdiplus::Rect destRect(0, 0, cx, cy);
-                    graphics.SetInterpolationMode(Gdiplus::InterpolationModeNearestNeighbor);
-                    graphics.DrawImage(&bm, destRect, 0, 0, cx_source, cy_source, Gdiplus::UnitPixel);
-                    graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
-                } else {
-                    Gdiplus::Rect destRect(-1, -1, cx + 2, cy + 2);
-                    // Gdiplus::Rect destRect(0, 0, cx, cy);
-                    graphics.DrawImage(&bm, destRect, 0, 0, cx_source, cy_source, Gdiplus::UnitPixel);
-                }
+            if (cx_source == cx && cy_source == cy) {
+                Gdiplus::Rect destRect(0, 0, cx, cy);
+                graphics.SetInterpolationMode(Gdiplus::InterpolationModeNearestNeighbor);
+                graphics.DrawImage(&bm, destRect, 0, 0, cx_source, cy_source, Gdiplus::UnitPixel);
+                graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+            } else {
+                Gdiplus::Rect destRect(-1, -1, cx + 2, cy + 2);
+                // Gdiplus::Rect destRect(0, 0, cx, cy);
+                graphics.DrawImage(&bm, destRect, 0, 0, cx_source, cy_source, Gdiplus::UnitPixel);
+            }
 #endif
         }
 

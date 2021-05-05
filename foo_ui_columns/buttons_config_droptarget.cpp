@@ -188,7 +188,9 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
 }
 ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::ButtonsListDropTarget(
     ButtonsToolbar::ConfigParam::ButtonsList* p_blv)
-    : drop_ref_count(0), last_rmb(false), m_button_list_view(p_blv)
+    : drop_ref_count(0)
+    , last_rmb(false)
+    , m_button_list_view(p_blv)
 {
     m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }

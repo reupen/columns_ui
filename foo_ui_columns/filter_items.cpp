@@ -3,8 +3,7 @@
 #include "filter_config_var.h"
 
 namespace filter_panel {
-void FilterPanel::populate_list_from_chain(
-    const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain)
+void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain)
 {
     bool b_redraw = disable_redrawing();
     pfc::list_t<pfc::string_simple_t<WCHAR>> previous_nodes;
@@ -32,8 +31,8 @@ void FilterPanel::populate_list_from_chain(
         new_selection[0] = b_all_was_selected;
         for (t_size i = 0; i < count; i++) {
             t_size index;
-            if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare, previous_nodes[i].get_ptr(),
-                    1, index, get_sort_direction())) {
+            if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare, previous_nodes[i].get_ptr(), 1,
+                    index, get_sort_direction())) {
                 new_selection[index] = true;
                 b_found = true;
             }

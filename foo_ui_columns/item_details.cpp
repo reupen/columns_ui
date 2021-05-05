@@ -250,7 +250,7 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
     } else {
         const auto padding_size = 2_spx * 2;
         si_new.nPage = (std::max)(RECT_CX(rc), 1l);
-        si_new.nMax = m_hscroll ? (std::max)(m_display_sz.cx + padding_size - 1, 1l) : 0l;        
+        si_new.nMax = m_hscroll ? (std::max)(m_display_sz.cx + padding_size - 1, 1l) : 0l;
     }
 
     if (si_new.nMax >= gsl::narrow<int>(si_new.nPage)) {
@@ -1012,9 +1012,7 @@ void ItemDetails::on_items_replaced(
 {
 }
 
-void ItemDetails::on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level)
-{
-}
+void ItemDetails::on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level) {}
 
 void ItemDetails::on_items_modified(const pfc::bit_array& p_mask) {}
 
@@ -1134,16 +1132,14 @@ unsigned ItemDetails::MenuNodeAlignmentPopup::get_children_count() const
     return m_items.get_count();
 }
 
-bool ItemDetails::MenuNodeAlignmentPopup::get_display_data(
-    pfc::string_base& p_out, unsigned& p_displayflags) const
+bool ItemDetails::MenuNodeAlignmentPopup::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Alignment";
     p_displayflags = 0;
     return true;
 }
 
-ItemDetails::MenuNodeAlignment::MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value)
-    : p_this(p_wnd), m_type(p_value)
+ItemDetails::MenuNodeAlignment::MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value) : p_this(p_wnd), m_type(p_value)
 {
 }
 
@@ -1205,8 +1201,7 @@ bool ItemDetails::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out,
     return true;
 }
 
-ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value)
-    : p_this(p_wnd), m_source(p_value)
+ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value) : p_this(p_wnd), m_source(p_value)
 {
 }
 

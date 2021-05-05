@@ -190,6 +190,9 @@ bool ItemDetailsConfig::run_modal(HWND wnd)
 }
 
 ItemDetailsConfig::ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)
-    : m_script(p_text), m_edge_style(edge_style), m_horizontal_alignment(halign), m_vertical_alignment(valign)
+    : m_script(p_text)
+    , m_edge_style(edge_style)
+    , m_horizontal_alignment(halign)
+    , m_vertical_alignment(valign)
 {
 }

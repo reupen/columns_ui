@@ -8,8 +8,7 @@ public:
     static COLORREF get_background_colour() { return -1; }
 };
 
-class VolumeBarToolbar
-    : public VolumeBar<false, false, VolumeBarToolbarAttributes, uie::container_ui_extension_t<>> {
+class VolumeBarToolbar : public VolumeBar<false, false, VolumeBarToolbarAttributes, uie::container_ui_extension_t<>> {
     const GUID& get_extension_guid() const override
     {
         // {B3259290-CB68-4d37-B0F1-8094862A9524}

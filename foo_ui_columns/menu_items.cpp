@@ -111,7 +111,9 @@ class MainMenuCommands : public mainmenu_commands {
 public:
     template <class... Commands>
     MainMenuCommands(GUID parent, uint32_t sort_priority, Commands&&... commands)
-        : m_parent(parent), m_sort_priority(sort_priority), m_commands{std::forward<Commands>(commands)...}
+        : m_parent(parent)
+        , m_sort_priority(sort_priority)
+        , m_commands{std::forward<Commands>(commands)...}
     {
     }
 

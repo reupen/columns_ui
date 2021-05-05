@@ -92,7 +92,8 @@ void set_font_size(bool up)
 }
 
 PlaylistView::PlaylistView()
-    : ListViewPanelBase(std::make_unique<PlaylistViewRenderer>(this)), m_dragging_initial_playlist(pfc_infinite){};
+    : ListViewPanelBase(std::make_unique<PlaylistViewRenderer>(this))
+    , m_dragging_initial_playlist(pfc_infinite){};
 
 PlaylistView::~PlaylistView() = default;
 
@@ -415,7 +416,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
     unsigned active_playlist = m_playlist_api->get_active_playlist();
     if (active_playlist != -1
         && (!m_playlist_api->playlist_lock_is_present(active_playlist)
-               || !(m_playlist_api->playlist_lock_get_filter_mask(active_playlist) & playlist_lock::filter_reorder))) {
+            || !(m_playlist_api->playlist_lock_get_filter_mask(active_playlist) & playlist_lock::filter_reorder))) {
         unsigned n;
         unsigned count = m_playlist_api->activeplaylist_get_item_count();
 
@@ -449,8 +450,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
 
                     if (extra) {
                         SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                        SplitterTitleformatHook tf_hook(
-                            &tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+                        SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
                         pfc::string8 output;
                         m_playlist_api->activeplaylist_item_format_title(
                             n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
@@ -1126,8 +1126,7 @@ const GUID PlaylistView::g_extension_guid
 uie::window_factory<PlaylistView> g_pvt;
 
 // {C882D3AC-C014-44df-9C7E-2DADF37645A0}
-const GUID ColoursClient::g_guid
-    = {0xc882d3ac, 0xc014, 0x44df, {0x9c, 0x7e, 0x2d, 0xad, 0xf3, 0x76, 0x45, 0xa0}};
+const GUID ColoursClient::g_guid = {0xc882d3ac, 0xc014, 0x44df, {0x9c, 0x7e, 0x2d, 0xad, 0xf3, 0x76, 0x45, 0xa0}};
 ColoursClient::factory<ColoursClient> g_appearance_client_ngpv_impl;
 
 // {19F8E0B3-E822-4f07-B200-D4A67E4872F9}

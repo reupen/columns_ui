@@ -13,7 +13,8 @@ public:
     bool get_description(pfc::string_base& p_out) const override { return false; }
     void execute() override { m_execute_callback(); }
     CommandMenuNode(const char* title, std::function<void()> execute_callback)
-        : m_title(title), m_execute_callback{std::move(execute_callback)}
+        : m_title(title)
+        , m_execute_callback{std::move(execute_callback)}
     {
     }
 

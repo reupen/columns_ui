@@ -3,7 +3,8 @@
 class GlobalVariable {
 public:
     GlobalVariable(const char* p_name, t_size p_name_length, const char* p_value, t_size p_value_length)
-        : m_name(p_name, p_name_length), m_value(p_value, p_value_length)
+        : m_name(p_name, p_name_length)
+        , m_value(p_value, p_value_length)
     {
     }
 
@@ -87,7 +88,7 @@ public:
         return false;
     }
 
-    SetGlobalTitleformatHook(GlobalVariableList& vars) : p_vars(vars) {};
+    SetGlobalTitleformatHook(GlobalVariableList& vars) : p_vars(vars){};
 };
 
 class DateTitleformatHook : public titleformat_hook {
@@ -106,7 +107,10 @@ class SplitterTitleformatHook : public titleformat_hook {
 public:
     SplitterTitleformatHook(titleformat_hook* p_hook1, titleformat_hook* p_hook2, titleformat_hook* p_hook3,
         titleformat_hook* p_hook4 = nullptr)
-        : m_hook1(p_hook1), m_hook2(p_hook2), m_hook3(p_hook3), m_hook4(p_hook4){};
+        : m_hook1(p_hook1)
+        , m_hook2(p_hook2)
+        , m_hook3(p_hook3)
+        , m_hook4(p_hook4){};
     bool process_field(
         titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
     bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,

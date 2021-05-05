@@ -194,7 +194,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                     if (msg == WM_MOUSEMOVE
                         && ((is_index_valid(p_panel) && m_panels[p_panel]->m_autohide)
-                               || (b_have_next && m_panels[p_panel + 1]->m_autohide))) {
+                            || (b_have_next && m_panels[p_panel + 1]->m_autohide))) {
                         if (cfg_sidebar_use_custom_show_delay && !cfg_sidebar_show_delay) {
                             if ((is_index_valid(p_panel))) {
                                 start_autohide_dehide(p_panel);
