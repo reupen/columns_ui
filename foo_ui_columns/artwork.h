@@ -162,10 +162,11 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void refresh_cached_bitmap();
     void flush_cached_bitmap();
-    bool refresh_image(t_size index);
+    bool refresh_image();
     void show_stub_image();
     void flush_image();
     void invalidate_window() const;
+    size_t get_displayed_artwork_type_index() const;
 
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};
@@ -173,8 +174,9 @@ private:
     std::shared_ptr<ArtworkReaderManager> m_artwork_loader;
     std::unique_ptr<Gdiplus::Bitmap> m_image;
     wil::unique_hbitmap m_bitmap;
-    t_size m_position{0};
-    t_size m_track_mode;
+    size_t m_selected_artwork_type_index{0};
+    std::optional<size_t> m_artwork_type_override_index{};
+    size_t m_track_mode;
     bool m_preserve_aspect_ratio{true};
     bool m_lock_type{false};
     bool m_dynamic_artwork_pending{};
