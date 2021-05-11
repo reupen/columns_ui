@@ -10,6 +10,8 @@
 
 * Support for back cover, disc and artist stub images was added to the Artwork view panel. [[#345](https://github.com/reupen/columns_ui/pull/345)]
 
+* In the Artwork view panel, when the artwork type is not locked and the panel automatically switches to a different artwork type, it now returns to the previously selected artwork type once it’s available again. [[#368](https://github.com/reupen/columns_ui/pull/368)]
+
 * The list view scrolling speed when selecting items or using drag and drop was adjusted to be slower, particularly for short lists such as in Buttons options. [[#349](https://github.com/reupen/columns_ui/pull/349)]
 
 * The Item properties and Item details panels now expand and align tab characters. [[#350](https://github.com/reupen/columns_ui/pull/350)]
