@@ -12,11 +12,15 @@
 
 * In the Artwork view panel, when the artwork type is not locked and the panel automatically switches to a different artwork type, it now returns to the previously selected artwork type once it’s available again. [[#368](https://github.com/reupen/columns_ui/pull/368)]
 
+* A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from the file system using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351)]
+
 * The list view scrolling speed when selecting items or using drag and drop was adjusted to be slower, particularly for short lists such as in Buttons options. [[#349](https://github.com/reupen/columns_ui/pull/349)]
 
 * The Item properties and Item details panels now expand and align tab characters. [[#350](https://github.com/reupen/columns_ui/pull/350)]
 
-* A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from the file system using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351)]
+* When multiple tracks are selected and some of them have a value for a particular metadata field and some do not, the Item properties panel now makes this clearer by appending '(not set)' to the list of values for that field. [[#370](https://github.com/reupen/columns_ui/pull/370)]
+
+* The Item properties panel now shows '(blank)' for a metadata field if it’s set but the value is an empty string. [[#370](https://github.com/reupen/columns_ui/pull/370)]
 
 * The Filter panel no longer focuses the first playlist item when using any of the send to playlist commands or actions. This improves compatibility with shuffle playback modes when 'Playback follows cursor' is enabled. [[#352](https://github.com/reupen/columns_ui/pull/352)]
 

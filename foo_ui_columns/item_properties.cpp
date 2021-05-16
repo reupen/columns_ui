@@ -259,8 +259,10 @@ public:
 
         const t_size field_index = info->meta_find(field);
 
-        if (field_index == (std::numeric_limits<size_t>::max)())
+        if (field_index == (std::numeric_limits<size_t>::max)()) {
+            m_some_values_missing = true;
             return true;
+        }
 
         const t_size value_count = info->meta_enum_value_count(field_index);
 
@@ -273,6 +275,7 @@ public:
 
     std::vector<std::string> m_values;
     bool m_truncated{false};
+    bool m_some_values_missing{};
 
 private:
     void add_value(const char* p_value)
@@ -487,7 +490,13 @@ void ItemProperties::refresh_contents()
         t_size count_values = aggregator.m_values.size();
 
         for (t_size j = 0; j < count_values; j++) {
-            temp << aggregator.m_values[j].c_str();
+            auto&& value = aggregator.m_values[j];
+
+            if (value.length() > 0)
+                temp << value.c_str();
+            else
+                temp << "(blank)";
+
             if (j + 1 != count_values)
                 temp << "; ";
         }
@@ -495,6 +504,8 @@ void ItemProperties::refresh_contents()
         if (aggregator.m_truncated)
             temp << "; "
                     "\xe2\x80\xa6";
+        else if (count_values > 0 && aggregator.m_some_values_missing)
+            temp << "; (not set)";
 
         item.m_subitems[1] = temp;
         item.m_groups[0] = "Metadata";
