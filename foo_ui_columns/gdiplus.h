@@ -11,6 +11,8 @@
 
 #include "stdafx.h"
 
+#include "wic.h"
+
 namespace cui::gdip {
 
 /**
@@ -19,6 +21,8 @@ namespace cui::gdip {
  */
 std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_32bpp_data(
     unsigned width, unsigned height, unsigned stride, const uint8_t* data, size_t size);
+
+std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_wic_data(const wic::BitmapData& bitmap_data);
 
 void check_status(Gdiplus::Status status);
 

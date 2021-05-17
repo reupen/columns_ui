@@ -6,15 +6,11 @@ std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_32bpp_data(
     unsigned width, unsigned height, unsigned stride, const uint8_t* data, size_t size)
 {
     auto bitmap = std::make_unique<Gdiplus::Bitmap>(width, height, PixelFormat32bppARGB);
-
-    if (bitmap->GetLastStatus() != Gdiplus::Ok)
-        return {};
+    check_status(bitmap->GetLastStatus());
 
     Gdiplus::BitmapData image_data{};
     auto status = bitmap->LockBits(nullptr, Gdiplus::ImageLockModeWrite, PixelFormat32bppARGB, &image_data);
-
-    if (status != Gdiplus::Ok)
-        return {};
+    check_status(status);
 
     assert(image_data.Height == height);
     assert(image_data.Width == width);
@@ -29,10 +25,15 @@ std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_32bpp_data(
     }
 
     status = bitmap->UnlockBits(&image_data);
-    if (status != Gdiplus::Ok)
-        return {};
+    check_status(status);
 
     return bitmap;
+}
+
+std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_wic_data(const wic::BitmapData& bitmap_data)
+{
+    return create_bitmap_from_32bpp_data(
+        bitmap_data.width, bitmap_data.height, bitmap_data.stride, bitmap_data.data.data(), bitmap_data.data.size());
 }
 
 void check_status(Gdiplus::Status status)

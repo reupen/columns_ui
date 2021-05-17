@@ -28,6 +28,10 @@
 
 * A problem where panels were queried for configuration data too frequently following [#320](https://github.com/reupen/columns_ui/pull/320) was resolved. [[#364](https://github.com/reupen/columns_ui/pull/364)]
 
+* A problem where GDI+ was used to load stub artwork images in the Artwork view panel instead of the Windows Imaging Component (WIC) was fixed [[#371](https://github.com/reupen/columns_ui/pull/371)].
+  
+  (See the change log for version 1.4.0-beta.1 for more details on what this means.)
+
 ### Internal changes
 
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]

@@ -17,6 +17,7 @@ bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback
     FreeResource(handle);
     return ret;
 }
+
 wil::unique_hbitmap g_get_nocover_bitmap(
     t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
@@ -25,7 +26,6 @@ wil::unique_hbitmap g_get_nocover_bitmap(
     album_art_data_ptr data;
     wil::unique_hbitmap ret;
     try {
-        // FIXME: hardcoded to front cover
         data = p_extractor->query(album_art_ids::cover_front, p_abort);
         ret = g_create_hbitmap_from_data(data, cx, cy, cr_back, b_reflection);
     } catch (const exception_aborted&) {
@@ -279,19 +279,14 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
 wil::unique_hbitmap g_create_hbitmap_from_data(
     const album_art_data_ptr& data, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
 {
-    cui::wic::BitmapData bitmap_data{};
+    std::unique_ptr<Gdiplus::Bitmap> bitmap;
     try {
-        bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
+        const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
+        bitmap = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
         fbh::print_to_console(u8"Playlist view – loading image failed: ", ex.what());
         return nullptr;
     }
-
-    const auto bitmap = cui::gdip::create_bitmap_from_32bpp_data(
-        bitmap_data.width, bitmap_data.height, bitmap_data.stride, bitmap_data.data.data(), bitmap_data.data.size());
-
-    if (!bitmap)
-        return nullptr;
 
     return g_create_hbitmap_from_image(*bitmap, cx, cy, cr_back, b_reflection);
 }

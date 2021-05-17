@@ -252,7 +252,6 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
                 m_artwork_loader->request(m_selection_handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
             } else {
                 flush_image();
-                invalidate_window();
                 if (m_artwork_loader)
                     m_artwork_loader->reset();
             }
@@ -281,7 +280,6 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
 
         if (!b_set) {
             flush_image();
-            invalidate_window();
             if (m_artwork_loader)
                 m_artwork_loader->reset();
         }
@@ -317,7 +315,6 @@ void ArtworkPanel::force_reload_artwork()
         m_artwork_loader->request(handle, new service_impl_t<CompletionNotifyForwarder>(this));
     } else {
         flush_image();
-        invalidate_window();
         if (m_artwork_loader)
             m_artwork_loader->reset();
     }
@@ -333,7 +330,6 @@ void ArtworkPanel::on_playlist_switch()
             m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
-            invalidate_window();
             if (m_artwork_loader)
                 m_artwork_loader->reset();
         }
@@ -350,7 +346,6 @@ void ArtworkPanel::on_items_selection_change(const pfc::bit_array& p_affected, c
             m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
             flush_image();
-            invalidate_window();
             if (m_artwork_loader)
                 m_artwork_loader->reset();
         }
@@ -391,8 +386,10 @@ void ArtworkPanel::on_completion(unsigned p_code)
 
 void ArtworkPanel::show_stub_image()
 {
-    flush_image();
-    invalidate_window();
+    flush_image(false);
+    // Needs to be delayed until after WIC calls are made (otherwise painting
+    // may happen prematurely).
+    auto _ = gsl::finally([this] { invalidate_window(); });
 
     if (!m_artwork_loader || !m_artwork_loader->is_ready())
         return;
@@ -404,18 +401,22 @@ void ArtworkPanel::show_stub_image()
         return;
     }
 
-    wil::com_ptr_t<mmh::IStreamMemblock> pStream
-        = new mmh::IStreamMemblock((const t_uint8*)data->get_ptr(), data->get_size());
-
-    m_image = std::make_unique<Gdiplus::Bitmap>(pStream.get());
+    try {
+        const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
+        m_image = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
+    } catch (const std::exception& ex) {
+        fbh::print_to_console(u8"Artwork panel – loading stub image failed: ", ex.what());
+    }
 }
 
 bool ArtworkPanel::refresh_image()
 {
     TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
 
-    flush_image();
-    invalidate_window();
+    flush_image(false);
+    // Needs to be delayed until after WIC calls are made (otherwise painting
+    // may happen prematurely).
+    auto _ = gsl::finally([this] { invalidate_window(); });
 
     if (!m_artwork_loader || !m_artwork_loader->is_ready())
         return false;
@@ -426,21 +427,15 @@ bool ArtworkPanel::refresh_image()
     if (data.is_empty())
         return false;
 
-    cui::wic::BitmapData bitmap_data{};
     try {
-        bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
+        const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
+        m_image = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
         fbh::print_to_console(u8"Artwork panel – loading image failed: ", ex.what());
         return false;
     }
 
-    m_image = cui::gdip::create_bitmap_from_32bpp_data(
-        bitmap_data.width, bitmap_data.height, bitmap_data.stride, bitmap_data.data.data(), bitmap_data.data.size());
-
-    if (!m_image)
-        return false;
-
-    return true;
+    return static_cast<bool>(m_image);
 }
 
 void ArtworkPanel::flush_cached_bitmap()
@@ -448,10 +443,12 @@ void ArtworkPanel::flush_cached_bitmap()
     m_bitmap.reset();
 }
 
-void ArtworkPanel::flush_image()
+void ArtworkPanel::flush_image(bool invalidate)
 {
     m_image.reset();
     flush_cached_bitmap();
+    if (invalidate)
+        invalidate_window();
 }
 
 void ArtworkPanel::invalidate_window() const
