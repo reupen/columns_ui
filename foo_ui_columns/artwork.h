@@ -164,7 +164,7 @@ private:
     void flush_cached_bitmap();
     bool refresh_image();
     void show_stub_image();
-    void flush_image();
+    void flush_image(bool invalidate = true);
     void invalidate_window() const;
     size_t get_displayed_artwork_type_index() const;
 
