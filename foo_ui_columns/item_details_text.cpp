@@ -386,27 +386,27 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
     t_size fontPtr = 0;
 
     t_size i;
-    t_size count = newLineDataWrapped.size();
-    t_size start = 0; //(rc.top<0?(0-rc.top)/line_height : 0);
+    t_size line_count = newLineDataWrapped.size();
+    t_size start_line = 0; //(rc.top<0?(0-rc.top)/line_height : 0);
 
     RECT rc_line = rc;
     const t_size ySkip = rc.top < 0 ? 0 - rc.top : 0; // Hackish - meh
 
     {
         t_size yCuml = 0;
-        for (i = 0; i < count; i++) {
+        for (i = 0; i < line_count; i++) {
             yCuml += newLineDataWrapped[i].m_height;
             if (yCuml > ySkip)
                 break;
-            start = i;
+            start_line = i;
             if (i)
                 rc_line.top += newLineDataWrapped[i - 1].m_height;
         }
     }
 
     const wchar_t* ptr = rawText.data();
-    for (i = 0; i < start /*+1*/; i++) {
-        if (i < count) {
+    for (i = 0; i < start_line /*+1*/; i++) {
+        if (i < line_count) {
             ptr += newLineDataWrapped[i].m_length;
             while (fontPtr < fontChangesCount
                 && gsl::narrow<t_size>(ptr - rawText.data()) > p_font_data.m_font_changes[fontPtr].m_text_index)
@@ -424,16 +424,17 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
         }
     }
 
-    if (start) {
+    if (start_line) {
+        // Back track to the last colour code and render it
         if (*ptr != '\x3') {
             const wchar_t* ptrC = ptr;
-            while (--ptrC > rawText) {
+            while (ptrC-- >= rawText.data()) {
                 if (*ptrC == '\x3') {
                     const wchar_t* ptrCEnd = ptrC;
                     do {
                         ptrC--;
-                    } while (ptrC >= rawText && *ptrC != '\x3');
-                    if (ptrC >= rawText && *ptrC == '\x3') {
+                    } while (ptrC >= rawText.data() && *ptrC != '\x3');
+                    if (ptrC >= rawText.data() && ptrCEnd != ptrC && *ptrC == '\x3') {
                         utf8_converter.convert(ptrC, ptrCEnd - ptrC + 1);
                         uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_line, false, cr_text,
                             false, false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
@@ -444,7 +445,7 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
         }
     }
 
-    for (i = start; i < count /*+1*/; i++) {
+    for (i = start_line; i < line_count /*+1*/; i++) {
         const wchar_t* ptrStart = ptr;
 
         if (rc_line.top > rc_topleft.bottom)
@@ -550,7 +551,7 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
             uih::text_out_colours_tab(dc, ptr, newLinePositions[i], 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, NULL, false);
 #endif
 
-        if (i < count)
+        if (i < line_count)
             ptr = ptrStart + newLineDataWrapped[i].m_length;
 
         rc_line.top = rc_line.bottom;
