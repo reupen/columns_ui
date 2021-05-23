@@ -1,11 +1,11 @@
 #include "stdafx.h"
 #include "item_details.h"
 
-std::wstring g_get_text_font_data(const wchar_t* p_text, font_change_data_list_t& p_out)
+std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChanges& p_out)
 {
     std::wstring p_new_text;
 
-    const wchar_t* ptr = p_text;
+    const wchar_t* ptr = formatted_text;
 
     while (*ptr) {
         const wchar_t* addStart = ptr;
@@ -22,36 +22,35 @@ std::wstring g_get_text_font_data(const wchar_t* p_text, font_change_data_list_t
             bool b_tab = false;
 
             if ((b_tab = *ptr == '\t') || *ptr == '\x7') {
-                FontChangeData temp;
+                RawFontChange temp;
                 t_size count = ptr - start;
                 ptr++;
 
                 if (b_tab) {
-                    const wchar_t* pSizeStart = ptr;
+                    const wchar_t* size_start = ptr;
                     while (*ptr && *ptr != '\x7' && *ptr != '\t')
                         ptr++;
-                    t_size sizeLen = ptr - pSizeStart;
+                    t_size size_len = ptr - size_start;
 
-                    temp.m_font_data.m_point = mmh::strtoul_n(pSizeStart, sizeLen);
+                    temp.m_font_data.m_point = mmh::strtoul_n(size_start, size_len);
                     if ((b_tab = *ptr == '\t') || *ptr == '\x7')
                         ptr++;
 
                     if (b_tab) {
-                        // ptr++;
-                        const wchar_t* pFormatStart = ptr;
+                        const wchar_t* format_start = ptr;
                         while (*ptr && *ptr != '\x7')
                             ptr++;
-                        t_size formatLen = ptr - pFormatStart;
+                        t_size format_len = ptr - format_start;
                         if (*ptr == '\x7') {
                             ptr++;
-                            g_parse_font_format_string(pFormatStart, formatLen, temp.m_font_data);
+                            g_parse_font_format_string(format_start, format_len, temp.m_font_data);
                         }
                     }
                 } else if (count == 0)
                     temp.m_reset = true;
 
                 temp.m_font_data.m_face = std::wstring_view(start, count);
-                temp.m_character_index = p_new_text.length(); // start-p_text-1;
+                temp.m_character_index = p_new_text.length();
                 p_out.add_item(temp);
             }
         }
@@ -59,55 +58,51 @@ std::wstring g_get_text_font_data(const wchar_t* p_text, font_change_data_list_t
     return p_new_text;
 }
 
-void g_get_text_font_info(const font_change_data_list_t& p_data, FontChangeNotify& p_info)
+void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& font_changes)
 {
-    t_size count = p_data.get_count();
+    t_size count = raw_font_changes.get_count();
     if (count) {
-        pfc::list_t<bool> maskKeepFonts;
+        pfc::list_t<bool> fonts_to_keep_mask;
 
-        // maskKeepFonts.set_count(p_info.m_fonts.get_count());
-        maskKeepFonts.add_items_repeat(false, p_info.m_fonts.get_count());
-
-        // p_info.m_fonts.set_count (count);
-        p_info.m_font_changes.resize(count);
+        fonts_to_keep_mask.add_items_repeat(false, font_changes.m_fonts.get_count());
+        font_changes.m_font_changes.resize(count);
 
         HDC dc = GetDC(nullptr);
         LOGFONT lf_base;
         memset(&lf_base, 0, sizeof(lf_base));
 
         for (t_size i = 0; i < count; i++) {
-            if (p_data[i].m_reset) {
-                p_info.m_font_changes[i].m_font = p_info.m_default_font;
+            if (raw_font_changes[i].m_reset) {
+                font_changes.m_font_changes[i].m_font = font_changes.m_default_font;
             } else {
                 LOGFONT lf = lf_base;
-                wcsncpy_s(lf.lfFaceName, p_data[i].m_font_data.m_face.c_str(), _TRUNCATE);
-                lf.lfHeight = -MulDiv(p_data[i].m_font_data.m_point, GetDeviceCaps(dc, LOGPIXELSY), 72);
-                if (p_data[i].m_font_data.m_bold)
+                wcsncpy_s(lf.lfFaceName, raw_font_changes[i].m_font_data.m_face.c_str(), _TRUNCATE);
+                lf.lfHeight = -MulDiv(raw_font_changes[i].m_font_data.m_point, GetDeviceCaps(dc, LOGPIXELSY), 72);
+                if (raw_font_changes[i].m_font_data.m_bold)
                     lf.lfWeight = FW_BOLD;
-                if (p_data[i].m_font_data.m_underline)
+                if (raw_font_changes[i].m_font_data.m_underline)
                     lf.lfUnderline = TRUE;
-                if (p_data[i].m_font_data.m_italic)
+                if (raw_font_changes[i].m_font_data.m_italic)
                     lf.lfItalic = TRUE;
 
                 t_size index;
-                if (p_info.find_font(p_data[i].m_font_data, index)) {
-                    if (index < maskKeepFonts.get_count())
-                        maskKeepFonts[index] = true;
+                if (font_changes.find_font(raw_font_changes[i].m_font_data, index)) {
+                    if (index < fonts_to_keep_mask.get_count())
+                        fonts_to_keep_mask[index] = true;
                 } else {
-                    Font::ptr_t font = std::make_shared<Font>();
+                    Font::Ptr font = std::make_shared<Font>();
                     font->m_font.reset(CreateFontIndirect(&lf));
                     font->m_height = uGetFontHeight(font->m_font.get());
-                    font->m_data = p_data[i].m_font_data;
-                    index = p_info.m_fonts.add_item(font);
-                    // maskKeepFonts.add_item(true);
+                    font->m_raw_font = raw_font_changes[i].m_font_data;
+                    index = font_changes.m_fonts.add_item(font);
                 }
 
-                p_info.m_font_changes[i].m_font = p_info.m_fonts[index];
+                font_changes.m_font_changes[i].m_font = font_changes.m_fonts[index];
             }
-            p_info.m_font_changes[i].m_text_index = p_data[i].m_character_index;
+            font_changes.m_font_changes[i].m_text_index = raw_font_changes[i].m_character_index;
         }
-        p_info.m_fonts.remove_mask(
-            pfc::bit_array_not(pfc::bit_array_table(maskKeepFonts.get_ptr(), maskKeepFonts.get_count(), true)));
+        font_changes.m_fonts.remove_mask(pfc::bit_array_not(
+            pfc::bit_array_table(fonts_to_keep_mask.get_ptr(), fonts_to_keep_mask.get_count(), true)));
 
         ReleaseDC(nullptr, dc);
     }
@@ -115,7 +110,6 @@ void g_get_text_font_info(const font_change_data_list_t& p_data, FontChangeNotif
 
 bool g_text_ptr_skip_font_change(const wchar_t*& ptr)
 {
-    // while (*ptr && *ptr != '\x7') ptr++;
     if (*ptr == '\x7') {
         ptr++;
 
@@ -130,11 +124,11 @@ bool g_text_ptr_skip_font_change(const wchar_t*& ptr)
     return false;
 }
 
-std::wstring g_get_text_multiline_data(const wchar_t* text, line_lengths& indices)
+std::wstring g_get_text_line_lengths(const wchar_t* text, LineLengths& line_lengths)
 {
     std::wstring p_out;
-    indices.clear();
-    indices.reserve(256);
+    line_lengths.clear();
+    line_lengths.reserve(256);
 
     const wchar_t* ptr = text;
     while (*ptr) {
@@ -147,7 +141,7 @@ std::wstring g_get_text_multiline_data(const wchar_t* text, line_lengths& indice
             }
         }
 
-        indices.emplace_back(counter);
+        line_lengths.emplace_back(counter);
 
         p_out.append(start, ptr - start);
 
@@ -188,7 +182,7 @@ std::vector<std::wstring_view> get_colour_fragments(std::wstring_view text)
 }
 
 auto split_lines_into_fragments(
-    std::wstring_view text, std::vector<std::wstring_view> lines, const FontChangeNotify& font_data)
+    std::wstring_view text, std::vector<std::wstring_view> lines, const FontChanges& font_data)
 {
     std::vector<std::tuple<std::wstring_view, std::vector<std::wstring_view>>> sub_fragments_by_line;
     auto&& font_changes = font_data.m_font_changes;
@@ -246,8 +240,8 @@ auto get_text_truncate_point(std::wstring_view text)
     return pos + 1;
 }
 
-DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, const line_lengths& line_lengths,
-    const FontChangeNotify& font_data, bool b_word_wrapping, int max_width)
+DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, const LineLengths& line_lengths,
+    const FontChanges& font_data, bool word_wrapping, int max_width)
 {
     auto&& font_changes = font_data.m_font_changes;
     const int vertical_line_padding = uih::scale_dpi_value(2);
@@ -297,10 +291,10 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
                 uih::UniscribeTextRenderer script_string;
 
                 script_string.analyse(dc, fragment.data() + fragment_character_pos,
-                    fragment.length() - fragment_character_pos, (std::max)(max_width - line_width, 0), b_word_wrapping,
+                    fragment.length() - fragment_character_pos, (std::max)(max_width - line_width, 0), word_wrapping,
                     true, line_width);
 
-                if (b_word_wrapping) {
+                if (word_wrapping) {
                     max_chars = gsl::narrow<size_t>(script_string.get_output_character_count());
 
                     if (max_chars > fragment.length()) {
@@ -310,7 +304,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
                 // Note: Despite indications in its documentation otherwise, Uniscribe appears to use UTF-16
                 // code units and not Unicode code points (otherwise this comparison would not work correctly).
-                if (b_word_wrapping && max_chars < fragment.substr(fragment_character_pos).length()) {
+                if (word_wrapping && max_chars < fragment.substr(fragment_character_pos).length()) {
                     std::vector<int> character_extents(fragment.length());
                     script_string.get_character_logical_extents(character_extents.data());
 
@@ -329,7 +323,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
                     const size_t wrapped_line_length = wrapped_line_end - wrapped_line_start;
 
-                    display_info.line_info.push_back(
+                    display_info.line_sizes.push_back(
                         {wrapped_line_length, line_width, line_height + vertical_line_padding});
 
                     fragment_character_pos += max_chars;
@@ -346,98 +340,88 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
         if (line.empty() || last_append_pos < gsl::narrow<size_t>(line.data() + line.size() - text.data())) {
             const size_t length = line.data() + line.size() - text.data() - last_append_pos;
-            display_info.line_info.push_back({length, line_width, line_height + vertical_line_padding});
+            display_info.line_sizes.push_back({length, line_width, line_height + vertical_line_padding});
             last_append_pos += length;
         }
     }
 
     display_info.sz.cx = ranges::accumulate(
-        display_info.line_info, 0, [](auto&& val, auto&& line_info) { return (std::max)(val, line_info.m_width); });
+        display_info.line_sizes, 0, [](auto&& val, auto&& line_info) { return (std::max)(val, line_info.m_width); });
 
     display_info.sz.cy = ranges::accumulate(
-        display_info.line_info, 0, [](auto&& val, auto&& line_info) { return val + line_info.m_height; });
+        display_info.line_sizes, 0, [](auto&& val, auto&& line_info) { return val + line_info.m_height; });
 
     return display_info;
 }
 
-void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_height, const wchar_t* text,
-    const FontChangeNotify& p_font_data, const display_line_info_list_t& newLineDataWrapped, const SIZE& sz,
-    COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping)
+void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, const FontChanges& font_changes,
+    const LineSizes& wrapped_line_sizes, COLORREF cr_text, uih::alignment align)
 {
     pfc::stringcvt::string_utf8_from_wide utf8_converter;
-    std::wstring rawText = text;
 
-    RECT rc = rc_topleft;
     const auto half_padding_size = uih::scale_dpi_value(2);
-    const auto padding_size = half_padding_size * 2;
 
-    t_size widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
-
-    int newRight = rc.left + sz.cx + padding_size;
-    if (b_hscroll && newRight > rc.right)
-        rc.right = newRight;
-    rc.bottom = rc.top + sz.cy;
-
-    COLORREF cr_old = GetTextColor(dc);
+    const COLORREF cr_old = GetTextColor(dc);
 
     SetTextColor(dc, cr_text);
 
-    t_size fontChangesCount = p_font_data.m_font_changes.size();
-    t_size fontPtr = 0;
+    const t_size font_change_count = font_changes.m_font_changes.size();
+    t_size font_index = 0;
 
-    t_size i;
-    t_size line_count = newLineDataWrapped.size();
-    t_size start_line = 0; //(rc.top<0?(0-rc.top)/line_height : 0);
+    const t_size line_count = wrapped_line_sizes.size();
+    t_size start_line = 0;
 
-    RECT rc_line = rc;
-    const t_size ySkip = rc.top < 0 ? 0 - rc.top : 0; // Hackish - meh
+    RECT rc_line = rc_placement;
+    const t_size y_start_pos = rc_placement.top < 0 ? 0 - rc_placement.top : 0;
 
-    {
-        t_size yCuml = 0;
-        for (i = 0; i < line_count; i++) {
-            yCuml += newLineDataWrapped[i].m_height;
-            if (yCuml > ySkip)
-                break;
-            start_line = i;
-            if (i)
-                rc_line.top += newLineDataWrapped[i - 1].m_height;
+    for (size_t line_index{0}, running_height{0}; line_index < line_count; line_index++) {
+        running_height += wrapped_line_sizes[line_index].m_height;
+
+        if (running_height > y_start_pos)
+            break;
+
+        start_line = line_index;
+
+        if (line_index)
+            rc_line.top += wrapped_line_sizes[line_index - 1].m_height;
+    }
+
+    const wchar_t* text_ptr = text;
+    for (size_t line_index = 0; line_index < start_line; line_index++) {
+        if (line_index < line_count) {
+            text_ptr += wrapped_line_sizes[line_index].m_length;
+
+            while (font_index < font_change_count
+                && gsl::narrow<t_size>(text_ptr - text) > font_changes.m_font_changes[font_index].m_text_index)
+                font_index++;
         }
     }
 
-    const wchar_t* ptr = rawText.data();
-    for (i = 0; i < start_line /*+1*/; i++) {
-        if (i < line_count) {
-            ptr += newLineDataWrapped[i].m_length;
-            while (fontPtr < fontChangesCount
-                && gsl::narrow<t_size>(ptr - rawText.data()) > p_font_data.m_font_changes[fontPtr].m_text_index)
-                fontPtr++;
-        }
-    }
-    bool b_fontChanged = false;
+    bool was_font_changed = false;
     HFONT fnt_old = nullptr;
 
-    if (fontPtr) {
-        HFONT fnt = SelectFont(dc, p_font_data.m_font_changes[fontPtr - 1].m_font->m_font.get());
-        if (!b_fontChanged) {
+    if (font_index) {
+        HFONT fnt = SelectFont(dc, font_changes.m_font_changes[font_index - 1].m_font->m_font.get());
+        if (!was_font_changed) {
             fnt_old = fnt;
-            b_fontChanged = true;
+            was_font_changed = true;
         }
     }
 
     if (start_line) {
         // Back track to the last colour code and render it
-        if (*ptr != '\x3') {
-            const wchar_t* ptrC = ptr;
-            while (ptrC-- >= rawText.data()) {
-                if (*ptrC == '\x3') {
-                    const wchar_t* ptrCEnd = ptrC;
+        if (*text_ptr != '\x3') {
+            const wchar_t* ptr = text_ptr;
+            while (ptr-- >= text) {
+                if (*ptr == '\x3') {
+                    const wchar_t* code_end = ptr;
                     do {
-                        ptrC--;
-                    } while (ptrC >= rawText.data() && *ptrC != '\x3');
-                    if (ptrC >= rawText.data() && ptrCEnd != ptrC && *ptrC == '\x3') {
-                        utf8_converter.convert(ptrC, ptrCEnd - ptrC + 1);
+                        ptr--;
+                    } while (ptr >= text && *ptr != '\x3');
+                    if (ptr >= text && code_end != ptr && *ptr == '\x3') {
+                        utf8_converter.convert(ptr, code_end - ptr + 1);
                         uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_line, false, cr_text,
-                            false, false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false);
+                            false, false, uih::ALIGN_LEFT, nullptr, false, false);
                     }
                     break;
                 }
@@ -445,120 +429,83 @@ void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_heigh
         }
     }
 
-    for (i = start_line; i < line_count /*+1*/; i++) {
-        const wchar_t* ptrStart = ptr;
+    for (size_t line_index = start_line; line_index < line_count; line_index++) {
+        const wchar_t* start_of_line = text_ptr;
 
-        if (rc_line.top > rc_topleft.bottom)
+        if (rc_line.top > rc_placement.bottom)
             break;
 
-        t_size thisFontChangeCount = 0;
-        t_size ptrRemaining = newLineDataWrapped[i].m_length;
-        t_size thisLineHeight = newLineDataWrapped[i].m_height;
+        t_size line_font_change_count = 0;
+        t_size num_characters_remaining = wrapped_line_sizes[line_index].m_length;
 
-        {
-            while ((fontPtr + thisFontChangeCount < fontChangesCount
-                && (ptr - rawText.data() + ptrRemaining)
-                    > (p_font_data.m_font_changes[fontPtr + thisFontChangeCount].m_text_index))) {
-                thisFontChangeCount++;
-            }
+        while ((font_index + line_font_change_count < font_change_count
+            && (text_ptr - text + num_characters_remaining)
+                > (font_changes.m_font_changes[font_index + line_font_change_count].m_text_index))) {
+            line_font_change_count++;
         }
 
-        rc_line.bottom = rc_line.top + thisLineHeight;
-        rc_line.left = rc.left + min(RECT_CX(rc), half_padding_size);
-        rc_line.right = rc.right - min(RECT_CX(rc), half_padding_size);
+        const t_size line_height = wrapped_line_sizes[line_index].m_height;
 
-        t_size widthLine = RECT_CX(rc_line);
-        t_size widthLineText = newLineDataWrapped[i].m_width;
+        rc_line.bottom = rc_line.top + line_height;
+        rc_line.left = rc_placement.left;
+        rc_line.right = rc_placement.right;
 
-        if (widthLineText < widthLine) {
+        const t_size line_width = RECT_CX(rc_line);
+        const t_size line_text_width = wrapped_line_sizes[line_index].m_width;
+
+        if (line_text_width < line_width) {
             if (align == uih::ALIGN_CENTRE)
-                rc_line.left += (widthLine - widthLineText) / 2;
+                rc_line.left += (line_width - line_text_width) / 2;
             else if (align == uih::ALIGN_RIGHT)
-                rc_line.left += (widthLine - widthLineText);
+                rc_line.left += (line_width - line_text_width);
         }
 
-        auto left_padding = rc_line.left;
+        const auto left_padding = rc_line.left;
 
-        while (thisFontChangeCount) {
-            int width = NULL;
-            t_size ptrThisCount = ptrRemaining;
-            if (gsl::narrow<t_size>(ptr - rawText.data()) < p_font_data.m_font_changes[fontPtr].m_text_index)
-                ptrThisCount = p_font_data.m_font_changes[fontPtr].m_text_index - (ptr - rawText.data());
-            else if (thisFontChangeCount > 1)
-                ptrThisCount = p_font_data.m_font_changes[fontPtr + 1].m_text_index - (ptr - rawText.data());
+        while (line_font_change_count) {
+            int end_x_position = NULL;
+            t_size num_characters_to_render = num_characters_remaining;
+            if (gsl::narrow<t_size>(text_ptr - text) < font_changes.m_font_changes[font_index].m_text_index)
+                num_characters_to_render = font_changes.m_font_changes[font_index].m_text_index - (text_ptr - text);
+            else if (line_font_change_count > 1)
+                num_characters_to_render = font_changes.m_font_changes[font_index + 1].m_text_index - (text_ptr - text);
 
-            // rc_line.top = rc_line.bottom - 4 -
-            // p_font_data.m_fonts[p_font_data.m_font_changes[fontPtr].m_font_index]->m_height;
-
-            if (gsl::narrow<t_size>(ptr - rawText.data()) >= p_font_data.m_font_changes[fontPtr].m_text_index) {
-                HFONT fnt = SelectFont(dc, p_font_data.m_font_changes[fontPtr].m_font->m_font.get());
-                if (!b_fontChanged) {
+            if (gsl::narrow<t_size>(text_ptr - text) >= font_changes.m_font_changes[font_index].m_text_index) {
+                HFONT fnt = SelectFont(dc, font_changes.m_font_changes[font_index].m_font->m_font.get());
+                if (!was_font_changed) {
                     fnt_old = fnt;
-                    b_fontChanged = true;
+                    was_font_changed = true;
                 }
-                fontPtr++;
-                thisFontChangeCount--;
+                font_index++;
+                line_font_change_count--;
             }
             RECT rc_font = rc_line;
             rc_font.bottom -= half_padding_size;
 
-            utf8_converter.convert(ptr, ptrThisCount);
-            BOOL ret
-                = uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false,
-                    false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, &width, rc_line.left - left_padding);
-            rc_line.left = width; // width == position actually!!
-            ptr += ptrThisCount;
-            ptrRemaining -= ptrThisCount;
+            utf8_converter.convert(text_ptr, num_characters_to_render);
+            BOOL ret = uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text,
+                false, false, uih::ALIGN_LEFT, nullptr, false, false, &end_x_position, rc_line.left - left_padding);
+            rc_line.left = end_x_position;
+            text_ptr += num_characters_to_render;
+            num_characters_remaining -= num_characters_to_render;
         }
 
-        if (ptrRemaining) {
+        if (num_characters_remaining) {
             RECT rc_font = rc_line;
             rc_font.bottom -= half_padding_size;
 
-            utf8_converter.convert(ptr, ptrRemaining);
-            uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false,
-                false && !b_hscroll, uih::ALIGN_LEFT, nullptr, false, false, nullptr, rc_line.left - left_padding);
+            utf8_converter.convert(text_ptr, num_characters_remaining);
+            uih::text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false, false,
+                uih::ALIGN_LEFT, nullptr, false, false, nullptr, rc_line.left - left_padding);
         }
 
-#if 0
-        if (fontPtr < fontChangesCount && (ptr - rawText) >= p_font_data.m_font_changes[fontPtr].m_text_index)
-        {
-            do
-            {
-                unsigned width = NULL;
-                t_size ptrThisCount = ptrRemaining;
-                if (fontPtr + 1 < fontChangesCount)
-                    ptrThisCount = min(p_font_data.m_font_changes[fontPtr + 1].m_text_index - (ptr - rawText), ptrThisCount);
-                if (fontPtr < fontChangesCount && (ptr - rawText) >= p_font_data.m_font_changes[fontPtr].m_text_index)
-                {
-                    HFONT fnt = SelectFont(dc, p_font_data.m_fonts[p_font_data.m_font_changes[fontPtr].m_font_index]->m_font);
-                    if (!b_fontChanged)
-                    {
-                        fnt_old = fnt;
-                        b_fontChanged = true;
-                    }
-                }
-                uih::text_out_colours_tab(dc, ptr, ptrThisCount, 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, &width, false);
-                rc_line.left += width;
-                if (fontPtr < fontChangesCount && (ptr - rawText) >= p_font_data.m_font_changes[fontPtr].m_text_index)
-                    fontPtr++;
-                ptr += ptrThisCount;
-                ptrRemaining -= ptrThisCount;
-            } while (ptrRemaining || (fontPtr < fontChangesCount && (ptr - rawText) >= p_font_data.m_font_changes[fontPtr].m_text_index));
-
-        }
-        else
-            uih::text_out_colours_tab(dc, ptr, newLinePositions[i], 0, 2, &rc_line, false, cr_text, false, false, !b_hscroll, align, NULL, false);
-#endif
-
-        if (i < line_count)
-            ptr = ptrStart + newLineDataWrapped[i].m_length;
+        if (line_index < line_count)
+            text_ptr = start_of_line + wrapped_line_sizes[line_index].m_length;
 
         rc_line.top = rc_line.bottom;
-        // rc_line.left = rc.left;
     }
 
     SetTextColor(dc, cr_old);
-    if (b_fontChanged)
+    if (was_font_changed)
         SelectFont(dc, fnt_old);
 }

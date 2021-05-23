@@ -21,91 +21,83 @@ extern cfg_uint cfg_item_details_horizontal_alignment;
 extern cfg_uint cfg_item_details_vertical_alignment;
 extern cfg_bool cfg_item_details_word_wrapping;
 
-struct DisplayLineInfo {
+struct LineSize {
     t_size m_length{};
     int m_width{0};
     int m_height{0};
 };
 
-class FontData {
-public:
+struct RawFont {
     std::wstring m_face;
     t_size m_point{10};
-    bool m_bold{false}, m_underline{false}, m_italic{false};
+    bool m_bold{false};
+    bool m_underline{false};
+    bool m_italic{false};
 
-    FontData() = default;
-
-    static bool s_are_equal(const FontData& item1, const FontData& item2);
+    static bool s_are_equal(const RawFont& item1, const RawFont& item2);
 };
 
-bool operator==(const FontData& item1, const FontData& item2);
+bool operator==(const RawFont& item1, const RawFont& item2);
 
-class FontChangeData {
+class RawFontChange {
 public:
-    FontData m_font_data;
+    RawFont m_font_data;
     bool m_reset{false};
     t_size m_character_index{NULL};
 
-    FontChangeData() = default;
+    RawFontChange() = default;
 };
 
-using font_change_data_list_t = pfc::list_t<FontChangeData, pfc::alloc_fast_aggressive>;
+using RawFontChanges = pfc::list_t<RawFontChange, pfc::alloc_fast_aggressive>;
 
-using line_lengths = std::vector<size_t>;
-using display_line_info_list_t = std::vector<DisplayLineInfo>;
+using LineLengths = std::vector<size_t>;
+using LineSizes = std::vector<LineSize>;
 
 class Font {
 public:
-    using ptr_t = std::shared_ptr<Font>;
+    using Ptr = std::shared_ptr<Font>;
 
-    FontData m_data;
+    RawFont m_raw_font;
 
     wil::unique_hfont m_font;
     int m_height{};
-    // font_t (const font_t & p_font) : m_font(p_font.m_font), m_height(p_font.m_height), m_data(p_font.m_data) {};
 };
 
-using font_list_t = pfc::list_t<Font::ptr_t>;
+using Fonts = pfc::list_t<Font::Ptr>;
 
-class FontChangeNotify {
+class FontChanges {
 public:
-    class FontChangeEntry {
+    class FontChange {
     public:
         t_size m_text_index{};
-        Font::ptr_t m_font;
+        Font::Ptr m_font;
     };
 
-    font_list_t m_fonts;
-    std::vector<FontChangeEntry> m_font_changes;
-    Font::ptr_t m_default_font;
+    Fonts m_fonts;
+    std::vector<FontChange> m_font_changes;
+    Font::Ptr m_default_font;
 
-    bool find_font(const FontData& p_font, t_size& index);
+    bool find_font(const RawFont& raw_font, t_size& index);
 
-    void reset(bool bKeepHandles = false);
+    void reset(bool keep_handles = false);
 };
-
-// void get_multiline_text_dimensions(HDC dc, pfc::string8_fast_aggressive & text, line_info_list_t & indices, t_size
-// line_height, SIZE & sz, bool b_word_wrapping = false, t_size max_width = pfc_infinite);
 
 struct DisplayInfo {
     SIZE sz{};
-    std::vector<DisplayLineInfo> line_info;
+    std::vector<LineSize> line_sizes;
 };
 
-DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, const line_lengths& line_lengths,
-    const FontChangeNotify& font_data, bool b_word_wrapping, int max_width);
+DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, const LineLengths& line_lengths,
+    const FontChanges& font_data, bool word_wrapping, int max_width);
 
-// void get_multiline_text_dimensions_const(HDC dc, const char * text, const line_info_list_t & indices, t_size
-// line_height, SIZE & sz, bool b_word_wrapping = false, t_size max_width = pfc_infinite);
-std::wstring g_get_text_multiline_data(const wchar_t* text, line_lengths& indices);
+std::wstring g_get_text_line_lengths(const wchar_t* text, LineLengths& line_lengths);
 
-void g_parse_font_format_string(const wchar_t* str, t_size len, FontData& p_out);
-std::wstring g_get_text_font_data(const wchar_t* p_text, font_change_data_list_t& p_out);
-void g_get_text_font_info(const font_change_data_list_t& p_data, FontChangeNotify& p_info);
+void g_parse_font_format_string(const wchar_t* str, t_size len, RawFont& p_out);
+std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChanges& p_out);
+void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& font_changes);
 
-void g_text_out_multiline_font(HDC dc, const RECT& rc_topleft, t_size line_height, const wchar_t* text,
-    const FontChangeNotify& p_font_data, const display_line_info_list_t& newLineDataWrapped, const SIZE& sz,
-    COLORREF cr_text, uih::alignment align, bool b_hscroll, bool word_wrapping);
+void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, const FontChanges& font_changes,
+    const LineSizes& wrapped_line_sizes, COLORREF cr_text, uih::alignment align);
 
 class TitleformatHookChangeFont : public titleformat_hook {
 public:
@@ -283,10 +275,7 @@ public:
     void on_volume_change(float p_new_val) override;
 
     // PL
-    enum {
-        playlist_callback_flags
-        = playlist_callback_single::flag_on_items_selection_change | playlist_callback_single::flag_on_playlist_switch
-    };
+    enum { playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch };
     void on_playlist_switch() override;
     void on_item_focus_change(t_size p_from, t_size p_to) override;
 
@@ -381,15 +370,15 @@ private:
     std::vector<std::shared_ptr<cui::helpers::FullFileInfoRequest>> m_aborting_full_file_info_requests;
     bool m_full_file_info_requested{};
     bool m_callback_registered{false};
-    bool m_nowplaying_active{false}; //, m_update_scrollbar_range_in_progress;
+    bool m_nowplaying_active{false};
     t_size m_tracking_mode;
 
     bool m_font_change_info_valid{false};
-    FontChangeNotify m_font_change_info;
-    font_change_data_list_t m_font_change_data;
+    FontChanges m_font_changes;
+    RawFontChanges m_raw_font_changes;
 
-    line_lengths m_line_lengths;
-    display_line_info_list_t m_display_line_info;
+    LineLengths m_line_lengths;
+    LineSizes m_line_sizes;
     bool m_display_info_valid{false};
 
     SIZE m_display_sz{};
@@ -400,16 +389,13 @@ private:
     std::wstring m_current_display_text;
     titleformat_object::ptr m_to;
 
-    t_size m_horizontal_alignment, m_vertical_alignment;
+    t_size m_horizontal_alignment;
+    t_size m_vertical_alignment;
     t_size m_edge_style;
-    bool m_hscroll, m_word_wrapping;
+    bool m_hscroll;
+    bool m_word_wrapping;
 
     HWND m_wnd_config{nullptr};
-
-    // gdi_object_t<HFONT>::ptr_t m_default_font;
-
-    // HINSTANCE m_library_richedit;
-    // HWND m_wnd_richedit;
 };
 
 class ItemDetailsConfig {

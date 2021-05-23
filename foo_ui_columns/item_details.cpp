@@ -370,13 +370,13 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
         if (std::wstring_view(wide_text.get_ptr(), wide_text.length()) != m_current_text_raw) {
             m_current_text_raw = wide_text;
 
-            m_font_change_data.set_size(0);
-            m_font_change_info.reset(true);
+            m_raw_font_changes.set_size(0);
+            m_font_changes.reset(true);
             m_font_change_info_valid = false;
 
-            const auto multiline_text = g_get_text_multiline_data(wide_text, m_line_lengths);
+            const auto multiline_text = g_get_text_line_lengths(wide_text, m_line_lengths);
 
-            m_current_text = g_get_text_font_data(multiline_text.c_str(), m_font_change_data);
+            m_current_text = g_get_raw_font_changes(multiline_text.c_str(), m_raw_font_changes);
         } else
             b_Update = false;
     } else {
@@ -406,9 +406,9 @@ void ItemDetails::update_display_info(HDC dc)
         m_current_display_text = m_current_text;
 
         auto display_info = g_get_multiline_text_dimensions(
-            dc, m_current_display_text, m_line_lengths, m_font_change_info, m_word_wrapping, widthMax);
+            dc, m_current_display_text, m_line_lengths, m_font_changes, m_word_wrapping, widthMax);
 
-        m_display_line_info = std::move(display_info.line_info);
+        m_line_sizes = std::move(display_info.line_sizes);
         m_display_sz = std::move(display_info.sz);
 
         m_display_info_valid = true;
@@ -419,7 +419,7 @@ void ItemDetails::update_display_info()
 {
     if (!m_display_info_valid) {
         HDC dc = GetDC(get_wnd());
-        HFONT fnt_old = SelectFont(dc, m_font_change_info.m_default_font->m_font.get());
+        HFONT fnt_old = SelectFont(dc, m_font_changes.m_default_font->m_font.get());
         update_display_info(dc);
         SelectFont(dc, fnt_old);
         ReleaseDC(get_wnd(), dc);
@@ -428,7 +428,7 @@ void ItemDetails::update_display_info()
 void ItemDetails::reset_display_info()
 {
     m_current_display_text.clear();
-    m_display_line_info.clear();
+    m_line_sizes.clear();
     m_display_sz.cy = (m_display_sz.cx = 0);
     m_display_info_valid = false;
 }
@@ -436,16 +436,16 @@ void ItemDetails::reset_display_info()
 void ItemDetails::update_font_change_info()
 {
     if (!m_font_change_info_valid) {
-        g_get_text_font_info(m_font_change_data, m_font_change_info);
-        m_font_change_data.set_size(0);
+        g_get_font_changes(m_raw_font_changes, m_font_changes);
+        m_raw_font_changes.set_size(0);
         m_font_change_info_valid = true;
     }
 }
 
 void ItemDetails::reset_font_change_info()
 {
-    m_font_change_data.remove_all();
-    m_font_change_info.reset();
+    m_raw_font_changes.remove_all();
+    m_font_changes.reset();
     m_font_change_info_valid = false;
 }
 
@@ -671,10 +671,10 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
         static_api_ptr_t<metadb_io_v3>()->register_callback(this);
 
-        m_font_change_info.m_default_font = std::make_shared<Font>();
-        m_font_change_info.m_default_font->m_font.reset(
+        m_font_changes.m_default_font = std::make_shared<Font>();
+        m_font_changes.m_default_font->m_font.reset(
             static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client));
-        m_font_change_info.m_default_font->m_height = uGetFontHeight(m_font_change_info.m_default_font->m_font.get());
+        m_font_changes.m_default_font->m_height = uGetFontHeight(m_font_changes.m_default_font->m_font.get());
 
         if (g_windows.empty())
             g_message_window.create(nullptr);
@@ -698,7 +698,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (g_windows.empty())
             g_message_window.destroy();
 
-        m_font_change_info.m_default_font.reset();
+        m_font_changes.m_default_font.reset();
 
         static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
         static_api_ptr_t<metadb_io_v3>()->unregister_callback(this);
@@ -740,7 +740,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         UINT scroll_lines = 3; // 3 is default
         SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0); // we don't support Win9X
 
-        int line_height = m_font_change_info.m_default_font->m_height + 2;
+        int line_height = m_font_changes.m_default_font->m_height + 2;
 
         if (!si.nPage)
             si.nPage++;
@@ -785,7 +785,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         int new_pos = si.nPos;
 
-        int line_height = m_font_change_info.m_default_font->m_height + 2;
+        int line_height = m_font_changes.m_default_font->m_height + 2;
 
         WORD p_value = LOWORD(wp);
 
@@ -849,38 +849,41 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         cui::colours::helper p_helper(g_guid_item_details_colour_client);
 
-        HFONT fnt_old = SelectFont(dc_mem, m_font_change_info.m_default_font->m_font.get());
-        RECT rc_client;
-        GetClientRect(wnd, &rc_client);
-
-        const int client_height = RECT_CY(rc_client);
-
-        auto background_colour = p_helper.get_colour(cui::colours::colour_background);
-        FillRect(dc_mem, &rc, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
-
-        int line_height = uGetTextHeight(dc_mem) + uih::scale_dpi_value(2);
-
-        rc_client.top -= siv.nPos;
-        rc_client.left -= sih.nPos;
+        HFONT fnt_old = SelectFont(dc_mem, m_font_changes.m_default_font->m_font.get());
 
         update_font_change_info();
         update_display_info(dc_mem);
 
+        RECT rc_client;
+        GetClientRect(wnd, &rc_client);
+
+        const int client_height = RECT_CY(rc_client);
+        const int client_width = RECT_CX(rc_client);
+
+        auto background_colour = p_helper.get_colour(cui::colours::colour_background);
+        FillRect(dc_mem, &rc, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
+
+        const int padding = uih::scale_dpi_value(2);
+        const int width
+            = m_hscroll ? (std::max)(client_width, gsl::narrow<int>(m_display_sz.cx) + padding * 2) : client_width;
+
+        RECT rc_placement{};
+        rc_placement.left = rc_client.left + padding - sih.nPos;
+        rc_placement.right = (std::max)(rc_placement.left + width - padding * 2, rc_placement.left);
+        rc_placement.top = rc_client.top - siv.nPos;
+
         if (m_display_sz.cy < client_height) {
             int extra = client_height - m_display_sz.cy;
             if (m_vertical_alignment == uih::ALIGN_CENTRE)
-                rc_client.top += extra / 2;
+                rc_placement.top += extra / 2;
             else if (m_vertical_alignment == uih::ALIGN_RIGHT)
-                rc_client.top += extra;
+                rc_placement.top += extra;
         }
 
-        // uih::text_out_colours_tab(dc_mem, m_current_text, m_current_text.get_length(), 0, 2, &rc, NULL,
-        // p_helper.get_colour(cui::colours::colour_text), true, true, false, uih::ALIGN_LEFT);
-        // text_out_multiline(dc_mem, rc_client, line_height, m_current_text,
-        // p_helper.get_colour(cui::colours::colour_text), (uih::alignment)m_alignment, m_hscroll, m_word_wrapping);
-        g_text_out_multiline_font(dc_mem, rc_client, line_height, m_current_text.c_str(), m_font_change_info,
-            m_display_line_info, m_display_sz, p_helper.get_colour(cui::colours::colour_text),
-            (uih::alignment)m_horizontal_alignment, m_hscroll, m_word_wrapping);
+        rc_placement.bottom = rc_placement.top + m_display_sz.cy;
+
+        g_text_out_multiline_font(dc_mem, rc_placement, m_current_text.c_str(), m_font_changes, m_line_sizes,
+            p_helper.get_colour(cui::colours::colour_text), (uih::alignment)m_horizontal_alignment);
         SelectFont(dc_mem, fnt_old);
 
         BitBlt(ps.hdc, rc.left, rc.top, RECT_CX(rc), RECT_CY(rc), dc_mem, rc.left, rc.top, SRCCOPY);
@@ -912,7 +915,7 @@ void ItemDetails::g_on_colours_change()
 
 void ItemDetails::on_font_change()
 {
-    m_font_change_info.m_default_font->m_font.reset(
+    m_font_changes.m_default_font->m_font.reset(
         static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client));
     refresh_contents();
     /*
