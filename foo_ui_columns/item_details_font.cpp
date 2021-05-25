@@ -9,29 +9,29 @@ bool are_strings_equal(std::wstring_view left, std::wstring_view right)
         == CSTR_EQUAL;
 }
 
-bool FontData::s_are_equal(const FontData& item1, const FontData& item2)
+bool RawFont::s_are_equal(const RawFont& item1, const RawFont& item2)
 {
     return are_strings_equal(item1.m_face, item2.m_face) && item1.m_point == item2.m_point
         && item1.m_bold == item2.m_bold && item1.m_italic == item2.m_italic && item1.m_underline == item2.m_underline;
 }
 
-bool operator==(const FontData& item1, const FontData& item2)
+bool operator==(const RawFont& item1, const RawFont& item2)
 {
-    return FontData::s_are_equal(item1, item2);
+    return RawFont::s_are_equal(item1, item2);
 }
 
-void FontChangeNotify::reset(bool bKeepHandles /*= false*/)
+void FontChanges::reset(bool keep_handles)
 {
-    if (!bKeepHandles)
+    if (!keep_handles)
         m_fonts.set_size(0);
     m_font_changes.resize(0);
 }
 
-bool FontChangeNotify::find_font(const FontData& p_font, t_size& index)
+bool FontChanges::find_font(const RawFont& raw_font, t_size& index)
 {
     t_size count = m_fonts.get_count();
     for (t_size i = 0; i < count; i++) {
-        if (m_fonts[i]->m_data == p_font) {
+        if (m_fonts[i]->m_raw_font == raw_font) {
             index = i;
             return true;
         }
@@ -154,7 +154,7 @@ FontCodeGenerator::StringFontCode::operator const char*() const
     return get_ptr();
 }
 
-void g_parse_font_format_string(const wchar_t* str, t_size len, FontData& p_out)
+void g_parse_font_format_string(const wchar_t* str, t_size len, RawFont& p_out)
 {
     t_size ptr = 0;
     while (ptr < len) {
