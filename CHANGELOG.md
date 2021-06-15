@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 1.7.0-beta.1
 
 ### Features
 
@@ -12,7 +12,7 @@
 
 * In the Artwork view panel, when the artwork type is not locked and the panel automatically switches to a different artwork type, it now returns to the previously selected artwork type once it’s available again. [[#368](https://github.com/reupen/columns_ui/pull/368), [#381](https://github.com/reupen/columns_ui/pull/381)]
 
-* A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from the file system using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351), [#382](https://github.com/reupen/columns_ui/pull/382)]
+* A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from source using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351), [#382](https://github.com/reupen/columns_ui/pull/382)]
 
 * The list view scrolling speed when selecting items or using drag and drop was adjusted to be slower, particularly for short lists such as in Buttons options. [[#349](https://github.com/reupen/columns_ui/pull/349)]
 
@@ -30,19 +30,21 @@
 
 * A bug causing misbehaviour of colour codes or a possible crash after scrolling in the Item details panel was fixed. [[#372](https://github.com/reupen/columns_ui/pull/372)]
 
-* The inability to create functioning buttons for certain File operations context menu commands was fixed. [[#379](https://github.com/reupen/columns_ui/pull/379)]
+* A problem in the Buttons toolbar preventing buttons for certain File operations context menu commands from working was fixed. [[#379](https://github.com/reupen/columns_ui/pull/379)]
+
+  (Note that any existing such buttons won’t be automatically fixed; the command will need to be reselected or the button recreated for the button to work.)
 
 * A problem where panels were queried for configuration data too frequently following [#320](https://github.com/reupen/columns_ui/pull/320) was resolved. [[#364](https://github.com/reupen/columns_ui/pull/364)]
 
 * A problem where GDI+ was used to load stub artwork images in the Artwork view panel instead of the Windows Imaging Component (WIC) was fixed [[#371](https://github.com/reupen/columns_ui/pull/371)].
-  
-  (See the change log for version 1.4.0-beta.1 for more details on what this means.)
+
+  (See [the change log for version 1.4.0-beta.1](#140-beta1) for more details on what this means.)
 
 ### Internal changes
 
 * The `Zc:threadSafeInit-` compiler option is no longer used. [[#340](https://github.com/reupen/columns_ui/pull/340)]
 
-* The component is now compiled using Visual Studio 2019 16.8.
+* The component is now compiled using Visual Studio 2019 16.10.
 
 * The component is now compiled using foobar2000 SDK 2021-02-23. [[#362](https://github.com/reupen/columns_ui/pull/362), [#363](https://github.com/reupen/columns_ui/pull/363)]
 
