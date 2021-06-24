@@ -24,6 +24,8 @@
 
 * The Filter panel no longer focuses the first playlist item when using any of the send to playlist commands or actions. This improves compatibility with shuffle playback modes when 'Playback follows cursor' is enabled. [[#352](https://github.com/reupen/columns_ui/pull/352)]
 
+* In the playlist view, group titles now respect the 'Display ellipses in truncated text' option.
+
 ### Bug fixes
 
 * A bug causing misbehaviour of colour codes or a possible crash after scrolling in the Item details panel was fixed. [[#372](https://github.com/reupen/columns_ui/pull/372)]
