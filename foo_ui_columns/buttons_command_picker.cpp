@@ -43,33 +43,37 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
 bool CommandPickerData::__populate_commands_recur(
     CommandData& data, std::list<std::string> name_parts, contextmenu_item_node* p_node, bool b_root)
 {
-    if (p_node) {
-        pfc::string8 name = menu_helpers::get_context_menu_node_name(p_node);
-        if (!name.is_empty())
-            name_parts.emplace_back(name);
+    if (!p_node)
+        return false;
 
-        if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP) {
-            const unsigned child_count = p_node->get_children_count();
+    pfc::string8 name = menu_helpers::get_context_menu_node_name(p_node);
 
-            for (unsigned child = 0; child < child_count; child++) {
-                contextmenu_item_node* p_child = p_node->get_child(child);
-                __populate_commands_recur(data, name_parts, p_child, false);
-            }
-            return true;
+    if (!name.is_empty())
+        name_parts.emplace_back(name);
+
+    if (p_node->get_type() == contextmenu_item_node::TYPE_POPUP) {
+        const unsigned child_count = p_node->get_children_count();
+
+        for (unsigned child = 0; child < child_count; child++) {
+            contextmenu_item_node* p_child = p_node->get_child(child);
+            __populate_commands_recur(data, name_parts, p_child, false);
         }
-        if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && !b_root) {
-            auto p_data = std::make_unique<CommandData>(data);
-            p_data->m_subcommand = p_node->get_guid();
-            p_node->get_description(p_data->m_desc);
-
-            auto& data_item = m_data.emplace_back(std::move(p_data));
-
-            const auto path = mmh::join(name_parts, "/");
-            unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, path.c_str());
-            SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
-            return true;
-        }
+        return true;
     }
+
+    if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && p_node->get_guid() != GUID{}) {
+        auto p_data = std::make_unique<CommandData>(data);
+        p_data->m_subcommand = p_node->get_guid();
+        p_node->get_description(p_data->m_desc);
+
+        auto& data_item = m_data.emplace_back(std::move(p_data));
+
+        const auto path = mmh::join(name_parts, "/");
+        const unsigned idx = uSendMessageText(wnd_command, LB_ADDSTRING, 0, path.c_str());
+        SendMessage(wnd_command, LB_SETITEMDATA, idx, reinterpret_cast<LPARAM>(data_item.get()));
+        return true;
+    }
+
     return false;
 }
 
