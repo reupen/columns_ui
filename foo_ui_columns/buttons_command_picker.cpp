@@ -57,7 +57,7 @@ bool CommandPickerData::__populate_commands_recur(
             }
             return true;
         }
-        if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && !b_root) {
+        if (p_node->get_type() == contextmenu_item_node::TYPE_COMMAND && p_node->get_guid() != GUID{}) {
             auto p_data = std::make_unique<CommandData>(data);
             p_data->m_subcommand = p_node->get_guid();
             p_node->get_description(p_data->m_desc);

@@ -30,6 +30,8 @@
 
 * A bug causing misbehaviour of colour codes or a possible crash after scrolling in the Item details panel was fixed. [[#372](https://github.com/reupen/columns_ui/pull/372)]
 
+* The inability to create functioning buttons for certain File operations context menu commands was fixed. [[#379](https://github.com/reupen/columns_ui/pull/379)]
+
 * A problem where panels were queried for configuration data too frequently following [#320](https://github.com/reupen/columns_ui/pull/320) was resolved. [[#364](https://github.com/reupen/columns_ui/pull/364)]
 
 * A problem where GDI+ was used to load stub artwork images in the Artwork view panel instead of the Windows Imaging Component (WIC) was fixed [[#371](https://github.com/reupen/columns_ui/pull/371)].
