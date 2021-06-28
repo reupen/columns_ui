@@ -179,17 +179,24 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_LBUTTONDOWN: {
-        m_artwork_type_override_index = m_selected_artwork_type_index;
+        const auto start_artwork_type_index = get_displayed_artwork_type_index();
+        auto artwork_type_index = start_artwork_type_index;
         const t_size count = g_artwork_types.size();
         bool artwork_found = false;
 
-        for (t_size i = 1; i < count; i++) {
-            m_artwork_type_override_index = (*m_artwork_type_override_index + 1) % count;
-            if (refresh_image()) {
-                m_selected_artwork_type_index = *m_artwork_type_override_index;
-                artwork_found = true;
-                break;
+        for (t_size i = 0; i < count; i++) {
+            artwork_type_index = (artwork_type_index + 1) % count;
+
+            if (!refresh_image(artwork_type_index))
+                continue;
+
+            artwork_found = true;
+
+            if (artwork_type_index != start_artwork_type_index) {
+                m_artwork_type_override_index.reset();
+                m_selected_artwork_type_index = artwork_type_index;
             }
+            break;
         }
 
         if (!artwork_found) {
@@ -409,7 +416,7 @@ void ArtworkPanel::show_stub_image()
     }
 }
 
-bool ArtworkPanel::refresh_image()
+bool ArtworkPanel::refresh_image(std::optional<size_t> artwork_type_index_override)
 {
     TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
 
@@ -421,7 +428,8 @@ bool ArtworkPanel::refresh_image()
     if (!m_artwork_loader || !m_artwork_loader->is_ready())
         return false;
 
-    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const auto artwork_type_index = artwork_type_index_override.value_or(get_displayed_artwork_type_index());
+    const auto artwork_type_id = g_artwork_types[artwork_type_index];
     const auto data = m_artwork_loader->get_image(artwork_type_id);
 
     if (data.is_empty())
@@ -771,6 +779,10 @@ ArtworkPanel::MenuNodeLockType::MenuNodeLockType(ArtworkPanel* p_wnd) : p_this(p
 void ArtworkPanel::MenuNodeLockType::execute()
 {
     p_this->m_lock_type = !p_this->m_lock_type;
+    if (p_this->m_lock_type) {
+        p_this->m_selected_artwork_type_index = p_this->get_displayed_artwork_type_index();
+        p_this->m_artwork_type_override_index.reset();
+    }
 }
 
 bool ArtworkPanel::MenuNodeLockType::get_description(pfc::string_base& p_out) const
