@@ -162,7 +162,7 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void refresh_cached_bitmap();
     void flush_cached_bitmap();
-    bool refresh_image();
+    bool refresh_image(std::optional<size_t> artwork_type_index_override = {});
     void show_stub_image();
     void flush_image(bool invalidate = true);
     void invalidate_window() const;

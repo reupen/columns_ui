@@ -10,7 +10,7 @@
 
 * Support for back cover, disc and artist stub images was added to the Artwork view panel. [[#345](https://github.com/reupen/columns_ui/pull/345)]
 
-* In the Artwork view panel, when the artwork type is not locked and the panel automatically switches to a different artwork type, it now returns to the previously selected artwork type once it’s available again. [[#368](https://github.com/reupen/columns_ui/pull/368)]
+* In the Artwork view panel, when the artwork type is not locked and the panel automatically switches to a different artwork type, it now returns to the previously selected artwork type once it’s available again. [[#368](https://github.com/reupen/columns_ui/pull/368), [#381](https://github.com/reupen/columns_ui/pull/381)]
 
 * A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from the file system using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351)]
 
