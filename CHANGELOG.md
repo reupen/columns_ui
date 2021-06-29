@@ -12,7 +12,7 @@
 
 * In the Artwork view panel, when the artwork type is not locked and the panel automatically switches to a different artwork type, it now returns to the previously selected artwork type once it’s available again. [[#368](https://github.com/reupen/columns_ui/pull/368), [#381](https://github.com/reupen/columns_ui/pull/381)]
 
-* A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from the file system using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351)]
+* A 'Reload artwork' command was added to the artwork view context menu. This forces a reload of artwork from the file system using current settings. [[#351](https://github.com/reupen/columns_ui/pull/351), [#382](https://github.com/reupen/columns_ui/pull/382)]
 
 * The list view scrolling speed when selecting items or using drag and drop was adjusted to be slower, particularly for short lists such as in Buttons options. [[#349](https://github.com/reupen/columns_ui/pull/349)]
 
