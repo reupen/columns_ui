@@ -64,8 +64,11 @@ void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) 
 
 void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Reload artwork",
-        "Reloads the currently displayed artwork.", 0, [this, self = ptr{this}] { force_reload_artwork(); })));
+    p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node(
+        "Reload artwork", "Reloads the currently displayed artwork.", 0, [this, self = ptr{this}] {
+            flush_image();
+            force_reload_artwork();
+        })));
     p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_separator_t()));
     p_hook.add_node(uie::menu_node_ptr(new MenuNodeTypePopup(this)));
     p_hook.add_node(uie::menu_node_ptr(new MenuNodeSourcePopup(this)));
@@ -305,9 +308,11 @@ void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track)
 
 void ArtworkPanel::force_reload_artwork()
 {
+    auto is_from_playback = false;
     metadb_handle_ptr handle;
     if (g_track_mode_includes_now_playing(m_track_mode) && static_api_ptr_t<play_control>()->is_playing()) {
         static_api_ptr_t<play_control>()->get_now_playing(handle);
+        is_from_playback = true;
     } else if (g_track_mode_includes_playlist(m_track_mode)) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
@@ -319,7 +324,7 @@ void ArtworkPanel::force_reload_artwork()
     }
 
     if (handle.is_valid()) {
-        m_artwork_loader->request(handle, new service_impl_t<CompletionNotifyForwarder>(this));
+        m_artwork_loader->request(handle, new service_impl_t<CompletionNotifyForwarder>(this), is_from_playback);
     } else {
         flush_image();
         if (m_artwork_loader)
