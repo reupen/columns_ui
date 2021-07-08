@@ -3,9 +3,9 @@
 #include "artwork.h"
 #include "config.h"
 
-namespace artwork_panel {
+namespace cui::artwork_panel {
 extern cfg_uint cfg_edge_style;
-} // namespace artwork_panel
+} // namespace cui::artwork_panel
 
 pfc::string8 format_legacy_artwork_sources()
 {
@@ -34,7 +34,7 @@ public:
         ComboBox_AddString(wnd_combo, L"None");
         ComboBox_AddString(wnd_combo, L"Sunken");
         ComboBox_AddString(wnd_combo, L"Grey");
-        ComboBox_SetCurSel(wnd_combo, artwork_panel::cfg_edge_style);
+        ComboBox_SetCurSel(wnd_combo, cui::artwork_panel::cfg_edge_style);
         m_initialising = false;
     }
 
@@ -62,8 +62,8 @@ public:
                     GetAncestor(wnd, GA_ROOT), format_legacy_artwork_sources(), "Previous Columns UI Artwork Sources");
                 break;
             case IDC_EDGESTYLE | (CBN_SELCHANGE << 16):
-                artwork_panel::cfg_edge_style = ComboBox_GetCurSel((HWND)lp);
-                artwork_panel::ArtworkPanel::g_on_edge_style_change();
+                cui::artwork_panel::cfg_edge_style = ComboBox_GetCurSel((HWND)lp);
+                cui::artwork_panel::ArtworkPanel::g_on_edge_style_change();
                 break;
             }
         }

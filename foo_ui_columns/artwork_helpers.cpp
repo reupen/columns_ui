@@ -3,14 +3,16 @@
 #include "artwork.h"
 #include "artwork_helpers.h"
 
-void artwork_panel::ArtworkReader::run_notification_thisthread(DWORD state)
+namespace cui::artwork_panel {
+
+void ArtworkReader::run_notification_thisthread(DWORD state)
 {
     if (m_notify.is_valid())
         m_notify->on_completion(state);
     m_notify.release();
 }
 
-void artwork_panel::ArtworkReader::initialise(const std::vector<GUID>& artwork_type_ids,
+void ArtworkReader::initialise(const std::vector<GUID>& artwork_type_ids,
     const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
     const metadb_handle_ptr& p_handle, bool is_from_playback, const completion_notify_ptr& p_notify,
     std::shared_ptr<class ArtworkReaderManager> p_manager)
@@ -24,37 +26,37 @@ void artwork_panel::ArtworkReader::initialise(const std::vector<GUID>& artwork_t
     m_manager = std::move(p_manager);
 }
 
-const std::unordered_map<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_stub_images() const
+const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_stub_images() const
 {
     return m_stub_images;
 }
 
-void artwork_panel::ArtworkReader::set_image(GUID artwork_type_id, album_art_data_ptr data)
+void ArtworkReader::set_image(GUID artwork_type_id, album_art_data_ptr data)
 {
     m_content.insert_or_assign(artwork_type_id, data);
 }
 
-const std::unordered_map<GUID, album_art_data_ptr>& artwork_panel::ArtworkReader::get_content() const
+const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_content() const
 {
     return m_content;
 }
 
-bool artwork_panel::ArtworkReader::did_succeed()
+bool ArtworkReader::did_succeed()
 {
     return m_succeeded;
 }
 
-void artwork_panel::ArtworkReader::abort()
+void ArtworkReader::abort()
 {
     m_abort.abort();
 }
 
-bool artwork_panel::ArtworkReader::is_aborting()
+bool ArtworkReader::is_aborting()
 {
     return m_abort.is_aborting();
 }
 
-void artwork_panel::ArtworkReaderManager::deinitialise()
+void ArtworkReaderManager::deinitialise()
 {
     for (auto iter = m_aborting_readers.begin(); iter != m_aborting_readers.end();) {
         (*iter)->wait_for_and_release_thread();
@@ -67,7 +69,7 @@ void artwork_panel::ArtworkReaderManager::deinitialise()
     m_stub_images.clear();
 }
 
-album_art_data_ptr artwork_panel::ArtworkReaderManager::get_stub_image(GUID artwork_type_id)
+album_art_data_ptr ArtworkReaderManager::get_stub_image(GUID artwork_type_id)
 {
     if (!is_ready())
         return {};
@@ -86,7 +88,7 @@ album_art_data_ptr artwork_panel::ArtworkReaderManager::get_stub_image(GUID artw
     return {};
 }
 
-album_art_data_ptr artwork_panel::ArtworkReaderManager::get_image(const GUID& p_what)
+album_art_data_ptr ArtworkReaderManager::get_image(const GUID& p_what)
 {
     if (!is_ready() || !m_current_reader->did_succeed())
         return {};
@@ -110,7 +112,7 @@ album_art_data_ptr artwork_panel::ArtworkReaderManager::get_image(const GUID& p_
     return {};
 }
 
-void artwork_panel::ArtworkReaderManager::request(
+void ArtworkReaderManager::request(
     const metadb_handle_ptr& handle, completion_notify_ptr notify, const bool is_from_playback)
 {
     std::shared_ptr<ArtworkReader> ptr_prev = m_current_reader;
@@ -126,19 +128,19 @@ void artwork_panel::ArtworkReaderManager::request(
     m_current_reader->create_thread();
 }
 
-bool artwork_panel::ArtworkReaderManager::is_ready()
+bool ArtworkReaderManager::is_ready()
 {
     return m_current_reader && !m_current_reader->is_thread_open();
 }
 
-void artwork_panel::ArtworkReaderManager::reset()
+void ArtworkReaderManager::reset()
 {
     abort_current_task();
     m_current_reader.reset();
     m_stub_images.clear();
 }
 
-void artwork_panel::ArtworkReaderManager::abort_current_task()
+void ArtworkReaderManager::abort_current_task()
 {
     if (m_current_reader) {
         if (m_current_reader->is_thread_open()) {
@@ -149,12 +151,12 @@ void artwork_panel::ArtworkReaderManager::abort_current_task()
     }
 }
 
-void artwork_panel::ArtworkReaderManager::set_types(std::vector<GUID> types)
+void ArtworkReaderManager::set_types(std::vector<GUID> types)
 {
     m_artwork_type_ids = types;
 }
 
-void artwork_panel::ArtworkReaderNotification::g_run(
+void ArtworkReaderNotification::g_run(
     std::shared_ptr<ArtworkReaderManager> p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader)
 {
     service_ptr_t<ArtworkReaderNotification> ptr = new service_impl_t<ArtworkReaderNotification>;
@@ -166,7 +168,7 @@ void artwork_panel::ArtworkReaderNotification::g_run(
     static_api_ptr_t<main_thread_callback_manager>()->add_callback(ptr.get_ptr());
 }
 
-void artwork_panel::ArtworkReaderNotification::callback_run()
+void ArtworkReaderNotification::callback_run()
 {
     if (m_aborted)
         m_manager->on_reader_abort(m_reader);
@@ -174,7 +176,7 @@ void artwork_panel::ArtworkReaderNotification::callback_run()
         m_manager->on_reader_completion(m_ret, m_reader);
 }
 
-void artwork_panel::ArtworkReaderManager::on_reader_completion(DWORD state, const ArtworkReader* ptr)
+void ArtworkReaderManager::on_reader_completion(DWORD state, const ArtworkReader* ptr)
 {
     if (m_current_reader && ptr == &*m_current_reader) {
         m_current_reader->wait_for_and_release_thread();
@@ -189,12 +191,12 @@ void artwork_panel::ArtworkReaderManager::on_reader_completion(DWORD state, cons
         }
     }
 }
-void artwork_panel::ArtworkReaderManager::on_reader_abort(const ArtworkReader* ptr)
+void ArtworkReaderManager::on_reader_abort(const ArtworkReader* ptr)
 {
     on_reader_completion(ERROR_PROCESS_ABORTED, ptr);
 }
 
-bool artwork_panel::ArtworkReader::are_contents_equal(const std::unordered_map<GUID, album_art_data_ptr>& content1,
+bool ArtworkReader::are_contents_equal(const std::unordered_map<GUID, album_art_data_ptr>& content1,
     const std::unordered_map<GUID, album_art_data_ptr>& content2)
 {
     for (auto&& artwork_id : m_artwork_type_ids) {
@@ -214,7 +216,7 @@ bool artwork_panel::ArtworkReader::are_contents_equal(const std::unordered_map<G
     return true;
 }
 
-DWORD artwork_panel::ArtworkReader::on_thread()
+DWORD ArtworkReader::on_thread()
 {
     TRACK_CALL_TEXT("artwork_panel::ArtworkReader::on_thread");
 
@@ -256,7 +258,7 @@ album_art_data_ptr query_artwork_data(
     return {};
 }
 
-unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
+unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("artwork_reader_v2_t::read_artwork");
     std::unordered_map<GUID, album_art_data_ptr> content_previous = m_content;
@@ -297,3 +299,5 @@ unsigned artwork_panel::ArtworkReader::read_artwork(abort_callback& p_abort)
 
     return are_contents_equal(m_content, content_previous) ? 0 : 1;
 }
+
+} // namespace cui::artwork_panel

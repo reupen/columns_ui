@@ -11,10 +11,10 @@
 #include "../playlist_view_tfhooks.h"
 #include "../button_items.h"
 
-namespace artwork_panel {
+namespace cui::artwork_panel {
 // extern cfg_string cfg_front;
 extern cfg_bool cfg_use_fb2k_artwork;
-}; // namespace artwork_panel
+}; // namespace cui::artwork_panel
 
 namespace pvt {
 
