@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "buttons.h"
 
+namespace cui::toolbars::buttons {
+
 bool CommandPickerData::__populate_mainmenu_dynamic_recur(
     CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root)
 {
@@ -312,3 +314,5 @@ BOOL CommandPickerData::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     return FALSE;
 }
+
+} // namespace cui::toolbars::buttons

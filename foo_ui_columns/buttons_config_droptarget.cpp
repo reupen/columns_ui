@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "buttons.h"
 
+namespace cui::toolbars::buttons {
+
 HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::QueryInterface(
     REFIID riid, LPVOID FAR* ppvObject)
 {
@@ -194,3 +196,5 @@ ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::ButtonsListDrop
 {
     m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }
+
+} // namespace cui::toolbars::buttons

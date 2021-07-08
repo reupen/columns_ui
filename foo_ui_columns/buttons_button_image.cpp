@@ -2,6 +2,8 @@
 #include "buttons.h"
 #include "wic.h"
 
+namespace cui::toolbars::buttons {
+
 ButtonsToolbar::ButtonImage::~ButtonImage()
 {
     if (m_bm)
@@ -116,3 +118,5 @@ void ButtonsToolbar::ButtonImage::get_size(SIZE& p_out)
     p_out.cx = bmi.bmWidth;
     p_out.cy = bmi.bmHeight;
 }
+
+} // namespace cui::toolbars::buttons
