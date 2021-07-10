@@ -2,7 +2,7 @@
 
 #include "filter.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 class ConfigFields
     : public cfg_var
@@ -45,4 +45,4 @@ extern ConfigFields cfg_field_list;
 extern fbh::ConfigInt32DpiAware cfg_vertical_item_padding;
 extern fbh::ConfigBool cfg_show_column_titles, cfg_allow_sorting, cfg_show_sort_indicators, cfg_reverse_sort_tracks;
 
-} // namespace filter_panel
+} // namespace cui::panels::filter

@@ -2,7 +2,7 @@
 #include "filter.h"
 #include "filter_config_var.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain)
 {
     bool b_redraw = disable_redrawing();
@@ -448,4 +448,4 @@ void FilterPanel::notify_sort_column(t_size index, bool b_descending, bool b_sel
         }
     }
 }
-} // namespace filter_panel
+} // namespace cui::panels::filter

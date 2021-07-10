@@ -3,7 +3,7 @@
 #include "filter.h"
 #include "filter_config_var.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 class FilterSearchToolbar : public uie::container_uie_window_v2 {
 public:
@@ -86,4 +86,4 @@ private:
     static pfc::ptr_list_t<FilterSearchToolbar> g_active_instances;
 };
 
-}; // namespace filter_panel
+}; // namespace cui::panels::filter

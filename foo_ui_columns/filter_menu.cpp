@@ -2,7 +2,7 @@
 #include "filter.h"
 #include "filter_config_var.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& ht)
 {
     HMENU menu = CreatePopupMenu();
@@ -148,4 +148,4 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     return true;
 }
 
-} // namespace filter_panel
+} // namespace cui::panels::filter

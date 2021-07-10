@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "filter.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 bool FilterPanel::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
@@ -81,4 +81,4 @@ void FilterPanel::notify_exit_inline_edit()
     m_edit_previous_value.reset();
 };
 
-} // namespace filter_panel
+} // namespace cui::panels::filter

@@ -4,7 +4,7 @@
 #include "filter_config_var.h"
 #include "filter_utils.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 template <class tHandles>
 void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
@@ -549,4 +549,4 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
     return CallWindowProc(m_proc_search_edit, wnd, msg, wp, lp);
 }
 
-} // namespace filter_panel
+} // namespace cui::panels::filter

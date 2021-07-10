@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "filter_config_var.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 const GUID g_guid_cfg_sort{0xe9f1557a, 0x4650, 0x4b59, {0xac, 0xd6, 0xb2, 0xad, 0x6e, 0xe9, 0xb8, 0x7d}};
 const GUID g_guid_cfg_sort_string{0x4b39f556, 0x9d06, 0x464e, {0xad, 0x16, 0xf, 0x5f, 0xa0, 0x2c, 0xf5, 0x10}};
@@ -191,4 +191,4 @@ bool ConfigFavourites::find_item(const char* p_item, t_size& index)
     return false;
 }
 
-} // namespace filter_panel
+} // namespace cui::panels::filter

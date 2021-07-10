@@ -2,7 +2,7 @@
 #include "filter_config_var.h"
 #include "filter_search_bar.h"
 
-namespace cui::filter::fcl {
+namespace cui::panels::filter::fcl {
 
 enum class SettingIdentifier : uint32_t {
     Autosend = 1,
@@ -65,27 +65,19 @@ class SettingsDataSet : public cui::fcl::dataset {
     {
         fbh::fcl::Writer out(p_writer, p_abort);
 
-        out.write_item(static_cast<uint32_t>(SettingIdentifier::Autosend), filter_panel::cfg_autosend);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::DoubleClickAction), filter_panel::cfg_doubleclickaction);
-        out.write_item(static_cast<uint32_t>(SettingIdentifier::EdgeStyle), filter_panel::cfg_edgestyle);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::EnableColumnTitleClickSorting), filter_panel::cfg_allow_sorting);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::FilterPrecedence), filter_panel::cfg_orderedbysplitters);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::MiddleClickAction), filter_panel::cfg_middleclickaction);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::ShowColumnTitles), filter_panel::cfg_show_column_titles);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::ShowSortIndicators), filter_panel::cfg_show_sort_indicators);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::ShowToolbarClearButton), filter_panel::cfg_showsearchclearbutton);
-        out.write_item(static_cast<uint32_t>(SettingIdentifier::ShowUnlabelledItems), filter_panel::cfg_showemptyitems);
-        out.write_item(static_cast<uint32_t>(SettingIdentifier::SortOnAdd), filter_panel::cfg_sort);
-        out.write_item(static_cast<uint32_t>(SettingIdentifier::SortOnAddScript), filter_panel::cfg_sort_string);
-        out.write_item(
-            static_cast<uint32_t>(SettingIdentifier::VerticalItemPadding), filter_panel::cfg_vertical_item_padding);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::Autosend), cfg_autosend);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::DoubleClickAction), cfg_doubleclickaction);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::EdgeStyle), cfg_edgestyle);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::EnableColumnTitleClickSorting), cfg_allow_sorting);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::FilterPrecedence), cfg_orderedbysplitters);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::MiddleClickAction), cfg_middleclickaction);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::ShowColumnTitles), cfg_show_column_titles);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::ShowSortIndicators), cfg_show_sort_indicators);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::ShowToolbarClearButton), cfg_showsearchclearbutton);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::ShowUnlabelledItems), cfg_showemptyitems);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::SortOnAdd), cfg_sort);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::SortOnAddScript), cfg_sort_string);
+        out.write_item(static_cast<uint32_t>(SettingIdentifier::VerticalItemPadding), cfg_vertical_item_padding);
     }
     void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -100,43 +92,43 @@ class SettingsDataSet : public cui::fcl::dataset {
 
             switch (static_cast<SettingIdentifier>(element_id)) {
             case SettingIdentifier::Autosend:
-                reader.read_item(filter_panel::cfg_autosend);
+                reader.read_item(cfg_autosend);
                 break;
             case SettingIdentifier::DoubleClickAction:
-                reader.read_item(filter_panel::cfg_doubleclickaction);
+                reader.read_item(cfg_doubleclickaction);
                 break;
             case SettingIdentifier::EdgeStyle:
-                reader.read_item(filter_panel::cfg_edgestyle);
+                reader.read_item(cfg_edgestyle);
                 break;
             case SettingIdentifier::EnableColumnTitleClickSorting:
-                reader.read_item(filter_panel::cfg_allow_sorting);
+                reader.read_item(cfg_allow_sorting);
                 break;
             case SettingIdentifier::FilterPrecedence:
-                reader.read_item(filter_panel::cfg_orderedbysplitters);
+                reader.read_item(cfg_orderedbysplitters);
                 break;
             case SettingIdentifier::MiddleClickAction:
-                reader.read_item(filter_panel::cfg_middleclickaction);
+                reader.read_item(cfg_middleclickaction);
                 break;
             case SettingIdentifier::ShowColumnTitles:
-                reader.read_item(filter_panel::cfg_show_column_titles);
+                reader.read_item(cfg_show_column_titles);
                 break;
             case SettingIdentifier::ShowSortIndicators:
-                reader.read_item(filter_panel::cfg_show_sort_indicators);
+                reader.read_item(cfg_show_sort_indicators);
                 break;
             case SettingIdentifier::ShowToolbarClearButton:
-                reader.read_item(filter_panel::cfg_showsearchclearbutton);
+                reader.read_item(cfg_showsearchclearbutton);
                 break;
             case SettingIdentifier::ShowUnlabelledItems:
-                reader.read_item(filter_panel::cfg_showemptyitems);
+                reader.read_item(cfg_showemptyitems);
                 break;
             case SettingIdentifier::SortOnAdd:
-                reader.read_item(filter_panel::cfg_sort);
+                reader.read_item(cfg_sort);
                 break;
             case SettingIdentifier::SortOnAddScript:
-                reader.read_item(filter_panel::cfg_sort_string, element_size);
+                reader.read_item(cfg_sort_string, element_size);
                 break;
             case SettingIdentifier::VerticalItemPadding:
-                reader.read_item(filter_panel::cfg_vertical_item_padding);
+                reader.read_item(cfg_vertical_item_padding);
                 break;
             default:
                 reader.skip(element_size);
@@ -144,14 +136,14 @@ class SettingsDataSet : public cui::fcl::dataset {
             }
         }
 
-        filter_panel::FilterPanel::g_on_show_column_titles_change();
-        filter_panel::FilterPanel::g_on_show_sort_indicators_change();
-        filter_panel::FilterPanel::g_on_vertical_item_padding_change();
-        filter_panel::FilterPanel::g_on_edgestyle_change();
-        filter_panel::FilterPanel::g_on_allow_sorting_change();
+        FilterPanel::g_on_show_column_titles_change();
+        FilterPanel::g_on_show_sort_indicators_change();
+        FilterPanel::g_on_vertical_item_padding_change();
+        FilterPanel::g_on_edgestyle_change();
+        FilterPanel::g_on_allow_sorting_change();
 
-        filter_panel::FilterPanel::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems, false);
-        filter_panel::FilterPanel::g_on_orderedbysplitters_change();
+        FilterPanel::g_on_showemptyitems_change(cfg_showemptyitems, false);
+        FilterPanel::g_on_orderedbysplitters_change();
     }
 };
 
@@ -164,11 +156,11 @@ class FavouritesDataSet : public cui::fcl::dataset {
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
-        const auto count = gsl::narrow<uint32_t>(filter_panel::cfg_favourites.get_count());
+        const auto count = gsl::narrow<uint32_t>(cfg_favourites.get_count());
         p_writer->write_lendian_t(count, p_abort);
 
         for (auto i : ranges::views::iota(0u, count)) {
-            auto& favourite = filter_panel::cfg_favourites[i];
+            auto& favourite = cfg_favourites[i];
             auto data = write_favourite(favourite, p_abort);
 
             const auto size = gsl::narrow<uint32_t>(data.get_size());
@@ -192,10 +184,10 @@ class FavouritesDataSet : public cui::fcl::dataset {
             imported_favourites[i] = read_favourite(&field_reader, favourite_data_size, p_abort);
         }
 
-        filter_panel::cfg_favourites.remove_all();
-        filter_panel::cfg_favourites.add_items(imported_favourites);
+        cfg_favourites.remove_all();
+        cfg_favourites.add_items(imported_favourites);
 
-        filter_panel::FilterSearchToolbar::s_on_favourites_change();
+        FilterSearchToolbar::s_on_favourites_change();
     }
 
     pfc::array_t<uint8_t> write_favourite(pfc::string8& favourite, abort_callback& aborter) const
@@ -242,11 +234,11 @@ class FieldsDataSet : public cui::fcl::dataset {
     void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
-        const auto count = gsl::narrow<uint32_t>(filter_panel::cfg_field_list.get_count());
+        const auto count = gsl::narrow<uint32_t>(cfg_field_list.get_count());
         p_writer->write_lendian_t(count, p_abort);
 
         for (auto i : ranges::views::iota(0u, count)) {
-            auto& field = filter_panel::cfg_field_list[i];
+            auto& field = cfg_field_list[i];
             auto data = write_field(field, p_abort);
 
             const auto size = gsl::narrow<uint32_t>(data.get_size());
@@ -260,7 +252,7 @@ class FieldsDataSet : public cui::fcl::dataset {
     {
         uint32_t count{};
         p_reader->read_lendian_t(count, p_abort);
-        pfc::array_staticsize_t<filter_panel::Field> imported_fields{count};
+        pfc::array_staticsize_t<Field> imported_fields{count};
 
         for (auto i : ranges::views::iota(0u, count)) {
             uint32_t field_size{};
@@ -271,12 +263,12 @@ class FieldsDataSet : public cui::fcl::dataset {
             imported_fields[i] = read_field(&field_reader, field_size, p_abort);
         }
 
-        filter_panel::cfg_field_list.remove_all();
-        filter_panel::cfg_field_list.add_items(imported_fields);
-        filter_panel::FilterPanel::g_on_fields_change();
+        cfg_field_list.remove_all();
+        cfg_field_list.add_items(imported_fields);
+        FilterPanel::g_on_fields_change();
     }
 
-    pfc::array_t<uint8_t> write_field(filter_panel::Field& field, abort_callback& aborter) const
+    pfc::array_t<uint8_t> write_field(Field& field, abort_callback& aborter) const
     {
         pfc::array_t<uint8_t> data;
         stream_writer_memblock_ref writer(data);
@@ -288,9 +280,9 @@ class FieldsDataSet : public cui::fcl::dataset {
         return data;
     }
 
-    filter_panel::Field read_field(stream_reader* reader, t_size size, abort_callback& aborter)
+    Field read_field(stream_reader* reader, t_size size, abort_callback& aborter)
     {
-        filter_panel::Field field;
+        Field field;
         fbh::fcl::Reader fcl_reader(reader, size, aborter);
         t_uint32 element_id;
         t_uint32 element_size;
@@ -321,4 +313,4 @@ class FieldsDataSet : public cui::fcl::dataset {
 
 cui::fcl::dataset_factory<FieldsDataSet> fields_data_set;
 
-} // namespace cui::filter::fcl
+} // namespace cui::panels::filter::fcl
