@@ -3,6 +3,8 @@
 #include "stdafx.h"
 #include "file_info_reader.h"
 
+namespace cui::panels::item_details {
+
 extern const GUID g_guid_item_details;
 extern const GUID g_guid_item_details_tracking_mode;
 extern const GUID g_guid_item_details_script;
@@ -426,3 +428,5 @@ private:
     void on_timer();
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 };
+
+} // namespace cui::panels::item_details

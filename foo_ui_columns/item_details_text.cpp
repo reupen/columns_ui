@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "item_details.h"
 
+namespace cui::panels::item_details {
+
 std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChanges& p_out)
 {
     std::wstring p_new_text;
@@ -509,3 +511,5 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
     if (was_font_changed)
         SelectFont(dc, fnt_old);
 }
+
+} // namespace cui::panels::item_details
