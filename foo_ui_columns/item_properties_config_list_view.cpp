@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "item_properties.h"
 
+namespace cui::panels::item_properties {
+
 void FieldsList::notify_save_inline_edit(const char* value)
 {
     if (m_edit_index < m_fields.get_count()) {
@@ -66,3 +68,5 @@ FieldsList::FieldsList(pfc::list_t<Field>& p_fields)
     , m_fields(p_fields)
 {
 }
+
+} // namespace cui::panels::item_properties

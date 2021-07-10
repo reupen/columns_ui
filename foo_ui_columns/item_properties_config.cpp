@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "item_properties.h"
 
+namespace cui::panels::item_properties {
+
 BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
@@ -193,3 +195,5 @@ BOOL CALLBACK ItemPropertiesConfig::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, 
         p_data = reinterpret_cast<ItemPropertiesConfig*>(GetWindowLongPtr(wnd, DWLP_USER));
     return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
 }
+
+} // namespace cui::panels::item_properties
