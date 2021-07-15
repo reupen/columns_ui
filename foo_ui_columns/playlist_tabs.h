@@ -1,7 +1,8 @@
-#ifndef _COLUMNS_UI_TABS_H_
-#define _COLUMNS_UI_TABS_H_
+#pragma once
 
 #include "stdafx.h"
+
+namespace cui::panels::playlist_tabs {
 
 void g_on_autohide_tabs_change();
 void g_on_multiline_tabs_change();
@@ -192,4 +193,4 @@ private:
 
 extern ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;
 
-#endif
+} // namespace cui::panels::playlist_tabs

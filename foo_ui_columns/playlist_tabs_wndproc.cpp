@@ -3,6 +3,8 @@
 #include "playlist_manager_utils.h"
 #include "main_window.h"
 
+namespace cui::panels::playlist_tabs {
+
 enum {
     ID_SWITCH = 1,
     ID_REMOVE,
@@ -444,3 +446,5 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
+
+} // namespace cui::panels::playlist_tabs

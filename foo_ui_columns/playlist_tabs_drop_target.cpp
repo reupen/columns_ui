@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_tabs.h"
 
+namespace cui::panels::playlist_tabs {
+
 HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
@@ -329,3 +331,5 @@ PlaylistTabs::PlaylistTabsDropTarget::PlaylistTabsDropTarget(PlaylistTabs* p_wnd
 {
     m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }
+
+} // namespace cui::panels::playlist_tabs
