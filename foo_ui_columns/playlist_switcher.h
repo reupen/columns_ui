@@ -1,5 +1,6 @@
-#ifndef _COLUMNS_UI_PLAYLIST_SWITCHER_H_
-#define _COLUMNS_UI_PLAYLIST_SWITCHER_H_
+#pragma once
+
+namespace cui::panels::playlist_switcher {
 
 class PlaylistSwitcherColoursClient : public cui::colours::client {
 public:
@@ -20,4 +21,4 @@ public:
     void on_bool_changed(t_size mask) const override{};
 };
 
-#endif
+} // namespace cui::panels::playlist_switcher

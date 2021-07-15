@@ -33,7 +33,7 @@ public:
                     int new_height = GetDlgItemInt(wnd, IDC_PLHEIGHT, &result, TRUE);
                     if (result)
                         settings::playlist_switcher_item_padding = new_height;
-                    PlaylistSwitcher::g_on_vertical_item_padding_change();
+                    cui::panels::playlist_switcher::PlaylistSwitcher::g_on_vertical_item_padding_change();
                 }
                 break;
             case IDC_MCLICK:
@@ -42,15 +42,15 @@ public:
             case (EN_CHANGE << 16) | IDC_PLAYLIST_TF:
                 cfg_playlist_switcher_tagz = string_utf8_from_window((HWND)lp);
                 if (cfg_playlist_switcher_use_tagz)
-                    PlaylistSwitcher::g_refresh_all_items();
+                    cui::panels::playlist_switcher::PlaylistSwitcher::g_refresh_all_items();
                 break;
             case IDC_USE_PLAYLIST_TF:
                 cfg_playlist_switcher_use_tagz = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                PlaylistSwitcher::g_refresh_all_items();
+                cui::panels::playlist_switcher::PlaylistSwitcher::g_refresh_all_items();
                 break;
             case (CBN_SELCHANGE << 16) | IDC_PLISTEDGE:
                 cfg_plistframe = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
-                PlaylistSwitcher::g_on_edgestyle_change();
+                cui::panels::playlist_switcher::PlaylistSwitcher::g_on_edgestyle_change();
                 break;
             }
         }

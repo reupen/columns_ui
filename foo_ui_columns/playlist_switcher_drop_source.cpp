@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
+namespace cui::panels::playlist_switcher {
+
 bool PlaylistSwitcher::do_drag_drop(WPARAM wp)
 {
     pfc::bit_array_bittable mask(get_item_count());
@@ -74,3 +76,5 @@ PlaylistSwitcher::DropSource::DropSource(PlaylistSwitcher* p_window, DWORD initi
     : refcount(0)
     , m_window(p_window)
     , m_initial_key_state(initial_key_state){};
+
+} // namespace cui::panels::playlist_switcher

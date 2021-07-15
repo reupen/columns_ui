@@ -4,6 +4,8 @@
 #include "playlist_switcher.h"
 #include "list_view_panel.h"
 
+namespace cui::panels::playlist_switcher {
+
 class PlaylistSwitcher
     : public ListViewPanelBase<PlaylistSwitcherColoursClient, uie::window>
     , private playlist_callback
@@ -331,3 +333,5 @@ private:
     static const GUID g_guid_font;
     static std::vector<PlaylistSwitcher*> g_windows;
 };
+
+} // namespace cui::panels::playlist_switcher

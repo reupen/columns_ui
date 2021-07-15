@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
+namespace cui::panels::playlist_switcher {
+
 bool PlaylistSwitcher::notify_before_create_inline_edit(
     const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
 {
@@ -29,3 +31,5 @@ void PlaylistSwitcher::notify_save_inline_edit(const char* value)
     }
     m_edit_playlist.reset();
 }
+
+} // namespace cui::panels::playlist_switcher

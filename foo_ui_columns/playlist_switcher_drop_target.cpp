@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
+namespace cui::panels::playlist_switcher {
+
 bool g_query_dataobj_supports_format(CLIPFORMAT cf, IDataObject* pDataObj)
 {
     FORMATETC fe;
@@ -468,3 +470,5 @@ PlaylistSwitcher::DropTarget::DropTarget(PlaylistSwitcher* p_window)
     m_playlist_api = standard_api_create_t<playlist_manager_v4>();
     m_DropTargetHelper = wil::CoCreateInstanceNoThrow<IDropTargetHelper>(CLSID_DragDropHelper);
 }
+
+} // namespace cui::panels::playlist_switcher
