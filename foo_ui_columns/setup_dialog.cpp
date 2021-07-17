@@ -72,14 +72,14 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         ComboBox_SetCurSel(wnd_theming, select);
 
-        m_previous_show_grouping = pvt::cfg_grouping;
-        m_previous_show_artwork = pvt::cfg_show_artwork;
+        m_previous_show_grouping = cui::panels::playlist_view::cfg_grouping;
+        m_previous_show_artwork = cui::panels::playlist_view::cfg_show_artwork;
 
         ComboBox_InsertString(wnd_grouping, 0, L"Disabled");
         ComboBox_InsertString(wnd_grouping, 1, L"Groups (without artwork)");
         ComboBox_InsertString(wnd_grouping, 2, L"Groups (with artwork)");
 
-        select = pvt::cfg_grouping ? (pvt::cfg_show_artwork ? 2 : 1) : 0;
+        select = cui::panels::playlist_view::cfg_grouping ? (cui::panels::playlist_view::cfg_show_artwork ? 2 : 1) : 0;
         ComboBox_SetCurSel(wnd_grouping, select);
 
         // ListView_SetItemState(wnd_lv, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
@@ -99,10 +99,10 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDCANCEL: {
             cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
             g_set_global_colour_mode(m_previous_colour_mode);
-            pvt::cfg_show_artwork = m_previous_show_artwork;
-            pvt::cfg_grouping = m_previous_show_grouping;
-            pvt::PlaylistView::g_on_show_artwork_change();
-            pvt::PlaylistView::g_on_groups_change();
+            cui::panels::playlist_view::cfg_show_artwork = m_previous_show_artwork;
+            cui::panels::playlist_view::cfg_grouping = m_previous_show_grouping;
+            cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
+            cui::panels::playlist_view::PlaylistView::g_on_groups_change();
 
             DestroyWindow(wnd);
             return 0;
@@ -121,16 +121,16 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case (CBN_SELCHANGE << 16) | IDC_GROUPING: {
             t_size selection = ComboBox_GetCurSel(HWND(lp));
             if (selection >= 2)
-                pvt::cfg_show_artwork = true;
+                cui::panels::playlist_view::cfg_show_artwork = true;
             if (selection >= 1)
-                pvt::cfg_grouping = true;
+                cui::panels::playlist_view::cfg_grouping = true;
             if (selection <= 1)
-                pvt::cfg_show_artwork = false;
+                cui::panels::playlist_view::cfg_show_artwork = false;
             if (selection == 0)
-                pvt::cfg_grouping = false;
+                cui::panels::playlist_view::cfg_grouping = false;
 
-            pvt::PlaylistView::g_on_show_artwork_change();
-            pvt::PlaylistView::g_on_groups_change();
+            cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
+            cui::panels::playlist_view::PlaylistView::g_on_groups_change();
             break;
         }
         }

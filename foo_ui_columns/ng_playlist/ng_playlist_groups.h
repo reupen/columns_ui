@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 
 class Group {
 public:
@@ -71,4 +71,4 @@ private:
     pfc::list_t<Group> m_groups;
 };
 extern ConfigGroups g_groups;
-} // namespace pvt
+} // namespace cui::panels::playlist_view

@@ -876,7 +876,7 @@ void TabColumns::apply()
     g_columns.set_entries_copy(m_columns);
     for (size_t i = 0, count = m_columns.get_count(); i < count; i++)
         m_columns[i]->source_item = g_columns[i];
-    pvt::PlaylistView::g_on_columns_change();
+    cui::panels::playlist_view::PlaylistView::g_on_columns_change();
 }
 
 void TabColumns::show_column(size_t index)

@@ -3,7 +3,7 @@
 #include "ng_playlist.h"
 #include "ng_playlist_style.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 namespace style_cache_manager {
 pfc::list_t<SharedCellStyleData*> m_objects;
 void g_add_object(const CellStyleData& p_data, SharedCellStyleData::ptr& p_out)
@@ -377,4 +377,4 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
     }
     return false;
 }
-} // namespace pvt
+} // namespace cui::panels::playlist_view

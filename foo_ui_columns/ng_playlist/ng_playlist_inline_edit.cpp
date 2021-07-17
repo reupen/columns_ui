@@ -1,7 +1,7 @@
 #include "../stdafx.h"
 #include "ng_playlist.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 
 namespace {
 
@@ -147,4 +147,4 @@ void PlaylistView::notify_exit_inline_edit()
     m_edit_handles.remove_all();
 }
 
-} // namespace pvt
+} // namespace cui::panels::playlist_view

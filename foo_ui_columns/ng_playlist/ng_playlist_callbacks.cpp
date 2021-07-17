@@ -1,7 +1,7 @@
 #include "../stdafx.h"
 #include "ng_playlist.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 void PlaylistView::on_items_added(/*unsigned p_playlist, */ unsigned start,
     const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
 {
@@ -28,7 +28,7 @@ for (t_size i = 0; i < p_count; i++) {
         replace_items(start, items);
     }
 }
-} // namespace pvt
+} // namespace cui::panels::playlist_view
 }
 ; // changes selection too; doesnt actually change set of items that are selected or item having focus, just changes
   // their order

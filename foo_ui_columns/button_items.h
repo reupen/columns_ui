@@ -48,14 +48,14 @@ struct LiveLayoutEditingButtonArgs {
 using LiveLayoutEditingButton = PushButton<LiveLayoutEditingButtonArgs>;
 
 struct ShowGroupsButtonArgs {
-    static bool state() { return pvt::cfg_grouping; }
+    static bool state() { return cui::panels::playlist_view::cfg_grouping; }
     static constexpr GUID id = main_menu::commands::show_groups_id;
 };
 
 using ShowGroupsButton = PushButton<ShowGroupsButtonArgs>;
 
 struct ShowArtworkButtonArgs {
-    static bool state() { return pvt::cfg_show_artwork; }
+    static bool state() { return cui::panels::playlist_view::cfg_show_artwork; }
     static constexpr GUID id = main_menu::commands::show_artwork_id;
 };
 

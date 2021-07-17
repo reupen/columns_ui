@@ -1,6 +1,6 @@
 #pragma once
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 class CellStyleData {
 public:
     Colour text_colour;
@@ -112,4 +112,4 @@ public:
         , m_index(index)
         , m_is_group(b_is_group){};
 };
-} // namespace pvt
+} // namespace cui::panels::playlist_view

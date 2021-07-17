@@ -2,7 +2,7 @@
 #include "ng_playlist.h"
 #include "wic.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback& p_abort)
 {
     bool ret = false;
@@ -344,4 +344,4 @@ wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(
     return nullptr;
 }
 
-}; // namespace pvt
+}; // namespace cui::panels::playlist_view
