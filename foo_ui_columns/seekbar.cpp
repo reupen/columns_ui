@@ -5,6 +5,8 @@
 
 #define ID_SEEK 2005
 
+namespace cui::toolbars::seekbar {
+
 pfc::ptr_list_t<SeekBarToolbar> SeekBarToolbar::windows;
 
 void SeekBarToolbar::SeekBarTrackbarCallback::on_position_change(unsigned pos, bool b_tracking)
@@ -199,3 +201,5 @@ unsigned SeekBarToolbar::get_type() const
 };
 
 ui_extension::window_factory<SeekBarToolbar> blue;
+
+} // namespace cui::toolbars::seekbar
