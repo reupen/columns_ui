@@ -14,15 +14,16 @@
 #include "status_bar.h"
 #include "migrate.h"
 #include "legacy_artwork_config.h"
+#include "rebar.h"
 
-RebarWindow* g_rebar_window = nullptr;
+cui::rebar::RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
 cui::MainWindow cui::main_window;
 StatusPane g_status_pane;
 
 HIMAGELIST g_imagelist = nullptr;
 
-HWND g_rebar = nullptr, g_status = nullptr;
+HWND g_status = nullptr;
 
 bool g_icon_created = false;
 bool ui_initialising = false, g_minimised = false;
@@ -109,8 +110,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         ShowWindow(m_wnd, SW_SHOWNORMAL);
     }
 
-    if (g_rebar)
-        ShowWindow(g_rebar, SW_SHOWNORMAL);
+    if (rebar::g_rebar)
+        ShowWindow(rebar::g_rebar, SW_SHOWNORMAL);
     if (g_status)
         ShowWindow(g_status, SW_SHOWNORMAL);
     if (g_status_pane.get_wnd())
@@ -251,7 +252,7 @@ void cui::MainWindow::create_child_windows()
 
     g_layout_window.create(m_wnd);
 
-    create_rebar();
+    rebar::create_rebar();
     create_status();
     if (settings::show_status_pane)
         g_status_pane.create(m_wnd);
@@ -289,18 +290,18 @@ void cui::MainWindow::resize_child_windows()
             }
             int rebar_height = 0;
 
-            if (g_rebar) {
+            if (rebar::g_rebar) {
                 RECT rc_rebar;
-                GetWindowRect(g_rebar, &rc_rebar);
+                GetWindowRect(rebar::g_rebar, &rc_rebar);
                 rebar_height = rc_rebar.bottom - rc_rebar.top;
             }
             if (g_layout_window.get_wnd())
                 dwp = DeferWindowPos(dwp, g_layout_window.get_wnd(), nullptr, 0, rebar_height,
                     rc_main_client.right - rc_main_client.left,
                     rc_main_client.bottom - rc_main_client.top - rebar_height - status_height, SWP_NOZORDER);
-            if (g_rebar) {
-                RedrawWindow(g_rebar, nullptr, nullptr, RDW_INVALIDATE);
-                dwp = DeferWindowPos(dwp, g_rebar, nullptr, 0, 0, rc_main_client.right - rc_main_client.left,
+            if (rebar::g_rebar) {
+                RedrawWindow(rebar::g_rebar, nullptr, nullptr, RDW_INVALIDATE);
+                dwp = DeferWindowPos(dwp, rebar::g_rebar, nullptr, 0, 0, rc_main_client.right - rc_main_client.left,
                     rebar_height, SWP_NOZORDER);
             }
 
@@ -453,10 +454,10 @@ void on_show_status_pane_change()
 void on_show_toolbars_change()
 {
     if (cui::main_window.get_wnd()) {
-        create_rebar();
-        if (g_rebar) {
-            ShowWindow(g_rebar, SW_SHOWNORMAL);
-            UpdateWindow(g_rebar);
+        cui::rebar::create_rebar();
+        if (cui::rebar::g_rebar) {
+            ShowWindow(cui::rebar::g_rebar, SW_SHOWNORMAL);
+            UpdateWindow(cui::rebar::g_rebar);
         }
         cui::main_window.resize_child_windows();
     }

@@ -4,8 +4,6 @@
 #include "rebar.h"
 #include "main_window.h"
 
-extern HWND g_rebar;
-
 static class TabMain : public PreferencesTab {
 public:
     bool m_initialised{};
@@ -74,16 +72,15 @@ public:
                         _T("Warning! This will reset the toolbars to the default state. Continue?"),
                         _T("Reset toolbars?"), MB_YESNO)
                     == IDYES) {
-                    extern ConfigRebar g_cfg_rebar;
 
                     if (cui::main_window.get_wnd())
-                        destroy_rebar();
-                    g_cfg_rebar.reset();
+                        cui::rebar::destroy_rebar();
+                    cui::rebar::g_cfg_rebar.reset();
                     if (cui::main_window.get_wnd()) {
-                        create_rebar();
-                        if (g_rebar) {
-                            ShowWindow(g_rebar, SW_SHOWNORMAL);
-                            UpdateWindow(g_rebar);
+                        cui::rebar::create_rebar();
+                        if (cui::rebar::g_rebar) {
+                            ShowWindow(cui::rebar::g_rebar, SW_SHOWNORMAL);
+                            UpdateWindow(cui::rebar::g_rebar);
                         }
                         cui::main_window.resize_child_windows();
                     }

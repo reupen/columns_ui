@@ -1,8 +1,8 @@
 #include "stdafx.h"
+#include "rebar.h"
 #include "status_pane.h"
 #include "mw_drop_target.h"
 
-extern HWND g_rebar;
 extern HWND g_status;
 
 bool g_last_rmb = false;
@@ -15,9 +15,9 @@ MainWindowDropTarget::MainWindowDropTarget()
 bool MainWindowDropTarget::check_window_allowed(HWND wnd)
 {
     return wnd
-        && (wnd == cui::main_window.get_wnd() || wnd == g_rebar || (g_rebar && IsChild(g_rebar, wnd))
-            || wnd == g_status_pane.get_wnd() || (g_status_pane.get_wnd() && IsChild(g_status_pane.get_wnd(), wnd))
-            || wnd == g_status);
+        && (wnd == cui::main_window.get_wnd() || wnd == cui::rebar::g_rebar
+            || (cui::rebar::g_rebar && IsChild(cui::rebar::g_rebar, wnd)) || wnd == g_status_pane.get_wnd()
+            || (g_status_pane.get_wnd() && IsChild(g_status_pane.get_wnd(), wnd)) || wnd == g_status);
 }
 
 HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(

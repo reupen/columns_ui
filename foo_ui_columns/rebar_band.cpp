@@ -2,6 +2,8 @@
 
 #include "rebar_band.h"
 
+namespace cui::rebar {
+
 void RebarBandState::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_type, abort_callback& aborter) const
 {
     uie::window_ptr ptr;
@@ -95,3 +97,5 @@ void RebarBandState::read_extra(stream_reader* reader, abort_callback& aborter)
     reader->read_lendian_t(m_width.value, aborter);
     reader->read_lendian_t(m_width.dpi, aborter);
 }
+
+} // namespace cui::rebar

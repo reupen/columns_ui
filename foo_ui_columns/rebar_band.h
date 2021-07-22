@@ -1,5 +1,7 @@
 #pragma once
 
+namespace cui::rebar {
+
 class RebarBandState {
 public:
     GUID m_guid{};
@@ -37,3 +39,5 @@ public:
     RebarBand(RebarBand&&) = default;
     RebarBand(const RebarBand& band) = default;
 };
+
+} // namespace cui::rebar
