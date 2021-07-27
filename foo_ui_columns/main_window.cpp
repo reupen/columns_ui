@@ -19,7 +19,6 @@
 cui::rebar::RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
 cui::MainWindow cui::main_window;
-StatusPane g_status_pane;
 
 HIMAGELIST g_imagelist = nullptr;
 
@@ -114,8 +113,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         ShowWindow(rebar::g_rebar, SW_SHOWNORMAL);
     if (g_status)
         ShowWindow(g_status, SW_SHOWNORMAL);
-    if (g_status_pane.get_wnd())
-        ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
+    if (status_pane::g_status_pane.get_wnd())
+        ShowWindow(status_pane::g_status_pane.get_wnd(), SW_SHOWNORMAL);
     g_layout_window.show_window();
 
     RedrawWindow(m_wnd, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
@@ -255,7 +254,7 @@ void cui::MainWindow::create_child_windows()
     rebar::create_rebar();
     status_bar::create_window();
     if (settings::show_status_pane)
-        g_status_pane.create(m_wnd);
+        status_pane::g_status_pane.create(m_wnd);
 
     g_layout_window.set_focus();
 }
@@ -280,10 +279,10 @@ void cui::MainWindow::resize_child_windows()
                 // dwp = DeferWindowPos(dwp, g_status, 0, 0, rc_main_client.bottom-status_height,
                 // rc_main_client.right-rc_main_client.left, status_height, SWP_NOZORDER|SWP_NOREDRAW);
             }
-            if (g_status_pane.get_wnd()) {
-                int cy = g_status_pane.get_ideal_height();
-                RedrawWindow(g_status_pane.get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
-                dwp = DeferWindowPos(dwp, g_status_pane.get_wnd(), nullptr, 0,
+            if (status_pane::g_status_pane.get_wnd()) {
+                int cy = status_pane::g_status_pane.get_ideal_height();
+                RedrawWindow(status_pane::g_status_pane.get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+                dwp = DeferWindowPos(dwp, status_pane::g_status_pane.get_wnd(), nullptr, 0,
                     rc_main_client.bottom - status_height - cy, rc_main_client.right - rc_main_client.left, cy,
                     SWP_NOZORDER);
                 status_height += cy;
@@ -391,25 +390,6 @@ public:
 };
 static service_factory_single_t<MainWindowPlaylistCallback> asdf2;
 
-void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
-{
-    const char* ptr = text;
-    while (*ptr) {
-        const char* start = ptr;
-        t_size counter = 0;
-        while (*ptr && *ptr != '\r' && *ptr != '\n') {
-            ptr++;
-        }
-
-        p_out.add_item(pfc::string8(start, ptr - start));
-
-        if (*ptr == '\r')
-            ptr++;
-        if (*ptr == '\n')
-            ptr++;
-    }
-}
-
 bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
 {
     bool ret = false;
@@ -440,12 +420,12 @@ void on_show_status_change()
 void on_show_status_pane_change()
 {
     if (cui::main_window.get_wnd()) {
-        if (settings::show_status_pane != (g_status_pane.get_wnd() != nullptr)) {
+        if (settings::show_status_pane != (cui::status_pane::g_status_pane.get_wnd() != nullptr)) {
             if (settings::show_status_pane) {
-                g_status_pane.create(cui::main_window.get_wnd());
-                ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
+                cui::status_pane::g_status_pane.create(cui::main_window.get_wnd());
+                ShowWindow(cui::status_pane::g_status_pane.get_wnd(), SW_SHOWNORMAL);
             } else
-                g_status_pane.destroy();
+                cui::status_pane::g_status_pane.destroy();
             cui::main_window.resize_child_windows();
         }
     }

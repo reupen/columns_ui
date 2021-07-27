@@ -1,7 +1,7 @@
 #pragma once
 #include "volume.h"
 
-void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out);
+namespace cui::status_pane {
 
 class StatusPane
     : public ui_helpers::container_window
@@ -207,3 +207,7 @@ private:
     wil::unique_hfont m_font;
     HTHEME m_theme{nullptr};
 };
+
+extern class StatusPane g_status_pane;
+
+} // namespace cui::status_pane

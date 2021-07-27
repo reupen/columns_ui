@@ -16,8 +16,10 @@ bool MainWindowDropTarget::check_window_allowed(HWND wnd)
 {
     return wnd
         && (wnd == cui::main_window.get_wnd() || wnd == cui::rebar::g_rebar
-            || (cui::rebar::g_rebar && IsChild(cui::rebar::g_rebar, wnd)) || wnd == g_status_pane.get_wnd()
-            || (g_status_pane.get_wnd() && IsChild(g_status_pane.get_wnd(), wnd)) || wnd == g_status);
+            || (cui::rebar::g_rebar && IsChild(cui::rebar::g_rebar, wnd))
+            || wnd == cui::status_pane::g_status_pane.get_wnd()
+            || (cui::status_pane::g_status_pane.get_wnd() && IsChild(cui::status_pane::g_status_pane.get_wnd(), wnd))
+            || wnd == g_status);
 }
 
 HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(

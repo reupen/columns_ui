@@ -54,12 +54,12 @@ public:
     {
         cui::status_bar::menudesc = p_text;
         cui::status_bar::set_show_menu_item_description(true);
-        g_status_pane.enter_menu_mode(p_text);
+        cui::status_pane::g_status_pane.enter_menu_mode(p_text);
     };
     void revert_statusbar_text() override
     {
         cui::status_bar::set_show_menu_item_description(false);
-        g_status_pane.exit_menu_mode();
+        cui::status_pane::g_status_pane.exit_menu_mode();
     }
 
     bool query_capability(const GUID& cap) override

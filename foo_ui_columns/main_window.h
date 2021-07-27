@@ -41,8 +41,6 @@ void on_show_status_change();
 void on_show_status_pane_change();
 void on_show_toolbars_change();
 
-extern class StatusPane g_status_pane;
-
 namespace taskbar_buttons {
 enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };
 }

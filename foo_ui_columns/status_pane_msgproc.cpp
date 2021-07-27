@@ -2,6 +2,27 @@
 
 #include "status_pane.h"
 
+namespace cui::status_pane {
+
+void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
+{
+    const char* ptr = text;
+    while (*ptr) {
+        const char* start = ptr;
+        t_size counter = 0;
+        while (*ptr && *ptr != '\r' && *ptr != '\n') {
+            ptr++;
+        }
+
+        p_out.add_item(pfc::string8(start, ptr - start));
+
+        if (*ptr == '\r')
+            ptr++;
+        if (*ptr == '\n')
+            ptr++;
+    }
+}
+
 LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
@@ -144,3 +165,5 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
+
+} // namespace cui::status_pane
