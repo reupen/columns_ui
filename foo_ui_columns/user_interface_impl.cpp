@@ -52,13 +52,13 @@ public:
     }
     void override_statusbar_text(const char* p_text) override
     {
-        status_bar::menudesc = p_text;
-        status_set_menu(true);
+        cui::status_bar::menudesc = p_text;
+        cui::status_bar::set_show_menu_item_description(true);
         g_status_pane.enter_menu_mode(p_text);
     };
     void revert_statusbar_text() override
     {
-        status_set_menu(false);
+        cui::status_bar::set_show_menu_item_description(false);
         g_status_pane.exit_menu_mode();
     }
 

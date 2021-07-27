@@ -4,7 +4,7 @@
 
 extern HWND g_status;
 
-namespace status_bar {
+namespace cui::status_bar {
 
 class StatusBarPlayCalllback : public play_callback_static {
 public:
@@ -16,14 +16,14 @@ public:
     {
         if (g_status) {
             statusbartext = "Loading track..";
-            status_update_main(false);
+            update_text(false);
         }
     }
 
     void on_playback_new_track(metadb_handle_ptr p_track) override
     {
         if (cui::main_window.get_wnd()) {
-            update_status();
+            regenerate_text();
         }
     }
 
@@ -31,51 +31,51 @@ public:
     {
         if (cui::main_window.get_wnd() && p_reason != play_control::stop_reason_shutting_down) {
             statusbartext = core_version_info::g_get_version_string();
-            status_update_main(false);
+            update_text(false);
         }
     }
     void on_playback_seek(double p_time) override
     {
         if (cui::main_window.get_wnd()) {
-            update_status();
+            regenerate_text();
         }
     }
     void on_playback_pause(bool b_state) override
     {
         if (cui::main_window.get_wnd()) {
-            update_status();
+            regenerate_text();
         }
     }
 
     void on_playback_edited(metadb_handle_ptr p_track) override
     {
         if (cui::main_window.get_wnd()) {
-            update_status();
+            regenerate_text();
         }
     }
 
     void on_playback_dynamic_info(const file_info& p_info) override
     {
         if (cui::main_window.get_wnd()) {
-            update_status();
+            regenerate_text();
         }
     }
     void on_playback_dynamic_info_track(const file_info& p_info) override
     {
         if (cui::main_window.get_wnd()) {
-            update_status();
+            regenerate_text();
         }
     }
     void on_playback_time(double p_time) override
     {
         if (cui::main_window.get_wnd()) {
-            update_status();
+            regenerate_text();
         }
     }
     void on_volume_change(float p_new_val) override
     {
         if (cui::main_window.get_wnd() && g_status)
-            set_part_sizes(status_bar::t_part_volume);
+            set_part_sizes(cui::status_bar::t_part_volume);
     }
 };
 
@@ -144,4 +144,4 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
 
 static service_factory_single_t<StatusBarPlaylistCallback> status_bar_playlist_callback;
 
-} // namespace status_bar
+} // namespace cui::status_bar

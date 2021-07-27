@@ -134,13 +134,13 @@ void cui::MainWindow::shutdown()
 {
     DestroyWindow(m_wnd);
     UnregisterClass(main_window_class_name, core_api::get_my_instance());
-    status_bar::volume_popup_window.class_release();
+    cui::status_bar::volume_popup_window.class_release();
     m_wnd = nullptr;
     g_status = nullptr;
     if (g_icon)
         DestroyIcon(g_icon);
     g_icon = nullptr;
-    status_bar::destroy_icon();
+    cui::status_bar::destroy_icon();
 }
 
 void cui::MainWindow::on_query_capability()
@@ -253,7 +253,7 @@ void cui::MainWindow::create_child_windows()
     g_layout_window.create(m_wnd);
 
     rebar::create_rebar();
-    create_status();
+    status_bar::create_window();
     if (settings::show_status_pane)
         g_status_pane.create(m_wnd);
 
@@ -308,7 +308,7 @@ void cui::MainWindow::resize_child_windows()
             EndDeferWindowPos(dwp);
 
             if (g_status) {
-                status_bar::set_part_sizes(status_bar::t_parts_none);
+                cui::status_bar::set_part_sizes(cui::status_bar::t_parts_none);
             }
         }
     }
@@ -341,7 +341,7 @@ public:
                  // only methods that read playlist state, not those that modify it)
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
         }
     }
     void on_items_reordered(const unsigned* order,
@@ -352,13 +352,13 @@ public:
     void FB2KAPI on_items_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
         }
     };
     void on_items_selection_change(const pfc::bit_array& affected, const pfc::bit_array& state) override
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
         }
     }
     void on_item_focus_change(unsigned from, unsigned to)
@@ -373,7 +373,7 @@ public:
     void on_playlist_switch() override
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_parts_all);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_parts_all);
         }
     };
     void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override{};
@@ -381,7 +381,7 @@ public:
     {
         if (cui::main_window.get_wnd())
             if (g_status && main_window::config_get_status_show_lock())
-                status_bar::set_part_sizes(status_bar::t_parts_all);
+                cui::status_bar::set_part_sizes(cui::status_bar::t_parts_all);
     };
 
     void on_default_format_changed() override{};
@@ -428,7 +428,7 @@ bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
 void on_show_status_change()
 {
     if (cui::main_window.get_wnd()) {
-        create_status();
+        cui::status_bar::create_window();
         if (g_status) {
             ShowWindow(g_status, SW_SHOWNORMAL);
             UpdateWindow(g_status);

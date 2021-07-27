@@ -3,6 +3,8 @@
 
 extern HWND g_status;
 
+namespace cui::status_bar {
+
 // {B9D5EA18-5827-40be-A896-302A71BCAA9C}
 static const GUID font_client_status_guid
     = {0xb9d5ea18, 0x5827, 0x40be, {0xa8, 0x96, 0x30, 0x2a, 0x71, 0xbc, 0xaa, 0x9c}};
@@ -33,7 +35,9 @@ void on_status_font_change()
     if (g_status) {
         g_status_font = static_api_ptr_t<cui::fonts::manager>()->get_font(font_client_status_guid);
         SendMessage(g_status, WM_SETFONT, (WPARAM)g_status_font, MAKELPARAM(1, 0));
-        status_bar::set_part_sizes(status_bar::t_parts_all);
-        cui::main_window.resize_child_windows();
+        set_part_sizes(cui::status_bar::t_parts_all);
+        main_window.resize_child_windows();
     }
 }
+
+} // namespace cui::status_bar

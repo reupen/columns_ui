@@ -35,13 +35,8 @@ enum { MSG_SET_AOT = WM_USER + 3, MSG_UPDATE_STATUS, MSG_UPDATE_TITLE, MSG_RUN_I
 
 bool remember_window_pos();
 
-void update_status();
-
 bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist = false, bool keyb = true);
 
-void status_update_main(bool is_caller_menu_desc);
-
-void create_status();
 void on_show_status_change();
 void on_show_status_pane_change();
 void on_show_toolbars_change();

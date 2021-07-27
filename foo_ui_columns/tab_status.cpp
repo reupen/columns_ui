@@ -50,11 +50,11 @@ public:
             } break;
             case IDC_VOL: {
                 cfg_show_vol = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                status_bar::set_part_sizes(status_bar::t_part_volume);
+                cui::status_bar::set_part_sizes(cui::status_bar::t_part_volume);
             } break;
             case IDC_SELTIME: {
                 cfg_show_seltime = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                status_bar::set_part_sizes(status_bar::t_part_length | status_bar::t_part_volume);
+                cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_volume);
 
             } break;
             case IDC_SHOW_STATUS: {
