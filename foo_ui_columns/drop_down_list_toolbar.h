@@ -122,6 +122,7 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
     m_items = ToolbarArgs::get_items();
 
     ComboBox_ResetContent(m_wnd_combo);
+    ComboBox_Enable(m_wnd_combo, !ranges::empty(m_items));
 
     // auto&& crashes the VS 2017 15.6 compiler here
     for (auto& [id, name] : m_items) {
