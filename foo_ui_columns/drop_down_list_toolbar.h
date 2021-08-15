@@ -124,8 +124,16 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
     ComboBox_ResetContent(m_wnd_combo);
     ComboBox_Enable(m_wnd_combo, !ranges::empty(m_items));
 
-    if (ranges::empty(m_items) && ToolbarArgs::get_items_empty_text() != nullptr) {
-        ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(ToolbarArgs::get_items_empty_text()));
+    if (ranges::empty(m_items)) {
+        if (ToolbarArgs::get_items_empty_text() != nullptr) {
+            const auto items_empty_text = ToolbarArgs::get_items_empty_text();
+
+            ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(items_empty_text));
+            const auto cx = uih::get_text_width(dc, items_empty_text, std::strlen(items_empty_text));
+            m_max_item_width = max(m_max_item_width, cx);
+        } else {
+            m_max_item_width = max(m_max_item_width, initial_width);
+        }
     } else {
         // auto&& crashes the VS 2017 15.6 compiler here
         for (auto& [id, name] : m_items) {
