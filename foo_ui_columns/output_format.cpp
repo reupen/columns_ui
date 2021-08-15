@@ -7,12 +7,10 @@ struct OutputFormatToolbarArgs {
     using ItemList = std::vector<std::tuple<ID, std::string>>;
     static auto get_items()
     {
-        outputCoreConfig_t coreConfig;
-        output_manager_v2::get()->getCoreConfig(coreConfig);
+        outputCoreConfig_t config;
+        output_manager_v2::get()->getCoreConfig(config);
 
-        output_entry::ptr output;
-
-        if (!output_entry::g_find(coreConfig.m_output, output)
+        if (output_entry::ptr output; !output_entry::g_find(config.m_output, output)
             || !(output->get_config_flags() & output_entry::flag_needs_bitdepth_config))
             return ItemList{};
 
@@ -25,14 +23,14 @@ struct OutputFormatToolbarArgs {
     static ID get_active_item()
     {
         auto api = output_manager_v2::get();
-        outputCoreConfig_t config{};
+        outputCoreConfig_t config;
         api->getCoreConfig(config);
         return config.m_bitDepth;
     }
     static void set_active_item(ID bitDepth)
     {
         auto api = output_manager_v2::get();
-        outputCoreConfig_t config{};
+        outputCoreConfig_t config;
         api->getCoreConfig(config);
         config.m_bitDepth = bitDepth;
         api->setCoreConfig(config);
