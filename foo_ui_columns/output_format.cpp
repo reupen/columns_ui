@@ -15,10 +15,12 @@ struct OutputFormatToolbarArgs {
             return ItemList{};
 
         static constexpr auto bit_depths = {8, 16, 24, 32};
-        return bit_depths | ranges::views::filter([](ID bd) {
-            return !(bd == 8 && core_version_info_v2::get()->test_version(1, 6, 7, 0));
-        }) | ranges::views::transform([](ID bd) { return std::make_tuple(bd, std::to_string(bd) + "-bit"); })
+        // clang-format off
+        return bit_depths
+            | ranges::views::filter([](ID bd) { return !(bd == 8 && core_version_info_v2::get()->test_version(1, 6, 7, 0)); })
+            | ranges::views::transform([](ID bd) { return std::make_tuple(bd, std::to_string(bd) + "-bit"); })
             | ranges::to<ItemList>();
+        // clang-format on
     }
     static ID get_active_item()
     {
