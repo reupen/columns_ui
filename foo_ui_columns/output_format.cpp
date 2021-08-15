@@ -29,6 +29,7 @@ struct OutputFormatToolbarArgs {
         api->getCoreConfig(config);
         return config.m_bitDepth;
     }
+    static const char* get_items_empty_text() { return "Auto"; }
     static void set_active_item(ID bitDepth)
     {
         auto api = output_manager_v2::get();

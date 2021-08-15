@@ -33,6 +33,7 @@ struct DspPresetToolbarArgs {
         auto api = dsp_config_manager_v2::get();
         return api->get_selected_preset();
     }
+    static const char* get_items_empty_text() { return nullptr; }
     static void set_active_item(ID id)
     {
         if (!is_available())

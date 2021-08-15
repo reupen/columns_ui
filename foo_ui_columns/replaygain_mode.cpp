@@ -52,6 +52,7 @@ struct ReplayGainModeToolbarArgs {
         auto playback_api = playback_control_v3::get();
         playback_api->restart();
     }
+    static const char* get_items_empty_text() { return nullptr; }
     static void get_menu_items(uie::menu_hook_t& p_hook)
     {
         p_hook.add_node(new cui::panel_helpers::CommandMenuNode{
