@@ -17,6 +17,19 @@ public:
         }
     }
 
+    static void s_update_colours()
+    {
+        cui::colours::helper helper(GUID{});
+
+        s_background_brush.reset(CreateSolidBrush(helper.get_colour(cui::colours::colour_background)));
+
+        for (auto&& window : s_windows) {
+            const HWND wnd = window->m_wnd_combo;
+            if (wnd)
+                RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
+        }
+    }
+
     void refresh_all_items_safe();
     void update_active_item_safe();
 
@@ -32,6 +45,12 @@ public:
     }
 
 private:
+    class ColourCallback : public cui::colours::common_callback {
+    public:
+        void on_bool_changed(t_size mask) const override{};
+        void on_colour_changed(t_size mask) const override { DropDownListToolbar<ToolbarArgs>::s_update_colours(); }
+    };
+
     static LRESULT WINAPI s_on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         auto p_this = reinterpret_cast<DropDownListToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
@@ -47,6 +66,8 @@ private:
     static constexpr unsigned initial_width = 150;
     static constexpr unsigned maximum_minimum_width = 150;
     static HFONT s_icon_font;
+    static ColourCallback s_colour_callback;
+    static wil::unique_hbrush s_background_brush;
     static std::vector<DropDownListToolbar<ToolbarArgs>*> s_windows;
 
     void refresh_all_items();
@@ -133,10 +154,15 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         s_windows.emplace_back(this);
         if (s_windows.size() == 1) {
             ToolbarArgs::on_first_window_created();
+
+            fb2k::std_api_get<cui::colours::manager>()->register_common_callback(&s_colour_callback);
         }
 
         if (!s_icon_font)
             s_icon_font = uCreateIconFont();
+
+        if (!s_background_brush)
+            s_update_colours();
 
         m_wnd_combo = CreateWindowEx(0, WC_COMBOBOX, nullptr,
             CBS_DROPDOWNLIST | WS_CHILD | WS_TABSTOP | WS_VISIBLE | WS_VSCROLL, 0, 0,
@@ -174,6 +200,8 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
     case WM_DESTROY: {
         if (s_windows.size() == 1) {
             ToolbarArgs::on_last_window_destroyed();
+
+            fb2k::std_api_get<cui::colours::manager>()->deregister_common_callback(&s_colour_callback);
         }
         s_windows.erase(std::remove(s_windows.begin(), s_windows.end(), this), s_windows.end());
 
@@ -183,8 +211,20 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         if (count == 1) {
             DeleteFont(s_icon_font);
             s_icon_font = nullptr;
+            s_background_brush.reset();
         }
         break;
+    }
+    case WM_CTLCOLOREDIT:
+    case WM_CTLCOLORLISTBOX: {
+        const auto dc = reinterpret_cast<HDC>(wp);
+
+        cui::colours::helper helper(GUID{});
+
+        SetTextColor(dc, helper.get_colour(cui::colours::colour_text));
+        SetBkColor(dc, helper.get_colour(cui::colours::colour_background));
+
+        return reinterpret_cast<LRESULT>(s_background_brush.get());
     }
     case WM_WINDOWPOSCHANGED: {
         const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
@@ -283,6 +323,12 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
 
 template <class ToolbarArgs>
 HFONT DropDownListToolbar<ToolbarArgs>::s_icon_font;
+
+template <class ToolbarArgs>
+typename DropDownListToolbar<ToolbarArgs>::ColourCallback DropDownListToolbar<ToolbarArgs>::s_colour_callback;
+
+template <class ToolbarArgs>
+wil::unique_hbrush DropDownListToolbar<ToolbarArgs>::s_background_brush;
 
 template <class ToolbarArgs>
 std::vector<DropDownListToolbar<ToolbarArgs>*> DropDownListToolbar<ToolbarArgs>::s_windows;
