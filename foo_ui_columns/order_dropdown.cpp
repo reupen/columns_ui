@@ -24,6 +24,8 @@ struct PlaybackOrderToolbarArgs {
         return api->playback_order_get_guid(api->playback_order_get_active());
     }
 
+    static const char* get_items_empty_text() { return nullptr; }
+
     static void set_active_item(ID id)
     {
         auto api = playlist_manager_v4::get();

@@ -30,6 +30,7 @@ struct OutputDeviceToolbarArgs {
         api->getCoreConfig(config);
         return std::make_tuple(config.m_output, config.m_device);
     }
+    static const char* get_items_empty_text() { return nullptr; }
     static void set_active_item(ID id)
     {
         if (!is_available())

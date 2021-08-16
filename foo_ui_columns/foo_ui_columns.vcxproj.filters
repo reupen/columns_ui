@@ -85,6 +85,9 @@
     <Filter Include="Output device toolbar">
       <UniqueIdentifier>{08469ea6-bf39-4b2a-8606-f51effa6d7b5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Output format toolbar">
+      <UniqueIdentifier>{08469ea6-bf39-4b2a-8606-f51effa6d7b6}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Playback order toolbar">
       <UniqueIdentifier>{c5f1100c-2f02-483d-8510-85811a67abb1}</UniqueIdentifier>
     </Filter>
@@ -447,6 +450,9 @@
     </ClCompile>
     <ClCompile Include="output_device.cpp">
       <Filter>Output device toolbar</Filter>
+    </ClCompile>
+    <ClCompile Include="output_format.cpp">
+      <Filter>Output format toolbar</Filter>
     </ClCompile>
     <ClCompile Include=".\order_dropdown.cpp">
       <Filter>Playback order toolbar</Filter>

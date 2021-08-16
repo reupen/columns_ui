@@ -122,13 +122,27 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
     m_items = ToolbarArgs::get_items();
 
     ComboBox_ResetContent(m_wnd_combo);
+    ComboBox_Enable(m_wnd_combo, !ranges::empty(m_items));
 
-    // auto&& crashes the VS 2017 15.6 compiler here
-    for (auto& [id, name] : m_items) {
-        ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(name.c_str()));
-        const auto cx = uih::get_text_width(dc, name.c_str(), name.size());
-        m_max_item_width = max(m_max_item_width, cx);
+    if (ranges::empty(m_items)) {
+        if (ToolbarArgs::get_items_empty_text() != nullptr) {
+            const auto items_empty_text = ToolbarArgs::get_items_empty_text();
+
+            ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(items_empty_text));
+            const auto cx = uih::get_text_width(dc, items_empty_text, std::strlen(items_empty_text));
+            m_max_item_width = max(m_max_item_width, cx);
+        } else {
+            m_max_item_width = max(m_max_item_width, initial_width);
+        }
+    } else {
+        // auto&& crashes the VS 2017 15.6 compiler here
+        for (auto& [id, name] : m_items) {
+            ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(name.c_str()));
+            const auto cx = uih::get_text_width(dc, name.c_str(), name.size());
+            m_max_item_width = max(m_max_item_width, cx);
+        }
     }
+
     SelectFont(dc, prev_font);
     ReleaseDC(m_wnd_combo, dc);
 
@@ -138,6 +152,11 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
 template <class ToolbarArgs>
 void DropDownListToolbar<ToolbarArgs>::update_active_item()
 {
+    if (ranges::empty(m_items) && ToolbarArgs::get_items_empty_text() != nullptr) {
+        ComboBox_SetCurSel(m_wnd_combo, 0);
+        return;
+    }
+
     auto&& id = ToolbarArgs::get_active_item();
     const auto iter = std::find_if(
         m_items.begin(), m_items.end(), [id](auto&& item) { return std::get<typename ToolbarArgs::ID>(item) == id; });
