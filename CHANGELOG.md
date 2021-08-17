@@ -1,5 +1,15 @@
 # Change log
 
+## Development version
+
+### Features
+
+* The DSP preset, Output device, Playback order and ReplayGain mode toolbars now use the global item foreground and background colours configured on the Colour and fonts preferences page. [[#390](https://github.com/reupen/columns_ui/pull/390), contributed by [@rplociennik](https://github.com/rplociennik)]
+  
+  (Note that selection colours are currently not used.)
+
+* A new Output format toolbar was added, allowing the selection of the output bit depth for output devices that don’t use automatic output format selection. [[#389](https://github.com/reupen/columns_ui/pull/389), contributed by [@rplociennik](https://github.com/rplociennik)]
+
 ## 1.7.0-beta.1
 
 ### Features
