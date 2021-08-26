@@ -8,6 +8,8 @@
   
   (Note that selection colours are currently not used.)
 
+* The DSP preset, Output device, Playback order and ReplayGain mode toolbars now use the common (list items) font configured on the Colour and fonts preferences page. [[#392](https://github.com/reupen/columns_ui/pull/392)]
+
 * A new Output format toolbar was added, allowing the selection of the output bit depth for output devices that don’t use automatic output format selection. [[#389](https://github.com/reupen/columns_ui/pull/389), contributed by [@rplociennik](https://github.com/rplociennik)]
 
 ## 1.7.0-beta.1
