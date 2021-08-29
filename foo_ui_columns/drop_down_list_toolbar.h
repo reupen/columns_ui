@@ -38,8 +38,11 @@ public:
         for (auto&& window : s_windows) {
             const HWND wnd = window->m_wnd_combo;
 
-            if (wnd)
+            if (wnd) {
                 SetWindowFont(wnd, s_items_font.get(), TRUE);
+                window->get_host()->on_size_limit_change(window->get_wnd(),
+                    uie::size_limit_minimum_height | uie::size_limit_maximum_height | uie::size_limit_minimum_width);
+            }
         }
     }
 
@@ -91,12 +94,13 @@ private:
 
     void refresh_all_items();
     void update_active_item();
+    int calculate_max_item_width();
+    int calculate_height();
 
     typename ToolbarArgs::ItemList m_items;
     HWND m_wnd_combo{nullptr};
     WNDPROC m_order_proc{nullptr};
     int m_max_item_width{0};
-    int m_height{0};
     bool m_initialised{false};
     bool m_process_next_char{true};
     bool m_processing_selection_change{false};
@@ -134,9 +138,6 @@ void DropDownListToolbar<ToolbarArgs>::update_active_item_safe()
 template <class ToolbarArgs>
 void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
 {
-    const HDC dc = GetDC(m_wnd_combo);
-    const HFONT prev_font = SelectFont(dc, s_items_font.get());
-
     auto&& active_item_id = ToolbarArgs::get_active_item();
     m_items = ToolbarArgs::get_items();
 
@@ -148,24 +149,61 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
             const auto items_empty_text = ToolbarArgs::get_items_empty_text();
 
             ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(items_empty_text));
-            const auto cx = uih::get_text_width(dc, items_empty_text, std::strlen(items_empty_text));
-            m_max_item_width = max(m_max_item_width, cx);
-        } else {
-            m_max_item_width = max(m_max_item_width, initial_width);
         }
     } else {
-        // auto&& crashes the VS 2017 15.6 compiler here
-        for (auto& [id, name] : m_items) {
+        for (auto&& [id, name] : m_items) {
             ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(name.c_str()));
-            const auto cx = uih::get_text_width(dc, name.c_str(), name.size());
-            m_max_item_width = max(m_max_item_width, cx);
         }
     }
 
-    SelectFont(dc, prev_font);
-    ReleaseDC(m_wnd_combo, dc);
-
     update_active_item();
+
+    const auto previous_max_item_width = m_max_item_width;
+    m_max_item_width = calculate_max_item_width();
+
+    if (m_initialised && m_max_item_width != previous_max_item_width) {
+        get_host()->on_size_limit_change(get_wnd(), uie::size_limit_minimum_width | uie::size_limit_maximum_height);
+    }
+}
+
+template <class ToolbarArgs>
+int DropDownListToolbar<ToolbarArgs>::calculate_height()
+{
+    RECT rc{};
+    GetWindowRect(m_wnd_combo, &rc);
+    return rc.bottom - rc.top;
+}
+
+template <class ToolbarArgs>
+int DropDownListToolbar<ToolbarArgs>::calculate_max_item_width()
+{
+    const int fallback_width = uih::scale_dpi_value(50);
+
+    const auto dc = wil::GetDC(m_wnd_combo);
+    const auto _ = wil::SelectObject(dc.get(), s_items_font.get());
+
+    const auto item_count = ComboBox_GetCount(m_wnd_combo);
+
+    if (item_count <= 0)
+        return fallback_width;
+
+    int max_item_width{};
+    pfc::string8 text;
+    for (auto index : ranges::views::iota(0, item_count)) {
+        uComboBox_GetText(m_wnd_combo, index, text);
+        const auto cx = uih::get_text_width(dc.get(), text, text.get_length());
+        max_item_width = max(max_item_width, cx);
+    }
+
+    COMBOBOXINFO cbi{};
+    cbi.cbSize = sizeof(cbi);
+    GetComboBoxInfo(m_wnd_combo, &cbi);
+
+    RECT rc_client{};
+    GetClientRect(m_wnd_combo, &rc_client);
+
+    const auto non_item_space = RECT_CX(rc_client) - RECT_CX(cbi.rcItem);
+    return max_item_width + non_item_space;
 }
 
 template <class ToolbarArgs>
@@ -208,8 +246,6 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
             uih::scale_dpi_value(initial_width), uih::scale_dpi_value(initial_height), wnd,
             reinterpret_cast<HMENU>(ID_COMBOBOX), core_api::get_my_instance(), nullptr);
 
-        m_initialised = true;
-
         if (m_wnd_combo) {
             SetWindowLongPtr(m_wnd_combo, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
 
@@ -219,20 +255,9 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
 
             m_order_proc = reinterpret_cast<WNDPROC>(
                 SetWindowLongPtr(m_wnd_combo, GWLP_WNDPROC, reinterpret_cast<LPARAM>(s_on_hook)));
-
-            COMBOBOXINFO cbi{};
-            cbi.cbSize = sizeof(cbi);
-
-            GetComboBoxInfo(m_wnd_combo, &cbi);
-
-            RECT rc_client;
-            GetClientRect(m_wnd_combo, &rc_client);
-
-            m_max_item_width += RECT_CX(rc_client) - RECT_CX(cbi.rcItem);
-            RECT rc;
-            GetWindowRect(m_wnd_combo, &rc);
-            m_height = rc.bottom - rc.top;
         }
+
+        m_initialised = true;
         break;
     }
     case WM_DESTROY: {
@@ -288,10 +313,12 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         }
         break;
     case WM_GETMINMAXINFO: {
-        const auto mmi = LPMINMAXINFO(lp);
+        const auto mmi = reinterpret_cast<LPMINMAXINFO>(lp);
+        const auto height = calculate_height();
+
         mmi->ptMinTrackSize.x = (std::min)(m_max_item_width, uih::scale_dpi_value(maximum_minimum_width));
-        mmi->ptMinTrackSize.y = m_height;
-        mmi->ptMaxTrackSize.y = m_height;
+        mmi->ptMinTrackSize.y = height;
+        mmi->ptMaxTrackSize.y = height;
         return 0;
     }
     }

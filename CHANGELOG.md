@@ -12,6 +12,12 @@
 
 * A new Output format toolbar was added, allowing the selection of the output bit depth for output devices that don’t use automatic output format selection. [[#389](https://github.com/reupen/columns_ui/pull/389), contributed by [@rplociennik](https://github.com/rplociennik)]
 
+### Bug fixes
+
+* The minimum widths of the DSP preset and Output device toolbars now update if the list of DSP presets or output devices changes. [[#393](https://github.com/reupen/columns_ui/pull/393)]
+
+  Note that this only happens when the drop-down list in the toolbar is clicked on or otherwise expanded, as this is the only time the lists of DSP presets and output devices are refreshed.
+
 ## 1.7.0-beta.1
 
 ### Features
