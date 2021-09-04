@@ -33,7 +33,6 @@ struct DspPresetToolbarArgs {
         auto api = dsp_config_manager_v2::get();
         return api->get_selected_preset();
     }
-    static const char* get_items_empty_text() { return nullptr; }
     static void set_active_item(ID id)
     {
         if (!is_available())
@@ -51,6 +50,7 @@ struct DspPresetToolbarArgs {
     static constexpr void on_last_window_destroyed() {}
     static bool is_available() { return static_api_test_t<dsp_config_manager_v2>(); }
     static constexpr bool refresh_on_click = true;
+    static constexpr auto no_items_text = "(no DSP presets exist)"sv;
     static constexpr const wchar_t* class_name{L"columns_ui_dsp_preset_TB7ds8Gd8SMzVA"};
     static constexpr const char* name{"DSP preset"};
     static constexpr GUID extension_guid{0x9bd325a4, 0xb2e6, 0x47ad, {0x9b, 0x54, 0x8d, 0xa3, 0x5f, 0x42, 0x78, 0x49}};

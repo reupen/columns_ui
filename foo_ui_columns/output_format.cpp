@@ -29,7 +29,6 @@ struct OutputFormatToolbarArgs {
         api->getCoreConfig(config);
         return config.m_bitDepth;
     }
-    static const char* get_items_empty_text() { return "Auto"; }
     static void set_active_item(ID bitDepth)
     {
         auto api = output_manager_v2::get();
@@ -49,6 +48,7 @@ struct OutputFormatToolbarArgs {
     static bool is_available() { return true; }
     static service_ptr callback_handle;
     static constexpr bool refresh_on_click = false;
+    static constexpr auto no_items_text = "Auto"sv;
     static constexpr const wchar_t* class_name{L"columns_ui_output_format_TBWOn9HkOxhkU"};
     static constexpr const char* name{"Output format"};
     static constexpr GUID extension_guid{0xa379ccd9, 0xbc38, 0x4e2b, {0x85, 0xd6, 0x97, 0x5d, 0x11, 0x7b, 0xdd, 0xcc}};
