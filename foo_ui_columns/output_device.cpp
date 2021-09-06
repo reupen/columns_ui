@@ -30,7 +30,6 @@ struct OutputDeviceToolbarArgs {
         api->getCoreConfig(config);
         return std::make_tuple(config.m_output, config.m_device);
     }
-    static const char* get_items_empty_text() { return nullptr; }
     static void set_active_item(ID id)
     {
         if (!is_available())
@@ -60,6 +59,7 @@ struct OutputDeviceToolbarArgs {
     static bool is_available() { return static_api_test_t<output_manager_v2>(); }
     static service_ptr callback_handle;
     static constexpr bool refresh_on_click = true;
+    static constexpr auto no_items_text = ""sv;
     static constexpr const wchar_t* class_name{L"columns_ui_output_device_DQLvIKXzFVY"};
     static constexpr const char* name{"Output device"};
     static constexpr GUID extension_guid{0xc25e4fe6, 0xb9a0, 0x48c3, {0xa4, 0xc0, 0x44, 0x3d, 0x69, 0xda, 0xd3, 0x6d}};

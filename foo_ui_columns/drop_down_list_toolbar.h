@@ -145,10 +145,10 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
     ComboBox_Enable(m_wnd_combo, !ranges::empty(m_items));
 
     if (ranges::empty(m_items)) {
-        if (ToolbarArgs::get_items_empty_text() != nullptr) {
-            const auto items_empty_text = ToolbarArgs::get_items_empty_text();
-
-            ComboBox_AddString(m_wnd_combo, pfc::stringcvt::string_wide_from_utf8(items_empty_text));
+        if (!ToolbarArgs::no_items_text.empty()) {
+            ComboBox_AddString(m_wnd_combo,
+                pfc::stringcvt::string_wide_from_utf8(
+                    ToolbarArgs::no_items_text.data(), ToolbarArgs::no_items_text.length()));
         }
     } else {
         for (auto&& [id, name] : m_items) {
@@ -209,7 +209,7 @@ int DropDownListToolbar<ToolbarArgs>::calculate_max_item_width()
 template <class ToolbarArgs>
 void DropDownListToolbar<ToolbarArgs>::update_active_item()
 {
-    if (ranges::empty(m_items) && ToolbarArgs::get_items_empty_text() != nullptr) {
+    if (ranges::empty(m_items) && !ToolbarArgs::no_items_text.empty()) {
         ComboBox_SetCurSel(m_wnd_combo, 0);
         return;
     }

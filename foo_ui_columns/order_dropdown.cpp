@@ -24,8 +24,6 @@ struct PlaybackOrderToolbarArgs {
         return api->playback_order_get_guid(api->playback_order_get_active());
     }
 
-    static const char* get_items_empty_text() { return nullptr; }
-
     static void set_active_item(ID id)
     {
         auto api = playlist_manager_v4::get();
@@ -42,6 +40,7 @@ struct PlaybackOrderToolbarArgs {
     static constexpr void on_last_window_destroyed() {}
     static constexpr bool is_available() { return true; }
     static constexpr bool refresh_on_click = false;
+    static constexpr auto no_items_text = ""sv;
     static constexpr const wchar_t* class_name{L"columns_ui_playback_order_i3z1Bci1KNo"};
     static constexpr const char* name{"Playback order"};
     static constexpr GUID extension_guid{0xaba09e7e, 0x9c95, 0x443e, {0xbd, 0xfc, 0x4, 0x9d, 0x66, 0xb3, 0x24, 0xa0}};
