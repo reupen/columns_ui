@@ -78,6 +78,8 @@ struct ReplayGainModeToolbarArgs {
     static constexpr const wchar_t* class_name{L"columns_ui_replaygain_mode_-bdvzDNKnwDniA"};
     static constexpr const char* name{"ReplayGain mode"};
     static constexpr GUID extension_guid{0xad9a81f7, 0x723a, 0x4cce, {0x87, 0xb6, 0x13, 0x39, 0xb, 0xda, 0xc2, 0x16}};
+    static constexpr GUID colour_client_id{0x3096eaa4, 0xf97a, 0x4ff8, {0x84, 0xbd, 0xc6, 0xa, 0xcd, 0x69, 0x5e, 0xf9}};
+    static constexpr GUID font_client_id{0x25df8f6b, 0x78e9, 0x4555, {0xaf, 0x63, 0xa9, 0xc5, 0x8f, 0x2a, 0xbe, 0xe9}};
 };
 
 std::unique_ptr<ReplayGainCoreSettingsNotifyLambda> ReplayGainModeToolbarArgs::callback;

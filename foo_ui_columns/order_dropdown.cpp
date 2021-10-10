@@ -44,6 +44,9 @@ struct PlaybackOrderToolbarArgs {
     static constexpr const wchar_t* class_name{L"columns_ui_playback_order_i3z1Bci1KNo"};
     static constexpr const char* name{"Playback order"};
     static constexpr GUID extension_guid{0xaba09e7e, 0x9c95, 0x443e, {0xbd, 0xfc, 0x4, 0x9d, 0x66, 0xb3, 0x24, 0xa0}};
+    static constexpr GUID colour_client_id{
+        0x9ab1c765, 0x31c7, 0x4ae9, {0xbf, 0xc1, 0xc6, 0x65, 0x76, 0xbf, 0x24, 0x83}};
+    static constexpr GUID font_client_id{0xb1ace74e, 0xddc0, 0x451f, {0x9a, 0x9a, 0xfc, 0x49, 0xdc, 0x4d, 0x5c, 0xfc}};
 };
 
 ui_extension::window_factory<DropDownListToolbar<PlaybackOrderToolbarArgs>> playback_order_toolbar;

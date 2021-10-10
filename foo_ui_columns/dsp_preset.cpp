@@ -54,6 +54,9 @@ struct DspPresetToolbarArgs {
     static constexpr const wchar_t* class_name{L"columns_ui_dsp_preset_TB7ds8Gd8SMzVA"};
     static constexpr const char* name{"DSP preset"};
     static constexpr GUID extension_guid{0x9bd325a4, 0xb2e6, 0x47ad, {0x9b, 0x54, 0x8d, 0xa3, 0x5f, 0x42, 0x78, 0x49}};
+    static constexpr GUID colour_client_id{
+        0xbbae33d4, 0x878c, 0x4c4a, {0x9a, 0xd0, 0x69, 0xe6, 0xf8, 0xc1, 0xc5, 0x8c}};
+    static constexpr GUID font_client_id{0x4f145326, 0xeda6, 0x4f80, {0xbd, 0xf8, 0x91, 0x92, 0xf2, 0x28, 0xa0, 0x77}};
 };
 
 ui_extension::window_factory<DropDownListToolbar<DspPresetToolbarArgs>> dsp_preset_toolbar;
