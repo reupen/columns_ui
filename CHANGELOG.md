@@ -4,7 +4,7 @@
 
 ### Features
 
-* The DSP preset, Output device, Playback order and ReplayGain mode toolbars now use the global item foreground and background colours configured on the Colour and fonts preferences page. [[#390](https://github.com/reupen/columns_ui/pull/390), contributed by [@rplociennik](https://github.com/rplociennik)]
+* The foreground and background colours of items in the DSP preset, Output device, Playback order and ReplayGain mode toolbars can now be configured on the Colour and fonts preferences page. [[#390](https://github.com/reupen/columns_ui/pull/390) (contributed by [@rplociennik](https://github.com/rplociennik)), [#397](https://github.com/reupen/columns_ui/pull/397)]
   
   (Note that selection colours are currently not used.)
 

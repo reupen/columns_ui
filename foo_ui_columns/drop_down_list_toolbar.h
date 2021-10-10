@@ -19,9 +19,8 @@ public:
 
     static void s_update_colours()
     {
-        cui::colours::helper helper(GUID{});
-
-        s_background_brush.reset(CreateSolidBrush(helper.get_colour(cui::colours::colour_background)));
+        cui::colours::helper colour_helper(ToolbarArgs::colour_client_id);
+        s_background_brush.reset(CreateSolidBrush(colour_helper.get_colour(cui::colours::colour_background)));
 
         for (auto&& window : s_windows) {
             const HWND wnd = window->m_wnd_combo;
@@ -32,8 +31,8 @@ public:
 
     static void s_update_font()
     {
-        const auto font_manager = fb2k::std_api_get<cui::fonts::manager>();
-        s_items_font.reset(font_manager->get_font(cui::fonts::font_type_items));
+        const cui::fonts::helper font_helper(ToolbarArgs::font_client_id);
+        s_items_font.reset(font_helper.get_font());
 
         for (auto&& window : s_windows) {
             const HWND wnd = window->m_wnd_combo;
@@ -61,13 +60,22 @@ public:
     }
 
 private:
-    class FontCallback : public cui::fonts::common_callback {
-    public:
-        void on_font_changed(t_size mask) const override { s_update_font(); }
+    class FontClient : public cui::fonts::client {
+        const GUID& get_client_guid() const override { return ToolbarArgs::font_client_id; }
+        void get_name(pfc::string_base& p_out) const override { p_out = ToolbarArgs::name; }
+        cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+        void on_font_changed() const override { s_update_font(); }
     };
 
-    class ColourCallback : public cui::colours::common_callback {
-    public:
+    class ColourClient : public cui::colours::client {
+        const GUID& get_client_guid() const override { return ToolbarArgs::colour_client_id; }
+        void get_name(pfc::string_base& p_out) const override { p_out = ToolbarArgs::name; }
+        size_t get_supported_colours() const override
+        {
+            return cui::colours::colour_flag_text | cui::colours::colour_flag_background;
+        }
+        size_t get_supported_bools() const override { return 0; }
+        bool get_themes_supported() const override { return false; }
         void on_bool_changed(t_size mask) const override {}
         void on_colour_changed(t_size mask) const override { s_update_colours(); }
     };
@@ -86,11 +94,11 @@ private:
     static constexpr unsigned initial_height = 300;
     static constexpr unsigned initial_width = 150;
     static constexpr unsigned maximum_minimum_width = 150;
-    static FontCallback s_font_callback;
-    static wil::unique_hfont s_items_font;
-    static ColourCallback s_colour_callback;
-    static wil::unique_hbrush s_background_brush;
-    static std::vector<DropDownListToolbar<ToolbarArgs>*> s_windows;
+    inline static cui::fonts::client::factory<FontClient> s_font_client;
+    inline static wil::unique_hfont s_items_font;
+    inline static cui::colours::client::factory<ColourClient> s_colour_client;
+    inline static wil::unique_hbrush s_background_brush;
+    inline static std::vector<DropDownListToolbar<ToolbarArgs>*> s_windows;
 
     void refresh_all_items();
     void update_active_item();
@@ -230,9 +238,6 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         s_windows.emplace_back(this);
         if (s_windows.size() == 1) {
             ToolbarArgs::on_first_window_created();
-
-            fb2k::std_api_get<cui::colours::manager>()->register_common_callback(&s_colour_callback);
-            fb2k::std_api_get<cui::fonts::manager>()->register_common_callback(&s_font_callback);
         }
 
         if (!s_items_font)
@@ -263,9 +268,6 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
     case WM_DESTROY: {
         if (s_windows.size() == 1) {
             ToolbarArgs::on_last_window_destroyed();
-
-            fb2k::std_api_get<cui::fonts::manager>()->deregister_common_callback(&s_font_callback);
-            fb2k::std_api_get<cui::colours::manager>()->deregister_common_callback(&s_colour_callback);
         }
         s_windows.erase(std::remove(s_windows.begin(), s_windows.end(), this), s_windows.end());
 
@@ -282,10 +284,10 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
     case WM_CTLCOLORLISTBOX: {
         const auto dc = reinterpret_cast<HDC>(wp);
 
-        cui::colours::helper helper(GUID{});
+        cui::colours::helper colour_helper(ToolbarArgs::colour_client_id);
 
-        SetTextColor(dc, helper.get_colour(cui::colours::colour_text));
-        SetBkColor(dc, helper.get_colour(cui::colours::colour_background));
+        SetTextColor(dc, colour_helper.get_colour(cui::colours::colour_text));
+        SetBkColor(dc, colour_helper.get_colour(cui::colours::colour_background));
 
         return reinterpret_cast<LRESULT>(s_background_brush.get());
     }
@@ -385,18 +387,3 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_hook(HWND wnd, UINT msg, WPARAM wp,
     }
     return CallWindowProc(m_order_proc, wnd, msg, wp, lp);
 }
-
-template <class ToolbarArgs>
-typename DropDownListToolbar<ToolbarArgs>::FontCallback DropDownListToolbar<ToolbarArgs>::s_font_callback;
-
-template <class ToolbarArgs>
-wil::unique_hfont DropDownListToolbar<ToolbarArgs>::s_items_font;
-
-template <class ToolbarArgs>
-typename DropDownListToolbar<ToolbarArgs>::ColourCallback DropDownListToolbar<ToolbarArgs>::s_colour_callback;
-
-template <class ToolbarArgs>
-wil::unique_hbrush DropDownListToolbar<ToolbarArgs>::s_background_brush;
-
-template <class ToolbarArgs>
-std::vector<DropDownListToolbar<ToolbarArgs>*> DropDownListToolbar<ToolbarArgs>::s_windows;
