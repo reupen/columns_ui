@@ -1,14 +1,12 @@
 # Change log
 
-## Development version
+## 1.7.0-beta.2
 
 ### Features
 
-* The foreground and background colours of items in the DSP preset, Output device, Playback order and ReplayGain mode toolbars can now be configured on the Colour and fonts preferences page. [[#390](https://github.com/reupen/columns_ui/pull/390) (contributed by [@rplociennik](https://github.com/rplociennik)), [#397](https://github.com/reupen/columns_ui/pull/397)]
+* The DSP preset, Output device, Playback order and ReplayGain mode toolbars are now integrated with the Colours and fonts preferences page, and their fonts, foreground colours and background colours are now configurable. [[#390](https://github.com/reupen/columns_ui/pull/390) (contributed by [@rplociennik](https://github.com/rplociennik)), [#392](https://github.com/reupen/columns_ui/pull/392), [#397](https://github.com/reupen/columns_ui/pull/397)]
   
-  (Note that selection colours are currently not used.)
-
-* The DSP preset, Output device, Playback order and ReplayGain mode toolbars now use the common (list items) font configured on the Colour and fonts preferences page. [[#392](https://github.com/reupen/columns_ui/pull/392)]
+  (Note that selection colours are not supported.)
 
 * A new Output format toolbar was added, allowing the selection of the output bit depth for output devices that don’t use automatic output format selection. [[#389](https://github.com/reupen/columns_ui/pull/389), contributed by [@rplociennik](https://github.com/rplociennik)]
 
@@ -19,6 +17,10 @@
 * The minimum widths of the DSP preset and Output device toolbars now update if the list of DSP presets or output devices changes. [[#393](https://github.com/reupen/columns_ui/pull/393)]
 
   Note that this only happens when the drop-down list in the toolbar is clicked on or otherwise expanded, as this is the only time the lists of DSP presets and output devices are refreshed.
+
+### Internal changes
+
+* The component is now compiled using Visual Studio 2019 16.11.
 
 ## 1.7.0-beta.1
 
