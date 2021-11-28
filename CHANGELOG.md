@@ -1,5 +1,9 @@
 # Change log
 
+## 1.7.0
+
+* There were no changes from version 1.7.0-beta.2.
+
 ## 1.7.0-beta.2
 
 ### Features
