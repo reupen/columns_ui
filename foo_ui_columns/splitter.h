@@ -224,6 +224,5 @@ public:
 void g_get_panel_list(uie::window_info_list_simple& p_out, uie::window_host_ptr& p_host);
 void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple& panels, UINT base);
 void g_append_menu_splitters(HMENU menu, const uie::window_info_list_simple& panels, UINT base);
-void clip_minmaxinfo(MINMAXINFO& mmi);
 
 #endif

@@ -50,14 +50,6 @@ void g_append_menu_splitters(HMENU menu, const uie::window_info_list_simple& pan
     }
 }
 
-void clip_minmaxinfo(MINMAXINFO& mmi)
-{
-    mmi.ptMinTrackSize.x = min(mmi.ptMinTrackSize.x, MAXSHORT);
-    mmi.ptMinTrackSize.y = min(mmi.ptMinTrackSize.y, MAXSHORT);
-    mmi.ptMaxTrackSize.y = min(mmi.ptMaxTrackSize.y, MAXSHORT);
-    mmi.ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, MAXSHORT);
-}
-
 class HorizontalSplitterPanel : public FlatSplitterPanel {
     class_data& get_class_data() const override
     {

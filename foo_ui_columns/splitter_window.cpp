@@ -123,7 +123,7 @@ void FlatSplitterPanel::refresh_children()
                         mmi.ptMaxTrackSize.x = MAXLONG;
                         mmi.ptMaxTrackSize.y = MAXLONG;
                         SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-                        clip_minmaxinfo(mmi);
+                        cui::helpers::clip_minmaxinfo(mmi);
 
                         m_panels[n]->m_wnd = wnd_host;
                         m_panels[n]->m_wnd_child = wnd_panel;

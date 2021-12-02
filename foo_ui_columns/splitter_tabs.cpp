@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "splitter_tabs.h"
 
+namespace cui::panels::tab_stack {
+
 // {6F000FC4-3F86-4fc5-80EA-F7AA4D9551E6}
 const GUID g_guid_splitter_tabs = {0x6f000fc4, 0x3f86, 0x4fc5, {0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6}};
 
@@ -147,8 +149,6 @@ void TabStackPanel::get_supported_panels(
     for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
-
-void clip_minmaxinfo(MINMAXINFO& mmi);
 
 bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
 {
@@ -729,7 +729,7 @@ void TabStackPanel::refresh_children()
                         mmi.ptMaxTrackSize.x = MAXLONG;
                         mmi.ptMaxTrackSize.y = MAXLONG;
                         SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-                        clip_minmaxinfo(mmi);
+                        helpers::clip_minmaxinfo(mmi);
 
                         m_panels[n]->m_wnd = wnd_panel;
                         m_panels[n]->m_child = p_ext;
@@ -992,3 +992,5 @@ public:
 };
 
 TabStackFontClient::factory<TabStackFontClient> g_font_client_splitter_tabs;
+
+} // namespace cui::panels::tab_stack

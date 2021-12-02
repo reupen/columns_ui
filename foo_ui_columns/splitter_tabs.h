@@ -1,5 +1,6 @@
-#ifndef _SPLITTER_TABS_H_
-#define _SPLITTER_TABS_H_
+#pragma once
+
+namespace cui::panels::tab_stack {
 
 class TabStackPanel : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
     using t_self = TabStackPanel;
@@ -138,4 +139,4 @@ public:
     TabStackPanel() = default;
 };
 
-#endif
+} // namespace cui::panels::tab_stack

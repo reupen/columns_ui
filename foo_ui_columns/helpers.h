@@ -22,4 +22,5 @@ namespace cui::helpers {
 std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter = nullptr);
 pfc::string8 get_last_win32_error_message();
 bool open_web_page(HWND wnd, const wchar_t* url);
+void clip_minmaxinfo(MINMAXINFO& mmi);
 } // namespace cui::helpers
