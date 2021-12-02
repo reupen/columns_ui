@@ -9,6 +9,31 @@ static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a
 
 ConfigLayout cfg_layout(g_guid_layout);
 
+void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple& panels, UINT base)
+{
+    HMENU popup = nullptr;
+    unsigned count = panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
+        if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
+            if (n)
+                uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, panels[n - 1].category);
+            popup = CreatePopupMenu();
+        }
+        uAppendMenu(popup, (MF_STRING), base + n, panels[n].name);
+        if (n == count - 1)
+            uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, panels[n].category);
+    }
+}
+
+void g_append_menu_splitters(HMENU menu, const uie::window_info_list_simple& panels, UINT base)
+{
+    unsigned count = panels.get_count();
+    for (unsigned n = 0; n < count; n++) {
+        if (panels[n].type & uie::type_splitter)
+            uAppendMenu(menu, (MF_STRING), base + n, panels[n].name);
+    }
+}
+
 class LayoutWindowHost : public ui_extension::window_host {
 public:
     const GUID& get_host_guid() const override
@@ -583,7 +608,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     RECT rc;
     GetRelativeRect(p_window->get_wnd(), HWND_DESKTOP, &rc);
     HWND wnd_over = m_trans_fill.create(get_wnd(), uih::WindowPosition(rc));
-    WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
+    cui::helpers::WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
     WindowEnum.run();
     t_size count_owned = WindowEnum.m_wnd_list.get_count();
     if (count_owned)

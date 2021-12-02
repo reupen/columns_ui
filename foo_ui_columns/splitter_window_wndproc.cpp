@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "splitter.h"
 
+namespace cui::panels::splitter {
+
 LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
@@ -383,4 +385,6 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 #endif
     }
     return DefWindowProc(wnd, msg, wp, lp);
+}
+
 }

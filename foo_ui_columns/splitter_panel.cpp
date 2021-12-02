@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "splitter.h"
 
+namespace cui::panels::splitter {
+
 FlatSplitterPanel::Panel::Panel() : m_container(this) {}
 
 void FlatSplitterPanel::Panel::destroy()
@@ -252,3 +254,5 @@ bool FlatSplitterPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
     }
     return false;
 }
+
+} // namespace cui::panels::splitter

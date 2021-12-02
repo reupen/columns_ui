@@ -1,54 +1,9 @@
 #include "stdafx.h"
 #include "splitter.h"
 
+namespace cui::panels::splitter {
+
 pfc::ptr_list_t<FlatSplitterPanel> FlatSplitterPanel::g_instances;
-
-void g_get_panel_list(uie::window_info_list_simple& p_out, uie::window_host_ptr& p_host)
-{
-    service_enum_t<ui_extension::window> e;
-    uie::window_ptr l;
-
-    if (e.first(l))
-        do {
-            uie::window_info_simple info;
-
-            if (l->is_available(p_host)) {
-                l->get_name(info.name);
-                l->get_category(info.category);
-                info.guid = l->get_extension_guid();
-                info.prefer_multiple_instances = l->get_prefer_multiple_instances();
-                info.type = l->get_type();
-                p_out.add_item(info);
-            }
-        } while (e.next(l));
-
-    p_out.sort_by_category_and_name();
-}
-
-void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple& panels, UINT base)
-{
-    HMENU popup = nullptr;
-    unsigned count = panels.get_count();
-    for (unsigned n = 0; n < count; n++) {
-        if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
-            if (n)
-                uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, panels[n - 1].category);
-            popup = CreatePopupMenu();
-        }
-        uAppendMenu(popup, (MF_STRING), base + n, panels[n].name);
-        if (n == count - 1)
-            uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, panels[n].category);
-    }
-}
-
-void g_append_menu_splitters(HMENU menu, const uie::window_info_list_simple& panels, UINT base)
-{
-    unsigned count = panels.get_count();
-    for (unsigned n = 0; n < count; n++) {
-        if (panels[n].type & uie::type_splitter)
-            uAppendMenu(menu, (MF_STRING), base + n, panels[n].name);
-    }
-}
 
 class HorizontalSplitterPanel : public FlatSplitterPanel {
     class_data& get_class_data() const override
@@ -98,4 +53,4 @@ template <orientation_t t_orientation>
 int dummy_class<t_orientation>::myint = {_T("dummy"), _T(""), 0, false, false, 0, WS_CHILD|WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, 0};
 #endif
 
-//#endif
+}
