@@ -30,12 +30,12 @@ public:
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override
     {
         t_size indices_count = indices.get_count();
-        if (indices_count == 1 && indices[0] < filter_panel::cfg_field_list.get_count()) {
+        if (indices_count == 1 && indices[0] < cui::panels::filter::cfg_field_list.get_count()) {
             m_edit_index = indices[0];
             m_edit_column = column;
 
-            p_text = m_edit_column ? filter_panel::cfg_field_list[m_edit_index].m_field
-                                   : filter_panel::cfg_field_list[m_edit_index].m_name;
+            p_text = m_edit_column ? cui::panels::filter::cfg_field_list[m_edit_index].m_field
+                                   : cui::panels::filter::cfg_field_list[m_edit_index].m_name;
 
             return true;
         }
@@ -43,26 +43,27 @@ public:
     };
     void notify_save_inline_edit(const char* value) override
     {
-        if (m_edit_index < filter_panel::cfg_field_list.get_count()) {
-            pfc::string8& dest = m_edit_column ? filter_panel::cfg_field_list[m_edit_index].m_field
-                                               : filter_panel::cfg_field_list[m_edit_index].m_name;
-            filter_panel::Field field_old = filter_panel::cfg_field_list[m_edit_index];
+        if (m_edit_index < cui::panels::filter::cfg_field_list.get_count()) {
+            pfc::string8& dest = m_edit_column ? cui::panels::filter::cfg_field_list[m_edit_index].m_field
+                                               : cui::panels::filter::cfg_field_list[m_edit_index].m_name;
+            cui::panels::filter::Field field_old = cui::panels::filter::cfg_field_list[m_edit_index];
             if (strcmp(dest, value) != 0) {
                 pfc::string8 valueReal = value;
                 if (m_edit_column == 0)
-                    filter_panel::cfg_field_list.fix_name(valueReal);
+                    cui::panels::filter::cfg_field_list.fix_name(valueReal);
                 dest = valueReal;
                 pfc::list_t<uih::ListView::SizedInsertItem<2, 0>> items;
                 items.set_count(1);
                 {
-                    items[0].m_subitems[0] = filter_panel::cfg_field_list[m_edit_index].m_name;
-                    items[0].m_subitems[1] = filter_panel::cfg_field_list[m_edit_index].m_field;
+                    items[0].m_subitems[0] = cui::panels::filter::cfg_field_list[m_edit_index].m_name;
+                    items[0].m_subitems[1] = cui::panels::filter::cfg_field_list[m_edit_index].m_field;
                 }
                 replace_items(m_edit_index, items);
                 if (m_edit_column == 0)
-                    filter_panel::FilterPanel::g_on_field_title_change(field_old.m_name, valueReal);
+                    cui::panels::filter::FilterPanel::g_on_field_title_change(field_old.m_name, valueReal);
                 else
-                    filter_panel::FilterPanel::g_on_field_query_change(filter_panel::cfg_field_list[m_edit_index]);
+                    cui::panels::filter::FilterPanel::g_on_field_query_change(
+                        cui::panels::filter::cfg_field_list[m_edit_index]);
             }
         }
         m_edit_column = pfc_infinite;
@@ -83,8 +84,8 @@ public:
         items.set_count(count);
         for (t_size i = 0; i < count; i++) {
             items[i].m_subitems.resize(2);
-            items[i].m_subitems[0] = filter_panel::cfg_field_list[base + i].m_name;
-            items[i].m_subitems[1] = filter_panel::cfg_field_list[base + i].m_field;
+            items[i].m_subitems[0] = cui::panels::filter::cfg_field_list[base + i].m_name;
+            items[i].m_subitems[1] = cui::panels::filter::cfg_field_list[base + i].m_field;
         }
     }
 
@@ -94,7 +95,7 @@ public:
 
         m_field_list.remove_items(pfc::bit_array_true());
         pfc::list_t<uih::ListView::InsertItem> items;
-        t_size count = filter_panel::cfg_field_list.get_count();
+        t_size count = cui::panels::filter::cfg_field_list.get_count();
         get_insert_items(0, count, items);
         m_field_list.insert_items(0, items.get_count(), items.get_ptr());
 
@@ -133,9 +134,9 @@ public:
                     t_size count = m_field_list.get_item_count();
                     while (!m_field_list.get_item_selected(index) && index < count)
                         index++;
-                    if (index && filter_panel::cfg_field_list.get_count()) {
-                        filter_panel::cfg_field_list.swap_items(index, index - 1);
-                        filter_panel::FilterPanel::g_on_fields_swapped(index, index - 1);
+                    if (index && cui::panels::filter::cfg_field_list.get_count()) {
+                        cui::panels::filter::cfg_field_list.swap_items(index, index - 1);
+                        cui::panels::filter::FilterPanel::g_on_fields_swapped(index, index - 1);
 
                         pfc::list_t<uih::ListView::InsertItem> items;
                         get_insert_items(index - 1, 2, items);
@@ -150,9 +151,9 @@ public:
                     t_size count = m_field_list.get_item_count();
                     while (!m_field_list.get_item_selected(index) && index < count)
                         index++;
-                    if (index + 1 < count && index + 1 < filter_panel::cfg_field_list.get_count()) {
-                        filter_panel::cfg_field_list.swap_items(index, index + 1);
-                        filter_panel::FilterPanel::g_on_fields_swapped(index, index + 1);
+                    if (index + 1 < count && index + 1 < cui::panels::filter::cfg_field_list.get_count()) {
+                        cui::panels::filter::cfg_field_list.swap_items(index, index + 1);
+                        cui::panels::filter::FilterPanel::g_on_fields_swapped(index, index + 1);
 
                         pfc::list_t<uih::ListView::InsertItem> items;
                         get_insert_items(index, 2, items);
@@ -162,11 +163,11 @@ public:
                 }
             } break;
             case IDC_NEW: {
-                filter_panel::Field temp;
+                cui::panels::filter::Field temp;
                 temp.m_name = "<enter name here>";
                 temp.m_field = "<enter field here>";
-                t_size index = filter_panel::cfg_field_list.add_item(temp);
-                filter_panel::FilterPanel::g_on_new_field(temp);
+                t_size index = cui::panels::filter::cfg_field_list.add_item(temp);
+                cui::panels::filter::FilterPanel::g_on_new_field(temp);
 
                 pfc::list_t<uih::ListView::InsertItem> items;
                 get_insert_items(index, 1, items);
@@ -188,10 +189,10 @@ public:
                             break;
                         index++;
                     }
-                    if (index < count && index < filter_panel::cfg_field_list.get_count()) {
-                        filter_panel::cfg_field_list.remove_by_idx(index);
+                    if (index < count && index < cui::panels::filter::cfg_field_list.get_count()) {
+                        cui::panels::filter::cfg_field_list.remove_by_idx(index);
                         m_field_list.remove_item(index);
-                        filter_panel::FilterPanel::g_on_field_removed(index);
+                        cui::panels::filter::FilterPanel::g_on_field_removed(index);
                         t_size new_count = m_field_list.get_item_count();
                         if (new_count) {
                             if (index < new_count)
@@ -236,16 +237,18 @@ public:
         for (auto&& option : edge_style_options)
             ComboBox_AddString(wnd_edge_style, option);
 
-        ComboBox_SetCurSel(wnd_edge_style, filter_panel::cfg_edgestyle);
+        ComboBox_SetCurSel(wnd_edge_style, cui::panels::filter::cfg_edgestyle);
 
         SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETRANGE32, -100, 100);
-        SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETPOS32, 0, filter_panel::cfg_vertical_item_padding);
+        SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETPOS32, 0, cui::panels::filter::cfg_vertical_item_padding);
 
         const auto wnd_show_column_titles = GetDlgItem(wnd, IDC_FILTERS_SHOW_COLUMN_TITLES);
-        Button_SetCheck(wnd_show_column_titles, filter_panel::cfg_show_column_titles ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(
+            wnd_show_column_titles, cui::panels::filter::cfg_show_column_titles ? BST_CHECKED : BST_UNCHECKED);
 
         const auto wnd_show_sort_indicators = GetDlgItem(wnd, IDC_FILTERS_SHOW_SORT_INDICATORS);
-        Button_SetCheck(wnd_show_sort_indicators, filter_panel::cfg_show_sort_indicators ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(
+            wnd_show_sort_indicators, cui::panels::filter::cfg_show_sort_indicators ? BST_CHECKED : BST_UNCHECKED);
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -257,23 +260,25 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case IDC_FILTERS_SHOW_COLUMN_TITLES:
-                filter_panel::cfg_show_column_titles = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::FilterPanel::g_on_show_column_titles_change();
+                cui::panels::filter::cfg_show_column_titles
+                    = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                cui::panels::filter::FilterPanel::g_on_show_column_titles_change();
                 break;
             case IDC_FILTERS_SHOW_SORT_INDICATORS:
-                filter_panel::cfg_show_sort_indicators = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::FilterPanel::g_on_show_sort_indicators_change();
+                cui::panels::filter::cfg_show_sort_indicators
+                    = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                cui::panels::filter::FilterPanel::g_on_show_sort_indicators_change();
                 break;
             case IDC_PADDING | EN_CHANGE << 16:
                 if (!m_initialising) {
-                    filter_panel::cfg_vertical_item_padding
+                    cui::panels::filter::cfg_vertical_item_padding
                         = strtol(string_utf8_from_window(reinterpret_cast<HWND>(lp)).get_ptr(), nullptr, 10);
-                    filter_panel::FilterPanel::g_on_vertical_item_padding_change();
+                    cui::panels::filter::FilterPanel::g_on_vertical_item_padding_change();
                 }
                 break;
             case IDC_EDGESTYLE | CBN_SELCHANGE << 16:
-                filter_panel::cfg_edgestyle = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-                filter_panel::FilterPanel::g_on_edgestyle_change();
+                cui::panels::filter::cfg_edgestyle = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+                cui::panels::filter::FilterPanel::g_on_edgestyle_change();
                 break;
             }
         }
@@ -309,7 +314,7 @@ public:
         const auto wnd_double_click_action = GetDlgItem(wnd, IDC_DBLCLK);
         for (auto&& option : double_click_action_options)
             ComboBox_AddString(wnd_double_click_action, option);
-        ComboBox_SetCurSel(wnd_double_click_action, filter_panel::cfg_doubleclickaction);
+        ComboBox_SetCurSel(wnd_double_click_action, cui::panels::filter::cfg_doubleclickaction);
 
         const auto middle_click_action_options
             = {L"None", L"Send to autosend playlist", L"Send to autosend playlist and play", L"Send to playlist",
@@ -318,30 +323,31 @@ public:
         const auto wnd_middle_click_action = uGetDlgItem(wnd, IDC_MIDDLE);
         for (auto&& option : middle_click_action_options)
             ComboBox_AddString(wnd_middle_click_action, option);
-        ComboBox_SetCurSel(wnd_middle_click_action, filter_panel::cfg_middleclickaction);
+        ComboBox_SetCurSel(wnd_middle_click_action, cui::panels::filter::cfg_middleclickaction);
 
         const auto wnd_precedence = uGetDlgItem(wnd, IDC_PRECEDENCE);
         ComboBox_AddString(wnd_precedence, L"By position in splitter");
         ComboBox_AddString(wnd_precedence, L"By field order in field list");
-        ComboBox_SetCurSel(wnd_precedence, filter_panel::cfg_orderedbysplitters ? 0 : 1);
+        ComboBox_SetCurSel(wnd_precedence, cui::panels::filter::cfg_orderedbysplitters ? 0 : 1);
 
         const auto wnd_sort = GetDlgItem(wnd, IDC_SORT);
-        Button_SetCheck(wnd_sort, filter_panel::cfg_sort ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(wnd_sort, cui::panels::filter::cfg_sort ? BST_CHECKED : BST_UNCHECKED);
 
         const auto wnd_sort_string = GetDlgItem(wnd, IDC_SORT_STRING);
-        uSetWindowText(wnd_sort_string, filter_panel::cfg_sort_string);
+        uSetWindowText(wnd_sort_string, cui::panels::filter::cfg_sort_string);
 
         const auto wnd_autosend_reverse_sort = GetDlgItem(wnd, IDC_REVERSE_SORT_TRACKS);
-        Button_SetCheck(wnd_autosend_reverse_sort, filter_panel::cfg_reverse_sort_tracks ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(
+            wnd_autosend_reverse_sort, cui::panels::filter::cfg_reverse_sort_tracks ? BST_CHECKED : BST_UNCHECKED);
 
         const auto wnd_autosend = GetDlgItem(wnd, IDC_AUTOSEND);
-        Button_SetCheck(wnd_autosend, filter_panel::cfg_autosend ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(wnd_autosend, cui::panels::filter::cfg_autosend ? BST_CHECKED : BST_UNCHECKED);
 
         const auto wnd_showempty = GetDlgItem(wnd, IDC_SHOWEMPTY);
-        Button_SetCheck(wnd_showempty, filter_panel::cfg_showemptyitems ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(wnd_showempty, cui::panels::filter::cfg_showemptyitems ? BST_CHECKED : BST_UNCHECKED);
 
         const auto wnd_allow_sorting = GetDlgItem(wnd, IDC_FILTERS_ALLOW_SORTING);
-        Button_SetCheck(wnd_allow_sorting, filter_panel::cfg_allow_sorting ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(wnd_allow_sorting, cui::panels::filter::cfg_allow_sorting ? BST_CHECKED : BST_UNCHECKED);
     }
 
     BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -353,34 +359,35 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case IDC_SORT:
-                filter_panel::cfg_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                cui::panels::filter::cfg_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 break;
             case IDC_AUTOSEND:
-                filter_panel::cfg_autosend = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                cui::panels::filter::cfg_autosend = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 break;
             case IDC_REVERSE_SORT_TRACKS:
-                filter_panel::cfg_reverse_sort_tracks = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                cui::panels::filter::cfg_reverse_sort_tracks
+                    = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
                 break;
             case IDC_FILTERS_ALLOW_SORTING:
-                filter_panel::cfg_allow_sorting = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::FilterPanel::g_on_allow_sorting_change();
+                cui::panels::filter::cfg_allow_sorting = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                cui::panels::filter::FilterPanel::g_on_allow_sorting_change();
                 break;
             case IDC_SHOWEMPTY:
-                filter_panel::cfg_showemptyitems = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
-                filter_panel::FilterPanel::g_on_showemptyitems_change(filter_panel::cfg_showemptyitems);
+                cui::panels::filter::cfg_showemptyitems = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_UNCHECKED;
+                cui::panels::filter::FilterPanel::g_on_showemptyitems_change(cui::panels::filter::cfg_showemptyitems);
                 break;
             case IDC_SORT_STRING | EN_CHANGE << 16:
-                filter_panel::cfg_sort_string = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                cui::panels::filter::cfg_sort_string = string_utf8_from_window(reinterpret_cast<HWND>(lp));
                 break;
             case IDC_PRECEDENCE | CBN_SELCHANGE << 16:
-                filter_panel::cfg_orderedbysplitters = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)) == 0;
-                filter_panel::FilterPanel::g_on_orderedbysplitters_change();
+                cui::panels::filter::cfg_orderedbysplitters = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)) == 0;
+                cui::panels::filter::FilterPanel::g_on_orderedbysplitters_change();
                 break;
             case IDC_MIDDLE | CBN_SELCHANGE << 16:
-                filter_panel::cfg_middleclickaction = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+                cui::panels::filter::cfg_middleclickaction = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
                 break;
             case IDC_DBLCLK | CBN_SELCHANGE << 16:
-                filter_panel::cfg_doubleclickaction = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+                cui::panels::filter::cfg_doubleclickaction = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
                 break;
             }
         }

@@ -5,10 +5,12 @@
 static class TabPlaylistViewArtwork : public PreferencesTab {
     void refresh_me(HWND wnd)
     {
-        SendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, pvt::cfg_show_artwork, 0);
-        SendDlgItemMessage(wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, pvt::cfg_artwork_reflection, 0);
+        SendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, cui::panels::playlist_view::cfg_show_artwork, 0);
+        SendDlgItemMessage(
+            wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, cui::panels::playlist_view::cfg_artwork_reflection, 0);
         SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETRANGE32, 0, MAXLONG);
-        SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETPOS32, NULL, pvt::cfg_artwork_width);
+        SendDlgItemMessage(
+            wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETPOS32, NULL, cui::panels::playlist_view::cfg_artwork_width);
     }
 
 public:
@@ -25,17 +27,20 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case IDC_SHOWARTWORK:
-                pvt::cfg_show_artwork = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
-                pvt::PlaylistView::g_on_show_artwork_change();
+                cui::panels::playlist_view::cfg_show_artwork
+                    = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
+                cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
                 break;
             case IDC_ARTWORKREFLECTION:
-                pvt::cfg_artwork_reflection = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
-                pvt::PlaylistView::g_on_artwork_width_change();
+                cui::panels::playlist_view::cfg_artwork_reflection
+                    = SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != BST_UNCHECKED;
+                cui::panels::playlist_view::PlaylistView::g_on_artwork_width_change();
                 break;
             case (EN_CHANGE << 16) | IDC_ARTWORKWIDTH:
                 if (m_initialised) {
-                    pvt::cfg_artwork_width = mmh::strtoul_n(string_utf8_from_window((HWND)lp).get_ptr(), pfc_infinite);
-                    pvt::PlaylistView::g_on_artwork_width_change();
+                    cui::panels::playlist_view::cfg_artwork_width
+                        = mmh::strtoul_n(string_utf8_from_window((HWND)lp).get_ptr(), pfc_infinite);
+                    cui::panels::playlist_view::PlaylistView::g_on_artwork_width_change();
                 }
                 break;
             }

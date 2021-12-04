@@ -4,6 +4,8 @@
 
 #define ID_BUTTONS 2001
 
+namespace cui::toolbars::buttons {
+
 ButtonsToolbar::class_data& ButtonsToolbar::get_class_data() const
 {
     __implement_get_class_data_child_ex(class_name, true, false);
@@ -681,3 +683,5 @@ const GUID ButtonsToolbar::extension_guid
     = {0xd8e65660, 0x64ed, 0x42e7, {0x85, 0xb, 0x31, 0xd8, 0x28, 0xc2, 0x52, 0x94}};
 
 ui_extension::window_factory<ButtonsToolbar> blah;
+
+} // namespace cui::toolbars::buttons

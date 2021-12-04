@@ -6,7 +6,8 @@
 #include "../config.h"
 #include "../list_view_panel.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
+
 extern const GUID g_guid_items_font, g_guid_header_font, g_guid_group_header_font;
 
 extern cfg_bool cfg_artwork_reflection;
@@ -582,7 +583,7 @@ private:
         t_size act_from = column_index_display_to_actual(index_from);
         t_size act_to = column_index_display_to_actual(index_to);
         g_columns.move(act_from, act_to);
-        pvt::PlaylistView::g_on_columns_change();
+        cui::panels::playlist_view::PlaylistView::g_on_columns_change();
     }
 
     bool notify_on_timer(UINT_PTR timerid) override
@@ -728,7 +729,7 @@ private:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 };
-} // namespace pvt
+} // namespace cui::panels::playlist_view
 
 namespace playlist_utils {
 bool check_clipboard();

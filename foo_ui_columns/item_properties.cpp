@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "item_properties.h"
 
+namespace cui::panels::item_properties {
+
 // {8F6069CD-2E36-4ead-B171-93F3DFF0073A}
 static const GUID g_guid_selection_properties
     = {0x8f6069cd, 0x2e36, 0x4ead, {0xb1, 0x71, 0x93, 0xf3, 0xdf, 0xf0, 0x7, 0x3a}};
@@ -994,3 +996,5 @@ void ItemPropertiesColoursClient::on_colour_changed(t_size mask) const
 {
     ItemProperties::g_redraw_all();
 }
+
+} // namespace cui::panels::item_properties

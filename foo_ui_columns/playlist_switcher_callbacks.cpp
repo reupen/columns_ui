@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
+namespace cui::panels::playlist_switcher {
+
 void PlaylistSwitcher::on_items_added(t_size p_playlist, t_size p_start,
     const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
 {
@@ -82,3 +84,5 @@ void PlaylistSwitcher::on_playback_stop(play_control::t_stop_reason p_reason)
     if (p_reason != play_control::stop_reason_shutting_down)
         on_playing_playlist_change(get_playing_playlist());
 };
+
+} // namespace cui::panels::playlist_switcher

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "buttons.h"
 
+namespace cui::toolbars::buttons {
+
 void ButtonsToolbar::Button::CustomImage::get_path(pfc::string8& p_out) const
 {
     p_out.reset();
@@ -352,3 +354,5 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
         p_file.write_lendian_t(m_mask_colour, p_abort);
     }
 }
+
+} // namespace cui::toolbars::buttons

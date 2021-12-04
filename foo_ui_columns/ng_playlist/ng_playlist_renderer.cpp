@@ -1,7 +1,7 @@
 #include "../stdafx.h"
 #include "ng_playlist.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 
 void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, t_size index, RECT rc)
 {
@@ -183,4 +183,4 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
     }
 }
 
-} // namespace pvt
+} // namespace cui::panels::playlist_view

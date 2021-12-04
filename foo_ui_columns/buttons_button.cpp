@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "buttons.h"
 
+namespace cui::toolbars::buttons {
+
 void ButtonsToolbar::Button::ButtonStateCallback::on_button_state_change(unsigned p_new_state) // see t_button_state
 {
     unsigned state = SendMessage(m_this->wnd_toolbar, TB_GETSTATE, id, 0);
@@ -257,3 +259,5 @@ void ButtonsToolbar::Button::write_to_file(stream_writer& p_file, bool b_paths, 
         p_file.write(m_text, m_text.length(), p_abort);
     }
 }
+
+} // namespace cui::toolbars::buttons

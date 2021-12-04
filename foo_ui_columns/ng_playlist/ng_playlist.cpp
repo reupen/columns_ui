@@ -11,12 +11,12 @@
 #include "../playlist_view_tfhooks.h"
 #include "../button_items.h"
 
-namespace artwork_panel {
+namespace cui::artwork_panel {
 // extern cfg_string cfg_front;
 extern cfg_bool cfg_use_fb2k_artwork;
-}; // namespace artwork_panel
+}; // namespace cui::artwork_panel
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 
 // {775E2746-6019-4b45-83B3-D7DF3A5BAE57}
 const GUID g_groups_guid = {0x775e2746, 0x6019, 0x4b45, {0x83, 0xb3, 0xd7, 0xdf, 0x3a, 0x5b, 0xae, 0x57}};
@@ -84,11 +84,11 @@ void set_font_size(bool up)
 {
     LOGFONT lf_ng;
     static_api_ptr_t<cui::fonts::manager> api;
-    api->get_font(pvt::g_guid_items_font, lf_ng);
+    api->get_font(cui::panels::playlist_view::g_guid_items_font, lf_ng);
 
     cui::fonts::get_next_font_size_step(lf_ng, up);
 
-    api->set_font(pvt::g_guid_items_font, lf_ng);
+    api->set_font(cui::panels::playlist_view::g_guid_items_font, lf_ng);
 }
 
 PlaylistView::PlaylistView()
@@ -695,16 +695,16 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         TabColumns::get_instance().show_column(column_index_display_to_actual(index));
     } else if (cmd == IDM_AUTOSIZE) {
         cfg_nohscroll = cfg_nohscroll == 0;
-        pvt::PlaylistView::g_on_autosize_change();
+        cui::panels::playlist_view::PlaylistView::g_on_autosize_change();
     } else if (cmd == IDM_PREFS) {
         static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
     } else if (cmd == IDM_ARTWORK) {
         cfg_show_artwork = !cfg_show_artwork;
-        pvt::PlaylistView::g_on_show_artwork_change();
+        cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
     } else if (cmd >= IDM_CUSTOM_BASE) {
         if (t_size(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
             g_columns[cmd - IDM_CUSTOM_BASE]->show = !g_columns[cmd - IDM_CUSTOM_BASE]->show; // g_columns
-            pvt::PlaylistView::g_on_columns_change();
+            cui::panels::playlist_view::PlaylistView::g_on_columns_change();
         }
     }
     return true;
@@ -1179,4 +1179,4 @@ void ColoursClient::on_colour_changed(t_size mask) const
     PlaylistView::g_update_all_items();
 }
 
-} // namespace pvt
+} // namespace cui::panels::playlist_view

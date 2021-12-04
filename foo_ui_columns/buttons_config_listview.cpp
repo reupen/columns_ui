@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "buttons.h"
 
+namespace cui::toolbars::buttons {
+
 CLIPFORMAT ButtonsToolbar::ConfigParam::ButtonsList::g_clipformat()
 {
     static auto cf = (CLIPFORMAT)RegisterClipboardFormat(L"CUIListViewStandardClipFormat");
@@ -41,3 +43,5 @@ bool ButtonsToolbar::ConfigParam::ButtonsList::do_drag_drop(WPARAM wp)
 
     return true;
 }
+
+} // namespace cui::toolbars::buttons

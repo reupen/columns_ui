@@ -2,7 +2,7 @@
 
 #include "list_view_panel.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 class AppearanceClient : public cui::colours::client {
 public:
@@ -220,4 +220,4 @@ private:
     ui_status_text_override::ptr m_status_text_override;
 };
 
-}; // namespace filter_panel
+}; // namespace cui::panels::filter

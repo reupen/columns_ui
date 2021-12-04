@@ -3,6 +3,8 @@
 #include "main_window.h"
 #include "status_pane.h"
 
+namespace cui::status_pane {
+
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
 const GUID StatusPane::g_guid_font = {0x522e01c6, 0xea7c, 0x49f2, {0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24}};
 
@@ -80,3 +82,7 @@ void StatusPane::get_length_data(bool& p_selection, t_size& p_count, pfc::string
     p_count = count;
     p_selection = b_selection;
 }
+
+cui::status_pane::StatusPane g_status_pane;
+
+} // namespace cui::status_pane

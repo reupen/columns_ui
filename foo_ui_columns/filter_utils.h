@@ -1,7 +1,7 @@
 #pragma once
 #include <filter_config_var.h>
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 template <class Container>
 void sort_tracks(Container&& tracks)
@@ -14,4 +14,4 @@ void sort_tracks(Container&& tracks)
     }
 }
 
-} // namespace filter_panel
+} // namespace cui::panels::filter

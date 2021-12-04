@@ -60,6 +60,8 @@
     service_factory_t<MenuCommandConfigObjectNotify> g_menu_command_config_object_notify;                             \
     }
 
+namespace cui::button_items {
+
 __DEFINE_MENU_BUTTON(
     a, standard_commands::guid_main_stop_after_current, standard_config_objects::bool_playlist_stop_after_current);
 __DEFINE_MENU_BUTTON(
@@ -278,3 +280,5 @@ class button_next : public ui_extension::button
 
 ui_extension::button_factory<button_next> g_next;
 #endif
+
+} // namespace cui::button_items

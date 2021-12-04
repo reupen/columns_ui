@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
+namespace cui::panels::playlist_switcher {
+
 bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     uie::window_ptr p_this_temp = this;
@@ -215,3 +217,5 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
 
     return true;
 }
+
+} // namespace cui::panels::playlist_switcher

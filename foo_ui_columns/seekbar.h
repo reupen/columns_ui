@@ -1,11 +1,6 @@
-#ifndef _COLUMNS_SEEKBAR_H_
-#define _COLUMNS_SEEKBAR_H_
+#pragma once
 
-#include <windows.h>
-#include <COMMCTRL.H>
-#include <WinUser.h>
-#include <windowsx.h>
-#include <commctrl.h>
+namespace cui::toolbars::seekbar {
 
 class SeekBarToolbar : public ui_extension::container_ui_extension {
     bool initialised{false};
@@ -47,4 +42,4 @@ public:
     static void update_seekbars(bool positions_only = false);
 };
 
-#endif
+} // namespace cui::toolbars::seekbar

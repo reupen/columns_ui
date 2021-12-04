@@ -1,6 +1,6 @@
 #pragma once
 
-namespace artwork_panel {
+namespace cui::artwork_panel {
 
 class ArtworkReader : public mmh::Thread {
 public:
@@ -81,4 +81,4 @@ public:
     std::shared_ptr<ArtworkReaderManager> m_manager;
 };
 
-}; // namespace artwork_panel
+}; // namespace cui::artwork_panel

@@ -3,7 +3,7 @@
 #include "ng_playlist.h"
 #include "ng_playlist_groups.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 
 // CONFIG
 
@@ -164,4 +164,4 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return 0;
 }
 
-} // namespace pvt
+} // namespace cui::panels::playlist_view

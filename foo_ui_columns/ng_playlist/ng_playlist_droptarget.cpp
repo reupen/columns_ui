@@ -1,7 +1,7 @@
 #include "../stdafx.h"
 #include "ng_playlist.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::QueryInterface(REFIID riid, LPVOID FAR* ppvObject)
 {
     if (ppvObject == nullptr)
@@ -361,4 +361,4 @@ HRESULT PlaylistViewDropTarget::UpdateDropDescription(IDataObject* pDataObj, DWO
     }
     return uih::ole::set_drop_description(pDataObj, dit, message, insertText);
 }
-} // namespace pvt
+} // namespace cui::panels::playlist_view

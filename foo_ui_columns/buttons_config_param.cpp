@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "buttons.h"
 
+namespace cui::toolbars::buttons {
+
 void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file->write_lendian_t(g_guid_fcb, p_abort);
@@ -505,3 +507,5 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
     }
     return FALSE;
 }
+
+} // namespace cui::toolbars::buttons

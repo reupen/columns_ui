@@ -4,6 +4,8 @@
 
 #define HOST_AUTOHIDE_TIMER_ID 672
 
+namespace cui::panels::splitter {
+
 bool FlatSplitterPanel::Panel::PanelContainer::test_autohide_window(HWND wnd)
 {
     return IsChild(get_wnd(), wnd) || wnd == get_wnd() || wnd == m_this->get_wnd();
@@ -368,3 +370,5 @@ FlatSplitterPanel::Panel::PanelContainer::PanelContainer(Panel* p_panel)
     , m_timer_active(false)
 {
 }
+
+} // namespace cui::panels::splitter

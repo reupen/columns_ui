@@ -35,22 +35,11 @@ enum { MSG_SET_AOT = WM_USER + 3, MSG_UPDATE_STATUS, MSG_UPDATE_TITLE, MSG_RUN_I
 
 bool remember_window_pos();
 
-void update_status();
-
 bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist = false, bool keyb = true);
 
-void create_rebar();
-void destroy_rebar(bool save_config = true);
-
-void status_update_main(bool is_caller_menu_desc);
-
-void create_status();
 void on_show_status_change();
 void on_show_status_pane_change();
 void on_show_toolbars_change();
-
-extern class StatusPane g_status_pane;
-extern class RebarWindow* g_rebar_window;
 
 namespace taskbar_buttons {
 enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };

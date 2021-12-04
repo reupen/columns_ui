@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "splitter.h"
 
+namespace cui::panels::splitter {
+
 ui_extension::window_host_factory<FlatSplitterPanel::FlatSplitterPanelHost> g_splitter_host_vert;
 
 unsigned FlatSplitterPanel::g_count = 0;
@@ -123,7 +125,7 @@ void FlatSplitterPanel::refresh_children()
                         mmi.ptMaxTrackSize.x = MAXLONG;
                         mmi.ptMaxTrackSize.y = MAXLONG;
                         SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-                        clip_minmaxinfo(mmi);
+                        cui::helpers::clip_minmaxinfo(mmi);
 
                         m_panels[n]->m_wnd = wnd_host;
                         m_panels[n]->m_wnd_child = wnd_panel;
@@ -1133,4 +1135,6 @@ void FlatSplitterPanel::g_on_size_change()
     for (t_size index = 0; index < g_instances.get_count(); index++) {
         g_instances[index]->on_size_changed();
     }
+}
+
 }

@@ -2,6 +2,8 @@
 
 #include "list_view_panel.h"
 
+namespace cui::panels::item_properties {
+
 struct InfoSection {
     // The ID is used for settings storage (in case we reorder the sections etc.)
     int id{};
@@ -219,3 +221,5 @@ private:
     pfc::string8 m_edit_field;
     metadb_handle_list m_edit_handles;
 };
+
+} // namespace cui::panels::item_properties

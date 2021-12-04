@@ -2,6 +2,8 @@
 
 #include "stdafx.h"
 
+namespace cui::toolbars::buttons {
+
 class ButtonsToolbar : public ui_extension::container_ui_extension {
     static const TCHAR* class_name;
     int width{0};
@@ -324,33 +326,35 @@ public:
     BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 };
 
+} // namespace cui::toolbars::buttons
+
 namespace pfc {
 template <>
-class traits_t<ButtonsToolbar::ImageIdentifier> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::ImageIdentifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::CustomImageIdentifier> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::CustomImageIdentifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::ButtonIdentifier> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::ButtonIdentifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::Identifier> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Identifier> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::Appearance> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Appearance> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::ConfigVersion> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::ConfigVersion> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::Show> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Show> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::Filter> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Filter> : public traits_rawobject {
 };
 template <>
-class traits_t<ButtonsToolbar::Type> : public traits_rawobject {
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Type> : public traits_rawobject {
 };
 template <>
 class traits_t<uie::t_mask> : public traits_rawobject {

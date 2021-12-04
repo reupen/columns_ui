@@ -4,13 +4,16 @@
 
 // extern HBITMAP buttons_images;
 
-extern RebarWindow* g_rebar_window;
-extern HWND g_rebar;
-extern ConfigRebar g_cfg_rebar;
-extern ConfigBandCache cfg_band_cache;
+namespace cui::rebar {
 
-constexpr const auto default_toolbar_width = 21;
-constexpr const auto default_toolbar_height = 21;
+RebarWindow* g_rebar_window{};
+HWND g_rebar{};
+
+ConfigRebar g_cfg_rebar(GUID{0xd26d3aa5, 0x9157, 0xbf8e, {0xd5, 0x9f, 0x44, 0x86, 0x1c, 0x7a, 0x82, 0xc7}});
+ConfigBandCache cfg_band_cache(GUID{0x76e74192, 0x6932, 0x2671, {0x90, 0x12, 0xcf, 0x18, 0xca, 0x02, 0x06, 0xe0}});
+
+constexpr auto default_toolbar_width = 21;
+constexpr auto default_toolbar_height = 21;
 
 void destroy_rebar(bool save_config)
 {
@@ -751,3 +754,5 @@ ui_extension::window_host& get_rebar_host()
 {
     return g_ui_ext_host_rebar.get_static_instance();
 }
+
+} // namespace cui::rebar

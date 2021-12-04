@@ -177,4 +177,12 @@ bool open_web_page(HWND wnd, const wchar_t* url)
     return succeeded;
 }
 
+void clip_minmaxinfo(MINMAXINFO& mmi)
+{
+    mmi.ptMinTrackSize.x = min(mmi.ptMinTrackSize.x, MAXSHORT);
+    mmi.ptMinTrackSize.y = min(mmi.ptMinTrackSize.y, MAXSHORT);
+    mmi.ptMaxTrackSize.y = min(mmi.ptMaxTrackSize.y, MAXSHORT);
+    mmi.ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, MAXSHORT);
+}
+
 } // namespace cui::helpers

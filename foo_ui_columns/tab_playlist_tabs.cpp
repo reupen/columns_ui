@@ -21,7 +21,7 @@ public:
             switch (wp) {
             case IDC_PLAUTOHIDE:
                 cfg_pl_autohide = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_UNCHECKED;
-                g_on_autohide_tabs_change();
+                cui::panels::playlist_tabs::g_on_autohide_tabs_change();
                 break;
             case IDC_PLAYLIST_TABS_MCLICK:
                 cui::config::cfg_playlist_tabs_middle_click
@@ -29,7 +29,7 @@ public:
                 break;
             case IDC_TABS_MULTILINE:
                 cfg_tabs_multiline = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                g_on_multiline_tabs_change();
+                cui::panels::playlist_tabs::g_on_multiline_tabs_change();
                 break;
             case IDC_MCLICK3:
                 cfg_plm_rename = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);

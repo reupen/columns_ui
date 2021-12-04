@@ -1,5 +1,4 @@
-#ifndef _COLUMNS_REBAR_H_
-#define _COLUMNS_REBAR_H_
+#pragma once
 
 /*!
  * \file rebar.h
@@ -12,6 +11,12 @@
 
 #include "stdafx.h"
 #include "rebar_band.h"
+
+namespace cui::rebar {
+
+extern class RebarWindow* g_rebar_window;
+extern class ConfigRebar g_cfg_rebar;
+extern HWND g_rebar;
 
 struct BandCacheEntry {
     GUID guid{};
@@ -142,6 +147,8 @@ private:
     friend class RebarWindowHost;
 };
 
+void create_rebar();
+void destroy_rebar(bool save_config = true);
 ui_extension::window_host& get_rebar_host();
 
-#endif
+} // namespace cui::rebar

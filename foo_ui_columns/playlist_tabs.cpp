@@ -3,6 +3,8 @@
 #include "main_window.h"
 #include "playlist_manager_utils.h"
 
+namespace cui::panels::playlist_tabs {
+
 cfg_guid cfg_default_playlist(GUID{0x68527c89, 0xb0f7, 0xf653, {0x00, 0x53, 0x8c, 0xeb, 0x47, 0xe7, 0xa3, 0xb3}},
     columns_ui::panels::guid_playlist_view_v2);
 
@@ -895,3 +897,5 @@ unsigned PlaylistTabs::WindowHost::is_resize_supported(HWND wnd) const
     // We won't support ui_extension::size_width since we can't reliably detect multiline tab shit
     return (m_this->get_host()->is_resize_supported(m_this->get_wnd()) & ui_extension::size_height);
 }
+
+} // namespace cui::panels::playlist_tabs

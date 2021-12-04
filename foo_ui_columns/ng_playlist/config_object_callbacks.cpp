@@ -8,7 +8,7 @@ public:
     void on_watched_object_changed(const service_ptr_t<config_object>& p_object) override
     {
         const auto val = p_object->get_data_bool_simple(false);
-        pvt::PlaylistView::g_on_playback_follows_cursor_change(val);
+        cui::panels::playlist_view::PlaylistView::g_on_playback_follows_cursor_change(val);
     }
 };
 

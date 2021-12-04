@@ -2,6 +2,8 @@
 #include "playlist_switcher_v2.h"
 #include "playlist_switcher_title_formatting.h"
 
+namespace cui::panels::playlist_switcher {
+
 // {70A5C273-67AB-4bb6-B61C-F7975A6871FD}
 const GUID PlaylistSwitcher::g_guid_font
     = {0x70a5c273, 0x67ab, 0x4bb6, {0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd}};
@@ -154,3 +156,5 @@ void PlaylistSwitcher::notify_on_destroy()
 namespace {
 uie::window_factory<PlaylistSwitcher> g_playlist_switcher;
 }
+
+} // namespace cui::panels::playlist_switcher

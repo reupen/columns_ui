@@ -4,7 +4,7 @@
 #include "filter_search_bar.h"
 #include "filter_utils.h"
 
-namespace filter_panel {
+namespace cui::panels::filter {
 
 const GUID g_guid_filter_items_font_client{0xd93f1ef3, 0x4aee, 0x4632, {0xb5, 0xbf, 0x2, 0x20, 0xce, 0xc7, 0x6d, 0xed}};
 const GUID g_guid_filter_header_font_client{
@@ -356,10 +356,10 @@ void FilterPanel::g_create_field_data(const Field& field, FieldData& p_out)
 
 void FilterPanel::g_load_fields()
 {
-    t_size count = filter_panel::cfg_field_list.get_count();
+    t_size count = cui::panels::filter::cfg_field_list.get_count();
     g_field_data.set_count(count);
     for (t_size i = 0; i < count; i++) {
-        const Field& field = filter_panel::cfg_field_list[i];
+        const Field& field = cui::panels::filter::cfg_field_list[i];
         g_create_field_data(field, g_field_data[i]);
     }
 }
@@ -934,4 +934,4 @@ void AppearanceClient::on_colour_changed(t_size mask) const
     FilterPanel::g_redraw_all();
 }
 
-} // namespace filter_panel
+} // namespace cui::panels::filter

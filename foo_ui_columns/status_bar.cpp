@@ -1,52 +1,22 @@
 #include "stdafx.h"
 #include "status_bar.h"
 
-extern HFONT g_status_font;
 extern HWND g_status;
 
-pfc::string8 status_bar::menudesc;
-pfc::string8 status_bar::statusbartext;
+namespace cui::status_bar {
+
+extern HFONT g_status_font;
+
+bool b_lock = false;
+unsigned u_length_pos = 0;
+unsigned u_lock_pos = 0;
+unsigned u_vol_pos = 0;
+HICON icon_lock = nullptr;
+HTHEME thm_status = nullptr;
+pfc::string8 menudesc;
+pfc::string8 statusbartext;
 
 bool menu = false;
-
-void status_set_menu(bool on)
-{
-    if (!on)
-        status_bar::menudesc.reset();
-    bool old_menu = menu;
-    menu = on;
-    // CHECK !!
-    if (!(!old_menu && !on))
-        status_update_main(on);
-}
-
-void status_update_main(bool is_caller_menu_desc)
-{
-    if (g_status) {
-        if (menu && is_caller_menu_desc)
-            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&status_bar::menudesc));
-        else if (!menu)
-            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&status_bar::statusbartext));
-    }
-}
-
-void update_status()
-{
-    metadb_handle_ptr track;
-    static_api_ptr_t<play_control> play_api;
-    play_api->get_now_playing(track);
-    if (track.is_valid()) {
-        service_ptr_t<titleformat_object> to_status;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
-        play_api->playback_format_title_ex(
-            track, nullptr, status_bar::statusbartext, to_status, nullptr, play_control::display_level_all);
-
-        track.release();
-    } else {
-        status_bar::statusbartext = core_version_info::g_get_version_string();
-    }
-    status_update_main(false);
-}
 
 WNDPROC status_proc = nullptr;
 
@@ -84,13 +54,45 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return CallWindowProc(status_proc, wnd, msg, wp, lp);
 }
 
-namespace status_bar {
-bool b_lock = false;
-unsigned u_length_pos = 0;
-unsigned u_lock_pos = 0;
-unsigned u_vol_pos = 0;
-HICON icon_lock = nullptr;
-HTHEME thm_status = nullptr;
+void set_show_menu_item_description(bool on)
+{
+    if (!on)
+        menudesc.reset();
+    bool old_menu = menu;
+    menu = on;
+    // CHECK !!
+    if (!(!old_menu && !on))
+        update_text(on);
+}
+
+void update_text(bool is_caller_menu_desc)
+{
+    if (g_status) {
+        if (menu && is_caller_menu_desc)
+            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&menudesc));
+        else if (!menu)
+            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&statusbartext));
+    }
+}
+
+void regenerate_text()
+{
+    metadb_handle_ptr track;
+    static_api_ptr_t<play_control> play_api;
+    play_api->get_now_playing(track);
+    if (track.is_valid()) {
+        service_ptr_t<titleformat_object> to_status;
+        static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
+        play_api->playback_format_title_ex(
+            track, nullptr, statusbartext, to_status, nullptr, play_control::display_level_all);
+
+        track.release();
+    } else {
+        statusbartext = core_version_info::g_get_version_string();
+    }
+    update_text(false);
+}
+
 HICON get_icon()
 {
     if (!icon_lock) {
@@ -98,6 +100,7 @@ HICON get_icon()
     }
     return icon_lock;
 }
+
 void destroy_icon()
 {
     if (icon_lock) {
@@ -105,22 +108,25 @@ void destroy_icon()
         icon_lock = nullptr;
     }
 }
+
 void destroy_theme_handle()
 {
     {
-        if (status_bar::thm_status) {
-            CloseThemeData(status_bar::thm_status);
-            status_bar::thm_status = nullptr;
+        if (thm_status) {
+            CloseThemeData(thm_status);
+            thm_status = nullptr;
         }
     }
 }
+
 void create_theme_handle()
 {
-    if (!status_bar::thm_status) {
-        status_bar::thm_status = IsThemeActive() && IsAppThemed() ? OpenThemeData(g_status, L"Status") : nullptr;
+    if (!thm_status) {
+        thm_status = IsThemeActive() && IsAppThemed() ? OpenThemeData(g_status, L"Status") : nullptr;
     }
 }
-void destroy_status_window()
+
+void destroy_window()
 {
     destroy_theme_handle();
     if (g_status) {
@@ -132,9 +138,7 @@ void destroy_status_window()
         g_status_font = nullptr;
     }
 }
-}; // namespace status_bar
 
-namespace status_bar {
 volume_popup_t volume_popup_window;
 unsigned u_volume_size;
 unsigned u_selected_length_size;
@@ -157,21 +161,19 @@ bool get_text(unsigned index, pfc::string_base& p_out)
 
 void calculate_volume_size(const char* p_text)
 {
-    u_volume_size = win32_helpers::status_bar_get_text_width(g_status, status_bar::thm_status, p_text) + 12;
+    u_volume_size = win32_helpers::status_bar_get_text_width(g_status, thm_status, p_text) + 12;
 }
 
 void calculate_selected_length_size(const char* p_text)
 {
-    u_selected_length_size
-        = max(win32_helpers::status_bar_get_text_width(g_status, status_bar::thm_status, p_text),
-              win32_helpers::status_bar_get_text_width(g_status, status_bar::thm_status, "0d 00:00:00"))
+    u_selected_length_size = max(win32_helpers::status_bar_get_text_width(g_status, thm_status, p_text),
+                                 win32_helpers::status_bar_get_text_width(g_status, thm_status, "0d 00:00:00"))
         + 12;
 }
 
 void calculate_playback_lock_size(const char* p_text)
 {
-    u_playback_lock_size
-        = win32_helpers::status_bar_get_text_width(g_status, status_bar::thm_status, p_text) + 14 + 16 + 4;
+    u_playback_lock_size = win32_helpers::status_bar_get_text_width(g_status, thm_status, p_text) + 14 + 16 + 4;
 }
 
 void get_selected_length_text(pfc::string_base& p_out, unsigned dp = 0)
@@ -204,13 +206,13 @@ void get_volume_text(pfc::string_base& p_out)
 void set_part_sizes(unsigned p_parts)
 {
     if (g_status) {
-        bool b_old_lock = status_bar::b_lock;
-        unsigned u_old_lock_pos = status_bar::u_lock_pos;
+        bool b_old_lock = b_lock;
+        unsigned u_old_lock_pos = u_lock_pos;
 
         RECT rc2;
-        GetClientRect(cui::main_window.get_wnd(), &rc2);
+        GetClientRect(main_window.get_wnd(), &rc2);
         int scrollbar_height = GetSystemMetrics(SM_CXVSCROLL);
-        if (!IsZoomed(cui::main_window.get_wnd()))
+        if (!IsZoomed(main_window.get_wnd()))
             rc2.right -= scrollbar_height;
 
         int blah[3];
@@ -229,16 +231,15 @@ void set_part_sizes(unsigned p_parts)
         static_api_ptr_t<playlist_manager> playlist_api;
         unsigned active = playlist_api->get_active_playlist();
 
-        status_bar::b_lock
-            = main_window::config_get_status_show_lock() && playlist_api->playlist_lock_is_present(active);
+        b_lock = main_window::config_get_status_show_lock() && playlist_api->playlist_lock_is_present(active);
 
-        if (status_bar::b_lock) {
+        if (b_lock) {
             if (b_old_lock && !(p_parts & t_part_lock))
                 get_text(u_old_lock_pos, text_lock);
             else
                 playlist_api->playlist_lock_query_name(active, text_lock);
             calculate_playback_lock_size(text_lock);
-            status_bar::u_lock_pos = m_parts.add_item(u_playback_lock_size);
+            u_lock_pos = m_parts.add_item(u_playback_lock_size);
         }
 
         if (cfg_show_seltime) {
@@ -249,7 +250,7 @@ void set_part_sizes(unsigned p_parts)
 
             calculate_selected_length_size(text_length);
 
-            status_bar::u_length_pos = m_parts.add_item(u_selected_length_size);
+            u_length_pos = m_parts.add_item(u_selected_length_size);
         }
 
         if (cfg_show_vol) {
@@ -258,7 +259,7 @@ void set_part_sizes(unsigned p_parts)
             else
                 get_volume_text(text_volume); // blah
             calculate_volume_size(text_volume);
-            status_bar::u_vol_pos = m_parts.add_item(u_volume_size);
+            u_vol_pos = m_parts.add_item(u_volume_size);
         }
 
         m_parts[0] = rc2.right - rc2.left;
@@ -276,7 +277,7 @@ void set_part_sizes(unsigned p_parts)
         }
         m_parts[count - 1] = -1;
 
-        if (b_old_lock && (!status_bar::b_lock || status_bar::u_lock_pos != u_old_lock_pos))
+        if (b_old_lock && (!b_lock || u_lock_pos != u_old_lock_pos))
             SendMessage(g_status, SB_SETICON, u_old_lock_pos, 0);
 
         SendMessage(g_status, SB_SETPARTS, m_parts.get_count(), (LPARAM)m_parts.get_ptr());
@@ -286,33 +287,33 @@ void set_part_sizes(unsigned p_parts)
         if (cfg_show_seltime && (p_parts & t_part_length))
             uStatus_SetText(g_status, u_length_pos, text_length);
 
-        if (status_bar::b_lock && (p_parts & t_part_lock)) {
-            SendMessage(g_status, SB_SETICON, status_bar::u_lock_pos, (LPARAM)status_bar::get_icon());
-            uStatus_SetText(g_status, status_bar::u_lock_pos, text_lock);
+        if (b_lock && (p_parts & t_part_lock)) {
+            SendMessage(g_status, SB_SETICON, u_lock_pos, (LPARAM)get_icon());
+            uStatus_SetText(g_status, u_lock_pos, text_lock);
         }
     }
 }
 
-}; // namespace status_bar
-
-void create_status()
+void create_window()
 {
     if (cfg_status && !g_status) {
         g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0,
-            cui::main_window.get_wnd(), (HMENU)ID_STATUS, core_api::get_my_instance(), nullptr);
+            main_window.get_wnd(), (HMENU)ID_STATUS, core_api::get_my_instance(), nullptr);
 
         status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWLP_WNDPROC, (LPARAM)(g_status_hook));
 
-        status_bar::create_theme_handle();
+        create_theme_handle();
 
         SetWindowPos(g_status, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
         on_status_font_change();
 
-        status_bar::set_part_sizes(status_bar::t_parts_all);
+        set_part_sizes(t_parts_all);
 
-        status_update_main(false);
+        update_text(false);
     } else if (!cfg_status && g_status) {
-        status_bar::destroy_status_window();
+        destroy_window();
     }
 }
+
+}; // namespace cui::status_bar

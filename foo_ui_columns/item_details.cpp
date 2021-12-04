@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "item_details.h"
 
+namespace cui::panels::item_details {
+
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
 const GUID g_guid_item_details = {0x59b4f428, 0x26a5, 0x4a51, {0x89, 0xe5, 0x39, 0x45, 0xd3, 0x27, 0xb4, 0xcb}};
 
@@ -1239,3 +1241,5 @@ const char* ItemDetails::MenuNodeTrackMode::get_name(t_size source)
         return "Current selection";
     return "Automatic (playlist selection/playing item)";
 }
+
+} // namespace cui::panels::item_details

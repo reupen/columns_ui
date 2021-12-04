@@ -148,10 +148,10 @@ void speedtest(ColumnListCRef columns, bool b_global)
                 if (b_global_colour_used)
                     for (unsigned i = 0; i < 10; i++) {
                         for (unsigned j = 0; j < 16; j++) {
-                            auto style_info = pvt::CellStyleData::g_create_default();
+                            auto style_info = cui::panels::playlist_view::CellStyleData::g_create_default();
                             pfc::hires_timer timer;
                             timer.start();
-                            pvt::StyleTitleformatHook tf_hook_style(style_info, 0);
+                            cui::panels::playlist_view::StyleTitleformatHook tf_hook_style(style_info, 0);
                             SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
                             DateTitleformatHook tf_hook_date(&st);
                             SplitterTitleformatHook tf_hook(
@@ -212,10 +212,10 @@ void speedtest(ColumnListCRef columns, bool b_global)
                         time_temp = 0;
                         for (i = 0; i < 10; i++) {
                             for (unsigned j = 0; j < 16; j++) {
-                                auto style_info = pvt::CellStyleData::g_create_default();
+                                auto style_info = cui::panels::playlist_view::CellStyleData::g_create_default();
                                 pfc::hires_timer timer;
                                 timer.start();
-                                pvt::StyleTitleformatHook tf_hook_style(style_info, 0);
+                                cui::panels::playlist_view::StyleTitleformatHook tf_hook_style(style_info, 0);
                                 SetGlobalTitleformatHook<false, true> tf_hook_set_global(p_vars);
                                 DateTitleformatHook tf_hook_date(&st);
                                 SplitterTitleformatHook tf_hook(

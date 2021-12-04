@@ -14,15 +14,15 @@
 #include "status_bar.h"
 #include "migrate.h"
 #include "legacy_artwork_config.h"
+#include "rebar.h"
 
-RebarWindow* g_rebar_window = nullptr;
+cui::rebar::RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
 cui::MainWindow cui::main_window;
-StatusPane g_status_pane;
 
 HIMAGELIST g_imagelist = nullptr;
 
-HWND g_rebar = nullptr, g_status = nullptr;
+HWND g_status = nullptr;
 
 bool g_icon_created = false;
 bool ui_initialising = false, g_minimised = false;
@@ -109,12 +109,12 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         ShowWindow(m_wnd, SW_SHOWNORMAL);
     }
 
-    if (g_rebar)
-        ShowWindow(g_rebar, SW_SHOWNORMAL);
+    if (rebar::g_rebar)
+        ShowWindow(rebar::g_rebar, SW_SHOWNORMAL);
     if (g_status)
         ShowWindow(g_status, SW_SHOWNORMAL);
-    if (g_status_pane.get_wnd())
-        ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
+    if (status_pane::g_status_pane.get_wnd())
+        ShowWindow(status_pane::g_status_pane.get_wnd(), SW_SHOWNORMAL);
     g_layout_window.show_window();
 
     RedrawWindow(m_wnd, nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
@@ -133,13 +133,13 @@ void cui::MainWindow::shutdown()
 {
     DestroyWindow(m_wnd);
     UnregisterClass(main_window_class_name, core_api::get_my_instance());
-    status_bar::volume_popup_window.class_release();
+    cui::status_bar::volume_popup_window.class_release();
     m_wnd = nullptr;
     g_status = nullptr;
     if (g_icon)
         DestroyIcon(g_icon);
     g_icon = nullptr;
-    status_bar::destroy_icon();
+    cui::status_bar::destroy_icon();
 }
 
 void cui::MainWindow::on_query_capability()
@@ -251,10 +251,10 @@ void cui::MainWindow::create_child_windows()
 
     g_layout_window.create(m_wnd);
 
-    create_rebar();
-    create_status();
+    rebar::create_rebar();
+    status_bar::create_window();
     if (settings::show_status_pane)
-        g_status_pane.create(m_wnd);
+        status_pane::g_status_pane.create(m_wnd);
 
     g_layout_window.set_focus();
 }
@@ -279,35 +279,35 @@ void cui::MainWindow::resize_child_windows()
                 // dwp = DeferWindowPos(dwp, g_status, 0, 0, rc_main_client.bottom-status_height,
                 // rc_main_client.right-rc_main_client.left, status_height, SWP_NOZORDER|SWP_NOREDRAW);
             }
-            if (g_status_pane.get_wnd()) {
-                int cy = g_status_pane.get_ideal_height();
-                RedrawWindow(g_status_pane.get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
-                dwp = DeferWindowPos(dwp, g_status_pane.get_wnd(), nullptr, 0,
+            if (status_pane::g_status_pane.get_wnd()) {
+                int cy = status_pane::g_status_pane.get_ideal_height();
+                RedrawWindow(status_pane::g_status_pane.get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
+                dwp = DeferWindowPos(dwp, status_pane::g_status_pane.get_wnd(), nullptr, 0,
                     rc_main_client.bottom - status_height - cy, rc_main_client.right - rc_main_client.left, cy,
                     SWP_NOZORDER);
                 status_height += cy;
             }
             int rebar_height = 0;
 
-            if (g_rebar) {
+            if (rebar::g_rebar) {
                 RECT rc_rebar;
-                GetWindowRect(g_rebar, &rc_rebar);
+                GetWindowRect(rebar::g_rebar, &rc_rebar);
                 rebar_height = rc_rebar.bottom - rc_rebar.top;
             }
             if (g_layout_window.get_wnd())
                 dwp = DeferWindowPos(dwp, g_layout_window.get_wnd(), nullptr, 0, rebar_height,
                     rc_main_client.right - rc_main_client.left,
                     rc_main_client.bottom - rc_main_client.top - rebar_height - status_height, SWP_NOZORDER);
-            if (g_rebar) {
-                RedrawWindow(g_rebar, nullptr, nullptr, RDW_INVALIDATE);
-                dwp = DeferWindowPos(dwp, g_rebar, nullptr, 0, 0, rc_main_client.right - rc_main_client.left,
+            if (rebar::g_rebar) {
+                RedrawWindow(rebar::g_rebar, nullptr, nullptr, RDW_INVALIDATE);
+                dwp = DeferWindowPos(dwp, rebar::g_rebar, nullptr, 0, 0, rc_main_client.right - rc_main_client.left,
                     rebar_height, SWP_NOZORDER);
             }
 
             EndDeferWindowPos(dwp);
 
             if (g_status) {
-                status_bar::set_part_sizes(status_bar::t_parts_none);
+                cui::status_bar::set_part_sizes(cui::status_bar::t_parts_none);
             }
         }
     }
@@ -340,7 +340,7 @@ public:
                  // only methods that read playlist state, not those that modify it)
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
         }
     }
     void on_items_reordered(const unsigned* order,
@@ -351,13 +351,13 @@ public:
     void FB2KAPI on_items_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
         }
     };
     void on_items_selection_change(const pfc::bit_array& affected, const pfc::bit_array& state) override
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
         }
     }
     void on_item_focus_change(unsigned from, unsigned to)
@@ -372,7 +372,7 @@ public:
     void on_playlist_switch() override
     {
         if (cui::main_window.get_wnd()) {
-            status_bar::set_part_sizes(status_bar::t_parts_all);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_parts_all);
         }
     };
     void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override{};
@@ -380,7 +380,7 @@ public:
     {
         if (cui::main_window.get_wnd())
             if (g_status && main_window::config_get_status_show_lock())
-                status_bar::set_part_sizes(status_bar::t_parts_all);
+                cui::status_bar::set_part_sizes(cui::status_bar::t_parts_all);
     };
 
     void on_default_format_changed() override{};
@@ -389,25 +389,6 @@ public:
     unsigned get_flags() override { return playlist_callback_single::flag_all; }
 };
 static service_factory_single_t<MainWindowPlaylistCallback> asdf2;
-
-void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
-{
-    const char* ptr = text;
-    while (*ptr) {
-        const char* start = ptr;
-        t_size counter = 0;
-        while (*ptr && *ptr != '\r' && *ptr != '\n') {
-            ptr++;
-        }
-
-        p_out.add_item(pfc::string8(start, ptr - start));
-
-        if (*ptr == '\r')
-            ptr++;
-        if (*ptr == '\n')
-            ptr++;
-    }
-}
 
 bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
 {
@@ -427,7 +408,7 @@ bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
 void on_show_status_change()
 {
     if (cui::main_window.get_wnd()) {
-        create_status();
+        cui::status_bar::create_window();
         if (g_status) {
             ShowWindow(g_status, SW_SHOWNORMAL);
             UpdateWindow(g_status);
@@ -439,12 +420,12 @@ void on_show_status_change()
 void on_show_status_pane_change()
 {
     if (cui::main_window.get_wnd()) {
-        if (settings::show_status_pane != (g_status_pane.get_wnd() != nullptr)) {
+        if (settings::show_status_pane != (cui::status_pane::g_status_pane.get_wnd() != nullptr)) {
             if (settings::show_status_pane) {
-                g_status_pane.create(cui::main_window.get_wnd());
-                ShowWindow(g_status_pane.get_wnd(), SW_SHOWNORMAL);
+                cui::status_pane::g_status_pane.create(cui::main_window.get_wnd());
+                ShowWindow(cui::status_pane::g_status_pane.get_wnd(), SW_SHOWNORMAL);
             } else
-                g_status_pane.destroy();
+                cui::status_pane::g_status_pane.destroy();
             cui::main_window.resize_child_windows();
         }
     }
@@ -453,10 +434,10 @@ void on_show_status_pane_change()
 void on_show_toolbars_change()
 {
     if (cui::main_window.get_wnd()) {
-        create_rebar();
-        if (g_rebar) {
-            ShowWindow(g_rebar, SW_SHOWNORMAL);
-            UpdateWindow(g_rebar);
+        cui::rebar::create_rebar();
+        if (cui::rebar::g_rebar) {
+            ShowWindow(cui::rebar::g_rebar, SW_SHOWNORMAL);
+            UpdateWindow(cui::rebar::g_rebar);
         }
         cui::main_window.resize_child_windows();
     }

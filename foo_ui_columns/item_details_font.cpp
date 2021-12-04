@@ -2,6 +2,8 @@
 #include "item_details.h"
 #include "config.h"
 
+namespace cui::panels::item_details {
+
 bool are_strings_equal(std::wstring_view left, std::wstring_view right)
 {
     return CompareStringEx(LOCALE_NAME_INVARIANT, NORM_IGNORECASE, left.data(), left.length(), right.data(),
@@ -219,3 +221,5 @@ namespace {
 ItemDetailsFontClient::factory<ItemDetailsFontClient> g_font_client_item_details;
 ItemDetailsColoursClient::factory<ItemDetailsColoursClient> g_colour_client_item_details;
 } // namespace
+
+} // namespace cui::panels::item_details

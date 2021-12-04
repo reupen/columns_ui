@@ -1,7 +1,7 @@
 #include "../stdafx.h"
 #include "ng_playlist.h"
 
-namespace pvt {
+namespace cui::panels::playlist_view {
 bool PlaylistView::do_drag_drop(WPARAM wp)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
@@ -81,4 +81,4 @@ PlaylistViewDropSource::PlaylistViewDropSource(PlaylistView* playlist, DWORD ini
     , p_playlist(playlist)
     , m_initial_key_state(initial_key_state){};
 
-} // namespace pvt
+} // namespace cui::panels::playlist_view

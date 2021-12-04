@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "seekbar.h"
 
+namespace cui::toolbars::seekbar {
+
 class SeekBarPlayCallback : public play_callback_static {
 public:
     unsigned get_flags() override { return flags; }
@@ -33,3 +35,5 @@ private:
 };
 
 static play_callback_static_factory_t<SeekBarPlayCallback> seek_bar_play_callback;
+
+} // namespace cui::toolbars::seekbar

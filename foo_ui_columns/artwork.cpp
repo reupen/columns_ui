@@ -4,7 +4,7 @@
 #include "config.h"
 #include "wic.h"
 
-namespace artwork_panel {
+namespace cui::artwork_panel {
 
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
 const GUID g_guid_track_mode = {0x5c7b29, 0x3915, 0x4b83, {0xa2, 0x83, 0xc0, 0x1a, 0x4e, 0xdc, 0x4f, 0x3a}};
@@ -802,4 +802,4 @@ bool ArtworkPanel::MenuNodeLockType::get_display_data(pfc::string_base& p_out, u
     return true;
 }
 
-}; // namespace artwork_panel
+}; // namespace cui::artwork_panel

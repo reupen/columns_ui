@@ -2,7 +2,7 @@
 
 #include "artwork_helpers.h"
 
-namespace artwork_panel {
+namespace cui::artwork_panel {
 
 class ArtworkPanel
     : public uie::container_ui_extension_t<>
@@ -185,4 +185,4 @@ private:
     static std::vector<ArtworkPanel*> g_windows;
 };
 
-} // namespace artwork_panel
+} // namespace cui::artwork_panel

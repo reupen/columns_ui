@@ -71,7 +71,7 @@ BOOL LayoutMiscTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 const int new_width = GetDlgItemInt(wnd, LOWORD(wp), &result, FALSE);
                 if (result)
                     settings::custom_splitter_divider_width = new_width;
-                FlatSplitterPanel::g_on_size_change();
+                panels::splitter::FlatSplitterPanel::g_on_size_change();
             }
             break;
         case IDC_USE_CUSTOM_SHOW_DELAY:

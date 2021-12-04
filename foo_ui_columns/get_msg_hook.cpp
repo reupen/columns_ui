@@ -4,7 +4,7 @@
 #include "rebar.h"
 #include "main_window.h"
 
-extern RebarWindow* g_rebar_window;
+extern cui::rebar::RebarWindow* g_rebar_window;
 
 bool GetMsgHook::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
 {

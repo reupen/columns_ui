@@ -2,6 +2,8 @@
 #include "item_details.h"
 #include "config.h"
 
+namespace cui::panels::item_details {
+
 BOOL CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
@@ -196,3 +198,5 @@ ItemDetailsConfig::ItemDetailsConfig(const char* p_text, uint32_t edge_style, ui
     , m_vertical_alignment(valign)
 {
 }
+
+} // namespace cui::panels::item_details

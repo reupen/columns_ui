@@ -3,6 +3,8 @@
 #include "ng_playlist/ng_playlist_groups.h"
 #include "ng_playlist/ng_playlist.h"
 
+namespace cui::panels::playlist_view {
+
 cui::fcl::group_impl_factory fclgroupcolumns(
     cui::fcl::groups::titles_playlist_view, "Playlist Scripts", "Playlist Scripts", cui::fcl::groups::title_scripts);
 cui::fcl::group_impl_factory fclgroupcommon(
@@ -153,7 +155,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
         }
 
         g_columns.set_entries_ref(newcolumns);
-        pvt::PlaylistView::g_on_columns_change();
+        PlaylistView::g_on_columns_change();
     }
 };
 
@@ -189,7 +191,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
     {
         fbh::fcl::Writer out(p_writer, p_abort);
 
-        out.write_item(identifier_show_groups, pvt::cfg_grouping);
+        out.write_item(identifier_show_groups, cfg_grouping);
         // out.write_item(identifier_show_artwork, pvt::cfg_show_artwork);
         // out.write_item(identifier_artwork_width, pvt::cfg_artwork_width);
         // out.write_item(identifier_artwork_reflection, pvt::cfg_artwork_reflection);
@@ -197,14 +199,14 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
         stream_writer_memblock groups_sw;
         fbh::fcl::Writer groups_writer(&groups_sw, p_abort);
 
-        const pfc::list_base_const_t<pvt::Group>& groups = pvt::g_groups.get_groups();
+        const pfc::list_base_const_t<Group>& groups = g_groups.get_groups();
         t_size count = groups.get_count();
         pfc::string8 temp;
 
         groups_writer.write_raw(count);
 
         for (t_size i = 0; i < count; i++) {
-            const pvt::Group& group = groups[i];
+            const Group& group = groups[i];
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
             w.write_item(identifier_script, group.string);
@@ -224,7 +226,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
         t_uint32 element_id;
         t_uint32 element_size;
 
-        pfc::list_t<pvt::Group> newgroups;
+        pfc::list_t<Group> newgroups;
         bool b_groups_set = false;
 
         while (reader.get_remaining()) {
@@ -233,7 +235,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
 
             switch (element_id) {
             case identifier_show_groups:
-                reader.read_item(pvt::cfg_grouping);
+                reader.read_item(cfg_grouping);
                 break;
             // case identifier_artwork_reflection:
             //    reader.read_item(pvt::cfg_artwork_reflection);
@@ -254,7 +256,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
                     reader.read_item(group_id);
                     reader.read_item(group_size);
 
-                    pvt::Group item;
+                    Group item;
 
                     fbh::fcl::Reader reader2(reader, group_size, p_abort);
 
@@ -294,8 +296,8 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
         }
 
         if (b_groups_set)
-            pvt::g_groups.set_groups(newgroups, false);
-        pvt::PlaylistView::g_on_groups_change();
+            g_groups.set_groups(newgroups, false);
+        PlaylistView::g_on_groups_change();
         // pvt::ng_playlist_view_t::g_on_show_artwork_change();
         // pvt::ng_playlist_view_t::g_on_artwork_width_change();
     }
@@ -370,10 +372,10 @@ class PlaylistViewMiscDataSet : public cui::fcl::dataset {
             }
         }
 
-        pvt::PlaylistView::g_on_autosize_change();
-        pvt::PlaylistView::g_on_vertical_item_padding_change();
-        pvt::PlaylistView::g_on_show_header_change();
-        pvt::PlaylistView::g_update_all_items();
+        PlaylistView::g_on_autosize_change();
+        PlaylistView::g_on_vertical_item_padding_change();
+        PlaylistView::g_on_show_header_change();
+        PlaylistView::g_update_all_items();
     }
 };
 
@@ -439,3 +441,5 @@ class TitlesDataSet : public cui::fcl::dataset {
 };
 
 cui::fcl::dataset_factory<TitlesDataSet> g_export_titles_t;
+
+} // namespace cui::panels::playlist_view
