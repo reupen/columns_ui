@@ -10,7 +10,7 @@ public:
     bool operator()(const internal::ExplicitBool& value) const
     {
         if (value) {
-            m_out->write(titleformat_inputtypes::unknown, u8"1");
+            m_out->write(titleformat_inputtypes::unknown, "1");
         }
         return value;
     }

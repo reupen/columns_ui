@@ -86,7 +86,7 @@ pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_t* item)
     return serialise_splitter_item(normalised_item.get());
 }
 
-std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(gsl::span<const t_uint8> data)
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(std::span<const t_uint8> data)
 {
     auto item = std::make_unique<uie::splitter_item_full_v3_impl_t>();
     stream_reader_memblock_ref reader(data.data(), data.size());
@@ -161,7 +161,7 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipbo
     try {
         return get_splitter_item_from_clipboard();
     } catch (const exception_io& ex) {
-        uMessageBox(wnd, ex.what(), u8"Error – Paste Panel", MB_OK | MB_ICONERROR);
+        uMessageBox(wnd, ex.what(), u8"Error – Paste Panel"_pcc, MB_OK | MB_ICONERROR);
     }
     return {};
 }

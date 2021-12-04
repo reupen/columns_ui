@@ -6,7 +6,7 @@ namespace cui::splitter_utils {
 
 pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_full_v3_impl_t* item);
 pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_t* item);
-std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(gsl::span<t_uint8> data);
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(std::span<t_uint8> data);
 
 CLIPFORMAT get_splitter_item_clipboard_format();
 
@@ -26,7 +26,7 @@ void copy_splitter_item_to_clipboard_safe(HWND wnd, const SplitterItem* item)
     try {
         copy_splitter_item_to_clipboard(item);
     } catch (const exception_io& ex) {
-        uMessageBox(wnd, ex.what(), u8"Error – Copy Panel", MB_OK | MB_ICONERROR);
+        uMessageBox(wnd, ex.what(), u8"Error – Copy Panel"_pcc, MB_OK | MB_ICONERROR);
     }
 }
 

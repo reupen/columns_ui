@@ -17,6 +17,7 @@
 #include <memory>
 #include <optional>
 #include <set>
+#include <span>
 #include <string_view>
 #include <utility>
 #include <unordered_map>
@@ -60,6 +61,7 @@
 #include "../fbh/stdafx.h"
 #include "../pfc/range_based_for.h"
 
+using namespace mmh::literals::pcc;
 using namespace uih::literals::spx;
 
 #include "functional.h"
