@@ -62,12 +62,12 @@ std::shared_ptr<file_info_impl> FullFileInfoRequest::get_safe(const char* reques
         if (error_message == nullptr) {
             error_message = "Unknown error";
         }
-        formatter << requester_name << u8": Error reading file info for track \"" << display_path << u8"\": "
-                  << error_message;
+        formatter << requester_name << ": Error reading file info for track \"" << display_path
+                  << "\": " << error_message;
     } catch (...) {
         pfc::string8 display_path;
         filesystem::g_get_display_path(m_track->get_path(), display_path);
-        formatter << requester_name << u8": Unknown error reading file info for track \"" << display_path << u8"\"";
+        formatter << requester_name << ": Unknown error reading file info for track \"" << display_path << "\"";
     }
     return nullptr;
 }

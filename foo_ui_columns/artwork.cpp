@@ -417,7 +417,7 @@ void ArtworkPanel::show_stub_image()
         const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
         m_image = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
-        fbh::print_to_console(u8"Artwork panel – loading stub image failed: ", ex.what());
+        fbh::print_to_console(u8"Artwork panel – loading stub image failed: "_pcc, ex.what());
     }
 }
 
@@ -444,7 +444,7 @@ bool ArtworkPanel::refresh_image(std::optional<size_t> artwork_type_index_overri
         const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
         m_image = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
-        fbh::print_to_console(u8"Artwork panel – loading image failed: ", ex.what());
+        fbh::print_to_console(u8"Artwork panel – loading image failed: "_pcc, ex.what());
         return false;
     }
 

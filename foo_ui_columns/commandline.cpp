@@ -1,17 +1,17 @@
 #include "stdafx.h"
 #include "fcl.h"
 
-static const char* g_help_text = u8"syntax: foobar2000 /columnsui:<command> \"<path>\"\n\n"
-                                 "Available commands:\n"
-                                 "help, ? – displays this command-line help\n"
-                                 "import – imports an fcl file\n"
-                                 "import-quiet – imports an fcl file without confirmation dialog boxes";
+static const char8_t* g_help_text = u8"syntax: foobar2000 /columnsui:<command> \"<path>\"\n\n"
+                                    u8"Available commands:\n"
+                                    u8"help, ? – displays this command-line help\n"
+                                    u8"import – imports an fcl file\n"
+                                    u8"import-quiet – imports an fcl file without confirmation dialog boxes";
 
 class HelpCommandLineHandler : public commandline_handler {
 public:
     result on_token(const char* token) override
     {
-        if (stricmp_utf8_partial(token, u8"/columnsui:help") != 0 && stricmp_utf8_partial(token, u8"/columnsui:?") != 0)
+        if (stricmp_utf8_partial(token, "/columnsui:help") != 0 && stricmp_utf8_partial(token, "/columnsui:?") != 0)
             return RESULT_NOT_OURS;
 
         execute();
@@ -21,7 +21,7 @@ public:
     {
         HWND parent = core_api::get_main_window();
         static_api_ptr_t<ui_control>()->activate();
-        uMessageBox(parent, g_help_text, u8"Columns UI command-line help", 0);
+        uMessageBox(parent, reinterpret_cast<const char*>(g_help_text), "Columns UI command-line help", 0);
     }
 };
 
@@ -63,16 +63,16 @@ public:
     CommandLineSingleFileHelper m_single_file_helper;
 
     ImportCommandLineHandler()
-        : m_single_file_helper{u8"Import configuration – Columns UI", u8"No file to import specified.",
-            u8"Too many files to import specified. You can only import one file at a time, "
+        : m_single_file_helper{u8"Import configuration – Columns UI"_pcc, "No file to import specified.",
+            "Too many files to import specified. You can only import one file at a time, "
             "and should use double quotes around paths containing spaces."}
     {
     }
 
     result on_token(const char* token) override
     {
-        m_is_quiet = !stricmp_utf8(token, u8"/columnsui:import-quiet");
-        const auto is_import = m_is_quiet || !stricmp_utf8(token, u8"/columnsui:import");
+        m_is_quiet = !stricmp_utf8(token, "/columnsui:import-quiet");
+        const auto is_import = m_is_quiet || !stricmp_utf8(token, "/columnsui:import");
 
         if (!is_import)
             return RESULT_NOT_OURS;
@@ -98,9 +98,9 @@ public:
         if (!is_quiet) {
             static_api_ptr_t<ui_control>()->activate();
             if (uMessageBox(main_window,
-                    formatter << u8"Are you sure you want to import " << pfc::string_filename_ext(path)
-                              << u8"? Your current Columns UI configuration will be lost.",
-                    u8"Import configuration", MB_YESNO)
+                    formatter << "Are you sure you want to import " << pfc::string_filename_ext(path)
+                              << "? Your current Columns UI configuration will be lost.",
+                    "Import configuration", MB_YESNO)
                 == IDNO) {
                 return;
             }
@@ -115,16 +115,16 @@ public:
     CommandLineSingleFileHelper m_single_file_helper;
 
     ExportCommandLineHandler()
-        : m_single_file_helper{u8"Export configuration – Columns UI", u8"No file to export to specified.",
-            u8"Too many destination files specified. You must specify only one destination path, "
+        : m_single_file_helper{u8"Export configuration – Columns UI"_pcc, "No file to export to specified.",
+            "Too many destination files specified. You must specify only one destination path, "
             "and should use double quotes around paths containing spaces."}
     {
     }
 
     result on_token(const char* token) override
     {
-        m_is_quiet = !stricmp_utf8(token, u8"/columnsui:export-quiet");
-        const auto is_import = m_is_quiet || !stricmp_utf8(token, u8"/columnsui:export");
+        m_is_quiet = !stricmp_utf8(token, "/columnsui:export-quiet");
+        const auto is_import = m_is_quiet || !stricmp_utf8(token, "/columnsui:export");
 
         if (!is_import)
             return RESULT_NOT_OURS;

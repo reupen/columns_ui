@@ -38,7 +38,7 @@ void ButtonsToolbar::ButtonImage::load(const Button::CustomImage& p_image)
         try {
             m_bm = cui::wic::create_hbitmap_from_path(fullPath).release();
         } catch (const std::exception& ex) {
-            fbh::print_to_console(u8"Buttons toolbar – loading image failed: ", ex.what());
+            fbh::print_to_console(u8"Buttons toolbar – loading image failed: "_pcc, ex.what());
             m_bm = nullptr;
         }
     }

@@ -233,7 +233,7 @@ DWORD ArtworkReader::on_thread()
     } catch (pfc::exception const& e) {
         m_content.clear();
         console::formatter formatter;
-        formatter << u8"Artwork view – unhandled error reading artwork: " << e.what();
+        formatter << u8"Artwork view – unhandled error reading artwork: "_pcc << e.what();
         ret = -1;
     }
     ArtworkReaderNotification::g_run(m_manager, b_aborted, ret, this);
@@ -252,7 +252,7 @@ album_art_data_ptr query_artwork_data(
         throw;
     } catch (exception_album_art_not_found const&) {
     } catch (exception_io const& ex) {
-        fbh::print_to_console(u8"Artwork view – error loading artwork: ", ex.what());
+        fbh::print_to_console(u8"Artwork view – error loading artwork: "_pcc, ex.what());
     }
 
     return {};

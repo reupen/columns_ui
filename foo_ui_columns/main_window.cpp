@@ -217,8 +217,8 @@ void cui::MainWindow::queue_taskbar_button_update(bool update)
 void cui::MainWindow::warn_if_ui_hacks_installed()
 {
     constexpr auto ui_hacks_warning
-        = u8"Columns UI detected that the UI Hacks (foo_ui_hacks) component is installed. UI Hacks "
-          u8"interferes with normal Columns UI operation and should be uninstalled to avoid problems.";
+        = "Columns UI detected that the UI Hacks (foo_ui_hacks) component is installed. UI Hacks "
+          "interferes with normal Columns UI operation and should be uninstalled to avoid problems.";
 
     HMODULE ui_hacks_module = nullptr;
     const auto is_ui_hacks_installed

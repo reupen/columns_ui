@@ -7,6 +7,6 @@
 
 namespace cui {
 
-constexpr auto version = u8"${{ Version }}";
+constexpr auto version = "${{ Version }}";
 
 }
