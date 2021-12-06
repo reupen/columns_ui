@@ -1,26 +1,26 @@
 variables:
-  solution: vc16/columns_ui-public.sln
+  solution: vc17/columns_ui-public.sln
   llvmMsBuildArgs: /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;SpectreMitigation=
   vc142MsBuildArgs:
   vcpkgInstallArgs: 'ms-gsl range-v3 wil --overlay-ports=$(System.DefaultWorkingDirectory)\ports'
 jobs:
 - template: job-build.yml
   parameters:
-    displayName: VS 2019 LLVM
+    displayName: VS 2022 LLVM
     matrix:
       Debug:
         configuration: Debug
       Release:
         configuration: Release
     msBuildArgs: ${{ variables.llvmMsBuildArgs }}
-    name: vs2019_llvm
+    name: vs2022_llvm
     platform: Win32
     solution: ${{ variables.solution }}
     vcpkgInstallArgs: ${{ variables.vcpkgInstallArgs }}
-    vmImage: windows-2019
+    vmImage: windows-2022
 - template: job-build.yml
   parameters:
-    displayName: VS 2019 v142
+    displayName: VS 2022 v143
     matrix:
       Debug:
         configuration: Debug
@@ -28,8 +28,8 @@ jobs:
         configuration: Release
         publish: true
     msBuildArgs: ${{ variables.vc142MsBuildArgs }}
-    name: vs2019_v142
+    name: vs2022_v143
     platform: Win32
     solution: ${{ variables.solution }}
     vcpkgInstallArgs: ${{ variables.vcpkgInstallArgs }}
-    vmImage: windows-2019
+    vmImage: windows-2022
