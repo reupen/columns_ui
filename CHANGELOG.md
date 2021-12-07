@@ -1,5 +1,11 @@
 # Change log
 
+## Development version
+
+### Internal changes
+
+* The component is now compiled using Visual Studio 2022 17.0 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
+
 ## 1.7.0
 
 * There were no changes from version 1.7.0-beta.2.

@@ -337,12 +337,9 @@ HWND RebarWindow::init()
     HWND rv = nullptr;
 
     auto& band_states = g_cfg_rebar.get_rebar_info();
-    m_bands.reserve(band_states.size());
 
-    /// Using ranges::views::transform here seems to make VS 2019 freeze
-    for (auto&& band_state : band_states) {
-        m_bands.emplace_back(RebarBand{band_state});
-    }
+    m_bands = band_states | ranges::views::transform([](auto&& band_state) { return RebarBand{band_state}; })
+        | ranges::to<std::vector>();
 
     if (!wnd_rebar) {
         rv = wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
@@ -598,13 +595,7 @@ void RebarWindow::delete_band(HWND wnd, bool destroy)
 
 std::vector<RebarBandState> RebarWindow::get_band_states() const
 {
-    /// Using ranges::views::transform here seems to make VS 2019 freeze
-    std::vector<RebarBandState> band_states;
-    band_states.reserve(m_bands.size());
-    for (auto&& band : m_bands)
-        band_states.emplace_back(band.m_state);
-
-    return band_states;
+    return m_bands | ranges::views::transform([](auto&& band) { return band.m_state; }) | ranges::to<std::vector>();
 }
 
 void RebarWindow::add_band(const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)

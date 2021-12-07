@@ -8,7 +8,7 @@ Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPY
 
 Releases can be downloaded from the [Columns UI home page](http://yuo.be/columns-ui).
 
-The latest development version can be downloaded by clicking on the Azure Pipelines badge above, then '1 published' and then the three dots shown while hovering over 'VS 2019 v142 Release'. Development versions may be buggier than formal releases; if you encounter a problem, please open an issue.
+The latest development version can be downloaded by clicking on the Azure Pipelines badge above, then '1 published' and then the three dots shown while hovering over 'VS 2022 v143 Release'. Development versions may be buggier than formal releases; if you encounter a problem, please open an issue.
 
 ## Development
 
@@ -20,7 +20,7 @@ This repo makes use of Git submodules. If you're not familiar with them, [check 
 
 ### Build instructions
 
-Visual Studio 2019 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/) (select the Desktop development with C++ workload during installation).
+Visual Studio 2022 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/) (select the Desktop development with C++ workload during installation).
 
 #### Installing external dependencies
 
@@ -45,26 +45,26 @@ cd vcpkg
 (Note: Change the `..\columns_ui\ports` path in the `.\vcpkg install` command as necessary.)
 
 #### Building using the Visual Studio IDE
-Open `vc16/columns_ui-public.sln` in Visual Studio 2019.
+Open `vc17/columns_ui-public.sln` in Visual Studio 2022.
 
 Select the Release configuration and the Win32 platform, and build the solution.
 
-If the build is successful, `foo_ui_columns.dll` will be output in `vc16\Release`.
+If the build is successful, `foo_ui_columns.dll` will be output in `vc17\Release`.
 
 #### Building using MSBuild on the command line
 
-You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2019 (in the start menu), run:
+You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2022 (in the start menu), run:
 
 ```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release vc16\columns_ui-public.sln
+msbuild /m /p:Platform=Win32 /p:Configuration=Release vc17\columns_ui-public.sln
 ```
 
-If the build is successful, `foo_ui_columns.dll` will be output in `vc16\Release`.
+If the build is successful, `foo_ui_columns.dll` will be output in `vc17\Release`.
 
 For a clean build, run:
 
 ```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc16\columns_ui-public.sln
+msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc17\columns_ui-public.sln
 ```
 
 #### Using the Clang compiler (experimental)
@@ -73,10 +73,10 @@ Note: Currently not functional out of the box – should be functional again whe
 
 Columns UI can be also compiled using the version of Clang distributed with Visual Studio. 
 
-(Note that Clang is not installed by default – in the Visual Studio 2019 installer, you will need to select the Clang compiler and the Clang build tools components.)
+(Note that Clang is not installed by default – in the Visual Studio 2022 installer, you will need to select the Clang compiler and the Clang build tools components.)
 
-With these installed, open a Developer Command Prompt for VS 2019 from the start menu, switch to the Columns UI source directory and run:
+With these installed, open a Developer Command Prompt for VS 2022 from the start menu, switch to the Columns UI source directory and run:
 
 ```
-msbuild /m /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;Platform=Win32;Configuration=Release /t:Rebuild vc16\columns_ui-public.sln
+msbuild /m /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;Platform=Win32;Configuration=Release /t:Rebuild vc17\columns_ui-public.sln
 ```
