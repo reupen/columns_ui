@@ -96,7 +96,7 @@ static const MainMenuCommand show_toolbars{
         cfg_toolbars = !cfg_toolbars;
         on_show_toolbars_change();
     },
-    [] { return cfg_toolbars != 0; }};
+    [] { return cfg_toolbars != 0; }, true};
 
 static const MainMenuCommand live_editing{toggle_live_editing_id, "Live editing",
     "Enables or disables live editing of the Columns UI layout.",
@@ -132,11 +132,14 @@ public:
 
     bool get_display(t_uint32 p_index, pfc::string_base& p_text, t_uint32& p_flags) override
     {
-        auto& command = m_commands[p_index];
+        const auto& command = m_commands[p_index];
         p_text = command.name;
+
         if (command.is_ticked_callback && command.is_ticked_callback())
             p_flags |= flag_checked;
-        return cui::main_window.get_wnd() != nullptr;
+
+        const bool shift_down = (GetKeyState(VK_SHIFT) < 0);
+        return main_window.get_wnd() != nullptr && (!command.hide_without_shift_key || shift_down);
     }
 
     void execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) override
