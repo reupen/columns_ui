@@ -6,6 +6,8 @@
 
 * The 'View/Show toolbars' menu item is now only shown if the shift key is held down when opening the View menu. [[#410](https://github.com/reupen/columns_ui/pull/410)]
 
+* A warning was added under the 'Show toolbars' option in preferences. [[#410](https://github.com/reupen/columns_ui/pull/410)]
+
 ### Internal changes
 
 * The component is now compiled using Visual Studio 2022 17.0 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
