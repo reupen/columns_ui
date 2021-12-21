@@ -10,6 +10,8 @@
 #include "layout.h"
 
 #include "main_window.h"
+
+#include "dark_mode.h"
 #include "notification_area.h"
 #include "status_bar.h"
 #include "migrate.h"
@@ -230,9 +232,19 @@ void cui::MainWindow::warn_if_ui_hacks_installed()
 
 void cui::MainWindow::on_create()
 {
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+    INITCOMMONCONTROLSEX icex{};
+    icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
+    icex.dwICC = ICC_BAR_CLASSES | ICC_COOL_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
+    InitCommonControlsEx(&icex);
+
+    Gdiplus::GdiplusStartupInput gdiplusStartupInput{};
     m_gdiplus_initialised
         = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
+
+    if (dark::is_dark_mode_enabled()) {
+        dark::enable_dark_mode_for_app();
+        dark::enable_top_level_non_client_dark_mode(m_wnd);
+    }
 }
 
 void cui::MainWindow::on_destroy()

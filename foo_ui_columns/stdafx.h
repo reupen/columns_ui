@@ -40,6 +40,7 @@
 #include <windows.h>
 #include <windowsx.h>
 #include <commctrl.h>
+#include <dwmapi.h>
 #include <shlwapi.h>
 #include <winuser.h>
 #include <gdiplus.h>

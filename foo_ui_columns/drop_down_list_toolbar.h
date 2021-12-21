@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dark_mode.h"
+
 template <class ToolbarArgs>
 class DropDownListToolbar : public ui_extension::container_ui_extension {
 public:
@@ -253,6 +255,9 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
 
         if (m_wnd_combo) {
             SetWindowLongPtr(m_wnd_combo, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
+
+            if (cui::dark::is_dark_mode_enabled())
+                SetWindowTheme(m_wnd_combo, L"DarkMode_CFD", nullptr);
 
             SetWindowFont(m_wnd_combo, s_items_font.get(), TRUE);
 

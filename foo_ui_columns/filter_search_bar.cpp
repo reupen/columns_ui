@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
 #include "filter_search_bar.h"
+
+#include "dark_mode.h"
 #include "filter_config_var.h"
 #include "filter_utils.h"
 
@@ -401,6 +403,9 @@ void FilterSearchToolbar::create_edit()
             WS_CHILD | WS_CLIPSIBLINGS | ES_LEFT | WS_VISIBLE | WS_CLIPCHILDREN | CBS_DROPDOWN | CBS_AUTOHSCROLL
                 | WS_TABSTOP | WS_VSCROLL,
             0, 0, 100, 200, get_wnd(), HMENU(id_edit), core_api::get_my_instance(), nullptr);
+
+    if (dark::is_dark_mode_enabled())
+        SetWindowTheme(m_search_editbox, L"DarkMode_CFD", nullptr);
 
     ComboBox_SetMinVisible(m_search_editbox, 25);
 

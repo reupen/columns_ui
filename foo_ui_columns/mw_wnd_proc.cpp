@@ -141,23 +141,18 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
         WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
+        m_wnd = wnd;
 
         if (m_should_handle_multimedia_keys) {
             WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
             m_shell_hook_registered = RegisterShellHookWindow(wnd) != 0;
         }
 
-        INITCOMMONCONTROLSEX icex;
-        icex.dwSize = sizeof(INITCOMMONCONTROLSEX);
-        icex.dwICC = ICC_BAR_CLASSES | ICC_COOL_CLASSES | ICC_LISTVIEW_CLASSES | ICC_TAB_CLASSES | ICC_WIN95_CLASSES;
-        InitCommonControlsEx(&icex);
-
         on_create();
 
         if (!uih::are_keyboard_cues_enabled())
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
-        m_wnd = wnd;
         cui::status_bar::statusbartext = core_version_info::g_get_version_string();
         set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)

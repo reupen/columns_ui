@@ -3,6 +3,7 @@
 #include "playlist_view_tfhooks.h"
 #include "config_appearance.h"
 #include "config_host.h"
+#include "dark_mode.h"
 #include "tab_colours.h"
 #include "tab_fonts.h"
 
@@ -46,6 +47,30 @@ FontsManagerData g_fonts_manager_data;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
 
+COLORREF g_get_dark_mode_system_colour(const cui::colours::colour_identifier_t p_identifier)
+{
+    // Unfortunately, these are hard-coded as there doesn't seem to be a simple
+    // way to get a similar set of dark mode colours from Windows.
+    switch (p_identifier) {
+    case cui::colours::colour_text:
+        return RGB(255, 255, 255);
+    case cui::colours::colour_selection_text:
+        return RGB(255, 255, 255);
+    case cui::colours::colour_background:
+        return RGB(32, 32, 32);
+    case cui::colours::colour_selection_background:
+        return RGB(98, 98, 98);
+    case cui::colours::colour_inactive_selection_text:
+        return RGB(255, 255, 255);
+    case cui::colours::colour_inactive_selection_background:
+        return RGB(51, 51, 51);
+    case cui::colours::colour_active_item_frame:
+        return RGB(119, 119, 119);
+    default:
+        return RGB(255, 0, 0);
+    }
+}
+
 class ColoursManagerInstance : public cui::colours::manager_instance {
 public:
     ColoursManagerInstance(const GUID& p_client_guid)
@@ -59,8 +84,12 @@ public:
         ColoursManagerData::entry_ptr_t p_entry
             = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
         if (p_entry->colour_mode == cui::colours::colour_mode_system
-            || p_entry->colour_mode == cui::colours::colour_mode_themed)
+            || p_entry->colour_mode == cui::colours::colour_mode_themed) {
+            if (cui::dark::is_dark_mode_enabled())
+                return g_get_dark_mode_system_colour(p_identifier);
+
             return g_get_system_color(p_identifier);
+        }
         switch (p_identifier) {
         case cui::colours::colour_text:
             return p_entry->text;
