@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "rebar.h"
+
+#include "dark_mode.h"
 #include "main_window.h"
 
 // extern HBITMAP buttons_images;
@@ -346,7 +348,11 @@ HWND RebarWindow::init()
             WS_BORDER | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE | RBS_AUTOSIZE
                 | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
             0, 0, 0, 0, cui::main_window.get_wnd(), (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
-        // SetWindowTheme(wnd_rebar, L"Default", NULL);
+
+        if (dark::is_dark_mode_enabled())
+            // Note: This isn't good enough as the background colour is different from toolbars
+            // and grippers are invisible.
+            SetWindowTheme(wnd_rebar, L"DarkModeNavBar", nullptr);
     }
 
     refresh_bands();

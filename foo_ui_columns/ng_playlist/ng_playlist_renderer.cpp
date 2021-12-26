@@ -46,14 +46,19 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size 
 
     const style_data_t& style_data = m_playlist_view->get_style_data(index);
 
-    COLORREF cr_text = NULL;
+    COLORREF cr_text = RGB(255, 0, 0);
     if (b_themed && theme_state) {
-        cr_text = GetThemeSysColor(context.list_view_theme, b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
-        {
-            if (IsThemeBackgroundPartiallyTransparent(context.list_view_theme, LVP_LISTITEM, theme_state))
-                DrawThemeParentBackground(context.wnd, context.dc, &rc);
-            DrawThemeBackground(context.list_view_theme, context.dc, LVP_LISTITEM, theme_state, &rc, nullptr);
-        }
+        if (FAILED(GetThemeColor(context.list_view_theme, LVP_LISTITEM, LISS_SELECTED, TMT_TEXTCOLOR, &cr_text)))
+            cr_text = GetThemeSysColor(context.list_view_theme, b_selected ? COLOR_BTNTEXT : COLOR_WINDOWTEXT);
+
+        if (IsThemeBackgroundPartiallyTransparent(context.list_view_theme, LVP_LISTITEM, theme_state))
+            DrawThemeParentBackground(context.wnd, context.dc, &rc);
+
+        RECT rc_background{rc};
+        if (context.m_use_dark_mode)
+            // This is inexplicable, but it needs to be done to get the same appearance as Windows Explorer.
+            InflateRect(&rc_background, 1, 1);
+        DrawThemeBackground(context.list_view_theme, context.dc, LVP_LISTITEM, theme_state, &rc_background, &rc);
     }
 
     RECT rc_subitem = rc;

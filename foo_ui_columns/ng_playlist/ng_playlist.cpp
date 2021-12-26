@@ -5,6 +5,8 @@
 #include "../stdafx.h"
 
 #include "ng_playlist.h"
+
+#include "dark_mode.h"
 #include "ng_playlist_groups.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
@@ -510,6 +512,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
 }
 void PlaylistView::notify_on_initialisation()
 {
+    set_use_dark_mode(dark::is_dark_mode_enabled());
     set_group_info_area_size(
         cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
     set_show_group_info_area(cfg_show_artwork);

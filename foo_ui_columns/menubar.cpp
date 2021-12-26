@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "dark_mode.h"
 #include "menu_mnemonics.h"
 
 cfg_int cfg_fullsizemenu(GUID{0xe880f267, 0x73de, 0x7952, {0x5b, 0x79, 0xb5, 0xda, 0x77, 0x28, 0x6d, 0xb6}}, 0);
@@ -165,6 +167,9 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         if (wnd_menu) {
             SetWindowLongPtr(wnd_menu, GWLP_USERDATA, (LPARAM)(this));
+
+            if (cui::dark::is_dark_mode_enabled())
+                SetWindowTheme(wnd_menu, L"DarkMode", nullptr);
 
             SendMessage(wnd_menu, TB_SETBITMAPSIZE, (WPARAM)0, MAKELONG(0, 0));
             SendMessage(wnd_menu, TB_SETBUTTONSIZE, (WPARAM)0, MAKELONG(0, /*GetSystemMetrics(SM_CYMENUSIZE)*/ 0));

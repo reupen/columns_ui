@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "item_properties.h"
 
+#include "dark_mode.h"
+
 namespace cui::panels::item_properties {
 
 // {8F6069CD-2E36-4ead-B171-93F3DFF0073A}
@@ -185,6 +187,7 @@ void ItemProperties::get_config(stream_writer* p_writer, abort_callback& p_abort
 
 void ItemProperties::notify_on_initialisation()
 {
+    set_use_dark_mode(dark::is_dark_mode_enabled());
     set_autosize(m_autosizing_columns);
     LOGFONT lf;
     static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);

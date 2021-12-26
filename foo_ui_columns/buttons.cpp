@@ -1,5 +1,7 @@
 #include "stdafx.h"
 #include "buttons.h"
+
+#include "dark_mode.h"
 #include "menu_items.h"
 
 #define ID_BUTTONS 2001
@@ -122,12 +124,11 @@ void ButtonsToolbar::create_toolbar()
     COLORREF colour_btntext = GetSysColor(COLOR_BTNTEXT);
 
     if (wnd_toolbar) {
-        //            SetWindowLongPtr(p_this->wnd_toolbar,GWLP_USERDATA,(LPARAM)(p_this));
+        if (dark::is_dark_mode_enabled())
+            SetWindowTheme(wnd_toolbar, L"DarkMode", nullptr);
 
         HIMAGELIST il = nullptr;
         HIMAGELIST iml_hot = nullptr;
-
-        // libpng_handle::g_create(p_libpng);
 
         bool b_need_hot = false;
 
@@ -245,7 +246,6 @@ void ButtonsToolbar::create_toolbar()
                 }
             }
         }
-        // p_libpng.release();
 
         unsigned ex_style = SendMessage(wnd_toolbar, TB_GETEXTENDEDSTYLE, 0, 0);
         SendMessage(wnd_toolbar, TB_SETEXTENDEDSTYLE, 0,

@@ -524,6 +524,9 @@
     <ClCompile Include="legacy_artwork_config.cpp">
       <Filter>Artwork view</Filter>
     </ClCompile>
+    <ClCompile Include="dark_mode.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
@@ -748,6 +751,9 @@
     </ClInclude>
     <ClInclude Include="legacy_artwork_config.h">
       <Filter>Artwork view</Filter>
+    </ClInclude>
+    <ClInclude Include="dark_mode.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
