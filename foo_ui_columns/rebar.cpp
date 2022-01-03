@@ -350,9 +350,7 @@ HWND RebarWindow::init()
             0, 0, 0, 0, cui::main_window.get_wnd(), (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
 
         if (dark::is_dark_mode_enabled())
-            // Note: This isn't good enough as the background colour is different from toolbars
-            // and grippers are invisible.
-            SetWindowTheme(wnd_rebar, L"DarkModeNavBar", nullptr);
+            m_toolbar_theme.reset(OpenThemeData(wnd_rebar, L"DarkMode::Toolbar"));
     }
 
     refresh_bands();
@@ -467,8 +465,30 @@ bool RebarWindow::set_menu_focus()
 
 void RebarWindow::on_themechanged()
 {
+    m_toolbar_theme.reset(OpenThemeData(wnd_rebar, L"DarkMode::Toolbar"));
     SetWindowPos(wnd_rebar, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOZORDER | SWP_NOSIZE | SWP_FRAMECHANGED);
-    RedrawWindow(wnd_rebar, nullptr, nullptr, RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN);
+    RedrawWindow(wnd_rebar, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
+}
+
+std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnmcd) const
+{
+    switch (lpnmcd->dwDrawStage) {
+    case CDDS_PREERASE:
+        if (!(cui::dark::is_dark_mode_enabled() && m_toolbar_theme))
+            return {};
+
+        COLORREF cr{RGB(255, 0, 0)};
+        if (FAILED(GetThemeColor(m_toolbar_theme.get(), 0, 0, TMT_FILLCOLOR, &cr)))
+            return {};
+
+        wil::unique_hbrush brush(CreateSolidBrush(cr));
+
+        RECT rc{};
+        GetClientRect(lpnmcd->hdr.hwndFrom, &rc);
+        FillRect(lpnmcd->hdc, &rc, brush.get());
+        return CDRF_SKIPDEFAULT;
+    }
+    return {};
 }
 
 void RebarWindow::save_bands()
@@ -558,6 +578,7 @@ void RebarWindow::destroy()
     destroy_bands();
     DestroyWindow(wnd_rebar);
     wnd_rebar = nullptr;
+    m_toolbar_theme.reset();
 }
 
 void RebarWindow::update_bands()

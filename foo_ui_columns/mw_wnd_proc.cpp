@@ -746,6 +746,11 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         switch (lpnmh->idFrom) {
         case ID_REBAR:
             switch (lpnmh->code) {
+            case NM_CUSTOMDRAW: {
+                if (const auto result = rebar::g_rebar_window->handle_custom_draw(reinterpret_cast<LPNMCUSTOMDRAW>(lp)))
+                    return *result;
+                break;
+            }
             case RBN_HEIGHTCHANGE: {
                 resize_child_windows();
             } break;
