@@ -30,4 +30,42 @@ void enable_top_level_non_client_dark_mode(HWND wnd)
     DwmSetWindowAttribute(wnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
 }
 
+namespace {
+
+COLORREF get_dark_system_colour(int system_colour_id)
+{
+    // Unfortunately, these are hard-coded as there doesn't seem to be a simple
+    // way to get a similar set of dark mode colours from Windows.
+    switch (system_colour_id) {
+    case COLOR_WINDOWTEXT:
+        return RGB(255, 255, 255);
+    case COLOR_HIGHLIGHTTEXT:
+        return RGB(255, 255, 255);
+    case COLOR_WINDOW:
+        return RGB(32, 32, 32);
+    case COLOR_HIGHLIGHT:
+        return RGB(98, 98, 98);
+    case COLOR_BTNTEXT:
+        return RGB(255, 255, 255);
+    case COLOR_BTNFACE:
+        return RGB(51, 51, 51);
+    case COLOR_WINDOWFRAME:
+        return RGB(119, 119, 119);
+    case COLOR_3DDKSHADOW:
+        return RGB(150, 150, 150);
+    default:
+        return RGB(255, 0, 0);
+    }
+}
+
+} // namespace
+
+COLORREF get_system_colour(int system_colour_id, bool is_dark)
+{
+    if (is_dark)
+        return get_dark_system_colour(system_colour_id);
+
+    return GetSysColor(system_colour_id);
+}
+
 } // namespace cui::dark

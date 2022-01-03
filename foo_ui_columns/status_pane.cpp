@@ -3,6 +3,8 @@
 #include "main_window.h"
 #include "status_pane.h"
 
+#include "dark_mode.h"
+
 namespace cui::status_pane {
 
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
@@ -28,8 +30,8 @@ void StatusPane::on_font_changed()
 
 void StatusPane::render_background(HDC dc, const RECT& rc)
 {
-    COLORREF cr = GetSysColor(COLOR_BTNFACE);
-    COLORREF cr2 = GetSysColor(COLOR_3DDKSHADOW);
+    COLORREF cr = dark::get_system_colour(COLOR_BTNFACE, dark::is_dark_mode_enabled());
+    COLORREF cr2 = dark::get_system_colour(COLOR_3DDKSHADOW, dark::is_dark_mode_enabled());
 
     FillRect(dc, &rc, wil::unique_hbrush(CreateSolidBrush(cr)).get());
 
