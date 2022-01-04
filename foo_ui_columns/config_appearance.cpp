@@ -47,27 +47,25 @@ FontsManagerData g_fonts_manager_data;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
 
-COLORREF g_get_dark_mode_system_colour(const cui::colours::colour_identifier_t p_identifier)
+int g_get_system_colour_id(const cui::colours::colour_identifier_t colour_id)
 {
-    // Unfortunately, these are hard-coded as there doesn't seem to be a simple
-    // way to get a similar set of dark mode colours from Windows.
-    switch (p_identifier) {
+    switch (colour_id) {
     case cui::colours::colour_text:
-        return RGB(255, 255, 255);
+        return COLOR_WINDOWTEXT;
     case cui::colours::colour_selection_text:
-        return RGB(255, 255, 255);
+        return COLOR_HIGHLIGHTTEXT;
     case cui::colours::colour_background:
-        return RGB(32, 32, 32);
+        return COLOR_WINDOW;
     case cui::colours::colour_selection_background:
-        return RGB(98, 98, 98);
+        return COLOR_HIGHLIGHT;
     case cui::colours::colour_inactive_selection_text:
-        return RGB(255, 255, 255);
+        return COLOR_BTNTEXT;
     case cui::colours::colour_inactive_selection_background:
-        return RGB(51, 51, 51);
+        return COLOR_BTNFACE;
     case cui::colours::colour_active_item_frame:
-        return RGB(119, 119, 119);
+        return COLOR_WINDOWFRAME;
     default:
-        return RGB(255, 0, 0);
+        uBugCheck();
     }
 }
 
@@ -85,10 +83,8 @@ public:
             = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
         if (p_entry->colour_mode == cui::colours::colour_mode_system
             || p_entry->colour_mode == cui::colours::colour_mode_themed) {
-            if (cui::dark::is_dark_mode_enabled())
-                return g_get_dark_mode_system_colour(p_identifier);
-
-            return g_get_system_color(p_identifier);
+            const auto system_colour_id = g_get_system_colour_id(p_identifier);
+            return cui::dark::get_system_colour(system_colour_id, cui::dark::is_dark_mode_enabled());
         }
         switch (p_identifier) {
         case cui::colours::colour_text:

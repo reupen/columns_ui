@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "dark_mode.h"
 #include "status_pane.h"
 
 namespace cui::status_pane {
@@ -109,7 +110,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         HFONT fnt_old = SelectFont(dc, m_font.get());
 
         const char* placeholder = "999999999 items selected";
-        const auto default_text_colour = GetSysColor(COLOR_BTNTEXT);
+        const auto default_text_colour = dark::get_system_colour(COLOR_BTNTEXT, dark::is_dark_mode_enabled());
         int placeholder_len = uih::get_text_width(dc, placeholder, strlen(placeholder)) + uih::scale_dpi_value(20);
 
         pfc::string8 items_text;
