@@ -106,6 +106,9 @@
     <Filter Include="Menu items">
       <UniqueIdentifier>{3606e825-9b65-4531-9f94-70972f21e197}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Dark mode">
+      <UniqueIdentifier>{08854a02-9e4c-43a6-8fc3-bb04284d5b02}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\config.cpp">
@@ -525,7 +528,7 @@
       <Filter>Artwork view</Filter>
     </ClCompile>
     <ClCompile Include="dark_mode.cpp">
-      <Filter>Utilities</Filter>
+      <Filter>Dark mode</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -753,7 +756,7 @@
       <Filter>Artwork view</Filter>
     </ClInclude>
     <ClInclude Include="dark_mode.h">
-      <Filter>Utilities</Filter>
+      <Filter>Dark mode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

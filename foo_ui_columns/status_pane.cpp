@@ -30,10 +30,10 @@ void StatusPane::on_font_changed()
 
 void StatusPane::render_background(HDC dc, const RECT& rc)
 {
-    COLORREF cr = dark::get_system_colour(COLOR_BTNFACE, dark::is_dark_mode_enabled());
+    const auto fill_brush = dark::get_system_colour_brush(COLOR_BTNFACE, dark::is_dark_mode_enabled());
     COLORREF cr2 = dark::get_system_colour(COLOR_3DDKSHADOW, dark::is_dark_mode_enabled());
 
-    FillRect(dc, &rc, wil::unique_hbrush(CreateSolidBrush(cr)).get());
+    FillRect(dc, &rc, fill_brush.get());
 
     if (m_theme) {
         COLORREF cr_back = cr2;

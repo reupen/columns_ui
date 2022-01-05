@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+#include "dark_mode.h"
 #include "mw_drop_target.h"
 #include "setup_dialog.h"
 #include "get_msg_hook.h"
@@ -476,6 +477,15 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return 0;
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
+    case WM_ERASEBKGND: {
+        RECT rc{};
+        GetClientRect(wnd, &rc);
+
+        const auto brush = dark::get_system_colour_brush(COLOR_BTNFACE, dark::is_dark_mode_enabled());
+        FillRect(reinterpret_cast<HDC>(wp), &rc, brush.get());
+
+        return TRUE;
+    }
     case WM_DRAWITEM: {
         auto lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lp);
 

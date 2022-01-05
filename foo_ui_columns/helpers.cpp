@@ -1,5 +1,7 @@
 #include "stdafx.h"
 
+#include "dark_mode.h"
+
 void g_ui_selection_manager_register_callback_no_now_playing_fallback(ui_selection_callback* p_callback)
 {
     if (static_api_test_t<ui_selection_manager_v2>())
@@ -96,11 +98,9 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
     return rv;
 }
 
-BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool vert, bool world)
+BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool vert, bool is_dark)
 {
-    COLORREF cr_back = GetSysColor(COLOR_3DFACE);
-    COLORREF cr_fore = GetSysColor(COLOR_MENUTEXT);
-    COLORREF cr_line = GetSysColor(COLOR_3DSHADOW);
+    COLORREF cr_fore = cui::dark::get_system_colour(COLOR_MENUTEXT, is_dark);
 
     {
         SetBkMode(dc, TRANSPARENT);

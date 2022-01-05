@@ -1,10 +1,25 @@
 #include "stdafx.h"
+
+#include "dark_mode.h"
 #include "splitter.h"
 #include "main_window.h"
 
 #define HOST_AUTOHIDE_TIMER_ID 672
 
 namespace cui::panels::splitter {
+
+void FlatSplitterPanel::Panel::PanelContainer::reopen_theme()
+{
+    close_theme();
+
+    if (IsThemeActive() && IsAppThemed())
+        m_theme.reset(OpenThemeData(m_wnd, dark::is_dark_mode_enabled() ? L"DarkMode::Toolbar" : L"Rebar"));
+}
+
+void FlatSplitterPanel::Panel::PanelContainer::close_theme()
+{
+    m_theme.reset();
+}
 
 bool FlatSplitterPanel::Panel::PanelContainer::test_autohide_window(HWND wnd)
 {
@@ -46,25 +61,22 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
 {
     switch (msg) {
     case WM_NCCREATE:
+        m_wnd = wnd;
         break;
-    case WM_CREATE: {
-        m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Rebar") : nullptr;
-    } break;
-    case WM_THEMECHANGED: {
-        if (m_theme)
-            CloseThemeData(m_theme);
-        m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Rebar") : nullptr;
-    } break;
-    case WM_DESTROY: {
-        if (m_theme)
-            CloseThemeData(m_theme);
-        m_theme = nullptr;
-    }
+    case WM_CREATE:
+        reopen_theme();
+        break;
+    case WM_THEMECHANGED:
+        reopen_theme();
+        break;
+    case WM_DESTROY:
+        close_theme();
         m_this.release();
         break;
     case WM_NCDESTROY:
         if (m_hook_active)
             fbh::LowLevelMouseHookManager::s_get_instance().deregister_hook(this);
+        m_wnd = nullptr;
         break;
     case MSG_AUTOHIDE_END:
         if (!cfg_sidebar_hide_delay) {
@@ -119,13 +131,12 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                 RECT rc_caption = {0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy)};
 
                 if (IntersectRect(&rc_dummy, &ps.rcPaint, &rc_caption)) {
-                    {
-#if 1
-                        if (m_theme)
-                            DrawThemeBackground(m_theme, dc, 0, 0, &rc_caption, nullptr);
-                        else
-                            FillRect(dc, &rc_caption, GetSysColorBrush(COLOR_BTNFACE));
-#endif
+                    const auto is_dark = dark::is_dark_mode_enabled();
+                    if (m_theme) {
+                        DrawThemeBackground(m_theme.get(), dc, 0, 0, &rc_caption, nullptr);
+                    } else {
+                        const auto back_brush = dark::get_system_colour_brush(COLOR_BTNFACE, is_dark);
+                        FillRect(dc, &rc_caption, back_brush.get());
                     }
 
                     pfc::string8 text;
@@ -136,7 +147,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                                                                      : g_font_menu_vertical.get());
                     // rc_caption.left += 11;
                     uDrawPanelTitle(dc, &rc_caption, text, text.length(),
-                        m_this->m_panels[index]->m_caption_orientation == vertical, false);
+                        m_this->m_panels[index]->m_caption_orientation == vertical, is_dark);
                     SelectFont(dc, old);
 
 #if 0
@@ -172,7 +183,8 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
             }
         }
         SubtractRect(&rc_fill, &rc_client, &rc_caption);
-        FillRect(HDC(wp), &rc_fill, GetSysColorBrush(COLOR_BTNFACE));
+        const auto brush_fill = dark::get_system_colour_brush(COLOR_BTNFACE, dark::is_dark_mode_enabled());
+        FillRect(HDC(wp), &rc_fill, brush_fill.get());
     }
         return TRUE;
     case WM_WINDOWPOSCHANGED:
@@ -364,8 +376,7 @@ void FlatSplitterPanel::Panel::PanelContainer::set_window_ptr(FlatSplitterPanel*
 FlatSplitterPanel::Panel::PanelContainer::~PanelContainer() = default;
 
 FlatSplitterPanel::Panel::PanelContainer::PanelContainer(Panel* p_panel)
-    : m_theme(nullptr)
-    , m_panel(p_panel)
+    : m_panel(p_panel)
     , m_hook_active(false)
     , m_timer_active(false)
 {
