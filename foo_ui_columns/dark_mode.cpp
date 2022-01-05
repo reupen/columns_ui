@@ -53,7 +53,17 @@ COLORREF get_dark_system_colour(int system_colour_id)
     case COLOR_WINDOWFRAME:
         return RGB(119, 119, 119);
     case COLOR_3DDKSHADOW:
-        return RGB(150, 150, 150);
+        // Standard value: RGB(105, 105, 105)
+        return RGB(28, 28, 28);
+    case COLOR_3DHILIGHT:
+        // Standard value: RGB(255, 255, 255)
+        return RGB(100, 100, 100);
+    case COLOR_3DLIGHT:
+        // Standard value: RGB(227, 227, 227)
+        return RGB(42, 42, 42);
+    case COLOR_3DSHADOW:
+        // Standard value: RGB(160, 160, 160)
+        return RGB(100, 100, 100);
     default:
         return RGB(255, 0, 0);
     }

@@ -4,6 +4,7 @@
 #include "mw_drop_target.h"
 #include "setup_dialog.h"
 #include "get_msg_hook.h"
+#include "main_window.h"
 #include "rebar.h"
 #include "status_bar.h"
 #include "notification_area.h"
