@@ -30,10 +30,11 @@ void StatusPane::on_font_changed()
 
 void StatusPane::render_background(HDC dc, const RECT& rc)
 {
-    COLORREF cr = dark::get_system_colour(COLOR_BTNFACE, dark::is_dark_mode_enabled());
-    COLORREF cr2 = dark::get_system_colour(COLOR_3DDKSHADOW, dark::is_dark_mode_enabled());
+    const auto is_dark = dark::is_dark_mode_enabled();
+    const auto fill_brush = dark::get_system_colour_brush(COLOR_BTNFACE, is_dark);
+    COLORREF cr2 = dark::get_system_colour(COLOR_3DDKSHADOW, is_dark);
 
-    FillRect(dc, &rc, wil::unique_hbrush(CreateSolidBrush(cr)).get());
+    FillRect(dc, &rc, fill_brush.get());
 
     if (m_theme) {
         COLORREF cr_back = cr2;
@@ -44,7 +45,7 @@ void StatusPane::render_background(HDC dc, const RECT& rc)
         Gdiplus::Graphics(dc).FillRectangle(&lgb, rect);
     } else {
         RECT rcl = {0, 0, rc.right, uih::scale_dpi_value(1)};
-        FillRect(dc, &rcl, GetSysColorBrush(COLOR_3DLIGHT));
+        FillRect(dc, &rcl, dark::get_system_colour_brush(COLOR_3DLIGHT, is_dark).get());
     }
 }
 

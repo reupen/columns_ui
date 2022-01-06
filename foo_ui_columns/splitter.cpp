@@ -8,7 +8,7 @@ pfc::ptr_list_t<FlatSplitterPanel> FlatSplitterPanel::g_instances;
 class HorizontalSplitterPanel : public FlatSplitterPanel {
     class_data& get_class_data() const override
     {
-        __implement_get_class_data_ex(_T("{72FACC90-BB7E-4733-8449-D7537232AD26}"), _T(""), false, 0,
+        __implement_get_class_data_ex(_T("{72FACC90-BB7E-4733-8449-D7537232AD26}"), _T(""), true, 0,
             WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
     }
     void get_name(pfc::string_base& p_out) const override { p_out = "Horizontal splitter"; }
@@ -24,7 +24,7 @@ class HorizontalSplitterPanel : public FlatSplitterPanel {
 class VerticalSplitterPanel : public FlatSplitterPanel {
     class_data& get_class_data() const override
     {
-        __implement_get_class_data_ex(_T("{77653A44-66D1-49e0-9A7A-1C71898C0441}"), _T(""), false, 0,
+        __implement_get_class_data_ex(_T("{77653A44-66D1-49e0-9A7A-1C71898C0441}"), _T(""), true, 0,
             WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
     }
     void get_name(pfc::string_base& p_out) const override { p_out = "Vertical splitter"; }

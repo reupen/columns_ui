@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "status_bar.h"
 
+#include "main_window.h"
+
 extern HWND g_status;
 
 namespace cui::status_bar {

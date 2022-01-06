@@ -70,7 +70,6 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     wc.hInstance = core_api::get_my_instance();
     wc.hIcon = ui_control::get()->get_main_icon();
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
-    wc.hbrBackground = reinterpret_cast<HBRUSH>(COLOR_BTNFACE + 1);
     wc.lpszClassName = main_window_class_name;
 
     ATOM cls = RegisterClass(&wc);

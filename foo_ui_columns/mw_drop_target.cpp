@@ -1,7 +1,9 @@
 #include "stdafx.h"
+#include "mw_drop_target.h"
+
+#include "main_window.h"
 #include "rebar.h"
 #include "status_pane.h"
-#include "mw_drop_target.h"
 
 extern HWND g_status;
 

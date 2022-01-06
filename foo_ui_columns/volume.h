@@ -1,16 +1,6 @@
-#ifndef _COLUMNS_VOLUME_H_
-#define _COLUMNS_VOLUME_H_
+#pragma once
 
-/*!
- * \file volume.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Volume control
- */
-
-#include "main_window.h"
+#include "dark_mode.h"
 
 template <bool b_vertical, bool b_popup, typename t_attributes, class t_base = ui_helpers::container_window>
 class VolumeBar
@@ -56,14 +46,14 @@ class VolumeBar
             if (b_popup)
                 uih::Trackbar::draw_channel(dc, rc);
             else {
+                const auto is_dark = cui::dark::is_dark_mode_enabled();
+                COLORREF cr_shadow = cui::dark::get_system_colour(COLOR_3DSHADOW, is_dark);
+                COLORREF cr_hilight = cui::dark::get_system_colour(COLOR_3DHILIGHT, is_dark);
+
                 if (m_this->get_using_gdiplus()) {
                     Gdiplus::Graphics graphics(dc);
                     if (Gdiplus::Ok == graphics.GetLastStatus()) {
                         graphics.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
-
-                        COLORREF cr_shadow = GetSysColor(COLOR_3DSHADOW);
-                        COLORREF cr_hilight = GetSysColor(COLOR_3DHILIGHT);
-
                         RECT rcdraw(*rc);
 
                         Gdiplus::Color colour_hilight, colour_shadow;
@@ -81,8 +71,8 @@ class VolumeBar
                             Gdiplus::Point{rcdraw.left - 1, rcdraw.bottom});
                     }
                 } else {
-                    HPEN pn_light = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_3DHILIGHT));
-                    HPEN pn_shadow = CreatePen(PS_SOLID, 1, GetSysColor(COLOR_3DSHADOW));
+                    HPEN pn_light = CreatePen(PS_SOLID, 1, cr_hilight);
+                    HPEN pn_shadow = CreatePen(PS_SOLID, 1, cr_shadow);
 
                     HPEN pn_old = SelectPen(dc, pn_shadow);
                     MoveToEx(dc, rc->left, rc->bottom - 1, nullptr);
@@ -355,5 +345,3 @@ public:
 };
 
 using volume_popup_t = VolumeBar<true, true, PopupVolumeBarAttributes>;
-
-#endif

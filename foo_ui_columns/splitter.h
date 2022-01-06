@@ -104,14 +104,18 @@ private:
             void on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs) override;
             service_ptr_t<FlatSplitterPanel> m_this;
 
-            HTHEME m_theme;
+            wil::unique_htheme m_theme;
             Panel* m_panel;
 
             bool m_hook_active;
             bool m_timer_active;
 
         private:
+            void reopen_theme();
+            void close_theme();
             bool test_autohide_window(HWND wnd);
+
+            HWND m_wnd{};
         } m_container;
 
         GUID m_guid{};
