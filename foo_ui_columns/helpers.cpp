@@ -98,39 +98,24 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
     return rv;
 }
 
-BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool vert, bool is_dark)
+BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool is_font_vertical, bool is_dark)
 {
-    COLORREF cr_fore = cui::dark::get_system_colour(COLOR_MENUTEXT, is_dark);
+    const COLORREF cr_fore = cui::dark::get_system_colour(COLOR_MENUTEXT, is_dark);
 
-    {
-        SetBkMode(dc, TRANSPARENT);
-        SetTextColor(dc, cr_fore);
+    SetBkMode(dc, TRANSPARENT);
+    SetTextColor(dc, cr_fore);
 
-        SIZE sz;
-        uGetTextExtentPoint32(dc, text, len, &sz);
-        int extra = vert ? rc_clip->bottom - sz.cy : (rc_clip->bottom - rc_clip->top - sz.cy - 1) / 2;
-        /*
-        if (world)
-        {
-        SetGraphicsMode(dc, GM_ADVANCED);
-        XFORM xf;
-        xf.eM11 = 0;
-        xf.eM21 = 1;
-        xf.eDx = 0;
-        xf.eM12 = -1;
-        xf.eM22 = 0;
-        xf.eDy = rc_clip->right;
-        SetWorldTransform(dc, &xf);
-        }
-        */
-        //        HFONT old = SelectFont(dc, fnt_menu);
+    SIZE sz{};
+    uGetTextExtentPoint32(dc, text, len, &sz);
 
-        uExtTextOut(dc, 5 + rc_clip->left, extra, ETO_CLIPPED, rc_clip, text, len, nullptr);
-        //        SelectFont(dc, old);
+    const auto rect_text_top = is_font_vertical ? rc_clip->left : rc_clip->top;
+    const auto rect_text_bottom = is_font_vertical ? rc_clip->right : rc_clip->bottom;
 
-        return TRUE;
-    }
-    return FALSE;
+    const auto text_top_offset = rect_text_top + (rect_text_bottom - rect_text_top - sz.cy - 1) / 2;
+    const auto x = is_font_vertical ? text_top_offset : 4_spx;
+    const auto y = is_font_vertical ? rc_clip->bottom - 5_spx : text_top_offset;
+
+    return uExtTextOut(dc, rc_clip->left + x, rc_clip->top + y, ETO_CLIPPED, rc_clip, text, len, nullptr);
 }
 
 namespace cui::helpers {

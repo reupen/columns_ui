@@ -16,7 +16,7 @@ void g_compare_file_with_bytes(
     const service_ptr_t<file>& p1, const pfc::array_t<t_uint8>& p2, bool& b_same, abort_callback& p_abort);
 
 HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext);
-BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool vert, bool is_dark);
+BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool is_font_vertical, bool is_dark);
 
 namespace cui::helpers {
 

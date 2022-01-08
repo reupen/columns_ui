@@ -804,8 +804,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         HWND wndvol = cui::status_bar::volume_popup_window.create(wnd);
                         POINT pt = lpnmm->pt;
                         ClientToScreen(lpnmm->hdr.hwndFrom, &pt);
-                        int cx = volume_popup_t::g_get_caption_size() + 28;
-                        int cy = 150;
+                        int cx = volume_popup_t::g_get_caption_size() + 26_spx + 2 * 1_spx;
+                        int cy = 144_spx + 2 * 3_spx;
                         int x = pt.x;
                         int y = pt.y;
                         HMONITOR mon = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);

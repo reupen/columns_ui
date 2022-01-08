@@ -973,11 +973,9 @@ void FlatSplitterPanel::get_category(pfc::string_base& p_out) const
     p_out = "Splitters";
 }
 
-unsigned FlatSplitterPanel::g_get_caption_size()
+int FlatSplitterPanel::g_get_caption_size()
 {
-    unsigned rv = uGetFontHeight(g_font_menu_horizontal.get());
-    rv += 9;
-    return rv;
+    return gsl::narrow<int>(uGetFontHeight(g_font_menu_horizontal.get())) + 8_spx;
 }
 
 void FlatSplitterPanel::FlatSplitterPanelHost::relinquish_ownership(HWND wnd)

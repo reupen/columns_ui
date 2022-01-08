@@ -10,7 +10,7 @@ enum Orientation {
 class FlatSplitterPanel : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
 public:
     virtual Orientation get_orientation() const = 0;
-    static unsigned g_get_caption_size();
+    static int g_get_caption_size();
     void get_category(pfc::string_base& p_out) const override;
     unsigned get_type() const override;
 

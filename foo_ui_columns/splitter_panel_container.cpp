@@ -121,14 +121,12 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                 RECT rc_dummy;
                 GetClientRect(wnd, &rc_client);
 
-                unsigned caption_size = g_get_caption_size();
+                const auto caption_size = g_get_caption_size();
 
-                unsigned cx
-                    = m_this->m_panels[index]->m_caption_orientation == vertical ? caption_size : rc_client.right;
-                unsigned cy
-                    = m_this->m_panels[index]->m_caption_orientation == vertical ? rc_client.bottom : caption_size;
+                auto cx = m_this->m_panels[index]->m_caption_orientation == vertical ? caption_size : rc_client.right;
+                auto cy = m_this->m_panels[index]->m_caption_orientation == vertical ? rc_client.bottom : caption_size;
 
-                RECT rc_caption = {0, 0, gsl::narrow<long>(cx), gsl::narrow<long>(cy)};
+                RECT rc_caption = {0, 0, cx, cy};
 
                 if (IntersectRect(&rc_dummy, &ps.rcPaint, &rc_caption)) {
                     const auto is_dark = dark::is_dark_mode_enabled();
