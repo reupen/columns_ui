@@ -8,6 +8,12 @@
 
 * A warning was added under the 'Show toolbars' option in preferences. [[#410](https://github.com/reupen/columns_ui/pull/410)]
 
+### Bug fixes
+
+* Various bugs with the positioning and sizing of panel captions were fixed. [[#418](https://github.com/reupen/columns_ui/pull/418)]
+
+* The status bar pop-up volume bar now correctly scales with the system DPI setting. [[#418](https://github.com/reupen/columns_ui/pull/418)]
+
 ### Internal changes
 
 * Some internal changes were made in advance of support for the Windows 10 dark mode. [[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413), [#415](https://github.com/reupen/columns_ui/pull/415)]

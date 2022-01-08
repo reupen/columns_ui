@@ -187,10 +187,10 @@ public:
                 SIZE sz{};
                 get_caption_extent(sz);
                 unsigned size_caption = get_caption_size();
-                const int x = b_vertical ? size_caption : sz.cx;
-                const int y = 0;
-                const int cx = LOWORD(lp) - (b_vertical ? size_caption : sz.cx);
-                const int cy = HIWORD(lp);
+                const int x = b_vertical ? size_caption + 1_spx : sz.cx;
+                const int y = b_vertical ? 3_spx : 0;
+                const int cx = LOWORD(lp) - (b_vertical ? size_caption + 2 * 1_spx : sz.cx);
+                const int cy = HIWORD(lp) - (b_vertical ? 2 * 3_spx : 0);
                 SetWindowPos(wnd_trackbar, nullptr, x, y, cx, cy, SWP_NOZORDER);
                 RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE);
             } else
@@ -221,26 +221,28 @@ public:
             }
         } break;
         case WM_PAINT: {
-            PAINTSTRUCT ps;
-            HDC dc = BeginPaint(wnd, &ps);
+            PAINTSTRUCT ps{};
+            const auto _ = wil::BeginPaint(wnd, &ps);
 
             if (t_attributes::get_show_caption()) {
                 RECT rc_client, rc_dummy;
                 GetClientRect(wnd, &rc_client);
                 SIZE sz{};
                 get_caption_extent(sz);
-                auto size_caption = (long)get_caption_size();
-                RECT rc_caption = {0, 0, b_vertical ? size_caption : sz.cx, rc_client.bottom};
+                const auto size_caption = get_caption_size();
+                const RECT rc_caption = {0, 5_spx, size_caption - 2_spx, rc_client.bottom - 5_spx};
 
                 if (IntersectRect(&rc_dummy, &rc_caption, &ps.rcPaint)) {
-                    HFONT old = SelectFont(dc, m_font_caption.get());
-                    uDrawPanelTitle(dc, &rc_caption, "Volume", 6, b_vertical, false);
-                    SelectFont(dc, old);
+                    SetBkMode(ps.hdc, TRANSPARENT);
+                    SetTextColor(ps.hdc, GetSysColor(COLOR_MENUTEXT));
+
+                    const auto _ = wil::SelectObject(ps.hdc, m_font_caption.get());
+                    uExtTextOut(ps.hdc, rc_caption.left, rc_caption.bottom, ETO_CLIPPED, &rc_caption, label_text.data(),
+                        label_text.length(), nullptr);
                 }
             }
-            EndPaint(wnd, &ps);
-        }
             return 0;
+        }
         case WM_KEYDOWN: {
             auto lpkeyb = uih::GetKeyboardLParam(lp);
             if (b_popup && wp == VK_ESCAPE && !lpkeyb.transition_code && !lpkeyb.previous_key_state) {
@@ -292,15 +294,14 @@ public:
         update_position(vol);
     }
     void update_position(float p_new_volume) { m_child.set_position(volume_to_position(p_new_volume)); }
-    static unsigned g_get_caption_size(HFONT fnt)
+    static int g_get_caption_size(HFONT fnt)
     {
         if (!t_attributes::get_show_caption())
             return 0;
-        unsigned rv = uGetFontHeight(fnt);
-        rv += 9;
-        return rv;
+
+        return gsl::narrow<int>(uGetFontHeight(fnt)) + 2_spx;
     }
-    static unsigned g_get_caption_size()
+    static int g_get_caption_size()
     {
         if (!t_attributes::get_show_caption())
             return 0;
@@ -310,15 +311,12 @@ public:
     }
 
 private:
-    unsigned get_caption_size() const { return g_get_caption_size(m_font_caption.get()); }
+    int get_caption_size() const { return g_get_caption_size(m_font_caption.get()); }
     bool get_caption_extent(SIZE& p_out) const
     {
-        HDC dc = GetDC(this->get_wnd());
-        HFONT old = SelectFont(dc, m_font_caption.get());
-        bool ret = uGetTextExtentPoint32(dc, "Volume", 6, &p_out) != 0;
-        SelectFont(dc, old);
-        ReleaseDC(this->get_wnd(), dc);
-        return ret;
+        const auto dc = wil::GetDC(this->get_wnd());
+        const auto _ = wil::SelectObject(dc.get(), m_font_caption.get());
+        return uGetTextExtentPoint32(dc.get(), label_text.data(), label_text.size(), &p_out) != 0;
     }
 
     void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused) override{};
@@ -331,6 +329,8 @@ private:
     void FB2KAPI on_playback_dynamic_info_track(const file_info& p_info) override{};
     void FB2KAPI on_playback_time(double p_time) override{};
     void FB2KAPI on_volume_change(float p_new_val) override { update_position(p_new_val); }
+
+    constexpr static auto label_text = "Volume"sv;
 
     wil::unique_hfont m_font_caption;
     ULONG_PTR m_Gdiplus_token{NULL};
