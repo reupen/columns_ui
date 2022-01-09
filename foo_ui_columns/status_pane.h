@@ -166,7 +166,7 @@ class StatusPane
 
             track.release();
         } else {
-            playing1.force_reset();
+            playing1.reset();
         }
     }
     void get_length_data(bool& p_selection, t_size& p_count, pfc::string_base& p_out);

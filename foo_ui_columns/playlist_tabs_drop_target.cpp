@@ -302,7 +302,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
                     newPlaylistIndex = playlist_api->get_playlist_count();
 
                 if (named && cfg_replace_drop_underscores)
-                    playlist_name.replace_char('_', ' ', 0);
+                    playlist_name.replace_char('_', ' ');
                 if (!named && cfg_pgen_tf)
                     new_idx = playlist_api->create_playlist(
                         StringFormatCommonTrackTitle(data, cfg_pgenstring), pfc_infinite, newPlaylistIndex);

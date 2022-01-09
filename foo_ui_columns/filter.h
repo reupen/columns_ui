@@ -27,7 +27,7 @@ public:
 class Node {
 public:
     metadb_handle_list_t<pfc::alloc_fast_aggressive> m_handles;
-    pfc::string_simple_t<WCHAR> m_value;
+    std::wstring m_value;
     bool m_handles_sorted{false};
 
     void ensure_handles_sorted();

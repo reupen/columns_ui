@@ -449,7 +449,7 @@ void FilterPanel::notify_update_item_data(t_size index)
     auto& subitems = get_item_subitems(index);
     subitems.resize(1);
 
-    subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value);
+    subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value.c_str());
 }
 
 t_size FilterPanel::get_highlight_item()
@@ -565,7 +565,7 @@ void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, Action action)
                 if (p_nodes[i]) {
                     if (playlist_name.get_length())
                         playlist_name << ", ";
-                    playlist_name << pfc::stringcvt::string_utf8_from_wide(m_nodes[i].m_value);
+                    playlist_name << pfc::stringcvt::string_utf8_from_wide(m_nodes[i].m_value.c_str());
                 }
             }
         }
@@ -677,7 +677,7 @@ void FilterPanel::update_first_node_text(bool b_update)
                 temp << "s";
             temp << ")";
         }
-        m_nodes[0].m_value.set_string(pfc::stringcvt::string_wide_from_utf8(temp));
+        m_nodes[0].m_value = pfc::stringcvt::string_wide_from_utf8(temp).get_ptr();
         if (b_update)
             update_items(0, 1);
     }
@@ -723,12 +723,12 @@ void Node::remove_handles(metadb_handle_list_cref to_remove)
 
 int Node::g_compare(const Node& i1, const WCHAR* i2)
 {
-    return StrCmpLogicalW(i1.m_value, i2);
+    return StrCmpLogicalW(i1.m_value.c_str(), i2);
 }
 
 int Node::g_compare_ptr_with_node(const Node& i1, const Node& i2)
 {
-    return StrCmpLogicalW(i1.m_value, i2.m_value);
+    return StrCmpLogicalW(i1.m_value.c_str(), i2.m_value.c_str());
 }
 
 void FilterPanel::refresh_stream()

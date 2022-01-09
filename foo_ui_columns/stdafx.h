@@ -31,6 +31,7 @@
 #include <ppl.h>
 #include <share.h>
 
+#include <fmt/format.h>
 #include <gsl/gsl>
 #include <range/v3/all.hpp>
 
@@ -76,3 +77,4 @@ using namespace uih::literals::spx;
 #include "config_defaults.h"
 
 using namespace std::literals;
+using namespace fmt::literals;

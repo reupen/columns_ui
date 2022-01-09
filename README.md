@@ -14,7 +14,9 @@ The latest development version can be downloaded by clicking on the Azure Pipeli
 
 To clone the repo and dependencies, [download and install Git](https://git-scm.com/downloads), and then run:
 
-`git clone --recursive https://github.com/reupen/columns_ui.git`
+```powershell
+git clone --recursive https://github.com/reupen/columns_ui.git
+```
 
 This repo makes use of Git submodules. If you're not familiar with them, [check out the guide here](https://git-scm.com/book/en/v2/Git-Tools-Submodules).
 
@@ -22,29 +24,24 @@ This repo makes use of Git submodules. If you're not familiar with them, [check 
 
 Visual Studio 2022 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/) (select the Desktop development with C++ workload during installation).
 
-#### Installing external dependencies
+#### Installing vcpkg
 
-The following libraries are required to build Columns UI:
+Some dependencies are managed using [vcpkg](https://github.com/Microsoft/vcpkg) and it must be installed to build Columns UI.
 
-- Microsoft Guideline Support Library (GSL)
-- Microsoft Windows Implementation Library (WIL)
-- range-v3
+You can install and set up vcpkg by running the following commands (in a directory of your choice outside the Columns UI source tree):
 
-The recommended way to install them is using [vcpkg](https://github.com/Microsoft/vcpkg).
-
-You can set up vcpkg, and install Microsoft GSL, using the following commands (run outside of the Columns UI source tree):
-
-```
+```powershell
 git clone https://github.com/Microsoft/vcpkg.git
-cd vcpkg
-.\bootstrap-vcpkg.bat
-.\vcpkg integrate install
-.\vcpkg install ms-gsl wil range-v3 --overlay-ports=..\columns_ui\ports
+vcpkg\bootstrap-vcpkg.bat
+vcpkg\vcpkg integrate install
 ```
 
-(Note: Change the `..\columns_ui\ports` path in the `.\vcpkg install` command as necessary.)
+Dependencies should then be automatically installed when Columns UI is built.
+
+(You’ll need to occasionally run `git pull` in the vcpkg directory to fetch updated package metatdata.)
 
 #### Building using the Visual Studio IDE
+
 Open `vc17/columns_ui-public.sln` in Visual Studio 2022.
 
 Select the Release configuration and the Win32 platform, and build the solution.
@@ -55,16 +52,16 @@ If the build is successful, `foo_ui_columns.dll` will be output in `vc17\Release
 
 You can use MSBuild if you prefer. In a Developer Command Prompt for VS 2022 (in the start menu), run:
 
-```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release vc17\columns_ui-public.sln
+```powershell
+msbuild /m "/p:Platform=Win32;Configuration=Release" vc17\columns_ui-public.sln
 ```
 
 If the build is successful, `foo_ui_columns.dll` will be output in `vc17\Release`.
 
 For a clean build, run:
 
-```
-msbuild /m /p:Platform=Win32 /p:Configuration=Release /t:Rebuild vc17\columns_ui-public.sln
+```powershell
+msbuild /m "/p:Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_ui-public.sln
 ```
 
 #### Using the Clang compiler (experimental)
@@ -77,6 +74,6 @@ Columns UI can be also compiled using the version of Clang distributed with Visu
 
 With these installed, open a Developer Command Prompt for VS 2022 from the start menu, switch to the Columns UI source directory and run:
 
-```
-msbuild /m /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;Platform=Win32;Configuration=Release /t:Rebuild vc17\columns_ui-public.sln
+```powershell
+msbuild /m "/p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_ui-public.sln
 ```
