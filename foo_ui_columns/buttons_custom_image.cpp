@@ -105,38 +105,31 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
                 }
             }
             {
-                pfc::string_printf dir1("%s\\images", p_base);
-                pfc::string_printf dir2("%s\\images\\%s", p_base, p_name);
-                if (!filesystem::g_exists(dir1, p_abort))
-                    filesystem::g_create_directory(dir1, p_abort);
-                if (!filesystem::g_exists(dir2, p_abort))
-                    filesystem::g_create_directory(dir2, p_abort);
+                const auto images_root = fmt::format(R"({}\images)", p_base);
+                const auto output_dir = fmt::format(R"({}\{})", images_root, p_name);
+                if (!filesystem::g_exists(images_root.c_str(), p_abort))
+                    filesystem::g_create_directory(images_root.c_str(), p_abort);
+                if (!filesystem::g_exists(output_dir.c_str(), p_abort))
+                    filesystem::g_create_directory(output_dir.c_str(), p_abort);
 
                 service_ptr_t<file> p_image;
 
-                pfc::string8 curdir = pfc::string_printf("%s\\images", p_base);
+                auto wname = fmt::format(R"({}\{})", output_dir, std::string_view(name.get_ptr(), name.get_size()));
 
-                pfc::string8 wname = curdir;
-                wname.add_byte('\\');
-
-                wname.add_string(p_name);
-                wname.add_byte('\\');
-
-                wname.add_string(name.get_ptr(), name.get_size());
-                pfc::string8 name_only = pfc::string_filename(wname);
-                pfc::string8 ext = pfc::string_extension(wname).get_ptr();
+                const auto name_only = pfc::string_filename(wname.c_str());
+                const auto ext = pfc::string_extension(wname.c_str());
                 unsigned n = 0;
 
                 bool b_write = true;
                 {
                     bool b_continue = false;
                     do {
-                        bool b_exists = filesystem::g_exists(wname, p_abort);
+                        bool b_exists = filesystem::g_exists(wname.c_str(), p_abort);
                         if (b_exists) {
                             b_continue = true;
                             service_ptr_t<file> p_temp;
                             try {
-                                filesystem::g_open(p_temp, wname, filesystem::open_mode_read, p_abort);
+                                filesystem::g_open(p_temp, wname.c_str(), filesystem::open_mode_read, p_abort);
                                 {
                                     bool b_same = false;
                                     g_compare_file_with_bytes(p_temp, data, b_same, p_abort);
@@ -151,18 +144,17 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
                             b_continue = false;
 
                         if (b_continue && n < 100)
-                            wname = pfc::string_printf(
-                                "%s\\%s\\%s %02u.%s", curdir.get_ptr(), p_name, name_only.get_ptr(), n, ext.get_ptr());
+                            wname = fmt::format(R"({}\{}_{:02}.{})", output_dir, name_only.get_ptr(), n, ext.get_ptr());
                         n++;
 
                     } while (b_continue && n < 100);
                 }
 
                 if (b_write) {
-                    filesystem::g_open(p_image, wname, filesystem::open_mode_write_new, p_abort);
+                    filesystem::g_open(p_image, wname.c_str(), filesystem::open_mode_write_new, p_abort);
                     p_image->write(data.get_ptr(), data.get_size(), p_abort);
                 }
-                m_path = wname;
+                m_path = wname.c_str();
             }
         } break;
         case I_BUTTON_CUSTOM_IMAGE_MASK_DATA: {
@@ -194,37 +186,29 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
                 }
             }
             {
-                pfc::string_printf dir1("%s\\images", p_base);
-                pfc::string_printf dir2("%s\\images\\%s", p_base, p_name);
-                if (!filesystem::g_exists(dir1, p_abort))
-                    filesystem::g_create_directory(dir1, p_abort);
-                if (!filesystem::g_exists(dir2, p_abort))
-                    filesystem::g_create_directory(dir2, p_abort);
+                const auto images_root = fmt::format(R"({}\images)", p_base);
+                const auto output_dir = fmt::format(R"({}\{})", images_root, p_name);
+                if (!filesystem::g_exists(images_root.c_str(), p_abort))
+                    filesystem::g_create_directory(images_root.c_str(), p_abort);
+                if (!filesystem::g_exists(output_dir.c_str(), p_abort))
+                    filesystem::g_create_directory(output_dir.c_str(), p_abort);
                 service_ptr_t<file> p_image;
 
-                pfc::string8 curdir = pfc::string_printf("%s\\images", p_base);
+                auto wname = fmt::format(R"({}\{})", output_dir, std::string_view(name.get_ptr(), name.get_size()));
 
-                pfc::string8 wname = curdir;
-                wname.add_byte('\\');
-
-                wname.add_string(p_name);
-                wname.add_byte('\\');
-
-                wname.add_string(name.get_ptr(), name.get_size());
-
-                pfc::string8 name_only = pfc::string_filename(wname);
-                pfc::string8 ext = pfc::string_extension(wname).get_ptr();
+                const auto name_only = pfc::string_filename(wname.c_str());
+                const auto ext = pfc::string_extension(wname.c_str());
                 unsigned n = 0;
                 bool b_write = true;
                 {
                     bool b_continue = false;
                     do {
-                        bool b_exists = filesystem::g_exists(wname, p_abort);
+                        bool b_exists = filesystem::g_exists(wname.c_str(), p_abort);
                         if (b_exists) {
                             b_continue = true;
                             service_ptr_t<file> p_temp;
                             try {
-                                filesystem::g_open(p_temp, wname, filesystem::open_mode_read, p_abort);
+                                filesystem::g_open(p_temp, wname.c_str(), filesystem::open_mode_read, p_abort);
                                 {
                                     bool b_same = false;
                                     g_compare_file_with_bytes(p_temp, data, b_same, p_abort);
@@ -239,18 +223,17 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
                             b_continue = false;
 
                         if (b_continue && n < 100)
-                            wname = pfc::string_printf(
-                                "%s\\%s\\%s %02u.%s", curdir.get_ptr(), p_name, name_only.get_ptr(), n, ext.get_ptr());
+                            wname = fmt::format(R"({}\{}_{:02}.{})", output_dir, name_only.get_ptr(), n, ext.get_ptr());
                         n++;
 
                     } while (b_continue && n < 100);
                 }
 
                 if (b_write) {
-                    filesystem::g_open(p_image, wname, filesystem::open_mode_write_new, p_abort);
+                    filesystem::g_open(p_image, wname.c_str(), filesystem::open_mode_write_new, p_abort);
                     p_image->write(data.get_ptr(), data.get_size(), p_abort);
                 }
-                m_mask_path = wname;
+                m_mask_path = wname.c_str();
             }
         } break;
         default:
@@ -283,7 +266,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
                 filesystem::g_get_canonical_path(realPath, canPath);
                 filesystem::g_open(p_image, canPath, filesystem::open_mode_read, p_abort);
 
-                pfc::string_filename_ext name(m_path);
+                const auto name = pfc::string_filename_ext(m_path);
 
                 t_filesize imagesize = p_image->get_size(p_abort);
 
@@ -321,7 +304,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
                 service_ptr_t<file> p_image;
                 filesystem::g_open(p_image, m_mask_path, filesystem::open_mode_read, p_abort);
 
-                pfc::string_filename_ext name(m_mask_path);
+                const auto name = pfc::string_filename_ext(m_mask_path);
 
                 t_filesize imagesize = p_image->get_size(p_abort);
 

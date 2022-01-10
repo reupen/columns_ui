@@ -2,7 +2,6 @@ variables:
   solution: vc17/columns_ui-public.sln
   llvmMsBuildArgs: /p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;SpectreMitigation=
   vc142MsBuildArgs:
-  vcpkgInstallArgs: 'ms-gsl range-v3 wil --overlay-ports=$(System.DefaultWorkingDirectory)\ports'
 jobs:
 - template: job-build.yml
   parameters:
@@ -16,7 +15,6 @@ jobs:
     name: vs2022_llvm
     platform: Win32
     solution: ${{ variables.solution }}
-    vcpkgInstallArgs: ${{ variables.vcpkgInstallArgs }}
     vmImage: windows-2022
 - template: job-build.yml
   parameters:
@@ -31,5 +29,4 @@ jobs:
     name: vs2022_v143
     platform: Win32
     solution: ${{ variables.solution }}
-    vcpkgInstallArgs: ${{ variables.vcpkgInstallArgs }}
     vmImage: windows-2022

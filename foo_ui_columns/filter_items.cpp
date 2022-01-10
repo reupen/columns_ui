@@ -6,7 +6,7 @@ namespace cui::panels::filter {
 void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain)
 {
     bool b_redraw = disable_redrawing();
-    pfc::list_t<pfc::string_simple_t<WCHAR>> previous_nodes;
+    std::vector<std::wstring> previous_nodes;
     bool b_all_was_selected = false;
     if (m_nodes.get_count()) {
         pfc::list_t<bool> sel_data;
@@ -17,12 +17,12 @@ void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc
         b_all_was_selected = selection[0];
         for (t_size i = 1; i < count; i++)
             if (selection[i])
-                previous_nodes.add_item(m_nodes[i].m_value);
+                previous_nodes.emplace_back(m_nodes[i].m_value);
     }
 
     populate_list(handles);
 
-    t_size count = previous_nodes.get_count();
+    t_size count = previous_nodes.size();
     pfc::array_t<bool> new_selection;
     new_selection.set_count(m_nodes.get_count());
     new_selection.fill_null();
@@ -31,7 +31,7 @@ void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc
         new_selection[0] = b_all_was_selected;
         for (t_size i = 0; i < count; i++) {
             t_size index;
-            if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare, previous_nodes[i].get_ptr(), 1,
+            if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare, previous_nodes[i].c_str(), 1,
                     index, get_sort_direction())) {
                 new_selection[index] = true;
                 b_found = true;
@@ -406,7 +406,7 @@ void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& han
     m_nodes.set_count(node_count + 1);
     Node* p_nodes = m_nodes.get_ptr();
     p_nodes[0].m_handles.add_items(handles);
-    p_nodes[0].m_value.set_string(L"All");
+    p_nodes[0].m_value = L"All";
 
     for (size_t i{0}, j{1}; i < data_entries_count; i++) {
         const size_t start{i};

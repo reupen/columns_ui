@@ -395,7 +395,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
 
                 if (create_new)
                     if (g_get_folder_name(pDataObj, playlist_name) && cfg_replace_drop_underscores)
-                        playlist_name.replace_char('_', ' ', 0);
+                        playlist_name.replace_char('_', ' ');
 
                 {
                     class DelayedDropTargetProcesser : public process_locations_notify {

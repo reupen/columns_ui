@@ -189,3 +189,4 @@ Release.Win32
 .vs
 
 /foo_ui_columns/version.h
+vcpkg_installed/

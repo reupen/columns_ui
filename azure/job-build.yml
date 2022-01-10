@@ -5,7 +5,6 @@ parameters:
   msBuildArgs: ''
   platform: ''
   solution: ''
-  vcpkgInstallArgs: ''
   vmImage: ''
 jobs:
 - job: ${{ parameters.name }}
@@ -16,7 +15,6 @@ jobs:
     msBuildArgs: ${{ parameters.msBuildArgs }}
     platform: ${{ parameters.platform }}
     solution: ${{ parameters.solution }}
-    vcpkgInstallArgs: ${{ parameters.vcpkgInstallArgs }}
   strategy:
     matrix:
       ${{ insert }}: ${{ parameters.matrix }}
@@ -25,11 +23,10 @@ jobs:
     submodules: recursive
   - powershell: |
       Set-PSDebug -Trace 1
+      git -C "$Env:VCPKG_INSTALLATION_ROOT" pull
       vcpkg version
       vcpkg integrate install
-      vcpkg install $(vcpkgInstallArgs)
-    condition: variables.vcpkgInstallArgs
-    displayName: Install dependencies
+    displayName: Set up vcpkg
   - task: VSBuild@1
     displayName: Build
     inputs:
