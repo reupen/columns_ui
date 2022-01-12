@@ -986,7 +986,7 @@ END
 // Bitmap
 //
 
-IDB_BLANK               BITMAP                  "next1.bmp"
+IDB_BLANK               BITMAP                  "assets\\blank.bmp"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -996,27 +996,27 @@ IDB_BLANK               BITMAP                  "next1.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_LOCK                ICON                    "LOCK.ico"
+IDI_LOCK                ICON                    "assets\\padlock.ico"
 
-IDI_PLAY                ICON                    "icons\\New Folder\\square\\play256.ico"
+IDI_PLAY                ICON                    "assets\\play.ico"
 
-IDI_STOP                ICON                    "icons\\New Folder\\square\\stop256.ico"
+IDI_STOP                ICON                    "assets\\stop.ico"
 
-IDI_NEXT                ICON                    "icons\\New Folder\\square\\next256.ico"
+IDI_NEXT                ICON                    "assets\\next.ico"
 
-IDI_RAND                ICON                    "icons\\New Folder\\square\\rand256.ico"
+IDI_RAND                ICON                    "assets\\play-random.ico"
 
-IDI_OPEN                ICON                    "icons\\New Folder\\square\\open256.ico"
+IDI_OPEN                ICON                    "assets\\open.ico"
 
-IDI_PAUSE               ICON                    "icons\\New Folder\\square\\pause256.ico"
+IDI_PAUSE               ICON                    "assets\\pause.ico"
 
-IDI_PREV                ICON                    "icons\\New Folder\\square\\prev256.ico"
+IDI_PREV                ICON                    "assets\\previous.ico"
 
-IDI_STARON              ICON                    "icons\\star\\star on.ico"
+IDI_STARON              ICON                    "assets\\star-gold.ico"
 
-IDI_STAROFF             ICON                    "icons\\star\\star off.ico"
+IDI_STAROFF             ICON                    "assets\\star-grey.ico"
 
-IDI_RESET               ICON                    "icons\\star\\left.ico"
+IDI_RESET               ICON                    "assets\\reset.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1024,7 +1024,7 @@ IDI_RESET               ICON                    "icons\\star\\left.ico"
 // PNG
 //
 
-IDB_NOCOVER             PNG                     "emptycoverdark.png"
+IDB_NOCOVER             PNG                     "assets\\placeholder-artwork.png"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
