@@ -33,6 +33,67 @@ void enable_top_level_non_client_dark_mode(HWND wnd)
 
 namespace {
 
+consteval COLORREF create_grey(const int value)
+{
+    return RGB(value, value, value);
+}
+
+enum class DarkColour : COLORREF {
+    DARK_000 = create_grey(32),
+    DARK_100 = create_grey(42),
+    DARK_190 = create_grey(51),
+    DARK_200 = create_grey(56),
+    DARK_300 = create_grey(77),
+    DARK_400 = create_grey(88),
+    DARK_500 = create_grey(98),
+    DARK_600 = create_grey(119),
+    DARK_900 = create_grey(255),
+};
+
+COLORREF get_dark_colour(ColourID colourId)
+{
+    switch (colourId) {
+    case ColourID::TabControlBackground:
+        return WI_EnumValue(DarkColour::DARK_000);
+    case ColourID::TabControlItemBackground:
+        return WI_EnumValue(DarkColour::DARK_200);
+    case ColourID::TabControlItemText:
+        return WI_EnumValue(DarkColour::DARK_900);
+    case ColourID::TabControlItemBorder:
+        return WI_EnumValue(DarkColour::DARK_000);
+    case ColourID::TabControlActiveItemBackground:
+        return WI_EnumValue(DarkColour::DARK_500);
+    case ColourID::TabControlHotItemBackground:
+        return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::TabControlHotActiveItemBackground:
+        return WI_EnumValue(DarkColour::DARK_600);
+    default:
+        uBugCheck();
+    }
+}
+
+COLORREF get_light_colour(ColourID colourId)
+{
+    // Not yet implemented
+    uBugCheck();
+}
+
+} // namespace
+
+COLORREF get_colour(ColourID colourId, bool is_dark)
+{
+    return is_dark ? get_dark_colour(colourId) : get_light_colour(colourId);
+}
+
+LazyResource<wil::unique_hbrush> get_colour_brush(ColourID colour_id, bool is_dark)
+{
+    auto factory
+        = [colour_id, is_dark] { return wil::unique_hbrush(CreateSolidBrush(get_colour(colour_id, is_dark))); };
+    return LazyResource<wil::unique_hbrush>(std::move(factory));
+}
+
+namespace {
+
 COLORREF get_dark_system_colour(int system_colour_id)
 {
     // Unfortunately, these are hard-coded as there doesn't seem to be a simple
@@ -71,7 +132,7 @@ COLORREF get_dark_system_colour(int system_colour_id)
 
 } // namespace
 
-[[nodiscard]] COLORREF get_system_colour(int system_colour_id, bool is_dark)
+COLORREF get_system_colour(int system_colour_id, bool is_dark)
 {
     if (is_dark)
         return get_dark_system_colour(system_colour_id);
@@ -79,9 +140,14 @@ COLORREF get_dark_system_colour(int system_colour_id)
     return GetSysColor(system_colour_id);
 }
 
-[[nodiscard]] wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark)
+wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark)
 {
-    return wil::unique_hbrush(CreateSolidBrush(get_system_colour(system_colour_id, is_dark)));
+    if (is_dark)
+        return wil::unique_hbrush(CreateSolidBrush(get_system_colour(system_colour_id, true)));
+
+    // HBRUSHes returned by GetSysColorBrush don't need destroying, but doing so does no harm
+    // according to the docs
+    return wil::unique_hbrush(GetSysColorBrush(system_colour_id));
 }
 
 } // namespace cui::dark

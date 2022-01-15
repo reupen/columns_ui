@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "playlist_tabs.h"
-#include "main_window.h"
+
+#include "dark_mode.h"
+#include "dark_mode_tabs.h"
 #include "playlist_manager_utils.h"
 
 namespace cui::panels::playlist_tabs {
@@ -258,6 +260,18 @@ const GUID PlaylistTabs::extension_guid
 LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
+    case WM_ERASEBKGND:
+        if (!dark::is_dark_mode_enabled())
+            break;
+
+        return FALSE;
+    case WM_PAINT: {
+        if (!dark::is_dark_mode_enabled())
+            break;
+
+        dark::handle_tab_control_paint(wnd);
+        return 0;
+    }
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {

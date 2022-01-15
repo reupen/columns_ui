@@ -1,6 +1,9 @@
 #include "stdafx.h"
 #include "splitter_tabs.h"
 
+#include "dark_mode.h"
+#include "dark_mode_tabs.h"
+
 namespace cui::panels::tab_stack {
 
 // {6F000FC4-3F86-4fc5-80EA-F7AA4D9551E6}
@@ -912,6 +915,18 @@ LRESULT WINAPI TabStackPanel::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
 LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
+    case WM_ERASEBKGND:
+        if (!dark::is_dark_mode_enabled())
+            break;
+
+        return FALSE;
+    case WM_PAINT: {
+        if (!dark::is_dark_mode_enabled())
+            break;
+
+        dark::handle_tab_control_paint(wnd);
+        return 0;
+    }
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {
