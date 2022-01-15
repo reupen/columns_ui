@@ -300,6 +300,7 @@
     <ClCompile Include=".\colours_manager_data.cpp" />
     <ClCompile Include=".\columns_v2.cpp" />
     <ClCompile Include="dark_mode.cpp" />
+    <ClCompile Include="dark_mode_tabs.cpp" />
     <ClCompile Include="filter_fcl.cpp" />
     <ClCompile Include="legacy_artwork_config.cpp" />
     <ClCompile Include="ng_playlist\config_object_callbacks.cpp" />
@@ -510,6 +511,7 @@
     <ClInclude Include=".\mw_drop_target.h" />
     <ClInclude Include="button_items.h" />
     <ClInclude Include="dark_mode.h" />
+    <ClInclude Include="dark_mode_tabs.h" />
     <ClInclude Include="filter_config_var.h" />
     <ClInclude Include="filter_utils.h" />
     <ClInclude Include="font_utils.h" />
