@@ -14,11 +14,11 @@ public:
 
     static void g_initialise_filter_stream(const FilterStream::ptr& p_stream)
     {
-        for (t_size i = 0, count = g_active_instances.get_count(); i < count; i++) {
-            if (!cfg_orderedbysplitters || g_filter_search_bar_has_stream(g_active_instances[i], p_stream)) {
-                if (!g_active_instances[i]->m_active_search_string.is_empty()) {
+        for (auto&& window : s_windows) {
+            if (!cfg_orderedbysplitters || g_filter_search_bar_has_stream(window, p_stream)) {
+                if (!window->m_active_search_string.is_empty()) {
                     p_stream->m_source_overriden = true;
-                    p_stream->m_source_handles = g_active_instances[i]->m_active_handles;
+                    p_stream->m_source_handles = window->m_active_handles;
                     break;
                 }
             }
@@ -67,6 +67,8 @@ private:
 
     using uie::container_uie_window_v2::on_size;
 
+    static std::vector<FilterSearchToolbar*> s_windows;
+
     HWND m_search_editbox{};
     HWND m_wnd_toolbar{};
     HWND m_wnd_last_focused{};
@@ -82,8 +84,6 @@ private:
     int m_combo_cy{};
     int m_toolbar_cx{};
     int m_toolbar_cy{};
-
-    static pfc::ptr_list_t<FilterSearchToolbar> g_active_instances;
 };
 
 }; // namespace cui::panels::filter

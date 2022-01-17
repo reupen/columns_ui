@@ -84,7 +84,7 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
     }
 }
 
-pfc::ptr_list_t<FilterSearchToolbar> FilterSearchToolbar::g_active_instances;
+std::vector<FilterSearchToolbar*> FilterSearchToolbar::s_windows;
 
 namespace {
 uie::window_factory<FilterSearchToolbar> g_filter_search_bar;
@@ -137,11 +137,11 @@ void FilterSearchToolbar::on_show_clear_button_change()
 
 bool FilterSearchToolbar::g_activate()
 {
-    if (g_active_instances.get_count()) {
-        g_active_instances[0]->activate();
-        return true;
-    }
-    return false;
+    if (s_windows.empty())
+        return false;
+
+    s_windows[0]->activate();
+    return true;
 }
 
 bool FilterSearchToolbar::g_filter_search_bar_has_stream(
@@ -154,8 +154,8 @@ bool FilterSearchToolbar::g_filter_search_bar_has_stream(
 
 void FilterSearchToolbar::s_on_favourites_change()
 {
-    for (size_t i{0}; i < g_active_instances.get_count(); ++i) {
-        g_active_instances[i]->refresh_favourites(false);
+    for (auto&& window : s_windows) {
+        window->refresh_favourites(false);
     }
 }
 
@@ -248,10 +248,10 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
     case WM_CREATE:
         m_font.reset(uCreateIconFont());
         create_edit();
-        g_active_instances.add_item(this);
+        s_windows.emplace_back(this);
         break;
     case WM_NCDESTROY:
-        g_active_instances.remove_item(this);
+        s_windows.erase(std::ranges::remove(s_windows, this).begin(), s_windows.end());
         if (!core_api::is_shutting_down())
             commit_search_results("");
         m_font.reset();
@@ -346,14 +346,14 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             if (!query.is_empty()) {
                 if (cfg_favourites.find_item(query, index)) {
                     cfg_favourites.remove_by_idx(index);
-                    for (t_size i = 0, count = g_active_instances.get_count(); i < count; i++)
-                        if (g_active_instances[i]->m_search_editbox)
-                            ComboBox_DeleteString(g_active_instances[i]->m_search_editbox, index);
+                    for (auto&& window : s_windows)
+                        if (window->m_search_editbox)
+                            ComboBox_DeleteString(window->m_search_editbox, index);
                 } else {
                     cfg_favourites.add_item(query);
-                    for (t_size i = 0, count = g_active_instances.get_count(); i < count; i++)
-                        if (g_active_instances[i]->m_search_editbox)
-                            ComboBox_AddString(g_active_instances[i]->m_search_editbox, uT(query));
+                    for (auto&& window : s_windows)
+                        if (window->m_search_editbox)
+                            ComboBox_AddString(window->m_search_editbox, uT(query));
                 }
                 update_favourite_icon();
             }
