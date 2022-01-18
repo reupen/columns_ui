@@ -12,8 +12,8 @@ void FlatSplitterPanel::Panel::PanelContainer::reopen_theme()
 {
     close_theme();
 
-    if (IsThemeActive() && IsAppThemed())
-        m_theme.reset(OpenThemeData(m_wnd, dark::is_dark_mode_enabled() ? L"DarkMode::Toolbar" : L"Rebar"));
+    if (IsThemeActive() && IsAppThemed() && !dark::is_dark_mode_enabled())
+        m_theme.reset(OpenThemeData(m_wnd, L"Rebar"));
 }
 
 void FlatSplitterPanel::Panel::PanelContainer::close_theme()
@@ -133,7 +133,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                     if (m_theme) {
                         DrawThemeBackground(m_theme.get(), dc, 0, 0, &rc_caption, nullptr);
                     } else {
-                        const auto back_brush = dark::get_system_colour_brush(COLOR_BTNFACE, is_dark);
+                        const auto back_brush = dark::get_colour_brush(dark::ColourID::PanelCaptionBackground, is_dark);
                         FillRect(dc, &rc_caption, back_brush.get());
                     }
 

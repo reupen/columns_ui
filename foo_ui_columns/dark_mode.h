@@ -8,6 +8,7 @@
 namespace cui::dark {
 
 enum class ColourID {
+    PanelCaptionBackground,
     TabControlBackground,
     TabControlItemBackground,
     TabControlItemText,
@@ -54,8 +55,9 @@ private:
 void enable_dark_mode_for_app();
 void enable_top_level_non_client_dark_mode(HWND wnd);
 
-[[nodiscard]] COLORREF get_colour(ColourID colourId, bool is_dark);
-[[nodiscard]] LazyResource<wil::unique_hbrush> get_colour_brush(ColourID colourId, bool is_dark);
+[[nodiscard]] COLORREF get_colour(ColourID colour_id, bool is_dark);
+[[nodiscard]] wil::unique_hbrush get_colour_brush(ColourID colour_id, bool is_dark);
+[[nodiscard]] LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool is_dark);
 
 [[nodiscard]] COLORREF get_system_colour(int system_colour_id, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark);
