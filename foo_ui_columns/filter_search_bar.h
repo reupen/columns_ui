@@ -36,6 +36,26 @@ public:
     t_uint32 get_flags() const override { return flag_default_flags_plus_transparent_background; }
 
 private:
+    class FontClient : public cui::fonts::client {
+        const GUID& get_client_guid() const override { return font_client_id; }
+        void get_name(pfc::string_base& p_out) const override { p_out = "Filter search"; }
+        cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+        void on_font_changed() const override { s_update_font(); }
+    };
+
+    class ColourClient : public cui::colours::client {
+        const GUID& get_client_guid() const override { return colour_client_id; }
+        void get_name(pfc::string_base& p_out) const override { p_out = "Filter search"; }
+        size_t get_supported_colours() const override
+        {
+            return cui::colours::colour_flag_text | cui::colours::colour_flag_background;
+        }
+        size_t get_supported_bools() const override { return 0; }
+        bool get_themes_supported() const override { return false; }
+        void on_bool_changed(t_size mask) const override {}
+        void on_colour_changed(t_size mask) const override { s_update_colours(); }
+    };
+
     enum { id_edit = 668, id_toolbar };
 
     enum { idc_clear = 1001, idc_favourite = 1002, msg_favourite_selected = WM_USER + 2 };
@@ -43,6 +63,13 @@ private:
     enum { TIMER_QUERY = 1001 };
 
     enum { config_version_current = 0 };
+
+    static LRESULT WINAPI g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    static void s_recreate_font();
+    static void s_recreate_background_brush();
+    static void s_update_colours();
+    static void s_update_font();
 
     const GUID& get_class_guid() override { return cui::toolbars::guid_filter_search_bar; }
 
@@ -59,15 +86,25 @@ private:
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void create_edit();
+    void recalculate_dimensions();
     void on_size(t_size cx, t_size cy) override;
     void activate();
 
-    static LRESULT WINAPI g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     LRESULT on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     using uie::container_uie_window_v2::on_size;
 
-    static std::vector<FilterSearchToolbar*> s_windows;
+    static constexpr GUID font_client_id
+        = {0xfc156d41, 0xcbb, 0x4b98, {0x88, 0x8b, 0x36, 0x4f, 0x38, 0x17, 0x2a, 0x2e}};
+
+    static constexpr GUID colour_client_id
+        = {0xa8ce267b, 0x39a0, 0x4d64, {0xbb, 0xaa, 0xc8, 0xee, 0x14, 0x58, 0xfb, 0x79}};
+
+    inline static fonts::client::factory<FontClient> s_font_client;
+    inline static wil::unique_hfont s_font;
+    inline static colours::client::factory<ColourClient> s_colour_client;
+    inline static wil::unique_hbrush s_background_brush;
+    inline static std::vector<FilterSearchToolbar*> s_windows;
 
     HWND m_search_editbox{};
     HWND m_wnd_toolbar{};
@@ -78,7 +115,6 @@ private:
     bool m_show_clear_button{cfg_showsearchclearbutton};
     pfc::string8 m_active_search_string;
     metadb_handle_list m_active_handles;
-    wil::unique_hfont m_font;
     HIMAGELIST m_imagelist{};
     int m_combo_cx{};
     int m_combo_cy{};

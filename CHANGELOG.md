@@ -4,6 +4,10 @@
 
 ### Features
 
+* The Filter search toolbar is now integrated with the Colours and fonts preferences page, and its font, foreground colour and background colour are now configurable. [[#424](https://github.com/reupen/columns_ui/pull/424)]
+  
+  (Note that selection colours are not supported.)
+
 * The 'View/Show toolbars' menu item is now only shown if the shift key is held down when opening the View menu. [[#410](https://github.com/reupen/columns_ui/pull/410)]
 
 * A warning was added under the 'Show toolbars' option in preferences. [[#410](https://github.com/reupen/columns_ui/pull/410)]
