@@ -433,6 +433,9 @@ void FilterSearchToolbar::create_edit()
         0, 0, 0, 0, get_wnd(), (HMENU)id_toolbar, core_api::get_my_instance(), nullptr);
     // SetWindowTheme(m_wnd_toolbar, L"SearchButton", NULL);
 
+    if (dark::is_dark_mode_enabled())
+        SetWindowTheme(m_wnd_toolbar, L"DarkMode", nullptr);
+
     const unsigned cx = GetSystemMetrics(SM_CXSMICON);
     const unsigned cy = GetSystemMetrics(SM_CYSMICON);
 
