@@ -177,7 +177,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value);
-        ;
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
@@ -188,7 +187,6 @@ public:
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeSourcePopup(ItemDetails* p_wnd);
-        ;
     };
 
     class MenuNodeAlignment : public ui_extension::menu_node_command_t {
@@ -201,7 +199,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value);
-        ;
     };
 
     class MenuNodeAlignmentPopup : public ui_extension::menu_node_popup_t {
@@ -212,7 +209,6 @@ public:
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeAlignmentPopup(ItemDetails* p_wnd);
-        ;
     };
 
     class MenuNodeOptions : public ui_extension::menu_node_command_t {
@@ -223,7 +219,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeOptions(ItemDetails* p_wnd);
-        ;
     };
     class MenuNodeHorizontalScrolling : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
@@ -233,7 +228,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeHorizontalScrolling(ItemDetails* p_wnd);
-        ;
     };
 
     class MenuNodeWordWrap : public ui_extension::menu_node_command_t {
@@ -244,7 +238,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeWordWrap(ItemDetails* p_wnd);
-        ;
     };
 
     // UIE funcs

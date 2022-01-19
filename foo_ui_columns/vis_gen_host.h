@@ -45,7 +45,7 @@ public:
     unsigned get_frame_style() const { return m_frame; }
     void get_vis_ptr(uie::visualisation_ptr& p_out) { p_out = p_vis; }
 
-    unsigned get_type() const override { return ui_extension::type_toolbar | ui_extension::type_panel; };
+    unsigned get_type() const override { return ui_extension::type_toolbar | ui_extension::type_panel; }
 
     void set_vis_data(const void* p_data, unsigned p_size)
     {

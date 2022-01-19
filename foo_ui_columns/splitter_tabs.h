@@ -72,7 +72,6 @@ public:
         unsigned min_width{0};
         unsigned max_width{0};
         SizeLimit() = default;
-        ;
     };
     class Panel {
     public:

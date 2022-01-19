@@ -20,7 +20,7 @@ enum ColourID {
     COLOUR_SELECTED_TEXT_NO_FOCUS,
     COLOUR_FRAME,
 };
-};
+}
 
 COLORREF get_default_colour(colours::ColourID index, bool themed = false);
 

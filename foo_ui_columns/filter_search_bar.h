@@ -122,4 +122,4 @@ private:
     int m_toolbar_cy{};
 };
 
-}; // namespace cui::panels::filter
+} // namespace cui::panels::filter

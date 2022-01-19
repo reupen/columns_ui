@@ -208,13 +208,13 @@ public:
     t_size get_supported_colours() const override
     {
         return colours::colour_flag_background | colours::colour_flag_text;
-    }; // bit-mask
-    t_size get_supported_bools() const override { return 0; }; // bit-mask
+    } // bit-mask
+    t_size get_supported_bools() const override { return 0; } // bit-mask
 
-    bool get_themes_supported() const override { return false; };
+    bool get_themes_supported() const override { return false; }
 
-    void on_bool_changed(t_size mask) const override{};
-    void on_colour_changed(t_size mask) const override { ItemDetails::g_on_colours_change(); };
+    void on_bool_changed(t_size mask) const override {}
+    void on_colour_changed(t_size mask) const override { ItemDetails::g_on_colours_change(); }
 };
 
 namespace {

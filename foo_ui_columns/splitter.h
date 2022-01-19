@@ -48,7 +48,6 @@ public:
         void get_children(pfc::list_base_t<window::ptr>& p_out) override;
 
         void on_size_limit_change(HWND wnd, unsigned flags) override;
-        ;
 
         // unsigned get_orientation();
         Orientation get_orientation() const;
@@ -82,7 +81,6 @@ private:
         unsigned min_width{0};
         unsigned max_width{0};
         SizeLimit() = default;
-        ;
     };
     class Panel : public std::enable_shared_from_this<Panel> {
     public:
@@ -93,7 +91,7 @@ private:
             enum { MSG_AUTOHIDE_END = WM_USER + 2 };
 
             PanelContainer(Panel* p_panel);
-            ;
+
             ~PanelContainer();
             void set_window_ptr(FlatSplitterPanel* p_ptr);
             void enter_autohide_hook();

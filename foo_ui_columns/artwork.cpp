@@ -77,7 +77,7 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
     p_hook.add_node(uie::menu_node_ptr(new MenuNodeOptions()));
 }
 
-ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio){};
+ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio) {}
 
 void ArtworkPanel::g_on_edge_style_change()
 {
@@ -546,20 +546,20 @@ class ArtworkColoursClient : public colours::client {
 public:
     static const GUID g_guid;
 
-    const GUID& get_client_guid() const override { return g_guid_colour_client; };
-    void get_name(pfc::string_base& p_out) const override { p_out = "Artwork view"; };
+    const GUID& get_client_guid() const override { return g_guid_colour_client; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Artwork view"; }
 
-    t_size get_supported_colours() const override { return colours::colour_flag_background; }; // bit-mask
-    t_size get_supported_bools() const override { return 0; }; // bit-mask
-    bool get_themes_supported() const override { return false; };
+    t_size get_supported_colours() const override { return colours::colour_flag_background; } // bit-mask
+    t_size get_supported_bools() const override { return 0; } // bit-mask
+    bool get_themes_supported() const override { return false; }
 
-    void on_colour_changed(t_size mask) const override { ArtworkPanel::g_on_colours_change(); };
-    void on_bool_changed(t_size mask) const override{};
+    void on_colour_changed(t_size mask) const override { ArtworkPanel::g_on_colours_change(); }
+    void on_bool_changed(t_size mask) const override {}
 };
 
 namespace {
 colours::client::factory<ArtworkColoursClient> g_appearance_client_impl;
-};
+}
 
 ArtworkPanel::CompletionNotifyForwarder::CompletionNotifyForwarder(ArtworkPanel* p_this) : m_this(p_this) {}
 
@@ -798,4 +798,4 @@ bool ArtworkPanel::MenuNodeLockType::get_display_data(pfc::string_base& p_out, u
     return true;
 }
 
-}; // namespace cui::artwork_panel
+} // namespace cui::artwork_panel

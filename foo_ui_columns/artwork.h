@@ -43,7 +43,7 @@ public:
 
     enum { playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch };
     void on_playlist_switch() override;
-    void on_item_focus_change(t_size p_from, t_size p_to) override{};
+    void on_item_focus_change(t_size p_from, t_size p_to) override {}
 
     void on_items_added(
         t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
@@ -102,7 +102,6 @@ private:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeArtworkType(ArtworkPanel* p_wnd, t_size p_value);
-        ;
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {

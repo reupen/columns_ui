@@ -114,7 +114,7 @@ public:
 
     bool on_menuchar(unsigned short chr) override;
 
-    unsigned get_type() const override { return ui_extension::type_toolbar; };
+    unsigned get_type() const override { return ui_extension::type_toolbar; }
 
     bool is_menu_focused() const override;
     HWND get_previous_focus_window() const override;
@@ -125,7 +125,7 @@ public:
 
 bool MenuToolbar::hooked = false;
 
-MenuToolbar::MenuToolbar() : p_manager(nullptr){};
+MenuToolbar::MenuToolbar() : p_manager(nullptr) {}
 
 MenuToolbar::~MenuToolbar() = default;
 

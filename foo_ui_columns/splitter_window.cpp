@@ -20,7 +20,7 @@ void FlatSplitterPanel::insert_panel(unsigned index, const uie::splitter_item_t*
             refresh_children();
         }
     }
-};
+}
 
 void FlatSplitterPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
@@ -34,7 +34,7 @@ void FlatSplitterPanel::replace_panel(unsigned index, const uie::splitter_item_t
         if (get_wnd())
             refresh_children();
     }
-};
+}
 
 void FlatSplitterPanel::destroy_children()
 {
@@ -715,7 +715,7 @@ bool FlatSplitterPanel::is_point_ours(
         }
     }
     return false;
-};
+}
 
 unsigned FlatSplitterPanel::get_panel_divider_size(unsigned index)
 {

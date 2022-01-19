@@ -46,7 +46,7 @@ public:
 
             m_this->on_size_changed();
         }
-    };
+    }
 
     unsigned is_resize_supported(HWND wnd) const override { return false; }
 
@@ -303,19 +303,19 @@ void TabStackPanel::get_category(pfc::string_base& p_out) const
 unsigned TabStackPanel::get_type() const
 {
     return ui_extension::type_layout | uie::type_splitter;
-};
+}
 
 unsigned TabStackPanel::get_panel_count() const
 {
     return m_panels.get_count();
-};
+}
 uie::splitter_item_t* TabStackPanel::get_panel(unsigned index) const
 {
     if (index < m_panels.get_count()) {
         return m_panels[index]->create_splitter_item();
     }
     return nullptr;
-};
+}
 
 bool TabStackPanel::get_config_item_supported(unsigned index, const GUID& p_type) const
 {
@@ -352,7 +352,7 @@ bool TabStackPanel::set_config_item(
         }
     }
     return false;
-};
+}
 
 void TabStackPanel::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
 {
@@ -373,7 +373,7 @@ void TabStackPanel::set_config(stream_reader* config, t_size p_size, abort_callb
             }
         }
     }
-};
+}
 void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t((t_uint32)stream_version_current, p_abort);
@@ -383,7 +383,7 @@ void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) cons
     for (unsigned n = 0; n < count; n++) {
         m_panels[n]->write(out, p_abort);
     }
-};
+}
 
 void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
@@ -394,7 +394,7 @@ void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abo
     for (unsigned n = 0; n < count; n++) {
         m_panels[n]->_export(p_writer, p_abort);
     }
-};
+}
 
 void TabStackPanel::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
@@ -413,7 +413,7 @@ void TabStackPanel::import_config(stream_reader* p_reader, t_size p_size, abort_
             m_panels.add_item(temp);
         }
     }
-};
+}
 
 void clip_sizelimit(uie::size_limit_t& mmi)
 {
@@ -778,7 +778,7 @@ void TabStackPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_i
         if (get_wnd())
             refresh_children();
     }
-};
+}
 
 void TabStackPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
 {
@@ -799,7 +799,7 @@ void TabStackPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_
         if (get_wnd())
             refresh_children();
     }
-};
+}
 
 void TabStackPanel::remove_panel(unsigned index)
 {
@@ -812,7 +812,7 @@ void TabStackPanel::remove_panel(unsigned index)
         m_panels[index]->destroy();
         m_panels.remove_by_idx(index);
     }
-};
+}
 
 void TabStackPanel::create_tabs()
 {
@@ -896,7 +896,7 @@ void TabStackPanel::on_active_tab_changing(t_size index_from)
         //}
         ShowWindow(m_active_panels[index_from]->m_wnd, SW_HIDE);
     }
-};
+}
 void TabStackPanel::on_active_tab_changed(t_size index_to)
 {
     if (index_to < m_active_panels.get_count() && m_active_panels[index_to]->m_wnd) {

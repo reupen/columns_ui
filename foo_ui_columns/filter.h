@@ -8,11 +8,11 @@ class AppearanceClient : public colours::client {
 public:
     static const GUID g_guid;
 
-    const GUID& get_client_guid() const override { return g_guid; };
-    void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel"; };
+    const GUID& get_client_guid() const override { return g_guid; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel"; }
     t_size get_supported_colours() const override { return colours::colour_flag_all; }
     t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; }
-    bool get_themes_supported() const override { return true; };
+    bool get_themes_supported() const override { return true; }
     void on_colour_changed(t_size mask) const override;
     void on_bool_changed(t_size mask) const override {}
 };
@@ -220,4 +220,4 @@ private:
     ui_status_text_override::ptr m_status_text_override;
 };
 
-}; // namespace cui::panels::filter
+} // namespace cui::panels::filter

@@ -35,7 +35,9 @@ public:
         , filter(p_filter_string)
         , parts(p_parts)
         , show(b_show)
-        , edit_field(p_edit_field){};
+        , edit_field(p_edit_field)
+    {
+    }
 };
 
 enum class ColumnStreamVersion {

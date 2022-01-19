@@ -118,7 +118,7 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
             if (g_status && main_window::config_get_status_show_lock())
                 set_part_sizes(t_part_lock);
         }
-    };
+    }
 
     void on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len) override {}
     void on_playlists_reorder(const unsigned* p_order, unsigned p_count) override {}
@@ -126,7 +126,7 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
     void on_playlists_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override {}
     void on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len) override {}
 
-    void on_default_format_changed() override{};
+    void on_default_format_changed() override {}
     void on_playback_order_changed(unsigned p_new_index) override {}
     void on_playlist_locked(unsigned p_playlist, bool p_locked) override
     {
@@ -134,7 +134,7 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
             if (g_status && main_window::config_get_status_show_lock())
                 set_part_sizes(t_part_lock);
         }
-    };
+    }
 
     virtual void on_item_replaced(unsigned pls, unsigned item, metadb_handle* from, metadb_handle* to) {}
 };

@@ -33,7 +33,7 @@ class WindowEnum_t {
 public:
     void run() { EnumWindows(&g_EnumWindowsProc, (LPARAM)this); }
     pfc::list_t<HWND, pfc::alloc_fast> m_wnd_list;
-    WindowEnum_t(HWND wnd_owner) : m_wnd_owner(wnd_owner){};
+    WindowEnum_t(HWND wnd_owner) : m_wnd_owner(wnd_owner) {}
 };
 
 std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter = nullptr);

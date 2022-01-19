@@ -318,4 +318,4 @@ void create_window()
     }
 }
 
-}; // namespace cui::status_bar
+} // namespace cui::status_bar

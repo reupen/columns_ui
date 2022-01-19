@@ -92,7 +92,7 @@ class VolumeBar
         VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
 
     public:
-        VolumeTrackBar(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this){};
+        VolumeTrackBar(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this) {}
     } m_child;
 
     class VolumeTrackBarCallback : public uih::TrackbarCallback {
@@ -120,7 +120,7 @@ class VolumeBar
         VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
 
     public:
-        VolumeTrackBarCallback(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this){};
+        VolumeTrackBarCallback(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this) {}
     } m_track_bar_host;
 
 public:
@@ -318,15 +318,15 @@ private:
         return uGetTextExtentPoint32(dc.get(), label_text.data(), label_text.size(), &p_out) != 0;
     }
 
-    void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused) override{};
-    void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override{};
-    void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason) override{};
-    void FB2KAPI on_playback_seek(double p_time) override{};
-    void FB2KAPI on_playback_pause(bool p_state) override{};
-    void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override{};
-    void FB2KAPI on_playback_dynamic_info(const file_info& p_info) override{};
-    void FB2KAPI on_playback_dynamic_info_track(const file_info& p_info) override{};
-    void FB2KAPI on_playback_time(double p_time) override{};
+    void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
+    void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override {}
+    void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason) override {}
+    void FB2KAPI on_playback_seek(double p_time) override {}
+    void FB2KAPI on_playback_pause(bool p_state) override {}
+    void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override {}
+    void FB2KAPI on_playback_dynamic_info(const file_info& p_info) override {}
+    void FB2KAPI on_playback_dynamic_info_track(const file_info& p_info) override {}
+    void FB2KAPI on_playback_time(double p_time) override {}
     void FB2KAPI on_volume_change(float p_new_val) override { update_position(p_new_val); }
 
     constexpr static auto label_text = "Volume"sv;

@@ -486,7 +486,7 @@ bool FilterPanel::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM 
     uie::window_ptr p_this = this;
     bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
     return ret;
-};
+}
 
 void FilterPanel::get_selection_handles(
     metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out, bool fallback, bool b_sort)

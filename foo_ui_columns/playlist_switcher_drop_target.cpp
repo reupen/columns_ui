@@ -14,7 +14,7 @@ bool g_query_dataobj_supports_format(CLIPFORMAT cf, IDataObject* pDataObj)
     fe.tymed = TYMED_HGLOBAL;
 
     return S_OK == pDataObj->QueryGetData(&fe); // Don't want S_FALSE ?
-};
+}
 
 bool g_get_folder_name(IDataObject* pDataObj, pfc::string8& p_out)
 {
@@ -434,7 +434,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                         }
                         void on_aborted() override {}
 
-                        DelayedDropTargetProcesser() : m_insertIndexTracker(false){};
+                        DelayedDropTargetProcesser() : m_insertIndexTracker(false) {}
                     };
 
                     service_ptr_t<DelayedDropTargetProcesser> ptr = new service_impl_t<DelayedDropTargetProcesser>;

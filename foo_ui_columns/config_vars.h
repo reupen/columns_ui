@@ -33,10 +33,14 @@ public:
         *this = temp;
     }
     explicit ConfigMenuItem(const GUID& p_guid, const MenuItemIdentifier& p_val)
-        : cfg_struct_t<MenuItemIdentifier>(p_guid, p_val){};
+        : cfg_struct_t<MenuItemIdentifier>(p_guid, p_val)
+    {
+    }
     explicit ConfigMenuItem(const GUID& p_guid, const GUID& p_val, const GUID& psub = pfc::guid_null)
-        : cfg_struct_t<MenuItemIdentifier>(p_guid, MenuItemIdentifier{p_val, psub}){};
-    explicit ConfigMenuItem(const GUID& p_guid) : cfg_struct_t<MenuItemIdentifier>(p_guid, MenuItemIdentifier{}){};
+        : cfg_struct_t<MenuItemIdentifier>(p_guid, MenuItemIdentifier{p_val, psub})
+    {
+    }
+    explicit ConfigMenuItem(const GUID& p_guid) : cfg_struct_t<MenuItemIdentifier>(p_guid, MenuItemIdentifier{}) {}
 };
 
 namespace settings {

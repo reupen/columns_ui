@@ -319,4 +319,4 @@ std::string mainpath_from_guid(GUID p_guid, GUID p_subguid, bool b_short)
     }
     return "Unknown command";
 }
-}; // namespace menu_helpers
+} // namespace menu_helpers

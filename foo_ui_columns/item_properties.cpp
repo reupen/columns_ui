@@ -57,7 +57,7 @@ const GUID ItemPropertiesColoursClient::g_guid
 
 namespace {
 colours::client::factory<ItemPropertiesColoursClient> g_appearance_client_impl;
-};
+}
 
 void ItemProperties::g_redraw_all()
 {

@@ -562,7 +562,7 @@ public:
         while (e.next(l)) {
             add_item(l);
         }
-    };
+    }
 };
 
 void g_get_panels_info(const pfc::list_t<uie::window::ptr>& p_panels, uie::window_info_list_simple& p_out)

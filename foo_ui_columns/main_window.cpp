@@ -353,48 +353,51 @@ public:
             set_part_sizes(cui::status_bar::t_part_length);
         }
     }
-    void on_items_reordered(const unsigned* order,
-        unsigned count) override{}; // changes selection too; doesnt actually change set of items that are selected or
-                                    // item having focus, just changes their order
-    void FB2KAPI on_items_removing(const bit_array& p_mask, unsigned p_old_count,
-        unsigned p_new_count) override{}; // called before actually removing them
+    void on_items_reordered(const unsigned* order, unsigned count) override {
+    } // changes selection too; doesnt actually change set of items that are selected or
+      // item having focus, just changes their order
+    void FB2KAPI on_items_removing(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override {
+    } // called before actually removing them
     void FB2KAPI on_items_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
         if (cui::main_window.get_wnd()) {
             set_part_sizes(cui::status_bar::t_part_length);
         }
-    };
+    }
     void on_items_selection_change(const bit_array& affected, const bit_array& state) override
     {
         if (cui::main_window.get_wnd()) {
             set_part_sizes(cui::status_bar::t_part_length);
         }
     }
-    void on_item_focus_change(unsigned from, unsigned to)
-        override{}; // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
+    void on_item_focus_change(unsigned from, unsigned to) override {
+    } // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
     void FB2KAPI on_items_modified(const bit_array& p_mask) override {}
-    void FB2KAPI on_items_modified_fromplayback(
-        const bit_array& p_mask, play_control::t_display_level p_level) override{};
+    void FB2KAPI on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override
+    {
+    }
     void on_items_replaced(const bit_array& p_mask,
-        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override{};
-    void on_item_ensure_visible(unsigned idx) override{};
+        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
+    {
+    }
+    void on_item_ensure_visible(unsigned idx) override {}
 
     void on_playlist_switch() override
     {
         if (cui::main_window.get_wnd()) {
             set_part_sizes(cui::status_bar::t_parts_all);
         }
-    };
-    void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override{};
+    }
+    void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override {}
     void on_playlist_locked(bool p_locked) override
     {
         if (cui::main_window.get_wnd())
             if (g_status && main_window::config_get_status_show_lock())
                 set_part_sizes(cui::status_bar::t_parts_all);
-    };
+    }
 
-    void on_default_format_changed() override{};
-    void on_playback_order_changed(unsigned p_new_index) override{};
+    void on_default_format_changed() override {}
+    void on_playback_order_changed(unsigned p_new_index) override {}
 
     unsigned get_flags() override { return flag_all; }
 };

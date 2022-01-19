@@ -13,9 +13,9 @@ public:
         service_ptr_t<VisualisationPanel> m_wnd;
 
     public:
-        HDC get_device_context() const override { return m_dc; };
+        HDC get_device_context() const override { return m_dc; }
 
-        const RECT* get_area() const override { return &m_rect; };
+        const RECT* get_area() const override { return &m_rect; }
 
         Painter(VisualisationPanel* p_wnd) : m_gdiobj(nullptr), m_wnd(p_wnd)
         {
@@ -39,7 +39,7 @@ public:
             SelectObject(m_dc, m_gdiobj);
             DeleteDC(m_dc);
             ReleaseDC(wnd, dc);
-        };
+        }
     };
 
     void create_painter(painter_ptr& p_out) override

@@ -7,7 +7,9 @@ public:
     Group(const char* p_string, PlaylistFilterType p_filter_type = FILTER_NONE, const char* p_filter = "")
         : string(p_string)
         , filter_type(p_filter_type)
-        , filter_playlists(p_filter){};
+        , filter_playlists(p_filter)
+    {
+    }
     Group() = default;
     void write(stream_writer* p_stream, abort_callback& p_abort)
     {
@@ -43,7 +45,7 @@ public:
     ConfigGroups(const GUID& p_guid) : cfg_var(p_guid)
     {
         add_group(Group("$if2(%album artist%,<no artist>)[ / %album%]"), false);
-    };
+    }
 
 private:
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override

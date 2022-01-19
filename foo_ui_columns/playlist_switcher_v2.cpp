@@ -122,7 +122,7 @@ void PlaylistSwitcher::notify_on_initialisation()
     LOGFONT lf;
     static_api_ptr_t<fonts::manager>()->get_font(g_guid_font, lf);
     set_font(&lf);
-};
+}
 void PlaylistSwitcher::notify_on_create()
 {
     m_playlist_api = standard_api_create_t<playlist_manager_v3>();

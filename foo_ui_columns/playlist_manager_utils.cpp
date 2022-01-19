@@ -67,7 +67,7 @@ bool cut(const pfc::list_base_const_t<t_size>& indices)
             mask.set(indices[i], true);
     }
     return cut(mask);
-};
+}
 bool copy(const bit_array& mask)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
@@ -91,7 +91,7 @@ bool copy(const pfc::list_base_const_t<t_size>& indices)
             mask.set(indices[i], true);
     }
     return copy(mask);
-};
+}
 bool paste(HWND wnd, t_size index_insert)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
@@ -126,5 +126,5 @@ bool paste(HWND wnd, t_size index_insert)
         index_insert++;
     }
     return true;
-};
+}
 } // namespace playlist_manager_utils

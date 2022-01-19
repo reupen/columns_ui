@@ -79,6 +79,6 @@ bool paste(HWND wnd, size_t index)
     playlist_api->activeplaylist_clear_selection();
     playlist_api->activeplaylist_insert_items(index, handles, bit_array_true());
     return true;
-};
+}
 
 } // namespace playlist_utils

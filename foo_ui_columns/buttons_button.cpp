@@ -15,7 +15,7 @@ void ButtonsToolbar::Button::ButtonStateCallback::on_button_state_change(unsigne
     else
         state = state & ~TBSTATE_PRESSED;
     SendMessage(m_this->wnd_toolbar, TB_SETSTATE, id, MAKELONG(state, 0));
-};
+}
 
 ButtonsToolbar::Button::ButtonStateCallback& ButtonsToolbar::Button::ButtonStateCallback::operator=(
     const ButtonStateCallback& p_source)

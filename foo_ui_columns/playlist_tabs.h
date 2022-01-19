@@ -30,14 +30,13 @@ public:
         virtual bool get_show_shortcuts() const;
 
         void on_size_limit_change(HWND wnd, unsigned flags) override;
-        ;
 
         const GUID& get_host_guid() const override;
 
         bool override_status_text_create(service_ptr_t<ui_status_text_override>& p_out) override;
 
         void relinquish_ownership(HWND wnd) override;
-        ;
+
         void set_this(PlaylistTabs* ptr);
 
     private:
@@ -100,7 +99,7 @@ public:
 
     void FB2KAPI on_items_removing(
         unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
-    ; // called before actually removing them
+    // called before actually removing them
     void FB2KAPI on_items_removed(
         unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
 

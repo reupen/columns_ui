@@ -86,7 +86,7 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
 
 namespace {
 uie::window_factory<FilterSearchToolbar> g_filter_search_bar;
-};
+}
 
 void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
@@ -97,7 +97,7 @@ void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abo
             p_reader->read_lendian_t(m_show_clear_button, p_abort);
         }
     }
-};
+}
 void FilterSearchToolbar::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(t_size(config_version_current), p_abort);

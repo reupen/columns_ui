@@ -272,22 +272,22 @@ class ColoursClient : public colours::client {
 public:
     static const GUID g_guid;
 
-    const GUID& get_client_guid() const override { return g_guid; };
+    const GUID& get_client_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; }
 
-    t_size get_supported_colours() const override { return colours::colour_flag_all; }; // bit-mask
-    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; }; // bit-mask
-    bool get_themes_supported() const override { return true; };
+    t_size get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
+    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; } // bit-mask
+    bool get_themes_supported() const override { return true; }
 
     void on_colour_changed(t_size mask) const override;
 
-    void on_bool_changed(t_size mask) const override{};
+    void on_bool_changed(t_size mask) const override {}
 };
 
 class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
 public:
-    PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {};
+    PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {}
 
     void render_group_info(uih::lv::RendererContext context, t_size index, RECT rc) override;
 
@@ -388,7 +388,6 @@ private:
         wil::shared_hbitmap m_artwork_bitmap; // cached for display
 
         PlaylistViewGroup() = default;
-        ;
     };
 
     class PlaylistViewItem : public Item {
@@ -488,8 +487,8 @@ private:
         unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
     void on_items_reordered(const t_size* p_order, t_size p_count) override;
 
-    void on_items_removing(const bit_array& p_mask, t_size p_old_count,
-        t_size p_new_count) override{}; // called before actually removing them
+    void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {
+    } // called before actually removing them
     void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
     void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override;
     void on_item_focus_change(t_size p_from, t_size p_to) override;
@@ -501,11 +500,11 @@ private:
     void on_playlist_switch() override;
     void on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) override;
 
-    void on_default_format_changed() override{};
+    void on_default_format_changed() override {}
 
-    void on_playback_order_changed(t_size p_new_index) override{};
+    void on_playback_order_changed(t_size p_new_index) override {}
 
-    void on_playlist_locked(bool p_locked) override{};
+    void on_playlist_locked(bool p_locked) override {}
 
     // Temp fix to avoid playlist_callback virtual functions being hidden by those of
     // playlist_callback_single
@@ -568,7 +567,7 @@ private:
             g_columns[act]->width = new_width;
             g_on_column_widths_change(this);
         }
-    };
+    }
 
     void notify_on_header_rearrange(t_size index_from, t_size index_to) override
     {
@@ -585,13 +584,13 @@ private:
             return true;
         }
         return false;
-    };
+    }
 
     void on_time_change()
     {
         update_items(0, get_item_count());
         set_day_timer();
-    };
+    }
 
     bool m_day_timer_active{false};
 

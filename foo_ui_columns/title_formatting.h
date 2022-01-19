@@ -35,7 +35,7 @@ public:
         std::function<std::string()>>;
     using FieldMap = std::map<std::string_view, FieldValue, internal::CaseInsensitiveUtf8Comparator>;
 
-    FieldProviderTitleformatHook(FieldMap field_map) : m_field_map(std::move(field_map)){};
+    FieldProviderTitleformatHook(FieldMap field_map) : m_field_map(std::move(field_map)) {}
 
     bool process_field(
         titleformat_text_out* p_out, const char* p_name, t_size p_name_length, bool& p_found_flag) override;

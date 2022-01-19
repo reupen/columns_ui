@@ -43,7 +43,7 @@ void ButtonsToolbar::import_config(stream_reader* p_reader, t_size p_size, abort
     param.import_from_stream(p_reader, false, p_abort);
 
     configure(param.m_buttons, param.m_text_below, param.m_appearance);
-};
+}
 
 void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
@@ -95,7 +95,7 @@ void ButtonsToolbar::reset_buttons(std::vector<Button>& p_buttons)
 ButtonsToolbar::ButtonsToolbar()
 {
     reset_buttons(m_buttons);
-};
+}
 
 ButtonsToolbar::~ButtonsToolbar() = default;
 

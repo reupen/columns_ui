@@ -208,7 +208,8 @@ ConfigLayout::Preset preset_to_config_preset(Preset preset)
 ConfigLayout::ConfigLayout(const GUID& p_guid)
     : cfg_var(p_guid)
     , m_active(0) //, m_initialised(false)
-    {};
+{
+}
 
 void ConfigLayout::Preset::write(stream_writer* out, abort_callback& p_abort)
 {

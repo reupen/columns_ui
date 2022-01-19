@@ -6,7 +6,9 @@ class ListViewPanelBase
     , public t_window {
 public:
     ListViewPanelBase(std::unique_ptr<uih::lv::RendererBase> renderer = std::make_unique<uih::lv::DefaultRenderer>())
-        : ListView(std::move(renderer)){};
+        : ListView(std::move(renderer))
+    {
+    }
 
     HWND create_or_transfer_window(
         HWND parent, const uie::window_host_ptr& host, const ui_helpers::window_position_t& p_position) override

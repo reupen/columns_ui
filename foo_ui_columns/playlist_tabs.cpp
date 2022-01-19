@@ -70,7 +70,7 @@ bool PlaylistTabs::is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::li
         }
     }
     return false;
-};
+}
 
 void PlaylistTabs::on_font_change()
 {

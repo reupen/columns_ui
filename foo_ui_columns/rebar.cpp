@@ -258,7 +258,7 @@ static const GUID rebar_guid = {0x3d3c8d68, 0x3ab9, 0x4ad5, {0xa4, 0xfa, 0x22, 0
 
 class RebarWindowHost : public ui_extension::window_host_with_control {
 public:
-    void get_name(pfc::string_base& out) const override { out.set_string("Columns UI/Toolbars"); };
+    void get_name(pfc::string_base& out) const override { out.set_string("Columns UI/Toolbars"); }
 
     bool is_available() const override { return g_rebar_window != nullptr; }
 
@@ -269,14 +269,14 @@ public:
         if (g_rebar_window) {
             g_rebar_window->add_band(in, width);
         }
-    };
+    }
 
     void insert_extension(ui_extension::window_ptr& p_ext, unsigned height, unsigned width) override
     {
         if (g_rebar_window) {
             g_rebar_window->add_band(p_ext->get_extension_guid(), width, p_ext);
         }
-    };
+    }
 
     unsigned is_resize_supported(HWND wnd) const override { return ui_extension::size_width; }
 
@@ -309,7 +309,7 @@ public:
                 g_rebar_window->update_band(index);
             }
         }
-    };
+    }
 
     const GUID& get_host_guid() const override { return rebar_guid; }
 
@@ -322,14 +322,14 @@ public:
     virtual bool on_key(UINT msg, LPARAM lp, WPARAM wp, bool process_keyboard_shortcuts)
     {
         return process_keydown(msg, lp, wp, false, process_keyboard_shortcuts);
-    };
+    }
 
     void relinquish_ownership(HWND wnd) override
     {
         if (g_rebar_window) {
             g_rebar_window->delete_band(wnd, false);
         }
-    };
+    }
 };
 
 ui_extension::window_host_factory_single<RebarWindowHost> g_ui_ext_host_rebar;

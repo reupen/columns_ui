@@ -21,7 +21,7 @@ bool maingroupname_from_guid(GUID p_guid, pfc::string_base& p_out, GUID& parento
 bool mainmenunode_subguid_to_path(
     const mainmenu_node::ptr& ptr_node, const GUID& p_subguid, pfc::string8& p_out, bool b_is_root = false);
 std::string mainpath_from_guid(GUID p_guid, GUID p_subguid, bool b_short = false);
-}; // namespace menu_helpers
+} // namespace menu_helpers
 
 struct MenuItemIdentifier {
     GUID m_command{};

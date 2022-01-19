@@ -19,7 +19,7 @@ public:
     pfc::string8 m_name;
     pfc::string8 m_name_friendly;
 
-    Field(const char* friendly, const char* field) : m_name(field), m_name_friendly(friendly){};
+    Field(const char* friendly, const char* field) : m_name(field), m_name_friendly(friendly) {}
     Field() = default;
 };
 
@@ -46,18 +46,18 @@ class ItemPropertiesColoursClient : public colours::client {
 public:
     static const GUID g_guid;
 
-    const GUID& get_client_guid() const override { return g_guid; };
+    const GUID& get_client_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override { p_out = "Item properties"; };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Item properties"; }
 
-    t_size get_supported_colours() const override { return colours::colour_flag_all; }; // bit-mask
+    t_size get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
 
-    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; }; // bit-mask
-    bool get_themes_supported() const override { return true; };
+    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; } // bit-mask
+    bool get_themes_supported() const override { return true; }
 
     void on_colour_changed(t_size mask) const override;
 
-    void on_bool_changed(t_size mask) const override{};
+    void on_bool_changed(t_size mask) const override {}
 };
 
 class ItemPropertiesConfig {
@@ -124,7 +124,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeTrackMode(ItemProperties* p_wnd, t_size p_value);
-        ;
     };
     class ModeNodeAutosize : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemProperties> p_this;
@@ -134,7 +133,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         ModeNodeAutosize(ItemProperties* p_wnd);
-        ;
     };
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
         pfc::list_t<ui_extension::menu_node_ptr> m_items;
@@ -144,7 +142,6 @@ public:
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeSourcePopup(ItemProperties* p_wnd);
-        ;
     };
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;

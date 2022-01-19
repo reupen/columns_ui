@@ -5,7 +5,7 @@ namespace cui::tf {
 
 class ValueVisitor {
 public:
-    ValueVisitor(titleformat_text_out* out) : m_out{out} {};
+    ValueVisitor(titleformat_text_out* out) : m_out{out} {}
 
     bool operator()(const internal::ExplicitBool& value) const
     {
