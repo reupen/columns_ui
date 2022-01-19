@@ -50,11 +50,13 @@ enum class DarkColour : COLORREF {
     DARK_900 = create_grey(255),
 };
 
-COLORREF get_dark_colour(ColourID colourId)
+COLORREF get_dark_colour(ColourID colour_id)
 {
-    switch (colourId) {
+    switch (colour_id) {
+    case ColourID::PanelCaptionBackground:
+        return WI_EnumValue(DarkColour::DARK_300);
     case ColourID::TabControlBackground:
-        return WI_EnumValue(DarkColour::DARK_000);
+        return WI_EnumValue(DarkColour::DARK_200);
     case ColourID::TabControlItemBackground:
         return WI_EnumValue(DarkColour::DARK_200);
     case ColourID::TabControlItemText:
@@ -72,24 +74,46 @@ COLORREF get_dark_colour(ColourID colourId)
     }
 }
 
-COLORREF get_light_colour(ColourID colourId)
+wil::unique_hbrush get_dark_colour_brush(ColourID colour_id)
 {
-    // Not yet implemented
-    uBugCheck();
+    return wil::unique_hbrush(CreateSolidBrush(get_dark_colour(colour_id)));
+}
+
+COLORREF get_light_colour(ColourID colour_id)
+{
+    switch (colour_id) {
+    case ColourID::PanelCaptionBackground:
+        return GetSysColor(COLOR_BTNFACE);
+    default:
+        uBugCheck();
+    }
+}
+
+wil::unique_hbrush get_light_colour_brush(ColourID colour_id)
+{
+    switch (colour_id) {
+    case ColourID::PanelCaptionBackground:
+        return wil::unique_hbrush(GetSysColorBrush(COLOR_BTNFACE));
+    default:
+        uBugCheck();
+    }
 }
 
 } // namespace
 
-COLORREF get_colour(ColourID colourId, bool is_dark)
+COLORREF get_colour(ColourID colour_id, bool is_dark)
 {
-    return is_dark ? get_dark_colour(colourId) : get_light_colour(colourId);
+    return is_dark ? get_dark_colour(colour_id) : get_light_colour(colour_id);
 }
 
-LazyResource<wil::unique_hbrush> get_colour_brush(ColourID colour_id, bool is_dark)
+wil::unique_hbrush get_colour_brush(ColourID colour_id, bool is_dark)
 {
-    auto factory
-        = [colour_id, is_dark] { return wil::unique_hbrush(CreateSolidBrush(get_colour(colour_id, is_dark))); };
-    return LazyResource<wil::unique_hbrush>(std::move(factory));
+    return is_dark ? get_dark_colour_brush(colour_id) : get_light_colour_brush(colour_id);
+}
+
+LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool is_dark)
+{
+    return {[colour_id, is_dark] { return get_colour_brush(colour_id, is_dark); }};
 }
 
 namespace {

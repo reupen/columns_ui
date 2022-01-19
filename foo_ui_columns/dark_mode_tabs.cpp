@@ -64,10 +64,10 @@ void handle_tab_control_paint(HWND wnd)
     constexpr auto is_dark = true;
     const auto border_colour = get_colour(ColourID::TabControlItemBorder, is_dark);
     const wil::unique_hpen border_pen(CreatePen(PS_SOLID, 1_spx, border_colour));
-    const auto default_item_brush = get_colour_brush(ColourID::TabControlItemBackground, is_dark);
-    const auto hot_item_brush = get_colour_brush(ColourID::TabControlHotItemBackground, is_dark);
-    const auto hot_active_item_brush = get_colour_brush(ColourID::TabControlHotActiveItemBackground, is_dark);
-    const auto active_item_brush = get_colour_brush(ColourID::TabControlActiveItemBackground, is_dark);
+    const auto default_item_brush = get_colour_brush_lazy(ColourID::TabControlItemBackground, is_dark);
+    const auto hot_item_brush = get_colour_brush_lazy(ColourID::TabControlHotItemBackground, is_dark);
+    const auto hot_active_item_brush = get_colour_brush_lazy(ColourID::TabControlHotActiveItemBackground, is_dark);
+    const auto active_item_brush = get_colour_brush_lazy(ColourID::TabControlActiveItemBackground, is_dark);
 
     PAINTSTRUCT ps{};
     const auto dc = wil::BeginPaint(wnd, &ps);
@@ -81,7 +81,7 @@ void handle_tab_control_paint(HWND wnd)
     GetClientRect(wnd, &client_rect);
 
     if (ps.fErase)
-        FillRect(dc.get(), &client_rect, *get_colour_brush(ColourID::TabControlBackground, is_dark));
+        FillRect(dc.get(), &client_rect, *get_colour_brush_lazy(ColourID::TabControlBackground, is_dark));
 
     for (auto&& [index, item] : ranges::views::enumerate(items)) {
         const auto is_new_line = index == 0 || items[index - 1].rc.top != item.rc.top;

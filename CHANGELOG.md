@@ -4,6 +4,10 @@
 
 ### Features
 
+* The Filter search toolbar is now integrated with the Colours and fonts preferences page, and its font, foreground colour and background colour are now configurable. [[#424](https://github.com/reupen/columns_ui/pull/424)]
+  
+  (Note that selection colours are not supported.)
+
 * The 'View/Show toolbars' menu item is now only shown if the shift key is held down when opening the View menu. [[#410](https://github.com/reupen/columns_ui/pull/410)]
 
 * A warning was added under the 'Show toolbars' option in preferences. [[#410](https://github.com/reupen/columns_ui/pull/410)]
@@ -16,7 +20,7 @@
 
 ### Internal changes
 
-* Some internal changes were made in advance of support for the Windows 10 dark mode. [[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413), [#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423)]
+* Some internal changes were made in advance of support for the Windows 10 dark mode. [[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413), [#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423), [#424](https://github.com/reupen/columns_ui/pull/424)]
 
 * The component is now compiled using Visual Studio 2022 17.0 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
 

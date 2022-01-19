@@ -84,8 +84,6 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
     }
 }
 
-pfc::ptr_list_t<FilterSearchToolbar> FilterSearchToolbar::g_active_instances;
-
 namespace {
 uie::window_factory<FilterSearchToolbar> g_filter_search_bar;
 };
@@ -123,12 +121,8 @@ void FilterSearchToolbar::on_show_clear_button_change()
     tbbi.dwMask = TBIF_STATE;
     tbbi.fsState = TBSTATE_ENABLED | (m_show_clear_button ? NULL : TBSTATE_HIDDEN);
     SendMessage(m_wnd_toolbar, TB_SETBUTTONINFO, idc_clear, (LPARAM)&tbbi);
-    // UpdateWindow(m_wnd_toolbar);
-    RECT rc{};
-    SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 1, (LPARAM)(&rc));
 
-    m_toolbar_cx = rc.right;
-    m_toolbar_cy = rc.bottom;
+    recalculate_dimensions();
 
     if (get_host().is_valid())
         get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
@@ -137,11 +131,11 @@ void FilterSearchToolbar::on_show_clear_button_change()
 
 bool FilterSearchToolbar::g_activate()
 {
-    if (g_active_instances.get_count()) {
-        g_active_instances[0]->activate();
-        return true;
-    }
-    return false;
+    if (s_windows.empty())
+        return false;
+
+    s_windows[0]->activate();
+    return true;
 }
 
 bool FilterSearchToolbar::g_filter_search_bar_has_stream(
@@ -154,8 +148,8 @@ bool FilterSearchToolbar::g_filter_search_bar_has_stream(
 
 void FilterSearchToolbar::s_on_favourites_change()
 {
-    for (size_t i{0}; i < g_active_instances.get_count(); ++i) {
-        g_active_instances[i]->refresh_favourites(false);
+    for (auto&& window : s_windows) {
+        window->refresh_favourites(false);
     }
 }
 
@@ -246,15 +240,28 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
 {
     switch (msg) {
     case WM_CREATE:
-        m_font.reset(uCreateIconFont());
+        s_windows.emplace_back(this);
+
+        if (!s_font)
+            s_recreate_font();
+
+        if (!s_background_brush)
+            s_recreate_background_brush();
+
         create_edit();
-        g_active_instances.add_item(this);
+
         break;
     case WM_NCDESTROY:
-        g_active_instances.remove_item(this);
+        s_windows.erase(std::ranges::remove(s_windows, this).begin(), s_windows.end());
+
         if (!core_api::is_shutting_down())
             commit_search_results("");
-        m_font.reset();
+
+        if (s_windows.empty()) {
+            s_font.reset();
+            s_background_brush.reset();
+        }
+
         m_active_handles.remove_all();
         m_active_search_string.reset();
         if (m_imagelist) {
@@ -291,6 +298,17 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
         mmi->ptMaxTrackSize.y = mmi->ptMinTrackSize.y;
     }
         return 0;
+    case WM_CTLCOLOREDIT:
+    case WM_CTLCOLORLISTBOX: {
+        const auto dc = reinterpret_cast<HDC>(wp);
+
+        cui::colours::helper colour_helper(colour_client_id);
+
+        SetTextColor(dc, colour_helper.get_colour(cui::colours::colour_text));
+        SetBkColor(dc, colour_helper.get_colour(cui::colours::colour_background));
+
+        return reinterpret_cast<LRESULT>(s_background_brush.get());
+    }
     case WM_NOTIFY: {
         auto lpnm = (LPNMHDR)lp;
         switch (lpnm->idFrom) {
@@ -346,14 +364,14 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             if (!query.is_empty()) {
                 if (cfg_favourites.find_item(query, index)) {
                     cfg_favourites.remove_by_idx(index);
-                    for (t_size i = 0, count = g_active_instances.get_count(); i < count; i++)
-                        if (g_active_instances[i]->m_search_editbox)
-                            ComboBox_DeleteString(g_active_instances[i]->m_search_editbox, index);
+                    for (auto&& window : s_windows)
+                        if (window->m_search_editbox)
+                            ComboBox_DeleteString(window->m_search_editbox, index);
                 } else {
                     cfg_favourites.add_item(query);
-                    for (t_size i = 0, count = g_active_instances.get_count(); i < count; i++)
-                        if (g_active_instances[i]->m_search_editbox)
-                            ComboBox_AddString(g_active_instances[i]->m_search_editbox, uT(query));
+                    for (auto&& window : s_windows)
+                        if (window->m_search_editbox)
+                            ComboBox_AddString(window->m_search_editbox, uT(query));
                 }
                 update_favourite_icon();
             }
@@ -415,6 +433,9 @@ void FilterSearchToolbar::create_edit()
         0, 0, 0, 0, get_wnd(), (HMENU)id_toolbar, core_api::get_my_instance(), nullptr);
     // SetWindowTheme(m_wnd_toolbar, L"SearchButton", NULL);
 
+    if (dark::is_dark_mode_enabled())
+        SetWindowTheme(m_wnd_toolbar, L"DarkMode", nullptr);
+
     const unsigned cx = GetSystemMetrics(SM_CXSMICON);
     const unsigned cy = GetSystemMetrics(SM_CYSMICON);
 
@@ -461,24 +482,14 @@ void FilterSearchToolbar::create_edit()
     ShowWindow(m_wnd_toolbar, SW_SHOWNORMAL);
     SendMessage(m_wnd_toolbar, TB_AUTOSIZE, 0, 0);
 
-    SendMessage(m_search_editbox, WM_SETFONT, (WPARAM)m_font.get(), MAKELONG(TRUE, 0));
+    SetWindowFont(m_search_editbox, s_font.get(), TRUE);
 
     COMBOBOXINFO cbi;
     memset(&cbi, 0, sizeof(cbi));
     cbi.cbSize = sizeof(cbi);
     SendMessage(m_search_editbox, CB_GETCOMBOBOXINFO, NULL, (LPARAM)&cbi);
 
-    RECT rc;
-    GetClientRect(m_search_editbox, &rc);
-    m_combo_cx += RECT_CX(rc) - RECT_CX(cbi.rcItem);
-
-    GetWindowRect(m_search_editbox, &rc);
-    m_combo_cy = rc.bottom - rc.top;
-
-    SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 1, (LPARAM)(&rc));
-
-    m_toolbar_cx = rc.right;
-    m_toolbar_cy = rc.bottom;
+    recalculate_dimensions();
 
     SetWindowLongPtr(m_search_editbox, GWLP_USERDATA, (LPARAM)(this));
     SetWindowLongPtr(cbi.hwndItem, GWLP_USERDATA, (LPARAM)(this));
@@ -490,10 +501,70 @@ void FilterSearchToolbar::create_edit()
     on_size();
 }
 
+void FilterSearchToolbar::recalculate_dimensions()
+{
+    COMBOBOXINFO cbi{};
+    cbi.cbSize = sizeof(cbi);
+    SendMessage(m_search_editbox, CB_GETCOMBOBOXINFO, NULL, (LPARAM)&cbi);
+
+    RECT client_rect{};
+    GetClientRect(m_search_editbox, &client_rect);
+    m_combo_cx = RECT_CX(client_rect) - RECT_CX(cbi.rcItem);
+
+    RECT window_rect{};
+    GetWindowRect(m_search_editbox, &window_rect);
+    m_combo_cy = window_rect.bottom - window_rect.top;
+
+    SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 1, (LPARAM)(&window_rect));
+
+    m_toolbar_cx = window_rect.right;
+    m_toolbar_cy = window_rect.bottom;
+}
+
 LRESULT WINAPI FilterSearchToolbar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     auto p_this = reinterpret_cast<FilterSearchToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
+}
+
+void FilterSearchToolbar::s_recreate_font()
+{
+    const fonts::helper font_helper(font_client_id);
+    s_font.reset(font_helper.get_font());
+}
+
+void FilterSearchToolbar::s_recreate_background_brush()
+{
+    const colours::helper colour_helper(colour_client_id);
+    s_background_brush.reset(CreateSolidBrush(colour_helper.get_colour(colours::colour_background)));
+}
+
+void FilterSearchToolbar::s_update_colours()
+{
+    s_recreate_background_brush();
+
+    for (auto&& window : s_windows) {
+        const HWND wnd = window->m_search_editbox;
+        if (wnd)
+            RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
+    }
+}
+
+void FilterSearchToolbar::s_update_font()
+{
+    s_recreate_font();
+
+    for (auto&& window : s_windows) {
+        const HWND wnd = window->m_search_editbox;
+
+        if (!wnd)
+            continue;
+
+        SetWindowFont(wnd, s_font.get(), TRUE);
+        window->recalculate_dimensions();
+        window->get_host()->on_size_limit_change(window->get_wnd(),
+            uie::size_limit_minimum_height | uie::size_limit_maximum_height | uie::size_limit_minimum_width);
+    }
 }
 
 LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
