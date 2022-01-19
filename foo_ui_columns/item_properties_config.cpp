@@ -137,7 +137,7 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         } break;
         case IDC_REMOVE: {
             if (m_field_list.get_selection_count(2) == 1) {
-                pfc::bit_array_bittable mask(m_field_list.get_item_count());
+                bit_array_bittable mask(m_field_list.get_item_count());
                 m_field_list.get_selection_state(mask);
                 // bool b_found = false;
                 t_size index = 0;

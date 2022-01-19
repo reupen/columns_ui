@@ -4,23 +4,23 @@
 namespace cui::panels::playlist_switcher {
 
 void PlaylistSwitcher::on_items_added(t_size p_playlist, t_size p_start,
-    const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
+    const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
 {
     refresh_items(p_playlist, 1);
 }
 void PlaylistSwitcher::on_items_removed(
-    t_size p_playlist, const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count)
+    t_size p_playlist, const bit_array& p_mask, t_size p_old_count, t_size p_new_count)
 {
     refresh_items(p_playlist, 1);
 }
 
-void PlaylistSwitcher::on_items_modified(t_size p_playlist, const pfc::bit_array& p_mask)
+void PlaylistSwitcher::on_items_modified(t_size p_playlist, const bit_array& p_mask)
 {
     refresh_items(p_playlist, 1);
 }
 
 void PlaylistSwitcher::on_items_replaced(
-    t_size p_playlist, const pfc::bit_array& p_mask, const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data)
+    t_size p_playlist, const bit_array& p_mask, const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data)
 {
     refresh_items(p_playlist, 1);
 }
@@ -34,7 +34,7 @@ void PlaylistSwitcher::on_playlist_activate(t_size p_old, t_size p_new)
         set_item_selected_single(p_new, false);
         ensure_visible(p_new);
     } else
-        set_selection_state(pfc::bit_array_true(), pfc::bit_array_false(), false);
+        set_selection_state(bit_array_true(), bit_array_false(), false);
 };
 void PlaylistSwitcher::on_playlist_created(t_size p_index, const char* p_name, t_size p_name_len)
 {
@@ -56,7 +56,7 @@ void PlaylistSwitcher::on_playlists_reorder(const t_size* p_order, t_size p_coun
     if (index != pfc_infinite)
         set_item_selected_single(index, false);
 };
-void PlaylistSwitcher::on_playlists_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count)
+void PlaylistSwitcher::on_playlists_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count)
 {
     refresh_playing_playlist();
     remove_items(p_mask);

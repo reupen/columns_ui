@@ -225,16 +225,16 @@ bool LayoutWindow::get_layout_editing_active()
 void LayoutWindow::enter_layout_editing_mode()
 {
     if (get_wnd()) {
-        uih::register_message_hook(uih::MessageHookType::type_get_message, this);
-        uih::register_message_hook(uih::MessageHookType::type_mouse, this);
+        register_message_hook(uih::MessageHookType::type_get_message, this);
+        register_message_hook(uih::MessageHookType::type_mouse, this);
     }
     //__enter_layout_editing_mode_recur(m_child);
 }
 
 void LayoutWindow::exit_layout_editing_mode()
 {
-    uih::deregister_message_hook(uih::MessageHookType::type_get_message, this);
-    uih::deregister_message_hook(uih::MessageHookType::type_mouse, this);
+    deregister_message_hook(uih::MessageHookType::type_get_message, this);
+    deregister_message_hook(uih::MessageHookType::type_mouse, this);
     //__exit_layout_editing_mode_recur(m_child);
 }
 
@@ -619,7 +619,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     HMENU menu = CreatePopupMenu();
     PanelList panel_list;
     pfc::list_t<uie::window::ptr> supported_panels(panel_list);
-    pfc::bit_array_bittable mask_remove(supported_panels.get_count());
+    bit_array_bittable mask_remove(supported_panels.get_count());
     if (p_container_v2.is_valid())
         p_container_v2->get_supported_panels(supported_panels, mask_remove);
     supported_panels.remove_mask(mask_remove);
@@ -938,8 +938,8 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 #endif
     case WM_DESTROY:
         destroy_child();
-        uih::deregister_message_hook(uih::MessageHookType::type_get_message, this);
-        uih::deregister_message_hook(uih::MessageHookType::type_mouse, this);
+        deregister_message_hook(uih::MessageHookType::type_get_message, this);
+        deregister_message_hook(uih::MessageHookType::type_mouse, this);
         break;
     }
     return DefWindowProc(wnd, msg, wp, lp);

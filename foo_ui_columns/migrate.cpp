@@ -8,8 +8,8 @@ cfg_bool has_migrated_to_v100({0xba7516e5, 0xd1f1, 0x4784, {0xa6, 0x93, 0x62, 0x
 bool replace_legacy_playlist(uie::splitter_item_t* splitter_item)
 {
 #pragma warning(suppress : 4996)
-    if (splitter_item->get_panel_guid() == cui::panels::guid_playlist_view) {
-        splitter_item->set_panel_guid(cui::panels::guid_playlist_view_v2);
+    if (splitter_item->get_panel_guid() == panels::guid_playlist_view) {
+        splitter_item->set_panel_guid(panels::guid_playlist_view_v2);
         return true;
     }
 

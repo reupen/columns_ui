@@ -7,7 +7,7 @@ void ButtonsToolbar::Button::CustomImage::get_path(pfc::string8& p_out) const
 {
     p_out.reset();
 
-    bool b_absolute = pfc::string_find_first(m_path, ':') != pfc_infinite
+    bool b_absolute = string_find_first(m_path, ':') != pfc_infinite
         || (m_path.length() > 1 && m_path.get_ptr()[0] == '\\' && m_path.get_ptr()[1] == '\\');
     bool b_relative_to_drive = !b_absolute && m_path.get_ptr()[0] == '\\';
 
@@ -20,7 +20,7 @@ void ButtonsToolbar::Button::CustomImage::get_path(pfc::string8& p_out) const
         if (index_colon != pfc_infinite)
             p_out.add_string(fb2kexe.get_ptr(), index_colon + 1);
     } else if (!b_absolute)
-        p_out << pfc::string_directory(fb2kexe) << "\\";
+        p_out << string_directory(fb2kexe) << "\\";
     p_out += m_path;
 }
 void ButtonsToolbar::Button::CustomImage::write(stream_writer* out, abort_callback& p_abort) const
@@ -266,7 +266,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
                 filesystem::g_get_canonical_path(realPath, canPath);
                 filesystem::g_open(p_image, canPath, filesystem::open_mode_read, p_abort);
 
-                const auto name = pfc::string_filename_ext(m_path);
+                const auto name = string_filename_ext(m_path);
 
                 t_filesize imagesize = p_image->get_size(p_abort);
 
@@ -304,7 +304,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
                 service_ptr_t<file> p_image;
                 filesystem::g_open(p_image, m_mask_path, filesystem::open_mode_read, p_abort);
 
-                const auto name = pfc::string_filename_ext(m_mask_path);
+                const auto name = string_filename_ext(m_mask_path);
 
                 t_filesize imagesize = p_image->get_size(p_abort);
 

@@ -110,7 +110,7 @@ public:
         return false;
     }
 
-    void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& p_out);
+    void get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& p_out);
     void refresh_all_items();
     void refresh_items(t_size base, t_size count, bool b_update = true);
     void add_items(t_size base, t_size count);
@@ -207,14 +207,14 @@ public:
             static_api_ptr_t<play_control>()->start();
         }
     }
-    void notify_on_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
-        notification_source_t p_notification_source) override
+    void notify_on_selection_change(
+        const bit_array& p_affected, const bit_array& p_status, notification_source_t p_notification_source) override
     {
         if (p_notification_source != notification_source_rmb) {
             t_size numSelected = get_selection_count(2);
 
             if (numSelected == 1) {
-                pfc::bit_array_bittable mask(get_item_count());
+                bit_array_bittable mask(get_item_count());
                 get_selection_state(mask);
                 t_size index = 0;
                 t_size count = get_item_count();
@@ -256,23 +256,19 @@ public:
     void refresh_playing_playlist() { m_playing_playlist = get_playing_playlist(); }
 
     void on_items_added(t_size p_playlist, t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
-        const pfc::bit_array& p_selection) override;
+        const bit_array& p_selection) override;
     void on_items_reordered(t_size p_playlist, const t_size* p_order, t_size p_count) override{};
     void on_items_removing(
-        t_size p_playlist, const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override{};
-    void on_items_removed(
-        t_size p_playlist, const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
-    void on_items_selection_change(
-        t_size p_playlist, const pfc::bit_array& p_affected, const pfc::bit_array& p_state) override
-    {
-    }
+        t_size p_playlist, const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override{};
+    void on_items_removed(t_size p_playlist, const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
+    void on_items_selection_change(t_size p_playlist, const bit_array& p_affected, const bit_array& p_state) override {}
     void on_item_focus_change(t_size p_playlist, t_size p_from, t_size p_to) override {}
 
-    void on_items_modified(t_size p_playlist, const pfc::bit_array& p_mask) override;
+    void on_items_modified(t_size p_playlist, const bit_array& p_mask) override;
     void on_items_modified_fromplayback(
-        t_size p_playlist, const pfc::bit_array& p_mask, play_control::t_display_level p_level) override{};
+        t_size p_playlist, const bit_array& p_mask, play_control::t_display_level p_level) override{};
 
-    void on_items_replaced(t_size p_playlist, const pfc::bit_array& p_mask,
+    void on_items_replaced(t_size p_playlist, const bit_array& p_mask,
         const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) override;
 
     void on_item_ensure_visible(t_size p_playlist, t_size p_idx) override{};
@@ -280,8 +276,8 @@ public:
     void on_playlist_activate(t_size p_old, t_size p_new) override;
     void on_playlist_created(t_size p_index, const char* p_name, t_size p_name_len) override;
     void on_playlists_reorder(const t_size* p_order, t_size p_count) override;
-    void on_playlists_removing(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override{};
-    void on_playlists_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
+    void on_playlists_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override{};
+    void on_playlists_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
     void on_playlist_renamed(t_size p_index, const char* p_new_name, t_size p_new_name_len) override;
 
     void on_default_format_changed() override{};
@@ -299,7 +295,7 @@ public:
     void on_playback_time(double p_time) override{};
     void on_volume_change(float p_new_val) override{};
 
-    const GUID& get_extension_guid() const override { return cui::panels::guid_playlist_switcher; }
+    const GUID& get_extension_guid() const override { return guid_playlist_switcher; }
     void get_name(pfc::string_base& out) const override { out = "Playlist switcher"; }
     void get_category(pfc::string_base& out) const override { out = "Panels"; }
     bool get_short_name(pfc::string_base& out) const override

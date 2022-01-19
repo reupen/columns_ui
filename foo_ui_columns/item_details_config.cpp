@@ -40,7 +40,7 @@ BOOL CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
         ComboBox_SetCurSel(wnd_combo, m_vertical_alignment);
 
         LOGFONT lf;
-        static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
+        static_api_ptr_t<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
         m_font_code_generator.initialise(lf, wnd, IDC_FONT_CODE);
 
         colour_code_gen(wnd, IDC_COLOUR_CODE, false, true);

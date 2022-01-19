@@ -60,9 +60,9 @@ bool GetMsgHook::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM
 
 void GetMsgHook::register_hook()
 {
-    uih::register_message_hook(uih::MessageHookType::type_get_message, this);
+    register_message_hook(uih::MessageHookType::type_get_message, this);
 }
 void GetMsgHook::deregister_hook()
 {
-    uih::deregister_message_hook(uih::MessageHookType::type_get_message, this);
+    deregister_message_hook(uih::MessageHookType::type_get_message, this);
 }

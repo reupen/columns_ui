@@ -30,14 +30,14 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         ShowWindow(m_volume_control.create(wnd), SW_SHOWNORMAL);
 
-        m_font.reset(cui::fonts::helper(g_guid_font).get_font());
+        m_font.reset(fonts::helper(g_guid_font).get_font());
         m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
 
         update_playlist_data();
         update_playback_status_text();
-        static_api_ptr_t<playlist_manager>()->register_callback(this, playlist_callback_single::flag_all);
+        static_api_ptr_t<playlist_manager>()->register_callback(this, flag_all);
         static_api_ptr_t<play_callback_manager>()->register_callback(
-            this, play_callback::flag_on_playback_all | play_callback::flag_on_volume_change, false);
+            this, flag_on_playback_all | flag_on_volume_change, false);
     } break;
     case WM_DESTROY:
         static_api_ptr_t<playlist_manager>()->unregister_callback(this);
@@ -70,7 +70,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_LBUTTONDBLCLK:
-        cui::helpers::execute_main_menu_command(cfg_statusdbl);
+        helpers::execute_main_menu_command(cfg_statusdbl);
         return 0;
     case WM_PRINTCLIENT: {
         if (lp & PRF_ERASEBKGND) {
@@ -111,7 +111,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         const char* placeholder = "999999999 items selected";
         const auto default_text_colour = dark::get_system_colour(COLOR_BTNTEXT, dark::is_dark_mode_enabled());
-        int placeholder_len = uih::get_text_width(dc, placeholder, strlen(placeholder)) + uih::scale_dpi_value(20);
+        int placeholder_len = get_text_width(dc, placeholder, strlen(placeholder)) + uih::scale_dpi_value(20);
 
         pfc::string8 items_text;
         items_text << m_item_count << " item";
@@ -120,30 +120,30 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (m_selection)
             items_text << " selected";
 
-        uih::text_out_colours_tab(dc, items_text, -1, uih::scale_dpi_value(1), uih::scale_dpi_value(3), &rc_line_1,
-            false, default_text_colour, false, false, uih::ALIGN_LEFT);
+        text_out_colours_tab(dc, items_text, -1, uih::scale_dpi_value(1), uih::scale_dpi_value(3), &rc_line_1, false,
+            default_text_colour, false, false, uih::ALIGN_LEFT);
         if (m_item_count) {
             pfc::string_formatter formatter;
-            uih::text_out_colours_tab(dc, formatter << "Length: " << m_length_text, -1, uih::scale_dpi_value(1),
+            text_out_colours_tab(dc, formatter << "Length: " << m_length_text, -1, uih::scale_dpi_value(1),
                 uih::scale_dpi_value(3), &rc_line_2, false, default_text_colour, false, false, uih::ALIGN_LEFT);
         }
 
         if (m_menu_active) {
             {
                 RECT rc_item = rc_line_1;
-                uih::text_out_colours_tab(dc, m_menu_text, -1, uih::scale_dpi_value(1) + placeholder_len,
+                text_out_colours_tab(dc, m_menu_text, -1, uih::scale_dpi_value(1) + placeholder_len,
                     uih::scale_dpi_value(3), &rc_item, false, default_text_colour, false, false, uih::ALIGN_LEFT,
                     nullptr, true, true, nullptr);
             }
         } else {
             placeholder = "Playing:  ";
-            t_size placeholder2_len = uih::get_text_width(dc, placeholder, strlen(placeholder));
+            t_size placeholder2_len = get_text_width(dc, placeholder, strlen(placeholder));
 
             t_size now_playing_x_end = uih::scale_dpi_value(4) + placeholder_len + placeholder2_len;
             {
                 RECT rc_item = rc_line_1;
                 // rc_item.right = 4 + placeholder_len + placeholder2_len;
-                uih::text_out_colours_tab(dc, m_track_label, -1, uih::scale_dpi_value(4) + placeholder_len, 0, &rc_item,
+                text_out_colours_tab(dc, m_track_label, -1, uih::scale_dpi_value(4) + placeholder_len, 0, &rc_item,
                     false, default_text_colour, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
             }
             if (playing1.get_length()) {
@@ -151,11 +151,11 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 g_split_string_by_crlf(playing1.get_ptr(), playingstrings);
                 t_size lines = playingstrings.get_count();
                 if (lines)
-                    uih::text_out_colours_tab(dc, playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_line_1,
-                        false, default_text_colour, true, false, uih::ALIGN_LEFT);
+                    text_out_colours_tab(dc, playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_line_1, false,
+                        default_text_colour, true, false, uih::ALIGN_LEFT);
                 if (lines > 1)
-                    uih::text_out_colours_tab(dc, playingstrings[1], pfc_infinite, now_playing_x_end, 0, &rc_line_2,
-                        false, default_text_colour, true, false, uih::ALIGN_LEFT);
+                    text_out_colours_tab(dc, playingstrings[1], pfc_infinite, now_playing_x_end, 0, &rc_line_2, false,
+                        default_text_colour, true, false, uih::ALIGN_LEFT);
             }
         }
 

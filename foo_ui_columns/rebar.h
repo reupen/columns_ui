@@ -61,8 +61,7 @@ private:
     void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
 
 public:
-    void export_config(
-        stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback, abort_callback& p_abort);
+    void export_config(stream_writer* p_out, t_uint32 mode, fcl::t_export_feedback& feedback, abort_callback& p_abort);
     void import_config(
         stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 

@@ -31,7 +31,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size 
     std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
     bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc)
 {
-    cui::colours::helper p_helper(ColoursClient::g_guid);
+    colours::helper p_helper(ColoursClient::g_guid);
 
     int theme_state = NULL;
     if (b_selected)
@@ -84,7 +84,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size 
 
             FillRect(context.dc, &rc_subitem, wil::unique_hbrush(CreateSolidBrush(cr_back)).get());
         }
-        uih::text_out_colours_tab(context.dc, sub_item.text.data(), sub_item.text.size(),
+        text_out_colours_tab(context.dc, sub_item.text.data(), sub_item.text.size(),
             uih::scale_dpi_value(1) + (column_index == 0 ? indentation : 0), uih::scale_dpi_value(3), &rc_subitem,
             b_selected, cr_text, true, cfg_ellipsis != 0, sub_item.alignment);
 
@@ -136,7 +136,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size 
 void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index,
     std::string_view text, int indentation, t_size level, RECT rc)
 {
-    cui::colours::helper p_helper(ColoursClient::g_guid);
+    colours::helper p_helper(ColoursClient::g_guid);
     bool b_theme_enabled = p_helper.get_themed();
 
     int text_width = NULL;
@@ -157,7 +157,7 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
         FillRect(context.dc, &rc, br.get());
     }
 
-    uih::text_out_colours_tab(context.dc, text.data(), text.size(), uih::scale_dpi_value(1) + indentation * level,
+    text_out_colours_tab(context.dc, text.data(), text.size(), uih::scale_dpi_value(1) + indentation * level,
         uih::scale_dpi_value(3), &rc, false, cr, true, cfg_ellipsis != 0, uih::ALIGN_LEFT, nullptr, true, true,
         &text_width);
 

@@ -177,7 +177,7 @@ public:
             void notify_on_initialisation() override;
             void notify_on_create() override;
             void notify_on_destroy() override;
-            void notify_on_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
+            void notify_on_selection_change(const bit_array& p_affected, const bit_array& p_status,
                 notification_source_t p_notification_source) override;
             bool do_drag_drop(WPARAM wp) override;
 

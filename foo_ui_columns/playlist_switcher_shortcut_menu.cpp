@@ -144,7 +144,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
                     autoplaylist->show_ui(index);
                 break;
             case ID_RECYCLER_CLEAR:
-                m_playlist_api->recycler_purge(pfc::bit_array_true());
+                m_playlist_api->recycler_purge(bit_array_true());
                 break;
             case ID_CUT:
                 if (b_index_valid)

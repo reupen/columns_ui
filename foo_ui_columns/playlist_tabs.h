@@ -99,29 +99,29 @@ public:
     };
 
     void FB2KAPI on_items_removing(
-        unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
+        unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
     ; // called before actually removing them
     void FB2KAPI on_items_removed(
-        unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
+        unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
 
     void on_playlist_activate(unsigned p_old, unsigned p_new) override;
 
     void on_playlists_reorder(const unsigned* p_order, unsigned p_count) override;
     void on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len) override;
-    void on_playlists_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
+    void on_playlists_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override;
     void on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len) override;
 
     void on_items_added(
-        unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr>&, const pfc::bit_array&) override;
+        unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr>&, const bit_array&) override;
     void on_items_reordered(unsigned int, const unsigned int*, unsigned int) override;
-    void on_items_selection_change(unsigned int, const pfc::bit_array&, const pfc::bit_array&) override;
+    void on_items_selection_change(unsigned int, const bit_array&, const bit_array&) override;
     void on_item_focus_change(unsigned int, unsigned int, unsigned int) override;
-    void on_items_modified(unsigned int, const pfc::bit_array&) override;
-    void on_items_modified_fromplayback(unsigned int, const pfc::bit_array&, play_control::t_display_level) override;
+    void on_items_modified(unsigned int, const bit_array&) override;
+    void on_items_modified_fromplayback(unsigned int, const bit_array&, play_control::t_display_level) override;
     void on_items_replaced(
-        unsigned int, const pfc::bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&) override;
+        unsigned int, const bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&) override;
     void on_item_ensure_visible(unsigned int, unsigned int) override;
-    void on_playlists_removing(const pfc::bit_array&, unsigned int, unsigned int) override;
+    void on_playlists_removing(const bit_array&, unsigned int, unsigned int) override;
     void on_default_format_changed() override;
     void on_playback_order_changed(unsigned int) override;
     void on_playlist_locked(unsigned int, bool) override;
@@ -155,10 +155,9 @@ public:
     void create_child();
     void destroy_child();
 
-    bool is_point_ours(
-        HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy) override;
+    bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy) override;
     void get_supported_panels(
-        const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported) override;
+        const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported) override;
 
     void insert_panel(unsigned index, const uie::splitter_item_t* p_item) override;
     void remove_panel(unsigned index) override;

@@ -10,7 +10,7 @@ class VolumeBar
         void get_channel_rect(RECT* rc) const override
         {
             if (b_popup)
-                uih::Trackbar::get_channel_rect(rc);
+                Trackbar::get_channel_rect(rc);
             else {
                 RECT rc_client;
                 GetClientRect(get_wnd(), &rc_client);
@@ -28,7 +28,7 @@ class VolumeBar
             if (t_attributes::get_background_colour() != -1)
                 FillRect(dc, rc, wil::unique_hbrush(CreateSolidBrush(t_attributes::get_background_colour())).get());
             else
-                uih::Trackbar::draw_background(dc, rc);
+                Trackbar::draw_background(dc, rc);
         }
         /*void draw_thumb (HDC dc, const RECT * rc) const
         {
@@ -44,7 +44,7 @@ class VolumeBar
         void draw_channel(HDC dc, const RECT* rc) const override
         {
             if (b_popup)
-                uih::Trackbar::draw_channel(dc, rc);
+                Trackbar::draw_channel(dc, rc);
             else {
                 const auto is_dark = cui::dark::is_dark_mode_enabled();
                 COLORREF cr_shadow = cui::dark::get_system_colour(COLOR_3DSHADOW, is_dark);
@@ -153,7 +153,7 @@ public:
         case WM_CREATE: {
             if (!b_popup) {
                 Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-                if (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_Gdiplus_token, &gdiplusStartupInput, nullptr))
+                if (Gdiplus::Ok == GdiplusStartup(&m_Gdiplus_token, &gdiplusStartupInput, nullptr))
                     m_using_gdiplus = true;
             }
             if (t_attributes::get_show_caption())
@@ -177,8 +177,7 @@ public:
             }
             ShowWindow(wnd_trackbar, SW_SHOWNORMAL);
 
-            static_api_ptr_t<play_callback_manager>()->register_callback(
-                this, play_callback::flag_on_volume_change, false);
+            static_api_ptr_t<play_callback_manager>()->register_callback(this, flag_on_volume_change, false);
 
             break;
         }

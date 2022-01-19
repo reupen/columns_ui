@@ -24,7 +24,7 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_destroy()
     RevokeDragDrop(get_wnd());
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_selection_change(
-    const pfc::bit_array& p_affected, const pfc::bit_array& p_status, notification_source_t p_notification_source)
+    const bit_array& p_affected, const bit_array& p_status, notification_source_t p_notification_source)
 {
     t_size index = get_selected_item_single();
     m_param.on_selection_change(index);

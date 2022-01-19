@@ -167,7 +167,7 @@ LRESULT ItemDetails::MessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LP
     case WM_CREATE:
         break;
     case WM_ACTIVATEAPP:
-        ItemDetails::g_on_app_activate(wp != 0);
+        g_on_app_activate(wp != 0);
         break;
     case WM_DESTROY:
         break;
@@ -303,14 +303,14 @@ void ItemDetails::request_full_file_info()
     const auto handle = m_handles[0];
     if (filesystem::g_is_remote_or_unrecognized(handle->get_path()))
         return;
-    m_full_file_info_request = std::make_unique<cui::helpers::FullFileInfoRequest>(
+    m_full_file_info_request = std::make_unique<helpers::FullFileInfoRequest>(
         std::move(handle), [self = service_ptr_t<ItemDetails>{this}](auto&& request) {
             self->on_full_file_info_request_completion(std::forward<decltype(request)>(request));
         });
     m_full_file_info_request->queue();
 }
 
-void ItemDetails::on_full_file_info_request_completion(std::shared_ptr<cui::helpers::FullFileInfoRequest> request)
+void ItemDetails::on_full_file_info_request_completion(std::shared_ptr<helpers::FullFileInfoRequest> request)
 {
     if (m_full_file_info_request == request) {
         m_full_file_info_request.reset();
@@ -349,7 +349,7 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
     bool b_Update = true;
     if (m_handles.get_count()) {
         LOGFONT lf;
-        static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
+        static_api_ptr_t<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
 
         TitleformatHookChangeFont tf_hook(lf);
         pfc::string8_fast_aggressive temp;
@@ -515,7 +515,7 @@ void ItemDetails::on_playlist_switch()
         set_handles(handles);
     }
 }
-void ItemDetails::on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
+void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
 {
     if (g_track_mode_includes_plalist(m_tracking_mode)
         && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
@@ -666,16 +666,14 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_CREATE: {
         register_callback();
-        static_api_ptr_t<play_callback_manager>()->register_callback(this,
-            play_callback::flag_on_playback_all
-                & ~(play_callback::flag_on_volume_change | play_callback::flag_on_playback_starting),
-            false);
+        static_api_ptr_t<play_callback_manager>()->register_callback(
+            this, flag_on_playback_all & ~(flag_on_volume_change | flag_on_playback_starting), false);
         static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
         static_api_ptr_t<metadb_io_v3>()->register_callback(this);
 
         m_font_changes.m_default_font = std::make_shared<Font>();
         m_font_changes.m_default_font->m_font.reset(
-            static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client));
+            static_api_ptr_t<fonts::manager>()->get_font(g_guid_item_details_font_client));
         m_font_changes.m_default_font->m_height = uGetFontHeight(m_font_changes.m_default_font->m_font.get());
 
         if (g_windows.empty())
@@ -849,7 +847,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         OffsetWindowOrgEx(dc_mem, +rc.left, +rc.top, nullptr);
 
-        cui::colours::helper p_helper(g_guid_item_details_colour_client);
+        colours::helper p_helper(g_guid_item_details_colour_client);
 
         HFONT fnt_old = SelectFont(dc_mem, m_font_changes.m_default_font->m_font.get());
 
@@ -862,7 +860,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const int client_height = RECT_CY(rc_client);
         const int client_width = RECT_CX(rc_client);
 
-        auto background_colour = p_helper.get_colour(cui::colours::colour_background);
+        auto background_colour = p_helper.get_colour(colours::colour_background);
         FillRect(dc_mem, &rc, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
 
         const int padding = uih::scale_dpi_value(2);
@@ -885,7 +883,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         rc_placement.bottom = rc_placement.top + m_display_sz.cy;
 
         g_text_out_multiline_font(dc_mem, rc_placement, m_current_text.c_str(), m_font_changes, m_line_sizes,
-            p_helper.get_colour(cui::colours::colour_text), (uih::alignment)m_horizontal_alignment);
+            p_helper.get_colour(colours::colour_text), (uih::alignment)m_horizontal_alignment);
         SelectFont(dc_mem, fnt_old);
 
         BitBlt(ps.hdc, rc.left, rc.top, RECT_CX(rc), RECT_CY(rc), dc_mem, rc.left, rc.top, SRCCOPY);
@@ -918,7 +916,7 @@ void ItemDetails::g_on_colours_change()
 void ItemDetails::on_font_change()
 {
     m_font_changes.m_default_font->m_font.reset(
-        static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_item_details_font_client));
+        static_api_ptr_t<fonts::manager>()->get_font(g_guid_item_details_font_client));
     refresh_contents();
     /*
     invalidate_all(false);
@@ -1013,22 +1011,22 @@ void ItemDetails::on_playlist_renamed(const char* p_new_name, t_size p_new_name_
 void ItemDetails::on_item_ensure_visible(t_size p_idx) {}
 
 void ItemDetails::on_items_replaced(
-    const pfc::bit_array& p_mask, const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data)
+    const bit_array& p_mask, const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data)
 {
 }
 
-void ItemDetails::on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level) {}
+void ItemDetails::on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) {}
 
-void ItemDetails::on_items_modified(const pfc::bit_array& p_mask) {}
+void ItemDetails::on_items_modified(const bit_array& p_mask) {}
 
-void ItemDetails::on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
+void ItemDetails::on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
 
-void ItemDetails::on_items_removing(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
+void ItemDetails::on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
 
 void ItemDetails::on_items_reordered(const t_size* p_order, t_size p_count) {}
 
 void ItemDetails::on_items_added(
-    t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
+    t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
 {
 }
 
@@ -1092,7 +1090,7 @@ bool ItemDetails::MenuNodeWordWrap::get_description(pfc::string_base& p_out) con
 bool ItemDetails::MenuNodeWordWrap::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Word wrapping";
-    p_displayflags = (p_this->m_word_wrapping) ? ui_extension::menu_node_t::state_checked : 0;
+    p_displayflags = (p_this->m_word_wrapping) ? state_checked : 0;
     return true;
 }
 
@@ -1116,7 +1114,7 @@ bool ItemDetails::MenuNodeHorizontalScrolling::get_description(pfc::string_base&
 bool ItemDetails::MenuNodeHorizontalScrolling::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Allow horizontal scrolling";
-    p_displayflags = (p_this->m_hscroll) ? ui_extension::menu_node_t::state_checked : 0;
+    p_displayflags = (p_this->m_hscroll) ? state_checked : 0;
     return true;
 }
 
@@ -1165,7 +1163,7 @@ bool ItemDetails::MenuNodeAlignment::get_description(pfc::string_base& p_out) co
 bool ItemDetails::MenuNodeAlignment::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_type);
-    p_displayflags = (m_type == p_this->m_horizontal_alignment) ? ui_extension::menu_node_t::state_radiochecked : 0;
+    p_displayflags = (m_type == p_this->m_horizontal_alignment) ? state_radiochecked : 0;
     return true;
 }
 
@@ -1225,7 +1223,7 @@ bool ItemDetails::MenuNodeTrackMode::get_description(pfc::string_base& p_out) co
 bool ItemDetails::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
-    p_displayflags = (m_source == p_this->m_tracking_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
+    p_displayflags = (m_source == p_this->m_tracking_mode) ? state_radiochecked : 0;
     return true;
 }
 

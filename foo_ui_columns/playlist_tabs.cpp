@@ -7,8 +7,8 @@
 
 namespace cui::panels::playlist_tabs {
 
-cfg_guid cfg_default_playlist(GUID{0x68527c89, 0xb0f7, 0xf653, {0x00, 0x53, 0x8c, 0xeb, 0x47, 0xe7, 0xa3, 0xb3}},
-    columns_ui::panels::guid_playlist_view_v2);
+cfg_guid cfg_default_playlist(
+    GUID{0x68527c89, 0xb0f7, 0xf653, {0x00, 0x53, 0x8c, 0xeb, 0x47, 0xe7, 0xa3, 0xb3}}, guid_playlist_view_v2);
 
 // {942C36A4-4E28-4cea-9644-F223C9A838EC}
 const GUID g_guid_playlist_switcher_tabs_font
@@ -32,20 +32,19 @@ ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;
 HFONT PlaylistTabs::g_font = nullptr;
 
 void PlaylistTabs::get_supported_panels(
-    const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported)
+    const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_tab_host.instance_create(temp);
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
-        (static_cast<PlaylistTabs::WindowHost*>(ptr.get_ptr()))->set_this(this);
+        (static_cast<WindowHost*>(ptr.get_ptr()))->set_this(this);
     t_size count = p_windows.get_count();
     for (t_size i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
-bool PlaylistTabs::is_point_ours(
-    HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy)
+bool PlaylistTabs::is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy)
 {
     if (wnd_point == get_wnd() || IsChild(get_wnd(), wnd_point)) {
         if (wnd_point == get_wnd() || wnd_point == wnd_tabs) {
@@ -56,7 +55,7 @@ bool PlaylistTabs::is_point_ours(
             uie::splitter_window_v2_ptr sptr;
             if (m_child.is_valid()) {
                 if (m_child->service_query_t(sptr)) {
-                    pfc::list_t<uie::window::ptr> temp;
+                    pfc::list_t<window::ptr> temp;
                     temp.add_item(this);
                     if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
                         p_hierarchy.add_items(temp);
@@ -85,7 +84,7 @@ void PlaylistTabs::on_font_change()
         DeleteObject(g_font);
     }
 
-    g_font = static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_playlist_switcher_tabs_font);
+    g_font = static_api_ptr_t<fonts::manager>()->get_font(g_guid_playlist_switcher_tabs_font);
 
     unsigned count = list_wnd.get_count();
     for (unsigned n = 0; n < count; n++) {
@@ -132,7 +131,7 @@ void PlaylistTabs::create_child()
 {
     destroy_child();
     if (m_host.is_valid()) {
-        ui_extension::window::create_by_guid(m_child_guid, m_child);
+        create_by_guid(m_child_guid, m_child);
         if (m_child.is_valid()) {
             try {
                 abort_callback_dummy abortCallback;
@@ -279,7 +278,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
         if (wp == VK_TAB) {
-            ui_extension::window::g_on_tab(wnd);
+            g_on_tab(wnd);
             // return 0;
         }
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
@@ -355,7 +354,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
         static_api_ptr_t<playlist_manager> playlist_api;
         if (idx >= 0) {
-            if (cui::config::cfg_playlist_tabs_middle_click && msg == WM_MBUTTONUP) {
+            if (config::cfg_playlist_tabs_middle_click && msg == WM_MBUTTONUP) {
                 remove_playlist_helper(idx);
             }
             if (cfg_plm_rename && msg == WM_LBUTTONDBLCLK) {
@@ -462,13 +461,13 @@ void PlaylistTabs::export_config(stream_writer* p_writer, abort_callback& p_abor
     p_writer->write_lendian_t(m_child_guid, p_abort);
     uie::window_ptr ptr = m_child;
     if (!ptr.is_valid() && m_child_guid != pfc::guid_null) {
-        if (uie::window::create_by_guid(m_child_guid, ptr)) {
+        if (create_by_guid(m_child_guid, ptr)) {
             try {
                 ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), abortCallback);
             } catch (const exception_io&) {
             }
         } else
-            throw cui::fcl::exception_missing_panel();
+            throw fcl::exception_missing_panel();
     }
     pfc::array_t<t_uint8> data;
     stream_writer_memblock_ref w(data);
@@ -490,7 +489,7 @@ void PlaylistTabs::import_config(stream_reader* p_reader, t_size p_size, abort_c
         data.set_size(size);
         p_reader->read(data.get_ptr(), size, p_abort);
         uie::window_ptr ptr;
-        if (uie::window::create_by_guid(m_child_guid, ptr)) {
+        if (create_by_guid(m_child_guid, ptr)) {
             try {
                 ptr->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
             } catch (const exception_io&) {
@@ -690,27 +689,27 @@ void PlaylistTabs::on_playback_order_changed(unsigned int) {}
 
 void PlaylistTabs::on_default_format_changed() {}
 
-void PlaylistTabs::on_playlists_removing(const pfc::bit_array&, unsigned int, unsigned int) {}
+void PlaylistTabs::on_playlists_removing(const bit_array&, unsigned int, unsigned int) {}
 
 void PlaylistTabs::on_item_ensure_visible(unsigned int, unsigned int) {}
 
 void PlaylistTabs::on_items_replaced(
-    unsigned int, const pfc::bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&)
+    unsigned int, const bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&)
 {
 }
 
-void PlaylistTabs::on_items_modified_fromplayback(unsigned int, const pfc::bit_array&, play_control::t_display_level) {}
+void PlaylistTabs::on_items_modified_fromplayback(unsigned int, const bit_array&, play_control::t_display_level) {}
 
-void PlaylistTabs::on_items_modified(unsigned int, const pfc::bit_array&) {}
+void PlaylistTabs::on_items_modified(unsigned int, const bit_array&) {}
 
 void PlaylistTabs::on_item_focus_change(unsigned int, unsigned int, unsigned int) {}
 
-void PlaylistTabs::on_items_selection_change(unsigned int, const pfc::bit_array&, const pfc::bit_array&) {}
+void PlaylistTabs::on_items_selection_change(unsigned int, const bit_array&, const bit_array&) {}
 
 void PlaylistTabs::on_items_reordered(unsigned int, const unsigned int*, unsigned int) {}
 
 void PlaylistTabs::on_items_added(
-    unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr>&, const pfc::bit_array&)
+    unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr>&, const bit_array&)
 {
 }
 
@@ -723,7 +722,7 @@ void PlaylistTabs::on_playlist_renamed(unsigned p_index, const char* p_new_name,
     }
 }
 
-void PlaylistTabs::on_playlists_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
+void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
 {
     bool need_move = false;
 
@@ -783,12 +782,12 @@ void PlaylistTabs::on_playlist_activate(unsigned p_old, unsigned p_new)
 }
 
 void FB2KAPI PlaylistTabs::on_items_removed(
-    unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
+    unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
 {
 }
 
 void FB2KAPI PlaylistTabs::on_items_removing(
-    unsigned p_playlist, const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
+    unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
 {
 }
 
@@ -821,12 +820,12 @@ void g_on_tabs_font_change()
     PlaylistTabs::on_font_change();
 }
 
-class PlaylistTabsFontClient : public cui::fonts::client {
+class PlaylistTabsFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_playlist_switcher_tabs_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist tabs"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_labels; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
 
     void on_font_changed() const override { PlaylistTabs::on_font_change(); }
 };

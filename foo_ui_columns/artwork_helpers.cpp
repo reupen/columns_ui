@@ -290,7 +290,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 
         if (m_stub_images.find(album_art_ids::cover_front) == m_stub_images.end()) {
             album_art_data_ptr data;
-            cui::panels::playlist_view::g_get_default_nocover_bitmap_data(data, p_abort);
+            panels::playlist_view::g_get_default_nocover_bitmap_data(data, p_abort);
 
             if (data.is_valid())
                 m_stub_images.insert_or_assign(album_art_ids::cover_front, data);

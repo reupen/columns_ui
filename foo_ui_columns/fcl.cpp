@@ -409,7 +409,7 @@ class ExportFeedbackReceiver
     : public cui::fcl::t_export_feedback
     , public pfc::list_t<GUID> {
 public:
-    void add_required_panels(const pfc::list_base_const_t<GUID>& panels) override { add_items(panels); }
+    void add_required_panels(const list_base_const_t<GUID>& panels) override { add_items(panels); }
     t_size find_or_add_guid(const GUID& guid)
     {
         t_size index = find_item(guid);

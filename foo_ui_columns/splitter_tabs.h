@@ -16,7 +16,7 @@ public:
     void remove_panel(unsigned index) override;
     void replace_panel(unsigned index, const uie::splitter_item_t* p_item) override;
 
-    bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy) override
+    bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy) override
     {
         if (wnd_point == get_wnd() || IsChild(get_wnd(), wnd_point)) {
             if (wnd_point == get_wnd() || wnd_point == m_wnd_tabs) {
@@ -28,7 +28,7 @@ public:
                 uie::splitter_window_v2_ptr sptr;
                 if (m_panels[i]->m_child.is_valid()) {
                     if (m_panels[i]->m_child->service_query_t(sptr)) {
-                        pfc::list_t<uie::window::ptr> temp;
+                        pfc::list_t<window::ptr> temp;
                         temp.add_item(this);
                         if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
                             p_hierarchy.add_items(temp);
@@ -46,7 +46,7 @@ public:
     }
 
     void get_supported_panels(
-        const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported) override;
+        const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported) override;
     unsigned get_panel_count() const override;
     uie::splitter_item_t* get_panel(unsigned index) const override;
 

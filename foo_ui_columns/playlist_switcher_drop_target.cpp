@@ -43,10 +43,10 @@ bool g_get_folder_name(IDataObject* pDataObj, pfc::string8& p_out)
                 uDragQueryFile((HDROP)sm.hGlobal, 0, temp);
                 DWORD att = uGetFileAttributes(temp);
                 if (att != INVALID_FILE_ATTRIBUTES && (att & FILE_ATTRIBUTE_DIRECTORY)) {
-                    p_out.set_string(pfc::string_filename_ext(temp));
+                    p_out.set_string(string_filename_ext(temp));
                     ret = true;
                 } else {
-                    p_out.set_string(pfc::string_filename(temp));
+                    p_out.set_string(string_filename(temp));
                     ret = true;
                 }
             }
@@ -151,7 +151,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::DragOver(DWORD grfKeySta
     pti.y = ptl.y;
     pti.x = ptl.x;
     if (m_window->get_wnd()) {
-        uih::ListView::HitTestResult hi;
+        HitTestResult hi;
 
         {
             POINT ptt = pti;
@@ -292,7 +292,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
         bool process = !ui_drop_item_callback::g_on_drop(pDataObj);
 
         if (process) {
-            uih::ListView::HitTestResult hi;
+            HitTestResult hi;
             {
                 POINT ptt = pti;
                 ScreenToClient(m_window->get_wnd(), &ptt);
@@ -426,7 +426,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                                 }
 
                                 playlist_api->playlist_add_items(
-                                    m_insertIndexTracker.m_playlist, p_items, pfc::bit_array_true());
+                                    m_insertIndexTracker.m_playlist, p_items, bit_array_true());
 
                                 if (main_window::config_get_activate_target_playlist_on_dropped_items())
                                     playlist_api->set_active_playlist(m_insertIndexTracker.m_playlist);

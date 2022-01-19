@@ -73,7 +73,7 @@ void FlatSplitterPanel::refresh_children()
             bool b_new = false;
 
             if (!p_ext.is_valid()) {
-                ui_extension::window::create_by_guid(m_panels[n]->m_guid, p_ext);
+                create_by_guid(m_panels[n]->m_guid, p_ext);
                 b_new = true;
             }
 
@@ -125,7 +125,7 @@ void FlatSplitterPanel::refresh_children()
                         mmi.ptMaxTrackSize.x = MAXLONG;
                         mmi.ptMaxTrackSize.y = MAXLONG;
                         SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-                        cui::helpers::clip_minmaxinfo(mmi);
+                        helpers::clip_minmaxinfo(mmi);
 
                         m_panels[n]->m_wnd = wnd_host;
                         m_panels[n]->m_wnd_child = wnd_panel;
@@ -672,7 +672,7 @@ void FlatSplitterPanel::start_autohide_dehide(unsigned p_panel, bool b_next_too)
 }
 
 void FlatSplitterPanel::get_supported_panels(
-    const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported)
+    const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported)
 {
     service_ptr_t<service_base> temp;
     g_splitter_host_vert.instance_create(temp);
@@ -685,7 +685,7 @@ void FlatSplitterPanel::get_supported_panels(
 }
 
 bool FlatSplitterPanel::is_point_ours(
-    HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy)
+    HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy)
 {
     if (wnd_point == get_wnd() || IsChild(get_wnd(), wnd_point)) {
         if (wnd_point == get_wnd()) {
@@ -697,7 +697,7 @@ bool FlatSplitterPanel::is_point_ours(
             uie::splitter_window_v2_ptr sptr;
             if (m_panels[i]->m_child.is_valid()) {
                 if (m_panels[i]->m_child->service_query_t(sptr)) {
-                    pfc::list_t<uie::window::ptr> temp;
+                    pfc::list_t<window::ptr> temp;
                     temp.add_item(this);
                     if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
                         p_hierarchy.add_items(temp);
@@ -726,7 +726,7 @@ bool FlatSplitterPanel::set_config_item(
     unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
 {
     if (is_index_valid(index)) {
-        if (p_type == uie::splitter_window::bool_show_caption) {
+        if (p_type == bool_show_caption) {
             p_source->read_object_t(m_panels[index]->m_show_caption, p_abort);
             if (get_wnd()) {
                 get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
@@ -735,33 +735,33 @@ bool FlatSplitterPanel::set_config_item(
             }
             return true;
         }
-        if (p_type == uie::splitter_window::bool_hidden) {
+        if (p_type == bool_hidden) {
             if (!m_panels[index]->m_autohide)
                 p_source->read_object_t(m_panels[index]->m_hidden, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::bool_autohide) {
+        if (p_type == bool_autohide) {
             p_source->read_object_t(m_panels[index]->m_autohide, p_abort);
             m_panels[index]->m_hidden = m_panels[index]->m_autohide;
             return true;
         }
-        if (p_type == uie::splitter_window::bool_locked) {
+        if (p_type == bool_locked) {
             if (get_wnd())
                 save_sizes();
             p_source->read_object_t(m_panels[index]->m_locked, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::uint32_orientation) {
+        if (p_type == uint32_orientation) {
             p_source->read_object_t(m_panels[index]->m_caption_orientation, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::uint32_size) {
+        if (p_type == uint32_size) {
             uint32_t size;
             p_source->read_object_t(size, p_abort);
             m_panels[index]->m_size = size;
             return true;
         }
-        if (p_type == uie::splitter_window::size_and_dpi) {
+        if (p_type == size_and_dpi) {
             uie::size_and_dpi sad;
             p_source->read_object_t(sad.size, p_abort);
             p_source->read_object_t(sad.dpi, p_abort);
@@ -769,15 +769,15 @@ bool FlatSplitterPanel::set_config_item(
             m_panels[index]->m_size.dpi = sad.dpi;
             return true;
         }
-        if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
+        if (p_type == bool_show_toggle_area && get_orientation() == horizontal) {
             p_source->read_object_t(m_panels[index]->m_show_toggle_area, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::bool_use_custom_title) {
+        if (p_type == bool_use_custom_title) {
             p_source->read_object_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::string_custom_title) {
+        if (p_type == string_custom_title) {
             p_source->read_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -790,44 +790,44 @@ bool FlatSplitterPanel::get_config_item(
     unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
 {
     if (is_index_valid(index)) {
-        if (p_type == uie::splitter_window::bool_show_caption) {
+        if (p_type == bool_show_caption) {
             p_out->write_object_t(m_panels[index]->m_show_caption, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::bool_hidden) {
+        if (p_type == bool_hidden) {
             p_out->write_object_t(m_panels[index]->m_hidden, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::bool_autohide) {
+        if (p_type == bool_autohide) {
             p_out->write_object_t(m_panels[index]->m_autohide, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::bool_locked) {
+        if (p_type == bool_locked) {
             p_out->write_object_t(m_panels[index]->m_locked, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::uint32_orientation) {
+        if (p_type == uint32_orientation) {
             p_out->write_object_t(m_panels[index]->m_caption_orientation, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::uint32_size) {
+        if (p_type == uint32_size) {
             p_out->write_object_t(m_panels[index]->m_size.get_scaled_value(), p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::size_and_dpi) {
+        if (p_type == size_and_dpi) {
             p_out->write_object_t(m_panels[index]->m_size.value, p_abort);
             p_out->write_object_t(m_panels[index]->m_size.dpi, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal) {
+        if (p_type == bool_show_toggle_area && get_orientation() == horizontal) {
             p_out->write_object_t(m_panels[index]->m_show_toggle_area, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::bool_use_custom_title) {
+        if (p_type == bool_use_custom_title) {
             p_out->write_object_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
         }
-        if (p_type == uie::splitter_window::string_custom_title) {
+        if (p_type == string_custom_title) {
             p_out->write_string(m_panels[index]->m_custom_title, p_abort);
             return true;
         }
@@ -839,13 +839,10 @@ bool FlatSplitterPanel::get_config_item(
 bool FlatSplitterPanel::get_config_item_supported(unsigned index, const GUID& p_type) const
 {
     if (is_index_valid(index)) {
-        if (p_type == uie::splitter_window::bool_show_caption || p_type == uie::splitter_window::bool_locked
-            || p_type == uie::splitter_window::bool_hidden || p_type == uie::splitter_window::uint32_orientation
-            || p_type == uie::splitter_window::bool_autohide
-            || (p_type == uie::splitter_window::bool_show_toggle_area && get_orientation() == horizontal)
-            || p_type == uie::splitter_window::uint32_size || p_type == uie::splitter_window::size_and_dpi
-            || p_type == uie::splitter_window::bool_use_custom_title
-            || p_type == uie::splitter_window::string_custom_title)
+        if (p_type == bool_show_caption || p_type == bool_locked || p_type == bool_hidden
+            || p_type == uint32_orientation || p_type == bool_autohide
+            || (p_type == bool_show_toggle_area && get_orientation() == horizontal) || p_type == uint32_size
+            || p_type == size_and_dpi || p_type == bool_use_custom_title || p_type == string_custom_title)
             return true;
     }
     return false;
@@ -1105,7 +1102,7 @@ void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, un
     }
 }
 
-void FlatSplitterPanel::FlatSplitterPanelHost::get_children(pfc::list_base_t<uie::window::ptr>& p_out)
+void FlatSplitterPanel::FlatSplitterPanelHost::get_children(pfc::list_base_t<window::ptr>& p_out)
 {
     if (m_this.is_valid()) {
         t_size count = m_this->m_panels.get_count();

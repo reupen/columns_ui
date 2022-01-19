@@ -50,26 +50,26 @@ static const MainMenuCommand activate_now_playing{activate_now_playing_id, "Acti
 
 static const MainMenuCommand show_groups{show_groups_id, "Show groups", "Shows or hides playlist view groups.",
     [] {
-        cui::panels::playlist_view::cfg_grouping = !cui::panels::playlist_view::cfg_grouping;
-        cui::panels::playlist_view::PlaylistView::g_on_groups_change();
+        panels::playlist_view::cfg_grouping = !panels::playlist_view::cfg_grouping;
+        panels::playlist_view::PlaylistView::g_on_groups_change();
     },
-    [] { return static_cast<bool>(cui::panels::playlist_view::cfg_grouping); }};
+    [] { return static_cast<bool>(panels::playlist_view::cfg_grouping); }};
 
 static const MainMenuCommand show_artwork{show_artwork_id, "Show artwork",
     "Shows or hides playlist view artwork in groups.",
     [] {
-        cui::panels::playlist_view::cfg_show_artwork = !cui::panels::playlist_view::cfg_show_artwork;
-        cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
+        panels::playlist_view::cfg_show_artwork = !panels::playlist_view::cfg_show_artwork;
+        panels::playlist_view::PlaylistView::g_on_show_artwork_change();
     },
-    [] { return cui::panels::playlist_view::cfg_show_artwork.get(); }};
+    [] { return panels::playlist_view::cfg_show_artwork.get(); }};
 
 static const MainMenuCommand decrease_font{
     {0xf2bc9f43, 0xf709, 0x4f6f, {0x9c, 0x65, 0x78, 0x73, 0x3b, 0x8, 0xc7, 0x77}}, "Decrease font size",
-    "Decreases the playlist view font size.", [] { cui::panels::playlist_view::set_font_size(false); }};
+    "Decreases the playlist view font size.", [] { panels::playlist_view::set_font_size(false); }};
 
 static const MainMenuCommand increase_font{
     {0x8553d7fd, 0xebc5, 0x4ae7, {0xaa, 0x28, 0xb2, 0x6, 0xfe, 0x94, 0xa0, 0xb4}}, "Increase font size",
-    "Increases the playlist font size.", [] { cui::panels::playlist_view::set_font_size(true); }};
+    "Increases the playlist font size.", [] { panels::playlist_view::set_font_size(true); }};
 
 static const MainMenuCommand show_status_bar{
     {0x5f944522, 0x843b, 0x43d2, {0x87, 0x14, 0xe3, 0xca, 0x1b, 0x78, 0x2b, 0x1f}}, "Show status bar",
@@ -196,7 +196,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     bool get_display(t_uint32 p_index, pfc::string_base& p_text, t_uint32& p_flags) override
     {
         if (g_layout_window.get_wnd()) {
-            p_flags = p_index == cfg_layout.get_active() ? mainmenu_commands::flag_checked : 0;
+            p_flags = p_index == cfg_layout.get_active() ? flag_checked : 0;
             get_name(p_index, p_text);
             return true;
         }
@@ -211,7 +211,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     }
 
     GUID get_parent() override { return groups::view_layout_presets; }
-    t_uint32 get_sort_priority() override { return mainmenu_commands::sort_priority_dontcare; }
+    t_uint32 get_sort_priority() override { return sort_priority_dontcare; }
 };
 static mainmenu_commands_factory_t<MainMenuLayoutPresets> mainmenu_commands_layout_presets;
 } // namespace commands

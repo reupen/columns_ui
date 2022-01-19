@@ -148,7 +148,7 @@ LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             update_seek_timer();
         }
 
-        SeekBarToolbar::update_seek_timer();
+        update_seek_timer();
         ShowWindow(wnd_seekbar, SW_SHOWNORMAL);
         break;
     }

@@ -28,15 +28,15 @@ void ButtonsToolbar::ButtonImage::load(const Button::CustomImage& p_image)
     pfc::string8 fullPath;
     p_image.get_path(fullPath);
 
-    if (!_stricmp(pfc::string_extension(fullPath), "bmp")) // Gdiplus vs 32bpp
+    if (!_stricmp(string_extension(fullPath), "bmp")) // Gdiplus vs 32bpp
         m_bm = (HBITMAP)uLoadImage(
             core_api::get_my_instance(), fullPath, IMAGE_BITMAP, 0, 0, LR_DEFAULTSIZE | LR_LOADFROMFILE);
-    else if (!_stricmp(pfc::string_extension(fullPath), "ico"))
+    else if (!_stricmp(string_extension(fullPath), "ico"))
         m_icon = (HICON)uLoadImage(core_api::get_my_instance(), fullPath, IMAGE_ICON, GetSystemMetrics(SM_CXSMICON),
             GetSystemMetrics(SM_CYSMICON), LR_LOADFROMFILE);
     else {
         try {
-            m_bm = cui::wic::create_hbitmap_from_path(fullPath).release();
+            m_bm = wic::create_hbitmap_from_path(fullPath).release();
         } catch (const std::exception& ex) {
             fbh::print_to_console(u8"Buttons toolbar – loading image failed: "_pcc, ex.what());
             m_bm = nullptr;

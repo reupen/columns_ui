@@ -17,141 +17,141 @@ struct Preset {
 
 // clang-format off
 const Preset default_preset = {"Default",
-    {columns_ui::panels::guid_horizontal_splitter, {
-        {columns_ui::panels::guid_vertical_splitter, {
-            {columns_ui::panels::guid_playlist_switcher},
+    {panels::guid_horizontal_splitter, {
+        {panels::guid_vertical_splitter, {
+            {panels::guid_playlist_switcher},
         }, true},
-        {columns_ui::panels::guid_vertical_splitter, {
-            {columns_ui::panels::guid_playlist_view_v2},
+        {panels::guid_vertical_splitter, {
+            {panels::guid_playlist_view_v2},
         }},
     }}
 };
 
 const std::array<Preset, 10> quick_setup_presets = {{
     {"Playlist switcher",
-        {columns_ui::panels::guid_horizontal_splitter, {
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_switcher},
+        {panels::guid_horizontal_splitter, {
+            {panels::guid_vertical_splitter, {
+                {panels::guid_playlist_switcher},
             }, true},
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_view_v2},
+            {panels::guid_vertical_splitter, {
+                {panels::guid_playlist_view_v2},
             }},
         }}
     },
     {"Playlist switcher + Filters",
-        {columns_ui::panels::guid_horizontal_splitter, {
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_switcher},
+        {panels::guid_horizontal_splitter, {
+            {panels::guid_vertical_splitter, {
+                {panels::guid_playlist_switcher},
             }, true},
-            {columns_ui::panels::guid_vertical_splitter,{
-                {columns_ui::panels::guid_horizontal_splitter, {
-                    {columns_ui::panels::guid_filter},
-                    {columns_ui::panels::guid_filter},
-                    {columns_ui::panels::guid_filter},
+            {panels::guid_vertical_splitter,{
+                {panels::guid_horizontal_splitter, {
+                    {panels::guid_filter},
+                    {panels::guid_filter},
+                    {panels::guid_filter},
                 }, true},
-                {columns_ui::panels::guid_playlist_view_v2},
+                {panels::guid_playlist_view_v2},
             }},
         }}
     },
     {"Playlist switcher + Artwork",
-        {columns_ui::panels::guid_horizontal_splitter, {
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_switcher},
-                {columns_ui::panels::guid_artwork_view, {}, true}
+        {panels::guid_horizontal_splitter, {
+            {panels::guid_vertical_splitter, {
+                {panels::guid_playlist_switcher},
+                {panels::guid_artwork_view, {}, true}
             }, true},
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_view_v2},
+            {panels::guid_vertical_splitter, {
+                {panels::guid_playlist_view_v2},
             }},
         }}
     },
     {"Playlist switcher + Artwork + Filters",
-        {columns_ui::panels::guid_horizontal_splitter, {
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_switcher},
-                {columns_ui::panels::guid_artwork_view, {}, true}
+        {panels::guid_horizontal_splitter, {
+            {panels::guid_vertical_splitter, {
+                {panels::guid_playlist_switcher},
+                {panels::guid_artwork_view, {}, true}
             }, true},
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_horizontal_splitter, {
-                    {columns_ui::panels::guid_filter},
-                    {columns_ui::panels::guid_filter},
-                    {columns_ui::panels::guid_filter},
+            {panels::guid_vertical_splitter, {
+                {panels::guid_horizontal_splitter, {
+                    {panels::guid_filter},
+                    {panels::guid_filter},
+                    {panels::guid_filter},
                 }, true},
-                {columns_ui::panels::guid_playlist_view_v2},
+                {panels::guid_playlist_view_v2},
             }},
         }}
     },
     {"Playlist switcher + Item details + Artwork ",
-        {columns_ui::panels::guid_horizontal_splitter, {
-            {columns_ui::panels::guid_vertical_splitter, {{columns_ui::panels::guid_playlist_switcher}}, true},
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_playlist_view_v2},
-                {columns_ui::panels::guid_horizontal_splitter, {
-                    {columns_ui::panels::guid_item_details},
-                    {columns_ui::panels::guid_artwork_view, {}, true, 125},
+        {panels::guid_horizontal_splitter, {
+            {panels::guid_vertical_splitter, {{panels::guid_playlist_switcher}}, true},
+            {panels::guid_vertical_splitter, {
+                {panels::guid_playlist_view_v2},
+                {panels::guid_horizontal_splitter, {
+                    {panels::guid_item_details},
+                    {panels::guid_artwork_view, {}, true, 125},
                 }, true, 125},
             }},
         }}
     },
     {"Playlist switcher + Filters + Item details + Artwork ",
-        {columns_ui::panels::guid_horizontal_splitter, {
-            {columns_ui::panels::guid_vertical_splitter, {{columns_ui::panels::guid_playlist_switcher}}, true},
-            {columns_ui::panels::guid_vertical_splitter, {
-                {columns_ui::panels::guid_horizontal_splitter, {
-                    {columns_ui::panels::guid_filter},
-                    {columns_ui::panels::guid_filter},
-                    {columns_ui::panels::guid_filter},
+        {panels::guid_horizontal_splitter, {
+            {panels::guid_vertical_splitter, {{panels::guid_playlist_switcher}}, true},
+            {panels::guid_vertical_splitter, {
+                {panels::guid_horizontal_splitter, {
+                    {panels::guid_filter},
+                    {panels::guid_filter},
+                    {panels::guid_filter},
                 }, true},
-                {columns_ui::panels::guid_playlist_view_v2},
-                {columns_ui::panels::guid_horizontal_splitter, {
-                    {columns_ui::panels::guid_item_details},
-                    {columns_ui::panels::guid_artwork_view, {}, true, 125},
+                {panels::guid_playlist_view_v2},
+                {panels::guid_horizontal_splitter, {
+                    {panels::guid_item_details},
+                    {panels::guid_artwork_view, {}, true, 125},
                 }, true, 125},
             }},
         }}
     },
     {"Playlist tabs",
-        {columns_ui::panels::guid_vertical_splitter, {
-            {columns_ui::panels::guid_playlist_tabs, {
-                {columns_ui::panels::guid_playlist_view_v2},
+        {panels::guid_vertical_splitter, {
+            {panels::guid_playlist_tabs, {
+                {panels::guid_playlist_view_v2},
             }},
         }}
     },
     {"Playlist tabs + Filters",
-        {columns_ui::panels::guid_vertical_splitter, {
-            {columns_ui::panels::guid_horizontal_splitter, {
-                {columns_ui::panels::guid_filter},
-                {columns_ui::panels::guid_filter},
-                {columns_ui::panels::guid_filter},
+        {panels::guid_vertical_splitter, {
+            {panels::guid_horizontal_splitter, {
+                {panels::guid_filter},
+                {panels::guid_filter},
+                {panels::guid_filter},
             }, true},
-            {columns_ui::panels::guid_playlist_tabs, {
-                {columns_ui::panels::guid_playlist_view_v2},
+            {panels::guid_playlist_tabs, {
+                {panels::guid_playlist_view_v2},
             }},
         }}
     },
     {"Playlist tabs + Item details + Artwork",
-        {columns_ui::panels::guid_vertical_splitter, {
-            {columns_ui::panels::guid_playlist_tabs, {
-                {columns_ui::panels::guid_playlist_view_v2},
+        {panels::guid_vertical_splitter, {
+            {panels::guid_playlist_tabs, {
+                {panels::guid_playlist_view_v2},
             }},
-            {columns_ui::panels::guid_horizontal_splitter, {
-                {columns_ui::panels::guid_item_details},
-                {columns_ui::panels::guid_artwork_view, {}, true, 125},
+            {panels::guid_horizontal_splitter, {
+                {panels::guid_item_details},
+                {panels::guid_artwork_view, {}, true, 125},
             }, true, 125},
         }}
     },
     {"Playlist tabs + Filters + Item details + Artwork",
-        {columns_ui::panels::guid_vertical_splitter, {
-            {columns_ui::panels::guid_horizontal_splitter, {
-                {columns_ui::panels::guid_filter},
-                {columns_ui::panels::guid_filter},
-                {columns_ui::panels::guid_filter},
+        {panels::guid_vertical_splitter, {
+            {panels::guid_horizontal_splitter, {
+                {panels::guid_filter},
+                {panels::guid_filter},
+                {panels::guid_filter},
             }, true},
-            {columns_ui::panels::guid_playlist_tabs, {
-                {columns_ui::panels::guid_playlist_view_v2},
+            {panels::guid_playlist_tabs, {
+                {panels::guid_playlist_view_v2},
             }},
-            {columns_ui::panels::guid_horizontal_splitter, {
-                {columns_ui::panels::guid_item_details},
-                {columns_ui::panels::guid_artwork_view, {}, true, 125},
+            {panels::guid_horizontal_splitter, {
+                {panels::guid_item_details},
+                {panels::guid_artwork_view, {}, true, 125},
             }, true, 125},
         }}
     },
@@ -269,7 +269,7 @@ t_size ConfigLayout::add_preset(const char* p_name, t_size len)
 {
     Preset temp;
     temp.m_name.set_string(p_name, len);
-    temp.m_guid = columns_ui::panels::guid_playlist_view_v2;
+    temp.m_guid = cui::panels::guid_playlist_view_v2;
     return m_presets.add_item(temp);
 }
 void ConfigLayout::save_active_preset()

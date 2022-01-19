@@ -5,7 +5,7 @@ namespace cui::panels::playlist_switcher {
 
 bool PlaylistSwitcher::do_drag_drop(WPARAM wp)
 {
-    pfc::bit_array_bittable mask(get_item_count());
+    bit_array_bittable mask(get_item_count());
     get_selection_state(mask);
 
     playlist_dataobject_desc_impl data;

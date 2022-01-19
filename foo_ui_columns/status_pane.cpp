@@ -10,12 +10,12 @@ namespace cui::status_pane {
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
 const GUID StatusPane::g_guid_font = {0x522e01c6, 0xea7c, 0x49f2, {0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24}};
 
-class StatusPaneFontClient : public cui::fonts::client {
+class StatusPaneFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return StatusPane::g_guid_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Status pane"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_labels; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
 
     void on_font_changed() const override { g_status_pane.on_font_changed(); }
 };
@@ -24,8 +24,8 @@ StatusPaneFontClient::factory<StatusPaneFontClient> g_font_client_status_pane;
 
 void StatusPane::on_font_changed()
 {
-    m_font.reset(cui::fonts::helper(g_guid_font).get_font());
-    cui::main_window.resize_child_windows();
+    m_font.reset(fonts::helper(g_guid_font).get_font());
+    main_window.resize_child_windows();
 }
 
 void StatusPane::render_background(HDC dc, const RECT& rc)
@@ -86,6 +86,6 @@ void StatusPane::get_length_data(bool& p_selection, t_size& p_count, pfc::string
     p_selection = b_selection;
 }
 
-cui::status_pane::StatusPane g_status_pane;
+StatusPane g_status_pane;
 
 } // namespace cui::status_pane

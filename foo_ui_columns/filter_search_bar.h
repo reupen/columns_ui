@@ -27,7 +27,7 @@ public:
 
     void get_name(pfc::string_base& out) const override { out = "Filter search"; }
 
-    const GUID& get_extension_guid() const override { return cui::toolbars::guid_filter_search_bar; }
+    const GUID& get_extension_guid() const override { return toolbars::guid_filter_search_bar; }
 
     void get_category(pfc::string_base& out) const override { out = "Toolbars"; }
 
@@ -36,19 +36,19 @@ public:
     t_uint32 get_flags() const override { return flag_default_flags_plus_transparent_background; }
 
 private:
-    class FontClient : public cui::fonts::client {
+    class FontClient : public fonts::client {
         const GUID& get_client_guid() const override { return font_client_id; }
         void get_name(pfc::string_base& p_out) const override { p_out = "Filter search"; }
-        cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+        fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
         void on_font_changed() const override { s_update_font(); }
     };
 
-    class ColourClient : public cui::colours::client {
+    class ColourClient : public colours::client {
         const GUID& get_client_guid() const override { return colour_client_id; }
         void get_name(pfc::string_base& p_out) const override { p_out = "Filter search"; }
         size_t get_supported_colours() const override
         {
-            return cui::colours::colour_flag_text | cui::colours::colour_flag_background;
+            return colours::colour_flag_text | colours::colour_flag_background;
         }
         size_t get_supported_bools() const override { return 0; }
         bool get_themes_supported() const override { return false; }
@@ -71,7 +71,7 @@ private:
     static void s_update_colours();
     static void s_update_font();
 
-    const GUID& get_class_guid() override { return cui::toolbars::guid_filter_search_bar; }
+    const GUID& get_class_guid() override { return toolbars::guid_filter_search_bar; }
 
     void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;

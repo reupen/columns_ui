@@ -67,7 +67,7 @@ cui::fcl::dataset_factory<LayoutDataSet> g_export_layout_t;
 
 namespace cui::rebar {
 
-class ToolbarLayoutDataSet : public cui::fcl::dataset_v2 {
+class ToolbarLayoutDataSet : public fcl::dataset_v2 {
     void get_name(pfc::string_base& p_out) const override { p_out = "Toolbars"; }
     const GUID& get_guid() const override
     {
@@ -75,13 +75,13 @@ class ToolbarLayoutDataSet : public cui::fcl::dataset_v2 {
         static const GUID guid = {0x2f802663, 0xbd1, 0x4d3d, {0xae, 0x7e, 0x6, 0x63, 0x0, 0x7a, 0x9c, 0x2b}};
         return guid;
     }
-    const GUID& get_group() const override { return cui::fcl::groups::toolbars; }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    const GUID& get_group() const override { return fcl::groups::toolbars; }
+    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         g_cfg_rebar.export_config(p_writer, type, feedback, p_abort);
     }
-    void set_data(stream_reader* p_reader, t_size size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, t_size size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         pfc::list_t<GUID> panels;
@@ -95,7 +95,7 @@ class ToolbarLayoutDataSet : public cui::fcl::dataset_v2 {
     [[nodiscard]] double get_import_priority() const override { return -100.0; }
 };
 
-cui::fcl::dataset_factory<ToolbarLayoutDataSet> g_export_toolbars_t;
+fcl::dataset_factory<ToolbarLayoutDataSet> g_export_toolbars_t;
 
 } // namespace cui::rebar
 

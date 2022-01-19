@@ -6,7 +6,7 @@ class VisualisationPanelInterface : public ui_extension::visualisation_host {
     service_ptr_t<VisualisationPanel> p_wnd;
 
 public:
-    class Painter : public uie::visualisation_host::painter_t {
+    class Painter : public painter_t {
         HDC m_dc;
         RECT m_rect;
         HGDIOBJ m_gdiobj;

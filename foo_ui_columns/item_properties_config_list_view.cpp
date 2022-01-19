@@ -7,7 +7,7 @@ void FieldsList::notify_save_inline_edit(const char* value)
 {
     if (m_edit_index < m_fields.get_count()) {
         (m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
-        pfc::list_t<uih::ListView::SizedInsertItem<2, 0>> items;
+        pfc::list_t<SizedInsertItem<2, 0>> items;
         items.set_count(1);
         items[0].m_subitems[0] = m_fields[m_edit_index].m_name_friendly;
         items[0].m_subitems[1] = m_fields[m_edit_index].m_name;
@@ -44,15 +44,15 @@ bool FieldsList::notify_before_create_inline_edit(
 void FieldsList::notify_on_create()
 {
     set_single_selection(true);
-    uih::ListView::set_columns({{"Name", 150}, {"Field", 150}});
+    set_columns({{"Name", 150}, {"Field", 150}});
 
     t_size count = m_fields.get_count();
-    pfc::list_t<uih::ListView::InsertItem> items;
+    pfc::list_t<InsertItem> items;
     get_insert_items(0, count, items);
     insert_items(0, count, items.get_ptr());
 }
 
-void FieldsList::get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
+void FieldsList::get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& items)
 {
     items.set_count(count);
     for (t_size i = 0; i < count; i++) {

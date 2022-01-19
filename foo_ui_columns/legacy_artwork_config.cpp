@@ -45,7 +45,7 @@ void prompt_to_reconfigure()
 {
     if (any_legacy_sources() && !has_been_asked_to_reconfigure) {
         has_been_asked_to_reconfigure = true;
-        cui::prefs::page_main.get_static_instance().show_tab("Artwork");
+        prefs::page_main.get_static_instance().show_tab("Artwork");
     }
 }
 

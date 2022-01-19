@@ -113,7 +113,7 @@ public:
                 (*this)[i]->width = entries[i]->width;
     }
 
-    void set_widths(const pfc::list_base_const_t<t_size>& widths)
+    void set_widths(const list_base_const_t<t_size>& widths)
     {
         // remove_all();
         t_size count = get_count();

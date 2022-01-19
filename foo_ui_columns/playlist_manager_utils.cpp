@@ -37,7 +37,7 @@ bool check_clipboard()
     hr = api->check_dataobject_playlists(pDO.get());
     return SUCCEEDED(hr);
 }
-bool cut(const pfc::bit_array& mask)
+bool cut(const bit_array& mask)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
     static_api_ptr_t<ole_interaction> api;
@@ -61,14 +61,14 @@ bool cut(const pfc::list_base_const_t<t_size>& indices)
     static_api_ptr_t<playlist_manager> m_playlist_api;
     t_size count = indices.get_count();
     t_size playlist_count = m_playlist_api->get_playlist_count();
-    pfc::bit_array_bittable mask(playlist_count);
+    bit_array_bittable mask(playlist_count);
     for (t_size i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
             mask.set(indices[i], true);
     }
     return cut(mask);
 };
-bool copy(const pfc::bit_array& mask)
+bool copy(const bit_array& mask)
 {
     static_api_ptr_t<playlist_manager> m_playlist_api;
     static_api_ptr_t<ole_interaction> api;
@@ -85,7 +85,7 @@ bool copy(const pfc::list_base_const_t<t_size>& indices)
     static_api_ptr_t<playlist_manager> m_playlist_api;
     t_size count = indices.get_count();
     t_size playlist_count = m_playlist_api->get_playlist_count();
-    pfc::bit_array_bittable mask(playlist_count);
+    bit_array_bittable mask(playlist_count);
     for (t_size i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
             mask.set(indices[i], true);
@@ -122,7 +122,7 @@ bool paste(HWND wnd, t_size index_insert)
         data.get_entry_name(i, name);
         data.get_entry_content(i, handles);
         index_insert = m_playlist_api->create_playlist(name, pfc_infinite, index_insert);
-        m_playlist_api->playlist_insert_items(index_insert, 0, handles, pfc::bit_array_false());
+        m_playlist_api->playlist_insert_items(index_insert, 0, handles, bit_array_false());
         index_insert++;
     }
     return true;

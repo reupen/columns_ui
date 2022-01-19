@@ -32,12 +32,11 @@ SharedCellStyleData::~SharedCellStyleData()
 
 CellStyleData CellStyleData::g_create_default()
 {
-    cui::colours::helper p_helper(ColoursClient::g_guid);
-    return CellStyleData(p_helper.get_colour(cui::colours::colour_text),
-        p_helper.get_colour(cui::colours::colour_selection_text), p_helper.get_colour(cui::colours::colour_background),
-        p_helper.get_colour(cui::colours::colour_selection_background),
-        p_helper.get_colour(cui::colours::colour_inactive_selection_text),
-        p_helper.get_colour(cui::colours::colour_inactive_selection_background));
+    colours::helper p_helper(ColoursClient::g_guid);
+    return CellStyleData(p_helper.get_colour(colours::colour_text), p_helper.get_colour(colours::colour_selection_text),
+        p_helper.get_colour(colours::colour_background), p_helper.get_colour(colours::colour_selection_background),
+        p_helper.get_colour(colours::colour_inactive_selection_text),
+        p_helper.get_colour(colours::colour_inactive_selection_background));
 }
 
 bool StyleTitleformatHook::process_field(
@@ -113,7 +112,7 @@ bool StyleTitleformatHook::process_field(
                 return true;
             }
             if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "themed", pfc_infinite)) {
-                cui::colours::helper p_helper(ColoursClient::g_guid);
+                colours::helper p_helper(ColoursClient::g_guid);
                 if (p_helper.get_themed()) {
                     p_out->write(titleformat_inputtypes::unknown, "1", 1);
                     p_found_flag = true;

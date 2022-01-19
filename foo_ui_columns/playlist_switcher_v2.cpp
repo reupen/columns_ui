@@ -12,19 +12,19 @@ const GUID PlaylistSwitcher::g_guid_font
 
 std::vector<PlaylistSwitcher*> PlaylistSwitcher::g_windows;
 
-void PlaylistSwitcher::get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& p_out)
+void PlaylistSwitcher::get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& p_out)
 {
     p_out.set_count(count);
 
     for (t_size i = 0; i < count; i++) {
         p_out[i].m_subitems.resize(1);
-        p_out[i].m_subitems[0].set_string(cui::format_playlist_title(i + base));
+        p_out[i].m_subitems[0].set_string(format_playlist_title(i + base));
     }
 }
 
 void PlaylistSwitcher::refresh_all_items()
 {
-    remove_items(pfc::bit_array_true());
+    remove_items(bit_array_true());
 
     add_items(0, m_playlist_api->get_playlist_count());
 
@@ -35,14 +35,14 @@ void PlaylistSwitcher::refresh_all_items()
 
 void PlaylistSwitcher::refresh_items(t_size base, t_size count, bool b_update)
 {
-    pfc::list_t<uih::ListView::InsertItem> items_insert;
+    pfc::list_t<InsertItem> items_insert;
     get_insert_items(base, count, items_insert);
     replace_items(base, items_insert);
 }
 
 void PlaylistSwitcher::add_items(t_size base, t_size count)
 {
-    pfc::list_t<uih::ListView::InsertItem> items_insert;
+    pfc::list_t<InsertItem> items_insert;
     get_insert_items(base, count, items_insert);
     insert_items(base, items_insert.get_count(), items_insert.get_ptr());
 }
@@ -105,7 +105,7 @@ void PlaylistSwitcher::g_refresh_all_items()
 void PlaylistSwitcher::g_on_font_items_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_font, lf);
     for (auto& window : g_windows) {
         window->set_font(&lf);
     }
@@ -120,7 +120,7 @@ void PlaylistSwitcher::notify_on_initialisation()
     set_vertical_item_padding(settings::playlist_switcher_item_padding);
 
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_font, lf);
     set_font(&lf);
 };
 void PlaylistSwitcher::notify_on_create()
@@ -134,8 +134,8 @@ void PlaylistSwitcher::notify_on_create()
 
     refresh_all_items();
 
-    m_playlist_api->register_callback(this, playlist_callback::flag_all);
-    standard_api_create_t<play_callback_manager>()->register_callback(this, play_callback::flag_on_playback_all, false);
+    m_playlist_api->register_callback(this, flag_all);
+    standard_api_create_t<play_callback_manager>()->register_callback(this, flag_on_playback_all, false);
 
     wil::com_ptr_t<DropTarget> drop_target = new DropTarget(this);
     RegisterDragDrop(get_wnd(), drop_target.get());

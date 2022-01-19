@@ -33,7 +33,7 @@ public:
     }
 
     bool is_available(const uie::window_host_ptr&) const override { return true; }
-    HWND get_wnd() const override { return uih::ListView::get_wnd(); }
+    HWND get_wnd() const override { return ListView::get_wnd(); }
 
     const uie::window_host_ptr& get_host() const { return m_window_host; }
 

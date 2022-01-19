@@ -45,7 +45,7 @@ public:
         const GUID& get_host_guid() const override;
 
         bool get_keyboard_shortcuts_enabled() const override;
-        void get_children(pfc::list_base_t<uie::window::ptr>& p_out) override;
+        void get_children(pfc::list_base_t<window::ptr>& p_out) override;
 
         void on_size_limit_change(HWND wnd, unsigned flags) override;
         ;
@@ -69,10 +69,9 @@ public:
         void relinquish_ownership(HWND wnd) override;
     };
 
-    bool is_point_ours(
-        HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<uie::window::ptr>& p_hierarchy) override;
+    bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy) override;
     void get_supported_panels(
-        const pfc::list_base_const_t<uie::window::ptr>& p_windows, pfc::bit_array_var& p_mask_unsupported) override;
+        const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported) override;
 
     static void g_on_size_change();
 
@@ -88,7 +87,7 @@ private:
     class Panel : public std::enable_shared_from_this<Panel> {
     public:
         class PanelContainer
-            : public ui_helpers::container_window
+            : public container_window
             , private fbh::LowLevelMouseHookManager::HookCallback {
         public:
             enum { MSG_AUTOHIDE_END = WM_USER + 2 };

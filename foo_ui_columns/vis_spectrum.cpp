@@ -202,10 +202,8 @@ void SpectrumAnalyserVisualisation::enable(const ui_extension::visualisation_hos
             p_stream_v2->set_channel_mode(visualisation_stream_v2::channel_mode_mono);
     }
 
-    static_api_ptr_t<play_callback_manager>()->register_callback(this,
-        play_callback::flag_on_playback_new_track | play_callback::flag_on_playback_stop
-            | play_callback::flag_on_playback_pause,
-        false);
+    static_api_ptr_t<play_callback_manager>()->register_callback(
+        this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_pause, false);
     if (static_api_ptr_t<play_control>()->is_playing())
         g_register_stream(this);
 }
@@ -539,9 +537,9 @@ void SpectrumAnalyserVisualisation::g_refresh_all()
     unsigned fft_size = 4096;
     bool ret = g_stream->get_spectrum_absolute(p_chunk, p_time, fft_size);
 
-    unsigned count = SpectrumAnalyserVisualisation::g_visualisations.get_count();
+    unsigned count = g_visualisations.get_count();
     for (unsigned n = 0; n < count; n++) {
-        SpectrumAnalyserVisualisation* vis_ext = SpectrumAnalyserVisualisation::g_visualisations[n];
+        SpectrumAnalyserVisualisation* vis_ext = g_visualisations[n];
         if (ret)
             vis_ext->refresh(&p_chunk);
     }

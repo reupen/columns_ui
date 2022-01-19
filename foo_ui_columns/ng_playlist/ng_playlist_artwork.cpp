@@ -281,8 +281,8 @@ wil::unique_hbitmap g_create_hbitmap_from_data(
 {
     std::unique_ptr<Gdiplus::Bitmap> bitmap;
     try {
-        const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
-        bitmap = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
+        const auto bitmap_data = wic::decode_image_data(data->get_ptr(), data->get_size());
+        bitmap = gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
         fbh::print_to_console(u8"Playlist view – loading image failed: "_pcc, ex.what());
         return nullptr;
@@ -314,8 +314,8 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(t_size index_item)
         m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
         std::shared_ptr<ArtworkReader> p_reader;
         m_artwork_manager->request(handle, p_reader, cx, cy,
-            cui::colours::helper(ColoursClient::g_guid).get_colour(cui::colours::colour_background),
-            cfg_artwork_reflection, std::move(ptr));
+            colours::helper(ColoursClient::g_guid).get_colour(colours::colour_background), cfg_artwork_reflection,
+            std::move(ptr));
         group->m_artwork_load_attempted = true;
         return nullptr;
     }

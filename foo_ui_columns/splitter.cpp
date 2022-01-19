@@ -40,7 +40,7 @@ class VerticalSplitterPanel : public FlatSplitterPanel {
 uie::window_factory<HorizontalSplitterPanel> g_splitter_window_horizontal;
 uie::window_factory<VerticalSplitterPanel> g_splitter_window_vertical;
 
-FlatSplitterPanel::Panel::ptr FlatSplitterPanel::Panel::null_ptr = FlatSplitterPanel::Panel::ptr();
+FlatSplitterPanel::Panel::ptr FlatSplitterPanel::Panel::null_ptr = ptr();
 
 #if 0
 template <orientation_t t_orientation>

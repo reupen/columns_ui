@@ -101,14 +101,13 @@ ColoursManagerData::Entry::Entry(bool b_global /*= false*/)
 
 void ColoursManagerData::Entry::reset_colors()
 {
-    text = cui::colours::g_get_system_color(cui::colours::colour_text);
-    selection_text = cui::colours::g_get_system_color(cui::colours::colour_selection_text);
-    inactive_selection_text = cui::colours::g_get_system_color(cui::colours::colour_inactive_selection_text);
-    background = cui::colours::g_get_system_color(cui::colours::colour_background);
-    selection_background = cui::colours::g_get_system_color(cui::colours::colour_selection_background);
-    inactive_selection_background
-        = cui::colours::g_get_system_color(cui::colours::colour_inactive_selection_background);
-    active_item_frame = cui::colours::g_get_system_color(cui::colours::colour_active_item_frame);
+    text = g_get_system_color(cui::colours::colour_text);
+    selection_text = g_get_system_color(cui::colours::colour_selection_text);
+    inactive_selection_text = g_get_system_color(cui::colours::colour_inactive_selection_text);
+    background = g_get_system_color(cui::colours::colour_background);
+    selection_background = g_get_system_color(cui::colours::colour_selection_background);
+    inactive_selection_background = g_get_system_color(cui::colours::colour_inactive_selection_background);
+    active_item_frame = g_get_system_color(cui::colours::colour_active_item_frame);
     group_foreground = NULL;
     group_background = NULL;
     use_custom_active_item_frame = false;

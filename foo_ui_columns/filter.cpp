@@ -188,7 +188,7 @@ void FilterPanel::g_on_edgestyle_change()
 void FilterPanel::g_on_font_items_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
     for (auto& window : g_windows) {
         window->set_font(&lf);
     }
@@ -197,7 +197,7 @@ void FilterPanel::g_on_font_items_change()
 void FilterPanel::g_on_font_header_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
     for (auto& window : g_windows) {
         window->set_header_font(&lf);
     }
@@ -317,7 +317,7 @@ void FilterPanel::get_windows(pfc::list_base_t<FilterPanel*>& windows)
             }
         }
         mmh::Permutation permutation(windows.get_count());
-        mmh::sort_get_permutation(indices.get_ptr(), permutation, (pfc::compare_t<t_size, t_size>), true, false);
+        sort_get_permutation(indices.get_ptr(), permutation, (pfc::compare_t<t_size, t_size>), true, false);
         windows.reorder(permutation.data());
     }
 }
@@ -358,10 +358,10 @@ void FilterPanel::g_create_field_data(const Field& field, FieldData& p_out)
 
 void FilterPanel::g_load_fields()
 {
-    t_size count = cui::panels::filter::cfg_field_list.get_count();
+    t_size count = cfg_field_list.get_count();
     g_field_data.set_count(count);
     for (t_size i = 0; i < count; i++) {
-        const Field& field = cui::panels::filter::cfg_field_list[i];
+        const Field& field = cfg_field_list[i];
         g_create_field_data(field, g_field_data[i]);
     }
 }
@@ -516,12 +516,12 @@ void FilterPanel::get_selection_handles(
 
 void FilterPanel::do_selection_action(Action action)
 {
-    pfc::bit_array_bittable mask(m_nodes.get_count());
+    bit_array_bittable mask(m_nodes.get_count());
     get_selection_state(mask);
     do_items_action(mask, action);
 }
 
-void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, Action action)
+void FilterPanel::do_items_action(const bit_array& p_nodes, Action action)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(m_nodes.get_count());
@@ -581,11 +581,11 @@ void FilterPanel::do_items_action(const pfc::bit_array& p_nodes, Action action)
     sort_tracks(handles);
 
     if (action != action_add_to_active)
-        playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
+        playlist_api->playlist_add_items(index, handles, bit_array_false());
     else {
         playlist_api->playlist_clear_selection(index);
         const auto item_index = playlist_api->playlist_get_item_count(index);
-        playlist_api->playlist_add_items(index, handles, pfc::bit_array_true());
+        playlist_api->playlist_add_items(index, handles, bit_array_true());
         playlist_api->playlist_set_focus_item(index, item_index);
     }
 
@@ -608,7 +608,7 @@ bool FilterPanel::notify_on_middleclick(bool on_item, t_size index)
 {
     if (cfg_middleclickaction && on_item && index < m_nodes.get_count()) {
         auto action = static_cast<Action>(cfg_middleclickaction.get_value() - 1);
-        do_items_action(pfc::bit_array_one(index), action);
+        do_items_action(bit_array_one(index), action);
         return true;
     }
     return false;
@@ -644,7 +644,7 @@ void FilterPanel::send_results_to_playlist(bool b_play)
     playlist_api->playlist_clear(index);
 
     sort_tracks(handles);
-    playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
+    playlist_api->playlist_add_items(index, handles, bit_array_false());
 
     playlist_api->set_active_playlist(index);
     if (b_play) {
@@ -655,7 +655,7 @@ void FilterPanel::send_results_to_playlist(bool b_play)
     //    playlist_api->remove_playlist(index+1);
 }
 void FilterPanel::notify_on_selection_change(
-    const pfc::bit_array& p_affected, const pfc::bit_array& p_status, notification_source_t p_notification_source)
+    const bit_array& p_affected, const bit_array& p_status, notification_source_t p_notification_source)
 {
     update_subsequent_filters();
     if (m_selection_holder.is_valid()) {
@@ -706,7 +706,7 @@ void Node::ensure_handles_sorted()
 void Node::remove_handles(metadb_handle_list_cref to_remove)
 {
     pfc::array_staticsize_t<bool> remove_mask(m_handles.get_count());
-    pfc::fill_array_t(remove_mask, false);
+    fill_array_t(remove_mask, false);
 
     m_handles_sorted = false;
     mmh::in_place_sort(m_handles, pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, false);
@@ -787,9 +787,9 @@ void FilterPanel::notify_on_initialisation()
     set_show_sort_indicators(cfg_show_sort_indicators);
 
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
     set_font(&lf);
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
     set_header_font(&lf);
 
     t_size index = g_windows.size();
@@ -906,25 +906,25 @@ pfc::list_t<FilterStream::ptr> FilterPanel::g_streams;
 const GUID AppearanceClient::g_guid = {0x4d6774af, 0xc292, 0x44ac, {0x8a, 0x8f, 0x3b, 0x8, 0x55, 0xdc, 0xbd, 0xf4}};
 
 namespace {
-cui::colours::client::factory<AppearanceClient> g_appearance_client_impl;
+colours::client::factory<AppearanceClient> g_appearance_client_impl;
 }
 
-class FilterItemFontClient : public cui::fonts::client {
+class FilterItemFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_filter_items_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel: Items"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { FilterPanel::g_on_font_items_change(); }
 };
 
-class FilterHeaderFontClient : public cui::fonts::client {
+class FilterHeaderFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_filter_header_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel: Column titles"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { FilterPanel::g_on_font_header_change(); }
 };

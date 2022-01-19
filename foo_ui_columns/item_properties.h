@@ -29,7 +29,7 @@ public:
     pfc::list_t<Field>& m_fields;
     FieldsList(pfc::list_t<Field>& p_fields);
 
-    void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items);
+    void get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& items);
     void notify_on_create() override;
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
@@ -42,7 +42,7 @@ private:
 
 t_size g_get_info_section_id_by_name(const char* p_name);
 
-class ItemPropertiesColoursClient : public cui::colours::client {
+class ItemPropertiesColoursClient : public colours::client {
 public:
     static const GUID g_guid;
 
@@ -50,12 +50,9 @@ public:
 
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties"; };
 
-    t_size get_supported_colours() const override { return cui::colours::colour_flag_all; }; // bit-mask
+    t_size get_supported_colours() const override { return colours::colour_flag_all; }; // bit-mask
 
-    t_size get_supported_bools() const override
-    {
-        return cui::colours::bool_flag_use_custom_active_item_frame;
-    }; // bit-mask
+    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; }; // bit-mask
     bool get_themes_supported() const override { return true; };
 
     void on_colour_changed(t_size mask) const override;

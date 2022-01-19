@@ -80,7 +80,7 @@ class ButtonMenuItemWithBitmap : public uie::button_v2 {
     {
         auto icon = (HICON)LoadImage(
             core_api::get_my_instance(), MAKEINTRESOURCE(IconID), IMAGE_ICON, cx_hint, cy_hint, NULL);
-        handle_type = uie::button_v2::handle_type_icon;
+        handle_type = handle_type_icon;
         return (HANDLE)icon;
     }
 };
