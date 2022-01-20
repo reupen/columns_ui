@@ -318,4 +318,30 @@ void create_window()
     }
 }
 
+std::optional<LRESULT> handle_draw_item(const LPDRAWITEMSTRUCT lpdis)
+{
+    RECT rc = lpdis->rcItem;
+
+    if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(main_window.get_wnd())) {
+        RECT rc_main;
+        GetClientRect(main_window.get_wnd(), &rc_main);
+        rc.right = rc_main.right - GetSystemMetrics(SM_CXVSCROLL);
+    } else {
+        int blah[3];
+        SendMessage(g_status, SB_GETBORDERS, 0, (LPARAM)&blah);
+        rc.right -= blah[2];
+    }
+
+    if (rc.left > rc.right)
+        rc.right = rc.left;
+
+    if (lpdis->itemData) {
+        pfc::string8& text = *reinterpret_cast<pfc::string8*>(lpdis->itemData);
+        text_out_colours_tab(lpdis->hDC, text, text.length(), 0, uih::scale_dpi_value(3), &rc, FALSE,
+            GetSysColor(COLOR_MENUTEXT), true, false, uih::ALIGN_LEFT);
+    }
+
+    return TRUE;
+}
+
 } // namespace cui::status_bar
