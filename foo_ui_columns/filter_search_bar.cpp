@@ -36,7 +36,7 @@ void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
     playlist_api->playlist_clear(index);
 
     sort_tracks(handles);
-    playlist_api->playlist_add_items(index, handles, pfc::bit_array_false());
+    playlist_api->playlist_add_items(index, handles, bit_array_false());
 
     playlist_api->set_active_playlist(index);
     if (b_play) {
@@ -64,7 +64,7 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
 
             uie::splitter_window_ptr p_splitter;
 
-            if (p_window->get_extension_guid() == cui::panels::guid_filter) {
+            if (p_window->get_extension_guid() == guid_filter) {
                 auto* p_filter = static_cast<FilterPanel*>(p_window.get_ptr());
                 if (!p_out.have_item(p_filter->m_stream))
                     p_out.add_item(p_filter->m_stream);
@@ -86,7 +86,7 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
 
 namespace {
 uie::window_factory<FilterSearchToolbar> g_filter_search_bar;
-};
+}
 
 void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
@@ -97,7 +97,7 @@ void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abo
             p_reader->read_lendian_t(m_show_clear_button, p_abort);
         }
     }
-};
+}
 void FilterSearchToolbar::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(t_size(config_version_current), p_abort);
@@ -302,10 +302,10 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
     case WM_CTLCOLORLISTBOX: {
         const auto dc = reinterpret_cast<HDC>(wp);
 
-        cui::colours::helper colour_helper(colour_client_id);
+        colours::helper colour_helper(colour_client_id);
 
-        SetTextColor(dc, colour_helper.get_colour(cui::colours::colour_text));
-        SetBkColor(dc, colour_helper.get_colour(cui::colours::colour_background));
+        SetTextColor(dc, colour_helper.get_colour(colours::colour_text));
+        SetBkColor(dc, colour_helper.get_colour(colours::colour_background));
 
         return reinterpret_cast<LRESULT>(s_background_brush.get());
     }
@@ -582,7 +582,7 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
     case WM_KEYDOWN:
         switch (wp) {
         case VK_TAB: {
-            uie::window::g_on_tab(wnd);
+            g_on_tab(wnd);
         }
         // return 0;
         break;

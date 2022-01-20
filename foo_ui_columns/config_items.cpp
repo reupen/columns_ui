@@ -180,5 +180,5 @@ void config_reset_inline_metafield_edit_mode()
 t_uint32 config_get_inline_metafield_edit_mode_default_value()
 {
     return mode_columns;
-};
-}; // namespace main_window
+}
+} // namespace main_window

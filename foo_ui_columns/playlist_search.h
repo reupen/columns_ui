@@ -234,4 +234,4 @@ private:
 
 #endif
 
-#endif _COLUMNS_PLAYLIST_SEARCH_H_
+#endif //_COLUMNS_PLAYLIST_SEARCH_H_

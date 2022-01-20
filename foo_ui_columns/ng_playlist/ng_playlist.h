@@ -26,7 +26,7 @@ void set_font_size(bool up);
 
 class BasePlaylistCallback : public playlist_callback {
 public:
-    void initialise_playlist_callback(t_uint32 p_flags = playlist_callback::flag_all)
+    void initialise_playlist_callback(t_uint32 p_flags = flag_all)
     {
         static_api_ptr_t<playlist_manager>()->register_callback(this, p_flags);
     }
@@ -34,31 +34,26 @@ public:
     void set_callback_flags(t_uint32 p_flags) { static_api_ptr_t<playlist_manager>()->modify_callback(this, p_flags); }
     // dummy implementations - avoid possible pure virtual function calls!
     void on_items_added(t_size p_playlist, t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
-        const pfc::bit_array& p_selection) override
+        const bit_array& p_selection) override
     {
     }
     void on_items_reordered(t_size p_playlist, const t_size* p_order, t_size p_count) override {}
-    void on_items_removing(
-        t_size p_playlist, const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
+    void on_items_removing(t_size p_playlist, const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
     {
     }
-    void on_items_removed(
-        t_size p_playlist, const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
+    void on_items_removed(t_size p_playlist, const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
     {
     }
-    void on_items_selection_change(
-        t_size p_playlist, const pfc::bit_array& p_affected, const pfc::bit_array& p_state) override
-    {
-    }
+    void on_items_selection_change(t_size p_playlist, const bit_array& p_affected, const bit_array& p_state) override {}
     void on_item_focus_change(t_size p_playlist, t_size p_from, t_size p_to) override {}
 
-    void on_items_modified(t_size p_playlist, const pfc::bit_array& p_mask) override {}
+    void on_items_modified(t_size p_playlist, const bit_array& p_mask) override {}
     void on_items_modified_fromplayback(
-        t_size p_playlist, const pfc::bit_array& p_mask, play_control::t_display_level p_level) override
+        t_size p_playlist, const bit_array& p_mask, play_control::t_display_level p_level) override
     {
     }
 
-    void on_items_replaced(t_size p_playlist, const pfc::bit_array& p_mask,
+    void on_items_replaced(t_size p_playlist, const bit_array& p_mask,
         const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) override
     {
     }
@@ -68,8 +63,8 @@ public:
     void on_playlist_activate(t_size p_old, t_size p_new) override {}
     void on_playlist_created(t_size p_index, const char* p_name, t_size p_name_len) override {}
     void on_playlists_reorder(const t_size* p_order, t_size p_count) override {}
-    void on_playlists_removing(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
-    void on_playlists_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
+    void on_playlists_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
+    void on_playlists_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
     void on_playlist_renamed(t_size p_index, const char* p_new_name, t_size p_new_name_len) override {}
 
     void on_default_format_changed() override {}
@@ -86,7 +81,7 @@ class PlaylistCache
         this->insert_item(item_t(), p_index);
     }
     void on_playlists_reorder(const t_size* p_order, t_size p_count) override { this->reorder(p_order); }
-    void on_playlists_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
+    void on_playlists_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
     {
         this->remove_mask(p_mask);
     }
@@ -273,29 +268,26 @@ private:
     t_size m_nocover_cx{0}, m_nocover_cy{0};
 };
 
-class ColoursClient : public cui::colours::client {
+class ColoursClient : public colours::client {
 public:
     static const GUID g_guid;
 
-    const GUID& get_client_guid() const override { return g_guid; };
+    const GUID& get_client_guid() const override { return g_guid; }
 
-    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; }
 
-    t_size get_supported_colours() const override { return cui::colours::colour_flag_all; }; // bit-mask
-    t_size get_supported_bools() const override
-    {
-        return cui::colours::bool_flag_use_custom_active_item_frame;
-    }; // bit-mask
-    bool get_themes_supported() const override { return true; };
+    t_size get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
+    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; } // bit-mask
+    bool get_themes_supported() const override { return true; }
 
     void on_colour_changed(t_size mask) const override;
 
-    void on_bool_changed(t_size mask) const override{};
+    void on_bool_changed(t_size mask) const override {}
 };
 
 class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
 public:
-    PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {};
+    PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {}
 
     void render_group_info(uih::lv::RendererContext context, t_size index, RECT rc) override;
 
@@ -328,7 +320,7 @@ class PlaylistView
             case WM_CREATE:
                 break;
             case WM_TIMECHANGE:
-                PlaylistView::g_on_time_change();
+                g_on_time_change();
                 break;
             case WM_DESTROY:
                 break;
@@ -396,7 +388,6 @@ private:
         wil::shared_hbitmap m_artwork_bitmap; // cached for display
 
         PlaylistViewGroup() = default;
-        ;
     };
 
     class PlaylistViewItem : public Item {
@@ -483,7 +474,7 @@ private:
 
     Group* storage_create_group() override { return new PlaylistViewGroup; }
 
-    PlaylistViewItem* get_item(t_size index) { return static_cast<PlaylistViewItem*>(uih::ListView::get_item(index)); }
+    PlaylistViewItem* get_item(t_size index) { return static_cast<PlaylistViewItem*>(ListView::get_item(index)); }
 
     void notify_update_item_data(t_size index) override;
 
@@ -492,28 +483,28 @@ private:
     void flush_items();
     void reset_items();
 
-    void on_items_added(unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
-        const pfc::bit_array& p_selection) override;
+    void on_items_added(
+        unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
     void on_items_reordered(const t_size* p_order, t_size p_count) override;
 
-    void on_items_removing(const pfc::bit_array& p_mask, t_size p_old_count,
-        t_size p_new_count) override{}; // called before actually removing them
-    void on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
-    void on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state) override;
+    void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {
+    } // called before actually removing them
+    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
+    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override;
     void on_item_focus_change(t_size p_from, t_size p_to) override;
-    void on_items_modified(const pfc::bit_array& p_mask) override;
-    void on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level) override;
-    void on_items_replaced(const pfc::bit_array& p_mask,
-        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override;
+    void on_items_modified(const bit_array& p_mask) override;
+    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override;
+    void on_items_replaced(
+        const bit_array& p_mask, const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) override;
     void on_item_ensure_visible(t_size p_idx) override;
     void on_playlist_switch() override;
     void on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) override;
 
-    void on_default_format_changed() override{};
+    void on_default_format_changed() override {}
 
-    void on_playback_order_changed(t_size p_new_index) override{};
+    void on_playback_order_changed(t_size p_new_index) override {}
 
-    void on_playlist_locked(bool p_locked) override{};
+    void on_playlist_locked(bool p_locked) override {}
 
     // Temp fix to avoid playlist_callback virtual functions being hidden by those of
     // playlist_callback_single
@@ -576,14 +567,14 @@ private:
             g_columns[act]->width = new_width;
             g_on_column_widths_change(this);
         }
-    };
+    }
 
     void notify_on_header_rearrange(t_size index_from, t_size index_to) override
     {
         t_size act_from = column_index_display_to_actual(index_from);
         t_size act_to = column_index_display_to_actual(index_to);
         g_columns.move(act_from, act_to);
-        cui::panels::playlist_view::PlaylistView::g_on_columns_change();
+        g_on_columns_change();
     }
 
     bool notify_on_timer(UINT_PTR timerid) override
@@ -593,13 +584,13 @@ private:
             return true;
         }
         return false;
-    };
+    }
 
     void on_time_change()
     {
         update_items(0, get_item_count());
         set_day_timer();
-    };
+    }
 
     bool m_day_timer_active{false};
 
@@ -625,9 +616,9 @@ private:
     void notify_sort_column(t_size index, bool b_descending, bool b_selection_only) override;
     t_size storage_get_focus_item() override;
     void storage_set_focus_item(t_size index) override;
-    void storage_get_selection_state(pfc::bit_array_var& out) override;
-    bool storage_set_selection_state(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
-        pfc::bit_array_var* p_changed = nullptr) override;
+    void storage_get_selection_state(bit_array_var& out) override;
+    bool storage_set_selection_state(
+        const bit_array& p_affected, const bit_array& p_status, bit_array_var* p_changed = nullptr) override;
     bool storage_get_item_selected(t_size index) override;
     t_size storage_get_selection_count(t_size max) override;
 
@@ -727,7 +718,7 @@ public:
 
 private:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 };
 } // namespace cui::panels::playlist_view
 

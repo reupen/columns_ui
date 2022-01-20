@@ -114,7 +114,7 @@ public:
 
     bool on_menuchar(unsigned short chr) override;
 
-    unsigned get_type() const override { return ui_extension::type_toolbar; };
+    unsigned get_type() const override { return ui_extension::type_toolbar; }
 
     bool is_menu_focused() const override;
     HWND get_previous_focus_window() const override;
@@ -125,7 +125,7 @@ public:
 
 bool MenuToolbar::hooked = false;
 
-MenuToolbar::MenuToolbar() : p_manager(nullptr){};
+MenuToolbar::MenuToolbar() : p_manager(nullptr) {}
 
 MenuToolbar::~MenuToolbar() = default;
 
@@ -419,7 +419,7 @@ void MenuToolbar::make_menu(unsigned idx)
 
     hooked = true;
     //    p_hooked_menu = this;
-    uih::register_message_hook(uih::MessageHookType::type_message_filter, this);
+    register_message_hook(uih::MessageHookType::type_message_filter, this);
     // msghook = uSetWindowsHookEx(WH_MSGFILTER, menu_hook_t_proc, 0, GetCurrentThreadId());
     service_ptr_t<mainmenu_manager> p_menu = standard_api_create_t<mainmenu_manager>();
 
@@ -499,7 +499,7 @@ void MenuToolbar::make_menu(unsigned idx)
     }
 
     // UnhookWindowsHookEx(msghook); // hook may not be freed instantly, so dont make msghook = 0
-    uih::deregister_message_hook(uih::MessageHookType::type_message_filter, this);
+    deregister_message_hook(uih::MessageHookType::type_message_filter, this);
     hooked = false;
     // p_hooked_menu=0;
 

@@ -41,24 +41,21 @@ public:
     void on_playback_time(double p_time) override {}
     void on_volume_change(float p_new_val) override {}
 
-    enum {
-        playlist_callback_flags
-        = playlist_callback_single::flag_on_items_selection_change | playlist_callback_single::flag_on_playlist_switch
-    };
+    enum { playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch };
     void on_playlist_switch() override;
-    void on_item_focus_change(t_size p_from, t_size p_to) override{};
+    void on_item_focus_change(t_size p_from, t_size p_to) override {}
 
-    void on_items_added(t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
-        const pfc::bit_array& p_selection) override
+    void on_items_added(
+        t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
     {
     }
     void on_items_reordered(const t_size* p_order, t_size p_count) override {}
-    void on_items_removing(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
-    void on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
-    void on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state) override;
-    void on_items_modified(const pfc::bit_array& p_mask) override {}
-    void on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level) override {}
-    void on_items_replaced(const pfc::bit_array& p_mask,
+    void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
+    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
+    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override;
+    void on_items_modified(const bit_array& p_mask) override {}
+    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override {}
+    void on_items_replaced(const bit_array& p_mask,
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
     {
     }
@@ -105,7 +102,6 @@ private:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeArtworkType(ArtworkPanel* p_wnd, t_size p_value);
-        ;
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {

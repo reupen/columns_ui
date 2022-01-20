@@ -3,7 +3,7 @@
 
 namespace cui::panels::playlist_view {
 void PlaylistView::on_items_added(/*unsigned p_playlist, */ unsigned start,
-    const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
+    const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
 {
     /*(if (p_playlist == 0)*/
     {
@@ -30,10 +30,10 @@ for (t_size i = 0; i < p_count; i++) {
 }
 } // namespace cui::panels::playlist_view
 }
-; // changes selection too; doesnt actually change set of items that are selected or item having focus, just changes
-  // their order
+// changes selection too; doesnt actually change set of items that are selected or item having focus, just changes
+// their order
 
-void PlaylistView::on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count)
+void PlaylistView::on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count)
 {
     clear_sort_column();
 
@@ -47,22 +47,22 @@ void PlaylistView::on_items_removed(const pfc::bit_array& p_mask, t_size p_old_c
 }
 
 void PlaylistView::on_items_selection_change(
-    /*t_size p_playlist, */ const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
+    /*t_size p_playlist, */ const bit_array& p_affected, const bit_array& p_state)
 {
     /*(if (p_playlist == 0)*/
     if (!m_ignore_callback) {
         RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
     }
-};
+}
 void PlaylistView::on_item_focus_change(/*t_size p_playlist, */ t_size p_from, t_size p_to)
 {
     // if (p_playlist==0)
     if (!m_ignore_callback) {
         on_focus_change(p_from, p_to);
     }
-}; // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
+} // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
 
-void PlaylistView::on_items_modified(/*t_size p_playlist, */ const pfc::bit_array& p_mask){// if (p_playlist==0)
+void PlaylistView::on_items_modified(/*t_size p_playlist, */ const bit_array& p_mask){// if (p_playlist==0)
     {clear_sort_column();
 t_size count = m_playlist_api->activeplaylist_get_item_count();
 
@@ -79,9 +79,9 @@ for (t_size i = 0; i < count; i++) {
 }
 }
 }
-;
+
 void PlaylistView::on_items_modified_fromplayback(
-    /*t_size p_playlist, */ const pfc::bit_array& p_mask, play_control::t_display_level p_level)
+    /*t_size p_playlist, */ const bit_array& p_mask, play_control::t_display_level p_level)
 {
     if (!core_api::is_shutting_down()) {
         t_size count = m_playlist_api->activeplaylist_get_item_count();
@@ -96,19 +96,18 @@ void PlaylistView::on_items_modified_fromplayback(
             }
         }
     }
-};
+}
 
-void PlaylistView::on_items_replaced(/*t_size p_playlist, */ const pfc::bit_array& p_mask,
-    const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data)
+void PlaylistView::on_items_replaced(
+    /*t_size p_playlist, */ const bit_array& p_mask, const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data)
 {
     on_items_modified(p_mask);
-};
+}
 
 void PlaylistView::on_item_ensure_visible(/*t_size p_playlist, */ t_size p_idx){// if (p_playlist==0)
     {ensure_visible(p_idx);
 }
 }
-;
 
 void PlaylistView::on_playlist_switch()
 {
@@ -144,7 +143,7 @@ void PlaylistView::on_playlist_switch()
     populate_list();
     if (!b_scrolled && focus != pfc_infinite)
         ensure_visible(focus);
-};
+}
 void PlaylistView::on_playlist_renamed(const char* p_new_name, t_size p_new_name_len)
 {
     clear_sort_column();
@@ -152,5 +151,5 @@ void PlaylistView::on_playlist_renamed(const char* p_new_name, t_size p_new_name
     refresh_groups();
     refresh_columns();
     populate_list();
-};
+}
 }

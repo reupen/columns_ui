@@ -77,7 +77,7 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
     p_hook.add_node(uie::menu_node_ptr(new MenuNodeOptions()));
 }
 
-ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio){};
+ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio) {}
 
 void ArtworkPanel::g_on_edge_style_change()
 {
@@ -142,15 +142,12 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_CREATE: {
         Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-        m_gdiplus_initialised
-            = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
+        m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         m_artwork_loader = std::make_shared<ArtworkReaderManager>();
         now_playing_album_art_notify_manager::get()->add(this);
         m_artwork_loader->set_types(g_artwork_types);
-        static_api_ptr_t<play_callback_manager>()->register_callback(this,
-            play_callback::flag_on_playback_new_track | play_callback::flag_on_playback_stop
-                | play_callback::flag_on_playback_edited,
-            false);
+        static_api_ptr_t<play_callback_manager>()->register_callback(
+            this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_edited, false);
         static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
         g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
         force_reload_artwork();
@@ -224,8 +221,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 SelectBitmap(dcc, bm_old);
                 DeleteDC(dcc);
             } else {
-                auto background_colour
-                    = cui::colours::helper(g_guid_colour_client).get_colour(cui::colours::colour_background);
+                auto background_colour = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
                 const wil::unique_hbrush background_brush(CreateSolidBrush(background_colour));
                 FillRect(ps.hdc, &rc, background_brush.get());
             }
@@ -348,7 +344,7 @@ void ArtworkPanel::on_playlist_switch()
     }
 }
 
-void ArtworkPanel::on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state)
+void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
 {
     if (g_track_mode_includes_playlist(m_track_mode)
         && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
@@ -414,8 +410,8 @@ void ArtworkPanel::show_stub_image()
     }
 
     try {
-        const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
-        m_image = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
+        const auto bitmap_data = wic::decode_image_data(data->get_ptr(), data->get_size());
+        m_image = gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
         fbh::print_to_console(u8"Artwork panel – loading stub image failed: "_pcc, ex.what());
     }
@@ -441,8 +437,8 @@ bool ArtworkPanel::refresh_image(std::optional<size_t> artwork_type_index_overri
         return false;
 
     try {
-        const auto bitmap_data = cui::wic::decode_image_data(data->get_ptr(), data->get_size());
-        m_image = cui::gdip::create_bitmap_from_wic_data(bitmap_data);
+        const auto bitmap_data = wic::decode_image_data(data->get_ptr(), data->get_size());
+        m_image = gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
         fbh::print_to_console(u8"Artwork panel – loading image failed: "_pcc, ex.what());
         return false;
@@ -500,7 +496,7 @@ void ArtworkPanel::refresh_cached_bitmap()
         graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
         graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
 
-        COLORREF cr = cui::colours::helper(g_guid_colour_client).get_colour(cui::colours::colour_background);
+        COLORREF cr = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
         Gdiplus::SolidBrush br(Gdiplus::Color(LOBYTE(LOWORD(cr)), HIBYTE(LOWORD(cr)), LOBYTE(HIWORD(cr))));
         err = graphics.FillRectangle(&br, 0, 0, cx, cy);
 
@@ -546,24 +542,24 @@ std::vector<ArtworkPanel*> ArtworkPanel::g_windows;
 
 uie::window_factory<ArtworkPanel> g_artwork_panel;
 
-class ArtworkColoursClient : public cui::colours::client {
+class ArtworkColoursClient : public colours::client {
 public:
     static const GUID g_guid;
 
-    const GUID& get_client_guid() const override { return g_guid_colour_client; };
-    void get_name(pfc::string_base& p_out) const override { p_out = "Artwork view"; };
+    const GUID& get_client_guid() const override { return g_guid_colour_client; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Artwork view"; }
 
-    t_size get_supported_colours() const override { return cui::colours::colour_flag_background; }; // bit-mask
-    t_size get_supported_bools() const override { return 0; }; // bit-mask
-    bool get_themes_supported() const override { return false; };
+    t_size get_supported_colours() const override { return colours::colour_flag_background; } // bit-mask
+    t_size get_supported_bools() const override { return 0; } // bit-mask
+    bool get_themes_supported() const override { return false; }
 
-    void on_colour_changed(t_size mask) const override { ArtworkPanel::g_on_colours_change(); };
-    void on_bool_changed(t_size mask) const override{};
+    void on_colour_changed(t_size mask) const override { ArtworkPanel::g_on_colours_change(); }
+    void on_bool_changed(t_size mask) const override {}
 };
 
 namespace {
-cui::colours::client::factory<ArtworkColoursClient> g_appearance_client_impl;
-};
+colours::client::factory<ArtworkColoursClient> g_appearance_client_impl;
+}
 
 ArtworkPanel::CompletionNotifyForwarder::CompletionNotifyForwarder(ArtworkPanel* p_this) : m_this(p_this) {}
 
@@ -630,7 +626,7 @@ bool ArtworkPanel::MenuNodeTrackMode::get_description(pfc::string_base& p_out) c
 bool ArtworkPanel::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
-    p_displayflags = (m_source == p_this->m_track_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
+    p_displayflags = (m_source == p_this->m_track_mode) ? state_radiochecked : 0;
     return true;
 }
 
@@ -758,13 +754,13 @@ bool ArtworkPanel::MenuNodePreserveAspectRatio::get_display_data(
     pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Preserve aspect ratio";
-    p_displayflags = (p_this->m_preserve_aspect_ratio) ? ui_extension::menu_node_t::state_checked : 0;
+    p_displayflags = (p_this->m_preserve_aspect_ratio) ? state_checked : 0;
     return true;
 }
 
 void ArtworkPanel::MenuNodeOptions::execute()
 {
-    cui::prefs::page_main.get_static_instance().show_tab("Artwork");
+    prefs::page_main.get_static_instance().show_tab("Artwork");
 }
 
 bool ArtworkPanel::MenuNodeOptions::get_description(pfc::string_base& p_out) const
@@ -798,8 +794,8 @@ bool ArtworkPanel::MenuNodeLockType::get_description(pfc::string_base& p_out) co
 bool ArtworkPanel::MenuNodeLockType::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Lock artwork type";
-    p_displayflags = (p_this->m_lock_type) ? ui_extension::menu_node_t::state_checked : 0;
+    p_displayflags = (p_this->m_lock_type) ? state_checked : 0;
     return true;
 }
 
-}; // namespace cui::artwork_panel
+} // namespace cui::artwork_panel

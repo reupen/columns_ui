@@ -15,7 +15,7 @@ void ButtonsToolbar::Button::ButtonStateCallback::on_button_state_change(unsigne
     else
         state = state & ~TBSTATE_PRESSED;
     SendMessage(m_this->wnd_toolbar, TB_SETSTATE, id, MAKELONG(state, 0));
-};
+}
 
 ButtonsToolbar::Button::ButtonStateCallback& ButtonsToolbar::Button::ButtonStateCallback::operator=(
     const ButtonStateCallback& p_source)
@@ -32,7 +32,7 @@ void ButtonsToolbar::Button::ButtonStateCallback::set_id(const unsigned i)
     id = i;
 }
 
-void ButtonsToolbar::Button::set(const ButtonsToolbar::Button& p_source)
+void ButtonsToolbar::Button::set(const Button& p_source)
 {
     m_guid = p_source.m_guid;
     m_subcommand = p_source.m_subcommand;
@@ -69,8 +69,7 @@ void ButtonsToolbar::Button::write(stream_writer* out, abort_callback& p_abort) 
         out->write_string(m_text, p_abort);
 }
 
-void ButtonsToolbar::Button::read(
-    ButtonsToolbar::ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
+void ButtonsToolbar::Button::read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort)
 {
     *this = Button{};
 

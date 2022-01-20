@@ -4,15 +4,15 @@
 
 namespace cui::panels::filter {
 
-class AppearanceClient : public cui::colours::client {
+class AppearanceClient : public colours::client {
 public:
     static const GUID g_guid;
 
-    const GUID& get_client_guid() const override { return g_guid; };
-    void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel"; };
-    t_size get_supported_colours() const override { return cui::colours::colour_flag_all; }
-    t_size get_supported_bools() const override { return cui::colours::bool_flag_use_custom_active_item_frame; }
-    bool get_themes_supported() const override { return true; };
+    const GUID& get_client_guid() const override { return g_guid; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel"; }
+    t_size get_supported_colours() const override { return colours::colour_flag_all; }
+    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; }
+    bool get_themes_supported() const override { return true; }
     void on_colour_changed(t_size mask) const override;
     void on_bool_changed(t_size mask) const override {}
 };
@@ -164,7 +164,7 @@ private:
         metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out, bool fallback = true, bool b_sort = false);
     bool get_nothing_or_all_node_selected() { return get_selection_count(1) == 0 || get_item_selected(0); }
     void do_selection_action(Action action = action_send_to_autosend);
-    void do_items_action(const pfc::bit_array& p_nodes, Action action = action_send_to_autosend);
+    void do_items_action(const bit_array& p_nodes, Action action = action_send_to_autosend);
     void send_results_to_playlist(bool b_play = false);
 
     void update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_data);
@@ -181,8 +181,8 @@ private:
     void move_selection(int delta) override {}
     void notify_update_item_data(t_size index) override;
     bool notify_on_middleclick(bool on_item, t_size index) override;
-    void notify_on_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
-        notification_source_t p_notification_source) override;
+    void notify_on_selection_change(
+        const bit_array& p_affected, const bit_array& p_status, notification_source_t p_notification_source) override;
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
     bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
@@ -220,4 +220,4 @@ private:
     ui_status_text_override::ptr m_status_text_override;
 };
 
-}; // namespace cui::panels::filter
+} // namespace cui::panels::filter

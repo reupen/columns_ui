@@ -107,7 +107,7 @@ void FlatSplitterPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
     t->read_lendian_t(m_use_custom_title, p_abort);
     t->read_string(m_custom_title, p_abort);
 
-    if (uie::window::create_by_guid(m_guid, m_child)) {
+    if (create_by_guid(m_guid, m_child)) {
         try {
             m_child->import_config_from_ptr(data.get_ptr(), data.get_size(), p_abort);
         } catch (const exception_io&) {
@@ -160,8 +160,8 @@ void FlatSplitterPanel::Panel::_export(stream_writer* out, abort_callback& p_abo
     stream_writer_memblock child_exported_data;
     uie::window_ptr ptr = m_child;
     if (!ptr.is_valid()) {
-        if (!uie::window::create_by_guid(m_guid, ptr))
-            throw cui::fcl::exception_missing_panel();
+        if (!create_by_guid(m_guid, ptr))
+            throw fcl::exception_missing_panel();
         try {
             ptr->set_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
         } catch (const exception_io&) {

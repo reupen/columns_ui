@@ -137,7 +137,7 @@ class ItemDetails
     , public play_callback
     , public playlist_callback_single
     , public metadb_io_callback_dynamic {
-    class MessageWindow : public ui_helpers::container_window {
+    class MessageWindow : public container_window {
         class_data& get_class_data() const override;
         LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     };
@@ -177,7 +177,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value);
-        ;
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
@@ -188,7 +187,6 @@ public:
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeSourcePopup(ItemDetails* p_wnd);
-        ;
     };
 
     class MenuNodeAlignment : public ui_extension::menu_node_command_t {
@@ -201,7 +199,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value);
-        ;
     };
 
     class MenuNodeAlignmentPopup : public ui_extension::menu_node_popup_t {
@@ -212,7 +209,6 @@ public:
         unsigned get_children_count() const override;
         void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeAlignmentPopup(ItemDetails* p_wnd);
-        ;
     };
 
     class MenuNodeOptions : public ui_extension::menu_node_command_t {
@@ -223,7 +219,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeOptions(ItemDetails* p_wnd);
-        ;
     };
     class MenuNodeHorizontalScrolling : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
@@ -233,7 +228,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeHorizontalScrolling(ItemDetails* p_wnd);
-        ;
     };
 
     class MenuNodeWordWrap : public ui_extension::menu_node_command_t {
@@ -244,7 +238,6 @@ public:
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
         MenuNodeWordWrap(ItemDetails* p_wnd);
-        ;
     };
 
     // UIE funcs
@@ -281,15 +274,15 @@ public:
     void on_playlist_switch() override;
     void on_item_focus_change(t_size p_from, t_size p_to) override;
 
-    void on_items_added(t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
-        const pfc::bit_array& p_selection) override;
+    void on_items_added(
+        t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
     void on_items_reordered(const t_size* p_order, t_size p_count) override;
-    void on_items_removing(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
-    void on_items_removed(const pfc::bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
-    void on_items_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_state) override;
-    void on_items_modified(const pfc::bit_array& p_mask) override;
-    void on_items_modified_fromplayback(const pfc::bit_array& p_mask, play_control::t_display_level p_level) override;
-    void on_items_replaced(const pfc::bit_array& p_mask,
+    void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
+    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
+    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override;
+    void on_items_modified(const bit_array& p_mask) override;
+    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override;
+    void on_items_replaced(const bit_array& p_mask,
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override;
     void on_item_ensure_visible(t_size p_idx) override;
 
@@ -329,7 +322,7 @@ private:
     void set_handles(const metadb_handle_list& handles);
     void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false);
     void request_full_file_info();
-    void on_full_file_info_request_completion(std::shared_ptr<cui::helpers::FullFileInfoRequest> request);
+    void on_full_file_info_request_completion(std::shared_ptr<helpers::FullFileInfoRequest> request);
     void release_aborted_full_file_info_requests();
     void release_all_full_file_info_requests();
 
@@ -368,8 +361,8 @@ private:
     metadb_handle_list m_handles;
     metadb_handle_list m_selection_handles;
     std::shared_ptr<file_info_impl> m_full_file_info;
-    std::shared_ptr<cui::helpers::FullFileInfoRequest> m_full_file_info_request;
-    std::vector<std::shared_ptr<cui::helpers::FullFileInfoRequest>> m_aborting_full_file_info_requests;
+    std::shared_ptr<helpers::FullFileInfoRequest> m_full_file_info_request;
+    std::vector<std::shared_ptr<helpers::FullFileInfoRequest>> m_aborting_full_file_info_requests;
     bool m_full_file_info_requested{};
     bool m_callback_registered{false};
     bool m_nowplaying_active{false};

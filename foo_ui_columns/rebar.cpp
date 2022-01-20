@@ -48,7 +48,7 @@ void create_rebar()
 }
 
 void ConfigRebar::export_config(
-    stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback, abort_callback& p_abort)
+    stream_writer* p_out, t_uint32 mode, fcl::t_export_feedback& feedback, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
     p_out->write_lendian_t((t_uint32)stream_version, p_abort);
@@ -85,19 +85,19 @@ void ConfigRebar::import_config(
             panels.add_item(item.m_guid);
         new_entries.push_back(std::move(item));
     }
-    if (cui::main_window.get_wnd())
+    if (main_window.get_wnd())
         destroy_rebar();
 
     m_entries = new_entries;
     cfg_band_cache.reset();
 
-    if (cui::main_window.get_wnd()) {
+    if (main_window.get_wnd()) {
         create_rebar();
         if (g_rebar) {
             ShowWindow(g_rebar, SW_SHOWNORMAL);
             UpdateWindow(g_rebar);
         }
-        cui::main_window.resize_child_windows();
+        main_window.resize_child_windows();
     }
 }
 
@@ -245,11 +245,11 @@ void ConfigRebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abo
 void ConfigRebar::reset()
 {
     m_entries = {
-        {cui::toolbars::guid_menu, 9999},
-        {cui::toolbars::guid_buttons, 100, true},
-        {cui::toolbars::guid_seek_bar, 9999},
-        {cui::toolbars::guid_playback_order, 100},
-        {cui::toolbars::guid_spectrum_analyser, 125},
+        {toolbars::guid_menu, 9999},
+        {toolbars::guid_buttons, 100, true},
+        {toolbars::guid_seek_bar, 9999},
+        {toolbars::guid_playback_order, 100},
+        {toolbars::guid_spectrum_analyser, 125},
     };
 }
 
@@ -258,7 +258,7 @@ static const GUID rebar_guid = {0x3d3c8d68, 0x3ab9, 0x4ad5, {0xa4, 0xfa, 0x22, 0
 
 class RebarWindowHost : public ui_extension::window_host_with_control {
 public:
-    void get_name(pfc::string_base& out) const override { out.set_string("Columns UI/Toolbars"); };
+    void get_name(pfc::string_base& out) const override { out.set_string("Columns UI/Toolbars"); }
 
     bool is_available() const override { return g_rebar_window != nullptr; }
 
@@ -269,14 +269,14 @@ public:
         if (g_rebar_window) {
             g_rebar_window->add_band(in, width);
         }
-    };
+    }
 
     void insert_extension(ui_extension::window_ptr& p_ext, unsigned height, unsigned width) override
     {
         if (g_rebar_window) {
             g_rebar_window->add_band(p_ext->get_extension_guid(), width, p_ext);
         }
-    };
+    }
 
     unsigned is_resize_supported(HWND wnd) const override { return ui_extension::size_width; }
 
@@ -309,7 +309,7 @@ public:
                 g_rebar_window->update_band(index);
             }
         }
-    };
+    }
 
     const GUID& get_host_guid() const override { return rebar_guid; }
 
@@ -322,14 +322,14 @@ public:
     virtual bool on_key(UINT msg, LPARAM lp, WPARAM wp, bool process_keyboard_shortcuts)
     {
         return process_keydown(msg, lp, wp, false, process_keyboard_shortcuts);
-    };
+    }
 
     void relinquish_ownership(HWND wnd) override
     {
         if (g_rebar_window) {
             g_rebar_window->delete_band(wnd, false);
         }
-    };
+    }
 };
 
 ui_extension::window_host_factory_single<RebarWindowHost> g_ui_ext_host_rebar;
@@ -347,7 +347,7 @@ HWND RebarWindow::init()
         rv = wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
             WS_BORDER | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE | RBS_AUTOSIZE
                 | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
-            0, 0, 0, 0, cui::main_window.get_wnd(), (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
+            0, 0, 0, 0, main_window.get_wnd(), (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
 
         if (dark::is_dark_mode_enabled())
             m_toolbar_theme.reset(OpenThemeData(wnd_rebar, L"DarkMode::Toolbar"));
@@ -474,7 +474,7 @@ std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnm
 {
     switch (lpnmcd->dwDrawStage) {
     case CDDS_PREERASE:
-        if (!(cui::dark::is_dark_mode_enabled() && m_toolbar_theme))
+        if (!(dark::is_dark_mode_enabled() && m_toolbar_theme))
             return {};
 
         COLORREF cr{RGB(255, 0, 0)};
@@ -519,7 +519,7 @@ void RebarWindow::save_bands()
         }
 
         if (!b_death)
-            mmh::destructive_reorder(m_bands, order);
+            destructive_reorder(m_bands, order);
         refresh_bands(false);
     }
 }

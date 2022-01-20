@@ -30,7 +30,9 @@ public:
     CommandLineSingleFileHelper(const char* error_title, const char* no_files_error, const char* too_many_files_error)
         : m_error_title{error_title}
         , m_no_files_error{no_files_error}
-        , m_too_many_files_error{too_many_files_error} {};
+        , m_too_many_files_error{too_many_files_error}
+    {
+    }
     void reset() { m_files.clear(); }
     void add_file(const char* url) { m_files.emplace_back(url); }
     bool validate_files()

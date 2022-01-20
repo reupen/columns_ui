@@ -80,7 +80,7 @@ public:
         class ButtonStateCallback : public uie::button_callback {
             void on_button_state_change(unsigned p_new_state) override; // see t_button_state
 
-            void on_command_state_change(unsigned p_new_state) override{};
+            void on_command_state_change(unsigned p_new_state) override {}
 
             service_ptr_t<ButtonsToolbar> m_this;
             unsigned id{0};
@@ -177,12 +177,12 @@ public:
             void notify_on_initialisation() override;
             void notify_on_create() override;
             void notify_on_destroy() override;
-            void notify_on_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
+            void notify_on_selection_change(const bit_array& p_affected, const bit_array& p_status,
                 notification_source_t p_notification_source) override;
             bool do_drag_drop(WPARAM wp) override;
 
         public:
-            ButtonsList(ConfigParam& p_param) : m_param(p_param){};
+            ButtonsList(ConfigParam& p_param) : m_param(p_param) {}
         } m_button_list;
 
         modal_dialog_scope m_scope;

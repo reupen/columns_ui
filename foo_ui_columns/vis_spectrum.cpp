@@ -130,25 +130,25 @@ private:
         }
     }
 
-    void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused) override{};
-    void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override { g_register_stream(this); };
+    void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
+    void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override { g_register_stream(this); }
     void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason) override
     {
         g_deregister_stream(this, p_reason == play_control::stop_reason_shutting_down);
-    };
-    void FB2KAPI on_playback_seek(double p_time) override{};
+    }
+    void FB2KAPI on_playback_seek(double p_time) override {}
     void FB2KAPI on_playback_pause(bool p_state) override
     {
         if (p_state)
             g_deregister_stream(this, true);
         else
             g_register_stream(this);
-    };
-    void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override{};
-    void FB2KAPI on_playback_dynamic_info(const file_info& p_info) override{};
-    void FB2KAPI on_playback_dynamic_info_track(const file_info& p_info) override{};
-    void FB2KAPI on_playback_time(double p_time) override{};
-    void FB2KAPI on_volume_change(float p_new_val) override{};
+    }
+    void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override {}
+    void FB2KAPI on_playback_dynamic_info(const file_info& p_info) override {}
+    void FB2KAPI on_playback_dynamic_info_track(const file_info& p_info) override {}
+    void FB2KAPI on_playback_time(double p_time) override {}
+    void FB2KAPI on_volume_change(float p_new_val) override {}
 };
 
 UINT_PTR SpectrumAnalyserVisualisation::g_timer = NULL;
@@ -163,7 +163,9 @@ SpectrumAnalyserVisualisation::SpectrumAnalyserVisualisation()
     , cr_back(cfg_vis)
     , mode(cfg_vis_mode)
     , m_scale(cfg_scale)
-    , m_vertical_scale(cfg_vertical_scale){};
+    , m_vertical_scale(cfg_vertical_scale)
+{
+}
 
 SpectrumAnalyserVisualisation::~SpectrumAnalyserVisualisation() = default;
 
@@ -202,10 +204,8 @@ void SpectrumAnalyserVisualisation::enable(const ui_extension::visualisation_hos
             p_stream_v2->set_channel_mode(visualisation_stream_v2::channel_mode_mono);
     }
 
-    static_api_ptr_t<play_callback_manager>()->register_callback(this,
-        play_callback::flag_on_playback_new_track | play_callback::flag_on_playback_stop
-            | play_callback::flag_on_playback_pause,
-        false);
+    static_api_ptr_t<play_callback_manager>()->register_callback(
+        this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_pause, false);
     if (static_api_ptr_t<play_control>()->is_playing())
         g_register_stream(this);
 }
@@ -539,9 +539,9 @@ void SpectrumAnalyserVisualisation::g_refresh_all()
     unsigned fft_size = 4096;
     bool ret = g_stream->get_spectrum_absolute(p_chunk, p_time, fft_size);
 
-    unsigned count = SpectrumAnalyserVisualisation::g_visualisations.get_count();
+    unsigned count = g_visualisations.get_count();
     for (unsigned n = 0; n < count; n++) {
-        SpectrumAnalyserVisualisation* vis_ext = SpectrumAnalyserVisualisation::g_visualisations[n];
+        SpectrumAnalyserVisualisation* vis_ext = g_visualisations[n];
         if (ret)
             vis_ext->refresh(&p_chunk);
     }
@@ -587,7 +587,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override
     {
         p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_configure(this)));
-    };
+    }
     void set_config(stream_reader* r, t_size p_size, abort_callback& p_abort) override
     {
         if (p_size) {

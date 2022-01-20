@@ -35,7 +35,9 @@ public:
         , filter(p_filter_string)
         , parts(p_parts)
         , show(b_show)
-        , edit_field(p_edit_field){};
+        , edit_field(p_edit_field)
+    {
+    }
 };
 
 enum class ColumnStreamVersion {
@@ -113,7 +115,7 @@ public:
                 (*this)[i]->width = entries[i]->width;
     }
 
-    void set_widths(const pfc::list_base_const_t<t_size>& widths)
+    void set_widths(const list_base_const_t<t_size>& widths)
     {
         // remove_all();
         t_size count = get_count();

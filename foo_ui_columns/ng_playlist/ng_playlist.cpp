@@ -45,9 +45,9 @@ ConfigGroups g_groups(g_groups_guid);
 
 cfg_bool cfg_artwork_reflection(g_artwork_reflection, true);
 
-fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { cui::button_items::ShowGroupsButton::s_on_change(); });
+fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { button_items::ShowGroupsButton::s_on_change(); });
 fbh::ConfigBool cfg_show_artwork(
-    g_show_artwork_guid, false, [](auto&&) { cui::button_items::ShowArtworkButton::s_on_change(); });
+    g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
 
 void ConfigGroups::swap(t_size index1, t_size index2)
@@ -85,12 +85,12 @@ void ConfigGroups::remove_group(t_size index)
 void set_font_size(bool up)
 {
     LOGFONT lf_ng;
-    static_api_ptr_t<cui::fonts::manager> api;
-    api->get_font(cui::panels::playlist_view::g_guid_items_font, lf_ng);
+    static_api_ptr_t<fonts::manager> api;
+    api->get_font(g_guid_items_font, lf_ng);
 
-    cui::fonts::get_next_font_size_step(lf_ng, up);
+    fonts::get_next_font_size_step(lf_ng, up);
 
-    api->set_font(cui::panels::playlist_view::g_guid_items_font, lf_ng);
+    api->set_font(g_guid_items_font, lf_ng);
 }
 
 PlaylistView::PlaylistView()
@@ -103,7 +103,7 @@ void PlaylistView::populate_list()
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     m_playlist_api->activeplaylist_get_all_items(data);
-    on_items_added(0, data, pfc::bit_array_false());
+    on_items_added(0, data, bit_array_false());
 }
 void PlaylistView::refresh_groups(bool b_update_columns)
 {
@@ -284,7 +284,7 @@ void PlaylistView::update_items(t_size index, t_size count)
             get_item(i + index)->get_group(j)->m_style_data.release();
         get_item(i + index)->m_style_data.set_count(0);
     }
-    uih::ListView::update_items(index, count);
+    ListView::update_items(index, count);
 }
 void PlaylistView::g_on_autosize_change()
 {
@@ -330,21 +330,21 @@ void PlaylistView::g_on_vertical_item_padding_change()
 void PlaylistView::g_on_font_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_items_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_items_font, lf);
     for (auto& window : g_windows)
         window->set_font(&lf);
 }
 void PlaylistView::g_on_header_font_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_header_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_header_font, lf);
     for (auto& window : g_windows)
         window->set_header_font(&lf);
 }
 void PlaylistView::g_on_group_header_font_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_group_header_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_group_header_font, lf);
     for (auto& window : g_windows)
         window->set_group_font(&lf);
 }
@@ -433,7 +433,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
 
         bool extra = m_script_global.is_valid() && cfg_global_sort;
 
-        pfc::bit_array_bittable mask(count);
+        bit_array_bittable mask(count);
         if (b_selection_only)
             m_playlist_api->activeplaylist_get_selection_mask(mask);
 
@@ -522,11 +522,11 @@ void PlaylistView::notify_on_initialisation()
         config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false));
     set_vertical_item_padding(settings::playlist_view_item_padding);
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_items_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_items_font, lf);
     set_font(&lf);
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_header_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_header_font, lf);
     set_header_font(&lf);
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_group_header_font, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_group_header_font, lf);
     set_group_font(&lf);
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);
@@ -536,13 +536,13 @@ void PlaylistView::notify_on_initialisation()
     set_allow_header_rearrange(true);
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    m_gdiplus_initialised = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
+    m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
     m_artwork_manager = std::make_shared<ArtworkReaderManager>();
     m_artwork_manager->initialise();
 
     m_playlist_api = standard_api_create_t<playlist_manager>();
     m_playlist_cache.initialise_playlist_callback();
-    initialise_playlist_callback(playlist_callback::flag_on_playlist_activate);
+    initialise_playlist_callback(flag_on_playlist_activate);
 
     refresh_columns();
     refresh_groups();
@@ -698,16 +698,16 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         TabColumns::get_instance().show_column(column_index_display_to_actual(index));
     } else if (cmd == IDM_AUTOSIZE) {
         cfg_nohscroll = cfg_nohscroll == 0;
-        cui::panels::playlist_view::PlaylistView::g_on_autosize_change();
+        g_on_autosize_change();
     } else if (cmd == IDM_PREFS) {
         static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
     } else if (cmd == IDM_ARTWORK) {
         cfg_show_artwork = !cfg_show_artwork;
-        cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
+        g_on_show_artwork_change();
     } else if (cmd >= IDM_CUSTOM_BASE) {
         if (t_size(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
             g_columns[cmd - IDM_CUSTOM_BASE]->show = !g_columns[cmd - IDM_CUSTOM_BASE]->show; // g_columns
-            cui::panels::playlist_view::PlaylistView::g_on_columns_change();
+            g_on_columns_change();
         }
     }
     return true;
@@ -935,12 +935,12 @@ const style_data_t& PlaylistView::get_style_data(t_size index)
 }
 bool PlaylistView::notify_on_middleclick(bool on_item, t_size index)
 {
-    return cui::playlist_item_helpers::MiddleClickActionManager::run(cfg_playlist_middle_action, on_item, index);
+    return playlist_item_helpers::MiddleClickActionManager::run(cfg_playlist_middle_action, on_item, index);
 }
 bool PlaylistView::notify_on_doubleleftclick_nowhere()
 {
     if (cfg_playlist_double.get_value().m_command != pfc::guid_null)
-        return cui::helpers::execute_main_menu_command(cfg_playlist_double);
+        return helpers::execute_main_menu_command(cfg_playlist_double);
     return false;
 }
 
@@ -952,7 +952,7 @@ void PlaylistView::get_insert_items(
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(count);
 
-    pfc::bit_array_range bit_table(start, count);
+    bit_array_range bit_table(start, count);
     m_playlist_api->activeplaylist_get_items(handles, bit_table);
 
     const auto group_count = m_scripts.get_count();
@@ -1044,19 +1044,19 @@ void PlaylistView::storage_set_focus_item(t_size index)
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
     static_api_ptr_t<playlist_manager>()->activeplaylist_set_focus_item(index);
 }
-void PlaylistView::storage_get_selection_state(pfc::bit_array_var& out)
+void PlaylistView::storage_get_selection_state(bit_array_var& out)
 {
     static_api_ptr_t<playlist_manager>()->activeplaylist_get_selection_mask(out);
 }
 bool PlaylistView::storage_set_selection_state(
-    const pfc::bit_array& p_affected, const pfc::bit_array& p_status, pfc::bit_array_var* p_changed)
+    const bit_array& p_affected, const bit_array& p_status, bit_array_var* p_changed)
 {
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
 
     static_api_ptr_t<playlist_manager> api;
 
     t_size count = api->activeplaylist_get_item_count();
-    pfc::bit_array_bittable previous_state(count);
+    bit_array_bittable previous_state(count);
 
     api->activeplaylist_get_selection_mask(previous_state);
 
@@ -1141,32 +1141,32 @@ const GUID g_guid_header_font = {0x30fbd64c, 0x2031, 0x4f0b, {0xa9, 0x37, 0xf2, 
 // {FB127FFA-1B35-4572-9C1A-4B96A5C5D537}
 const GUID g_guid_group_header_font = {0xfb127ffa, 0x1b35, 0x4572, {0x9c, 0x1a, 0x4b, 0x96, 0xa5, 0xc5, 0xd5, 0x37}};
 
-class PlaylistViewItemFontClient : public cui::fonts::client {
+class PlaylistViewItemFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_items_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Items"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { PlaylistView::g_on_font_change(); }
 };
 
-class PlaylistViewHeaderFontClient : public cui::fonts::client {
+class PlaylistViewHeaderFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_header_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Column titles"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { PlaylistView::g_on_header_font_change(); }
 };
 
-class PlaylistViewGroupFontClient : public cui::fonts::client {
+class PlaylistViewGroupFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_group_header_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Group titles"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { PlaylistView::g_on_group_header_font_change(); }
 };
@@ -1177,7 +1177,7 @@ PlaylistViewGroupFontClient::factory<PlaylistViewGroupFontClient> g_font_group_h
 
 void ColoursClient::on_colour_changed(t_size mask) const
 {
-    if (cfg_show_artwork && cfg_artwork_reflection && (mask & (cui::colours::colour_flag_background)))
+    if (cfg_show_artwork && cfg_artwork_reflection && (mask & (colours::colour_flag_background)))
         PlaylistView::g_flush_artwork();
     PlaylistView::g_update_all_items();
 }

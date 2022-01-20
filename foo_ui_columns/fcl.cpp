@@ -39,7 +39,7 @@ public:
         HTREEITEM item{nullptr};
         cui::fcl::group_ptr group;
         bool checked{true};
-        Node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)){};
+        Node(HTREEITEM pitem, cui::fcl::group_ptr ptr) : item(pitem), group(std::move(ptr)) {}
         Node() = default;
     };
     // cui::fcl::group_list m_groups;
@@ -201,7 +201,7 @@ class ImportResultsData {
 public:
     PanelInfoList m_items;
     bool m_aborted;
-    ImportResultsData(PanelInfoList items, bool baborted) : m_items(std::move(items)), m_aborted(baborted){};
+    ImportResultsData(PanelInfoList items, bool baborted) : m_items(std::move(items)), m_aborted(baborted) {}
 };
 
 BOOL g_ImportResultsProc(const ImportResultsData& data, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -258,7 +258,7 @@ BOOL g_ImportResultsProc(const ImportResultsData& data, HWND wnd, UINT msg, WPAR
     return FALSE;
 }
 
-PFC_DECLARE_EXCEPTION(exception_fcl_dependentpanelmissing, pfc::exception, "Missing dependent panel(s)");
+PFC_DECLARE_EXCEPTION(exception_fcl_dependentpanelmissing, pfc::exception, "Missing dependent panel(s)")
 
 void g_import_layout(HWND wnd, const char* path, bool quiet)
 {
@@ -409,7 +409,7 @@ class ExportFeedbackReceiver
     : public cui::fcl::t_export_feedback
     , public pfc::list_t<GUID> {
 public:
-    void add_required_panels(const pfc::list_base_const_t<GUID>& panels) override { add_items(panels); }
+    void add_required_panels(const list_base_const_t<GUID>& panels) override { add_items(panels); }
     t_size find_or_add_guid(const GUID& guid)
     {
         t_size index = find_item(guid);

@@ -137,11 +137,11 @@ public:
     void register_common_callback(cui::colours::common_callback* p_callback) override
     {
         g_colours_manager_data.register_common_callback(p_callback);
-    };
+    }
     void deregister_common_callback(cui::colours::common_callback* p_callback) override
     {
         g_colours_manager_data.deregister_common_callback(p_callback);
-    };
+    }
 
 private:
 };
@@ -274,7 +274,7 @@ namespace {
 service_factory_single_t<ColoursManager> g_colours_manager;
 service_factory_t<FontsManager> g_fonts_manager;
 service_factory_t<FontsManager2> g_fonts_manager_v2;
-}; // namespace
+} // namespace
 
 cui::colours::colour_mode_t g_get_global_colour_mode()
 {
@@ -482,7 +482,7 @@ class ColoursDataSet : public cui::fcl::dataset {
 
 namespace {
 service_factory_t<ColoursDataSet> g_fcl_colours_t;
-};
+}
 
 class FontsDataSet : public cui::fcl::dataset {
     enum { stream_version = 0 };
@@ -593,7 +593,7 @@ class FontsDataSet : public cui::fcl::dataset {
 
 namespace {
 service_factory_t<FontsDataSet> g_fcl_fonts_t;
-};
+}
 
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}
 const GUID ColoursManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};

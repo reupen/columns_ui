@@ -155,7 +155,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!uih::are_keyboard_cues_enabled())
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
-        cui::status_bar::statusbartext = core_version_info::g_get_version_string();
+        status_bar::statusbartext = core_version_info::g_get_version_string();
         set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
             create_systray_icon();
@@ -180,7 +180,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             DeregisterShellHookWindow(wnd);
 
         rebar::destroy_rebar(false);
-        cui::status_bar::destroy_window();
+        status_bar::destroy_window();
         m_taskbar_list.reset();
         RevokeDragDrop(m_wnd);
         destroy_systray_icon();
@@ -192,7 +192,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             ImageList_Destroy(g_imagelist_taskbar);
         break;
     case WM_CLOSE:
-        if (cui::config::advbool_close_to_notification_icon.get()) {
+        if (config::advbool_close_to_notification_icon.get()) {
             cfg_go_to_tray = true;
             ShowWindow(wnd, SW_MINIMIZE);
         } else
@@ -232,7 +232,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     contextmenu_node* node
                         = statusbar_contextmenus::g_main_nowplaying->find_by_id(id - statusbar_contextmenus::ID_BASE);
                     if (node)
-                        set = node->get_description(cui::status_bar::menudesc);
+                        set = node->get_description(status_bar::menudesc);
                 }
 
                 if (systray_contextmenus::g_main_nowplaying.is_valid() && id < systray_contextmenus::ID_BASE_FILE_PREFS
@@ -240,18 +240,18 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     contextmenu_node* node = systray_contextmenus::g_main_nowplaying->find_by_id(
                         id - systray_contextmenus::ID_NOW_PLAYING_BASE);
                     if (node)
-                        set = node->get_description(cui::status_bar::menudesc);
+                        set = node->get_description(status_bar::menudesc);
                 } else if (systray_contextmenus::g_menu_file_prefs.is_valid()
                     && id < systray_contextmenus::ID_BASE_FILE_EXIT) {
                     set = systray_contextmenus::g_menu_file_prefs->get_description(
-                        id - systray_contextmenus::ID_BASE_FILE_PREFS, cui::status_bar::menudesc);
+                        id - systray_contextmenus::ID_BASE_FILE_PREFS, status_bar::menudesc);
                 } else if (systray_contextmenus::g_menu_file_exit.is_valid()
                     && id < systray_contextmenus::ID_BASE_PLAYBACK) {
                     set = systray_contextmenus::g_menu_file_exit->get_description(
-                        id - systray_contextmenus::ID_BASE_FILE_EXIT, cui::status_bar::menudesc);
+                        id - systray_contextmenus::ID_BASE_FILE_EXIT, status_bar::menudesc);
                 } else if (systray_contextmenus::g_menu_playback.is_valid()) {
                     set = systray_contextmenus::g_menu_playback->get_description(
-                        id - systray_contextmenus::ID_BASE_PLAYBACK, cui::status_bar::menudesc);
+                        id - systray_contextmenus::ID_BASE_PLAYBACK, status_bar::menudesc);
                 }
 
                 status_bar::set_show_menu_item_description(set);
@@ -508,7 +508,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             if (lpdis->itemData) {
                 pfc::string8& text = *reinterpret_cast<pfc::string8*>(lpdis->itemData);
-                uih::text_out_colours_tab(lpdis->hDC, text, text.length(), 0, uih::scale_dpi_value(3), &rc, FALSE,
+                text_out_colours_tab(lpdis->hDC, text, text.length(), 0, uih::scale_dpi_value(3), &rc, FALSE,
                     GetSysColor(COLOR_MENUTEXT), true, false, uih::ALIGN_LEFT);
             }
 
@@ -550,9 +550,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (rebar::g_rebar_window)
             rebar::g_rebar_window->on_themechanged();
         if (g_status) {
-            cui::status_bar::destroy_theme_handle();
-            cui::status_bar::create_theme_handle();
-            cui::status_bar::set_part_sizes(cui::status_bar::t_parts_none);
+            status_bar::destroy_theme_handle();
+            status_bar::create_theme_handle();
+            set_part_sizes(status_bar::t_parts_none);
         }
         break;
     case WM_KEYDOWN:
@@ -589,7 +589,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return TRUE;
         } else if (lp == WM_MOUSEMOVE) {
         } else if (lp == WM_XBUTTONUP) {
-            if (cui::config::advbool_notification_icon_x_buttons.get()) {
+            if (config::advbool_notification_icon_x_buttons.get()) {
                 if (g_last_sysray_x1_down && !g_last_sysray_x2_down)
                     standard_commands::main_previous();
                 if (g_last_sysray_x2_down && !g_last_sysray_x1_down)
@@ -796,12 +796,12 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         break;
                     }
                 }
-                if (cfg_show_vol && /*lpnm->dwItemSpec*/ part == cui::status_bar::u_vol_pos) {
-                    if (!cui::status_bar::volume_popup_window.get_wnd()) {
+                if (cfg_show_vol && /*lpnm->dwItemSpec*/ part == status_bar::u_vol_pos) {
+                    if (!status_bar::volume_popup_window.get_wnd()) {
                         // caption vertical. alt-f4 send crazy with two??
                         RECT rc_status;
                         GetWindowRect(lpnmm->hdr.hwndFrom, &rc_status);
-                        HWND wndvol = cui::status_bar::volume_popup_window.create(wnd);
+                        HWND wndvol = status_bar::volume_popup_window.create(wnd);
                         POINT pt = lpnmm->pt;
                         ClientToScreen(lpnmm->hdr.hwndFrom, &pt);
                         int cx = volume_popup_t::g_get_caption_size() + 26_spx + 2 * 1_spx;
@@ -839,13 +839,13 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 unsigned long part = lpnmm->dwItemSpec;
 
                 if (part == 0)
-                    cui::helpers::execute_main_menu_command(cfg_statusdbl);
+                    helpers::execute_main_menu_command(cfg_statusdbl);
                 // standard_commands::main_highlight_playing();
-                else if (cfg_show_vol && part == cui::status_bar::u_vol_pos) {
+                else if (cfg_show_vol && part == status_bar::u_vol_pos) {
                     // static_api_ptr_t<ui_control>()->show_preferences(preferences_page::guid_playback);
-                } else if (cfg_show_seltime && part == cui::status_bar::u_length_pos) {
+                } else if (cfg_show_seltime && part == status_bar::u_length_pos) {
                     static_api_ptr_t<playlist_manager>()->activeplaylist_set_selection(
-                        pfc::bit_array_true(), pfc::bit_array_true());
+                        bit_array_true(), bit_array_true());
                 }
             } break;
             }

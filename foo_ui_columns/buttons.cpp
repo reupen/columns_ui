@@ -33,7 +33,7 @@ unsigned ButtonsToolbar::get_type() const
 
 void ButtonsToolbar::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
-    ButtonsToolbar::ConfigParam param;
+    ConfigParam param;
     param.m_selection = nullptr;
     param.m_child = nullptr;
     param.m_active = 0;
@@ -43,7 +43,7 @@ void ButtonsToolbar::import_config(stream_reader* p_reader, t_size p_size, abort
     param.import_from_stream(p_reader, false, p_abort);
 
     configure(param.m_buttons, param.m_text_below, param.m_appearance);
-};
+}
 
 void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
@@ -73,7 +73,7 @@ void ButtonsToolbar::reset_buttons(std::vector<Button>& p_buttons)
         {{}, TYPE_SEPARATOR, SHOW_IMAGE, nullptr},
         {standard_commands::guid_main_open, TYPE_MENU_ITEM_MAIN, SHOW_IMAGE, nullptr},
         {{}, TYPE_SEPARATOR, SHOW_IMAGE, nullptr},
-        {cui::main_menu::commands::toggle_live_editing_id, TYPE_MENU_ITEM_MAIN, SHOW_TEXT, "Live layout editing"},
+        {main_menu::commands::toggle_live_editing_id, TYPE_MENU_ITEM_MAIN, SHOW_TEXT, "Live layout editing"},
     };
 
     p_buttons.clear();
@@ -95,7 +95,7 @@ void ButtonsToolbar::reset_buttons(std::vector<Button>& p_buttons)
 ButtonsToolbar::ButtonsToolbar()
 {
     reset_buttons(m_buttons);
-};
+}
 
 ButtonsToolbar::~ButtonsToolbar() = default;
 
@@ -143,7 +143,7 @@ void ButtonsToolbar::create_toolbar()
 
         SIZE sz = {0, 0};
 
-        pfc::bit_array_bittable mask(count);
+        bit_array_bittable mask(count);
 
         for (n = 0; n < count; n++) {
             if (m_buttons[n].m_type != TYPE_SEPARATOR) {
@@ -321,8 +321,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     if (msg == WM_CREATE) {
         wnd_host = wnd;
         Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-        m_gdiplus_initialised
-            = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
+        m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         initialised = true;
         create_toolbar();
 

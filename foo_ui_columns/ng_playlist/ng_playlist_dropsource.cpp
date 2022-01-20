@@ -79,6 +79,8 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropSource::GiveFeedback(DWORD dwEffect)
 PlaylistViewDropSource::PlaylistViewDropSource(PlaylistView* playlist, DWORD initial_key_state)
     : refcount(0)
     , p_playlist(playlist)
-    , m_initial_key_state(initial_key_state){};
+    , m_initial_key_state(initial_key_state)
+{
+}
 
 } // namespace cui::panels::playlist_view

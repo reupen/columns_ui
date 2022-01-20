@@ -18,7 +18,7 @@ void SeekBarToolbar::SeekBarTrackbarCallback::on_position_change(unsigned pos, b
 void SeekBarToolbar::SeekBarTrackbarCallback::get_tooltip_text(unsigned pos, uih::TrackbarString& out)
 {
     out = pfc::stringcvt::string_os_from_utf8(pfc::format_time_ex(pos / 10.0, 1));
-};
+}
 
 void SeekBarToolbar::update_seekbars(bool positions_only)
 {
@@ -118,7 +118,6 @@ void SeekBarToolbar::update_seek()
 }
 
 SeekBarToolbar::SeekBarToolbar() = default;
-;
 
 SeekBarToolbar::~SeekBarToolbar()
 {
@@ -148,7 +147,7 @@ LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             update_seek_timer();
         }
 
-        SeekBarToolbar::update_seek_timer();
+        update_seek_timer();
         ShowWindow(wnd_seekbar, SW_SHOWNORMAL);
         break;
     }
@@ -198,7 +197,7 @@ void SeekBarToolbar::get_category(pfc::string_base& out) const
 unsigned SeekBarToolbar::get_type() const
 {
     return ui_extension::type_toolbar;
-};
+}
 
 ui_extension::window_factory<SeekBarToolbar> blue;
 

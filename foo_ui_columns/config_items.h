@@ -34,4 +34,4 @@ void config_reset_activate_target_playlist_on_dropped_items();
 bool config_get_activate_target_playlist_on_dropped_items();
 bool config_get_activate_target_playlist_on_dropped_items_default_value();
 void config_set_activate_target_playlist_on_dropped_items(bool b_val);
-}; // namespace main_window
+} // namespace main_window

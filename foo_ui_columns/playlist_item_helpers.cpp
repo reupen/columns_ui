@@ -8,7 +8,7 @@ void action_remove_track(bool on_item, unsigned idx)
     if (on_item) {
         static_api_ptr_t<playlist_manager> api;
         api->activeplaylist_undo_backup();
-        api->activeplaylist_remove_items(pfc::bit_array_one(idx));
+        api->activeplaylist_remove_items(bit_array_one(idx));
     }
 }
 

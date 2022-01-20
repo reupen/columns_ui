@@ -20,7 +20,7 @@ struct ColumnTimes {
 
 class EditColumnWindowOptions : public ColumnTab {
 public:
-    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
     using self_t = EditColumnWindowOptions;
     HWND create(HWND wnd) override
     {
@@ -32,7 +32,9 @@ public:
         : initialising(false)
         , editproc(nullptr)
         , m_wnd(nullptr)
-        , m_column(std::move(column)){};
+        , m_column(std::move(column))
+    {
+    }
 
     bool initialising;
     WNDPROC editproc;
@@ -234,7 +236,7 @@ class DisplayScriptTab : public ColumnTab {
 public:
     using SelfType = DisplayScriptTab;
 
-    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
 
     HWND create(HWND wnd) override
     {
@@ -325,7 +327,7 @@ class StyleScriptTab : public ColumnTab {
 public:
     using SelfType = StyleScriptTab;
 
-    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
 
     HWND create(HWND wnd) override
     {
@@ -422,7 +424,7 @@ class SortingScriptTab : public ColumnTab {
 public:
     using SelfType = SortingScriptTab;
 
-    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; };
+    void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
 
     HWND create(HWND wnd) override
     {

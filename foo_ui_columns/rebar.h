@@ -45,7 +45,7 @@ private:
     void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
 
 public:
-    explicit ConfigBandCache(const GUID& p_guid) : cfg_var(p_guid) { reset(); };
+    explicit ConfigBandCache(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
     void get_band_cache(BandCache& out);
     void set_band_cache(BandCache& in);
     void reset();
@@ -61,12 +61,11 @@ private:
     void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
 
 public:
-    void export_config(
-        stream_writer* p_out, t_uint32 mode, cui::fcl::t_export_feedback& feedback, abort_callback& p_abort);
+    void export_config(stream_writer* p_out, t_uint32 mode, fcl::t_export_feedback& feedback, abort_callback& p_abort);
     void import_config(
         stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 
-    explicit ConfigRebar(const GUID& p_guid) : cfg_var(p_guid) { reset(); };
+    explicit ConfigRebar(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
 
     const std::vector<RebarBandState>& get_rebar_info() { return m_entries; }
 

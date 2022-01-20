@@ -51,7 +51,7 @@ public:
     void update_active_item_safe();
 
     const GUID& get_extension_guid() const override { return ToolbarArgs::extension_guid; }
-    unsigned get_type() const override { return ui_extension::type_toolbar; };
+    unsigned get_type() const override { return ui_extension::type_toolbar; }
     void get_name(pfc::string_base& out) const override { out = ToolbarArgs::name; }
     void get_category(pfc::string_base& out) const override { out.set_string("Toolbars"); }
     bool is_available(const uie::window_host_ptr& p_host) const override { return ToolbarArgs::is_available(); }

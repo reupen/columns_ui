@@ -86,7 +86,7 @@ void PreferencesTabHelper::on_initdialog(HWND wnd)
     m_wnd = wnd;
     m_title_font = create_default_title_font();
 
-    const auto children = cui::helpers::get_child_windows(wnd, [this, wnd](HWND wnd_child) {
+    const auto children = helpers::get_child_windows(wnd, [this, wnd](HWND wnd_child) {
         return GetAncestor(wnd_child, GA_PARENT) == wnd
             && m_title_ctrl_ids.find(GetDlgCtrlID(wnd_child)) != m_title_ctrl_ids.end();
     });

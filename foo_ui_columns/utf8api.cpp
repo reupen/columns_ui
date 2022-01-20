@@ -60,4 +60,4 @@ unsigned status_bar_get_text_width(HWND wnd, HTHEME thm, const char* p_text, boo
         DeleteFont(fnt);
     return rv;
 }
-}; // namespace win32_helpers
+} // namespace win32_helpers

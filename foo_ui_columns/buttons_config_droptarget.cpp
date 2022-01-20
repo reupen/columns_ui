@@ -88,7 +88,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
         // console::formatter() << pfc::format_hex(hr);
     }
     if (m_button_list_view->get_wnd()) {
-        uih::ListView::HitTestResult hi;
+        HitTestResult hi;
 
         {
             POINT ptt = pti;
@@ -145,7 +145,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
         *pdwEffect = DROPEFFECT_MOVE;
         const t_size old_index = m_button_list_view->get_selected_item_single(); // meh
 
-        uih::ListView::HitTestResult hi;
+        HitTestResult hi;
 
         POINT ptt = pt;
         ScreenToClient(m_button_list_view->get_wnd(), &ptt);
@@ -171,7 +171,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             for (t_size i = old_index; i != new_index; i += step)
                 std::swap(perm[i], perm[i + step]);
 
-            mmh::destructive_reorder(m_button_list_view->m_param.m_buttons, perm);
+            destructive_reorder(m_button_list_view->m_param.m_buttons, perm);
 
             // blaarrgg, designed in the dark ages
             m_button_list_view->m_param.m_selection = &m_button_list_view->m_param.m_buttons[new_index];
@@ -188,8 +188,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
     m_button_list_view->destroy_timer_scroll_down();
     return S_OK;
 }
-ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::ButtonsListDropTarget(
-    ButtonsToolbar::ConfigParam::ButtonsList* p_blv)
+ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::ButtonsListDropTarget(ButtonsList* p_blv)
     : drop_ref_count(0)
     , last_rmb(false)
     , m_button_list_view(p_blv)

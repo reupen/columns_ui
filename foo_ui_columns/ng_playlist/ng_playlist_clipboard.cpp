@@ -77,8 +77,8 @@ bool paste(HWND wnd, size_t index)
     data.to_handles(handles, b_native, GetAncestor(wnd, GA_ROOT));
     playlist_api->activeplaylist_undo_backup();
     playlist_api->activeplaylist_clear_selection();
-    playlist_api->activeplaylist_insert_items(index, handles, pfc::bit_array_true());
+    playlist_api->activeplaylist_insert_items(index, handles, bit_array_true());
     return true;
-};
+}
 
 } // namespace playlist_utils

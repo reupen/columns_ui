@@ -50,7 +50,7 @@ public:
             } break;
             case IDC_VOL: {
                 cfg_show_vol = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                cui::status_bar::set_part_sizes(cui::status_bar::t_part_volume);
+                set_part_sizes(cui::status_bar::t_part_volume);
             } break;
             case IDC_SELTIME: {
                 cfg_show_seltime = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);

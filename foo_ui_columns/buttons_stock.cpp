@@ -63,12 +63,12 @@
 namespace cui::button_items {
 
 __DEFINE_MENU_BUTTON(
-    a, standard_commands::guid_main_stop_after_current, standard_config_objects::bool_playlist_stop_after_current);
+    a, standard_commands::guid_main_stop_after_current, standard_config_objects::bool_playlist_stop_after_current)
 __DEFINE_MENU_BUTTON(
-    b, standard_commands::guid_main_playback_follows_cursor, standard_config_objects::bool_playback_follows_cursor);
+    b, standard_commands::guid_main_playback_follows_cursor, standard_config_objects::bool_playback_follows_cursor)
 __DEFINE_MENU_BUTTON(
-    c, standard_commands::guid_main_cursor_follows_playback, standard_config_objects::bool_cursor_follows_playback);
-__DEFINE_MENU_BUTTON(d, standard_commands::guid_main_always_on_top, standard_config_objects::bool_ui_always_on_top);
+    c, standard_commands::guid_main_cursor_follows_playback, standard_config_objects::bool_cursor_follows_playback)
+__DEFINE_MENU_BUTTON(d, standard_commands::guid_main_always_on_top, standard_config_objects::bool_ui_always_on_top)
 
 /**Defines icons for buttons */
 template <const GUID& MenutItemID, INT IconID>
@@ -80,7 +80,7 @@ class ButtonMenuItemWithBitmap : public uie::button_v2 {
     {
         auto icon = (HICON)LoadImage(
             core_api::get_my_instance(), MAKEINTRESOURCE(IconID), IMAGE_ICON, cx_hint, cy_hint, NULL);
-        handle_type = uie::button_v2::handle_type_icon;
+        handle_type = handle_type_icon;
         return (HANDLE)icon;
     }
 };
@@ -116,7 +116,7 @@ class ButtonBlank : public ui_extension::custom_button {
     }
     void get_name(pfc::string_base& p_out) const override { p_out = "Blanking button"; }
     unsigned get_button_state() const override { return NULL; }
-    void execute(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override{};
+    void execute(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override {}
     uie::t_button_guid get_guid_type() const override { return uie::BUTTON_GUID_BUTTON; }
 };
 

@@ -126,7 +126,7 @@ void FontCodeGenerator::initialise(const LOGFONT& p_lf_default, HWND parent, UIN
 
 void FontCodeGenerator::run(HWND parent, UINT edit)
 {
-    if (auto font_description = cui::fonts::select_font(parent, m_lf); font_description) {
+    if (auto font_description = fonts::select_font(parent, m_lf); font_description) {
         m_lf = font_description->log_font;
         uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, StringFontCode(m_lf));
     }
@@ -190,31 +190,31 @@ void g_parse_font_format_string(const wchar_t* str, t_size len, RawFont& p_out)
     }
 }
 
-class ItemDetailsFontClient : public cui::fonts::client {
+class ItemDetailsFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_item_details_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item details"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { ItemDetails::g_on_font_change(); }
 };
 
-class ItemDetailsColoursClient : public cui::colours::client {
+class ItemDetailsColoursClient : public colours::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_item_details_colour_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item details"; }
 
     t_size get_supported_colours() const override
     {
-        return cui::colours::colour_flag_background | cui::colours::colour_flag_text;
-    }; // bit-mask
-    t_size get_supported_bools() const override { return 0; }; // bit-mask
+        return colours::colour_flag_background | colours::colour_flag_text;
+    } // bit-mask
+    t_size get_supported_bools() const override { return 0; } // bit-mask
 
-    bool get_themes_supported() const override { return false; };
+    bool get_themes_supported() const override { return false; }
 
-    void on_bool_changed(t_size mask) const override{};
-    void on_colour_changed(t_size mask) const override { ItemDetails::g_on_colours_change(); };
+    void on_bool_changed(t_size mask) const override {}
+    void on_colour_changed(t_size mask) const override { ItemDetails::g_on_colours_change(); }
 };
 
 namespace {

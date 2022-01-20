@@ -62,7 +62,7 @@ public:
 
     bool reset_query() override { return false; }
 
-    void reset() override{};
+    void reset() override {}
 
     bool get_help_url(pfc::string_base& p_out) override
     {

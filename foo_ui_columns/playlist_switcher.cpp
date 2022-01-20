@@ -12,12 +12,12 @@ cfg_struct_t<LOGFONT> cfg_plist_font(
 const GUID g_guid_playlist_switcher_font
     = {0x70a5c273, 0x67ab, 0x4bb6, {0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd}};
 
-class PlaylistSwitcherFontClient : public cui::fonts::client {
+class PlaylistSwitcherFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_playlist_switcher_font; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist switcher"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { PlaylistSwitcher::g_on_font_items_change(); }
 };

@@ -56,8 +56,8 @@ const GUID ItemPropertiesColoursClient::g_guid
     = {0x862f8a37, 0x16e0, 0x4a74, {0xb2, 0x7e, 0x2b, 0x73, 0xdb, 0x56, 0x7d, 0xf}};
 
 namespace {
-cui::colours::client::factory<ItemPropertiesColoursClient> g_appearance_client_impl;
-};
+colours::client::factory<ItemPropertiesColoursClient> g_appearance_client_impl;
+}
 
 void ItemProperties::g_redraw_all()
 {
@@ -76,7 +76,7 @@ LRESULT ItemProperties::MessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp,
     case WM_CREATE:
         break;
     case WM_ACTIVATEAPP:
-        ItemProperties::g_on_app_activate(wp != 0);
+        g_on_app_activate(wp != 0);
         break;
     case WM_DESTROY:
         break;
@@ -190,11 +190,11 @@ void ItemProperties::notify_on_initialisation()
     set_use_dark_mode(dark::is_dark_mode_enabled());
     set_autosize(m_autosizing_columns);
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
     set_font(&lf);
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
     set_header_font(&lf);
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
     set_group_font(&lf);
     set_edge_style(m_edge_style);
     set_show_header(m_show_column_titles);
@@ -207,7 +207,7 @@ void ItemProperties::notify_on_create()
 
     register_callback();
     static_api_ptr_t<play_callback_manager>()->register_callback(
-        this, play_callback::flag_on_playback_stop | play_callback::flag_on_playback_new_track, true);
+        this, flag_on_playback_stop | flag_on_playback_new_track, true);
     static_api_ptr_t<metadb_io_v3>()->register_callback(this);
     refresh_contents();
 
@@ -462,7 +462,7 @@ void ItemProperties::refresh_contents()
     std::vector<MetadataFieldValueAggregator> metadata_aggregators;
     metadata_aggregators.resize(field_count);
 
-    pfc::list_t<uih::ListView::InsertItem> items;
+    pfc::list_t<InsertItem> items;
     t_size i;
     t_size count = m_handles.get_count();
 
@@ -487,7 +487,7 @@ void ItemProperties::refresh_contents()
         auto& field = m_fields[i];
         auto& aggregator = metadata_aggregators[i];
 
-        uih::ListView::InsertItem item(2, 1);
+        InsertItem item(2, 1);
         pfc::string8 temp;
         item.m_subitems[0] = field.m_name_friendly;
         temp.reset();
@@ -533,7 +533,7 @@ void ItemProperties::refresh_contents()
 
     for (auto&& [section, values] : track_properties) {
         for (auto&& value : values) {
-            uih::ListView::InsertItem item(2, 1);
+            InsertItem item(2, 1);
             item.m_subitems[0] = value.m_name;
             item.m_subitems[1] = value.m_value;
             item.m_groups[0] = section.c_str();
@@ -545,15 +545,15 @@ void ItemProperties::refresh_contents()
     t_size new_count = items.get_count();
 
     if (new_count && old_count) {
-        pfc::list_t<uih::ListView::InsertItem> items_replace;
+        pfc::list_t<InsertItem> items_replace;
         items_replace.add_items_fromptr(items.get_ptr(), min(new_count, old_count));
-        uih::ListView::replace_items(0, items_replace);
+        replace_items(0, items_replace);
     }
 
     if (new_count > old_count) {
-        uih::ListView::insert_items(old_count, items.get_count() - old_count, items.get_ptr() + old_count);
+        insert_items(old_count, items.get_count() - old_count, items.get_ptr() + old_count);
     } else if (new_count < old_count) {
-        uih::ListView::remove_items(pfc::bit_array_range(new_count, old_count - new_count));
+        remove_items(bit_array_range(new_count, old_count - new_count));
     }
 
     if (b_redraw)
@@ -641,39 +641,39 @@ void ItemProperties::on_tracking_mode_change()
     refresh_contents();
 }
 
-class ItemsFontClientItemProperties : public cui::fonts::client {
+class ItemsFontClientItemProperties : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_selection_properties_items_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Items"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { ItemProperties::g_on_font_items_change(); }
 };
 
-class HeaderFontClientItemProperties : public cui::fonts::client {
+class HeaderFontClientItemProperties : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_selection_properties_header_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Column titles"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { ItemProperties::g_on_font_header_change(); }
 };
 
-class GroupClientItemProperties : public cui::fonts::client {
+class GroupClientItemProperties : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_selection_properties_group_font_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Group titles"; }
 
-    cui::fonts::font_type_t get_default_font_type() const override { return cui::fonts::font_type_items; }
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
     void on_font_changed() const override { ItemProperties::g_on_font_groups_change(); }
 };
 void ItemProperties::g_on_font_items_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
     for (auto& window : g_windows) {
         window->set_font(&lf);
     }
@@ -682,7 +682,7 @@ void ItemProperties::g_on_font_items_change()
 void ItemProperties::g_on_font_groups_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
     for (auto& window : g_windows) {
         window->set_group_font(&lf);
     }
@@ -691,7 +691,7 @@ void ItemProperties::g_on_font_groups_change()
 void ItemProperties::g_on_font_header_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<cui::fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
+    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
     for (auto& window : g_windows) {
         window->set_header_font(&lf);
     }
@@ -887,7 +887,7 @@ bool ItemProperties::show_config_popup(HWND wnd_parent)
                 m_show_group_titles = dialog.m_show_groups;
                 cfg_selection_poperties_show_group_titles = m_show_group_titles;
 
-                remove_items(pfc::bit_array_true());
+                remove_items(bit_array_true());
                 set_group_count(m_show_group_titles ? 1 : 0);
             }
 
@@ -955,7 +955,7 @@ bool ItemProperties::ModeNodeAutosize::get_description(pfc::string_base& p_out) 
 bool ItemProperties::ModeNodeAutosize::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Auto-sizing columns";
-    p_displayflags = (p_this->m_autosizing_columns) ? ui_extension::menu_node_t::state_checked : 0;
+    p_displayflags = (p_this->m_autosizing_columns) ? state_checked : 0;
     return true;
 }
 
@@ -980,7 +980,7 @@ bool ItemProperties::MenuNodeTrackMode::get_description(pfc::string_base& p_out)
 bool ItemProperties::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = get_name(m_source);
-    p_displayflags = (m_source == p_this->m_tracking_mode) ? ui_extension::menu_node_t::state_radiochecked : 0;
+    p_displayflags = (m_source == p_this->m_tracking_mode) ? state_radiochecked : 0;
     return true;
 }
 

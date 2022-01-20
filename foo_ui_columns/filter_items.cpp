@@ -319,7 +319,7 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
                 pfc::string8_fastalloc buffer;
                 buffer.prealloc(32);
                 tracks_ptr[i]->format_title(nullptr, buffer, to, nullptr);
-                if (b_show_empty || pfc::strlen_max(buffer, 1)) {
+                if (b_show_empty || strlen_max(buffer, 1)) {
                     const size_t node_index = node_count++;
                     pp_out[node_index].m_handle = tracks_ptr[i];
                     pp_out[node_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(buffer));
@@ -397,7 +397,7 @@ void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& han
 
     const auto node_count = make_data_entries(handles, data_entries, g_showemptyitems);
 
-    pfc::list_t<uih::ListView::InsertItem, pfc::alloc_fast_aggressive> items;
+    pfc::list_t<InsertItem, pfc::alloc_fast_aggressive> items;
     items.prealloc(node_count);
 
     DataEntry* p_data = data_entries.get_ptr();
@@ -435,7 +435,7 @@ void FilterPanel::notify_sort_column(t_size index, bool b_descending, bool b_sel
         mmh::Permutation sort_permuation(node_count - 1);
         const auto* nodes = m_nodes.get_ptr();
         ++nodes;
-        mmh::sort_get_permutation(nodes, sort_permuation, Node::g_compare_ptr_with_node, false, b_descending, true);
+        sort_get_permutation(nodes, sort_permuation, Node::g_compare_ptr_with_node, false, b_descending, true);
 
         m_nodes.reorder_partial(1, sort_permuation.data(), node_count - 1);
 

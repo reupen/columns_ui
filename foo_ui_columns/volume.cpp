@@ -14,7 +14,7 @@ class VolumeBarToolbar : public VolumeBar<false, false, VolumeBarToolbarAttribut
         // {B3259290-CB68-4d37-B0F1-8094862A9524}
         static const GUID ret = {0xb3259290, 0xcb68, 0x4d37, {0xb0, 0xf1, 0x80, 0x94, 0x86, 0x2a, 0x95, 0x24}};
         return ret;
-    };
+    }
 
     void get_name(pfc::string_base& out) const override { out = "Volume"; }
     void get_category(pfc::string_base& out) const override { out = "Toolbars"; }

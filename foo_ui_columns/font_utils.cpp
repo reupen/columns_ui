@@ -12,7 +12,7 @@ void FontDescription::estimate_point_size()
 
 void ConfigFontDescription::get_data_raw(stream_writer* stream, abort_callback& aborter)
 {
-    cui::fonts::write_font(stream, m_font_description.log_font, aborter);
+    write_font(stream, m_font_description.log_font, aborter);
     stream->write_lendian_t(m_font_description.point_size_tenths, aborter);
 }
 

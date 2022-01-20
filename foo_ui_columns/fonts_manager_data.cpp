@@ -9,7 +9,7 @@ FontsManagerData::FontsManagerData() : cfg_var(g_cfg_guid)
     uGetIconFont(&m_common_items_entry->font_description.log_font);
     m_common_items_entry->font_description.estimate_point_size();
 
-    m_common_labels_entry = std::make_shared<FontsManagerData::Entry>();
+    m_common_labels_entry = std::make_shared<Entry>();
     uGetMenuFont(&m_common_labels_entry->font_description.log_font);
     m_common_labels_entry->font_description.estimate_point_size();
 }
@@ -41,7 +41,7 @@ void FontsManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
         }
     }
     {
-        p_out = std::make_shared<FontsManagerData::Entry>();
+        p_out = std::make_shared<Entry>();
         p_out->guid = p_guid;
         cui::fonts::client::ptr ptr;
         if (cui::fonts::client::create_by_guid(p_guid, ptr)) {

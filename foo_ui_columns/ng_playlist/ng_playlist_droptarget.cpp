@@ -277,7 +277,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                     playlist_api->activeplaylist_reorder_items(permutation_move.data(), permutation_move.size());
                 } else {
                     playlist_api->activeplaylist_clear_selection();
-                    t_size index_insert = playlist_api->activeplaylist_insert_items(idx, data, pfc::bit_array_true());
+                    t_size index_insert = playlist_api->activeplaylist_insert_items(idx, data, bit_array_true());
                     playlist_api->activeplaylist_set_focus_item(index_insert);
                     if (p_playlist->m_dragging && *pdwEffect == DROPEFFECT_MOVE) {
                         playlist_api->playlist_remove_items(p_playlist->m_dragging_initial_playlist,
@@ -306,7 +306,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                             bool b_redraw = p_playlist->disable_redrawing();
                             playlist_api->playlist_clear_selection(m_insertIndexTracker.m_playlist);
                             t_size index_insert = playlist_api->playlist_insert_items(m_insertIndexTracker.m_playlist,
-                                m_insertIndexTracker.m_item, p_items, pfc::bit_array_true());
+                                m_insertIndexTracker.m_item, p_items, bit_array_true());
                             playlist_api->playlist_set_focus_item(
                                 m_insertIndexTracker.m_playlist, m_insertIndexTracker.m_item);
                             if (b_redraw)

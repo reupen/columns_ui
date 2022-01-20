@@ -92,7 +92,7 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         | WS_CLIPSIBLINGS | WS_THICKFRAME;
 
     m_wnd = CreateWindowEx(ex_styles, main_window_class_name, _T("foobar2000"), styles, left, top, cx, cy, nullptr,
-        nullptr, core_api::get_my_instance(), &cui::main_window);
+        nullptr, core_api::get_my_instance(), &main_window);
 
     main_window::on_transparency_enabled_change();
 
@@ -125,7 +125,7 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
 
     main_window::config_set_is_first_run();
 
-    fb2k::inMainThread(cui::artwork::legacy::prompt_to_reconfigure);
+    fb2k::inMainThread(artwork::legacy::prompt_to_reconfigure);
 
     return m_wnd;
 }
@@ -134,13 +134,13 @@ void cui::MainWindow::shutdown()
 {
     DestroyWindow(m_wnd);
     UnregisterClass(main_window_class_name, core_api::get_my_instance());
-    cui::status_bar::volume_popup_window.class_release();
+    status_bar::volume_popup_window.class_release();
     m_wnd = nullptr;
     g_status = nullptr;
     if (g_icon)
         DestroyIcon(g_icon);
     g_icon = nullptr;
-    cui::status_bar::destroy_icon();
+    status_bar::destroy_icon();
 }
 
 void cui::MainWindow::on_query_capability()
@@ -237,8 +237,7 @@ void cui::MainWindow::on_create()
     InitCommonControlsEx(&icex);
 
     Gdiplus::GdiplusStartupInput gdiplusStartupInput{};
-    m_gdiplus_initialised
-        = (Gdiplus::Ok == Gdiplus::GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
+    m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
 
     if (dark::is_dark_mode_enabled()) {
         dark::enable_dark_mode_for_app();
@@ -318,7 +317,7 @@ void cui::MainWindow::resize_child_windows()
             EndDeferWindowPos(dwp);
 
             if (g_status) {
-                cui::status_bar::set_part_sizes(cui::status_bar::t_parts_none);
+                set_part_sizes(status_bar::t_parts_none);
             }
         }
     }
@@ -346,58 +345,61 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
 class MainWindowPlaylistCallback : public playlist_callback_single_static {
 public:
     void on_items_added(
-        unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const pfc::bit_array& p_selection)
+        unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
         override // inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but
                  // only methods that read playlist state, not those that modify it)
     {
         if (cui::main_window.get_wnd()) {
-            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
+            set_part_sizes(cui::status_bar::t_part_length);
         }
     }
-    void on_items_reordered(const unsigned* order,
-        unsigned count) override{}; // changes selection too; doesnt actually change set of items that are selected or
-                                    // item having focus, just changes their order
-    void FB2KAPI on_items_removing(const pfc::bit_array& p_mask, unsigned p_old_count,
-        unsigned p_new_count) override{}; // called before actually removing them
-    void FB2KAPI on_items_removed(const pfc::bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
+    void on_items_reordered(const unsigned* order, unsigned count) override {
+    } // changes selection too; doesnt actually change set of items that are selected or
+      // item having focus, just changes their order
+    void FB2KAPI on_items_removing(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override {
+    } // called before actually removing them
+    void FB2KAPI on_items_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
         if (cui::main_window.get_wnd()) {
-            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
-        }
-    };
-    void on_items_selection_change(const pfc::bit_array& affected, const pfc::bit_array& state) override
-    {
-        if (cui::main_window.get_wnd()) {
-            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length);
+            set_part_sizes(cui::status_bar::t_part_length);
         }
     }
-    void on_item_focus_change(unsigned from, unsigned to)
-        override{}; // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
-    void FB2KAPI on_items_modified(const pfc::bit_array& p_mask) override {}
-    void FB2KAPI on_items_modified_fromplayback(
-        const pfc::bit_array& p_mask, play_control::t_display_level p_level) override{};
-    void on_items_replaced(const pfc::bit_array& p_mask,
-        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override{};
-    void on_item_ensure_visible(unsigned idx) override{};
+    void on_items_selection_change(const bit_array& affected, const bit_array& state) override
+    {
+        if (cui::main_window.get_wnd()) {
+            set_part_sizes(cui::status_bar::t_part_length);
+        }
+    }
+    void on_item_focus_change(unsigned from, unsigned to) override {
+    } // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
+    void FB2KAPI on_items_modified(const bit_array& p_mask) override {}
+    void FB2KAPI on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override
+    {
+    }
+    void on_items_replaced(const bit_array& p_mask,
+        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
+    {
+    }
+    void on_item_ensure_visible(unsigned idx) override {}
 
     void on_playlist_switch() override
     {
         if (cui::main_window.get_wnd()) {
-            cui::status_bar::set_part_sizes(cui::status_bar::t_parts_all);
+            set_part_sizes(cui::status_bar::t_parts_all);
         }
-    };
-    void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override{};
+    }
+    void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override {}
     void on_playlist_locked(bool p_locked) override
     {
         if (cui::main_window.get_wnd())
             if (g_status && main_window::config_get_status_show_lock())
-                cui::status_bar::set_part_sizes(cui::status_bar::t_parts_all);
-    };
+                set_part_sizes(cui::status_bar::t_parts_all);
+    }
 
-    void on_default_format_changed() override{};
-    void on_playback_order_changed(unsigned p_new_index) override{};
+    void on_default_format_changed() override {}
+    void on_playback_order_changed(unsigned p_new_index) override {}
 
-    unsigned get_flags() override { return playlist_callback_single::flag_all; }
+    unsigned get_flags() override { return flag_all; }
 };
 static service_factory_single_t<MainWindowPlaylistCallback> asdf2;
 

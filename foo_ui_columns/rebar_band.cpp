@@ -15,10 +15,10 @@ void RebarBandState::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_ty
         } catch (const exception_io&) {
         } // FIXME: Why?
     } else
-        throw cui::fcl::exception_missing_panel();
+        throw fcl::exception_missing_panel();
 
     stream_writer_memblock w;
-    if (fcl_type == cui::fcl::type_public)
+    if (fcl_type == fcl::type_public)
         ptr->export_config(&w, aborter);
     else
         ptr->get_config(&w, aborter);
@@ -45,7 +45,7 @@ void RebarBandState::import_from_fcl_stream(stream_reader* reader, t_uint32 fcl_
         data.set_size(mem_size);
         reader->read(data.get_ptr(), mem_size, aborter);
 
-        if (fcl_type == cui::fcl::type_public) {
+        if (fcl_type == fcl::type_public) {
             uie::window_ptr ptr;
 
             if (uie::window::create_by_guid(m_guid, ptr)) {

@@ -8,7 +8,7 @@ bool FilterPanel::notify_before_create_inline_edit(
 {
     return !m_field_data.m_use_script && !m_field_data.m_fields.empty() && column == 0 && indices.get_count() == 1
         && indices[0] != 0;
-};
+}
 bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
@@ -24,7 +24,7 @@ bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<t_size>
         return true;
     }
     return false;
-};
+}
 void FilterPanel::notify_save_inline_edit(const char* value)
 {
     static_api_ptr_t<metadb_io_v2> tagger_api;
@@ -73,12 +73,12 @@ void FilterPanel::notify_save_inline_edit(const char* value)
                 nullptr);
         }
     }
-};
+}
 void FilterPanel::notify_exit_inline_edit()
 {
     m_edit_fields.clear();
     m_edit_handles.remove_all();
     m_edit_previous_value.reset();
-};
+}
 
 } // namespace cui::panels::filter

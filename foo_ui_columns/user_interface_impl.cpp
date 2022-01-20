@@ -56,7 +56,7 @@ public:
         cui::status_bar::menudesc = p_text;
         cui::status_bar::set_show_menu_item_description(true);
         cui::status_pane::g_status_pane.enter_menu_mode(p_text);
-    };
+    }
     void revert_statusbar_text() override
     {
         cui::status_bar::set_show_menu_item_description(false);

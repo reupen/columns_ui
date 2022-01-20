@@ -125,7 +125,7 @@ void ConfigColumns::get_data_raw(stream_writer* out, abort_callback& p_abort)
 
 void ConfigColumns::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
 {
-    pfc::list_t<PlaylistViewColumn::ptr> items;
+    list_t<PlaylistViewColumn::ptr> items;
     ColumnStreamVersion streamVersion = ColumnStreamVersion::streamVersion0;
 
     t_uint32 num;

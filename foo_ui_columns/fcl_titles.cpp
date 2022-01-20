@@ -5,12 +5,12 @@
 
 namespace cui::panels::playlist_view {
 
-cui::fcl::group_impl_factory fclgroupcolumns(
-    cui::fcl::groups::titles_playlist_view, "Playlist Scripts", "Playlist Scripts", cui::fcl::groups::title_scripts);
-cui::fcl::group_impl_factory fclgroupcommon(
-    cui::fcl::groups::titles_common, "Common Scripts", "Common Scripts", cui::fcl::groups::title_scripts);
+fcl::group_impl_factory fclgroupcolumns(
+    fcl::groups::titles_playlist_view, "Playlist Scripts", "Playlist Scripts", fcl::groups::title_scripts);
+fcl::group_impl_factory fclgroupcommon(
+    fcl::groups::titles_common, "Common Scripts", "Common Scripts", fcl::groups::title_scripts);
 
-class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
+class PlaylistViewColumnsDataSet : public fcl::dataset {
     enum ItemID {
         identifier_column,
     };
@@ -32,14 +32,14 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
 
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Columns"; }
-    const GUID& get_group() const override { return cui::fcl::groups::titles_playlist_view; }
+    const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }
     const GUID& get_guid() const override
     {
         // {2415AAE7-7F5E-4ad8-94E2-1E730A2139EF}
         static const GUID guid = {0x2415aae7, 0x7f5e, 0x4ad8, {0x94, 0xe2, 0x1e, 0x73, 0xa, 0x21, 0x39, 0xef}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -68,7 +68,7 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
             out.write_item(identifier_column, sw.m_data.get_ptr(), sw.m_data.get_size());
         }
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -159,9 +159,9 @@ class PlaylistViewColumnsDataSet : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<PlaylistViewColumnsDataSet> g_export_columns_t;
+fcl::dataset_factory<PlaylistViewColumnsDataSet> g_export_columns_t;
 
-class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
+class PlaylistViewGroupsDataSet : public fcl::dataset {
     enum ItemID {
         identifier_groups,
         identifier_show_groups,
@@ -179,14 +179,14 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
 
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Groups"; }
-    const GUID& get_group() const override { return cui::fcl::groups::titles_playlist_view; }
+    const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }
     const GUID& get_guid() const override
     {
         // {A89F68C6-B40A-4200-BA2A-68999F704FFD}
         static const GUID guid = {0xa89f68c6, 0xb40a, 0x4200, {0xba, 0x2a, 0x68, 0x99, 0x9f, 0x70, 0x4f, 0xfd}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -218,7 +218,7 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
 
         out.write_item(identifier_groups, groups_sw.m_data.get_ptr(), groups_sw.m_data.get_size());
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -303,9 +303,9 @@ class PlaylistViewGroupsDataSet : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<PlaylistViewGroupsDataSet> g_export_groups_t;
+fcl::dataset_factory<PlaylistViewGroupsDataSet> g_export_groups_t;
 
-class PlaylistViewMiscDataSet : public cui::fcl::dataset {
+class PlaylistViewMiscDataSet : public fcl::dataset {
     enum ItemID {
         identifier_global_script,
         identifier_style_script,
@@ -316,14 +316,14 @@ class PlaylistViewMiscDataSet : public cui::fcl::dataset {
         identifier_use_globals,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours"; }
-    const GUID& get_group() const override { return cui::fcl::groups::titles_playlist_view; }
+    const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }
     const GUID& get_guid() const override
     {
         // {190F4811-899A-4366-A181-FF5161FC1C77}
         static const GUID guid = {0x190f4811, 0x899a, 0x4366, {0xa1, 0x81, 0xff, 0x51, 0x61, 0xfc, 0x1c, 0x77}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -336,7 +336,7 @@ class PlaylistViewMiscDataSet : public cui::fcl::dataset {
         out.write_item(identifier_use_dates, static_cast<int32_t>(true));
         out.write_item(identifier_use_globals, cfg_global);
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -379,9 +379,9 @@ class PlaylistViewMiscDataSet : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<PlaylistViewMiscDataSet> g_export_pview_t;
+fcl::dataset_factory<PlaylistViewMiscDataSet> g_export_pview_t;
 
-class TitlesDataSet : public cui::fcl::dataset {
+class TitlesDataSet : public fcl::dataset {
     enum ItemID {
         identifier_main_window_title,
         identifier_status_bar,
@@ -390,14 +390,14 @@ class TitlesDataSet : public cui::fcl::dataset {
         identifier_playlist,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Titles"; }
-    const GUID& get_group() const override { return cui::fcl::groups::titles_common; }
+    const GUID& get_group() const override { return fcl::groups::titles_common; }
     const GUID& get_guid() const override
     {
         // {9AF6A28B-3EFF-4d1a-AD81-FA1759F1D66C}
         static const GUID guid = {0x9af6a28b, 0x3eff, 0x4d1a, {0xad, 0x81, 0xfa, 0x17, 0x59, 0xf1, 0xd6, 0x6c}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -406,7 +406,7 @@ class TitlesDataSet : public cui::fcl::dataset {
         out.write_item(identifier_notification_icon_tooltip, main_window::config_notification_icon_script.get());
         out.write_item(identifier_main_window_title, main_window::config_main_window_title_script.get());
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -440,6 +440,6 @@ class TitlesDataSet : public cui::fcl::dataset {
     }
 };
 
-cui::fcl::dataset_factory<TitlesDataSet> g_export_titles_t;
+fcl::dataset_factory<TitlesDataSet> g_export_titles_t;
 
 } // namespace cui::panels::playlist_view

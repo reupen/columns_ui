@@ -5,7 +5,7 @@ namespace cui::panels::playlist_switcher {
 
 bool PlaylistSwitcher::do_drag_drop(WPARAM wp)
 {
-    pfc::bit_array_bittable mask(get_item_count());
+    bit_array_bittable mask(get_item_count());
     get_selection_state(mask);
 
     playlist_dataobject_desc_impl data;
@@ -75,6 +75,8 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropSource::GiveFeedback(DWORD dwEff
 PlaylistSwitcher::DropSource::DropSource(PlaylistSwitcher* p_window, DWORD initial_key_state)
     : refcount(0)
     , m_window(p_window)
-    , m_initial_key_state(initial_key_state){};
+    , m_initial_key_state(initial_key_state)
+{
+}
 
 } // namespace cui::panels::playlist_switcher

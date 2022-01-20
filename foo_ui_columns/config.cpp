@@ -55,7 +55,7 @@ const GUID& config_get_main_guid()
 {
     return g_guid_columns_ui_preferences_page;
 }
-}; // namespace columns
+} // namespace columns
 
 namespace cui {
 namespace prefs {
