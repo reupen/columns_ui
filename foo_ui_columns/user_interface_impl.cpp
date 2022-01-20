@@ -53,13 +53,12 @@ public:
     }
     void override_statusbar_text(const char* p_text) override
     {
-        cui::status_bar::menudesc = p_text;
-        cui::status_bar::set_show_menu_item_description(true);
+        cui::status_bar::set_menu_item_description(p_text);
         cui::status_pane::g_status_pane.enter_menu_mode(p_text);
     }
     void revert_statusbar_text() override
     {
-        cui::status_bar::set_show_menu_item_description(false);
+        cui::status_bar::clear_menu_item_description();
         cui::status_pane::g_status_pane.exit_menu_mode();
     }
 

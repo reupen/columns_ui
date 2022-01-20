@@ -136,11 +136,9 @@ void cui::MainWindow::shutdown()
     UnregisterClass(main_window_class_name, core_api::get_my_instance());
     status_bar::volume_popup_window.class_release();
     m_wnd = nullptr;
-    g_status = nullptr;
     if (g_icon)
         DestroyIcon(g_icon);
     g_icon = nullptr;
-    status_bar::destroy_icon();
 }
 
 void cui::MainWindow::on_query_capability()

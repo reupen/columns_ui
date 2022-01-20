@@ -8,6 +8,10 @@
   
   (Note that selection colours are not supported.)
 
+* Improvements were made to the status bar layout logic (including better DPI scaling). [[#432](https://github.com/reupen/columns_ui/pull/432)]
+
+* The status bar playlist lock icon was replaced with the 🔒 character. [[#432](https://github.com/reupen/columns_ui/pull/432)]
+
 * The 'View/Show toolbars' menu item is now only shown if the shift key is held down when opening the View menu. [[#410](https://github.com/reupen/columns_ui/pull/410)]
 
 * A warning was added under the 'Show toolbars' option in preferences. [[#410](https://github.com/reupen/columns_ui/pull/410)]
@@ -20,7 +24,7 @@
 
 ### Internal changes
 
-* Some internal changes were made in advance of support for the Windows 10 dark mode. [[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413), [#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423), [#424](https://github.com/reupen/columns_ui/pull/424)]
+* Some internal changes were made in advance of support for the Windows 10 dark mode. [[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413), [#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423), [#424](https://github.com/reupen/columns_ui/pull/424), [#432](https://github.com/reupen/columns_ui/pull/432)]
 
 * The component is now compiled using Visual Studio 2022 17.0 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
 

@@ -8,7 +8,6 @@
 #define IDD_PREFS_PVIEW_GLOBALS         102
 #define IDC_PICK                        102
 #define IDD_BUTTONS_OPTIONS             105
-#define IDI_LOCK                        108
 #define IDB_BLANK                       117
 #define IDD_QUICK_SETUP                 129
 #define IDB_NOCOVER                     137

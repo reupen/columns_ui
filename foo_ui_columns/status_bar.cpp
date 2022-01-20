@@ -7,20 +7,22 @@ extern HWND g_status;
 
 namespace cui::status_bar {
 
+namespace {
+
+struct StatusBarState {
+    WNDPROC status_proc{};
+    std::string playback_information_text;
+    std::string menu_item_description;
+    std::string playlist_lock_text;
+    std::string track_length_text;
+    std::string volume_text;
+};
+
+std::optional<StatusBarState> state;
+
+} // namespace
+
 extern HFONT g_status_font;
-
-bool b_lock = false;
-unsigned u_length_pos = 0;
-unsigned u_lock_pos = 0;
-unsigned u_vol_pos = 0;
-HICON icon_lock = nullptr;
-HTHEME thm_status = nullptr;
-pfc::string8 menudesc;
-pfc::string8 statusbartext;
-
-bool menu = false;
-
-WNDPROC status_proc = nullptr;
 
 LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -39,7 +41,11 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         HBITMAP bm_mem = CreateCompatibleBitmap(dc, rc.right, rc.bottom);
         auto bm_old = (HBITMAP)SelectObject(dc_mem, bm_mem);
 
-        CallWindowProc(status_proc, wnd, WM_ERASEBKGND, (WPARAM)dc_mem, NULL);
+        if (dark::is_dark_mode_enabled())
+            FillRect(dc_mem, &rc, dark::get_colour_brush(dark::ColourID::StatusBarBackground, true).get());
+        else
+            CallWindowProc(state->status_proc, wnd, WM_ERASEBKGND, (WPARAM)dc_mem, NULL);
+
         SendMessage(wnd, WM_PRINTCLIENT, (WPARAM)dc_mem, PRF_CHECKVISIBLE | PRF_CLIENT | PRF_ERASEBKGND);
 
         BitBlt(dc, rc.left, rc.top, rc.right, rc.bottom, dc_mem, 0, 0, SRCCOPY);
@@ -53,84 +59,59 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return 0;
     }
 
-    return CallWindowProc(status_proc, wnd, msg, wp, lp);
+    return CallWindowProc(state->status_proc, wnd, msg, wp, lp);
 }
 
-void set_show_menu_item_description(bool on)
-{
-    if (!on)
-        menudesc.reset();
-    bool old_menu = menu;
-    menu = on;
-    // CHECK !!
-    if (!(!old_menu && !on))
-        update_text(on);
-}
-
-void update_text(bool is_caller_menu_desc)
+void set_playback_information(std::string_view text)
 {
     if (g_status) {
-        if (menu && is_caller_menu_desc)
-            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&menudesc));
-        else if (!menu)
-            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW, (LPARAM)(&statusbartext));
+        state->playback_information_text = text;
+
+        if (state->menu_item_description.empty())
+            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | 0, WI_EnumValue(StatusBarPartID::PlaybackInformation));
+    }
+}
+
+void set_menu_item_description(std::string_view text)
+{
+    if (g_status) {
+        state->menu_item_description = text;
+
+        const auto part_id = text.empty() ? StatusBarPartID::PlaybackInformation : StatusBarPartID::MenuItemDescription;
+
+        SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | 0, WI_EnumValue(part_id));
+    }
+}
+
+void clear_menu_item_description()
+{
+    if (g_status) {
+        state->menu_item_description.clear();
+        SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | 0, WI_EnumValue(StatusBarPartID::PlaybackInformation));
     }
 }
 
 void regenerate_text()
 {
+    if (!g_status)
+        return;
+
     metadb_handle_ptr track;
     static_api_ptr_t<play_control> play_api;
     play_api->get_now_playing(track);
     if (track.is_valid()) {
-        service_ptr_t<titleformat_object> to_status;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to_status, main_window::config_status_bar_script.get());
-        play_api->playback_format_title_ex(
-            track, nullptr, statusbartext, to_status, nullptr, play_control::display_level_all);
-
-        track.release();
+        titleformat_object::ptr to_status;
+        pfc::string8 text;
+        titleformat_compiler::get()->compile_safe(to_status, main_window::config_status_bar_script.get());
+        play_api->playback_format_title_ex(track, nullptr, text, to_status, nullptr, play_control::display_level_all);
+        set_playback_information(text.get_ptr());
     } else {
-        statusbartext = core_version_info::g_get_version_string();
-    }
-    update_text(false);
-}
-
-HICON get_icon()
-{
-    if (!icon_lock) {
-        icon_lock = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_LOCK), IMAGE_ICON, 0, 0, 0);
-    }
-    return icon_lock;
-}
-
-void destroy_icon()
-{
-    if (icon_lock) {
-        DeleteObject(icon_lock);
-        icon_lock = nullptr;
-    }
-}
-
-void destroy_theme_handle()
-{
-    {
-        if (thm_status) {
-            CloseThemeData(thm_status);
-            thm_status = nullptr;
-        }
-    }
-}
-
-void create_theme_handle()
-{
-    if (!thm_status) {
-        thm_status = IsThemeActive() && IsAppThemed() ? OpenThemeData(g_status, L"Status") : nullptr;
+        set_playback_information(core_version_info::g_get_version_string());
     }
 }
 
 void destroy_window()
 {
-    destroy_theme_handle();
     if (g_status) {
         DestroyWindow(g_status);
         g_status = nullptr;
@@ -139,46 +120,39 @@ void destroy_window()
         DeleteObject(g_status_font);
         g_status_font = nullptr;
     }
+    state.reset();
 }
 
 volume_popup_t volume_popup_window;
-unsigned u_volume_size;
-unsigned u_selected_length_size;
-unsigned u_playback_lock_size;
 
-bool get_text(unsigned index, pfc::string_base& p_out)
+std::string get_playlist_lock_text()
 {
-    unsigned ret = SendMessage(g_status, SB_GETTEXTLENGTH, index, 0);
-    if (HIWORD(ret) != SBT_OWNERDRAW) {
-        unsigned short len = LOWORD(ret);
-        pfc::array_t<TCHAR> buffer;
-        buffer.set_size(len + 1);
-        ret = SendMessage(g_status, SB_GETTEXT, index, (LPARAM)buffer.get_ptr());
-        buffer[len] = NULL;
-        p_out.set_string(pfc::stringcvt::string_utf8_from_os(buffer.get_ptr(), len));
-        return true;
-    }
-    return false;
+    const auto api = playlist_manager::get();
+    const auto playlist_index = api->get_active_playlist();
+
+    pfc::string8 lock_name;
+    api->playlist_lock_query_name(playlist_index, lock_name);
+
+    return fmt::format("{} {}", u8"🔒"_pcc, lock_name.get_ptr());
 }
 
-void calculate_volume_size(const char* p_text)
+int calculate_volume_size(const char* p_text)
 {
-    u_volume_size = win32_helpers::status_bar_get_text_width(g_status, thm_status, p_text) + 12;
+    return win32_helpers::status_bar_get_text_width(g_status, p_text);
 }
 
-void calculate_selected_length_size(const char* p_text)
+int calculate_selected_length_size(const char* p_text)
 {
-    u_selected_length_size = max(win32_helpers::status_bar_get_text_width(g_status, thm_status, p_text),
-                                 win32_helpers::status_bar_get_text_width(g_status, thm_status, "0d 00:00:00"))
-        + 12;
+    return max(win32_helpers::status_bar_get_text_width(g_status, p_text),
+        win32_helpers::status_bar_get_text_width(g_status, "0d 00:00:00"));
 }
 
-void calculate_playback_lock_size(const char* p_text)
+int calculate_playback_lock_size(const char* p_text)
 {
-    u_playback_lock_size = win32_helpers::status_bar_get_text_width(g_status, thm_status, p_text) + 14 + 16 + 4;
+    return win32_helpers::status_bar_get_text_width(g_status, p_text);
 }
 
-void get_selected_length_text(pfc::string_base& p_out, unsigned dp = 0)
+std::string get_selected_length_text(unsigned dp = 0)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> sels;
     double length = 0;
@@ -193,78 +167,71 @@ void get_selected_length_text(pfc::string_base& p_out, unsigned dp = 0)
     playlist_api->activeplaylist_get_selected_items(sels);
     length = sels.calc_total_duration();
 
-    p_out = pfc::format_time_ex(length, dp);
+    return pfc::format_time_ex(length, dp).get_ptr();
 }
 
-void get_volume_text(pfc::string_base& p_out)
+std::string get_volume_text()
 {
-    static_api_ptr_t<play_control> play_api;
-    float volume = play_api->get_volume();
-
-    p_out.add_string(pfc::format_float(volume, 0, 2));
-    p_out.add_string(" dB");
+    const float volume = playback_control::get()->get_volume();
+    return fmt::format("{:0.02f} dB", volume);
 }
 
 void set_part_sizes(unsigned p_parts)
 {
     if (g_status) {
-        bool b_old_lock = b_lock;
-        unsigned u_old_lock_pos = u_lock_pos;
+        RECT rect;
+        GetClientRect(g_status, &rect);
+        const auto scrollbar_height = GetSystemMetrics(SM_CXVSCROLL);
+        rect.right -= scrollbar_height;
 
-        RECT rc2;
-        GetClientRect(main_window.get_wnd(), &rc2);
-        int scrollbar_height = GetSystemMetrics(SM_CXVSCROLL);
-        if (!IsZoomed(main_window.get_wnd()))
-            rc2.right -= scrollbar_height;
+        if (rect.right < rect.left)
+            rect.right = rect.left;
 
-        int blah[3];
-        SendMessage(g_status, SB_GETBORDERS, 0, (LPARAM)&blah);
-
-        if (rc2.right < rc2.left)
-            rc2.right = rc2.left;
+        int borders[3]{};
+        SendMessage(g_status, SB_GETBORDERS, 0, reinterpret_cast<LPARAM>(&borders));
+        const auto part_spacing = borders[2];
+        const auto part_padding = 2 * (4_spx + part_spacing);
 
         pfc::list_t<int> m_parts;
 
         m_parts.add_item(-1); // dummy
 
-        pfc::string8 text_lock;
-        pfc::string8 text_volume;
-        pfc::string8 text_length;
+        unsigned track_length_pos{};
+        unsigned playlist_lock_pos{};
+        unsigned volume_pos{};
+
         static_api_ptr_t<playlist_manager> playlist_api;
         unsigned active = playlist_api->get_active_playlist();
 
-        b_lock = main_window::config_get_status_show_lock() && playlist_api->playlist_lock_is_present(active);
+        const bool show_playlist_lock_part
+            = main_window::config_get_status_show_lock() && playlist_api->playlist_lock_is_present(active);
 
-        if (b_lock) {
-            if (b_old_lock && !(p_parts & t_part_lock))
-                get_text(u_old_lock_pos, text_lock);
-            else
-                playlist_api->playlist_lock_query_name(active, text_lock);
-            calculate_playback_lock_size(text_lock);
-            u_lock_pos = m_parts.add_item(u_playback_lock_size);
+        if (show_playlist_lock_part) {
+            if (p_parts & t_part_lock) {
+                state->playlist_lock_text = get_playlist_lock_text();
+            }
+
+            const auto part_size = calculate_playback_lock_size(state->playlist_lock_text.c_str()) + part_padding;
+            playlist_lock_pos = m_parts.add_item(part_size);
         }
 
         if (cfg_show_seltime) {
-            if (!(p_parts & t_part_length))
-                get_text(u_length_pos, text_length);
-            else
-                get_selected_length_text(text_length); // blah
+            if ((p_parts & t_part_length))
+                state->track_length_text = get_selected_length_text();
 
-            calculate_selected_length_size(text_length);
-
-            u_length_pos = m_parts.add_item(u_selected_length_size);
+            const auto part_size = calculate_selected_length_size(state->track_length_text.c_str()) + part_padding;
+            track_length_pos = m_parts.add_item(part_size);
         }
 
         if (cfg_show_vol) {
-            if (!(p_parts & t_part_volume))
-                get_text(u_vol_pos, text_volume);
-            else
-                get_volume_text(text_volume); // blah
-            calculate_volume_size(text_volume);
-            u_vol_pos = m_parts.add_item(u_volume_size);
+            if ((p_parts & t_part_volume))
+                state->volume_text = get_volume_text();
+
+            const auto part_size = calculate_volume_size(state->volume_text.c_str()) + part_padding;
+            volume_pos = m_parts.add_item(part_size);
         }
 
-        m_parts[0] = rc2.right - rc2.left;
+        m_parts[0] = rect.right - rect.left;
 
         unsigned n;
         unsigned count = m_parts.get_count();
@@ -279,19 +246,18 @@ void set_part_sizes(unsigned p_parts)
         }
         m_parts[count - 1] = -1;
 
-        if (b_old_lock && (!b_lock || u_lock_pos != u_old_lock_pos))
-            SendMessage(g_status, SB_SETICON, u_old_lock_pos, 0);
-
         SendMessage(g_status, SB_SETPARTS, m_parts.get_count(), (LPARAM)m_parts.get_ptr());
 
         if (cfg_show_vol && (p_parts & t_part_volume))
-            uStatus_SetText(g_status, u_vol_pos, text_volume);
-        if (cfg_show_seltime && (p_parts & t_part_length))
-            uStatus_SetText(g_status, u_length_pos, text_length);
+            SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | volume_pos, WI_EnumValue(StatusBarPartID::Volume));
 
-        if (b_lock && (p_parts & t_part_lock)) {
-            SendMessage(g_status, SB_SETICON, u_lock_pos, (LPARAM)get_icon());
-            uStatus_SetText(g_status, u_lock_pos, text_lock);
+        if (cfg_show_seltime && (p_parts & t_part_length))
+            SendMessage(
+                g_status, SB_SETTEXT, SBT_OWNERDRAW | track_length_pos, WI_EnumValue(StatusBarPartID::TrackLength));
+
+        if (show_playlist_lock_part && (p_parts & t_part_lock)) {
+            SendMessage(
+                g_status, SB_SETTEXT, SBT_OWNERDRAW | playlist_lock_pos, WI_EnumValue(StatusBarPartID::PlaylistLock));
         }
     }
 }
@@ -302,9 +268,9 @@ void create_window()
         g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0,
             main_window.get_wnd(), (HMENU)ID_STATUS, core_api::get_my_instance(), nullptr);
 
-        status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWLP_WNDPROC, (LPARAM)(g_status_hook));
+        state = StatusBarState{};
 
-        create_theme_handle();
+        state->status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWLP_WNDPROC, (LPARAM)(g_status_hook));
 
         SetWindowPos(g_status, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
@@ -312,34 +278,82 @@ void create_window()
 
         set_part_sizes(t_parts_all);
 
-        update_text(false);
+        regenerate_text();
     } else if (!cfg_status && g_status) {
         destroy_window();
     }
 }
 
+namespace {
+
+RECT get_adjusted_draw_item_rect(const RECT rect, const unsigned index, const StatusBarPartID part_id)
+{
+    int borders[3]{};
+    SendMessage(g_status, SB_GETBORDERS, 0, reinterpret_cast<LPARAM>(&borders));
+    const auto part_spacing = borders[2];
+
+    RECT adjusted_rect = rect;
+    adjusted_rect.left += 4_spx;
+    adjusted_rect.right -= 4_spx;
+
+    if (index > 0)
+        adjusted_rect.left -= part_spacing;
+
+    return adjusted_rect;
+}
+
+std::string_view get_draw_item_text(const StatusBarPartID part_id)
+{
+    switch (part_id) {
+    case StatusBarPartID::PlaybackInformation:
+        return state->playback_information_text;
+    case StatusBarPartID::MenuItemDescription:
+        return state->menu_item_description;
+    case StatusBarPartID::PlaylistLock:
+        return state->playlist_lock_text;
+    case StatusBarPartID::TrackLength:
+        return state->track_length_text;
+    case StatusBarPartID::Volume:
+        return state->volume_text;
+    default:
+        uBugCheck();
+    }
+}
+
+void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::string_view text, const RECT rc)
+{
+    if (text.empty())
+        return;
+
+    const auto text_colour = dark::get_colour(dark::ColourID::StatusBarText, dark::is_dark_mode_enabled());
+
+    if (part_id == StatusBarPartID::PlaybackInformation) {
+        text_out_colours_tab(dc, text.data(), gsl::narrow<int>(text.size()), 0, 0, &rc, FALSE, text_colour, true, false,
+            uih::ALIGN_LEFT);
+        return;
+    }
+
+    const auto utf16_text = pfc::stringcvt::string_wide_from_utf8(text.data(), text.size());
+    SetTextColor(dc, text_colour);
+    SetBkMode(dc, TRANSPARENT);
+    const int x = rc.left;
+    const int y = rc.top + (RECT_CY(rc) - uih::get_dc_font_height(dc)) / 2;
+    ExtTextOutW(dc, x, y, ETO_CLIPPED, &rc, utf16_text, utf16_text.length(), nullptr);
+}
+
+} // namespace
+
 std::optional<LRESULT> handle_draw_item(const LPDRAWITEMSTRUCT lpdis)
 {
-    RECT rc = lpdis->rcItem;
+    const auto part_id = static_cast<StatusBarPartID>(lpdis->itemData);
+    const RECT rc = get_adjusted_draw_item_rect(lpdis->rcItem, lpdis->itemID, part_id);
 
-    if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(main_window.get_wnd())) {
-        RECT rc_main;
-        GetClientRect(main_window.get_wnd(), &rc_main);
-        rc.right = rc_main.right - GetSystemMetrics(SM_CXVSCROLL);
-    } else {
-        int blah[3];
-        SendMessage(g_status, SB_GETBORDERS, 0, (LPARAM)&blah);
-        rc.right -= blah[2];
-    }
+    if (rc.right <= rc.left)
+        return TRUE;
 
-    if (rc.left > rc.right)
-        rc.right = rc.left;
+    const std::string_view text = get_draw_item_text(part_id);
 
-    if (lpdis->itemData) {
-        pfc::string8& text = *reinterpret_cast<pfc::string8*>(lpdis->itemData);
-        text_out_colours_tab(lpdis->hDC, text, text.length(), 0, uih::scale_dpi_value(3), &rc, FALSE,
-            GetSysColor(COLOR_MENUTEXT), true, false, uih::ALIGN_LEFT);
-    }
+    draw_item_content(lpdis->hDC, part_id, text, rc);
 
     return TRUE;
 }

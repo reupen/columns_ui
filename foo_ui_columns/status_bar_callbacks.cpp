@@ -14,69 +14,26 @@ public:
 
     void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override
     {
-        if (g_status) {
-            statusbartext = "Loading track..";
-            update_text(false);
-        }
+        set_playback_information("Loading track.."sv);
     }
 
-    void on_playback_new_track(metadb_handle_ptr p_track) override
-    {
-        if (main_window.get_wnd()) {
-            regenerate_text();
-        }
-    }
+    void on_playback_new_track(metadb_handle_ptr p_track) override { regenerate_text(); }
 
     void on_playback_stop(play_control::t_stop_reason p_reason) override
     {
-        if (main_window.get_wnd() && p_reason != play_control::stop_reason_shutting_down) {
-            statusbartext = core_version_info::g_get_version_string();
-            update_text(false);
+        if (p_reason != play_control::stop_reason_shutting_down) {
+            set_playback_information({core_version_info::g_get_version_string()});
         }
     }
-    void on_playback_seek(double p_time) override
-    {
-        if (main_window.get_wnd()) {
-            regenerate_text();
-        }
-    }
-    void on_playback_pause(bool b_state) override
-    {
-        if (main_window.get_wnd()) {
-            regenerate_text();
-        }
-    }
+    void on_playback_seek(double p_time) override { regenerate_text(); }
+    void on_playback_pause(bool b_state) override { regenerate_text(); }
 
-    void on_playback_edited(metadb_handle_ptr p_track) override
-    {
-        if (main_window.get_wnd()) {
-            regenerate_text();
-        }
-    }
+    void on_playback_edited(metadb_handle_ptr p_track) override { regenerate_text(); }
 
-    void on_playback_dynamic_info(const file_info& p_info) override
-    {
-        if (main_window.get_wnd()) {
-            regenerate_text();
-        }
-    }
-    void on_playback_dynamic_info_track(const file_info& p_info) override
-    {
-        if (main_window.get_wnd()) {
-            regenerate_text();
-        }
-    }
-    void on_playback_time(double p_time) override
-    {
-        if (main_window.get_wnd()) {
-            regenerate_text();
-        }
-    }
-    void on_volume_change(float p_new_val) override
-    {
-        if (main_window.get_wnd() && g_status)
-            set_part_sizes(t_part_volume);
-    }
+    void on_playback_dynamic_info(const file_info& p_info) override { regenerate_text(); }
+    void on_playback_dynamic_info_track(const file_info& p_info) override { regenerate_text(); }
+    void on_playback_time(double p_time) override { regenerate_text(); }
+    void on_volume_change(float p_new_val) override { set_part_sizes(t_part_volume); }
 };
 
 static play_callback_static_factory_t<StatusBarPlayCalllback> status_bar_play_callback;
@@ -114,10 +71,8 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
 
     void on_playlist_activate(unsigned p_old, unsigned p_new) override
     {
-        if (main_window.get_wnd()) {
-            if (g_status && main_window::config_get_status_show_lock())
-                set_part_sizes(t_part_lock);
-        }
+        if (main_window::config_get_status_show_lock())
+            set_part_sizes(t_part_lock);
     }
 
     void on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len) override {}
@@ -130,10 +85,8 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
     void on_playback_order_changed(unsigned p_new_index) override {}
     void on_playlist_locked(unsigned p_playlist, bool p_locked) override
     {
-        if (main_window.get_wnd()) {
-            if (g_status && main_window::config_get_status_show_lock())
-                set_part_sizes(t_part_lock);
-        }
+        if (main_window::config_get_status_show_lock())
+            set_part_sizes(t_part_lock);
     }
 
     virtual void on_item_replaced(unsigned pls, unsigned item, metadb_handle* from, metadb_handle* to) {}
