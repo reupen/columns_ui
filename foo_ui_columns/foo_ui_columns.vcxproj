@@ -575,42 +575,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
-    <None Include=".\buttons2.bmp" />
-    <None Include=".\emptycoverdark.png" />
-    <None Include=".\icons\star\left.ico" />
-    <None Include=".\LOCK.ico" />
-    <None Include=".\next.bmp" />
-    <None Include=".\official_buttons_pack\next.bmp" />
-    <None Include=".\next1.bmp" />
-    <None Include=".\icons\New Folder\square\next256.ico" />
-    <None Include=".\icons\New Folder\square\next64.bmp" />
-    <None Include=".\open.bmp" />
-    <None Include=".\official_buttons_pack\open.bmp" />
-    <None Include=".\icons\New Folder\square\open256.ico" />
-    <None Include=".\icons\New Folder\square\open64.bmp" />
-    <None Include=".\official_buttons_pack\pause.bmp" />
-    <None Include=".\pause.bmp" />
-    <None Include=".\icons\New Folder\square\pause256.ico" />
-    <None Include=".\icons\New Folder\square\pause64.bmp" />
-    <None Include=".\official_buttons_pack\play.bmp" />
-    <None Include=".\play.bmp" />
-    <None Include=".\icons\New Folder\square\play256.ico" />
-    <None Include=".\icons\New Folder\square\play64.bmp" />
-    <None Include=".\official_buttons_pack\prev.bmp" />
-    <None Include=".\prev.bmp" />
-    <None Include=".\icons\New Folder\square\prev256.ico" />
-    <None Include=".\icons\New Folder\square\prev64.bmp" />
-    <None Include=".\rand.bmp" />
-    <None Include=".\official_buttons_pack\rand.bmp" />
-    <None Include=".\icons\New Folder\square\rand256.ico" />
-    <None Include=".\icons\New Folder\square\rand64.bmp" />
-    <None Include=".\icons\star\star off.ico" />
-    <None Include=".\icons\star\star on.ico" />
-    <None Include=".\official_buttons_pack\stop.bmp" />
-    <None Include=".\stop1.bmp" />
-    <None Include=".\icons\New Folder\square\stop256.ico" />
-    <None Include=".\icons\New Folder\square\stop64.bmp" />
-    <None Include=".\up1.bmp" />
     <None Include="version.h.template" />
   </ItemGroup>
   <ItemGroup>
@@ -638,6 +602,20 @@
     <ProjectReference Include="..\ui_helpers\ui_helpers.vcxproj">
       <Project>{a8c4298d-00f5-46f7-91ba-f503fd581590}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\blank.bmp" />
+    <Image Include="assets\next.ico" />
+    <Image Include="assets\open.ico" />
+    <Image Include="assets\pause.ico" />
+    <Image Include="assets\placeholder-artwork.png" />
+    <Image Include="assets\play-random.ico" />
+    <Image Include="assets\play.ico" />
+    <Image Include="assets\previous.ico" />
+    <Image Include="assets\reset.ico" />
+    <Image Include="assets\star-gold.ico" />
+    <Image Include="assets\star-grey.ico" />
+    <Image Include="assets\stop.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
