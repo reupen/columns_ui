@@ -155,7 +155,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!uih::are_keyboard_cues_enabled())
             SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_INITIALIZE, UISF_HIDEFOCUS), NULL);
 
-        status_bar::statusbartext = core_version_info::g_get_version_string();
         set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
             create_systray_icon();
@@ -219,7 +218,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case WM_MENUSELECT: {
         if (HIWORD(wp) & MF_POPUP) {
-            status_bar::set_show_menu_item_description(false);
+            status_bar::clear_menu_item_description();
         } else {
             if (systray_contextmenus::g_menu_file_prefs.is_valid() || systray_contextmenus::g_menu_file_exit.is_valid()
                 || systray_contextmenus::g_menu_playback.is_valid()
@@ -227,12 +226,12 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 || statusbar_contextmenus::g_main_nowplaying.is_valid()) {
                 unsigned id = LOWORD(wp);
 
-                bool set = false;
+                pfc::string8 item_description;
                 if (statusbar_contextmenus::g_main_nowplaying.is_valid()) {
                     contextmenu_node* node
                         = statusbar_contextmenus::g_main_nowplaying->find_by_id(id - statusbar_contextmenus::ID_BASE);
                     if (node)
-                        set = node->get_description(status_bar::menudesc);
+                        node->get_description(item_description);
                 }
 
                 if (systray_contextmenus::g_main_nowplaying.is_valid() && id < systray_contextmenus::ID_BASE_FILE_PREFS
@@ -240,21 +239,21 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     contextmenu_node* node = systray_contextmenus::g_main_nowplaying->find_by_id(
                         id - systray_contextmenus::ID_NOW_PLAYING_BASE);
                     if (node)
-                        set = node->get_description(status_bar::menudesc);
+                        node->get_description(item_description);
                 } else if (systray_contextmenus::g_menu_file_prefs.is_valid()
                     && id < systray_contextmenus::ID_BASE_FILE_EXIT) {
-                    set = systray_contextmenus::g_menu_file_prefs->get_description(
-                        id - systray_contextmenus::ID_BASE_FILE_PREFS, status_bar::menudesc);
+                    systray_contextmenus::g_menu_file_prefs->get_description(
+                        id - systray_contextmenus::ID_BASE_FILE_PREFS, item_description);
                 } else if (systray_contextmenus::g_menu_file_exit.is_valid()
                     && id < systray_contextmenus::ID_BASE_PLAYBACK) {
-                    set = systray_contextmenus::g_menu_file_exit->get_description(
-                        id - systray_contextmenus::ID_BASE_FILE_EXIT, status_bar::menudesc);
+                    systray_contextmenus::g_menu_file_exit->get_description(
+                        id - systray_contextmenus::ID_BASE_FILE_EXIT, item_description);
                 } else if (systray_contextmenus::g_menu_playback.is_valid()) {
-                    set = systray_contextmenus::g_menu_playback->get_description(
-                        id - systray_contextmenus::ID_BASE_PLAYBACK, status_bar::menudesc);
+                    systray_contextmenus::g_menu_playback->get_description(
+                        id - systray_contextmenus::ID_BASE_PLAYBACK, item_description);
                 }
 
-                status_bar::set_show_menu_item_description(set);
+                status_bar::set_menu_item_description(item_description.get_ptr());
             }
         }
     } break;
@@ -491,30 +490,11 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         auto lpdis = reinterpret_cast<LPDRAWITEMSTRUCT>(lp);
 
         if (lpdis->CtlID == ID_STATUS) {
-            RECT rc = lpdis->rcItem;
-            //            rc.right -= 3;
-            if (!cfg_show_vol && !cfg_show_seltime && !IsZoomed(m_wnd)) {
-                RECT rc_main;
-                GetClientRect(m_wnd, &rc_main);
-                rc.right = rc_main.right - GetSystemMetrics(SM_CXVSCROLL);
-            } else {
-                int blah[3];
-                SendMessage(g_status, SB_GETBORDERS, 0, (LPARAM)&blah);
-                rc.right -= blah[2];
-            }
-
-            if (rc.left > rc.right)
-                rc.right = rc.left;
-
-            if (lpdis->itemData) {
-                pfc::string8& text = *reinterpret_cast<pfc::string8*>(lpdis->itemData);
-                text_out_colours_tab(lpdis->hDC, text, text.length(), 0, uih::scale_dpi_value(3), &rc, FALSE,
-                    GetSysColor(COLOR_MENUTEXT), true, false, uih::ALIGN_LEFT);
-            }
-
-            return TRUE;
+            if (const auto result = status_bar::handle_draw_item(lpdis))
+                return *result;
         }
-    } break;
+        break;
+    }
     case WM_WINDOWPOSCHANGED: {
         auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
         if (!(lpwp->flags & SWP_NOSIZE)) {
@@ -550,8 +530,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (rebar::g_rebar_window)
             rebar::g_rebar_window->on_themechanged();
         if (g_status) {
-            status_bar::destroy_theme_handle();
-            status_bar::create_theme_handle();
             set_part_sizes(status_bar::t_parts_none);
         }
         break;
@@ -777,26 +755,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             case NM_RCLICK:
             case NM_CLICK: {
                 auto lpnmm = reinterpret_cast<LPNMMOUSE>(lp);
-                unsigned u_parts = SendMessage(lpnmm->hdr.hwndFrom, SB_GETPARTS, 0, 0);
-                pfc::array_t<unsigned> parts;
-                parts.set_size(u_parts);
-                SendMessage(lpnmm->hdr.hwndFrom, SB_GETPARTS, parts.get_size(), (LPARAM)parts.get_ptr());
-                u_parts = parts.get_size();
-                if (!IsZoomed(wnd) && u_parts && parts[u_parts - 1] == pfc_infinite) {
-                    RECT rc;
-                    GetClientRect(lpnmm->hdr.hwndFrom, &rc);
-                    parts[u_parts - 1] = rc.right - GetSystemMetrics(SM_CXVSCROLL);
-                }
+                const auto part_id = static_cast<status_bar::StatusBarPartID>(
+                    SendMessage(lpnmm->hdr.hwndFrom, SB_GETTEXT, lpnmm->dwItemSpec, NULL));
 
-                unsigned part = -1;
-                unsigned n = 0;
-                for (n = 0; n < u_parts; n++) {
-                    if ((unsigned)lpnmm->pt.x < parts[n]) {
-                        part = n;
-                        break;
-                    }
-                }
-                if (cfg_show_vol && /*lpnm->dwItemSpec*/ part == status_bar::u_vol_pos) {
+                if (cfg_show_vol && part_id == status_bar::StatusBarPartID::Volume) {
                     if (!status_bar::volume_popup_window.get_wnd()) {
                         // caption vertical. alt-f4 send crazy with two??
                         RECT rc_status;
@@ -835,15 +797,13 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             } break;
             case NM_DBLCLK: {
-                auto lpnmm = reinterpret_cast<LPNMMOUSE>(lp);
-                unsigned long part = lpnmm->dwItemSpec;
+                const auto lpnmm = reinterpret_cast<LPNMMOUSE>(lp);
+                const auto part_id = static_cast<status_bar::StatusBarPartID>(
+                    SendMessage(lpnmm->hdr.hwndFrom, SB_GETTEXT, lpnmm->dwItemSpec, NULL));
 
-                if (part == 0)
+                if (part_id == status_bar::StatusBarPartID::PlaybackInformation)
                     helpers::execute_main_menu_command(cfg_statusdbl);
-                // standard_commands::main_highlight_playing();
-                else if (cfg_show_vol && part == status_bar::u_vol_pos) {
-                    // static_api_ptr_t<ui_control>()->show_preferences(preferences_page::guid_playback);
-                } else if (cfg_show_seltime && part == status_bar::u_length_pos) {
+                else if (cfg_show_seltime && part_id == status_bar::StatusBarPartID::TrackLength) {
                     static_api_ptr_t<playlist_manager>()->activeplaylist_set_selection(
                         bit_array_true(), bit_array_true());
                 }

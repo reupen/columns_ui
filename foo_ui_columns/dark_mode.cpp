@@ -55,6 +55,10 @@ COLORREF get_dark_colour(ColourID colour_id)
     switch (colour_id) {
     case ColourID::PanelCaptionBackground:
         return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::StatusBarBackground:
+        return WI_EnumValue(DarkColour::DARK_200);
+    case ColourID::StatusBarText:
+        return WI_EnumValue(DarkColour::DARK_900);
     case ColourID::TabControlBackground:
         return WI_EnumValue(DarkColour::DARK_200);
     case ColourID::TabControlItemBackground:
@@ -84,6 +88,8 @@ COLORREF get_light_colour(ColourID colour_id)
     switch (colour_id) {
     case ColourID::PanelCaptionBackground:
         return GetSysColor(COLOR_BTNFACE);
+    case ColourID::StatusBarText:
+        return GetSysColor(COLOR_MENUTEXT);
     default:
         uBugCheck();
     }
@@ -94,6 +100,8 @@ wil::unique_hbrush get_light_colour_brush(ColourID colour_id)
     switch (colour_id) {
     case ColourID::PanelCaptionBackground:
         return wil::unique_hbrush(GetSysColorBrush(COLOR_BTNFACE));
+    case ColourID::StatusBarText:
+        return wil::unique_hbrush(GetSysColorBrush(COLOR_MENUTEXT));
     default:
         uBugCheck();
     }

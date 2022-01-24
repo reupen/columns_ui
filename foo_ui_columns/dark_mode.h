@@ -9,6 +9,8 @@ namespace cui::dark {
 
 enum class ColourID {
     PanelCaptionBackground,
+    StatusBarBackground,
+    StatusBarText,
     TabControlBackground,
     TabControlItemBackground,
     TabControlItemText,

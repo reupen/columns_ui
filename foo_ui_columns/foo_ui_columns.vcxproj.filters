@@ -766,114 +766,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include=".\buttons2.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\emptycoverdark.png">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\star\left.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\LOCK.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\next.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\official_buttons_pack\next.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\next1.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\next256.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\next64.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\open.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\official_buttons_pack\open.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\open256.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\open64.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\official_buttons_pack\pause.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\pause.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\pause256.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\pause64.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\official_buttons_pack\play.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\play.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\play256.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\play64.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\official_buttons_pack\prev.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\prev.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\prev256.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\prev64.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\rand.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\official_buttons_pack\rand.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\rand256.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\rand64.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\star\star off.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\star\star on.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\official_buttons_pack\stop.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\stop1.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\stop256.ico">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\icons\New Folder\square\stop64.bmp">
-      <Filter>Resources</Filter>
-    </None>
-    <None Include=".\up1.bmp">
-      <Filter>Resources</Filter>
-    </None>
     <None Include=".clang-format" />
     <None Include="version.h.template" />
   </ItemGroup>
@@ -881,5 +773,43 @@
     <ResourceCompile Include=".\foo_ui_columns.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\blank.bmp">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\next.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\open.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\pause.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\placeholder-artwork.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\play.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\play-random.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\previous.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\reset.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\star-gold.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\star-grey.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\stop.ico">
+      <Filter>Resources</Filter>
+    </Image>
   </ItemGroup>
 </Project>

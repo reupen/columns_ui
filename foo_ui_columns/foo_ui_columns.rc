@@ -996,8 +996,6 @@ IDB_BLANK               BITMAP                  "assets\\blank.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_LOCK                ICON                    "assets\\padlock.ico"
-
 IDI_PLAY                ICON                    "assets\\play.ico"
 
 IDI_STOP                ICON                    "assets\\stop.ico"
