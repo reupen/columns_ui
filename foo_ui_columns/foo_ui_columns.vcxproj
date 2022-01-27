@@ -605,17 +605,24 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\blank.bmp" />
-    <Image Include="assets\next.ico" />
-    <Image Include="assets\open.ico" />
-    <Image Include="assets\pause.ico" />
+    <Image Include="assets\dark-next.ico" />
+    <Image Include="assets\dark-open.ico" />
+    <Image Include="assets\dark-pause.ico" />
+    <Image Include="assets\dark-play-random.ico" />
+    <Image Include="assets\dark-play.ico" />
+    <Image Include="assets\dark-previous.ico" />
+    <Image Include="assets\dark-stop.ico" />
+    <Image Include="assets\light-next.ico" />
+    <Image Include="assets\light-open.ico" />
+    <Image Include="assets\light-pause.ico" />
     <Image Include="assets\placeholder-artwork.png" />
-    <Image Include="assets\play-random.ico" />
-    <Image Include="assets\play.ico" />
-    <Image Include="assets\previous.ico" />
+    <Image Include="assets\light-play-random.ico" />
+    <Image Include="assets\light-play.ico" />
+    <Image Include="assets\light-previous.ico" />
     <Image Include="assets\reset.ico" />
     <Image Include="assets\star-gold.ico" />
     <Image Include="assets\star-grey.ico" />
-    <Image Include="assets\stop.ico" />
+    <Image Include="assets\light-stop.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -12,7 +12,10 @@
 extern HWND g_status;
 extern bool g_icon_created;
 
-INT_PTR g_taskbar_bitmaps[] = {IDI_STOP, IDI_PREV, IDI_PAUSE, IDI_PLAY, IDI_NEXT, IDI_RAND};
+constexpr WORD light_taskbar_icons[]
+    = {IDI_LIGHT_STOP, IDI_LIGHT_PREV, IDI_LIGHT_PAUSE, IDI_LIGHT_PLAY, IDI_LIGHT_NEXT, IDI_LIGHT_RAND};
+constexpr WORD dark_taskbar_icons[]
+    = {IDI_DARK_STOP, IDI_DARK_PREV, IDI_DARK_PAUSE, IDI_DARK_PLAY, IDI_DARK_NEXT, IDI_DARK_RAND};
 
 namespace statusbar_contextmenus {
 enum { ID_BASE = 1 };
@@ -95,9 +98,11 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             t_size i = 0;
 
+            const auto icons = dark::is_dark_mode_enabled() ? dark_taskbar_icons : light_taskbar_icons;
+
             for (i = 0; i < 6; i++) {
                 auto icon = (HICON)LoadImage(
-                    core_api::get_my_instance(), MAKEINTRESOURCE(g_taskbar_bitmaps[i]), IMAGE_ICON, cx, cy, NULL);
+                    core_api::get_my_instance(), MAKEINTRESOURCE(icons[i]), IMAGE_ICON, cx, cy, NULL);
                 ImageList_ReplaceIcon(g_imagelist_taskbar, -1, icon);
                 DestroyIcon(icon);
             }
