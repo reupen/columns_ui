@@ -11,16 +11,23 @@
 #define IDB_BLANK                       117
 #define IDD_QUICK_SETUP                 129
 #define IDB_NOCOVER                     137
-#define IDI_PLAY                        147
-#define IDI_STOP                        148
-#define IDI_NEXT                        149
-#define IDI_RAND                        150
-#define IDI_OPEN                        151
-#define IDI_PAUSE                       152
-#define IDI_PREV                        153
+#define IDI_LIGHT_PLAY                  147
+#define IDI_LIGHT_STOP                  148
+#define IDI_LIGHT_NEXT                  149
+#define IDI_LIGHT_RAND                  150
+#define IDI_LIGHT_OPEN                  151
+#define IDI_LIGHT_PAUSE                 152
+#define IDI_LIGHT_PREV                  153
 #define IDI_STARON                      155
 #define IDI_STAROFF                     156
 #define IDI_RESET                       157
+#define IDI_DARK_NEXT                   158
+#define IDI_DARK_OPEN                   159
+#define IDI_DARK_PAUSE                  160
+#define IDI_DARK_PLAY                   161
+#define IDI_DARK_RAND                   162
+#define IDI_DARK_PREV                   163
+#define IDI_DARK_STOP                   164
 #define IDD_RENAME_PLAYLIST             185
 #define IDD_PREFS_TAB_HOST              191
 #define IDD_PREFS_PLAYLIST_TABS         193
@@ -248,7 +255,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        158
+#define _APS_NEXT_RESOURCE_VALUE        165
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1179
 #define _APS_NEXT_SYMED_VALUE           101

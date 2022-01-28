@@ -778,25 +778,25 @@
     <Image Include="assets\blank.bmp">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\next.ico">
+    <Image Include="assets\light-next.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\open.ico">
+    <Image Include="assets\light-open.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\pause.ico">
+    <Image Include="assets\light-pause.ico">
       <Filter>Resources</Filter>
     </Image>
     <Image Include="assets\placeholder-artwork.png">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\play.ico">
+    <Image Include="assets\light-play.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\play-random.ico">
+    <Image Include="assets\light-play-random.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\previous.ico">
+    <Image Include="assets\light-previous.ico">
       <Filter>Resources</Filter>
     </Image>
     <Image Include="assets\reset.ico">
@@ -808,7 +808,28 @@
     <Image Include="assets\star-grey.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\stop.ico">
+    <Image Include="assets\light-stop.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-next.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-open.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-pause.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-play.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-play-random.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-previous.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-stop.ico">
       <Filter>Resources</Filter>
     </Image>
   </ItemGroup>

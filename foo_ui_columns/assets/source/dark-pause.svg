@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256.0px"
+   height="256.0px"
+   viewBox="0 0 256.0 256.0"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="pause.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="4.8728976"
+     inkscape:cx="45.147676"
+     inkscape:cy="126.41349"
+     inkscape:window-width="3840"
+     inkscape:window-height="2068"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid20" />
+  </sodipodi:namedview>
+  <defs
+     id="defs9">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1867">
+      <path
+         style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:6.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+         sodipodi:type="inkscape:offset"
+         inkscape:radius="0"
+         inkscape:original="M 127.5 0 A 127.5 127.5 0 0 0 0 127.5 A 127.5 127.5 0 0 0 127.5 255 A 127.5 127.5 0 0 0 255 127.5 A 127.5 127.5 0 0 0 127.5 0 z "
+         xlink:href="#circle1409"
+         id="path1869"
+         inkscape:href="#circle1409"
+         d="M 127.5,0 A 127.5,127.5 0 0 0 0,127.5 127.5,127.5 0 0 0 127.5,255 127.5,127.5 0 0 0 255,127.5 127.5,127.5 0 0 0 127.5,0 Z"
+         clip-path="none" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="display:inline;fill:#000000;fill-opacity:1"
+       id="path69"
+       r="127.5"
+       cy="127.5"
+       cx="127.5" />
+    <circle
+       style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:20;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.55"
+       id="circle1613"
+       cx="127.5"
+       cy="127.5"
+       clip-path="url(#clipPath1867)"
+       r="127.5" />
+    <g
+       id="g1515"
+       transform="matrix(1,0,0,1.3333333,2.5,-42.666662)">
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:10.7239;stroke-opacity:0.6"
+         id="rect1356"
+         width="27"
+         height="86.25"
+         x="83"
+         y="84.875" />
+      <rect
+         style="fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:10.7239;stroke-opacity:0.6"
+         id="rect1511"
+         width="27"
+         height="86.25"
+         x="141"
+         y="84.875" />
+    </g>
+  </g>
+</svg>
