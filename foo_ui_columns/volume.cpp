@@ -5,7 +5,6 @@ class VolumeBarToolbarAttributes {
 public:
     static const TCHAR* get_class_name() { return _T("volume_toolbar"); }
     static bool get_show_caption() { return false; }
-    static COLORREF get_background_colour() { return -1; }
 };
 
 class VolumeBarToolbar : public VolumeBar<false, false, VolumeBarToolbarAttributes, uie::container_ui_extension_t<>> {

@@ -18,6 +18,9 @@ enum class ColourID {
     TabControlActiveItemBackground,
     TabControlHotItemBackground,
     TabControlHotActiveItemBackground,
+    VolumePopupBackground,
+    VolumePopupBorder,
+    VolumePopupText,
 };
 
 template <class Object>

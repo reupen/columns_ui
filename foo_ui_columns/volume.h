@@ -23,24 +23,6 @@ class VolumeBar
             }
         }
 
-        void draw_background(HDC dc, const RECT* rc) const override
-        {
-            if (t_attributes::get_background_colour() != -1)
-                FillRect(dc, rc, wil::unique_hbrush(CreateSolidBrush(t_attributes::get_background_colour())).get());
-            else
-                Trackbar::draw_background(dc, rc);
-        }
-        /*void draw_thumb (HDC dc, const RECT * rc) const
-        {
-            if (get_uxtheme_ptr().is_valid() && get_theme_handle())
-            {
-                get_uxtheme_ptr()->DrawThemeBackground(get_theme_handle(), dc, get_orientation() ? TKP_THUMBVERT :
-        TKP_THUMBBOTTOM, get_enabled() ? (get_tracking() ? TUS_PRESSED : (get_hot() ? TUS_HOT : TUS_NORMAL)) :
-        TUS_DISABLED, rc, 0);
-            }
-            else
-                uih::Trackbar::draw_thumb(dc, rc);
-        }*/
         void draw_channel(HDC dc, const RECT* rc) const override
         {
             if (b_popup)
@@ -182,15 +164,15 @@ public:
             break;
         }
         case WM_SIZE: {
-            if (t_attributes::get_show_caption()) {
-                SIZE sz{};
-                get_caption_extent(sz);
-                unsigned size_caption = get_caption_size();
-                const int x = b_vertical ? size_caption + 1_spx : sz.cx;
-                const int y = b_vertical ? 3_spx : 0;
-                const int cx = LOWORD(lp) - (b_vertical ? size_caption + 2 * 1_spx : sz.cx);
-                const int cy = HIWORD(lp) - (b_vertical ? 2 * 3_spx : 0);
-                SetWindowPos(wnd_trackbar, nullptr, x, y, cx, cy, SWP_NOZORDER);
+            if (t_attributes::get_show_caption() && b_popup && b_vertical) {
+                const auto size_caption = get_caption_size();
+                const auto left = size_caption + 2 * 1_spx;
+                const auto top = 3_spx + 1_spx;
+                const auto right = LOWORD(lp) - 2 * 1_spx;
+                const auto bottom = HIWORD(lp) - 1_spx - 3_spx;
+                const auto width = right - left;
+                const auto height = bottom - top;
+                SetWindowPos(wnd_trackbar, nullptr, left, top, width, height, SWP_NOZORDER);
                 RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE);
             } else
                 SetWindowPos(wnd_trackbar, nullptr, 0, 0, LOWORD(lp), HIWORD(lp), SWP_NOZORDER);
@@ -219,9 +201,30 @@ public:
                 }
             }
         } break;
+        case WM_ERASEBKGND: {
+            // Note: In non-pop-up mode, this is handled by uie::container_window
+            RECT rect{};
+            GetClientRect(wnd, &rect);
+            const auto brush = cui::dark::get_colour_brush(
+                cui::dark::ColourID::VolumePopupBackground, cui::dark::is_dark_mode_enabled());
+            FillRect(reinterpret_cast<HDC>(wp), &rect, brush.get());
+            return TRUE;
+        }
         case WM_PAINT: {
             PAINTSTRUCT ps{};
             const auto _ = wil::BeginPaint(wnd, &ps);
+
+            if (b_popup) {
+                RECT rect{};
+                GetClientRect(wnd, &rect);
+
+                const auto border_colour
+                    = cui::dark::get_colour(cui::dark::ColourID::VolumePopupBorder, cui::dark::is_dark_mode_enabled());
+                const auto pen = wil::unique_hpen(CreatePen(PS_INSIDEFRAME, 1_spx, border_colour));
+                const auto _select_pen = wil::SelectObject(ps.hdc, pen.get());
+                const auto _select_brush = wil::SelectObject(ps.hdc, GetStockObject(NULL_BRUSH));
+                Rectangle(ps.hdc, rect.left, rect.top, rect.right, rect.bottom);
+            }
 
             if (t_attributes::get_show_caption()) {
                 RECT rc_client, rc_dummy;
@@ -229,11 +232,14 @@ public:
                 SIZE sz{};
                 get_caption_extent(sz);
                 const auto size_caption = get_caption_size();
-                const RECT rc_caption = {0, 5_spx, size_caption - 2_spx, rc_client.bottom - 5_spx};
+                const auto left = 1_spx + 1_spx;
+                const RECT rc_caption = {left, 1_spx, left + size_caption, rc_client.bottom - 9_spx - 1_spx};
 
                 if (IntersectRect(&rc_dummy, &rc_caption, &ps.rcPaint)) {
                     SetBkMode(ps.hdc, TRANSPARENT);
-                    SetTextColor(ps.hdc, GetSysColor(COLOR_MENUTEXT));
+                    const auto text_colour
+                        = get_colour(cui::dark::ColourID::VolumePopupText, cui::dark::is_dark_mode_enabled());
+                    SetTextColor(ps.hdc, text_colour);
 
                     const auto _ = wil::SelectObject(ps.hdc, m_font_caption.get());
                     uExtTextOut(ps.hdc, rc_caption.left, rc_caption.bottom, ETO_CLIPPED, &rc_caption, label_text.data(),
@@ -283,8 +289,8 @@ public:
     ui_helpers::container_window::class_data& get_class_data() const override
     {
         __implement_get_class_data_ex(t_attributes::get_class_name(), _T(""), !b_popup, 0,
-            b_popup ? WS_POPUP | WS_CLIPCHILDREN | WS_BORDER : WS_CHILD | WS_CLIPCHILDREN,
-            b_popup ? WS_EX_DLGMODALFRAME | WS_EX_TOOLWINDOW | WS_EX_TOPMOST : WS_EX_CONTROLPARENT, 0);
+            b_popup ? WS_POPUP | WS_CLIPCHILDREN : WS_CHILD | WS_CLIPCHILDREN,
+            b_popup ? WS_EX_TOOLWINDOW | WS_EX_TOPMOST : WS_EX_CONTROLPARENT, 0);
     }
 
     void update_position()
@@ -298,7 +304,7 @@ public:
         if (!t_attributes::get_show_caption())
             return 0;
 
-        return gsl::narrow<int>(uGetFontHeight(fnt)) + 2_spx;
+        return gsl::narrow<int>(uGetFontHeight(fnt)) + 1_spx;
     }
     static int g_get_caption_size()
     {
@@ -340,7 +346,6 @@ class PopupVolumeBarAttributes {
 public:
     static const TCHAR* get_class_name() { return _T("volume_popup"); }
     static bool get_show_caption() { return true; }
-    static COLORREF get_background_colour() { return -1; }
 };
 
 using volume_popup_t = VolumeBar<true, true, PopupVolumeBarAttributes>;

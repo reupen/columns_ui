@@ -73,6 +73,12 @@ COLORREF get_dark_colour(ColourID colour_id)
         return WI_EnumValue(DarkColour::DARK_300);
     case ColourID::TabControlHotActiveItemBackground:
         return WI_EnumValue(DarkColour::DARK_600);
+    case ColourID::VolumePopupBackground:
+        return WI_EnumValue(DarkColour::DARK_200);
+    case ColourID::VolumePopupBorder:
+        return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::VolumePopupText:
+        return WI_EnumValue(DarkColour::DARK_900);
     default:
         uBugCheck();
     }
@@ -83,28 +89,32 @@ wil::unique_hbrush get_dark_colour_brush(ColourID colour_id)
     return wil::unique_hbrush(CreateSolidBrush(get_dark_colour(colour_id)));
 }
 
-COLORREF get_light_colour(ColourID colour_id)
+int get_light_colour_system_id(ColourID colour_id)
 {
     switch (colour_id) {
     case ColourID::PanelCaptionBackground:
-        return GetSysColor(COLOR_BTNFACE);
+        return COLOR_BTNFACE;
     case ColourID::StatusBarText:
-        return GetSysColor(COLOR_MENUTEXT);
+        return COLOR_MENUTEXT;
+    case ColourID::VolumePopupBackground:
+        return COLOR_BTNFACE;
+    case ColourID::VolumePopupBorder:
+        return COLOR_3DLIGHT;
+    case ColourID::VolumePopupText:
+        return COLOR_MENUTEXT;
     default:
         uBugCheck();
     }
 }
 
+COLORREF get_light_colour(ColourID colour_id)
+{
+    return GetSysColor(get_light_colour_system_id(colour_id));
+}
+
 wil::unique_hbrush get_light_colour_brush(ColourID colour_id)
 {
-    switch (colour_id) {
-    case ColourID::PanelCaptionBackground:
-        return wil::unique_hbrush(GetSysColorBrush(COLOR_BTNFACE));
-    case ColourID::StatusBarText:
-        return wil::unique_hbrush(GetSysColorBrush(COLOR_MENUTEXT));
-    default:
-        uBugCheck();
-    }
+    return wil::unique_hbrush(GetSysColorBrush(get_light_colour_system_id(colour_id)));
 }
 
 } // namespace

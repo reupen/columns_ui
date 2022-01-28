@@ -771,8 +771,15 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         HWND wndvol = status_bar::volume_popup_window.create(wnd);
                         POINT pt = lpnmm->pt;
                         ClientToScreen(lpnmm->hdr.hwndFrom, &pt);
-                        int cx = volume_popup_t::g_get_caption_size() + 26_spx + 2 * 1_spx;
-                        int cy = 144_spx + 2 * 3_spx;
+                        const auto border_width = 1_spx;
+                        const auto left_padding = 1_spx + 2_spx;
+                        const auto top_padding = 3_spx;
+                        const auto bottom_padding = 3_spx;
+                        const auto right_padding = 1_spx;
+                        const auto trackbar_width = 22_spx;
+                        int cx = volume_popup_t::g_get_caption_size() + trackbar_width + left_padding + right_padding
+                            + 2 * border_width;
+                        int cy = 142_spx + top_padding + bottom_padding + 2 * border_width;
                         int x = pt.x;
                         int y = pt.y;
                         HMONITOR mon = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
