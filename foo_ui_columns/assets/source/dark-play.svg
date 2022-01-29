@@ -7,7 +7,7 @@
    viewBox="0 0 256.0 256.0"
    version="1.1"
    id="SVGRoot"
-   sodipodi:docname="play.svg"
+   sodipodi:docname="dark-play.svg"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -70,7 +70,7 @@
        id="path1080"
        inkscape:flatsided="false"
        sodipodi:sides="3"
-       sodipodi:cx="120.19764"
+       sodipodi:cx="121.19764"
        sodipodi:cy="128"
        sodipodi:r1="66.395279"
        sodipodi:r2="33.197636"
@@ -78,7 +78,7 @@
        sodipodi:arg2="1.0471976"
        inkscape:rounded="0"
        inkscape:randomized="0"
-       d="M 186.59292,128 136.79646,156.75 87,185.5 87.000004,128 87,70.500002 136.79646,99.250005 Z"
+       d="M 187.59292,128 137.79646,156.75 88,185.5 88.000004,128 88,70.500002 137.79646,99.250005 Z"
        inkscape:transform-center-x="-16.598784"
        inkscape:transform-center-y="-1.5375808e-06" />
     <circle
