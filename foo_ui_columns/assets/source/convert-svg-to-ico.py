@@ -34,7 +34,7 @@ def convert_file(input_file):
         result.check_returncode()
 
     output_file_names = [output_file[1] for output_file in output_files]
-    commands = ["magick", "convert", *output_file_names, f"{name}.ico"]
+    commands = ["magick", "convert", *output_file_names, rf"..\{name}.ico"]
     result = subprocess.run(commands)
     result.check_returncode()
 

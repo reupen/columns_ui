@@ -7,7 +7,7 @@
    viewBox="0 0 256.0 256.0"
    version="1.1"
    id="SVGRoot"
-   sodipodi:docname="open.svg"
+   sodipodi:docname="dark-open.svg"
    inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
@@ -25,8 +25,8 @@
      inkscape:document-units="px"
      showgrid="true"
      inkscape:zoom="4.8728976"
-     inkscape:cx="33.860757"
-     inkscape:cy="162.73685"
+     inkscape:cx="28.319906"
+     inkscape:cy="116.35787"
      inkscape:window-width="3840"
      inkscape:window-height="2068"
      inkscape:window-x="-12"
@@ -86,16 +86,16 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        inkscape:transform-center-x="-16.810962"
-       transform="matrix(0,-0.62799757,-0.94475986,0,249.16417,167.4689)"
-       d="m 164.76003,128 -53.38173,30.81996 -53.381729,30.81995 0,-61.63991 0,-61.639909 53.381729,30.819955 z"
-       inkscape:transform-center-y="-1.3031964e-06" />
+       transform="matrix(0,-0.61818906,-0.94475986,0,249.16417,169.85284)"
+       inkscape:transform-center-y="-1.3976576e-06"
+       d="m 164.76003,128 -53.38173,30.81996 -53.381729,30.81995 0,-61.63991 0,-61.639909 53.381729,30.819955 z" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;stroke-width:15.5805;stroke-opacity:0.6"
+       style="fill:#ffffff;fill-opacity:1;stroke-width:14.5876;stroke-opacity:0.6"
        id="rect1628"
-       width="20.599747"
-       height="110.47897"
-       x="153"
-       y="-183.23949"
+       width="19"
+       height="105"
+       x="157.5"
+       y="-180"
        transform="rotate(90)" />
   </g>
 </svg>
