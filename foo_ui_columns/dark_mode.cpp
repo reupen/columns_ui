@@ -55,6 +55,8 @@ COLORREF get_dark_colour(ColourID colour_id)
     switch (colour_id) {
     case ColourID::PanelCaptionBackground:
         return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::RebarBandBorder:
+        return WI_EnumValue(DarkColour::DARK_400);
     case ColourID::StatusBarBackground:
         return WI_EnumValue(DarkColour::DARK_200);
     case ColourID::StatusBarText:
