@@ -473,7 +473,7 @@ void RebarWindow::on_themechanged()
 std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnmcd) const
 {
     switch (lpnmcd->dwDrawStage) {
-    case CDDS_PREERASE:
+    case CDDS_PREERASE: {
         if (!(dark::is_dark_mode_enabled() && m_toolbar_theme))
             return {};
 
@@ -486,7 +486,42 @@ std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnm
         RECT rc{};
         GetClientRect(lpnmcd->hdr.hwndFrom, &rc);
         FillRect(lpnmcd->hdc, &rc, brush.get());
+
+        const int row_count = SendMessage(lpnmcd->hdr.hwndFrom, RB_GETROWCOUNT, 0, 0);
+
+        const auto divider_brush = get_colour_brush_lazy(dark::ColourID::RebarBandBorder, true);
+        const auto divider_width = uih::scale_dpi_value(1, USER_DEFAULT_SCREEN_DPI * 2);
+
+        int row_index{};
+        int row_bottom{};
+
+        for (auto&& [band_index, band] : ranges::views::enumerate(m_bands)) {
+            if (band_index == 0 || band.m_state.m_break_before_band) {
+                const int row_height = SendMessage(lpnmcd->hdr.hwndFrom, RB_GETROWHEIGHT, band_index, 0);
+                row_bottom += row_height;
+
+                ++row_index;
+
+                if (row_index < row_count) {
+                    RECT row_divider = {rc.left, row_bottom, rc.right, row_bottom + divider_width};
+                    FillRect(lpnmcd->hdc, &row_divider, *divider_brush);
+                }
+
+                continue;
+            }
+
+            RECT band_rect{};
+            SendMessage(lpnmcd->hdr.hwndFrom, RB_GETRECT, band_index, reinterpret_cast<LPARAM>(&band_rect));
+
+            MARGINS margins{};
+            SendMessage(lpnmcd->hdr.hwndFrom, RB_GETBANDMARGINS, band_index, reinterpret_cast<LPARAM>(&margins));
+
+            const auto left = band_rect.left - margins.cxLeftWidth;
+            RECT band_divider = {left, band_rect.top, left + divider_width, band_rect.bottom};
+            FillRect(lpnmcd->hdc, &band_divider, *divider_brush);
+        }
         return CDRF_SKIPDEFAULT;
+    }
     }
     return {};
 }
