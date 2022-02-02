@@ -10,7 +10,7 @@
 #define IDD_BUTTONS_OPTIONS             105
 #define IDB_BLANK                       117
 #define IDD_QUICK_SETUP                 129
-#define IDB_NOCOVER                     137
+#define IDB_LIGHT_NOCOVER               137
 #define IDI_LIGHT_PLAY                  147
 #define IDI_LIGHT_STOP                  148
 #define IDI_LIGHT_NEXT                  149
@@ -28,6 +28,7 @@
 #define IDI_DARK_RAND                   162
 #define IDI_DARK_PREV                   163
 #define IDI_DARK_STOP                   164
+#define IDB_DARK_NOCOVER                165
 #define IDD_RENAME_PLAYLIST             185
 #define IDD_PREFS_TAB_HOST              191
 #define IDD_PREFS_PLAYLIST_TABS         193
@@ -225,7 +226,6 @@
 #define IDC_EDGESTYLE                   1155
 #define IDC_PRECEDENCE                  1156
 #define IDC_HALIGN                      1156
-#define IDC_FB2KARTWORK                 1157
 #define IDC_VALIGN                      1157
 #define IDC_ARTWORKWIDTH                1158
 #define IDC_QUICKSETUP                  1159
@@ -255,7 +255,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        165
+#define _APS_NEXT_RESOURCE_VALUE        166
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1179
 #define _APS_NEXT_SYMED_VALUE           101

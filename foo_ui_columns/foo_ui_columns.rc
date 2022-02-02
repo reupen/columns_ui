@@ -1036,7 +1036,9 @@ IDI_DARK_STOP           ICON                    "assets\\dark-stop.ico"
 // PNG
 //
 
-IDB_NOCOVER             PNG                     "assets\\placeholder-artwork.png"
+IDB_LIGHT_NOCOVER       PNG                     "assets\\light-placeholder-artwork.png"
+
+IDB_DARK_NOCOVER        PNG                     "assets\\dark-placeholder-artwork.png"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

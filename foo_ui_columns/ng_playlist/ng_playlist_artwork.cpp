@@ -2,11 +2,15 @@
 #include "ng_playlist.h"
 #include "wic.h"
 
+#include "dark_mode.h"
+
 namespace cui::panels::playlist_view {
+
 bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback& p_abort)
 {
     bool ret = false;
-    HRSRC rsrc = FindResource(core_api::get_my_instance(), MAKEINTRESOURCE(IDB_NOCOVER), L"PNG");
+    const WORD resource_id = dark::is_dark_mode_enabled() ? IDB_DARK_NOCOVER : IDB_LIGHT_NOCOVER;
+    HRSRC rsrc = FindResource(core_api::get_my_instance(), MAKEINTRESOURCE(resource_id), L"PNG");
     HGLOBAL handle = LoadResource(core_api::get_my_instance(), rsrc);
     DWORD size = SizeofResource(core_api::get_my_instance(), rsrc);
     LPVOID ptr = LockResource(handle);
