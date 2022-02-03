@@ -787,7 +787,7 @@
     <Image Include="assets\light-pause.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\placeholder-artwork.png">
+    <Image Include="assets\light-placeholder-artwork.png">
       <Filter>Resources</Filter>
     </Image>
     <Image Include="assets\light-play.ico">
@@ -830,6 +830,9 @@
       <Filter>Resources</Filter>
     </Image>
     <Image Include="assets\dark-stop.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-placeholder-artwork.png">
       <Filter>Resources</Filter>
     </Image>
   </ItemGroup>

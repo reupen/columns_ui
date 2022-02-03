@@ -615,10 +615,11 @@
     <Image Include="assets\light-next.ico" />
     <Image Include="assets\light-open.ico" />
     <Image Include="assets\light-pause.ico" />
-    <Image Include="assets\placeholder-artwork.png" />
+    <Image Include="assets\light-placeholder-artwork.png" />
     <Image Include="assets\light-play-random.ico" />
     <Image Include="assets\light-play.ico" />
     <Image Include="assets\light-previous.ico" />
+    <Image Include="assets\dark-placeholder-artwork.png" />
     <Image Include="assets\reset.ico" />
     <Image Include="assets\star-gold.ico" />
     <Image Include="assets\star-grey.ico" />

@@ -399,22 +399,8 @@ public:
 
     unsigned get_flags() override { return flag_all; }
 };
-static service_factory_single_t<MainWindowPlaylistCallback> asdf2;
 
-bool g_get_resource_data(INT_PTR id, pfc::array_t<t_uint8>& p_out)
-{
-    bool ret = false;
-    HRSRC rsrc = FindResource(core_api::get_my_instance(), MAKEINTRESOURCE(IDB_NOCOVER), L"PNG");
-    HGLOBAL handle = LoadResource(core_api::get_my_instance(), rsrc);
-    DWORD size = SizeofResource(core_api::get_my_instance(), rsrc);
-    LPVOID ptr = LockResource(handle);
-    if (ptr && size) {
-        p_out.append_fromptr((t_uint8*)ptr, size);
-        ret = true;
-    }
-    FreeResource(handle);
-    return ret;
-}
+static service_factory_single_t<MainWindowPlaylistCallback> asdf2;
 
 void on_show_status_change()
 {
