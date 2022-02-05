@@ -8,7 +8,7 @@
    version="1.1"
    id="SVGRoot"
    sodipodi:docname="light-previous.svg"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.2-alpha (0bd5040e, 2022-02-05)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -25,14 +25,15 @@
      inkscape:document-units="px"
      showgrid="true"
      inkscape:zoom="4.8728976"
-     inkscape:cx="33.860757"
-     inkscape:cy="126.41349"
+     inkscape:cx="34.065973"
+     inkscape:cy="125.79784"
      inkscape:window-width="3840"
      inkscape:window-height="2068"
      inkscape:window-x="-12"
      inkscape:window-y="-12"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1">
+     inkscape:current-layer="g14896"
+     inkscape:blackoutopacity="0.0">
     <inkscape:grid
        type="xygrid"
        id="grid20" />
@@ -78,7 +79,7 @@
          sodipodi:type="star"
          style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd"
          id="path1080"
-         inkscape:flatsided="false"
+         inkscape:flatsided="true"
          sodipodi:sides="3"
          sodipodi:cx="93.584389"
          sodipodi:cy="128"
@@ -91,7 +92,7 @@
          inkscape:transform-center-x="-15.185053"
          inkscape:transform-center-y="-3.256093e-06"
          transform="matrix(-0.78678608,0,0,0.89227906,228.13089,13.28828)"
-         d="m 164.76003,128 -53.38173,30.81996 -53.381729,30.81995 0,-61.63991 0,-61.639909 53.381729,30.819955 z" />
+         d="m 164.76003,128 -106.763459,61.63991 0,-123.279819 z" />
       <rect
          style="fill:#000000;fill-opacity:1;stroke-width:16.0664;stroke-opacity:0.6"
          id="rect1628"
