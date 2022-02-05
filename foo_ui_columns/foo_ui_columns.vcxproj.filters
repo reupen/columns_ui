@@ -799,13 +799,13 @@
     <Image Include="assets\light-previous.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\reset.ico">
+    <Image Include="assets\light-reset.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\star-gold.ico">
+    <Image Include="assets\light-star-gold.ico">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\star-grey.ico">
+    <Image Include="assets\light-star-grey.ico">
       <Filter>Resources</Filter>
     </Image>
     <Image Include="assets\light-stop.ico">
@@ -833,6 +833,15 @@
       <Filter>Resources</Filter>
     </Image>
     <Image Include="assets\dark-placeholder-artwork.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-reset.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-star-gold.ico">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\dark-star-grey.ico">
       <Filter>Resources</Filter>
     </Image>
   </ItemGroup>

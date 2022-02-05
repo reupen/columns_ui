@@ -1010,11 +1010,11 @@ IDI_LIGHT_PAUSE         ICON                    "assets\\light-pause.ico"
 
 IDI_LIGHT_PREV          ICON                    "assets\\light-previous.ico"
 
-IDI_STARON              ICON                    "assets\\star-gold.ico"
+IDI_LIGHT_STARON        ICON                    "assets\\light-star-gold.ico"
 
-IDI_STAROFF             ICON                    "assets\\star-grey.ico"
+IDI_LIGHT_STAROFF       ICON                    "assets\\light-star-grey.ico"
 
-IDI_RESET               ICON                    "assets\\reset.ico"
+IDI_LIGHT_RESET         ICON                    "assets\\light-reset.ico"
 
 IDI_DARK_NEXT           ICON                    "assets\\dark-next.ico"
 
@@ -1029,6 +1029,12 @@ IDI_DARK_RAND           ICON                    "assets\\dark-play-random.ico"
 IDI_DARK_PREV           ICON                    "assets\\dark-previous.ico"
 
 IDI_DARK_STOP           ICON                    "assets\\dark-stop.ico"
+
+IDI_DARK_STAROFF        ICON                    "assets\\dark-star-grey.ico"
+
+IDI_DARK_STARON         ICON                    "assets\\dark-star-gold.ico"
+
+IDI_DARK_RESET          ICON                    "assets\\dark-reset.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="256"
+   height="256"
+   viewBox="0 0 256 256"
+   version="1.1"
+   id="svg1502"
+   sodipodi:docname="light-star-grey.svg"
+   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1504"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     showgrid="false"
+     inkscape:zoom="2.8085938"
+     inkscape:cx="127.82197"
+     inkscape:cy="127.82197"
+     inkscape:window-width="3840"
+     inkscape:window-height="2068"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg1502" />
+  <defs
+     id="defs1495">
+    <style
+       id="style1493">
+      .cls-1 {
+        fill: #ff0;
+        stroke: #9e9e9e;
+        stroke-linejoin: round;
+        stroke-width: 20px;
+        fill-rule: evenodd;
+      }
+    </style>
+  </defs>
+  <path
+     id="use1500"
+     class="cls-1"
+     d="m 127.99729,9.9989294 38.62836,70.0449956 78.55513,15.089943 -54.68238,58.381832 9.92002,79.38072 -72.42113,-33.97564 -72.42112,33.97564 9.926512,-79.3699 L 10.819219,95.139278 89.374355,80.049335 Z"
+     style="fill:#f0f0f0;fill-opacity:1;stroke:#9e9e9e;stroke-opacity:1" />
+</svg>
