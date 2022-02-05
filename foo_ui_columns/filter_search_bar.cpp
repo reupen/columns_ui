@@ -441,20 +441,29 @@ void FilterSearchToolbar::create_edit()
 
     m_imagelist = ImageList_Create(cx, cy, ILC_COLOR32, 0, 3);
 
-    auto icon = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_STAROFF), IMAGE_ICON, cx, cy, NULL);
+    const WORD grey_star_resource_id = dark::is_dark_mode_enabled() ? IDI_DARK_STAROFF : IDI_LIGHT_STAROFF;
+    const WORD gold_star_resource_id = dark::is_dark_mode_enabled() ? IDI_DARK_STARON : IDI_LIGHT_STARON;
+    const WORD reset_resource_id = dark::is_dark_mode_enabled() ? IDI_DARK_RESET : IDI_LIGHT_RESET;
+
+    wil::unique_hicon icon(static_cast<HICON>(
+        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(grey_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
+
     if (icon) {
-        ImageList_ReplaceIcon(m_imagelist, -1, icon);
-        DestroyIcon(icon);
-        if (icon
-            = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_STARON), IMAGE_ICON, cx, cy, NULL)) {
-            ImageList_ReplaceIcon(m_imagelist, -1, icon);
-            DestroyIcon(icon);
-            if (icon
-                = (HICON)LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(IDI_RESET), IMAGE_ICON, cx, cy, NULL)) {
-                ImageList_ReplaceIcon(m_imagelist, -1, icon);
-                DestroyIcon(icon);
-            }
-        }
+        ImageList_ReplaceIcon(m_imagelist, -1, icon.get());
+    }
+
+    icon.reset(static_cast<HICON>(
+        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(gold_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
+
+    if (icon) {
+        ImageList_ReplaceIcon(m_imagelist, -1, icon.get());
+    }
+
+    icon.reset(static_cast<HICON>(
+        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(reset_resource_id), IMAGE_ICON, cx, cy, NULL)));
+
+    if (icon) {
+        ImageList_ReplaceIcon(m_imagelist, -1, icon.get());
     }
 
     TBBUTTON tbb[2];

@@ -188,5 +188,6 @@ Release.Win32
 *.db
 .vs
 
+.idea/
 /foo_ui_columns/version.h
 vcpkg_installed/

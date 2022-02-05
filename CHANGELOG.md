@@ -12,6 +12,8 @@
 
 * The default playback button icons were tweaked. This includes the removal of subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435)]
 
+* The filter search button icons were updated. [[#438](https://github.com/reupen/columns_ui/pull/438)]
+
 * The default no-cover artwork image was updated. [[#437](https://github.com/reupen/columns_ui/pull/437)]
 
 * The status bar playlist lock icon was replaced with the 🔒 character. [[#432](https://github.com/reupen/columns_ui/pull/432)]
@@ -28,7 +30,7 @@
 
 ### Internal changes
 
-* Some internal changes were made in advance of support for the Windows 10 dark mode. [[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413), [#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423), [#424](https://github.com/reupen/columns_ui/pull/424), [#432](https://github.com/reupen/columns_ui/pull/432), [#433](https://github.com/reupen/columns_ui/pull/433), [#434](https://github.com/reupen/columns_ui/pull/434), [#435](https://github.com/reupen/columns_ui/pull/435), [#436](https://github.com/reupen/columns_ui/pull/436), [#437](https://github.com/reupen/columns_ui/pull/437)]
+* Some internal changes were made in advance of support for the Windows 10 dark mode. [[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413), [#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423), [#424](https://github.com/reupen/columns_ui/pull/424), [#432](https://github.com/reupen/columns_ui/pull/432), [#433](https://github.com/reupen/columns_ui/pull/433), [#434](https://github.com/reupen/columns_ui/pull/434), [#435](https://github.com/reupen/columns_ui/pull/435), [#436](https://github.com/reupen/columns_ui/pull/436), [#437](https://github.com/reupen/columns_ui/pull/437), [#438](https://github.com/reupen/columns_ui/pull/438)]
 
 * The component is now compiled using Visual Studio 2022 17.0 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
 
