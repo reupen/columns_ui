@@ -1,7 +1,8 @@
 #include "stdafx.h"
 #include "seekbar.h"
 
-//#define _WIN32_WINNT 0x500
+#include "dark_mode.h"
+#include "dark_mode_trackbar.h"
 
 #define ID_SEEK 2005
 
@@ -138,6 +139,9 @@ LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_child.set_callback(&m_track_bar_host);
         m_child.set_show_tooltips(true);
         m_child.set_scroll_step(3);
+
+        if (dark::is_dark_mode_enabled())
+            m_child.set_custom_colours(dark::get_dark_trackbar_colours());
 
         wnd_seekbar = m_child.create(wnd);
 

@@ -22,7 +22,10 @@ This repo makes use of Git submodules. If you're not familiar with them, [check 
 
 ### Build instructions
 
-Visual Studio 2022 is required to build Columns UI. You can use the [free community edition](https://www.visualstudio.com/downloads/) (select the Desktop development with C++ workload during installation).
+Visual Studio 2022 and the Windows 11 SDK are required to build Columns UI.
+
+You can use the [free community edition of Visual Studio](https://www.visualstudio.com/downloads/).
+During installation, select the Desktop development with C++ workload and the Windows 11 SDK from the right-hand side.
 
 #### Installing vcpkg
 

@@ -533,6 +533,9 @@
     <ClCompile Include="dark_mode_tabs.cpp">
       <Filter>Dark mode</Filter>
     </ClCompile>
+    <ClCompile Include="dark_mode_trackbar.cpp">
+      <Filter>Dark mode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
@@ -762,6 +765,9 @@
       <Filter>Dark mode</Filter>
     </ClInclude>
     <ClInclude Include="dark_mode_tabs.h">
+      <Filter>Dark mode</Filter>
+    </ClInclude>
+    <ClInclude Include="dark_mode_trackbar.h">
       <Filter>Dark mode</Filter>
     </ClInclude>
   </ItemGroup>

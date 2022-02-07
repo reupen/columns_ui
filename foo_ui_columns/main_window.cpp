@@ -6,11 +6,10 @@
 
 #include "stdafx.h"
 
-#include "status_pane.h"
-#include "layout.h"
-
 #include "main_window.h"
 
+#include "status_pane.h"
+#include "layout.h"
 #include "dark_mode.h"
 #include "notification_area.h"
 #include "status_bar.h"
@@ -52,6 +51,14 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     }
 
     warn_if_ui_hacks_installed();
+
+    try {
+        THROW_IF_FAILED(OleInitialize(nullptr));
+    } catch (const wil::ResultException&) {
+        MessageBox(
+            nullptr, unsupported_os_message, L"Columns UI - Failed to initialise COM", MB_OK | MB_ICONEXCLAMATION);
+        return nullptr;
+    }
 
     migrate::v100::migrate();
 
@@ -139,6 +146,8 @@ void cui::MainWindow::shutdown()
     if (g_icon)
         DestroyIcon(g_icon);
     g_icon = nullptr;
+
+    OleUninitialize();
 }
 
 void cui::MainWindow::on_query_capability()
