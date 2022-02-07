@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dark_mode.h"
+#include "dark_mode_trackbar.h"
 
 template <bool b_vertical, bool b_popup, typename t_attributes, class t_base = ui_helpers::container_window>
 class VolumeBar
@@ -14,7 +15,7 @@ class VolumeBar
             else {
                 RECT rc_client;
                 GetClientRect(get_wnd(), &rc_client);
-                unsigned cx = calculate_thumb_size();
+                const auto cx = calculate_thumb_size();
 
                 rc->left = get_orientation() ? rc_client.left + 5 : rc_client.left + cx / 2;
                 rc->right = get_orientation() ? rc_client.right - 5 : rc_client.right - cx + cx / 2;
@@ -143,6 +144,9 @@ public:
 
             m_child.set_callback(&m_track_bar_host);
             m_child.set_show_tooltips(true);
+
+            if (cui::dark::is_dark_mode_enabled())
+                m_child.set_custom_colours(cui::dark::get_dark_trackbar_colours());
 
             wnd_trackbar = m_child.create(wnd);
 

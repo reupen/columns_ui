@@ -19,9 +19,18 @@ enum class ColourID {
     TabControlActiveItemBackground,
     TabControlHotItemBackground,
     TabControlHotActiveItemBackground,
+    TrackbarChannel,
+    TrackbarThumb,
+    TrackbarHotThumb,
+    TrackbarDisabledThumb,
     VolumePopupBackground,
     VolumePopupBorder,
     VolumePopupText,
+};
+
+struct AccentColours {
+    COLORREF standard{};
+    COLORREF light_1{};
 };
 
 template <class Object>
@@ -61,10 +70,12 @@ private:
 void enable_dark_mode_for_app();
 void enable_top_level_non_client_dark_mode(HWND wnd);
 
+[[nodiscard]] COLORREF get_dark_colour(ColourID colour_id);
 [[nodiscard]] COLORREF get_colour(ColourID colour_id, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_colour_brush(ColourID colour_id, bool is_dark);
 [[nodiscard]] LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool is_dark);
 
+[[nodiscard]] AccentColours get_system_accent_colours();
 [[nodiscard]] COLORREF get_system_colour(int system_colour_id, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark);
 

@@ -47,44 +47,9 @@ enum class DarkColour : COLORREF {
     DARK_400 = create_grey(88),
     DARK_500 = create_grey(98),
     DARK_600 = create_grey(119),
-    DARK_900 = create_grey(255),
+    DARK_750 = create_grey(166),
+    DARK_999 = create_grey(255),
 };
-
-COLORREF get_dark_colour(ColourID colour_id)
-{
-    switch (colour_id) {
-    case ColourID::PanelCaptionBackground:
-        return WI_EnumValue(DarkColour::DARK_300);
-    case ColourID::RebarBandBorder:
-        return WI_EnumValue(DarkColour::DARK_400);
-    case ColourID::StatusBarBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
-    case ColourID::StatusBarText:
-        return WI_EnumValue(DarkColour::DARK_900);
-    case ColourID::TabControlBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
-    case ColourID::TabControlItemBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
-    case ColourID::TabControlItemText:
-        return WI_EnumValue(DarkColour::DARK_900);
-    case ColourID::TabControlItemBorder:
-        return WI_EnumValue(DarkColour::DARK_000);
-    case ColourID::TabControlActiveItemBackground:
-        return WI_EnumValue(DarkColour::DARK_500);
-    case ColourID::TabControlHotItemBackground:
-        return WI_EnumValue(DarkColour::DARK_300);
-    case ColourID::TabControlHotActiveItemBackground:
-        return WI_EnumValue(DarkColour::DARK_600);
-    case ColourID::VolumePopupBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
-    case ColourID::VolumePopupBorder:
-        return WI_EnumValue(DarkColour::DARK_300);
-    case ColourID::VolumePopupText:
-        return WI_EnumValue(DarkColour::DARK_900);
-    default:
-        uBugCheck();
-    }
-}
 
 wil::unique_hbrush get_dark_colour_brush(ColourID colour_id)
 {
@@ -119,7 +84,82 @@ wil::unique_hbrush get_light_colour_brush(ColourID colour_id)
     return wil::unique_hbrush(GetSysColorBrush(get_light_colour_system_id(colour_id)));
 }
 
+COLORREF winrt_color_to_colorref(const winrt::Windows::UI::Color& colour)
+{
+    return RGB(colour.R, colour.G, colour.B);
+}
+
+AccentColours fetch_system_accent_colours()
+{
+    try {
+        const winrt::Windows::UI::ViewManagement::UISettings settings;
+        const winrt::Windows::UI::Color accent
+            = settings.GetColorValue(winrt::Windows::UI::ViewManagement::UIColorType::Accent);
+        const winrt::Windows::UI::Color light_accent
+            = settings.GetColorValue(winrt::Windows::UI::ViewManagement::UIColorType::AccentLight1);
+
+        return {winrt_color_to_colorref(accent), winrt_color_to_colorref(light_accent)};
+    } catch (winrt::hresult_error&) {
+        return {WI_EnumValue(DarkColour::DARK_600), WI_EnumValue(DarkColour::DARK_750)};
+    };
+}
+
+std::optional<AccentColours> accent_colours;
+
 } // namespace
+
+AccentColours get_system_accent_colours()
+{
+    // TODO: Flush these on change
+    if (!accent_colours)
+        accent_colours = fetch_system_accent_colours();
+
+    return *accent_colours;
+}
+
+COLORREF get_dark_colour(ColourID colour_id)
+{
+    switch (colour_id) {
+    case ColourID::PanelCaptionBackground:
+        return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::RebarBandBorder:
+        return WI_EnumValue(DarkColour::DARK_400);
+    case ColourID::StatusBarBackground:
+        return WI_EnumValue(DarkColour::DARK_200);
+    case ColourID::StatusBarText:
+        return WI_EnumValue(DarkColour::DARK_999);
+    case ColourID::TabControlBackground:
+        return WI_EnumValue(DarkColour::DARK_200);
+    case ColourID::TabControlItemBackground:
+        return WI_EnumValue(DarkColour::DARK_200);
+    case ColourID::TabControlItemText:
+        return WI_EnumValue(DarkColour::DARK_999);
+    case ColourID::TabControlItemBorder:
+        return WI_EnumValue(DarkColour::DARK_000);
+    case ColourID::TabControlActiveItemBackground:
+        return WI_EnumValue(DarkColour::DARK_500);
+    case ColourID::TabControlHotItemBackground:
+        return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::TabControlHotActiveItemBackground:
+        return WI_EnumValue(DarkColour::DARK_600);
+    case ColourID::TrackbarChannel:
+        return WI_EnumValue(DarkColour::DARK_400);
+    case ColourID::TrackbarThumb:
+        return get_system_accent_colours().standard;
+    case ColourID::TrackbarHotThumb:
+        return get_system_accent_colours().light_1;
+    case ColourID::TrackbarDisabledThumb:
+        return WI_EnumValue(DarkColour::DARK_400);
+    case ColourID::VolumePopupBackground:
+        return WI_EnumValue(DarkColour::DARK_200);
+    case ColourID::VolumePopupBorder:
+        return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::VolumePopupText:
+        return WI_EnumValue(DarkColour::DARK_999);
+    default:
+        uBugCheck();
+    }
+}
 
 COLORREF get_colour(ColourID colour_id, bool is_dark)
 {

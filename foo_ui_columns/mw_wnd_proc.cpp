@@ -164,7 +164,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (cfg_show_systray)
             create_systray_icon();
 
-        HRESULT hr = OleInitialize(nullptr);
         wil::com_ptr_t<MainWindowDropTarget> drop_handler = new MainWindowDropTarget;
         RegisterDragDrop(m_wnd, drop_handler.get());
 
@@ -189,7 +188,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         RevokeDragDrop(m_wnd);
         destroy_systray_icon();
         on_destroy();
-        OleUninitialize();
     } break;
     case WM_NCDESTROY:
         if (g_imagelist_taskbar)

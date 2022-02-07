@@ -50,8 +50,11 @@
 #include <wincodec.h>
 #include <strsafe.h>
 
+#include <wil/cppwinrt.h>
 #include <wil/com.h>
 #include <wil/resource.h>
+
+#include <winrt/Windows.UI.ViewManagement.h>
 
 #include "../foobar2000/SDK/foobar2000.h"
 #include "../foobar2000/SDK/core_api.h"
