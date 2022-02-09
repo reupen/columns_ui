@@ -62,10 +62,9 @@ private:
     mutable LazyObject<Resource> m_resource;
 };
 
-/**
- * Temporary compile-time flag controlling whether dark mode is enabled.
- */
 [[nodiscard]] bool is_dark_mode_enabled();
+[[nodiscard]] bool does_os_support_dark_mode();
+[[nodiscard]] bool are_private_apis_allowed();
 
 void enable_dark_mode_for_app();
 void enable_top_level_non_client_dark_mode(HWND wnd);

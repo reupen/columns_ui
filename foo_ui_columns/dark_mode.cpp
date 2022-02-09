@@ -5,15 +5,49 @@ namespace cui::dark {
 
 bool is_dark_mode_enabled()
 {
-    return false;
+    colours::helper colours_helper(GUID{});
+    return colours_helper.get_dark_mode_active();
+}
+
+bool does_os_support_dark_mode()
+{
+    OSVERSIONINFOEX osviex{};
+    osviex.dwOSVersionInfoSize = sizeof(osviex);
+
+    DWORDLONG mask = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
+    mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_GREATER_EQUAL);
+    mask = VerSetConditionMask(mask, VER_BUILDNUMBER, VER_GREATER_EQUAL);
+
+    osviex.dwMajorVersion = 10;
+    osviex.dwMinorVersion = 0;
+    osviex.dwBuildNumber = 19041;
+
+    return VerifyVersionInfoW(&osviex, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, mask) != FALSE;
+}
+
+bool are_private_apis_allowed()
+{
+    OSVERSIONINFO osvi{};
+    osvi.dwOSVersionInfoSize = sizeof(osvi);
+#pragma warning(push)
+#pragma warning(disable : 4996)
+    GetVersionEx(&osvi);
+#pragma warning(pop)
+
+    if (osvi.dwMajorVersion != 10 || osvi.dwMinorVersion != 0)
+        return false;
+
+    return osvi.dwBuildNumber >= 19041 && osvi.dwBuildNumber <= 22000;
 }
 
 void enable_dark_mode_for_app()
 {
+    if (!are_private_apis_allowed())
+        return;
+
     enum class PreferredAppMode { System = 1, Forced = 2, Disabled = 3 };
 
     using SetPreferredAppModeProc = int(__stdcall*)(int);
-    using FlushMenuThemesProc = void(__stdcall*)();
 
     const wil::unique_hmodule uxtheme(THROW_LAST_ERROR_IF_NULL(LoadLibrary(L"uxtheme.dll")));
 

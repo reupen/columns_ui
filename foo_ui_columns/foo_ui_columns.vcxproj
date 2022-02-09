@@ -312,6 +312,7 @@
     <ClCompile Include="seekbar_callbacks.cpp" />
     <ClCompile Include="status_bar_callbacks.cpp" />
     <ClCompile Include="status_bar_font_client.cpp" />
+    <ClCompile Include="tab_dark_mode.cpp" />
     <ClCompile Include="tab_playlist_swticher.cpp" />
     <ClCompile Include="title_formatting.cpp" />
     <ClCompile Include="version.cpp" />
@@ -569,6 +570,7 @@
     <ClInclude Include="rebar_band.h" />
     <ClInclude Include="rename_dialog.h" />
     <ClInclude Include="splitter_utils.h" />
+    <ClInclude Include="tab_dark_mode.h" />
     <ClInclude Include="tab_layout.h" />
     <ClInclude Include="tab_layout_misc.h" />
     <ClInclude Include="title_formatting.h" />

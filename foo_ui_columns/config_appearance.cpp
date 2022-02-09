@@ -1,24 +1,33 @@
 #include "stdafx.h"
 
-#include "playlist_view_tfhooks.h"
 #include "config_appearance.h"
 #include "config_host.h"
 #include "dark_mode.h"
 #include "tab_colours.h"
+#include "tab_dark_mode.h"
 #include "tab_fonts.h"
 
-/*
- * Fonts:
- *  Tabs - playlist tabs, tab stack
- *  Lists - Playlist switcher, Playlist items, Playlist items group header, playlist column titles, filter panel
- *  Other - Status bar, , , ,
- *
- * Colours:
- *  [[inactive] selected] text, [[inactive] selected] item background,
- *
- */
+namespace cui::colours {
 
-#if 1
+namespace {
+
+const GUID dark_mode_status_id = {0x1278cd90, 0x1d95, 0x48e8, {0x87, 0x3a, 0x1, 0xf9, 0xad, 0x2d, 0xbc, 0x5f}};
+
+}
+
+fbh::ConfigInt32 dark_mode_status(dark_mode_status_id, WI_EnumValue(DarkModeStatus::Disabled), [](auto&& new_value) {
+    g_colours_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
+    g_colours_manager_data.g_on_common_colour_changed(colour_flag_all);
+    ColoursClientList colours_clients;
+    ColoursClientList::g_get_list(colours_clients);
+
+    for (auto&& client : colours_clients) {
+        client.m_ptr->on_bool_changed(bool_flag_dark_mode_enabled);
+        client.m_ptr->on_colour_changed(colour_flag_all);
+    }
+});
+
+} // namespace cui::colours
 
 class AppearanceMessageWindow : public ui_helpers::container_window_autorelease_t {
 public:
@@ -44,6 +53,7 @@ void AppearanceMessageWindow::g_initialise()
 
 ColoursManagerData g_colours_manager_data;
 FontsManagerData g_fonts_manager_data;
+TabDarkMode g_tab_dark_mode;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
 
@@ -112,6 +122,9 @@ public:
         switch (p_identifier) {
         case cui::colours::bool_use_custom_active_item_frame:
             return p_entry->use_custom_active_item_frame;
+        case cui::colours::bool_dark_mode_enabled:
+            return (cui::colours::dark_mode_status.get() == WI_EnumValue(cui::colours::DarkModeStatus::Enabled)
+                && cui::dark::does_os_support_dark_mode());
         default:
             return false;
         }
@@ -365,7 +378,7 @@ void refresh_appearance_prefs()
     }
 }
 
-static PreferencesTab* g_tabs_appearance[] = {&g_tab_appearance, &g_tab_appearance_fonts};
+static PreferencesTab* g_tabs_appearance[] = {&g_tab_dark_mode, &g_tab_appearance, &g_tab_appearance_fonts};
 
 // {FA25D859-C808-485d-8AB7-FCC10F29ECE5}
 const GUID g_guid_cfg_child_appearance = {0xfa25d859, 0xc808, 0x485d, {0x8a, 0xb7, 0xfc, 0xc1, 0xf, 0x29, 0xec, 0xe5}};
@@ -649,5 +662,3 @@ LRESULT AppearanceMessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
-
-#endif

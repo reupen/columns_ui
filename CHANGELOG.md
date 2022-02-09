@@ -4,6 +4,15 @@
 
 ### Features
 
+* Support for the Windows 10 and 11 dark mode was added. 
+[[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413),
+[#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423),
+[#424](https://github.com/reupen/columns_ui/pull/424), [#432](https://github.com/reupen/columns_ui/pull/432),
+[#433](https://github.com/reupen/columns_ui/pull/433), [#434](https://github.com/reupen/columns_ui/pull/434),
+[#435](https://github.com/reupen/columns_ui/pull/435), [#436](https://github.com/reupen/columns_ui/pull/436),
+[#437](https://github.com/reupen/columns_ui/pull/437), [#438](https://github.com/reupen/columns_ui/pull/438),
+[#439](https://github.com/reupen/columns_ui/pull/439), [#440](https://github.com/reupen/columns_ui/pull/440)]
+
 * The Filter search toolbar is now integrated with the Colours and fonts preferences page, and its font, foreground colour and background colour are now configurable. [[#424](https://github.com/reupen/columns_ui/pull/424)]
   
   (Note that selection colours are not supported.)
@@ -29,15 +38,6 @@
 * The status bar pop-up volume bar now correctly scales with the system DPI setting. [[#418](https://github.com/reupen/columns_ui/pull/418)]
 
 ### Internal changes
-
-* Some internal changes were made in advance of support for the Windows 10 dark mode. 
-[[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413),
-[#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423),
-[#424](https://github.com/reupen/columns_ui/pull/424), [#432](https://github.com/reupen/columns_ui/pull/432),
-[#433](https://github.com/reupen/columns_ui/pull/433), [#434](https://github.com/reupen/columns_ui/pull/434),
-[#435](https://github.com/reupen/columns_ui/pull/435), [#436](https://github.com/reupen/columns_ui/pull/436),
-[#437](https://github.com/reupen/columns_ui/pull/437), [#438](https://github.com/reupen/columns_ui/pull/438),
-[#439](https://github.com/reupen/columns_ui/pull/439)]
 
 * The component is now compiled using Visual Studio 2022 17.0 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
 

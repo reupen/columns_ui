@@ -64,6 +64,7 @@
 #define IDD_COLUMN_SORTING_SCRIPT       232
 #define IDD_COLUMN_STYLE_SCRIPT         233
 #define IDD_PREFS_PLAYLIST_SWITCHER     234
+#define IDD_PREFS_DARK_MODE             235
 #define IDC_LIST                        1003
 #define IDC_COLUMNS                     1003
 #define IDC_INFOSECTIONS                1003
@@ -219,6 +220,7 @@
 #define IDC_COLOURS_MODE                1131
 #define IDC_COLOURS_ELEMENT             1132
 #define IDC_PATCH_FORE                  1133
+#define IDC_DARK_MODE                   1133
 #define IDC_THEMING                     1134
 #define IDC_DEST                        1135
 #define IDC_SORT_STRING                 1143
@@ -251,6 +253,10 @@
 #define IDC_VIEW_OLD_ARTWORK_SOURCES    1177
 #define IDC_VIEW_OLD_ARTWORK_SOURCES_TEXT 1178
 #define IDC_PREVIOUS_OPEN_DISPLAY_PREFERENCES 1179
+#define IDC_DARK_MODE_DISABLED          1179
+#define IDC_DARK_MODE_ENABLED           1180
+#define IDC_UNKNOWN_WINDOWS_BUILD       1181
+#define IDC_WINDOWS_VERSION_TOO_OLD     1182
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -260,7 +266,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        169
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1179
+#define _APS_NEXT_CONTROL_VALUE         1183
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
