@@ -377,7 +377,7 @@ void ArtworkPanel::on_completion(unsigned p_code)
     bool b_found = false;
     t_size count = g_artwork_types.size();
     if (m_lock_type)
-        count = min(1, count);
+        count = std::min(size_t{1}, count);
     for (t_size i = 0; i < count; i++) {
         if (refresh_image()) {
             b_found = true;

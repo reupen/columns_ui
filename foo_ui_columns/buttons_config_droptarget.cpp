@@ -176,8 +176,8 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             // blaarrgg, designed in the dark ages
             m_button_list_view->m_param.m_selection = &m_button_list_view->m_param.m_buttons[new_index];
 
-            const size_t first_index = (std::min)(old_index, new_index);
-            const size_t last_index = (std::max)(old_index, new_index);
+            const size_t first_index = std::min(old_index, new_index);
+            const size_t last_index = std::max(old_index, new_index);
             m_button_list_view->m_param.refresh_buttons_list_items(first_index, last_index - first_index + 1);
             m_button_list_view->set_item_selected_single(new_index);
         }

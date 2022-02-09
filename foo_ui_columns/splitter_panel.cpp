@@ -21,9 +21,9 @@ void FlatSplitterPanel::Panel::destroy()
         m_container.destroy();
 }
 
-void FlatSplitterPanel::Panel::on_size(unsigned cx, unsigned cy)
+void FlatSplitterPanel::Panel::on_size(int cx, int cy)
 {
-    unsigned caption_size = m_show_caption ? g_get_caption_size() : 0;
+    const auto caption_size = m_show_caption ? g_get_caption_size() : 0;
 
     // get_orientation()
     unsigned x = m_caption_orientation == vertical ? caption_size : 0;
@@ -36,8 +36,8 @@ void FlatSplitterPanel::Panel::on_size(unsigned cx, unsigned cy)
         SetWindowPos(m_wnd_child, nullptr, x, y, cx - x, cy - y, SWP_NOZORDER);
     if (caption_size /*&& (m_caption_orientation == vertical || (m_container.m_uxtheme.is_valid() && m_container.m_theme))*/)
     {
-        int caption_cx = min(m_caption_orientation == vertical ? caption_size : (cx), MAXLONG);
-        int caption_cy = min(m_caption_orientation == vertical ? cy : caption_size, MAXLONG);
+        int caption_cx = m_caption_orientation == vertical ? caption_size : cx;
+        int caption_cy = m_caption_orientation == vertical ? cy : caption_size;
 
         RECT rc_caption = {0, 0, caption_cx, caption_cy};
         RedrawWindow(m_wnd, &rc_caption, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);

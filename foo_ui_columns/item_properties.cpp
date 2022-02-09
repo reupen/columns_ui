@@ -546,7 +546,7 @@ void ItemProperties::refresh_contents()
 
     if (new_count && old_count) {
         pfc::list_t<InsertItem> items_replace;
-        items_replace.add_items_fromptr(items.get_ptr(), min(new_count, old_count));
+        items_replace.add_items_fromptr(items.get_ptr(), std::min(new_count, old_count));
         replace_items(0, items_replace);
     }
 

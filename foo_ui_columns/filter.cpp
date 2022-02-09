@@ -217,7 +217,7 @@ void FilterPanel::g_on_new_field(const Field& field)
 }
 void FilterPanel::g_on_fields_swapped(t_size index_1, t_size index_2)
 {
-    if (max(index_1, index_2) < g_field_data.get_count())
+    if (std::max(index_1, index_2) < g_field_data.get_count())
         g_field_data.swap_items(index_1, index_2);
     if (!cfg_orderedbysplitters) {
         t_size count = g_streams.get_count();
@@ -232,7 +232,7 @@ void FilterPanel::g_on_fields_swapped(t_size index_1, t_size index_2)
                         g_update_subsequent_filters(windows, j, false, false);
                         break;
                     }
-                    if (this_index > max(index_1, index_2))
+                    if (this_index > std::max(index_1, index_2))
                         break;
                 }
             }
@@ -436,7 +436,7 @@ void FilterPanel::set_field(const FieldData& field, bool b_force)
         pfc::ptr_list_t<FilterPanel> windows_after;
         get_windows(windows_after);
         t_size pos_after = windows_after.find_item(this);
-        t_size pos_update = min(pos_before, pos_after);
+        t_size pos_update = std::min(pos_before, pos_after);
         if (b_redraw)
             enable_redrawing();
         // update_window();

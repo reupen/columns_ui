@@ -143,7 +143,7 @@ int calculate_volume_size(const char* p_text)
 
 int calculate_selected_length_size(const char* p_text)
 {
-    return max(win32_helpers::status_bar_get_text_width(g_status, p_text),
+    return std::max(win32_helpers::status_bar_get_text_width(g_status, p_text),
         win32_helpers::status_bar_get_text_width(g_status, "0d 00:00:00"));
 }
 

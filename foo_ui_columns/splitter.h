@@ -149,7 +149,7 @@ private:
         void set_hidden(bool val);
 
         void on_size();
-        void on_size(unsigned cx, unsigned cy);
+        void on_size(int cx, int cy);
 
         void destroy();
         Panel();

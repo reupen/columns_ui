@@ -351,7 +351,7 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
     uie::window_ptr window;
     service_ptr_t<uie::splitter_window> splitter;
     if (uie::window::create_by_guid(p_guid, window) && window->service_query_t(splitter)) {
-        unsigned count = min(old_node->m_children.size(), splitter->get_maximum_panel_count());
+        unsigned count = std::min(old_node->m_children.size(), splitter->get_maximum_panel_count());
         if (count == old_node->m_children.size()
             || MessageBox(wnd, _T("The number of child items will not fit in the selected splitter type. Continue?"),
                    _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)

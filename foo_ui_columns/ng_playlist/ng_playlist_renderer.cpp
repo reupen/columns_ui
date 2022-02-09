@@ -18,8 +18,8 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, t
     RECT rc_bitmap;
     rc_bitmap.left = rc.left + (RECT_CX(rc) - bminfo.bmWidth) / 2;
     rc_bitmap.top = rc.top;
-    rc_bitmap.right = rc_bitmap.left + min(bminfo.bmWidth, RECT_CX(rc));
-    rc_bitmap.bottom = rc_bitmap.top + min(bminfo.bmHeight, RECT_CY(rc));
+    rc_bitmap.right = rc_bitmap.left + std::min(bminfo.bmWidth, RECT_CX(rc));
+    rc_bitmap.bottom = rc_bitmap.top + std::min(bminfo.bmHeight, RECT_CY(rc));
 
     HBITMAP bm_old = SelectBitmap(dcc, bm.get());
     BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, RECT_CX(rc_bitmap), RECT_CY(rc_bitmap), dcc, 0, 0, SRCCOPY);
@@ -161,7 +161,7 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
         uih::scale_dpi_value(3), &rc, false, cr, true, cfg_ellipsis != 0, uih::ALIGN_LEFT, nullptr, true, true,
         &text_width);
 
-    auto cx = (LONG)min(text_width, MAXLONG);
+    auto cx = static_cast<long>(std::min(text_width, MAXLONG));
 
     RECT rc_line = {cx + uih::scale_dpi_value(7), rc.top + RECT_CY(rc) / 2 - uih::scale_dpi_value(1) / 2,
         rc.right - uih::scale_dpi_value(4),

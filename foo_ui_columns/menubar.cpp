@@ -214,8 +214,8 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             int cy = lpwp->cy;
             int extra = 0;
             if (count && (BOOL)SendMessage(wnd_menu, TB_GETITEMRECT, count - 1, (LPARAM)(&rc))) {
-                cx = min(cx, rc.right);
-                cy = min(cy, rc.bottom);
+                cx = std::min(cx, gsl::narrow_cast<int>(rc.right));
+                cy = std::min(cy, gsl::narrow_cast<int>(rc.bottom));
                 extra = (lpwp->cy - rc.bottom) / 2;
             }
             SetWindowPos(wnd_menu, nullptr, 0, extra, cx, cy, SWP_NOZORDER);

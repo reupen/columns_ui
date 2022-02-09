@@ -294,7 +294,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
     case WM_GETMINMAXINFO: {
         auto mmi = LPMINMAXINFO(lp);
         mmi->ptMinTrackSize.x = m_combo_cx + m_toolbar_cx;
-        mmi->ptMinTrackSize.y = max(m_combo_cy, m_toolbar_cy);
+        mmi->ptMinTrackSize.y = std::max(m_combo_cy, m_toolbar_cy);
         mmi->ptMaxTrackSize.y = mmi->ptMinTrackSize.y;
     }
         return 0;

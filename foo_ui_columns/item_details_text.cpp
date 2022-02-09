@@ -282,7 +282,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
                     line_height = font_iter->m_font->m_height;
                     is_line_height_explicitly_set = true;
                 } else {
-                    line_height = (std::max)(line_height, font_iter->m_font->m_height);
+                    line_height = std::max(line_height, font_iter->m_font->m_height);
                     is_line_height_explicitly_set = true;
                 }
                 ++font_iter;
@@ -293,7 +293,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
                 uih::UniscribeTextRenderer script_string;
 
                 script_string.analyse(dc, fragment.data() + fragment_character_pos,
-                    fragment.length() - fragment_character_pos, (std::max)(max_width - line_width, 0), word_wrapping,
+                    fragment.length() - fragment_character_pos, std::max(max_width - line_width, 0), word_wrapping,
                     true, line_width);
 
                 if (word_wrapping) {
@@ -348,7 +348,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
     }
 
     display_info.sz.cx = ranges::accumulate(
-        display_info.line_sizes, 0, [](auto&& val, auto&& line_info) { return (std::max)(val, line_info.m_width); });
+        display_info.line_sizes, 0, [](auto&& val, auto&& line_info) { return std::max(val, line_info.m_width); });
 
     display_info.sz.cy = ranges::accumulate(
         display_info.line_sizes, 0, [](auto&& val, auto&& line_info) { return val + line_info.m_height; });

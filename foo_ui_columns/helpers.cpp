@@ -164,10 +164,10 @@ bool open_web_page(HWND wnd, const wchar_t* url)
 
 void clip_minmaxinfo(MINMAXINFO& mmi)
 {
-    mmi.ptMinTrackSize.x = min(mmi.ptMinTrackSize.x, MAXSHORT);
-    mmi.ptMinTrackSize.y = min(mmi.ptMinTrackSize.y, MAXSHORT);
-    mmi.ptMaxTrackSize.y = min(mmi.ptMaxTrackSize.y, MAXSHORT);
-    mmi.ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, MAXSHORT);
+    mmi.ptMinTrackSize.x = std::min(mmi.ptMinTrackSize.x, static_cast<long>(MAXSHORT));
+    mmi.ptMinTrackSize.y = std::min(mmi.ptMinTrackSize.y, static_cast<long>(MAXSHORT));
+    mmi.ptMaxTrackSize.y = std::min(mmi.ptMaxTrackSize.y, static_cast<long>(MAXSHORT));
+    mmi.ptMaxTrackSize.x = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
 }
 
 } // namespace cui::helpers
