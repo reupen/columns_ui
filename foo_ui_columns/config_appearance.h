@@ -67,3 +67,15 @@ public:
 
 extern ColoursManagerData g_colours_manager_data;
 extern FontsManagerData g_fonts_manager_data;
+
+namespace cui::colours {
+
+enum class DarkModeStatus {
+    Disabled,
+    Enabled,
+    UseSystemSetting,
+};
+
+extern fbh::ConfigInt32 dark_mode_status;
+
+} // namespace cui::colours
