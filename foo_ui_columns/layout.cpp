@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "layout.h"
-#include "splitter.h"
+
+#include "dark_mode.h"
 #include "splitter_utils.h"
 #include "main_window.h"
 
@@ -898,6 +899,9 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         refresh_child();
         create_child();
         break;
+    case WM_ERASEBKGND:
+        cui::dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));
+        return TRUE;
     case WM_WINDOWPOSCHANGED: {
         auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE)) {
