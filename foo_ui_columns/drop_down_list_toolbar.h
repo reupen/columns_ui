@@ -202,7 +202,7 @@ int DropDownListToolbar<ToolbarArgs>::calculate_max_item_width()
     for (auto index : ranges::views::iota(0, item_count)) {
         uComboBox_GetText(m_wnd_combo, index, text);
         const auto cx = uih::get_text_width(dc.get(), text, text.get_length());
-        max_item_width = max(max_item_width, cx);
+        max_item_width = std::max(max_item_width, cx);
     }
 
     COMBOBOXINFO cbi{};

@@ -247,12 +247,12 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
     si_new.nMin = 0;
 
     if (scrollbar_type == ScrollbarType::vertical) {
-        si_new.nPage = (std::max)(RECT_CY(rc), 1l);
-        si_new.nMax = (std::max)(m_display_sz.cy - 1, 1l);
+        si_new.nPage = std::max(RECT_CY(rc), 1l);
+        si_new.nMax = std::max(m_display_sz.cy - 1, 1l);
     } else {
         const auto padding_size = 2_spx * 2;
-        si_new.nPage = (std::max)(RECT_CX(rc), 1l);
-        si_new.nMax = m_hscroll ? (std::max)(m_display_sz.cx + padding_size - 1, 1l) : 0l;
+        si_new.nPage = std::max(RECT_CX(rc), 1l);
+        si_new.nMax = m_hscroll ? std::max(m_display_sz.cx + padding_size - 1, 1l) : 0l;
     }
 
     if (si_new.nMax >= gsl::narrow<int>(si_new.nPage)) {
@@ -865,11 +865,11 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         const int padding = uih::scale_dpi_value(2);
         const int width
-            = m_hscroll ? (std::max)(client_width, gsl::narrow<int>(m_display_sz.cx) + padding * 2) : client_width;
+            = m_hscroll ? std::max(client_width, gsl::narrow<int>(m_display_sz.cx) + padding * 2) : client_width;
 
         RECT rc_placement{};
         rc_placement.left = rc_client.left + padding - sih.nPos;
-        rc_placement.right = (std::max)(rc_placement.left + width - padding * 2, rc_placement.left);
+        rc_placement.right = std::max(rc_placement.left + width - padding * 2, rc_placement.left);
         rc_placement.top = rc_client.top - siv.nPos;
 
         if (m_display_sz.cy < client_height) {

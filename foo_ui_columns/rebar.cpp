@@ -691,7 +691,8 @@ void RebarWindow::update_band(unsigned n, bool size)
         if (mmi.ptMaxTrackSize.y < 0)
             mmi.ptMaxTrackSize.y = 0;
         if (mmi.ptMinTrackSize.y <= 0)
-            mmi.ptMinTrackSize.y = min(uih::scale_dpi_value(default_toolbar_height), mmi.ptMaxTrackSize.y);
+            mmi.ptMinTrackSize.y
+                = std::min(static_cast<long>(uih::scale_dpi_value(default_toolbar_height)), mmi.ptMaxTrackSize.y);
         if (mmi.ptMinTrackSize.x <= 0)
             mmi.ptMinTrackSize.x = uih::scale_dpi_value(default_toolbar_width);
 
@@ -761,7 +762,8 @@ void RebarWindow::refresh_bands(bool force_destroy_bands)
                     if (mmi.ptMaxTrackSize.y < 0)
                         mmi.ptMaxTrackSize.y = 0;
                     if (mmi.ptMinTrackSize.y <= 0)
-                        mmi.ptMinTrackSize.y = min(uih::scale_dpi_value(default_toolbar_height), mmi.ptMaxTrackSize.y);
+                        mmi.ptMinTrackSize.y = std::min(
+                            static_cast<long>(uih::scale_dpi_value(default_toolbar_height)), mmi.ptMaxTrackSize.y);
                     if (mmi.ptMinTrackSize.x <= 0)
                         mmi.ptMinTrackSize.x = uih::scale_dpi_value(default_toolbar_width);
 

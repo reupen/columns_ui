@@ -757,7 +757,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         uie::window_ptr window;
         service_ptr_t<uie::splitter_window> splitter;
         if (uie::window::create_by_guid(panels[panel_index].guid, window) && window->service_query_t(splitter)) {
-            unsigned count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
+            unsigned count = std::min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
             if (count == p_splitter->get_panel_count()
                 || MessageBox(get_wnd(),
                        _T("The number of child items will not fit in the selected splitter type. ")
@@ -794,7 +794,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         uie::window_ptr window;
         service_ptr_t<uie::splitter_window> splitter;
         if (uie::window::create_by_guid(panels[panel_index].guid, window) && window->service_query_t(splitter)) {
-            unsigned count = min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
+            unsigned count = std::min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
             if (index != pfc_infinite
                 && (count == p_splitter->get_panel_count()
                     || MessageBox(p_data.m_wnd,

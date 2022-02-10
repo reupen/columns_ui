@@ -1,6 +1,7 @@
 #pragma once
 
 #define OEMRESOURCE
+#define NOMINMAX
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC

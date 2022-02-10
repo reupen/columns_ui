@@ -109,7 +109,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (get_orientation() == vertical) {
                     lpmmi->ptMinTrackSize.y += mmi.ptMinTrackSize.y + divider_size;
 
-                    lpmmi->ptMinTrackSize.x = max(mmi.ptMinTrackSize.x, lpmmi->ptMinTrackSize.x);
+                    lpmmi->ptMinTrackSize.x = std::max(mmi.ptMinTrackSize.x, lpmmi->ptMinTrackSize.x);
 
                     if (lpmmi->ptMaxTrackSize.y <= MAXLONG - mmi.ptMaxTrackSize.y
                         && lpmmi->ptMaxTrackSize.y + mmi.ptMaxTrackSize.y <= MAXLONG - (long)divider_size) {
@@ -117,25 +117,25 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     } else {
                         lpmmi->ptMaxTrackSize.y = MAXLONG;
                     }
-                    lpmmi->ptMaxTrackSize.x = min(mmi.ptMaxTrackSize.x, lpmmi->ptMaxTrackSize.x);
+                    lpmmi->ptMaxTrackSize.x = std::min(mmi.ptMaxTrackSize.x, lpmmi->ptMaxTrackSize.x);
                 } else {
                     lpmmi->ptMinTrackSize.x += mmi.ptMinTrackSize.x + divider_size;
-                    lpmmi->ptMinTrackSize.y = max(mmi.ptMinTrackSize.y, lpmmi->ptMinTrackSize.y);
+                    lpmmi->ptMinTrackSize.y = std::max(mmi.ptMinTrackSize.y, lpmmi->ptMinTrackSize.y);
                     if (lpmmi->ptMaxTrackSize.x <= MAXLONG - mmi.ptMaxTrackSize.x
                         && lpmmi->ptMaxTrackSize.x + mmi.ptMaxTrackSize.x <= MAXLONG - (long)divider_size) {
                         lpmmi->ptMaxTrackSize.x += mmi.ptMaxTrackSize.x + divider_size;
                     } else {
                         lpmmi->ptMaxTrackSize.x = MAXLONG;
                     }
-                    lpmmi->ptMaxTrackSize.y = min(mmi.ptMaxTrackSize.y, lpmmi->ptMaxTrackSize.y);
+                    lpmmi->ptMaxTrackSize.y = std::min(mmi.ptMaxTrackSize.y, lpmmi->ptMaxTrackSize.y);
                 }
             }
         }
         if (b_found) {
             if (get_orientation() == vertical)
-                lpmmi->ptMaxTrackSize.x = max(lpmmi->ptMaxTrackSize.x, lpmmi->ptMinTrackSize.x);
+                lpmmi->ptMaxTrackSize.x = std::max(lpmmi->ptMaxTrackSize.x, lpmmi->ptMinTrackSize.x);
             else
-                lpmmi->ptMaxTrackSize.y = max(lpmmi->ptMaxTrackSize.y, lpmmi->ptMinTrackSize.y);
+                lpmmi->ptMaxTrackSize.y = std::max(lpmmi->ptMaxTrackSize.y, lpmmi->ptMinTrackSize.y);
         } else {
             if (get_orientation() == vertical)
                 lpmmi->ptMaxTrackSize.y = MAXLONG;

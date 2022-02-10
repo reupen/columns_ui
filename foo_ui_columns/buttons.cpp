@@ -171,8 +171,8 @@ void ButtonsToolbar::create_toolbar()
 
                         SIZE szt;
                         images[n].get_size(szt);
-                        sz.cx = max(sz.cx, szt.cx);
-                        sz.cy = max(sz.cy, szt.cy);
+                        sz.cx = std::max(sz.cx, szt.cx);
+                        sz.cy = std::max(sz.cy, szt.cy);
                     }
                 }
             }
@@ -345,8 +345,8 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             int cy = lpwp->cy;
             int extra = 0;
             if (count && (BOOL)SendMessage(wnd_toolbar, TB_GETITEMRECT, count - 1, (LPARAM)(&rc))) {
-                cx = min(cx, rc.right);
-                cy = min(cy, rc.bottom);
+                cx = std::min(cx, gsl::narrow_cast<int>(rc.right));
+                cy = std::min(cy, gsl::narrow_cast<int>(rc.bottom));
                 extra = (lpwp->cy - rc.bottom) / 2;
             }
             SetWindowPos(wnd_toolbar, nullptr, 0, extra, cx, cy, SWP_NOZORDER);

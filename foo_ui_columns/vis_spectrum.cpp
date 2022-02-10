@@ -442,7 +442,7 @@ t_size g_scale_value_single(double val, t_size count, bool b_log)
         val_trans = start;
     }
     t_size ret = pfc::rint32(val_trans);
-    ret = max(min(ret, count), 0);
+    ret = std::clamp(ret, size_t{0}, count);
     return ret;
 }
 
@@ -477,7 +477,7 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                                 for (t_size k = 0; k < channel_count; k++)
                                     sample_val += p_data[j * channel_count + k];
                                 sample_val *= 1.0 / channel_count;
-                                val = max(val, sample_val);
+                                val = std::max(val, sample_val);
                             }
                         }
 
@@ -512,7 +512,7 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                             for (t_size k = 0; k < channel_count; k++)
                                 sample_val += p_data[j * channel_count + k];
                             sample_val *= 1.0 / channel_count;
-                            val = max(val, sample_val);
+                            val = std::max(val, sample_val);
                         }
                     }
                     RECT r;

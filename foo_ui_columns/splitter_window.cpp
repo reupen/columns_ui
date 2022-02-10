@@ -1088,10 +1088,10 @@ void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, un
         mmi.ptMaxTrackSize.x = MAXLONG;
         mmi.ptMaxTrackSize.y = MAXLONG;
         SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-        p_ext->m_size_limits.min_width = min(mmi.ptMinTrackSize.x, MAXSHORT);
-        p_ext->m_size_limits.min_height = min(mmi.ptMinTrackSize.y, MAXSHORT);
-        p_ext->m_size_limits.max_height = min(mmi.ptMaxTrackSize.y, MAXSHORT);
-        p_ext->m_size_limits.max_width = min(mmi.ptMaxTrackSize.x, MAXSHORT);
+        p_ext->m_size_limits.min_width = std::min(mmi.ptMinTrackSize.x, static_cast<long>(MAXSHORT));
+        p_ext->m_size_limits.min_height = std::min(mmi.ptMinTrackSize.y, static_cast<long>(MAXSHORT));
+        p_ext->m_size_limits.max_height = std::min(mmi.ptMaxTrackSize.y, static_cast<long>(MAXSHORT));
+        p_ext->m_size_limits.max_width = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
         pfc::string8 name;
         p_ext->m_child->get_name(name);
         // console::formatter() << "change: name: " << name << " min width: " << (t_int32)mmi.ptMinTrackSize.x;
