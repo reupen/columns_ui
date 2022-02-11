@@ -112,7 +112,7 @@ private:
 
     class_data& get_class_data() const override
     {
-        __implement_get_class_data(_T("{DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}"), true);
+        __implement_get_class_data(_T("{DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}"), false);
     }
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;

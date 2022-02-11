@@ -93,6 +93,8 @@ wil::unique_hbrush get_dark_colour_brush(ColourID colour_id)
 int get_light_colour_system_id(ColourID colour_id)
 {
     switch (colour_id) {
+    case ColourID::LayoutBackground:
+        return COLOR_BTNFACE;
     case ColourID::PanelCaptionBackground:
         return COLOR_BTNFACE;
     case ColourID::StatusBarText:
@@ -154,6 +156,8 @@ AccentColours get_system_accent_colours()
 COLORREF get_dark_colour(ColourID colour_id)
 {
     switch (colour_id) {
+    case ColourID::LayoutBackground:
+        return WI_EnumValue(DarkColour::DARK_190);
     case ColourID::PanelCaptionBackground:
         return WI_EnumValue(DarkColour::DARK_300);
     case ColourID::RebarBandBorder:
@@ -266,6 +270,15 @@ wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark)
     // HBRUSHes returned by GetSysColorBrush don't need destroying, but doing so does no harm
     // according to the docs
     return wil::unique_hbrush(GetSysColorBrush(system_colour_id));
+}
+
+void draw_layout_background(HWND wnd, HDC dc)
+{
+    RECT rc{};
+    GetClientRect(wnd, &rc);
+
+    const auto brush = dark::get_colour_brush(ColourID::LayoutBackground, is_dark_mode_enabled());
+    FillRect(dc, &rc, brush.get());
 }
 
 } // namespace cui::dark

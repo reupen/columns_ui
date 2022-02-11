@@ -8,6 +8,7 @@
 namespace cui::dark {
 
 enum class ColourID {
+    LayoutBackground,
     PanelCaptionBackground,
     RebarBandBorder,
     StatusBarBackground,
@@ -77,5 +78,7 @@ void enable_top_level_non_client_dark_mode(HWND wnd);
 [[nodiscard]] AccentColours get_system_accent_colours();
 [[nodiscard]] COLORREF get_system_colour(int system_colour_id, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark);
+
+void draw_layout_background(HWND wnd, HDC dc);
 
 } // namespace cui::dark

@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "dark_mode.h"
 #include "splitter.h"
 
 namespace cui::panels::splitter {
@@ -28,6 +30,9 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         g_instances.remove_item(this);
         m_wnd = nullptr;
         break;
+    case WM_ERASEBKGND:
+        dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));
+        return TRUE;
     case WM_SHOWWINDOW:
         if (wp == TRUE && lp == 0) {
             unsigned count = m_panels.get_count();
@@ -293,46 +298,6 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // SetCursor(LoadCursor(0, IDC_ARROW));
         }
         break;
-#if 0
-    case WM_PAINT:
-    {
-        PAINTSTRUCT ps;
-        BeginPaint(wnd, &ps);
-        COLORREF cr = GetSysColor(COLOR_3DFACE);
-        wil::unique_hbrush br_line(CreateSolidBrush(/*RGB(226, 226, 226)*/cr));
-
-        t_size n, count = m_panels.get_count();
-        for (n = 0; n + 1<count; n++)
-        {
-            std::shared_ptr<Panel> p_item = m_panels.get_item(n);
-
-            if (p_item->m_wnd_child)
-            {
-                RECT rc_area;
-                GetRelativeRect(p_item->m_wnd_child, m_wnd, &rc_area);
-                if (get_orientation() == vertical)
-                {
-                    rc_area.top = rc_area.bottom;
-                    rc_area.bottom += 2;
-                    //FillRect(ps.hdc, &rc_area, GetSysColorBrush(COLOR_WINDOW));
-                    //rc_area.top++;
-                }
-                else
-                {
-                    rc_area.left = rc_area.right;
-                    rc_area.right += 2;
-                    //FillRect(ps.hdc, &rc_area, GetSysColorBrush(COLOR_WINDOW));
-                    //rc_area.right--;
-                }
-                FillRect(ps.hdc, &rc_area, br_line.get());
-            }
-        }
-
-        EndPaint(wnd, &ps);
-
-    }
-    ;
-#endif
 #if 0
     case WM_CONTEXTMENU:
         if ((HWND)wp == wnd)
