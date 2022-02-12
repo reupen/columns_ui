@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "item_properties.h"
 
-#include "dark_mode.h"
-
 namespace cui::panels::item_properties {
 
 // {8F6069CD-2E36-4ead-B171-93F3DFF0073A}
@@ -63,6 +61,13 @@ void ItemProperties::g_redraw_all()
 {
     for (auto& window : g_windows)
         window->invalidate_all();
+}
+
+void ItemProperties::s_on_dark_mode_status_change()
+{
+    const auto is_dark = colours::is_dark_mode_active();
+    for (auto&& window : g_windows)
+        window->set_use_dark_mode(is_dark);
 }
 
 ItemProperties::MessageWindow::class_data& ItemProperties::MessageWindow::get_class_data() const
@@ -187,7 +192,7 @@ void ItemProperties::get_config(stream_writer* p_writer, abort_callback& p_abort
 
 void ItemProperties::notify_on_initialisation()
 {
-    set_use_dark_mode(dark::is_dark_mode_enabled());
+    set_use_dark_mode(colours::is_dark_mode_active());
     set_autosize(m_autosizing_columns);
     LOGFONT lf;
     static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
@@ -998,6 +1003,12 @@ const char* ItemProperties::MenuNodeTrackMode::get_name(t_size source)
 void ItemPropertiesColoursClient::on_colour_changed(t_size mask) const
 {
     ItemProperties::g_redraw_all();
+}
+
+void ItemPropertiesColoursClient::on_bool_changed(t_size mask) const
+{
+    if (mask & colours::bool_flag_dark_mode_enabled)
+        ItemProperties::s_on_dark_mode_status_change();
 }
 
 } // namespace cui::panels::item_properties

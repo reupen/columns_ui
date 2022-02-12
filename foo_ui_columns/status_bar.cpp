@@ -16,6 +16,7 @@ struct StatusBarState {
     std::string playlist_lock_text;
     std::string track_length_text;
     std::string volume_text;
+    std::unique_ptr<colours::dark_mode_notifier> dark_mode_notifier;
 };
 
 std::optional<StatusBarState> state;
@@ -41,7 +42,7 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         HBITMAP bm_mem = CreateCompatibleBitmap(dc, rc.right, rc.bottom);
         auto bm_old = (HBITMAP)SelectObject(dc_mem, bm_mem);
 
-        if (dark::is_dark_mode_enabled())
+        if (colours::is_dark_mode_active())
             FillRect(dc_mem, &rc, dark::get_colour_brush(dark::ColourID::StatusBarBackground, true).get());
         else
             CallWindowProc(state->status_proc, wnd, WM_ERASEBKGND, (WPARAM)dc_mem, NULL);
@@ -276,6 +277,9 @@ void create_window()
 
         on_status_font_change();
 
+        state->dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
+            [wnd = g_status] { RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
+
         set_part_sizes(t_parts_all);
 
         regenerate_text();
@@ -325,7 +329,7 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     if (text.empty())
         return;
 
-    const auto text_colour = dark::get_colour(dark::ColourID::StatusBarText, dark::is_dark_mode_enabled());
+    const auto text_colour = dark::get_colour(dark::ColourID::StatusBarText, colours::is_dark_mode_active());
 
     if (part_id == StatusBarPartID::PlaybackInformation) {
         text_out_colours_tab(dc, text.data(), gsl::narrow<int>(text.size()), 0, 0, &rc, FALSE, text_colour, true, false,

@@ -142,8 +142,11 @@ private:
      */
     void fix_z_order();
 
+    void reopen_themes();
+
     std::vector<RebarBand> m_bands;
     wil::unique_htheme m_toolbar_theme;
+    std::unique_ptr<cui::colours::dark_mode_notifier> m_dark_mode_notifier;
 
     friend class RebarWindowHost;
 };

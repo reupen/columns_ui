@@ -1,8 +1,6 @@
 #pragma once
 
 #include "ng_playlist_style.h"
-#include "../playlist_view_tfhooks.h"
-#include "../artwork.h"
 #include "../config.h"
 #include "../list_view_panel.h"
 
@@ -277,12 +275,15 @@ public:
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; }
 
     t_size get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
-    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; } // bit-mask
+    t_size get_supported_bools() const override
+    {
+        return colours::bool_flag_use_custom_active_item_frame | colours::bool_flag_dark_mode_enabled;
+    } // bit-mask
     bool get_themes_supported() const override { return true; }
 
     void on_colour_changed(t_size mask) const override;
 
-    void on_bool_changed(t_size mask) const override {}
+    void on_bool_changed(t_size mask) const override;
 };
 
 class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
@@ -349,6 +350,7 @@ public:
     static void g_on_show_header_change();
     static void g_on_playback_follows_cursor_change(bool b_val);
     static void g_on_show_tooltips_change();
+    static void s_on_dark_mode_status_change();
     static void g_on_font_change();
     static void g_on_header_font_change();
     static void g_on_group_header_font_change();

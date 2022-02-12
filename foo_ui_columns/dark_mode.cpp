@@ -3,12 +3,6 @@
 
 namespace cui::dark {
 
-bool is_dark_mode_enabled()
-{
-    colours::helper colours_helper(GUID{});
-    return colours_helper.get_dark_mode_active();
-}
-
 bool does_os_support_dark_mode()
 {
     OSVERSIONINFOEX osviex{};
@@ -40,12 +34,10 @@ bool are_private_apis_allowed()
     return osvi.dwBuildNumber >= 19041 && osvi.dwBuildNumber <= 22000;
 }
 
-void enable_dark_mode_for_app()
+void set_app_mode(PreferredAppMode mode)
 {
     if (!are_private_apis_allowed())
         return;
-
-    enum class PreferredAppMode { System = 1, Forced = 2, Disabled = 3 };
 
     using SetPreferredAppModeProc = int(__stdcall*)(int);
 
@@ -54,14 +46,14 @@ void enable_dark_mode_for_app()
     const auto set_preferred_app_mode
         = reinterpret_cast<SetPreferredAppModeProc>(GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(135)));
 
-    set_preferred_app_mode(WI_EnumValue(PreferredAppMode::Forced));
+    set_preferred_app_mode(WI_EnumValue(mode));
 }
 
-void enable_top_level_non_client_dark_mode(HWND wnd)
+void set_titlebar_mode(HWND wnd, bool is_dark)
 {
     // Valid in Windows 10 10.0.18985 and newer (effectively 20H1+)
     constexpr DWORD DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
-    constexpr BOOL value = TRUE;
+    const BOOL value = is_dark;
     DwmSetWindowAttribute(wnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
 }
 
@@ -277,7 +269,7 @@ void draw_layout_background(HWND wnd, HDC dc)
     RECT rc{};
     GetClientRect(wnd, &rc);
 
-    const auto brush = dark::get_colour_brush(ColourID::LayoutBackground, is_dark_mode_enabled());
+    const auto brush = dark::get_colour_brush(ColourID::LayoutBackground, colours::is_dark_mode_active());
     FillRect(dc, &rc, brush.get());
 }
 

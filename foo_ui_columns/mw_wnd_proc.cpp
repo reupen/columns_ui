@@ -12,11 +12,6 @@
 extern HWND g_status;
 extern bool g_icon_created;
 
-constexpr WORD light_taskbar_icons[]
-    = {IDI_LIGHT_STOP, IDI_LIGHT_PREV, IDI_LIGHT_PAUSE, IDI_LIGHT_PLAY, IDI_LIGHT_NEXT, IDI_LIGHT_RAND};
-constexpr WORD dark_taskbar_icons[]
-    = {IDI_DARK_STOP, IDI_DARK_PREV, IDI_DARK_PAUSE, IDI_DARK_PLAY, IDI_DARK_NEXT, IDI_DARK_RAND};
-
 namespace statusbar_contextmenus {
 enum { ID_BASE = 1 };
 
@@ -69,8 +64,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     static bool g_last_sysray_x2_down;
     static HWND g_wnd_focused_before_menu;
 
-    static HIMAGELIST g_imagelist_taskbar;
-
     if (m_hook_proc) {
         LRESULT ret;
         if (m_hook_proc(wnd, msg, wp, lp, &ret)) {
@@ -89,28 +82,18 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 
     if (WM_TASKBARBUTTONCREATED && msg == WM_TASKBARBUTTONCREATED) {
-        auto taskbar_list = wil::CoCreateInstanceNoThrow<ITaskbarList3>(CLSID_TaskbarList);
-        if (taskbar_list && SUCCEEDED(taskbar_list->HrInit())) {
-            const unsigned cx = GetSystemMetrics(SM_CXSMICON);
-            const unsigned cy = GetSystemMetrics(SM_CYSMICON);
+        m_taskbar_list = wil::CoCreateInstanceNoThrow<ITaskbarList3>(CLSID_TaskbarList);
+        if (m_taskbar_list && SUCCEEDED(m_taskbar_list->HrInit())) {
+            const int cx = GetSystemMetrics(SM_CXSMICON);
+            const int cy = GetSystemMetrics(SM_CYSMICON);
 
-            g_imagelist_taskbar = ImageList_Create(cx, cy, ILC_COLOR32, 0, 6);
+            m_taskbar_button_images.reset(ImageList_Create(cx, cy, ILC_COLOR32, std::size(light_taskbar_icons), 0));
+            ImageList_SetImageCount(m_taskbar_button_images.get(), std::size(light_taskbar_icons));
 
-            t_size i = 0;
-
-            const auto icons = dark::is_dark_mode_enabled() ? dark_taskbar_icons : light_taskbar_icons;
-
-            for (i = 0; i < 6; i++) {
-                auto icon = (HICON)LoadImage(
-                    core_api::get_my_instance(), MAKEINTRESOURCE(icons[i]), IMAGE_ICON, cx, cy, NULL);
-                ImageList_ReplaceIcon(g_imagelist_taskbar, -1, icon);
-                DestroyIcon(icon);
-            }
-
-            if (SUCCEEDED(taskbar_list->ThumbBarSetImageList(wnd, g_imagelist_taskbar))) {
+            if (update_taskbar_button_images())
                 queue_taskbar_button_update(false);
-                m_taskbar_list = taskbar_list;
-            }
+            else
+                m_taskbar_list.reset();
         }
     }
 
@@ -190,8 +173,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         on_destroy();
     } break;
     case WM_NCDESTROY:
-        if (g_imagelist_taskbar)
-            ImageList_Destroy(g_imagelist_taskbar);
+        m_taskbar_button_images.reset();
         break;
     case WM_CLOSE:
         if (config::advbool_close_to_notification_icon.get()) {

@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "main_window.h"
 #include "status_bar.h"
 
 extern HWND g_status;

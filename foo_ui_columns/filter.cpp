@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "filter.h"
 
-#include "dark_mode.h"
 #include "filter_config_var.h"
 #include "filter_search_bar.h"
 #include "filter_utils.h"
@@ -185,6 +184,14 @@ void FilterPanel::g_on_edgestyle_change()
         window->set_edge_style(cfg_edgestyle);
     }
 }
+
+void FilterPanel::s_on_dark_mode_status_change()
+{
+    const auto is_dark = colours::is_dark_mode_active();
+    for (auto&& window : g_windows)
+        window->set_use_dark_mode(is_dark);
+}
+
 void FilterPanel::g_on_font_items_change()
 {
     LOGFONT lf;
@@ -778,7 +785,7 @@ void FilterPanel::refresh_columns()
 void FilterPanel::notify_on_initialisation()
 {
     // set_variable_height_items(true); //Implementation not finished
-    set_use_dark_mode(dark::is_dark_mode_enabled());
+    set_use_dark_mode(colours::is_dark_mode_active());
     set_edge_style(cfg_edgestyle);
     set_autosize(true);
     set_vertical_item_padding(cfg_vertical_item_padding);
@@ -935,6 +942,12 @@ FilterHeaderFontClient::factory<FilterHeaderFontClient> g_font_header_client_fil
 void AppearanceClient::on_colour_changed(t_size mask) const
 {
     FilterPanel::g_redraw_all();
+}
+
+void AppearanceClient::on_bool_changed(t_size mask) const
+{
+    if (mask & colours::bool_flag_dark_mode_enabled)
+        FilterPanel::s_on_dark_mode_status_change();
 }
 
 } // namespace cui::panels::filter

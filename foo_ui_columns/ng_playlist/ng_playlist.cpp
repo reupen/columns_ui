@@ -6,7 +6,6 @@
 
 #include "ng_playlist.h"
 
-#include "dark_mode.h"
 #include "ng_playlist_groups.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
@@ -389,6 +388,16 @@ void PlaylistView::g_on_playback_follows_cursor_change(bool b_val)
     for (auto& window : g_windows)
         window->set_always_show_focus(b_val);
 }
+
+void PlaylistView::s_on_dark_mode_status_change()
+{
+    const auto is_dark = colours::is_dark_mode_active();
+    for (auto&& window : g_windows) {
+        window->flush_artwork_images();
+        window->set_use_dark_mode(is_dark);
+    }
+}
+
 void PlaylistView::g_on_columns_change()
 {
     for (auto& window : g_windows)
@@ -512,7 +521,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
 }
 void PlaylistView::notify_on_initialisation()
 {
-    set_use_dark_mode(dark::is_dark_mode_enabled());
+    set_use_dark_mode(colours::is_dark_mode_active());
     set_group_info_area_size(
         cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
     set_show_group_info_area(cfg_show_artwork);
@@ -1180,6 +1189,12 @@ void ColoursClient::on_colour_changed(t_size mask) const
     if (cfg_show_artwork && cfg_artwork_reflection && (mask & (colours::colour_flag_background)))
         PlaylistView::g_flush_artwork();
     PlaylistView::g_update_all_items();
+}
+
+void ColoursClient::on_bool_changed(t_size mask) const
+{
+    if (mask & colours::bool_flag_dark_mode_enabled)
+        PlaylistView::s_on_dark_mode_status_change();
 }
 
 } // namespace cui::panels::playlist_view

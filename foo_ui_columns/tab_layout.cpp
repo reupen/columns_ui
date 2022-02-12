@@ -1,7 +1,7 @@
 #include "stdafx.h"
 
 #include "tab_layout.h"
-#include "functional.h"
+
 #include "layout.h"
 #include "config.h"
 #include "rename_dialog.h"

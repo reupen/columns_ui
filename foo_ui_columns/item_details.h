@@ -297,6 +297,7 @@ public:
 
     static void g_on_app_activate(bool b_activated);
     static void g_on_font_change();
+    static void s_on_dark_mode_status_change();
     static void g_on_colours_change();
 
     void set_horizontal_alignment(t_size horizontal_alignment);
@@ -336,6 +337,7 @@ private:
 
     void scroll(INT sb, int position, bool b_absolute);
 
+    void set_window_theme() const;
     void invalidate_all(bool b_update = true);
     void update_now();
 

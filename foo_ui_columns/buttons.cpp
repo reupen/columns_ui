@@ -120,15 +120,10 @@ void ButtonsToolbar::create_toolbar()
             | TBSTYLE_TOOLTIPS | CCS_NORESIZE | CCS_NOPARENTALIGN | CCS_NODIVIDER,
         0, 0, rc.right, rc.bottom, wnd_host, (HMENU)ID_BUTTONS, core_api::get_my_instance(), nullptr);
 
-    COLORREF colour_3dface = GetSysColor(COLOR_3DFACE);
-    COLORREF colour_btntext = GetSysColor(COLOR_BTNTEXT);
+    COLORREF colour_btntext = dark::get_system_colour(COLOR_BTNTEXT, colours::is_dark_mode_active());
 
     if (wnd_toolbar) {
-        if (dark::is_dark_mode_enabled())
-            SetWindowTheme(wnd_toolbar, L"DarkMode", nullptr);
-
-        HIMAGELIST il = nullptr;
-        HIMAGELIST iml_hot = nullptr;
+        set_window_theme();
 
         bool b_need_hot = false;
 
@@ -145,6 +140,8 @@ void ButtonsToolbar::create_toolbar()
 
         bit_array_bittable mask(count);
 
+        size_t image_count{};
+
         for (n = 0; n < count; n++) {
             if (m_buttons[n].m_type != TYPE_SEPARATOR) {
                 m_buttons[n].m_callback.set_wnd(this);
@@ -159,6 +156,8 @@ void ButtonsToolbar::create_toolbar()
                 }
 
                 if (m_buttons[n].m_show == SHOW_IMAGE || m_buttons[n].m_show == SHOW_IMAGE_TEXT) {
+                    ++image_count;
+
                     if (m_buttons[n].m_use_custom_hot)
                         images_hot[n].load(m_buttons[n].m_custom_hot_image);
                     if (!m_buttons[n].m_use_custom) {
@@ -188,9 +187,12 @@ void ButtonsToolbar::create_toolbar()
 
         width = sz.cx;
         height = sz.cy;
-        il = ImageList_Create(width, height, ILC_COLOR32 | ILC_MASK, 7, 0);
+
+        m_standard_images.reset(
+            ImageList_Create(width, height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
         if (b_need_hot)
-            iml_hot = ImageList_Create(width, height, ILC_COLOR32 | ILC_MASK, 7, 0);
+            m_hot_images.reset(
+                ImageList_Create(width, height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
 
         // SendMessage(wnd_toolbar, TB_ADDSTRING,  NULL, (LPARAM)_T("\0")); //Add a empty string at index 0
 
@@ -205,11 +207,11 @@ void ButtonsToolbar::create_toolbar()
                 m_buttons[n].m_callback.set_wnd(this);
                 m_buttons[n].m_callback.set_id(n);
                 if (m_buttons[n].m_show == SHOW_IMAGE || m_buttons[n].m_show == SHOW_IMAGE_TEXT) {
-                    tbb[n].iBitmap = images[n].add_to_imagelist(il);
+                    tbb[n].iBitmap = images[n].add_to_imagelist(m_standard_images.get());
                     if (!m_buttons[n].m_use_custom_hot || !images_hot[n].is_valid())
-                        images[n].add_to_imagelist(iml_hot);
+                        images[n].add_to_imagelist(m_hot_images.get());
                     else
-                        images_hot[n].add_to_imagelist(iml_hot);
+                        images_hot[n].add_to_imagelist(m_hot_images.get());
                 } else
                     tbb[n].iBitmap = I_IMAGENONE;
 
@@ -281,10 +283,10 @@ void ButtonsToolbar::create_toolbar()
         } else if (m_appearance == APPEARANCE_FLAT)
             SendMessage(wnd_toolbar, TB_SETPADDING, (WPARAM)0, MAKELPARAM(5, HIWORD(padding)));
 
-        if (il)
-            SendMessage(wnd_toolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)il);
-        if (iml_hot)
-            SendMessage(wnd_toolbar, TB_SETHOTIMAGELIST, (WPARAM)0, (LPARAM)iml_hot);
+        if (m_standard_images)
+            SendMessage(wnd_toolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)m_standard_images.get());
+        if (m_hot_images)
+            SendMessage(wnd_toolbar, TB_SETHOTIMAGELIST, (WPARAM)0, (LPARAM)m_hot_images.get());
 
         SendMessage(wnd_toolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
 
@@ -305,15 +307,15 @@ void ButtonsToolbar::destroy_toolbar()
     for (t_size i = 0; i < count; i++)
         if (m_buttons[i].m_interface.is_valid())
             m_buttons[i].m_interface->deregister_callback(m_buttons[i].m_callback);
-    auto iml = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETIMAGELIST, (WPARAM)0, (LPARAM)0);
-    auto iml_hot = (HIMAGELIST)SendMessage(wnd_toolbar, TB_GETHOTIMAGELIST, (WPARAM)0, (LPARAM)0);
     DestroyWindow(wnd_toolbar);
     wnd_toolbar = nullptr;
-    if (iml)
-        ImageList_Destroy(iml);
-    if (iml_hot)
-        ImageList_Destroy(iml_hot);
-    m_buttons.clear();
+    m_standard_images.reset();
+    m_hot_images.reset();
+}
+
+void ButtonsToolbar::set_window_theme() const
+{
+    SetWindowTheme(wnd_toolbar, cui::colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
 }
 
 LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -324,9 +326,14 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         initialised = true;
         create_toolbar();
-
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] {
+            destroy_toolbar();
+            create_toolbar();
+        });
     } else if (msg == WM_DESTROY) {
+        m_dark_mode_notifier.reset();
         destroy_toolbar();
+        m_buttons.clear();
         wnd_host = nullptr;
         initialised = false;
         if (m_gdiplus_initialised) {

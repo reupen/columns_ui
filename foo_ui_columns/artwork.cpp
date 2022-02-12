@@ -533,8 +533,25 @@ void ArtworkPanel::refresh_cached_bitmap()
 void ArtworkPanel::g_on_colours_change()
 {
     for (auto& window : g_windows) {
+        if (!window->get_wnd())
+            continue;
+
         window->flush_cached_bitmap();
         window->invalidate_window();
+    }
+}
+
+void ArtworkPanel::s_on_dark_mode_status_change()
+{
+    for (auto&& window : g_windows) {
+        if (!window->get_wnd())
+            continue;
+
+        if (window->m_artwork_loader)
+            window->m_artwork_loader->reset();
+
+        window->flush_image();
+        window->force_reload_artwork();
     }
 }
 
@@ -550,11 +567,15 @@ public:
     void get_name(pfc::string_base& p_out) const override { p_out = "Artwork view"; }
 
     t_size get_supported_colours() const override { return colours::colour_flag_background; } // bit-mask
-    t_size get_supported_bools() const override { return 0; } // bit-mask
+    t_size get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; } // bit-mask
     bool get_themes_supported() const override { return false; }
 
     void on_colour_changed(t_size mask) const override { ArtworkPanel::g_on_colours_change(); }
-    void on_bool_changed(t_size mask) const override {}
+    void on_bool_changed(t_size mask) const override
+    {
+        if ((mask & colours::bool_flag_dark_mode_enabled))
+            ArtworkPanel::s_on_dark_mode_status_change();
+    }
 };
 
 namespace {

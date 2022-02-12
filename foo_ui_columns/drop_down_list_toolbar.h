@@ -1,7 +1,5 @@
 #pragma once
 
-#include "dark_mode.h"
-
 template <class ToolbarArgs>
 class DropDownListToolbar : public ui_extension::container_ui_extension {
 public:
@@ -16,6 +14,13 @@ public:
     {
         for (auto&& window : s_windows) {
             window->refresh_all_items_safe();
+        }
+    }
+
+    static void s_set_window_theme()
+    {
+        for (auto&& window : s_windows) {
+            window->set_window_theme();
         }
     }
 
@@ -76,9 +81,13 @@ private:
         {
             return cui::colours::colour_flag_text | cui::colours::colour_flag_background;
         }
-        size_t get_supported_bools() const override { return 0; }
+        size_t get_supported_bools() const override { return cui::colours::bool_flag_dark_mode_enabled; }
         bool get_themes_supported() const override { return false; }
-        void on_bool_changed(t_size mask) const override {}
+        void on_bool_changed(t_size mask) const override
+        {
+            if (mask & cui::colours::bool_flag_dark_mode_enabled)
+                s_set_window_theme();
+        }
         void on_colour_changed(t_size mask) const override { s_update_colours(); }
     };
 
@@ -92,6 +101,12 @@ private:
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
+    void set_window_theme() const;
+    void refresh_all_items();
+    void update_active_item();
+    int calculate_max_item_width();
+    int calculate_height();
+
     static constexpr unsigned ID_COMBOBOX = 1001;
     static constexpr unsigned initial_height = 300;
     static constexpr unsigned initial_width = 150;
@@ -102,11 +117,6 @@ private:
     inline static wil::unique_hbrush s_background_brush;
     inline static std::vector<DropDownListToolbar<ToolbarArgs>*> s_windows;
 
-    void refresh_all_items();
-    void update_active_item();
-    int calculate_max_item_width();
-    int calculate_height();
-
     typename ToolbarArgs::ItemList m_items;
     HWND m_wnd_combo{nullptr};
     WNDPROC m_order_proc{nullptr};
@@ -116,6 +126,12 @@ private:
     bool m_processing_selection_change{false};
     t_int32 m_mousewheel_delta{0};
 };
+
+template <class ToolbarArgs>
+void DropDownListToolbar<ToolbarArgs>::set_window_theme() const
+{
+    SetWindowTheme(m_wnd_combo, cui::colours::is_dark_mode_active() ? L"DarkMode_CFD" : nullptr, nullptr);
+}
 
 template <class ToolbarArgs>
 void DropDownListToolbar<ToolbarArgs>::refresh_all_items_safe()
@@ -256,8 +272,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         if (m_wnd_combo) {
             SetWindowLongPtr(m_wnd_combo, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
 
-            if (cui::dark::is_dark_mode_enabled())
-                SetWindowTheme(m_wnd_combo, L"DarkMode_CFD", nullptr);
+            set_window_theme();
 
             SetWindowFont(m_wnd_combo, s_items_font.get(), TRUE);
 

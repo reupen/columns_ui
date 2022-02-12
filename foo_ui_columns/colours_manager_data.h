@@ -59,5 +59,5 @@ public:
 
     void g_on_common_bool_changed(t_size mask);
 
-    pfc::ptr_list_t<cui::colours::common_callback> m_callbacks;
+    std::set<cui::colours::common_callback*> m_callbacks;
 };

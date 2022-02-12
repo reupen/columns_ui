@@ -2,7 +2,6 @@
 
 #include "filter_search_bar.h"
 
-#include "dark_mode.h"
 #include "filter_config_var.h"
 #include "filter_utils.h"
 
@@ -382,6 +381,39 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
+void FilterSearchToolbar::set_window_themes() const
+{
+    const auto is_dark = cui::colours::is_dark_mode_active();
+
+    if (m_search_editbox)
+        SetWindowTheme(m_search_editbox, is_dark ? L"DarkMode_CFD" : nullptr, nullptr);
+
+    if (m_wnd_toolbar)
+        SetWindowTheme(m_wnd_toolbar, is_dark ? L"DarkMode" : nullptr, nullptr);
+}
+
+void FilterSearchToolbar::update_toolbar_icons() const
+{
+    const auto is_dark = cui::colours::is_dark_mode_active();
+    const int cx = GetSystemMetrics(SM_CXSMICON);
+    const int cy = GetSystemMetrics(SM_CYSMICON);
+
+    const WORD grey_star_resource_id = is_dark ? IDI_DARK_STAROFF : IDI_LIGHT_STAROFF;
+    const WORD gold_star_resource_id = is_dark ? IDI_DARK_STARON : IDI_LIGHT_STARON;
+    const WORD reset_resource_id = is_dark ? IDI_DARK_RESET : IDI_LIGHT_RESET;
+
+    wil::unique_hicon grey_star(static_cast<HICON>(
+        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(grey_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
+    wil::unique_hicon gold_star(static_cast<HICON>(
+        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(gold_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
+    wil::unique_hicon reset(static_cast<HICON>(
+        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(reset_resource_id), IMAGE_ICON, cx, cy, NULL)));
+
+    ImageList_ReplaceIcon(m_imagelist, 0, grey_star.get());
+    ImageList_ReplaceIcon(m_imagelist, 1, gold_star.get());
+    ImageList_ReplaceIcon(m_imagelist, 2, reset.get());
+}
+
 void FilterSearchToolbar::refresh_favourites(bool is_initial)
 {
     if (!is_initial)
@@ -422,49 +454,21 @@ void FilterSearchToolbar::create_edit()
                 | WS_TABSTOP | WS_VSCROLL,
             0, 0, 100, 200, get_wnd(), HMENU(id_edit), core_api::get_my_instance(), nullptr);
 
-    if (dark::is_dark_mode_enabled())
-        SetWindowTheme(m_search_editbox, L"DarkMode_CFD", nullptr);
-
     ComboBox_SetMinVisible(m_search_editbox, 25);
 
     m_wnd_toolbar = CreateWindowEx(WS_EX_TOOLWINDOW, TOOLBARCLASSNAME, nullptr,
         WS_CHILD | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | TBSTYLE_FLAT | TBSTYLE_LIST | TBSTYLE_TRANSPARENT
             | TBSTYLE_TOOLTIPS | CCS_NORESIZE | CCS_NOPARENTALIGN | CCS_NODIVIDER,
         0, 0, 0, 0, get_wnd(), (HMENU)id_toolbar, core_api::get_my_instance(), nullptr);
-    // SetWindowTheme(m_wnd_toolbar, L"SearchButton", NULL);
 
-    if (dark::is_dark_mode_enabled())
-        SetWindowTheme(m_wnd_toolbar, L"DarkMode", nullptr);
+    set_window_themes();
 
     const unsigned cx = GetSystemMetrics(SM_CXSMICON);
     const unsigned cy = GetSystemMetrics(SM_CYSMICON);
 
-    m_imagelist = ImageList_Create(cx, cy, ILC_COLOR32, 0, 3);
-
-    const WORD grey_star_resource_id = dark::is_dark_mode_enabled() ? IDI_DARK_STAROFF : IDI_LIGHT_STAROFF;
-    const WORD gold_star_resource_id = dark::is_dark_mode_enabled() ? IDI_DARK_STARON : IDI_LIGHT_STARON;
-    const WORD reset_resource_id = dark::is_dark_mode_enabled() ? IDI_DARK_RESET : IDI_LIGHT_RESET;
-
-    wil::unique_hicon icon(static_cast<HICON>(
-        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(grey_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
-
-    if (icon) {
-        ImageList_ReplaceIcon(m_imagelist, -1, icon.get());
-    }
-
-    icon.reset(static_cast<HICON>(
-        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(gold_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
-
-    if (icon) {
-        ImageList_ReplaceIcon(m_imagelist, -1, icon.get());
-    }
-
-    icon.reset(static_cast<HICON>(
-        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(reset_resource_id), IMAGE_ICON, cx, cy, NULL)));
-
-    if (icon) {
-        ImageList_ReplaceIcon(m_imagelist, -1, icon.get());
-    }
+    m_imagelist = ImageList_Create(cx, cy, ILC_COLOR32, 3, 0);
+    ImageList_SetImageCount(m_imagelist, 3);
+    update_toolbar_icons();
 
     TBBUTTON tbb[2];
     memset(&tbb, 0, sizeof(tbb));
@@ -530,6 +534,12 @@ void FilterSearchToolbar::recalculate_dimensions()
     m_toolbar_cy = window_rect.bottom;
 }
 
+void FilterSearchToolbar::ColourClient::on_bool_changed(t_size mask) const
+{
+    if (mask & colours::bool_flag_dark_mode_enabled)
+        FilterSearchToolbar::s_on_dark_mode_status_change();
+}
+
 LRESULT WINAPI FilterSearchToolbar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     auto p_this = reinterpret_cast<FilterSearchToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
@@ -546,6 +556,15 @@ void FilterSearchToolbar::s_recreate_background_brush()
 {
     const colours::helper colour_helper(colour_client_id);
     s_background_brush.reset(CreateSolidBrush(colour_helper.get_colour(colours::colour_background)));
+}
+
+void FilterSearchToolbar::s_on_dark_mode_status_change()
+{
+    for (auto&& window : s_windows) {
+        window->set_window_themes();
+        window->update_toolbar_icons();
+        RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
+    }
 }
 
 void FilterSearchToolbar::s_update_colours()

@@ -206,6 +206,7 @@ private:
     bool m_menu_active{false};
     wil::unique_hfont m_font;
     HTHEME m_theme{nullptr};
+    std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 
 extern class StatusPane g_status_pane;

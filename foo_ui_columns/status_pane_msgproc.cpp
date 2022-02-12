@@ -32,6 +32,8 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         m_font.reset(fonts::helper(g_guid_font).get_font());
         m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
+            [wnd] { RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
 
         update_playlist_data();
         update_playback_status_text();
@@ -45,6 +47,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         m_volume_control.destroy();
 
+        m_dark_mode_notifier.reset();
         m_font.reset();
         if (m_theme) {
             CloseThemeData(m_theme);
@@ -110,7 +113,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         HFONT fnt_old = SelectFont(dc, m_font.get());
 
         const char* placeholder = "999999999 items selected";
-        const auto default_text_colour = dark::get_system_colour(COLOR_BTNTEXT, dark::is_dark_mode_enabled());
+        const auto default_text_colour = dark::get_system_colour(COLOR_BTNTEXT, colours::is_dark_mode_active());
         int placeholder_len = get_text_width(dc, placeholder, strlen(placeholder)) + uih::scale_dpi_value(20);
 
         pfc::string8 items_text;

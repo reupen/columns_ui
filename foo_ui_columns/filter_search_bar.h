@@ -50,9 +50,9 @@ private:
         {
             return colours::colour_flag_text | colours::colour_flag_background;
         }
-        size_t get_supported_bools() const override { return 0; }
+        size_t get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; }
         bool get_themes_supported() const override { return false; }
-        void on_bool_changed(t_size mask) const override {}
+        void on_bool_changed(t_size mask) const override;
         void on_colour_changed(t_size mask) const override { s_update_colours(); }
     };
 
@@ -68,6 +68,7 @@ private:
 
     static void s_recreate_font();
     static void s_recreate_background_brush();
+    static void s_on_dark_mode_status_change();
     static void s_update_colours();
     static void s_update_font();
 
@@ -85,6 +86,8 @@ private:
     void update_favourite_icon(const char* p_new = nullptr);
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
+    void set_window_themes() const;
+    void update_toolbar_icons() const;
     void create_edit();
     void recalculate_dimensions();
     void on_size(t_size cx, t_size cy) override;

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "ng_playlist/ng_playlist.h"
-#include "artwork.h"
 #include "artwork_helpers.h"
 
 namespace cui::artwork_panel {

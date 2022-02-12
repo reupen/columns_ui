@@ -1,6 +1,5 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
-#include "main_window.h"
 
 namespace cui::panels::playlist_switcher {
 
@@ -33,6 +32,13 @@ PlaylistSwitcherColoursClient::factory<PlaylistSwitcherColoursClient> g_appearan
 void PlaylistSwitcherColoursClient::on_colour_changed(t_size mask) const
 {
     PlaylistSwitcher::g_redraw_all();
+}
+
+void PlaylistSwitcherColoursClient::on_bool_changed(t_size mask) const
+{
+    if (mask & colours::bool_flag_dark_mode_enabled) {
+        PlaylistSwitcher::s_on_dark_mode_status_change();
+    }
 }
 
 } // namespace cui::panels::playlist_switcher

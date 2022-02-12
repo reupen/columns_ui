@@ -2,7 +2,6 @@
 
 #include "dark_mode.h"
 #include "splitter.h"
-#include "main_window.h"
 
 #define HOST_AUTOHIDE_TIMER_ID 672
 
@@ -12,7 +11,7 @@ void FlatSplitterPanel::Panel::PanelContainer::reopen_theme()
 {
     close_theme();
 
-    if (IsThemeActive() && IsAppThemed() && !dark::is_dark_mode_enabled())
+    if (IsThemeActive() && IsAppThemed())
         m_theme.reset(OpenThemeData(m_wnd, L"Rebar"));
 }
 
@@ -65,11 +64,14 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         break;
     case WM_CREATE:
         reopen_theme();
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
+            [wnd] { RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
         break;
     case WM_THEMECHANGED:
         reopen_theme();
         break;
     case WM_DESTROY:
+        m_dark_mode_notifier.reset();
         close_theme();
         m_this.release();
         break;
@@ -129,8 +131,8 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                 RECT rc_caption = {0, 0, cx, cy};
 
                 if (IntersectRect(&rc_dummy, &ps.rcPaint, &rc_caption)) {
-                    const auto is_dark = dark::is_dark_mode_enabled();
-                    if (m_theme) {
+                    const auto is_dark = colours::is_dark_mode_active();
+                    if (m_theme && !is_dark) {
                         DrawThemeBackground(m_theme.get(), dc, 0, 0, &rc_caption, nullptr);
                     } else {
                         const auto back_brush = get_colour_brush(dark::ColourID::PanelCaptionBackground, is_dark);
@@ -181,7 +183,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
             }
         }
         SubtractRect(&rc_fill, &rc_client, &rc_caption);
-        const auto brush_fill = dark::get_system_colour_brush(COLOR_BTNFACE, dark::is_dark_mode_enabled());
+        const auto brush_fill = dark::get_system_colour_brush(COLOR_BTNFACE, colours::is_dark_mode_active());
         FillRect(HDC(wp), &rc_fill, brush_fill.get());
     }
         return TRUE;

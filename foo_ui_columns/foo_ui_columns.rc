@@ -689,7 +689,7 @@ STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    LTEXT           "Mode (requires restart)",IDC_TITLE1,7,4,313,16
+    LTEXT           "Mode",IDC_TITLE1,7,4,313,16
     CONTROL         "Light",IDC_DARK_MODE_DISABLED,"Button",BS_AUTORADIOBUTTON | WS_GROUP,7,29,32,10
     CONTROL         "Dark",IDC_DARK_MODE_ENABLED,"Button",BS_AUTORADIOBUTTON,7,44,32,10
     LTEXT           "Your version of Windows has not been tested for dark mode compatibility. Some dark mode features have been disabled.",IDC_UNKNOWN_WINDOWS_BUILD,7,71,313,20,NOT WS_VISIBLE

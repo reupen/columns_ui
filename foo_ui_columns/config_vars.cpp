@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "menu_items.h"
-#include "rebar.h"
 #include "columns_v2.h"
-#include "common.h"
 #include "main_window.h"
 
 namespace settings {

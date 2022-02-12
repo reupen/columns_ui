@@ -1,7 +1,8 @@
 #include "stdafx.h"
+
+#include "common.h"
 #include "playlist_tabs.h"
 #include "playlist_manager_utils.h"
-#include "main_window.h"
 
 namespace cui::panels::playlist_tabs {
 

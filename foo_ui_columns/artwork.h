@@ -72,6 +72,7 @@ public:
     void on_completion(unsigned p_code);
 
     static void g_on_colours_change();
+    static void s_on_dark_mode_status_change();
 
     void force_reload_artwork();
 
