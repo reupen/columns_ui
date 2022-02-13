@@ -186,7 +186,29 @@ void cui::MainWindow::set_title(const char* ptr)
     m_window_title = ptr;
 }
 
-void cui::MainWindow::update_taskbar_buttons(bool update)
+bool cui::MainWindow::update_taskbar_button_images() const
+{
+    if (!m_taskbar_list)
+        return false;
+
+    int cx{};
+    int cy{};
+
+    if (!ImageList_GetIconSize(m_taskbar_button_images.get(), &cx, &cy))
+        return false;
+
+    const auto icons = colours::is_dark_mode_active() ? dark_taskbar_icons : light_taskbar_icons;
+
+    for (size_t i = 0; i < std::size(light_taskbar_icons); i++) {
+        wil::unique_hicon icon(static_cast<HICON>(
+            LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(icons[i]), IMAGE_ICON, cx, cy, NULL)));
+        ImageList_ReplaceIcon(m_taskbar_button_images.get(), i, icon.get());
+    }
+
+    return SUCCEEDED(m_taskbar_list->ThumbBarSetImageList(m_wnd, m_taskbar_button_images.get()));
+}
+
+void cui::MainWindow::update_taskbar_buttons(bool update) const
 {
     if (m_wnd && m_taskbar_list) {
         static_api_ptr_t<playback_control> play_api;
@@ -246,10 +268,7 @@ void cui::MainWindow::on_create()
     Gdiplus::GdiplusStartupInput gdiplusStartupInput{};
     m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
 
-    if (dark::is_dark_mode_enabled()) {
-        dark::enable_dark_mode_for_app();
-        dark::enable_top_level_non_client_dark_mode(m_wnd);
-    }
+    set_dark_mode_attributes();
 }
 
 void cui::MainWindow::on_destroy()
@@ -257,6 +276,38 @@ void cui::MainWindow::on_destroy()
     if (m_gdiplus_initialised)
         Gdiplus::GdiplusShutdown(m_gdiplus_instance);
     m_gdiplus_initialised = false;
+}
+
+void cui::MainWindow::set_dark_mode_attributes(bool is_update) const
+{
+    if (!dark::does_os_support_dark_mode())
+        return;
+
+    const auto is_dark = colours::is_dark_mode_active();
+    dark::set_titlebar_mode(m_wnd, is_dark);
+    set_app_mode(is_dark ? dark::PreferredAppMode::Dark : dark::PreferredAppMode::Light);
+
+    if (!is_update)
+        return;
+
+    update_taskbar_button_images();
+
+    if (!IsWindowVisible(m_wnd))
+        return;
+
+    // The below is a hack to force the titlebar to redraw (nothing else works).
+    RECT rc{};
+    if (!GetWindowRect(m_wnd, &rc))
+        return;
+
+    const auto cx = RECT_CX(rc);
+    const auto cy = RECT_CY(rc);
+
+    if (cx <= 0)
+        return;
+
+    SetWindowPos(m_wnd, nullptr, 0, 0, cx - 1, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    SetWindowPos(m_wnd, nullptr, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
 }
 
 void cui::MainWindow::create_child_windows()

@@ -17,10 +17,13 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             g_font_menu_horizontal.reset(uCreateMenuFont());
             g_font_menu_vertical.reset(uCreateMenuFont(true));
         }
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
+            [wnd] { RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
         refresh_children();
         break;
     case WM_DESTROY:
         destroy_children();
+        m_dark_mode_notifier.reset();
         if (!--g_count) {
             g_font_menu_horizontal.reset();
             g_font_menu_vertical.reset();

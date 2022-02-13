@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "playlist_view_tfhooks.h"
 #include "columns_v2.h"
 
 void PlaylistViewColumn::read(stream_reader* reader, abort_callback& abortCallback)

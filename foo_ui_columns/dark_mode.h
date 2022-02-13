@@ -63,12 +63,13 @@ private:
     mutable LazyObject<Resource> m_resource;
 };
 
-[[nodiscard]] bool is_dark_mode_enabled();
 [[nodiscard]] bool does_os_support_dark_mode();
 [[nodiscard]] bool are_private_apis_allowed();
 
-void enable_dark_mode_for_app();
-void enable_top_level_non_client_dark_mode(HWND wnd);
+enum class PreferredAppMode { System = 1, Dark = 2, Light = 3 };
+
+void set_app_mode(PreferredAppMode mode);
+void set_titlebar_mode(HWND wnd, bool is_dark);
 
 [[nodiscard]] COLORREF get_dark_colour(ColourID colour_id);
 [[nodiscard]] COLORREF get_colour(ColourID colour_id, bool is_dark);

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "playlist_switcher_v2.h"
 
-#include "dark_mode.h"
 #include "playlist_switcher_title_formatting.h"
 
 namespace cui::panels::playlist_switcher {
@@ -97,6 +96,14 @@ void PlaylistSwitcher::g_redraw_all()
     for (auto& window : g_windows)
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_INVALIDATE);
 }
+
+void PlaylistSwitcher::s_on_dark_mode_status_change()
+{
+    const auto is_dark = colours::is_dark_mode_active();
+    for (auto&& window : g_windows)
+        window->set_use_dark_mode(is_dark);
+}
+
 void PlaylistSwitcher::g_refresh_all_items()
 {
     for (auto& window : g_windows)
@@ -112,7 +119,7 @@ void PlaylistSwitcher::g_on_font_items_change()
 }
 void PlaylistSwitcher::notify_on_initialisation()
 {
-    set_use_dark_mode(dark::is_dark_mode_enabled());
+    set_use_dark_mode(colours::is_dark_mode_active());
     set_autosize(true);
     set_single_selection(true);
     set_show_header(false);

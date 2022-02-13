@@ -52,12 +52,15 @@ public:
 
     t_size get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
 
-    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; } // bit-mask
+    t_size get_supported_bools() const override
+    {
+        return colours::bool_flag_use_custom_active_item_frame | colours::bool_flag_dark_mode_enabled;
+    } // bit-mask
     bool get_themes_supported() const override { return true; }
 
     void on_colour_changed(t_size mask) const override;
 
-    void on_bool_changed(t_size mask) const override {}
+    void on_bool_changed(t_size mask) const override;
 };
 
 class ItemPropertiesConfig {
@@ -181,6 +184,7 @@ public:
 
     static void g_on_app_activate(bool b_activated);
     static void g_redraw_all();
+    static void s_on_dark_mode_status_change();
     static void g_on_font_items_change();
     static void g_on_font_header_change();
     static void g_on_font_groups_change();

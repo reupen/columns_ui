@@ -75,6 +75,7 @@ public:
     static void g_on_edgestyle_change();
     static void g_on_vertical_item_padding_change();
     static void g_redraw_all();
+    static void s_on_dark_mode_status_change();
     static void g_refresh_all_items();
 
     void destroy_switch_timer()

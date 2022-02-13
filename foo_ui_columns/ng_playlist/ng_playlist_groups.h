@@ -1,5 +1,7 @@
 #pragma once
 
+#include "common.h"
+
 namespace cui::panels::playlist_view {
 
 class Group {

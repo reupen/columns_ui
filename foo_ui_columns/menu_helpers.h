@@ -10,7 +10,6 @@
  */
 
 #include "stdafx.h"
-#include "common.h"
 
 namespace menu_helpers {
 pfc::string8 get_context_menu_node_name(contextmenu_item_node* p_node);

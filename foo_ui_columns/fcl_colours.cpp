@@ -1,6 +1,4 @@
 #include "stdafx.h"
-#include "playlist_switcher_v2.h"
-#include "playlist_view_tfhooks.h"
 #include "config.h"
 #include "tab_colours.h"
 

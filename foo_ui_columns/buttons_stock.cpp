@@ -1,7 +1,5 @@
 #include "stdafx.h"
 
-#include "dark_mode.h"
-
 /** Creates toggle buttons from standard config objects */
 #define __DEFINE_MENU_BUTTON(_namespace, _guid_command, _guid_config)                                                 \
     namespace _namespace {                                                                                            \
@@ -80,7 +78,7 @@ class ButtonMenuItemWithBitmap : public uie::button_v2 {
     HANDLE get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, unsigned cx_hint, unsigned cy_hint,
         unsigned& handle_type) const override
     {
-        const auto icon_id = dark::is_dark_mode_enabled() ? DarkIconID : LightIconID;
+        const auto icon_id = colours::is_dark_mode_active() ? DarkIconID : LightIconID;
         auto icon = (HICON)LoadImage(
             core_api::get_my_instance(), MAKEINTRESOURCE(icon_id), IMAGE_ICON, cx_hint, cy_hint, NULL);
         handle_type = handle_type_icon;

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "playlist_tabs.h"
 
-#include "dark_mode.h"
 #include "dark_mode_tabs.h"
 #include "playlist_manager_utils.h"
 
@@ -260,12 +259,12 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_ERASEBKGND:
-        if (!dark::is_dark_mode_enabled())
+        if (!colours::is_dark_mode_active())
             break;
 
         return FALSE;
     case WM_PAINT: {
-        if (!dark::is_dark_mode_enabled())
+        if (!colours::is_dark_mode_active())
             break;
 
         dark::handle_tab_control_paint(wnd);

@@ -30,7 +30,7 @@ void StatusPane::on_font_changed()
 
 void StatusPane::render_background(HDC dc, const RECT& rc)
 {
-    const auto is_dark = dark::is_dark_mode_enabled();
+    const auto is_dark = colours::is_dark_mode_active();
     const auto fill_brush = dark::get_system_colour_brush(COLOR_BTNFACE, is_dark);
     COLORREF cr2 = dark::get_system_colour(COLOR_3DDKSHADOW, is_dark);
 

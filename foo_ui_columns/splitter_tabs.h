@@ -118,6 +118,18 @@ public:
     void destroy_children();
     void adjust_rect(bool b_larger, RECT* rc);
     void set_styles(bool visible = true);
+
+    void update_size_limits();
+    void on_font_change();
+    static void g_on_font_change();
+    void on_size_changed(unsigned width, unsigned height);
+    void on_size_changed();
+    void on_active_tab_changing(t_size index_from);
+    void on_active_tab_changed(t_size index_to);
+
+    TabStackPanel() = default;
+
+private:
     PanelList m_panels;
     PanelList m_active_panels;
     HWND m_wnd_tabs{nullptr};
@@ -125,17 +137,8 @@ public:
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;
     t_int32 m_mousewheel_delta{NULL};
-
-    void update_size_limits();
-    void on_font_change();
-    static void g_on_font_change();
     wil::unique_hfont g_font;
-    void on_size_changed(unsigned width, unsigned height);
-    void on_size_changed();
-    void on_active_tab_changing(t_size index_from);
-    void on_active_tab_changed(t_size index_to);
-
-    TabStackPanel() = default;
+    std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 
 } // namespace cui::panels::tab_stack

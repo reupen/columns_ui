@@ -1,8 +1,6 @@
 #pragma once
 
-#include "layout.h"
 #include "config.h"
-#include "splitter_utils.h"
 
 namespace cui::prefs {
 

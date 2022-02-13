@@ -11,10 +11,13 @@ public:
     const GUID& get_client_guid() const override { return g_guid; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel"; }
     t_size get_supported_colours() const override { return colours::colour_flag_all; }
-    t_size get_supported_bools() const override { return colours::bool_flag_use_custom_active_item_frame; }
+    t_size get_supported_bools() const override
+    {
+        return colours::bool_flag_use_custom_active_item_frame | colours::bool_flag_dark_mode_enabled;
+    }
     bool get_themes_supported() const override { return true; }
     void on_colour_changed(t_size mask) const override;
-    void on_bool_changed(t_size mask) const override {}
+    void on_bool_changed(t_size mask) const override;
 };
 
 class Field {
@@ -107,6 +110,7 @@ public:
     static void g_on_field_query_change(const Field& field);
     static void g_on_showemptyitems_change(bool b_val, bool update_filters = true);
     static void g_on_edgestyle_change();
+    static void s_on_dark_mode_status_change();
     static void g_on_font_items_change();
     static void g_on_font_header_change();
     static void g_redraw_all();

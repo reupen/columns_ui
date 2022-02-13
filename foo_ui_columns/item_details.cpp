@@ -661,10 +661,16 @@ void ItemDetails::scroll(INT SB, int position, bool b_absolute)
     }
 }
 
+void ItemDetails::set_window_theme() const
+{
+    SetWindowTheme(get_wnd(), colours::is_dark_mode_active() ? L"DarkMode_Explorer" : nullptr, nullptr);
+}
+
 LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
+        set_window_theme();
         register_callback();
         static_api_ptr_t<play_callback_manager>()->register_callback(
             this, flag_on_playback_all & ~(flag_on_volume_change | flag_on_playback_starting), false);
@@ -903,6 +909,13 @@ void ItemDetails::g_on_font_change()
 {
     for (auto& window : g_windows) {
         window->on_font_change();
+    }
+}
+
+void ItemDetails::s_on_dark_mode_status_change()
+{
+    for (auto&& window : g_windows) {
+        window->set_window_theme();
     }
 }
 

@@ -4,26 +4,31 @@
 
 void ColoursManagerData::g_on_common_bool_changed(t_size mask)
 {
-    t_size count = m_callbacks.get_count();
-    for (t_size i = 0; i < count; i++)
-        m_callbacks[i]->on_bool_changed(mask);
+    // Copy the list of callbacks in case someone tries to add or remove one
+    // while we're iterating through them
+    for (const auto callbacks = m_callbacks; auto&& callback : callbacks) {
+        if (m_callbacks.contains(callback))
+            callback->on_bool_changed(mask);
+    }
 }
 
 void ColoursManagerData::g_on_common_colour_changed(t_size mask)
 {
-    t_size count = m_callbacks.get_count();
-    for (t_size i = 0; i < count; i++)
-        m_callbacks[i]->on_colour_changed(mask);
+    // Copy the list of callbacks in case someone tries to add or remove one
+    // while we're iterating through them
+    for (const auto callbacks = m_callbacks; auto&& callback : callbacks)
+        if (m_callbacks.contains(callback))
+            callback->on_colour_changed(mask);
 }
 
 void ColoursManagerData::deregister_common_callback(cui::colours::common_callback* p_callback)
 {
-    m_callbacks.remove_item(p_callback);
+    m_callbacks.erase(p_callback);
 }
 
 void ColoursManagerData::register_common_callback(cui::colours::common_callback* p_callback)
 {
-    m_callbacks.add_item(p_callback);
+    m_callbacks.emplace(p_callback);
 }
 
 ColoursManagerData::ColoursManagerData() : cfg_var(g_cfg_guid)

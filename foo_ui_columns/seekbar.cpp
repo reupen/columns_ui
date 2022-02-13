@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "seekbar.h"
 
-#include "dark_mode.h"
 #include "dark_mode_trackbar.h"
 
 #define ID_SEEK 2005
@@ -19,6 +18,14 @@ void SeekBarToolbar::SeekBarTrackbarCallback::on_position_change(unsigned pos, b
 void SeekBarToolbar::SeekBarTrackbarCallback::get_tooltip_text(unsigned pos, uih::TrackbarString& out)
 {
     out = pfc::stringcvt::string_os_from_utf8(pfc::format_time_ex(pos / 10.0, 1));
+}
+
+void SeekBarToolbar::set_custom_colours()
+{
+    if (colours::is_dark_mode_active())
+        m_child.set_custom_colours(dark::get_dark_trackbar_colours());
+    else
+        m_child.set_custom_colours({});
 }
 
 void SeekBarToolbar::update_seekbars(bool positions_only)
@@ -140,12 +147,14 @@ LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_child.set_show_tooltips(true);
         m_child.set_scroll_step(3);
 
-        if (dark::is_dark_mode_enabled())
-            m_child.set_custom_colours(dark::get_dark_trackbar_colours());
+        set_custom_colours();
 
         wnd_seekbar = m_child.create(wnd);
 
         if (wnd_seekbar) {
+            m_dark_mode_notifier
+                = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] { set_custom_colours(); });
+
             update_seek();
 
             update_seek_timer();
@@ -171,6 +180,7 @@ LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     case WM_DESTROY: {
         if (initialised) {
+            m_dark_mode_notifier.reset();
             m_child.destroy();
             windows.remove_item(this);
             initialised = false;

@@ -1,5 +1,6 @@
-#ifndef _COLUMNS_2_H_
-#define _COLUMNS_2_H_
+#pragma once
+
+#include "common.h"
 
 class PlaylistViewColumnBase {
 public:
@@ -143,5 +144,3 @@ protected:
 };
 
 extern ConfigColumns g_columns;
-
-#endif

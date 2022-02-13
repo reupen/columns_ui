@@ -3,6 +3,7 @@
 #include "config_appearance.h"
 #include "config_host.h"
 #include "dark_mode.h"
+#include "main_window.h"
 #include "tab_colours.h"
 #include "tab_dark_mode.h"
 #include "tab_fonts.h"
@@ -15,17 +16,35 @@ const GUID dark_mode_status_id = {0x1278cd90, 0x1d95, 0x48e8, {0x87, 0x3a, 0x1, 
 
 }
 
-fbh::ConfigInt32 dark_mode_status(dark_mode_status_id, WI_EnumValue(DarkModeStatus::Disabled), [](auto&& new_value) {
-    g_colours_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
-    g_colours_manager_data.g_on_common_colour_changed(colour_flag_all);
-    ColoursClientList colours_clients;
-    ColoursClientList::g_get_list(colours_clients);
+fbh::ConfigInt32 dark_mode_status(
+    dark_mode_status_id, WI_EnumValue(DarkModeStatus::Disabled), [](auto&& new_value, auto&& old_value) {
+        if (new_value == old_value)
+            return;
 
-    for (auto&& client : colours_clients) {
-        client.m_ptr->on_bool_changed(bool_flag_dark_mode_enabled);
-        client.m_ptr->on_colour_changed(colour_flag_all);
-    }
-});
+        const auto wnd = main_window.get_wnd();
+
+        if (wnd)
+            SetWindowRedraw(wnd, FALSE);
+
+        g_colours_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
+        g_colours_manager_data.g_on_common_colour_changed(colour_flag_all);
+        ColoursClientList colours_clients;
+        ColoursClientList::g_get_list(colours_clients);
+
+        for (auto&& client : colours_clients) {
+            if (client.m_ptr->get_supported_bools() & bool_flag_dark_mode_enabled)
+                client.m_ptr->on_bool_changed(bool_flag_dark_mode_enabled);
+
+            client.m_ptr->on_colour_changed(colour_flag_all);
+        }
+
+        if (wnd) {
+            SetWindowRedraw(wnd, TRUE);
+            RedrawWindow(wnd, nullptr, nullptr,
+                RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
+            main_window.set_dark_mode_attributes(true);
+        }
+    });
 
 } // namespace cui::colours
 
@@ -94,7 +113,7 @@ public:
         if (p_entry->colour_mode == cui::colours::colour_mode_system
             || p_entry->colour_mode == cui::colours::colour_mode_themed) {
             const auto system_colour_id = g_get_system_colour_id(p_identifier);
-            return cui::dark::get_system_colour(system_colour_id, cui::dark::is_dark_mode_enabled());
+            return cui::dark::get_system_colour(system_colour_id, cui::colours::is_dark_mode_active());
         }
         switch (p_identifier) {
         case cui::colours::colour_text:

@@ -1,6 +1,5 @@
 #include "stdafx.h"
 
-#include "dark_mode.h"
 #include "menu_mnemonics.h"
 
 cfg_int cfg_fullsizemenu(GUID{0xe880f267, 0x73de, 0x7952, {0x5b, 0x79, 0xb5, 0xda, 0x77, 0x28, 0x6d, 0xb6}}, 0);
@@ -61,12 +60,6 @@ public:
 class MenuToolbar
     : public ui_extension::container_uie_window_t<uie::menu_window_v2>
     , uih::MessageHook {
-    static const TCHAR* class_name;
-
-    WNDPROC menuproc{nullptr};
-    bool initialised{false};
-    bool m_menu_key_pressed{false};
-
 public:
     //    static pfc::ptr_list_t<playlists_list_window> list_wnd;
     // static HHOOK msghook;
@@ -121,6 +114,16 @@ public:
 
     MenuToolbar();
     ~MenuToolbar();
+
+private:
+    void set_window_theme();
+
+    static const TCHAR* class_name;
+
+    WNDPROC menuproc{nullptr};
+    bool initialised{false};
+    bool m_menu_key_pressed{false};
+    std::unique_ptr<cui::colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 
 bool MenuToolbar::hooked = false;
@@ -139,6 +142,11 @@ bool MenuToolbar::is_menu_focused() const
 HWND MenuToolbar::get_previous_focus_window() const
 {
     return wnd_prev_focus;
+}
+
+void MenuToolbar::set_window_theme()
+{
+    SetWindowTheme(wnd_menu, cui::colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
 }
 
 LRESULT WINAPI MenuToolbar::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -168,8 +176,9 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (wnd_menu) {
             SetWindowLongPtr(wnd_menu, GWLP_USERDATA, (LPARAM)(this));
 
-            if (cui::dark::is_dark_mode_enabled())
-                SetWindowTheme(wnd_menu, L"DarkMode", nullptr);
+            set_window_theme();
+            m_dark_mode_notifier
+                = std::make_unique<cui::colours::dark_mode_notifier>([this, self = ptr{this}] { set_window_theme(); });
 
             SendMessage(wnd_menu, TB_SETBITMAPSIZE, (WPARAM)0, MAKELONG(0, 0));
             SendMessage(wnd_menu, TB_SETBUTTONSIZE, (WPARAM)0, MAKELONG(0, /*GetSystemMetrics(SM_CYMENUSIZE)*/ 0));
@@ -335,6 +344,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_DESTROY: {
+        m_dark_mode_notifier.reset();
         DestroyWindow(wnd_menu);
         wnd_menu = nullptr;
         m_buttons.remove_all();

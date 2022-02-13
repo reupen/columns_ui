@@ -53,6 +53,7 @@ public:
     void on_query_capability();
     void update_title();
     void reset_title();
+    void set_dark_mode_attributes(bool is_update = false) const;
 
     /*
      * ITaskbarList3::ThumbBarUpdateButtons calls SendMessageTimeout without the SMTO_BLOCK flag.
@@ -66,6 +67,11 @@ public:
     HWND get_wnd() const { return m_wnd; }
 
 private:
+    static constexpr WORD light_taskbar_icons[]
+        = {IDI_LIGHT_STOP, IDI_LIGHT_PREV, IDI_LIGHT_PAUSE, IDI_LIGHT_PLAY, IDI_LIGHT_NEXT, IDI_LIGHT_RAND};
+    static constexpr WORD dark_taskbar_icons[]
+        = {IDI_DARK_STOP, IDI_DARK_PREV, IDI_DARK_PAUSE, IDI_DARK_PLAY, IDI_DARK_NEXT, IDI_DARK_RAND};
+
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static void warn_if_ui_hacks_installed();
 
@@ -74,7 +80,8 @@ private:
     void on_destroy();
     void create_child_windows();
     void set_title(const char* ptr);
-    void update_taskbar_buttons(bool update);
+    bool update_taskbar_button_images() const;
+    void update_taskbar_buttons(bool update) const;
 
     pfc::string8 m_window_title;
     wil::com_ptr_t<ITaskbarList3> m_taskbar_list;
@@ -84,6 +91,7 @@ private:
     bool m_shell_hook_registered{};
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};
+    wil::unique_himagelist m_taskbar_button_images;
 };
 
 extern MainWindow main_window;

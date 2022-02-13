@@ -5,22 +5,12 @@
 namespace cui::toolbars::buttons {
 
 class ButtonsToolbar : public ui_extension::container_ui_extension {
-    static const TCHAR* class_name;
-    int width{0};
-    int height{0};
-
+public:
     enum ConfigVersion { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
 
     /** For config dialog */
     enum { MSG_BUTTON_CHANGE = WM_USER + 2, MSG_COMMAND_CHANGE = WM_USER + 3 };
 
-    class_data& get_class_data() const override;
-
-    WNDPROC menuproc{nullptr};
-    bool initialised{false}, m_gdiplus_initialised{false};
-    ULONG_PTR m_gdiplus_instance{};
-
-public:
     enum Filter : uint32_t {
         FILTER_NONE,
         FILTER_PLAYING,
@@ -46,6 +36,37 @@ public:
         APPEARANCE_FLAT,
         APPEARANCE_NOEDGE,
     };
+
+    enum Identifier {
+        I_TEXT_BELOW,
+        I_APPEARANCE,
+        I_BUTTONS,
+    };
+    enum ButtonIdentifier {
+        I_BUTTON_TYPE,
+        I_BUTTON_FILTER,
+        I_BUTTON_SHOW,
+        I_BUTTON_GUID,
+        I_BUTTON_CUSTOM,
+        I_BUTTON_CUSTOM_DATA,
+        I_BUTTON_CUSTOM_HOT,
+        I_BUTTON_CUSTOM_HOT_DATA,
+        I_BUTTON_MASK_TYPE,
+        I_BUTTON_CUSTOM_IMAGE_DATA,
+        I_BUTTON_CUSTOM_IMAGE_MASK_DATA,
+        I_BUTTON_MASK_COLOUR,
+        I_BUTTON_USE_CUSTOM_TEXT,
+        I_BUTTON_TEXT,
+        I_BUTTON_SUBCOMMAND
+    };
+
+    enum CustomImageIdentifier {
+        I_CUSTOM_BUTTON_PATH,
+        I_CUSTOM_BUTTON_MASK_PATH,
+        // I_BUTTON_MASK_TYPE=8
+    };
+
+    enum ImageIdentifier { IMAGE_NAME, IMAGE_DATA, IMAGE_PATH };
 
     class Button {
     public:
@@ -232,15 +253,11 @@ public:
 
     void create_toolbar();
     void destroy_toolbar();
+    void set_window_theme() const;
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;
 
     unsigned get_type() const override;
-
-    std::vector<Button> m_buttons;
-
-    bool m_text_below{false};
-    Appearance m_appearance{APPEARANCE_NORMAL};
 
     static void reset_buttons(std::vector<Button>& p_buttons);
 
@@ -253,36 +270,22 @@ public:
 
     static const GUID g_guid_fcb;
 
-    enum Identifier {
-        I_TEXT_BELOW,
-        I_APPEARANCE,
-        I_BUTTONS,
-    };
-    enum ButtonIdentifier {
-        I_BUTTON_TYPE,
-        I_BUTTON_FILTER,
-        I_BUTTON_SHOW,
-        I_BUTTON_GUID,
-        I_BUTTON_CUSTOM,
-        I_BUTTON_CUSTOM_DATA,
-        I_BUTTON_CUSTOM_HOT,
-        I_BUTTON_CUSTOM_HOT_DATA,
-        I_BUTTON_MASK_TYPE,
-        I_BUTTON_CUSTOM_IMAGE_DATA,
-        I_BUTTON_CUSTOM_IMAGE_MASK_DATA,
-        I_BUTTON_MASK_COLOUR,
-        I_BUTTON_USE_CUSTOM_TEXT,
-        I_BUTTON_TEXT,
-        I_BUTTON_SUBCOMMAND
-    };
+private:
+    class_data& get_class_data() const override;
 
-    enum CustomImageIdentifier {
-        I_CUSTOM_BUTTON_PATH,
-        I_CUSTOM_BUTTON_MASK_PATH,
-        // I_BUTTON_MASK_TYPE=8
-    };
+    static const TCHAR* class_name;
+    int width{0};
+    int height{0};
 
-    enum ImageIdentifier { IMAGE_NAME, IMAGE_DATA, IMAGE_PATH };
+    WNDPROC menuproc{nullptr};
+    bool initialised{false}, m_gdiplus_initialised{false};
+    ULONG_PTR m_gdiplus_instance{};
+    std::vector<Button> m_buttons;
+    bool m_text_below{false};
+    Appearance m_appearance{APPEARANCE_NORMAL};
+    wil::unique_himagelist m_standard_images;
+    wil::unique_himagelist m_hot_images;
+    std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 
 class CommandPickerParam {

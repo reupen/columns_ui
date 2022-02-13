@@ -113,6 +113,7 @@ private:
             bool test_autohide_window(HWND wnd);
 
             HWND m_wnd{};
+            std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
         } m_container;
 
         GUID m_guid{};
@@ -195,6 +196,7 @@ private:
     int m_last_position{NULL};
     unsigned m_panel_dragging{NULL};
     bool m_panel_dragging_valid{false};
+    std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 
     static wil::unique_hfont g_font_menu_horizontal;
     static wil::unique_hfont g_font_menu_vertical;

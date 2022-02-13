@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "common.h"
 #include "playlist_tabs.h"
 
 namespace cui::panels::playlist_tabs {

@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "splitter_tabs.h"
 
-#include "dark_mode.h"
 #include "dark_mode_tabs.h"
 
 namespace cui::panels::tab_stack {
@@ -511,6 +510,8 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         on_size_changed();
         // ShowWindow(m_wnd_tabs, SW_SHOWNORMAL);
         g_windows.emplace_back(this);
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
+            [wnd_tabs = m_wnd_tabs] { RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
     } break;
     case WM_KEYDOWN: {
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
@@ -527,6 +528,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         break;
     case WM_DESTROY:
+        m_dark_mode_notifier.reset();
         g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
         destroy_children();
         destroy_tabs();
@@ -916,12 +918,12 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
 {
     switch (msg) {
     case WM_ERASEBKGND:
-        if (!dark::is_dark_mode_enabled())
+        if (!colours::is_dark_mode_active())
             break;
 
         return FALSE;
     case WM_PAINT: {
-        if (!dark::is_dark_mode_enabled())
+        if (!colours::is_dark_mode_active())
             break;
 
         dark::handle_tab_control_paint(wnd);
