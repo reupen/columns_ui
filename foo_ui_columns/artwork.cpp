@@ -154,7 +154,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         g_windows.push_back(this);
     } break;
     case WM_DESTROY:
-        g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+        std::erase(g_windows, this);
         static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
         static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
         static_api_ptr_t<play_callback_manager>()->unregister_callback(this);

@@ -700,7 +700,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         // 0, 0, 200, 200, wnd, HMENU(1001), core_api::get_my_instance(), NULL);
     } break;
     case WM_DESTROY: {
-        g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+        std::erase(g_windows, this);
         if (g_windows.empty())
             g_message_window.destroy();
 

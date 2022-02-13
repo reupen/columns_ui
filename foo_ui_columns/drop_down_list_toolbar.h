@@ -289,7 +289,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         if (s_windows.size() == 1) {
             ToolbarArgs::on_last_window_destroyed();
         }
-        s_windows.erase(std::remove(s_windows.begin(), s_windows.end(), this), s_windows.end());
+        std::erase(s_windows, this);
 
         m_initialised = false;
         const unsigned count = get_class_data().refcount;

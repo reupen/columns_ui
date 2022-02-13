@@ -529,7 +529,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_DESTROY:
         m_dark_mode_notifier.reset();
-        g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+        std::erase(g_windows, this);
         destroy_children();
         destroy_tabs();
         break;

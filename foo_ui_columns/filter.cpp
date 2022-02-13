@@ -872,7 +872,7 @@ void FilterPanel::notify_on_destroy()
         g_streams.remove_item(m_stream);
     m_stream.reset();
 
-    g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+    std::erase(g_windows, this);
     if (g_windows.empty())
         g_field_data.remove_all();
     m_nodes.remove_all();

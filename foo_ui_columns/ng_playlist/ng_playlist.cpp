@@ -580,7 +580,7 @@ void PlaylistView::notify_on_create()
 
 void PlaylistView::notify_on_destroy()
 {
-    g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+    std::erase(g_windows, this);
     if (g_windows.empty())
         g_global_mesage_window.destroy();
 

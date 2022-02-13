@@ -251,7 +251,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
 
         break;
     case WM_NCDESTROY:
-        s_windows.erase(std::ranges::remove(s_windows, this).begin(), s_windows.end());
+        std::erase(s_windows, this);
 
         if (!core_api::is_shutting_down())
             commit_search_results("");

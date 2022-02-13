@@ -153,7 +153,7 @@ void PlaylistSwitcher::notify_on_destroy()
 {
     m_selection_holder.release();
 
-    g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+    std::erase(g_windows, this);
 
     RevokeDragDrop(get_wnd());
 
