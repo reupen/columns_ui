@@ -12,7 +12,8 @@
 [#435](https://github.com/reupen/columns_ui/pull/435), [#436](https://github.com/reupen/columns_ui/pull/436),
 [#437](https://github.com/reupen/columns_ui/pull/437), [#438](https://github.com/reupen/columns_ui/pull/438),
 [#439](https://github.com/reupen/columns_ui/pull/439), [#440](https://github.com/reupen/columns_ui/pull/440),
-[#442](https://github.com/reupen/columns_ui/pull/442), [#444](https://github.com/reupen/columns_ui/pull/444)]
+[#442](https://github.com/reupen/columns_ui/pull/442), [#444](https://github.com/reupen/columns_ui/pull/444),
+[#445](https://github.com/reupen/columns_ui/pull/445)]
 
 * The Filter search toolbar is now integrated with the Colours and fonts preferences page, and its font, foreground colour and background colour are now configurable. [[#424](https://github.com/reupen/columns_ui/pull/424)]
   
