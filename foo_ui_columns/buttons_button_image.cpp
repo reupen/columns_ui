@@ -82,7 +82,7 @@ void ButtonsToolbar::ButtonImage::load(
 }
 unsigned ButtonsToolbar::ButtonImage::add_to_imagelist(HIMAGELIST iml)
 {
-    unsigned rv = I_IMAGENONE;
+    unsigned rv = I_IMAGECALLBACK;
     if (m_icon) {
         rv = ImageList_ReplaceIcon(iml, -1, m_icon);
     } else if (m_bm) {
