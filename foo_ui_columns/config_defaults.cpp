@@ -25,8 +25,7 @@ COLORREF get_default_colour(colours::ColourID index, bool themed)
 
 WINDOWPLACEMENT get_def_window_pos()
 {
-    WINDOWPLACEMENT rv;
-    memset(&rv, 0, sizeof(rv));
+    WINDOWPLACEMENT rv{};
     rv.showCmd = SW_SHOWNORMAL;
     rv.length = sizeof(rv);
     rv.ptMaxPosition.x = -1;

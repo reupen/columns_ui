@@ -30,8 +30,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            uTCITEM tabs;
-            memset(&tabs, 0, sizeof(tabs));
+            uTCITEM tabs{};
 
             HWND wnd_tab = GetDlgItem(wnd, IDC_TAB1);
 

@@ -528,8 +528,7 @@ std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnm
 
 void RebarWindow::save_bands()
 {
-    REBARBANDINFO rbbi;
-    memset(&rbbi, 0, sizeof(rbbi));
+    REBARBANDINFO rbbi{};
 
     rbbi.cbSize = REBARBANDINFOW_V6_SIZE;
     rbbi.fMask = RBBIM_SIZE | RBBIM_STYLE | RBBIM_LPARAM;
@@ -677,14 +676,12 @@ void RebarWindow::update_band(unsigned n, bool size)
 {
     ui_extension::window_ptr p_ext = m_bands[n].m_window;
     if (p_ext.is_valid()) {
-        uREBARBANDINFO rbbi;
-        memset(&rbbi, 0, sizeof(rbbi));
+        uREBARBANDINFO rbbi{};
         rbbi.cbSize = sizeof(uREBARBANDINFO);
 
         rbbi.fMask |= RBBIM_CHILDSIZE;
 
-        MINMAXINFO mmi;
-        memset(&mmi, 0, sizeof(MINMAXINFO));
+        MINMAXINFO mmi{};
         mmi.ptMaxTrackSize.x = MAXLONG;
         mmi.ptMaxTrackSize.y = MAXLONG;
         SendMessage(m_bands[n].m_wnd, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));

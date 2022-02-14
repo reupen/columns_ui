@@ -455,8 +455,7 @@ void MenuToolbar::make_menu(unsigned idx)
 
     p_manager = p_menu;
 
-    TPMPARAMS tpmp;
-    memset(&tpmp, 0, sizeof(TPMPARAMS));
+    TPMPARAMS tpmp{};
     tpmp.cbSize = sizeof(tpmp);
 
     GetWindowRect(wnd_menu, &tpmp.rcExclude);
@@ -464,8 +463,7 @@ void MenuToolbar::make_menu(unsigned idx)
     HMONITOR mon = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
 
     if (mon) {
-        MONITORINFO mi;
-        memset(&mi, 0, sizeof(MONITORINFO));
+        MONITORINFO mi{};
         mi.cbSize = sizeof(MONITORINFO);
         if (uGetMonitorInfo(mon, &mi)) {
             if (pt.x < mi.rcMonitor.left)

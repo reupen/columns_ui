@@ -853,8 +853,7 @@ void PlaylistView::notify_update_item_data(t_size index)
     temp.prealloc(32);
     GlobalVariableList globals;
     bool b_global = m_script_global.is_valid();
-    SYSTEMTIME st;
-    memset(&st, 0, sizeof(SYSTEMTIME));
+    SYSTEMTIME st{};
     GetLocalTime(&st);
 
     DateTitleformatHook tf_hook_date(&st);

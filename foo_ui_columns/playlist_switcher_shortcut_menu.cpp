@@ -92,8 +92,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
         m_contextmenu_manager_base = ID_RECYCLER_BASE + recycler_count;
     }
     if (b_index_valid) {
-        MENUITEMINFO mi;
-        memset(&mi, 0, sizeof(mi));
+        MENUITEMINFO mi{};
         mi.cbSize = sizeof(MENUITEMINFO);
         mi.fMask = MIIM_STATE;
         mi.fState = MFS_DEFAULT;

@@ -56,8 +56,7 @@ bool LayoutTabNode::have_item(const GUID& p_guid)
 HTREEITEM LayoutTab::insert_item_in_tree_view(
     HWND wnd_tree, const char* sz_text, HTREEITEM ti_parent, HTREEITEM ti_after, bool is_expanded)
 {
-    uTVINSERTSTRUCT is;
-    memset(&is, 0, sizeof(is));
+    uTVINSERTSTRUCT is{};
     is.hParent = ti_parent;
     is.hInsertAfter = ti_after;
     is.item.mask = TVIF_TEXT | TVIF_PARAM | TVIF_STATE;
@@ -723,8 +722,7 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
             HTREEITEM treeitem = TreeView_GetSelection(m_wnd_tree);
 
-            TVHITTESTINFO ti;
-            memset(&ti, 0, sizeof(ti));
+            TVHITTESTINFO ti{};
 
             if (pt.x == -1 && pt.y == -1) {
                 RECT rc;

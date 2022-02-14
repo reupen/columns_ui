@@ -70,8 +70,7 @@ void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& fon
         font_changes.m_font_changes.resize(count);
 
         HDC dc = GetDC(nullptr);
-        LOGFONT lf_base;
-        memset(&lf_base, 0, sizeof(lf_base));
+        LOGFONT lf_base{};
 
         for (t_size i = 0; i < count; i++) {
             if (raw_font_changes[i].m_reset) {

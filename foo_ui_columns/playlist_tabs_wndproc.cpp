@@ -314,8 +314,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     data.prealloc(playlist_api->playlist_get_item_count(idx));
                     playlist_api->playlist_get_all_items(idx, data);
 
-                    MENUITEMINFO mi;
-                    memset(&mi, 0, sizeof(mi));
+                    MENUITEMINFO mi{};
                     mi.cbSize = sizeof(MENUITEMINFO);
                     mi.fMask = MIIM_STATE;
                     mi.fState = MFS_DEFAULT;

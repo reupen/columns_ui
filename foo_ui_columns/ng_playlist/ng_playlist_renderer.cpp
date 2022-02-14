@@ -11,8 +11,7 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, t
         return;
 
     HDC dcc = CreateCompatibleDC(context.dc);
-    BITMAP bminfo;
-    memset(&bminfo, 0, sizeof(bminfo));
+    BITMAP bminfo{};
     GetObject(bm.get(), sizeof(BITMAP), &bminfo);
 
     RECT rc_bitmap;

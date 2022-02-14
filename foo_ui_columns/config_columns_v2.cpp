@@ -114,8 +114,6 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             m_wnd = wnd;
-            uTCITEM tabs;
-            memset(&tabs, 0, sizeof(tabs));
 
             uSendDlgItemMessageText(wnd, IDC_ALIGNMENT, CB_ADDSTRING, 0, "Left");
             uSendDlgItemMessageText(wnd, IDC_ALIGNMENT, CB_ADDSTRING, 0, "Centre");

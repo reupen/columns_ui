@@ -114,8 +114,7 @@ void FilterSearchToolbar::get_menu_items(uie::menu_hook_t& p_hook)
 
 void FilterSearchToolbar::on_show_clear_button_change()
 {
-    TBBUTTONINFO tbbi;
-    memset(&tbbi, 0, sizeof(tbbi));
+    TBBUTTONINFO tbbi{};
     tbbi.cbSize = sizeof(tbbi);
     tbbi.dwMask = TBIF_STATE;
     tbbi.fsState = TBSTATE_ENABLED | (m_show_clear_button ? NULL : TBSTATE_HIDDEN);
@@ -432,8 +431,7 @@ void FilterSearchToolbar::update_favourite_icon(const char* p_new)
 {
     bool new_state = cfg_favourites.have_item(p_new ? p_new : string_utf8_from_window(m_search_editbox));
     if (m_favourite_state != new_state) {
-        TBBUTTONINFO tbbi;
-        memset(&tbbi, 0, sizeof(tbbi));
+        TBBUTTONINFO tbbi{};
         tbbi.cbSize = sizeof(tbbi);
         tbbi.dwMask = TBIF_IMAGE;
         tbbi.iImage = new_state ? 1 : 0;
@@ -470,8 +468,7 @@ void FilterSearchToolbar::create_edit()
     ImageList_SetImageCount(m_imagelist, 3);
     update_toolbar_icons();
 
-    TBBUTTON tbb[2];
-    memset(&tbb, 0, sizeof(tbb));
+    TBBUTTON tbb[2]{};
     tbb[0].iBitmap = 2;
     tbb[0].idCommand = idc_clear;
     tbb[0].fsState = TBSTATE_ENABLED | (m_show_clear_button ? NULL : TBSTATE_HIDDEN);
@@ -497,8 +494,7 @@ void FilterSearchToolbar::create_edit()
 
     SetWindowFont(m_search_editbox, s_font.get(), TRUE);
 
-    COMBOBOXINFO cbi;
-    memset(&cbi, 0, sizeof(cbi));
+    COMBOBOXINFO cbi{};
     cbi.cbSize = sizeof(cbi);
     SendMessage(m_search_editbox, CB_GETCOMBOBOXINFO, NULL, (LPARAM)&cbi);
 

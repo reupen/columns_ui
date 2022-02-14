@@ -35,15 +35,13 @@ ULONG STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDro
 bool ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListDropTarget::check_do(IDataObject* pDO)
 {
     bool rv = false;
-    FORMATETC fe;
-    memset(&fe, 0, sizeof(fe));
+    FORMATETC fe{};
     fe.cfFormat = g_clipformat();
     fe.dwAspect = DVASPECT_CONTENT;
     fe.lindex = -1;
     fe.tymed = TYMED_HGLOBAL;
     // console::formatter() << "check_do: " << (int)fe.cfFormat;
-    STGMEDIUM sm;
-    memset(&sm, 0, sizeof(sm));
+    STGMEDIUM sm{};
     if (SUCCEEDED(pDO->GetData(&fe, &sm))) {
         auto* pDDD = (DDData*)GlobalLock(sm.hGlobal);
         if (pDDD && pDDD->version == 0 && pDDD->wnd == m_button_list_view->get_wnd())

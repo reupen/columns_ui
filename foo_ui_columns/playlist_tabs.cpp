@@ -370,8 +370,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // unsigned scroll_lines = GetNumScrollLines();
 
             HWND wnd_child = GetWindow(wnd, GW_CHILD);
-            WCHAR str_class[129];
-            memset(str_class, 0, sizeof(str_class));
+            WCHAR str_class[129]{};
             if (wnd_child && RealGetWindowClass(wnd_child, str_class, tabsize(str_class) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
                 INT min = NULL;
