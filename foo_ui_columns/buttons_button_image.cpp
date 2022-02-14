@@ -104,11 +104,9 @@ void ButtonsToolbar::ButtonImage::get_size(SIZE& p_out)
 {
     p_out.cx = 0;
     p_out.cy = 0;
-    BITMAP bmi;
-    memset(&bmi, 0, sizeof(BITMAP));
+    BITMAP bmi{};
     if (m_icon) {
-        ICONINFO ii;
-        memset(&ii, 0, sizeof(ii));
+        ICONINFO ii{};
         if (GetIconInfo(m_icon, &ii)) {
             GetObject(ii.hbmColor ? ii.hbmColor : ii.hbmMask, sizeof(BITMAP), &bmi);
         }

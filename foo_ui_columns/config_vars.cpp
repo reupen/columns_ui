@@ -166,8 +166,7 @@ ConfigWindowPlacement::ConfigWindowPlacement(const GUID& p_guid)
 void ConfigWindowPlacement::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     if (cui::main_window.get_wnd() && remember_window_pos()) {
-        WINDOWPLACEMENT wp;
-        memset(&wp, 0, sizeof(wp));
+        WINDOWPLACEMENT wp{};
         wp.length = sizeof(wp);
         if (GetWindowPlacement(cui::main_window.get_wnd(), &wp))
             *this = wp;

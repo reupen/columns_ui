@@ -10,8 +10,7 @@ bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTI
     for (t_size i = 0; i < count; i++) {
         pfc::stringcvt::string_wide_from_utf8 wide(g_field_data[i].m_name);
         {
-            MENUITEMINFO mii;
-            memset(&mii, 0, sizeof(mii));
+            MENUITEMINFO mii{};
             mii.cbSize = sizeof(mii);
             mii.fMask = MIIM_FTYPE | MIIM_STRING | MIIM_ID | MIIM_STATE;
             mii.fType = MFT_STRING;
@@ -80,8 +79,7 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
         const wchar_t* p_send = L"Send to playlist";
         const wchar_t* p_send_play = L"Send to playlist and play";
         const wchar_t* p_add = L"Add to active playlist";
-        MENUITEMINFO mii;
-        memset(&mii, 0, sizeof(mii));
+        MENUITEMINFO mii{};
         mii.cbSize = sizeof(mii);
         mii.fMask = MIIM_FTYPE | MIIM_STRING | MIIM_ID | MIIM_STATE;
         mii.fType = MFT_STRING;

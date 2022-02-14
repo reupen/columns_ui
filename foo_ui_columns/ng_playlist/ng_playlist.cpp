@@ -580,7 +580,7 @@ void PlaylistView::notify_on_create()
 
 void PlaylistView::notify_on_destroy()
 {
-    g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+    std::erase(g_windows, this);
     if (g_windows.empty())
         g_global_mesage_window.destroy();
 
@@ -853,8 +853,7 @@ void PlaylistView::notify_update_item_data(t_size index)
     temp.prealloc(32);
     GlobalVariableList globals;
     bool b_global = m_script_global.is_valid();
-    SYSTEMTIME st;
-    memset(&st, 0, sizeof(SYSTEMTIME));
+    SYSTEMTIME st{};
     GetLocalTime(&st);
 
     DateTitleformatHook tf_hook_date(&st);

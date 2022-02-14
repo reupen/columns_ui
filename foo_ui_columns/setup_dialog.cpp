@@ -36,8 +36,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         ListView_SetExtendedListViewStyleEx(
             wnd_lv, LVS_EX_FULLROWSELECT | 0x10000000, LVS_EX_FULLROWSELECT | 0x10000000);
 
-        LVCOLUMN lvc;
-        memset(&lvc, 0, sizeof(LVCOLUMN));
+        LVCOLUMN lvc{};
         lvc.mask = LVCF_TEXT | LVCF_WIDTH;
 
         // MapDialogWidth(wnd, 228);
@@ -53,8 +52,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         LayoutWindow::g_get_default_presets(m_presets);
 
-        LVITEM lvi;
-        memset(&lvi, 0, sizeof(LVITEM));
+        LVITEM lvi{};
         lvi.mask = LVIF_TEXT;
         t_size count = m_presets.get_count();
         for (t_size i = 0; i < count; i++) {

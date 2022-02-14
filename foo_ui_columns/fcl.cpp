@@ -19,8 +19,7 @@ namespace treeview {
 static HTREEITEM insert_item(
     HWND wnd_tree, const char* sz_text, LPARAM data, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST)
 {
-    uTVINSERTSTRUCT is;
-    memset(&is, 0, sizeof(is));
+    uTVINSERTSTRUCT is{};
     is.hParent = ti_parent;
     is.hInsertAfter = ti_after;
     is.item.mask = TVIF_TEXT | TVIF_PARAM | TVIF_STATE;
@@ -219,8 +218,7 @@ BOOL g_ImportResultsProc(const ImportResultsData& data, HWND wnd, UINT msg, WPAR
                     : _T("Some parts of the layout may not have imported because the following panels are not ")
                       _T("installed:")));
 
-        LVCOLUMN lvc;
-        memset(&lvc, 0, sizeof(LVCOLUMN));
+        LVCOLUMN lvc{};
         lvc.mask = LVCF_TEXT | LVCF_WIDTH;
 
         uih::list_view_insert_column_text(wnd_lv, 0, _T("Name"), 150);
@@ -228,8 +226,7 @@ BOOL g_ImportResultsProc(const ImportResultsData& data, HWND wnd, UINT msg, WPAR
 
         SendMessage(wnd_lv, WM_SETREDRAW, FALSE, 0);
 
-        LVITEM lvi;
-        memset(&lvi, 0, sizeof(LVITEM));
+        LVITEM lvi{};
         lvi.mask = LVIF_TEXT;
         t_size count = data.m_items.get_count();
         for (t_size i = 0; i < count; i++) {

@@ -320,8 +320,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
 
             COLORREF blend_target = total >= 128 * 3 ? 0 : 0xffffff;
 
-            char temp[33];
-            memset(temp, 0, 33);
+            char temp[33]{};
             _ultoa_s(blend_target, temp, 16);
             p_out->write(titleformat_inputtypes::unknown, temp, 33);
             p_found_flag = true;
@@ -365,8 +364,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
 
             int newrgb = RGB(newr, newg, newb);
 
-            char temp[33];
-            memset(temp, 0, 33);
+            char temp[33]{};
 
             _ultoa_s(newrgb, temp, 16);
             p_out->write(titleformat_inputtypes::unknown, temp, 33);

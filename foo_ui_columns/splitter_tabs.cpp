@@ -29,8 +29,7 @@ public:
         unsigned index;
         if (m_this->m_panels.find_by_wnd(wnd, index)) {
             std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
-            MINMAXINFO mmi;
-            memset(&mmi, 0, sizeof(MINMAXINFO));
+            MINMAXINFO mmi{};
             mmi.ptMaxTrackSize.x = MAXLONG;
             mmi.ptMaxTrackSize.y = MAXLONG;
             SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
@@ -429,8 +428,7 @@ void TabStackPanel::update_size_limits()
     unsigned count = m_active_panels.get_count();
 
     for (unsigned n = 0; n < count; n++) {
-        MINMAXINFO mmi;
-        memset(&mmi, 0, sizeof(MINMAXINFO));
+        MINMAXINFO mmi{};
         mmi.ptMaxTrackSize.x = MAXLONG;
         mmi.ptMaxTrackSize.y = MAXLONG;
 
@@ -529,7 +527,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_DESTROY:
         m_dark_mode_notifier.reset();
-        g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+        std::erase(g_windows, this);
         destroy_children();
         destroy_tabs();
         break;
@@ -729,8 +727,7 @@ void TabStackPanel::refresh_children()
 
                         uTabCtrl_InsertItemText(m_wnd_tabs, index, name, b_newtab);
 
-                        MINMAXINFO mmi;
-                        memset(&mmi, 0, sizeof(MINMAXINFO));
+                        MINMAXINFO mmi{};
                         mmi.ptMaxTrackSize.x = MAXLONG;
                         mmi.ptMaxTrackSize.y = MAXLONG;
                         SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
@@ -950,8 +947,7 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
             // unsigned scroll_lines = GetNumScrollLines();
 
             HWND wnd_child = GetWindow(wnd, GW_CHILD);
-            WCHAR str_class[129];
-            memset(str_class, 0, sizeof(str_class));
+            WCHAR str_class[129]{};
             if (wnd_child && RealGetWindowClass(wnd_child, str_class, tabsize(str_class) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
                 INT min = NULL;

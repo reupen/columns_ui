@@ -67,8 +67,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         bool b_found = false;
 
         for (unsigned n = 0; n < count; n++) {
-            MINMAXINFO mmi;
-            memset(&mmi, 0, sizeof(MINMAXINFO));
+            MINMAXINFO mmi{};
             mmi.ptMaxTrackSize.x = MAXLONG;
             mmi.ptMaxTrackSize.y = MAXLONG;
 
@@ -210,8 +209,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                                 start_autohide_dehide(p_panel);
                             }
                         } else {
-                            TRACKMOUSEEVENT tme;
-                            memset(&tme, 0, sizeof(TRACKMOUSEEVENT));
+                            TRACKMOUSEEVENT tme{};
                             tme.cbSize = sizeof(TRACKMOUSEEVENT);
                             tme.dwFlags = TME_QUERY;
                             tme.hwndTrack = wnd;

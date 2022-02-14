@@ -120,8 +120,7 @@ void FlatSplitterPanel::refresh_children()
                     if (wnd_panel) {
                         SetWindowLongPtr(
                             wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE) | WS_CLIPSIBLINGS);
-                        MINMAXINFO mmi;
-                        memset(&mmi, 0, sizeof(MINMAXINFO));
+                        MINMAXINFO mmi{};
                         mmi.ptMaxTrackSize.x = MAXLONG;
                         mmi.ptMaxTrackSize.y = MAXLONG;
                         SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
@@ -1083,8 +1082,7 @@ void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, un
     unsigned index;
     if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
         std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
-        MINMAXINFO mmi;
-        memset(&mmi, 0, sizeof(MINMAXINFO));
+        MINMAXINFO mmi{};
         mmi.ptMaxTrackSize.x = MAXLONG;
         mmi.ptMaxTrackSize.y = MAXLONG;
         SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);

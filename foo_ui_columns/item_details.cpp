@@ -626,9 +626,8 @@ void ItemDetails::on_size(t_size cx, t_size cy)
 
 void ItemDetails::scroll(INT SB, int position, bool b_absolute)
 {
-    SCROLLINFO si;
-    SCROLLINFO si2;
-    memset(&si, 0, sizeof(SCROLLINFO));
+    SCROLLINFO si{};
+    SCROLLINFO si2{};
     si.cbSize = sizeof(si);
     si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;
     GetScrollInfo(get_wnd(), SB, &si);
@@ -646,7 +645,6 @@ void ItemDetails::scroll(INT SB, int position, bool b_absolute)
         new_pos = si.nMax;
 
     if (new_pos != si.nPos) {
-        memset(&si2, 0, sizeof(SCROLLINFO));
         si2.cbSize = sizeof(si);
         si2.fMask = SIF_POS;
         si2.nPos = new_pos;
@@ -700,7 +698,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         // 0, 0, 200, 200, wnd, HMENU(1001), core_api::get_my_instance(), NULL);
     } break;
     case WM_DESTROY: {
-        g_windows.erase(std::remove(g_windows.begin(), g_windows.end(), this), g_windows.end());
+        std::erase(g_windows, this);
         if (g_windows.empty())
             g_message_window.destroy();
 
@@ -737,8 +735,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         LONG_PTR style = GetWindowLongPtr(get_wnd(), GWL_STYLE);
         bool b_horz = (!(style & WS_VSCROLL) || ((wp & MK_CONTROL))) && (style & WS_HSCROLL);
 
-        SCROLLINFO si;
-        memset(&si, 0, sizeof(SCROLLINFO));
+        SCROLLINFO si{};
         si.cbSize = sizeof(SCROLLINFO);
         si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;
         GetScrollInfo(get_wnd(), b_horz ? SB_HORZ : SB_VERT, &si);
@@ -782,9 +779,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_HSCROLL:
     case WM_VSCROLL: {
         UINT SB = msg == WM_VSCROLL ? SB_VERT : SB_HORZ;
-        SCROLLINFO si;
-        SCROLLINFO si2;
-        memset(&si, 0, sizeof(SCROLLINFO));
+        SCROLLINFO si{};
+        SCROLLINFO si2{};
         si.cbSize = sizeof(si);
         si.fMask = SIF_POS | SIF_TRACKPOS | SIF_PAGE | SIF_RANGE;
         GetScrollInfo(get_wnd(), SB, &si);
@@ -816,7 +812,6 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             new_pos = si.nMax;
 
         if (new_pos != si.nPos) {
-            memset(&si2, 0, sizeof(SCROLLINFO));
             si2.cbSize = sizeof(si);
             si2.fMask = SIF_POS;
             si2.nPos = new_pos;
@@ -837,8 +832,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         PAINTSTRUCT ps;
         BeginPaint(wnd, &ps);
 
-        SCROLLINFO siv;
-        memset(&siv, 0, sizeof(siv));
+        SCROLLINFO siv{};
         siv.cbSize = sizeof(siv);
         siv.fMask = SIF_POS;
         SCROLLINFO sih = siv;

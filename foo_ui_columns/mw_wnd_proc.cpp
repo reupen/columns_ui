@@ -659,8 +659,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 menu_helpers::win32_auto_mnemonics(menu);
 
-                MENUITEMINFO mi;
-                memset(&mi, 0, sizeof(mi));
+                MENUITEMINFO mi{};
                 mi.cbSize = sizeof(MENUITEMINFO);
                 mi.fMask = MIIM_STATE;
                 mi.fState = MFS_DEFAULT;
@@ -758,8 +757,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         int y = pt.y;
                         HMONITOR mon = MonitorFromPoint(pt, MONITOR_DEFAULTTONEAREST);
                         if (mon) {
-                            MONITORINFO mi;
-                            memset(&mi, 0, sizeof(MONITORINFO));
+                            MONITORINFO mi{};
                             mi.cbSize = sizeof(MONITORINFO);
                             if (GetMonitorInfo(mon, &mi)) {
                                 if (x + cx > mi.rcMonitor.right)

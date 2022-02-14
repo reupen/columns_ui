@@ -245,8 +245,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                     enter_autohide_hook();
                 }
             } else {
-                TRACKMOUSEEVENT tme;
-                memset(&tme, 0, sizeof(TRACKMOUSEEVENT));
+                TRACKMOUSEEVENT tme{};
                 tme.cbSize = sizeof(TRACKMOUSEEVENT);
                 tme.dwFlags = TME_QUERY;
                 tme.hwndTrack = wnd;
