@@ -3,6 +3,9 @@ name: VS 2022
 on:
   workflow_dispatch:
   pull_request:
+  push:
+    branches:
+      - master
 
 jobs:
   build:
