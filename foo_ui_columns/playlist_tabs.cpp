@@ -618,17 +618,18 @@ void PlaylistTabs::adjust_rect(bool b_larger, RECT* rc)
 
 void PlaylistTabs::reset_size_limits()
 {
+    constexpr auto max_value = static_cast<long>(USHRT_MAX);
     memset(&mmi, 0, sizeof(mmi));
     if (m_child_wnd) {
         mmi.ptMinTrackSize.x = 0;
         mmi.ptMinTrackSize.y = 0;
-        mmi.ptMaxTrackSize.x = MAXLONG;
-        mmi.ptMaxTrackSize.y = MAXLONG;
+        mmi.ptMaxTrackSize.x = max_value;
+        mmi.ptMaxTrackSize.y = max_value;
         SendMessage(m_child_wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-        if (mmi.ptMinTrackSize.x != 0 || mmi.ptMinTrackSize.y != 0 || mmi.ptMaxTrackSize.x != MAXLONG
-            || mmi.ptMaxTrackSize.y != MAXLONG) {
+        if (mmi.ptMinTrackSize.x != 0 || mmi.ptMinTrackSize.y != 0 || mmi.ptMaxTrackSize.x < max_value
+            || mmi.ptMaxTrackSize.y < max_value) {
             RECT rc_min = {0, 0, mmi.ptMinTrackSize.x, mmi.ptMinTrackSize.y};
-            RECT rc_max = {0, 0, mmi.ptMaxTrackSize.x, mmi.ptMaxTrackSize.y};
+            RECT rc_max = {0, 0, std::min(mmi.ptMaxTrackSize.x, max_value), std::min(mmi.ptMaxTrackSize.y, max_value)};
             if (wnd_tabs) {
                 adjust_rect(TRUE, &rc_min);
                 adjust_rect(TRUE, &rc_max);

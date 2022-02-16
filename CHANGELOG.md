@@ -35,6 +35,8 @@
 
 ### Bug fixes
 
+* A problem where the playlist tabs panel had an incorrect maximum width or height was fixed. [[#449](https://github.com/reupen/columns_ui/pull/449)]
+
 * Various bugs with the positioning and sizing of panel captions were fixed. [[#418](https://github.com/reupen/columns_ui/pull/418)]
 
 * The status bar pop-up volume bar now correctly scales with the system DPI setting. [[#418](https://github.com/reupen/columns_ui/pull/418)]
