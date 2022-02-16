@@ -1,0 +1,61 @@
+name: VS 2022
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: windows-2022
+    continue-on-error: ${{ matrix.toolset == 'llvm' }}
+
+    strategy:
+      matrix:
+        toolset: ['v143', 'llvm']
+        configuration: ['release', 'debug']
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+        submodules: true
+
+    - name: Set up MSBuild
+      uses: microsoft/setup-msbuild@v1
+
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: C:\Users\runneradmin\AppData\Local\vcpkg\archives
+        key: ${{ runner.os }}-vcpkg-archives-${{ hashFiles('vcpkg.json') }}
+
+    - name: Set up vcpkg
+      run: |
+        git -C C:\vcpkg fetch
+        vcpkg version
+        vcpkg integrate install
+
+    - name: Set up MSBuild logger
+      run: |
+        Invoke-WebRequest -Uri https://github.com/reupen/msbuild-github-logger/releases/download/v1.0.0/Reupen.MSBuild.GitHubLogger.dll -OutFile "$Env:Temp\Reupen.MSBuild.GitHubLogger.dll"
+
+    - name: Build (v143)
+      if: matrix.toolset == 'v143'
+      run: |
+        msbuild /m '/p:Platform=Win32;Configuration=${{ matrix.configuration }}' "/logger:$Env:Temp\Reupen.MSBuild.GitHubLogger.dll" vc17\columns_ui-public.sln
+
+    - name: Build (LLVM)
+      if: matrix.toolset == 'llvm'
+      run: msbuild /m '/p:Platform=Win32;Configuration=${{ matrix.configuration }};PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;SpectreMitigation=' vc17\columns_ui-public.sln
+
+    - uses: actions/upload-artifact@v2
+      if: matrix.toolset == 'v143' && matrix.configuration == 'release'
+      with:
+        name: Component package (release)
+        path: vc17\Release\foo_ui_columns*.fb2k-component
+
+    - uses: actions/upload-artifact@v2
+      if: matrix.toolset == 'v143' && matrix.configuration == 'release'
+      with:
+        name: Symbols for debugging
+        path: vc17\Release\foo_ui_columns.pdb

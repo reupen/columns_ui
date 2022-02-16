@@ -1,14 +1,22 @@
 # Columns UI
 
-[![Build status](https://reupen.visualstudio.com/Columns%20UI/_apis/build/status/reupen.columns_ui?branchName=master)](https://reupen.visualstudio.com/Columns%20UI/_build/latest?definitionId=3&branchName=master)
+[![Build status](https://github.com/reupen/columns_ui/actions/workflows/build.yml/badge.svg)](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amaster)
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and COPYING.LESSER).
 
 ## Downloads
 
-Releases can be downloaded from the [Columns UI home page](http://yuo.be/columns-ui).
+### Releases
 
-The latest development version can be downloaded by clicking on the Azure Pipelines badge above, then '1 published' and then the three dots shown while hovering over 'VS 2022 v143 Release'. Development versions may be buggier than formal releases; if you encounter a problem, please open an issue.
+Stable and pre-release versions can be downloaded from the [Columns UI home page](http://yuo.be/columns-ui).
+
+### Development versions
+
+The latest development version can be downloaded by clicking on the GitHub Actions badge above, and then 
+clicking on the last successful build and scrolling down to the link named 'Component package (release)'
+at the bottom.
+
+Development versions may be buggier than formal releases; if you encounter a problem, please open an issue.
 
 ## Development
 
