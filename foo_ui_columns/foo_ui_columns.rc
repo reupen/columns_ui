@@ -463,8 +463,9 @@ BEGIN
     CONTROL         "Show status bar",IDC_SHOW_STATUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,176,68,10
     CONTROL         "Show playlist lock status",IDC_SHOW_LOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,194,96,10
     CONTROL         "Show total length of selected tracks",IDC_SELTIME,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,159,176,134,10
-    CONTROL         "Show volume",IDC_VOL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,159,194,61,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,113,176,134,10
+    CONTROL         "Show number of selected tracks",IDC_SELCOUNT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,113,194,124,10
+    CONTROL         "Show volume",IDC_VOL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,254,176,61,10
     LTEXT           "Status pane",IDC_TITLE3,7,227,312,14
     CONTROL         "Show status pane",IDC_SHOW_STATUSPANE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,254,74,10
 END

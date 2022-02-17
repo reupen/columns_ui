@@ -257,6 +257,7 @@
 #define IDC_DARK_MODE_ENABLED           1180
 #define IDC_UNKNOWN_WINDOWS_BUILD       1181
 #define IDC_WINDOWS_VERSION_TOO_OLD     1182
+#define IDC_SELCOUNT                    1183
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -266,7 +267,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        169
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1183
+#define _APS_NEXT_CONTROL_VALUE         1184
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

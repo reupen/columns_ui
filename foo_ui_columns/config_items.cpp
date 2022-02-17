@@ -132,8 +132,8 @@ void config_reset_transparency_level()
 void config_set_status_show_lock(bool b_val)
 {
     cfg_status_show_lock = b_val;
-    cui::status_bar::set_part_sizes(
-        cui::status_bar::t_part_lock | cui::status_bar::t_part_length | cui::status_bar::t_part_volume);
+    cui::status_bar::set_part_sizes(cui::status_bar::t_part_lock | cui::status_bar::t_part_length
+        | cui::status_bar::t_part_count | cui::status_bar::t_part_volume);
 }
 bool config_get_status_show_lock()
 {

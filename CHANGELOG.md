@@ -33,6 +33,8 @@
 
 * A warning was added under the 'Show toolbars' option in preferences. [[#410](https://github.com/reupen/columns_ui/pull/410)]
 
+* The status bar can now show the number of selected tracks. [[#450](https://github.com/reupen/columns_ui/pull/450)]
+
 ### Bug fixes
 
 * A problem where the playlist tabs panel had an incorrect maximum width or height was fixed. [[#449](https://github.com/reupen/columns_ui/pull/449)]
