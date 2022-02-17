@@ -12,7 +12,8 @@ enum StatusBarPart : uint32_t {
     t_part_main = 1 << 0,
     t_part_lock = 1 << 1,
     t_part_length = 1 << 2,
-    t_part_volume = 1 << 3
+    t_part_count = 1 << 3,
+    t_part_volume = 1 << 4
 };
 
 enum class StatusBarPartID : ULONG_PTR {
@@ -20,6 +21,7 @@ enum class StatusBarPartID : ULONG_PTR {
     MenuItemDescription,
     PlaylistLock,
     TrackLength,
+    TrackCount,
     Volume,
 };
 

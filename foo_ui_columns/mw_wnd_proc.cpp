@@ -787,7 +787,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 if (part_id == status_bar::StatusBarPartID::PlaybackInformation)
                     helpers::execute_main_menu_command(cfg_statusdbl);
-                else if (cfg_show_seltime && part_id == status_bar::StatusBarPartID::TrackLength) {
+                else if ((cfg_show_seltime && part_id == status_bar::StatusBarPartID::TrackLength)
+                    || (cfg_show_selcount && part_id == status_bar::StatusBarPartID::TrackCount)) {
                     static_api_ptr_t<playlist_manager>()->activeplaylist_set_selection(
                         bit_array_true(), bit_array_true());
                 }

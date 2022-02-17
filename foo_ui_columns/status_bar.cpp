@@ -15,6 +15,7 @@ struct StatusBarState {
     std::string menu_item_description;
     std::string playlist_lock_text;
     std::string track_length_text;
+    std::string track_count_text;
     std::string volume_text;
     std::unique_ptr<colours::dark_mode_notifier> dark_mode_notifier;
 };
@@ -148,6 +149,12 @@ int calculate_selected_length_size(const char* p_text)
         win32_helpers::status_bar_get_text_width(g_status, "0d 00:00:00"));
 }
 
+int calculate_selected_count_size(const char* p_text)
+{
+    return std::max(win32_helpers::status_bar_get_text_width(g_status, p_text),
+        win32_helpers::status_bar_get_text_width(g_status, "0,000 tracks"));
+}
+
 int calculate_playback_lock_size(const char* p_text)
 {
     return win32_helpers::status_bar_get_text_width(g_status, p_text);
@@ -169,6 +176,15 @@ std::string get_selected_length_text(unsigned dp = 0)
     length = sels.calc_total_duration();
 
     return pfc::format_time_ex(length, dp).get_ptr();
+}
+
+std::string get_selected_count_text(unsigned dp = 0)
+{
+    static_api_ptr_t<playlist_manager> playlist_api;
+
+    unsigned count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
+
+    return fmt::format(std::locale(""), "{:L} {}", count, count == 1 ? "track" : "tracks");
 }
 
 std::string get_volume_text()
@@ -198,6 +214,7 @@ void set_part_sizes(unsigned p_parts)
         m_parts.add_item(-1); // dummy
 
         unsigned track_length_pos{};
+        unsigned track_count_pos{};
         unsigned playlist_lock_pos{};
         unsigned volume_pos{};
 
@@ -222,6 +239,14 @@ void set_part_sizes(unsigned p_parts)
 
             const auto part_size = calculate_selected_length_size(state->track_length_text.c_str()) + part_padding;
             track_length_pos = m_parts.add_item(part_size);
+        }
+
+        if (cfg_show_selcount) {
+            if ((p_parts & t_part_count))
+                state->track_count_text = get_selected_count_text();
+
+            const auto part_size = calculate_selected_count_size(state->track_count_text.c_str()) + part_padding;
+            track_count_pos = m_parts.add_item(part_size);
         }
 
         if (cfg_show_vol) {
@@ -255,6 +280,10 @@ void set_part_sizes(unsigned p_parts)
         if (cfg_show_seltime && (p_parts & t_part_length))
             SendMessage(
                 g_status, SB_SETTEXT, SBT_OWNERDRAW | track_length_pos, WI_EnumValue(StatusBarPartID::TrackLength));
+
+        if (cfg_show_selcount && (p_parts & t_part_count))
+            SendMessage(
+                g_status, SB_SETTEXT, SBT_OWNERDRAW | track_count_pos, WI_EnumValue(StatusBarPartID::TrackCount));
 
         if (show_playlist_lock_part && (p_parts & t_part_lock)) {
             SendMessage(
@@ -317,6 +346,8 @@ std::string_view get_draw_item_text(const StatusBarPartID part_id)
         return state->playlist_lock_text;
     case StatusBarPartID::TrackLength:
         return state->track_length_text;
+    case StatusBarPartID::TrackCount:
+        return state->track_count_text;
     case StatusBarPartID::Volume:
         return state->volume_text;
     default:

@@ -13,6 +13,7 @@ public:
     {
         SendDlgItemMessage(wnd, IDC_VOL, BM_SETCHECK, cfg_show_vol, 0);
         SendDlgItemMessage(wnd, IDC_SELTIME, BM_SETCHECK, cfg_show_seltime, 0);
+        SendDlgItemMessage(wnd, IDC_SELCOUNT, BM_SETCHECK, cfg_show_selcount, 0);
         SendDlgItemMessage(wnd, IDC_SHOW_STATUS, BM_SETCHECK, cfg_status, 0);
         SendDlgItemMessage(wnd, IDC_SHOW_STATUSPANE, BM_SETCHECK, settings::show_status_pane, 0);
         SendDlgItemMessage(wnd, IDC_SHOW_LOCK, BM_SETCHECK, main_window::config_get_status_show_lock(), 0);
@@ -52,10 +53,14 @@ public:
                 cfg_show_vol = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 set_part_sizes(cui::status_bar::t_part_volume);
             } break;
+            case IDC_SELCOUNT: {
+                cfg_show_selcount = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cui::status_bar::set_part_sizes(cui::status_bar::t_part_count | cui::status_bar::t_part_volume);
+            } break;
             case IDC_SELTIME: {
                 cfg_show_seltime = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
-                cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_volume);
-
+                cui::status_bar::set_part_sizes(
+                    cui::status_bar::t_part_length | cui::status_bar::t_part_count | cui::status_bar::t_part_volume);
             } break;
             case IDC_SHOW_STATUS: {
                 cfg_status = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);

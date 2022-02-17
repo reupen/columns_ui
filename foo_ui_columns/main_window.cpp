@@ -407,7 +407,7 @@ public:
                  // only methods that read playlist state, not those that modify it)
     {
         if (cui::main_window.get_wnd()) {
-            set_part_sizes(cui::status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_count);
         }
     }
     void on_items_reordered(const unsigned* order, unsigned count) override {
@@ -418,13 +418,13 @@ public:
     void FB2KAPI on_items_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
     {
         if (cui::main_window.get_wnd()) {
-            set_part_sizes(cui::status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_count);
         }
     }
     void on_items_selection_change(const bit_array& affected, const bit_array& state) override
     {
         if (cui::main_window.get_wnd()) {
-            set_part_sizes(cui::status_bar::t_part_length);
+            cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_count);
         }
     }
     void on_item_focus_change(unsigned from, unsigned to) override {
