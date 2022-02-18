@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include "common.h"
+#include "dark_mode.h"
 #include "playlist_tabs.h"
 #include "playlist_manager_utils.h"
 
@@ -52,7 +53,9 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         static_api_ptr_t<playlist_manager>()->register_callback(this, flag_all);
         break;
     }
-
+    case WM_ERASEBKGND:
+        dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));
+        return TRUE;
     case WM_SHOWWINDOW: {
         if (wp == TRUE && lp == NULL && !IsWindowVisible(m_child_wnd)) {
             ShowWindow(m_child_wnd, SW_SHOWNORMAL);

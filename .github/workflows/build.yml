@@ -24,7 +24,7 @@ jobs:
         submodules: true
 
     - name: Set up MSBuild
-      uses: microsoft/setup-msbuild@v1
+      uses: microsoft/setup-msbuild@v1.1
 
     - name: Cache dependencies
       uses: actions/cache@v2

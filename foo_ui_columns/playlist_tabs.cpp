@@ -259,17 +259,13 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_ERASEBKGND:
-        if (!colours::is_dark_mode_active())
-            break;
-
         return FALSE;
-    case WM_PAINT: {
-        if (!colours::is_dark_mode_active())
-            break;
-
-        dark::handle_tab_control_paint(wnd);
+    case WM_PAINT:
+        if (colours::is_dark_mode_active())
+            dark::handle_tab_control_paint(wnd);
+        else
+            uih::paint_subclassed_window_with_buffering(wnd, tabproc);
         return 0;
-    }
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {

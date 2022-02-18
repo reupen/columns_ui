@@ -70,18 +70,16 @@ void handle_tab_control_paint(HWND wnd)
     const auto active_item_brush = get_colour_brush_lazy(ColourID::TabControlActiveItemBackground, is_dark);
 
     PAINTSTRUCT ps{};
-    const auto dc = wil::BeginPaint(wnd, &ps);
-    const auto _select_font = wil::SelectObject(dc.get(), GetWindowFont(wnd));
-    const auto _select_pen = wil::SelectObject(dc.get(), border_pen.get());
+    const auto paint_dc = wil::BeginPaint(wnd, &ps);
+    const auto buffered_dc = uih::BufferedDC(paint_dc.get(), ps.rcPaint);
+    const auto _select_font = wil::SelectObject(buffered_dc.get(), GetWindowFont(wnd));
+    const auto _select_pen = wil::SelectObject(buffered_dc.get(), border_pen.get());
 
-    SetTextColor(dc.get(), get_colour(ColourID::TabControlItemText, is_dark));
-    SetBkMode(dc.get(), TRANSPARENT);
-
-    RECT client_rect{};
-    GetClientRect(wnd, &client_rect);
+    SetTextColor(buffered_dc.get(), get_colour(ColourID::TabControlItemText, is_dark));
+    SetBkMode(buffered_dc.get(), TRANSPARENT);
 
     if (ps.fErase)
-        FillRect(dc.get(), &client_rect, *get_colour_brush_lazy(ColourID::TabControlBackground, is_dark));
+        FillRect(buffered_dc.get(), &ps.rcPaint, *get_colour_brush_lazy(ColourID::TabControlBackground, is_dark));
 
     for (auto&& [index, item] : ranges::views::enumerate(items)) {
         const auto is_new_line = index == 0 || items[index - 1].rc.top != item.rc.top;
@@ -110,23 +108,23 @@ void handle_tab_control_paint(HWND wnd)
 
             return *default_item_brush;
         }();
-        FillRect(dc.get(), &item_rect, item_back_brush);
+        FillRect(buffered_dc.get(), &item_rect, item_back_brush);
 
-        MoveToEx(dc.get(), item_rect.right, item_rect.bottom, nullptr);
-        LineTo(dc.get(), item_rect.right, item_rect.top);
-        LineTo(dc.get(), item_rect.left, item_rect.top);
+        MoveToEx(buffered_dc.get(), item_rect.right, item_rect.bottom, nullptr);
+        LineTo(buffered_dc.get(), item_rect.right, item_rect.top);
+        LineTo(buffered_dc.get(), item_rect.left, item_rect.top);
         if (is_new_line || item.is_active) {
-            LineTo(dc.get(), item_rect.left, item_rect.bottom);
+            LineTo(buffered_dc.get(), item_rect.left, item_rect.bottom);
         }
 
         SIZE sz{};
-        GetTextExtentPoint32(dc.get(), item.text.data(), gsl::narrow<int>(item.text.length()), &sz);
+        GetTextExtentPoint32(buffered_dc.get(), item.text.data(), gsl::narrow<int>(item.text.length()), &sz);
 
         // Position using original rect, but shift up 1px if it's the active tab
         const auto x = item.rc.left + (RECT_CX(item.rc) - sz.cx) / 2;
         const auto y = item.rc.top + (RECT_CY(item.rc) - sz.cy) / 2 - (item.is_active ? 1_spx : 0);
 
-        ExtTextOut(dc.get(), x, y, ETO_CLIPPED, &item_rect, item.text.data(), item.text.length(), nullptr);
+        ExtTextOut(buffered_dc.get(), x, y, ETO_CLIPPED, &item_rect, item.text.data(), item.text.length(), nullptr);
     }
 }
 

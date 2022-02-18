@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29215.179
+# Visual Studio Version 17
+VisualStudioVersion = 17.1.32210.238
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Components", "Components", "{5CE500DE-1CE0-4222-9433-DCE0A3364124}"
 EndProject
@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		..\.gitattributes = ..\.gitattributes
 		..\.gitignore = ..\.gitignore
 		..\.gitmodules = ..\.gitmodules
+		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 		..\CHANGELOG.md = ..\CHANGELOG.md
 		..\CONTRIBUTING.md = ..\CONTRIBUTING.md
 		..\COPYING = ..\COPYING
@@ -41,10 +42,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "fbh", "..\fbh\fbh.vcxproj", "{84D30275-D3D7-4867-82D2-8031A53DCE20}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Azure", "Azure", "{4800C6BC-4666-4EBD-882B-B50A759132F0}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{9697868F-BFF6-40A6-8818-F351DD370422}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9A1841D3-5B7E-4831-A6B7-8B3899D66EF2}"
 	ProjectSection(SolutionItems) = preProject
-		..\azure\job-build.yml = ..\azure\job-build.yml
-		..\azure\pipeline.yml = ..\azure\pipeline.yml
+		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 	EndProjectSection
 EndProject
 Global
@@ -147,7 +149,8 @@ Global
 		{EBFFFB4E-261D-44D3-B89C-957B31A0BF9C} = {B9D1251F-E5BC-412F-950B-BE588408EA59}
 		{743CBAAD-BE8E-430A-918B-2BB68008A616} = {5CE500DE-1CE0-4222-9433-DCE0A3364124}
 		{93EC0EDE-01CD-4FB0-B8E8-4F2A027E026E} = {3A85ACE2-E7C5-4F1F-A253-9C60B8076BE8}
-		{4800C6BC-4666-4EBD-882B-B50A759132F0} = {0FF158B9-F515-4DCF-B879-3D38EEC6DA2C}
+		{9697868F-BFF6-40A6-8818-F351DD370422} = {0FF158B9-F515-4DCF-B879-3D38EEC6DA2C}
+		{9A1841D3-5B7E-4831-A6B7-8B3899D66EF2} = {9697868F-BFF6-40A6-8818-F351DD370422}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {69B91470-DA3C-4CE2-B984-1659F90BD386}
