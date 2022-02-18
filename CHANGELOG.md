@@ -13,27 +13,29 @@
 [#437](https://github.com/reupen/columns_ui/pull/437), [#438](https://github.com/reupen/columns_ui/pull/438),
 [#439](https://github.com/reupen/columns_ui/pull/439), [#440](https://github.com/reupen/columns_ui/pull/440),
 [#442](https://github.com/reupen/columns_ui/pull/442), [#444](https://github.com/reupen/columns_ui/pull/444),
-[#445](https://github.com/reupen/columns_ui/pull/445)]
+[#445](https://github.com/reupen/columns_ui/pull/445), [#451](https://github.com/reupen/columns_ui/pull/451)]
+
+* The status bar can now show the number of selected tracks. [[#450](https://github.com/reupen/columns_ui/pull/450)]
+
+* Improvements were made to the status bar layout logic (including better DPI scaling). [[#432](https://github.com/reupen/columns_ui/pull/432)]
+
+* The status bar playlist lock icon was replaced with the 🔒 character. [[#432](https://github.com/reupen/columns_ui/pull/432)]
+
+* The default playback button icons were tweaked. This includes the removal of subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435)]
 
 * The Filter search toolbar is now integrated with the Colours and fonts preferences page, and its font, foreground colour and background colour are now configurable. [[#424](https://github.com/reupen/columns_ui/pull/424)]
   
   (Note that selection colours are not supported.)
 
-* Improvements were made to the status bar layout logic (including better DPI scaling). [[#432](https://github.com/reupen/columns_ui/pull/432)]
-
-* The default playback button icons were tweaked. This includes the removal of subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435)]
-
 * The filter search button icons were updated. [[#438](https://github.com/reupen/columns_ui/pull/438)]
 
 * The default no-cover artwork image was updated. [[#437](https://github.com/reupen/columns_ui/pull/437)]
 
-* The status bar playlist lock icon was replaced with the 🔒 character. [[#432](https://github.com/reupen/columns_ui/pull/432)]
+* Flickering when resizing the Playlist tabs and Tab stack panels was eliminated. [[#451](https://github.com/reupen/columns_ui/pull/451)]
 
 * The 'View/Show toolbars' menu item is now only shown if the shift key is held down when opening the View menu. [[#410](https://github.com/reupen/columns_ui/pull/410)]
 
 * A warning was added under the 'Show toolbars' option in preferences. [[#410](https://github.com/reupen/columns_ui/pull/410)]
-
-* The status bar can now show the number of selected tracks. [[#450](https://github.com/reupen/columns_ui/pull/450)]
 
 ### Bug fixes
 
