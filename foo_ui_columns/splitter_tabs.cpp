@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "splitter_tabs.h"
 
+#include "dark_mode.h"
 #include "dark_mode_tabs.h"
 
 namespace cui::panels::tab_stack {
@@ -511,6 +512,9 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
             [wnd_tabs = m_wnd_tabs] { RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
     } break;
+    case WM_ERASEBKGND:
+        dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));
+        return TRUE;
     case WM_KEYDOWN: {
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
             && g_process_keydown_keyboard_shortcuts(wp))
