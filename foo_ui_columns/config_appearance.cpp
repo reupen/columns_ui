@@ -28,8 +28,8 @@ fbh::ConfigInt32 dark_mode_status(
         if (wnd)
             SetWindowRedraw(wnd, FALSE);
 
-        g_colours_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
-        g_colours_manager_data.g_on_common_colour_changed(colour_flag_all);
+        g_colour_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
+        g_colour_manager_data.g_on_common_colour_changed(colour_flag_all);
         ColoursClientList colours_clients;
         ColoursClientList::g_get_list(colours_clients);
 
@@ -50,113 +50,11 @@ fbh::ConfigInt32 dark_mode_status(
 
 } // namespace cui::colours
 
-ColoursManagerData g_colours_manager_data;
+ColourManagerData g_colour_manager_data;
 FontsManagerData g_fonts_manager_data;
 TabDarkMode g_tab_dark_mode;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
-
-int g_get_system_colour_id(const cui::colours::colour_identifier_t colour_id)
-{
-    switch (colour_id) {
-    case cui::colours::colour_text:
-        return COLOR_WINDOWTEXT;
-    case cui::colours::colour_selection_text:
-        return COLOR_HIGHLIGHTTEXT;
-    case cui::colours::colour_background:
-        return COLOR_WINDOW;
-    case cui::colours::colour_selection_background:
-        return COLOR_HIGHLIGHT;
-    case cui::colours::colour_inactive_selection_text:
-        return COLOR_BTNTEXT;
-    case cui::colours::colour_inactive_selection_background:
-        return COLOR_BTNFACE;
-    case cui::colours::colour_active_item_frame:
-        return COLOR_WINDOWFRAME;
-    default:
-        uBugCheck();
-    }
-}
-
-class ColoursManagerInstance : public cui::colours::manager_instance {
-public:
-    ColoursManagerInstance(const GUID& p_client_guid)
-    {
-        g_colours_manager_data.find_by_guid(p_client_guid, m_entry);
-        g_colours_manager_data.find_by_guid(pfc::guid_null, m_global_entry);
-    }
-    COLORREF get_colour(const cui::colours::colour_identifier_t& p_identifier) const override
-    {
-        cui::system_appearance_manager::initialise();
-        ColoursManagerData::entry_ptr_t p_entry
-            = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
-        if (p_entry->colour_mode == cui::colours::colour_mode_system
-            || p_entry->colour_mode == cui::colours::colour_mode_themed) {
-            const auto system_colour_id = g_get_system_colour_id(p_identifier);
-            return cui::dark::get_system_colour(system_colour_id, cui::colours::is_dark_mode_active());
-        }
-        switch (p_identifier) {
-        case cui::colours::colour_text:
-            return p_entry->text;
-        case cui::colours::colour_selection_text:
-            return p_entry->selection_text;
-        case cui::colours::colour_background:
-            return p_entry->background;
-        case cui::colours::colour_selection_background:
-            return p_entry->selection_background;
-        case cui::colours::colour_inactive_selection_text:
-            return p_entry->inactive_selection_text;
-        case cui::colours::colour_inactive_selection_background:
-            return p_entry->inactive_selection_background;
-        case cui::colours::colour_active_item_frame:
-            return p_entry->active_item_frame;
-        default:
-            return 0;
-        }
-    }
-    bool get_bool(const cui::colours::bool_identifier_t& p_identifier) const override
-    {
-        ColoursManagerData::entry_ptr_t p_entry
-            = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
-        switch (p_identifier) {
-        case cui::colours::bool_use_custom_active_item_frame:
-            return p_entry->use_custom_active_item_frame;
-        case cui::colours::bool_dark_mode_enabled:
-            return (cui::colours::dark_mode_status.get() == WI_EnumValue(cui::colours::DarkModeStatus::Enabled)
-                && cui::dark::does_os_support_dark_mode());
-        default:
-            return false;
-        }
-    }
-    bool get_themed() const override
-    {
-        return m_entry->colour_mode == cui::colours::colour_mode_themed
-            || (m_entry->colour_mode == cui::colours::colour_mode_global
-                && m_global_entry->colour_mode == cui::colours::colour_mode_themed);
-    }
-
-private:
-    ColoursManagerData::entry_ptr_t m_entry;
-    ColoursManagerData::entry_ptr_t m_global_entry;
-};
-
-class ColoursManager : public cui::colours::manager {
-public:
-    void create_instance(const GUID& p_client_guid, cui::colours::manager_instance::ptr& p_out) override
-    {
-        p_out = new service_impl_t<ColoursManagerInstance>(p_client_guid);
-    }
-    void register_common_callback(cui::colours::common_callback* p_callback) override
-    {
-        g_colours_manager_data.register_common_callback(p_callback);
-    }
-    void deregister_common_callback(cui::colours::common_callback* p_callback) override
-    {
-        g_colours_manager_data.deregister_common_callback(p_callback);
-    }
-
-private:
-};
 
 class FontsManager : public cui::fonts::manager {
 public:
@@ -283,25 +181,24 @@ public:
 };
 
 namespace {
-service_factory_single_t<ColoursManager> g_colours_manager;
 service_factory_t<FontsManager> g_fonts_manager;
 service_factory_t<FontsManager2> g_fonts_manager_v2;
 } // namespace
 
 cui::colours::colour_mode_t g_get_global_colour_mode()
 {
-    ColoursManagerData::entry_ptr_t ptr;
-    g_colours_manager_data.find_by_guid(pfc::guid_null, ptr);
+    ColourManagerData::entry_ptr_t ptr;
+    g_colour_manager_data.find_by_guid(pfc::guid_null, ptr);
     return ptr->colour_mode;
 }
 
 void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
 {
-    ColoursManagerData::entry_ptr_t ptr;
-    g_colours_manager_data.find_by_guid(pfc::guid_null, ptr);
+    ColourManagerData::entry_ptr_t ptr;
+    g_colour_manager_data.find_by_guid(pfc::guid_null, ptr);
     if (ptr->colour_mode != mode) {
         ptr->colour_mode = mode;
-        g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
+        g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
         if (g_tab_appearance.is_active()) {
             g_tab_appearance.update_mode_combobox();
             g_tab_appearance.update_fills();
@@ -310,8 +207,8 @@ void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
         ColoursClientList::g_get_list(m_colours_client_list);
         t_size count = m_colours_client_list.get_count();
         for (t_size i = 0; i < count; i++) {
-            ColoursManagerData::entry_ptr_t p_data;
-            g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
+            ColourManagerData::entry_ptr_t p_data;
+            g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_global)
                 m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
         }
@@ -324,13 +221,13 @@ void on_global_colours_change()
         g_tab_appearance.update_mode_combobox();
         g_tab_appearance.update_fills();
     }
-    g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
+    g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
     ColoursClientList m_colours_client_list;
     ColoursClientList::g_get_list(m_colours_client_list);
     t_size count = m_colours_client_list.get_count();
     for (t_size i = 0; i < count; i++) {
-        ColoursManagerData::entry_ptr_t p_data;
-        g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
+        ColourManagerData::entry_ptr_t p_data;
+        g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
         if (p_data->colour_mode == cui::colours::colour_mode_global)
             m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
     }
@@ -392,7 +289,7 @@ static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and 
     tabsize(g_tabs_appearance), g_guid_colour_preferences, g_guid_columns_ui_preferences_page, &cfg_child_appearance);
 
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}
-const GUID ColoursManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
+const GUID ColourManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
 
 // {6B71F91C-6B7E-4dbe-B27B-C493AA513FD0}
 const GUID FontsManagerData::g_cfg_guid

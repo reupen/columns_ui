@@ -32,12 +32,12 @@ private:
             ColoursClientList m_colours_client_list;
             ColoursClientList::g_get_list(m_colours_client_list);
             t_size count = m_colours_client_list.get_count();
-            bool b_global_custom = g_colours_manager_data.m_global_entry->colour_mode == colours::colour_mode_custom;
+            bool b_global_custom = g_colour_manager_data.m_global_entry->colour_mode == colours::colour_mode_custom;
             if (!b_global_custom)
-                g_colours_manager_data.g_on_common_colour_changed(colours::colour_flag_all);
+                g_colour_manager_data.g_on_common_colour_changed(colours::colour_flag_all);
             for (t_size i = 0; i < count; i++) {
-                ColoursManagerData::entry_ptr_t p_data;
-                g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
+                ColourManagerData::entry_ptr_t p_data;
+                g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
                 if (p_data->colour_mode == colours::colour_mode_system
                     || p_data->colour_mode == colours::colour_mode_themed
                     || (p_data->colour_mode == colours::colour_mode_global && !b_global_custom)) {

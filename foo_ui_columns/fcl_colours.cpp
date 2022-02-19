@@ -29,17 +29,17 @@ class ColoursDataSet : public fcl::dataset {
         // p_writer->write_lendian_t(stream_version, p_abort);
         {
             stream_writer_memblock mem;
-            g_colours_manager_data.m_global_entry->_export(&mem, p_abort);
+            g_colour_manager_data.m_global_entry->_export(&mem, p_abort);
             out.write_item(identifier_global_entry, mem.m_data.get_ptr(), mem.m_data.get_size());
         }
         {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
-            t_size count = g_colours_manager_data.m_entries.get_count();
+            t_size count = g_colour_manager_data.m_entries.get_count();
             mem.write_lendian_t(count, p_abort);
             for (t_size i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
-                g_colours_manager_data.m_entries[i]->_export(&mem2, p_abort);
+                g_colour_manager_data.m_entries[i]->_export(&mem2, p_abort);
                 out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
             }
             out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
@@ -63,7 +63,7 @@ class ColoursDataSet : public fcl::dataset {
             switch (element_id) {
             case identifier_global_entry: {
                 stream_reader_memblock_ref colour_reader(data);
-                g_colours_manager_data.m_global_entry->import(&colour_reader, data.get_size(), type, p_abort);
+                g_colour_manager_data.m_global_entry->import(&colour_reader, data.get_size(), type, p_abort);
             } break;
             case identifier_client_entries: {
                 stream_reader_memblock_ref stream2(data);
@@ -72,8 +72,8 @@ class ColoursDataSet : public fcl::dataset {
                 t_size count;
                 reader2.read_item(count);
 
-                g_colours_manager_data.m_entries.remove_all();
-                g_colours_manager_data.m_entries.set_count(count);
+                g_colour_manager_data.m_entries.remove_all();
+                g_colour_manager_data.m_entries.set_count(count);
 
                 for (t_size i = 0; i < count; i++) {
                     t_uint32 element_id2;
@@ -85,8 +85,8 @@ class ColoursDataSet : public fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref colour_reader(data2);
-                        g_colours_manager_data.m_entries[i] = std::make_shared<ColoursManagerData::Entry>();
-                        g_colours_manager_data.m_entries[i]->import(&colour_reader, data2.get_size(), type, p_abort);
+                        g_colour_manager_data.m_entries[i] = std::make_shared<ColourManagerData::Entry>();
+                        g_colour_manager_data.m_entries[i]->import(&colour_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
                 }
@@ -100,7 +100,7 @@ class ColoursDataSet : public fcl::dataset {
             g_tab_appearance.update_mode_combobox();
             g_tab_appearance.update_fills();
         }
-        g_colours_manager_data.g_on_common_colour_changed(colours::colour_flag_all);
+        g_colour_manager_data.g_on_common_colour_changed(colours::colour_flag_all);
         service_enum_t<colours::client> colour_enum;
         colours::client::ptr ptr;
         while (colour_enum.next(ptr))

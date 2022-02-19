@@ -1,6 +1,6 @@
 #include "stdafx.h"
 
-#include "colours_manager_data.h"
+#include "colour_manager_data.h"
 #include "config.h"
 #include "config_appearance.h"
 
@@ -44,8 +44,8 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         abort_callback& p_abort) override
     {
         static_api_ptr_t<fonts::manager> api;
-        ColoursManagerData::entry_ptr_t colour_manager_entry;
-        g_colours_manager_data.find_by_guid(pfc::guid_null, colour_manager_entry);
+        ColourManagerData::entry_ptr_t colour_manager_entry;
+        g_colour_manager_data.find_by_guid(pfc::guid_null, colour_manager_entry);
 
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         t_uint32 element_id;

@@ -15,7 +15,7 @@ class TabColours : public PreferencesTab {
     uih::FillWindow g_fill_selection_background_inactive;
     uih::FillWindow g_fill_active_item_frame;
     GUID m_element_guid{};
-    ColoursManagerData::entry_ptr_t m_element_ptr;
+    ColourManagerData::entry_ptr_t m_element_ptr;
     cui::colours::client::ptr m_element_api;
     ColoursClientList m_colours_client_list;
 

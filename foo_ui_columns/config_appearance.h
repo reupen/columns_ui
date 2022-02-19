@@ -1,7 +1,7 @@
 #pragma once
 
 #include "fonts_manager_data.h"
-#include "colours_manager_data.h"
+#include "colour_manager_data.h"
 
 class ColoursClientListEntry {
 public:
@@ -65,7 +65,7 @@ public:
     }
 };
 
-extern ColoursManagerData g_colours_manager_data;
+extern ColourManagerData g_colour_manager_data;
 extern FontsManagerData g_fonts_manager_data;
 
 namespace cui::colours {
