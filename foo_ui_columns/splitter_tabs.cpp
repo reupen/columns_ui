@@ -991,7 +991,7 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
         }
         break;
     }
-    return uCallWindowProc(m_tab_proc, wnd, msg, wp, lp);
+    return CallWindowProc(m_tab_proc, wnd, msg, wp, lp);
 }
 
 class TabStackFontClient : public fonts::client {

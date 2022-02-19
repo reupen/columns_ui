@@ -410,7 +410,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
-    return uCallWindowProc(tabproc, wnd, msg, wp, lp);
+    return CallWindowProc(tabproc, wnd, msg, wp, lp);
 }
 
 void PlaylistTabs::on_child_position_change()

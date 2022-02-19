@@ -403,7 +403,7 @@ LRESULT WINAPI MenuToolbar::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     }
-    return uCallWindowProc(menuproc, wnd, msg, wp, lp);
+    return CallWindowProc(menuproc, wnd, msg, wp, lp);
 }
 
 void MenuToolbar::make_menu(unsigned idx)
