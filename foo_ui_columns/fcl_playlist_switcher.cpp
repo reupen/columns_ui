@@ -47,7 +47,7 @@ class PlaylistSwitcherAppearanceDataSet : public fcl::dataset {
         bool font_read{false};
         bool item_padding_read = false;
         uih::IntegerAndDpi<int32_t> item_padding(0, uih::get_system_dpi_cached().cx);
-        static_api_ptr_t<fonts::manager> api;
+        const auto api = fb2k::std_api_get<fonts::manager>();
 
         while (reader.get_remaining()) {
             reader.read_item(element_id);

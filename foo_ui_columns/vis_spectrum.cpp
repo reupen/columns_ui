@@ -80,7 +80,7 @@ public:
         if (!g_visualisations.have_item(p_ext)) {
             // console::printf("registering %x",p_ext);
             if (g_visualisations.add_item(p_ext) == 0) {
-                // static_api_ptr_t<visualisation_manager>()->create_stream(g_stream, NULL);
+                // visualisation_manager::get()->create_stream(g_stream, NULL);
                 g_create_timer();
             }
         }
@@ -198,15 +198,15 @@ void SpectrumAnalyserVisualisation::enable(const ui_extension::visualisation_hos
     m_bar_gap = uih::scale_dpi_value(1);
 
     if (list_vis.add_item(this) == 0) {
-        static_api_ptr_t<visualisation_manager>()->create_stream(g_stream, visualisation_manager::KStreamFlagNewFFT);
+        visualisation_manager::get()->create_stream(g_stream, visualisation_manager::KStreamFlagNewFFT);
         visualisation_stream_v2::ptr p_stream_v2;
         if (g_stream->service_query_t(p_stream_v2))
             p_stream_v2->set_channel_mode(visualisation_stream_v2::channel_mode_mono);
     }
 
-    static_api_ptr_t<play_callback_manager>()->register_callback(
+    play_callback_manager::get()->register_callback(
         this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_pause, false);
-    if (static_api_ptr_t<play_control>()->is_playing())
+    if (play_control::get()->is_playing())
         g_register_stream(this);
 }
 
@@ -216,8 +216,8 @@ void SpectrumAnalyserVisualisation::disable()
 
     list_vis.remove_item(this);
 
-    static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
-    if (static_api_ptr_t<play_control>()->is_playing())
+    play_callback_manager::get()->unregister_callback(this);
+    if (play_control::get()->is_playing())
         g_deregister_stream(this);
 
     if (!list_vis.get_count())

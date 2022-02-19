@@ -6,7 +6,7 @@ namespace cui::playlist_item_helpers {
 void action_remove_track(bool on_item, unsigned idx)
 {
     if (on_item) {
-        static_api_ptr_t<playlist_manager> api;
+        const auto api = playlist_manager::get();
         api->activeplaylist_undo_backup();
         api->activeplaylist_remove_items(bit_array_one(idx));
     }
@@ -15,7 +15,7 @@ void action_remove_track(bool on_item, unsigned idx)
 void action_add_to_queue(bool on_item, unsigned idx)
 {
     if (on_item) {
-        static_api_ptr_t<playlist_manager> api;
+        const auto api = playlist_manager::get();
         unsigned active = api->get_active_playlist();
         if (active != -1)
             api->queue_add_item_playlist(active, idx);

@@ -47,7 +47,7 @@ StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(
 
     for (unsigned f = 0; f < fmt_count; f++) {
         service_ptr_t<titleformat_object> to_temp;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, specs[f]);
+        titleformat_compiler::get()->compile_safe(to_temp, specs[f]);
         for (unsigned n = 0; n < count; n++) {
             if (n == 0) {
                 handles[0]->format_title(nullptr, a, to_temp, nullptr);

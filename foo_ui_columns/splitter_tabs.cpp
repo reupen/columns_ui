@@ -819,7 +819,7 @@ void TabStackPanel::remove_panel(unsigned index)
 
 void TabStackPanel::create_tabs()
 {
-    g_font.reset(static_api_ptr_t<fonts::manager>()->get_font(g_guid_splitter_tabs));
+    g_font.reset(fb2k::std_api_get<fonts::manager>()->get_font(g_guid_splitter_tabs));
     RECT rc;
     GetClientRect(get_wnd(), &rc);
     DWORD flags = WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE
@@ -854,7 +854,7 @@ void TabStackPanel::on_font_change()
             SendMessage(m_wnd_tabs, WM_SETFONT, (WPARAM)0, MAKELPARAM(0, 0));
         }
 
-        g_font.reset(static_api_ptr_t<fonts::manager>()->get_font(g_guid_splitter_tabs));
+        g_font.reset(fb2k::std_api_get<fonts::manager>()->get_font(g_guid_splitter_tabs));
 
         if (m_wnd_tabs) {
             SendMessage(m_wnd_tabs, WM_SETFONT, (WPARAM)g_font.get(), MAKELPARAM(1, 0));

@@ -7,7 +7,7 @@ bool PlaylistView::do_drag_drop(WPARAM wp)
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     m_playlist_api->activeplaylist_get_selected_items(data);
     if (data.get_count() > 0) {
-        static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
+        const auto incoming_api = playlist_incoming_item_filter::get();
         auto pDataObject = incoming_api->create_dataobject_ex(data);
         if (pDataObject.is_valid()) {
             // pfc::com_ptr_t<IAsyncOperation> pAsyncOperation;

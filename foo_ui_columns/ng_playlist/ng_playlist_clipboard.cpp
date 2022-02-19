@@ -5,7 +5,7 @@ namespace playlist_utils {
 
 bool check_clipboard()
 {
-    static_api_ptr_t<ole_interaction> api;
+    const auto api = ole_interaction::get();
     wil::com_ptr_t<IDataObject> pDO;
     if (FAILED(OleGetClipboard(&pDO)))
         return false;
@@ -20,8 +20,8 @@ bool check_clipboard()
 
 bool cut()
 {
-    static_api_ptr_t<playlist_manager> m_playlist_api;
-    static_api_ptr_t<ole_interaction> api;
+    const auto m_playlist_api = playlist_manager::get();
+    const auto api = ole_interaction::get();
     metadb_handle_list data;
     m_playlist_api->activeplaylist_undo_backup();
     m_playlist_api->activeplaylist_get_selected_items(data);
@@ -35,8 +35,8 @@ bool cut()
 
 bool copy()
 {
-    static_api_ptr_t<playlist_manager> m_playlist_api;
-    static_api_ptr_t<ole_interaction> api;
+    const auto m_playlist_api = playlist_manager::get();
+    const auto api = ole_interaction::get();
     metadb_handle_list data;
     m_playlist_api->activeplaylist_get_selected_items(data);
     pfc::com_ptr_t<IDataObject> pDO = api->create_dataobject(data);
@@ -55,8 +55,8 @@ bool paste_at_focused_item(HWND wnd)
 
 bool paste(HWND wnd, size_t index)
 {
-    static_api_ptr_t<playlist_manager> playlist_api;
-    static_api_ptr_t<ole_interaction> ole_api;
+    const auto playlist_api = playlist_manager::get();
+    const auto ole_api = ole_interaction::get();
     wil::com_ptr_t<IDataObject> pDO;
 
     if (FAILED(OleGetClipboard(&pDO)))

@@ -154,12 +154,11 @@ class StatusPane
     void update_playing_text()
     {
         metadb_handle_ptr track;
-        static_api_ptr_t<play_control> play_api;
+        const auto play_api = play_control::get();
         play_api->get_now_playing(track);
         if (track.is_valid()) {
             service_ptr_t<titleformat_object> to_status;
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(
-                to_status, main_window::config_status_bar_script.get());
+            titleformat_compiler::get()->compile_safe(to_status, main_window::config_status_bar_script.get());
             StatusPaneTitleformatHook tf_hook;
             play_api->playback_format_title_ex(
                 track, &tf_hook, playing1, to_status, nullptr, play_control::display_level_all);

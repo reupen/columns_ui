@@ -43,7 +43,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
     void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
-        static_api_ptr_t<fonts::manager> api;
+        const auto api = fb2k::std_api_get<fonts::manager>();
         ColourManagerData::entry_ptr_t colour_manager_entry;
         g_colour_manager_data.find_by_guid(pfc::guid_null, colour_manager_entry);
 

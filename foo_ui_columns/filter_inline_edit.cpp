@@ -27,7 +27,7 @@ bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<t_size>
 }
 void FilterPanel::notify_save_inline_edit(const char* value)
 {
-    static_api_ptr_t<metadb_io_v2> tagger_api;
+    const auto tagger_api = metadb_io_v2::get();
     {
         metadb_handle_list ptrs(m_edit_handles);
         pfc::list_t<file_info_impl> infos;

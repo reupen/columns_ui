@@ -11,7 +11,7 @@ bool PlaylistSwitcher::do_drag_drop(WPARAM wp)
     playlist_dataobject_desc_impl data;
     data.set_from_playlist_manager(mask);
 
-    pfc::com_ptr_t<IDataObject> pDataObject = static_api_ptr_t<ole_interaction_v2>()->create_dataobject(data);
+    pfc::com_ptr_t<IDataObject> pDataObject = ole_interaction_v2::get()->create_dataobject(data);
 
     if (pDataObject.is_valid()) {
         DWORD blah = DROPEFFECT_NONE;

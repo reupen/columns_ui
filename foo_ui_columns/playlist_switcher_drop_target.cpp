@@ -207,7 +207,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::DragOver(DWORD grfKeySta
                             if (cfg_drag_autoswitch)
                                 m_window->set_switch_timer(hi.index);
                             pfc::string8 name;
-                            static_api_ptr_t<playlist_manager>()->playlist_get_name(hi.index, name);
+                            playlist_manager::get()->playlist_get_name(hi.index, name);
                             uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to %1", name);
                         }
                     }
@@ -409,7 +409,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
 
                         void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override
                         {
-                            static_api_ptr_t<playlist_manager_v4> playlist_api;
+                            const auto playlist_api = playlist_manager_v4::get();
                             if ((m_new_playlist || m_insertIndexTracker.m_playlist != pfc_infinite)
                                 && p_items.get_count()) {
                                 if (m_new_playlist) {

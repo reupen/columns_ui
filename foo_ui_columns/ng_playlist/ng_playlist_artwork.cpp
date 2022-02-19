@@ -23,7 +23,7 @@ bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback
 wil::unique_hbitmap g_get_nocover_bitmap(
     t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
-    album_art_extractor_instance_v2::ptr p_extractor = static_api_ptr_t<album_art_manager_v2>()->open_stub(p_abort);
+    album_art_extractor_instance_v2::ptr p_extractor = album_art_manager_v2::get()->open_stub(p_abort);
 
     album_art_data_ptr data;
     wil::unique_hbitmap ret;
@@ -89,7 +89,7 @@ public:
         ptr->m_reader = p_reader;
         ptr->m_manager = std::move(p_manager);
 
-        static_api_ptr_t<main_thread_callback_manager>()->add_callback(ptr.get_ptr());
+        main_thread_callback_manager::get()->add_callback(ptr.get_ptr());
     }
 
     bool m_aborted;
@@ -137,7 +137,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 
     m_bitmaps.clear();
 
-    static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
+    const auto p_album_art_manager_v2 = album_art_manager_v2::get();
 
     album_art_data_ptr data;
     auto artwork_api_v2 = p_album_art_manager_v2->open(

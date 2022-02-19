@@ -164,7 +164,7 @@ void ArtworkReaderNotification::g_run(
     ptr->m_manager = std::move(p_manager);
     ptr->m_ret = ret;
 
-    static_api_ptr_t<main_thread_callback_manager>()->add_callback(ptr.get_ptr());
+    main_thread_callback_manager::get()->add_callback(ptr.get_ptr());
 }
 
 void ArtworkReaderNotification::callback_run()
@@ -263,7 +263,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     std::unordered_map<GUID, album_art_data_ptr> content_previous = m_content;
     m_content.clear();
 
-    static_api_ptr_t<album_art_manager_v2> p_album_art_manager_v2;
+    const auto p_album_art_manager_v2 = album_art_manager_v2::get();
     pfc::list_t<GUID> guids;
     guids.add_items_fromptr(m_artwork_type_ids.data(), m_artwork_type_ids.size());
 

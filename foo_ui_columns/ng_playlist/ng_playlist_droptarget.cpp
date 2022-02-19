@@ -46,8 +46,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::DragEnter(
 
     bool uid_handled = ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect);
 
-    m_is_accepted_type
-        = uid_handled || static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj);
+    m_is_accepted_type = uid_handled || playlist_incoming_item_filter::get()->process_dropped_files_check(pDataObj);
     if (!uid_handled) {
         if (m_is_accepted_type) {
             *pdwEffect
@@ -194,19 +193,18 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
         if (process) {
             metadb_handle_list data;
 
-            // console::info(static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check_if_native(pDataObj)?"native":"not
+            // console::info(playlist_incoming_item_filter::get()->process_dropped_files_check_if_native(pDataObj)?"native":"not
             // very native?");
 
-            static_api_ptr_t<ole_interaction> ole_api;
-            bool b_isNative
-                = static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check_if_native(pDataObj);
+            const auto ole_api = ole_interaction::get();
+            bool b_isNative = playlist_incoming_item_filter::get()->process_dropped_files_check_if_native(pDataObj);
 
             dropped_files_data_impl dropped_data;
-            // static_api_ptr_t<playlist_incoming_item_filter_v3>()->process_dropped_files(pDataObj, data,
+            // playlist_incoming_item_filter_v3::get()->process_dropped_files(pDataObj, data,
             // true,p_playlist->get_wnd());
             ole_api->parse_dataobject(pDataObj, dropped_data);
 
-            static_api_ptr_t<playlist_manager> playlist_api;
+            const auto playlist_api = playlist_manager::get();
 
             t_size idx = playlist_api->activeplaylist_get_item_count();
             uih::ListView::HitTestResult hi;
@@ -297,7 +295,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
 
                     void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override
                     {
-                        static_api_ptr_t<playlist_manager> playlist_api;
+                        const auto playlist_api = playlist_manager::get();
                         if (m_insertIndexTracker.m_playlist != pfc_infinite && p_items.get_count()) {
                             if (m_insertIndexTracker.m_item == pfc_infinite)
                                 m_insertIndexTracker.m_item
@@ -339,7 +337,7 @@ PlaylistViewDropTarget::PlaylistViewDropTarget(PlaylistView* playlist)
 }
 HRESULT PlaylistViewDropTarget::UpdateDropDescription(IDataObject* pDataObj, DWORD pdwEffect)
 {
-    static_api_ptr_t<playlist_manager> playlist_api;
+    const auto playlist_api = playlist_manager::get();
     DROPIMAGETYPE dit = DROPIMAGE_INVALID;
     const char* message = nullptr;
     pfc::string8 insertText;

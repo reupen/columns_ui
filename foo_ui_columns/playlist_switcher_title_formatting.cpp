@@ -42,7 +42,7 @@ private:
     std::optional<double> m_total_duration;
     std::optional<t_filesize> m_total_file_size;
     std::optional<metadb_handle_list_t<pfc::alloc_fast_aggressive>> m_tracks;
-    static_api_ptr_t<playlist_manager_v3> m_playlist_api;
+    const playlist_manager_v3::ptr m_playlist_api = playlist_manager_v3::get();
 };
 
 } // namespace

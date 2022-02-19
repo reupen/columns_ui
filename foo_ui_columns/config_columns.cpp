@@ -45,8 +45,8 @@ void double_to_string(double blah, pfc::string_base& p_out, int points = 10, boo
 
 void speedtest(ColumnListCRef columns, bool b_global)
 {
-    static_api_ptr_t<playlist_manager> playlist_api;
-    static_api_ptr_t<titleformat_compiler> titleformat_api;
+    const auto playlist_api = playlist_manager::get();
+    const auto titleformat_api = titleformat_compiler::get();
     service_ptr_t<genrand_service> p_genrand = genrand_service::g_create();
 
     unsigned activeplaylist_item_count = playlist_api->activeplaylist_get_item_count();

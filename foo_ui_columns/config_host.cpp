@@ -123,7 +123,7 @@ void PreferencesTabsHost::show_tab(const char* tab_name)
             make_child();
     }
 
-    static_api_ptr_t<ui_control>()->show_preferences(get_guid());
+    ui_control::get()->show_preferences(get_guid());
 }
 
 BOOL PreferencesTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

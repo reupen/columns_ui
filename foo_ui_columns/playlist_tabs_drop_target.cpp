@@ -52,7 +52,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragEnter(
 
     if (ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect)) {
         m_is_accepted_type = true;
-    } else if (static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj)) {
+    } else if (playlist_incoming_item_filter::get()->process_dropped_files_check(pDataObj)) {
         *pdwEffect = DROPEFFECT_COPY;
         m_is_accepted_type = true;
     } else
@@ -83,7 +83,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
             return S_OK;
         }
 
-        static_api_ptr_t<playlist_manager> playlist_api;
+        const auto playlist_api = playlist_manager::get();
         POINT pti;
         pti.y = pt.y;
         pti.x = pt.x;
@@ -116,7 +116,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
 
                 if (idx != -1 && !isAltDown) {
                     pfc::string8 name;
-                    static_api_ptr_t<playlist_manager>()->playlist_get_name(idx, name);
+                    playlist_manager::get()->playlist_get_name(idx, name);
                     uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to %1", name);
                 } else
                     uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to new playlist", "");
@@ -161,7 +161,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
         return S_OK;
     }
 
-    static_api_ptr_t<playlist_manager> playlist_api;
+    const auto playlist_api = playlist_manager::get();
 
     POINT pti;
     pti.y = pt.y;
@@ -207,7 +207,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 
         if (process) {
             metadb_handle_list data;
-            static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
+            const auto incoming_api = playlist_incoming_item_filter::get();
             incoming_api->process_dropped_files(pDataObj, data, true, p_list->get_wnd());
 
             POINT pttab = pti;

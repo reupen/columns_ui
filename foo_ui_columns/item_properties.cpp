@@ -195,11 +195,11 @@ void ItemProperties::notify_on_initialisation()
     set_use_dark_mode(colours::is_dark_mode_active());
     set_autosize(m_autosizing_columns);
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
     set_font(&lf);
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
     set_header_font(&lf);
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
     set_group_font(&lf);
     set_edge_style(m_edge_style);
     set_show_header(m_show_column_titles);
@@ -211,9 +211,8 @@ void ItemProperties::notify_on_create()
     set_group_count(m_show_group_titles ? 1 : 0);
 
     register_callback();
-    static_api_ptr_t<play_callback_manager>()->register_callback(
-        this, flag_on_playback_stop | flag_on_playback_new_track, true);
-    static_api_ptr_t<metadb_io_v3>()->register_callback(this);
+    play_callback_manager::get()->register_callback(this, flag_on_playback_stop | flag_on_playback_new_track, true);
+    metadb_io_v3::get()->register_callback(this);
     refresh_contents();
 
     if (g_windows.empty())
@@ -226,8 +225,8 @@ void ItemProperties::notify_on_destroy()
     if (g_windows.empty())
         g_message_window.destroy();
 
-    static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
-    static_api_ptr_t<metadb_io_v3>()->unregister_callback(this);
+    play_callback_manager::get()->unregister_callback(this);
+    metadb_io_v3::get()->unregister_callback(this);
     deregister_callback();
     m_handles.remove_all();
     m_selection_handles.remove_all();
@@ -238,7 +237,7 @@ void ItemProperties::notify_on_destroy()
 void ItemProperties::notify_on_set_focus(HWND wnd_lost)
 {
     deregister_callback();
-    m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
+    m_selection_holder = ui_selection_manager::get()->acquire();
     m_selection_holder->set_selection(m_handles);
 }
 void ItemProperties::notify_on_kill_focus(HWND wnd_receiving)
@@ -256,7 +255,7 @@ void ItemProperties::register_callback()
 void ItemProperties::deregister_callback()
 {
     if (m_callback_registered)
-        static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
+        ui_selection_manager::get()->unregister_callback(this);
     m_callback_registered = false;
 }
 
@@ -623,7 +622,7 @@ void ItemProperties::on_selection_changed(const pfc::list_base_const_t<metadb_ha
             m_selection_handles = p_selection;
 
         if (m_tracking_mode == track_nowplaying
-            || (m_tracking_mode == track_automatic && static_api_ptr_t<play_control>()->is_playing()))
+            || (m_tracking_mode == track_automatic && play_control::get()->is_playing()))
             return;
 
         m_handles = m_selection_handles;
@@ -635,12 +634,12 @@ void ItemProperties::on_tracking_mode_change()
 {
     m_handles.remove_all();
     if (m_tracking_mode == track_selection
-        || (m_tracking_mode == track_automatic && !static_api_ptr_t<play_control>()->is_playing())) {
+        || (m_tracking_mode == track_automatic && !play_control::get()->is_playing())) {
         m_handles = m_selection_handles;
     } else if (m_tracking_mode == track_nowplaying
-        || (m_tracking_mode == track_automatic && static_api_ptr_t<play_control>()->is_playing())) {
+        || (m_tracking_mode == track_automatic && play_control::get()->is_playing())) {
         metadb_handle_ptr item;
-        if (static_api_ptr_t<playback_control>()->get_now_playing(item))
+        if (playback_control::get()->get_now_playing(item))
             m_handles.add_item(item);
     }
     refresh_contents();
@@ -678,7 +677,7 @@ public:
 void ItemProperties::g_on_font_items_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
     for (auto& window : g_windows) {
         window->set_font(&lf);
     }
@@ -687,7 +686,7 @@ void ItemProperties::g_on_font_items_change()
 void ItemProperties::g_on_font_groups_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
     for (auto& window : g_windows) {
         window->set_group_font(&lf);
     }
@@ -696,7 +695,7 @@ void ItemProperties::g_on_font_groups_change()
 void ItemProperties::g_on_font_header_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
     for (auto& window : g_windows) {
         window->set_header_font(&lf);
     }
@@ -728,7 +727,7 @@ ItemProperties::ItemProperties()
 
 void ItemProperties::notify_save_inline_edit(const char* value)
 {
-    static_api_ptr_t<metadb_io_v2> tagger_api;
+    const auto tagger_api = metadb_io_v2::get();
     if (strcmp(value, "<mixed values>") != 0) {
         pfc::list_t<pfc::string8> values;
         const char* ptr = value;

@@ -169,13 +169,13 @@ class button_stop : public ui_extension::button//, play_callback
     virtual void register_callback(uie::button_callback & p_callback)
     {
         m_callback = &p_callback;
-        static_api_ptr_t<play_callback_manager>()->register_callback(this, play_callback::flag_on_playback_all, false);
+        play_callback_manager::get()->register_callback(this, play_callback::flag_on_playback_all, false);
     };
     virtual void deregister_callback(uie::button_callback & p_callback)
     {
         assert(m_callback == &p_callback);
         m_callback = NULL;
-        static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
+        play_callback_manager::get()->unregister_callback(this);
     };
     virtual void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused){};
     virtual void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track)
@@ -267,7 +267,7 @@ class button_next : public ui_extension::button
             };
         };
         unsigned cursor, playlist;
-        static_api_ptr_t<playlist_manager> api;
+        const auto api = playlist_manager::get();
         if (!api->get_playing_item_location(&playlist, &cursor))
         {
             playlist = api->get_active_playlist();

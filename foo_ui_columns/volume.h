@@ -82,7 +82,7 @@ class VolumeBar
         void on_position_change(unsigned pos, bool b_tracking) override
         {
             const auto volume = position_to_volume(pos);
-            static_api_ptr_t<playback_control>()->set_volume(static_cast<float>(volume));
+            playback_control::get()->set_volume(static_cast<float>(volume));
         }
 
         void get_tooltip_text(unsigned pos, uih::TrackbarString& out) override
@@ -172,7 +172,7 @@ public:
             }
             ShowWindow(wnd_trackbar, SW_SHOWNORMAL);
 
-            static_api_ptr_t<play_callback_manager>()->register_callback(this, flag_on_volume_change, false);
+            play_callback_manager::get()->register_callback(this, flag_on_volume_change, false);
 
             break;
         }
@@ -278,7 +278,7 @@ public:
         } break;
         case WM_DESTROY: {
             m_dark_mode_notifier.reset();
-            static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
+            play_callback_manager::get()->unregister_callback(this);
             m_child.destroy();
             if (t_attributes::get_show_caption())
                 m_font_caption.reset();
@@ -309,7 +309,7 @@ public:
 
     void update_position()
     {
-        float vol = static_api_ptr_t<playback_control>()->get_volume();
+        float vol = playback_control::get()->get_volume();
         update_position(vol);
     }
     void update_position(float p_new_volume) { m_child.set_position(volume_to_position(p_new_volume)); }

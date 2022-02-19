@@ -99,7 +99,7 @@ void regenerate_text()
         return;
 
     metadb_handle_ptr track;
-    static_api_ptr_t<play_control> play_api;
+    const auto play_api = play_control::get();
     play_api->get_now_playing(track);
     if (track.is_valid()) {
         titleformat_object::ptr to_status;
@@ -165,8 +165,8 @@ std::string get_selected_length_text(unsigned dp = 0)
     metadb_handle_list_t<pfc::alloc_fast_aggressive> sels;
     double length = 0;
 
-    static_api_ptr_t<playlist_manager> playlist_api;
-    static_api_ptr_t<metadb> metadb_api;
+    const auto playlist_api = playlist_manager::get();
+    const auto metadb_api = metadb::get();
 
     unsigned count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
 
@@ -180,7 +180,7 @@ std::string get_selected_length_text(unsigned dp = 0)
 
 std::string get_selected_count_text(unsigned dp = 0)
 {
-    static_api_ptr_t<playlist_manager> playlist_api;
+    const auto playlist_api = playlist_manager::get();
 
     unsigned count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
 
@@ -218,7 +218,7 @@ void set_part_sizes(unsigned p_parts)
         unsigned playlist_lock_pos{};
         unsigned volume_pos{};
 
-        static_api_ptr_t<playlist_manager> playlist_api;
+        const auto playlist_api = playlist_manager::get();
         unsigned active = playlist_api->get_active_playlist();
 
         const bool show_playlist_lock_part

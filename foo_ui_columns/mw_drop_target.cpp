@@ -31,8 +31,8 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(
     if (m_DropTargetHelper)
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
-    static_api_ptr_t<playlist_manager> playlist_api;
-    static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
+    const auto playlist_api = playlist_manager::get();
+    const auto incoming_api = playlist_incoming_item_filter::get();
 
     HWND wnd = WindowFromPoint(pt);
     bool is_allowed_window = check_window_allowed(wnd);
@@ -116,11 +116,11 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragOver(DWORD grfKeyState, POIN
     // if (last_over.x != pt.x || last_over.y != pt.y)
     if (!uid_handled) {
         if (is_allowed_window
-            && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(m_DataObject.get())) {
+            && playlist_incoming_item_filter::get()->process_dropped_files_check(m_DataObject.get())) {
             *pdwEffect = DROPEFFECT_COPY;
 
             pfc::string8 name;
-            static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
+            playlist_manager::get()->activeplaylist_get_name(name);
             uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_COPY, "Add to %1", name);
         } else {
             *pdwEffect = DROPEFFECT_NONE;
@@ -151,11 +151,10 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::DragEnter(
     bool uid_handled = ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect);
 
     if (!uid_handled) {
-        if (is_allowed_window
-            && static_api_ptr_t<playlist_incoming_item_filter>()->process_dropped_files_check(pDataObj)) {
+        if (is_allowed_window && playlist_incoming_item_filter::get()->process_dropped_files_check(pDataObj)) {
             *pdwEffect = DROPEFFECT_COPY;
             pfc::string8 name;
-            static_api_ptr_t<playlist_manager>()->activeplaylist_get_name(name);
+            playlist_manager::get()->activeplaylist_get_name(name);
             uih::ole::set_drop_description(pDataObj, DROPIMAGE_COPY, "Add to %1", name);
         } else {
             *pdwEffect = DROPEFFECT_NONE;

@@ -48,7 +48,7 @@ public:
 
     bool override_status_text_create(service_ptr_t<ui_status_text_override>& p_out) override
     {
-        static_api_ptr_t<ui_control> api;
+        const auto api = ui_control::get();
         return api->override_status_text_create(p_out);
     }
 

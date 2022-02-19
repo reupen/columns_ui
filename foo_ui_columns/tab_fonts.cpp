@@ -139,9 +139,9 @@ void TabFonts::get_font(LOGFONT& lf)
 {
     t_size index_element = ComboBox_GetCurSel(m_wnd_colours_element);
     if (index_element <= 1)
-        static_api_ptr_t<cui::fonts::manager>()->get_font(cui::fonts::font_type_t(index_element), lf);
+        fb2k::std_api_get<cui::fonts::manager>()->get_font(cui::fonts::font_type_t(index_element), lf);
     else
-        static_api_ptr_t<cui::fonts::manager>()->get_font(m_element_api->get_client_guid(), lf);
+        fb2k::std_api_get<cui::fonts::manager>()->get_font(m_element_api->get_client_guid(), lf);
 }
 
 void TabFonts::update_mode_combobox()

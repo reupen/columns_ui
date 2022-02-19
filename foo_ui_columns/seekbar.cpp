@@ -12,7 +12,7 @@ pfc::ptr_list_t<SeekBarToolbar> SeekBarToolbar::windows;
 void SeekBarToolbar::SeekBarTrackbarCallback::on_position_change(unsigned pos, bool b_tracking)
 {
     if (!b_tracking || (GetKeyState(VK_SHIFT) & KF_UP))
-        static_api_ptr_t<play_control>()->playback_seek(pos / 10.0);
+        play_control::get()->playback_seek(pos / 10.0);
 }
 
 void SeekBarToolbar::SeekBarTrackbarCallback::get_tooltip_text(unsigned pos, uih::TrackbarString& out)
@@ -47,7 +47,7 @@ unsigned SeekBarToolbar::g_seek_timer = 0;
 
 void SeekBarToolbar::update_seek_timer()
 {
-    if (windows.get_count() && static_api_ptr_t<playback_control>()->is_playing()) {
+    if (windows.get_count() && playback_control::get()->is_playing()) {
         if (!g_seek_timer) {
             g_seek_timer = SetTimer(nullptr, NULL, 150, (TIMERPROC)SeekTimerProc);
         }
@@ -62,7 +62,7 @@ void SeekBarToolbar::update_seek_pos()
     if (wnd_seekbar == nullptr)
         return;
 
-    static_api_ptr_t<play_control> play_api;
+    const auto play_api = play_control::get();
 
     if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
         double position = 0;
@@ -82,7 +82,7 @@ void SeekBarToolbar::update_seek_pos()
 
 VOID CALLBACK SeekBarToolbar::SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time)
 {
-    if (windows.get_count() && static_api_ptr_t<playback_control>()->is_playing())
+    if (windows.get_count() && playback_control::get()->is_playing())
         update_seekbars(true);
 }
 
@@ -97,7 +97,7 @@ void SeekBarToolbar::update_seek()
     if (wnd_seekbar == nullptr)
         return;
 
-    static_api_ptr_t<play_control> play_api;
+    const auto play_api = play_control::get();
 
     if (play_api->is_playing() && play_api->playback_get_length() /* && play_api->playback_can_seek()*/) {
         double position = 0;

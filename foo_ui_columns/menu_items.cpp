@@ -176,7 +176,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
         pfc::string8 buff;
         get_name(p_index, name);
         buff << "[View/Layout] " << name;
-        return static_api_ptr_t<hasher_md5>()->process_single_guid(buff.get_ptr(), buff.get_length());
+        return hasher_md5::get()->process_single_guid(buff.get_ptr(), buff.get_length());
     }
     void get_name(t_uint32 p_index, pfc::string_base& p_out) override
     {
