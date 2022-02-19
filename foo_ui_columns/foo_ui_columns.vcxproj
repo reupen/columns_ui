@@ -299,6 +299,7 @@
     <ClCompile Include=".\buttons_custom_image.cpp" />
     <ClCompile Include=".\colours_manager_data.cpp" />
     <ClCompile Include=".\columns_v2.cpp" />
+    <ClCompile Include="system_appearance_manager.cpp" />
     <ClCompile Include="dark_mode.cpp" />
     <ClCompile Include="dark_mode_tabs.cpp" />
     <ClCompile Include="dark_mode_trackbar.cpp" />
@@ -515,6 +516,7 @@
     <ClInclude Include=".\item_properties.h" />
     <ClInclude Include=".\menu_helpers.h" />
     <ClInclude Include=".\mw_drop_target.h" />
+    <ClInclude Include="system_appearance_manager.h" />
     <ClInclude Include="button_items.h" />
     <ClInclude Include="dark_mode.h" />
     <ClInclude Include="dark_mode_tabs.h" />

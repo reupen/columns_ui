@@ -109,6 +109,9 @@
     <Filter Include="Dark mode">
       <UniqueIdentifier>{08854a02-9e4c-43a6-8fc3-bb04284d5b02}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Colours and fonts">
+      <UniqueIdentifier>{15a560a7-d486-480b-9ce9-1081f9083d13}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include=".\config.cpp">
@@ -172,12 +175,6 @@
       <Filter>Config storage</Filter>
     </ClCompile>
     <ClCompile Include=".\stdafx.cpp" />
-    <ClCompile Include=".\colours_manager_data.cpp">
-      <Filter>Config storage</Filter>
-    </ClCompile>
-    <ClCompile Include=".\fonts_manager_data.cpp">
-      <Filter>Config storage</Filter>
-    </ClCompile>
     <ClCompile Include=".\config_vars.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
@@ -551,6 +548,15 @@
     <ClCompile Include="fcl_fonts.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
+    <ClCompile Include=".\fonts_manager_data.cpp">
+      <Filter>Colours and fonts</Filter>
+    </ClCompile>
+    <ClCompile Include=".\colours_manager_data.cpp">
+      <Filter>Colours and fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="system_appearance_manager.cpp">
+      <Filter>Colours and fonts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">
@@ -585,12 +591,6 @@
     </ClInclude>
     <ClInclude Include=".\stdafx.h" />
     <ClInclude Include=".\config_items.h">
-      <Filter>Config storage</Filter>
-    </ClInclude>
-    <ClInclude Include=".\colours_manager_data.h">
-      <Filter>Config storage</Filter>
-    </ClInclude>
-    <ClInclude Include=".\fonts_manager_data.h">
       <Filter>Config storage</Filter>
     </ClInclude>
     <ClInclude Include=".\config_vars.h">
@@ -787,6 +787,15 @@
     </ClInclude>
     <ClInclude Include="tab_dark_mode.h">
       <Filter>Config UI</Filter>
+    </ClInclude>
+    <ClInclude Include=".\fonts_manager_data.h">
+      <Filter>Colours and fonts</Filter>
+    </ClInclude>
+    <ClInclude Include=".\colours_manager_data.h">
+      <Filter>Colours and fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="system_appearance_manager.h">
+      <Filter>Colours and fonts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
