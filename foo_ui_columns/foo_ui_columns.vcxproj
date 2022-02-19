@@ -302,6 +302,8 @@
     <ClCompile Include="dark_mode.cpp" />
     <ClCompile Include="dark_mode_tabs.cpp" />
     <ClCompile Include="dark_mode_trackbar.cpp" />
+    <ClCompile Include="fcl_playlist_switcher.cpp" />
+    <ClCompile Include="fcl_playlist_view.cpp" />
     <ClCompile Include="filter_fcl.cpp" />
     <ClCompile Include="legacy_artwork_config.cpp" />
     <ClCompile Include="ng_playlist\config_object_callbacks.cpp" />
@@ -477,7 +479,7 @@
     <ClCompile Include=".\config_layout.cpp" />
     <ClCompile Include=".\config_vars.cpp" />
     <ClCompile Include=".\fcl.cpp" />
-    <ClCompile Include=".\fcl_colours.cpp" />
+    <ClCompile Include="fcl_legacy_fonts.cpp" />
     <ClCompile Include=".\fcl_layout.cpp" />
     <ClCompile Include=".\fcl_titles.cpp" />
     <ClCompile Include=".\status_pane.cpp" />

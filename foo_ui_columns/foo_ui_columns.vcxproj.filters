@@ -132,7 +132,7 @@
     <ClCompile Include=".\fcl.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
-    <ClCompile Include=".\fcl_colours.cpp">
+    <ClCompile Include="fcl_legacy_fonts.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
     <ClCompile Include=".\fcl_layout.cpp">
@@ -538,6 +538,12 @@
     </ClCompile>
     <ClCompile Include="tab_dark_mode.cpp">
       <Filter>Config UI</Filter>
+    </ClCompile>
+    <ClCompile Include="fcl_playlist_view.cpp">
+      <Filter>FCL files</Filter>
+    </ClCompile>
+    <ClCompile Include="fcl_playlist_switcher.cpp">
+      <Filter>FCL files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
