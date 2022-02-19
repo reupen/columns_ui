@@ -545,6 +545,9 @@
     <ClCompile Include="fcl_playlist_switcher.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
+    <ClCompile Include="fcl_colours.cpp">
+      <Filter>FCL files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include=".\resource.h">

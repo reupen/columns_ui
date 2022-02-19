@@ -41,3 +41,5 @@ private:
     bool initialising{false};
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 };
+
+extern TabColours g_tab_appearance;

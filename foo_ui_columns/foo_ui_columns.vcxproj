@@ -302,6 +302,7 @@
     <ClCompile Include="dark_mode.cpp" />
     <ClCompile Include="dark_mode_tabs.cpp" />
     <ClCompile Include="dark_mode_trackbar.cpp" />
+    <ClCompile Include="fcl_colours.cpp" />
     <ClCompile Include="fcl_playlist_switcher.cpp" />
     <ClCompile Include="fcl_playlist_view.cpp" />
     <ClCompile Include="filter_fcl.cpp" />
