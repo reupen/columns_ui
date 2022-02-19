@@ -39,15 +39,15 @@
 // Included before windows.h, because pfc.h includes winsock2.h
 #include "../pfc/pfc.h"
 
-#include <windows.h>
+#include <Windows.h>
 #include <windowsx.h>
-#include <commctrl.h>
+#include <CommCtrl.h>
 #include <dwmapi.h>
-#include <shlwapi.h>
-#include <winuser.h>
+#include <Shlwapi.h>
+#include <WinUser.h>
 #include <gdiplus.h>
 #include <zmouse.h>
-#include <uxtheme.h>
+#include <Uxtheme.h>
 #include <wincodec.h>
 #include <strsafe.h>
 
@@ -55,7 +55,7 @@
 #include <wil/com.h>
 #include <wil/resource.h>
 
-#include <winrt/Windows.UI.ViewManagement.h>
+#include <winrt/windows.ui.viewmanagement.h>
 
 #include "../foobar2000/SDK/foobar2000.h"
 #include "../foobar2000/SDK/core_api.h"
