@@ -300,6 +300,7 @@
     <ClCompile Include="colour_manager_data.cpp" />
     <ClCompile Include=".\columns_v2.cpp" />
     <ClCompile Include="colour_manager.cpp" />
+    <ClCompile Include="font_manager.cpp" />
     <ClCompile Include="system_appearance_manager.cpp" />
     <ClCompile Include="dark_mode.cpp" />
     <ClCompile Include="dark_mode_tabs.cpp" />
@@ -329,7 +330,7 @@
     <ClCompile Include=".\filter_menu.cpp" />
     <ClCompile Include=".\filter_search_bar.cpp" />
     <ClCompile Include=".\filter_config_var.cpp" />
-    <ClCompile Include=".\fonts_manager_data.cpp" />
+    <ClCompile Include="font_manager_data.cpp" />
     <ClCompile Include=".\gdiplus.cpp" />
     <ClCompile Include=".\get_msg_hook.cpp" />
     <ClCompile Include=".\item_details_config.cpp" />
@@ -510,7 +511,7 @@
     <ClInclude Include=".\config_appearance.h" />
     <ClInclude Include=".\config_defaults.h" />
     <ClInclude Include=".\config_items.h" />
-    <ClInclude Include=".\fonts_manager_data.h" />
+    <ClInclude Include="font_manager_data.h" />
     <ClInclude Include=".\gdiplus.h" />
     <ClInclude Include=".\get_msg_hook.h" />
     <ClInclude Include=".\item_details.h" />

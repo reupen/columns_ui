@@ -30,22 +30,22 @@ class FontsDataSet : public fcl::dataset {
         // p_writer->write_lendian_t(stream_version, p_abort);
         {
             stream_writer_memblock mem;
-            g_fonts_manager_data.m_common_items_entry->_export(&mem, p_abort);
+            g_font_manager_data.m_common_items_entry->_export(&mem, p_abort);
             out.write_item(identifier_global_items, mem.m_data.get_ptr(), mem.m_data.get_size());
         }
         {
             stream_writer_memblock mem;
-            g_fonts_manager_data.m_common_labels_entry->_export(&mem, p_abort);
+            g_font_manager_data.m_common_labels_entry->_export(&mem, p_abort);
             out.write_item(identifier_global_labels, mem.m_data.get_ptr(), mem.m_data.get_size());
         }
         {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
-            t_size count = g_fonts_manager_data.m_entries.get_count();
+            t_size count = g_font_manager_data.m_entries.get_count();
             mem.write_lendian_t(count, p_abort);
             for (t_size i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
-                g_fonts_manager_data.m_entries[i]->_export(&mem2, p_abort);
+                g_font_manager_data.m_entries[i]->_export(&mem2, p_abort);
                 out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
             }
             out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
@@ -70,10 +70,10 @@ class FontsDataSet : public fcl::dataset {
 
             switch (element_id) {
             case identifier_global_items:
-                g_fonts_manager_data.m_common_items_entry->import(&data_reader, data.get_size(), type, p_abort);
+                g_font_manager_data.m_common_items_entry->import(&data_reader, data.get_size(), type, p_abort);
                 break;
             case identifier_global_labels:
-                g_fonts_manager_data.m_common_labels_entry->import(&data_reader, data.get_size(), type, p_abort);
+                g_font_manager_data.m_common_labels_entry->import(&data_reader, data.get_size(), type, p_abort);
                 break;
             case identifier_client_entries: {
                 fbh::fcl::Reader reader2(&data_reader, data.get_size(), p_abort);
@@ -81,8 +81,8 @@ class FontsDataSet : public fcl::dataset {
                 t_size count;
                 reader2.read_item(count);
 
-                g_fonts_manager_data.m_entries.remove_all();
-                g_fonts_manager_data.m_entries.set_count(count);
+                g_font_manager_data.m_entries.remove_all();
+                g_font_manager_data.m_entries.set_count(count);
 
                 for (t_size i = 0; i < count; i++) {
                     t_uint32 element_id2;
@@ -94,8 +94,8 @@ class FontsDataSet : public fcl::dataset {
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref element_reader(data2);
-                        g_fonts_manager_data.m_entries[i] = std::make_shared<FontsManagerData::Entry>();
-                        g_fonts_manager_data.m_entries[i]->import(&element_reader, data2.get_size(), type, p_abort);
+                        g_font_manager_data.m_entries[i] = std::make_shared<FontManagerData::Entry>();
+                        g_font_manager_data.m_entries[i]->import(&element_reader, data2.get_size(), type, p_abort);
                     } else
                         reader2.skip(element_size2);
                 }
@@ -106,7 +106,7 @@ class FontsDataSet : public fcl::dataset {
             }
         }
         refresh_appearance_prefs();
-        g_fonts_manager_data.g_on_common_font_changed(pfc_infinite);
+        g_font_manager_data.g_on_common_font_changed(pfc_infinite);
         service_enum_t<fonts::client> font_enum;
         fonts::client::ptr ptr;
         while (font_enum.next(ptr))

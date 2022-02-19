@@ -2,9 +2,7 @@
 
 #include "config_appearance.h"
 
-#include "system_appearance_manager.h"
 #include "config_host.h"
-#include "dark_mode.h"
 #include "main_window.h"
 #include "tab_colours.h"
 #include "tab_dark_mode.h"
@@ -51,139 +49,10 @@ fbh::ConfigInt32 dark_mode_status(
 } // namespace cui::colours
 
 ColourManagerData g_colour_manager_data;
-FontsManagerData g_fonts_manager_data;
+FontManagerData g_font_manager_data;
 TabDarkMode g_tab_dark_mode;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
-
-class FontsManager : public cui::fonts::manager {
-public:
-    void get_font(const GUID& p_guid, LOGFONT& p_out) const override
-    {
-        cui::system_appearance_manager::initialise();
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(p_guid, p_entry);
-        if (p_entry->font_mode == cui::fonts::font_mode_common_items)
-            get_font(cui::fonts::font_type_items, p_out);
-        else if (p_entry->font_mode == cui::fonts::font_mode_common_labels)
-            get_font(cui::fonts::font_type_labels, p_out);
-        else {
-            p_out = p_entry->get_normalised_font();
-        }
-    }
-
-    void get_font(const cui::fonts::font_type_t p_type, LOGFONT& p_out) const override
-    {
-        FontsManagerData::entry_ptr_t p_entry;
-        if (p_type == cui::fonts::font_type_items)
-            p_entry = g_fonts_manager_data.m_common_items_entry;
-        else
-            p_entry = g_fonts_manager_data.m_common_labels_entry;
-
-        if (p_entry->font_mode == cui::fonts::font_mode_system) {
-            if (p_type == cui::fonts::font_type_items)
-                uGetIconFont(&p_out);
-            else
-                uGetMenuFont(&p_out);
-        } else {
-            p_out = p_entry->get_normalised_font();
-        }
-    }
-
-    void set_font(const GUID& p_guid, const LOGFONT& p_font) override
-    {
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(p_guid, p_entry);
-        p_entry->font_mode = cui::fonts::font_mode_custom;
-        p_entry->font_description.log_font = p_font;
-        p_entry->font_description.estimate_point_size();
-        cui::fonts::client::ptr ptr;
-        if (cui::fonts::client::create_by_guid(p_guid, ptr))
-            ptr->on_font_changed();
-    }
-
-    void register_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.register_common_callback(p_callback);
-    }
-
-    void deregister_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.deregister_common_callback(p_callback);
-    }
-};
-
-class FontsManager2 : public cui::fonts::manager_v2 {
-public:
-    [[nodiscard]] LOGFONT get_client_font(GUID p_guid, unsigned dpi) const override
-    {
-        LOGFONT lf{};
-
-        cui::system_appearance_manager::initialise();
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(p_guid, p_entry);
-
-        if (p_entry->font_mode == cui::fonts::font_mode_common_items)
-            return get_common_font(cui::fonts::font_type_items, dpi);
-
-        if (p_entry->font_mode == cui::fonts::font_mode_common_labels)
-            return get_common_font(cui::fonts::font_type_labels, dpi);
-
-        return p_entry->get_normalised_font(dpi);
-    }
-
-    [[nodiscard]] LOGFONT get_common_font(const cui::fonts::font_type_t p_type, unsigned dpi) const override
-    {
-        FontsManagerData::entry_ptr_t entry;
-        if (p_type == cui::fonts::font_type_items)
-            entry = g_fonts_manager_data.m_common_items_entry;
-        else
-            entry = g_fonts_manager_data.m_common_labels_entry;
-
-        if (entry->font_mode == cui::fonts::font_mode_system) {
-            if (p_type == cui::fonts::font_type_items) {
-                LOGFONT lf{};
-                uih::dpi::system_parameters_info_for_dpi(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, dpi);
-                return lf;
-            }
-
-            NONCLIENTMETRICS ncm{};
-            ncm.cbSize = sizeof(NONCLIENTMETRICS);
-            uih::dpi::system_parameters_info_for_dpi(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, dpi);
-            return ncm.lfMenuFont;
-        }
-
-        return entry->get_normalised_font(dpi);
-    }
-
-    void set_client_font(GUID guid, const LOGFONT& p_font, int point_size_tenths) override
-    {
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(guid, p_entry);
-        p_entry->font_mode = cui::fonts::font_mode_custom;
-        p_entry->font_description.log_font = p_font;
-        p_entry->font_description.point_size_tenths = point_size_tenths;
-
-        cui::fonts::client::ptr ptr;
-        if (cui::fonts::client::create_by_guid(guid, ptr))
-            ptr->on_font_changed();
-    }
-
-    void register_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.register_common_callback(p_callback);
-    }
-
-    void deregister_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.deregister_common_callback(p_callback);
-    }
-};
-
-namespace {
-service_factory_t<FontsManager> g_fonts_manager;
-service_factory_t<FontsManager2> g_fonts_manager_v2;
-} // namespace
 
 cui::colours::colour_mode_t g_get_global_colour_mode()
 {
@@ -292,6 +161,4 @@ static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and 
 const GUID ColourManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
 
 // {6B71F91C-6B7E-4dbe-B27B-C493AA513FD0}
-const GUID FontsManagerData::g_cfg_guid
-    = {0x6b71f91c, 0x6b7e, 0x4dbe, {0xb2, 0x7b, 0xc4, 0x93, 0xaa, 0x51, 0x3f, 0xd0}};
-
+const GUID FontManagerData::g_cfg_guid = {0x6b71f91c, 0x6b7e, 0x4dbe, {0xb2, 0x7b, 0xc4, 0x93, 0xaa, 0x51, 0x3f, 0xd0}};
