@@ -49,27 +49,76 @@ extern cfg_bool show_status_pane;
 extern fbh::ConfigObjectBoolFactory<> allow_locked_panel_resizing;
 extern fbh::ConfigUint32DpiAware custom_splitter_divider_width;
 
-extern fbh::ConfigInt32DpiAware playlist_switcher_item_padding, playlist_view_item_padding;
+extern fbh::ConfigInt32DpiAware playlist_switcher_item_padding;
+extern fbh::ConfigInt32DpiAware playlist_view_item_padding;
 } // namespace settings
 
 extern cfg_string cfg_playlist_switcher_tagz;
 extern ConfigMenuItem cfg_playlist_double;
 
-extern cfg_int cfg_global, cfg_cur_prefs_col, cfg_header_hottrack, cfg_sortsel, cfg_global_sort, cfg_vis, cfg_vis2,
-    cfg_vis_edge, cfg_lock, cfg_header, cfg_drop_at_end, cfg_mclick, cfg_mclick2, cfg_balloon, cfg_scroll_h_no_v,
-    cfg_ellipsis, cfg_tabs_multiline, cfg_frame, cfg_show_seltime, cfg_show_selcount, cfg_plistframe,
-    cfg_tooltips_clipped, cfg_np, cfg_show_systray, cfg_minimise_to_tray, cfg_show_vol, cfg_custom_icon,
-    cfg_custom_buttons, cfg_drag_autoswitch, cfg_plist_width, cfg_drag_pl, cfg_pl_autohide, cfg_sel_dp,
-    cfg_alternative_sel, cfg_plm_rename, cfg_pgen_playlist, cfg_pgen_tf, cfg_autoswitch_delay, cfg_pgen_dir,
-    cfg_custom_buttons_over, cfg_custom_buttons_transparency, cfg_replace_drop_underscores, cfg_status,
-    cfg_show_sort_arrows, cfg_toolbar_disable_default_drawing, cfg_sidebar_use_custom_show_delay,
-    cfg_sidebar_show_delay, cfg_sidebar_hide_delay, cfg_toolbars, cfg_playlist_switcher_use_tagz,
-    cfg_playlist_middle_action, cfg_playlist_panel_delete, cfg_nohscroll;
+extern cfg_int cfg_global;
+extern cfg_int cfg_cur_prefs_col;
+extern cfg_int cfg_header_hottrack;
+extern cfg_int cfg_sortsel;
+extern cfg_int cfg_global_sort;
+extern cfg_int cfg_vis;
+extern cfg_int cfg_vis2;
+extern cfg_int cfg_vis_edge;
+extern cfg_int cfg_lock;
+extern cfg_int cfg_header;
+extern cfg_int cfg_drop_at_end;
+extern cfg_int cfg_mclick;
+extern cfg_int cfg_mclick2;
+extern cfg_int cfg_balloon;
+extern cfg_int cfg_scroll_h_no_v;
+extern cfg_int cfg_ellipsis;
+extern cfg_int cfg_tabs_multiline;
+extern cfg_int cfg_frame;
+extern cfg_int cfg_show_seltime;
+extern cfg_int cfg_show_selcount;
+extern cfg_int cfg_plistframe;
+extern cfg_int cfg_tooltips_clipped;
+extern cfg_int cfg_np;
+extern cfg_int cfg_show_systray;
+extern cfg_int cfg_minimise_to_tray;
+extern cfg_int cfg_show_vol;
+extern cfg_int cfg_custom_icon;
+extern cfg_int cfg_custom_buttons;
+extern cfg_int cfg_drag_autoswitch;
+extern cfg_int cfg_plist_width;
+extern cfg_int cfg_drag_pl;
+extern cfg_int cfg_pl_autohide;
+extern cfg_int cfg_sel_dp;
+extern cfg_int cfg_alternative_sel;
+extern cfg_int cfg_plm_rename;
+extern cfg_int cfg_pgen_playlist;
+extern cfg_int cfg_pgen_tf;
+extern cfg_int cfg_autoswitch_delay;
+extern cfg_int cfg_pgen_dir;
+extern cfg_int cfg_custom_buttons_over;
+extern cfg_int cfg_custom_buttons_transparency;
+extern cfg_int cfg_replace_drop_underscores;
+extern cfg_int cfg_status;
+extern cfg_int cfg_show_sort_arrows;
+extern cfg_int cfg_toolbar_disable_default_drawing;
+extern cfg_int cfg_sidebar_use_custom_show_delay;
+extern cfg_int cfg_sidebar_show_delay;
+extern cfg_int cfg_sidebar_hide_delay;
+extern cfg_int cfg_toolbars;
+extern cfg_int cfg_playlist_switcher_use_tagz;
+extern cfg_int cfg_playlist_middle_action;
+extern cfg_int cfg_playlist_panel_delete;
+extern cfg_int cfg_nohscroll;
 
 extern cfg_bool cfg_go_to_tray;
 
-extern cfg_string cfg_tray_icon_path, cfg_export, cfg_import, cfg_custom_buttons_path, cfg_globalstring, cfg_colour,
-    cfg_pgenstring;
+extern cfg_string cfg_tray_icon_path;
+extern cfg_string cfg_export;
+extern cfg_string cfg_import;
+extern cfg_string cfg_custom_buttons_path;
+extern cfg_string cfg_globalstring;
+extern cfg_string cfg_colour;
+extern cfg_string cfg_pgenstring;
 
 extern ConfigMenuItem cfg_statusdbl;
 
