@@ -1,14 +1,5 @@
 #pragma once
 
-/*!
- * \file setup_dialog.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Initial quick set-up dialog box
- */
-
 #include "layout.h"
 
 class QuickSetupDialog {

@@ -1,15 +1,6 @@
 #ifndef _COLUMNS_HELPERS_H_
 #define _COLUMNS_HELPERS_H_
 
-/*!
- * \file common.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Some common functions and enumerations
- */
-
 enum PlaylistFilterType {
     FILTER_NONE = 0,
     FILTER_SHOW,

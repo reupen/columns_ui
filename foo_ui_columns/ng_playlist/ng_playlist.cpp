@@ -1,7 +1,3 @@
-/**
- * \file ng_playlist.cpp
- */
-
 #include "../stdafx.h"
 
 #include "ng_playlist.h"

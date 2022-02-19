@@ -1,14 +1,5 @@
 #pragma once
 
-/*!
- * \file menu_helpers.h
- *
- * \author musicmusic
- * \date March 2015
- *
- * Various helpers used to construct menu item paths for display. Used by buttons toolbar.
- */
-
 #include "stdafx.h"
 
 namespace menu_helpers {
