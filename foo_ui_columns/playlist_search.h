@@ -1,5 +1,4 @@
-#ifndef _COLUMNS_PLAYLIST_SEARCH_H_
-#define _COLUMNS_PLAYLIST_SEARCH_H_
+#pragma once
 
 /** What's all this? Never finished, obsolete or abandoned? Based on Typefind code. */
 
@@ -233,5 +232,3 @@ private:
 };
 
 #endif
-
-#endif //_COLUMNS_PLAYLIST_SEARCH_H_

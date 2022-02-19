@@ -1,5 +1,4 @@
-#ifndef _COLUMNS_UI_H_
-#define _COLUMNS_UI_H_
+#pragma once
 
 namespace colours {
 enum ColourID {
@@ -87,5 +86,3 @@ private:
 
 extern MainWindow main_window;
 } // namespace cui
-
-#endif
