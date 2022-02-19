@@ -195,7 +195,7 @@ void FilterPanel::s_on_dark_mode_status_change()
 void FilterPanel::g_on_font_items_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
     for (auto& window : g_windows) {
         window->set_font(&lf);
     }
@@ -204,7 +204,7 @@ void FilterPanel::g_on_font_items_change()
 void FilterPanel::g_on_font_header_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
     for (auto& window : g_windows) {
         window->set_header_font(&lf);
     }
@@ -418,7 +418,7 @@ void FilterPanel::get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_aggre
         if (m_stream->m_source_overriden)
             p_out = m_stream->m_source_handles;
         else
-            static_api_ptr_t<library_manager>()->get_all_items(p_out);
+            library_manager::get()->get_all_items(p_out);
     }
 }
 
@@ -475,7 +475,7 @@ bool FilterPanel::do_drag_drop(WPARAM wp)
     get_selection_handles(data);
     if (data.get_count() > 0) {
         sort_tracks(data);
-        static_api_ptr_t<playlist_incoming_item_filter> incoming_api;
+        const auto incoming_api = playlist_incoming_item_filter::get();
         auto pDataObject = incoming_api->create_dataobject_ex(data);
         if (pDataObject.is_valid()) {
             m_drag_item_count = data.get_count();
@@ -543,8 +543,8 @@ void FilterPanel::do_items_action(const bit_array& p_nodes, Action action)
 
     fbh::metadb_handle_list_remove_duplicates(handles);
 
-    static_api_ptr_t<playlist_manager_v3> playlist_api;
-    static_api_ptr_t<play_control> playback_api;
+    const auto playlist_api = playlist_manager_v3::get();
+    const auto playback_api = play_control::get();
     t_size index_insert = pfc_infinite;
     if (action == action_send_to_autosend && playback_api->is_playing()) {
         t_size playlist = playlist_api->get_playing_playlist();
@@ -626,8 +626,8 @@ void FilterPanel::send_results_to_playlist(bool b_play)
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(m_nodes.get_count());
     get_selection_handles(handles);
-    static_api_ptr_t<playlist_manager> playlist_api;
-    static_api_ptr_t<play_control> playback_api;
+    const auto playlist_api = playlist_manager::get();
+    const auto playback_api = play_control::get();
     t_size index_insert = pfc_infinite;
     if (!b_play && playback_api->is_playing()) {
         t_size playlist = playlist_api->get_playing_playlist();
@@ -692,7 +692,7 @@ void FilterPanel::update_first_node_text(bool b_update)
 
 void FilterPanel::notify_on_set_focus(HWND wnd_lost)
 {
-    m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
+    m_selection_holder = ui_selection_manager::get()->acquire();
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     get_selection_handles(handles, false, true);
     m_selection_holder->set_selection(handles);
@@ -794,9 +794,9 @@ void FilterPanel::notify_on_initialisation()
     set_show_sort_indicators(cfg_show_sort_indicators);
 
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
     set_font(&lf);
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
     set_header_font(&lf);
 
     t_size index = g_windows.size();

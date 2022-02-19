@@ -20,7 +20,7 @@ bool PlaylistNameTitleformatHook::process_field(
 void PlaylistNameTitleformatHook::initialise()
 {
     if (!m_initialised) {
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_name(m_name);
+        playlist_manager_v3::get()->activeplaylist_get_name(m_name);
         m_initialised = true;
     }
 }

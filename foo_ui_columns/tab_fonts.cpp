@@ -45,7 +45,7 @@ BOOL TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 m_wnd_colours_element, pfc::stringcvt::string_os_from_utf8(m_fonts_client_list[i].m_name));
 
         ComboBox_SetCurSel(m_wnd_colours_element, 0);
-        m_element_ptr = g_fonts_manager_data.m_common_items_entry;
+        m_element_ptr = g_font_manager_data.m_common_items_entry;
 
         update_mode_combobox();
         update_font_desc();
@@ -83,12 +83,12 @@ BOOL TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_element_api.release();
             if (idx != -1) {
                 if (idx == 0)
-                    m_element_ptr = g_fonts_manager_data.m_common_items_entry;
+                    m_element_ptr = g_font_manager_data.m_common_items_entry;
                 else if (idx == 1)
-                    m_element_ptr = g_fonts_manager_data.m_common_labels_entry;
+                    m_element_ptr = g_font_manager_data.m_common_labels_entry;
                 else if (idx >= 2) {
                     m_element_api = m_fonts_client_list[idx - 2].m_ptr;
-                    g_fonts_manager_data.find_by_guid(m_fonts_client_list[idx - 2].m_guid, m_element_ptr);
+                    g_font_manager_data.find_by_guid(m_fonts_client_list[idx - 2].m_guid, m_element_ptr);
                 }
             }
             update_mode_combobox();
@@ -109,11 +109,11 @@ void TabFonts::on_font_changed()
     else {
         t_size index_element = ComboBox_GetCurSel(m_wnd_colours_element);
         if (index_element <= 1) {
-            g_fonts_manager_data.g_on_common_font_changed(1 << index_element);
+            g_font_manager_data.g_on_common_font_changed(1 << index_element);
             t_size count = m_fonts_client_list.get_count();
             for (t_size i = 0; i < count; i++) {
-                FontsManagerData::entry_ptr_t p_data;
-                g_fonts_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
+                FontManagerData::entry_ptr_t p_data;
+                g_font_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
                 if (index_element == 0 && p_data->font_mode == cui::fonts::font_mode_common_items) {
                     m_fonts_client_list[i].m_ptr->on_font_changed();
                 } else if (index_element == 1 && p_data->font_mode == cui::fonts::font_mode_common_labels)
@@ -139,9 +139,9 @@ void TabFonts::get_font(LOGFONT& lf)
 {
     t_size index_element = ComboBox_GetCurSel(m_wnd_colours_element);
     if (index_element <= 1)
-        static_api_ptr_t<cui::fonts::manager>()->get_font(cui::fonts::font_type_t(index_element), lf);
+        fb2k::std_api_get<cui::fonts::manager>()->get_font(cui::fonts::font_type_t(index_element), lf);
     else
-        static_api_ptr_t<cui::fonts::manager>()->get_font(m_element_api->get_client_guid(), lf);
+        fb2k::std_api_get<cui::fonts::manager>()->get_font(m_element_api->get_client_guid(), lf);
 }
 
 void TabFonts::update_mode_combobox()

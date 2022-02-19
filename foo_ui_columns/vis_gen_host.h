@@ -1,7 +1,5 @@
-#ifndef _COLUMNS_VIS_GEN_HOST_H_
-#define _COLUMNS_VIS_GEN_HOST_H_
+#pragma once
 
-#if 1
 class VisualisationPanel : public ui_extension::container_ui_extension {
     static const wchar_t* class_name;
     bool initialised{false};
@@ -73,5 +71,3 @@ public:
 
     virtual const GUID& get_visualisation_guid() const = 0;
 };
-#endif
-#endif

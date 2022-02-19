@@ -590,7 +590,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                             pfc::string8_fast_aggressive name;
                             pfc::string8_fast_aggressive title2;
                             pfc::string8_fast_aggressive title3;
-                            static_api_ptr_t<play_control> play_api;
+                            const auto play_api = play_control::get();
                             metadb_handle_ptr track;
                             if (play_api->get_now_playing(track)) {
                                 metadb_info_container::ptr p_info;
@@ -649,7 +649,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         b_shortcuts ? mainmenu_manager::flag_show_shortcuts_global : 0);
                 }
 
-                bool b_visible = static_api_ptr_t<ui_control>()->is_visible();
+                bool b_visible = ui_control::get()->is_visible();
                 InsertMenu(menu, insert_point, MF_STRING | MF_BYPOSITION, systray_contextmenus::ID_ACTIVATE,
                     b_visible ? _T("Hide foobar2000") : _T("Show foobar2000"));
 
@@ -677,9 +677,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (cmd) {
                     if (cmd == systray_contextmenus::ID_ACTIVATE) {
                         if (b_visible)
-                            static_api_ptr_t<ui_control>()->hide();
+                            ui_control::get()->hide();
                         else
-                            static_api_ptr_t<ui_control>()->activate();
+                            ui_control::get()->activate();
                     } else if (cmd < systray_contextmenus::ID_BASE_FILE_PREFS) {
                         if (p_manager_selection.is_valid()) {
                             p_manager_selection->execute_by_id(cmd - systray_contextmenus::ID_NOW_PLAYING_BASE);
@@ -789,8 +789,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     helpers::execute_main_menu_command(cfg_statusdbl);
                 else if ((cfg_show_seltime && part_id == status_bar::StatusBarPartID::TrackLength)
                     || (cfg_show_selcount && part_id == status_bar::StatusBarPartID::TrackCount)) {
-                    static_api_ptr_t<playlist_manager>()->activeplaylist_set_selection(
-                        bit_array_true(), bit_array_true());
+                    playlist_manager::get()->activeplaylist_set_selection(bit_array_true(), bit_array_true());
                 }
             } break;
             }

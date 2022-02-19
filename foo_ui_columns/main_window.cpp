@@ -159,13 +159,12 @@ void cui::MainWindow::on_query_capability()
 void cui::MainWindow::update_title()
 {
     metadb_handle_ptr track;
-    static_api_ptr_t<play_control> play_api;
+    const auto play_api = play_control::get();
     play_api->get_now_playing(track);
     if (track.is_valid()) {
         pfc::string8 title;
         service_ptr_t<titleformat_object> to_wtitle;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(
-            to_wtitle, main_window::config_main_window_title_script.get());
+        titleformat_compiler::get()->compile_safe(to_wtitle, main_window::config_main_window_title_script.get());
         play_api->playback_format_title_ex(track, nullptr, title, to_wtitle, nullptr, play_control::display_level_all);
         set_title(title);
         track.release();
@@ -211,7 +210,7 @@ bool cui::MainWindow::update_taskbar_button_images() const
 void cui::MainWindow::update_taskbar_buttons(bool update) const
 {
     if (m_wnd && m_taskbar_list) {
-        static_api_ptr_t<playback_control> play_api;
+        const auto play_api = playback_control::get();
 
         bool b_is_playing = play_api->is_playing();
         bool b_is_paused = play_api->is_paused();
@@ -382,7 +381,7 @@ void cui::MainWindow::resize_child_windows()
 
 bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
 {
-    static_api_ptr_t<keyboard_shortcut_manager_v2> keyboard_api;
+    const auto keyboard_api = keyboard_shortcut_manager_v2::get();
 
     if (msg == WM_SYSKEYDOWN) {
         if (keyb && uie::window::g_process_keydown_keyboard_shortcuts(wp)) {

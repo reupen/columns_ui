@@ -6,7 +6,7 @@ namespace playlist_manager_utils {
 
 void rename_playlist(size_t index, HWND wnd_parent)
 {
-    static_api_ptr_t<playlist_manager> playlist_api;
+    const auto playlist_api = playlist_manager::get();
     pfc::string8 current_name;
 
     if (!playlist_api->playlist_get_name(index, current_name))
@@ -27,7 +27,7 @@ void rename_playlist(size_t index, HWND wnd_parent)
 
 bool check_clipboard()
 {
-    static_api_ptr_t<ole_interaction> api;
+    const auto api = ole_interaction::get();
     wil::com_ptr_t<IDataObject> pDO;
 
     HRESULT hr = OleGetClipboard(&pDO);
@@ -39,8 +39,8 @@ bool check_clipboard()
 }
 bool cut(const bit_array& mask)
 {
-    static_api_ptr_t<playlist_manager> m_playlist_api;
-    static_api_ptr_t<ole_interaction> api;
+    const auto m_playlist_api = playlist_manager::get();
+    const auto api = ole_interaction::get();
     playlist_dataobject_desc_impl data;
 
     data.set_from_playlist_manager(mask);
@@ -58,7 +58,7 @@ bool cut(const bit_array& mask)
 }
 bool cut(const pfc::list_base_const_t<t_size>& indices)
 {
-    static_api_ptr_t<playlist_manager> m_playlist_api;
+    const auto m_playlist_api = playlist_manager::get();
     t_size count = indices.get_count();
     t_size playlist_count = m_playlist_api->get_playlist_count();
     bit_array_bittable mask(playlist_count);
@@ -70,8 +70,8 @@ bool cut(const pfc::list_base_const_t<t_size>& indices)
 }
 bool copy(const bit_array& mask)
 {
-    static_api_ptr_t<playlist_manager> m_playlist_api;
-    static_api_ptr_t<ole_interaction> api;
+    const auto m_playlist_api = playlist_manager::get();
+    const auto api = ole_interaction::get();
     playlist_dataobject_desc_impl data;
 
     data.set_from_playlist_manager(mask);
@@ -82,7 +82,7 @@ bool copy(const bit_array& mask)
 }
 bool copy(const pfc::list_base_const_t<t_size>& indices)
 {
-    static_api_ptr_t<playlist_manager> m_playlist_api;
+    const auto m_playlist_api = playlist_manager::get();
     t_size count = indices.get_count();
     t_size playlist_count = m_playlist_api->get_playlist_count();
     bit_array_bittable mask(playlist_count);
@@ -94,8 +94,8 @@ bool copy(const pfc::list_base_const_t<t_size>& indices)
 }
 bool paste(HWND wnd, t_size index_insert)
 {
-    static_api_ptr_t<playlist_manager> m_playlist_api;
-    static_api_ptr_t<ole_interaction> api;
+    const auto m_playlist_api = playlist_manager::get();
+    const auto api = ole_interaction::get();
     wil::com_ptr_t<IDataObject> pDO;
 
     HRESULT hr = OleGetClipboard(&pDO);

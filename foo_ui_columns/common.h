@@ -1,14 +1,4 @@
-#ifndef _COLUMNS_HELPERS_H_
-#define _COLUMNS_HELPERS_H_
-
-/*!
- * \file common.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Some common functions and enumerations
- */
+#pragma once
 
 enum PlaylistFilterType {
     FILTER_NONE = 0,
@@ -53,5 +43,3 @@ public:
 };
 
 void g_save_playlist(HWND wnd, const pfc::list_base_const_t<metadb_handle_ptr>& p_items, const char* name);
-
-#endif

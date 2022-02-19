@@ -1,14 +1,4 @@
-#ifndef _COLUMNS_UI_H_
-#define _COLUMNS_UI_H_
-
-/*!
- * \file main_window.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Largely functions used for initialising and deinitialising the core parts of the UI
- */
+#pragma once
 
 namespace colours {
 enum ColourID {
@@ -96,5 +86,3 @@ private:
 
 extern MainWindow main_window;
 } // namespace cui
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef _COLUMNS_PLAYLIST_SEARCH_H_
-#define _COLUMNS_PLAYLIST_SEARCH_H_
+#pragma once
 
 /** What's all this? Never finished, obsolete or abandoned? Based on Typefind code. */
 
@@ -19,7 +18,7 @@ class progressive_search {
     pfc::array_t<bool> m_filter;
     pfc::string8_fastalloc m_string;
     pfc::string8_fastalloc m_buffer;
-    static_api_ptr_t<playlist_manager> api;
+    const auto api = playlist_manager::get();
     unsigned active;
     t_uint32 m_mode;
 #ifdef SEARCH_CACHING_ENABLED
@@ -27,7 +26,7 @@ class progressive_search {
 #endif
     void run()
     {
-        static_api_ptr_t<search_filter_manager> filter_api;
+        const auto filter_api = search_filter_manager::get();
         search_filter::ptr filter;
         bool b_clear = false;
         if (m_mode == mode_query) {
@@ -137,7 +136,7 @@ public:
     }
     void set_pattern(const char* src)
     {
-        static_api_ptr_t<titleformat_compiler> tf_api;
+        const auto tf_api = titleformat_compiler::get();
         tf_api->compile(m_to, src);
     }
     void set_mode(t_uint32 mode) { m_mode = mode; }
@@ -154,7 +153,7 @@ public:
                         api->queue_add_item_playlist(active, focus);
                 } else {
                     api->set_playing_playlist(active);
-                    static_api_ptr_t<play_control> play_control;
+                    const auto play_control = play_control::get();
                     play_control->play_start(play_control::track_command_settrack);
                 }
             }
@@ -233,5 +232,3 @@ private:
 };
 
 #endif
-
-#endif //_COLUMNS_PLAYLIST_SEARCH_H_

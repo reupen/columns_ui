@@ -15,7 +15,7 @@ const GUID g_guid_playlist_switcher_tabs_font
 
 void remove_playlist_helper(t_size index)
 {
-    static_api_ptr_t<playlist_manager> api;
+    const auto api = playlist_manager::get();
     if (index == api->get_active_playlist()) {
         if (index && index + 1 == api->get_playlist_count())
             api->set_active_playlist(index - 1);
@@ -83,7 +83,7 @@ void PlaylistTabs::on_font_change()
         DeleteObject(g_font);
     }
 
-    g_font = static_api_ptr_t<fonts::manager>()->get_font(g_guid_playlist_switcher_tabs_font);
+    g_font = fb2k::std_api_get<fonts::manager>()->get_font(g_guid_playlist_switcher_tabs_font);
 
     unsigned count = list_wnd.get_count();
     for (unsigned n = 0; n < count; n++) {
@@ -170,7 +170,7 @@ bool PlaylistTabs::create_tabs()
     bool rv = false;
     bool force_close = false;
 
-    static_api_ptr_t<playlist_manager> playlist_api;
+    const auto playlist_api = playlist_manager::get();
 
     if (cfg_pl_autohide) {
         force_close = (playlist_api->get_playlist_count() <= 1);
@@ -289,7 +289,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             hittest.pt.y = GET_Y_LPARAM(lp);
             int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
             if (idx >= 0) {
-                static_api_ptr_t<playlist_manager> playlist_api;
+                const auto playlist_api = playlist_manager::get();
                 // if (cfg_playlists_shift_lmb && (wp & MK_SHIFT)) remove_playlist_helper(idx);
                 // else
                 if (cfg_drag_pl) {
@@ -309,7 +309,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
             if (idx >= 0 && !PtInRect(&m_dragging_rect, hittest.pt)) {
                 int cur_idx = m_dragging_idx;
-                static_api_ptr_t<playlist_manager> playlist_api;
+                const auto playlist_api = playlist_manager::get();
                 int count = playlist_api->get_playlist_count();
 
                 int n = cur_idx;
@@ -347,7 +347,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         hittest.pt.x = GET_X_LPARAM(lp);
         hittest.pt.y = GET_Y_LPARAM(lp);
         int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
-        static_api_ptr_t<playlist_manager> playlist_api;
+        const auto playlist_api = playlist_manager::get();
         if (idx >= 0) {
             if (config::cfg_playlist_tabs_middle_click && msg == WM_MBUTTONUP) {
                 remove_playlist_helper(idx);
@@ -410,7 +410,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
-    return uCallWindowProc(tabproc, wnd, msg, wp, lp);
+    return CallWindowProc(tabproc, wnd, msg, wp, lp);
 }
 
 void PlaylistTabs::on_child_position_change()
@@ -753,7 +753,7 @@ void PlaylistTabs::on_playlist_created(unsigned p_index, const char* p_name, uns
 void PlaylistTabs::on_playlists_reorder(const unsigned* p_order, unsigned p_count)
 {
     if (wnd_tabs) {
-        static_api_ptr_t<playlist_manager> playlist_api;
+        const auto playlist_api = playlist_manager::get();
         int sel = playlist_api->get_active_playlist();
 
         for (unsigned n = 0; n < p_count; n++) {
@@ -842,7 +842,7 @@ void PlaylistTabs::WindowHost::relinquish_ownership(HWND wnd)
 
 bool PlaylistTabs::WindowHost::override_status_text_create(service_ptr_t<ui_status_text_override>& p_out)
 {
-    static_api_ptr_t<ui_control> api;
+    const auto api = ui_control::get();
     return m_this->get_host()->override_status_text_create(p_out);
 }
 

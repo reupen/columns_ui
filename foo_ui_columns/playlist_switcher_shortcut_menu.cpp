@@ -22,7 +22,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     if (b_index_valid)
         set_highlight_selected_item(index);
 
-    static_api_ptr_t<autoplaylist_manager> autoplaylist_api;
+    const auto autoplaylist_api = autoplaylist_manager::get();
     autoplaylist_client_v2::ptr autoplaylist;
 
     try {
@@ -138,7 +138,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             switch (cmd) {
             case ID_PLAY:
                 m_playlist_api->set_playing_playlist(index);
-                static_api_ptr_t<play_control>()->start();
+                play_control::get()->start();
                 break;
             case ID_AUTOPLAYLIST:
                 if (autoplaylist.is_valid())

@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
-#include "colours_manager_data.h"
+#include "colour_manager_data.h"
 
-void ColoursManagerData::g_on_common_bool_changed(t_size mask)
+void ColourManagerData::g_on_common_bool_changed(t_size mask)
 {
     // Copy the list of callbacks in case someone tries to add or remove one
     // while we're iterating through them
@@ -12,7 +12,7 @@ void ColoursManagerData::g_on_common_bool_changed(t_size mask)
     }
 }
 
-void ColoursManagerData::g_on_common_colour_changed(t_size mask)
+void ColourManagerData::g_on_common_colour_changed(t_size mask)
 {
     // Copy the list of callbacks in case someone tries to add or remove one
     // while we're iterating through them
@@ -21,22 +21,22 @@ void ColoursManagerData::g_on_common_colour_changed(t_size mask)
             callback->on_colour_changed(mask);
 }
 
-void ColoursManagerData::deregister_common_callback(cui::colours::common_callback* p_callback)
+void ColourManagerData::deregister_common_callback(cui::colours::common_callback* p_callback)
 {
     m_callbacks.erase(p_callback);
 }
 
-void ColoursManagerData::register_common_callback(cui::colours::common_callback* p_callback)
+void ColourManagerData::register_common_callback(cui::colours::common_callback* p_callback)
 {
     m_callbacks.emplace(p_callback);
 }
 
-ColoursManagerData::ColoursManagerData() : cfg_var(g_cfg_guid)
+ColourManagerData::ColourManagerData() : cfg_var(g_cfg_guid)
 {
     m_global_entry = std::make_shared<Entry>(true);
 }
 
-void ColoursManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
+void ColourManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
 {
     if (p_guid == pfc::guid_null) {
         p_out = m_global_entry;
@@ -54,7 +54,7 @@ void ColoursManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
     m_entries.add_item(p_out);
 }
 
-void ColoursManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ColourManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
@@ -71,7 +71,7 @@ void ColoursManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint
     }
 }
 
-void ColoursManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
+void ColourManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
     pfc::list_t<GUID> clients;
     {
@@ -98,13 +98,13 @@ void ColoursManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p
             m_entries[i]->write(p_stream, p_abort);
 }
 
-ColoursManagerData::Entry::Entry(bool b_global /*= false*/)
+ColourManagerData::Entry::Entry(bool b_global /*= false*/)
     : colour_mode(b_global ? cui::colours::colour_mode_themed : cui::colours::colour_mode_global)
 {
     reset_colors();
 }
 
-void ColoursManagerData::Entry::reset_colors()
+void ColourManagerData::Entry::reset_colors()
 {
     text = g_get_system_color(cui::colours::colour_text);
     selection_text = g_get_system_color(cui::colours::colour_selection_text);
@@ -118,7 +118,7 @@ void ColoursManagerData::Entry::reset_colors()
     use_custom_active_item_frame = false;
 }
 
-void ColoursManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
+void ColourManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
 {
     p_stream->read_lendian_t(guid, p_abort);
     p_stream->read_lendian_t((t_uint32&)colour_mode, p_abort);
@@ -132,7 +132,7 @@ void ColoursManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, 
     p_stream->read_lendian_t(use_custom_active_item_frame, p_abort);
 }
 
-void ColoursManagerData::Entry::import(
+void ColourManagerData::Entry::import(
     stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -181,7 +181,7 @@ void ColoursManagerData::Entry::import(
     }
 }
 
-void ColoursManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_abort)
+void ColourManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_abort)
 {
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
@@ -198,7 +198,7 @@ void ColoursManagerData::Entry::_export(stream_writer* p_stream, abort_callback&
     out.write_item(identifier_custom_active_item_frame, active_item_frame);
 }
 
-void ColoursManagerData::Entry::write(stream_writer* p_stream, abort_callback& p_abort)
+void ColourManagerData::Entry::write(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t(guid, p_abort);
     p_stream->write_lendian_t((t_uint32)colour_mode, p_abort);

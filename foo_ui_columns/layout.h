@@ -1,14 +1,5 @@
 #pragma once
 
-/*!
- * \file layout.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Classes used for hosting panels in the main area of the UI
- */
-
 class ConfigLayout : public cfg_var {
 public:
     class Preset {

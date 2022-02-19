@@ -35,7 +35,7 @@ void on_status_font_change()
     }
 
     if (g_status) {
-        g_status_font = static_api_ptr_t<fonts::manager>()->get_font(font_client_status_guid);
+        g_status_font = fb2k::std_api_get<fonts::manager>()->get_font(font_client_status_guid);
         SendMessage(g_status, WM_SETFONT, (WPARAM)g_status_font, MAKELPARAM(1, 0));
         set_part_sizes(t_parts_all);
         main_window.resize_child_windows();

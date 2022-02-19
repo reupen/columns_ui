@@ -26,10 +26,10 @@ class BasePlaylistCallback : public playlist_callback {
 public:
     void initialise_playlist_callback(t_uint32 p_flags = flag_all)
     {
-        static_api_ptr_t<playlist_manager>()->register_callback(this, p_flags);
+        playlist_manager::get()->register_callback(this, p_flags);
     }
-    void deinitialise_playlist_callback() { static_api_ptr_t<playlist_manager>()->unregister_callback(this); }
-    void set_callback_flags(t_uint32 p_flags) { static_api_ptr_t<playlist_manager>()->modify_callback(this, p_flags); }
+    void deinitialise_playlist_callback() { playlist_manager::get()->unregister_callback(this); }
+    void set_callback_flags(t_uint32 p_flags) { playlist_manager::get()->modify_callback(this, p_flags); }
     // dummy implementations - avoid possible pure virtual function calls!
     void on_items_added(t_size p_playlist, t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
         const bit_array& p_selection) override
@@ -87,7 +87,7 @@ class PlaylistCache
 public:
     void initialise_playlist_callback()
     {
-        this->set_count(static_api_ptr_t<playlist_manager>()->get_playlist_count());
+        this->set_count(playlist_manager::get()->get_playlist_count());
         BasePlaylistCallback::initialise_playlist_callback();
     }
     using BasePlaylistCallback::deinitialise_playlist_callback;

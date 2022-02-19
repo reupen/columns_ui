@@ -62,7 +62,7 @@ BOOL TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         ComboBox_SetCurSel(m_wnd_colours_element, 0);
 
-        g_colours_manager_data.find_by_guid(m_element_guid, m_element_ptr);
+        g_colour_manager_data.find_by_guid(m_element_guid, m_element_ptr);
 
         update_mode_combobox();
         update_fills();
@@ -89,7 +89,7 @@ BOOL TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     m_element_guid = m_colours_client_list[idx - 1].m_guid;
                     m_element_api = m_colours_client_list[idx - 1].m_ptr;
                 }
-                g_colours_manager_data.find_by_guid(m_element_guid, m_element_ptr);
+                g_colour_manager_data.find_by_guid(m_element_guid, m_element_ptr);
             }
             update_fills();
             update_buttons();
@@ -155,11 +155,11 @@ void TabColours::on_colour_changed()
     if (m_element_api.is_valid())
         m_element_api->on_colour_changed(cui::colours::colour_flag_all);
     else if (m_element_guid == pfc::guid_null) {
-        g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
+        g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
         t_size count = m_colours_client_list.get_count();
         for (t_size i = 0; i < count; i++) {
-            ColoursManagerData::entry_ptr_t p_data;
-            g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
+            ColourManagerData::entry_ptr_t p_data;
+            g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_global)
                 m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
         }

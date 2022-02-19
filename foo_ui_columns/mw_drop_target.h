@@ -1,14 +1,5 @@
 #pragma once
 
-/*!
- * \file mw_drop_target.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Class used for handling drag and drop operations on the main window (drop target only)
- */
-
 class MainWindowDropTarget : public IDropTarget {
 public:
     HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;

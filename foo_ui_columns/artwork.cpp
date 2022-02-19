@@ -146,18 +146,18 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_artwork_loader = std::make_shared<ArtworkReaderManager>();
         now_playing_album_art_notify_manager::get()->add(this);
         m_artwork_loader->set_types(g_artwork_types);
-        static_api_ptr_t<play_callback_manager>()->register_callback(
+        play_callback_manager::get()->register_callback(
             this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_edited, false);
-        static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
+        playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
         g_ui_selection_manager_register_callback_no_now_playing_fallback(this);
         force_reload_artwork();
         g_windows.push_back(this);
     } break;
     case WM_DESTROY:
         std::erase(g_windows, this);
-        static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
-        static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
-        static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
+        ui_selection_manager::get()->unregister_callback(this);
+        playlist_manager_v3::get()->unregister_callback(this);
+        play_callback_manager::get()->unregister_callback(this);
         now_playing_album_art_notify_manager::get()->remove(this);
         m_selection_handles.remove_all();
         m_image.reset();
@@ -253,7 +253,7 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
             m_selection_handles = p_selection;
 
         if (g_track_mode_includes_selection(m_track_mode)
-            && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
+            && (!g_track_mode_includes_auto(m_track_mode) || !play_control::get()->is_playing())) {
             if (m_selection_handles.get_count()) {
                 m_artwork_loader->request(m_selection_handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
             } else {
@@ -274,7 +274,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
         bool b_set = false;
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         if (m_track_mode == track_auto_playlist_playing) {
-            static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+            playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         } else if (m_track_mode == track_auto_selection_playing) {
             handles = m_selection_handles;
         }
@@ -306,12 +306,12 @@ void ArtworkPanel::force_reload_artwork()
 {
     auto is_from_playback = false;
     metadb_handle_ptr handle;
-    if (g_track_mode_includes_now_playing(m_track_mode) && static_api_ptr_t<play_control>()->is_playing()) {
-        static_api_ptr_t<play_control>()->get_now_playing(handle);
+    if (g_track_mode_includes_now_playing(m_track_mode) && play_control::get()->is_playing()) {
+        play_control::get()->get_now_playing(handle);
         is_from_playback = true;
     } else if (g_track_mode_includes_playlist(m_track_mode)) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         if (handles.get_count())
             handle = handles[0];
     } else if (g_track_mode_includes_selection(m_track_mode)) {
@@ -331,9 +331,9 @@ void ArtworkPanel::force_reload_artwork()
 void ArtworkPanel::on_playlist_switch()
 {
     if (g_track_mode_includes_playlist(m_track_mode)
-        && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
+        && (!g_track_mode_includes_auto(m_track_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
             m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {
@@ -347,9 +347,9 @@ void ArtworkPanel::on_playlist_switch()
 void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
 {
     if (g_track_mode_includes_playlist(m_track_mode)
-        && (!g_track_mode_includes_auto(m_track_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
+        && (!g_track_mode_includes_auto(m_track_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
             m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
         } else {

@@ -1,7 +1,3 @@
-/**
- * \file ng_playlist.cpp
- */
-
 #include "../stdafx.h"
 
 #include "ng_playlist.h"
@@ -84,7 +80,7 @@ void ConfigGroups::remove_group(t_size index)
 void set_font_size(bool up)
 {
     LOGFONT lf_ng;
-    static_api_ptr_t<fonts::manager> api;
+    const auto api = fb2k::std_api_get<fonts::manager>();
     api->get_font(g_guid_items_font, lf_ng);
 
     fonts::get_next_font_size_step(lf_ng, up);
@@ -106,7 +102,7 @@ void PlaylistView::populate_list()
 }
 void PlaylistView::refresh_groups(bool b_update_columns)
 {
-    static_api_ptr_t<titleformat_compiler> p_compiler;
+    const auto p_compiler = titleformat_compiler::get();
     service_ptr_t<titleformat_object> p_script;
     service_ptr_t<titleformat_object> p_script_group;
     m_scripts.remove_all();
@@ -185,7 +181,7 @@ void PlaylistView::g_on_column_widths_change(const PlaylistView* p_skip)
 }
 void PlaylistView::refresh_columns()
 {
-    static_api_ptr_t<titleformat_compiler> p_compiler;
+    const auto p_compiler = titleformat_compiler::get();
     service_ptr_t<titleformat_object> p_script;
     service_ptr_t<titleformat_object> p_script_group;
     m_script_global.release();
@@ -258,7 +254,7 @@ void PlaylistView::on_groups_change()
 
 void PlaylistView::update_all_items()
 {
-    static_api_ptr_t<titleformat_compiler> p_compiler;
+    const auto p_compiler = titleformat_compiler::get();
     service_ptr_t<titleformat_object> p_script;
     service_ptr_t<titleformat_object> p_script_group;
 
@@ -329,21 +325,21 @@ void PlaylistView::g_on_vertical_item_padding_change()
 void PlaylistView::g_on_font_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_items_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_items_font, lf);
     for (auto& window : g_windows)
         window->set_font(&lf);
 }
 void PlaylistView::g_on_header_font_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_header_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_header_font, lf);
     for (auto& window : g_windows)
         window->set_header_font(&lf);
 }
 void PlaylistView::g_on_group_header_font_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_group_header_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_group_header_font, lf);
     for (auto& window : g_windows)
         window->set_group_font(&lf);
 }
@@ -531,11 +527,11 @@ void PlaylistView::notify_on_initialisation()
         config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false));
     set_vertical_item_padding(settings::playlist_view_item_padding);
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_items_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_items_font, lf);
     set_font(&lf);
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_header_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_header_font, lf);
     set_header_font(&lf);
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_group_header_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_group_header_font, lf);
     set_group_font(&lf);
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);
@@ -608,7 +604,7 @@ void PlaylistView::notify_on_destroy()
 
 void PlaylistView::notify_on_set_focus(HWND wnd_lost)
 {
-    m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
+    m_selection_holder = ui_selection_manager::get()->acquire();
     m_selection_holder->set_playlist_selection_tracking();
 }
 void PlaylistView::notify_on_kill_focus(HWND wnd_receiving)
@@ -651,7 +647,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         uAppendMenu(menu, (MF_SEPARATOR), 0, "");
 
         pfc::string8 playlist_name;
-        static_api_ptr_t<playlist_manager> playlist_api;
+        const auto playlist_api = playlist_manager::get();
         playlist_api->activeplaylist_get_name(playlist_name);
 
         pfc::string8_fast_aggressive filter;
@@ -709,7 +705,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         cfg_nohscroll = cfg_nohscroll == 0;
         g_on_autosize_change();
     } else if (cmd == IDM_PREFS) {
-        static_api_ptr_t<ui_control>()->show_preferences(columns::config_get_playlist_view_guid());
+        ui_control::get()->show_preferences(columns::config_get_playlist_view_guid());
     } else if (cmd == IDM_ARTWORK) {
         cfg_show_artwork = !cfg_show_artwork;
         g_on_show_artwork_change();
@@ -992,7 +988,7 @@ void PlaylistView::reset_items()
 
 t_size PlaylistView::get_highlight_item()
 {
-    if (static_api_ptr_t<play_control>()->is_playing()) {
+    if (play_control::get()->is_playing()) {
         t_size playing_index;
         t_size playing_playlist;
         m_playlist_api->get_playing_item_location(&playing_playlist, &playing_index);
@@ -1045,23 +1041,23 @@ bool PlaylistView::notify_on_keyboard_keydown_paste()
 
 t_size PlaylistView::storage_get_focus_item()
 {
-    return static_api_ptr_t<playlist_manager>()->activeplaylist_get_focus_item();
+    return playlist_manager::get()->activeplaylist_get_focus_item();
 }
 void PlaylistView::storage_set_focus_item(t_size index)
 {
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
-    static_api_ptr_t<playlist_manager>()->activeplaylist_set_focus_item(index);
+    playlist_manager::get()->activeplaylist_set_focus_item(index);
 }
 void PlaylistView::storage_get_selection_state(bit_array_var& out)
 {
-    static_api_ptr_t<playlist_manager>()->activeplaylist_get_selection_mask(out);
+    playlist_manager::get()->activeplaylist_get_selection_mask(out);
 }
 bool PlaylistView::storage_set_selection_state(
     const bit_array& p_affected, const bit_array& p_status, bit_array_var* p_changed)
 {
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
 
-    static_api_ptr_t<playlist_manager> api;
+    const auto api = playlist_manager::get();
 
     t_size count = api->activeplaylist_get_item_count();
     bit_array_bittable previous_state(count);
@@ -1084,11 +1080,11 @@ bool PlaylistView::storage_set_selection_state(
 }
 bool PlaylistView::storage_get_item_selected(t_size index)
 {
-    return static_api_ptr_t<playlist_manager>()->activeplaylist_is_item_selected(index);
+    return playlist_manager::get()->activeplaylist_is_item_selected(index);
 }
 t_size PlaylistView::storage_get_selection_count(t_size max)
 {
-    return static_api_ptr_t<playlist_manager>()->activeplaylist_get_selection_count(max);
+    return playlist_manager::get()->activeplaylist_get_selection_count(max);
 }
 
 void PlaylistView::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)

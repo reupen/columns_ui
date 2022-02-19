@@ -51,7 +51,7 @@ void StatusPane::render_background(HDC dc, const RECT& rc)
 
 void StatusPane::update_playback_status_text()
 {
-    static_api_ptr_t<playback_control> api;
+    const auto api = playback_control::get();
     if (api->is_playing()) {
         m_track_label = api->is_paused() ? "Paused:" : "Playing:";
     } else {
@@ -64,8 +64,8 @@ void StatusPane::get_length_data(bool& p_selection, t_size& p_count, pfc::string
     metadb_handle_list_t<pfc::alloc_fast_aggressive> sels;
     double length = 0;
 
-    static_api_ptr_t<playlist_manager> playlist_api;
-    static_api_ptr_t<metadb> metadb_api;
+    const auto playlist_api = playlist_manager::get();
+    const auto metadb_api = metadb::get();
 
     unsigned count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
     bool b_selection = count > 0;

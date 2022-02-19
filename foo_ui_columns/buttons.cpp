@@ -453,7 +453,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
             switch (m_buttons[wp].m_filter) {
             case FILTER_PLAYLIST: {
-                static_api_ptr_t<playlist_manager> api;
+                const auto api = playlist_manager::get();
                 data.prealloc(api->activeplaylist_get_selection_count(pfc_infinite));
                 api->activeplaylist_get_selected_items(data);
                 caller = contextmenu_item::caller_active_playlist_selection;
@@ -465,7 +465,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             } break;
             case FILTER_PLAYING: {
                 metadb_handle_ptr hdle;
-                if (static_api_ptr_t<play_control>()->get_now_playing(hdle))
+                if (play_control::get()->get_now_playing(hdle))
                     data.add_item(hdle);
                 caller = contextmenu_item::caller_now_playing;
             } break;

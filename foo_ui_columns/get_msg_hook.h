@@ -1,14 +1,5 @@
 #pragma once
 
-/*!
- * \file get_msg_hook.h
- *
- * \author musicmusic
- * \date 1 March 2015
- *
- * Class used for hooking message loops
- */
-
 class GetMsgHook : public uih::MessageHook {
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 

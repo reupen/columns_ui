@@ -96,7 +96,7 @@ bool ItemDetails::show_config_popup(HWND wnd_parent)
 
         if (get_wnd()) {
             m_to.release();
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(m_to, m_script);
+            titleformat_compiler::get()->compile_safe(m_to, m_script);
 
             on_edge_style_change();
             refresh_contents();
@@ -216,7 +216,7 @@ void ItemDetails::register_callback()
 void ItemDetails::deregister_callback()
 {
     if (m_callback_registered)
-        static_api_ptr_t<ui_selection_manager>()->unregister_callback(this);
+        ui_selection_manager::get()->unregister_callback(this);
     m_callback_registered = false;
 }
 
@@ -349,14 +349,14 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
     bool b_Update = true;
     if (m_handles.get_count()) {
         LOGFONT lf;
-        static_api_ptr_t<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
+        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
 
         TitleformatHookChangeFont tf_hook(lf);
         pfc::string8_fast_aggressive temp;
         temp.prealloc(2048);
 
         if (m_nowplaying_active) {
-            static_api_ptr_t<playback_control>()->playback_format_title(
+            playback_control::get()->playback_format_title(
                 &tf_hook, temp, m_to, nullptr, playback_control::display_level_all);
         } else {
             const auto handle = m_handles[0];
@@ -498,7 +498,7 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
 
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         if (m_tracking_mode == track_auto_playlist_playing) {
-            static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+            playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         } else if (m_tracking_mode == track_auto_selection_playing) {
             handles = m_selection_handles;
         }
@@ -509,18 +509,18 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
 void ItemDetails::on_playlist_switch()
 {
     if (g_track_mode_includes_plalist(m_tracking_mode)
-        && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
+        && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
     }
 }
 void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
 {
     if (g_track_mode_includes_plalist(m_tracking_mode)
-        && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
+        && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
     }
 }
@@ -561,7 +561,7 @@ void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handl
             m_selection_handles = p_selection;
 
         if (g_track_mode_includes_selection(m_tracking_mode)
-            && (!g_track_mode_includes_auto(m_tracking_mode) || !static_api_ptr_t<play_control>()->is_playing())) {
+            && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
             set_handles(m_selection_handles);
         }
     }
@@ -578,13 +578,13 @@ void ItemDetails::on_tracking_mode_change()
 
     m_nowplaying_active = false;
 
-    if (g_track_mode_includes_now_playing(m_tracking_mode) && static_api_ptr_t<play_control>()->is_playing()) {
+    if (g_track_mode_includes_now_playing(m_tracking_mode) && play_control::get()->is_playing()) {
         metadb_handle_ptr item;
-        if (static_api_ptr_t<playback_control>()->get_now_playing(item))
+        if (playback_control::get()->get_now_playing(item))
             handles.add_item(item);
         m_nowplaying_active = true;
     } else if (g_track_mode_includes_plalist(m_tracking_mode)) {
-        static_api_ptr_t<playlist_manager_v3>()->activeplaylist_get_selected_items(handles);
+        playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
     } else if (g_track_mode_includes_selection(m_tracking_mode)) {
         handles = m_selection_handles;
     }
@@ -670,14 +670,14 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         set_window_theme();
         register_callback();
-        static_api_ptr_t<play_callback_manager>()->register_callback(
+        play_callback_manager::get()->register_callback(
             this, flag_on_playback_all & ~(flag_on_volume_change | flag_on_playback_starting), false);
-        static_api_ptr_t<playlist_manager_v3>()->register_callback(this, playlist_callback_flags);
-        static_api_ptr_t<metadb_io_v3>()->register_callback(this);
+        playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
+        metadb_io_v3::get()->register_callback(this);
 
         m_font_changes.m_default_font = std::make_shared<Font>();
         m_font_changes.m_default_font->m_font.reset(
-            static_api_ptr_t<fonts::manager>()->get_font(g_guid_item_details_font_client));
+            fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client));
         m_font_changes.m_default_font->m_height = uGetFontHeight(m_font_changes.m_default_font->m_font.get());
 
         if (g_windows.empty())
@@ -686,7 +686,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         auto lpcs = (LPCREATESTRUCT)lp;
 
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(m_to, m_script);
+        titleformat_compiler::get()->compile_safe(m_to, m_script);
 
         on_size(/*lpcs->cx, lpcs->cy*/);
         on_tracking_mode_change();
@@ -704,9 +704,9 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         m_font_changes.m_default_font.reset();
 
-        static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
-        static_api_ptr_t<metadb_io_v3>()->unregister_callback(this);
-        static_api_ptr_t<playlist_manager_v3>()->unregister_callback(this);
+        play_callback_manager::get()->unregister_callback(this);
+        metadb_io_v3::get()->unregister_callback(this);
+        playlist_manager_v3::get()->unregister_callback(this);
         deregister_callback();
         release_all_full_file_info_requests();
         m_handles.remove_all();
@@ -718,7 +718,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case WM_SETFOCUS:
         deregister_callback();
-        m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
+        m_selection_holder = ui_selection_manager::get()->acquire();
         m_selection_holder->set_selection(m_handles);
         break;
     case WM_KILLFOCUS:
@@ -923,7 +923,7 @@ void ItemDetails::g_on_colours_change()
 void ItemDetails::on_font_change()
 {
     m_font_changes.m_default_font->m_font.reset(
-        static_api_ptr_t<fonts::manager>()->get_font(g_guid_item_details_font_client));
+        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client));
     refresh_contents();
     /*
     invalidate_all(false);
@@ -960,7 +960,7 @@ void ItemDetails::set_script(const char* p_script)
 
     if (get_wnd()) {
         m_to.release();
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(m_to, m_script);
+        titleformat_compiler::get()->compile_safe(m_to, m_script);
 
         on_edge_style_change();
         refresh_contents();

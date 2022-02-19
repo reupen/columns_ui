@@ -1,8 +1,8 @@
 #include "stdafx.h"
 
 #include "config_appearance.h"
+
 #include "config_host.h"
-#include "dark_mode.h"
 #include "main_window.h"
 #include "tab_colours.h"
 #include "tab_dark_mode.h"
@@ -26,8 +26,8 @@ fbh::ConfigInt32 dark_mode_status(
         if (wnd)
             SetWindowRedraw(wnd, FALSE);
 
-        g_colours_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
-        g_colours_manager_data.g_on_common_colour_changed(colour_flag_all);
+        g_colour_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
+        g_colour_manager_data.g_on_common_colour_changed(colour_flag_all);
         ColoursClientList colours_clients;
         ColoursClientList::g_get_list(colours_clients);
 
@@ -48,280 +48,26 @@ fbh::ConfigInt32 dark_mode_status(
 
 } // namespace cui::colours
 
-class AppearanceMessageWindow : public ui_helpers::container_window_autorelease_t {
-public:
-    class_data& get_class_data() const override
-    {
-        __implement_get_class_data_ex(_T("{BDCEC7A3-7230-4671-A5F7-B19A989DCA81}"), _T(""), false, 0, 0, 0, 0);
-    }
-    static void g_initialise();
-    static bool g_initialised;
-    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-};
-bool AppearanceMessageWindow::g_initialised = false;
-// pfc::rcptr_t<appearance_message_window_t> g_appearance_message_window;
-
-void AppearanceMessageWindow::g_initialise()
-{
-    if (!g_initialised) {
-        auto ptr = new AppearanceMessageWindow;
-        ptr->create(HWND_MESSAGE);
-        g_initialised = true;
-    }
-}
-
-ColoursManagerData g_colours_manager_data;
-FontsManagerData g_fonts_manager_data;
+ColourManagerData g_colour_manager_data;
+FontManagerData g_font_manager_data;
 TabDarkMode g_tab_dark_mode;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
 
-int g_get_system_colour_id(const cui::colours::colour_identifier_t colour_id)
-{
-    switch (colour_id) {
-    case cui::colours::colour_text:
-        return COLOR_WINDOWTEXT;
-    case cui::colours::colour_selection_text:
-        return COLOR_HIGHLIGHTTEXT;
-    case cui::colours::colour_background:
-        return COLOR_WINDOW;
-    case cui::colours::colour_selection_background:
-        return COLOR_HIGHLIGHT;
-    case cui::colours::colour_inactive_selection_text:
-        return COLOR_BTNTEXT;
-    case cui::colours::colour_inactive_selection_background:
-        return COLOR_BTNFACE;
-    case cui::colours::colour_active_item_frame:
-        return COLOR_WINDOWFRAME;
-    default:
-        uBugCheck();
-    }
-}
-
-class ColoursManagerInstance : public cui::colours::manager_instance {
-public:
-    ColoursManagerInstance(const GUID& p_client_guid)
-    {
-        g_colours_manager_data.find_by_guid(p_client_guid, m_entry);
-        g_colours_manager_data.find_by_guid(pfc::guid_null, m_global_entry);
-    }
-    COLORREF get_colour(const cui::colours::colour_identifier_t& p_identifier) const override
-    {
-        AppearanceMessageWindow::g_initialise();
-        ColoursManagerData::entry_ptr_t p_entry
-            = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
-        if (p_entry->colour_mode == cui::colours::colour_mode_system
-            || p_entry->colour_mode == cui::colours::colour_mode_themed) {
-            const auto system_colour_id = g_get_system_colour_id(p_identifier);
-            return cui::dark::get_system_colour(system_colour_id, cui::colours::is_dark_mode_active());
-        }
-        switch (p_identifier) {
-        case cui::colours::colour_text:
-            return p_entry->text;
-        case cui::colours::colour_selection_text:
-            return p_entry->selection_text;
-        case cui::colours::colour_background:
-            return p_entry->background;
-        case cui::colours::colour_selection_background:
-            return p_entry->selection_background;
-        case cui::colours::colour_inactive_selection_text:
-            return p_entry->inactive_selection_text;
-        case cui::colours::colour_inactive_selection_background:
-            return p_entry->inactive_selection_background;
-        case cui::colours::colour_active_item_frame:
-            return p_entry->active_item_frame;
-        default:
-            return 0;
-        }
-    }
-    bool get_bool(const cui::colours::bool_identifier_t& p_identifier) const override
-    {
-        ColoursManagerData::entry_ptr_t p_entry
-            = m_entry->colour_mode == cui::colours::colour_mode_global ? m_global_entry : m_entry;
-        switch (p_identifier) {
-        case cui::colours::bool_use_custom_active_item_frame:
-            return p_entry->use_custom_active_item_frame;
-        case cui::colours::bool_dark_mode_enabled:
-            return (cui::colours::dark_mode_status.get() == WI_EnumValue(cui::colours::DarkModeStatus::Enabled)
-                && cui::dark::does_os_support_dark_mode());
-        default:
-            return false;
-        }
-    }
-    bool get_themed() const override
-    {
-        return m_entry->colour_mode == cui::colours::colour_mode_themed
-            || (m_entry->colour_mode == cui::colours::colour_mode_global
-                && m_global_entry->colour_mode == cui::colours::colour_mode_themed);
-    }
-
-private:
-    ColoursManagerData::entry_ptr_t m_entry;
-    ColoursManagerData::entry_ptr_t m_global_entry;
-};
-
-class ColoursManager : public cui::colours::manager {
-public:
-    void create_instance(const GUID& p_client_guid, cui::colours::manager_instance::ptr& p_out) override
-    {
-        p_out = new service_impl_t<ColoursManagerInstance>(p_client_guid);
-    }
-    void register_common_callback(cui::colours::common_callback* p_callback) override
-    {
-        g_colours_manager_data.register_common_callback(p_callback);
-    }
-    void deregister_common_callback(cui::colours::common_callback* p_callback) override
-    {
-        g_colours_manager_data.deregister_common_callback(p_callback);
-    }
-
-private:
-};
-
-class FontsManager : public cui::fonts::manager {
-public:
-    void get_font(const GUID& p_guid, LOGFONT& p_out) const override
-    {
-        AppearanceMessageWindow::g_initialise();
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(p_guid, p_entry);
-        if (p_entry->font_mode == cui::fonts::font_mode_common_items)
-            get_font(cui::fonts::font_type_items, p_out);
-        else if (p_entry->font_mode == cui::fonts::font_mode_common_labels)
-            get_font(cui::fonts::font_type_labels, p_out);
-        else {
-            p_out = p_entry->get_normalised_font();
-        }
-    }
-
-    void get_font(const cui::fonts::font_type_t p_type, LOGFONT& p_out) const override
-    {
-        FontsManagerData::entry_ptr_t p_entry;
-        if (p_type == cui::fonts::font_type_items)
-            p_entry = g_fonts_manager_data.m_common_items_entry;
-        else
-            p_entry = g_fonts_manager_data.m_common_labels_entry;
-
-        if (p_entry->font_mode == cui::fonts::font_mode_system) {
-            if (p_type == cui::fonts::font_type_items)
-                uGetIconFont(&p_out);
-            else
-                uGetMenuFont(&p_out);
-        } else {
-            p_out = p_entry->get_normalised_font();
-        }
-    }
-
-    void set_font(const GUID& p_guid, const LOGFONT& p_font) override
-    {
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(p_guid, p_entry);
-        p_entry->font_mode = cui::fonts::font_mode_custom;
-        p_entry->font_description.log_font = p_font;
-        p_entry->font_description.estimate_point_size();
-        cui::fonts::client::ptr ptr;
-        if (cui::fonts::client::create_by_guid(p_guid, ptr))
-            ptr->on_font_changed();
-    }
-
-    void register_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.register_common_callback(p_callback);
-    }
-
-    void deregister_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.deregister_common_callback(p_callback);
-    }
-};
-
-class FontsManager2 : public cui::fonts::manager_v2 {
-public:
-    [[nodiscard]] LOGFONT get_client_font(GUID p_guid, unsigned dpi) const override
-    {
-        LOGFONT lf{};
-
-        AppearanceMessageWindow::g_initialise();
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(p_guid, p_entry);
-
-        if (p_entry->font_mode == cui::fonts::font_mode_common_items)
-            return get_common_font(cui::fonts::font_type_items, dpi);
-
-        if (p_entry->font_mode == cui::fonts::font_mode_common_labels)
-            return get_common_font(cui::fonts::font_type_labels, dpi);
-
-        return p_entry->get_normalised_font(dpi);
-    }
-
-    [[nodiscard]] LOGFONT get_common_font(const cui::fonts::font_type_t p_type, unsigned dpi) const override
-    {
-        FontsManagerData::entry_ptr_t entry;
-        if (p_type == cui::fonts::font_type_items)
-            entry = g_fonts_manager_data.m_common_items_entry;
-        else
-            entry = g_fonts_manager_data.m_common_labels_entry;
-
-        if (entry->font_mode == cui::fonts::font_mode_system) {
-            if (p_type == cui::fonts::font_type_items) {
-                LOGFONT lf{};
-                uih::dpi::system_parameters_info_for_dpi(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, dpi);
-                return lf;
-            }
-
-            NONCLIENTMETRICS ncm{};
-            ncm.cbSize = sizeof(NONCLIENTMETRICS);
-            uih::dpi::system_parameters_info_for_dpi(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, dpi);
-            return ncm.lfMenuFont;
-        }
-
-        return entry->get_normalised_font(dpi);
-    }
-
-    void set_client_font(GUID guid, const LOGFONT& p_font, int point_size_tenths) override
-    {
-        FontsManagerData::entry_ptr_t p_entry;
-        g_fonts_manager_data.find_by_guid(guid, p_entry);
-        p_entry->font_mode = cui::fonts::font_mode_custom;
-        p_entry->font_description.log_font = p_font;
-        p_entry->font_description.point_size_tenths = point_size_tenths;
-
-        cui::fonts::client::ptr ptr;
-        if (cui::fonts::client::create_by_guid(guid, ptr))
-            ptr->on_font_changed();
-    }
-
-    void register_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.register_common_callback(p_callback);
-    }
-
-    void deregister_common_callback(cui::fonts::common_callback* p_callback) override
-    {
-        g_fonts_manager_data.deregister_common_callback(p_callback);
-    }
-};
-
-namespace {
-service_factory_single_t<ColoursManager> g_colours_manager;
-service_factory_t<FontsManager> g_fonts_manager;
-service_factory_t<FontsManager2> g_fonts_manager_v2;
-} // namespace
-
 cui::colours::colour_mode_t g_get_global_colour_mode()
 {
-    ColoursManagerData::entry_ptr_t ptr;
-    g_colours_manager_data.find_by_guid(pfc::guid_null, ptr);
+    ColourManagerData::entry_ptr_t ptr;
+    g_colour_manager_data.find_by_guid(pfc::guid_null, ptr);
     return ptr->colour_mode;
 }
 
 void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
 {
-    ColoursManagerData::entry_ptr_t ptr;
-    g_colours_manager_data.find_by_guid(pfc::guid_null, ptr);
+    ColourManagerData::entry_ptr_t ptr;
+    g_colour_manager_data.find_by_guid(pfc::guid_null, ptr);
     if (ptr->colour_mode != mode) {
         ptr->colour_mode = mode;
-        g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
+        g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
         if (g_tab_appearance.is_active()) {
             g_tab_appearance.update_mode_combobox();
             g_tab_appearance.update_fills();
@@ -330,8 +76,8 @@ void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
         ColoursClientList::g_get_list(m_colours_client_list);
         t_size count = m_colours_client_list.get_count();
         for (t_size i = 0; i < count; i++) {
-            ColoursManagerData::entry_ptr_t p_data;
-            g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
+            ColourManagerData::entry_ptr_t p_data;
+            g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_global)
                 m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
         }
@@ -344,13 +90,13 @@ void on_global_colours_change()
         g_tab_appearance.update_mode_combobox();
         g_tab_appearance.update_fills();
     }
-    g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
+    g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
     ColoursClientList m_colours_client_list;
     ColoursClientList::g_get_list(m_colours_client_list);
     t_size count = m_colours_client_list.get_count();
     for (t_size i = 0; i < count; i++) {
-        ColoursManagerData::entry_ptr_t p_data;
-        g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
+        ColourManagerData::entry_ptr_t p_data;
+        g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
         if (p_data->colour_mode == cui::colours::colour_mode_global)
             m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
     }
@@ -411,273 +157,8 @@ constexpr const GUID g_guid_colour_preferences
 static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and fonts", g_tabs_appearance,
     tabsize(g_tabs_appearance), g_guid_colour_preferences, g_guid_columns_ui_preferences_page, &cfg_child_appearance);
 
-class ColoursDataSet : public cui::fcl::dataset {
-    enum { stream_version = 0 };
-    void get_name(pfc::string_base& p_out) const override { p_out = "Colours (unified)"; }
-    const GUID& get_group() const override { return cui::fcl::groups::colours_and_fonts; }
-    const GUID& get_guid() const override
-    {
-        // {165946E7-6165-4680-A08E-84B5768458E8}
-        static const GUID guid = {0x165946e7, 0x6165, 0x4680, {0xa0, 0x8e, 0x84, 0xb5, 0x76, 0x84, 0x58, 0xe8}};
-        return guid;
-    }
-    enum Identifier {
-        identifier_global_entry,
-        identifier_client_entries,
-        identifier_client_entry = 0,
-    };
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
-        abort_callback& p_abort) const override
-    {
-        fbh::fcl::Writer out(p_writer, p_abort);
-        // p_writer->write_lendian_t(stream_version, p_abort);
-        {
-            stream_writer_memblock mem;
-            g_colours_manager_data.m_global_entry->_export(&mem, p_abort);
-            out.write_item(identifier_global_entry, mem.m_data.get_ptr(), mem.m_data.get_size());
-        }
-        {
-            stream_writer_memblock mem;
-            fbh::fcl::Writer out2(&mem, p_abort);
-            t_size count = g_colours_manager_data.m_entries.get_count();
-            mem.write_lendian_t(count, p_abort);
-            for (t_size i = 0; i < count; i++) {
-                stream_writer_memblock mem2;
-                g_colours_manager_data.m_entries[i]->_export(&mem2, p_abort);
-                out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
-            }
-            out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
-        }
-    }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
-        abort_callback& p_abort) override
-    {
-        fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
-
-        while (reader.get_remaining()) {
-            reader.read_item(element_id);
-            reader.read_item(element_size);
-
-            pfc::array_t<t_uint8> data;
-            data.set_size(element_size);
-            reader.read(data.get_ptr(), data.get_size());
-
-            switch (element_id) {
-            case identifier_global_entry: {
-                stream_reader_memblock_ref colour_reader(data);
-                g_colours_manager_data.m_global_entry->import(&colour_reader, data.get_size(), type, p_abort);
-            } break;
-            case identifier_client_entries: {
-                stream_reader_memblock_ref stream2(data);
-                fbh::fcl::Reader reader2(&stream2, data.get_size(), p_abort);
-
-                t_size count;
-                reader2.read_item(count);
-
-                g_colours_manager_data.m_entries.remove_all();
-                g_colours_manager_data.m_entries.set_count(count);
-
-                for (t_size i = 0; i < count; i++) {
-                    t_uint32 element_id2;
-                    t_uint32 element_size2;
-                    reader2.read_item(element_id2);
-                    reader2.read_item(element_size2);
-                    if (element_id2 == identifier_client_entry) {
-                        pfc::array_t<t_uint8> data2;
-                        data2.set_size(element_size2);
-                        reader2.read(data2.get_ptr(), data2.get_size());
-                        stream_reader_memblock_ref colour_reader(data2);
-                        g_colours_manager_data.m_entries[i] = std::make_shared<ColoursManagerData::Entry>();
-                        g_colours_manager_data.m_entries[i]->import(&colour_reader, data2.get_size(), type, p_abort);
-                    } else
-                        reader2.skip(element_size2);
-                }
-            } break;
-            default:
-                reader.skip(element_size);
-                break;
-            }
-        }
-        if (g_tab_appearance.is_active()) {
-            g_tab_appearance.update_mode_combobox();
-            g_tab_appearance.update_fills();
-        }
-        g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
-        service_enum_t<cui::colours::client> colour_enum;
-        cui::colours::client::ptr ptr;
-        while (colour_enum.next(ptr))
-            ptr->on_colour_changed(cui::colours::colour_flag_all);
-    }
-};
-
-namespace {
-service_factory_t<ColoursDataSet> g_fcl_colours_t;
-}
-
-class FontsDataSet : public cui::fcl::dataset {
-    enum { stream_version = 0 };
-    void get_name(pfc::string_base& p_out) const override { p_out = "Fonts (unified)"; }
-    const GUID& get_group() const override { return cui::fcl::groups::colours_and_fonts; }
-    const GUID& get_guid() const override
-    {
-        // {A806A9CD-4117-43da-805E-FE4EB348C90C}
-        static const GUID guid = {0xa806a9cd, 0x4117, 0x43da, {0x80, 0x5e, 0xfe, 0x4e, 0xb3, 0x48, 0xc9, 0xc}};
-        return guid;
-    }
-    enum Identifier {
-        identifier_global_items,
-        identifier_global_labels,
-        identifier_client_entries,
-        identifier_client_entry = 0,
-    };
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
-        abort_callback& p_abort) const override
-    {
-        fbh::fcl::Writer out(p_writer, p_abort);
-        // p_writer->write_lendian_t(stream_version, p_abort);
-        {
-            stream_writer_memblock mem;
-            g_fonts_manager_data.m_common_items_entry->_export(&mem, p_abort);
-            out.write_item(identifier_global_items, mem.m_data.get_ptr(), mem.m_data.get_size());
-        }
-        {
-            stream_writer_memblock mem;
-            g_fonts_manager_data.m_common_labels_entry->_export(&mem, p_abort);
-            out.write_item(identifier_global_labels, mem.m_data.get_ptr(), mem.m_data.get_size());
-        }
-        {
-            stream_writer_memblock mem;
-            fbh::fcl::Writer out2(&mem, p_abort);
-            t_size count = g_fonts_manager_data.m_entries.get_count();
-            mem.write_lendian_t(count, p_abort);
-            for (t_size i = 0; i < count; i++) {
-                stream_writer_memblock mem2;
-                g_fonts_manager_data.m_entries[i]->_export(&mem2, p_abort);
-                out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
-            }
-            out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
-        }
-    }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
-        abort_callback& p_abort) override
-    {
-        fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
-
-        while (reader.get_remaining()) {
-            reader.read_item(element_id);
-            reader.read_item(element_size);
-
-            pfc::array_t<t_uint8> data;
-            data.set_size(element_size);
-            reader.read(data.get_ptr(), data.get_size());
-
-            stream_reader_memblock_ref data_reader(data);
-
-            switch (element_id) {
-            case identifier_global_items:
-                g_fonts_manager_data.m_common_items_entry->import(&data_reader, data.get_size(), type, p_abort);
-                break;
-            case identifier_global_labels:
-                g_fonts_manager_data.m_common_labels_entry->import(&data_reader, data.get_size(), type, p_abort);
-                break;
-            case identifier_client_entries: {
-                fbh::fcl::Reader reader2(&data_reader, data.get_size(), p_abort);
-
-                t_size count;
-                reader2.read_item(count);
-
-                g_fonts_manager_data.m_entries.remove_all();
-                g_fonts_manager_data.m_entries.set_count(count);
-
-                for (t_size i = 0; i < count; i++) {
-                    t_uint32 element_id2;
-                    t_uint32 element_size2;
-                    reader2.read_item(element_id2);
-                    reader2.read_item(element_size2);
-                    if (element_id2 == identifier_client_entry) {
-                        pfc::array_t<t_uint8> data2;
-                        data2.set_size(element_size2);
-                        reader2.read(data2.get_ptr(), data2.get_size());
-                        stream_reader_memblock_ref element_reader(data2);
-                        g_fonts_manager_data.m_entries[i] = std::make_shared<FontsManagerData::Entry>();
-                        g_fonts_manager_data.m_entries[i]->import(&element_reader, data2.get_size(), type, p_abort);
-                    } else
-                        reader2.skip(element_size2);
-                }
-            } break;
-            default:
-                reader.skip(element_size);
-                break;
-            }
-        }
-        refresh_appearance_prefs();
-        g_fonts_manager_data.g_on_common_font_changed(pfc_infinite);
-        service_enum_t<cui::fonts::client> font_enum;
-        cui::fonts::client::ptr ptr;
-        while (font_enum.next(ptr))
-            ptr->on_font_changed();
-    }
-};
-
-namespace {
-service_factory_t<FontsDataSet> g_fcl_fonts_t;
-}
-
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}
-const GUID ColoursManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
+const GUID ColourManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
 
 // {6B71F91C-6B7E-4dbe-B27B-C493AA513FD0}
-const GUID FontsManagerData::g_cfg_guid
-    = {0x6b71f91c, 0x6b7e, 0x4dbe, {0xb2, 0x7b, 0xc4, 0x93, 0xaa, 0x51, 0x3f, 0xd0}};
-
-LRESULT AppearanceMessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_SYSCOLORCHANGE: {
-        ColoursClientList m_colours_client_list;
-        ColoursClientList::g_get_list(m_colours_client_list);
-        t_size count = m_colours_client_list.get_count();
-        bool b_global_custom = g_colours_manager_data.m_global_entry->colour_mode == cui::colours::colour_mode_custom;
-        if (!b_global_custom)
-            g_colours_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
-        for (t_size i = 0; i < count; i++) {
-            ColoursManagerData::entry_ptr_t p_data;
-            g_colours_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
-            if (p_data->colour_mode == cui::colours::colour_mode_system
-                || p_data->colour_mode == cui::colours::colour_mode_themed
-                || (p_data->colour_mode == cui::colours::colour_mode_global && !b_global_custom)) {
-                m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
-            }
-        }
-    } break;
-    case WM_SETTINGCHANGE:
-        if ((wp == SPI_GETICONTITLELOGFONT && g_fonts_manager_data.m_common_items_entry
-                && g_fonts_manager_data.m_common_items_entry->font_mode == cui::fonts::font_mode_system)
-            || (wp == SPI_GETNONCLIENTMETRICS && g_fonts_manager_data.m_common_labels_entry
-                && g_fonts_manager_data.m_common_labels_entry->font_mode == cui::fonts::font_mode_system)) {
-            FontsClientList m_fonts_client_list;
-            FontsClientList::g_get_list(m_fonts_client_list);
-            t_size count = m_fonts_client_list.get_count();
-            g_fonts_manager_data.g_on_common_font_changed(
-                wp == SPI_GETICONTITLELOGFONT ? cui::fonts::font_type_flag_items : cui::fonts::font_type_flag_labels);
-            for (t_size i = 0; i < count; i++) {
-                FontsManagerData::entry_ptr_t p_data;
-                g_fonts_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
-                if (wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == cui::fonts::font_mode_common_items)
-                    m_fonts_client_list[i].m_ptr->on_font_changed();
-                else if (wp == SPI_GETICONTITLELOGFONT && p_data->font_mode == cui::fonts::font_mode_common_labels)
-                    m_fonts_client_list[i].m_ptr->on_font_changed();
-            }
-        }
-        break;
-    case WM_CLOSE:
-        destroy();
-        delete this;
-        return 0;
-    }
-    return DefWindowProc(wnd, msg, wp, lp);
-}
+const GUID FontManagerData::g_cfg_guid = {0x6b71f91c, 0x6b7e, 0x4dbe, {0xb2, 0x7b, 0xc4, 0x93, 0xaa, 0x51, 0x3f, 0xd0}};

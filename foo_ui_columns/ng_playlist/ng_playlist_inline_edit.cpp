@@ -134,7 +134,7 @@ void PlaylistView::notify_save_inline_edit(const char* value)
         offset = index + 1;
     }
 
-    static_api_ptr_t<metadb_io_v2> tagger_api;
+    const auto tagger_api = metadb_io_v2::get();
 
     const auto filter = fb2k::service_new<InlineEditFileInfoFilter>(m_edit_field.get_ptr(), values);
     tagger_api->update_info_async(m_edit_handles, filter, GetAncestor(get_wnd(), GA_ROOT),

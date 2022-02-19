@@ -145,7 +145,7 @@ LRESULT WINAPI quickfind_window::on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM l
             unsigned start, end;
             SendMessage(wnd, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
             if (wp == VK_BACK || start != end || end != SendMessage(wnd, WM_GETTEXTLENGTH, 0, 0)) {
-                LRESULT ret = uCallWindowProc(m_editproc, wnd, msg, wp, lp);
+                LRESULT ret = CallWindowProc(m_editproc, wnd, msg, wp, lp);
                 m_search.set_string(string_utf8_from_window(wnd));
                 return ret;
             }
@@ -160,7 +160,7 @@ LRESULT WINAPI quickfind_window::on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM l
         destroy();
     } break;
     }
-    return uCallWindowProc(m_editproc, wnd, msg, wp, lp);
+    return CallWindowProc(m_editproc, wnd, msg, wp, lp);
 }
 
 #endif

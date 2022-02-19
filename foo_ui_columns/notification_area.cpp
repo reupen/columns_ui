@@ -11,15 +11,14 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
 {
     if (g_icon_created) {
         metadb_handle_ptr track;
-        static_api_ptr_t<play_control> play_api;
+        const auto play_api = play_control::get();
         play_api->get_now_playing(track);
         pfc::string8 sys;
         pfc::string8 title;
 
         if (track.is_valid()) {
             service_ptr_t<titleformat_object> to_systray;
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(
-                to_systray, main_window::config_notification_icon_script.get());
+            titleformat_compiler::get()->compile_safe(to_systray, main_window::config_notification_icon_script.get());
             play_api->playback_format_title_ex(
                 track, nullptr, title, to_systray, nullptr, play_control::display_level_titles);
 
@@ -89,5 +88,5 @@ void create_icon_handle()
         g_icon
             = (HICON)uLoadImage(core_api::get_my_instance(), cfg_tray_icon_path, IMAGE_ICON, cx, cy, LR_LOADFROMFILE);
     if (!g_icon)
-        g_icon = static_api_ptr_t<ui_control>()->load_main_icon(cx, cy);
+        g_icon = ui_control::get()->load_main_icon(cx, cy);
 }

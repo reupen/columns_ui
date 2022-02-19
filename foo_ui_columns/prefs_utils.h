@@ -1,5 +1,4 @@
-#ifndef _COLOUMNS_PREFS_H_
-#define _COLOUMNS_PREFS_H_
+#pragma once
 
 void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItemIdentifier& p_item,
     const std::vector<MenuItemInfo>& p_cache, bool insert_none);
@@ -44,5 +43,3 @@ HFONT create_default_ui_font(unsigned point_size);
 HFONT create_default_title_font();
 
 } // namespace cui::prefs
-
-#endif

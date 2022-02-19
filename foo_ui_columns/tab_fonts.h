@@ -7,7 +7,7 @@ class TabFonts : public PreferencesTab {
     HWND m_wnd{nullptr};
     HWND m_wnd_colours_mode{nullptr};
     HWND m_wnd_colours_element{nullptr};
-    FontsManagerData::entry_ptr_t m_element_ptr;
+    FontManagerData::entry_ptr_t m_element_ptr;
     cui::fonts::client::ptr m_element_api;
     FontsClientList m_fonts_client_list;
 

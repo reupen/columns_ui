@@ -112,7 +112,7 @@ void PlaylistSwitcher::g_refresh_all_items()
 void PlaylistSwitcher::g_on_font_items_change()
 {
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_font, lf);
     for (auto& window : g_windows) {
         window->set_font(&lf);
     }
@@ -127,7 +127,7 @@ void PlaylistSwitcher::notify_on_initialisation()
     set_vertical_item_padding(settings::playlist_switcher_item_padding);
 
     LOGFONT lf;
-    static_api_ptr_t<fonts::manager>()->get_font(g_guid_font, lf);
+    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_font, lf);
     set_font(&lf);
 }
 void PlaylistSwitcher::notify_on_create()

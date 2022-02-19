@@ -1,14 +1,4 @@
-#ifndef _COLUMNS_FCL_H_
-#define _COLUMNS_FCL_H_
-
-/*!
- * \file fcl.h
- *
- * \author musicmusic
- * \date March 2015
- *
- * Contains functions for importing and exporting FCL (Columns UI layout) files
- */
+#pragma once
 
 void g_export_layout(HWND wnd, pfc::string8 path = {}, bool is_quiet = false);
 void g_import_layout(HWND wnd);
@@ -21,5 +11,3 @@ extern const GUID titles_playlist_view, titles_common;
 }
 } // namespace fcl
 } // namespace cui
-
-#endif

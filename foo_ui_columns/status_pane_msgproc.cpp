@@ -37,13 +37,12 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         update_playlist_data();
         update_playback_status_text();
-        static_api_ptr_t<playlist_manager>()->register_callback(this, flag_all);
-        static_api_ptr_t<play_callback_manager>()->register_callback(
-            this, flag_on_playback_all | flag_on_volume_change, false);
+        playlist_manager::get()->register_callback(this, flag_all);
+        play_callback_manager::get()->register_callback(this, flag_on_playback_all | flag_on_volume_change, false);
     } break;
     case WM_DESTROY:
-        static_api_ptr_t<playlist_manager>()->unregister_callback(this);
-        static_api_ptr_t<play_callback_manager>()->unregister_callback(this);
+        playlist_manager::get()->unregister_callback(this);
+        play_callback_manager::get()->unregister_callback(this);
 
         m_volume_control.destroy();
 

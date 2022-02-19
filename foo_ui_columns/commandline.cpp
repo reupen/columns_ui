@@ -20,7 +20,7 @@ public:
     static void execute()
     {
         HWND parent = core_api::get_main_window();
-        static_api_ptr_t<ui_control>()->activate();
+        ui_control::get()->activate();
         uMessageBox(parent, reinterpret_cast<const char*>(g_help_text), "Columns UI command-line help", 0);
     }
 };
@@ -39,12 +39,12 @@ public:
     {
         const auto main_window = core_api::get_main_window();
         if (m_files.empty()) {
-            static_api_ptr_t<ui_control>()->activate();
+            ui_control::get()->activate();
             fbh::show_info_box(main_window, m_error_title, m_no_files_error, OIC_ERROR);
             return false;
         }
         if (m_files.size() > 1) {
-            static_api_ptr_t<ui_control>()->activate();
+            ui_control::get()->activate();
             fbh::show_info_box(main_window, m_error_title, m_too_many_files_error, OIC_ERROR);
             return false;
         }
@@ -98,7 +98,7 @@ public:
         pfc::string_formatter formatter;
 
         if (!is_quiet) {
-            static_api_ptr_t<ui_control>()->activate();
+            ui_control::get()->activate();
             if (uMessageBox(main_window,
                     formatter << "Are you sure you want to import " << pfc::string_filename_ext(path)
                               << "? Your current Columns UI configuration will be lost.",
@@ -147,7 +147,7 @@ public:
     static void execute_export(const char* path, bool is_quiet)
     {
         if (!is_quiet) {
-            static_api_ptr_t<ui_control>()->activate();
+            ui_control::get()->activate();
         }
         g_export_layout(core_api::get_main_window(), path, is_quiet);
     }

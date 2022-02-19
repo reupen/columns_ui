@@ -205,7 +205,7 @@ public:
     {
         if (m_playlist_api->playlist_get_item_count(index)) {
             m_playlist_api->set_playing_playlist(index);
-            static_api_ptr_t<play_control>()->start();
+            play_control::get()->start();
         }
     }
     void notify_on_selection_change(
@@ -232,7 +232,7 @@ public:
 
     void notify_on_set_focus(HWND wnd_lost) override
     {
-        m_selection_holder = static_api_ptr_t<ui_selection_manager>()->acquire();
+        m_selection_holder = ui_selection_manager::get()->acquire();
         m_selection_holder->set_playlist_tracking();
     }
 

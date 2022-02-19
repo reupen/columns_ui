@@ -5,7 +5,7 @@
 
 void preview_to_console(const char* spec, bool extra)
 {
-    static_api_ptr_t<playlist_manager> playlist_api;
+    const auto playlist_api = playlist_manager::get();
 
     int count = playlist_api->activeplaylist_get_item_count();
 
@@ -27,7 +27,7 @@ void preview_to_console(const char* spec, bool extra)
         if (extra) {
             pfc::string8_fast_aggressive str_dummy;
             service_ptr_t<titleformat_object> to_global;
-            static_api_ptr_t<titleformat_compiler>()->compile_safe(to_global, cfg_globalstring);
+            titleformat_compiler::get()->compile_safe(to_global, cfg_globalstring);
 
             PlaylistNameTitleformatHook tf_hook_playlist_name;
             DateTitleformatHook tf_hook_date(&st);
@@ -38,7 +38,7 @@ void preview_to_console(const char* spec, bool extra)
         }
 
         service_ptr_t<titleformat_object> to_temp;
-        static_api_ptr_t<titleformat_compiler>()->compile_safe(to_temp, spec);
+        titleformat_compiler::get()->compile_safe(to_temp, spec);
 
         SetGlobalTitleformatHook<false, true> tf_hook_set_global(extra_items);
         DateTitleformatHook tf_hook_date(&st);

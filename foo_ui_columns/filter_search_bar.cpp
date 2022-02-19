@@ -10,8 +10,8 @@ namespace cui::panels::filter {
 template <class tHandles>
 void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
 {
-    static_api_ptr_t<playlist_manager> playlist_api;
-    static_api_ptr_t<play_control> playback_api;
+    const auto playlist_api = playlist_manager::get();
+    const auto playback_api = play_control::get();
     t_size index_insert = pfc_infinite;
     if (!b_play && playback_api->is_playing()) {
         t_size playlist = playlist_api->get_playing_playlist();
@@ -191,7 +191,7 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
         if (b_reset) {
             m_active_handles.remove_all();
         } else if (b_diff) {
-            static_api_ptr_t<library_manager>()->get_all_items(m_active_handles);
+            library_manager::get()->get_all_items(m_active_handles);
             try {
                 auto api = search_filter_manager_v2::get()->create_ex(m_active_search_string,
                     fb2k::service_new<completion_notify_dummy>(), search_filter_manager_v2::KFlagSuppressNotify);

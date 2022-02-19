@@ -50,7 +50,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_host->set_this(this);
             create_child();
         }
-        static_api_ptr_t<playlist_manager>()->register_callback(this, flag_all);
+        playlist_manager::get()->register_callback(this, flag_all);
         break;
     }
     case WM_ERASEBKGND:
@@ -77,7 +77,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
         return 0;
     case WM_DESTROY: {
-        static_api_ptr_t<playlist_manager>()->unregister_callback(this);
+        playlist_manager::get()->unregister_callback(this);
         destroy_child();
         m_host.release();
         RevokeDragDrop(wnd);
@@ -112,7 +112,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
 
                 if (idx < 0) {
-                    static_api_ptr_t<playlist_manager> playlist_api;
+                    const auto playlist_api = playlist_manager::get();
                     unsigned new_idx
                         = playlist_api->create_playlist("Untitled", 12, playlist_api->get_playlist_count());
                     playlist_api->set_active_playlist(new_idx);
@@ -126,7 +126,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_switch_timer = false;
             KillTimer(wnd, SWITCH_TIMER_ID);
             if (!m_playlist_switched) {
-                static_api_ptr_t<playlist_manager> playlist_api;
+                const auto playlist_api = playlist_manager::get();
                 if (m_switch_playlist < playlist_api->get_playlist_count())
                     playlist_api->set_active_playlist(m_switch_playlist);
 
@@ -238,7 +238,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     idx = TabCtrl_HitTest(wnd_tabs, &hittest);
                 }
 
-                static_api_ptr_t<playlist_manager_v3> playlist_api;
+                const auto playlist_api = playlist_manager_v3::get();
 
                 unsigned num = playlist_api->get_playlist_count();
                 unsigned active = playlist_api->get_active_playlist();
@@ -246,7 +246,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
 
-                static_api_ptr_t<autoplaylist_manager> autoplaylist_api;
+                const auto autoplaylist_api = autoplaylist_manager::get();
                 autoplaylist_client_v2::ptr autoplaylist;
 
                 try {
@@ -440,7 +440,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case 5002:
             switch (((LPNMHDR)lp)->code) {
             case TCN_SELCHANGE: {
-                static_api_ptr_t<playlist_manager>()->set_active_playlist(TabCtrl_GetCurSel(((LPNMHDR)lp)->hwndFrom));
+                playlist_manager::get()->set_active_playlist(TabCtrl_GetCurSel(((LPNMHDR)lp)->hwndFrom));
             } break;
             }
             break;
