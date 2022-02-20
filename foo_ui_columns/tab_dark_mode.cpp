@@ -33,6 +33,7 @@ BOOL TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         const auto disabled_wnd = GetDlgItem(wnd, IDC_DARK_MODE_DISABLED);
         const auto enabled_wnd = GetDlgItem(wnd, IDC_DARK_MODE_ENABLED);
+        const auto use_system_setting_wnd = GetDlgItem(wnd, IDC_DARK_MODE_USE_SYSTEM_SETTING);
         const auto windows_too_old_wnd = GetDlgItem(wnd, IDC_WINDOWS_VERSION_TOO_OLD);
         const auto unknown_windows_build_wnd = GetDlgItem(wnd, IDC_UNKNOWN_WINDOWS_BUILD);
 
@@ -40,6 +41,7 @@ BOOL TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             ShowWindow(windows_too_old_wnd, SW_SHOWNORMAL);
             EnableWindow(disabled_wnd, FALSE);
             EnableWindow(enabled_wnd, FALSE);
+            EnableWindow(use_system_setting_wnd, FALSE);
             Button_SetCheck(disabled_wnd, BST_CHECKED);
             break;
         }
@@ -55,6 +57,9 @@ BOOL TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case cui::colours::DarkModeStatus::Enabled:
             Button_SetCheck(enabled_wnd, BST_CHECKED);
             break;
+        case cui::colours::DarkModeStatus::UseSystemSetting:
+            Button_SetCheck(use_system_setting_wnd, BST_CHECKED);
+            break;
         }
         break;
     }
@@ -68,6 +73,9 @@ BOOL TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         case IDC_DARK_MODE_DISABLED:
             cui::colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Disabled));
+            return 0;
+        case IDC_DARK_MODE_USE_SYSTEM_SETTING:
+            cui::colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::UseSystemSetting));
             return 0;
         }
         break;

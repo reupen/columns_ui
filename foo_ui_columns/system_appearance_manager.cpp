@@ -13,6 +13,7 @@ using namespace winrt::Windows::UI::ViewManagement;
 
 std::optional<ModernColours> modern_colours_cached;
 bool modern_colours_fetch_attempted{};
+std::optional<bool> dark_mode_available_cached;
 std::vector<std::shared_ptr<ModernColoursChangedHandler>> modern_colours_changed_callbacks;
 
 COLORREF winrt_color_to_colorref(const winrt::Windows::UI::Color& colour)
@@ -50,6 +51,58 @@ void reset_modern_colours()
     modern_colours_cached.reset();
 }
 
+bool fetch_dark_mode_available()
+{
+    if (!dark::does_os_support_dark_mode() || !IsAppThemed())
+        return false;
+
+    try {
+        if (AccessibilitySettings().HighContrast())
+            return false;
+    } catch (const winrt::hresult_error& ex) {
+        log_winrt_error(u8"Error retrieving HighContrast setting"sv, ex);
+    }
+
+    return true;
+}
+
+void reset_dark_mode_available()
+{
+    dark_mode_available_cached.reset();
+}
+
+void handle_modern_colours_changed()
+{
+    std::optional<bool> old_dark_mode_available;
+    std::optional<bool> old_dark_mode_enabled;
+
+    if (dark_mode_available_cached)
+        old_dark_mode_available = dark_mode_available_cached;
+
+    if (modern_colours_cached && dark_mode_available_cached)
+        old_dark_mode_enabled = is_dark_mode_enabled();
+
+    reset_modern_colours();
+    reset_dark_mode_available();
+
+    if (old_dark_mode_enabled && *old_dark_mode_enabled != is_dark_mode_enabled()
+        && colours::handle_system_dark_mode_status_change()) {
+        // A dark mode status change was handled, so don't bother sending any
+        // other notifications
+        return;
+    }
+
+    if (old_dark_mode_available && *old_dark_mode_available != is_dark_mode_available()
+        && colours::handle_system_dark_mode_availability_change()) {
+        // A dark mode status change was handled, so don't bother sending any
+        // other notifications
+        return;
+    }
+
+    for (auto&& callback : modern_colours_changed_callbacks)
+        (*callback)();
+}
+
 class AppearanceMessageWindow : public ui_helpers::container_window_autorelease_t {
 public:
     static void s_initialise()
@@ -76,12 +129,8 @@ private:
 
             try {
                 m_ui_settings = UISettings();
-                m_colours_changed_token = m_ui_settings->ColorValuesChanged([](auto&&, auto&&) {
-                    reset_modern_colours();
-
-                    for (auto&& callback : modern_colours_changed_callbacks)
-                        (*callback)();
-                });
+                m_colours_changed_token = m_ui_settings->ColorValuesChanged(
+                    [](auto&&, auto&&) { fb2k::inMainThread([] { handle_modern_colours_changed(); }); });
             } catch (const winrt::hresult_error& ex) {
                 log_winrt_error(u8"Error registering UISettings ColorValuesChanged event handler"sv, ex);
             }
@@ -180,6 +229,32 @@ std::unique_ptr<EventToken> add_modern_colours_change_handler(ModernColoursChang
     auto event_handler_ptr = std::make_shared<ModernColoursChangedHandler>(std::move(event_handler));
     modern_colours_changed_callbacks.emplace_back(event_handler_ptr);
     return {std::make_unique<ModernColoursChangedToken>(event_handler_ptr)};
+}
+
+bool is_dark_mode_available()
+{
+    initialise();
+
+    if (!dark_mode_available_cached)
+        dark_mode_available_cached = fetch_dark_mode_available();
+
+    return *dark_mode_available_cached;
+}
+
+bool is_dark_mode_enabled()
+{
+    initialise();
+
+    if (!is_dark_mode_available())
+        return false;
+
+    const auto modern_colours = get_modern_colours();
+
+    if (!modern_colours)
+        return false;
+
+    // Infer dark mode status as there is no public API for Win32 apps to determine it
+    return modern_colours->is_dark();
 }
 
 } // namespace cui

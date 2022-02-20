@@ -220,7 +220,6 @@
 #define IDC_COLOURS_MODE                1131
 #define IDC_COLOURS_ELEMENT             1132
 #define IDC_PATCH_FORE                  1133
-#define IDC_DARK_MODE                   1133
 #define IDC_THEMING                     1134
 #define IDC_DEST                        1135
 #define IDC_SORT_STRING                 1143
@@ -258,6 +257,7 @@
 #define IDC_UNKNOWN_WINDOWS_BUILD       1181
 #define IDC_WINDOWS_VERSION_TOO_OLD     1182
 #define IDC_SELCOUNT                    1183
+#define IDC_DARK_MODE_USE_SYSTEM_SETTING 1183
 #define IDC_STATIC                      -1
 
 // Next default values for new objects

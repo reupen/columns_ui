@@ -693,8 +693,10 @@ BEGIN
     LTEXT           "Mode",IDC_TITLE1,7,4,313,16
     CONTROL         "Light",IDC_DARK_MODE_DISABLED,"Button",BS_AUTORADIOBUTTON | WS_GROUP,7,29,32,10
     CONTROL         "Dark",IDC_DARK_MODE_ENABLED,"Button",BS_AUTORADIOBUTTON,7,44,32,10
-    LTEXT           "Your version of Windows has not been tested for dark mode compatibility. Some dark mode features have been disabled.",IDC_UNKNOWN_WINDOWS_BUILD,7,71,313,20,NOT WS_VISIBLE
-    LTEXT           "Dark mode requires Windows 10 20H1 or newer.",IDC_WINDOWS_VERSION_TOO_OLD,7,71,165,8,NOT WS_VISIBLE
+    CONTROL         "Use system setting",IDC_DARK_MODE_USE_SYSTEM_SETTING,
+                    "Button",BS_AUTORADIOBUTTON,7,59,78,10
+    LTEXT           "Your version of Windows has not been tested for dark mode compatibility. Some dark mode features have been disabled.",IDC_UNKNOWN_WINDOWS_BUILD,7,81,313,20,NOT WS_VISIBLE
+    LTEXT           "Dark mode requires Windows 10 20H1 or newer.",IDC_WINDOWS_VERSION_TOO_OLD,7,81,165,8,NOT WS_VISIBLE
 END
 
 

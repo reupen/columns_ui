@@ -78,4 +78,8 @@ enum class DarkModeStatus {
 
 extern fbh::ConfigInt32 dark_mode_status;
 
+void handle_effective_dark_mode_status_change();
+bool handle_system_dark_mode_status_change();
+bool handle_system_dark_mode_availability_change();
+
 } // namespace cui::colours

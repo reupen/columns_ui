@@ -4,6 +4,7 @@
 
 #include "config_host.h"
 #include "main_window.h"
+#include "system_appearance_manager.h"
 #include "tab_colours.h"
 #include "tab_dark_mode.h"
 #include "tab_fonts.h"
@@ -18,33 +19,64 @@ const GUID dark_mode_status_id = {0x1278cd90, 0x1d95, 0x48e8, {0x87, 0x3a, 0x1, 
 
 fbh::ConfigInt32 dark_mode_status(
     dark_mode_status_id, WI_EnumValue(DarkModeStatus::Disabled), [](auto&& new_value, auto&& old_value) {
-        if (new_value == old_value)
+        const auto old_enabled = old_value == WI_EnumValue(DarkModeStatus::Enabled)
+            || (old_value == WI_EnumValue(DarkModeStatus::UseSystemSetting)
+                && system_appearance_manager::is_dark_mode_enabled());
+
+        const auto new_enabled = new_value == WI_EnumValue(DarkModeStatus::Enabled)
+            || (new_value == WI_EnumValue(DarkModeStatus::UseSystemSetting)
+                && system_appearance_manager::is_dark_mode_enabled());
+
+        if (old_enabled == new_enabled)
             return;
 
-        const auto wnd = main_window.get_wnd();
-
-        if (wnd)
-            SetWindowRedraw(wnd, FALSE);
-
-        g_colour_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
-        g_colour_manager_data.g_on_common_colour_changed(colour_flag_all);
-        ColoursClientList colours_clients;
-        ColoursClientList::g_get_list(colours_clients);
-
-        for (auto&& client : colours_clients) {
-            if (client.m_ptr->get_supported_bools() & bool_flag_dark_mode_enabled)
-                client.m_ptr->on_bool_changed(bool_flag_dark_mode_enabled);
-
-            client.m_ptr->on_colour_changed(colour_flag_all);
-        }
-
-        if (wnd) {
-            SetWindowRedraw(wnd, TRUE);
-            RedrawWindow(wnd, nullptr, nullptr,
-                RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
-            main_window.set_dark_mode_attributes(true);
-        }
+        handle_effective_dark_mode_status_change();
     });
+
+void handle_effective_dark_mode_status_change()
+{
+    const auto wnd = main_window.get_wnd();
+
+    if (wnd)
+        SetWindowRedraw(wnd, FALSE);
+
+    g_colour_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
+    g_colour_manager_data.g_on_common_colour_changed(colour_flag_all);
+    ColoursClientList colours_clients;
+    ColoursClientList::g_get_list(colours_clients);
+
+    for (auto&& client : colours_clients) {
+        if (client.m_ptr->get_supported_bools() & bool_flag_dark_mode_enabled)
+            client.m_ptr->on_bool_changed(bool_flag_dark_mode_enabled);
+
+        client.m_ptr->on_colour_changed(colour_flag_all);
+    }
+
+    if (wnd) {
+        SetWindowRedraw(wnd, TRUE);
+        RedrawWindow(wnd, nullptr, nullptr,
+            RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
+        main_window.set_dark_mode_attributes(true);
+    }
+}
+
+bool handle_system_dark_mode_status_change()
+{
+    if (dark_mode_status == WI_EnumValue(DarkModeStatus::UseSystemSetting)) {
+        handle_effective_dark_mode_status_change();
+        return true;
+    }
+    return false;
+}
+
+bool handle_system_dark_mode_availability_change()
+{
+    if (dark_mode_status == WI_EnumValue(DarkModeStatus::Enabled)) {
+        handle_effective_dark_mode_status_change();
+        return true;
+    }
+    return false;
+}
 
 } // namespace cui::colours
 
