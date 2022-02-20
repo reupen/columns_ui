@@ -5,15 +5,7 @@
 ### Features
 
 * Support for the Windows 10 and 11 dark mode was added. 
-[[#411](https://github.com/reupen/columns_ui/pull/411), [#413](https://github.com/reupen/columns_ui/pull/413),
-[#415](https://github.com/reupen/columns_ui/pull/415), [#423](https://github.com/reupen/columns_ui/pull/423),
-[#424](https://github.com/reupen/columns_ui/pull/424), [#432](https://github.com/reupen/columns_ui/pull/432),
-[#433](https://github.com/reupen/columns_ui/pull/433), [#434](https://github.com/reupen/columns_ui/pull/434),
-[#435](https://github.com/reupen/columns_ui/pull/435), [#436](https://github.com/reupen/columns_ui/pull/436),
-[#437](https://github.com/reupen/columns_ui/pull/437), [#438](https://github.com/reupen/columns_ui/pull/438),
-[#439](https://github.com/reupen/columns_ui/pull/439), [#440](https://github.com/reupen/columns_ui/pull/440),
-[#442](https://github.com/reupen/columns_ui/pull/442), [#444](https://github.com/reupen/columns_ui/pull/444),
-[#445](https://github.com/reupen/columns_ui/pull/445), [#451](https://github.com/reupen/columns_ui/pull/451)]
+[[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C2022-03-01)]
 
 * The status bar can now show the number of selected tracks. [[#450](https://github.com/reupen/columns_ui/pull/450)]
 

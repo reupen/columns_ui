@@ -187,6 +187,7 @@ private:
     unsigned m_child_top{0};
 
     MINMAXINFO mmi{};
+    std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 
 extern ui_extension::window_host_factory<PlaylistTabs::WindowHost> g_tab_host;
