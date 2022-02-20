@@ -2,6 +2,7 @@
 
 #include "dark_mode.h"
 #include "dark_mode_trackbar.h"
+#include "system_appearance_manager.h"
 
 template <bool b_vertical, bool b_popup, typename t_attributes, class t_base = ui_helpers::container_window>
 class VolumeBar
@@ -157,6 +158,11 @@ public:
 
             m_dark_mode_notifier = std::make_unique<cui::colours::dark_mode_notifier>([this] { set_custom_colours(); });
 
+            m_modern_colours_changed_token = cui::system_appearance_manager::add_modern_colours_change_handler([this] {
+                if (cui::colours::is_dark_mode_active())
+                    set_custom_colours();
+            });
+
             wnd_trackbar = m_child.create(wnd);
 
             if (wnd_trackbar) {
@@ -277,6 +283,7 @@ public:
             }
         } break;
         case WM_DESTROY: {
+            m_modern_colours_changed_token.reset();
             m_dark_mode_notifier.reset();
             play_callback_manager::get()->unregister_callback(this);
             m_child.destroy();
@@ -356,6 +363,7 @@ private:
     ULONG_PTR m_Gdiplus_token{NULL};
     bool m_using_gdiplus{false};
     std::unique_ptr<cui::colours::dark_mode_notifier> m_dark_mode_notifier;
+    std::unique_ptr<cui::system_appearance_manager::EventToken> m_modern_colours_changed_token;
 };
 
 class PopupVolumeBarAttributes {

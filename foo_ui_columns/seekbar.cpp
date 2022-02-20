@@ -155,6 +155,12 @@ LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_dark_mode_notifier
                 = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] { set_custom_colours(); });
 
+            m_modern_colours_changed_token
+                = system_appearance_manager::add_modern_colours_change_handler([this, self = ptr{this}] {
+                      if (colours::is_dark_mode_active())
+                          set_custom_colours();
+                  });
+
             update_seek();
 
             update_seek_timer();
@@ -177,16 +183,16 @@ LRESULT SeekBarToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         return 0;
     }
+    case WM_DESTROY:
+        m_modern_colours_changed_token.reset();
+        m_dark_mode_notifier.reset();
 
-    case WM_DESTROY: {
-        if (initialised) {
-            m_dark_mode_notifier.reset();
+        if (m_child.get_wnd())
             m_child.destroy();
-            windows.remove_item(this);
-            initialised = false;
-        }
+
+        windows.remove_item(this);
+        initialised = false;
         break;
-    }
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }

@@ -1,6 +1,8 @@
 #include "stdafx.h"
 #include "dark_mode.h"
 
+#include "system_appearance_manager.h"
+
 namespace cui::dark {
 
 bool does_os_support_dark_mode()
@@ -23,10 +25,8 @@ bool are_private_apis_allowed()
 {
     OSVERSIONINFO osvi{};
     osvi.dwOSVersionInfoSize = sizeof(osvi);
-#pragma warning(push)
-#pragma warning(disable : 4996)
+#pragma warning(suppress : 4996)
     GetVersionEx(&osvi);
-#pragma warning(pop)
 
     if (osvi.dwMajorVersion != 10 || osvi.dwMinorVersion != 0)
         return false;
@@ -112,38 +112,7 @@ wil::unique_hbrush get_light_colour_brush(ColourID colour_id)
     return wil::unique_hbrush(GetSysColorBrush(get_light_colour_system_id(colour_id)));
 }
 
-COLORREF winrt_color_to_colorref(const winrt::Windows::UI::Color& colour)
-{
-    return RGB(colour.R, colour.G, colour.B);
-}
-
-AccentColours fetch_system_accent_colours()
-{
-    try {
-        const winrt::Windows::UI::ViewManagement::UISettings settings;
-        const winrt::Windows::UI::Color accent
-            = settings.GetColorValue(winrt::Windows::UI::ViewManagement::UIColorType::Accent);
-        const winrt::Windows::UI::Color light_accent
-            = settings.GetColorValue(winrt::Windows::UI::ViewManagement::UIColorType::AccentLight1);
-
-        return {winrt_color_to_colorref(accent), winrt_color_to_colorref(light_accent)};
-    } catch (winrt::hresult_error&) {
-        return {WI_EnumValue(DarkColour::DARK_600), WI_EnumValue(DarkColour::DARK_750)};
-    };
-}
-
-std::optional<AccentColours> accent_colours;
-
 } // namespace
-
-AccentColours get_system_accent_colours()
-{
-    // TODO: Flush these on change
-    if (!accent_colours)
-        accent_colours = fetch_system_accent_colours();
-
-    return *accent_colours;
-}
 
 COLORREF get_dark_colour(ColourID colour_id)
 {
@@ -175,9 +144,15 @@ COLORREF get_dark_colour(ColourID colour_id)
     case ColourID::TrackbarChannel:
         return WI_EnumValue(DarkColour::DARK_400);
     case ColourID::TrackbarThumb:
-        return get_system_accent_colours().standard;
+        if (const auto modern_colours = system_appearance_manager::get_modern_colours())
+            return modern_colours->accent;
+
+        return WI_EnumValue(DarkColour::DARK_600);
     case ColourID::TrackbarHotThumb:
-        return get_system_accent_colours().light_1;
+        if (const auto modern_colours = system_appearance_manager::get_modern_colours())
+            return modern_colours->accent_light_1;
+
+        return WI_EnumValue(DarkColour::DARK_750);
     case ColourID::TrackbarDisabledThumb:
         return WI_EnumValue(DarkColour::DARK_400);
     case ColourID::VolumePopupBackground:

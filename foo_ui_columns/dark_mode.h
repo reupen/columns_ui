@@ -29,11 +29,6 @@ enum class ColourID {
     VolumePopupText,
 };
 
-struct AccentColours {
-    COLORREF standard{};
-    COLORREF light_1{};
-};
-
 template <class Object>
 class LazyObject {
 public:
@@ -76,7 +71,6 @@ void set_titlebar_mode(HWND wnd, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_colour_brush(ColourID colour_id, bool is_dark);
 [[nodiscard]] LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool is_dark);
 
-[[nodiscard]] AccentColours get_system_accent_colours();
 [[nodiscard]] COLORREF get_system_colour(int system_colour_id, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark);
 
