@@ -51,6 +51,10 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             create_child();
         }
         playlist_manager::get()->register_callback(this, flag_all);
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([wnd, wnd_tabs = wnd_tabs] {
+            RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+            RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+        });
         break;
     }
     case WM_ERASEBKGND:
@@ -77,6 +81,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
         return 0;
     case WM_DESTROY: {
+        m_dark_mode_notifier.reset();
         playlist_manager::get()->unregister_callback(this);
         destroy_child();
         m_host.release();

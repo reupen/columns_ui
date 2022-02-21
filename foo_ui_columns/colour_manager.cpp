@@ -66,6 +66,7 @@ public:
             return 0;
         }
     }
+
     bool get_bool(const colours::bool_identifier_t& p_identifier) const override
     {
         ColourManagerData::entry_ptr_t p_entry
@@ -74,12 +75,21 @@ public:
         case colours::bool_use_custom_active_item_frame:
             return p_entry->use_custom_active_item_frame;
         case colours::bool_dark_mode_enabled:
-            return (colours::dark_mode_status.get() == WI_EnumValue(cui::colours::DarkModeStatus::Enabled)
-                && dark::does_os_support_dark_mode());
+            if (!system_appearance_manager::is_dark_mode_available())
+                return false;
+
+            if (colours::dark_mode_status.get() == WI_EnumValue(cui::colours::DarkModeStatus::Enabled))
+                return true;
+
+            if (colours::dark_mode_status.get() == WI_EnumValue(cui::colours::DarkModeStatus::UseSystemSetting))
+                return system_appearance_manager::is_dark_mode_enabled();
+
+            return false;
         default:
             return false;
         }
     }
+
     bool get_themed() const override
     {
         return m_entry->colour_mode == colours::colour_mode_themed

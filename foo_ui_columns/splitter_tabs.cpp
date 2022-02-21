@@ -509,8 +509,10 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         on_size_changed();
         // ShowWindow(m_wnd_tabs, SW_SHOWNORMAL);
         g_windows.emplace_back(this);
-        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
-            [wnd_tabs = m_wnd_tabs] { RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([wnd, wnd_tabs = m_wnd_tabs] {
+            RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+            RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+        });
     } break;
     case WM_ERASEBKGND:
         dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));

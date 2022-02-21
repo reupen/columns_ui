@@ -32,7 +32,7 @@
 #include <ppl.h>
 #include <share.h>
 
-#include <fmt/format.h>
+#include <fmt/xchar.h>
 #include <gsl/gsl>
 #include <range/v3/all.hpp>
 
@@ -55,6 +55,7 @@
 #include <wil/com.h>
 #include <wil/resource.h>
 
+#include <winrt/windows.foundation.h>
 #include <winrt/windows.ui.viewmanagement.h>
 
 #include "../foobar2000/SDK/foobar2000.h"

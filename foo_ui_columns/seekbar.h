@@ -1,5 +1,7 @@
 #pragma once
 
+#include "system_appearance_manager.h"
+
 namespace cui::toolbars::seekbar {
 
 class SeekBarToolbar : public ui_extension::container_ui_extension {
@@ -45,6 +47,7 @@ private:
     uih::Trackbar m_child;
     SeekBarTrackbarCallback m_track_bar_host;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
+    std::unique_ptr<system_appearance_manager::EventToken> m_modern_colours_changed_token;
 };
 
 } // namespace cui::toolbars::seekbar
