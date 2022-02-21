@@ -11,6 +11,7 @@ public:
     const char* get_name() override;
     bool get_help_url(pfc::string_base& p_out) override;
     bool is_active();
+    void refresh();
 
 private:
     HWND m_wnd{nullptr};

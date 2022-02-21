@@ -3,10 +3,59 @@
 
 #include "config_appearance.h"
 #include "dark_mode.h"
+#include "system_appearance_manager.h"
+
+constexpr auto unknown_windows_build_message
+    = "Your version of Windows has not been tested for dark mode compatibility. Some dark mode features have been disabled."sv;
+constexpr auto windows_too_old_message = "Dark mode requires Windows 10 20H1 or newer."sv;
+constexpr auto dark_mode_unavailable_message = "Dark mode is unavailable due to the current system settings."sv;
 
 bool TabDarkMode::is_active()
 {
     return m_wnd != nullptr;
+}
+
+void TabDarkMode::refresh()
+{
+    if (!is_active())
+        return;
+
+    const auto disabled_wnd = GetDlgItem(m_wnd, IDC_DARK_MODE_DISABLED);
+    const auto enabled_wnd = GetDlgItem(m_wnd, IDC_DARK_MODE_ENABLED);
+    const auto use_system_setting_wnd = GetDlgItem(m_wnd, IDC_DARK_MODE_USE_SYSTEM_SETTING);
+    const auto message_wnd = GetDlgItem(m_wnd, IDC_DARK_MODE_MESSAGE);
+
+    const auto has_os_dark_mode_support = cui::dark::does_os_support_dark_mode();
+    const auto is_dark_mode_available = cui::system_appearance_manager::is_dark_mode_available();
+
+    EnableWindow(disabled_wnd, is_dark_mode_available);
+    EnableWindow(enabled_wnd, is_dark_mode_available);
+    EnableWindow(use_system_setting_wnd, is_dark_mode_available);
+
+    if (!is_dark_mode_available) {
+        if (!has_os_dark_mode_support)
+            uSetWindowText(message_wnd, windows_too_old_message.data());
+        else
+            uSetWindowText(message_wnd, dark_mode_unavailable_message.data());
+
+        Button_SetCheck(disabled_wnd, BST_CHECKED);
+        Button_SetCheck(enabled_wnd, BST_UNCHECKED);
+        Button_SetCheck(use_system_setting_wnd, BST_UNCHECKED);
+        return;
+    }
+
+    if (!cui::dark::are_private_apis_allowed()) {
+        uSetWindowText(message_wnd, unknown_windows_build_message.data());
+    } else {
+        uSetWindowText(message_wnd, "");
+    }
+
+    const auto current_mode = static_cast<cui::colours::DarkModeStatus>(cui::colours::dark_mode_status.get());
+
+    Button_SetCheck(disabled_wnd, current_mode == cui::colours::DarkModeStatus::Disabled ? BST_CHECKED : BST_UNCHECKED);
+    Button_SetCheck(enabled_wnd, current_mode == cui::colours::DarkModeStatus::Enabled ? BST_CHECKED : BST_UNCHECKED);
+    Button_SetCheck(use_system_setting_wnd,
+        current_mode == cui::colours::DarkModeStatus::UseSystemSetting ? BST_CHECKED : BST_UNCHECKED);
 }
 
 bool TabDarkMode::get_help_url(pfc::string_base& p_out)
@@ -30,37 +79,7 @@ BOOL TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
-
-        const auto disabled_wnd = GetDlgItem(wnd, IDC_DARK_MODE_DISABLED);
-        const auto enabled_wnd = GetDlgItem(wnd, IDC_DARK_MODE_ENABLED);
-        const auto use_system_setting_wnd = GetDlgItem(wnd, IDC_DARK_MODE_USE_SYSTEM_SETTING);
-        const auto windows_too_old_wnd = GetDlgItem(wnd, IDC_WINDOWS_VERSION_TOO_OLD);
-        const auto unknown_windows_build_wnd = GetDlgItem(wnd, IDC_UNKNOWN_WINDOWS_BUILD);
-
-        if (!cui::dark::does_os_support_dark_mode()) {
-            ShowWindow(windows_too_old_wnd, SW_SHOWNORMAL);
-            EnableWindow(disabled_wnd, FALSE);
-            EnableWindow(enabled_wnd, FALSE);
-            EnableWindow(use_system_setting_wnd, FALSE);
-            Button_SetCheck(disabled_wnd, BST_CHECKED);
-            break;
-        }
-
-        if (!cui::dark::are_private_apis_allowed()) {
-            ShowWindow(unknown_windows_build_wnd, SW_SHOWNORMAL);
-        }
-
-        switch (static_cast<cui::colours::DarkModeStatus>(cui::colours::dark_mode_status.get())) {
-        case cui::colours::DarkModeStatus::Disabled:
-            Button_SetCheck(disabled_wnd, BST_CHECKED);
-            break;
-        case cui::colours::DarkModeStatus::Enabled:
-            Button_SetCheck(enabled_wnd, BST_CHECKED);
-            break;
-        case cui::colours::DarkModeStatus::UseSystemSetting:
-            Button_SetCheck(use_system_setting_wnd, BST_CHECKED);
-            break;
-        }
+        refresh();
         break;
     }
     case WM_DESTROY:

@@ -9,6 +9,12 @@
 #include "tab_dark_mode.h"
 #include "tab_fonts.h"
 
+TabDarkMode g_tab_dark_mode;
+ColourManagerData g_colour_manager_data;
+FontManagerData g_font_manager_data;
+TabColours g_tab_appearance;
+TabFonts g_tab_appearance_fonts;
+
 namespace cui::colours {
 
 namespace {
@@ -71,6 +77,8 @@ bool handle_system_dark_mode_status_change()
 
 bool handle_system_dark_mode_availability_change()
 {
+    g_tab_dark_mode.refresh();
+
     if (dark_mode_status == WI_EnumValue(DarkModeStatus::Enabled)) {
         handle_effective_dark_mode_status_change();
         return true;
@@ -79,12 +87,6 @@ bool handle_system_dark_mode_availability_change()
 }
 
 } // namespace cui::colours
-
-ColourManagerData g_colour_manager_data;
-FontManagerData g_font_manager_data;
-TabDarkMode g_tab_dark_mode;
-TabColours g_tab_appearance;
-TabFonts g_tab_appearance_fonts;
 
 cui::colours::colour_mode_t g_get_global_colour_mode()
 {
