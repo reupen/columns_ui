@@ -77,8 +77,6 @@ msbuild /m "/p:Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_u
 
 #### Using the Clang compiler (experimental)
 
-Note: Currently not functional out of the box – should be functional again when the LLVM bundled with Visual Studio is updated to version 13.
-
 Columns UI can be also compiled using the version of Clang distributed with Visual Studio. 
 
 (Note that Clang is not installed by default – in the Visual Studio 2022 installer, you will need to select the Clang compiler and the Clang build tools components.)
@@ -86,5 +84,7 @@ Columns UI can be also compiled using the version of Clang distributed with Visu
 With these installed, open a Developer Command Prompt for VS 2022 from the start menu, switch to the Columns UI source directory and run:
 
 ```powershell
-msbuild /m "/p:PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_ui-public.sln
+msbuild /m "/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_ui-public.sln
 ```
+
+(Note: Currently `lld-link.exe` can't be used due to [missing wildcard support](https://github.com/llvm/llvm-project/issues/38333).)

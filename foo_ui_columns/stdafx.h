@@ -2,6 +2,7 @@
 
 #define OEMRESOURCE
 #define NOMINMAX
+#define _SILENCE_CLANG_COROUTINE_MESSAGE
 
 #ifdef _DEBUG
 #define _CRTDBG_MAP_ALLOC

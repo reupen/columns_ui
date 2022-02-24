@@ -49,7 +49,7 @@ jobs:
 
     - name: Build (LLVM)
       if: matrix.toolset == 'llvm'
-      run: msbuild /m '/p:Platform=Win32;Configuration=${{ matrix.configuration }};PlatformToolset=ClangCL;UseLldLink=True;VcpkgAutoLink=False;WholeProgramOptimization=False;SpectreMitigation=' vc17\columns_ui-public.sln
+      run: msbuild /m '/p:Platform=Win32;Configuration=${{ matrix.configuration }};PlatformToolset=ClangCL;LinkToolExe=link.exe' vc17\columns_ui-public.sln
 
     - uses: actions/upload-artifact@v2
       if: matrix.toolset == 'v143' && matrix.configuration == 'release'

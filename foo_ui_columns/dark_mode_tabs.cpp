@@ -96,7 +96,8 @@ void handle_tab_control_paint(HWND wnd)
         if (!IntersectRect(&_intersect_rect, &ps.rcPaint, &item_rect))
             continue;
 
-        const auto item_back_brush = [&] {
+        // &item = item is currently required by Clang, see https://github.com/llvm/llvm-project/issues/48582
+        const auto item_back_brush = [&, &item = item] {
             if (item.is_hot && item.is_active)
                 return *hot_active_item_brush;
 
