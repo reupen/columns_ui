@@ -274,16 +274,16 @@ public:
 
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; }
 
-    t_size get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
-    t_size get_supported_bools() const override
+    uint32_t get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
+    uint32_t get_supported_bools() const override
     {
         return colours::bool_flag_use_custom_active_item_frame | colours::bool_flag_dark_mode_enabled;
     } // bit-mask
     bool get_themes_supported() const override { return true; }
 
-    void on_colour_changed(t_size mask) const override;
+    void on_colour_changed(uint32_t mask) const override;
 
-    void on_bool_changed(t_size mask) const override;
+    void on_bool_changed(uint32_t mask) const override;
 };
 
 class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
@@ -422,7 +422,7 @@ private:
         }
     }
 
-    void notify_on_group_info_area_size_change(t_size new_width) override
+    void notify_on_group_info_area_size_change(int new_width) override
     {
         cfg_artwork_width = new_width;
         // flush_artwork_images();
@@ -486,7 +486,7 @@ private:
     void reset_items();
 
     void on_items_added(
-        unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
+        size_t start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
     void on_items_reordered(const t_size* p_order, t_size p_count) override;
 
     void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {
@@ -629,8 +629,8 @@ private:
     bool do_drag_drop(WPARAM wp) override;
 
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
     void notify_exit_inline_edit() override;

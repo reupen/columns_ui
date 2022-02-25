@@ -2,7 +2,7 @@
 
 #include "colour_manager_data.h"
 
-void ColourManagerData::g_on_common_bool_changed(t_size mask)
+void ColourManagerData::g_on_common_bool_changed(uint32_t mask)
 {
     // Copy the list of callbacks in case someone tries to add or remove one
     // while we're iterating through them
@@ -12,7 +12,7 @@ void ColourManagerData::g_on_common_bool_changed(t_size mask)
     }
 }
 
-void ColourManagerData::g_on_common_colour_changed(t_size mask)
+void ColourManagerData::g_on_common_colour_changed(uint32_t mask)
 {
     // Copy the list of callbacks in case someone tries to add or remove one
     // while we're iterating through them
@@ -60,8 +60,7 @@ void ColourManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint,
     p_stream->read_lendian_t(version, p_abort);
     if (version <= cfg_version) {
         m_global_entry->read(version, p_stream, p_abort);
-        t_size count;
-        p_stream->read_lendian_t(count, p_abort);
+        const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
         m_entries.remove_all();
         for (t_size i = 0; i < count; i++) {
             entry_ptr_t ptr = std::make_shared<Entry>();
@@ -90,9 +89,9 @@ void ColourManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_
         if (mask[i] = clients.have_item(m_entries[i]->guid))
             counter++;
 
-    p_stream->write_lendian_t((t_uint32)cfg_version, p_abort);
+    p_stream->write_lendian_t(static_cast<t_uint32>(cfg_version), p_abort);
     m_global_entry->write(p_stream, p_abort);
-    p_stream->write_lendian_t(counter, p_abort);
+    p_stream->write_lendian_t(gsl::narrow<uint32_t>(counter), p_abort);
     for (i = 0; i < count; i++)
         if (mask[i])
             m_entries[i]->write(p_stream, p_abort);

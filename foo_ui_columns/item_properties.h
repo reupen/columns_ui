@@ -32,8 +32,8 @@ public:
     void get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& items);
     void notify_on_create() override;
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
 
@@ -50,17 +50,17 @@ public:
 
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties"; }
 
-    t_size get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
+    uint32_t get_supported_colours() const override { return colours::colour_flag_all; } // bit-mask
 
-    t_size get_supported_bools() const override
+    uint32_t get_supported_bools() const override
     {
         return colours::bool_flag_use_custom_active_item_frame | colours::bool_flag_dark_mode_enabled;
     } // bit-mask
     bool get_themes_supported() const override { return true; }
 
-    void on_colour_changed(t_size mask) const override;
+    void on_colour_changed(uint32_t mask) const override;
 
-    void on_bool_changed(t_size mask) const override;
+    void on_bool_changed(uint32_t mask) const override;
 };
 
 class ItemPropertiesConfig {
@@ -71,14 +71,14 @@ public:
     bool m_show_columns, m_show_groups;
 
     bool m_initialising;
-    static BOOL CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static INT_PTR CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style, t_uint32 info_sections_mask,
         bool b_show_columns, bool b_show_groups);
 
     bool run_modal(HWND wnd);
 
 private:
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     FieldsList m_field_list;
 };
@@ -142,8 +142,8 @@ public:
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        unsigned get_children_count() const override;
-        void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
+        size_t get_children_count() const override;
+        void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeSourcePopup(ItemProperties* p_wnd);
     };
 
@@ -159,9 +159,9 @@ public:
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override;
     void notify_on_column_size_change(t_size index, int new_width) override;
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
+        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override;
     static void g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out);
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
 
@@ -205,7 +205,7 @@ private:
     metadb_handle_list m_handles, m_selection_handles;
     pfc::list_t<Field> m_fields;
     bool m_callback_registered{false};
-    t_size m_tracking_mode;
+    uint32_t m_tracking_mode;
 
     t_uint32 m_info_sections_mask;
     bool m_show_column_titles, m_show_group_titles;
@@ -214,7 +214,7 @@ private:
     uih::IntegerAndDpi<int32_t> m_column_name_width{80};
     uih::IntegerAndDpi<int32_t> m_column_field_width{125};
 
-    t_size m_edge_style;
+    uint32_t m_edge_style;
     t_size m_edit_column, m_edit_index;
     pfc::string8 m_edit_field;
     metadb_handle_list m_edit_handles;

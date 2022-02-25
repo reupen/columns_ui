@@ -51,8 +51,8 @@ TitleformatHookChangeFont::TitleformatHookChangeFont(const LOGFONT& lf)
     m_default_font_face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, tabsize(lf.lfFaceName));
 }
 
-bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, const char* p_name,
-    unsigned p_name_length, titleformat_hook_function_params* p_params, bool& p_found_flag)
+bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
+    titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;
     if (!stricmp_utf8_ex(p_name, p_name_length, "set_font", pfc_infinite)) {
@@ -102,7 +102,7 @@ bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, co
 }
 
 bool TitleformatHookChangeFont::process_field(
-    titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
     if (!stricmp_utf8_ex(p_name, p_name_length, "default_font_face", pfc_infinite)) {
@@ -205,20 +205,20 @@ public:
     const GUID& get_client_guid() const override { return g_guid_item_details_colour_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item details"; }
 
-    t_size get_supported_colours() const override
+    uint32_t get_supported_colours() const override
     {
         return colours::colour_flag_background | colours::colour_flag_text;
     } // bit-mask
-    t_size get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; } // bit-mask
+    uint32_t get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; } // bit-mask
 
     bool get_themes_supported() const override { return false; }
 
-    void on_bool_changed(t_size mask) const override
+    void on_bool_changed(uint32_t mask) const override
     {
         if (mask & colours::bool_flag_dark_mode_enabled)
             ItemDetails::s_on_dark_mode_status_change();
     }
-    void on_colour_changed(t_size mask) const override { ItemDetails::g_on_colours_change(); }
+    void on_colour_changed(uint32_t mask) const override { ItemDetails::g_on_colours_change(); }
 };
 
 namespace {

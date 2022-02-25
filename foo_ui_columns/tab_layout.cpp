@@ -531,7 +531,7 @@ void LayoutTab::switch_to_preset(HWND wnd, unsigned index)
     }
 }
 
-BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -735,13 +735,13 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ti.pt = pt;
                 ScreenToClient(m_wnd_tree, &ti.pt);
             }
-            SendMessage(m_wnd_tree, TVM_HITTEST, 0, (long)&ti);
+            SendMessage(m_wnd_tree, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&ti));
             if (ti.hItem) {
                 enum { ID_REMOVE = 1, ID_MOVE_UP, ID_MOVE_DOWN, ID_COPY, ID_PASTE, ID_CHANGE_BASE };
                 unsigned ID_INSERT_BASE = ID_CHANGE_BASE + 1;
                 HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti.hItem);
 
-                SendMessage(m_wnd_tree, TVM_SELECTITEM, TVGN_CARET, (long)ti.hItem);
+                SendMessage(m_wnd_tree, TVM_SELECTITEM, TVGN_CARET, reinterpret_cast<LPARAM>(ti.hItem));
 
                 unsigned index = tree_view_get_child_index(m_wnd_tree, ti.hItem);
 
@@ -768,16 +768,18 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     for (unsigned n = 0; n < count; n++) {
                         if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
                             if (n)
-                                uAppendMenu(
-                                    menu_change_base, MF_STRING | MF_POPUP, (UINT)popup, panels[n - 1].category);
+                                uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
+                                    panels[n - 1].category);
                             popup = CreatePopupMenu();
                         }
                         uAppendMenu(popup, (MF_STRING), ID_CHANGE_BASE + n, panels[n].name);
                         ID_INSERT_BASE++;
                         if (n == count - 1)
-                            uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, (UINT)popup, panels[n].category);
+                            uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
+                                panels[n].category);
                     }
-                    uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)menu_change_base, "Change base");
+                    uAppendMenu(
+                        menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_change_base), "Change base");
                 }
                 unsigned ID_SWITCH_BASE = ID_INSERT_BASE + 1;
                 if (p_splitter.is_valid() && p_node->m_children.size() < p_splitter->get_maximum_panel_count()) {
@@ -789,17 +791,19 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         if (!panels[n].prefer_multiple_instances || !m_node_root->have_item(panels[n].guid)) {
                             if (!popup || uStringCompare(panels[last].category, panels[n].category)) {
                                 if (popup)
-                                    uAppendMenu(
-                                        menu_change_base, MF_STRING | MF_POPUP, (UINT)popup, panels[last].category);
+                                    uAppendMenu(menu_change_base, MF_STRING | MF_POPUP,
+                                        reinterpret_cast<UINT_PTR>(popup), panels[last].category);
                                 popup = CreatePopupMenu();
                             }
                             uAppendMenu(popup, (MF_STRING), ID_INSERT_BASE + n, panels[n].name);
                             last = n;
                         }
                         if (n == count - 1)
-                            uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, (UINT)popup, panels[n].category);
+                            uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
+                                panels[n].category);
                     }
-                    uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)menu_change_base, "Insert panel");
+                    uAppendMenu(
+                        menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_change_base), "Insert panel");
                     ID_SWITCH_BASE += count;
                 }
                 if (p_splitter.is_valid()) {
@@ -810,7 +814,8 @@ BOOL LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                             uAppendMenu(menu_insert, (MF_STRING), ID_SWITCH_BASE + n, panels[n].name);
                         }
                     }
-                    AppendMenu(menu, MF_STRING | MF_POPUP, (UINT)menu_insert, _T("Change splitter type"));
+                    AppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_insert),
+                        _T("Change splitter type"));
                 }
                 if (ti_parent) {
                     if (GetMenuItemCount(menu))

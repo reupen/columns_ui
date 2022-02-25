@@ -14,13 +14,13 @@ public:
     void get_category(pfc::string_base& p_out) const override;
     unsigned get_type() const override;
 
-    void insert_panel(unsigned index, const uie::splitter_item_t* p_item) override;
+    void insert_panel(size_t index, const uie::splitter_item_t* p_item) override;
 
-    void remove_panel(unsigned index) override;
-    void replace_panel(unsigned index, const uie::splitter_item_t* p_item) override;
+    void remove_panel(size_t index) override;
+    void replace_panel(size_t index, const uie::splitter_item_t* p_item) override;
 
-    unsigned get_panel_count() const override;
-    uie::splitter_item_t* get_panel(unsigned index) const override;
+    size_t get_panel_count() const override;
+    uie::splitter_item_t* get_panel(size_t index) const override;
     enum { stream_version_current = 0 };
 
     void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
@@ -31,12 +31,12 @@ public:
 
     bool is_index_valid(unsigned index) const;
 
-    bool get_config_item_supported(unsigned index, const GUID& p_type) const override;
+    bool get_config_item_supported(size_t index, const GUID& p_type) const override;
 
     bool get_config_item(
-        unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const override;
+        size_t index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const override;
 
-    bool set_config_item(unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
+    bool set_config_item(size_t index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
 
     class FlatSplitterPanelHost : public ui_extension::window_host_ex {
         service_ptr_t<FlatSplitterPanel> m_this;

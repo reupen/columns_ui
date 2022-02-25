@@ -2,7 +2,7 @@
 #include "playlist_view_tfhooks.h"
 
 bool PlaylistNameTitleformatHook::process_field(
-    titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
 {
     if (p_name_length && *p_name == '_') {
         p_name++;
@@ -75,7 +75,7 @@ int date_to_julian(const SYSTEMTIME* st)
 }
 
 bool DateTitleformatHook::process_field(
-    titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
 
@@ -148,7 +148,7 @@ bool DateTitleformatHook::process_field(
 }
 
 bool SplitterTitleformatHook::process_field(
-    titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
     if (m_hook1 && m_hook1->process_field(p_out, p_name, p_name_length, p_found_flag))
@@ -166,7 +166,7 @@ bool SplitterTitleformatHook::process_field(
     return false;
 }
 
-bool SplitterTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+bool SplitterTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
     titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;
@@ -185,7 +185,7 @@ bool SplitterTitleformatHook::process_function(titleformat_text_out* p_out, cons
     return false;
 }
 
-bool DateTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+bool DateTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
     titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;

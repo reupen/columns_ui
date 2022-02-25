@@ -40,7 +40,7 @@ CellStyleData CellStyleData::g_create_default()
 }
 
 bool StyleTitleformatHook::process_field(
-    titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag)
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
 {
     p_found_flag = false;
     {
@@ -142,19 +142,19 @@ bool StyleTitleformatHook::process_field(
     return false;
 }
 
-bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
     titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;
     if (!stricmp_utf8_ex(p_name, p_name_length, "set_style", pfc_infinite)) {
         if (p_params->get_param_count() >= 2) {
             const char* name;
-            unsigned name_length;
+            size_t name_length;
             p_params->get_param(0, name, name_length);
             if (!stricmp_utf8_ex(name, name_length, "text", pfc_infinite)) {
                 {
                     const char* value;
-                    unsigned value_length;
+                    size_t value_length;
                     p_params->get_param(1, value, value_length);
                     if (value_length && *value == 3) {
                         value++;
@@ -171,7 +171,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                 if (p_params->get_param_count() >= 3) {
                     {
                         const char* value;
-                        unsigned value_length;
+                        size_t value_length;
                         p_params->get_param(2, value, value_length);
                         if (value_length && *value == 3) {
                             value++;
@@ -182,7 +182,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                 }
                 if (p_params->get_param_count() >= 4) {
                     const char* value;
-                    unsigned value_length;
+                    size_t value_length;
                     p_params->get_param(3, value, value_length);
                     if (value_length && *value == 3) {
                         value++;
@@ -194,7 +194,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
             } else if (!stricmp_utf8_ex(name, name_length, "back", pfc_infinite)) {
                 {
                     const char* value;
-                    unsigned value_length;
+                    size_t value_length;
                     p_params->get_param(1, value, value_length);
                     if (value_length && *value == 3) {
                         value++;
@@ -212,7 +212,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                 if (p_params->get_param_count() >= 3) {
                     {
                         const char* value;
-                        unsigned value_length;
+                        size_t value_length;
                         p_params->get_param(2, value, value_length);
                         if (value_length && *value == 3) {
                             value++;
@@ -222,7 +222,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                     }
                     if (p_params->get_param_count() >= 4) {
                         const char* value;
-                        unsigned value_length;
+                        size_t value_length;
                         p_params->get_param(3, value, value_length);
                         if (value_length && *value == 3) {
                             value++;
@@ -238,13 +238,13 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                 p_side += 6;
                 if (!stricmp_utf8_ex(p_side, name_length - 6, "left", pfc_infinite)) {
                     const char* value;
-                    unsigned value_length;
+                    size_t value_length;
                     p_params->get_param(1, value, value_length);
                     p_colours.use_frame_left = (value_length == 1 && *value == '1');
                     if (p_params->get_param_count() >= 3) {
                         {
                             const char* value;
-                            unsigned value_length;
+                            size_t value_length;
                             p_params->get_param(2, value, value_length);
                             if (value_length && *value == 3) {
                                 value++;
@@ -255,13 +255,13 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                     }
                 } else if (!stricmp_utf8_ex(p_side, name_length - 6, "top", pfc_infinite)) {
                     const char* value;
-                    unsigned value_length;
+                    size_t value_length;
                     p_params->get_param(1, value, value_length);
                     p_colours.use_frame_top = (value_length == 1 && *value == '1');
                     if (p_params->get_param_count() >= 3) {
                         {
                             const char* value;
-                            unsigned value_length;
+                            size_t value_length;
                             p_params->get_param(2, value, value_length);
                             if (value_length && *value == 3) {
                                 value++;
@@ -272,13 +272,13 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                     }
                 } else if (!stricmp_utf8_ex(p_side, name_length - 6, "right", pfc_infinite)) {
                     const char* value;
-                    unsigned value_length;
+                    size_t value_length;
                     p_params->get_param(1, value, value_length);
                     p_colours.use_frame_right = (value_length == 1 && *value == '1');
                     if (p_params->get_param_count() >= 3) {
                         {
                             const char* value;
-                            unsigned value_length;
+                            size_t value_length;
                             p_params->get_param(2, value, value_length);
                             if (value_length && *value == 3) {
                                 value++;
@@ -289,13 +289,13 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
                     }
                 } else if (!stricmp_utf8_ex(p_side, name_length - 6, "bottom", pfc_infinite)) {
                     const char* value;
-                    unsigned value_length;
+                    size_t value_length;
                     p_params->get_param(1, value, value_length);
                     p_colours.use_frame_bottom = (value_length == 1 && *value == '1');
                     if (p_params->get_param_count() >= 3) {
                         {
                             const char* value;
-                            unsigned value_length;
+                            size_t value_length;
                             p_params->get_param(2, value, value_length);
                             if (value_length && *value == 3) {
                                 value++;
@@ -312,7 +312,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
     } else if (!stricmp_utf8_ex(p_name, p_name_length, "calculate_blend_target", pfc_infinite)) {
         if (p_params->get_param_count() == 1) {
             const char* p_val;
-            unsigned p_val_length;
+            size_t p_val_length;
             p_params->get_param(0, p_val, p_val_length);
 
             int colour = mmh::strtoul_n(p_val, p_val_length, 0x10);
@@ -330,8 +330,8 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
         if (p_params->get_param_count() == 3) {
             const char* p_val;
             const char* p_val2;
-            unsigned p_val_length;
-            unsigned p_val2_length;
+            size_t p_val_length;
+            size_t p_val2_length;
             p_params->get_param(0, p_val, p_val_length);
             int colour = mmh::strtoul_n(p_val, p_val_length, 0x10);
             p_params->get_param(1, p_val2, p_val2_length);

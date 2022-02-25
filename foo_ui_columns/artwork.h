@@ -110,8 +110,8 @@ private:
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        unsigned get_children_count() const override;
-        void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
+        size_t get_children_count() const override;
+        void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeSourcePopup(ArtworkPanel* p_wnd);
     };
 
@@ -120,8 +120,8 @@ private:
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        unsigned get_children_count() const override;
-        void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
+        size_t get_children_count() const override;
+        void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeTypePopup(ArtworkPanel* p_wnd);
     };
     class MenuNodePreserveAspectRatio : public ui_extension::menu_node_command_t {
@@ -173,7 +173,7 @@ private:
     wil::unique_hbitmap m_bitmap;
     size_t m_selected_artwork_type_index{0};
     std::optional<size_t> m_artwork_type_override_index{};
-    size_t m_track_mode;
+    uint32_t m_track_mode;
     bool m_preserve_aspect_ratio{true};
     bool m_lock_type{false};
     bool m_dynamic_artwork_pending{};

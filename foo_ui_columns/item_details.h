@@ -104,9 +104,9 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
 class TitleformatHookChangeFont : public titleformat_hook {
 public:
     bool process_field(
-        titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
+        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
 
-    bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
     TitleformatHookChangeFont(const LOGFONT& lf);
@@ -184,8 +184,8 @@ public:
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        unsigned get_children_count() const override;
-        void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
+        size_t get_children_count() const override;
+        void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeSourcePopup(ItemDetails* p_wnd);
     };
 
@@ -206,8 +206,8 @@ public:
 
     public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        unsigned get_children_count() const override;
-        void get_child(unsigned p_index, uie::menu_node_ptr& p_out) const override;
+        size_t get_children_count() const override;
+        void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
         MenuNodeAlignmentPopup(ItemDetails* p_wnd);
     };
 
@@ -368,7 +368,7 @@ private:
     bool m_full_file_info_requested{};
     bool m_callback_registered{false};
     bool m_nowplaying_active{false};
-    t_size m_tracking_mode;
+    uint32_t m_tracking_mode;
 
     bool m_font_change_info_valid{false};
     FontChanges m_font_changes;
@@ -386,9 +386,9 @@ private:
     std::wstring m_current_display_text;
     titleformat_object::ptr m_to;
 
-    t_size m_horizontal_alignment;
-    t_size m_vertical_alignment;
-    t_size m_edge_style;
+    uint32_t m_horizontal_alignment;
+    uint32_t m_vertical_alignment;
+    uint32_t m_edge_style;
     bool m_hscroll;
     bool m_word_wrapping;
 
@@ -421,7 +421,7 @@ private:
     void kill_timer();
     void start_timer();
     void on_timer();
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 };
 
 } // namespace cui::panels::item_details

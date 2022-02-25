@@ -42,7 +42,7 @@ class FontsDataSet : public fcl::dataset {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
             t_size count = g_font_manager_data.m_entries.get_count();
-            mem.write_lendian_t(count, p_abort);
+            mem.write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
             for (t_size i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
                 g_font_manager_data.m_entries[i]->_export(&mem2, p_abort);
@@ -78,8 +78,7 @@ class FontsDataSet : public fcl::dataset {
             case identifier_client_entries: {
                 fbh::fcl::Reader reader2(&data_reader, data.get_size(), p_abort);
 
-                t_size count;
-                reader2.read_item(count);
+                const auto count = reader2.read_item<uint32_t>();
 
                 g_font_manager_data.m_entries.remove_all();
                 g_font_manager_data.m_entries.set_count(count);

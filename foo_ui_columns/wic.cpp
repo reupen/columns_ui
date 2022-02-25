@@ -15,7 +15,8 @@ wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_data(const void* data, siz
 {
     auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
 
-    const wil::com_ptr_t<IStream> stream = new mmh::IStreamMemblock(static_cast<const uint8_t*>(data), size);
+    wil::com_ptr_t<IStream> stream;
+    stream.attach(SHCreateMemStream(static_cast<const BYTE*>(data), size));
 
     wil::com_ptr_t<IWICBitmapDecoder> bitmap_decoder;
     check_hresult(imaging_factory->CreateDecoderFromStream(

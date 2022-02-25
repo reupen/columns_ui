@@ -215,7 +215,7 @@ void ConfigLayout::Preset::write(stream_writer* out, abort_callback& p_abort)
 {
     out->write_lendian_t(m_guid, p_abort);
     out->write_string(m_name.get_ptr(), p_abort);
-    out->write_lendian_t(m_val.get_size(), p_abort);
+    out->write_lendian_t(gsl::narrow<uint32_t>(m_val.get_size()), p_abort);
     out->write(m_val.get_ptr(), m_val.get_size(), p_abort);
 }
 void ConfigLayout::Preset::read(stream_reader* stream, abort_callback& p_abort)
@@ -370,20 +370,20 @@ void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
             stream_writer_memblock conf;
             item->get_panel_config(&conf);
             out->write_string(m_presets[n].m_name.get_ptr(), p_abort);
-            out->write_lendian_t(conf.m_data.get_size(), p_abort);
+            out->write_lendian_t(gsl::narrow<uint32_t>(conf.m_data.get_size()), p_abort);
             out->write(conf.m_data.get_ptr(), conf.m_data.get_size(), p_abort);
         }
     }
 }
 
-void ConfigLayout::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_reader->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
         m_presets.remove_all();
         p_reader->read_lendian_t(m_active, p_abort);
-        unsigned count;
+        uint32_t count;
         p_reader->read_lendian_t(count, p_abort);
         for (unsigned n = 0; n < count; n++) {
             Preset temp;

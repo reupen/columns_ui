@@ -26,7 +26,7 @@ HWND TabFonts::create(HWND wnd)
 
 void TabFonts::apply() {}
 
-BOOL TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -107,7 +107,7 @@ void TabFonts::on_font_changed()
     if (m_element_api.is_valid())
         m_element_api->on_font_changed();
     else {
-        t_size index_element = ComboBox_GetCurSel(m_wnd_colours_element);
+        const auto index_element = ComboBox_GetCurSel(m_wnd_colours_element);
         if (index_element <= 1) {
             g_font_manager_data.g_on_common_font_changed(1 << index_element);
             t_size count = m_fonts_client_list.get_count();

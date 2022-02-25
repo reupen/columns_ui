@@ -16,14 +16,14 @@ public:
     void write(stream_writer* p_stream, abort_callback& p_abort)
     {
         p_stream->write_string(string.get_ptr(), p_abort);
-        p_stream->write_lendian_t((t_size&)filter_type, p_abort);
+        p_stream->write_lendian_t(reinterpret_cast<uint32_t&>(filter_type), p_abort);
         p_stream->write_string(filter_playlists.get_ptr(), p_abort);
     }
-    void read(t_size version, stream_reader* p_stream, abort_callback& p_abort)
+    void read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort)
     {
         p_stream->read_string(string, p_abort);
         if (version >= 1) {
-            p_stream->read_lendian_t((t_size&)filter_type, p_abort);
+            p_stream->read_lendian_t(reinterpret_cast<uint32_t&>(filter_type), p_abort);
             p_stream->read_string(filter_playlists, p_abort);
         }
     }
@@ -53,20 +53,18 @@ private:
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override
     {
         t_size count = m_groups.get_count();
-        p_stream->write_lendian_t(t_size(stream_version_current), p_abort);
-        p_stream->write_lendian_t(count, p_abort);
+        p_stream->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
+        p_stream->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
         for (t_size i = 0; i < count; i++)
             m_groups[i].write(p_stream, p_abort);
     }
 
     void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override
     {
-        t_size count;
-        t_size version;
-        p_stream->read_lendian_t(version, p_abort);
+        const auto version = p_stream->read_lendian_t<uint32_t>(p_abort);
         if (version <= stream_version_current) {
             m_groups.remove_all();
-            p_stream->read_lendian_t(count, p_abort);
+            const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
             m_groups.set_count(count);
             for (t_size i = 0; i < count; i++)
                 m_groups[i].read(version, p_stream, p_abort);

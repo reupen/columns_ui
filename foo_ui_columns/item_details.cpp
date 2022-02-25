@@ -109,8 +109,7 @@ bool ItemDetails::show_config_popup(HWND wnd_parent)
 void ItemDetails::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
-        t_size version;
-        p_reader->read_lendian_t(version, p_abort);
+        const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
         if (version <= stream_version_current) {
             p_reader->read_string(m_script, p_abort);
             p_reader->read_lendian_t(m_tracking_mode, p_abort);
@@ -129,7 +128,7 @@ void ItemDetails::set_config(stream_reader* p_reader, t_size p_size, abort_callb
 
 void ItemDetails::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
-    p_writer->write_lendian_t((t_size)stream_version_current, p_abort);
+    p_writer->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
     p_writer->write_string(m_script, p_abort);
     p_writer->write_lendian_t(m_tracking_mode, p_abort);
     p_writer->write_lendian_t(m_hscroll, p_abort);
@@ -1132,12 +1131,12 @@ ItemDetails::MenuNodeAlignmentPopup::MenuNodeAlignmentPopup(ItemDetails* p_wnd)
     m_items.add_item(new MenuNodeAlignment(p_wnd, 2));
 }
 
-void ItemDetails::MenuNodeAlignmentPopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemDetails::MenuNodeAlignmentPopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ItemDetails::MenuNodeAlignmentPopup::get_children_count() const
+size_t ItemDetails::MenuNodeAlignmentPopup::get_children_count() const
 {
     return m_items.get_count();
 }
@@ -1194,12 +1193,12 @@ ItemDetails::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemDetails* p_wnd)
     m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
 }
 
-void ItemDetails::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemDetails::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ItemDetails::MenuNodeSourcePopup::get_children_count() const
+size_t ItemDetails::MenuNodeSourcePopup::get_children_count() const
 {
     return m_items.get_count();
 }

@@ -401,7 +401,7 @@ bool process_keydown(UINT msg, LPARAM lp, WPARAM wp, bool playlist, bool keyb)
 class MainWindowPlaylistCallback : public playlist_callback_single_static {
 public:
     void on_items_added(
-        unsigned start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
+        size_t start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
         override // inside any of these methods, you can call IPlaylist APIs to get exact info about what happened (but
                  // only methods that read playlist state, not those that modify it)
     {
@@ -409,12 +409,12 @@ public:
             cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_count);
         }
     }
-    void on_items_reordered(const unsigned* order, unsigned count) override {
+    void on_items_reordered(const size_t* order, size_t count) override {
     } // changes selection too; doesnt actually change set of items that are selected or
       // item having focus, just changes their order
-    void FB2KAPI on_items_removing(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override {
+    void FB2KAPI on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {
     } // called before actually removing them
-    void FB2KAPI on_items_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count) override
+    void FB2KAPI on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
     {
         if (cui::main_window.get_wnd()) {
             cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_count);
@@ -426,7 +426,7 @@ public:
             cui::status_bar::set_part_sizes(cui::status_bar::t_part_length | cui::status_bar::t_part_count);
         }
     }
-    void on_item_focus_change(unsigned from, unsigned to) override {
+    void on_item_focus_change(size_t from, size_t to) override {
     } // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
     void FB2KAPI on_items_modified(const bit_array& p_mask) override {}
     void FB2KAPI on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override
@@ -436,7 +436,7 @@ public:
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
     {
     }
-    void on_item_ensure_visible(unsigned idx) override {}
+    void on_item_ensure_visible(size_t idx) override {}
 
     void on_playlist_switch() override
     {
@@ -444,7 +444,7 @@ public:
             set_part_sizes(cui::status_bar::t_parts_all);
         }
     }
-    void on_playlist_renamed(const char* p_new_name, unsigned p_new_name_len) override {}
+    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
     void on_playlist_locked(bool p_locked) override
     {
         if (cui::main_window.get_wnd())
@@ -453,7 +453,7 @@ public:
     }
 
     void on_default_format_changed() override {}
-    void on_playback_order_changed(unsigned p_new_index) override {}
+    void on_playback_order_changed(size_t p_new_index) override {}
 
     unsigned get_flags() override { return flag_all; }
 };

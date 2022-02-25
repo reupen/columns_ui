@@ -74,7 +74,7 @@ HWND TabDarkMode::create(HWND wnd)
         wnd, IDD_PREFS_DARK_MODE, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
-BOOL TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {

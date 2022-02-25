@@ -385,13 +385,14 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 for (unsigned n = 0; n < count_exts; n++) {
                     if (!n || uStringCompare(moo[n - 1].category, moo[n].category)) {
                         if (n)
-                            uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, moo[n - 1].category);
+                            uAppendMenu(
+                                menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), moo[n - 1].category);
                         popup = CreatePopupMenu();
                     }
                     uAppendMenu(popup, (MF_STRING | (rebar::g_rebar_window->check_band(moo[n].guid) ? MF_CHECKED : 0)),
                         IDM_BASE + n, moo[n].name);
                     if (n == count_exts - 1)
-                        uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, moo[n].category);
+                        uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), moo[n].category);
                     IDM_EXT_BASE++;
                 }
 
@@ -613,7 +614,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                             track.release();
                             uFixAmpersandChars_v2(title, name);
 
-                            uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)menu_now_playing, name);
+                            uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_now_playing), name);
 
                             uAppendMenu(menu, MF_SEPARATOR, 0, "");
                         }

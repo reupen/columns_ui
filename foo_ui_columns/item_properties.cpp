@@ -126,18 +126,17 @@ void ItemProperties::set_config(stream_reader* p_reader, t_size p_size, abort_ca
     if (!p_size)
         return;
 
-    t_size version;
-    p_reader->read_lendian_t(version, p_abort);
+    const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
 
     if (version > config_version_current)
         return;
 
-    t_size field_count;
+    uint32_t field_count;
     p_reader->read_lendian_t(field_count, p_abort);
     m_fields.remove_all();
     m_fields.set_count(field_count);
 
-    for (t_size i = 0; i < field_count; i++) {
+    for (uint32_t i = 0; i < field_count; i++) {
         p_reader->read_string(m_fields[i].m_name_friendly, p_abort);
         p_reader->read_string(m_fields[i].m_name, p_abort);
     }
@@ -169,9 +168,9 @@ void ItemProperties::set_config(stream_reader* p_reader, t_size p_size, abort_ca
 
 void ItemProperties::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
-    p_writer->write_lendian_t(t_size(config_version_current), p_abort);
+    p_writer->write_lendian_t(static_cast<uint32_t>(config_version_current), p_abort);
     t_size count = m_fields.get_count();
-    p_writer->write_lendian_t(count, p_abort);
+    p_writer->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
     for (t_size i = 0; i < count; i++) {
         p_writer->write_string(m_fields[i].m_name_friendly, p_abort);
         p_writer->write_string(m_fields[i].m_name, p_abort);
@@ -791,7 +790,7 @@ void ItemProperties::notify_save_inline_edit(const char* value)
     m_edit_handles.remove_all();
 }
 
-bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
     t_size indices_count = indices.get_count();
@@ -837,7 +836,7 @@ void ItemProperties::g_print_field(const char* field, const file_info& p_info, p
 }
 
 bool ItemProperties::notify_before_create_inline_edit(
-    const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
+    const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse)
 {
     return m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count();
 }
@@ -926,12 +925,12 @@ ItemProperties::MenuNodeSourcePopup::MenuNodeSourcePopup(ItemProperties* p_wnd)
     m_items.add_item(new MenuNodeTrackMode(p_wnd, 1));
 }
 
-void ItemProperties::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ItemProperties::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ItemProperties::MenuNodeSourcePopup::get_children_count() const
+size_t ItemProperties::MenuNodeSourcePopup::get_children_count() const
 {
     return m_items.get_count();
 }
@@ -999,12 +998,12 @@ const char* ItemProperties::MenuNodeTrackMode::get_name(t_size source)
     return "";
 }
 
-void ItemPropertiesColoursClient::on_colour_changed(t_size mask) const
+void ItemPropertiesColoursClient::on_colour_changed(uint32_t mask) const
 {
     ItemProperties::g_redraw_all();
 }
 
-void ItemPropertiesColoursClient::on_bool_changed(t_size mask) const
+void ItemPropertiesColoursClient::on_bool_changed(uint32_t mask) const
 {
     if (mask & colours::bool_flag_dark_mode_enabled)
         ItemProperties::s_on_dark_mode_status_change();

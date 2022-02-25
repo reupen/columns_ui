@@ -34,7 +34,7 @@ void PreferencesTabsHost::make_child()
     // UpdateWindow(child);
 }
 
-BOOL PreferencesTabsHost::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR PreferencesTabsHost::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     PreferencesTabsHost* p_instance;
     if (msg == WM_INITDIALOG) {
@@ -47,14 +47,14 @@ BOOL PreferencesTabsHost::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 namespace cui::prefs {
 HWND PreferencesTabHelper::create(
-    HWND wnd, UINT id, std::function<BOOL(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback)
+    HWND wnd, UINT id, std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback)
 {
     m_on_message_callback = std::move(on_message_callback);
     return CreateDialogParam(
         mmh::get_current_instance(), MAKEINTRESOURCE(id), wnd, s_on_message, reinterpret_cast<LPARAM>(this));
 }
 
-BOOL PreferencesTabHelper::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR PreferencesTabHelper::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     PreferencesTabHelper* p_instance;
     if (msg == WM_INITDIALOG) {
@@ -66,7 +66,7 @@ BOOL PreferencesTabHelper::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
     return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
 }
 
-BOOL PreferencesTabHelper::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR PreferencesTabHelper::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:
@@ -126,7 +126,7 @@ void PreferencesTabsHost::show_tab(const char* tab_name)
     ui_control::get()->show_preferences(get_guid());
 }
 
-BOOL PreferencesTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR PreferencesTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {

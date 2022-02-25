@@ -635,7 +635,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         uAppendMenu(menu, (MF_STRING), IDM_DES, "Sort &descending");
         uAppendMenu(selection_menu, (MF_STRING), IDM_SEL_ASC, "Sort a&scending");
         uAppendMenu(selection_menu, (MF_STRING), IDM_SEL_DES, "Sort d&escending");
-        uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)selection_menu, "Se&lection");
+        uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(selection_menu), "Se&lection");
         uAppendMenu(menu, (MF_SEPARATOR), 0, "");
         uAppendMenu(menu, (MF_STRING), IDM_EDIT_COLUMN, "&Edit this column");
         uAppendMenu(menu, (MF_SEPARATOR), 0, "");
@@ -1179,14 +1179,14 @@ PlaylistViewItemFontClient::factory<PlaylistViewItemFontClient> g_font_client_ng
 PlaylistViewHeaderFontClient::factory<PlaylistViewHeaderFontClient> g_font_header_client_ngpv;
 PlaylistViewGroupFontClient::factory<PlaylistViewGroupFontClient> g_font_group_header_client_ngpv;
 
-void ColoursClient::on_colour_changed(t_size mask) const
+void ColoursClient::on_colour_changed(uint32_t mask) const
 {
     if (cfg_show_artwork && cfg_artwork_reflection && (mask & (colours::colour_flag_background)))
         PlaylistView::g_flush_artwork();
     PlaylistView::g_update_all_items();
 }
 
-void ColoursClient::on_bool_changed(t_size mask) const
+void ColoursClient::on_bool_changed(uint32_t mask) const
 {
     if (mask & colours::bool_flag_dark_mode_enabled)
         PlaylistView::s_on_dark_mode_status_change();

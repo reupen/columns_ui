@@ -27,7 +27,7 @@ public:
         }
         return nullptr;
     }
-    void add_item(const char* p_name, unsigned p_name_length, const char* p_value, unsigned p_value_length)
+    void add_item(const char* p_name, size_t p_name_length, const char* p_value, unsigned p_value_length)
     {
         auto var = new GlobalVariable(p_name, p_name_length, p_value, p_value_length);
         ptr_list_t<GlobalVariable>::add_item(var);
@@ -41,13 +41,13 @@ class SetGlobalTitleformatHook : public titleformat_hook {
 
 public:
     bool process_field(
-        titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override
+        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override
     {
         p_found_flag = false;
         return false;
     }
 
-    bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override
     {
         p_found_flag = false;
@@ -56,7 +56,7 @@ public:
             case 2: {
                 const char* name;
                 const char* value;
-                unsigned name_length, value_length;
+                size_t name_length, value_length;
                 p_params->get_param(0, name, name_length);
                 p_params->get_param(1, value, value_length);
                 p_vars.add_item(name, name_length, value, value_length);
@@ -71,7 +71,7 @@ public:
             switch (p_params->get_param_count()) {
             case 1: {
                 const char* name;
-                unsigned name_length;
+                size_t name_length;
                 p_params->get_param(0, name, name_length);
                 const char* ptr = p_vars.find_by_name(name, name_length);
                 if (ptr) {
@@ -97,8 +97,8 @@ class DateTitleformatHook : public titleformat_hook {
 
 public:
     bool process_field(
-        titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
-    bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
+    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
     DateTitleformatHook(const SYSTEMTIME* st = nullptr) : p_st(st) {}
 };
@@ -114,8 +114,8 @@ public:
     {
     }
     bool process_field(
-        titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
-    bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
+    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
 private:
@@ -129,9 +129,9 @@ class PlaylistNameTitleformatHook : public titleformat_hook {
 public:
     void initialise();
     bool process_field(
-        titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
+        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
 
-    bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override
     {
         return false;

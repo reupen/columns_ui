@@ -3,7 +3,7 @@
 
 namespace cui::panels::item_properties {
 
-BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -47,7 +47,7 @@ BOOL CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
     case WM_CTLCOLORSTATIC:
         SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
         SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return (BOOL)GetSysColorBrush(COLOR_WINDOW);
+        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
     case WM_NOTIFY: {
         auto lpnm = (LPNMHDR)lp;
         switch (lpnm->idFrom) {
@@ -185,7 +185,7 @@ ItemPropertiesConfig::ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size e
 {
 }
 
-BOOL CALLBACK ItemPropertiesConfig::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR CALLBACK ItemPropertiesConfig::g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     ItemPropertiesConfig* p_data = nullptr;
     if (msg == WM_INITDIALOG) {

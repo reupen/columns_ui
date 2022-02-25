@@ -2,8 +2,8 @@
 #include "main_window.h"
 
 class AlwaysOnTopNotifyReceiver : public config_object_notify {
-    unsigned get_watched_object_count() override { return 1; }
-    GUID get_watched_object(unsigned p_index) override { return standard_config_objects::bool_ui_always_on_top; }
+    size_t get_watched_object_count() override { return 1; }
+    GUID get_watched_object(size_t p_index) override { return standard_config_objects::bool_ui_always_on_top; }
     void on_watched_object_changed(const service_ptr_t<config_object>& p_object) override
     {
         if (cui::main_window.get_wnd()) {

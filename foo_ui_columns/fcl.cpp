@@ -59,7 +59,7 @@ public:
         }
     }
 
-    BOOL CALLBACK FCLDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK FCLDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
@@ -291,8 +291,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             p_file->read_lendian_t(mode, p_abort);
         {
             pfc::list_t<bool> mask;
-            t_size count;
-            p_file->read_lendian_t(count, p_abort);
+            const auto count = p_file->read_lendian_t<uint32_t>(p_abort);
             for (t_size i = 0; i < count; i++) {
                 PanelInfo info;
                 p_file->read_lendian_t(info.guid, p_abort);
@@ -322,8 +321,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             }
         }
         {
-            t_size count;
-            p_file->read_lendian_t(count, p_abort);
+            const auto count = p_file->read_lendian_t<uint32_t>(p_abort);
 
             pfc::array_t<pfc::array_t<t_uint32>> panel_indices;
             panel_indices.set_count(count);
@@ -342,8 +340,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                 for (t_uint32 j = 0; j < pcount; j++)
                     p_file->read_lendian_t(panel_indices[i][j], p_abort);
                 // pfc::array_t<t_uint8> data;
-                t_size size;
-                p_file->read_lendian_t(size, p_abort);
+                const auto size = p_file->read_lendian_t<uint32_t>(p_abort);
                 datasets[i].data.set_size(size);
                 p_file->read(datasets[i].data.get_ptr(), size, p_abort);
             }
@@ -470,7 +467,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
                     mem.write_string(name, p_abort);
                     stream_writer_memblock writer;
                     export_items[i]->get_data(&writer, mode, feeds[i], p_abort);
-                    t_size pcount = feeds[i].get_count();
+                    const auto pcount = gsl::narrow<uint32_t>(feeds[i].get_count());
                     mem.write_lendian_t(pcount, p_abort);
                     for (t_size j = 0; j < pcount; j++) {
                         t_uint32 temp = feedback.find_or_add_guid(feeds[i][j]);
@@ -485,7 +482,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
 
         {
             t_size pcount = feedback.get_count();
-            p_file->write_lendian_t(pcount, p_abort);
+            p_file->write_lendian_t(gsl::narrow<uint32_t>(pcount), p_abort);
             for (t_size j = 0; j < pcount; j++) {
                 uie::window_ptr ptr;
                 pfc::string8 name;
@@ -512,7 +509,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
             }*/
         }
 
-        p_file->write_lendian_t(actualtotal, p_abort);
+        p_file->write_lendian_t(gsl::narrow<uint32_t>(actualtotal), p_abort);
         p_file->write(mem.m_data.get_ptr(), mem.m_data.get_size(), p_abort);
     } catch (const pfc::exception& ex) {
         abort_callback_impl p_abort;

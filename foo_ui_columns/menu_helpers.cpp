@@ -170,7 +170,7 @@ void get_context_menu_item_parent_names(const contextmenu_item::ptr& menu_item, 
 std::list<std::string> get_context_menu_item_name_parts(GUID p_guid, GUID p_subcommand, bool short_form)
 {
     contextmenu_item::ptr menu_item;
-    size_t menu_item_index{};
+    uint32_t menu_item_index{};
 
     if (!menu_item_resolver::g_resolve_context_command(p_guid, menu_item, menu_item_index)) {
         return {"Unknown command"};

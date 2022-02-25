@@ -107,24 +107,6 @@ public:
         }
     }
 
-    void set_widths(ColumnListCRef entries)
-    {
-        // remove_all();
-        t_size count = get_count();
-        if (count == entries.get_count())
-            for (t_size i = 0; i < count; i++)
-                (*this)[i]->width = entries[i]->width;
-    }
-
-    void set_widths(const list_base_const_t<t_size>& widths)
-    {
-        // remove_all();
-        t_size count = get_count();
-        if (count == widths.get_count())
-            for (t_size i = 0; i < count; i++)
-                (*this)[i]->width = widths[i];
-    }
-
     bool move_up(t_size idx);
     bool move_down(t_size idx);
     bool move(t_size from, t_size to);
@@ -140,7 +122,7 @@ public:
 
 protected:
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
-    void set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort) override;
+    void set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort) override;
 };
 
 extern ConfigColumns g_columns;

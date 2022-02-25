@@ -88,7 +88,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CTLCOLORSTATIC:
         SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
         SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return (BOOL)GetSysColorBrush(COLOR_WINDOW);
+        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
     case WM_PAINT:
         uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDCANCEL));
         return TRUE;

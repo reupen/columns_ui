@@ -220,7 +220,7 @@ public:
         void export_to_stream(stream_writer* p_writer, bool b_paths, abort_callback& p_abort);
         void import_from_stream(stream_reader* p_reader, bool add, abort_callback& p_abort);
 
-        static BOOL CALLBACK g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+        static INT_PTR CALLBACK g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
         BOOL ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
         void on_selection_change(t_size index);
@@ -230,7 +230,7 @@ public:
         ConfigParam();
     };
 
-    static BOOL CALLBACK ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static INT_PTR CALLBACK ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     bool have_config_popup() const override { return true; }
     bool show_config_popup(HWND wnd_parent) override;
@@ -326,7 +326,7 @@ public:
     void get_data(CommandPickerParam& p_data) const;
     void initialise(HWND wnd);
     void deinitialise(HWND wnd);
-    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 };
 
 } // namespace cui::toolbars::buttons

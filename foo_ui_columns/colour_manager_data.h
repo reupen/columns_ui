@@ -55,9 +55,9 @@ public:
     void register_common_callback(cui::colours::common_callback* p_callback);
     void deregister_common_callback(cui::colours::common_callback* p_callback);
 
-    void g_on_common_colour_changed(t_size mask);
+    void g_on_common_colour_changed(uint32_t mask);
 
-    void g_on_common_bool_changed(t_size mask);
+    void g_on_common_bool_changed(uint32_t mask);
 
     std::set<cui::colours::common_callback*> m_callbacks;
 };

@@ -104,8 +104,8 @@ class StyleTitleformatHook : public titleformat_hook {
 
 public:
     bool process_field(
-        titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override;
-    bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+        titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
+    bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
     StyleTitleformatHook(CellStyleData& vars, t_size index, bool b_is_group = false)

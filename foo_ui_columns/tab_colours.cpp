@@ -27,7 +27,7 @@ HWND TabColours::create(HWND wnd)
 
 void TabColours::apply() {}
 
-BOOL TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {

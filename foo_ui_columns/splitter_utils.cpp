@@ -70,11 +70,11 @@ pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_full_v3_i
     writer.write_string(title.get_ptr(), aborter);
 
     auto panel_data = item->get_panel_config_to_array(true);
-    writer.write_lendian_t(panel_data.get_size(), aborter);
+    writer.write_lendian_t(gsl::narrow<uint32_t>(panel_data.get_size()), aborter);
     writer.write(panel_data.get_ptr(), panel_data.get_size(), aborter);
 
     writer.write_lendian_t(item->m_extra_data_format_id, aborter);
-    writer.write_lendian_t(item->m_extra_data.get_size(), aborter);
+    writer.write_lendian_t(gsl::narrow<uint32_t>(item->m_extra_data.get_size()), aborter);
     writer.write(item->m_extra_data.get_ptr(), item->m_extra_data.get_size(), aborter);
 
     return writer.m_data;

@@ -22,11 +22,11 @@ public:
         set_columns({{"Name", client_width / 3}, {"Field", client_width * 2 / 3}});
     }
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override
+        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override
     {
         return column <= 1 && indices.get_count() == 1;
     }
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override
     {
         t_size indices_count = indices.get_count();
@@ -102,7 +102,7 @@ public:
         m_initialising = false;
     }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
@@ -251,7 +251,7 @@ public:
             wnd_show_sort_indicators, cui::panels::filter::cfg_show_sort_indicators ? BST_CHECKED : BST_UNCHECKED);
     }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG:
@@ -350,7 +350,7 @@ public:
         Button_SetCheck(wnd_allow_sorting, cui::panels::filter::cfg_allow_sorting ? BST_CHECKED : BST_UNCHECKED);
     }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG:

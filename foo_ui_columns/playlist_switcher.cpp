@@ -29,12 +29,12 @@ const GUID PlaylistSwitcherColoursClient::g_guid
 
 PlaylistSwitcherColoursClient::factory<PlaylistSwitcherColoursClient> g_appearance_client_ps_impl;
 
-void PlaylistSwitcherColoursClient::on_colour_changed(t_size mask) const
+void PlaylistSwitcherColoursClient::on_colour_changed(uint32_t mask) const
 {
     PlaylistSwitcher::g_redraw_all();
 }
 
-void PlaylistSwitcherColoursClient::on_bool_changed(t_size mask) const
+void PlaylistSwitcherColoursClient::on_bool_changed(uint32_t mask) const
 {
     if (mask & colours::bool_flag_dark_mode_enabled) {
         PlaylistSwitcher::s_on_dark_mode_status_change();

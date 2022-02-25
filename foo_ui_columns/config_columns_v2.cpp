@@ -98,7 +98,7 @@ public:
             refresh_me(m_wnd);
         }
     }
-    static BOOL CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    static INT_PTR CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         self_t* p_data = nullptr;
         if (msg == WM_INITDIALOG) {
@@ -109,7 +109,7 @@ public:
         return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
     }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
@@ -258,7 +258,7 @@ public:
     }
 
 private:
-    static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    static INT_PTR CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         SelfType* p_data = nullptr;
         if (msg == WM_INITDIALOG) {
@@ -281,7 +281,7 @@ private:
         EnableWindow(edit_control(), m_column ? TRUE : FALSE);
     }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG:
@@ -346,7 +346,7 @@ public:
     }
 
 private:
-    static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    static INT_PTR CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         SelfType* p_data = nullptr;
         if (msg == WM_INITDIALOG) {
@@ -372,7 +372,7 @@ private:
         EnableWindow(custom_colour_control(), m_column ? TRUE : FALSE);
     }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG:
@@ -446,7 +446,7 @@ public:
     }
 
 private:
-    static BOOL CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    static INT_PTR CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         SelfType* p_data = nullptr;
         if (msg == WM_INITDIALOG) {
@@ -472,7 +472,7 @@ private:
         EnableWindow(custom_sorting_control(), m_column ? TRUE : FALSE);
     }
 
-    BOOL CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG:
@@ -539,7 +539,7 @@ void TabColumns::make_child()
 
     TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
 
-    unsigned count = 4;
+    const auto count = 4u;
     if (cfg_child_column >= count)
         cfg_child_column = 0;
 
@@ -599,7 +599,7 @@ void TabColumns::refresh_me(HWND wnd, bool init)
     ListView_SetColumnWidth(wnd_lv, 0, RECT_CX(rc_lv));
 }
 
-BOOL TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
