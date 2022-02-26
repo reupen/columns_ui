@@ -38,7 +38,7 @@ public:
         m_initialising = false;
     }
 
-    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {

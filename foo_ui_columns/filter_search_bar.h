@@ -46,14 +46,14 @@ private:
     class ColourClient : public colours::client {
         const GUID& get_client_guid() const override { return colour_client_id; }
         void get_name(pfc::string_base& p_out) const override { p_out = "Filter search"; }
-        size_t get_supported_colours() const override
+        uint32_t get_supported_colours() const override
         {
             return colours::colour_flag_text | colours::colour_flag_background;
         }
-        size_t get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; }
+        uint32_t get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; }
         bool get_themes_supported() const override { return false; }
-        void on_bool_changed(t_size mask) const override;
-        void on_colour_changed(t_size mask) const override { s_update_colours(); }
+        void on_bool_changed(uint32_t mask) const override;
+        void on_colour_changed(uint32_t mask) const override { s_update_colours(); }
     };
 
     enum { id_edit = 668, id_toolbar };

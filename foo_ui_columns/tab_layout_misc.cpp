@@ -22,7 +22,7 @@ bool LayoutMiscTab::get_help_url(pfc::string_base& p_out)
     return true;
 }
 
-BOOL LayoutMiscTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR LayoutMiscTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {

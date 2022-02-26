@@ -27,7 +27,7 @@ public:
 
     void on_size_limit_change(HWND wnd, unsigned flags) override
     {
-        unsigned index;
+        size_t index;
         if (m_this->m_panels.find_by_wnd(wnd, index)) {
             std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
             MINMAXINFO mmi{};
@@ -74,7 +74,7 @@ public:
 
         if (desired_visibility) {
             bool b_found = false;
-            unsigned idx = 0;
+            size_t idx = 0;
             b_found = (m_this->m_active_panels.find_by_wnd(wnd, idx));
 
             if (!m_this->get_host()->is_visible(m_this->get_wnd()))
@@ -91,7 +91,7 @@ public:
         if (!m_this->get_host()->is_visible(m_this->get_wnd()))
             b_usvisible = m_this->get_host()->set_window_visibility(m_this->get_wnd(), visibility);
         if (b_usvisible && visibility) {
-            unsigned idx = 0;
+            size_t idx = 0;
             if (m_this->m_active_panels.find_by_wnd(wnd, idx)) {
                 {
                     m_this->on_active_tab_changing(TabCtrl_GetCurSel(m_this->m_wnd_tabs));
@@ -112,7 +112,7 @@ public:
 
     void relinquish_ownership(HWND wnd) override
     {
-        unsigned index;
+        size_t index;
         if (m_this->m_active_panels.find_by_wnd(wnd, index)) {
             std::shared_ptr<Panel> p_ext = m_this->m_active_panels[index];
 
@@ -152,7 +152,7 @@ void TabStackPanel::get_supported_panels(
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
-bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
+bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, size_t& p_out)
 {
     unsigned count = get_count();
     for (unsigned n = 0; n < count; n++) {
@@ -231,7 +231,7 @@ void TabStackPanel::Panel::write(stream_writer* out, abort_callback& p_abort)
 {
     refresh_child_data(p_abort);
     out->write_lendian_t(m_guid, p_abort);
-    out->write_lendian_t(m_child_data.get_size(), p_abort);
+    out->write_lendian_t(gsl::narrow<uint32_t>(m_child_data.get_size()), p_abort);
     out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
     out->write_lendian_t(m_use_custom_title, p_abort);
     out->write_string(m_custom_title, p_abort);
@@ -252,7 +252,7 @@ void TabStackPanel::Panel::_export(stream_writer* out, abort_callback& p_abort)
         ptr->export_config(&child_exported_data, p_abort);
     }
     out->write_lendian_t(m_guid, p_abort);
-    out->write_lendian_t(child_exported_data.m_data.get_size(), p_abort);
+    out->write_lendian_t(gsl::narrow<uint32_t>(child_exported_data.m_data.get_size()), p_abort);
     out->write(child_exported_data.m_data.get_ptr(), child_exported_data.m_data.get_size(), p_abort);
     out->write_lendian_t(m_use_custom_title, p_abort);
     out->write_string(m_custom_title, p_abort);
@@ -304,11 +304,11 @@ unsigned TabStackPanel::get_type() const
     return ui_extension::type_layout | uie::type_splitter;
 }
 
-unsigned TabStackPanel::get_panel_count() const
+size_t TabStackPanel::get_panel_count() const
 {
     return m_panels.get_count();
 }
-uie::splitter_item_t* TabStackPanel::get_panel(unsigned index) const
+uie::splitter_item_t* TabStackPanel::get_panel(size_t index) const
 {
     if (index < m_panels.get_count()) {
         return m_panels[index]->create_splitter_item();
@@ -316,13 +316,13 @@ uie::splitter_item_t* TabStackPanel::get_panel(unsigned index) const
     return nullptr;
 }
 
-bool TabStackPanel::get_config_item_supported(unsigned index, const GUID& p_type) const
+bool TabStackPanel::get_config_item_supported(size_t index, const GUID& p_type) const
 {
     return p_type == bool_use_custom_title || p_type == string_custom_title;
 }
 
 bool TabStackPanel::get_config_item(
-    unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
+    size_t index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
 {
     if (index < m_panels.get_count()) {
         if (p_type == bool_use_custom_title) {
@@ -337,8 +337,7 @@ bool TabStackPanel::get_config_item(
     return false;
 }
 
-bool TabStackPanel::set_config_item(
-    unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
+bool TabStackPanel::set_config_item(size_t index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
 {
     if (index < m_panels.get_count()) {
         if (p_type == bool_use_custom_title) {
@@ -361,7 +360,7 @@ void TabStackPanel::set_config(stream_reader* config, t_size p_size, abort_callb
         if (version <= stream_version_current) {
             m_panels.remove_all();
 
-            config->read_lendian_t(m_active_tab, p_abort);
+            m_active_tab = config->read_lendian_t<uint32_t>(p_abort);
             unsigned count;
             config->read_lendian_t(count, p_abort);
 
@@ -377,7 +376,7 @@ void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) cons
 {
     out->write_lendian_t((t_uint32)stream_version_current, p_abort);
     unsigned count = m_panels.get_count();
-    out->write_lendian_t(m_active_tab, p_abort);
+    out->write_lendian_t(gsl::narrow<uint32_t>(m_active_tab), p_abort);
     out->write_lendian_t(count, p_abort);
     for (unsigned n = 0; n < count; n++) {
         m_panels[n]->write(out, p_abort);
@@ -388,7 +387,7 @@ void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abo
 {
     p_writer->write_lendian_t((t_uint32)stream_version_current, p_abort);
     unsigned count = m_panels.get_count();
-    p_writer->write_lendian_t(m_active_tab, p_abort);
+    p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_active_tab), p_abort);
     p_writer->write_lendian_t(count, p_abort);
     for (unsigned n = 0; n < count; n++) {
         m_panels[n]->_export(p_writer, p_abort);
@@ -402,9 +401,8 @@ void TabStackPanel::import_config(stream_reader* p_reader, t_size p_size, abort_
     if (version <= stream_version_current) {
         m_panels.remove_all();
 
-        unsigned count;
-        p_reader->read_lendian_t(m_active_tab, p_abort);
-        p_reader->read_lendian_t(count, p_abort);
+        m_active_tab = p_reader->read_lendian_t<uint32_t>(p_abort);
+        const auto count = p_reader->read_lendian_t<uint32_t>(p_abort);
 
         for (unsigned n = 0; n < count; n++) {
             auto temp = std::make_shared<Panel>();
@@ -773,7 +771,7 @@ void TabStackPanel::destroy_children()
     m_active_panels.remove_all();
 }
 
-void TabStackPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
+void TabStackPanel::insert_panel(size_t index, const uie::splitter_item_t* p_item)
 {
     if (index <= m_panels.get_count()) {
         auto temp = std::make_shared<Panel>();
@@ -785,7 +783,7 @@ void TabStackPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_i
     }
 }
 
-void TabStackPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
+void TabStackPanel::replace_panel(size_t index, const uie::splitter_item_t* p_item)
 {
     if (index < m_panels.get_count()) {
         if (get_wnd())
@@ -806,7 +804,7 @@ void TabStackPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_
     }
 }
 
-void TabStackPanel::remove_panel(unsigned index)
+void TabStackPanel::remove_panel(size_t index)
 {
     if (index < m_panels.get_count()) {
         t_size activeindex = m_active_panels.find_item(m_panels[index]);

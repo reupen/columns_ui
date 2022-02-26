@@ -59,13 +59,13 @@ public:
 } // namespace
 
 bool PlaylistView::notify_before_create_inline_edit(
-    const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse)
+    const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse)
 {
     return (!b_source_mouse || main_window::config_get_inline_metafield_edit_mode() != main_window::mode_disabled)
         && column < m_edit_fields.get_count() && strlen(m_edit_fields[column]);
 }
 
-bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
     pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
     const t_size indices_count = indices.get_count();

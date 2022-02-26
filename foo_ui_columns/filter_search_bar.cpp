@@ -90,8 +90,7 @@ uie::window_factory<FilterSearchToolbar> g_filter_search_bar;
 void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
-        t_size version;
-        p_reader->read_lendian_t(version, p_abort);
+        const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
         if (version <= config_version_current) {
             p_reader->read_lendian_t(m_show_clear_button, p_abort);
         }
@@ -99,7 +98,7 @@ void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abo
 }
 void FilterSearchToolbar::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
-    p_writer->write_lendian_t(t_size(config_version_current), p_abort);
+    p_writer->write_lendian_t(static_cast<uint32_t>(config_version_current), p_abort);
     p_writer->write_lendian_t(m_show_clear_button, p_abort);
 }
 
@@ -530,7 +529,7 @@ void FilterSearchToolbar::recalculate_dimensions()
     m_toolbar_cy = window_rect.bottom;
 }
 
-void FilterSearchToolbar::ColourClient::on_bool_changed(t_size mask) const
+void FilterSearchToolbar::ColourClient::on_bool_changed(uint32_t mask) const
 {
     if (mask & colours::bool_flag_dark_mode_enabled)
         FilterSearchToolbar::s_on_dark_mode_status_change();

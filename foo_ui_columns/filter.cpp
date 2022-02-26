@@ -22,8 +22,7 @@ bool FilterStream::is_visible()
 void FilterPanel::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
 {
     if (p_size) {
-        t_size version;
-        p_reader->read_lendian_t(version, p_abort);
+        const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
         if (version <= config_version_current) {
             p_reader->read_string(m_field_data.m_name, p_abort);
             if (version >= 1) {
@@ -39,7 +38,7 @@ void FilterPanel::set_config(stream_reader* p_reader, t_size p_size, abort_callb
 
 void FilterPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
-    p_writer->write_lendian_t(t_size(config_version_current), p_abort);
+    p_writer->write_lendian_t(static_cast<uint32_t>(config_version_current), p_abort);
     p_writer->write_string(m_field_data.m_name, p_abort);
     p_writer->write_lendian_t(m_show_search, p_abort);
     p_writer->write_lendian_t(get_sort_direction(), p_abort);
@@ -939,12 +938,12 @@ public:
 FilterItemFontClient::factory<FilterItemFontClient> g_font_client_filter;
 FilterHeaderFontClient::factory<FilterHeaderFontClient> g_font_header_client_filter;
 
-void AppearanceClient::on_colour_changed(t_size mask) const
+void AppearanceClient::on_colour_changed(uint32_t mask) const
 {
     FilterPanel::g_redraw_all();
 }
 
-void AppearanceClient::on_bool_changed(t_size mask) const
+void AppearanceClient::on_bool_changed(uint32_t mask) const
 {
     if (mask & colours::bool_flag_dark_mode_enabled)
         FilterPanel::s_on_dark_mode_status_change();

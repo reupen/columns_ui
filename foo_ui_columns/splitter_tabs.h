@@ -12,9 +12,9 @@ public:
     void get_category(pfc::string_base& p_out) const override;
     unsigned get_type() const override;
 
-    void insert_panel(unsigned index, const uie::splitter_item_t* p_item) override;
-    void remove_panel(unsigned index) override;
-    void replace_panel(unsigned index, const uie::splitter_item_t* p_item) override;
+    void insert_panel(size_t index, const uie::splitter_item_t* p_item) override;
+    void remove_panel(size_t index) override;
+    void replace_panel(size_t index, const uie::splitter_item_t* p_item) override;
 
     bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy) override
     {
@@ -47,13 +47,13 @@ public:
 
     void get_supported_panels(
         const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported) override;
-    unsigned get_panel_count() const override;
-    uie::splitter_item_t* get_panel(unsigned index) const override;
+    size_t get_panel_count() const override;
+    uie::splitter_item_t* get_panel(size_t index) const override;
 
-    bool get_config_item_supported(unsigned index, const GUID& p_type) const override;
+    bool get_config_item_supported(size_t index, const GUID& p_type) const override;
     bool get_config_item(
-        unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const override;
-    bool set_config_item(unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
+        size_t index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const override;
+    bool set_config_item(size_t index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
 
     enum { stream_version_current = 0 };
 
@@ -104,7 +104,7 @@ public:
     public:
         // bool move_up(unsigned idx);
         // bool move_down(unsigned idx);
-        bool find_by_wnd(HWND wnd, unsigned& p_out);
+        bool find_by_wnd(HWND wnd, size_t& p_out);
     };
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;

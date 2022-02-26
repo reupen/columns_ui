@@ -61,8 +61,7 @@ void FontManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, a
     if (version <= cfg_version) {
         m_common_items_entry->read(version, p_stream, p_abort);
         m_common_labels_entry->read(version, p_stream, p_abort);
-        t_size count;
-        p_stream->read_lendian_t(count, p_abort);
+        const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
         m_entries.remove_all();
         for (t_size i = 0; i < count; i++) {
             entry_ptr_t ptr = std::make_shared<Entry>();
@@ -93,8 +92,8 @@ void FontManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_ab
 
     pfc::array_t<bool> mask;
 
-    const auto count = m_entries.get_count();
-    size_t counter = 0;
+    const auto count = gsl::narrow<uint32_t>(m_entries.get_count());
+    uint32_t counter = 0;
     mask.set_count(count);
 
     for (auto&& i : ranges::views::iota(size_t{0}, count))

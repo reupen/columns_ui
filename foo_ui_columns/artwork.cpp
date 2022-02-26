@@ -56,10 +56,10 @@ const std::vector<GUID> g_artwork_types{
 void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(m_track_mode, p_abort);
-    p_writer->write_lendian_t((t_uint32)current_stream_version, p_abort);
+    p_writer->write_lendian_t(static_cast<t_uint32>(current_stream_version), p_abort);
     p_writer->write_lendian_t(m_preserve_aspect_ratio, p_abort);
     p_writer->write_lendian_t(m_lock_type, p_abort);
-    p_writer->write_lendian_t(m_selected_artwork_type_index, p_abort);
+    p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_selected_artwork_type_index), p_abort);
 }
 
 void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
@@ -566,12 +566,12 @@ public:
     const GUID& get_client_guid() const override { return g_guid_colour_client; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Artwork view"; }
 
-    t_size get_supported_colours() const override { return colours::colour_flag_background; } // bit-mask
-    t_size get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; } // bit-mask
+    uint32_t get_supported_colours() const override { return colours::colour_flag_background; } // bit-mask
+    uint32_t get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; } // bit-mask
     bool get_themes_supported() const override { return false; }
 
-    void on_colour_changed(t_size mask) const override { ArtworkPanel::g_on_colours_change(); }
-    void on_bool_changed(t_size mask) const override
+    void on_colour_changed(uint32_t mask) const override { ArtworkPanel::g_on_colours_change(); }
+    void on_bool_changed(uint32_t mask) const override
     {
         if ((mask & colours::bool_flag_dark_mode_enabled))
             ArtworkPanel::s_on_dark_mode_status_change();
@@ -615,7 +615,7 @@ void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callba
             if (version >= 2) {
                 p_reader->read_lendian_t(m_lock_type, p_abort);
                 if (version >= 3) {
-                    p_reader->read_lendian_t(m_selected_artwork_type_index, p_abort);
+                    m_selected_artwork_type_index = p_reader->read_lendian_t<uint32_t>(p_abort);
                     if (m_selected_artwork_type_index >= g_artwork_types.size()) {
                         m_selected_artwork_type_index = 0;
                     }
@@ -713,12 +713,12 @@ ArtworkPanel::MenuNodeSourcePopup::MenuNodeSourcePopup(ArtworkPanel* p_wnd)
     m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 1));
 }
 
-void ArtworkPanel::MenuNodeSourcePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ArtworkPanel::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ArtworkPanel::MenuNodeSourcePopup::get_children_count() const
+size_t ArtworkPanel::MenuNodeSourcePopup::get_children_count() const
 {
     return m_items.size();
 }
@@ -739,12 +739,12 @@ ArtworkPanel::MenuNodeTypePopup::MenuNodeTypePopup(ArtworkPanel* p_wnd)
     m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 3));
 }
 
-void ArtworkPanel::MenuNodeTypePopup::get_child(unsigned p_index, uie::menu_node_ptr& p_out) const
+void ArtworkPanel::MenuNodeTypePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
 {
     p_out = m_items[p_index].get_ptr();
 }
 
-unsigned ArtworkPanel::MenuNodeTypePopup::get_children_count() const
+size_t ArtworkPanel::MenuNodeTypePopup::get_children_count() const
 {
     return m_items.size();
 }

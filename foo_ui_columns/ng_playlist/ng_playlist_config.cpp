@@ -13,7 +13,7 @@ struct edit_view_param {
     bool b_new{};
 };
 
-static BOOL CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {

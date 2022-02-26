@@ -39,9 +39,11 @@
 
 ### Internal changes
 
-* The component is now compiled using Visual Studio 2022 17.0 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
+* The component is now compiled using Visual Studio 2022 17.1 and the /std:c++20 compiler option. [[#408](https://github.com/reupen/columns_ui/pull/408), [#409](https://github.com/reupen/columns_ui/pull/409)]
 
 * The component is now compiled using foobar2000 SDK 2022-01-04. [[#419](https://github.com/reupen/columns_ui/pull/419)]
+
+* Preliminary work towards 64-bit support was undertaken. [[#457](https://github.com/reupen/columns_ui/pull/457)]
 
 ## 1.7.0
 

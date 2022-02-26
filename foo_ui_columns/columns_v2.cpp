@@ -106,7 +106,7 @@ void ConfigColumns::get_data_raw(stream_writer* out, abort_callback& p_abort)
 
     t_size num = get_count();
 
-    out->write_lendian_t(num, p_abort);
+    out->write_lendian_t(gsl::narrow<uint32_t>(num), p_abort);
 
     for (t_size n = 0; n < num; n++)
         get_item(n)->write(out, p_abort);
@@ -122,7 +122,7 @@ void ConfigColumns::get_data_raw(stream_writer* out, abort_callback& p_abort)
     }
 }
 
-void ConfigColumns::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigColumns::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort)
 {
     list_t<PlaylistViewColumn::ptr> items;
     ColumnStreamVersion streamVersion = ColumnStreamVersion::streamVersion0;

@@ -247,12 +247,12 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
 void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file.write_lendian_t(I_BUTTON_MASK_TYPE, p_abort);
-    p_file.write_lendian_t(sizeof(m_mask_type), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_mask_type), p_abort);
     p_file.write_lendian_t(m_mask_type, p_abort);
 
     if (b_paths) {
         p_file.write_lendian_t(I_CUSTOM_BUTTON_PATH, p_abort);
-        p_file.write_lendian_t(m_path.length(), p_abort);
+        p_file.write_lendian_t(gsl::narrow<uint32_t>(m_path.length()), p_abort);
         p_file.write(m_path.get_ptr(), m_path.length(), p_abort);
     } else {
         pfc::string8 realPath;
@@ -268,16 +268,13 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
 
                 const auto name = string_filename_ext(m_path);
 
-                t_filesize imagesize = p_image->get_size(p_abort);
+                const auto imagesize = gsl::narrow<uint32_t>(p_image->get_size(p_abort));
 
-                if (imagesize >= MAXLONG)
-                    throw exception_io_device_full();
-
-                unsigned size = (unsigned)imagesize + name.length() + 4 * sizeof(t_uint32);
+                const auto size = gsl::narrow<uint32_t>(imagesize + name.length() + 4 * sizeof(t_uint32));
                 p_file.write_lendian_t(size, p_abort);
 
                 p_file.write_lendian_t(IMAGE_NAME, p_abort);
-                p_file.write_lendian_t(name.length(), p_abort);
+                p_file.write_lendian_t(gsl::narrow<uint32_t>(name.length()), p_abort);
                 p_file.write(name.get_ptr(), name.length(), p_abort);
 
                 p_file.write_lendian_t(IMAGE_DATA, p_abort);
@@ -295,7 +292,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
     if (m_mask_type == uie::MASK_BITMAP) {
         if (b_paths) {
             p_file.write_lendian_t(I_CUSTOM_BUTTON_MASK_PATH, p_abort);
-            p_file.write_lendian_t(m_mask_path.length(), p_abort);
+            p_file.write_lendian_t(gsl::narrow<uint32_t>(m_mask_path.length()), p_abort);
             p_file.write(m_mask_path.get_ptr(), m_mask_path.length(), p_abort);
         } else {
             try {
@@ -306,22 +303,20 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
 
                 const auto name = string_filename_ext(m_mask_path);
 
-                t_filesize imagesize = p_image->get_size(p_abort);
+                const auto imagesize = gsl::narrow<uint32_t>(p_image->get_size(p_abort));
 
-                if (imagesize >= MAXLONG)
-                    throw exception_io_device_full();
-
-                unsigned size = (unsigned)imagesize + name.length() + sizeof(IMAGE_NAME) + sizeof(IMAGE_DATA);
+                const auto size
+                    = gsl::narrow<uint32_t>(imagesize + name.length() + sizeof(IMAGE_NAME) + sizeof(IMAGE_DATA));
                 p_file.write_lendian_t(size, p_abort);
 
                 p_file.write_lendian_t(IMAGE_NAME, p_abort);
-                p_file.write_lendian_t(name.length(), p_abort);
+                p_file.write_lendian_t(gsl::narrow<uint32_t>(name.length()), p_abort);
                 p_file.write(name.get_ptr(), name.length(), p_abort);
 
                 p_file.write_lendian_t(IMAGE_DATA, p_abort);
-                p_file.write_lendian_t((unsigned)imagesize, p_abort);
+                p_file.write_lendian_t(imagesize, p_abort);
                 pfc::array_t<t_uint8> temp;
-                temp.set_size((unsigned)imagesize);
+                temp.set_size(imagesize);
                 p_image->read(temp.get_ptr(), temp.get_size(), p_abort);
                 p_file.write(temp.get_ptr(), temp.get_size(), p_abort);
             } catch (const pfc::exception& err) {
@@ -333,7 +328,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
 
     if (m_mask_type == uie::MASK_COLOUR) {
         p_file.write_lendian_t(I_BUTTON_MASK_COLOUR, p_abort);
-        p_file.write_lendian_t(sizeof(m_mask_colour), p_abort);
+        p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_mask_colour), p_abort);
         p_file.write_lendian_t(m_mask_colour, p_abort);
     }
 }

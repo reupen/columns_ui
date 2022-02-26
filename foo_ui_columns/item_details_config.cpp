@@ -4,7 +4,7 @@
 
 namespace cui::panels::item_details {
 
-BOOL CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
         /*case DM_GETDEFID:
@@ -74,7 +74,7 @@ BOOL CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARA
     case WM_CTLCOLORSTATIC:
         SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
         SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return (BOOL)GetSysColorBrush(COLOR_WINDOW);
+        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
     case WM_CLOSE:
         if (m_modal) {
             SendMessage(wnd, WM_COMMAND, IDCANCEL, NULL);

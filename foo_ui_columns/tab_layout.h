@@ -93,7 +93,7 @@ private:
     void initialise_presets(HWND wnd);
     void switch_to_preset(HWND wnd, unsigned index);
 
-    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void on_tree_selection_change(HTREEITEM tree_item);
 
     HWND m_wnd_tree{};

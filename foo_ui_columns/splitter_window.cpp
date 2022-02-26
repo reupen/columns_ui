@@ -9,7 +9,7 @@ unsigned FlatSplitterPanel::g_count = 0;
 wil::unique_hfont FlatSplitterPanel::g_font_menu_horizontal;
 wil::unique_hfont FlatSplitterPanel::g_font_menu_vertical;
 
-void FlatSplitterPanel::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
+void FlatSplitterPanel::insert_panel(size_t index, const uie::splitter_item_t* p_item)
 {
     if (index <= m_panels.get_count()) {
         auto temp = std::make_shared<Panel>();
@@ -22,7 +22,7 @@ void FlatSplitterPanel::insert_panel(unsigned index, const uie::splitter_item_t*
     }
 }
 
-void FlatSplitterPanel::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
+void FlatSplitterPanel::replace_panel(size_t index, const uie::splitter_item_t* p_item)
 {
     if (index < m_panels.get_count()) {
         if (get_wnd())
@@ -722,7 +722,7 @@ unsigned FlatSplitterPanel::get_panel_divider_size(unsigned index)
 }
 
 bool FlatSplitterPanel::set_config_item(
-    unsigned index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
+    size_t index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
 {
     if (is_index_valid(index)) {
         if (p_type == bool_show_caption) {
@@ -786,7 +786,7 @@ bool FlatSplitterPanel::set_config_item(
 }
 
 bool FlatSplitterPanel::get_config_item(
-    unsigned index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
+    size_t index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
 {
     if (is_index_valid(index)) {
         if (p_type == bool_show_caption) {
@@ -835,7 +835,7 @@ bool FlatSplitterPanel::get_config_item(
     return false;
 }
 
-bool FlatSplitterPanel::get_config_item_supported(unsigned index, const GUID& p_type) const
+bool FlatSplitterPanel::get_config_item_supported(size_t index, const GUID& p_type) const
 {
     if (is_index_valid(index)) {
         if (p_type == bool_show_caption || p_type == bool_locked || p_type == bool_hidden
@@ -935,7 +935,7 @@ void FlatSplitterPanel::set_config(stream_reader* config, t_size p_size, abort_c
     read_config(config, p_size, false, p_abort);
 }
 
-uie::splitter_item_t* FlatSplitterPanel::get_panel(unsigned index) const
+uie::splitter_item_t* FlatSplitterPanel::get_panel(size_t index) const
 {
     if (index < m_panels.get_count()) {
         return m_panels[index]->create_splitter_item();
@@ -943,12 +943,12 @@ uie::splitter_item_t* FlatSplitterPanel::get_panel(unsigned index) const
     return nullptr;
 }
 
-unsigned FlatSplitterPanel::get_panel_count() const
+size_t FlatSplitterPanel::get_panel_count() const
 {
     return m_panels.get_count();
 }
 
-void FlatSplitterPanel::remove_panel(unsigned index)
+void FlatSplitterPanel::remove_panel(size_t index)
 {
     if (index < m_panels.get_count()) {
         m_panels[index]->destroy();

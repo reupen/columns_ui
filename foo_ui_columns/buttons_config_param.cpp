@@ -11,11 +11,11 @@ void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b
     unsigned count = m_buttons.size();
 
     p_file->write_lendian_t(I_TEXT_BELOW, p_abort);
-    p_file->write_lendian_t(sizeof(m_text_below), p_abort);
+    p_file->write_lendian_t(mmh::sizeof_t<uint32_t>(m_text_below), p_abort);
     p_file->write_lendian_t(m_text_below, p_abort);
 
     p_file->write_lendian_t(I_APPEARANCE, p_abort);
-    p_file->write_lendian_t(sizeof(m_appearance), p_abort);
+    p_file->write_lendian_t(mmh::sizeof_t<uint32_t>(m_appearance), p_abort);
     p_file->write_lendian_t(m_appearance, p_abort);
 
     p_file->write_lendian_t(I_BUTTONS, p_abort);
@@ -23,12 +23,12 @@ void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b
     stream_writer_memblock p_write;
     // FIX
 
-    p_file->write_lendian_t(p_write.m_data.get_size() + sizeof(count), p_abort);
+    p_file->write_lendian_t(gsl::narrow<uint32_t>(p_write.m_data.get_size() + sizeof(count)), p_abort);
     p_file->write_lendian_t(count, p_abort);
 
     for (unsigned n = 0; n < count; n++) {
         m_buttons[n].write_to_file(p_write, b_paths, p_abort);
-        p_file->write_lendian_t(p_write.m_data.get_size(), p_abort);
+        p_file->write_lendian_t(gsl::narrow<uint32_t>(p_write.m_data.get_size()), p_abort);
         p_file->write(p_write.m_data.get_ptr(), p_write.m_data.get_size(), p_abort);
         p_write.m_data.set_size(0);
     }
@@ -179,7 +179,7 @@ void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_siz
     m_button_list.replace_items(index, items);
 }
 
-BOOL CALLBACK ButtonsToolbar::ConfigParam::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR CALLBACK ButtonsToolbar::ConfigParam::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     ConfigParam* ptr = nullptr;
     switch (msg) {

@@ -18,7 +18,7 @@ class StatusPane
     class StatusPaneTitleformatHook : public titleformat_hook {
     public:
         bool process_field(
-            titleformat_text_out* p_out, const char* p_name, unsigned p_name_length, bool& p_found_flag) override
+            titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override
         {
             p_found_flag = false;
             if (!stricmp_utf8_ex(p_name, p_name_length, "is_status_pane", pfc_infinite)) {
@@ -29,7 +29,7 @@ class StatusPane
             return false;
         }
 
-        bool process_function(titleformat_text_out* p_out, const char* p_name, unsigned p_name_length,
+        bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
             titleformat_hook_function_params* p_params, bool& p_found_flag) override
         {
             p_found_flag = false;

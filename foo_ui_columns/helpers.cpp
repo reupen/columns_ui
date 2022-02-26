@@ -153,7 +153,7 @@ pfc::string8 get_last_win32_error_message()
 bool open_web_page(HWND wnd, const wchar_t* url)
 {
     const auto process = ShellExecute(wnd, nullptr, url, nullptr, nullptr, SW_SHOWNORMAL);
-    const bool succeeded = reinterpret_cast<int>(process) > 32;
+    const bool succeeded = reinterpret_cast<INT_PTR>(process) > 32;
     if (!succeeded) {
         fbh::show_info_box(wnd, "Error opening web page",
             "Columns UI was unable to open the web page using your default browser.", OIC_ERROR);

@@ -24,7 +24,7 @@ public:
 
     void on_font_changed();
 
-    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void apply();
     HWND create(HWND wnd) override;
     const char* get_name() override;

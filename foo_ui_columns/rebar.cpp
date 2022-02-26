@@ -59,7 +59,7 @@ void ConfigRebar::export_config(
     }
 
     t_size count = m_entries.size();
-    p_out->write_lendian_t(count, p_abort);
+    p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
     for (t_size i = 0; i < count; i++) {
         feedback.add_required_panel(m_entries[i].m_guid);
         m_entries[i].export_to_fcl_stream(p_out, mode, p_abort);
@@ -74,8 +74,7 @@ void ConfigRebar::import_config(
     p_reader->read_lendian_t(version, p_abort);
     if (version > 0)
         throw exception_io_unsupported_format();
-    t_size count;
-    p_reader->read_lendian_t(count, p_abort);
+    const auto count = p_reader->read_lendian_t<uint32_t>(p_abort);
     for (t_size i = 0; i < count; i++) {
         RebarBandState item;
         item.import_from_fcl_stream(p_reader, mode, p_abort);
@@ -162,7 +161,7 @@ void ConfigBandCache::get_data_raw(stream_writer* out, abort_callback& p_abort)
     return entries.write(out, p_abort);
 }
 
-void ConfigBandCache::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigBandCache::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort)
 {
     return entries.read(p_reader, p_abort);
 }
@@ -208,7 +207,7 @@ void ConfigRebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
     }
 }
 
-void ConfigRebar::set_data_raw(stream_reader* p_reader, unsigned p_sizehint, abort_callback& p_abort)
+void ConfigRebar::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort)
 {
     m_entries.clear();
 

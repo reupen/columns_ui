@@ -20,7 +20,7 @@ static class TabPlaylistSwitcherDragAndDrop : public PreferencesTab {
     }
 
 public:
-    static BOOL CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    static INT_PTR CALLBACK ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {

@@ -36,7 +36,7 @@ class ColoursDataSet : public fcl::dataset {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
             t_size count = g_colour_manager_data.m_entries.get_count();
-            mem.write_lendian_t(count, p_abort);
+            mem.write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
             for (t_size i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
                 g_colour_manager_data.m_entries[i]->_export(&mem2, p_abort);
@@ -69,8 +69,7 @@ class ColoursDataSet : public fcl::dataset {
                 stream_reader_memblock_ref stream2(data);
                 fbh::fcl::Reader reader2(&stream2, data.get_size(), p_abort);
 
-                t_size count;
-                reader2.read_item(count);
+                const auto count = reader2.read_item<uint32_t>();
 
                 g_colour_manager_data.m_entries.remove_all();
                 g_colour_manager_data.m_entries.set_count(count);

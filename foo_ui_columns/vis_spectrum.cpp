@@ -44,7 +44,8 @@ public:
 
     unsigned short m_bar_width{3}, m_bar_gap{1};
 
-    t_size m_scale, m_vertical_scale;
+    uint32_t m_scale;
+    uint32_t m_vertical_scale;
 
     static pfc::ptr_list_t<SpectrumAnalyserVisualisation> list_vis;
 
@@ -277,7 +278,7 @@ public:
     }
 };
 
-static BOOL CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -316,16 +317,16 @@ static BOOL CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND w
             if (!state.br_fore) {
                 state.br_fore = CreateSolidBrush(state.cr_fore);
             }
-            return (BOOL)state.br_fore;
+            return reinterpret_cast<INT_PTR>(state.br_fore);
         }
         if (GetDlgItem(wnd, IDC_PATCH_BACK) == (HWND)lp) {
             auto dc = (HDC)wp;
             if (!state.br_back) {
                 state.br_back = CreateSolidBrush(state.cr_back);
             }
-            return (BOOL)state.br_back;
+            return reinterpret_cast<INT_PTR>(state.br_back);
         }
-        return (BOOL)GetSysColorBrush(COLOR_3DHIGHLIGHT);
+        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_3DHIGHLIGHT));
     } break;
     case WM_COMMAND:
         switch (wp) {
@@ -609,7 +610,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
         pfc::array_t<t_uint8> m_data;
         data->write_lendian_t(get_frame_style(), p_abort);
         get_vis_data(m_data);
-        data->write_lendian_t(m_data.get_size(), p_abort);
+        data->write_lendian_t(gsl::narrow<uint32_t>(m_data.get_size()), p_abort);
         data->write(m_data.get_ptr(), m_data.get_size(), p_abort);
     }
     bool have_config_popup() const override { return true; }

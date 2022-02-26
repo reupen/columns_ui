@@ -17,12 +17,12 @@ void g_append_menu_panels(HMENU menu, const uie::window_info_list_simple& panels
     for (unsigned n = 0; n < count; n++) {
         if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
             if (n)
-                uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, panels[n - 1].category);
+                uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), panels[n - 1].category);
             popup = CreatePopupMenu();
         }
         uAppendMenu(popup, (MF_STRING), base + n, panels[n].name);
         if (n == count - 1)
-            uAppendMenu(menu, MF_STRING | MF_POPUP, (UINT)popup, panels[n].category);
+            uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), panels[n].category);
     }
 }
 
@@ -440,7 +440,7 @@ void LayoutWindow::export_config(
     p_out->write_lendian_t((t_uint32)stream_version, p_abort);
     t_size count = cfg_layout.get_presets().get_count();
     p_out->write_lendian_t(cfg_layout.get_active(), p_abort);
-    p_out->write_lendian_t(count, p_abort);
+    p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
     for (t_size i = 0; i < count; i++) {
         uie::splitter_item_ptr item;
         cfg_layout.get_preset(i, item);
@@ -634,11 +634,11 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     uAppendMenu(menu, MF_STRING | MF_GRAYED, (UINT_PTR)0, temp);
     // uAppendMenu(menu, MF_MENUBREAK, (UINT_PTR)0, NULL);
 
-    const UINT_PTR ID_PARENT_ADD_BASE = ID_CHANGE_BASE + panels.get_count();
-    const UINT_PTR ID_CHANGE_BASE_SPLITTER_BASE = ID_PARENT_ADD_BASE + panels.get_count();
+    const UINT ID_PARENT_ADD_BASE = ID_CHANGE_BASE + gsl::narrow<UINT>(panels.get_count());
+    const UINT ID_CHANGE_BASE_SPLITTER_BASE = ID_PARENT_ADD_BASE + gsl::narrow<UINT>(panels.get_count());
 
-    const UINT_PTR ID_CHANGE_SPLITTER_BASE = ID_CHANGE_BASE_SPLITTER_BASE + panels.get_count();
-    const UINT_PTR ID_ADD_BASE = ID_CHANGE_SPLITTER_BASE + panels.get_count();
+    const UINT ID_CHANGE_SPLITTER_BASE = ID_CHANGE_BASE_SPLITTER_BASE + gsl::narrow<UINT>(panels.get_count());
+    const UINT ID_ADD_BASE = ID_CHANGE_SPLITTER_BASE + gsl::narrow<UINT>(panels.get_count());
 
     t_size index = pfc_infinite;
     const auto found_in_parent

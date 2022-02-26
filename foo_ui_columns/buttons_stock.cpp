@@ -259,7 +259,7 @@ class button_next : public ui_extension::button
                 m_playlist_api->playlist_set_playback_cursor(m_playlist, m_index);
                 m_play_api->play_start(play_control::TRACK_COMMAND_SETTRACK);
             }
-            menu_node_play_item(unsigned pl, unsigned p_index)
+            menu_node_play_item(unsigned pl, size_t p_index)
                 : m_playlist(pl), m_index(p_index)
             {
                 playlist_manager::g_get(m_playlist_api);

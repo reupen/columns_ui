@@ -35,7 +35,7 @@ public:
     void set_presets(const pfc::list_base_const_t<Preset>& presets, t_size active);
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
 
-    void set_data_raw(stream_reader*, unsigned p_sizehint, abort_callback& p_abort) override;
+    void set_data_raw(stream_reader*, size_t p_sizehint, abort_callback& p_abort) override;
 
     void reset_presets(); // needs services
 

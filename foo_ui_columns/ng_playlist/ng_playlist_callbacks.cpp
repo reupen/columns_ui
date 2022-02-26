@@ -2,7 +2,7 @@
 #include "ng_playlist.h"
 
 namespace cui::panels::playlist_view {
-void PlaylistView::on_items_added(/*unsigned p_playlist, */ unsigned start,
+void PlaylistView::on_items_added(/*unsigned p_playlist, */ size_t start,
     const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
 {
     /*(if (p_playlist == 0)*/

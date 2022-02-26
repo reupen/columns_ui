@@ -10,14 +10,14 @@ public:
 
     const GUID& get_client_guid() const override { return g_guid; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel"; }
-    t_size get_supported_colours() const override { return colours::colour_flag_all; }
-    t_size get_supported_bools() const override
+    uint32_t get_supported_colours() const override { return colours::colour_flag_all; }
+    uint32_t get_supported_bools() const override
     {
         return colours::bool_flag_use_custom_active_item_frame | colours::bool_flag_dark_mode_enabled;
     }
     bool get_themes_supported() const override { return true; }
-    void on_colour_changed(t_size mask) const override;
-    void on_bool_changed(t_size mask) const override;
+    void on_colour_changed(uint32_t mask) const override;
+    void on_bool_changed(uint32_t mask) const override;
 };
 
 class Field {
@@ -188,8 +188,8 @@ private:
     void notify_on_selection_change(
         const bit_array& p_affected, const bit_array& p_status, notification_source_t p_notification_source) override;
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, unsigned column, bool b_source_mouse) override;
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, unsigned column,
+        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
         pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
     void notify_exit_inline_edit() override;

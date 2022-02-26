@@ -192,7 +192,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 tbb[n].fsState = TBSTATE_ENABLED;
                 tbb[n].fsStyle = BTNS_DROPDOWN | BTNS_AUTOSIZE;
                 tbb[n].dwData = 0;
-                tbb[n].iString = (int)m_buttons[n].m_name_with_accelerators.get_ptr();
+                tbb[n].iString = reinterpret_cast<INT_PTR>(m_buttons[n].m_name_with_accelerators.get_ptr());
             }
 
             SendMessage(wnd_menu, TB_ADDBUTTONS, (WPARAM)tbb.get_size(), (LPARAM)(LPTBBUTTON)tbb.get_ptr());
@@ -531,7 +531,7 @@ bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARA
                 pt.x = GET_X_LPARAM(((MSG*)lp)->lParam);
 
                 if (ScreenToClient(wnd_menu, &pt) && PtInRect(&toolbar, pt)) {
-                    t_size idx = SendMessage(wnd_menu, TB_HITTEST, 0, (long)&pt);
+                    t_size idx = SendMessage(wnd_menu, TB_HITTEST, 0, reinterpret_cast<LPARAM>(&pt));
 
                     if (idx >= 0 && idx < m_buttons.get_count())
                         redrop = false;
@@ -581,7 +581,7 @@ bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARA
                     POINT pt = px;
                     int hot_item = SendMessage(wnd_menu, TB_GETHOTITEM, 0, 0);
                     if (ScreenToClient(wnd_menu, &pt)) {
-                        t_size idx = SendMessage(wnd_menu, TB_HITTEST, 0, (long)&pt);
+                        t_size idx = SendMessage(wnd_menu, TB_HITTEST, 0, reinterpret_cast<LPARAM>(&pt));
 
                         if (idx >= 0 && idx < m_buttons.get_count() && (active_item - 1) != idx) {
                             destroy_menu();

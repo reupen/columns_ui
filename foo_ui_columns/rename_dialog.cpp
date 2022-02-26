@@ -10,7 +10,8 @@ public:
     modal_dialog_scope m_scope;
 };
 
-static BOOL CALLBACK show_rename_dialog_box_proc(RenameDialogBoxState& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+static INT_PTR CALLBACK show_rename_dialog_box_proc(
+    RenameDialogBoxState& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:

@@ -433,7 +433,7 @@ void PlaylistTabs::get_config(stream_writer* out, abort_callback& p_abort) const
     out->write_lendian_t(m_child_guid, p_abort);
 
     refresh_child_data();
-    out->write_lendian_t(m_child_data.get_size(), p_abort);
+    out->write_lendian_t(gsl::narrow<uint32_t>(m_child_data.get_size()), p_abort);
     out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
 }
 
@@ -467,7 +467,7 @@ void PlaylistTabs::export_config(stream_writer* p_writer, abort_callback& p_abor
     stream_writer_memblock_ref w(data);
     if (ptr.is_valid())
         ptr->export_config(&w, abortCallback);
-    p_writer->write_lendian_t(data.get_size(), p_abort);
+    p_writer->write_lendian_t(gsl::narrow<uint32_t>(data.get_size()), p_abort);
     p_writer->write(data.get_ptr(), data.get_size(), p_abort);
 }
 
@@ -494,7 +494,7 @@ void PlaylistTabs::import_config(stream_reader* p_reader, t_size p_size, abort_c
     }
 }
 
-uie::splitter_item_t* PlaylistTabs::get_panel(unsigned index) const
+uie::splitter_item_t* PlaylistTabs::get_panel(size_t index) const
 {
     auto ptr = new uie::splitter_item_simple_t;
     ptr->set_panel_guid(m_child_guid);
@@ -510,17 +510,17 @@ uie::splitter_item_t* PlaylistTabs::get_panel(unsigned index) const
     return ptr;
 }
 
-unsigned PlaylistTabs::get_maximum_panel_count() const
+size_t PlaylistTabs::get_maximum_panel_count() const
 {
     return 1;
 }
 
-unsigned PlaylistTabs::get_panel_count() const
+size_t PlaylistTabs::get_panel_count() const
 {
     return m_child_guid != pfc::guid_null ? 1 : 0;
 }
 
-void PlaylistTabs::replace_panel(unsigned index, const uie::splitter_item_t* p_item)
+void PlaylistTabs::replace_panel(size_t index, const uie::splitter_item_t* p_item)
 {
     if (index == 0 && m_child_guid != pfc::guid_null) {
         if (initialised)
@@ -536,7 +536,7 @@ void PlaylistTabs::replace_panel(unsigned index, const uie::splitter_item_t* p_i
     }
 }
 
-void PlaylistTabs::remove_panel(unsigned index)
+void PlaylistTabs::remove_panel(size_t index)
 {
     if (index == 0 && m_child_guid != pfc::guid_null) {
         if (initialised)
@@ -550,7 +550,7 @@ void PlaylistTabs::remove_panel(unsigned index)
     }
 }
 
-void PlaylistTabs::insert_panel(unsigned index, const uie::splitter_item_t* p_item)
+void PlaylistTabs::insert_panel(size_t index, const uie::splitter_item_t* p_item)
 {
     if (index == 0 && m_child_guid == pfc::guid_null) {
         if (initialised)
@@ -678,37 +678,33 @@ void PlaylistTabs::set_styles(bool visible /*= true*/)
     }
 }
 
-void PlaylistTabs::on_playlist_locked(unsigned int, bool) {}
+void PlaylistTabs::on_playlist_locked(size_t, bool) {}
 
-void PlaylistTabs::on_playback_order_changed(unsigned int) {}
+void PlaylistTabs::on_playback_order_changed(size_t) {}
 
 void PlaylistTabs::on_default_format_changed() {}
 
-void PlaylistTabs::on_playlists_removing(const bit_array&, unsigned int, unsigned int) {}
+void PlaylistTabs::on_playlists_removing(const bit_array&, size_t, size_t) {}
 
-void PlaylistTabs::on_item_ensure_visible(unsigned int, unsigned int) {}
+void PlaylistTabs::on_item_ensure_visible(size_t, size_t) {}
 
-void PlaylistTabs::on_items_replaced(
-    unsigned int, const bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&)
+void PlaylistTabs::on_items_replaced(size_t, const bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&)
 {
 }
 
-void PlaylistTabs::on_items_modified_fromplayback(unsigned int, const bit_array&, play_control::t_display_level) {}
+void PlaylistTabs::on_items_modified_fromplayback(size_t, const bit_array&, play_control::t_display_level) {}
 
-void PlaylistTabs::on_items_modified(unsigned int, const bit_array&) {}
+void PlaylistTabs::on_items_modified(size_t, const bit_array&) {}
 
-void PlaylistTabs::on_item_focus_change(unsigned int, unsigned int, unsigned int) {}
+void PlaylistTabs::on_item_focus_change(size_t, size_t, size_t) {}
 
-void PlaylistTabs::on_items_selection_change(unsigned int, const bit_array&, const bit_array&) {}
+void PlaylistTabs::on_items_selection_change(size_t, const bit_array&, const bit_array&) {}
 
-void PlaylistTabs::on_items_reordered(unsigned int, const unsigned int*, unsigned int) {}
+void PlaylistTabs::on_items_reordered(size_t, const size_t*, size_t) {}
 
-void PlaylistTabs::on_items_added(
-    unsigned int, unsigned int, const pfc::list_base_const_t<metadb_handle_ptr>&, const bit_array&)
-{
-}
+void PlaylistTabs::on_items_added(size_t, size_t, const pfc::list_base_const_t<metadb_handle_ptr>&, const bit_array&) {}
 
-void PlaylistTabs::on_playlist_renamed(unsigned p_index, const char* p_new_name, unsigned p_new_name_len)
+void PlaylistTabs::on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len)
 {
     if (wnd_tabs) {
         uTabCtrl_InsertItemText(wnd_tabs, p_index, pfc::string8(p_new_name, p_new_name_len), false);
@@ -717,7 +713,7 @@ void PlaylistTabs::on_playlist_renamed(unsigned p_index, const char* p_new_name,
     }
 }
 
-void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
+void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
 {
     bool need_move = false;
 
@@ -739,7 +735,7 @@ void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, unsigned p_old_
         on_size();
 }
 
-void PlaylistTabs::on_playlist_created(unsigned p_index, const char* p_name, unsigned p_name_len)
+void PlaylistTabs::on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len)
 {
     if (wnd_tabs) {
         uTabCtrl_InsertItemText(wnd_tabs, p_index, pfc::string8(p_name, p_name_len));
@@ -750,7 +746,7 @@ void PlaylistTabs::on_playlist_created(unsigned p_index, const char* p_name, uns
         on_size();
 }
 
-void PlaylistTabs::on_playlists_reorder(const unsigned* p_order, unsigned p_count)
+void PlaylistTabs::on_playlists_reorder(const size_t* p_order, size_t p_count)
 {
     if (wnd_tabs) {
         const auto playlist_api = playlist_manager::get();
@@ -769,7 +765,7 @@ void PlaylistTabs::on_playlists_reorder(const unsigned* p_order, unsigned p_coun
     }
 }
 
-void PlaylistTabs::on_playlist_activate(unsigned p_old, unsigned p_new)
+void PlaylistTabs::on_playlist_activate(size_t p_old, size_t p_new)
 {
     if (wnd_tabs) {
         TabCtrl_SetCurSel(wnd_tabs, p_new);
@@ -777,12 +773,12 @@ void PlaylistTabs::on_playlist_activate(unsigned p_old, unsigned p_new)
 }
 
 void FB2KAPI PlaylistTabs::on_items_removed(
-    unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
+    size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
 {
 }
 
 void FB2KAPI PlaylistTabs::on_items_removing(
-    unsigned p_playlist, const bit_array& p_mask, unsigned p_old_count, unsigned p_new_count)
+    size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
 {
 }
 

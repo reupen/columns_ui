@@ -45,7 +45,7 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
         fbh::fcl::Writer out(p_writer, p_abort);
         t_size count = g_columns.get_count();
         pfc::string8 temp;
-        out.write_raw(count);
+        out.write_raw(gsl::narrow<uint32_t>(count));
 
         for (t_size i = 0; i < count; i++) {
             stream_writer_memblock sw;
@@ -65,15 +65,14 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
             w.write_item(identifier_width, g_columns[i]->width.value);
             w.write_item(identifier_width_dpi, g_columns[i]->width.dpi);
 
-            out.write_item(identifier_column, sw.m_data.get_ptr(), sw.m_data.get_size());
+            out.write_item(identifier_column, sw.m_data.get_ptr(), gsl::narrow<uint32_t>(sw.m_data.get_size()));
         }
     }
     void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_size count;
-        reader.read_item(count);
+        const auto count = reader.read_item<uint32_t>();
         ColumnList newcolumns;
         for (t_size i = 0; i < count; i++) {
             t_uint32 column_id;
@@ -203,7 +202,7 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
         t_size count = groups.get_count();
         pfc::string8 temp;
 
-        groups_writer.write_raw(count);
+        groups_writer.write_raw(gsl::narrow<uint32_t>(count));
 
         for (t_size i = 0; i < count; i++) {
             const Group& group = groups[i];
@@ -247,8 +246,7 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
             //    reader.read_item(pvt::cfg_artwork_width);
             //    break;
             case identifier_groups: {
-                t_size count;
-                reader.read_item(count);
+                const auto count = reader.read_item<uint32_t>();
                 for (t_size i = 0; i < count; i++) {
                     t_uint32 group_id;
                     t_uint32 group_size;

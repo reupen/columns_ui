@@ -568,7 +568,7 @@ void ButtonsToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_ca
     }
 }
 
-BOOL CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:

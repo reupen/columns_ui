@@ -182,8 +182,8 @@ void CommandPickerData::populate_commands()
             }
         }
     }
-    unsigned count = SendMessage(wnd_command, LB_GETCOUNT, 0, 0);
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = ListBox_GetCount(wnd_command);
+    for (int n = 0; n < count; n++) {
         LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, n, 0);
         CommandData* p_data = ((CommandData*)ret);
 
@@ -248,7 +248,7 @@ void CommandPickerData::deinitialise(HWND wnd)
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
     m_data.clear();
 }
-BOOL CommandPickerData::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR CommandPickerData::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -270,7 +270,7 @@ BOOL CommandPickerData::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CTLCOLORSTATIC:
         SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
         SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return (BOOL)GetSysColorBrush(COLOR_WINDOW);
+        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
     case WM_COMMAND:
         switch (wp) {
         case IDC_GROUP | (LBN_SELCHANGE << 16):

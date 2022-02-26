@@ -26,7 +26,7 @@ public:
         return tab_columns_v3_;
     }
 
-    BOOL on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     HWND create(HWND wnd) override
     {

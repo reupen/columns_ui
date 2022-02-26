@@ -204,27 +204,27 @@ void ButtonsToolbar::Button::read_from_file(ConfigVersion p_version, const char*
 void ButtonsToolbar::Button::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
     p_file.write_lendian_t(I_BUTTON_TYPE, p_abort);
-    p_file.write_lendian_t(sizeof(m_type), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_type), p_abort);
     p_file.write_lendian_t(m_type, p_abort);
 
     p_file.write_lendian_t(I_BUTTON_FILTER, p_abort);
-    p_file.write_lendian_t(sizeof(m_filter), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_filter), p_abort);
     p_file.write_lendian_t(m_filter, p_abort);
 
     p_file.write_lendian_t(I_BUTTON_SHOW, p_abort);
-    p_file.write_lendian_t(sizeof(m_show), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_show), p_abort);
     p_file.write_lendian_t(m_show, p_abort);
 
     p_file.write_lendian_t(I_BUTTON_GUID, p_abort);
-    p_file.write_lendian_t(sizeof(m_guid), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_guid), p_abort);
     p_file.write_lendian_t((GUID&)m_guid, p_abort);
 
     p_file.write_lendian_t(I_BUTTON_SUBCOMMAND, p_abort);
-    p_file.write_lendian_t(sizeof(m_subcommand), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_subcommand), p_abort);
     p_file.write_lendian_t((GUID&)m_subcommand, p_abort);
 
     p_file.write_lendian_t(I_BUTTON_CUSTOM, p_abort);
-    p_file.write_lendian_t(sizeof(m_use_custom), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_use_custom), p_abort);
     p_file.write_lendian_t(m_use_custom, p_abort);
 
     if (m_use_custom) {
@@ -232,29 +232,29 @@ void ButtonsToolbar::Button::write_to_file(stream_writer& p_file, bool b_paths, 
 
         stream_writer_memblock p_write;
         m_custom_image.write_to_file(p_write, b_paths, p_abort);
-        p_file.write_lendian_t(p_write.m_data.get_size(), p_abort);
+        p_file.write_lendian_t(gsl::narrow<uint32_t>(p_write.m_data.get_size()), p_abort);
         p_file.write(p_write.m_data.get_ptr(), p_write.m_data.get_size(), p_abort);
     }
 
     p_file.write_lendian_t(I_BUTTON_CUSTOM_HOT, p_abort);
-    p_file.write_lendian_t(sizeof(m_use_custom_hot), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_use_custom_hot), p_abort);
     p_file.write_lendian_t(m_use_custom_hot, p_abort);
 
     if (m_use_custom_hot) {
         p_file.write_lendian_t(I_BUTTON_CUSTOM_HOT_DATA, p_abort);
         stream_writer_memblock p_write;
         m_custom_hot_image.write_to_file(p_write, b_paths, p_abort);
-        p_file.write_lendian_t(p_write.m_data.get_size(), p_abort);
+        p_file.write_lendian_t(gsl::narrow<uint32_t>(p_write.m_data.get_size()), p_abort);
         p_file.write(p_write.m_data.get_ptr(), p_write.m_data.get_size(), p_abort);
     }
 
     p_file.write_lendian_t(I_BUTTON_USE_CUSTOM_TEXT, p_abort);
-    p_file.write_lendian_t(sizeof(m_use_custom_text), p_abort);
+    p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_use_custom_text), p_abort);
     p_file.write_lendian_t(m_use_custom_text, p_abort);
 
     if (m_use_custom_text) {
         p_file.write_lendian_t(I_BUTTON_TEXT, p_abort);
-        p_file.write_lendian_t(m_text.length(), p_abort);
+        p_file.write_lendian_t(gsl::narrow<uint32_t>(m_text.length()), p_abort);
         p_file.write(m_text, m_text.length(), p_abort);
     }
 }
