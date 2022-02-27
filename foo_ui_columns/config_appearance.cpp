@@ -185,7 +185,7 @@ const GUID g_guid_cfg_child_appearance = {0xfa25d859, 0xc808, 0x485d, {0x8a, 0xb
 cfg_int cfg_child_appearance(g_guid_cfg_child_appearance, 0);
 
 // {41E6D7ED-A1DC-4d84-9BC9-352DAF7788B0}
-constexpr const GUID g_guid_colour_preferences
+constexpr GUID g_guid_colour_preferences
     = {0x41e6d7ed, 0xa1dc, 0x4d84, {0x9b, 0xc9, 0x35, 0x2d, 0xaf, 0x77, 0x88, 0xb0}};
 
 static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and fonts", g_tabs_appearance,

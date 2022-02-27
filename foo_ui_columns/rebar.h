@@ -106,7 +106,7 @@ public:
     void delete_band(unsigned idx);
 
     void on_themechanged();
-    std::optional<LRESULT> handle_custom_draw(const LPNMCUSTOMDRAW lpnmcd) const;
+    std::optional<LRESULT> handle_custom_draw(LPNMCUSTOMDRAW lpnmcd) const;
 
     bool on_menu_char(unsigned short c);
     void show_accelerators();
