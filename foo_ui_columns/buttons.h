@@ -109,7 +109,7 @@ public:
         public:
             ButtonStateCallback& operator=(const ButtonStateCallback& p_source);
             void set_wnd(ButtonsToolbar* p_source);
-            void set_id(const unsigned i);
+            void set_id(unsigned i);
             ButtonStateCallback() = default;
         } m_callback;
 

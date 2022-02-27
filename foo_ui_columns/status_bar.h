@@ -35,6 +35,6 @@ void clear_menu_item_description();
 void create_window();
 void destroy_window();
 void on_status_font_change();
-std::optional<LRESULT> handle_draw_item(const LPDRAWITEMSTRUCT lpdis);
+std::optional<LRESULT> handle_draw_item(LPDRAWITEMSTRUCT lpdis);
 
 } // namespace cui::status_bar

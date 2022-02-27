@@ -53,7 +53,7 @@ void reset_modern_colours()
 
 bool fetch_dark_mode_available()
 {
-    if (!dark::does_os_support_dark_mode() || !IsAppThemed())
+    if (!dark::does_os_support_dark_mode() || !IsThemeActive() || !IsAppThemed())
         return false;
 
     try {

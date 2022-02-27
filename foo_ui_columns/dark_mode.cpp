@@ -31,7 +31,7 @@ bool are_private_apis_allowed()
     if (osvi.dwMajorVersion != 10 || osvi.dwMinorVersion != 0)
         return false;
 
-    return osvi.dwBuildNumber >= 19041 && osvi.dwBuildNumber <= 22000;
+    return osvi.dwBuildNumber >= 19041 && osvi.dwBuildNumber <= 22533;
 }
 
 void set_app_mode(PreferredAppMode mode)
@@ -40,13 +40,18 @@ void set_app_mode(PreferredAppMode mode)
         return;
 
     using SetPreferredAppModeProc = int(__stdcall*)(int);
+    using FlushMenuThemesProc = void(__stdcall*)();
 
     const wil::unique_hmodule uxtheme(THROW_LAST_ERROR_IF_NULL(LoadLibrary(L"uxtheme.dll")));
 
     const auto set_preferred_app_mode
         = reinterpret_cast<SetPreferredAppModeProc>(GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(135)));
 
+    const auto flush_menu_themes
+        = reinterpret_cast<FlushMenuThemesProc>(GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(136)));
+
     set_preferred_app_mode(WI_EnumValue(mode));
+    flush_menu_themes();
 }
 
 void set_titlebar_mode(HWND wnd, bool is_dark)
