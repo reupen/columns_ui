@@ -31,7 +31,7 @@ bool are_private_apis_allowed()
     if (osvi.dwMajorVersion != 10 || osvi.dwMinorVersion != 0)
         return false;
 
-    return osvi.dwBuildNumber >= 19041 && osvi.dwBuildNumber <= 22000;
+    return osvi.dwBuildNumber >= 19041 && osvi.dwBuildNumber <= 22533;
 }
 
 void set_app_mode(PreferredAppMode mode)
