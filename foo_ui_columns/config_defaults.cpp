@@ -39,12 +39,14 @@ WINDOWPLACEMENT get_def_window_pos()
 
 LOGFONT get_menu_font()
 {
-    static logfont_os_menu font;
+    LOGFONT font{};
+    uGetMenuFont(&font);
     return font;
 }
 
 LOGFONT get_icon_font()
 {
-    static logfont_os_icon font;
+    LOGFONT font{};
+    uGetIconFont(&font);
     return font;
 }

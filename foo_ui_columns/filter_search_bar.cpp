@@ -367,8 +367,10 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
                 } else {
                     cfg_favourites.add_item(query);
                     for (auto&& window : s_windows)
-                        if (window->m_search_editbox)
-                            ComboBox_AddString(window->m_search_editbox, uT(query));
+                        if (window->m_search_editbox) {
+                            const auto wide_query = pfc::stringcvt::string_wide_from_utf8(query);
+                            ComboBox_AddString(window->m_search_editbox, wide_query.get_ptr());
+                        }
                 }
                 update_favourite_icon();
             }
@@ -502,7 +504,7 @@ void FilterSearchToolbar::create_edit()
     SetWindowLongPtr(m_search_editbox, GWLP_USERDATA, (LPARAM)(this));
     SetWindowLongPtr(cbi.hwndItem, GWLP_USERDATA, (LPARAM)(this));
     m_proc_search_edit = (WNDPROC)SetWindowLongPtr(cbi.hwndItem, GWLP_WNDPROC, (LPARAM)(g_on_search_edit_message));
-    Edit_SetCueBannerText(cbi.hwndItem, uT("Search Filters"));
+    Edit_SetCueBannerText(cbi.hwndItem, L"Search Filters");
 
     refresh_favourites(true);
 

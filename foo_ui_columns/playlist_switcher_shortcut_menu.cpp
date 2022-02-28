@@ -54,7 +54,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             autoplaylist->get_display_name(name);
             name << " properties";
 
-            AppendMenu(menu, MF_STRING, ID_AUTOPLAYLIST, uT(name));
+            uAppendMenu(menu, MF_STRING, ID_AUTOPLAYLIST, name);
         }
         AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
