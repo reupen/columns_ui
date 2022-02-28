@@ -3,6 +3,8 @@ name: VS 2022
 on:
   workflow_dispatch:
   pull_request:
+  schedule:
+    - cron: 0 4 * * WED
   push:
     branches:
       - master
