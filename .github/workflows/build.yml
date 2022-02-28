@@ -16,6 +16,11 @@ jobs:
       matrix:
         toolset: ["v143", "llvm"]
         configuration: ["release", "debug"]
+        include:
+          - toolset: v143
+            additional-build-args: '"/logger:$Env:Temp\Reupen.MSBuild.GitHubLogger.dll"'
+          - toolset: llvm
+            additional-build-args: '"/p:PlatformToolset=ClangCL;LinkToolExe=link.exe"'
 
     steps:
       - uses: actions/checkout@v2
@@ -42,14 +47,9 @@ jobs:
         run: |
           Invoke-WebRequest -Uri https://github.com/reupen/msbuild-github-logger/releases/download/v1.0.0/Reupen.MSBuild.GitHubLogger.dll -OutFile "$Env:Temp\Reupen.MSBuild.GitHubLogger.dll"
 
-      - name: Build (v143)
-        if: matrix.toolset == 'v143'
+      - name: Build
         run: |
-          msbuild /m '/p:Platform=Win32;Configuration=${{ matrix.configuration }}' "/logger:$Env:Temp\Reupen.MSBuild.GitHubLogger.dll" vc17\columns_ui-public.sln
-
-      - name: Build (LLVM)
-        if: matrix.toolset == 'llvm'
-        run: msbuild /m '/p:Platform=Win32;Configuration=${{ matrix.configuration }};PlatformToolset=ClangCL;LinkToolExe=link.exe' vc17\columns_ui-public.sln
+          msbuild /m '/p:Platform=Win32;Configuration=${{ matrix.configuration }}' ${{ matrix.additional-build-args }} vc17\columns_ui-public.sln
 
       - uses: actions/upload-artifact@v2
         if: matrix.toolset == 'v143' && matrix.configuration == 'release'
