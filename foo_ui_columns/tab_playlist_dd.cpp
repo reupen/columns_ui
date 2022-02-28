@@ -45,7 +45,7 @@ public:
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_DROP_STRING:
-                cfg_pgenstring = string_utf8_from_window((HWND)lp);
+                cfg_pgenstring = uGetWindowText((HWND)lp);
                 break;
 #if 0
             case IDC_DROP_NAME:

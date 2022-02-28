@@ -63,7 +63,7 @@ LRESULT quickfind_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetFocus(wnd_edit);
 
         SendMessage(wnd_edit, EM_SETSEL, 0, -1);
-        string_utf8_from_window text(wnd_edit);
+        uGetWindowText text(wnd_edit);
         m_search.init();
         if (text.length())
             m_search.set_string(text);
@@ -124,7 +124,7 @@ LRESULT WINAPI quickfind_window::on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM l
             return 0;
         else if (wp == VK_DELETE) {
             LRESULT ret = CallWindowProc(m_editproc, wnd, msg, wp, lp);
-            m_search.set_string(string_utf8_from_window(wnd));
+            m_search.set_string(uGetWindowText(wnd));
             return ret;
         }
         /*
@@ -146,7 +146,7 @@ LRESULT WINAPI quickfind_window::on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM l
             SendMessage(wnd, EM_GETSEL, (WPARAM)&start, (LPARAM)&end);
             if (wp == VK_BACK || start != end || end != SendMessage(wnd, WM_GETTEXTLENGTH, 0, 0)) {
                 LRESULT ret = CallWindowProc(m_editproc, wnd, msg, wp, lp);
-                m_search.set_string(string_utf8_from_window(wnd));
+                m_search.set_string(uGetWindowText(wnd));
                 return ret;
             }
             m_search.add_char(wp);

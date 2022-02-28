@@ -107,7 +107,7 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         case IDC_SCRIPT:
             switch (HIWORD(wp)) {
             case EN_CHANGE:
-                m_script = string_utf8_from_window(HWND(lp));
+                m_script = uGetWindowText(HWND(lp));
                 if (!m_modal)
                     start_timer();
                 break;

@@ -45,7 +45,7 @@ static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg,
             uGetDlgItemText(wnd, IDC_VALUE, state.value.string);
             state.value.filter_type
                 = ((PlaylistFilterType)SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_GETCURSEL, 0, 0));
-            state.value.filter_playlists = (string_utf8_from_window(wnd, IDC_PLAYLIST_FILTER_STRING));
+            state.value.filter_playlists = (uGetDlgItemText(wnd, IDC_PLAYLIST_FILTER_STRING));
             EndDialog(wnd, 1);
 
         } break;

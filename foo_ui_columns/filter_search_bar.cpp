@@ -271,7 +271,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
         case TIMER_QUERY:
             KillTimer(get_wnd(), TIMER_QUERY);
             if (m_query_timer_active)
-                commit_search_results(string_utf8_from_window(m_search_editbox));
+                commit_search_results(uGetWindowText(m_search_editbox));
             m_query_timer_active = false;
             return 0;
         }
@@ -285,7 +285,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             KillTimer(get_wnd(), TIMER_QUERY);
             m_query_timer_active = false;
         }
-        commit_search_results(string_utf8_from_window(m_search_editbox));
+        commit_search_results(uGetWindowText(m_search_editbox));
         update_favourite_icon();
         return 0;
     case WM_GETMINMAXINFO: {
@@ -315,7 +315,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
                 auto lpnmtbgit = (LPNMTBGETINFOTIP)lp;
                 pfc::string8 temp;
                 if (lpnmtbgit->iItem == idc_favourite) {
-                    string_utf8_from_window query(m_search_editbox);
+                    const auto query = uGetWindowText(m_search_editbox);
                     temp = !query.is_empty() && cfg_favourites.have_item(query) ? "Remove from favourites"
                                                                                 : "Add to favourites";
                 } else if (lpnmtbgit->iItem == idc_clear)
@@ -356,7 +356,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             commit_search_results("");
             break;
         case idc_favourite: {
-            string_utf8_from_window query(m_search_editbox);
+            const auto query = uGetWindowText(m_search_editbox);
             t_size index;
             if (!query.is_empty()) {
                 if (cfg_favourites.find_item(query, index)) {
@@ -367,8 +367,10 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
                 } else {
                     cfg_favourites.add_item(query);
                     for (auto&& window : s_windows)
-                        if (window->m_search_editbox)
-                            ComboBox_AddString(window->m_search_editbox, uT(query));
+                        if (window->m_search_editbox) {
+                            const auto wide_query = pfc::stringcvt::string_wide_from_utf8(query);
+                            ComboBox_AddString(window->m_search_editbox, wide_query.get_ptr());
+                        }
                 }
                 update_favourite_icon();
             }
@@ -428,7 +430,7 @@ void FilterSearchToolbar::refresh_favourites(bool is_initial)
 
 void FilterSearchToolbar::update_favourite_icon(const char* p_new)
 {
-    bool new_state = cfg_favourites.have_item(p_new ? p_new : string_utf8_from_window(m_search_editbox));
+    bool new_state = cfg_favourites.have_item(p_new ? p_new : uGetWindowText(m_search_editbox).get_ptr());
     if (m_favourite_state != new_state) {
         TBBUTTONINFO tbbi{};
         tbbi.cbSize = sizeof(tbbi);
@@ -502,7 +504,7 @@ void FilterSearchToolbar::create_edit()
     SetWindowLongPtr(m_search_editbox, GWLP_USERDATA, (LPARAM)(this));
     SetWindowLongPtr(cbi.hwndItem, GWLP_USERDATA, (LPARAM)(this));
     m_proc_search_edit = (WNDPROC)SetWindowLongPtr(cbi.hwndItem, GWLP_WNDPROC, (LPARAM)(g_on_search_edit_message));
-    Edit_SetCueBannerText(cbi.hwndItem, uT("Search Filters"));
+    Edit_SetCueBannerText(cbi.hwndItem, L"Search Filters");
 
     refresh_favourites(true);
 
@@ -633,7 +635,7 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
                 KillTimer(get_wnd(), TIMER_QUERY);
                 m_query_timer_active = false;
             }
-            commit_search_results(string_utf8_from_window(m_search_editbox), true);
+            commit_search_results(uGetWindowText(m_search_editbox), true);
             return 0;
         }
         break;

@@ -281,7 +281,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         autoplaylist->get_display_name(name);
                         name << " properties";
 
-                        AppendMenu(menu, MF_STRING, ID_AUTOPLAYLIST, uT(name));
+                        uAppendMenu(menu, MF_STRING, ID_AUTOPLAYLIST, name);
                     }
                     AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
