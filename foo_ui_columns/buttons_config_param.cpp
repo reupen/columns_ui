@@ -443,7 +443,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         } break;
         case IDC_TEXT | (EN_CHANGE << 16): {
             if (m_selection) {
-                m_selection->m_text = string_utf8_from_window(HWND(lp));
+                m_selection->m_text = uGetWindowText(HWND(lp));
             }
         } break;
         case IDC_PICK: {

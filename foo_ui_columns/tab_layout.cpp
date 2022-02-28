@@ -656,7 +656,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         } break;
         case IDC_CUSTOM_TITLE | (EN_CHANGE << 16):
             if (!m_initialising) {
-                string_utf8_from_window text((HWND)lp);
+                const auto text = uGetWindowText((HWND)lp);
                 stream_writer_memblock str;
                 abort_callback_impl p_abort;
                 str.write_string(text, p_abort);

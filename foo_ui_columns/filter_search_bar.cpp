@@ -271,7 +271,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
         case TIMER_QUERY:
             KillTimer(get_wnd(), TIMER_QUERY);
             if (m_query_timer_active)
-                commit_search_results(string_utf8_from_window(m_search_editbox));
+                commit_search_results(uGetWindowText(m_search_editbox));
             m_query_timer_active = false;
             return 0;
         }
@@ -285,7 +285,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             KillTimer(get_wnd(), TIMER_QUERY);
             m_query_timer_active = false;
         }
-        commit_search_results(string_utf8_from_window(m_search_editbox));
+        commit_search_results(uGetWindowText(m_search_editbox));
         update_favourite_icon();
         return 0;
     case WM_GETMINMAXINFO: {
@@ -315,7 +315,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
                 auto lpnmtbgit = (LPNMTBGETINFOTIP)lp;
                 pfc::string8 temp;
                 if (lpnmtbgit->iItem == idc_favourite) {
-                    string_utf8_from_window query(m_search_editbox);
+                    const auto query = uGetWindowText(m_search_editbox);
                     temp = !query.is_empty() && cfg_favourites.have_item(query) ? "Remove from favourites"
                                                                                 : "Add to favourites";
                 } else if (lpnmtbgit->iItem == idc_clear)
@@ -356,7 +356,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             commit_search_results("");
             break;
         case idc_favourite: {
-            string_utf8_from_window query(m_search_editbox);
+            const auto query = uGetWindowText(m_search_editbox);
             t_size index;
             if (!query.is_empty()) {
                 if (cfg_favourites.find_item(query, index)) {
@@ -430,7 +430,7 @@ void FilterSearchToolbar::refresh_favourites(bool is_initial)
 
 void FilterSearchToolbar::update_favourite_icon(const char* p_new)
 {
-    bool new_state = cfg_favourites.have_item(p_new ? p_new : string_utf8_from_window(m_search_editbox));
+    bool new_state = cfg_favourites.have_item(p_new ? p_new : uGetWindowText(m_search_editbox).get_ptr());
     if (m_favourite_state != new_state) {
         TBBUTTONINFO tbbi{};
         tbbi.cbSize = sizeof(tbbi);
@@ -635,7 +635,7 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
                 KillTimer(get_wnd(), TIMER_QUERY);
                 m_query_timer_active = false;
             }
-            commit_search_results(string_utf8_from_window(m_search_editbox), true);
+            commit_search_results(uGetWindowText(m_search_editbox), true);
             return 0;
         }
         break;

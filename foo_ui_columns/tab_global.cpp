@@ -20,9 +20,9 @@ public:
         int id = g_cur_tab2;
         if (id >= 0 && id < 2) {
             if (id == 0)
-                cfg_globalstring = string_utf8_from_window(wnd, IDC_STRING);
+                cfg_globalstring = uGetDlgItemText(wnd, IDC_STRING);
             else if (id == 1)
-                cfg_colour = string_utf8_from_window(wnd, IDC_STRING);
+                cfg_colour = uGetDlgItemText(wnd, IDC_STRING);
         }
     }
 
@@ -120,7 +120,7 @@ public:
                 } else if (cmd == IDM_SPEEDTEST) {
                     speedtest(g_columns, cfg_global != 0);
                 } else if (cmd == IDM_PREVIEW) {
-                    preview_to_console(string_utf8_from_window(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
+                    preview_to_console(uGetDlgItemText(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
                 } else if (cmd == IDM_EDITORFONT) {
                     auto font_description = cui::fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
                     if (font_description) {

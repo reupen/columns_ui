@@ -41,7 +41,7 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case (EN_CHANGE << 16) | IDC_STRING:
-                main_window::config_status_bar_script.set(string_utf8_from_window((HWND)lp));
+                main_window::config_status_bar_script.set(uGetWindowText((HWND)lp));
                 break;
             case (CBN_SELCHANGE << 16) | IDC_MENU_DBLCLK: {
                 on_menu_combo_change(wnd, lp, cfg_statusdbl, m_cache, IDC_MENU_DESC);

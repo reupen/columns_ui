@@ -40,7 +40,7 @@ public:
                 cfg_mclick = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
                 break;
             case (EN_CHANGE << 16) | IDC_PLAYLIST_TF:
-                cfg_playlist_switcher_tagz = string_utf8_from_window((HWND)lp);
+                cfg_playlist_switcher_tagz = uGetWindowText((HWND)lp);
                 if (cfg_playlist_switcher_use_tagz)
                     cui::panels::playlist_switcher::PlaylistSwitcher::g_refresh_all_items();
                 break;

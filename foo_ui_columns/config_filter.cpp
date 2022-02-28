@@ -272,7 +272,7 @@ public:
             case IDC_PADDING | EN_CHANGE << 16:
                 if (!m_initialising) {
                     cui::panels::filter::cfg_vertical_item_padding
-                        = strtol(string_utf8_from_window(reinterpret_cast<HWND>(lp)).get_ptr(), nullptr, 10);
+                        = strtol(uGetWindowText(reinterpret_cast<HWND>(lp)).get_ptr(), nullptr, 10);
                     cui::panels::filter::FilterPanel::g_on_vertical_item_padding_change();
                 }
                 break;
@@ -377,7 +377,7 @@ public:
                 cui::panels::filter::FilterPanel::g_on_showemptyitems_change(cui::panels::filter::cfg_showemptyitems);
                 break;
             case IDC_SORT_STRING | EN_CHANGE << 16:
-                cui::panels::filter::cfg_sort_string = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                cui::panels::filter::cfg_sort_string = uGetWindowText(reinterpret_cast<HWND>(lp));
                 break;
             case IDC_PRECEDENCE | CBN_SELCHANGE << 16:
                 cui::panels::filter::cfg_orderedbysplitters = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)) == 0;

@@ -39,7 +39,7 @@ public:
             case (EN_CHANGE << 16) | IDC_ARTWORKWIDTH:
                 if (m_initialised) {
                     cui::panels::playlist_view::cfg_artwork_width
-                        = mmh::strtoul_n(string_utf8_from_window((HWND)lp).get_ptr(), pfc_infinite);
+                        = mmh::strtoul_n(uGetWindowText((HWND)lp).get_ptr(), pfc_infinite);
                     cui::panels::playlist_view::PlaylistView::g_on_artwork_width_change();
                 }
                 break;

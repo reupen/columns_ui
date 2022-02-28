@@ -629,7 +629,7 @@ INT_PTR CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, 
         case (EN_CHANGE << 16) | IDC_IMAGE_PATH: {
             auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
             if (ptr->m_image) {
-                ptr->m_image->m_path = string_utf8_from_window((HWND)lp);
+                ptr->m_image->m_path = uGetWindowText((HWND)lp);
             }
         } break;
         case IDC_BROWSE: {

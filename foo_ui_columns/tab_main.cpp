@@ -38,7 +38,7 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case (EN_CHANGE << 16) | IDC_STRING:
-                main_window::config_main_window_title_script.set(string_utf8_from_window((HWND)lp));
+                main_window::config_main_window_title_script.set(uGetWindowText((HWND)lp));
                 break;
 
             case IDC_QUICKSETUP:

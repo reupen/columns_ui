@@ -153,7 +153,7 @@ public:
             } break;
             case (EN_CHANGE << 16) | IDC_SORT: {
                 if (!initialising && m_column) {
-                    m_column->sort_spec = (string_utf8_from_window((HWND)lp));
+                    m_column->sort_spec = (uGetWindowText((HWND)lp));
                 }
             } break;
             case IDC_PICK_COLOUR:
@@ -171,17 +171,17 @@ public:
             } break;
             case (EN_CHANGE << 16) | IDC_PLAYLIST_FILTER_STRING: {
                 if (!initialising && m_column) {
-                    m_column->filter = (string_utf8_from_window((HWND)lp));
+                    m_column->filter = (uGetWindowText((HWND)lp));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_EDITFIELD: {
                 if (!initialising && m_column) {
-                    m_column->edit_field = (string_utf8_from_window((HWND)lp));
+                    m_column->edit_field = (uGetWindowText((HWND)lp));
                 }
             } break;
             case (EN_CHANGE << 16) | IDC_NAME: {
                 if (!initialising && m_column) {
-                    m_column->name = string_utf8_from_window((HWND)lp);
+                    m_column->name = uGetWindowText((HWND)lp);
                     SendMessage(GetAncestor(wnd, GA_PARENT), MSG_COLUMN_NAME_CHANGED, NULL, NULL);
                 }
             } break;
@@ -220,7 +220,7 @@ void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
     } else if (cmd == IDM_SPEEDTEST) {
         speedtest(g_columns, cfg_global != 0);
     } else if (cmd == IDM_PREVIEW) {
-        preview_to_console(string_utf8_from_window(wnd, edit_ctrl_id), cfg_global != 0);
+        preview_to_console(uGetDlgItemText(wnd, edit_ctrl_id), cfg_global != 0);
     } else if (cmd == IDM_EDITORFONT) {
         auto font_description = cui::fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
         if (font_description) {
@@ -306,7 +306,7 @@ private:
                 break;
             case EN_CHANGE << 16 | IDC_DISPLAY_SCRIPT:
                 if (!initialising && m_column)
-                    m_column->spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                    m_column->spec = uGetWindowText(reinterpret_cast<HWND>(lp));
                 break;
             }
         }
@@ -402,7 +402,7 @@ private:
                 break;
             case EN_CHANGE << 16 | IDC_STYLE_SCRIPT:
                 if (!initialising && m_column)
-                    m_column->colour_spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                    m_column->colour_spec = uGetWindowText(reinterpret_cast<HWND>(lp));
                 break;
             }
         }
@@ -499,7 +499,7 @@ private:
                 break;
             case EN_CHANGE << 16 | IDC_SORTING_SCRIPT:
                 if (!initialising && m_column)
-                    m_column->sort_spec = string_utf8_from_window(reinterpret_cast<HWND>(lp));
+                    m_column->sort_spec = uGetWindowText(reinterpret_cast<HWND>(lp));
                 break;
             }
         }
