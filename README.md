@@ -1,5 +1,6 @@
 # Columns UI
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/08f7739ddcb94b3baf90df6a44cb798e)](https://app.codacy.com/gh/reupen/columns_ui?utm_source=github.com&utm_medium=referral&utm_content=reupen/columns_ui&utm_campaign=Badge_Grade_Settings)
 [![Build status](https://github.com/reupen/columns_ui/actions/workflows/build.yml/badge.svg)](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amaster)
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and
