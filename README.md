@@ -12,7 +12,7 @@ Stable and pre-release versions can be downloaded from the [Columns UI home page
 
 ### Development versions
 
-The latest development version can be downloaded by clicking on the GitHub Actions badge above, and then 
+The latest development version can be downloaded by clicking on the GitHub Actions badge above, and then
 clicking on the last successful build and scrolling down to the link named 'Component package (release)'
 at the bottom.
 
@@ -77,7 +77,7 @@ msbuild /m "/p:Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_u
 
 #### Using the Clang compiler (experimental)
 
-Columns UI can be also compiled using the version of Clang distributed with Visual Studio. 
+Columns UI can be also compiled using the version of Clang distributed with Visual Studio.
 
 (Note that Clang is not installed by default – in the Visual Studio 2022 installer, you will need to select the Clang compiler and the Clang build tools components.)
 
