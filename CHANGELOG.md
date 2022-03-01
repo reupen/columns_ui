@@ -17,7 +17,8 @@
   [[#432](https://github.com/reupen/columns_ui/pull/432)]
 
 - The default playback button icons were tweaked. This includes the removal of
-  subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435)]
+  subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435),
+  [#463](https://github.com/reupen/columns_ui/pull/463)]
 
 - The Filter search toolbar is now integrated with the Colours and fonts
   preferences page, and its font, foreground colour and background colour are
