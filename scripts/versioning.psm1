@@ -13,7 +13,7 @@ class Version {
 
     [string]ToString() {
         $annotations = @()
-    
+
         if ($this.Distance) {
             $annotations += @($this.Distance, "g$($this.CommitHash)")
         }
@@ -21,7 +21,7 @@ class Version {
         if ($Env:GITHUB_ACTIONS -eq 'true') {
             $annotations += 'github'
         }
-    
+
         if ($Env:GITHUB_RUN_ID) {
             $annotations += "r$Env:GITHUB_RUN_ID.$Env:GITHUB_RUN_NUMBER"
         }
@@ -29,12 +29,12 @@ class Version {
         if ($this.Dirty) {
             $annotations += 'dirty'
         }
-    
+
         if ($annotations) {
             $joinedAnnotations = $annotations -Join '.'
             return "$($this.BaseVersion)+$joinedAnnotations"
         }
-    
+
         return $this.BaseVersion
     }
 
@@ -46,11 +46,11 @@ class Version {
         $descriptionRegex = '^v(?<version>.+)-(?<distance>\d+)-g(?<commit>[0-9a-f]{7})(-(?<dirty>dirty))?$'
 
         $description = git describe --tags --dirty --match 'v[0-9]*' --long
-        
+
         If (-not ($description -match $descriptionRegex)) {
             throw
         }
-    
+
         return [Version]::new($Matches.version, [int]$Matches.distance, $Matches.commit, [bool]$Matches.dirty)
     }
 }

@@ -1,5 +1,4 @@
 ---
 # For some reason, (?!\.\.) does not work, so this alternative involving [^\.]{2} is used instead
 HeaderFilterRegex: '(\\|/)foo_ui_columns(\\|/)([^\.]{2})*.?\.h$'
-FormatStyle:     file
-...
+FormatStyle: file
