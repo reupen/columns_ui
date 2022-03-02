@@ -80,7 +80,7 @@ public:
     using self_t = SharedCellStyleData;
     using ptr = pfc::refcounted_object_ptr_t<self_t>;
 
-    SharedCellStyleData(const CellStyleData& in) : CellStyleData(in) {}
+    explicit SharedCellStyleData(const CellStyleData& in) : CellStyleData(in) {}
     SharedCellStyleData(const SharedCellStyleData&) = delete;
     SharedCellStyleData& operator=(const SharedCellStyleData&) = delete;
     SharedCellStyleData(SharedCellStyleData&&) = delete;

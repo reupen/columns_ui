@@ -32,7 +32,7 @@ int get_system_colour_id(const colours::colour_identifier_t colour_id)
 
 class ColourManagerInstance : public colours::manager_instance {
 public:
-    ColourManagerInstance(const GUID& p_client_guid)
+    explicit ColourManagerInstance(const GUID& p_client_guid)
     {
         g_colour_manager_data.find_by_guid(p_client_guid, m_entry);
         g_colour_manager_data.find_by_guid(pfc::guid_null, m_global_entry);

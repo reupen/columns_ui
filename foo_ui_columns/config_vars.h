@@ -20,7 +20,7 @@ class ConfigWindowPlacement : public cfg_struct_t<WINDOWPLACEMENT> {
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
 
 public:
-    ConfigWindowPlacement(const GUID& p_guid);
+    explicit ConfigWindowPlacement(const GUID& p_guid);
 };
 
 class ConfigMenuItem : public cfg_struct_t<MenuItemIdentifier> {

@@ -28,7 +28,7 @@ public:
             reinterpret_cast<LPARAM>(this));
     }
     // virtual const char * get_name()=0;
-    EditColumnWindowOptions(PlaylistViewColumn::ptr column)
+    explicit EditColumnWindowOptions(PlaylistViewColumn::ptr column)
         : initialising(false)
         , editproc(nullptr)
         , m_wnd(nullptr)

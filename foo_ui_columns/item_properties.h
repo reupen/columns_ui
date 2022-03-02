@@ -27,7 +27,7 @@ class FieldsList : public uih::ListView {
 public:
     t_size m_edit_index, m_edit_column;
     pfc::list_t<Field>& m_fields;
-    FieldsList(pfc::list_t<Field>& p_fields);
+    explicit FieldsList(pfc::list_t<Field>& p_fields);
 
     void get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& items);
     void notify_on_create() override;
@@ -135,7 +135,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        ModeNodeAutosize(ItemProperties* p_wnd);
+        explicit ModeNodeAutosize(ItemProperties* p_wnd);
     };
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
         pfc::list_t<ui_extension::menu_node_ptr> m_items;
@@ -144,7 +144,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         size_t get_children_count() const override;
         void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
-        MenuNodeSourcePopup(ItemProperties* p_wnd);
+        explicit MenuNodeSourcePopup(ItemProperties* p_wnd);
     };
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;

@@ -183,7 +183,7 @@ wil::unique_hbrush get_colour_brush(ColourID colour_id, bool is_dark)
 
 LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool is_dark)
 {
-    return {[colour_id, is_dark] { return get_colour_brush(colour_id, is_dark); }};
+    return LazyResource<wil::unique_hbrush>{[colour_id, is_dark] { return get_colour_brush(colour_id, is_dark); }};
 }
 
 namespace {

@@ -56,7 +56,7 @@ class PlaylistSwitcher
         HRESULT STDMETHODCALLTYPE DragLeave() override;
         HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
 
-        DropTarget(PlaylistSwitcher* p_window);
+        explicit DropTarget(PlaylistSwitcher* p_window);
 
     private:
         long drop_ref_count;

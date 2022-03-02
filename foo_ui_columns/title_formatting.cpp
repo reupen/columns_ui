@@ -5,9 +5,9 @@ namespace cui::tf {
 
 class ValueVisitor {
 public:
-    ValueVisitor(titleformat_text_out* out) : m_out{out} {}
+    explicit ValueVisitor(titleformat_text_out* out) : m_out{out} {}
 
-    bool operator()(const internal::ExplicitBool& value) const
+    bool operator()(const bool& value) const
     {
         if (value) {
             m_out->write(titleformat_inputtypes::unknown, "1");

@@ -288,7 +288,7 @@ public:
 
 class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
 public:
-    PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {}
+    explicit PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {}
 
     void render_group_info(uih::lv::RendererContext context, t_size index, RECT rc) override;
 
@@ -677,7 +677,7 @@ public:
     HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
     HRESULT STDMETHODCALLTYPE DragLeave() override;
     HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
-    PlaylistViewDropTarget(PlaylistView* playlist);
+    explicit PlaylistViewDropTarget(PlaylistView* playlist);
 
 private:
     HRESULT UpdateDropDescription(IDataObject* pDataObj, DWORD pdwEffect);

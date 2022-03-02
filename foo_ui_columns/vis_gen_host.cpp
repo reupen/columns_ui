@@ -17,7 +17,7 @@ public:
 
         const RECT* get_area() const override { return &m_rect; }
 
-        Painter(VisualisationPanel* p_wnd) : m_gdiobj(nullptr), m_wnd(p_wnd)
+        explicit Painter(VisualisationPanel* p_wnd) : m_gdiobj(nullptr), m_wnd(p_wnd)
         {
             m_dc = CreateCompatibleDC(nullptr);
             if (!p_wnd->get_bitmap())

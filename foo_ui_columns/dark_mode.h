@@ -32,7 +32,7 @@ enum class ColourID {
 template <class Object>
 class LazyObject {
 public:
-    LazyObject(std::function<Object()> factory) : m_factory(factory) {}
+    explicit LazyObject(std::function<Object()> factory) : m_factory(factory) {}
 
     Object& operator*() const
     {
@@ -50,7 +50,7 @@ private:
 template <class Resource>
 class LazyResource {
 public:
-    LazyResource(std::function<Resource()> factory) : m_resource(factory) {}
+    explicit LazyResource(std::function<Resource()> factory) : m_resource(factory) {}
 
     auto operator*() const { return (*m_resource).get(); }
 

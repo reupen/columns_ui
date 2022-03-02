@@ -14,7 +14,7 @@ public:
     class CompletionNotifyForwarder : public completion_notify {
     public:
         void on_completion(unsigned p_code) override;
-        CompletionNotifyForwarder(ArtworkPanel* p_this);
+        explicit CompletionNotifyForwarder(ArtworkPanel* p_this);
 
     private:
         service_ptr_t<ArtworkPanel> m_this;
@@ -112,7 +112,7 @@ private:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         size_t get_children_count() const override;
         void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
-        MenuNodeSourcePopup(ArtworkPanel* p_wnd);
+        explicit MenuNodeSourcePopup(ArtworkPanel* p_wnd);
     };
 
     class MenuNodeTypePopup : public ui_extension::menu_node_popup_t {
@@ -122,7 +122,7 @@ private:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         size_t get_children_count() const override;
         void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
-        MenuNodeTypePopup(ArtworkPanel* p_wnd);
+        explicit MenuNodeTypePopup(ArtworkPanel* p_wnd);
     };
     class MenuNodePreserveAspectRatio : public ui_extension::menu_node_command_t {
         service_ptr_t<ArtworkPanel> p_this;
@@ -131,7 +131,7 @@ private:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd);
+        explicit MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd);
     };
 
     class MenuNodeOptions : public ui_extension::menu_node_command_t {
@@ -147,7 +147,7 @@ private:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeLockType(ArtworkPanel* p_wnd);
+        explicit MenuNodeLockType(ArtworkPanel* p_wnd);
     };
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;

@@ -5,7 +5,8 @@ class ListViewPanelBase
     : public uih::ListView
     , public t_window {
 public:
-    ListViewPanelBase(std::unique_ptr<uih::lv::RendererBase> renderer = std::make_unique<uih::lv::DefaultRenderer>())
+    explicit ListViewPanelBase(
+        std::unique_ptr<uih::lv::RendererBase> renderer = std::make_unique<uih::lv::DefaultRenderer>())
         : ListView(std::move(renderer))
     {
     }

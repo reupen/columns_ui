@@ -76,7 +76,7 @@ class VolumeBar
         VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
 
     public:
-        VolumeTrackBar(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this) {}
+        explicit VolumeTrackBar(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this) {}
     } m_child;
 
     class VolumeTrackBarCallback : public uih::TrackbarCallback {
@@ -104,7 +104,9 @@ class VolumeBar
         VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
 
     public:
-        VolumeTrackBarCallback(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this) {}
+        explicit VolumeTrackBarCallback(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this)
+        {
+        }
     } m_track_bar_host;
 
 public:

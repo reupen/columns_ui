@@ -118,44 +118,6 @@ bool TitleformatHookChangeFont::process_field(
     return false;
 }
 
-void FontCodeGenerator::initialise(const LOGFONT& p_lf_default, HWND parent, UINT edit)
-{
-    m_lf = p_lf_default;
-    uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, StringFontCode(m_lf));
-}
-
-void FontCodeGenerator::run(HWND parent, UINT edit)
-{
-    if (auto font_description = fonts::select_font(parent, m_lf); font_description) {
-        m_lf = font_description->log_font;
-        uSendDlgItemMessageText(parent, edit, WM_SETTEXT, 0, StringFontCode(m_lf));
-    }
-}
-
-FontCodeGenerator::StringFontCode::StringFontCode(const LOGFONT& lf)
-{
-    prealloc(64);
-    HDC dc = GetDC(nullptr);
-    unsigned pt = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
-    ReleaseDC(nullptr, dc);
-
-    add_string("$set_font(");
-    add_string(pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, tabsize(lf.lfFaceName)));
-    add_byte(',');
-    add_string(pfc::format_int(pt));
-    add_string(",");
-    if (lf.lfWeight == FW_BOLD)
-        add_string("bold;");
-    if (lf.lfItalic)
-        add_string("italic;");
-    add_string(")");
-}
-
-FontCodeGenerator::StringFontCode::operator const char*() const
-{
-    return get_ptr();
-}
-
 void g_parse_font_format_string(const wchar_t* str, t_size len, RawFont& p_out)
 {
     t_size ptr = 0;

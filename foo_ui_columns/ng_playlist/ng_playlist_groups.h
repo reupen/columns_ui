@@ -6,7 +6,7 @@ namespace cui::panels::playlist_view {
 
 class Group {
 public:
-    Group(const char* p_string, PlaylistFilterType p_filter_type = FILTER_NONE, const char* p_filter = "")
+    explicit Group(const char* p_string, PlaylistFilterType p_filter_type = FILTER_NONE, const char* p_filter = "")
         : string(p_string)
         , filter_type(p_filter_type)
         , filter_playlists(p_filter)
@@ -44,7 +44,7 @@ public:
     void replace_group(t_size index, const Group& p_group);
     void swap(t_size index1, t_size index2);
     void set_groups(const pfc::list_base_const_t<Group>& p_groups, bool b_update_views = true);
-    ConfigGroups(const GUID& p_guid) : cfg_var(p_guid)
+    explicit ConfigGroups(const GUID& p_guid) : cfg_var(p_guid)
     {
         add_group(Group("$if2(%album artist%,<no artist>)[ / %album%]"), false);
     }

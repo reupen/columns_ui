@@ -158,7 +158,7 @@ public:
         return false;
     }
     t_uint32 get_mode() const { return m_mode; }
-    FCLDialog(bool b_import = false, std::unordered_set<GUID> p_list = {})
+    explicit FCLDialog(bool b_import = false, std::unordered_set<GUID> p_list = {})
         : m_import(b_import)
         , m_filter(std::move(p_list))
     {
