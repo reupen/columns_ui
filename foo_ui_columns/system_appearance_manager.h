@@ -26,4 +26,4 @@ void initialise();
 [[nodiscard]] std::unique_ptr<EventToken> add_modern_colours_change_handler(ModernColoursChangedHandler event_handler);
 [[nodiscard]] bool is_dark_mode_available();
 [[nodiscard]] bool is_dark_mode_enabled();
-}
+} // namespace cui::system_appearance_manager

@@ -205,9 +205,7 @@ ConfigLayout::Preset preset_to_config_preset(Preset preset)
 
 } // namespace cui::default_presets
 
-ConfigLayout::ConfigLayout(const GUID& p_guid)
-    : cfg_var(p_guid)
-    , m_active(0) //, m_initialised(false)
+ConfigLayout::ConfigLayout(const GUID& p_guid) : cfg_var(p_guid), m_active(0) //, m_initialised(false)
 {
 }
 

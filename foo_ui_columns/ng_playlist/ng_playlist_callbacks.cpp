@@ -14,21 +14,23 @@ void PlaylistView::on_items_added(/*unsigned p_playlist, */ size_t start,
         refresh_all_items_text();
     }
 }
-void PlaylistView::on_items_reordered(/*t_size p_playlist, */ const t_size* p_order, t_size p_count){
+void PlaylistView::on_items_reordered(/*t_size p_playlist, */ const t_size* p_order, t_size p_count)
+{
     /*(if (p_playlist ==0)*/
-    {clear_sort_column();
-for (t_size i = 0; i < p_count; i++) {
-    t_size start = i;
-    while (i < p_count && p_order[i] != i) {
-        i++;
-    }
-    if (i > start) {
-        InsertItemsContainer items;
-        get_insert_items(start, i - start, items);
-        replace_items(start, items);
-    }
-}
-} // namespace cui::panels::playlist_view
+    {
+        clear_sort_column();
+        for (t_size i = 0; i < p_count; i++) {
+            t_size start = i;
+            while (i < p_count && p_order[i] != i) {
+                i++;
+            }
+            if (i > start) {
+                InsertItemsContainer items;
+                get_insert_items(start, i - start, items);
+                replace_items(start, items);
+            }
+        }
+    } // namespace cui::panels::playlist_view
 }
 // changes selection too; doesnt actually change set of items that are selected or item having focus, just changes
 // their order
@@ -62,22 +64,24 @@ void PlaylistView::on_item_focus_change(/*t_size p_playlist, */ t_size p_from, t
     }
 } // focus may be -1 when no item has focus; reminder: focus may also change on other callbacks
 
-void PlaylistView::on_items_modified(/*t_size p_playlist, */ const bit_array& p_mask){// if (p_playlist==0)
-    {clear_sort_column();
-t_size count = m_playlist_api->activeplaylist_get_item_count();
+void PlaylistView::on_items_modified(/*t_size p_playlist, */ const bit_array& p_mask)
+{ // if (p_playlist==0)
+    {
+        clear_sort_column();
+        t_size count = m_playlist_api->activeplaylist_get_item_count();
 
-for (t_size i = 0; i < count; i++) {
-    t_size start = i;
-    while (i < count && p_mask[i]) {
-        i++;
+        for (t_size i = 0; i < count; i++) {
+            t_size start = i;
+            while (i < count && p_mask[i]) {
+                i++;
+            }
+            if (i > start) {
+                InsertItemsContainer items;
+                get_insert_items(start, i - start, items);
+                replace_items(start, items);
+            }
+        }
     }
-    if (i > start) {
-        InsertItemsContainer items;
-        get_insert_items(start, i - start, items);
-        replace_items(start, items);
-    }
-}
-}
 }
 
 void PlaylistView::on_items_modified_fromplayback(
@@ -104,9 +108,11 @@ void PlaylistView::on_items_replaced(
     on_items_modified(p_mask);
 }
 
-void PlaylistView::on_item_ensure_visible(/*t_size p_playlist, */ t_size p_idx){// if (p_playlist==0)
-    {ensure_visible(p_idx);
-}
+void PlaylistView::on_item_ensure_visible(/*t_size p_playlist, */ t_size p_idx)
+{ // if (p_playlist==0)
+    {
+        ensure_visible(p_idx);
+    }
 }
 
 void PlaylistView::on_playlist_switch()
@@ -152,4 +158,4 @@ void PlaylistView::on_playlist_renamed(const char* p_new_name, t_size p_new_name
     refresh_columns();
     populate_list();
 }
-}
+} // namespace cui::panels::playlist_view

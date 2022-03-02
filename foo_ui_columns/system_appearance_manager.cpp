@@ -257,4 +257,4 @@ bool is_dark_mode_enabled()
     return modern_colours->is_dark();
 }
 
-} // namespace cui
+} // namespace cui::system_appearance_manager

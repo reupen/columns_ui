@@ -53,4 +53,4 @@ template <orientation_t t_orientation>
 int dummy_class<t_orientation>::myint = {_T("dummy"), _T(""), 0, false, false, 0, WS_CHILD|WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, 0};
 #endif
 
-}
+} // namespace cui::panels::splitter

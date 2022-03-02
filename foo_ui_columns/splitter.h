@@ -207,4 +207,4 @@ public:
     FlatSplitterPanel() = default;
 };
 
-}
+} // namespace cui::panels::splitter
