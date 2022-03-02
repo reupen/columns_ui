@@ -6,22 +6,14 @@ Note: These guidelines are a work in progress.
 
 ### Automated formatting
 
-Code in this repository is formatted using
+C++ code in this repository is formatted using
 [ClangFormat](https://clang.llvm.org/docs/ClangFormat.html) to ensure
-consistency throughout the code base. Code style rules are defined in
-[.clang-format](.clang-format) (including rules for the placement of braces).
+consistency throughout the code base. [Prettier](https://prettier.io/) is used
+for Markdown, JSON and YAML files.
 
-You're advised to format any contributions using ClangFormat tools. There are
-various options for this, but two useful ones are:
-
-- `git clang-format`. This formats staged changes (requires
-  [LLVM](https://llvm.org/) and [Python](https://www.python.org/)).
-
-- [The ClangFormat Visual Studio extension](https://marketplace.visualstudio.com/items?itemName=LLVMExtensions.ClangFormat).
-  This can format a selection or an entire file.
-
-Generally, `git clang-format` is preferred as this limits formatting to the
-changes being made.
+A [pre-commit](https://pre-commit.com/) configuration is included to run these
+tools automatically on commit. It’s recommended that you set it up locally.
+(However, a bot will also check and reformat pull requests if needed.)
 
 ### Spaces and line endings
 
@@ -39,6 +31,8 @@ For functions and variables use lower_case_separated_by_underscores.
 Static data and function members of classes are prefixed with s\_.
 
 Non-static data members are prefixed with m\_.
+
+(These prefixes can be omitted for simple data structures.)
 
 British English is normally used both in names in code (class names, function
 names etc.) and in text in the UI. (An exception can be made for subclasses and

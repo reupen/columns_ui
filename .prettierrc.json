@@ -1,3 +1,11 @@
 {
-  "proseWrap": "always"
+  "endOfLine": "auto",
+  "overrides": [
+    {
+      "files": "*.md",
+      "options": {
+        "proseWrap": "always"
+      }
+    }
+  ]
 }

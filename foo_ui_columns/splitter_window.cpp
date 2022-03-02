@@ -1130,4 +1130,4 @@ void FlatSplitterPanel::g_on_size_change()
     }
 }
 
-}
+} // namespace cui::panels::splitter

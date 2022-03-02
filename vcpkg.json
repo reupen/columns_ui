@@ -2,12 +2,7 @@
   "name": "columns-ui",
   "version-string": "git",
   "builtin-baseline": "03ca9b59af1506a86840e3a3a01a092f3333a29b",
-  "dependencies": [
-    "fmt",
-    "ms-gsl",
-    "range-v3",
-    "wil"
-  ],
+  "dependencies": ["fmt", "ms-gsl", "range-v3", "wil"],
   "overrides": [
     {
       "name": "fmt",

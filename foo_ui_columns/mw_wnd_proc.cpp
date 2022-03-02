@@ -532,7 +532,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         } else if (lp == WM_RBUTTONDOWN) {
             g_last_sysray_r_down = true;
         }
-#if 0 
+#if 0
             /* There was some misbehaviour with the newer messages. So we don't use them. */
         if (lp == NIN_SELECT || lp == NIN_KEYSELECT)
         {

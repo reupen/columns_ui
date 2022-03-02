@@ -353,4 +353,4 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-}
+} // namespace cui::panels::splitter

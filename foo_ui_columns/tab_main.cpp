@@ -72,7 +72,6 @@ public:
                         _T("Warning! This will reset the toolbars to the default state. Continue?"),
                         _T("Reset toolbars?"), MB_YESNO)
                     == IDYES) {
-
                     if (cui::main_window.get_wnd())
                         cui::rebar::destroy_rebar();
                     cui::rebar::g_cfg_rebar.reset();
