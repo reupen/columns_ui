@@ -8,7 +8,7 @@
    version="1.1"
    id="SVGRoot"
    sodipodi:docname="light-play.svg"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -25,8 +25,8 @@
      inkscape:document-units="px"
      showgrid="true"
      inkscape:zoom="4.8728976"
-     inkscape:cx="45.250284"
-     inkscape:cy="126.41349"
+     inkscape:cx="45.352892"
+     inkscape:cy="125.07958"
      inkscape:window-width="3840"
      inkscape:window-height="2068"
      inkscape:window-x="-12"
@@ -46,11 +46,11 @@
          style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:6.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
          sodipodi:type="inkscape:offset"
          inkscape:radius="0"
-         inkscape:original="M 127.5 0 A 127.5 127.5 0 0 0 0 127.5 A 127.5 127.5 0 0 0 127.5 255 A 127.5 127.5 0 0 0 255 127.5 A 127.5 127.5 0 0 0 127.5 0 z "
+         inkscape:original="M 128 0 A 128 128 0 0 0 0 128 A 128 128 0 0 0 128 256 A 128 128 0 0 0 256 128 A 128 128 0 0 0 128 0 z "
          xlink:href="#circle1409"
          id="path1869"
          inkscape:href="#circle1409"
-         d="M 127.5,0 A 127.5,127.5 0 0 0 0,127.5 127.5,127.5 0 0 0 127.5,255 127.5,127.5 0 0 0 255,127.5 127.5,127.5 0 0 0 127.5,0 Z"
+         d="M 128,0 A 128,128 0 0 0 0,128 128,128 0 0 0 128,256 128,128 0 0 0 256,128 128,128 0 0 0 128,0 Z"
          clip-path="none" />
     </clipPath>
   </defs>
@@ -61,14 +61,14 @@
     <circle
        style="display:inline;fill:#ffffff;fill-opacity:1"
        id="path69"
-       r="127.5"
-       cy="127.5"
-       cx="127.5" />
+       r="128"
+       cy="128"
+       cx="128" />
     <path
        sodipodi:type="star"
        style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd"
        id="path1080"
-       inkscape:flatsided="false"
+       inkscape:flatsided="true"
        sodipodi:sides="3"
        sodipodi:cx="121.19764"
        sodipodi:cy="128"
@@ -78,15 +78,16 @@
        sodipodi:arg2="1.0471976"
        inkscape:rounded="0"
        inkscape:randomized="0"
-       d="M 187.59292,128 88,185.5 88,70.5 Z"
-       inkscape:transform-center-x="-16.598784"
-       inkscape:transform-center-y="-1.5375808e-06" />
+       d="M 187.59292,128 88,185.5 88,70.500002 Z"
+       inkscape:transform-center-x="-15.833299"
+       inkscape:transform-center-y="-1.5375808e-06"
+       transform="matrix(0.95388308,0,0,1,12.308289,0)" />
     <circle
        style="display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:20;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.25"
        id="circle1613"
-       cx="127.5"
-       cy="127.5"
-       r="127.5"
+       cx="128"
+       cy="128"
+       r="128"
        clip-path="url(#clipPath1867)" />
   </g>
 </svg>
