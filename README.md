@@ -1,6 +1,9 @@
 # Columns UI
 
 [![Build status](https://github.com/reupen/columns_ui/actions/workflows/build.yml/badge.svg)](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amaster)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/reupen/columns_ui/master.svg)](https://results.pre-commit.ci/latest/github/reupen/columns_ui/master)
+[![Codiga code quality](https://api.codiga.io/project/31411/score/svg)](https://app.codiga.io/project/31411/dashboard)
+[![Codacy code quality](https://app.codacy.com/project/badge/Grade/7a892c27551745ea883810ab7493983d)](https://www.codacy.com/gh/reupen/columns_ui/dashboard)
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and
 COPYING.LESSER).
