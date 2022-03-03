@@ -193,7 +193,7 @@ public:
                 HRESULT STDMETHODCALLTYPE DragLeave() override;
                 HRESULT STDMETHODCALLTYPE Drop(
                     IDataObject* pDataObj, DWORD grfKeyState, POINTL ptl, DWORD* pdwEffect) override;
-                ButtonsListDropTarget(ButtonsList* p_blv);
+                explicit ButtonsListDropTarget(ButtonsList* p_blv);
             };
             void notify_on_initialisation() override;
             void notify_on_create() override;
@@ -203,7 +203,7 @@ public:
             bool do_drag_drop(WPARAM wp) override;
 
         public:
-            ButtonsList(ConfigParam& p_param) : m_param(p_param) {}
+            explicit ButtonsList(ConfigParam& p_param) : m_param(p_param) {}
         } m_button_list;
 
         modal_dialog_scope m_scope;

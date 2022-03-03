@@ -6,7 +6,7 @@
 class ReplayGainCoreSettingsNotifyLambda : public replaygain_core_settings_notify {
 public:
     using Callback = std::function<void(const t_replaygain_config&)>;
-    ReplayGainCoreSettingsNotifyLambda(Callback calback) : m_callback{std::move(calback)} {}
+    explicit ReplayGainCoreSettingsNotifyLambda(Callback calback) : m_callback{std::move(calback)} {}
 
     void on_changed(const t_replaygain_config& cfg) override { m_callback(cfg); }
 

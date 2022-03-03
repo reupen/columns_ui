@@ -248,16 +248,15 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
 
             if (m_panel_dragging_valid && wp & MK_LBUTTON && is_index_valid(m_panel_dragging)) {
-                int new_height = m_last_position - (get_orientation() == vertical ? pt.y : pt.x);
                 int delta = (get_orientation() == vertical ? pt.y : pt.x) - m_last_position;
-                // console::formatter() << "before or: pt = " << pt.y << "," << pt.x << " lastpos: " << m_last_position
-                // << " enddelta: " << delta;
                 auto& p_panel = m_panels[m_panel_dragging];
+
                 if (p_panel->m_hidden && delta) {
                     p_panel->m_hidden = false;
                     p_panel->m_size = 0;
                     get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
                 }
+
                 int delta_changed = override_size(m_panel_dragging, delta);
                 m_last_position = (get_orientation() == vertical ? pt.y : pt.x) + delta_changed;
                 on_size_changed();

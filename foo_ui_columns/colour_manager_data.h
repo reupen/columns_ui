@@ -42,7 +42,7 @@ public:
         virtual void import(stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort);
         void read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort);
         void reset_colors();
-        Entry(bool b_global = false);
+        explicit Entry(bool b_global = false);
     };
     using entry_ptr_t = std::shared_ptr<Entry>;
     pfc::list_t<entry_ptr_t> m_entries;

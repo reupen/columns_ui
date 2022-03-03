@@ -85,7 +85,7 @@ public:
         HRESULT STDMETHODCALLTYPE DragOver(DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
         HRESULT STDMETHODCALLTYPE DragLeave() override;
         HRESULT STDMETHODCALLTYPE Drop(IDataObject* pDataObj, DWORD grfKeyState, POINTL pt, DWORD* pdwEffect) override;
-        PlaylistTabsDropTarget(PlaylistTabs* p_wnd);
+        explicit PlaylistTabsDropTarget(PlaylistTabs* p_wnd);
 
     private:
         bool m_last_rmb{};

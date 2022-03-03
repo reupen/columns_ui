@@ -51,10 +51,10 @@ LOGFONT read_font(stream_reader* stream, abort_callback& aborter)
 void write_font(stream_writer* stream, const LOGFONT& log_font, abort_callback& aborter)
 {
     LOGFONT lf = log_font;
-    t_size face_len = pfc::wcslen_max(lf.lfFaceName, tabsize(lf.lfFaceName));
+    t_size face_len = pfc::wcslen_max(lf.lfFaceName, std::size(lf.lfFaceName));
 
-    if (face_len < tabsize(lf.lfFaceName)) {
-        memset(lf.lfFaceName + face_len, 0, sizeof(WCHAR) * (tabsize(lf.lfFaceName) - face_len));
+    if (face_len < std::size(lf.lfFaceName)) {
+        memset(lf.lfFaceName + face_len, 0, sizeof(WCHAR) * (std::size(lf.lfFaceName) - face_len));
     }
 
     stream->write_lendian_t(lf.lfHeight, aborter);

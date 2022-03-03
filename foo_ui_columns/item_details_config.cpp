@@ -4,6 +4,20 @@
 
 namespace cui::panels::item_details {
 
+namespace {
+
+std::string format_font_code(const LOGFONT& lf)
+{
+    const auto dpi = uih::get_system_dpi_cached().cy;
+    const auto pt = -MulDiv(lf.lfHeight, 72, dpi);
+    const auto face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, std::size(lf.lfFaceName));
+
+    return fmt::format("$set_font({},{},{}{})", face.get_ptr(), pt, lf.lfWeight == FW_BOLD ? "bold;"sv : ""sv,
+        lf.lfItalic ? "italic;"sv : ""sv);
+}
+
+} // namespace
+
 INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
@@ -39,9 +53,8 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         ComboBox_AddString(wnd_combo, L"Bottom");
         ComboBox_SetCurSel(wnd_combo, m_vertical_alignment);
 
-        LOGFONT lf;
-        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
-        m_font_code_generator.initialise(lf, wnd, IDC_FONT_CODE);
+        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, m_code_generator_selected_font);
+        uSetDlgItemText(wnd, IDC_FONT_CODE, format_font_code(m_code_generator_selected_font).c_str());
 
         colour_code_gen(wnd, IDC_COLOUR_CODE, false, true);
 
@@ -102,7 +115,11 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
             colour_code_gen(wnd, IDC_COLOUR_CODE, false, false);
             break;
         case IDC_GEN_FONT:
-            m_font_code_generator.run(wnd, IDC_FONT_CODE);
+            if (const auto font_description = fonts::select_font(wnd, m_code_generator_selected_font);
+                font_description) {
+                m_code_generator_selected_font = font_description->log_font;
+                uSetDlgItemText(wnd, IDC_FONT_CODE, format_font_code(m_code_generator_selected_font).c_str());
+            }
             break;
         case IDC_SCRIPT:
             switch (HIWORD(wp)) {

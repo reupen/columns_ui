@@ -88,7 +88,7 @@ public:
         return false;
     }
 
-    SetGlobalTitleformatHook(GlobalVariableList& vars) : p_vars(vars) {}
+    explicit SetGlobalTitleformatHook(GlobalVariableList& vars) : p_vars(vars) {}
 };
 
 class DateTitleformatHook : public titleformat_hook {
@@ -100,7 +100,7 @@ public:
         titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag) override;
     bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
-    DateTitleformatHook(const SYSTEMTIME* st = nullptr) : p_st(st) {}
+    explicit DateTitleformatHook(const SYSTEMTIME* st = nullptr) : p_st(st) {}
 };
 
 class SplitterTitleformatHook : public titleformat_hook {

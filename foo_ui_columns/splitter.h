@@ -90,7 +90,7 @@ private:
         public:
             enum { MSG_AUTOHIDE_END = WM_USER + 2 };
 
-            PanelContainer(Panel* p_panel);
+            explicit PanelContainer(Panel* p_panel);
 
             ~PanelContainer();
             void set_window_ptr(FlatSplitterPanel* p_ptr);

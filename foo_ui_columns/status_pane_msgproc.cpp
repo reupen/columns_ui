@@ -10,7 +10,7 @@ void g_split_string_by_crlf(const char* text, pfc::string_list_impl& p_out)
     const char* ptr = text;
     while (*ptr) {
         const char* start = ptr;
-        t_size counter = 0;
+
         while (*ptr && *ptr != '\r' && *ptr != '\n') {
             ptr++;
         }

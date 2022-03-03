@@ -109,26 +109,11 @@ public:
     bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
-    TitleformatHookChangeFont(const LOGFONT& lf);
+    explicit TitleformatHookChangeFont(const LOGFONT& lf);
 
 private:
     pfc::string8 m_default_font_face;
     t_size m_default_font_size;
-};
-
-class FontCodeGenerator {
-    class StringFontCode : private pfc::string8_fast_aggressive {
-    public:
-        operator const char*() const;
-        StringFontCode(const LOGFONT& lf);
-    };
-
-public:
-    void run(HWND parent, UINT edit);
-    void initialise(const LOGFONT& p_lf_default, HWND parent, UINT edit);
-
-private:
-    LOGFONT m_lf{};
 };
 
 class ItemDetails
@@ -186,7 +171,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         size_t get_children_count() const override;
         void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
-        MenuNodeSourcePopup(ItemDetails* p_wnd);
+        explicit MenuNodeSourcePopup(ItemDetails* p_wnd);
     };
 
     class MenuNodeAlignment : public ui_extension::menu_node_command_t {
@@ -208,7 +193,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         size_t get_children_count() const override;
         void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
-        MenuNodeAlignmentPopup(ItemDetails* p_wnd);
+        explicit MenuNodeAlignmentPopup(ItemDetails* p_wnd);
     };
 
     class MenuNodeOptions : public ui_extension::menu_node_command_t {
@@ -218,7 +203,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeOptions(ItemDetails* p_wnd);
+        explicit MenuNodeOptions(ItemDetails* p_wnd);
     };
     class MenuNodeHorizontalScrolling : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
@@ -227,7 +212,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeHorizontalScrolling(ItemDetails* p_wnd);
+        explicit MenuNodeHorizontalScrolling(ItemDetails* p_wnd);
     };
 
     class MenuNodeWordWrap : public ui_extension::menu_node_command_t {
@@ -237,7 +222,7 @@ public:
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeWordWrap(ItemDetails* p_wnd);
+        explicit MenuNodeWordWrap(ItemDetails* p_wnd);
     };
 
     // UIE funcs
@@ -401,7 +386,7 @@ public:
     uint32_t m_edge_style{};
     uint32_t m_horizontal_alignment{};
     uint32_t m_vertical_alignment{};
-    FontCodeGenerator m_font_code_generator;
+    LOGFONT m_code_generator_selected_font{};
     bool m_modal{};
     bool m_timer_active{};
     service_ptr_t<ItemDetails> m_this;

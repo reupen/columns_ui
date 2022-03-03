@@ -278,8 +278,6 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
 
         unsigned IDM_EXT_BASE = IDM_BASE;
 
-        HWND child = ChildWindowFromPoint(wnd, pt_client);
-
         if (m_this.is_valid()) {
             unsigned index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index)) {

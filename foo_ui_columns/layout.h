@@ -39,7 +39,7 @@ public:
 
     void reset_presets(); // needs services
 
-    ConfigLayout(const GUID& p_guid);
+    explicit ConfigLayout(const GUID& p_guid);
 
 private:
     enum { stream_version_current = 0 };

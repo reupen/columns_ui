@@ -8,7 +8,7 @@ namespace {
 
 class LazyFieldCalculator {
 public:
-    LazyFieldCalculator(size_t playlist_index) : m_playlist_index(playlist_index) {}
+    explicit LazyFieldCalculator(size_t playlist_index) : m_playlist_index(playlist_index) {}
 
     t_filesize total_file_size()
     {

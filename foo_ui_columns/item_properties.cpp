@@ -404,7 +404,7 @@ private:
 template <class Container>
 class TrackPropertyInfoSourceProvider : public track_property_provider_v3_info_source {
 public:
-    TrackPropertyInfoSourceProvider(Container& items) : m_items(items) {}
+    explicit TrackPropertyInfoSourceProvider(Container& items) : m_items(items) {}
     metadb_info_container::ptr get_info(size_t index) override { return m_items[index]; }
 
 private:

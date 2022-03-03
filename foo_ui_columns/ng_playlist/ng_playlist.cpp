@@ -797,7 +797,7 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 
         const keyboard_shortcut_manager::shortcut_type shortcuts[]
             = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
-        contextmenu_api->set_shortcut_preference(shortcuts, tabsize(shortcuts));
+        contextmenu_api->set_shortcut_preference(shortcuts, std::size(shortcuts));
         contextmenu_api->init_context_playlist(contextmenu_flags);
         contextmenu_api->win32_build_menu(menu, ID_CUSTOM_BASE, -1);
     }
@@ -839,10 +839,6 @@ void PlaylistView::notify_update_item_data(t_size index)
 {
     string_array& p_out = get_item_subitems(index);
     PlaylistViewItem* p_item = get_item(index);
-
-    t_size group_index = 0;
-    t_size group_count = 0;
-    // uih::ListView::get_item_group(index, get_group_count()-1, group_index, group_count);
 
     pfc::string8_fast_aggressive temp;
     pfc::string8_fast_aggressive str_dummy;

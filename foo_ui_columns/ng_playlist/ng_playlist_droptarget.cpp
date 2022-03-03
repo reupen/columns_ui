@@ -193,15 +193,9 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
         if (process) {
             metadb_handle_list data;
 
-            // console::info(playlist_incoming_item_filter::get()->process_dropped_files_check_if_native(pDataObj)?"native":"not
-            // very native?");
-
             const auto ole_api = ole_interaction::get();
-            bool b_isNative = playlist_incoming_item_filter::get()->process_dropped_files_check_if_native(pDataObj);
 
             dropped_files_data_impl dropped_data;
-            // playlist_incoming_item_filter_v3::get()->process_dropped_files(pDataObj, data,
-            // true,p_playlist->get_wnd());
             ole_api->parse_dataobject(pDataObj, dropped_data);
 
             const auto playlist_api = playlist_manager::get();
@@ -303,7 +297,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                             playlist_api->playlist_undo_backup(m_insertIndexTracker.m_playlist);
                             bool b_redraw = p_playlist->disable_redrawing();
                             playlist_api->playlist_clear_selection(m_insertIndexTracker.m_playlist);
-                            t_size index_insert = playlist_api->playlist_insert_items(m_insertIndexTracker.m_playlist,
+                            playlist_api->playlist_insert_items(m_insertIndexTracker.m_playlist,
                                 m_insertIndexTracker.m_item, p_items, bit_array_true());
                             playlist_api->playlist_set_focus_item(
                                 m_insertIndexTracker.m_playlist, m_insertIndexTracker.m_item);

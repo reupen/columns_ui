@@ -11,7 +11,7 @@ namespace cui::prefs {
 
 class PreferencesTabHelper {
 public:
-    PreferencesTabHelper(std::initializer_list<unsigned> title_ctrl_ids) : m_title_ctrl_ids(title_ctrl_ids) {}
+    explicit PreferencesTabHelper(std::initializer_list<unsigned> title_ctrl_ids) : m_title_ctrl_ids(title_ctrl_ids) {}
 
     HWND create(
         HWND wnd, UINT id, std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback);

@@ -313,14 +313,12 @@ static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWN
         return TRUE;
     case WM_CTLCOLORSTATIC: {
         if (GetDlgItem(wnd, IDC_PATCH_FORE) == (HWND)lp) {
-            auto dc = (HDC)wp;
             if (!state.br_fore) {
                 state.br_fore = CreateSolidBrush(state.cr_fore);
             }
             return reinterpret_cast<INT_PTR>(state.br_fore);
         }
         if (GetDlgItem(wnd, IDC_PATCH_BACK) == (HWND)lp) {
-            auto dc = (HDC)wp;
             if (!state.br_back) {
                 state.br_back = CreateSolidBrush(state.cr_back);
             }

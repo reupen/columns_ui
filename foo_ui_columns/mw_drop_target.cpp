@@ -69,13 +69,9 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(
 
         incoming_api->process_dropped_files(pDataObj, data, true, cui::main_window.get_wnd());
 
-        bool send_new_playlist = false;
-
-        int idx = -1;
-
         playlist_api->activeplaylist_undo_backup();
         playlist_api->activeplaylist_clear_selection();
-        playlist_api->activeplaylist_insert_items(idx, data, bit_array_true());
+        playlist_api->activeplaylist_add_items(data, bit_array_true());
 
         data.remove_all();
     }

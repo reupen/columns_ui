@@ -423,7 +423,6 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                         path, FALSE)) {
                     m_button_list.remove_items(bit_array_true());
 
-                    HWND wnd_show = GetDlgItem(wnd, IDC_SHOW);
                     HWND wnd_text = GetDlgItem(wnd, IDC_TEXT_LOCATION);
                     HWND wnd_app = GetDlgItem(wnd, IDC_APPEARANCE);
 

@@ -21,7 +21,7 @@ public:
     void fix_name(const char* p_name, pfc::string8& p_out);
     void fix_name(pfc::string8& p_name);
 
-    ConfigFields(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
+    explicit ConfigFields(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
 };
 
 class ConfigFavourites
@@ -34,7 +34,7 @@ public:
     bool have_item(const char* p_item);
     bool find_item(const char* p_item, t_size& index);
 
-    ConfigFavourites(const GUID& p_guid) : cfg_var(p_guid) {}
+    explicit ConfigFavourites(const GUID& p_guid) : cfg_var(p_guid) {}
 };
 
 extern ConfigFavourites cfg_favourites;

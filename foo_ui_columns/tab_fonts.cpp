@@ -2,6 +2,20 @@
 
 #include "tab_fonts.h"
 
+namespace {
+
+std::string format_font_description(const LOGFONT& lf)
+{
+    const auto dpi = uih::get_system_dpi_cached().cy;
+    const auto pt = -MulDiv(lf.lfHeight, 72, dpi);
+    const auto face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, std::size(lf.lfFaceName));
+
+    return fmt::format(
+        "{} {}pt{}{}", face.get_ptr(), pt, lf.lfWeight == FW_BOLD ? " bold"sv : ""sv, lf.lfItalic ? " italic"sv : ""sv);
+}
+
+} // namespace
+
 bool TabFonts::is_active()
 {
     return m_wnd != nullptr;
@@ -127,7 +141,7 @@ void TabFonts::update_font_desc()
 {
     LOGFONT lf;
     get_font(lf);
-    uSetWindowText(GetDlgItem(m_wnd, IDC_FONT_DESC), StringFontDesc(lf));
+    uSetWindowText(GetDlgItem(m_wnd, IDC_FONT_DESC), format_font_description(lf).c_str());
 }
 
 void TabFonts::update_change()

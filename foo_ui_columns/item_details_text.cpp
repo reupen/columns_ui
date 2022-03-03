@@ -484,8 +484,8 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
             rc_font.bottom -= half_padding_size;
 
             utf8_converter.convert(text_ptr, num_characters_to_render);
-            BOOL ret = text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false,
-                false, uih::ALIGN_LEFT, nullptr, false, false, &end_x_position, rc_line.left - left_padding);
+            text_out_colours_tab(dc, utf8_converter, pfc_infinite, 0, 0, &rc_font, false, cr_text, false, false,
+                uih::ALIGN_LEFT, nullptr, false, false, &end_x_position, rc_line.left - left_padding);
             rc_line.left = end_x_position;
             text_ptr += num_characters_to_render;
             num_characters_remaining -= num_characters_to_render;
