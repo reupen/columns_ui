@@ -171,7 +171,7 @@ void FilterPanel::g_on_showemptyitems_change(bool b_val, bool update_filters)
         if (g_streams[i]->m_windows.get_count()) {
             pfc::list_t<FilterPanel*> windows;
             g_streams[i]->m_windows[0]->get_windows(windows);
-            t_size j = windows.get_count();
+
             if (windows.get_count())
                 g_update_subsequent_filters(windows, 0, false, false);
         }
@@ -479,7 +479,7 @@ bool FilterPanel::do_drag_drop(WPARAM wp)
         if (pDataObject.is_valid()) {
             m_drag_item_count = data.get_count();
             DWORD blah = DROPEFFECT_NONE;
-            HRESULT hr = uih::ole::do_drag_drop(
+            uih::ole::do_drag_drop(
                 get_wnd(), wp, pDataObject.get_ptr(), DROPEFFECT_COPY | DROPEFFECT_MOVE, DROPEFFECT_COPY, &blah);
             m_drag_item_count = 0;
         }

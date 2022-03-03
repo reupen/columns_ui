@@ -211,13 +211,8 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
             incoming_api->process_dropped_files(pDataObj, data, true, p_list->get_wnd());
 
             POINT pttab = pti;
-            POINT ptpl = pti;
 
-            int idx = -1;
             t_size newPlaylistIndex = pfc_infinite;
-            //    if ((g_tab && wnd == g_tab) || g_plist && wnd == g_plist)
-
-            //    bool processed = false;
             t_size target_index = playlist_api->get_active_playlist();
 
             if (p_list->wnd_tabs && wnd == p_list->wnd_tabs) {
@@ -229,7 +224,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
                     hittest.pt.x = pttab.x;
                     hittest.pt.y = pttab.y;
                     int idx = TabCtrl_HitTest(p_list->wnd_tabs, &hittest);
-                    int old = playlist_api->get_active_playlist();
+
                     if (send_new_playlist || idx < 0 || isAltDown) {
                         send_new_playlist = true;
                         if (idx >= 0)
@@ -318,7 +313,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 
             } else {
                 playlist_api->playlist_clear_selection(target_index);
-                playlist_api->playlist_insert_items(target_index, idx, data, bit_array_true());
+                playlist_api->playlist_add_items(target_index, data, bit_array_true());
                 if (main_window::config_get_activate_target_playlist_on_dropped_items())
                     playlist_api->set_active_playlist(target_index);
             }

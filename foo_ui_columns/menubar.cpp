@@ -579,7 +579,7 @@ bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARA
                 HWND wnd_hit = WindowFromPoint(px);
                 if (wnd_hit == wnd_menu) {
                     POINT pt = px;
-                    int hot_item = SendMessage(wnd_menu, TB_GETHOTITEM, 0, 0);
+
                     if (ScreenToClient(wnd_menu, &pt)) {
                         t_size idx = SendMessage(wnd_menu, TB_HITTEST, 0, reinterpret_cast<LPARAM>(&pt));
 

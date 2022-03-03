@@ -99,9 +99,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     if (WM_SHELLHOOKMESSAGE && msg == WM_SHELLHOOKMESSAGE && m_should_handle_multimedia_keys) {
         if (wp == HSHELL_APPCOMMAND) {
-            short cmd = GET_APPCOMMAND_LPARAM(lp);
-            WORD uDevice = GET_DEVICE_LPARAM(lp);
-            WORD dwKeys = GET_KEYSTATE_LPARAM(lp);
+            const auto cmd = GET_APPCOMMAND_LPARAM(lp);
+
             switch (cmd) {
             case APPCOMMAND_MEDIA_PLAY_PAUSE:
                 standard_commands::main_play_or_pause();

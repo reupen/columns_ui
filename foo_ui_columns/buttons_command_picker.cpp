@@ -88,7 +88,6 @@ void CommandPickerData::populate_commands()
         service_enum_t<contextmenu_item> e;
         service_ptr_t<contextmenu_item> ptr;
 
-        unsigned p_item_index = 0; //,n=0;
         while (e.next(ptr)) {
             {
                 unsigned p_service_item_count = ptr->get_num_items();
@@ -126,7 +125,6 @@ void CommandPickerData::populate_commands()
         service_enum_t<mainmenu_commands> e;
         service_ptr_t<mainmenu_commands> ptr;
 
-        unsigned p_item_index = 0; //,n=0;
         while (e.next(ptr)) {
             service_ptr_t<mainmenu_commands_v2> ptr_v2;
             ptr->service_query_t(ptr_v2);

@@ -79,7 +79,7 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
     wc.lpszClassName = main_window_class_name;
 
-    ATOM cls = RegisterClass(&wc);
+    RegisterClass(&wc);
 
     RECT rc_work{};
     SystemParametersInfo(SPI_GETWORKAREA, NULL, &rc_work, NULL);

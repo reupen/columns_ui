@@ -48,7 +48,7 @@ void FilterPanel::notify_save_inline_edit(const char* value)
                     t_size field_index = infos[i].meta_find(m_edit_fields[j]);
                     if (field_index != pfc_infinite) {
                         t_size field_count = infos[i].meta_enum_value_count(field_index);
-                        bool b_found = false;
+
                         for (t_size k = 0; k < field_count; k++) {
                             const char* ptr = infos[i].meta_enum_value(field_index, k);
                             if (((!ptr && m_edit_previous_value.is_empty())

@@ -683,18 +683,11 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             g_message_window.create(nullptr);
         g_windows.push_back(this);
 
-        auto lpcs = (LPCREATESTRUCT)lp;
-
         titleformat_compiler::get()->compile_safe(m_to, m_script);
 
         on_size(/*lpcs->cx, lpcs->cy*/);
         on_tracking_mode_change();
         refresh_contents(true, true);
-
-        // FIXME
-        // m_library_richedit = LoadLibrary(L"Msftedit.dll");
-        // m_wnd_richedit = CreateWindowEx(NULL, MSFTEDIT_CLASS, L"MooMooCoCoBananas", WS_VISIBLE| WS_CHILD | WS_BORDER,
-        // 0, 0, 200, 200, wnd, HMENU(1001), core_api::get_my_instance(), NULL);
     } break;
     case WM_DESTROY: {
         std::erase(g_windows, this);

@@ -20,8 +20,6 @@ class LegacyFontsDataSet : public fcl::dataset {
     void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
-        fbh::fcl::Writer out(p_writer, p_abort);
-        // out.write_item(font_status, cfg_status_font);
     }
     void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override

@@ -62,7 +62,6 @@ void FlatSplitterPanel::refresh_children()
 {
     unsigned n;
     unsigned count = m_panels.get_count();
-    unsigned size_cumulative = 0;
     pfc::array_t<bool> new_items;
     new_items.set_count(count);
     new_items.fill_null();
@@ -268,7 +267,6 @@ void FlatSplitterPanel::get_panels_sizes(
 
     unsigned n;
     unsigned count = m_panels.get_count();
-    unsigned height_allocated = 0;
 
     if (count) {
         pfc::array_t<t_size_info> size_info;

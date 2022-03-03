@@ -840,10 +840,6 @@ void PlaylistView::notify_update_item_data(t_size index)
     string_array& p_out = get_item_subitems(index);
     PlaylistViewItem* p_item = get_item(index);
 
-    t_size group_index = 0;
-    t_size group_count = 0;
-    // uih::ListView::get_item_group(index, get_group_count()-1, group_index, group_count);
-
     pfc::string8_fast_aggressive temp;
     pfc::string8_fast_aggressive str_dummy;
     temp.prealloc(32);

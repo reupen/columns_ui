@@ -68,8 +68,6 @@ class FontManager2 : public fonts::manager_v2 {
 public:
     [[nodiscard]] LOGFONT get_client_font(GUID p_guid, unsigned dpi) const override
     {
-        LOGFONT lf{};
-
         system_appearance_manager::initialise();
         FontManagerData::entry_ptr_t p_entry;
         g_font_manager_data.find_by_guid(p_guid, p_entry);

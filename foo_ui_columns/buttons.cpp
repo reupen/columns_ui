@@ -377,7 +377,6 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     else if (msg == WM_USER + 2) {
         if (wnd_toolbar && wp < m_buttons.size() && m_buttons[wp].m_interface.is_valid()) {
             unsigned state = m_buttons[wp].m_interface->get_button_state();
-            unsigned tbstate = 0;
             if (state & uie::BUTTON_STATE_PRESSED) {
                 PostMessage(wnd_toolbar, TB_PRESSBUTTON, wp, MAKELONG(TRUE, 0));
             }
@@ -574,8 +573,6 @@ INT_PTR CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, 
     case WM_INITDIALOG:
         SetWindowLongPtr(wnd, DWLP_USER, lp);
         {
-            auto* ptr = reinterpret_cast<ConfigParam*>(lp);
-
             uSendDlgItemMessageText(wnd, IDC_IMAGE_TYPE, CB_ADDSTRING, 0, "Default");
             uSendDlgItemMessageText(wnd, IDC_IMAGE_TYPE, CB_ADDSTRING, 0, "Custom");
 

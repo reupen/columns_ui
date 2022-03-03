@@ -82,8 +82,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
     *pdwEffect = DROPEFFECT_NONE;
     if (check_do(m_DataObject.get() /*, pdwEffect*/)) {
         *pdwEffect = DROPEFFECT_MOVE;
-        HRESULT hr = uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_MOVE, "Move", "");
-        // console::formatter() << pfc::format_hex(hr);
+        uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_MOVE, "Move", "");
     }
     if (m_button_list_view->get_wnd()) {
         HitTestResult hi;
