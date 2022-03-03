@@ -489,7 +489,7 @@ void FilterSearchToolbar::create_edit()
 
     SendMessage(m_wnd_toolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)m_imagelist);
     SendMessage(m_wnd_toolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
-    SendMessage(m_wnd_toolbar, TB_ADDBUTTONS, (WPARAM)tabsize(tbb), (LPARAM)&tbb[0]);
+    SendMessage(m_wnd_toolbar, TB_ADDBUTTONS, (WPARAM)std::size(tbb), (LPARAM)&tbb[0]);
     ShowWindow(m_wnd_toolbar, SW_SHOWNORMAL);
     SendMessage(m_wnd_toolbar, TB_AUTOSIZE, 0, 0);
 

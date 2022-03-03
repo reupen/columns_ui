@@ -797,7 +797,7 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 
         const keyboard_shortcut_manager::shortcut_type shortcuts[]
             = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
-        contextmenu_api->set_shortcut_preference(shortcuts, tabsize(shortcuts));
+        contextmenu_api->set_shortcut_preference(shortcuts, std::size(shortcuts));
         contextmenu_api->init_context_playlist(contextmenu_flags);
         contextmenu_api->win32_build_menu(menu, ID_CUSTOM_BASE, -1);
     }

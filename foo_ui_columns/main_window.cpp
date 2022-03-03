@@ -219,21 +219,21 @@ void cui::MainWindow::update_taskbar_buttons(bool update) const
             = {L"Stop", L"Previous", (b_is_playing && !b_is_paused ? L"Pause" : L"Play"), L"Next", L"Random"};
         INT_PTR bitmap_indices[] = {0, 1, (b_is_playing && !b_is_paused ? 2 : 3), 4, 5};
 
-        THUMBBUTTON tb[tabsize(bitmap_indices)]{};
+        THUMBBUTTON tb[std::size(bitmap_indices)]{};
 
-        for (size_t i = 0; i < tabsize(bitmap_indices); i++) {
+        for (size_t i = 0; i < std::size(bitmap_indices); i++) {
             tb[i].dwMask = THB_BITMAP | THB_TOOLTIP /*|THB_FLAGS*/;
             tb[i].iId = taskbar_buttons::ID_FIRST + i;
             tb[i].iBitmap = bitmap_indices[i];
-            wcscpy_s(tb[i].szTip, tabsize(tb[i].szTip), ttips[i]);
+            wcscpy_s(tb[i].szTip, std::size(tb[i].szTip), ttips[i]);
             // if (tb[i].iId == ID_STOP && !b_is_playing)
             //    tb[i].dwFlags |= THBF_DISABLED;
         }
 
         if (update)
-            m_taskbar_list->ThumbBarUpdateButtons(m_wnd, tabsize(tb), tb);
+            m_taskbar_list->ThumbBarUpdateButtons(m_wnd, std::size(tb), tb);
         else
-            m_taskbar_list->ThumbBarAddButtons(m_wnd, tabsize(tb), tb);
+            m_taskbar_list->ThumbBarAddButtons(m_wnd, std::size(tb), tb);
     }
 }
 

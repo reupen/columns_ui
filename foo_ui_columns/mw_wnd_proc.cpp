@@ -299,7 +299,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 const keyboard_shortcut_manager::shortcut_type shortcuts[]
                     = {keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING};
-                p_manager->set_shortcut_preference(shortcuts, tabsize(shortcuts));
+                p_manager->set_shortcut_preference(shortcuts, std::size(shortcuts));
                 if (p_manager->init_context_now_playing(
                         standard_config_objects::query_show_keyboard_shortcuts_in_menus()
                             ? contextmenu_manager::FLAG_SHOW_SHORTCUTS
@@ -575,7 +575,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     if (p_manager_selection.is_valid()) {
                         const keyboard_shortcut_manager::shortcut_type shortcuts[]
                             = {keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING};
-                        p_manager_selection->set_shortcut_preference(shortcuts, tabsize(shortcuts));
+                        p_manager_selection->set_shortcut_preference(shortcuts, std::size(shortcuts));
 
                         if (p_manager_selection->init_context_now_playing(
                                 standard_config_objects::query_show_keyboard_shortcuts_in_menus()

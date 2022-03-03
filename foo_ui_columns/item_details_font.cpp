@@ -48,7 +48,7 @@ TitleformatHookChangeFont::TitleformatHookChangeFont(const LOGFONT& lf)
     m_default_font_size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
     ReleaseDC(nullptr, dc);
 
-    m_default_font_face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, tabsize(lf.lfFaceName));
+    m_default_font_face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, std::size(lf.lfFaceName));
 }
 
 bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,

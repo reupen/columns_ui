@@ -32,12 +32,12 @@ MiddleLickAction MiddleClickActionManager::g_pma_actions[] = {
 
 unsigned MiddleClickActionManager::get_count()
 {
-    return tabsize(g_pma_actions);
+    return std::size(g_pma_actions);
 }
 
 unsigned MiddleClickActionManager::id_to_idx(unsigned id)
 {
-    unsigned count = tabsize(g_pma_actions);
+    unsigned count = std::size(g_pma_actions);
     for (unsigned n = 0; n < count; n++) {
         if (g_pma_actions[n].id == id)
             return n;

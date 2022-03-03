@@ -14,5 +14,5 @@ PreferencesTab* tabs_layout[] = {&g_tab_layout, &g_tab_layout_misc};
 
 cfg_int cfg_child_layout(GUID{0xe5c3db3c, 0xccd8, 0x4c8e, {0x9f, 0x74, 0xdf, 0xcc, 0x57, 0x6a, 0x41, 0xea}}, 0);
 
-service_factory_single_t<PreferencesTabsHost> page_layout("Layout", tabs_layout, tabsize(tabs_layout),
+service_factory_single_t<PreferencesTabsHost> page_layout("Layout", tabs_layout, std::size(tabs_layout),
     cui::prefs::layout_page_guid, g_guid_columns_ui_preferences_page, &cfg_child_layout);

@@ -948,7 +948,7 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
 
             HWND wnd_child = GetWindow(wnd, GW_CHILD);
             WCHAR str_class[129]{};
-            if (wnd_child && RealGetWindowClass(wnd_child, str_class, tabsize(str_class) - 1)
+            if (wnd_child && RealGetWindowClass(wnd_child, str_class, std::size(str_class) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
                 INT min = NULL;
                 INT max = NULL;
