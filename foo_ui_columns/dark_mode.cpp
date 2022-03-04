@@ -56,8 +56,6 @@ void set_app_mode(PreferredAppMode mode)
 
 void set_titlebar_mode(HWND wnd, bool is_dark)
 {
-    // Valid in Windows 10 10.0.18985 and newer (effectively 20H1+)
-    constexpr DWORD DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
     const BOOL value = is_dark;
     DwmSetWindowAttribute(wnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
 }

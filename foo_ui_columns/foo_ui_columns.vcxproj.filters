@@ -803,6 +803,9 @@
     <ClInclude Include="system_appearance_manager.h">
       <Filter>Colours and fonts</Filter>
     </ClInclude>
+    <ClInclude Include="vis_spectrum.h">
+      <Filter>Spectrum analyser</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

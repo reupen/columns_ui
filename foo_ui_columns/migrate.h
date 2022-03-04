@@ -1,5 +1,7 @@
 #pragma once
 
-namespace cui::migrate::v100 {
-void migrate();
-}
+namespace cui::migrate {
+
+void migrate_all();
+
+} // namespace cui::migrate

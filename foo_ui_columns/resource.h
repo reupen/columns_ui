@@ -196,9 +196,6 @@
 #define IDC_CUSTOM_FRAME                1088
 #define IDC_CAPTIONSTYLE                1092
 #define IDC_CONFIGURE                   1093
-#define IDC_PATCH_BACK                  1097
-#define IDC_CHANGE_FORE                 1098
-#define IDC_CHANGE_BACK                 1099
 #define IDC_BARS                        1100
 #define IDC_CHANGE_SEL_INACTIVE_BACK    1100
 #define IDC_FRAME_COMBO                 1101
@@ -219,7 +216,6 @@
 #define IDC_DUPLICATE_PRESET            1130
 #define IDC_COLOURS_MODE                1131
 #define IDC_COLOURS_ELEMENT             1132
-#define IDC_PATCH_FORE                  1133
 #define IDC_THEMING                     1134
 #define IDC_DEST                        1135
 #define IDC_SORT_STRING                 1143
@@ -255,7 +251,6 @@
 #define IDC_DARK_MODE_DISABLED          1179
 #define IDC_DARK_MODE_ENABLED           1180
 #define IDC_DARK_MODE_MESSAGE           1181
-#define IDC_WINDOWS_VERSION_TOO_OLD     1182
 #define IDC_SELCOUNT                    1183
 #define IDC_DARK_MODE_USE_SYSTEM_SETTING 1183
 #define IDC_STATIC                      -1

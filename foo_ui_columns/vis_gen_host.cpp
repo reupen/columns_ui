@@ -1,7 +1,6 @@
 #include "stdafx.h"
 #include "vis_gen_host.h"
 
-#if 1
 class VisualisationPanelInterface : public ui_extension::visualisation_host {
     service_ptr_t<VisualisationPanel> p_wnd;
 
@@ -71,6 +70,7 @@ VisualisationPanel::~VisualisationPanel() = default;
 void VisualisationPanel::set_frame_style(unsigned p_type)
 {
     m_frame = p_type;
+
     if (m_wnd) {
         long flags = WS_EX_CONTROLPARENT;
         if (m_frame == 1)
@@ -80,6 +80,7 @@ void VisualisationPanel::set_frame_style(unsigned p_type)
 
         SetWindowLongPtr(get_wnd(), GWL_EXSTYLE, flags);
         SetWindowPos(get_wnd(), nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
+        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME);
     }
 }
 
@@ -202,5 +203,3 @@ void VisualisationPanel::get_category(pfc::string_base& out) const
 {
     out.set_string("Visualisations");
 }
-
-#endif
