@@ -583,6 +583,7 @@
     <ClInclude Include="tab_layout_misc.h" />
     <ClInclude Include="title_formatting.h" />
     <ClInclude Include="urls.h" />
+    <ClInclude Include="vis_spectrum.h" />
     <ClInclude Include="wic.h" />
   </ItemGroup>
   <ItemGroup>

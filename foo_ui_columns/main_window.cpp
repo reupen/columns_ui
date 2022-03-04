@@ -60,7 +60,7 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         return nullptr;
     }
 
-    migrate::v100::migrate();
+    migrate::migrate_all();
 
     if (main_window::config_get_is_first_run()) {
         if (!cfg_layout.get_presets().get_count())

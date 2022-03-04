@@ -1,7 +1,14 @@
 #include "stdafx.h"
-#include "layout.h"
 
-namespace cui::migrate::v100 {
+#include "migrate.h"
+#include "config_appearance.h"
+#include "layout.h"
+#include "main_window.h"
+#include "vis_spectrum.h"
+
+namespace cui::migrate {
+
+namespace v100 {
 
 cfg_bool has_migrated_to_v100({0xba7516e5, 0xd1f1, 0x4784, {0xa6, 0x93, 0x62, 0x72, 0x37, 0xc3, 0x7e, 0x9c}}, false);
 
@@ -72,4 +79,48 @@ void migrate()
     }
 }
 
-} // namespace cui::migrate::v100
+} // namespace v100
+
+namespace v200 {
+
+cfg_bool has_migrated_spectrum_analyser_colours(
+    {0x2ce47e0, 0xd964, 0x4f16, {0x83, 0x57, 0xd1, 0x1f, 0xb4, 0x43, 0xf2, 0x58}}, false);
+
+cfg_int cfg_legacy_spectrum_analyser_background_colour(
+    GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}},
+    get_default_colour(::colours::COLOUR_BACK));
+cfg_int cfg_legacy_spectrum_analyser_foreground_colour(
+    GUID{0x421d3d3f, 0x5289, 0xb1e4, {0x9b, 0x91, 0xab, 0x51, 0xd3, 0xad, 0xbc, 0x4d}},
+    get_default_colour(::colours::COLOUR_TEXT));
+
+void migrate()
+{
+    if (has_migrated_spectrum_analyser_colours)
+        return;
+
+    has_migrated_spectrum_analyser_colours = true;
+
+    if (main_window::config_get_is_first_run())
+        return;
+
+    if (cfg_legacy_spectrum_analyser_background_colour == get_default_colour(::colours::COLOUR_BACK)
+        && cfg_legacy_spectrum_analyser_foreground_colour == get_default_colour(::colours::COLOUR_TEXT))
+        return;
+
+    ColourManagerData::entry_ptr_t colours_entry;
+    g_colour_manager_data.find_by_guid(toolbars::spectrum_analyser::colour_client_id, colours_entry);
+
+    colours_entry->colour_mode = colours::colour_mode_custom;
+    colours_entry->background = cfg_legacy_spectrum_analyser_background_colour;
+    colours_entry->text = cfg_legacy_spectrum_analyser_foreground_colour;
+}
+
+} // namespace v200
+
+void migrate_all()
+{
+    v100::migrate();
+    v200::migrate();
+}
+
+} // namespace cui::migrate
