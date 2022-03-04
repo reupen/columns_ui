@@ -168,7 +168,7 @@ std::string get_selected_length_text(unsigned dp = 0)
     const auto playlist_api = playlist_manager::get();
     const auto metadb_api = metadb::get();
 
-    unsigned count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
+    const auto count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
 
     sels.prealloc(count);
 
@@ -182,7 +182,7 @@ std::string get_selected_count_text(unsigned dp = 0)
 {
     const auto playlist_api = playlist_manager::get();
 
-    unsigned count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
+    const auto count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
 
     return fmt::format(std::locale(""), "{:L} {}", count, count == 1 ? "track" : "tracks");
 }
@@ -213,13 +213,13 @@ void set_part_sizes(unsigned p_parts)
 
         m_parts.add_item(-1); // dummy
 
-        unsigned track_length_pos{};
-        unsigned track_count_pos{};
-        unsigned playlist_lock_pos{};
-        unsigned volume_pos{};
+        uint8_t track_length_pos{};
+        uint8_t track_count_pos{};
+        uint8_t playlist_lock_pos{};
+        uint8_t volume_pos{};
 
         const auto playlist_api = playlist_manager::get();
-        unsigned active = playlist_api->get_active_playlist();
+        const auto active = playlist_api->get_active_playlist();
 
         const bool show_playlist_lock_part
             = main_window::config_get_status_show_lock() && playlist_api->playlist_lock_is_present(active);
@@ -230,7 +230,7 @@ void set_part_sizes(unsigned p_parts)
             }
 
             const auto part_size = calculate_playback_lock_size(state->playlist_lock_text.c_str()) + part_padding;
-            playlist_lock_pos = m_parts.add_item(part_size);
+            playlist_lock_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 
         if (cfg_show_seltime) {
@@ -238,7 +238,7 @@ void set_part_sizes(unsigned p_parts)
                 state->track_length_text = get_selected_length_text();
 
             const auto part_size = calculate_selected_length_size(state->track_length_text.c_str()) + part_padding;
-            track_length_pos = m_parts.add_item(part_size);
+            track_length_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 
         if (cfg_show_selcount) {
@@ -246,7 +246,7 @@ void set_part_sizes(unsigned p_parts)
                 state->track_count_text = get_selected_count_text();
 
             const auto part_size = calculate_selected_count_size(state->track_count_text.c_str()) + part_padding;
-            track_count_pos = m_parts.add_item(part_size);
+            track_count_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 
         if (cfg_show_vol) {
@@ -254,19 +254,18 @@ void set_part_sizes(unsigned p_parts)
                 state->volume_text = get_volume_text();
 
             const auto part_size = calculate_volume_size(state->volume_text.c_str()) + part_padding;
-            volume_pos = m_parts.add_item(part_size);
+            volume_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 
         m_parts[0] = rect.right - rect.left;
 
-        unsigned n;
-        unsigned count = m_parts.get_count();
-        for (n = 1; n < count; n++)
+        const auto count = m_parts.get_count();
+        for (size_t n = 1; n < count; n++)
             m_parts[0] -= m_parts[n];
 
         if (count > 1) {
-            for (n = count - 2; n; n--) {
-                for (unsigned i = 0; i < n; i++)
+            for (size_t n = count - 2; n; n--) {
+                for (size_t i = 0; i < n; i++)
                     m_parts[n] += m_parts[i];
             }
         }
@@ -373,7 +372,7 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     SetBkMode(dc, TRANSPARENT);
     const int x = rc.left;
     const int y = rc.top + (RECT_CY(rc) - uih::get_dc_font_height(dc)) / 2;
-    ExtTextOutW(dc, x, y, ETO_CLIPPED, &rc, utf16_text, utf16_text.length(), nullptr);
+    ExtTextOutW(dc, x, y, ETO_CLIPPED, &rc, utf16_text, gsl::narrow<UINT>(utf16_text.length()), nullptr);
 }
 
 } // namespace

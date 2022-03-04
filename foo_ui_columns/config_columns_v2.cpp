@@ -576,20 +576,20 @@ void TabColumns::refresh_me(HWND wnd, bool init)
     HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
 
     SendDlgItemMessage(wnd, IDC_COLUMNS, WM_SETREDRAW, false, 0);
-    int idx = (init ? cfg_cur_prefs_col : ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED));
+    const auto idx = (init ? cfg_cur_prefs_col : ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED));
     ListView_DeleteAllItems(wnd_lv);
 
     pfc::string8 temp;
 
-    int t = m_columns.get_count();
-    for (int i = 0; i < t; i++) {
-        uih::list_view_insert_item_text(wnd_lv, i, 0, m_columns[i]->name);
+    const auto t = m_columns.get_count();
+    for (size_t i = 0; i < t; i++) {
+        uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(i), 0, m_columns[i]->name);
     }
 
     SendDlgItemMessage(wnd, IDC_COLUMNS, WM_SETREDRAW, true, 0);
     initialising = false;
 
-    if (idx >= 0 && idx < (int)m_columns.get_count()) {
+    if (idx >= 0 && idx < gsl::narrow<int>(m_columns.get_count())) {
         ListView_SetItemState(wnd_lv, idx, LVIS_SELECTED, LVIS_SELECTED);
         ListView_EnsureVisible(wnd_lv, idx, FALSE);
     }
@@ -656,7 +656,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         temp->name = "New Column";
                         t_size insert = m_columns.insert_item(
                             temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
-                        uih::list_view_insert_item_text(wnd_lv, insert, 0, "New Column");
+                        uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(insert), 0, "New Column");
                         ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
                         ListView_EnsureVisible(wnd_lv, insert, FALSE);
                     } else if (idx >= 0 && (t_size)idx < m_columns.get_count()) {
@@ -697,7 +697,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     case WM_DESTROY: {
         int idx = ListView_GetNextItem(m_wnd_lv, -1, LVNI_SELECTED);
-        if (idx >= 0 && idx < (int)m_columns.get_count()) {
+        if (idx >= 0 && idx < gsl::narrow<int>(m_columns.get_count())) {
             cfg_cur_prefs_col = idx;
         }
 
@@ -799,7 +799,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 temp->name = "New Column";
                 t_size insert = m_columns.insert_item(
                     temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
-                uih::list_view_insert_item_text(wnd_lv, insert, 0, "New Column");
+                uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(insert), 0, "New Column");
                 ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
                 ListView_EnsureVisible(wnd_lv, insert, FALSE);
             }
@@ -891,7 +891,7 @@ void TabColumns::show_column(size_t index)
             }
         }
     } else {
-        cfg_cur_prefs_col = index;
+        cfg_cur_prefs_col = gsl::narrow<int>(index);
     }
     cui::prefs::page_playlist_view.get_static_instance().show_tab("Columns");
 }

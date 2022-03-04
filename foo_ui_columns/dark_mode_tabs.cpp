@@ -31,7 +31,7 @@ std::vector<Tab> get_tabs(HWND wnd)
     TCITEM tci_default{};
     tci_default.mask = TCIF_TEXT;
     tci_default.pszText = buffer.data();
-    tci_default.cchTextMax = buffer.size();
+    tci_default.cchTextMax = gsl::narrow<int>(buffer.size());
 
     // clang-format off
     return ranges::views::iota(0, item_count)
@@ -125,7 +125,8 @@ void handle_tab_control_paint(HWND wnd)
         const auto x = item.rc.left + (RECT_CX(item.rc) - sz.cx) / 2;
         const auto y = item.rc.top + (RECT_CY(item.rc) - sz.cy) / 2 - (item.is_active ? 1_spx : 0);
 
-        ExtTextOut(buffered_dc.get(), x, y, ETO_CLIPPED, &item_rect, item.text.data(), item.text.length(), nullptr);
+        ExtTextOut(buffered_dc.get(), x, y, ETO_CLIPPED, &item_rect, item.text.data(),
+            gsl::narrow<UINT>(item.text.length()), nullptr);
     }
 }
 

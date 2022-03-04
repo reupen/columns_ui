@@ -31,7 +31,7 @@ struct LineSize {
 
 struct RawFont {
     std::wstring m_face;
-    t_size m_point{10};
+    uint32_t m_point{10};
     bool m_bold{false};
     bool m_underline{false};
     bool m_italic{false};
@@ -154,14 +154,14 @@ public:
 
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
-        t_size m_source;
+        uint32_t m_source;
 
     public:
-        static const char* get_name(t_size source);
+        static const char* get_name(uint32_t source);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value);
+        MenuNodeTrackMode(ItemDetails* p_wnd, uint32_t p_value);
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
@@ -176,14 +176,14 @@ public:
 
     class MenuNodeAlignment : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
-        t_size m_type;
+        uint32_t m_type;
 
     public:
-        static const char* get_name(t_size source);
+        static const char* get_name(uint32_t source);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value);
+        MenuNodeAlignment(ItemDetails* p_wnd, uint32_t p_value);
     };
 
     class MenuNodeAlignmentPopup : public ui_extension::menu_node_popup_t {
@@ -285,10 +285,10 @@ public:
     static void s_on_dark_mode_status_change();
     static void g_on_colours_change();
 
-    void set_horizontal_alignment(t_size horizontal_alignment);
-    void set_vertical_alignment(t_size vertical_alignment);
+    void set_horizontal_alignment(uint32_t horizontal_alignment);
+    void set_vertical_alignment(uint32_t vertical_alignment);
 
-    void set_edge_style(t_size edge_style);
+    void set_edge_style(uint32_t edge_style);
 
     void on_edge_style_change();
 

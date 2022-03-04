@@ -420,12 +420,12 @@ int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
 }
 void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
 {
-    unsigned active_playlist = m_playlist_api->get_active_playlist();
+    const auto active_playlist = m_playlist_api->get_active_playlist();
     if (active_playlist != -1
         && (!m_playlist_api->playlist_lock_is_present(active_playlist)
             || !(m_playlist_api->playlist_lock_get_filter_mask(active_playlist) & playlist_lock::filter_reorder))) {
         unsigned n;
-        unsigned count = m_playlist_api->activeplaylist_get_item_count();
+        const auto count = m_playlist_api->activeplaylist_get_item_count();
 
         pfc::list_t<pfc::array_t<WCHAR>, pfc::alloc_fast_aggressive> data;
         pfc::list_t<t_size, pfc::alloc_fast_aggressive> source_indices;
@@ -653,8 +653,8 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         pfc::string8_fast_aggressive filter;
         pfc::string8_fast_aggressive name;
 
-        int e = g_columns.get_count();
-        for (int s = 0; s < e; s++) {
+        const auto e = g_columns.get_count();
+        for (size_t s = 0; s < e; s++) {
             bool add = false;
             switch (g_columns[s]->filter_type) {
             case FILTER_NONE: {
@@ -797,7 +797,7 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 
         const keyboard_shortcut_manager::shortcut_type shortcuts[]
             = {keyboard_shortcut_manager::TYPE_CONTEXT_PLAYLIST, keyboard_shortcut_manager::TYPE_CONTEXT};
-        contextmenu_api->set_shortcut_preference(shortcuts, std::size(shortcuts));
+        contextmenu_api->set_shortcut_preference(shortcuts, gsl::narrow<unsigned>(std::size(shortcuts)));
         contextmenu_api->init_context_playlist(contextmenu_flags);
         contextmenu_api->win32_build_menu(menu, ID_CUSTOM_BASE, -1);
     }

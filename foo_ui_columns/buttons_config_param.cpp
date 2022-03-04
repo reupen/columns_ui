@@ -8,7 +8,7 @@ void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b
     p_file->write_lendian_t(g_guid_fcb, p_abort);
     p_file->write_lendian_t(VERSION_CURRENT, p_abort);
 
-    unsigned count = m_buttons.size();
+    const auto count = gsl::narrow<uint32_t>(m_buttons.size());
 
     p_file->write_lendian_t(I_TEXT_BELOW, p_abort);
     p_file->write_lendian_t(mmh::sizeof_t<uint32_t>(m_text_below), p_abort);
@@ -151,10 +151,10 @@ void ButtonsToolbar::ConfigParam::on_selection_change(t_size index)
 
 void ButtonsToolbar::ConfigParam::populate_buttons_list()
 {
-    unsigned count = m_buttons.size();
+    const auto count = m_buttons.size();
 
     pfc::array_staticsize_t<uih::ListView::InsertItem> items(count);
-    for (unsigned n = 0; n < count; n++) {
+    for (size_t n = 0; n < count; n++) {
         items[n].m_subitems.resize(2);
         items[n].m_subitems[0] = m_buttons[n].get_name().c_str();
         items[n].m_subitems[1] = m_buttons[n].get_type_desc().c_str();
@@ -164,14 +164,14 @@ void ButtonsToolbar::ConfigParam::populate_buttons_list()
 
 void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
 {
-    unsigned real_count = m_buttons.size();
+    const auto real_count = m_buttons.size();
 
     if (index + count > real_count)
         count = real_count - index;
 
     pfc::list_t<uih::ListView::InsertItem> items;
     items.set_count(count);
-    for (unsigned n = index; n < index + count; n++) {
+    for (size_t n = index; n < index + count; n++) {
         items[n - index].m_subitems.resize(2);
         items[n - index].m_subitems[0] = m_buttons[n].get_name().c_str();
         items[n - index].m_subitems[1] = m_buttons[n].get_type_desc().c_str();
@@ -463,7 +463,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                     m_selection->m_filter = (Filter)p_data.m_filter;
                     m_selection->m_interface.release();
 
-                    unsigned idx = m_button_list.get_selected_item_single();
+                    const auto idx = m_button_list.get_selected_item_single();
                     if (idx != pfc_infinite) {
                         refresh_buttons_list_items(idx, 1);
 

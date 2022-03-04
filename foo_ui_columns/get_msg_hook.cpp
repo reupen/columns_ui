@@ -34,7 +34,7 @@ bool GetMsgHook::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM
                 g_layout_window.hide_menu_access_keys();
             }
         } else if (lpmsg->wParam == VK_TAB) {
-            unsigned flags = SendMessage(lpmsg->hwnd, WM_GETDLGCODE, 0, (LPARAM)lpmsg);
+            const auto flags = SendMessage(lpmsg->hwnd, WM_GETDLGCODE, 0, (LPARAM)lpmsg);
             if (!((flags & DLGC_WANTTAB) || (flags & DLGC_WANTMESSAGE))) {
                 ui_extension::window::g_on_tab(lpmsg->hwnd);
                 lpmsg->message = WM_NULL;

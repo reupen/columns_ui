@@ -33,8 +33,8 @@ public:
 
     bool b_active{false};
     unsigned mode;
-    unsigned short m_bar_width{3};
-    unsigned short m_bar_gap{1};
+    short m_bar_width{3};
+    short m_bar_gap{1};
 
     uint32_t m_scale;
     uint32_t m_vertical_scale;
@@ -213,7 +213,7 @@ public:
     SpectrumAnalyserVisualisation* ptr;
     unsigned frame;
     bool b_show_frame;
-    SpectrumAnalyserConfigData(unsigned p_mode, t_size scale, t_size vertical_scale,
+    SpectrumAnalyserConfigData(unsigned p_mode, uint32_t scale, uint32_t vertical_scale,
         SpectrumAnalyserVisualisation* p_spec, bool p_show_frame = false, unsigned p_frame = 0)
         : mode(p_mode)
         , m_scale(scale)
@@ -341,7 +341,7 @@ void g_scale_value(
         --source_end;
 }
 
-t_size g_scale_value_single(double val, t_size count, bool b_log)
+int g_scale_value_single(double val, int count, bool b_log)
 {
     double val_trans;
     if (b_log) {
@@ -354,9 +354,7 @@ t_size g_scale_value_single(double val, t_size count, bool b_log)
         double start = (double)count * val;
         val_trans = start;
     }
-    t_size ret = pfc::rint32(val_trans);
-    ret = std::clamp(ret, size_t{0}, count);
-    return ret;
+    return std::clamp(pfc::rint32(val_trans), 0, count);
 }
 
 void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
@@ -376,12 +374,12 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                 s_foreground_brush.reset(CreateSolidBrush(colours.get_colour(colours::colour_text)));
 
             if (mode == MODE_BARS) {
-                unsigned totalbars = rc_client->right / m_bar_width;
+                int totalbars = rc_client->right / m_bar_width;
                 if (totalbars) {
                     const audio_sample* p_data = p_chunk->get_data();
                     t_size sample_count = p_chunk->get_sample_count();
                     t_size channel_count = p_chunk->get_channels();
-                    for (t_size i = 0; i < totalbars; i++) {
+                    for (int i = 0; i < totalbars; i++) {
                         double val = 0;
                         t_size starti;
                         t_size endi;
@@ -416,7 +414,7 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                 const audio_sample* p_data = p_chunk->get_data();
                 t_size sample_count = p_chunk->get_sample_count();
                 t_size channel_count = p_chunk->get_channels();
-                for (t_size i = 0; i < (t_size)rc_client->right; i++) {
+                for (int i = 0; i < rc_client->right; i++) {
                     double val = 0;
                     t_size starti;
                     t_size endi;
@@ -454,8 +452,8 @@ void SpectrumAnalyserVisualisation::s_refresh_all()
     unsigned fft_size = 4096;
     bool ret = g_stream->get_spectrum_absolute(p_chunk, p_time, fft_size);
 
-    unsigned count = s_active_instances.get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = s_active_instances.get_count();
+    for (size_t n = 0; n < count; n++) {
         SpectrumAnalyserVisualisation* vis_ext = s_active_instances[n];
         if (ret)
             vis_ext->refresh(&p_chunk);

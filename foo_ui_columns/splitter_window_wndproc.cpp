@@ -38,8 +38,8 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return TRUE;
     case WM_SHOWWINDOW:
         if (wp == TRUE && lp == 0) {
-            unsigned count = m_panels.get_count();
-            for (unsigned n = 0; n < count; n++) {
+            const auto count = m_panels.get_count();
+            for (size_t n = 0; n < count; n++) {
                 ShowWindow(m_panels[n]->m_wnd_child, SW_SHOWNORMAL);
                 ShowWindow(m_panels[n]->m_wnd, SW_SHOWNORMAL);
             }
@@ -63,10 +63,10 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         lpmmi->ptMaxTrackSize.y = get_orientation() == vertical ? 0 : MAXLONG;
         lpmmi->ptMaxTrackSize.x = get_orientation() == horizontal ? 0 : MAXLONG;
 
-        unsigned count = m_panels.get_count();
+        const auto count = m_panels.get_count();
         bool b_found = false;
 
-        for (unsigned n = 0; n < count; n++) {
+        for (size_t n = 0; n < count; n++) {
             MINMAXINFO mmi{};
             mmi.ptMaxTrackSize.x = MAXLONG;
             mmi.ptMaxTrackSize.y = MAXLONG;
@@ -164,7 +164,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         HWND child = RealChildWindowFromPoint(wnd, pt);
         if (child == wnd) {
-            unsigned p_panel = -1;
+            size_t p_panel = -1;
             bool b_have_next = false;
             bool b_on_divider = false;
 
@@ -187,7 +187,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
             HWND child = RealChildWindowFromPoint(wnd, pt);
             if (child == wnd) {
-                unsigned p_panel = -1;
+                size_t p_panel = -1;
                 bool b_have_next = false;
                 bool b_on_divider = false;
                 if (m_panel_dragging_valid) {
@@ -273,7 +273,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         HWND child = ChildWindowFromPoint(wnd, pt);
         if (child == wnd) {
-            unsigned p_panel = -1;
+            size_t p_panel = -1;
             if (find_by_divider_pt(pt, p_panel) && is_index_valid(p_panel)) {
                 bool b_have_next = is_index_valid(p_panel + 1);
                 if (m_panels[p_panel]->m_locked && !m_panels[p_panel]->m_autohide

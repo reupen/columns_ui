@@ -107,7 +107,7 @@ private:
     int calculate_max_item_width();
     int calculate_height();
 
-    static constexpr unsigned ID_COMBOBOX = 1001;
+    static constexpr INT_PTR ID_COMBOBOX = 1001;
     static constexpr unsigned initial_height = 300;
     static constexpr unsigned initial_width = 150;
     static constexpr unsigned maximum_minimum_width = 150;
@@ -217,7 +217,7 @@ int DropDownListToolbar<ToolbarArgs>::calculate_max_item_width()
     pfc::string8 text;
     for (auto index : ranges::views::iota(0, item_count)) {
         uComboBox_GetText(m_wnd_combo, index, text);
-        const auto cx = uih::get_text_width(dc.get(), text, text.get_length());
+        const auto cx = uih::get_text_width(dc.get(), text, gsl::narrow<int>(text.get_length()));
         max_item_width = std::max(max_item_width, cx);
     }
 
@@ -244,8 +244,8 @@ void DropDownListToolbar<ToolbarArgs>::update_active_item()
     const auto iter = std::find_if(
         m_items.begin(), m_items.end(), [id](auto&& item) { return std::get<typename ToolbarArgs::ID>(item) == id; });
 
-    const int sel_item_index = iter != m_items.end() ? iter - m_items.begin() : -1;
-    ComboBox_SetCurSel(m_wnd_combo, sel_item_index);
+    const ptrdiff_t sel_item_index = iter != m_items.end() ? iter - m_items.begin() : -1;
+    ComboBox_SetCurSel(m_wnd_combo, gsl::narrow<int>(sel_item_index));
 }
 
 template <class ToolbarArgs>
@@ -292,7 +292,7 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
         std::erase(s_windows, this);
 
         m_initialised = false;
-        const unsigned count = get_class_data().refcount;
+        const auto count = get_class_data().refcount;
         DestroyWindow(m_wnd_combo);
         if (count == 1) {
             s_items_font.reset();

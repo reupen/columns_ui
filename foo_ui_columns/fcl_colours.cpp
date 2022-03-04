@@ -30,7 +30,7 @@ class ColoursDataSet : public fcl::dataset {
         {
             stream_writer_memblock mem;
             g_colour_manager_data.m_global_entry->_export(&mem, p_abort);
-            out.write_item(identifier_global_entry, mem.m_data.get_ptr(), mem.m_data.get_size());
+            out.write_item(identifier_global_entry, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
         {
             stream_writer_memblock mem;
@@ -40,9 +40,11 @@ class ColoursDataSet : public fcl::dataset {
             for (t_size i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
                 g_colour_manager_data.m_entries[i]->_export(&mem2, p_abort);
-                out2.write_item(identifier_client_entry, mem2.m_data.get_ptr(), mem2.m_data.get_size());
+                out2.write_item(
+                    identifier_client_entry, mem2.m_data.get_ptr(), gsl::narrow<uint32_t>(mem2.m_data.get_size()));
             }
-            out.write_item(identifier_client_entries, mem.m_data.get_ptr(), mem.m_data.get_size());
+            out.write_item(
+                identifier_client_entries, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
     }
     void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,

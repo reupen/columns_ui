@@ -212,10 +212,12 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
             w.write_item(identifier_playlist_filter_mode, (t_uint32)group.filter_type);
             w.write_item(identifier_playlist_filter_string, group.filter_playlists);
 
-            groups_writer.write_item(identifier_group, sw.m_data.get_ptr(), sw.m_data.get_size());
+            groups_writer.write_item(
+                identifier_group, sw.m_data.get_ptr(), gsl::narrow<uint32_t>(sw.m_data.get_size()));
         }
 
-        out.write_item(identifier_groups, groups_sw.m_data.get_ptr(), groups_sw.m_data.get_size());
+        out.write_item(
+            identifier_groups, groups_sw.m_data.get_ptr(), gsl::narrow<uint32_t>(groups_sw.m_data.get_size()));
     }
     void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override

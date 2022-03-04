@@ -66,13 +66,13 @@ public:
 class ItemPropertiesConfig {
 public:
     pfc::list_t<Field> m_fields;
-    t_size m_edge_style;
+    uint32_t m_edge_style;
     t_uint32 m_info_sections_mask;
     bool m_show_columns, m_show_groups;
 
     bool m_initialising;
     static INT_PTR CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style, t_uint32 info_sections_mask,
+    ItemPropertiesConfig(pfc::list_t<Field> p_fields, uint32_t edge_style, t_uint32 info_sections_mask,
         bool b_show_columns, bool b_show_groups);
 
     bool run_modal(HWND wnd);
@@ -119,14 +119,14 @@ public:
     bool show_config_popup(HWND wnd_parent) override;
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemProperties> p_this;
-        t_size m_source;
+        uint32_t m_source;
 
     public:
-        static const char* get_name(t_size source);
+        static const char* get_name(uint32_t source);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeTrackMode(ItemProperties* p_wnd, t_size p_value);
+        MenuNodeTrackMode(ItemProperties* p_wnd, uint32_t p_value);
     };
     class ModeNodeAutosize : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemProperties> p_this;

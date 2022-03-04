@@ -49,7 +49,7 @@ private:
     WNDPROC tabproc{nullptr};
 
     bool m_dragging{false};
-    unsigned m_dragging_idx{0};
+    size_t m_dragging_idx{0};
     RECT m_dragging_rect{};
 
     bool m_playlist_switched{false};
@@ -58,7 +58,7 @@ private:
     bool initialised{false};
 
     t_int32 m_mousewheel_delta{0};
-    UINT_PTR ID_CUSTOM_BASE{NULL};
+    UINT ID_CUSTOM_BASE{NULL};
 
     service_ptr_t<contextmenu_manager> p_manager;
 

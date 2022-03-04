@@ -14,12 +14,11 @@ extern fbh::ConfigBool cfg_grouping;
 extern fbh::ConfigBool cfg_show_artwork;
 
 wil::unique_hbitmap g_create_hbitmap_from_image(
-    Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection);
+    Gdiplus::Bitmap& bm, int& cx, int& cy, COLORREF cr_back, bool b_reflection);
 wil::unique_hbitmap g_create_hbitmap_from_data(
-    const album_art_data_ptr& data, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection);
+    const album_art_data_ptr& data, int& cx, int& cy, COLORREF cr_back, bool b_reflection);
 bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback& p_abort);
-wil::unique_hbitmap g_get_nocover_bitmap(
-    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
+wil::unique_hbitmap g_get_nocover_bitmap(int cx, int cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
 void set_font_size(bool up);
 
 class BasePlaylistCallback : public playlist_callback {
@@ -96,7 +95,7 @@ public:
 class PlaylistCacheItem {
 public:
     bool m_initialised{false};
-    t_size m_scroll_position{NULL};
+    int m_scroll_position{NULL};
     PlaylistCacheItem() = default;
 };
 
@@ -127,7 +126,7 @@ public:
     bool is_ready() { return !is_thread_open(); }
     const std::unordered_map<GUID, wil::shared_hbitmap>& get_content() const { return m_bitmaps; }
 
-    void initialise(const metadb_handle_ptr& p_handle, t_size cx, t_size cy, COLORREF cr_back, bool b_reflection,
+    void initialise(const metadb_handle_ptr& p_handle, int cx, int cy, COLORREF cr_back, bool b_reflection,
         BaseArtworkCompletionNotify::ptr_t p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
     {
         m_handle = p_handle;
@@ -152,7 +151,8 @@ private:
     unsigned read_artwork(abort_callback& p_abort);
 
     std::unordered_map<GUID, wil::shared_hbitmap> m_bitmaps;
-    t_size m_cx{0}, m_cy{0};
+    int m_cx{0};
+    int m_cy{0};
     COLORREF m_back{RGB(255, 255, 255)};
     bool m_reflection{false};
     metadb_handle_ptr m_handle;
@@ -186,7 +186,7 @@ public:
 
     enum { max_readers = 4 };
 
-    void request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, t_size cx, t_size cy,
+    void request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, int cx, int cy,
         COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify);
 
     void flush_pending()
@@ -233,7 +233,7 @@ public:
     ArtworkReaderManager() = default;
 
     wil::shared_hbitmap request_nocover_image(
-        t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
+        int cx, int cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
     void flush_nocover() { m_nocover_bitmap.reset(); }
 
 private:
@@ -656,8 +656,8 @@ private:
     contextmenu_manager::ptr m_contextmenu_manager;
     ui_status_text_override::ptr m_status_text_override;
 
-    UINT_PTR m_mainmenu_manager_base{NULL};
-    UINT_PTR m_contextmenu_manager_base{NULL};
+    UINT m_mainmenu_manager_base{NULL};
+    UINT m_contextmenu_manager_base{NULL};
 
     PlaylistCache<PlaylistCacheItem> m_playlist_cache;
 

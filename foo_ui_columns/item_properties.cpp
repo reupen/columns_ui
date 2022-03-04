@@ -962,7 +962,7 @@ bool ItemProperties::ModeNodeAutosize::get_display_data(pfc::string_base& p_out,
     return true;
 }
 
-ItemProperties::MenuNodeTrackMode::MenuNodeTrackMode(ItemProperties* p_wnd, t_size p_value)
+ItemProperties::MenuNodeTrackMode::MenuNodeTrackMode(ItemProperties* p_wnd, uint32_t p_value)
     : p_this(p_wnd)
     , m_source(p_value)
 {
@@ -987,7 +987,7 @@ bool ItemProperties::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out
     return true;
 }
 
-const char* ItemProperties::MenuNodeTrackMode::get_name(t_size source)
+const char* ItemProperties::MenuNodeTrackMode::get_name(uint32_t source)
 {
     if (source == track_nowplaying)
         return "Playing item";

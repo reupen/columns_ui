@@ -14,7 +14,7 @@ FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
     m_common_labels_entry->font_description.estimate_point_size();
 }
 
-void FontManagerData::g_on_common_font_changed(t_size mask)
+void FontManagerData::g_on_common_font_changed(uint32_t mask)
 {
     t_size count = m_callbacks.get_count();
     for (t_size i = 0; i < count; i++)

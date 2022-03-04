@@ -47,7 +47,7 @@ namespace settings {
 extern cfg_bool show_status_pane;
 
 extern fbh::ConfigObjectBoolFactory<> allow_locked_panel_resizing;
-extern fbh::ConfigUint32DpiAware custom_splitter_divider_width;
+extern fbh::ConfigInt32DpiAware custom_splitter_divider_width;
 
 extern fbh::ConfigInt32DpiAware playlist_switcher_item_padding;
 extern fbh::ConfigInt32DpiAware playlist_view_item_padding;

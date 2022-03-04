@@ -220,7 +220,7 @@ private:
     bool m_show_search{false};
     bool m_pending_sort_direction{false};
     contextmenu_manager::ptr m_contextmenu_manager;
-    UINT_PTR m_contextmenu_manager_base{0};
+    UINT m_contextmenu_manager_base{0};
     ui_status_text_override::ptr m_status_text_override;
 };
 

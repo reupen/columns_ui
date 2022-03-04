@@ -110,7 +110,7 @@ void PreferencesTabsHost::show_tab(const char* tab_name)
 
     for (size_t n = 0; n < m_tab_count; n++) {
         if (!strcmp(m_tabs[n]->get_name(), tab_name)) {
-            m_active_tab = n;
+            m_active_tab = gsl::narrow<int>(n);
             break;
         }
     }
@@ -133,9 +133,9 @@ INT_PTR PreferencesTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
         m_wnd = wnd;
         m_wnd_tabs = GetDlgItem(wnd, IDC_TAB1);
         // SendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
-        unsigned count = m_tab_count;
-        for (unsigned n = 0; n < count; n++) {
-            uTabCtrl_InsertItemText(m_wnd_tabs, n, m_tabs[n]->get_name());
+        const auto count = m_tab_count;
+        for (size_t n = 0; n < count; n++) {
+            uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(n), m_tabs[n]->get_name());
         }
         TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);
         make_child();

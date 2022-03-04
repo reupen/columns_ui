@@ -79,7 +79,7 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case IDC_GLOBAL:
-                cfg_global = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_global = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case IDC_TFHELP: {
                 RECT rc;
@@ -138,7 +138,7 @@ public:
 
             break;
             case IDC_GLOBALSORT:
-                cfg_global_sort = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_global_sort = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case IDC_APPLY:
                 save_string(wnd);

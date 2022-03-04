@@ -67,7 +67,8 @@
   [[#419](https://github.com/reupen/columns_ui/pull/419)]
 
 - Preliminary work towards 64-bit support was undertaken.
-  [[#457](https://github.com/reupen/columns_ui/pull/457)]
+  [[#457](https://github.com/reupen/columns_ui/pull/457),
+  [#467](https://github.com/reupen/columns_ui/pull/467)]
 
 ## 1.7.0
 

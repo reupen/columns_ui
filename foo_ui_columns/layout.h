@@ -14,7 +14,7 @@ public:
         void set(const uie::splitter_item_t* item);
     };
 
-    unsigned get_active() { return m_active; }
+    size_t get_active() { return m_active; }
 
     /** from configuration, not from ui */
     const pfc::list_base_const_t<Preset>& get_presets() const;
@@ -25,14 +25,14 @@ public:
     void set_preset_name(t_size index, const char* ptr, t_size len);
 
     void get_active_preset_for_use(uie::splitter_item_ptr& p_out);
-    t_size delete_preset(t_size index);
+    t_size delete_preset(size_t index);
 
     t_size add_preset(const char* p_name, t_size len = pfc_infinite);
     t_size add_preset(const Preset& item);
-    void set_active_preset(t_size index);
+    void set_active_preset(size_t index);
     void save_active_preset();
 
-    void set_presets(const pfc::list_base_const_t<Preset>& presets, t_size active);
+    void set_presets(const pfc::list_base_const_t<Preset>& presets, size_t active);
     void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
 
     void set_data_raw(stream_reader*, size_t p_sizehint, abort_callback& p_abort) override;
@@ -46,7 +46,7 @@ private:
 
     pfc::list_t<Preset> m_presets;
 
-    unsigned m_active;
+    size_t m_active;
 
     // bool m_initialised;
 };

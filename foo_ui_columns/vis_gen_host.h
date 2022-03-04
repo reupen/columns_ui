@@ -45,7 +45,7 @@ public:
 
     unsigned get_type() const override { return ui_extension::type_toolbar | ui_extension::type_panel; }
 
-    void set_vis_data(const void* p_data, unsigned p_size)
+    void set_vis_data(const void* p_data, size_t p_size)
     {
         m_data.set_size(0);
         m_data.append_fromptr((t_uint8*)p_data, p_size);

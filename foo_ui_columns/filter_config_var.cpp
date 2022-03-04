@@ -94,7 +94,7 @@ void ConfigFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort
         stream_writer_memblock field_writer;
         field_writer.write_lendian_t(field.m_last_sort_direction, p_abort);
 
-        uint32_t extra_size = field_writer.m_data.get_size();
+        uint32_t extra_size = gsl::narrow<uint32_t>(field_writer.m_data.get_size());
         p_stream->write_lendian_t(extra_size, p_abort);
         p_stream->write(field_writer.m_data.get_ptr(), field_writer.m_data.get_size(), p_abort);
     }

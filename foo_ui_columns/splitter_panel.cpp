@@ -231,10 +231,10 @@ uie::splitter_item_full_v2_t* FlatSplitterPanel::Panel::create_splitter_item(boo
     return ret;
 }
 
-bool FlatSplitterPanel::PanelList::find_by_wnd_child(HWND wnd, unsigned& p_out)
+bool FlatSplitterPanel::PanelList::find_by_wnd_child(HWND wnd, size_t& p_out)
 {
-    unsigned count = get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = get_count();
+    for (size_t n = 0; n < count; n++) {
         if (get_item(n)->m_wnd_child == wnd) {
             p_out = n;
             return true;
@@ -243,10 +243,10 @@ bool FlatSplitterPanel::PanelList::find_by_wnd_child(HWND wnd, unsigned& p_out)
     return false;
 }
 
-bool FlatSplitterPanel::PanelList::find_by_wnd(HWND wnd, unsigned& p_out)
+bool FlatSplitterPanel::PanelList::find_by_wnd(HWND wnd, size_t& p_out)
 {
-    unsigned count = get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = get_count();
+    for (size_t n = 0; n < count; n++) {
         if (get_item(n)->m_wnd == wnd) {
             p_out = n;
             return true;

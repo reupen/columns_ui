@@ -98,12 +98,12 @@ public:
     void update_bands();
     void delete_band(HWND wnd, bool destroy = true);
 
-    void update_band(unsigned n, bool size = false);
+    void update_band(size_t n, bool size = false);
 
     bool check_band(const GUID& id);
-    bool find_band(const GUID& id, unsigned& out);
+    bool find_band(const GUID& id, size_t& out);
     bool delete_band(const GUID& id);
-    void delete_band(unsigned idx);
+    void delete_band(size_t idx);
 
     void on_themechanged();
     std::optional<LRESULT> handle_custom_draw(LPNMCUSTOMDRAW lpnmcd) const;
