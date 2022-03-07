@@ -61,7 +61,7 @@ FONT 8, "Tahoma", 0, 0, 0x1
 BEGIN
     CONTROL         "Use global variables for display",IDC_GLOBAL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,115,10
     CONTROL         "Use global variables when sorting by column",IDC_GLOBALSORT,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,153,30,157,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,153,30,165,10
     EDITTEXT        IDC_STRING,11,60,304,168,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
     EDITTEXT        IDC_COLOUR,175,231,77,13,ES_AUTOHSCROLL | ES_READONLY
     PUSHBUTTON      "...",IDC_PICK_COLOUR,254,231,13,13
@@ -285,7 +285,7 @@ BEGIN
     CONTROL         "Allow mouse-activated inline editing",IDC_INLINE_MODE,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,87,133,10
     CONTROL         "Display column titles",IDC_HEADER,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,30,80,10
-    CONTROL         "Enable sorting using column titles",IDC_HHTRACK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,49,121,10
+    CONTROL         "Enable sorting using column titles",IDC_HHTRACK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,49,129,10
     CONTROL         "Put dropped files at end of playlist",IDC_DROP_AT_END,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,87,125,10
     CONTROL         "Display sort indicators",IDC_SORT_ARROWS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,157,68,87,10
@@ -295,11 +295,11 @@ BEGIN
     LTEXT           "px",IDC_STATIC,39,138,9,8
     LTEXT           "Playlist edge style",IDC_STATIC,7,159,61,8
     COMBOBOX        IDC_PLEDGE,7,170,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Action to perform when middle-clicking on a track",IDC_STATIC,7,194,163,8
+    LTEXT           "Action to perform when middle-clicking on a track",IDC_STATIC,7,194,168,8
     COMBOBOX        IDC_PLAYLIST_MIDDLE,7,205,313,136,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Alternative selection model",IDC_SELECTION_MODEL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,106,102,10
     LTEXT           "Appearance and behaviour",IDC_TITLE1,7,4,313,16
-    LTEXT           "Action to perform when double clicking in empty space",IDC_STATIC,7,229,179,8
+    LTEXT           "Action to perform when double clicking in empty space",IDC_STATIC,7,229,185,8
     COMBOBOX        IDC_PLAYLIST_DOUBLE,7,240,313,136,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
     LTEXT           "",IDC_MENU_DESC,7,254,313,10
 END

@@ -57,6 +57,9 @@
 - The status bar pop-up volume bar now correctly scales with the system DPI
   setting. [[#418](https://github.com/reupen/columns_ui/pull/418)]
 
+- Various truncated labels in Playlist view preferences were corrected.
+  [[#469](https://github.com/reupen/columns_ui/pull/469)]
+
 ### Internal changes
 
 - The component is now compiled using Visual Studio 2022 17.1 and the /std:c++20
