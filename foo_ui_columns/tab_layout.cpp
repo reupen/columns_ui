@@ -164,7 +164,7 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
     if (p_parent->m_window.is_valid() && p_parent->m_window->service_query_t(p_splitter)) {
         auto& parent_children = p_parent->m_children;
 
-        unsigned index
+        const size_t index
             = ti_after != TVI_LAST ? tree_view_get_child_index(m_wnd_tree, ti_after) + 1 : parent_children.size();
         if (index <= parent_children.size()) {
             p_splitter->insert_panel(index, p_node->m_item->get_ptr());
@@ -272,7 +272,7 @@ void LayoutTab::paste_item(HWND wnd, HTREEITEM ti_parent, HTREEITEM ti_after)
     auto p_parent = m_node_map.at(ti_parent);
     service_ptr_t<uie::splitter_window> p_splitter;
     if (p_parent->m_window.is_valid() && p_parent->m_window->service_query_t(p_splitter)) {
-        unsigned index{};
+        size_t index{};
         auto& parent_children = p_parent->m_children;
 
         if (ti_after == TVI_LAST)
@@ -350,7 +350,7 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
     uie::window_ptr window;
     service_ptr_t<uie::splitter_window> splitter;
     if (uie::window::create_by_guid(p_guid, window) && window->service_query_t(splitter)) {
-        unsigned count = std::min(old_node->m_children.size(), splitter->get_maximum_panel_count());
+        const auto count = std::min(old_node->m_children.size(), splitter->get_maximum_panel_count());
         if (count == old_node->m_children.size()
             || MessageBox(wnd, _T("The number of child items will not fit in the selected splitter type. Continue?"),
                    _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
@@ -512,14 +512,14 @@ void LayoutTab::apply()
 
 void LayoutTab::initialise_presets(HWND wnd)
 {
-    unsigned count = cfg_layout.get_presets().get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = cfg_layout.get_presets().get_count();
+    for (size_t n = 0; n < count; n++) {
         uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, 0, cfg_layout.get_presets()[n].m_name);
     }
     ComboBox_SetCurSel(GetDlgItem(wnd, IDC_PRESETS), m_active_preset);
 }
 
-void LayoutTab::switch_to_preset(HWND wnd, unsigned index)
+void LayoutTab::switch_to_preset(HWND wnd, size_t index)
 {
     if (index < cfg_layout.get_presets().get_count()) {
         if (m_changed)
@@ -764,8 +764,8 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (!ti_parent) {
                     HMENU menu_change_base = CreatePopupMenu();
                     HMENU popup = nullptr;
-                    unsigned count = panels.get_count();
-                    for (unsigned n = 0; n < count; n++) {
+                    const auto count = panels.get_count();
+                    for (size_t n = 0; n < count; n++) {
                         if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
                             if (n)
                                 uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
@@ -785,9 +785,9 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (p_splitter.is_valid() && p_node->m_children.size() < p_splitter->get_maximum_panel_count()) {
                     HMENU menu_change_base = CreatePopupMenu();
                     HMENU popup = nullptr;
-                    unsigned count = panels.get_count();
-                    unsigned last = 0;
-                    for (unsigned n = 0; n < count; n++) {
+                    const auto count = panels.get_count();
+                    size_t last = 0;
+                    for (size_t n = 0; n < count; n++) {
                         if (!panels[n].prefer_multiple_instances || !m_node_root->have_item(panels[n].guid)) {
                             if (!popup || uStringCompare(panels[last].category, panels[n].category)) {
                                 if (popup)
@@ -804,12 +804,12 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     }
                     uAppendMenu(
                         menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_change_base), "Insert panel");
-                    ID_SWITCH_BASE += count;
+                    ID_SWITCH_BASE += gsl::narrow<unsigned>(count);
                 }
                 if (p_splitter.is_valid()) {
-                    unsigned count_exts = panels.get_count();
+                    const auto count_exts = panels.get_count();
                     HMENU menu_insert = CreatePopupMenu();
-                    for (unsigned n = 0; n < count_exts; n++) {
+                    for (size_t n = 0; n < count_exts; n++) {
                         if (panels[n].type & uie::type_splitter) {
                             uAppendMenu(menu_insert, (MF_STRING), ID_SWITCH_BASE + n, panels[n].name);
                         }

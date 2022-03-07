@@ -626,7 +626,7 @@ void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callba
     }
 }
 
-ArtworkPanel::MenuNodeTrackMode::MenuNodeTrackMode(ArtworkPanel* p_wnd, t_size p_value)
+ArtworkPanel::MenuNodeTrackMode::MenuNodeTrackMode(ArtworkPanel* p_wnd, uint32_t p_value)
     : p_this(p_wnd)
     , m_source(p_value)
 {
@@ -651,7 +651,7 @@ bool ArtworkPanel::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, 
     return true;
 }
 
-const char* ArtworkPanel::MenuNodeTrackMode::get_name(t_size source)
+const char* ArtworkPanel::MenuNodeTrackMode::get_name(uint32_t source)
 {
     if (source == track_playing)
         return "Playing item";
@@ -664,7 +664,7 @@ const char* ArtworkPanel::MenuNodeTrackMode::get_name(t_size source)
     return "Automatic (playlist selection/playing item)";
 }
 
-ArtworkPanel::MenuNodeArtworkType::MenuNodeArtworkType(ArtworkPanel* p_wnd, t_size p_value)
+ArtworkPanel::MenuNodeArtworkType::MenuNodeArtworkType(ArtworkPanel* p_wnd, uint32_t p_value)
     : p_this(p_wnd)
     , m_type(p_value)
 {
@@ -692,7 +692,7 @@ bool ArtworkPanel::MenuNodeArtworkType::get_display_data(pfc::string_base& p_out
     return true;
 }
 
-const char* ArtworkPanel::MenuNodeArtworkType::get_name(t_size source)
+const char* ArtworkPanel::MenuNodeArtworkType::get_name(uint32_t source)
 {
     if (source == 0)
         return "Front cover";

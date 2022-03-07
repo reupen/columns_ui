@@ -3,7 +3,7 @@
 
 namespace cui::playlist_item_helpers {
 
-void action_remove_track(bool on_item, unsigned idx)
+void action_remove_track(bool on_item, size_t idx)
 {
     if (on_item) {
         const auto api = playlist_manager::get();
@@ -12,17 +12,17 @@ void action_remove_track(bool on_item, unsigned idx)
     }
 }
 
-void action_add_to_queue(bool on_item, unsigned idx)
+void action_add_to_queue(bool on_item, size_t idx)
 {
     if (on_item) {
         const auto api = playlist_manager::get();
-        unsigned active = api->get_active_playlist();
+        const auto active = api->get_active_playlist();
         if (active != -1)
             api->queue_add_item_playlist(active, idx);
     }
 }
 
-void action_none(bool on_on_item, unsigned idx) {}
+void action_none(bool on_on_item, size_t idx) {}
 
 MiddleLickAction MiddleClickActionManager::g_pma_actions[] = {
     {"(None)", 0, action_none},
@@ -30,15 +30,15 @@ MiddleLickAction MiddleClickActionManager::g_pma_actions[] = {
     {"Add to playback queue", 2, action_add_to_queue},
 };
 
-unsigned MiddleClickActionManager::get_count()
+size_t MiddleClickActionManager::get_count()
 {
     return std::size(g_pma_actions);
 }
 
-unsigned MiddleClickActionManager::id_to_idx(unsigned id)
+size_t MiddleClickActionManager::id_to_idx(unsigned id)
 {
-    unsigned count = std::size(g_pma_actions);
-    for (unsigned n = 0; n < count; n++) {
+    constexpr auto count = std::size(g_pma_actions);
+    for (size_t n = 0; n < count; n++) {
         if (g_pma_actions[n].id == id)
             return n;
     }

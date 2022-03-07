@@ -243,7 +243,7 @@ public:
         return m_playback_api->is_playing() ? m_playlist_api->get_playing_playlist() : pfc_infinite;
     }
 
-    void on_playing_playlist_change(unsigned p_playing_playlist)
+    void on_playing_playlist_change(size_t p_playing_playlist)
     {
         t_size previous_playing = m_playing_playlist;
         m_playing_playlist = p_playing_playlist;
@@ -317,7 +317,7 @@ public:
 
 private:
     contextmenu_manager::ptr m_contextmenu_manager;
-    UINT_PTR m_contextmenu_manager_base{NULL};
+    UINT m_contextmenu_manager_base{NULL};
     ui_status_text_override::ptr m_status_text_override;
     ui_selection_holder::ptr m_selection_holder;
 

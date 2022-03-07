@@ -3,7 +3,7 @@
 #include "setup_dialog.h"
 #include "main_window.h"
 
-BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
@@ -56,7 +56,7 @@ BOOL QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         lvi.mask = LVIF_TEXT;
         t_size count = m_presets.get_count();
         for (t_size i = 0; i < count; i++) {
-            uih::list_view_insert_item_text(wnd_lv, i, 0, m_presets[i].m_name, false);
+            uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(i), 0, m_presets[i].m_name, false);
         }
         ComboBox_InsertString(wnd_theming, 0, L"No");
         ComboBox_InsertString(wnd_theming, 1, L"Yes");

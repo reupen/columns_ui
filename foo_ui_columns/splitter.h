@@ -29,7 +29,7 @@ public:
 
     void get_config(stream_writer* out, abort_callback& p_abort) const override;
 
-    bool is_index_valid(unsigned index) const;
+    bool is_index_valid(size_t index) const;
 
     bool get_config_item_supported(size_t index, const GUID& p_type) const override;
 
@@ -160,21 +160,21 @@ private:
     };
     class PanelList : public pfc::list_t<std::shared_ptr<Panel>> {
     public:
-        bool find_by_wnd(HWND wnd, unsigned& p_out);
-        bool find_by_wnd_child(HWND wnd, unsigned& p_out);
+        bool find_by_wnd(HWND wnd, size_t& p_out);
+        bool find_by_wnd_child(HWND wnd, size_t& p_out);
     };
 
     void read_config(stream_reader* p_reader, t_size p_size, bool is_import, abort_callback& p_abort);
     void write_config(stream_writer* p_writer, bool is_export, abort_callback& p_abort) const;
 
-    void start_autohide_dehide(unsigned index, bool b_next_too = true);
+    void start_autohide_dehide(size_t index, bool b_next_too = true);
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void get_panels_sizes(unsigned width, unsigned height, pfc::list_base_t<unsigned>& p_out);
-    bool find_by_divider_pt(POINT& pt, unsigned& p_out);
-    bool test_divider_pt(const POINT& pt, unsigned p_out);
+    bool find_by_divider_pt(POINT& pt, size_t& p_out);
+    bool test_divider_pt(const POINT& pt, size_t p_out);
 
-    unsigned get_panel_divider_size(unsigned index);
+    int get_panel_divider_size(size_t index) const;
 
     void on_size_changed(unsigned width, unsigned height);
     void on_size_changed();
@@ -184,7 +184,7 @@ private:
 
     bool can_resize_divider(t_size index) const;
     bool can_resize_panel(t_size index) const;
-    int override_size(unsigned& panel, int delta);
+    int override_size(size_t& panel, int delta);
 
     void refresh_children();
     void destroy_children();
@@ -193,8 +193,8 @@ private:
     PanelList m_panels;
     HWND m_wnd{nullptr};
 
-    int m_last_position{NULL};
-    unsigned m_panel_dragging{NULL};
+    int m_last_position{};
+    size_t m_panel_dragging{};
     bool m_panel_dragging_valid{false};
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 

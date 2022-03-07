@@ -117,7 +117,7 @@ public:
     {
     }
 
-    t_uint32 get_command_count() override { return m_commands.size(); }
+    t_uint32 get_command_count() override { return gsl::narrow_cast<uint32_t>(m_commands.size()); }
     GUID get_command(t_uint32 p_index) override { return m_commands[p_index].guid; }
     void get_name(t_uint32 p_index, pfc::string_base& p_out) override { p_out = m_commands[p_index].name; }
 
@@ -169,7 +169,7 @@ static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_fon
     groups::playlist_font_part, mainmenu_commands::sort_priority_dontcare, increase_font, decrease_font);
 
 class MainMenuLayoutPresets : public mainmenu_commands {
-    t_uint32 get_command_count() override { return cfg_layout.get_presets().get_count(); }
+    t_uint32 get_command_count() override { return gsl::narrow<uint32_t>(cfg_layout.get_presets().get_count()); }
     GUID get_command(t_uint32 p_index) override
     {
         pfc::string8 name;

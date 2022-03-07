@@ -120,12 +120,10 @@ bool StyleTitleformatHook::process_field(
                 return true;
             }
             if (!stricmp_utf8_ex(p_name + 1, p_name_length - 1, "display_index", pfc_infinite)) {
-                if (!m_index_text.get_ptr()) {
-                    m_index_text.set_size(33);
-                    m_index_text.fill(0);
-                    _ultoa_s(m_index + 1, m_index_text.get_ptr(), m_index_text.get_size(), 10);
+                if (!m_index_text) {
+                    m_index_text = fmt::format("{}", m_index + 1);
                 }
-                p_out->write(titleformat_inputtypes::unknown, m_index_text.get_ptr(), m_index_text.get_size());
+                p_out->write(titleformat_inputtypes::unknown, m_index_text->data(), m_index_text->size());
                 p_found_flag = true;
                 return true;
             }
@@ -336,7 +334,7 @@ bool StyleTitleformatHook::process_function(titleformat_text_out* p_out, const c
             int colour = mmh::strtoul_n(p_val, p_val_length, 0x10);
             p_params->get_param(1, p_val2, p_val2_length);
             int target = mmh::strtoul_n(p_val2, p_val2_length, 0x10);
-            int amount = p_params->get_param_uint(2);
+            int amount = gsl::narrow_cast<int>(std::min(p_params->get_param_uint(2), size_t{255u}));
 
             int rdiff = (target & 0xff) - (colour & 0xff);
             int gdiff = ((target & 0xff00) >> 8) - ((colour & 0xff00) >> 8);

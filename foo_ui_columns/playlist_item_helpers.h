@@ -2,7 +2,7 @@
 
 namespace cui::playlist_item_helpers {
 
-using MiddleClickFunction = void (*)(bool, unsigned int);
+using MiddleClickFunction = void (*)(bool, size_t);
 
 struct MiddleLickAction {
     const char* name;
@@ -13,13 +13,13 @@ struct MiddleLickAction {
 class MiddleClickActionManager {
 public:
     static MiddleLickAction g_pma_actions[];
-    static unsigned id_to_idx(unsigned id);
+    static size_t id_to_idx(unsigned id);
 
-    static bool run(unsigned id, bool on_item, unsigned idx)
+    static bool run(unsigned id, bool on_item, size_t idx)
     {
         g_pma_actions[id_to_idx(id)].p_run(on_item, idx);
         return true;
     }
-    static unsigned get_count();
+    static size_t get_count();
 };
 } // namespace cui::playlist_item_helpers

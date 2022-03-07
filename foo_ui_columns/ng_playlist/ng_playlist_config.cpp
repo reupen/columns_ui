@@ -79,9 +79,9 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         Button_SetCheck(GetDlgItem(wnd, IDC_GROUPING), cfg_grouping ? BST_CHECKED : BST_UNCHECKED);
         uih::list_view_insert_column_text(list, 0, _T("Script"), rc.right - rc.left);
 
-        unsigned m = g_groups.get_groups().get_count();
+        const auto m = gsl::narrow<int>(g_groups.get_groups().get_count());
         pfc::string8_fastalloc temp;
-        for (unsigned n = 0; n < m; n++) {
+        for (int n = 0; n < m; n++) {
             uih::list_view_insert_item_text(list, n, 0, g_groups.get_groups()[n].string.get_ptr());
         }
     }
@@ -150,9 +150,9 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             p.idx = -1;
             if (run_edit_view(p, wnd)) {
                 HWND list = uGetDlgItem(wnd, IDC_GROUPS);
-                unsigned n = g_groups.add_group(Group(p.value));
-                uih::list_view_insert_item_text(list, n, 0, p.value.string.get_ptr());
-                ListView_SetItemState(list, n, LVIS_SELECTED, LVIS_SELECTED);
+                const auto n = g_groups.add_group(Group(p.value));
+                uih::list_view_insert_item_text(list, gsl::narrow<int>(n), 0, p.value.string.get_ptr());
+                ListView_SetItemState(list, gsl::narrow<int>(n), LVIS_SELECTED, LVIS_SELECTED);
             }
         } break;
         }

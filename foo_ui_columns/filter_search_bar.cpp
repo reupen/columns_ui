@@ -156,13 +156,14 @@ void FilterSearchToolbar::activate()
     SetFocus(m_search_editbox);
 }
 
-void FilterSearchToolbar::on_size(t_size cx, t_size cy)
+void FilterSearchToolbar::on_size(int cx, int cy)
 {
     // RECT rc_tbb = {0};
     // SendMessage(m_wnd_toolbar, TB_GETITEMRECT, 0, (LPARAM)(&rc_tbb));
     SetWindowPos(m_search_editbox, nullptr, 0, 0, cx - m_toolbar_cx, 200, SWP_NOZORDER);
     SetWindowPos(m_wnd_toolbar, nullptr, cx - m_toolbar_cx, 0, m_toolbar_cx, cy, SWP_NOZORDER);
 }
+
 void FilterSearchToolbar::on_search_editbox_change()
 {
     if (m_query_timer_active)
@@ -482,7 +483,7 @@ void FilterSearchToolbar::create_edit()
     tbb[1].iString = -1;
     // tb.iString = (INT_PTR)(L"Add to favourites");
 
-    unsigned ex_style = SendMessage(m_wnd_toolbar, TB_GETEXTENDEDSTYLE, 0, 0);
+    const auto ex_style = SendMessage(m_wnd_toolbar, TB_GETEXTENDEDSTYLE, 0, 0);
     SendMessage(m_wnd_toolbar, TB_SETEXTENDEDSTYLE, 0, ex_style | TBSTYLE_EX_DRAWDDARROWS | TBSTYLE_EX_MIXEDBUTTONS);
     SendMessage(m_wnd_toolbar, TB_SETBITMAPSIZE, (WPARAM)0, MAKELONG(cx, cy));
     SendMessage(m_wnd_toolbar, TB_GETPADDING, (WPARAM)0, 0);

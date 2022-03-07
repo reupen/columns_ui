@@ -6,8 +6,8 @@ namespace cui::panels::item_details {
 
 bool are_strings_equal(std::wstring_view left, std::wstring_view right)
 {
-    return CompareStringEx(LOCALE_NAME_INVARIANT, NORM_IGNORECASE, left.data(), left.length(), right.data(),
-               right.length(), nullptr, nullptr, 0)
+    return CompareStringEx(LOCALE_NAME_INVARIANT, NORM_IGNORECASE, left.data(), gsl::narrow<int>(left.length()),
+               right.data(), gsl::narrow<int>(right.length()), nullptr, nullptr, 0)
         == CSTR_EQUAL;
 }
 

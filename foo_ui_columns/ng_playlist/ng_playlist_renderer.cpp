@@ -156,9 +156,9 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
         FillRect(context.dc, &rc, br.get());
     }
 
-    text_out_colours_tab(context.dc, text.data(), text.size(), uih::scale_dpi_value(1) + indentation * level,
-        uih::scale_dpi_value(3), &rc, false, cr, true, cfg_ellipsis != 0, uih::ALIGN_LEFT, nullptr, true, true,
-        &text_width);
+    text_out_colours_tab(context.dc, text.data(), text.size(),
+        uih::scale_dpi_value(1) + indentation * gsl::narrow<int>(level), uih::scale_dpi_value(3), &rc, false, cr, true,
+        cfg_ellipsis != 0, uih::ALIGN_LEFT, nullptr, true, true, &text_width);
 
     auto cx = static_cast<long>(std::min(text_width, MAXLONG));
 

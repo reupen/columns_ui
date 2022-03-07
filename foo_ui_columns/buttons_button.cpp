@@ -5,7 +5,7 @@ namespace cui::toolbars::buttons {
 
 void ButtonsToolbar::Button::ButtonStateCallback::on_button_state_change(unsigned p_new_state) // see t_button_state
 {
-    unsigned state = SendMessage(m_this->wnd_toolbar, TB_GETSTATE, id, 0);
+    auto state = LOWORD(SendMessage(m_this->wnd_toolbar, TB_GETSTATE, id, 0));
     if (p_new_state & uie::BUTTON_STATE_ENABLED)
         state |= TBSTATE_ENABLED;
     else
@@ -27,7 +27,7 @@ void ButtonsToolbar::Button::ButtonStateCallback::set_wnd(ButtonsToolbar* p_sour
 {
     m_this = p_source;
 }
-void ButtonsToolbar::Button::ButtonStateCallback::set_id(const unsigned i)
+void ButtonsToolbar::Button::ButtonStateCallback::set_id(const int i)
 {
     id = i;
 }

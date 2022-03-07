@@ -83,26 +83,26 @@ private:
 
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ArtworkPanel> p_this;
-        t_size m_source;
+        uint32_t m_source;
 
     public:
-        static const char* get_name(t_size source);
+        static const char* get_name(uint32_t source);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeTrackMode(ArtworkPanel* p_wnd, t_size p_value);
+        MenuNodeTrackMode(ArtworkPanel* p_wnd, uint32_t p_value);
     };
 
     class MenuNodeArtworkType : public ui_extension::menu_node_command_t {
         service_ptr_t<ArtworkPanel> p_this;
-        t_size m_type;
+        uint32_t m_type;
 
     public:
-        static const char* get_name(t_size source);
+        static const char* get_name(uint32_t source);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         bool get_description(pfc::string_base& p_out) const override;
         void execute() override;
-        MenuNodeArtworkType(ArtworkPanel* p_wnd, t_size p_value);
+        MenuNodeArtworkType(ArtworkPanel* p_wnd, uint32_t p_value);
     };
 
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {

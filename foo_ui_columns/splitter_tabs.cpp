@@ -154,8 +154,8 @@ void TabStackPanel::get_supported_panels(
 
 bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, size_t& p_out)
 {
-    unsigned count = get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = get_count();
+    for (size_t n = 0; n < count; n++) {
         if (get_item(n)->m_wnd == wnd) {
             p_out = n;
             return true;
@@ -375,10 +375,10 @@ void TabStackPanel::set_config(stream_reader* config, t_size p_size, abort_callb
 void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t((t_uint32)stream_version_current, p_abort);
-    unsigned count = m_panels.get_count();
+    const auto count = m_panels.get_count();
     out->write_lendian_t(gsl::narrow<uint32_t>(m_active_tab), p_abort);
-    out->write_lendian_t(count, p_abort);
-    for (unsigned n = 0; n < count; n++) {
+    out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
+    for (size_t n = 0; n < count; n++) {
         m_panels[n]->write(out, p_abort);
     }
 }
@@ -386,10 +386,10 @@ void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) cons
 void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t((t_uint32)stream_version_current, p_abort);
-    unsigned count = m_panels.get_count();
+    const auto count = m_panels.get_count();
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_active_tab), p_abort);
-    p_writer->write_lendian_t(count, p_abort);
-    for (unsigned n = 0; n < count; n++) {
+    p_writer->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
+    for (size_t n = 0; n < count; n++) {
         m_panels[n]->_export(p_writer, p_abort);
     }
 }
@@ -424,9 +424,9 @@ void TabStackPanel::update_size_limits()
 {
     m_size_limits = uie::size_limit_t();
 
-    unsigned count = m_active_panels.get_count();
+    const auto count = m_active_panels.get_count();
 
-    for (unsigned n = 0; n < count; n++) {
+    for (size_t n = 0; n < count; n++) {
         MINMAXINFO mmi{};
         mmi.ptMaxTrackSize.x = MAXLONG;
         mmi.ptMaxTrackSize.y = MAXLONG;
@@ -662,8 +662,8 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void TabStackPanel::refresh_children()
 {
-    unsigned count = m_panels.get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = m_panels.get_count();
+    for (size_t n = 0; n < count; n++) {
         if (!m_panels[n]->m_wnd) {
             m_panels[n]->set_splitter_window_ptr(this);
             uie::window_ptr p_ext = m_panels[n]->m_child;
@@ -729,7 +729,7 @@ void TabStackPanel::refresh_children()
                         // if (p_uxtheme.load())
                         //    p_uxtheme->EnableThemeDialogTexture(wnd_panel, ETDT_ENABLETAB);
 
-                        uTabCtrl_InsertItemText(m_wnd_tabs, index, name, b_newtab);
+                        uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(index), name, b_newtab);
 
                         MINMAXINFO mmi{};
                         mmi.ptMaxTrackSize.x = MAXLONG;
@@ -763,8 +763,8 @@ void TabStackPanel::refresh_children()
 
 void TabStackPanel::destroy_children()
 {
-    unsigned count = m_panels.get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = m_panels.get_count();
+    for (size_t n = 0; n < count; n++) {
         std::shared_ptr<Panel> pal = m_panels[n];
         pal->destroy();
     }
@@ -866,7 +866,7 @@ void TabStackPanel::on_font_change()
 }
 void TabStackPanel::on_size_changed(unsigned width, unsigned height)
 {
-    HDWP dwp = BeginDeferWindowPos(m_active_panels.get_count() + 1);
+    HDWP dwp = BeginDeferWindowPos(gsl::narrow<int>(m_active_panels.get_count() + 1));
     if (m_wnd_tabs)
         dwp = DeferWindowPos(dwp, m_wnd_tabs, nullptr, 0, 0, width, height, SWP_NOZORDER);
     // SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
@@ -948,14 +948,14 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
 
             HWND wnd_child = GetWindow(wnd, GW_CHILD);
             WCHAR str_class[129]{};
-            if (wnd_child && RealGetWindowClass(wnd_child, str_class, std::size(str_class) - 1)
+            if (wnd_child && RealGetWindowClass(wnd_child, str_class, gsl::narrow<UINT>(std::size(str_class) - 1))
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
                 INT min = NULL;
                 INT max = NULL;
                 INT index = NULL;
                 BOOL err = FALSE;
                 SendMessage(wnd_child, UDM_GETRANGE32, (WPARAM)&min, (LPARAM)&max);
-                index = SendMessage(wnd_child, UDM_GETPOS32, (WPARAM)NULL, (LPARAM)&err);
+                index = static_cast<int>(SendMessage(wnd_child, UDM_GETPOS32, (WPARAM)NULL, (LPARAM)&err));
 
                 // if (!err)
                 {

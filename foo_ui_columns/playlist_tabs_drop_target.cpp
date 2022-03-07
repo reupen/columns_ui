@@ -108,8 +108,8 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
                 hittest.pt.x = pttab.x;
                 hittest.pt.y = pttab.y;
                 int idx = TabCtrl_HitTest(p_list->wnd_tabs, &hittest);
-                int old = playlist_api->get_active_playlist();
-                if (cfg_drag_autoswitch && idx >= 0 && old != idx && !isAltDown)
+                const auto old = playlist_api->get_active_playlist();
+                if (cfg_drag_autoswitch && idx >= 0 && old != gsl::narrow<size_t>(idx) && !isAltDown)
                     p_list->switch_to_playlist_delayed2(idx); // playlist_switcher::get()->set_active_playlist(idx);
                 else
                     p_list->kill_switch_timer();
@@ -294,7 +294,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
                     }
                 }
 
-                unsigned new_idx;
+                size_t new_idx;
                 if (newPlaylistIndex == pfc_infinite)
                     newPlaylistIndex = playlist_api->get_playlist_count();
 

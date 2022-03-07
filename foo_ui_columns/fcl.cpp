@@ -228,8 +228,8 @@ BOOL g_ImportResultsProc(const ImportResultsData& data, HWND wnd, UINT msg, WPAR
 
         LVITEM lvi{};
         lvi.mask = LVIF_TEXT;
-        t_size count = data.m_items.get_count();
-        for (t_size i = 0; i < count; i++) {
+        const auto count = gsl::narrow<int>(data.m_items.get_count());
+        for (int i = 0; i < count; i++) {
             pfc::string8 temp;
             uih::list_view_insert_item_text(wnd_lv, i, 0, data.m_items[i].name, false);
             uih::list_view_insert_item_text(wnd_lv, i, 1, pfc::print_guid(data.m_items[i].guid), true);
@@ -470,7 +470,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
                     const auto pcount = gsl::narrow<uint32_t>(feeds[i].get_count());
                     mem.write_lendian_t(pcount, p_abort);
                     for (t_size j = 0; j < pcount; j++) {
-                        t_uint32 temp = feedback.find_or_add_guid(feeds[i][j]);
+                        const auto temp = gsl::narrow<uint32_t>(feedback.find_or_add_guid(feeds[i][j]));
                         mem.write_lendian_t(temp, p_abort);
                     }
                     mem.write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);

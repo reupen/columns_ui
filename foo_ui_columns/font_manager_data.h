@@ -42,7 +42,7 @@ public:
     void register_common_callback(cui::fonts::common_callback* p_callback);
     void deregister_common_callback(cui::fonts::common_callback* p_callback);
 
-    void g_on_common_font_changed(t_size mask);
+    void g_on_common_font_changed(uint32_t mask);
 
     pfc::ptr_list_t<cui::fonts::common_callback> m_callbacks;
 

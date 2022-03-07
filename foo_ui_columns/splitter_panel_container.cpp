@@ -28,7 +28,7 @@ bool FlatSplitterPanel::Panel::PanelContainer::test_autohide_window(HWND wnd)
 void FlatSplitterPanel::Panel::PanelContainer::on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs)
 {
     if (msg == WM_MOUSEMOVE && m_this.is_valid() && MonitorFromPoint(mllhs.pt, MONITOR_DEFAULTTONULL)) {
-        unsigned index = m_this->m_panels.find_item(m_panel->shared_from_this());
+        const auto index = m_this->m_panels.find_item(m_panel->shared_from_this());
         if (index != pfc_infinite) {
             HWND wnd_capture = GetCapture();
             HWND wnd_pt = WindowFromPoint(mllhs.pt);
@@ -117,7 +117,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         PAINTSTRUCT ps;
         HDC dc = BeginPaint(wnd, &ps);
         if (m_this.is_valid()) {
-            unsigned index = 0;
+            size_t index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->m_panels[index]->m_show_caption) {
                 RECT rc_client;
                 RECT rc_dummy;
@@ -146,7 +146,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
                         m_panel->m_caption_orientation == horizontal ? g_font_menu_horizontal.get()
                                                                      : g_font_menu_vertical.get());
                     // rc_caption.left += 11;
-                    uDrawPanelTitle(dc, &rc_caption, text, text.length(),
+                    uDrawPanelTitle(dc, &rc_caption, text, gsl::narrow<int>(text.length()),
                         m_this->m_panels[index]->m_caption_orientation == vertical, is_dark);
                     SelectFont(dc, old);
 
@@ -168,7 +168,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         RECT rc_client;
         GetClientRect(wnd, &rc_client);
         if (m_this.is_valid()) {
-            unsigned index = 0;
+            size_t index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->m_panels[index]->m_show_caption) {
                 unsigned caption_size = g_get_caption_size();
 
@@ -213,7 +213,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         return 0;
     case WM_LBUTTONDBLCLK:
         if (m_this.is_valid()) {
-            unsigned index = 0;
+            size_t index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->get_orientation() != m_panel->m_caption_orientation
                 && !m_panel->m_autohide) {
                 POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
@@ -279,7 +279,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         unsigned IDM_EXT_BASE = IDM_BASE;
 
         if (m_this.is_valid()) {
-            unsigned index = 0;
+            size_t index = 0;
             if (m_this->m_panels.find_by_wnd(wnd, index)) {
                 std::shared_ptr<Panel> p_panel = m_this->m_panels[index];
 

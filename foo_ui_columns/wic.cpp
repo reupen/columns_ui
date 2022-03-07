@@ -16,7 +16,7 @@ wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_data(const void* data, siz
     auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
 
     wil::com_ptr_t<IStream> stream;
-    stream.attach(SHCreateMemStream(static_cast<const BYTE*>(data), size));
+    stream.attach(SHCreateMemStream(static_cast<const BYTE*>(data), gsl::narrow<UINT>(size)));
 
     wil::com_ptr_t<IWICBitmapDecoder> bitmap_decoder;
     check_hresult(imaging_factory->CreateDecoderFromStream(
@@ -54,14 +54,14 @@ BitmapData decode_image(const wil::com_ptr_t<IWICBitmapSource>& bitmap_source)
     BitmapData image_data{};
     check_hresult(bitmap_source->GetSize(&image_data.width, &image_data.height));
 
-    constexpr size_t pixel_size = 4;
-    const size_t row_size = image_data.width * pixel_size - 1;
-    const size_t remainder = row_size % pixel_size;
+    constexpr unsigned pixel_size = 4;
+    const unsigned row_size = image_data.width * pixel_size - 1;
+    const unsigned remainder = row_size % pixel_size;
     image_data.stride = row_size + pixel_size - remainder;
 
     image_data.data.resize(image_data.stride * image_data.height);
-    check_hresult(
-        bitmap_source->CopyPixels(nullptr, image_data.stride, image_data.data.size(), image_data.data.data()));
+    check_hresult(bitmap_source->CopyPixels(
+        nullptr, image_data.stride, gsl::narrow<UINT>(image_data.data.size()), image_data.data.data()));
 
     return image_data;
 }

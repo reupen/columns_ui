@@ -7,15 +7,13 @@ void preview_to_console(const char* spec, bool extra)
 {
     const auto playlist_api = playlist_manager::get();
 
-    int count = playlist_api->activeplaylist_get_item_count();
+    const auto count = playlist_api->activeplaylist_get_item_count();
 
     if (!count)
         popup_message::g_show("Activate a non-empty playlist and try again", "No track to preview");
     else {
-        int idx = playlist_api->activeplaylist_get_focus_item();
+        auto idx = playlist_api->activeplaylist_get_focus_item();
         if (idx >= count)
-            idx = count - 1;
-        if (idx < 0)
             idx = 0;
 
         pfc::string8 temp;
@@ -87,19 +85,20 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItem
 {
     HWND wnd_combo = GetDlgItem(wnd, ID);
 
-    unsigned count = p_cache.size();
+    const auto count = p_cache.size();
     pfc::string8_fast_aggressive temp;
-    unsigned idx_none = 0;
+    int idx_none = 0;
     if (insert_none) {
-        idx_none = uSendDlgItemMessageText(wnd, ID, CB_ADDSTRING, 0, "(None)");
+        idx_none = ComboBox_AddString(wnd_combo, L"(None)");
         SendMessage(wnd_combo, CB_SETITEMDATA, idx_none, -1);
     }
 
-    unsigned sel = -1;
+    int sel = -1;
     pfc::string8 desc;
 
-    for (unsigned n = 0; n < count; n++) {
-        unsigned idx = uSendMessageText(wnd_combo, CB_ADDSTRING, 0, p_cache[n].m_name);
+    for (size_t n = 0; n < count; n++) {
+        const auto idx
+            = ComboBox_AddString(wnd_combo, pfc::stringcvt::string_wide_from_utf8(p_cache[n].m_name).get_ptr());
         SendMessage(wnd_combo, CB_SETITEMDATA, idx, n);
 
         if (sel == -1 && p_cache[n] == p_item) {
@@ -112,7 +111,7 @@ void populate_menu_combo(HWND wnd, unsigned ID, unsigned ID_DESC, const MenuItem
             idx_none++;
     }
 
-    uSendMessageText(wnd_combo, CB_SETCURSEL, sel == -1 && insert_none ? idx_none : sel, nullptr);
+    ComboBox_SetCurSel(wnd_combo, sel == -1 && insert_none ? idx_none : sel);
 
     // menu_helpers::get_description(menu_item::TYPE_MAIN, item, desc);
     uSendDlgItemMessageText(wnd, ID_DESC, WM_SETTEXT, 0, desc);
@@ -124,9 +123,9 @@ void on_menu_combo_change(
     auto wnd_combo = (HWND)lp;
 
     pfc::string8 temp;
-    unsigned cache_idx = SendMessage(wnd_combo, CB_GETITEMDATA, SendMessage(wnd_combo, CB_GETCURSEL, 0, 0), 0);
+    size_t cache_idx = ComboBox_GetItemData(wnd_combo, ComboBox_GetCurSel(wnd_combo));
 
-    if (cache_idx == -1) {
+    if (cache_idx == static_cast<size_t>(CB_ERR)) {
         cfg_menu_store = MenuItemIdentifier();
     } else if (cache_idx < p_cache.size()) {
         cfg_menu_store = p_cache[cache_idx];

@@ -17,17 +17,17 @@ private:
 
 class GlobalVariableList : public pfc::ptr_list_t<GlobalVariable> {
 public:
-    const char* find_by_name(const char* p_name, unsigned length)
+    const char* find_by_name(const char* p_name, size_t length)
     {
-        unsigned count = get_count();
-        for (unsigned n = 0; n < count; n++) {
+        const auto count = get_count();
+        for (size_t n = 0; n < count; n++) {
             const char* ptr = get_item(n)->get_name();
             if (!stricmp_utf8_ex(p_name, length, ptr, pfc_infinite))
                 return get_item(n)->get_value();
         }
         return nullptr;
     }
-    void add_item(const char* p_name, size_t p_name_length, const char* p_value, unsigned p_value_length)
+    void add_item(const char* p_name, size_t p_name_length, const char* p_value, size_t p_value_length)
     {
         auto var = new GlobalVariable(p_name, p_name_length, p_value, p_value_length);
         ptr_list_t<GlobalVariable>::add_item(var);

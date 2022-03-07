@@ -264,7 +264,7 @@ public:
 
                     const auto _ = wil::SelectObject(ps.hdc, m_font_caption.get());
                     uExtTextOut(ps.hdc, rc_caption.left, rc_caption.bottom, ETO_CLIPPED, &rc_caption, label_text.data(),
-                        label_text.length(), nullptr);
+                        gsl::narrow<UINT>(label_text.length()), nullptr);
                 }
             }
             return 0;
@@ -327,7 +327,7 @@ public:
         if (!t_attributes::get_show_caption())
             return 0;
 
-        return gsl::narrow<int>(uGetFontHeight(fnt)) + 1_spx;
+        return uih::get_font_height(fnt) + 1_spx;
     }
     static int g_get_caption_size()
     {
@@ -344,7 +344,7 @@ private:
     {
         const auto dc = wil::GetDC(this->get_wnd());
         const auto _ = wil::SelectObject(dc.get(), m_font_caption.get());
-        return uGetTextExtentPoint32(dc.get(), label_text.data(), label_text.size(), &p_out) != 0;
+        return uGetTextExtentPoint32(dc.get(), label_text.data(), gsl::narrow<UINT>(label_text.size()), &p_out) != 0;
     }
 
     void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}

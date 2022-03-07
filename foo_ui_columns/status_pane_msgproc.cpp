@@ -88,7 +88,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto paint_dc = wil::BeginPaint(wnd, &ps);
         uih::BufferedDC dc(paint_dc.get(), ps.rcPaint);
 
-        const auto font_height = uGetFontHeight(m_font.get());
+        const auto font_height = uih::get_font_height(m_font.get());
         const auto line_height = font_height + uih::scale_dpi_value(3);
 
         RECT rc_client{};
@@ -112,10 +112,11 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         const auto _ = wil::SelectObject(dc.get(), m_font.get());
 
-        const char* placeholder = "999999999 items selected";
+        constexpr auto selected_placeholder = "999999999 items selected"sv;
         const auto default_text_colour = dark::get_system_colour(COLOR_BTNTEXT, colours::is_dark_mode_active());
-        int placeholder_len
-            = uih::get_text_width(dc.get(), placeholder, strlen(placeholder)) + uih::scale_dpi_value(20);
+        const auto placeholder_len
+            = uih::get_text_width(dc.get(), selected_placeholder.data(), gsl::narrow<int>(selected_placeholder.size()))
+            + uih::scale_dpi_value(20);
 
         pfc::string8 items_text;
         items_text << m_item_count << " item";
@@ -140,10 +141,11 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     nullptr, true, true, nullptr);
             }
         } else {
-            placeholder = "Playing:  ";
-            t_size placeholder2_len = uih::get_text_width(dc.get(), placeholder, strlen(placeholder));
+            constexpr auto playing_placeholder = "Playing:  "sv;
+            const auto placeholder2_len = uih::get_text_width(
+                dc.get(), playing_placeholder.data(), gsl::narrow<int>(playing_placeholder.size()));
 
-            t_size now_playing_x_end = uih::scale_dpi_value(4) + placeholder_len + placeholder2_len;
+            const auto now_playing_x_end = uih::scale_dpi_value(4) + placeholder_len + placeholder2_len;
             {
                 RECT rc_item = rc_line_1;
                 // rc_item.right = 4 + placeholder_len + placeholder2_len;

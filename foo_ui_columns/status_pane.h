@@ -172,9 +172,9 @@ class StatusPane
 
 public:
     StatusPane() = default;
-    t_size get_ideal_height()
+    int get_ideal_height() const
     {
-        return uGetFontHeight(m_font.get()) * 2 + uih::scale_dpi_value(2) + uih::scale_dpi_value(4)
+        return uih::get_font_height(m_font.get()) * 2 + uih::scale_dpi_value(2) + uih::scale_dpi_value(4)
             + uih::scale_dpi_value(3) * 2;
     }
     void enter_menu_mode(const char* p_text)

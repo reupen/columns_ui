@@ -64,7 +64,7 @@ public:
                 main_window::config_set_transparency_enabled(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
                 break;
             case IDC_TOOLBARS:
-                cfg_toolbars = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_toolbars = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 on_show_toolbars_change();
                 break;
             case IDC_RESET_TOOLBARS: {

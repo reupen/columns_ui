@@ -118,7 +118,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 if (idx < 0) {
                     const auto playlist_api = playlist_manager::get();
-                    unsigned new_idx
+                    const auto new_idx
                         = playlist_api->create_playlist("Untitled", 12, playlist_api->get_playlist_count());
                     playlist_api->set_active_playlist(new_idx);
                     return 0;
@@ -245,8 +245,8 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 const auto playlist_api = playlist_manager_v3::get();
 
-                unsigned num = playlist_api->get_playlist_count();
-                unsigned active = playlist_api->get_active_playlist();
+                auto num = playlist_api->get_playlist_count();
+                auto active = playlist_api->get_active_playlist();
                 bool b_index_valid = idx < num;
 
                 metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
@@ -300,9 +300,10 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 if (num)
                     AppendMenu(menu, MF_STRING, ID_SAVE_ALL, _T("Save all as..."));
-                pfc::array_t<t_size> recycler_ids;
+                pfc::array_t<uint32_t> recycler_ids;
                 {
-                    t_size recycler_count = playlist_api->recycler_get_count();
+                    const auto recycler_count
+                        = gsl::narrow<unsigned>(std::min(playlist_api->recycler_get_count(), size_t{UINT32_MAX}));
                     if (recycler_count) {
                         recycler_ids.set_count(recycler_count);
                         HMENU recycler_popup = CreatePopupMenu();

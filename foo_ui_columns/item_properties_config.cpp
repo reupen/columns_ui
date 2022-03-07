@@ -22,7 +22,7 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
         uih::list_view_insert_column_text(wnd_lv, 0, L"", RECT_CX(rc));
 
         for (auto&& [index, section] : ranges::views::enumerate(g_info_sections)) {
-            uih::list_view_insert_item_text(wnd_lv, index, 0, section.name);
+            uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(index), 0, section.name);
             ListView_SetCheckState(wnd_lv, index, (m_info_sections_mask & (1 << section.id)) ? TRUE : FALSE);
         }
 
@@ -173,8 +173,8 @@ bool ItemPropertiesConfig::run_modal(HWND wnd)
     return dialog_result > 0;
 }
 
-ItemPropertiesConfig::ItemPropertiesConfig(pfc::list_t<Field> p_fields, t_size edge_style, t_uint32 info_sections_mask,
-    bool b_show_columns, bool b_show_groups)
+ItemPropertiesConfig::ItemPropertiesConfig(pfc::list_t<Field> p_fields, uint32_t edge_style,
+    t_uint32 info_sections_mask, bool b_show_columns, bool b_show_groups)
     : m_fields(std::move(p_fields))
     , m_edge_style(edge_style)
     , m_info_sections_mask(info_sections_mask)

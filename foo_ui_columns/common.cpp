@@ -27,7 +27,7 @@ StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(
     pfc::string8_fast_aggressive b;
     a.prealloc(512);
     b.prealloc(512);
-    unsigned count = handles.get_count();
+    const auto count = handles.get_count();
     bool use = false;
 
     pfc::ptr_list_t<char> specs;
@@ -43,12 +43,10 @@ StringFormatCommonTrackTitle::StringFormatCommonTrackTitle(
             ptr++;
     }
 
-    unsigned fmt_count = specs.get_count();
-
-    for (unsigned f = 0; f < fmt_count; f++) {
+    for (auto&& spec : specs) {
         service_ptr_t<titleformat_object> to_temp;
-        titleformat_compiler::get()->compile_safe(to_temp, specs[f]);
-        for (unsigned n = 0; n < count; n++) {
+        titleformat_compiler::get()->compile_safe(to_temp, spec);
+        for (size_t n = 0; n < count; n++) {
             if (n == 0) {
                 handles[0]->format_title(nullptr, a, to_temp, nullptr);
                 use = true;

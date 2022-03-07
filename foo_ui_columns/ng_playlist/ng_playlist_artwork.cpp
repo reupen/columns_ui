@@ -20,8 +20,7 @@ bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback
     return ret;
 }
 
-wil::unique_hbitmap g_get_nocover_bitmap(
-    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
+wil::unique_hbitmap g_get_nocover_bitmap(int cx, int cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
     album_art_extractor_instance_v2::ptr p_extractor = album_art_manager_v2::get()->open_stub(p_abort);
 
@@ -42,8 +41,8 @@ wil::unique_hbitmap g_get_nocover_bitmap(
     return ret;
 }
 
-void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, t_size cx,
-    t_size cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
+void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, int cx,
+    int cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
 {
     auto p_new_reader = std::make_shared<ArtworkReader>();
     p_new_reader->initialise(p_handle, cx, cy, cr_back, b_reflection, std::move(p_notify), shared_from_this());
@@ -173,7 +172,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 }
 
 wil::unique_hbitmap g_create_hbitmap_from_image(
-    Gdiplus::Bitmap& bm, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
+    Gdiplus::Bitmap& bm, int& cx, int& cy, COLORREF cr_back, bool b_reflection)
 {
     HDC dc = nullptr;
     HDC dcc = nullptr;
@@ -182,11 +181,11 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
     // cy = bm.GetHeight();
     if (b_reflection)
         cy = cx; //(cy*11 -7) / 14;
-    t_size ocx = cx;
-    t_size ocy = cy;
+    int ocx = cx;
+    int ocy = cy;
 
-    t_size cx_source = bm.GetWidth();
-    t_size cy_source = bm.GetHeight();
+    int cx_source = gsl::narrow<int>(bm.GetWidth());
+    int cy_source = gsl::narrow<int>(bm.GetHeight());
 
     double ar_source = (double)cx_source / (double)cy_source;
     double ar_dest = (double)ocx / (double)ocy;
@@ -201,7 +200,7 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
     if ((ocx - cx) % 2)
         cx++;
 
-    t_size reflect_cy = b_reflection ? (cy * 3) / 11 : 0;
+    int reflect_cy = b_reflection ? (cy * 3) / 11 : 0;
     wil::unique_hbitmap bitmap(CreateCompatibleBitmap(dc, cx, cy + reflect_cy));
     HBITMAP bm_old = SelectBitmap(dcc, bitmap.get());
 
@@ -279,7 +278,7 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
 }
 
 wil::unique_hbitmap g_create_hbitmap_from_data(
-    const album_art_data_ptr& data, t_size& cx, t_size& cy, COLORREF cr_back, bool b_reflection)
+    const album_art_data_ptr& data, int& cx, int& cy, COLORREF cr_back, bool b_reflection)
 {
     std::unique_ptr<Gdiplus::Bitmap> bitmap;
     try {
@@ -306,8 +305,8 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(t_size index_item)
     PlaylistViewGroup* group = item->get_group(group_count - 1);
 
     if (!group->m_artwork_load_attempted) {
-        t_size cx = get_group_info_area_width();
-        t_size cy = get_group_info_area_height();
+        const auto cx = get_group_info_area_width();
+        const auto cy = get_group_info_area_height();
 
         ArtworkCompletionNotify::ptr_t ptr = std::make_shared<ArtworkCompletionNotify>();
         ptr->m_group = group;
@@ -330,7 +329,7 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(t_size index_item)
 }
 
 wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(
-    t_size cx, t_size cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
+    int cx, int cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
     insync(m_nocover_sync);
     if (m_nocover_bitmap && m_nocover_cx == cx && m_nocover_cy == cy)

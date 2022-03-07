@@ -47,7 +47,7 @@ private:
 
 } // namespace
 
-pfc::string8 format_playlist_title(unsigned index)
+pfc::string8 format_playlist_title(size_t index)
 {
     auto playlist_api = playlist_manager_v3::get();
     auto playback_api = playback_control::get();

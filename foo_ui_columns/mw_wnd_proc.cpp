@@ -87,8 +87,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             const int cx = GetSystemMetrics(SM_CXSMICON);
             const int cy = GetSystemMetrics(SM_CYSMICON);
 
-            m_taskbar_button_images.reset(ImageList_Create(cx, cy, ILC_COLOR32, std::size(light_taskbar_icons), 0));
-            ImageList_SetImageCount(m_taskbar_button_images.get(), std::size(light_taskbar_icons));
+            m_taskbar_button_images.reset(
+                ImageList_Create(cx, cy, ILC_COLOR32, gsl::narrow<int>(std::size(light_taskbar_icons)), 0));
+            ImageList_SetImageCount(m_taskbar_button_images.get(), gsl::narrow<int>(std::size(light_taskbar_icons)));
 
             if (update_taskbar_button_images())
                 queue_taskbar_button_update(false);
@@ -298,7 +299,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 const keyboard_shortcut_manager::shortcut_type shortcuts[]
                     = {keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING};
-                p_manager->set_shortcut_preference(shortcuts, std::size(shortcuts));
+                p_manager->set_shortcut_preference(shortcuts, gsl::narrow<unsigned>(std::size(shortcuts)));
                 if (p_manager->init_context_now_playing(
                         standard_config_objects::query_show_keyboard_shortcuts_in_menus()
                             ? contextmenu_manager::FLAG_SHOW_SHORTCUTS
@@ -347,7 +348,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 RBHITTESTINFO rbht;
                 rbht.pt = pt_client;
 
-                int idx_hit = SendMessage(rebar::g_rebar, RB_HITTEST, 0, reinterpret_cast<LPARAM>(&rbht));
+                int idx_hit
+                    = static_cast<int>(SendMessage(rebar::g_rebar, RB_HITTEST, 0, reinterpret_cast<LPARAM>(&rbht)));
 
                 uie::window_ptr p_ext;
 
@@ -379,9 +381,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 moo.sort_by_category_and_name();
 
-                unsigned count_exts = moo.get_count();
+                const auto count_exts = moo.get_count();
                 HMENU popup = nullptr;
-                for (unsigned n = 0; n < count_exts; n++) {
+                for (size_t n = 0; n < count_exts; n++) {
                     if (!n || uStringCompare(moo[n - 1].category, moo[n].category)) {
                         if (n)
                             uAppendMenu(
@@ -574,7 +576,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     if (p_manager_selection.is_valid()) {
                         const keyboard_shortcut_manager::shortcut_type shortcuts[]
                             = {keyboard_shortcut_manager::TYPE_CONTEXT_NOW_PLAYING};
-                        p_manager_selection->set_shortcut_preference(shortcuts, std::size(shortcuts));
+                        p_manager_selection->set_shortcut_preference(
+                            shortcuts, gsl::narrow<unsigned>(std::size(shortcuts)));
 
                         if (p_manager_selection->init_context_now_playing(
                                 standard_config_objects::query_show_keyboard_shortcuts_in_menus()
@@ -641,7 +644,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
 
                 AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
-                t_size insert_point = GetMenuItemCount(menu);
+                int insert_point = GetMenuItemCount(menu);
                 if (systray_contextmenus::g_menu_file_exit.is_valid()) {
                     systray_contextmenus::g_menu_file_exit->instantiate(mainmenu_groups::file_etc_exit);
                     systray_contextmenus::g_menu_file_exit->generate_menu_win32(menu,

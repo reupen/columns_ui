@@ -280,7 +280,7 @@ void ConfigLayout::save_active_preset()
     }
 }
 
-void ConfigLayout::set_active_preset(t_size index)
+void ConfigLayout::set_active_preset(size_t index)
 {
     if (index < m_presets.get_count() && m_active != index) {
         m_active = index;
@@ -291,7 +291,7 @@ void ConfigLayout::set_active_preset(t_size index)
     }
 }
 
-t_size ConfigLayout::delete_preset(t_size index)
+t_size ConfigLayout::delete_preset(size_t index)
 {
     if (index < m_presets.get_count()) {
         if (index == m_active)
@@ -303,7 +303,7 @@ t_size ConfigLayout::delete_preset(t_size index)
     return m_presets.get_count();
 }
 
-void ConfigLayout::set_presets(const pfc::list_base_const_t<Preset>& presets, t_size active)
+void ConfigLayout::set_presets(const pfc::list_base_const_t<Preset>& presets, size_t active)
 {
     if (presets.get_count()) {
         m_presets.remove_all();
@@ -355,8 +355,8 @@ const pfc::list_base_const_t<ConfigLayout::Preset>& ConfigLayout::get_presets() 
 void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     out->write_lendian_t(t_uint32(stream_version_current), p_abort);
-    out->write_lendian_t(m_active, p_abort);
-    unsigned count = m_presets.get_count();
+    out->write_lendian_t(gsl::narrow<uint32_t>(m_active), p_abort);
+    const auto count = gsl::narrow<uint32_t>(m_presets.get_count());
     out->write_lendian_t(count, p_abort);
     for (unsigned n = 0; n < count; n++) {
         if (n != m_active || !g_layout_window.get_wnd())
@@ -380,7 +380,7 @@ void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abor
     p_reader->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
         m_presets.remove_all();
-        p_reader->read_lendian_t(m_active, p_abort);
+        m_active = p_reader->read_lendian_t<uint32_t>(p_abort);
         uint32_t count;
         p_reader->read_lendian_t(count, p_abort);
         for (unsigned n = 0; n < count; n++) {

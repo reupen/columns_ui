@@ -46,8 +46,8 @@ public:
 
             populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, m_menu_cache, true);
 
-            unsigned count = cui::playlist_item_helpers::MiddleClickActionManager::get_count();
-            for (unsigned n = 0; n < count; n++) {
+            const auto count = cui::playlist_item_helpers::MiddleClickActionManager::get_count();
+            for (size_t n = 0; n < count; n++) {
                 uSendDlgItemMessageText(wnd, IDC_PLAYLIST_MIDDLE, CB_ADDSTRING, 0,
                     cui::playlist_item_helpers::MiddleClickActionManager::g_pma_actions[n].name);
                 SendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETITEMDATA, n,
@@ -69,7 +69,7 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case IDC_DROP_AT_END: {
-                cfg_drop_at_end = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_drop_at_end = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
             } break;
             case (EN_CHANGE << 16) | IDC_HEIGHT: {
                 if (m_initialised) {
@@ -85,42 +85,42 @@ public:
                 on_menu_combo_change(wnd, lp, cfg_playlist_double, m_menu_cache, IDC_MENU_DESC);
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLAYLIST_MIDDLE: {
-                cfg_playlist_middle_action
-                    = SendMessage((HWND)lp, CB_GETITEMDATA, SendMessage((HWND)lp, CB_GETCURSEL, 0, 0), 0);
+                cfg_playlist_middle_action = gsl::narrow<int>(
+                    ComboBox_GetItemData(reinterpret_cast<HWND>(lp), ComboBox_GetCurSel(reinterpret_cast<HWND>(lp))));
             } break;
             case IDC_SELECTION_MODEL:
-                cfg_alternative_sel = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_alternative_sel = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::g_on_alternate_selection_change();
                 break;
             case IDC_SORT_ARROWS:
-                cfg_show_sort_arrows = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_show_sort_arrows = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::g_on_show_sort_indicators_change();
                 break;
             case IDC_TOOLTIPS_CLIPPED:
-                cfg_tooltips_clipped = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_tooltips_clipped = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::g_on_show_tooltips_change();
                 break;
 
             case IDC_ELLIPSIS:
-                cfg_ellipsis = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_ellipsis = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::s_redraw_all();
                 break;
 
             case IDC_HEADER: {
-                cfg_header = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_header = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::g_on_show_header_change();
             } break;
             case IDC_NOHSCROLL: {
-                cfg_nohscroll = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_nohscroll = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::g_on_autosize_change();
             } break;
 
             case IDC_HHTRACK: {
-                cfg_header_hottrack = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_header_hottrack = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::g_on_sorting_enabled_change();
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLEDGE: {
-                cfg_frame = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+                cfg_frame = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
                 cui::panels::playlist_view::PlaylistView::g_on_edge_style_change();
             } break;
             case IDC_INLINE_MODE: {

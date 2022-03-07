@@ -7,6 +7,7 @@ namespace cui::toolbars::seekbar {
 class SeekBarToolbar : public ui_extension::container_ui_extension {
 public:
     static pfc::ptr_list_t<SeekBarToolbar> windows;
+    inline static INT_PTR g_seek_timer{};
 
     HWND wnd_seekbar{nullptr};
 
@@ -31,7 +32,6 @@ public:
     unsigned get_type() const override;
 
     static void update_seek_timer();
-    static unsigned g_seek_timer;
     static VOID CALLBACK SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time);
     static void update_seekbars(bool positions_only = false);
 

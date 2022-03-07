@@ -90,7 +90,7 @@ private:
     void update_toolbar_icons() const;
     void create_edit();
     void recalculate_dimensions();
-    void on_size(t_size cx, t_size cy) override;
+    void on_size(int cx, int cy) override;
     void activate();
 
     LRESULT on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);

@@ -41,10 +41,10 @@ public:
                 break;
 
             case IDC_NOWPL: {
-                cfg_np = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_np = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
             } break;
             case IDC_USE_CUSTOM_ICON: {
-                cfg_custom_icon = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_custom_icon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 EnableWindow(GetDlgItem(wnd, IDC_BROWSE_ICON), cfg_custom_icon);
                 create_icon_handle();
                 create_systray_icon();
@@ -62,15 +62,15 @@ public:
             } break;
 
             case IDC_MINIMISE_TO_SYSTRAY: {
-                cfg_minimise_to_tray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_minimise_to_tray = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
             } break;
             case IDC_SHOW_SYSTRAY: {
-                cfg_show_systray = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_show_systray = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 //                EnableWindow(GetDlgItem(wnd, IDC_MINIMISE_TO_SYSTRAY), cfg_show_systray);
                 on_show_notification_area_icon_change();
             } break;
             case IDC_BALLOON: {
-                cfg_balloon = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_balloon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
             } break;
             }
         }

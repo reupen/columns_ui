@@ -93,7 +93,7 @@ void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& fon
                 } else {
                     Font::Ptr font = std::make_shared<Font>();
                     font->m_font.reset(CreateFontIndirect(&lf));
-                    font->m_height = uGetFontHeight(font->m_font.get());
+                    font->m_height = uih::get_font_height(font->m_font.get());
                     font->m_raw_font = raw_font_changes[i].m_font_data;
                     index = font_changes.m_fonts.add_item(font);
                 }
@@ -266,7 +266,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
     auto font_iter = font_changes.begin();
 
     for (auto&& [line, fragments] : fragments_by_line) {
-        int line_height{gsl::narrow<int>(uGetTextHeight(dc))};
+        int line_height{uih::get_dc_font_height(dc)};
         bool is_line_height_explicitly_set{};
         int line_width{};
 
@@ -292,8 +292,8 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
                 uih::UniscribeTextRenderer script_string;
 
                 script_string.analyse(dc, fragment.data() + fragment_character_pos,
-                    fragment.length() - fragment_character_pos, std::max(max_width - line_width, 0), word_wrapping,
-                    true, line_width);
+                    gsl::narrow<int>(fragment.length() - fragment_character_pos), std::max(max_width - line_width, 0),
+                    word_wrapping, true, line_width);
 
                 if (word_wrapping) {
                     max_chars = gsl::narrow<size_t>(script_string.get_output_character_count());
@@ -329,7 +329,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
                     fragment_character_pos += max_chars;
                     last_append_pos = wrapped_line_end - text.data();
-                    line_height = gsl::narrow<int>(uGetTextHeight(dc));
+                    line_height = uih::get_dc_font_height(dc);
                     is_line_height_explicitly_set = false;
                     line_width = 0;
                 } else {
@@ -445,14 +445,14 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
             line_font_change_count++;
         }
 
-        const t_size line_height = wrapped_line_sizes[line_index].m_height;
+        const auto line_height = wrapped_line_sizes[line_index].m_height;
 
         rc_line.bottom = rc_line.top + line_height;
         rc_line.left = rc_placement.left;
         rc_line.right = rc_placement.right;
 
-        const t_size line_width = RECT_CX(rc_line);
-        const t_size line_text_width = wrapped_line_sizes[line_index].m_width;
+        const auto line_width = RECT_CX(rc_line);
+        const auto line_text_width = wrapped_line_sizes[line_index].m_width;
 
         if (line_text_width < line_width) {
             if (align == uih::ALIGN_CENTRE)

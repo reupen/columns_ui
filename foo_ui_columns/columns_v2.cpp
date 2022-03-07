@@ -51,7 +51,7 @@ void PlaylistViewColumn::write_extra(stream_writer* out, abort_callback& abortCa
 
 bool ColumnList::move_up(t_size idx)
 {
-    unsigned count = get_count();
+    const auto count = get_count();
     if (idx > 0 && idx < count) {
         order_helper order(count);
         order.swap(idx, idx - 1);
@@ -63,9 +63,9 @@ bool ColumnList::move_up(t_size idx)
 
 bool ColumnList::move(t_size from, t_size to)
 {
-    unsigned count = get_count();
-    unsigned n = from;
-    unsigned idx = to;
+    const auto count = get_count();
+    auto n = from;
+    auto idx = to;
     bool rv = false;
 
     order_helper order(count);
@@ -90,7 +90,7 @@ bool ColumnList::move(t_size from, t_size to)
 
 bool ColumnList::move_down(t_size idx)
 {
-    unsigned count = get_count();
+    const auto count = get_count();
     if (idx >= 0 && idx < (count - 1)) {
         order_helper order(count);
         order.swap(idx, idx + 1);

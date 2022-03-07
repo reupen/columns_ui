@@ -73,9 +73,10 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
 
     if (num)
         AppendMenu(menu, MF_STRING, ID_SAVE_ALL, _T("Save all as..."));
-    pfc::array_t<t_size> recycler_ids;
+    pfc::array_t<unsigned> recycler_ids;
     {
-        t_size recycler_count = m_playlist_api->recycler_get_count();
+        const auto recycler_count
+            = gsl::narrow<unsigned>(std::min(m_playlist_api->recycler_get_count(), size_t{UINT32_MAX}));
         if (recycler_count) {
             recycler_ids.set_count(recycler_count);
             HMENU recycler_popup = CreatePopupMenu();
@@ -117,7 +118,8 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     }
     menu_helpers::win32_auto_mnemonics(menu);
 
-    int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr);
+    const auto cmd = static_cast<unsigned>(
+        TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr));
     m_status_text_override.release();
 
     DestroyMenu(menu);

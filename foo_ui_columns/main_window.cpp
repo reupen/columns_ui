@@ -201,7 +201,7 @@ bool cui::MainWindow::update_taskbar_button_images() const
     for (size_t i = 0; i < std::size(light_taskbar_icons); i++) {
         wil::unique_hicon icon(static_cast<HICON>(
             LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(icons[i]), IMAGE_ICON, cx, cy, NULL)));
-        ImageList_ReplaceIcon(m_taskbar_button_images.get(), i, icon.get());
+        ImageList_ReplaceIcon(m_taskbar_button_images.get(), gsl::narrow<int>(i), icon.get());
     }
 
     return SUCCEEDED(m_taskbar_list->ThumbBarSetImageList(m_wnd, m_taskbar_button_images.get()));
@@ -217,13 +217,13 @@ void cui::MainWindow::update_taskbar_buttons(bool update) const
 
         const WCHAR* ttips[6]
             = {L"Stop", L"Previous", (b_is_playing && !b_is_paused ? L"Pause" : L"Play"), L"Next", L"Random"};
-        INT_PTR bitmap_indices[] = {0, 1, (b_is_playing && !b_is_paused ? 2 : 3), 4, 5};
+        const UINT bitmap_indices[] = {0u, 1u, (b_is_playing && !b_is_paused ? 2u : 3u), 4u, 5u};
 
         THUMBBUTTON tb[std::size(bitmap_indices)]{};
 
         for (size_t i = 0; i < std::size(bitmap_indices); i++) {
             tb[i].dwMask = THB_BITMAP | THB_TOOLTIP /*|THB_FLAGS*/;
-            tb[i].iId = taskbar_buttons::ID_FIRST + i;
+            tb[i].iId = gsl::narrow<uint32_t>(taskbar_buttons::ID_FIRST + i);
             tb[i].iBitmap = bitmap_indices[i];
             wcscpy_s(tb[i].szTip, std::size(tb[i].szTip), ttips[i]);
             // if (tb[i].iId == ID_STOP && !b_is_playing)
@@ -231,9 +231,9 @@ void cui::MainWindow::update_taskbar_buttons(bool update) const
         }
 
         if (update)
-            m_taskbar_list->ThumbBarUpdateButtons(m_wnd, std::size(tb), tb);
+            m_taskbar_list->ThumbBarUpdateButtons(m_wnd, gsl::narrow<UINT>(std::size(tb)), tb);
         else
-            m_taskbar_list->ThumbBarAddButtons(m_wnd, std::size(tb), tb);
+            m_taskbar_list->ThumbBarAddButtons(m_wnd, gsl::narrow<UINT>(std::size(tb)), tb);
     }
 }
 

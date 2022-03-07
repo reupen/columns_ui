@@ -403,7 +403,7 @@ void ItemDetails::update_display_info(HDC dc)
         GetClientRect(get_wnd(), &rc);
         const auto padding_size = uih::scale_dpi_value(2) * 2;
 
-        t_size widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
+        const auto widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
         m_current_display_text = m_current_text;
 
         auto display_info = g_get_multiline_text_dimensions(
@@ -677,7 +677,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_font_changes.m_default_font = std::make_shared<Font>();
         m_font_changes.m_default_font->m_font.reset(
             fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client));
-        m_font_changes.m_default_font->m_height = uGetFontHeight(m_font_changes.m_default_font->m_font.get());
+        m_font_changes.m_default_font->m_height = uih::get_font_height(m_font_changes.m_default_font->m_font.get());
 
         if (g_windows.empty())
             g_message_window.create(nullptr);
@@ -971,7 +971,7 @@ void ItemDetails::on_edge_style_change()
     SetWindowPos(get_wnd(), nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_FRAMECHANGED);
 }
 
-void ItemDetails::set_edge_style(t_size edge_style)
+void ItemDetails::set_edge_style(uint32_t edge_style)
 {
     m_edge_style = edge_style;
     if (get_wnd()) {
@@ -979,7 +979,7 @@ void ItemDetails::set_edge_style(t_size edge_style)
     }
 }
 
-void ItemDetails::set_vertical_alignment(t_size vertical_alignment)
+void ItemDetails::set_vertical_alignment(uint32_t vertical_alignment)
 {
     if (get_wnd()) {
         m_vertical_alignment = vertical_alignment;
@@ -989,7 +989,7 @@ void ItemDetails::set_vertical_alignment(t_size vertical_alignment)
     }
 }
 
-void ItemDetails::set_horizontal_alignment(t_size horizontal_alignment)
+void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
 {
     if (get_wnd()) {
         m_horizontal_alignment = horizontal_alignment;
@@ -1141,7 +1141,7 @@ bool ItemDetails::MenuNodeAlignmentPopup::get_display_data(pfc::string_base& p_o
     return true;
 }
 
-ItemDetails::MenuNodeAlignment::MenuNodeAlignment(ItemDetails* p_wnd, t_size p_value) : p_this(p_wnd), m_type(p_value)
+ItemDetails::MenuNodeAlignment::MenuNodeAlignment(ItemDetails* p_wnd, uint32_t p_value) : p_this(p_wnd), m_type(p_value)
 {
 }
 
@@ -1166,7 +1166,7 @@ bool ItemDetails::MenuNodeAlignment::get_display_data(pfc::string_base& p_out, u
     return true;
 }
 
-const char* ItemDetails::MenuNodeAlignment::get_name(t_size source)
+const char* ItemDetails::MenuNodeAlignment::get_name(uint32_t source)
 {
     if (source == 0)
         return "Left";
@@ -1203,7 +1203,9 @@ bool ItemDetails::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out,
     return true;
 }
 
-ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, t_size p_value) : p_this(p_wnd), m_source(p_value)
+ItemDetails::MenuNodeTrackMode::MenuNodeTrackMode(ItemDetails* p_wnd, uint32_t p_value)
+    : p_this(p_wnd)
+    , m_source(p_value)
 {
 }
 
@@ -1226,7 +1228,7 @@ bool ItemDetails::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, u
     return true;
 }
 
-const char* ItemDetails::MenuNodeTrackMode::get_name(t_size source)
+const char* ItemDetails::MenuNodeTrackMode::get_name(uint32_t source)
 {
     if (source == track_playing)
         return "Playing item";

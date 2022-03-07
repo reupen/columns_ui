@@ -96,8 +96,8 @@ using style_data_t = pfc::array_t<SharedCellStyleData::ptr>;
 
 class StyleTitleformatHook : public titleformat_hook {
     CellStyleData p_default_colours;
-    pfc::array_t<char> text, selected_text, back, selected_back, selected_back_no_focus, selected_text_no_focus,
-        m_index_text;
+    pfc::array_t<char> text, selected_text, back, selected_back, selected_back_no_focus, selected_text_no_focus;
+    std::optional<std::string> m_index_text;
     CellStyleData& p_colours;
     t_size m_index;
     bool m_is_group;

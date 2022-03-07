@@ -30,20 +30,16 @@ void SeekBarToolbar::set_custom_colours()
 
 void SeekBarToolbar::update_seekbars(bool positions_only)
 {
-    unsigned n;
-    unsigned count = windows.get_count();
     if (positions_only) {
-        for (n = 0; n < count; n++)
-            if (windows[n]->get_wnd())
-                windows[n]->update_seek_pos();
+        for (auto&& window : windows)
+            if (window->get_wnd())
+                window->update_seek_pos();
     } else {
-        for (n = 0; n < count; n++)
-            if (windows[n]->get_wnd())
-                windows[n]->update_seek();
+        for (auto&& window : windows)
+            if (window->get_wnd())
+                window->update_seek();
     }
 }
-
-unsigned SeekBarToolbar::g_seek_timer = 0;
 
 void SeekBarToolbar::update_seek_timer()
 {

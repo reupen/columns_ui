@@ -41,7 +41,7 @@ void g_compare_file_with_bytes(
                     delta64 = BUFSIZE;
                 auto delta = (unsigned)delta64;
 
-                unsigned io_bytes_done = p1->read(temp.get_ptr(), delta, p_abort);
+                const auto io_bytes_done = p1->read(temp.get_ptr(), delta, p_abort);
 
                 if (io_bytes_done <= 0)
                     break;

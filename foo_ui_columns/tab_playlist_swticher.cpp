@@ -37,19 +37,19 @@ public:
                 }
                 break;
             case IDC_MCLICK:
-                cfg_mclick = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_mclick = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case (EN_CHANGE << 16) | IDC_PLAYLIST_TF:
-                cfg_playlist_switcher_tagz = uGetWindowText((HWND)lp);
+                cfg_playlist_switcher_tagz = uGetWindowText(reinterpret_cast<HWND>(lp));
                 if (cfg_playlist_switcher_use_tagz)
                     cui::panels::playlist_switcher::PlaylistSwitcher::g_refresh_all_items();
                 break;
             case IDC_USE_PLAYLIST_TF:
-                cfg_playlist_switcher_use_tagz = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_playlist_switcher_use_tagz = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_switcher::PlaylistSwitcher::g_refresh_all_items();
                 break;
             case (CBN_SELCHANGE << 16) | IDC_PLISTEDGE:
-                cfg_plistframe = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
+                cfg_plistframe = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
                 cui::panels::playlist_switcher::PlaylistSwitcher::g_on_edgestyle_change();
                 break;
             }

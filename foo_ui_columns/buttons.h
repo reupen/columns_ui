@@ -11,14 +11,14 @@ public:
     /** For config dialog */
     enum { MSG_BUTTON_CHANGE = WM_USER + 2, MSG_COMMAND_CHANGE = WM_USER + 3 };
 
-    enum Filter : uint32_t {
+    enum Filter : int32_t {
         FILTER_NONE,
         FILTER_PLAYING,
         FILTER_PLAYLIST,
         FILTER_ACTIVE_SELECTION,
     };
 
-    enum Type : uint32_t {
+    enum Type : int32_t {
         TYPE_SEPARATOR,
         TYPE_BUTTON,
         TYPE_MENU_ITEM_CONTEXT,
@@ -104,12 +104,12 @@ public:
             void on_command_state_change(unsigned p_new_state) override {}
 
             service_ptr_t<ButtonsToolbar> m_this;
-            unsigned id{0};
+            int id{};
 
         public:
             ButtonStateCallback& operator=(const ButtonStateCallback& p_source);
             void set_wnd(ButtonsToolbar* p_source);
-            void set_id(unsigned i);
+            void set_id(int i);
             ButtonStateCallback() = default;
         } m_callback;
 
@@ -292,8 +292,8 @@ class CommandPickerParam {
 public:
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_group{ButtonsToolbar::TYPE_SEPARATOR};
-    unsigned m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
+    int m_group{ButtonsToolbar::TYPE_SEPARATOR};
+    int m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
 };
 
 class CommandPickerData {
@@ -309,10 +309,10 @@ class CommandPickerData {
     HWND wnd_group{};
     HWND wnd_filter{};
     HWND wnd_command{};
-    unsigned m_group{ButtonsToolbar::TYPE_SEPARATOR};
+    int m_group{ButtonsToolbar::TYPE_SEPARATOR};
     GUID m_guid{};
     GUID m_subcommand{};
-    unsigned m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
+    int m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
 
     bool __populate_mainmenu_dynamic_recur(
         CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root);

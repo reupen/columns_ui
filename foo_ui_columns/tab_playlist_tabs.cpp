@@ -27,14 +27,14 @@ public:
                     = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case IDC_TABS_MULTILINE:
-                cfg_tabs_multiline = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_tabs_multiline = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_tabs::g_on_multiline_tabs_change();
                 break;
             case IDC_MCLICK3:
-                cfg_plm_rename = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_plm_rename = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case IDC_PLDRAG:
-                cfg_drag_pl = SendMessage((HWND)lp, BM_GETCHECK, 0, 0);
+                cfg_drag_pl = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             }
         }

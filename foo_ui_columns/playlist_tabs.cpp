@@ -74,7 +74,7 @@ bool PlaylistTabs::is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::li
 void PlaylistTabs::on_font_change()
 {
     if (g_font != nullptr) {
-        unsigned count = list_wnd.get_count();
+        const auto count = list_wnd.get_count();
         for (unsigned n = 0; n < count; n++) {
             HWND wnd = list_wnd[n]->wnd_tabs;
             if (wnd)
@@ -85,7 +85,7 @@ void PlaylistTabs::on_font_change()
 
     g_font = fb2k::std_api_get<fonts::manager>()->get_font(g_guid_playlist_switcher_tabs_font);
 
-    unsigned count = list_wnd.get_count();
+    const auto count = list_wnd.get_count();
     for (unsigned n = 0; n < count; n++) {
         HWND wnd = list_wnd[n]->wnd_tabs;
         if (wnd) {
@@ -181,7 +181,7 @@ bool PlaylistTabs::create_tabs()
         wnd_tabs = nullptr;
         rv = true;
     } else if (!wnd_tabs && !force_close) {
-        int t = playlist_api->get_playlist_count();
+        const auto t = playlist_api->get_playlist_count();
         pfc::string8 temp;
 
         int x = 0;
@@ -206,9 +206,9 @@ bool PlaylistTabs::create_tabs()
             tabproc = (WNDPROC)SetWindowLongPtr(wnd_tabs, GWLP_WNDPROC, (LPARAM)main_hook);
 
             pfc::string8 temp2;
-            for (int i = 0; i < t; i++) {
+            for (size_t i = 0; i < t; i++) {
                 playlist_api->playlist_get_name(i, temp);
-                uTabCtrl_InsertItemText(wnd_tabs, i, temp);
+                uTabCtrl_InsertItemText(wnd_tabs, gsl::narrow<int>(i), temp);
             }
 
             TabCtrl_SetCurSel(wnd_tabs, playlist_api->get_active_playlist());
@@ -306,27 +306,28 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             TCHITTESTINFO hittest;
             hittest.pt.x = GET_X_LPARAM(lp);
             hittest.pt.y = GET_Y_LPARAM(lp);
-            int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
-            if (idx >= 0 && !PtInRect(&m_dragging_rect, hittest.pt)) {
-                int cur_idx = m_dragging_idx;
+            const auto hit_test_index = TabCtrl_HitTest(wnd_tabs, &hittest);
+            if (hit_test_index >= 0 && !PtInRect(&m_dragging_rect, hittest.pt)) {
+                const auto cur_idx = m_dragging_idx;
                 const auto playlist_api = playlist_manager::get();
-                int count = playlist_api->get_playlist_count();
+                const auto count = playlist_api->get_playlist_count();
+                const auto target_index = gsl::narrow<size_t>(hit_test_index);
 
-                int n = cur_idx;
+                auto n = cur_idx;
                 order_helper order(count);
-                if (n < idx) {
-                    while (n < idx && n < count) {
+                if (n < target_index) {
+                    while (n < target_index && n < count) {
                         order.swap(n, n + 1);
                         n++;
                     }
-                } else if (n > idx) {
-                    while (n > idx && n > 0) {
+                } else if (n > target_index) {
+                    while (n > target_index && n > 0) {
                         order.swap(n, n - 1);
                         n--;
                     }
                 }
                 if (n != cur_idx) {
-                    TabCtrl_GetItemRect(wnd, n, &m_dragging_rect);
+                    TabCtrl_GetItemRect(wnd, gsl::narrow<int>(n), &m_dragging_rect);
                     playlist_api->reorder(order.get_ptr(), count);
                     m_dragging_idx = n;
                 }
@@ -356,7 +357,7 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 playlist_manager_utils::rename_playlist(idx, get_wnd());
             }
         } else {
-            unsigned new_idx = playlist_api->create_playlist(
+            const auto new_idx = playlist_api->create_playlist(
                 pfc::string8("Untitled"), pfc_infinite, playlist_api->get_playlist_count());
             playlist_api->set_active_playlist(new_idx);
         }
@@ -367,14 +368,14 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             HWND wnd_child = GetWindow(wnd, GW_CHILD);
             WCHAR str_class[129]{};
-            if (wnd_child && RealGetWindowClass(wnd_child, str_class, std::size(str_class) - 1)
+            if (wnd_child && RealGetWindowClass(wnd_child, str_class, gsl::narrow_cast<UINT>(std::size(str_class)) - 1)
                 && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
                 INT min = NULL;
                 INT max = NULL;
                 INT index = NULL;
                 BOOL err = FALSE;
                 SendMessage(wnd_child, UDM_GETRANGE32, (WPARAM)&min, (LPARAM)&max);
-                index = SendMessage(wnd_child, UDM_GETPOS32, (WPARAM)NULL, (LPARAM)&err);
+                index = gsl::narrow<int>(SendMessage(wnd_child, UDM_GETPOS32, (WPARAM)NULL, (LPARAM)&err));
 
                 // if (!err)
                 {
@@ -707,7 +708,7 @@ void PlaylistTabs::on_items_added(size_t, size_t, const pfc::list_base_const_t<m
 void PlaylistTabs::on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len)
 {
     if (wnd_tabs) {
-        uTabCtrl_InsertItemText(wnd_tabs, p_index, pfc::string8(p_new_name, p_new_name_len), false);
+        uTabCtrl_InsertItemText(wnd_tabs, gsl::narrow<int>(p_index), pfc::string8(p_new_name, p_new_name_len), false);
         if (cfg_tabs_multiline)
             on_size();
     }
@@ -720,7 +721,7 @@ void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, size_t p_old_co
     if (create_tabs())
         need_move = true;
     else if (wnd_tabs) {
-        unsigned n = p_old_count;
+        auto n = p_old_count;
         for (; n > 0; n--) {
             if (p_mask[n - 1])
                 TabCtrl_DeleteItem(wnd_tabs, n - 1);
@@ -738,7 +739,7 @@ void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, size_t p_old_co
 void PlaylistTabs::on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len)
 {
     if (wnd_tabs) {
-        uTabCtrl_InsertItemText(wnd_tabs, p_index, pfc::string8(p_name, p_name_len));
+        uTabCtrl_InsertItemText(wnd_tabs, gsl::narrow<int>(p_index), pfc::string8(p_name, p_name_len));
         set_styles();
         if (cfg_tabs_multiline)
             on_size();
@@ -750,15 +751,15 @@ void PlaylistTabs::on_playlists_reorder(const size_t* p_order, size_t p_count)
 {
     if (wnd_tabs) {
         const auto playlist_api = playlist_manager::get();
-        int sel = playlist_api->get_active_playlist();
+        const auto sel = playlist_api->get_active_playlist();
 
-        for (unsigned n = 0; n < p_count; n++) {
-            if (n != (unsigned)p_order[n]) {
+        for (size_t n = 0; n < p_count; n++) {
+            if (n != p_order[n]) {
                 pfc::string8 temp;
                 pfc::string8 temp2;
                 playlist_api->playlist_get_name(n, temp);
 
-                uTabCtrl_InsertItemText(wnd_tabs, n, temp, false);
+                uTabCtrl_InsertItemText(wnd_tabs, gsl::narrow<int>(n), temp, false);
             }
         }
         TabCtrl_SetCurSel(wnd_tabs, sel);
@@ -790,16 +791,16 @@ PlaylistTabs::class_data& PlaylistTabs::get_class_data() const
 
 void g_on_autohide_tabs_change()
 {
-    unsigned count = PlaylistTabs::list_wnd.get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = PlaylistTabs::list_wnd.get_count();
+    for (size_t n = 0; n < count; n++) {
         PlaylistTabs::list_wnd[n]->create_tabs();
     }
 }
 
 void g_on_multiline_tabs_change()
 {
-    unsigned count = PlaylistTabs::list_wnd.get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = PlaylistTabs::list_wnd.get_count();
+    for (size_t n = 0; n < count; n++) {
         PlaylistTabs* p_tabs = PlaylistTabs::list_wnd[n];
         p_tabs->set_styles();
         p_tabs->on_size();

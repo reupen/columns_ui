@@ -102,8 +102,8 @@ void ConfigRebar::import_config(
 
 void BandCache::add_entry(const GUID& guid, unsigned width)
 {
-    unsigned count = get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = get_count();
+    for (size_t n = 0; n < count; n++) {
         BandCacheEntry& p_bce = (*this)[n];
         if (p_bce.guid == guid) {
             p_bce.width = width;
@@ -116,8 +116,8 @@ void BandCache::add_entry(const GUID& guid, unsigned width)
 unsigned BandCache::get_width(const GUID& guid)
 {
     unsigned rv = 100;
-    unsigned count = get_count();
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = get_count();
+    for (size_t n = 0; n < count; n++) {
         const auto& p_bce = get_item_ref(n);
         if (p_bce.guid == guid) {
             rv = p_bce.width;
@@ -128,9 +128,9 @@ unsigned BandCache::get_width(const GUID& guid)
 
 void BandCache::write(stream_writer* out, abort_callback& p_abort)
 {
-    unsigned count = get_count();
-    out->write_lendian_t(count, p_abort);
-    for (unsigned n = 0; n < count; n++) {
+    const auto count = get_count();
+    out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
+    for (size_t n = 0; n < count; n++) {
         const auto& p_bce = get_item_ref(n);
         out->write_lendian_t(p_bce.guid, p_abort);
         out->write_lendian_t(p_bce.width, p_abort);
@@ -486,7 +486,7 @@ std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnm
         GetClientRect(lpnmcd->hdr.hwndFrom, &rc);
         FillRect(lpnmcd->hdc, &rc, brush.get());
 
-        const int row_count = SendMessage(lpnmcd->hdr.hwndFrom, RB_GETROWCOUNT, 0, 0);
+        const int row_count = gsl::narrow<int>(SendMessage(lpnmcd->hdr.hwndFrom, RB_GETROWCOUNT, 0, 0));
 
         const auto divider_brush = get_colour_brush_lazy(dark::ColourID::RebarBandBorder, true);
         const auto divider_width = uih::scale_dpi_value(1, USER_DEFAULT_SCREEN_DPI * 2);
@@ -496,7 +496,8 @@ std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnm
 
         for (auto&& [band_index, band] : ranges::views::enumerate(m_bands)) {
             if (band_index == 0 || band.m_state.m_break_before_band) {
-                const int row_height = SendMessage(lpnmcd->hdr.hwndFrom, RB_GETROWHEIGHT, band_index, 0);
+                const int row_height
+                    = gsl::narrow<int>(SendMessage(lpnmcd->hdr.hwndFrom, RB_GETROWHEIGHT, band_index, 0));
                 row_bottom += row_height;
 
                 ++row_index;
@@ -535,13 +536,13 @@ void RebarWindow::save_bands()
     const auto band_count = m_bands.size();
     mmh::Permutation order(band_count);
 
-    UINT count = SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0);
+    const auto count = static_cast<UINT>(SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0));
 
     bool b_death = false;
 
     if (count && band_count == count) {
         for (uint32_t n = 0; n < count; n++) {
-            BOOL b_OK = SendMessage(wnd_rebar, RB_GETBANDINFO, n, reinterpret_cast<LPARAM>(&rbbi));
+            const auto b_OK = SendMessage(wnd_rebar, RB_GETBANDINFO, n, reinterpret_cast<LPARAM>(&rbbi));
             const auto band_index = static_cast<uint32_t>(rbbi.lParam);
             if (b_OK && band_index < count) {
                 order[n] = band_index;
@@ -563,7 +564,7 @@ bool RebarWindow::check_band(const GUID& id)
         != m_bands.end();
 }
 
-bool RebarWindow::find_band(const GUID& id, unsigned& out)
+bool RebarWindow::find_band(const GUID& id, size_t& out)
 {
     const auto iterator
         = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_state.m_guid == id; });
@@ -574,7 +575,7 @@ bool RebarWindow::find_band(const GUID& id, unsigned& out)
 
 bool RebarWindow::delete_band(const GUID& id)
 {
-    unsigned n = 0;
+    size_t n = 0;
     bool rv = find_band(id, n);
     if (rv)
         delete_band(n);
@@ -585,7 +586,7 @@ void RebarWindow::destroy_bands()
 {
     abort_callback_dummy abortCallbackDummy;
 
-    UINT count = SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0);
+    const auto count = static_cast<UINT>(SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0));
 
     if (count > 0 && count == m_bands.size()) {
         for (auto&& band : m_bands) {
@@ -621,7 +622,7 @@ void RebarWindow::update_bands()
     uih::rebar_show_all_bands(wnd_rebar);
 }
 
-void RebarWindow::delete_band(unsigned n)
+void RebarWindow::delete_band(size_t n)
 {
     if (n < m_bands.size()) {
         SendMessage(wnd_rebar, RB_SHOWBAND, n, FALSE);
@@ -671,7 +672,7 @@ void RebarWindow::insert_band(unsigned idx, const GUID& guid, unsigned width, co
     refresh_bands(false);
 }
 
-void RebarWindow::update_band(unsigned n, bool size)
+void RebarWindow::update_band(size_t n, bool size)
 {
     ui_extension::window_ptr p_ext = m_bands[n].m_window;
     if (p_ext.is_valid()) {
@@ -702,7 +703,7 @@ void RebarWindow::update_band(unsigned n, bool size)
             rbbi.cx = m_bands[n].m_state.m_width;
         }
 
-        uRebar_InsertItem(wnd_rebar, n, &rbbi, false);
+        uRebar_InsertItem(wnd_rebar, gsl::narrow<int>(n), &rbbi, false);
         SendMessage(wnd_rebar, RB_SHOWBAND, n, TRUE);
 
         fix_z_order();
@@ -794,7 +795,7 @@ void RebarWindow::refresh_bands(bool force_destroy_bands)
 
 void RebarWindow::fix_z_order()
 {
-    const auto dwp = BeginDeferWindowPos(m_bands.size());
+    const auto dwp = BeginDeferWindowPos(gsl::narrow<int>(m_bands.size()));
     for (auto&& band : m_bands) {
         if (band.m_wnd)
             DeferWindowPos(dwp, band.m_wnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);

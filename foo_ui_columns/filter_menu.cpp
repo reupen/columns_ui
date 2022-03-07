@@ -20,9 +20,9 @@ bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTI
                 mii.fType |= MFT_RADIOCHECK;
             }
             mii.dwTypeData = (LPWSTR)wide.get_ptr();
-            mii.cch = wide.length();
-            mii.wID = i + 1;
-            InsertMenuItem(menu, i, TRUE, &mii);
+            mii.cch = gsl::narrow<UINT>(wide.length());
+            mii.wID = gsl::narrow<UINT>(i + 1);
+            InsertMenuItem(menu, gsl::narrow<UINT>(i), TRUE, &mii);
             // console::formatter() << (t_uint32)GetLastError();
         }
     }
@@ -85,7 +85,7 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
         mii.fType = MFT_STRING;
 
         mii.dwTypeData = const_cast<wchar_t*>(p_asend);
-        mii.cch = wcslen(p_asend);
+        mii.cch = gsl::narrow<UINT>(wcslen(p_asend));
         mii.wID = action_send_to_autosend + 1;
         mii.fState = MFS_ENABLED;
         if (cfg_doubleclickaction + 1 == mii.wID)
@@ -93,7 +93,7 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
         InsertMenuItem(menu, 2, TRUE, &mii);
 
         mii.dwTypeData = const_cast<wchar_t*>(p_asend_play);
-        mii.cch = wcslen(p_asend_play);
+        mii.cch = gsl::narrow<UINT>(wcslen(p_asend_play));
         mii.wID = action_send_to_autosend_play + 1;
         mii.fState = MFS_ENABLED;
         if (cfg_doubleclickaction + 1 == mii.wID)
@@ -101,7 +101,7 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
         InsertMenuItem(menu, 3, TRUE, &mii);
 
         mii.dwTypeData = const_cast<wchar_t*>(p_send);
-        mii.cch = wcslen(p_send);
+        mii.cch = gsl::narrow<UINT>(wcslen(p_send));
         mii.wID = action_send_to_new + 1;
         mii.fState = MFS_ENABLED;
         if (cfg_doubleclickaction + 1 == mii.wID)
@@ -109,7 +109,7 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
         InsertMenuItem(menu, 4, TRUE, &mii);
 
         mii.dwTypeData = const_cast<wchar_t*>(p_send_play);
-        mii.cch = wcslen(p_send_play);
+        mii.cch = gsl::narrow<UINT>(wcslen(p_send_play));
         mii.wID = action_send_to_new_play + 1;
         mii.fState = MFS_ENABLED;
         if (cfg_doubleclickaction + 1 == mii.wID)
@@ -117,7 +117,7 @@ bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
         InsertMenuItem(menu, 5, TRUE, &mii);
 
         mii.dwTypeData = const_cast<wchar_t*>(p_add);
-        mii.cch = wcslen(p_add);
+        mii.cch = gsl::narrow<UINT>(wcslen(p_add));
         mii.wID = action_add_to_active + 1;
         mii.fState = MFS_ENABLED;
         if (cfg_doubleclickaction + 1 == mii.wID)
