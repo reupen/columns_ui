@@ -445,18 +445,19 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
 
 void SpectrumAnalyserVisualisation::s_refresh_all()
 {
-    double p_time = NULL;
-    g_stream->get_absolute_time(p_time);
+    bool is_active{};
     audio_chunk_impl p_chunk;
 
-    unsigned fft_size = 4096;
-    bool ret = g_stream->get_spectrum_absolute(p_chunk, p_time, fft_size);
+    if (g_stream.is_valid()) {
+        double time{};
+        g_stream->get_absolute_time(time);
 
-    const auto count = s_active_instances.get_count();
-    for (size_t n = 0; n < count; n++) {
-        SpectrumAnalyserVisualisation* vis_ext = s_active_instances[n];
-        if (ret)
-            vis_ext->refresh(&p_chunk);
+        constexpr auto fft_size = 4096u;
+        is_active = g_stream->get_spectrum_absolute(p_chunk, time, fft_size);
+    }
+
+    for (const auto instance : s_instances) {
+        instance->refresh(is_active ? &p_chunk : nullptr);
     }
 }
 
