@@ -31,8 +31,9 @@ class VolumeBar
                 Trackbar::draw_channel(dc, rc);
             else {
                 const auto is_dark = cui::colours::is_dark_mode_active();
-                COLORREF cr_shadow = cui::dark::get_system_colour(COLOR_3DSHADOW, is_dark);
-                COLORREF cr_hilight = cui::dark::get_system_colour(COLOR_3DHILIGHT, is_dark);
+                const auto top_edge_colour = cui::dark::get_colour(cui::dark::ColourID::VolumeChannelTopEdge, is_dark);
+                const auto bottom_and_right_edge_colour
+                    = cui::dark::get_colour(cui::dark::ColourID::VolumeChannelBottomAndRightEdge, is_dark);
 
                 if (m_this->get_using_gdiplus()) {
                     Gdiplus::Graphics graphics(dc);
@@ -41,8 +42,8 @@ class VolumeBar
                         RECT rcdraw(*rc);
 
                         Gdiplus::Color colour_hilight, colour_shadow;
-                        colour_hilight.SetFromCOLORREF(cr_hilight);
-                        colour_shadow.SetFromCOLORREF(cr_shadow);
+                        colour_hilight.SetFromCOLORREF(bottom_and_right_edge_colour);
+                        colour_shadow.SetFromCOLORREF(top_edge_colour);
 
                         Gdiplus::Pen pen_hilight(colour_hilight);
                         Gdiplus::Pen pen_shadow(colour_shadow);
@@ -55,8 +56,8 @@ class VolumeBar
                             Gdiplus::Point{rcdraw.left - 1, rcdraw.bottom});
                     }
                 } else {
-                    HPEN pn_light = CreatePen(PS_SOLID, 1, cr_hilight);
-                    HPEN pn_shadow = CreatePen(PS_SOLID, 1, cr_shadow);
+                    HPEN pn_light = CreatePen(PS_SOLID, 1, bottom_and_right_edge_colour);
+                    HPEN pn_shadow = CreatePen(PS_SOLID, 1, top_edge_colour);
 
                     HPEN pn_old = SelectPen(dc, pn_shadow);
                     MoveToEx(dc, rc->left, rc->bottom - 1, nullptr);

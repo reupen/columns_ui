@@ -113,7 +113,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto _ = wil::SelectObject(dc.get(), m_font.get());
 
         constexpr auto selected_placeholder = "999999999 items selected"sv;
-        const auto default_text_colour = dark::get_system_colour(COLOR_BTNTEXT, colours::is_dark_mode_active());
+        const auto default_text_colour = get_colour(dark::ColourID::StatusPaneText, colours::is_dark_mode_active());
         const auto placeholder_len
             = uih::get_text_width(dc.get(), selected_placeholder.data(), gsl::narrow<int>(selected_placeholder.size()))
             + uih::scale_dpi_value(20);
