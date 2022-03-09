@@ -29,7 +29,7 @@ class SpectrumAnalyserVisualisation
 
 public:
     static void s_flush_brushes();
-    static void s_refresh_all();
+    static void s_refresh_all(bool include_inactive = false);
 
     bool b_active{false};
     unsigned mode;
@@ -443,7 +443,7 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
     ps.release();
 }
 
-void SpectrumAnalyserVisualisation::s_refresh_all()
+void SpectrumAnalyserVisualisation::s_refresh_all(bool include_inactive)
 {
     bool is_active{};
     audio_chunk_impl p_chunk;
@@ -456,7 +456,9 @@ void SpectrumAnalyserVisualisation::s_refresh_all()
         is_active = g_stream->get_spectrum_absolute(p_chunk, time, fft_size);
     }
 
-    for (const auto instance : s_instances) {
+    const auto& instances = include_inactive ? s_instances : s_active_instances;
+
+    for (const auto instance : instances) {
         instance->refresh(is_active ? &p_chunk : nullptr);
     }
 }
@@ -599,7 +601,7 @@ class ColourClient : public colours::client {
     void on_colour_changed(uint32_t mask) const override
     {
         SpectrumAnalyserVisualisation::s_flush_brushes();
-        SpectrumAnalyserVisualisation::s_refresh_all();
+        SpectrumAnalyserVisualisation::s_refresh_all(true);
     }
 };
 
