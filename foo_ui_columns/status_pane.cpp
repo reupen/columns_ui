@@ -31,21 +31,20 @@ void StatusPane::on_font_changed()
 void StatusPane::render_background(HDC dc, const RECT& rc)
 {
     const auto is_dark = colours::is_dark_mode_active();
-    const auto fill_brush = dark::get_system_colour_brush(COLOR_BTNFACE, is_dark);
-    COLORREF cr2 = dark::get_system_colour(COLOR_3DDKSHADOW, is_dark);
+    const auto fill_colour = get_colour(dark::ColourID::StatusPaneBackground, is_dark);
+    const auto fill_brush = get_colour_brush(dark::ColourID::StatusPaneBackground, is_dark);
+    const auto top_line_colour = get_colour(dark::ColourID::StatusPaneTopLine, is_dark);
 
     FillRect(dc, &rc, fill_brush.get());
 
-    if (m_theme) {
-        COLORREF cr_back = cr2;
-        Gdiplus::Color cr_end(0, LOBYTE(LOWORD(cr_back)), HIBYTE(LOWORD(cr_back)), LOBYTE(HIWORD(cr_back)));
-        Gdiplus::Color cr_start(33, LOBYTE(LOWORD(cr_back)), HIBYTE(LOWORD(cr_back)), LOBYTE(HIWORD(cr_back)));
-        Gdiplus::Rect rect(rc.left, rc.top, RECT_CX(rc), uih::scale_dpi_value(2));
-        Gdiplus::LinearGradientBrush lgb(rect, cr_start, cr_end, Gdiplus::LinearGradientModeVertical);
+    if (top_line_colour != fill_colour) {
+        const Gdiplus::Color gradient_start(
+            20, GetRValue(top_line_colour), GetGValue(top_line_colour), GetBValue(top_line_colour));
+        const Gdiplus::Color gradient_end(
+            0, GetRValue(top_line_colour), GetGValue(top_line_colour), GetBValue(top_line_colour));
+        const Gdiplus::Rect rect(rc.left, rc.top, RECT_CX(rc), uih::scale_dpi_value(2));
+        Gdiplus::LinearGradientBrush lgb(rect, gradient_start, gradient_end, Gdiplus::LinearGradientModeVertical);
         Gdiplus::Graphics(dc).FillRectangle(&lgb, rect);
-    } else {
-        RECT rcl = {0, 0, rc.right, uih::scale_dpi_value(1)};
-        FillRect(dc, &rcl, dark::get_system_colour_brush(COLOR_3DLIGHT, is_dark).get());
     }
 }
 

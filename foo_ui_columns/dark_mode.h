@@ -9,10 +9,14 @@ namespace cui::dark {
 
 enum class ColourID {
     LayoutBackground,
+    PanelCaptionText,
     PanelCaptionBackground,
     RebarBandBorder,
     StatusBarBackground,
     StatusBarText,
+    StatusPaneTopLine,
+    StatusPaneBackground,
+    StatusPaneText,
     TabControlBackground,
     TabControlItemBackground,
     TabControlItemText,
@@ -24,6 +28,8 @@ enum class ColourID {
     TrackbarThumb,
     TrackbarHotThumb,
     TrackbarDisabledThumb,
+    VolumeChannelTopEdge,
+    VolumeChannelBottomAndRightEdge,
     VolumePopupBackground,
     VolumePopupBorder,
     VolumePopupText,

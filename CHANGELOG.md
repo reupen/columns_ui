@@ -22,7 +22,9 @@
 
 - The spectrum analyser is now integrated with the Colours and fonts preferences
   page, and its foreground colour and background colour are now configured
-  there. [[#466](https://github.com/reupen/columns_ui/pull/466)]
+  there. [[#466](https://github.com/reupen/columns_ui/pull/466),
+  [#470](https://github.com/reupen/columns_ui/pull/470),
+  [#473](https://github.com/reupen/columns_ui/pull/473)]
 
 - The Filter search toolbar is now integrated with the Colours and fonts
   preferences page, and its font, foreground colour and background colour are

@@ -90,10 +90,22 @@ int get_light_colour_system_id(ColourID colour_id)
     switch (colour_id) {
     case ColourID::LayoutBackground:
         return COLOR_BTNFACE;
+    case ColourID::PanelCaptionText:
+        return COLOR_MENUTEXT;
     case ColourID::PanelCaptionBackground:
         return COLOR_BTNFACE;
     case ColourID::StatusBarText:
         return COLOR_MENUTEXT;
+    case ColourID::StatusPaneBackground:
+        return COLOR_BTNFACE;
+    case ColourID::StatusPaneText:
+        return COLOR_BTNTEXT;
+    case ColourID::StatusPaneTopLine:
+        return COLOR_3DDKSHADOW;
+    case ColourID::VolumeChannelTopEdge:
+        return COLOR_3DSHADOW;
+    case ColourID::VolumeChannelBottomAndRightEdge:
+        return COLOR_3DHILIGHT;
     case ColourID::VolumePopupBackground:
         return COLOR_BTNFACE;
     case ColourID::VolumePopupBorder:
@@ -122,6 +134,8 @@ COLORREF get_dark_colour(ColourID colour_id)
     switch (colour_id) {
     case ColourID::LayoutBackground:
         return WI_EnumValue(DarkColour::DARK_190);
+    case ColourID::PanelCaptionText:
+        return WI_EnumValue(DarkColour::DARK_999);
     case ColourID::PanelCaptionBackground:
         return WI_EnumValue(DarkColour::DARK_300);
     case ColourID::RebarBandBorder:
@@ -130,6 +144,12 @@ COLORREF get_dark_colour(ColourID colour_id)
         return WI_EnumValue(DarkColour::DARK_200);
     case ColourID::StatusBarText:
         return WI_EnumValue(DarkColour::DARK_999);
+    case ColourID::StatusPaneBackground:
+        return WI_EnumValue(DarkColour::DARK_190);
+    case ColourID::StatusPaneText:
+        return WI_EnumValue(DarkColour::DARK_999);
+    case ColourID::StatusPaneTopLine:
+        return WI_EnumValue(DarkColour::DARK_190);
     case ColourID::TabControlBackground:
         return WI_EnumValue(DarkColour::DARK_200);
     case ColourID::TabControlItemBackground:
@@ -158,6 +178,10 @@ COLORREF get_dark_colour(ColourID colour_id)
         return WI_EnumValue(DarkColour::DARK_750);
     case ColourID::TrackbarDisabledThumb:
         return WI_EnumValue(DarkColour::DARK_400);
+    case ColourID::VolumeChannelTopEdge:
+        return WI_EnumValue(DarkColour::DARK_500);
+    case ColourID::VolumeChannelBottomAndRightEdge:
+        return WI_EnumValue(DarkColour::DARK_500);
     case ColourID::VolumePopupBackground:
         return WI_EnumValue(DarkColour::DARK_200);
     case ColourID::VolumePopupBorder:
@@ -191,32 +215,18 @@ COLORREF get_dark_system_colour(int system_colour_id)
     // Unfortunately, these are hard-coded as there doesn't seem to be a simple
     // way to get a similar set of dark mode colours from Windows.
     switch (system_colour_id) {
+    case COLOR_BTNTEXT:
     case COLOR_HIGHLIGHTTEXT:
-    case COLOR_MENUTEXT:
     case COLOR_WINDOWTEXT:
         return RGB(255, 255, 255);
     case COLOR_WINDOW:
         return RGB(32, 32, 32);
     case COLOR_HIGHLIGHT:
         return RGB(98, 98, 98);
-    case COLOR_BTNTEXT:
-        return RGB(255, 255, 255);
     case COLOR_BTNFACE:
         return RGB(51, 51, 51);
     case COLOR_WINDOWFRAME:
         return RGB(119, 119, 119);
-    case COLOR_3DDKSHADOW:
-        // Standard value: RGB(105, 105, 105)
-        return RGB(28, 28, 28);
-    case COLOR_3DHILIGHT:
-        // Standard value: RGB(255, 255, 255)
-        return RGB(100, 100, 100);
-    case COLOR_3DLIGHT:
-        // Standard value: RGB(227, 227, 227)
-        return RGB(42, 42, 42);
-    case COLOR_3DSHADOW:
-        // Standard value: RGB(160, 160, 160)
-        return RGB(100, 100, 100);
     default:
         return RGB(255, 0, 0);
     }

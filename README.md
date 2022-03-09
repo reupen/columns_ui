@@ -17,12 +17,13 @@ Stable and pre-release versions can be downloaded from the
 
 ### Development versions
 
-The latest development version can be downloaded by clicking on the GitHub
-Actions badge above, and then clicking on the last successful build and
-scrolling down to the link named 'Component package (release)' at the bottom.
+If you’re logged into GitHub, you can download the latest development version by
+clicking on the GitHub Actions badge above, and then clicking on the last
+successful build and scrolling down to the link named 'Component package
+(release)' at the bottom.
 
 Development versions may be buggier than formal releases; if you encounter a
-problem, please open an issue.
+problem, open an issue.
 
 ## Development
 
