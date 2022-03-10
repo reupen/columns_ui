@@ -18,7 +18,8 @@
 
 - The default playback button icons were tweaked. This includes the removal of
   subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435),
-  [#463](https://github.com/reupen/columns_ui/pull/463)]
+  [#463](https://github.com/reupen/columns_ui/pull/463),
+  [#474](https://github.com/reupen/columns_ui/pull/474)]
 
 - The spectrum analyser is now integrated with the Colours and fonts preferences
   page, and its foreground colour and background colour are now configured

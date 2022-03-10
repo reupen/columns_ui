@@ -8,7 +8,7 @@
    version="1.1"
    id="SVGRoot"
    sodipodi:docname="light-open.svg"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -25,7 +25,7 @@
      inkscape:document-units="px"
      showgrid="true"
      inkscape:zoom="4.8728976"
-     inkscape:cx="28.319906"
+     inkscape:cx="8.8243184"
      inkscape:cy="116.35787"
      inkscape:window-width="3840"
      inkscape:window-height="2068"
@@ -86,7 +86,7 @@
        inkscape:rounded="0"
        inkscape:randomized="0"
        inkscape:transform-center-x="-16.810962"
-       transform="matrix(0,-0.61818906,-0.94475986,0,249.16417,169.85284)"
+       transform="matrix(0,-0.61818906,-0.94475986,0,248.92926,169.85284)"
        inkscape:transform-center-y="-1.3976576e-06"
        d="m 164.76003,128 -53.38173,30.81996 -53.381729,30.81995 0,-61.63991 0,-61.639909 53.381729,30.819955 z" />
     <rect
@@ -96,6 +96,6 @@
        height="105"
        x="157.5"
        y="-180"
-       transform="rotate(90)" />
+       transform="rotate(90,0.25,0.25)" />
   </g>
 </svg>
