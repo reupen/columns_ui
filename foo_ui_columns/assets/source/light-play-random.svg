@@ -8,7 +8,7 @@
    version="1.1"
    id="SVGRoot"
    sodipodi:docname="light-play-random.svg"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.1.2 (0a00cf5339, 2022-02-04, custom)"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -25,8 +25,8 @@
      inkscape:document-units="px"
      showgrid="true"
      inkscape:zoom="4.8728976"
-     inkscape:cx="28.319906"
-     inkscape:cy="131.74913"
+     inkscape:cx="8.8243184"
+     inkscape:cy="131.95434"
      inkscape:window-width="3840"
      inkscape:window-height="2068"
      inkscape:window-x="-12"
@@ -75,7 +75,8 @@
        id="g1527"
        transform="translate(1.6052625)">
       <g
-         id="g1204">
+         id="g1204"
+         transform="translate(0,0.50000279)">
         <path
            sodipodi:type="star"
            style="display:inline;fill:#000000;fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
