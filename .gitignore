@@ -182,12 +182,13 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
-Debug.Win32
-Release.Win32
+release-*/
+debug-*/
 *.opendb
 *.db
 .vs
-
+doxygen/
 .idea/
-/foo_ui_columns/version.h
 vcpkg_installed/
+
+/foo_ui_columns/version.h
