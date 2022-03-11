@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "playlist_tabs.h"
 
 #include "dark_mode_tabs.h"

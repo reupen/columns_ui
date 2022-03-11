@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "playlist_switcher_title_formatting.h"
 #include "title_formatting.h"
 

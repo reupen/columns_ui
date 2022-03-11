@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "layout.h"
 #include "main_window.h"
 #include "rebar.h"

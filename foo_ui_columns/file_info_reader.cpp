@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "file_info_reader.h"
 
 // See https://hydrogenaud.io/index.php/topic,101928.0.html

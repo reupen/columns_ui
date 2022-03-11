@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "playlist_view_tfhooks.h"
 #include "tab_colours.h"
 #include "prefs_utils.h"

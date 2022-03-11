@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "item_properties.h"
 
 namespace cui::panels::item_properties {

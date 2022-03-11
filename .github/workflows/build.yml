@@ -79,10 +79,10 @@ jobs:
         if: matrix.publish-artefacts
         with:
           name: Component package (${{ matrix.configuration }})
-          path: vc17\Release\foo_ui_columns*.fb2k-component
+          path: vc17\release-win32-v143\foo_ui_columns*.fb2k-component
 
       - uses: actions/upload-artifact@v2
         if: matrix.publish-artefacts
         with:
           name: Symbols for debugging (${{ matrix.configuration }})
-          path: vc17\Release\foo_ui_columns.pdb
+          path: vc17\release-win32-v143\foo_ui_columns.pdb

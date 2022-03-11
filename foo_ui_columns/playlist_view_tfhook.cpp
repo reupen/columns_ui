@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "playlist_view_tfhooks.h"
 
 bool PlaylistNameTitleformatHook::process_field(

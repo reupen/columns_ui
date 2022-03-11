@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "seekbar.h"
 
 namespace cui::toolbars::seekbar {

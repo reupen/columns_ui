@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "playlist_item_helpers.h"
 
 namespace cui::playlist_item_helpers {

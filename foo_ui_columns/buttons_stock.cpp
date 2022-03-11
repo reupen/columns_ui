@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 /** Creates toggle buttons from standard config objects */
 #define __DEFINE_MENU_BUTTON(_namespace, _guid_command, _guid_config)                                                 \

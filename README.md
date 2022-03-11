@@ -72,7 +72,7 @@ Open `vc17/columns_ui-public.sln` in Visual Studio 2022.
 Select the Release configuration and the Win32 platform, and build the solution.
 
 If the build is successful, `foo_ui_columns.dll` will be output in
-`vc17\Release`.
+`vc17\release-win32-v143`.
 
 #### Building using MSBuild on the command line
 
@@ -84,7 +84,7 @@ msbuild /m "/p:Platform=Win32;Configuration=Release" vc17\columns_ui-public.sln
 ```
 
 If the build is successful, `foo_ui_columns.dll` will be output in
-`vc17\Release`.
+`vc17\release-win32-v143`.
 
 For a clean build, run:
 
@@ -105,7 +105,7 @@ With these installed, open a Developer Command Prompt for VS 2022 from the start
 menu, switch to the Columns UI source directory and run:
 
 ```powershell
-msbuild /m "/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;Platform=Win32;Configuration=Release" "/t:Rebuild" vc17\columns_ui-public.sln
+msbuild /m "/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;Platform=Win32;Configuration=Release" vc17\columns_ui-public.sln
 ```
 
 (Note: Currently `lld-link.exe` can't be used due to

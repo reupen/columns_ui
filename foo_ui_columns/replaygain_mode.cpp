@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "drop_down_list_toolbar.h"
 #include "panel_menu_item.h"

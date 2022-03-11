@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "colour_manager_data.h"
 #include "config.h"

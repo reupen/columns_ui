@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "fcl.h"
 
 static const char8_t* g_help_text = u8"syntax: foobar2000 /columnsui:<command> \"<path>\"\n\n"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "item_details.h"
 #include "config.h"
 

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "splitter.h"
 #include "tab_layout_misc.h"
