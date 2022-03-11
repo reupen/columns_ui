@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
 #include "config_columns_v2.h"

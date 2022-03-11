@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 /**
  * Contains configuration variable and appearance clients for the legacy playlist view, and other

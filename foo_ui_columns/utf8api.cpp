@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "utf8api.h"
 
 namespace win32_helpers {

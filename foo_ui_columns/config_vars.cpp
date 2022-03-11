@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "menu_items.h"
 #include "columns_v2.h"
 #include "main_window.h"

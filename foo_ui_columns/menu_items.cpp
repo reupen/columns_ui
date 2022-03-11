@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "menu_items.h"
 #include "layout.h"
 #include "ng_playlist/ng_playlist.h"

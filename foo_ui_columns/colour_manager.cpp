@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "config_appearance.h"
 #include "dark_mode.h"

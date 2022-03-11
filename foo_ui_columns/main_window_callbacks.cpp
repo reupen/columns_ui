@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "main_window.h"
 
 class MainWindowPlayCallback : public play_callback_static {

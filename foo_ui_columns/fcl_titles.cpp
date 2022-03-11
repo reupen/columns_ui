@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "fcl.h"
 #include "ng_playlist/ng_playlist_groups.h"
 #include "ng_playlist/ng_playlist.h"

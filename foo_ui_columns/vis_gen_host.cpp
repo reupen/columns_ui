@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "vis_gen_host.h"
 
 class VisualisationPanelInterface : public ui_extension::visualisation_host {

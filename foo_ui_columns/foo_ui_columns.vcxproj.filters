@@ -114,98 +114,98 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include=".\config.cpp">
+    <ClCompile Include="config.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_artwork.cpp">
+    <ClCompile Include="config_artwork.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_columns.cpp">
+    <ClCompile Include="config_columns.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_columns_v2.cpp">
+    <ClCompile Include="config_columns_v2.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_filter.cpp">
+    <ClCompile Include="config_filter.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_layout.cpp">
+    <ClCompile Include="config_layout.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\fcl.cpp">
+    <ClCompile Include="fcl.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
     <ClCompile Include="fcl_legacy_fonts.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
-    <ClCompile Include=".\fcl_layout.cpp">
+    <ClCompile Include="fcl_layout.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
-    <ClCompile Include=".\fcl_titles.cpp">
+    <ClCompile Include="fcl_titles.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
-    <ClCompile Include=".\status_pane.cpp">
+    <ClCompile Include="status_pane.cpp">
       <Filter>Status pane</Filter>
     </ClCompile>
-    <ClCompile Include=".\status_pane_msgproc.cpp">
+    <ClCompile Include="status_pane_msgproc.cpp">
       <Filter>Status pane</Filter>
     </ClCompile>
-    <ClCompile Include=".\helpers.cpp">
+    <ClCompile Include="helpers.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include=".\menu_helpers.cpp">
+    <ClCompile Include="menu_helpers.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include=".\gdiplus.cpp">
+    <ClCompile Include="gdiplus.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include=".\mw_drop_target.cpp">
+    <ClCompile Include="mw_drop_target.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
-    <ClCompile Include=".\mw_wnd_proc.cpp">
+    <ClCompile Include="mw_wnd_proc.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_colours.cpp">
+    <ClCompile Include="tab_colours.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_fonts.cpp">
+    <ClCompile Include="tab_fonts.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_items.cpp">
+    <ClCompile Include="config_items.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
-    <ClCompile Include=".\stdafx.cpp" />
-    <ClCompile Include=".\config_vars.cpp">
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="config_vars.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
-    <ClCompile Include=".\prefs_utils.cpp">
+    <ClCompile Include="prefs_utils.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_display2.cpp">
+    <ClCompile Include="tab_display2.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_playlist_dd.cpp">
+    <ClCompile Include="tab_playlist_dd.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_main.cpp">
+    <ClCompile Include="tab_main.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_notification_area.cpp">
+    <ClCompile Include="tab_notification_area.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_status.cpp">
+    <ClCompile Include="tab_status.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\tab_global.cpp">
+    <ClCompile Include="tab_global.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include=".\user_interface_impl.cpp">
+    <ClCompile Include="user_interface_impl.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_defaults.cpp">
+    <ClCompile Include="config_defaults.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
-    <ClCompile Include=".\main_window.cpp">
+    <ClCompile Include="main_window.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
     <ClCompile Include="list_view_panel.cpp">
@@ -238,7 +238,7 @@
     <ClCompile Include="font_utils.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include=".\columns_v2.cpp">
+    <ClCompile Include="columns_v2.cpp">
       <Filter>Playlist view</Filter>
     </ClCompile>
     <ClCompile Include="legacy_config.cpp">
@@ -274,175 +274,175 @@
     <ClCompile Include="ng_playlist\ng_playlist_style.cpp">
       <Filter>Playlist view</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_view_tfhook.cpp">
+    <ClCompile Include="playlist_view_tfhook.cpp">
       <Filter>Playlist view</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter.cpp">
+    <ClCompile Include="filter.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter_config_var.cpp">
+    <ClCompile Include="filter_config_var.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter_inline_edit.cpp">
+    <ClCompile Include="filter_inline_edit.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter_items.cpp">
+    <ClCompile Include="filter_items.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter_menu.cpp">
+    <ClCompile Include="filter_menu.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\filter_search_bar.cpp">
+    <ClCompile Include="filter_search_bar.cpp">
       <Filter>Filter</Filter>
     </ClCompile>
-    <ClCompile Include=".\item_details.cpp">
+    <ClCompile Include="item_details.cpp">
       <Filter>Item details</Filter>
     </ClCompile>
-    <ClCompile Include=".\item_details_config.cpp">
+    <ClCompile Include="item_details_config.cpp">
       <Filter>Item details</Filter>
     </ClCompile>
-    <ClCompile Include=".\item_details_font.cpp">
+    <ClCompile Include="item_details_font.cpp">
       <Filter>Item details</Filter>
     </ClCompile>
-    <ClCompile Include=".\item_details_text.cpp">
+    <ClCompile Include="item_details_text.cpp">
       <Filter>Item details</Filter>
     </ClCompile>
-    <ClCompile Include=".\artwork.cpp">
+    <ClCompile Include="artwork.cpp">
       <Filter>Artwork view</Filter>
     </ClCompile>
-    <ClCompile Include=".\artwork_helpers.cpp">
+    <ClCompile Include="artwork_helpers.cpp">
       <Filter>Artwork view</Filter>
     </ClCompile>
-    <ClCompile Include=".\item_properties.cpp">
+    <ClCompile Include="item_properties.cpp">
       <Filter>Item properties</Filter>
     </ClCompile>
-    <ClCompile Include=".\item_properties_config.cpp">
+    <ClCompile Include="item_properties_config.cpp">
       <Filter>Item properties</Filter>
     </ClCompile>
-    <ClCompile Include=".\item_properties_config_list_view.cpp">
+    <ClCompile Include="item_properties_config_list_view.cpp">
       <Filter>Item properties</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_switcher.cpp">
+    <ClCompile Include="playlist_switcher.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_switcher_callbacks.cpp">
+    <ClCompile Include="playlist_switcher_callbacks.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_switcher_drop_source.cpp">
+    <ClCompile Include="playlist_switcher_drop_source.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_switcher_drop_target.cpp">
+    <ClCompile Include="playlist_switcher_drop_target.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_switcher_inline_edit.cpp">
+    <ClCompile Include="playlist_switcher_inline_edit.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_switcher_shortcut_menu.cpp">
+    <ClCompile Include="playlist_switcher_shortcut_menu.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_switcher_v2.cpp">
+    <ClCompile Include="playlist_switcher_v2.cpp">
       <Filter>Playlist switcher</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_manager_utils.cpp">
+    <ClCompile Include="playlist_manager_utils.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_tabs.cpp">
+    <ClCompile Include="playlist_tabs.cpp">
       <Filter>Playlist tabs</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_tabs_drop_target.cpp">
+    <ClCompile Include="playlist_tabs_drop_target.cpp">
       <Filter>Playlist tabs</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_tabs_wndproc.cpp">
+    <ClCompile Include="playlist_tabs_wndproc.cpp">
       <Filter>Playlist tabs</Filter>
     </ClCompile>
-    <ClCompile Include=".\splitter_tabs.cpp">
+    <ClCompile Include="splitter_tabs.cpp">
       <Filter>Tab stack</Filter>
     </ClCompile>
-    <ClCompile Include=".\splitter.cpp">
+    <ClCompile Include="splitter.cpp">
       <Filter>Splitter</Filter>
     </ClCompile>
-    <ClCompile Include=".\splitter_panel.cpp">
+    <ClCompile Include="splitter_panel.cpp">
       <Filter>Splitter</Filter>
     </ClCompile>
-    <ClCompile Include=".\splitter_panel_container.cpp">
+    <ClCompile Include="splitter_panel_container.cpp">
       <Filter>Splitter</Filter>
     </ClCompile>
-    <ClCompile Include=".\splitter_window.cpp">
+    <ClCompile Include="splitter_window.cpp">
       <Filter>Splitter</Filter>
     </ClCompile>
-    <ClCompile Include=".\splitter_window_wndproc.cpp">
+    <ClCompile Include="splitter_window_wndproc.cpp">
       <Filter>Splitter</Filter>
     </ClCompile>
-    <ClCompile Include=".\playlist_search.cpp">
+    <ClCompile Include="playlist_search.cpp">
       <Filter>Playlist search</Filter>
     </ClCompile>
-    <ClCompile Include=".\rebar.cpp">
+    <ClCompile Include="rebar.cpp">
       <Filter>Rebar</Filter>
     </ClCompile>
     <ClCompile Include="rebar_band.cpp">
       <Filter>Rebar</Filter>
     </ClCompile>
-    <ClCompile Include=".\status_bar.cpp">
+    <ClCompile Include="status_bar.cpp">
       <Filter>Status bar</Filter>
     </ClCompile>
     <ClCompile Include="notification_area.cpp">
       <Filter>Notification area</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons.cpp">
+    <ClCompile Include="buttons.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_button.cpp">
+    <ClCompile Include="buttons_button.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_button_image.cpp">
+    <ClCompile Include="buttons_button_image.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_command_picker.cpp">
+    <ClCompile Include="buttons_command_picker.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_config_droptarget.cpp">
+    <ClCompile Include="buttons_config_droptarget.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_config_listview.cpp">
+    <ClCompile Include="buttons_config_listview.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_config_param.cpp">
+    <ClCompile Include="buttons_config_param.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_custom_image.cpp">
+    <ClCompile Include="buttons_custom_image.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\buttons_stock.cpp">
+    <ClCompile Include="buttons_stock.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\vis_spectrum.cpp">
+    <ClCompile Include="vis_spectrum.cpp">
       <Filter>Spectrum analyser</Filter>
     </ClCompile>
-    <ClCompile Include=".\vis_gen_host.cpp">
+    <ClCompile Include="vis_gen_host.cpp">
       <Filter>Spectrum analyser</Filter>
     </ClCompile>
-    <ClCompile Include=".\utf8api.cpp">
+    <ClCompile Include="utf8api.cpp">
       <Filter>Status bar</Filter>
     </ClCompile>
     <ClCompile Include="button_items.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\callbacks_config.cpp">
+    <ClCompile Include="callbacks_config.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
-    <ClCompile Include=".\common.cpp">
+    <ClCompile Include="common.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="help.cpp">
       <Filter>Help</Filter>
     </ClCompile>
-    <ClCompile Include=".\setup_dialog.cpp">
+    <ClCompile Include="setup_dialog.cpp">
       <Filter>Quick set-up</Filter>
     </ClCompile>
-    <ClCompile Include=".\volume.cpp">
+    <ClCompile Include="volume.cpp">
       <Filter>Volume bar</Filter>
     </ClCompile>
-    <ClCompile Include=".\seekbar.cpp">
+    <ClCompile Include="seekbar.cpp">
       <Filter>Seek bar</Filter>
     </ClCompile>
     <ClCompile Include="replaygain_mode.cpp">
@@ -454,22 +454,22 @@
     <ClCompile Include="output_format.cpp">
       <Filter>Output format toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\order_dropdown.cpp">
+    <ClCompile Include="order_dropdown.cpp">
       <Filter>Playback order toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\menubar.cpp">
+    <ClCompile Include="menubar.cpp">
       <Filter>Menu toolbar</Filter>
     </ClCompile>
     <ClCompile Include="dsp_preset.cpp">
       <Filter>DSP preset toolbar</Filter>
     </ClCompile>
-    <ClCompile Include=".\layout_config.cpp">
+    <ClCompile Include="layout_config.cpp">
       <Filter>Layout host</Filter>
     </ClCompile>
-    <ClCompile Include=".\layout.cpp">
+    <ClCompile Include="layout.cpp">
       <Filter>Layout host</Filter>
     </ClCompile>
-    <ClCompile Include=".\config_appearance.cpp">
+    <ClCompile Include="config_appearance.cpp">
       <Filter>Config storage</Filter>
     </ClCompile>
     <ClCompile Include="version.cpp" />
@@ -488,16 +488,16 @@
     <ClCompile Include="main_window_callbacks.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
-    <ClCompile Include=".\commandline.cpp">
+    <ClCompile Include="commandline.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
     <ClCompile Include="status_bar_font_client.cpp">
       <Filter>Status bar</Filter>
     </ClCompile>
-    <ClCompile Include=".\menu_items.cpp">
+    <ClCompile Include="menu_items.cpp">
       <Filter>Menu items</Filter>
     </ClCompile>
-    <ClCompile Include=".\get_msg_hook.cpp">
+    <ClCompile Include="get_msg_hook.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
     <ClCompile Include="filter_fcl.cpp">
@@ -565,50 +565,50 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include=".\resource.h">
+    <ClInclude Include="resource.h">
       <Filter>Resources</Filter>
     </ClInclude>
-    <ClInclude Include=".\config.h">
+    <ClInclude Include="config.h">
       <Filter>Config UI</Filter>
     </ClInclude>
-    <ClInclude Include=".\fcl.h">
+    <ClInclude Include="fcl.h">
       <Filter>FCL files</Filter>
     </ClInclude>
-    <ClInclude Include=".\status_pane.h">
+    <ClInclude Include="status_pane.h">
       <Filter>Status pane</Filter>
     </ClInclude>
-    <ClInclude Include=".\helpers.h">
+    <ClInclude Include="helpers.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include=".\menu_helpers.h">
+    <ClInclude Include="menu_helpers.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include=".\gdiplus.h">
+    <ClInclude Include="gdiplus.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include=".\mw_drop_target.h">
+    <ClInclude Include="mw_drop_target.h">
       <Filter>Main window</Filter>
     </ClInclude>
-    <ClInclude Include=".\tab_colours.h">
+    <ClInclude Include="tab_colours.h">
       <Filter>Config UI</Filter>
     </ClInclude>
-    <ClInclude Include=".\tab_fonts.h">
+    <ClInclude Include="tab_fonts.h">
       <Filter>Config UI</Filter>
     </ClInclude>
-    <ClInclude Include=".\stdafx.h" />
-    <ClInclude Include=".\config_items.h">
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="config_items.h">
       <Filter>Config storage</Filter>
     </ClInclude>
-    <ClInclude Include=".\config_vars.h">
+    <ClInclude Include="config_vars.h">
       <Filter>Config storage</Filter>
     </ClInclude>
-    <ClInclude Include=".\config_defaults.h">
+    <ClInclude Include="config_defaults.h">
       <Filter>Config storage</Filter>
     </ClInclude>
-    <ClInclude Include=".\main_window.h">
+    <ClInclude Include="main_window.h">
       <Filter>Main window</Filter>
     </ClInclude>
-    <ClInclude Include=".\prefs_utils.h">
+    <ClInclude Include="prefs_utils.h">
       <Filter>Config UI</Filter>
     </ClInclude>
     <ClInclude Include="list_view_panel.h">
@@ -644,7 +644,7 @@
     <ClInclude Include="font_utils.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include=".\columns_v2.h">
+    <ClInclude Include="columns_v2.h">
       <Filter>Playlist view</Filter>
     </ClInclude>
     <ClInclude Include="ng_playlist\ng_playlist.h">
@@ -659,100 +659,100 @@
     <ClInclude Include="playlist_view_tfhooks.h">
       <Filter>Playlist view</Filter>
     </ClInclude>
-    <ClInclude Include=".\filter.h">
+    <ClInclude Include="filter.h">
       <Filter>Filter</Filter>
     </ClInclude>
     <ClInclude Include="filter_search_bar.h">
       <Filter>Filter</Filter>
     </ClInclude>
-    <ClInclude Include=".\item_details.h">
+    <ClInclude Include="item_details.h">
       <Filter>Item details</Filter>
     </ClInclude>
-    <ClInclude Include=".\artwork.h">
+    <ClInclude Include="artwork.h">
       <Filter>Artwork view</Filter>
     </ClInclude>
-    <ClInclude Include=".\artwork_helpers.h">
+    <ClInclude Include="artwork_helpers.h">
       <Filter>Artwork view</Filter>
     </ClInclude>
-    <ClInclude Include=".\item_properties.h">
+    <ClInclude Include="item_properties.h">
       <Filter>Item properties</Filter>
     </ClInclude>
-    <ClInclude Include=".\playlist_switcher.h">
+    <ClInclude Include="playlist_switcher.h">
       <Filter>Playlist switcher</Filter>
     </ClInclude>
-    <ClInclude Include=".\playlist_switcher_v2.h">
+    <ClInclude Include="playlist_switcher_v2.h">
       <Filter>Playlist switcher</Filter>
     </ClInclude>
-    <ClInclude Include=".\playlist_manager_utils.h">
+    <ClInclude Include="playlist_manager_utils.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include=".\playlist_tabs.h">
+    <ClInclude Include="playlist_tabs.h">
       <Filter>Playlist tabs</Filter>
     </ClInclude>
-    <ClInclude Include=".\splitter_tabs.h">
+    <ClInclude Include="splitter_tabs.h">
       <Filter>Tab stack</Filter>
     </ClInclude>
-    <ClInclude Include=".\splitter.h">
+    <ClInclude Include="splitter.h">
       <Filter>Splitter</Filter>
     </ClInclude>
-    <ClInclude Include=".\playlist_search.h">
+    <ClInclude Include="playlist_search.h">
       <Filter>Playlist search</Filter>
     </ClInclude>
-    <ClInclude Include=".\rebar.h">
+    <ClInclude Include="rebar.h">
       <Filter>Rebar</Filter>
     </ClInclude>
     <ClInclude Include="rebar_band.h">
       <Filter>Rebar</Filter>
     </ClInclude>
-    <ClInclude Include=".\status_bar.h">
+    <ClInclude Include="status_bar.h">
       <Filter>Status bar</Filter>
     </ClInclude>
     <ClInclude Include="notification_area.h">
       <Filter>Notification area</Filter>
     </ClInclude>
-    <ClInclude Include=".\buttons.h">
+    <ClInclude Include="buttons.h">
       <Filter>Buttons toolbar</Filter>
     </ClInclude>
-    <ClInclude Include=".\vis_gen_host.h">
+    <ClInclude Include="vis_gen_host.h">
       <Filter>Spectrum analyser</Filter>
     </ClInclude>
-    <ClInclude Include=".\utf8api.h">
+    <ClInclude Include="utf8api.h">
       <Filter>Status bar</Filter>
     </ClInclude>
     <ClInclude Include="button_items.h">
       <Filter>Buttons toolbar</Filter>
     </ClInclude>
-    <ClInclude Include=".\common.h">
+    <ClInclude Include="common.h">
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="help.h">
       <Filter>Help</Filter>
     </ClInclude>
-    <ClInclude Include=".\setup_dialog.h">
+    <ClInclude Include="setup_dialog.h">
       <Filter>Quick set-up</Filter>
     </ClInclude>
     <ClInclude Include="urls.h">
       <Filter>Help</Filter>
     </ClInclude>
-    <ClInclude Include=".\volume.h">
+    <ClInclude Include="volume.h">
       <Filter>Volume bar</Filter>
     </ClInclude>
-    <ClInclude Include=".\seekbar.h">
+    <ClInclude Include="seekbar.h">
       <Filter>Seek bar</Filter>
     </ClInclude>
     <ClInclude Include="drop_down_list_toolbar.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include=".\layout.h">
+    <ClInclude Include="layout.h">
       <Filter>Layout host</Filter>
     </ClInclude>
-    <ClInclude Include=".\config_appearance.h">
+    <ClInclude Include="config_appearance.h">
       <Filter>Config storage</Filter>
     </ClInclude>
-    <ClInclude Include=".\menu_items.h">
+    <ClInclude Include="menu_items.h">
       <Filter>Menu items</Filter>
     </ClInclude>
-    <ClInclude Include=".\get_msg_hook.h">
+    <ClInclude Include="get_msg_hook.h">
       <Filter>Main window</Filter>
     </ClInclude>
     <ClInclude Include="filter_utils.h">
@@ -812,7 +812,7 @@
     <None Include="version.h.template" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include=".\foo_ui_columns.rc">
+    <ResourceCompile Include="foo_ui_columns.rc">
       <Filter>Resources</Filter>
     </ResourceCompile>
   </ItemGroup>

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "tab_dark_mode.h"
 
 #include "config_appearance.h"

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "main_window.h"
 
 class AlwaysOnTopNotifyReceiver : public config_object_notify {

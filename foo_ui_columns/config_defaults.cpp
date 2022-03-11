@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "main_window.h"
 
 COLORREF get_default_colour(colours::ColourID index, bool themed)

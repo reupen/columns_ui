@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "config.h"
 #include "notification_area.h"
 

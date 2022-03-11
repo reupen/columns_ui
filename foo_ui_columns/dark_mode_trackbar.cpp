@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "dark_mode_trackbar.h"
 
 #include "dark_mode.h"

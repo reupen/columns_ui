@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "config_host.h"
 #include "prefs_utils.h"

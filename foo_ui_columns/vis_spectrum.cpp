@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "vis_spectrum.h"
 
 #include "vis_gen_host.h"

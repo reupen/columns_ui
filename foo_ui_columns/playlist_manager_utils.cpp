@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "playlist_manager_utils.h"
 #include "rename_dialog.h"
 

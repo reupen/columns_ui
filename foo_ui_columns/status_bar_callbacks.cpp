@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "status_bar.h"
 
 extern HWND g_status;

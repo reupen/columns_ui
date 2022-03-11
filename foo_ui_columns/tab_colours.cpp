@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "tab_colours.h"
 #include "main_window.h"

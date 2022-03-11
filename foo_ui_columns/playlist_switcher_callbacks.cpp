@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "playlist_switcher_v2.h"
 
 namespace cui::panels::playlist_switcher {

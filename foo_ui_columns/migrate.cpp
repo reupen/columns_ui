@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #include "migrate.h"
 #include "config_appearance.h"

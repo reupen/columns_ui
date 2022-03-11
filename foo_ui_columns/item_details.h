@@ -1,6 +1,6 @@
 #pragma once
 
-#include "stdafx.h"
+#include "pch.h"
 #include "file_info_reader.h"
 
 namespace cui::panels::item_details {

@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "config.h"
 #include "prefs_utils.h"
 #include "main_window.h"

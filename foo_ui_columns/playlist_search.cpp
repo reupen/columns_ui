@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 
 #ifdef QUICKFIND_ENABLED
 #include "playlist_search.h"

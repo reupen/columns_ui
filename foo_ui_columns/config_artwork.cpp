@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "legacy_artwork_config.h"
 #include "artwork.h"
 #include "config.h"

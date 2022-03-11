@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "mw_drop_target.h"
 
 #include "main_window.h"

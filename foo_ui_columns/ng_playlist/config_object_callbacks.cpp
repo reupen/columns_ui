@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "ng_playlist/ng_playlist.h"
 
 class PlaybackFollowsCursorCallback : public config_object_notify {

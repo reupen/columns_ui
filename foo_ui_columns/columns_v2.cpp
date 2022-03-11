@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "columns_v2.h"
 
 void PlaylistViewColumn::read(stream_reader* reader, abort_callback& abortCallback)

@@ -1,4 +1,4 @@
-#include "../stdafx.h"
+#include "pch.h"
 #include "ng_playlist.h"
 
 namespace cui::panels::playlist_view {

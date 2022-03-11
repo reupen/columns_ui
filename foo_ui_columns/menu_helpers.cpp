@@ -1,4 +1,4 @@
-#include "stdafx.h"
+#include "pch.h"
 #include "menu_helpers.h"
 
 bool operator==(const MenuItemIdentifier& p1, const MenuItemIdentifier& p2)
