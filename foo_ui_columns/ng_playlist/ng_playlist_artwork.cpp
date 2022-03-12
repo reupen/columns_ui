@@ -53,7 +53,7 @@ void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::share
 
 void ArtworkReaderManager::on_reader_completion(const ArtworkReader* ptr)
 {
-    t_size index;
+    size_t index;
     if (find_current_reader(ptr, index)) {
         m_current_readers[index]->wait_for_and_release_thread();
         m_current_readers[index]->send_completion_notification(m_current_readers[index]);
@@ -292,12 +292,12 @@ wil::unique_hbitmap g_create_hbitmap_from_data(
     return g_create_hbitmap_from_image(*bitmap, cx, cy, cr_back, b_reflection);
 }
 
-wil::shared_hbitmap PlaylistView::request_group_artwork(t_size index_item)
+wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
 {
     if (!m_gdiplus_initialised)
         return nullptr;
 
-    const t_size group_count = m_scripts.get_count();
+    const size_t group_count = m_scripts.get_count();
     if (group_count == 0)
         return nullptr;
 

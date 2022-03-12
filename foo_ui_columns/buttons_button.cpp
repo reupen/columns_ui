@@ -147,7 +147,7 @@ void ButtonsToolbar::Button::read_from_file(ConfigVersion p_version, const char*
     stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
 {
     // t_filesize p_start = p_file->get_position(p_abort);
-    t_size read = 0;
+    size_t read = 0;
     while (read < p_size /* && !p_file->is_eof(p_abort)*/) {
         ButtonIdentifier id;
         p_file->read_lendian_t(id, p_abort);
@@ -155,7 +155,7 @@ void ButtonsToolbar::Button::read_from_file(ConfigVersion p_version, const char*
         p_file->read_lendian_t(size, p_abort);
         // if (size > p_file->get_size(p_abort) - p_file->get_position(p_abort))
         //    throw exception_io_data();
-        read += sizeof(t_uint32) + sizeof(t_uint32) + size;
+        read += sizeof(uint32_t) + sizeof(uint32_t) + size;
         switch (id) {
         case I_BUTTON_TYPE:
             p_file->read_lendian_t(m_type, p_abort);

@@ -187,8 +187,8 @@ bool LayoutTab::_fix_single_instance_recur(uie::splitter_window_ptr& p_window)
         return false;
 
     bool modified = false;
-    t_size i;
-    t_size count = p_window->get_panel_count();
+    size_t i;
+    size_t count = p_window->get_panel_count();
     pfc::array_staticsize_t<bool> mask(count);
 
     for (i = 0; i < count; i++) {
@@ -569,7 +569,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             const auto preset_name = helpers::show_rename_dialog_box(wnd, "New preset: Enter name", "New preset");
 
             if (preset_name) {
-                t_size index = cfg_layout.add_preset(*preset_name);
+                size_t index = cfg_layout.add_preset(*preset_name);
                 uSendDlgItemMessageText(wnd, IDC_PRESETS, CB_ADDSTRING, NULL, preset_name->get_ptr());
                 SendDlgItemMessage(wnd, IDC_PRESETS, CB_SETCURSEL, index, NULL);
                 switch_to_preset(wnd, index);
@@ -613,7 +613,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_DELETE_PRESET: {
             deinitialise_tree(wnd);
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
-            t_size count = cfg_layout.delete_preset(m_active_preset);
+            size_t count = cfg_layout.delete_preset(m_active_preset);
             ComboBox_DeleteString(wnd_combo, m_active_preset);
             if (!count) {
                 cfg_layout.reset_presets();
@@ -678,7 +678,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         case (CBN_SELCHANGE << 16) | IDC_CAPTIONSTYLE:
             set_item_property(wnd, uie::splitter_window::uint32_orientation,
-                (t_uint32)(SendMessage((HWND)lp, CB_GETCURSEL, 0, 0) ? 1 : 0));
+                (uint32_t)(SendMessage((HWND)lp, CB_GETCURSEL, 0, 0) ? 1 : 0));
             break;
         case IDC_CONFIGURE:
             run_configure(wnd);

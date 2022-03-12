@@ -18,7 +18,7 @@ bool g_ui_selection_manager_is_now_playing_fallback()
 }
 
 void g_compare_file_with_bytes(
-    const service_ptr_t<file>& p1, const pfc::array_t<t_uint8>& p2, bool& b_same, abort_callback& p_abort)
+    const service_ptr_t<file>& p1, const pfc::array_t<uint8_t>& p2, bool& b_same, abort_callback& p_abort)
 {
     try {
         b_same = false;
@@ -27,7 +27,7 @@ void g_compare_file_with_bytes(
         if (bytes == p2.get_size()) {
             enum { BUFSIZE = 1024 * 1024 };
             auto size = (unsigned)(BUFSIZE < bytes ? BUFSIZE : bytes);
-            pfc::array_t<t_uint8> temp, temp2;
+            pfc::array_t<uint8_t> temp, temp2;
             temp.set_size(size);
             temp2.set_size(size);
 
@@ -36,7 +36,7 @@ void g_compare_file_with_bytes(
                 if (p_abort.is_aborting())
                     throw exception_aborted();
 
-                t_int64 delta64 = bytes - done;
+                int64_t delta64 = bytes - done;
                 if (delta64 > BUFSIZE)
                     delta64 = BUFSIZE;
                 auto delta = (unsigned)delta64;
@@ -72,8 +72,8 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
         if (!num_colours && p_bih->bmiHeader.biBitCount <= 8)
             num_colours = 1 << p_bih->bmiHeader.biBitCount;
 
-        pfc::array_t<t_uint8> bmi;
-        bmi.append_fromptr((t_uint8*)p_bih, p_bih->bmiHeader.biSize + sizeof(RGBQUAD) * num_colours);
+        pfc::array_t<uint8_t> bmi;
+        bmi.append_fromptr((uint8_t*)p_bih, p_bih->bmiHeader.biSize + sizeof(RGBQUAD) * num_colours);
 
         auto* lpbi = (LPBITMAPINFO)bmi.get_ptr();
 

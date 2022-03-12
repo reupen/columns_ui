@@ -7,9 +7,9 @@ extern fbh::ConfigString config_main_window_title_script;
 
 enum MetafieldEditingMode { mode_disabled, mode_columns };
 
-void config_set_inline_metafield_edit_mode(t_uint32 value);
-t_uint32 config_get_inline_metafield_edit_mode();
-t_uint32 config_get_inline_metafield_edit_mode_default_value();
+void config_set_inline_metafield_edit_mode(uint32_t value);
+uint32_t config_get_inline_metafield_edit_mode();
+uint32_t config_get_inline_metafield_edit_mode_default_value();
 void config_reset_inline_metafield_edit_mode();
 
 void on_transparency_enabled_change();

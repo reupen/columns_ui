@@ -3,7 +3,7 @@
 
 namespace cui::panels::playlist_view {
 
-void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, t_size index, RECT rc)
+void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, size_t index, RECT rc)
 {
     const auto bm = m_playlist_view->request_group_artwork(index);
 
@@ -26,7 +26,7 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, t
     DeleteDC(dcc);
 }
 
-void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size index,
+void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t index,
     std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
     bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc)
 {
@@ -62,7 +62,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size 
 
     RECT rc_subitem = rc;
 
-    for (t_size column_index = 0; column_index < sub_items.size(); column_index++) {
+    for (size_t column_index = 0; column_index < sub_items.size(); column_index++) {
         auto& sub_item = sub_items[column_index];
         auto& sub_style_data = style_data[column_index];
 
@@ -133,7 +133,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, t_size 
 }
 
 void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index,
-    std::string_view text, int indentation, t_size level, RECT rc)
+    std::string_view text, int indentation, size_t level, RECT rc)
 {
     colours::helper p_helper(ColoursClient::g_guid);
     bool b_theme_enabled = p_helper.get_themed();

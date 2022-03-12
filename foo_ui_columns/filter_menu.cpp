@@ -6,8 +6,8 @@ namespace cui::panels::filter {
 bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& ht)
 {
     HMENU menu = CreatePopupMenu();
-    t_size count = g_field_data.get_count();
-    for (t_size i = 0; i < count; i++) {
+    size_t count = g_field_data.get_count();
+    for (size_t i = 0; i < count; i++) {
         pfc::stringcvt::string_wide_from_utf8 wide(g_field_data[i].m_name);
         {
             MENUITEMINFO mii{};
@@ -23,7 +23,7 @@ bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTI
             mii.cch = gsl::narrow<UINT>(wide.length());
             mii.wID = gsl::narrow<UINT>(i + 1);
             InsertMenuItem(menu, gsl::narrow<UINT>(i), TRUE, &mii);
-            // console::formatter() << (t_uint32)GetLastError();
+            // console::formatter() << (uint32_t)GetLastError();
         }
     }
     int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr);

@@ -138,11 +138,11 @@ private:
         case WM_SYSCOLORCHANGE: {
             ColoursClientList m_colours_client_list;
             ColoursClientList::g_get_list(m_colours_client_list);
-            t_size count = m_colours_client_list.get_count();
+            size_t count = m_colours_client_list.get_count();
             bool b_global_custom = g_colour_manager_data.m_global_entry->colour_mode == colours::colour_mode_custom;
             if (!b_global_custom)
                 g_colour_manager_data.g_on_common_colour_changed(colours::colour_flag_all);
-            for (t_size i = 0; i < count; i++) {
+            for (size_t i = 0; i < count; i++) {
                 ColourManagerData::entry_ptr_t p_data;
                 g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
                 if (p_data->colour_mode == colours::colour_mode_system
@@ -159,10 +159,10 @@ private:
                     && g_font_manager_data.m_common_labels_entry->font_mode == fonts::font_mode_system)) {
                 FontsClientList m_fonts_client_list;
                 FontsClientList::g_get_list(m_fonts_client_list);
-                t_size count = m_fonts_client_list.get_count();
+                size_t count = m_fonts_client_list.get_count();
                 g_font_manager_data.g_on_common_font_changed(
                     wp == SPI_GETICONTITLELOGFONT ? fonts::font_type_flag_items : fonts::font_type_flag_labels);
-                for (t_size i = 0; i < count; i++) {
+                for (size_t i = 0; i < count; i++) {
                     FontManagerData::entry_ptr_t p_data;
                     g_font_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
                     if (wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == fonts::font_mode_common_items)

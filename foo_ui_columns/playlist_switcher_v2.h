@@ -86,7 +86,7 @@ public:
             m_switch_playlist.reset();
         }
     }
-    void set_switch_timer(t_size index)
+    void set_switch_timer(size_t index)
     {
         if (!m_switch_timer_active || !m_switch_playlist || m_switch_playlist->m_playlist != index) {
             if (index != m_playlist_api->get_active_playlist()) {
@@ -102,7 +102,7 @@ public:
     bool notify_on_timer(UINT_PTR timerid) override
     {
         if (timerid == TIMER_SWITCH) {
-            t_size index = m_switch_playlist ? m_switch_playlist->m_playlist : pfc_infinite;
+            size_t index = m_switch_playlist ? m_switch_playlist->m_playlist : pfc_infinite;
             destroy_switch_timer();
             if (index != pfc_infinite)
                 m_playlist_api->set_active_playlist(index);
@@ -111,10 +111,10 @@ public:
         return false;
     }
 
-    void get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& p_out);
+    void get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& p_out);
     void refresh_all_items();
-    void refresh_items(t_size base, t_size count, bool b_update = true);
-    void add_items(t_size base, t_size count);
+    void refresh_items(size_t base, size_t count, bool b_update = true);
+    void add_items(size_t base, size_t count);
     void refresh_columns();
 
     void notify_on_initialisation() override;
@@ -124,9 +124,9 @@ public:
     void move_selection(int delta) override;
 
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override;
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-        pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
+        const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
 
     const char* get_drag_unit_singular() const override { return "playlist"; }
@@ -143,7 +143,7 @@ public:
         return ret;
     }
 
-    bool notify_on_middleclick(bool on_item, t_size index) override
+    bool notify_on_middleclick(bool on_item, size_t index) override
     {
         if (cfg_mclick && on_item && index < m_playlist_api->get_playlist_count()) {
             m_playlist_api->remove_playlist_switch(index);
@@ -161,7 +161,7 @@ public:
 
     bool notify_on_keyboard_keydown_remove() override
     {
-        t_size index = m_playlist_api->get_active_playlist();
+        size_t index = m_playlist_api->get_active_playlist();
         if (index < m_playlist_api->get_playlist_count()) {
             pfc::string8 name;
             m_playlist_api->playlist_get_name(index, name);
@@ -176,23 +176,23 @@ public:
 
     bool notify_on_keyboard_keydown_cut() override
     {
-        t_size index = m_playlist_api->get_active_playlist();
+        size_t index = m_playlist_api->get_active_playlist();
         if (index != pfc_infinite)
-            playlist_manager_utils::cut(pfc::list_single_ref_t<t_size>(index));
+            playlist_manager_utils::cut(pfc::list_single_ref_t<size_t>(index));
         return true;
     }
 
     bool notify_on_keyboard_keydown_copy() override
     {
-        t_size index = m_playlist_api->get_active_playlist();
+        size_t index = m_playlist_api->get_active_playlist();
         if (index != pfc_infinite)
-            playlist_manager_utils::copy(pfc::list_single_ref_t<t_size>(index));
+            playlist_manager_utils::copy(pfc::list_single_ref_t<size_t>(index));
         return true;
     }
 
     bool notify_on_keyboard_keydown_paste() override
     {
-        t_size index = m_playlist_api->get_active_playlist();
+        size_t index = m_playlist_api->get_active_playlist();
         if (index == pfc_infinite)
             index = m_playlist_api->get_playlist_count();
         else
@@ -201,7 +201,7 @@ public:
         return true;
     }
 
-    void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl) override
+    void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override
     {
         if (m_playlist_api->playlist_get_item_count(index)) {
             m_playlist_api->set_playing_playlist(index);
@@ -212,13 +212,13 @@ public:
         const bit_array& p_affected, const bit_array& p_status, notification_source_t p_notification_source) override
     {
         if (p_notification_source != notification_source_rmb) {
-            t_size numSelected = get_selection_count(2);
+            size_t numSelected = get_selection_count(2);
 
             if (numSelected == 1) {
                 bit_array_bittable mask(get_item_count());
                 get_selection_state(mask);
-                t_size index = 0;
-                t_size count = get_item_count();
+                size_t index = 0;
+                size_t count = get_item_count();
                 while (index < count) {
                     if (mask[index])
                         break;
@@ -238,14 +238,14 @@ public:
 
     void notify_on_kill_focus(HWND wnd_receiving) override { m_selection_holder.release(); }
 
-    t_size get_playing_playlist()
+    size_t get_playing_playlist()
     {
         return m_playback_api->is_playing() ? m_playlist_api->get_playing_playlist() : pfc_infinite;
     }
 
     void on_playing_playlist_change(size_t p_playing_playlist)
     {
-        t_size previous_playing = m_playing_playlist;
+        size_t previous_playing = m_playing_playlist;
         m_playing_playlist = p_playing_playlist;
         if (previous_playing != pfc_infinite && previous_playing < get_item_count())
             refresh_items(previous_playing, 1);
@@ -256,37 +256,37 @@ public:
 
     void refresh_playing_playlist() { m_playing_playlist = get_playing_playlist(); }
 
-    void on_items_added(t_size p_playlist, t_size p_start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
+    void on_items_added(size_t p_playlist, size_t p_start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
         const bit_array& p_selection) override;
-    void on_items_reordered(t_size p_playlist, const t_size* p_order, t_size p_count) override {}
-    void on_items_removing(t_size p_playlist, const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override
+    void on_items_reordered(size_t p_playlist, const size_t* p_order, size_t p_count) override {}
+    void on_items_removing(size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
     {
     }
-    void on_items_removed(t_size p_playlist, const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
-    void on_items_selection_change(t_size p_playlist, const bit_array& p_affected, const bit_array& p_state) override {}
-    void on_item_focus_change(t_size p_playlist, t_size p_from, t_size p_to) override {}
+    void on_items_removed(size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
+    void on_items_selection_change(size_t p_playlist, const bit_array& p_affected, const bit_array& p_state) override {}
+    void on_item_focus_change(size_t p_playlist, size_t p_from, size_t p_to) override {}
 
-    void on_items_modified(t_size p_playlist, const bit_array& p_mask) override;
+    void on_items_modified(size_t p_playlist, const bit_array& p_mask) override;
     void on_items_modified_fromplayback(
-        t_size p_playlist, const bit_array& p_mask, play_control::t_display_level p_level) override
+        size_t p_playlist, const bit_array& p_mask, play_control::t_display_level p_level) override
     {
     }
 
-    void on_items_replaced(t_size p_playlist, const bit_array& p_mask,
+    void on_items_replaced(size_t p_playlist, const bit_array& p_mask,
         const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) override;
 
-    void on_item_ensure_visible(t_size p_playlist, t_size p_idx) override {}
+    void on_item_ensure_visible(size_t p_playlist, size_t p_idx) override {}
 
-    void on_playlist_activate(t_size p_old, t_size p_new) override;
-    void on_playlist_created(t_size p_index, const char* p_name, t_size p_name_len) override;
-    void on_playlists_reorder(const t_size* p_order, t_size p_count) override;
-    void on_playlists_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
-    void on_playlists_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
-    void on_playlist_renamed(t_size p_index, const char* p_new_name, t_size p_new_name_len) override;
+    void on_playlist_activate(size_t p_old, size_t p_new) override;
+    void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) override;
+    void on_playlists_reorder(const size_t* p_order, size_t p_count) override;
+    void on_playlists_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
+    void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
+    void on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len) override;
 
     void on_default_format_changed() override {}
-    void on_playback_order_changed(t_size p_new_index) override {}
-    void on_playlist_locked(t_size p_playlist, bool p_locked) override;
+    void on_playback_order_changed(size_t p_new_index) override {}
+    void on_playlist_locked(size_t p_playlist, bool p_locked) override;
 
     void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override;
     void on_playback_new_track(metadb_handle_ptr p_track) override;
@@ -328,7 +328,7 @@ private:
     wil::com_ptr_t<IDataObject> m_DataObject;
 
     std::shared_ptr<playlist_position_reference_tracker> m_edit_playlist;
-    t_size m_playing_playlist;
+    size_t m_playing_playlist;
     service_ptr_t<playlist_manager_v3> m_playlist_api;
     service_ptr_t<playback_control> m_playback_api;
 

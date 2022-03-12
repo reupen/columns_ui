@@ -121,7 +121,7 @@ unsigned ItemProperties::get_type() const
     return uie::type_panel;
 }
 
-void ItemProperties::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ItemProperties::set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     if (!p_size)
         return;
@@ -169,9 +169,9 @@ void ItemProperties::set_config(stream_reader* p_reader, t_size p_size, abort_ca
 void ItemProperties::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(static_cast<uint32_t>(config_version_current), p_abort);
-    t_size count = m_fields.get_count();
+    size_t count = m_fields.get_count();
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         p_writer->write_string(m_fields[i].m_name_friendly, p_abort);
         p_writer->write_string(m_fields[i].m_name, p_abort);
     }
@@ -265,14 +265,14 @@ public:
         if (m_truncated)
             return false;
 
-        const t_size field_index = info->meta_find(field);
+        const size_t field_index = info->meta_find(field);
 
         if (field_index == (std::numeric_limits<size_t>::max)()) {
             m_some_values_missing = true;
             return true;
         }
 
-        const t_size value_count = info->meta_enum_value_count(field_index);
+        const size_t value_count = info->meta_enum_value_count(field_index);
 
         for (auto value_index : ranges::views::iota(size_t{0}, value_count)) {
             const auto value = info->meta_enum_value(field_index, value_index);
@@ -466,8 +466,8 @@ void ItemProperties::refresh_contents()
     metadata_aggregators.resize(field_count);
 
     pfc::list_t<InsertItem> items;
-    t_size i;
-    t_size count = m_handles.get_count();
+    size_t i;
+    size_t count = m_handles.get_count();
 
     std::vector<metadb_info_container::ptr> info_refs;
     info_refs.resize(count);
@@ -495,9 +495,9 @@ void ItemProperties::refresh_contents()
         item.m_subitems[0] = field.m_name_friendly;
         temp.reset();
 
-        t_size count_values = aggregator.m_values.size();
+        size_t count_values = aggregator.m_values.size();
 
-        for (t_size j = 0; j < count_values; j++) {
+        for (size_t j = 0; j < count_values; j++) {
             auto&& value = aggregator.m_values[j];
 
             if (value.length() > 0)
@@ -544,8 +544,8 @@ void ItemProperties::refresh_contents()
         }
     }
 
-    t_size old_count = get_item_count();
-    t_size new_count = items.get_count();
+    size_t old_count = get_item_count();
+    size_t new_count = items.get_count();
 
     if (new_count && old_count) {
         pfc::list_t<InsertItem> items_replace;
@@ -589,9 +589,9 @@ void ItemProperties::on_changed_sorted(metadb_handle_list_cref p_items_sorted, b
 {
     if (!p_fromhook) {
         bool b_refresh = false;
-        t_size count = m_handles.get_count();
-        for (t_size i = 0; i < count && !b_refresh; i++) {
-            t_size index = pfc_infinite;
+        size_t count = m_handles.get_count();
+        for (size_t i = 0; i < count && !b_refresh; i++) {
+            size_t index = pfc_infinite;
             if (p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, m_handles[i], index))
                 b_refresh = true;
         }
@@ -740,17 +740,17 @@ void ItemProperties::notify_save_inline_edit(const char* value)
                 ptr++;
         }
 
-        t_size value_count = values.get_count();
+        size_t value_count = values.get_count();
 
         metadb_handle_list ptrs(m_edit_handles);
         pfc::list_t<file_info_impl> infos;
         pfc::list_t<bool> mask;
         pfc::list_t<const file_info*> infos_ptr;
-        t_size count = ptrs.get_count();
+        size_t count = ptrs.get_count();
         mask.set_count(count);
         infos.set_count(count);
         // infos.set_count(count);
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             assert(ptrs[i].is_valid());
             mask[i] = !ptrs[i]->get_info(infos[i]);
             infos_ptr.add_item(&infos[i]);
@@ -759,7 +759,7 @@ void ItemProperties::notify_save_inline_edit(const char* value)
                 g_print_field(m_edit_field, infos[i], old_value);
                 if (!(mask[i] = !((strcmp(old_value, value))))) {
                     infos[i].meta_remove_field(m_edit_field);
-                    for (t_size j = 0; j < value_count; j++)
+                    for (size_t j = 0; j < value_count; j++)
                         infos[i].meta_add(m_edit_field, values[j]);
                 }
             }
@@ -790,10 +790,10 @@ void ItemProperties::notify_save_inline_edit(const char* value)
     m_edit_handles.remove_all();
 }
 
-bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-    pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
+bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+    pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
-    t_size indices_count = indices.get_count();
+    size_t indices_count = indices.get_count();
     if (m_handles.get_count() && column == 1 && indices_count == 1 && indices[0] < m_fields.get_count()) {
         m_edit_index = indices[0];
         m_edit_column = column;
@@ -806,8 +806,8 @@ bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<t_si
             metadb_info_container::ptr p_info;
             if (m_edit_handles[0]->get_info_ref(p_info))
                 g_print_field(m_edit_field, p_info->info(), text);
-            t_size count = m_handles.get_count();
-            for (t_size i = 1; i < count; i++) {
+            size_t count = m_handles.get_count();
+            for (size_t i = 1; i < count; i++) {
                 temp.reset();
                 if (m_edit_handles[i]->get_info_ref(p_info))
                     g_print_field(m_edit_field, p_info->info(), temp);
@@ -827,21 +827,21 @@ bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<t_si
 
 void ItemProperties::g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out)
 {
-    t_size meta_index = p_info.meta_find(field);
+    size_t meta_index = p_info.meta_find(field);
     if (meta_index != pfc_infinite) {
-        t_size count = p_info.meta_enum_value_count(meta_index);
-        for (t_size i = 0; i < count; i++)
+        size_t count = p_info.meta_enum_value_count(meta_index);
+        for (size_t i = 0; i < count; i++)
             p_out << p_info.meta_enum_value(meta_index, i) << (i + 1 < count ? "; " : "");
     }
 }
 
 bool ItemProperties::notify_before_create_inline_edit(
-    const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse)
+    const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse)
 {
     return m_handles.get_count() && column == 1 && indices.get_count() == 1 && indices[0] < m_fields.get_count();
 }
 
-void ItemProperties::notify_on_column_size_change(t_size index, int new_width)
+void ItemProperties::notify_on_column_size_change(size_t index, int new_width)
 {
     if (index == 0)
         m_column_name_width = new_width;

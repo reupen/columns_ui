@@ -8,7 +8,7 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
 {
     if (ptr_node.is_valid()) {
         pfc::string8 name_part;
-        t_uint32 flags;
+        uint32_t flags;
         ptr_node->get_display(name_part, flags);
 
         switch (ptr_node->get_type()) {
@@ -30,7 +30,7 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
             if (!b_root)
                 name_parts.emplace_back(name_part);
 
-            for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
+            for (size_t i = 0, count = ptr_node->get_children_count(); i < count; i++) {
                 mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
                 __populate_mainmenu_dynamic_recur(data, ptr_child, name_parts, false);
             }

@@ -83,7 +83,7 @@ wil::unique_hbitmap create_hbitmap_from_path(const char* path)
     bmi.biClrUsed = 0;
     bmi.biClrImportant = 0;
 
-    std::array<t_uint8, sizeof(BITMAPINFOHEADER)> bm_data{};
+    std::array<uint8_t, sizeof(BITMAPINFOHEADER)> bm_data{};
 
     auto* bi = reinterpret_cast<BITMAPINFO*>(bm_data.data());
     bi->bmiHeader = bmi;

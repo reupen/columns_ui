@@ -55,8 +55,8 @@ INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         ComboBox_AddString(m_wnd_colours_element, L"Global");
         ColoursClientList::g_get_list(m_colours_client_list);
-        t_size count = m_colours_client_list.get_count();
-        for (t_size i = 0; i < count; i++)
+        size_t count = m_colours_client_list.get_count();
+        for (size_t i = 0; i < count; i++)
             ComboBox_AddString(
                 m_wnd_colours_element, pfc::stringcvt::string_os_from_utf8(m_colours_client_list[i].m_name));
 
@@ -156,8 +156,8 @@ void TabColours::on_colour_changed()
         m_element_api->on_colour_changed(cui::colours::colour_flag_all);
     else if (m_element_guid == pfc::guid_null) {
         g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
-        t_size count = m_colours_client_list.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = m_colours_client_list.get_count();
+        for (size_t i = 0; i < count; i++) {
             ColourManagerData::entry_ptr_t p_data;
             g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_global)
@@ -169,7 +169,7 @@ void TabColours::on_colour_changed()
 void TabColours::update_mode_combobox()
 {
     ComboBox_ResetContent(m_wnd_colours_mode);
-    t_size index;
+    size_t index;
     if (m_element_guid != pfc::guid_null) {
         index = ComboBox_AddString(m_wnd_colours_mode, L"Global");
         ComboBox_SetItemData(m_wnd_colours_mode, index, cui::colours::colour_mode_global);

@@ -4,14 +4,14 @@
 namespace cui::panels::playlist_switcher {
 
 bool PlaylistSwitcher::notify_before_create_inline_edit(
-    const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse)
+    const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse)
 {
     return column == 0 && indices.get_count() == 1;
 }
-bool PlaylistSwitcher::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-    pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
+bool PlaylistSwitcher::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+    pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
-    t_size indices_count = indices.get_count();
+    size_t indices_count = indices.get_count();
     if (indices_count == 1 && indices[0] < m_playlist_api->get_playlist_count()) {
         m_edit_playlist = std::make_shared<playlist_position_reference_tracker>(false);
         m_edit_playlist->m_playlist = indices[0];

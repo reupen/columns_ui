@@ -23,7 +23,7 @@ class FontsDataSet : public fcl::dataset {
         identifier_client_entries,
         identifier_client_entry = 0,
     };
-    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -42,9 +42,9 @@ class FontsDataSet : public fcl::dataset {
         {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
-            t_size count = g_font_manager_data.m_entries.get_count();
+            size_t count = g_font_manager_data.m_entries.get_count();
             mem.write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
-            for (t_size i = 0; i < count; i++) {
+            for (size_t i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
                 g_font_manager_data.m_entries[i]->_export(&mem2, p_abort);
                 out2.write_item(
@@ -54,18 +54,18 @@ class FontsDataSet : public fcl::dataset {
                 identifier_client_entries, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
 
         while (reader.get_remaining()) {
             reader.read_item(element_id);
             reader.read_item(element_size);
 
-            pfc::array_t<t_uint8> data;
+            pfc::array_t<uint8_t> data;
             data.set_size(element_size);
             reader.read(data.get_ptr(), data.get_size());
 
@@ -86,13 +86,13 @@ class FontsDataSet : public fcl::dataset {
                 g_font_manager_data.m_entries.remove_all();
                 g_font_manager_data.m_entries.set_count(count);
 
-                for (t_size i = 0; i < count; i++) {
-                    t_uint32 element_id2;
-                    t_uint32 element_size2;
+                for (size_t i = 0; i < count; i++) {
+                    uint32_t element_id2;
+                    uint32_t element_size2;
                     reader2.read_item(element_id2);
                     reader2.read_item(element_size2);
                     if (element_id2 == identifier_client_entry) {
-                        pfc::array_t<t_uint8> data2;
+                        pfc::array_t<uint8_t> data2;
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref element_reader(data2);

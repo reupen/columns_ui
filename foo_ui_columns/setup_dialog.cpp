@@ -54,15 +54,15 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
 
         LVITEM lvi{};
         lvi.mask = LVIF_TEXT;
-        t_size count = m_presets.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = m_presets.get_count();
+        for (size_t i = 0; i < count; i++) {
             uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(i), 0, m_presets[i].m_name, false);
         }
         ComboBox_InsertString(wnd_theming, 0, L"No");
         ComboBox_InsertString(wnd_theming, 1, L"Yes");
         m_previous_colour_mode = g_get_global_colour_mode();
 
-        t_size select = -1;
+        size_t select = -1;
         if (m_previous_colour_mode == cui::colours::colour_mode_themed)
             select = 1;
         else if (m_previous_colour_mode == cui::colours::colour_mode_system)
@@ -109,7 +109,7 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
             DestroyWindow(wnd);
             return 0;
         case (CBN_SELCHANGE << 16) | IDC_THEMING: {
-            const t_size selection = ComboBox_GetCurSel(HWND(lp));
+            const size_t selection = ComboBox_GetCurSel(HWND(lp));
             if (selection == 1)
                 g_set_global_colour_mode(cui::colours::colour_mode_themed);
             else if (selection == 0)
@@ -117,7 +117,7 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
             break;
         }
         case (CBN_SELCHANGE << 16) | IDC_GROUPING: {
-            t_size selection = ComboBox_GetCurSel(HWND(lp));
+            size_t selection = ComboBox_GetCurSel(HWND(lp));
             if (selection >= 2)
                 cui::panels::playlist_view::cfg_show_artwork = true;
             if (selection >= 1)
@@ -143,7 +143,7 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
             switch (lpnm->code) {
             case LVN_ITEMCHANGED: {
                 auto lpnmlv = (LPNMLISTVIEW)lp;
-                if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (t_size)lpnmlv->iItem < m_presets.get_count()) {
+                if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (size_t)lpnmlv->iItem < m_presets.get_count()) {
                     if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED)) {
                         uie::splitter_item_ptr ptr;
                         m_presets[lpnmlv->iItem].get(ptr);

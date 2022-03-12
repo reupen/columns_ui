@@ -17,7 +17,7 @@ std::vector<MenuItemInfo> get_dynamic_main_menu_node_items(
     GUID command_id, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts)
 {
     pfc::string8 name_part;
-    t_uint32 flags;
+    uint32_t flags;
     ptr_node->get_display(name_part, flags);
 
     switch (ptr_node->get_type()) {
@@ -41,7 +41,7 @@ std::vector<MenuItemInfo> get_dynamic_main_menu_node_items(
         if (!name_part.is_empty())
             name_parts.emplace_back(name_part);
 
-        for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
+        for (size_t i = 0, count = ptr_node->get_children_count(); i < count; i++) {
             mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
             if (ptr_child.is_valid()) {
                 auto child_items = get_dynamic_main_menu_node_items(command_id, ptr_child, name_parts);
@@ -246,21 +246,21 @@ bool mainmenunode_subguid_to_path(
         switch (ptr_node->get_type()) {
         case mainmenu_node::type_command: {
             if (p_subguid == ptr_node->get_guid()) {
-                t_uint32 flags;
+                uint32_t flags;
                 ptr_node->get_display(p_out, flags);
                 return true;
             }
         }
             return false;
         case mainmenu_node::type_group: {
-            for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
+            for (size_t i = 0, count = ptr_node->get_children_count(); i < count; i++) {
                 mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
                 pfc::string8 name;
                 if (mainmenunode_subguid_to_path(ptr_child, p_subguid, name)) {
                     if (b_is_root)
                         p_out = name;
                     else {
-                        t_uint32 flags;
+                        uint32_t flags;
                         ptr_node->get_display(p_out, flags);
                         p_out << "/" << name;
                     }

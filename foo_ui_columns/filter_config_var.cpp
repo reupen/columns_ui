@@ -40,13 +40,13 @@ cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 
 ConfigFavourites cfg_favourites(g_guid_favouritequeries);
 
-void ConfigFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ConfigFields::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
-        t_uint32 count;
-        t_uint32 i;
+        uint32_t count;
+        uint32_t i;
         p_stream->read_lendian_t(count, p_abort);
         set_count(count);
         for (i = 0; i < count; i++) {
@@ -67,7 +67,7 @@ void ConfigFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abor
                 uint32_t extra_data_size;
                 p_stream->read_lendian_t(extra_data_size, p_abort);
 
-                pfc::array_staticsize_t<t_uint8> column_extra_data(extra_data_size);
+                pfc::array_staticsize_t<uint8_t> column_extra_data(extra_data_size);
                 p_stream->read(column_extra_data.get_ptr(), column_extra_data.get_size(), p_abort);
 
                 stream_reader_memblock_ref column_reader(column_extra_data);
@@ -78,9 +78,9 @@ void ConfigFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abor
 }
 void ConfigFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
-    p_stream->write_lendian_t((t_uint32)stream_version_current, p_abort);
-    t_uint32 i;
-    t_uint32 count = gsl::narrow<uint32_t>(get_count());
+    p_stream->write_lendian_t((uint32_t)stream_version_current, p_abort);
+    uint32_t i;
+    uint32_t count = gsl::narrow<uint32_t>(get_count());
     p_stream->write_lendian_t(count, p_abort);
     for (i = 0; i < count; i++) {
         const auto& field = (*this)[i];
@@ -102,7 +102,7 @@ void ConfigFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort
 void ConfigFields::reset()
 {
     set_count(3);
-    t_size i = 0;
+    size_t i = 0;
     (*this)[i].m_name = ((*this)[i].m_field = "Genre");
     i++;
     (*this)[i].m_field = "Album Artist;Artist";
@@ -113,8 +113,8 @@ void ConfigFields::reset()
 
 bool ConfigFields::have_name(const char* p_name)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!stricmp_utf8(p_name, (*this)[i].m_name))
             return true;
     return false;
@@ -122,8 +122,8 @@ bool ConfigFields::have_name(const char* p_name)
 
 bool ConfigFields::find_by_name(const char* p_name, size_t& p_index)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!stricmp_utf8(p_name, (*this)[i].m_name)) {
             p_index = i;
             return true;
@@ -133,7 +133,7 @@ bool ConfigFields::find_by_name(const char* p_name, size_t& p_index)
 
 void ConfigFields::fix_name(const char* p_name, pfc::string8& p_out)
 {
-    t_size i = 0;
+    size_t i = 0;
     p_out = p_name;
     while (have_name(p_out)) {
         p_out.reset();
@@ -147,24 +147,24 @@ void ConfigFields::fix_name(pfc::string8& p_name)
 
 void ConfigFavourites::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
-    t_uint32 m = gsl::narrow<t_uint32>(get_count());
-    t_uint32 v = 0;
+    uint32_t m = gsl::narrow<uint32_t>(get_count());
+    uint32_t v = 0;
     p_stream->write_lendian_t(v, p_abort);
     p_stream->write_lendian_t(m, p_abort);
-    for (t_uint32 n = 0; n < m; n++)
+    for (uint32_t n = 0; n < m; n++)
         p_stream->write_string(get_item(n), p_abort);
 }
 
-void ConfigFavourites::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ConfigFavourites::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 count;
-    t_uint32 version;
+    uint32_t count;
+    uint32_t version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= 0) {
         p_stream->read_lendian_t(count, p_abort);
         pfc::string8_fast_aggressive temp;
         temp.prealloc(32);
-        for (t_uint32 n = 0; n < count; n++) {
+        for (uint32_t n = 0; n < count; n++) {
             p_stream->read_string(temp, p_abort);
             add_item(temp);
         }
@@ -173,17 +173,17 @@ void ConfigFavourites::set_data_raw(stream_reader* p_stream, t_size p_sizehint, 
 
 bool ConfigFavourites::have_item(const char* p_item)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!strcmp(p_item, get_item(i)))
             return true;
     return false;
 }
 
-bool ConfigFavourites::find_item(const char* p_item, t_size& index)
+bool ConfigFavourites::find_item(const char* p_item, size_t& index)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!strcmp(p_item, get_item(i))) {
             index = i;
             return true;

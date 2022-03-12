@@ -24,7 +24,7 @@
     public:                                                                                                           \
         static void g_on_state_change(bool b_enabled)                                                                 \
         {                                                                                                             \
-            t_size i, ic = m_buttons.get_count(), j, jc;                                                              \
+            size_t i, ic = m_buttons.get_count(), j, jc;                                                              \
             for (i = 0; i < ic; i++) {                                                                                \
                 jc = m_buttons[i]->m_callbacks.get_count();                                                           \
                 for (j = 0; j < jc; j++) {                                                                            \
@@ -45,8 +45,8 @@
     uie::button_factory<MenuCommandButton> g_menu_command_button;                                                     \
     class MenuCommandConfigObjectNotify : public config_object_notify {                                               \
     public:                                                                                                           \
-        virtual t_size get_watched_object_count() { return 1; }                                                       \
-        virtual GUID get_watched_object(t_size p_index) { return _guid_config; }                                      \
+        virtual size_t get_watched_object_count() { return 1; }                                                       \
+        virtual GUID get_watched_object(size_t p_index) { return _guid_config; }                                      \
         virtual void on_watched_object_changed(const service_ptr_t<config_object>& p_object)                          \
         {                                                                                                             \
             bool val = false;                                                                                         \

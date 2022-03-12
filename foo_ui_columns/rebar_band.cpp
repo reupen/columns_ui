@@ -4,7 +4,7 @@
 
 namespace cui::rebar {
 
-void RebarBandState::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_type, abort_callback& aborter) const
+void RebarBandState::export_to_fcl_stream(stream_writer* writer, uint32_t fcl_type, abort_callback& aborter) const
 {
     uie::window_ptr ptr;
 
@@ -30,7 +30,7 @@ void RebarBandState::export_to_fcl_stream(stream_writer* writer, t_uint32 fcl_ty
     writer->write(w.m_data.get_ptr(), size, aborter);
 }
 
-void RebarBandState::import_from_fcl_stream(stream_reader* reader, t_uint32 fcl_type, abort_callback& aborter)
+void RebarBandState::import_from_fcl_stream(stream_reader* reader, uint32_t fcl_type, abort_callback& aborter)
 {
     reader->read_lendian_t(m_guid, aborter);
     uint32_t width_;
@@ -41,7 +41,7 @@ void RebarBandState::import_from_fcl_stream(stream_reader* reader, t_uint32 fcl_
     reader->read_lendian_t(mem_size, aborter);
 
     if (mem_size) {
-        pfc::array_t<t_uint8> data;
+        pfc::array_t<uint8_t> data;
         data.set_size(mem_size);
         reader->read(data.get_ptr(), mem_size, aborter);
 

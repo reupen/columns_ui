@@ -172,7 +172,7 @@ public:
             ConfigParam& m_param;
             static CLIPFORMAT g_clipformat();
             struct DDData {
-                t_uint32 version;
+                uint32_t version;
                 HWND wnd;
             };
             class ButtonsListDropTarget : public IDropTarget {
@@ -223,9 +223,9 @@ public:
         static INT_PTR CALLBACK g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
         BOOL ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-        void on_selection_change(t_size index);
+        void on_selection_change(size_t index);
         void populate_buttons_list();
-        void refresh_buttons_list_items(t_size index, t_size count, bool b_update_display = true);
+        void refresh_buttons_list_items(size_t index, size_t count, bool b_update_display = true);
 
         ConfigParam();
     };
@@ -262,8 +262,8 @@ public:
     static void reset_buttons(std::vector<Button>& p_buttons);
 
     void get_config(stream_writer* data, abort_callback& p_abort) const override;
-    void set_config(stream_reader* p_reader, t_size p_sizehint, abort_callback& p_abort) override;
-    void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort) override;
+    void import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     //    virtual void write_to_file(stream_writer * out);

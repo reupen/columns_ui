@@ -29,10 +29,10 @@ void FontChanges::reset(bool keep_handles)
     m_font_changes.resize(0);
 }
 
-bool FontChanges::find_font(const RawFont& raw_font, t_size& index)
+bool FontChanges::find_font(const RawFont& raw_font, size_t& index)
 {
-    t_size count = m_fonts.get_count();
-    for (t_size i = 0; i < count; i++) {
+    size_t count = m_fonts.get_count();
+    for (size_t i = 0; i < count; i++) {
         if (m_fonts[i]->m_raw_font == raw_font) {
             index = i;
             return true;
@@ -63,9 +63,9 @@ bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, co
             const char* face;
             const char* pointsize;
             const char* flags;
-            t_size face_length;
-            t_size pointsize_length;
-            t_size flags_length;
+            size_t face_length;
+            size_t pointsize_length;
+            size_t flags_length;
             p_params->get_param(0, face, face_length);
             p_params->get_param(1, pointsize, pointsize_length);
             if (b_have_flags)
@@ -118,18 +118,18 @@ bool TitleformatHookChangeFont::process_field(
     return false;
 }
 
-void g_parse_font_format_string(const wchar_t* str, t_size len, RawFont& p_out)
+void g_parse_font_format_string(const wchar_t* str, size_t len, RawFont& p_out)
 {
-    t_size ptr = 0;
+    size_t ptr = 0;
     while (ptr < len) {
-        t_size keyStart = ptr;
+        size_t keyStart = ptr;
         while (ptr < len && str[ptr] != '=' && str[ptr] != ';')
             ptr++;
-        t_size keyLen = ptr - keyStart;
+        size_t keyLen = ptr - keyStart;
 
         bool valueValid = false;
-        t_size valueStart = 0;
-        t_size valueLen = 0;
+        size_t valueStart = 0;
+        size_t valueLen = 0;
 
         if (str[ptr] == '=') {
             ptr++;

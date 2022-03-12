@@ -117,20 +117,20 @@ public:
     {
     }
 
-    t_uint32 get_command_count() override { return gsl::narrow_cast<uint32_t>(m_commands.size()); }
-    GUID get_command(t_uint32 p_index) override { return m_commands[p_index].guid; }
-    void get_name(t_uint32 p_index, pfc::string_base& p_out) override { p_out = m_commands[p_index].name; }
+    uint32_t get_command_count() override { return gsl::narrow_cast<uint32_t>(m_commands.size()); }
+    GUID get_command(uint32_t p_index) override { return m_commands[p_index].guid; }
+    void get_name(uint32_t p_index, pfc::string_base& p_out) override { p_out = m_commands[p_index].name; }
 
-    bool get_description(t_uint32 p_index, pfc::string_base& p_out) override
+    bool get_description(uint32_t p_index, pfc::string_base& p_out) override
     {
         p_out = m_commands[p_index].description;
         return true;
     }
 
     GUID get_parent() override { return m_parent; }
-    t_uint32 get_sort_priority() override { return m_sort_priority; }
+    uint32_t get_sort_priority() override { return m_sort_priority; }
 
-    bool get_display(t_uint32 p_index, pfc::string_base& p_text, t_uint32& p_flags) override
+    bool get_display(uint32_t p_index, pfc::string_base& p_text, uint32_t& p_flags) override
     {
         const auto& command = m_commands[p_index];
         p_text = command.name;
@@ -142,7 +142,7 @@ public:
         return main_window.get_wnd() != nullptr && (!command.hide_without_shift_key || shift_down);
     }
 
-    void execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) override
+    void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override
     {
         m_commands[p_index].execute_callback();
     }
@@ -169,8 +169,8 @@ static service_factory_single_t<MainMenuCommands> mainmenu_commands_playlist_fon
     groups::playlist_font_part, mainmenu_commands::sort_priority_dontcare, increase_font, decrease_font);
 
 class MainMenuLayoutPresets : public mainmenu_commands {
-    t_uint32 get_command_count() override { return gsl::narrow<uint32_t>(cfg_layout.get_presets().get_count()); }
-    GUID get_command(t_uint32 p_index) override
+    uint32_t get_command_count() override { return gsl::narrow<uint32_t>(cfg_layout.get_presets().get_count()); }
+    GUID get_command(uint32_t p_index) override
     {
         pfc::string8 name;
         pfc::string8 buff;
@@ -178,12 +178,12 @@ class MainMenuLayoutPresets : public mainmenu_commands {
         buff << "[View/Layout] " << name;
         return hasher_md5::get()->process_single_guid(buff.get_ptr(), buff.get_length());
     }
-    void get_name(t_uint32 p_index, pfc::string_base& p_out) override
+    void get_name(uint32_t p_index, pfc::string_base& p_out) override
     {
         if (p_index < cfg_layout.get_presets().get_count())
             p_out = cfg_layout.get_presets()[p_index].m_name;
     }
-    bool get_description(t_uint32 p_index, pfc::string_base& p_out) override
+    bool get_description(uint32_t p_index, pfc::string_base& p_out) override
     {
         if (p_index < cfg_layout.get_presets().get_count()) {
             pfc::string8 name;
@@ -193,7 +193,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
         }
         return false;
     }
-    bool get_display(t_uint32 p_index, pfc::string_base& p_text, t_uint32& p_flags) override
+    bool get_display(uint32_t p_index, pfc::string_base& p_text, uint32_t& p_flags) override
     {
         if (g_layout_window.get_wnd()) {
             p_flags = p_index == cfg_layout.get_active() ? flag_checked : 0;
@@ -202,7 +202,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
         }
         return false;
     }
-    void execute(t_uint32 p_index, service_ptr_t<service_base> p_callback) override
+    void execute(uint32_t p_index, service_ptr_t<service_base> p_callback) override
     {
         if (p_index < cfg_layout.get_presets().get_count()) {
             cfg_layout.save_active_preset();
@@ -211,7 +211,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     }
 
     GUID get_parent() override { return groups::view_layout_presets; }
-    t_uint32 get_sort_priority() override { return sort_priority_dontcare; }
+    uint32_t get_sort_priority() override { return sort_priority_dontcare; }
 };
 static mainmenu_commands_factory_t<MainMenuLayoutPresets> mainmenu_commands_layout_presets;
 } // namespace commands

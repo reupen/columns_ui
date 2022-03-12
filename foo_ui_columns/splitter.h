@@ -23,8 +23,8 @@ public:
     uie::splitter_item_t* get_panel(size_t index) const override;
     enum { stream_version_current = 0 };
 
-    void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
-    void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* config, size_t p_size, abort_callback& p_abort) override;
+    void import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     void get_config(stream_writer* out, abort_callback& p_abort) const override;
@@ -124,7 +124,7 @@ private:
         HWND m_wnd{nullptr};
         HWND m_wnd_child{nullptr};
         bool m_show_caption{true};
-        pfc::array_t<t_uint8> m_child_data;
+        pfc::array_t<uint8_t> m_child_data;
         SizeLimit m_size_limits;
         uie::window_ptr m_child;
         bool m_show_toggle_area{false};
@@ -164,7 +164,7 @@ private:
         bool find_by_wnd_child(HWND wnd, size_t& p_out);
     };
 
-    void read_config(stream_reader* p_reader, t_size p_size, bool is_import, abort_callback& p_abort);
+    void read_config(stream_reader* p_reader, size_t p_size, bool is_import, abort_callback& p_abort);
     void write_config(stream_writer* p_writer, bool is_export, abort_callback& p_abort) const;
 
     void start_autohide_dehide(size_t index, bool b_next_too = true);
@@ -182,8 +182,8 @@ private:
 
     void save_sizes(unsigned width, unsigned height);
 
-    bool can_resize_divider(t_size index) const;
-    bool can_resize_panel(t_size index) const;
+    bool can_resize_divider(size_t index) const;
+    bool can_resize_panel(size_t index) const;
     int override_size(size_t& panel, int delta);
 
     void refresh_children();

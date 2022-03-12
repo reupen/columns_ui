@@ -23,22 +23,22 @@ enum TrackingMode {
     track_selection,
 };
 
-bool g_track_mode_includes_now_playing(t_size mode)
+bool g_track_mode_includes_now_playing(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
 
-bool g_track_mode_includes_playlist(t_size mode)
+bool g_track_mode_includes_playlist(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-bool g_track_mode_includes_auto(t_size mode)
+bool g_track_mode_includes_auto(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-bool g_track_mode_includes_selection(t_size mode)
+bool g_track_mode_includes_selection(size_t mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
@@ -56,7 +56,7 @@ const std::vector<GUID> g_artwork_types{
 void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(m_track_mode, p_abort);
-    p_writer->write_lendian_t(static_cast<t_uint32>(current_stream_version), p_abort);
+    p_writer->write_lendian_t(static_cast<uint32_t>(current_stream_version), p_abort);
     p_writer->write_lendian_t(m_preserve_aspect_ratio, p_abort);
     p_writer->write_lendian_t(m_lock_type, p_abort);
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_selected_artwork_type_index), p_abort);
@@ -181,10 +181,10 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_LBUTTONDOWN: {
         const auto start_artwork_type_index = get_displayed_artwork_type_index();
         auto artwork_type_index = start_artwork_type_index;
-        const t_size count = g_artwork_types.size();
+        const size_t count = g_artwork_types.size();
         bool artwork_found = false;
 
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             artwork_type_index = (artwork_type_index + 1) % count;
 
             if (!refresh_image(artwork_type_index))
@@ -375,10 +375,10 @@ void ArtworkPanel::on_completion(unsigned p_code)
     m_artwork_type_override_index = m_selected_artwork_type_index;
 
     bool b_found = false;
-    t_size count = g_artwork_types.size();
+    size_t count = g_artwork_types.size();
     if (m_lock_type)
         count = std::min(size_t{1}, count);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         if (refresh_image()) {
             b_found = true;
             break;
@@ -600,11 +600,11 @@ ArtworkPanel::class_data& ArtworkPanel::get_class_data() const
         WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT | flags, 0, IDC_HAND);
 }
 
-void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callback& p_abort)
+void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort)
 {
     if (size) {
         p_reader->read_lendian_t(m_track_mode, p_abort);
-        t_uint32 version = pfc_infinite;
+        uint32_t version = pfc_infinite;
         try {
             p_reader->read_lendian_t(version, p_abort);
         } catch (exception_io_data_truncation const&) {

@@ -56,13 +56,13 @@ bool cut(const bit_array& mask)
 
     return true;
 }
-bool cut(const pfc::list_base_const_t<t_size>& indices)
+bool cut(const pfc::list_base_const_t<size_t>& indices)
 {
     const auto m_playlist_api = playlist_manager::get();
-    t_size count = indices.get_count();
-    t_size playlist_count = m_playlist_api->get_playlist_count();
+    size_t count = indices.get_count();
+    size_t playlist_count = m_playlist_api->get_playlist_count();
     bit_array_bittable mask(playlist_count);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
             mask.set(indices[i], true);
     }
@@ -80,19 +80,19 @@ bool copy(const bit_array& mask)
     HRESULT hr = OleSetClipboard(pDO.get_ptr());
     return SUCCEEDED(hr);
 }
-bool copy(const pfc::list_base_const_t<t_size>& indices)
+bool copy(const pfc::list_base_const_t<size_t>& indices)
 {
     const auto m_playlist_api = playlist_manager::get();
-    t_size count = indices.get_count();
-    t_size playlist_count = m_playlist_api->get_playlist_count();
+    size_t count = indices.get_count();
+    size_t playlist_count = m_playlist_api->get_playlist_count();
     bit_array_bittable mask(playlist_count);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         if (indices[i] < playlist_count)
             mask.set(indices[i], true);
     }
     return copy(mask);
 }
-bool paste(HWND wnd, t_size index_insert)
+bool paste(HWND wnd, size_t index_insert)
 {
     const auto m_playlist_api = playlist_manager::get();
     const auto api = ole_interaction::get();
@@ -111,12 +111,12 @@ bool paste(HWND wnd, t_size index_insert)
     if (FAILED(hr))
         return false;
 
-    t_size plcount = m_playlist_api->get_playlist_count();
+    size_t plcount = m_playlist_api->get_playlist_count();
     if (index_insert > plcount)
         index_insert = plcount;
 
-    t_size count = data.get_entry_count();
-    for (t_size i = 0; i < count; i++) {
+    size_t count = data.get_entry_count();
+    for (size_t i = 0; i < count; i++) {
         pfc::string8 name;
         metadb_handle_list handles;
         data.get_entry_name(i, name);

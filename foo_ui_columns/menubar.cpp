@@ -18,7 +18,7 @@ public:
     pfc::string8 m_name;
     pfc::array_t<TCHAR> m_name_with_accelerators;
     GUID m_guid{};
-    t_uint32 m_sort_priority{NULL};
+    uint32_t m_sort_priority{NULL};
 
     MainMenuRootGroup() = default;
 
@@ -162,7 +162,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         initialised = true;
 
         MainMenuRootGroup::g_get_root_items(m_buttons);
-        t_size button_count = m_buttons.get_count();
+        size_t button_count = m_buttons.get_count();
 
         std::vector<TBBUTTON> tb_buttons(button_count);
 
@@ -215,7 +215,7 @@ LRESULT MenuToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
 
             RECT rc = {0, 0, 0, 0};
-            t_size count = m_buttons.get_count();
+            size_t count = m_buttons.get_count();
             int cx = lpwp->cx;
             int cy = lpwp->cy;
             int extra = 0;
@@ -528,7 +528,7 @@ bool MenuToolbar::on_hooked_message(uih::MessageHookType p_type, int code, WPARA
                 pt.x = GET_X_LPARAM(((MSG*)lp)->lParam);
 
                 if (ScreenToClient(wnd_menu, &pt) && PtInRect(&toolbar, pt)) {
-                    t_size idx = SendMessage(wnd_menu, TB_HITTEST, 0, reinterpret_cast<LPARAM>(&pt));
+                    size_t idx = SendMessage(wnd_menu, TB_HITTEST, 0, reinterpret_cast<LPARAM>(&pt));
 
                     if (idx >= 0 && idx < m_buttons.get_count())
                         redrop = false;

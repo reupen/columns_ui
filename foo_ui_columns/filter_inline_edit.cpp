@@ -4,15 +4,15 @@
 namespace cui::panels::filter {
 
 bool FilterPanel::notify_before_create_inline_edit(
-    const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse)
+    const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse)
 {
     return !m_field_data.m_use_script && !m_field_data.m_fields.empty() && column == 0 && indices.get_count() == 1
         && indices[0] != 0;
 }
-bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-    pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
+bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+    pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
-    t_size indices_count = indices.get_count();
+    size_t indices_count = indices.get_count();
     if (!m_field_data.m_use_script && !m_field_data.m_fields.empty() && indices_count == 1
         && indices[0] < m_nodes.get_count()) {
         m_edit_handles = m_nodes[indices[0]].m_handles;
@@ -33,23 +33,23 @@ void FilterPanel::notify_save_inline_edit(const char* value)
         pfc::list_t<file_info_impl> infos;
         pfc::list_t<bool> mask;
         pfc::list_t<const file_info*> infos_ptr;
-        t_size count = ptrs.get_count();
+        size_t count = ptrs.get_count();
         mask.set_count(count);
         infos.set_count(count);
         // infos.set_count(count);
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             assert(ptrs[i].is_valid());
             mask[i] = !ptrs[i]->get_info(infos[i]);
             infos_ptr.add_item(&infos[i]);
             if (!mask[i]) {
                 bool b_remove = true;
-                t_size jcount = m_edit_fields.size();
-                for (t_size j = 0; j < jcount; j++) {
-                    t_size field_index = infos[i].meta_find(m_edit_fields[j]);
+                size_t jcount = m_edit_fields.size();
+                for (size_t j = 0; j < jcount; j++) {
+                    size_t field_index = infos[i].meta_find(m_edit_fields[j]);
                     if (field_index != pfc_infinite) {
-                        t_size field_count = infos[i].meta_enum_value_count(field_index);
+                        size_t field_count = infos[i].meta_enum_value_count(field_index);
 
-                        for (t_size k = 0; k < field_count; k++) {
+                        for (size_t k = 0; k < field_count; k++) {
                             const char* ptr = infos[i].meta_enum_value(field_index, k);
                             if (((!ptr && m_edit_previous_value.is_empty())
                                     || !stricmp_utf8(m_edit_previous_value, ptr))

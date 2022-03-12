@@ -33,7 +33,7 @@ public:
 
     unsigned get_type() const override { return uie::type_toolbar; }
 
-    t_uint32 get_flags() const override { return flag_default_flags_plus_transparent_background; }
+    uint32_t get_flags() const override { return flag_default_flags_plus_transparent_background; }
 
 private:
     class FontClient : public fonts::client {
@@ -74,7 +74,7 @@ private:
 
     const GUID& get_class_guid() override { return toolbars::guid_filter_search_bar; }
 
-    void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
     void get_menu_items(uie::menu_hook_t& p_hook) override;
 

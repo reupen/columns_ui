@@ -14,7 +14,7 @@ public:
     Alignment align{ALIGN_LEFT};
     PlaylistFilterType filter_type{FILTER_NONE};
     pfc::string8 filter;
-    t_uint32 parts{1};
+    uint32_t parts{1};
     bool show{true};
     pfc::string8 edit_field;
 
@@ -97,9 +97,9 @@ public:
     void set_entries_copy(ColumnListCRef entries, bool keep_reference_to_source_items = false)
     {
         // remove_all();
-        t_size count = entries.get_count();
+        size_t count = entries.get_count();
         set_count(count);
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             PlaylistViewColumn::ptr item = std::make_shared<PlaylistViewColumn>(*entries[i].get());
             if (keep_reference_to_source_items)
                 item->source_item = entries[i];
@@ -107,9 +107,9 @@ public:
         }
     }
 
-    bool move_up(t_size idx);
-    bool move_down(t_size idx);
-    bool move(t_size from, t_size to);
+    bool move_up(size_t idx);
+    bool move_down(size_t idx);
+    bool move(size_t from, size_t to);
 };
 
 class ConfigColumns

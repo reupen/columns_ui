@@ -2,7 +2,7 @@
 
 class GlobalVariable {
 public:
-    GlobalVariable(const char* p_name, t_size p_name_length, const char* p_value, t_size p_value_length)
+    GlobalVariable(const char* p_name, size_t p_name_length, const char* p_value, size_t p_value_length)
         : m_name(p_name, p_name_length)
         , m_value(p_value, p_value_length)
     {

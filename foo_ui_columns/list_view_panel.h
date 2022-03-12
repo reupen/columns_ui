@@ -43,7 +43,7 @@ public:
 protected:
     const char* get_drag_unit_plural() const override { return "tracks"; }
     const char* get_drag_unit_singular() const override { return "track"; }
-    bool should_show_drag_text(t_size selection_count) override { return true; }
+    bool should_show_drag_text(size_t selection_count) override { return true; }
     void render_get_colour_data(ColourData& p_out) override
     {
         cui::colours::helper p_helper(t_appearance_client::g_guid);

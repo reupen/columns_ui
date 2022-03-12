@@ -49,7 +49,7 @@ public:
 
     void get_name(pfc::string_base& out) const override;
 
-    void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void enable(const ui_extension::visualisation_host_ptr& p_host) override;
     void paint_background(HDC dc, const RECT* rc_client) override;
     void disable() override;
@@ -321,7 +321,7 @@ void CALLBACK SpectrumAnalyserVisualisation::g_timer_proc(HWND wnd, UINT msg, UI
 }
 
 void g_scale_value(
-    t_size source_count, t_size index, t_size dest_count, t_size& source_start, t_size& source_end, bool b_log)
+    size_t source_count, size_t index, size_t dest_count, size_t& source_start, size_t& source_end, bool b_log)
 {
     double start;
     double end;
@@ -377,17 +377,17 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                 int totalbars = rc_client->right / m_bar_width;
                 if (totalbars) {
                     const audio_sample* p_data = p_chunk->get_data();
-                    t_size sample_count = p_chunk->get_sample_count();
-                    t_size channel_count = p_chunk->get_channels();
+                    size_t sample_count = p_chunk->get_sample_count();
+                    size_t channel_count = p_chunk->get_channels();
                     for (int i = 0; i < totalbars; i++) {
                         double val = 0;
-                        t_size starti;
-                        t_size endi;
+                        size_t starti;
+                        size_t endi;
                         g_scale_value(sample_count, i, totalbars, starti, endi, m_scale == scale_logarithmic);
-                        for (t_size j = starti; j <= endi; j++) {
+                        for (size_t j = starti; j <= endi; j++) {
                             if (j < sample_count) {
                                 double sample_val = 0;
-                                for (t_size k = 0; k < channel_count; k++)
+                                for (size_t k = 0; k < channel_count; k++)
                                     sample_val += p_data[j * channel_count + k];
                                 sample_val *= 1.0 / channel_count;
                                 val = std::max(val, sample_val);
@@ -412,17 +412,17 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
                 }
             } else {
                 const audio_sample* p_data = p_chunk->get_data();
-                t_size sample_count = p_chunk->get_sample_count();
-                t_size channel_count = p_chunk->get_channels();
+                size_t sample_count = p_chunk->get_sample_count();
+                size_t channel_count = p_chunk->get_channels();
                 for (int i = 0; i < rc_client->right; i++) {
                     double val = 0;
-                    t_size starti;
-                    t_size endi;
+                    size_t starti;
+                    size_t endi;
                     g_scale_value(sample_count, i, rc_client->right, starti, endi, m_scale == scale_logarithmic);
-                    for (t_size j = starti; j <= endi; j++) {
+                    for (size_t j = starti; j <= endi; j++) {
                         if (j < sample_count) {
                             double sample_val = 0;
-                            for (t_size k = 0; k < channel_count; k++)
+                            for (size_t k = 0; k < channel_count; k++)
                                 sample_val += p_data[j * channel_count + k];
                             sample_val *= 1.0 / channel_count;
                             val = std::max(val, sample_val);
@@ -468,7 +468,7 @@ void SpectrumAnalyserVisualisation::get_name(pfc::string_base& out) const
     out.set_string("Spectrum analyser");
 }
 
-void SpectrumAnalyserVisualisation::set_config(stream_reader* r, t_size p_size, abort_callback& p_abort)
+void SpectrumAnalyserVisualisation::set_config(stream_reader* r, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
         r->read_lendian_t<COLORREF>(p_abort);
@@ -506,16 +506,16 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
     {
         p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_configure(this)));
     }
-    void set_config(stream_reader* r, t_size p_size, abort_callback& p_abort) override
+    void set_config(stream_reader* r, size_t p_size, abort_callback& p_abort) override
     {
         if (p_size) {
-            t_uint32 m_frame;
+            uint32_t m_frame;
             r->read_lendian_t(m_frame, p_abort);
             {
                 set_frame_style(m_frame);
                 unsigned size = 0;
                 r->read_lendian_t(size, p_abort);
-                pfc::array_t<t_uint8> m_data;
+                pfc::array_t<uint8_t> m_data;
                 m_data.set_size(size);
                 r->read(m_data.get_ptr(), size, p_abort);
                 set_vis_data(m_data.get_ptr(), m_data.get_size());
@@ -524,7 +524,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
     }
     void get_config(stream_writer* data, abort_callback& p_abort) const override
     {
-        pfc::array_t<t_uint8> m_data;
+        pfc::array_t<uint8_t> m_data;
         data->write_lendian_t(get_frame_style(), p_abort);
         get_vis_data(m_data);
         data->write_lendian_t(gsl::narrow<uint32_t>(m_data.get_size()), p_abort);
@@ -544,7 +544,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
             uie::visualization::create_by_guid(
                 get_visualisation_guid(), reinterpret_cast<uie::visualisation_ptr&>(p_temp));
 
-        pfc::array_t<t_uint8> m_data;
+        pfc::array_t<uint8_t> m_data;
         if (!p_temp->b_active) {
             try {
                 abort_callback_dummy p_abort;

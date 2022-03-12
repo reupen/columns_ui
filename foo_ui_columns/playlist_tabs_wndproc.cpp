@@ -308,7 +308,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         recycler_ids.set_count(recycler_count);
                         HMENU recycler_popup = CreatePopupMenu();
                         pfc::string8_fast_aggressive temp;
-                        for (t_size i = 0; i < recycler_count; i++) {
+                        for (size_t i = 0; i < recycler_count; i++) {
                             playlist_api->recycler_get_name(i, temp);
                             recycler_ids[i] = playlist_api->recycler_get_id(i); // Menu Message Loop !
                             uAppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_BASE + i, temp);
@@ -376,11 +376,11 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                             break;
                         case ID_CUT:
                             if (b_index_valid)
-                                playlist_manager_utils::cut(pfc::list_single_ref_t<t_size>(idx));
+                                playlist_manager_utils::cut(pfc::list_single_ref_t<size_t>(idx));
                             break;
                         case ID_COPY:
                             if (b_index_valid)
-                                playlist_manager_utils::copy(pfc::list_single_ref_t<t_size>(idx));
+                                playlist_manager_utils::copy(pfc::list_single_ref_t<size_t>(idx));
                             break;
                         case ID_PASTE:
                             if (b_index_valid)

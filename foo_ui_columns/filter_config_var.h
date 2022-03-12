@@ -12,7 +12,7 @@ public:
 
     enum { sub_stream_version_current = 0 };
 
-    void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
+    void set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort) override;
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
     void reset();
 
@@ -29,10 +29,10 @@ class ConfigFavourites
     , public pfc::list_t<pfc::string8> {
 public:
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
-    void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
+    void set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort) override;
 
     bool have_item(const char* p_item);
-    bool find_item(const char* p_item, t_size& index);
+    bool find_item(const char* p_item, size_t& index);
 
     explicit ConfigFavourites(const GUID& p_guid) : cfg_var(p_guid) {}
 };

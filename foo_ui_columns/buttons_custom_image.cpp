@@ -16,7 +16,7 @@ void ButtonsToolbar::Button::CustomImage::get_path(pfc::string8& p_out) const
     // pfc::string8 fullPath;
 
     if (b_relative_to_drive) {
-        t_size index_colon = fb2kexe.find_first(':');
+        size_t index_colon = fb2kexe.find_first(':');
         if (index_colon != pfc_infinite)
             p_out.add_string(fb2kexe.get_ptr(), index_colon + 1);
     } else if (!b_absolute)
@@ -80,7 +80,7 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
             t_filesize read2 = 0;
             // t_filesize p_start_data = p_file->get_position(p_abort);
             pfc::array_t<char> name;
-            pfc::array_t<t_uint8> data;
+            pfc::array_t<uint8_t> data;
             while (read2 /*p_file->get_position(p_abort) - p_start_data*/ < size /* && !p_file->is_eof(p_abort)*/) {
                 DWORD size_data;
                 Identifier id_data;
@@ -161,7 +161,7 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version
             t_filesize read2 = 0;
             // t_filesize p_start_data = p_file->get_position(p_abort);
             pfc::array_t<char> name;
-            pfc::array_t<t_uint8> data;
+            pfc::array_t<uint8_t> data;
             while (read2 /*p_file->get_position(p_abort) - p_start_data*/ < size /* && !p_file->is_eof(p_abort)*/) {
                 DWORD size_data;
                 Identifier id_data;
@@ -270,7 +270,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
 
                 const auto imagesize = gsl::narrow<uint32_t>(p_image->get_size(p_abort));
 
-                const auto size = gsl::narrow<uint32_t>(imagesize + name.length() + 4 * sizeof(t_uint32));
+                const auto size = gsl::narrow<uint32_t>(imagesize + name.length() + 4 * sizeof(uint32_t));
                 p_file.write_lendian_t(size, p_abort);
 
                 p_file.write_lendian_t(IMAGE_NAME, p_abort);
@@ -279,7 +279,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
 
                 p_file.write_lendian_t(IMAGE_DATA, p_abort);
                 p_file.write_lendian_t((unsigned)imagesize, p_abort);
-                pfc::array_t<t_uint8> temp;
+                pfc::array_t<uint8_t> temp;
                 temp.set_size((unsigned)imagesize);
                 p_image->read(temp.get_ptr(), temp.get_size(), p_abort);
                 p_file.write(temp.get_ptr(), temp.get_size(), p_abort);
@@ -315,7 +315,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
 
                 p_file.write_lendian_t(IMAGE_DATA, p_abort);
                 p_file.write_lendian_t(imagesize, p_abort);
-                pfc::array_t<t_uint8> temp;
+                pfc::array_t<uint8_t> temp;
                 temp.set_size(imagesize);
                 p_image->read(temp.get_ptr(), temp.get_size(), p_abort);
                 p_file.write(temp.get_ptr(), temp.get_size(), p_abort);

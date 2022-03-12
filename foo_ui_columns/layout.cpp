@@ -381,7 +381,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
     }
 }
 
-bool LayoutWindow::import_config_to_object(stream_reader* p_reader, t_size psize, t_uint32 mode,
+bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize, uint32_t mode,
     ConfigLayout::Preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     // uie::splitter_item_ptr item = new uie::splitter_item_simple_t;
@@ -390,8 +390,8 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, t_size psize
     p_reader->read_lendian_t(guid, p_abort);
     p_reader->read_string(name, p_abort);
 
-    pfc::array_t<t_uint8> data, conf;
-    t_uint32 size;
+    pfc::array_t<uint8_t> data, conf;
+    uint32_t size;
     p_reader->read_lendian_t(size, p_abort);
     data.set_size(size);
     p_reader->read(data.get_ptr(), size, p_abort);
@@ -434,14 +434,14 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, t_size psize
 }
 
 void LayoutWindow::export_config(
-    stream_writer* p_out, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
+    stream_writer* p_out, uint32_t mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
-    p_out->write_lendian_t((t_uint32)stream_version, p_abort);
-    t_size count = cfg_layout.get_presets().get_count();
+    p_out->write_lendian_t((uint32_t)stream_version, p_abort);
+    size_t count = cfg_layout.get_presets().get_count();
     p_out->write_lendian_t(gsl::narrow<uint32_t>(cfg_layout.get_active()), p_abort);
     p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         uie::splitter_item_ptr item;
         cfg_layout.get_preset(i, item);
         pfc::string8 name;
@@ -464,8 +464,8 @@ void LayoutWindow::export_config(
                     }
                     __get_panel_list_recur(ptr, panels);
                     ptr->export_config(&writer, p_abort);
-                    p_out->write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
-                    p_out->write(writer.m_data.get_ptr(), (t_uint32)writer.m_data.get_size(), p_abort);
+                    p_out->write_lendian_t((uint32_t)writer.m_data.get_size(), p_abort);
+                    p_out->write(writer.m_data.get_ptr(), (uint32_t)writer.m_data.get_size(), p_abort);
                 }
             } else {
                 p_out->write_lendian_t(item->get_panel_guid(), p_abort);
@@ -485,8 +485,8 @@ void LayoutWindow::export_config(
                     __get_panel_list_recur(ptr, panels);
                 }
 
-                p_out->write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
-                p_out->write(writer.m_data.get_ptr(), (t_uint32)writer.m_data.get_size(), p_abort);
+                p_out->write_lendian_t((uint32_t)writer.m_data.get_size(), p_abort);
+                p_out->write(writer.m_data.get_ptr(), (uint32_t)writer.m_data.get_size(), p_abort);
             }
         } catch (const pfc::exception& ex) {
             pfc::string_formatter formatter;
@@ -568,9 +568,9 @@ public:
 
 void g_get_panels_info(const pfc::list_t<uie::window::ptr>& p_panels, uie::window_info_list_simple& p_out)
 {
-    t_size count = p_panels.get_count();
+    size_t count = p_panels.get_count();
 
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         uie::window_info_simple info;
         uie::window::ptr l = p_panels[i];
 
@@ -590,7 +590,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     if (m_trans_fill.get_wnd())
         return;
 
-    t_size hierarchy_count = p_data.m_hierarchy.get_count();
+    size_t hierarchy_count = p_data.m_hierarchy.get_count();
     if (hierarchy_count == 0)
         throw pfc::exception_bug_check();
 
@@ -611,7 +611,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     HWND wnd_over = m_trans_fill.create(get_wnd(), uih::WindowPosition(rc));
     cui::helpers::WindowEnum_t WindowEnum(GetAncestor(get_wnd(), GA_ROOT));
     WindowEnum.run();
-    t_size count_owned = WindowEnum.m_wnd_list.get_count();
+    size_t count_owned = WindowEnum.m_wnd_list.get_count();
     if (count_owned)
         SetWindowPos(wnd_over, WindowEnum.m_wnd_list[count_owned - 1], 0, 0, 0, 0,
             SWP_NOSIZE | SWP_NOMOVE | SWP_NOACTIVATE | SWP_NOOWNERZORDER);
@@ -640,7 +640,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     const UINT ID_CHANGE_SPLITTER_BASE = ID_CHANGE_BASE_SPLITTER_BASE + gsl::narrow<UINT>(panels.get_count());
     const UINT ID_ADD_BASE = ID_CHANGE_SPLITTER_BASE + gsl::narrow<UINT>(panels.get_count());
 
-    t_size index = pfc_infinite;
+    size_t index = pfc_infinite;
     const auto found_in_parent
         = p_container.is_valid() && p_container->find_by_ptr(p_data.m_hierarchy[hierarchy_count - 1], index);
     const auto splitter_item_in_clipboard = cui::splitter_utils::is_splitter_item_in_clipboard();
@@ -743,17 +743,17 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         if (clipboard_splitter_item)
             p_container->insert_panel(index + 1, clipboard_splitter_item.get());
     } else if (cmd >= ID_CHANGE_BASE && cmd < panels.get_count() + ID_CHANGE_BASE) {
-        t_size panel_index = cmd - ID_CHANGE_BASE;
+        size_t panel_index = cmd - ID_CHANGE_BASE;
         uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
         si->set_panel_guid(panels[panel_index].guid);
         set_child(si.get_ptr());
     } else if (cmd >= ID_PARENT_ADD_BASE && cmd < panels.get_count() + ID_PARENT_ADD_BASE) {
-        t_size panel_index = cmd - ID_PARENT_ADD_BASE;
+        size_t panel_index = cmd - ID_PARENT_ADD_BASE;
         uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
         si->set_panel_guid(panels[panel_index].guid);
         p_container->add_panel(si.get_ptr());
     } else if (cmd >= ID_CHANGE_BASE_SPLITTER_BASE && cmd < panels.get_count() + ID_CHANGE_BASE_SPLITTER_BASE) {
-        t_size panel_index = cmd - ID_CHANGE_BASE_SPLITTER_BASE;
+        size_t panel_index = cmd - ID_CHANGE_BASE_SPLITTER_BASE;
 
         uie::window_ptr window;
         service_ptr_t<uie::splitter_window> splitter;
@@ -785,12 +785,12 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
             }
         }
     } else if (cmd >= ID_ADD_BASE && cmd < panels.get_count() + ID_ADD_BASE) {
-        t_size panel_index = cmd - ID_ADD_BASE;
+        size_t panel_index = cmd - ID_ADD_BASE;
         uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
         si->set_panel_guid(panels[panel_index].guid);
         p_splitter->add_panel(si.get_ptr());
     } else if (cmd >= ID_CHANGE_SPLITTER_BASE && cmd < panels.get_count() + ID_CHANGE_SPLITTER_BASE) {
-        t_size panel_index = cmd - ID_CHANGE_SPLITTER_BASE;
+        size_t panel_index = cmd - ID_CHANGE_SPLITTER_BASE;
 
         uie::window_ptr window;
         service_ptr_t<uie::splitter_window> splitter;

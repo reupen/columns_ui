@@ -54,26 +54,26 @@ ui_extension::window_factory<DropDownListToolbar<PlaybackOrderToolbarArgs>> play
 class OrderToolbarPlaylistCallback : public playlist_callback_single_static {
 public:
     void on_items_added(
-        t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
+        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
     {
     }
-    void on_items_reordered(const t_size* p_order, t_size p_count) override {}
-    void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
-    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
+    void on_items_reordered(const size_t* p_order, size_t p_count) override {}
+    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
+    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
     void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override {}
-    void on_item_focus_change(t_size p_from, t_size p_to) override {}
+    void on_item_focus_change(size_t p_from, size_t p_to) override {}
     void on_items_modified(const bit_array& p_mask) override {}
     void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override {}
     void on_items_replaced(const bit_array& p_mask,
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
     {
     }
-    void on_item_ensure_visible(t_size p_idx) override {}
+    void on_item_ensure_visible(size_t p_idx) override {}
     void on_playlist_switch() override {}
-    void on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) override {}
+    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
     void on_playlist_locked(bool p_locked) override {}
     void on_default_format_changed() override {}
-    void on_playback_order_changed(t_size p_new_index) override
+    void on_playback_order_changed(size_t p_new_index) override
     {
         DropDownListToolbar<PlaybackOrderToolbarArgs>::s_update_active_item_safe();
     }

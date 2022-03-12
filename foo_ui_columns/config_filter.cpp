@@ -5,10 +5,10 @@
 
 class FieldList : public uih::ListView {
 public:
-    t_size m_edit_index, m_edit_column;
+    size_t m_edit_index, m_edit_column;
     FieldList() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite) {}
 
-    void execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl) override
+    void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override
     {
         activate_inline_editing(index, column);
     }
@@ -22,14 +22,14 @@ public:
         set_columns({{"Name", client_width / 3}, {"Field", client_width * 2 / 3}});
     }
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override
+        const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override
     {
         return column <= 1 && indices.get_count() == 1;
     }
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-        pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override
+    bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override
     {
-        t_size indices_count = indices.get_count();
+        size_t indices_count = indices.get_count();
         if (indices_count == 1 && indices[0] < cui::panels::filter::cfg_field_list.get_count()) {
             m_edit_index = indices[0];
             m_edit_column = column;
@@ -79,10 +79,10 @@ static class TabFilterFields : public PreferencesTab {
 public:
     TabFilterFields() = default;
 
-    void get_insert_items(t_size base, t_size count, pfc::list_t<uih::ListView::InsertItem>& items)
+    void get_insert_items(size_t base, size_t count, pfc::list_t<uih::ListView::InsertItem>& items)
     {
         items.set_count(count);
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             items[i].m_subitems.resize(2);
             items[i].m_subitems[0] = cui::panels::filter::cfg_field_list[base + i].m_name;
             items[i].m_subitems[1] = cui::panels::filter::cfg_field_list[base + i].m_field;
@@ -95,7 +95,7 @@ public:
 
         m_field_list.remove_items(bit_array_true());
         pfc::list_t<uih::ListView::InsertItem> items;
-        t_size count = cui::panels::filter::cfg_field_list.get_count();
+        size_t count = cui::panels::filter::cfg_field_list.get_count();
         get_insert_items(0, count, items);
         m_field_list.insert_items(0, items.get_count(), items.get_ptr());
 
@@ -130,8 +130,8 @@ public:
             } break;
             case IDC_UP: {
                 if (m_field_list.get_selection_count(2) == 1) {
-                    t_size index = 0;
-                    t_size count = m_field_list.get_item_count();
+                    size_t index = 0;
+                    size_t count = m_field_list.get_item_count();
                     while (!m_field_list.get_item_selected(index) && index < count)
                         index++;
                     if (index && cui::panels::filter::cfg_field_list.get_count()) {
@@ -147,8 +147,8 @@ public:
             } break;
             case IDC_DOWN: {
                 if (m_field_list.get_selection_count(2) == 1) {
-                    t_size index = 0;
-                    t_size count = m_field_list.get_item_count();
+                    size_t index = 0;
+                    size_t count = m_field_list.get_item_count();
                     while (!m_field_list.get_item_selected(index) && index < count)
                         index++;
                     if (index + 1 < count && index + 1 < cui::panels::filter::cfg_field_list.get_count()) {
@@ -166,7 +166,7 @@ public:
                 cui::panels::filter::Field temp;
                 temp.m_name = "<enter name here>";
                 temp.m_field = "<enter field here>";
-                t_size index = cui::panels::filter::cfg_field_list.add_item(temp);
+                size_t index = cui::panels::filter::cfg_field_list.add_item(temp);
                 cui::panels::filter::FilterPanel::g_on_new_field(temp);
 
                 pfc::list_t<uih::ListView::InsertItem> items;
@@ -182,8 +182,8 @@ public:
                     bit_array_bittable mask(m_field_list.get_item_count());
                     m_field_list.get_selection_state(mask);
                     // bool b_found = false;
-                    t_size index = 0;
-                    t_size count = m_field_list.get_item_count();
+                    size_t index = 0;
+                    size_t count = m_field_list.get_item_count();
                     while (index < count) {
                         if (mask[index])
                             break;
@@ -193,7 +193,7 @@ public:
                         cui::panels::filter::cfg_field_list.remove_by_idx(index);
                         m_field_list.remove_item(index);
                         cui::panels::filter::FilterPanel::g_on_field_removed(index);
-                        t_size new_count = m_field_list.get_item_count();
+                        size_t new_count = m_field_list.get_item_count();
                         if (new_count) {
                             if (index < new_count)
                                 m_field_list.set_item_selected_single(index);

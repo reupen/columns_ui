@@ -60,7 +60,7 @@ class SettingsDataSet : public cui::fcl::dataset {
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel settings"; }
     const GUID& get_group() const override { return behaviour_appearance_group_id; }
     const GUID& get_guid() const override { return settings_data_set_id; }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -79,12 +79,12 @@ class SettingsDataSet : public cui::fcl::dataset {
         out.write_item(static_cast<uint32_t>(SettingIdentifier::SortOnAddScript), cfg_sort_string);
         out.write_item(static_cast<uint32_t>(SettingIdentifier::VerticalItemPadding), cfg_vertical_item_padding);
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
 
         while (reader.get_remaining()) {
             reader.read_item(element_id);
@@ -153,7 +153,7 @@ class FavouritesDataSet : public cui::fcl::dataset {
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter search favourites"; }
     const GUID& get_group() const override { return favourites_group_id; }
     const GUID& get_guid() const override { return favourites_data_set_id; }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         const auto count = gsl::narrow<uint32_t>(cfg_favourites.get_count());
@@ -168,7 +168,7 @@ class FavouritesDataSet : public cui::fcl::dataset {
             p_writer->write(data.get_ptr(), size, p_abort);
         }
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         uint32_t count{};
@@ -199,12 +199,12 @@ class FavouritesDataSet : public cui::fcl::dataset {
         return data;
     }
 
-    pfc::string8 read_favourite(stream_reader* reader, t_size size, abort_callback& aborter)
+    pfc::string8 read_favourite(stream_reader* reader, size_t size, abort_callback& aborter)
     {
         pfc::string8 favourite;
         fbh::fcl::Reader fcl_reader(reader, size, aborter);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
 
         while (fcl_reader.get_remaining()) {
             fcl_reader.read_item(element_id);
@@ -231,7 +231,7 @@ class FieldsDataSet : public cui::fcl::dataset {
     const GUID& get_group() const override { return fields_group_id; }
     const GUID& get_guid() const override { return fields_data_set_id; }
 
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         const auto count = gsl::narrow<uint32_t>(cfg_field_list.get_count());
@@ -247,7 +247,7 @@ class FieldsDataSet : public cui::fcl::dataset {
         }
     }
 
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         uint32_t count{};
@@ -280,12 +280,12 @@ class FieldsDataSet : public cui::fcl::dataset {
         return data;
     }
 
-    Field read_field(stream_reader* reader, t_size size, abort_callback& aborter)
+    Field read_field(stream_reader* reader, size_t size, abort_callback& aborter)
     {
         Field field;
         fbh::fcl::Reader fcl_reader(reader, size, aborter);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
 
         while (fcl_reader.get_remaining()) {
             fcl_reader.read_item(element_id);

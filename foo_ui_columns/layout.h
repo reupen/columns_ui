@@ -4,7 +4,7 @@ class ConfigLayout : public cfg_var {
 public:
     class Preset {
     public:
-        pfc::array_t<t_uint8> m_val;
+        pfc::array_t<uint8_t> m_val;
         GUID m_guid{};
         pfc::string_simple m_name;
         void write(stream_writer* out, abort_callback& p_abort);
@@ -19,16 +19,16 @@ public:
     /** from configuration, not from ui */
     const pfc::list_base_const_t<Preset>& get_presets() const;
 
-    void get_preset(t_size index, uie::splitter_item_ptr& p_out);
-    void set_preset(t_size index, const uie::splitter_item_t* item);
-    void get_preset_name(t_size index, pfc::string_base& p_out);
-    void set_preset_name(t_size index, const char* ptr, t_size len);
+    void get_preset(size_t index, uie::splitter_item_ptr& p_out);
+    void set_preset(size_t index, const uie::splitter_item_t* item);
+    void get_preset_name(size_t index, pfc::string_base& p_out);
+    void set_preset_name(size_t index, const char* ptr, size_t len);
 
     void get_active_preset_for_use(uie::splitter_item_ptr& p_out);
-    t_size delete_preset(size_t index);
+    size_t delete_preset(size_t index);
 
-    t_size add_preset(const char* p_name, t_size len = pfc_infinite);
-    t_size add_preset(const Preset& item);
+    size_t add_preset(const char* p_name, size_t len = pfc_infinite);
+    size_t add_preset(const Preset& item);
     void set_active_preset(size_t index);
     void save_active_preset();
 
@@ -68,8 +68,8 @@ public:
     bool set_focus();
     void show_window();
 
-    void export_config(stream_writer* p_out, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
-    bool import_config_to_object(stream_reader* p_reader, t_size size, t_uint32 mode, ConfigLayout::Preset& p_out,
+    void export_config(stream_writer* p_out, uint32_t mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
+    bool import_config_to_object(stream_reader* p_reader, size_t size, uint32_t mode, ConfigLayout::Preset& p_out,
         pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 
     void show_menu_access_keys();
@@ -121,7 +121,7 @@ private:
 
     uie::window_ptr m_child;
     GUID m_child_guid{columns_ui::panels::guid_playlist_view_v2};
-    pfc::array_t<t_uint8> m_child_data;
+    pfc::array_t<uint8_t> m_child_data;
     HWND m_child_wnd{nullptr};
     bool m_layout_editing_active{false};
     LiveEditData m_live_edit_data;

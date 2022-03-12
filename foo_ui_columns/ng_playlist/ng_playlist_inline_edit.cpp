@@ -59,16 +59,16 @@ public:
 } // namespace
 
 bool PlaylistView::notify_before_create_inline_edit(
-    const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse)
+    const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse)
 {
     return (!b_source_mouse || main_window::config_get_inline_metafield_edit_mode() != main_window::mode_disabled)
         && column < m_edit_fields.get_count() && strlen(m_edit_fields[column]);
 }
 
-bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-    pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
+bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+    pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
-    const t_size indices_count = indices.get_count();
+    const size_t indices_count = indices.get_count();
     m_edit_handles.remove_all();
     m_edit_handles.set_count(indices_count);
 
@@ -76,14 +76,14 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<t_size
 
     m_edit_field = m_edit_fields[column];
 
-    for (t_size i = 0; i < indices_count; i++) {
+    for (size_t i = 0; i < indices_count; i++) {
         if (!m_playlist_api->activeplaylist_get_item_handle(m_edit_handles[i], indices[i]))
             return false;
     }
 
     bool matching = true;
 
-    for (t_size i = 0; i < indices_count; i++) {
+    for (size_t i = 0; i < indices_count; i++) {
         metadb_info_container::ptr info_container = m_edit_handles[i]->get_info_ref();
 
         auto& info = info_container->info();

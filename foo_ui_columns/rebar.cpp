@@ -48,34 +48,34 @@ void create_rebar()
 }
 
 void ConfigRebar::export_config(
-    stream_writer* p_out, t_uint32 mode, fcl::t_export_feedback& feedback, abort_callback& p_abort)
+    stream_writer* p_out, uint32_t mode, fcl::t_export_feedback& feedback, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
-    p_out->write_lendian_t((t_uint32)stream_version, p_abort);
+    p_out->write_lendian_t((uint32_t)stream_version, p_abort);
 
     if (g_rebar_window) {
         g_rebar_window->refresh_band_configs();
         set_rebar_info(g_rebar_window->get_band_states());
     }
 
-    t_size count = m_entries.size();
+    size_t count = m_entries.size();
     p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         feedback.add_required_panel(m_entries[i].m_guid);
         m_entries[i].export_to_fcl_stream(p_out, mode, p_abort);
     }
 }
 
 void ConfigRebar::import_config(
-    stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
+    stream_reader* p_reader, size_t size, uint32_t mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     std::vector<RebarBandState> new_entries;
     p_reader->read_lendian_t(version, p_abort);
     if (version > 0)
         throw exception_io_unsupported_format();
     const auto count = p_reader->read_lendian_t<uint32_t>(p_abort);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         RebarBandState item;
         item.import_from_fcl_stream(p_reader, mode, p_abort);
 
@@ -199,7 +199,7 @@ void ConfigRebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
     // Extra data added in version 0.5.0
     out->write_lendian_t(static_cast<uint32_t>(StreamVersion::VersionCurrent), p_abort);
 
-    for (t_size n = 0; n < num; n++) {
+    for (size_t n = 0; n < num; n++) {
         stream_writer_memblock extraData;
         m_entries[n].write_extra(&extraData, p_abort);
         out->write_lendian_t(gsl::narrow<uint32_t>(extraData.m_data.get_size()), p_abort);
@@ -233,7 +233,7 @@ void ConfigRebar::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort
         for (uint32_t i = 0; i < itemCount; i++) {
             uint32_t extraDataSize;
             p_reader->read_lendian_t(extraDataSize, p_abort);
-            pfc::array_staticsize_t<t_uint8> columnExtraData(extraDataSize);
+            pfc::array_staticsize_t<uint8_t> columnExtraData(extraDataSize);
             p_reader->read(columnExtraData.get_ptr(), columnExtraData.get_size(), p_abort);
             stream_reader_memblock_ref columnReader(columnExtraData);
             m_entries[i].read_extra(&columnReader, p_abort);

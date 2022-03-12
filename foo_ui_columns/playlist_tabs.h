@@ -8,7 +8,7 @@ void g_on_autohide_tabs_change();
 void g_on_multiline_tabs_change();
 void g_on_tabs_font_change();
 
-void remove_playlist_helper(t_size index);
+void remove_playlist_helper(size_t index);
 constexpr unsigned SWITCH_TIMER_ID = 670u;
 
 class PlaylistTabs
@@ -57,7 +57,7 @@ private:
     unsigned m_switch_playlist{0};
     bool initialised{false};
 
-    t_int32 m_mousewheel_delta{0};
+    int32_t m_mousewheel_delta{0};
     UINT ID_CUSTOM_BASE{NULL};
 
     service_ptr_t<contextmenu_manager> p_manager;
@@ -163,11 +163,11 @@ public:
     size_t get_maximum_panel_count() const override;
     uie::splitter_item_t* get_panel(size_t index) const override;
 
-    void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     void refresh_child_data(abort_callback& aborter = fb2k::noAbort) const;
-    void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* config, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* out, abort_callback& p_abort) const override;
 
     void on_child_position_change();
@@ -176,7 +176,7 @@ private:
     static HFONT g_font;
 
     GUID m_child_guid{};
-    mutable pfc::array_t<t_uint8> m_child_data;
+    mutable pfc::array_t<uint8_t> m_child_data;
     service_ptr_t<WindowHost> m_host;
     ui_extension::window_ptr m_child;
     HWND m_child_wnd{nullptr};

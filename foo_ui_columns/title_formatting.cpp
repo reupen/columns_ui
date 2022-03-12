@@ -40,7 +40,7 @@ private:
 };
 
 bool FieldProviderTitleformatHook::process_field(
-    titleformat_text_out* p_out, const char* p_name, t_size p_name_length, bool& p_found_flag)
+    titleformat_text_out* p_out, const char* p_name, size_t p_name_length, bool& p_found_flag)
 {
     const auto iter = m_field_map.find(std::string_view(p_name, p_name_length));
 
