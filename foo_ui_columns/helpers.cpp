@@ -36,7 +36,7 @@ void g_compare_file_with_bytes(
                 if (p_abort.is_aborting())
                     throw exception_aborted();
 
-                t_int64 delta64 = bytes - done;
+                int64_t delta64 = bytes - done;
                 if (delta64 > BUFSIZE)
                     delta64 = BUFSIZE;
                 auto delta = (unsigned)delta64;
