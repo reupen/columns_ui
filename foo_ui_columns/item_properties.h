@@ -25,22 +25,22 @@ public:
 
 class FieldsList : public uih::ListView {
 public:
-    t_size m_edit_index, m_edit_column;
+    size_t m_edit_index, m_edit_column;
     pfc::list_t<Field>& m_fields;
     explicit FieldsList(pfc::list_t<Field>& p_fields);
 
-    void get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& items);
+    void get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& items);
     void notify_on_create() override;
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override;
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-        pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
+        const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
 
 private:
 };
 
-t_size g_get_info_section_id_by_name(const char* p_name);
+size_t g_get_info_section_id_by_name(const char* p_name);
 
 class ItemPropertiesColoursClient : public colours::client {
 public:
@@ -112,7 +112,7 @@ public:
     unsigned get_type() const override;
 
     enum { config_version_current = 5 };
-    void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     bool have_config_popup() const override;
@@ -157,12 +157,12 @@ public:
     void notify_on_kill_focus(HWND wnd_receiving) override;
     bool notify_on_keyboard_keydown_copy() override;
     bool notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM lp) override;
-    void notify_on_column_size_change(t_size index, int new_width) override;
+    void notify_on_column_size_change(size_t index, int new_width) override;
     bool notify_before_create_inline_edit(
-        const pfc::list_base_const_t<t_size>& indices, size_t column, bool b_source_mouse) override;
+        const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
     static void g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out);
-    bool notify_create_inline_edit(const pfc::list_base_const_t<t_size>& indices, size_t column,
-        pfc::string_base& p_text, t_size& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
+    bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
+        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
 
     // UI SEL API
@@ -215,7 +215,7 @@ private:
     uih::IntegerAndDpi<int32_t> m_column_field_width{125};
 
     uint32_t m_edge_style;
-    t_size m_edit_column, m_edit_index;
+    size_t m_edit_column, m_edit_index;
     pfc::string8 m_edit_field;
     metadb_handle_list m_edit_handles;
 };

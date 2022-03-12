@@ -40,7 +40,7 @@ cfg_bool cfg_showsearchclearbutton(g_guid_showsearchclearbutton, true);
 
 ConfigFavourites cfg_favourites(g_guid_favouritequeries);
 
-void ConfigFields::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ConfigFields::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
@@ -102,7 +102,7 @@ void ConfigFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort
 void ConfigFields::reset()
 {
     set_count(3);
-    t_size i = 0;
+    size_t i = 0;
     (*this)[i].m_name = ((*this)[i].m_field = "Genre");
     i++;
     (*this)[i].m_field = "Album Artist;Artist";
@@ -113,8 +113,8 @@ void ConfigFields::reset()
 
 bool ConfigFields::have_name(const char* p_name)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!stricmp_utf8(p_name, (*this)[i].m_name))
             return true;
     return false;
@@ -122,8 +122,8 @@ bool ConfigFields::have_name(const char* p_name)
 
 bool ConfigFields::find_by_name(const char* p_name, size_t& p_index)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!stricmp_utf8(p_name, (*this)[i].m_name)) {
             p_index = i;
             return true;
@@ -133,7 +133,7 @@ bool ConfigFields::find_by_name(const char* p_name, size_t& p_index)
 
 void ConfigFields::fix_name(const char* p_name, pfc::string8& p_out)
 {
-    t_size i = 0;
+    size_t i = 0;
     p_out = p_name;
     while (have_name(p_out)) {
         p_out.reset();
@@ -155,7 +155,7 @@ void ConfigFavourites::get_data_raw(stream_writer* p_stream, abort_callback& p_a
         p_stream->write_string(get_item(n), p_abort);
 }
 
-void ConfigFavourites::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ConfigFavourites::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
     t_uint32 count;
     t_uint32 version;
@@ -173,17 +173,17 @@ void ConfigFavourites::set_data_raw(stream_reader* p_stream, t_size p_sizehint, 
 
 bool ConfigFavourites::have_item(const char* p_item)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!strcmp(p_item, get_item(i)))
             return true;
     return false;
 }
 
-bool ConfigFavourites::find_item(const char* p_item, t_size& index)
+bool ConfigFavourites::find_item(const char* p_item, size_t& index)
 {
-    t_size count = get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = get_count();
+    for (size_t i = 0; i < count; i++)
         if (!strcmp(p_item, get_item(i))) {
             index = i;
             return true;

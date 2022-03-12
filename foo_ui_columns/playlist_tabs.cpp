@@ -13,7 +13,7 @@ cfg_guid cfg_default_playlist(
 const GUID g_guid_playlist_switcher_tabs_font
     = {0x942c36a4, 0x4e28, 0x4cea, {0x96, 0x44, 0xf2, 0x23, 0xc9, 0xa8, 0x38, 0xec}};
 
-void remove_playlist_helper(t_size index)
+void remove_playlist_helper(size_t index)
 {
     const auto api = playlist_manager::get();
     if (index == api->get_active_playlist()) {
@@ -38,8 +38,8 @@ void PlaylistTabs::get_supported_panels(
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
         (static_cast<WindowHost*>(ptr.get_ptr()))->set_this(this);
-    t_size count = p_windows.get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = p_windows.get_count();
+    for (size_t i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
@@ -438,7 +438,7 @@ void PlaylistTabs::get_config(stream_writer* out, abort_callback& p_abort) const
     out->write(m_child_data.get_ptr(), m_child_data.get_size(), p_abort);
 }
 
-void PlaylistTabs::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
+void PlaylistTabs::set_config(stream_reader* config, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
         config->read_lendian_t(m_child_guid, p_abort);
@@ -472,7 +472,7 @@ void PlaylistTabs::export_config(stream_writer* p_writer, abort_callback& p_abor
     p_writer->write(data.get_ptr(), data.get_size(), p_abort);
 }
 
-void PlaylistTabs::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void PlaylistTabs::import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
         p_reader->read_lendian_t(m_child_guid, p_abort);

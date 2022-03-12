@@ -140,7 +140,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
     *pdwEffect = DROPEFFECT_NONE;
     if (check_do(pDataObj /*, pdwEffect*/)) {
         *pdwEffect = DROPEFFECT_MOVE;
-        const t_size old_index = m_button_list_view->get_selected_item_single(); // meh
+        const size_t old_index = m_button_list_view->get_selected_item_single(); // meh
 
         HitTestResult hi;
 
@@ -149,7 +149,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
 
         m_button_list_view->hit_test_ex(ptt, hi);
 
-        t_size new_index = pfc_infinite;
+        size_t new_index = pfc_infinite;
 
         if (hi.category == HitTestCategory::OnUnobscuredItem || hi.category == HitTestCategory::OnGroupHeader
             || hi.category == HitTestCategory::OnItemObscuredBelow || hi.category == HitTestCategory::NotOnItem)
@@ -165,7 +165,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
             const int step = new_index > old_index ? 1 : -1;
             mmh::Permutation perm(button_count);
 
-            for (t_size i = old_index; i != new_index; i += step)
+            for (size_t i = old_index; i != new_index; i += step)
                 std::swap(perm[i], perm[i + step]);
 
             destructive_reorder(m_button_list_view->m_param.m_buttons, perm);

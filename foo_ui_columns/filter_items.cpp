@@ -13,24 +13,24 @@ void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc
         sel_data.set_count(m_nodes.get_count());
         pfc::bit_array_var_table selection(sel_data.get_ptr(), sel_data.get_count());
         get_selection_state(selection);
-        t_size count = sel_data.get_count();
+        size_t count = sel_data.get_count();
         b_all_was_selected = selection[0];
-        for (t_size i = 1; i < count; i++)
+        for (size_t i = 1; i < count; i++)
             if (selection[i])
                 previous_nodes.emplace_back(m_nodes[i].m_value);
     }
 
     populate_list(handles);
 
-    t_size count = previous_nodes.size();
+    size_t count = previous_nodes.size();
     pfc::array_t<bool> new_selection;
     new_selection.set_count(m_nodes.get_count());
     new_selection.fill_null();
     if (count || b_all_was_selected) {
         bool b_found = false;
         new_selection[0] = b_all_was_selected;
-        for (t_size i = 0; i < count; i++) {
-            t_size index;
+        for (size_t i = 0; i < count; i++) {
+            size_t index;
             if (mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare, previous_nodes[i].c_str(), 1,
                     index, get_sort_direction())) {
                 new_selection[index] = true;
@@ -75,12 +75,12 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
             i++;
         const auto handles_count = 1 + i - start;
 
-        t_size index_item;
+        size_t index_item;
         const auto exact_match = mmh::partial_bsearch(m_nodes.get_count() - 1, m_nodes, Node::g_compare,
             p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
 
         if (exact_match) {
-            const t_size current_count = m_nodes[index_item].m_handles.get_count();
+            const size_t current_count = m_nodes[index_item].m_handles.get_count();
             const bool selected = !nothing_or_all_node_selected && get_item_selected(index_item);
 
             m_nodes[index_item].m_handles.set_count(current_count + handles_count);
@@ -179,7 +179,7 @@ void FilterPanel::on_items_added(const pfc::list_base_const_t<metadb_handle_ptr>
 {
     pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
-    t_size index = windows.find_item(this);
+    size_t index = windows.find_item(this);
     if (index == 0 || index == pfc_infinite) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles_copy{handles};
         add_nodes(handles_copy);
@@ -190,7 +190,7 @@ void FilterPanel::on_items_removed(const pfc::list_base_const_t<metadb_handle_pt
 {
     pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
-    t_size index = windows.find_item(this);
+    size_t index = windows.find_item(this);
     if (index == 0 || index == pfc_infinite) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles_copy{handles};
         remove_nodes(handles_copy);
@@ -286,7 +286,7 @@ void FilterPanel::on_items_modified(const pfc::list_base_const_t<metadb_handle_p
 {
     pfc::ptr_list_t<FilterPanel> windows;
     get_windows(windows);
-    t_size index = windows.find_item(this);
+    size_t index = windows.find_item(this);
     if (index == 0 || index == pfc_infinite) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles_copy{handles};
         update_nodes(handles_copy);
@@ -299,8 +299,8 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
     class HandleInfo {
     public:
         metadb_info_container::ptr m_info;
-        t_size m_value_count{};
-        t_size m_field_index{};
+        size_t m_value_count{};
+        size_t m_field_index{};
     };
 
     if (m_field_data.is_empty())
@@ -332,8 +332,8 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
         infos.set_count(track_count);
         HandleInfo* p_infos = infos.get_ptr();
 
-        t_size counter = 0;
-        t_size field_count = m_field_data.m_fields.size();
+        size_t counter = 0;
+        size_t field_count = m_field_data.m_fields.size();
 
         for (size_t i{0}; i < track_count; i++) {
             if (tracks_ptr[i]->get_info_ref(p_infos[i].m_info)) {
@@ -417,7 +417,7 @@ void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& han
         PFC_ASSERT(j < m_nodes.get_count());
 
         p_nodes[j].m_handles.set_count(handles_count);
-        for (t_size k{0}; k < handles_count; k++)
+        for (size_t k{0}; k < handles_count; k++)
             p_nodes[j].m_handles[k] = p_data[start + k].m_handle;
         p_nodes[j].m_value = p_data[start].m_text.get_ptr();
         j++;
@@ -428,7 +428,7 @@ void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& han
     insert_items(0, items.get_count(), items.get_ptr());
 }
 
-void FilterPanel::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
+void FilterPanel::notify_sort_column(size_t index, bool b_descending, bool b_selection_only)
 {
     const auto node_count = m_nodes.get_count();
     if (node_count > 2) {

@@ -30,7 +30,7 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
             if (!b_root)
                 name_parts.emplace_back(name_part);
 
-            for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
+            for (size_t i = 0, count = ptr_node->get_children_count(); i < count; i++) {
                 mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
                 __populate_mainmenu_dynamic_recur(data, ptr_child, name_parts, false);
             }

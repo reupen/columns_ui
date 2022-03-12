@@ -21,7 +21,7 @@ class LegacyFontsDataSet : public fcl::dataset {
         abort_callback& p_abort) const override
     {
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         const auto api = fb2k::std_api_get<fonts::manager>();

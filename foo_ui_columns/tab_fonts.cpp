@@ -53,8 +53,8 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         ComboBox_AddString(m_wnd_colours_element, L"Common (list items)");
         ComboBox_AddString(m_wnd_colours_element, L"Common (labels)");
 
-        t_size count = m_fonts_client_list.get_count();
-        for (t_size i = 0; i < count; i++)
+        size_t count = m_fonts_client_list.get_count();
+        for (size_t i = 0; i < count; i++)
             ComboBox_AddString(
                 m_wnd_colours_element, pfc::stringcvt::string_os_from_utf8(m_fonts_client_list[i].m_name));
 
@@ -124,8 +124,8 @@ void TabFonts::on_font_changed()
         const auto index_element = ComboBox_GetCurSel(m_wnd_colours_element);
         if (index_element <= 1) {
             g_font_manager_data.g_on_common_font_changed(1 << index_element);
-            t_size count = m_fonts_client_list.get_count();
-            for (t_size i = 0; i < count; i++) {
+            size_t count = m_fonts_client_list.get_count();
+            for (size_t i = 0; i < count; i++) {
                 FontManagerData::entry_ptr_t p_data;
                 g_font_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
                 if (index_element == 0 && p_data->font_mode == cui::fonts::font_mode_common_items) {
@@ -151,7 +151,7 @@ void TabFonts::update_change()
 
 void TabFonts::get_font(LOGFONT& lf)
 {
-    t_size index_element = ComboBox_GetCurSel(m_wnd_colours_element);
+    size_t index_element = ComboBox_GetCurSel(m_wnd_colours_element);
     if (index_element <= 1)
         fb2k::std_api_get<cui::fonts::manager>()->get_font(cui::fonts::font_type_t(index_element), lf);
     else
@@ -161,8 +161,8 @@ void TabFonts::get_font(LOGFONT& lf)
 void TabFonts::update_mode_combobox()
 {
     ComboBox_ResetContent(m_wnd_colours_mode);
-    t_size index;
-    t_size index_element = ComboBox_GetCurSel(m_wnd_colours_element);
+    size_t index;
+    size_t index_element = ComboBox_GetCurSel(m_wnd_colours_element);
     if (index_element <= 1) {
         index = ComboBox_AddString(m_wnd_colours_mode, L"System");
         ComboBox_SetItemData(m_wnd_colours_mode, index, cui::fonts::font_mode_system);

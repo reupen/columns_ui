@@ -43,11 +43,11 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
-        t_size count = g_columns.get_count();
+        size_t count = g_columns.get_count();
         pfc::string8 temp;
         out.write_raw(gsl::narrow<uint32_t>(count));
 
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
             w.write_item(identifier_name, g_columns[i]->name);
@@ -68,13 +68,13 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
             out.write_item(identifier_column, sw.m_data.get_ptr(), gsl::narrow<uint32_t>(sw.m_data.get_size()));
         }
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         const auto count = reader.read_item<uint32_t>();
         ColumnList newcolumns;
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             t_uint32 column_id;
             t_uint32 column_size;
 
@@ -199,12 +199,12 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
         fbh::fcl::Writer groups_writer(&groups_sw, p_abort);
 
         const pfc::list_base_const_t<Group>& groups = g_groups.get_groups();
-        t_size count = groups.get_count();
+        size_t count = groups.get_count();
         pfc::string8 temp;
 
         groups_writer.write_raw(gsl::narrow<uint32_t>(count));
 
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             const Group& group = groups[i];
             stream_writer_memblock sw;
             fbh::fcl::Writer w(&sw, p_abort);
@@ -219,7 +219,7 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
         out.write_item(
             identifier_groups, groups_sw.m_data.get_ptr(), gsl::narrow<uint32_t>(groups_sw.m_data.get_size()));
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -249,7 +249,7 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
             //    break;
             case identifier_groups: {
                 const auto count = reader.read_item<uint32_t>();
-                for (t_size i = 0; i < count; i++) {
+                for (size_t i = 0; i < count; i++) {
                     t_uint32 group_id;
                     t_uint32 group_size;
 
@@ -336,7 +336,7 @@ class PlaylistViewMiscDataSet : public fcl::dataset {
         out.write_item(identifier_use_dates, static_cast<int32_t>(true));
         out.write_item(identifier_use_globals, cfg_global);
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -406,7 +406,7 @@ class TitlesDataSet : public fcl::dataset {
         out.write_item(identifier_notification_icon_tooltip, main_window::config_notification_icon_script.get());
         out.write_item(identifier_main_window_title, main_window::config_main_window_title_script.get());
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);

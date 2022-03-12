@@ -147,8 +147,8 @@ void TabStackPanel::get_supported_panels(
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
         (static_cast<TabStackSplitterHost*>(ptr.get_ptr()))->set_window_ptr(this);
-    t_size count = p_windows.get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = p_windows.get_count();
+    for (size_t i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
@@ -352,7 +352,7 @@ bool TabStackPanel::set_config_item(size_t index, const GUID& p_type, stream_rea
     return false;
 }
 
-void TabStackPanel::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
+void TabStackPanel::set_config(stream_reader* config, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
         t_uint32 version;
@@ -394,7 +394,7 @@ void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abo
     }
 }
 
-void TabStackPanel::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void TabStackPanel::import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     t_uint32 version;
     p_reader->read_lendian_t(version, p_abort);
@@ -491,8 +491,8 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetWindowPos(m_wnd_tabs, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
         refresh_children();
 
-        t_size activetab = m_active_tab == pfc_infinite ? 0 : m_active_tab;
-        t_size activeindex = 0;
+        size_t activetab = m_active_tab == pfc_infinite ? 0 : m_active_tab;
+        size_t activeindex = 0;
         if (activetab < m_panels.get_count())
             activeindex = m_active_panels.find_item(m_panels[activetab]);
         if (activeindex == pfc_infinite)
@@ -581,7 +581,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         unsigned IDM_EXT_BASE = IDM_BASE;
 
         HWND child = ChildWindowFromPointEx(wnd, pt_client, CWP_SKIPTRANSPARENT | CWP_SKIPINVISIBLE);
-        t_size index = pfc_infinite;
+        size_t index = pfc_infinite;
 
         bool b_found = false;
         if (HWND(wp) == m_wnd_tabs) {
@@ -707,7 +707,7 @@ void TabStackPanel::refresh_children()
                         }
                     }
 
-                    t_size index = m_active_panels.find_item(m_panels[n]);
+                    size_t index = m_active_panels.find_item(m_panels[n]);
                     bool b_newtab = index == pfc_infinite;
                     if (b_newtab)
                         index = m_active_panels.insert_item(m_panels[n], index);
@@ -789,7 +789,7 @@ void TabStackPanel::replace_panel(size_t index, const uie::splitter_item_t* p_it
         if (get_wnd())
             m_panels[index]->destroy();
 
-        t_size activeindex = m_active_panels.find_item(m_panels[index]);
+        size_t activeindex = m_active_panels.find_item(m_panels[index]);
         if (activeindex != pfc_infinite) {
             m_active_panels.remove_by_idx(activeindex);
             TabCtrl_DeleteItem(m_wnd_tabs, activeindex);
@@ -807,7 +807,7 @@ void TabStackPanel::replace_panel(size_t index, const uie::splitter_item_t* p_it
 void TabStackPanel::remove_panel(size_t index)
 {
     if (index < m_panels.get_count()) {
-        t_size activeindex = m_active_panels.find_item(m_panels[index]);
+        size_t activeindex = m_active_panels.find_item(m_panels[index]);
         if (activeindex != pfc_infinite) {
             m_active_panels.remove_by_idx(activeindex);
             TabCtrl_DeleteItem(m_wnd_tabs, activeindex);
@@ -871,10 +871,10 @@ void TabStackPanel::on_size_changed(unsigned width, unsigned height)
         dwp = DeferWindowPos(dwp, m_wnd_tabs, nullptr, 0, 0, width, height, SWP_NOZORDER);
     // SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 
-    t_size count = m_active_panels.get_count();
+    size_t count = m_active_panels.get_count();
     RECT rc = {0, 0, (LONG)width, (LONG)height};
     adjust_rect(FALSE, &rc);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         if (m_active_panels[i]->m_wnd)
             dwp = DeferWindowPos(dwp, m_active_panels[i]->m_wnd, nullptr, rc.left, rc.top, rc.right - rc.left,
                 rc.bottom - rc.top, SWP_NOZORDER);
@@ -888,7 +888,7 @@ void TabStackPanel::on_size_changed()
     GetClientRect(get_wnd(), &rc);
     on_size_changed(RECT_CX(rc), RECT_CY(rc));
 }
-void TabStackPanel::on_active_tab_changing(t_size index_from)
+void TabStackPanel::on_active_tab_changing(size_t index_from)
 {
     if (index_from != pfc_infinite && index_from < m_active_panels.get_count() && m_active_panels[index_from]->m_wnd) {
         // if (GetFocus() == m_active_panels[index_from]->m_wnd || IsChild(m_active_panels[index_from]->m_wnd,
@@ -900,7 +900,7 @@ void TabStackPanel::on_active_tab_changing(t_size index_from)
         ShowWindow(m_active_panels[index_from]->m_wnd, SW_HIDE);
     }
 }
-void TabStackPanel::on_active_tab_changed(t_size index_to)
+void TabStackPanel::on_active_tab_changed(size_t index_to)
 {
     if (index_to < m_active_panels.get_count() && m_active_panels[index_to]->m_wnd) {
         ShowWindow(m_active_panels[index_to]->m_wnd, SW_SHOW);

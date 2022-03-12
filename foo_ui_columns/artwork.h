@@ -43,15 +43,15 @@ public:
 
     enum { playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch };
     void on_playlist_switch() override;
-    void on_item_focus_change(t_size p_from, t_size p_to) override {}
+    void on_item_focus_change(size_t p_from, size_t p_to) override {}
 
     void on_items_added(
-        t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
+        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
     {
     }
-    void on_items_reordered(const t_size* p_order, t_size p_count) override {}
-    void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
-    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override {}
+    void on_items_reordered(const size_t* p_order, size_t p_count) override {}
+    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
+    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
     void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override;
     void on_items_modified(const bit_array& p_mask) override {}
     void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override {}
@@ -59,13 +59,13 @@ public:
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
     {
     }
-    void on_item_ensure_visible(t_size p_idx) override {}
+    void on_item_ensure_visible(size_t p_idx) override {}
 
-    void on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) override {}
+    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
     void on_playlist_locked(bool p_locked) override {}
 
     void on_default_format_changed() override {}
-    void on_playback_order_changed(t_size p_new_index) override {}
+    void on_playback_order_changed(size_t p_new_index) override {}
 
     void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) override;
 
@@ -153,7 +153,7 @@ private:
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;
     enum { current_stream_version = 3 };
 
-    void set_config(stream_reader* p_reader, t_size size, abort_callback& p_abort) override;
+    void set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;

@@ -200,7 +200,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
 
             const auto playlist_api = playlist_manager::get();
 
-            t_size idx = playlist_api->activeplaylist_get_item_count();
+            size_t idx = playlist_api->activeplaylist_get_item_count();
             uih::ListView::HitTestResult hi;
 
             {
@@ -226,7 +226,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                 pfc::list_t<bool> selection;
                 std::vector<size_t> permutation_move;
 
-                t_size active_playlist = playlist_api->get_active_playlist();
+                size_t active_playlist = playlist_api->get_active_playlist();
 
                 if (p_playlist->m_dragging) {
                     selection.set_size(playlist_api->playlist_get_item_count(p_playlist->m_dragging_initial_playlist));
@@ -237,9 +237,9 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
 
                     if (p_playlist->m_dragging_initial_playlist == active_playlist) {
                         if (*pdwEffect == DROPEFFECT_MOVE) {
-                            t_size count = selection.get_count();
+                            size_t count = selection.get_count();
                             size_t counter{};
-                            for (t_size i = 0; i < count; i++) {
+                            for (size_t i = 0; i < count; i++) {
                                 if (selection[i]) {
                                     permutation_move.insert(permutation_move.begin() + idx + counter, i);
                                     ++counter;
@@ -269,7 +269,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                     playlist_api->activeplaylist_reorder_items(permutation_move.data(), permutation_move.size());
                 } else {
                     playlist_api->activeplaylist_clear_selection();
-                    t_size index_insert = playlist_api->activeplaylist_insert_items(idx, data, bit_array_true());
+                    size_t index_insert = playlist_api->activeplaylist_insert_items(idx, data, bit_array_true());
                     playlist_api->activeplaylist_set_focus_item(index_insert);
                     if (p_playlist->m_dragging && *pdwEffect == DROPEFFECT_MOVE) {
                         playlist_api->playlist_remove_items(p_playlist->m_dragging_initial_playlist,

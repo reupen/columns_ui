@@ -27,7 +27,7 @@ public:
 
 private:
     void get_data_raw(stream_writer* stream, abort_callback& aborter) override;
-    void set_data_raw(stream_reader* stream, t_size size_hint, abort_callback& aborter) override;
+    void set_data_raw(stream_reader* stream, size_t size_hint, abort_callback& aborter) override;
 
     FontDescription m_font_description{};
 };

@@ -241,7 +241,7 @@ void ConfigLayout::Preset::set(const uie::splitter_item_t* item)
     item->get_panel_config_to_array(m_val, true);
 }
 
-void ConfigLayout::get_preset(t_size index, uie::splitter_item_ptr& p_out)
+void ConfigLayout::get_preset(size_t index, uie::splitter_item_ptr& p_out)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
         g_layout_window.get_child(p_out);
@@ -250,7 +250,7 @@ void ConfigLayout::get_preset(t_size index, uie::splitter_item_ptr& p_out)
     }
 }
 
-void ConfigLayout::set_preset(t_size index, const uie::splitter_item_t* item)
+void ConfigLayout::set_preset(size_t index, const uie::splitter_item_t* item)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
         g_layout_window.set_child(item);
@@ -260,11 +260,11 @@ void ConfigLayout::set_preset(t_size index, const uie::splitter_item_t* item)
     }
 }
 
-t_size ConfigLayout::add_preset(const Preset& item)
+size_t ConfigLayout::add_preset(const Preset& item)
 {
     return m_presets.add_item(item);
 }
-t_size ConfigLayout::add_preset(const char* p_name, t_size len)
+size_t ConfigLayout::add_preset(const char* p_name, size_t len)
 {
     Preset temp;
     temp.m_name.set_string(p_name, len);
@@ -291,7 +291,7 @@ void ConfigLayout::set_active_preset(size_t index)
     }
 }
 
-t_size ConfigLayout::delete_preset(size_t index)
+size_t ConfigLayout::delete_preset(size_t index)
 {
     if (index < m_presets.get_count()) {
         if (index == m_active)
@@ -334,13 +334,13 @@ void ConfigLayout::reset_presets()
     }
 }
 
-void ConfigLayout::get_preset_name(t_size index, pfc::string_base& p_out)
+void ConfigLayout::get_preset_name(size_t index, pfc::string_base& p_out)
 {
     if (index < m_presets.get_count()) {
         p_out = m_presets[index].m_name;
     }
 }
-void ConfigLayout::set_preset_name(t_size index, const char* ptr, t_size len)
+void ConfigLayout::set_preset_name(size_t index, const char* ptr, size_t len)
 {
     if (index < m_presets.get_count()) {
         m_presets[index].m_name.set_string(ptr, len);

@@ -108,8 +108,8 @@ void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
         }
         ColoursClientList m_colours_client_list;
         ColoursClientList::g_get_list(m_colours_client_list);
-        t_size count = m_colours_client_list.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = m_colours_client_list.get_count();
+        for (size_t i = 0; i < count; i++) {
             ColourManagerData::entry_ptr_t p_data;
             g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
             if (p_data->colour_mode == cui::colours::colour_mode_global)
@@ -127,8 +127,8 @@ void on_global_colours_change()
     g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
     ColoursClientList m_colours_client_list;
     ColoursClientList::g_get_list(m_colours_client_list);
-    t_size count = m_colours_client_list.get_count();
-    for (t_size i = 0; i < count; i++) {
+    size_t count = m_colours_client_list.get_count();
+    for (size_t i = 0; i < count; i++) {
         ColourManagerData::entry_ptr_t p_data;
         g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
         if (p_data->colour_mode == cui::colours::colour_mode_global)

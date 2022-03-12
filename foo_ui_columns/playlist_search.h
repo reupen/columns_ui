@@ -148,7 +148,7 @@ public:
                 bool ctrl_down = 0 != (GetKeyState(VK_CONTROL) & KF_UP);
                 if (ctrl_down) {
                     metadb_handle_ptr mh;
-                    t_size focus = api->playlist_get_focus_item(active);
+                    size_t focus = api->playlist_get_focus_item(active);
                     if (focus != pfc_infinite)
                         api->queue_add_item_playlist(active, focus);
                 } else {

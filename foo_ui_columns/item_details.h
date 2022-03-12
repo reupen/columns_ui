@@ -24,7 +24,7 @@ extern cfg_uint cfg_item_details_vertical_alignment;
 extern cfg_bool cfg_item_details_word_wrapping;
 
 struct LineSize {
-    t_size m_length{};
+    size_t m_length{};
     int m_width{0};
     int m_height{0};
 };
@@ -45,7 +45,7 @@ class RawFontChange {
 public:
     RawFont m_font_data;
     bool m_reset{false};
-    t_size m_character_index{NULL};
+    size_t m_character_index{NULL};
 
     RawFontChange() = default;
 };
@@ -71,7 +71,7 @@ class FontChanges {
 public:
     class FontChange {
     public:
-        t_size m_text_index{};
+        size_t m_text_index{};
         Font::Ptr m_font;
     };
 
@@ -79,7 +79,7 @@ public:
     std::vector<FontChange> m_font_changes;
     Font::Ptr m_default_font;
 
-    bool find_font(const RawFont& raw_font, t_size& index);
+    bool find_font(const RawFont& raw_font, size_t& index);
 
     void reset(bool keep_handles = false);
 };
@@ -94,7 +94,7 @@ DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, cons
 
 std::wstring g_get_text_line_lengths(const wchar_t* text, LineLengths& line_lengths);
 
-void g_parse_font_format_string(const wchar_t* str, t_size len, RawFont& p_out);
+void g_parse_font_format_string(const wchar_t* str, size_t len, RawFont& p_out);
 std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChanges& p_out);
 void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& font_changes);
 
@@ -113,7 +113,7 @@ public:
 
 private:
     pfc::string8 m_default_font_face;
-    t_size m_default_font_size;
+    size_t m_default_font_size;
 };
 
 class ItemDetails
@@ -144,13 +144,13 @@ public:
         track_selection,
     };
 
-    bool g_track_mode_includes_now_playing(t_size mode);
+    bool g_track_mode_includes_now_playing(size_t mode);
 
-    bool g_track_mode_includes_plalist(t_size mode);
+    bool g_track_mode_includes_plalist(size_t mode);
 
-    bool g_track_mode_includes_auto(t_size mode);
+    bool g_track_mode_includes_auto(size_t mode);
 
-    bool g_track_mode_includes_selection(t_size mode);
+    bool g_track_mode_includes_selection(size_t mode);
 
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
@@ -232,7 +232,7 @@ public:
     unsigned get_type() const override;
 
     enum { stream_version_current = 2 };
-    void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
     bool have_config_popup() const override;
     bool show_config_popup(HWND wnd_parent) override;
@@ -257,25 +257,25 @@ public:
     // PL
     enum { playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch };
     void on_playlist_switch() override;
-    void on_item_focus_change(t_size p_from, t_size p_to) override;
+    void on_item_focus_change(size_t p_from, size_t p_to) override;
 
     void on_items_added(
-        t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
-    void on_items_reordered(const t_size* p_order, t_size p_count) override;
-    void on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
-    void on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) override;
+        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
+    void on_items_reordered(const size_t* p_order, size_t p_count) override;
+    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
+    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
     void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override;
     void on_items_modified(const bit_array& p_mask) override;
     void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override;
     void on_items_replaced(const bit_array& p_mask,
         const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override;
-    void on_item_ensure_visible(t_size p_idx) override;
+    void on_item_ensure_visible(size_t p_idx) override;
 
-    void on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) override;
+    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override;
     void on_playlist_locked(bool p_locked) override;
 
     void on_default_format_changed() override;
-    void on_playback_order_changed(t_size p_new_index) override;
+    void on_playback_order_changed(size_t p_new_index) override;
 
     // ML
     void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
@@ -335,7 +335,7 @@ private:
     void update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position);
 
     void on_size();
-    void on_size(t_size cx, t_size cy);
+    void on_size(size_t cx, size_t cy);
 
     void on_font_change();
     void on_colours_change();

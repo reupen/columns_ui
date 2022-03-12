@@ -35,9 +35,9 @@ class ColoursDataSet : public fcl::dataset {
         {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
-            t_size count = g_colour_manager_data.m_entries.get_count();
+            size_t count = g_colour_manager_data.m_entries.get_count();
             mem.write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
-            for (t_size i = 0; i < count; i++) {
+            for (size_t i = 0; i < count; i++) {
                 stream_writer_memblock mem2;
                 g_colour_manager_data.m_entries[i]->_export(&mem2, p_abort);
                 out2.write_item(
@@ -47,7 +47,7 @@ class ColoursDataSet : public fcl::dataset {
                 identifier_client_entries, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -76,7 +76,7 @@ class ColoursDataSet : public fcl::dataset {
                 g_colour_manager_data.m_entries.remove_all();
                 g_colour_manager_data.m_entries.set_count(count);
 
-                for (t_size i = 0; i < count; i++) {
+                for (size_t i = 0; i < count; i++) {
                     t_uint32 element_id2;
                     t_uint32 element_size2;
                     reader2.read_item(element_id2);

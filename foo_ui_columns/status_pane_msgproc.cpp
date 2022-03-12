@@ -155,7 +155,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (playing1.get_length()) {
                 pfc::string_list_impl playingstrings;
                 g_split_string_by_crlf(playing1.get_ptr(), playingstrings);
-                t_size lines = playingstrings.get_count();
+                size_t lines = playingstrings.get_count();
                 if (lines)
                     text_out_colours_tab(dc.get(), playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_line_1,
                         false, default_text_colour, true, false, uih::ALIGN_LEFT);

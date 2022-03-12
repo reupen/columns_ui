@@ -25,14 +25,14 @@ std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChange
 
             if ((b_tab = *ptr == '\t') || *ptr == '\x7') {
                 RawFontChange temp;
-                t_size count = ptr - start;
+                size_t count = ptr - start;
                 ptr++;
 
                 if (b_tab) {
                     const wchar_t* size_start = ptr;
                     while (*ptr && *ptr != '\x7' && *ptr != '\t')
                         ptr++;
-                    t_size size_len = ptr - size_start;
+                    size_t size_len = ptr - size_start;
 
                     temp.m_font_data.m_point = mmh::strtoul_n(size_start, size_len);
                     if ((b_tab = *ptr == '\t') || *ptr == '\x7')
@@ -42,7 +42,7 @@ std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChange
                         const wchar_t* format_start = ptr;
                         while (*ptr && *ptr != '\x7')
                             ptr++;
-                        t_size format_len = ptr - format_start;
+                        size_t format_len = ptr - format_start;
                         if (*ptr == '\x7') {
                             ptr++;
                             g_parse_font_format_string(format_start, format_len, temp.m_font_data);
@@ -62,7 +62,7 @@ std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChange
 
 void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& font_changes)
 {
-    t_size count = raw_font_changes.get_count();
+    size_t count = raw_font_changes.get_count();
     if (count) {
         pfc::list_t<bool> fonts_to_keep_mask;
 
@@ -72,7 +72,7 @@ void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& fon
         HDC dc = GetDC(nullptr);
         LOGFONT lf_base{};
 
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             if (raw_font_changes[i].m_reset) {
                 font_changes.m_font_changes[i].m_font = font_changes.m_default_font;
             } else {
@@ -86,7 +86,7 @@ void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& fon
                 if (raw_font_changes[i].m_font_data.m_italic)
                     lf.lfItalic = TRUE;
 
-                t_size index;
+                size_t index;
                 if (font_changes.find_font(raw_font_changes[i].m_font_data, index)) {
                     if (index < fonts_to_keep_mask.get_count())
                         fonts_to_keep_mask[index] = true;
@@ -134,7 +134,7 @@ std::wstring g_get_text_line_lengths(const wchar_t* text, LineLengths& line_leng
     const wchar_t* ptr = text;
     while (*ptr) {
         const wchar_t* start = ptr;
-        t_size counter = 0;
+        size_t counter = 0;
         while (*ptr && *ptr != '\r' && *ptr != '\n') {
             if (!g_text_ptr_skip_font_change(ptr)) {
                 ptr++;
@@ -366,14 +366,14 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
 
     SetTextColor(dc, cr_text);
 
-    const t_size font_change_count = font_changes.m_font_changes.size();
-    t_size font_index = 0;
+    const size_t font_change_count = font_changes.m_font_changes.size();
+    size_t font_index = 0;
 
-    const t_size line_count = wrapped_line_sizes.size();
-    t_size start_line = 0;
+    const size_t line_count = wrapped_line_sizes.size();
+    size_t start_line = 0;
 
     RECT rc_line = rc_placement;
-    const t_size y_start_pos = rc_placement.top < 0 ? 0 - rc_placement.top : 0;
+    const size_t y_start_pos = rc_placement.top < 0 ? 0 - rc_placement.top : 0;
 
     for (size_t line_index{0}, running_height{0}; line_index < line_count; line_index++) {
         running_height += wrapped_line_sizes[line_index].m_height;
@@ -393,7 +393,7 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
             text_ptr += wrapped_line_sizes[line_index].m_length;
 
             while (font_index < font_change_count
-                && gsl::narrow<t_size>(text_ptr - text) > font_changes.m_font_changes[font_index].m_text_index)
+                && gsl::narrow<size_t>(text_ptr - text) > font_changes.m_font_changes[font_index].m_text_index)
                 font_index++;
         }
     }
@@ -436,8 +436,8 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
         if (rc_line.top > rc_placement.bottom)
             break;
 
-        t_size line_font_change_count = 0;
-        t_size num_characters_remaining = wrapped_line_sizes[line_index].m_length;
+        size_t line_font_change_count = 0;
+        size_t num_characters_remaining = wrapped_line_sizes[line_index].m_length;
 
         while ((font_index + line_font_change_count < font_change_count
             && (text_ptr - text + num_characters_remaining)
@@ -465,13 +465,13 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
 
         while (line_font_change_count) {
             int end_x_position = NULL;
-            t_size num_characters_to_render = num_characters_remaining;
-            if (gsl::narrow<t_size>(text_ptr - text) < font_changes.m_font_changes[font_index].m_text_index)
+            size_t num_characters_to_render = num_characters_remaining;
+            if (gsl::narrow<size_t>(text_ptr - text) < font_changes.m_font_changes[font_index].m_text_index)
                 num_characters_to_render = font_changes.m_font_changes[font_index].m_text_index - (text_ptr - text);
             else if (line_font_change_count > 1)
                 num_characters_to_render = font_changes.m_font_changes[font_index + 1].m_text_index - (text_ptr - text);
 
-            if (gsl::narrow<t_size>(text_ptr - text) >= font_changes.m_font_changes[font_index].m_text_index) {
+            if (gsl::narrow<size_t>(text_ptr - text) >= font_changes.m_font_changes[font_index].m_text_index) {
                 HFONT fnt = SelectFont(dc, font_changes.m_font_changes[font_index].m_font->m_font.get());
                 if (!was_font_changed) {
                     fnt_old = fnt;

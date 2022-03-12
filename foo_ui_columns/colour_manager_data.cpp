@@ -42,8 +42,8 @@ void ColourManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
         p_out = m_global_entry;
         return;
     }
-    t_size count = m_entries.get_count();
-    for (t_size i = 0; i < count; i++) {
+    size_t count = m_entries.get_count();
+    for (size_t i = 0; i < count; i++) {
         if (m_entries[i]->guid == p_guid) {
             p_out = m_entries[i];
             return;
@@ -54,7 +54,7 @@ void ColourManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
     m_entries.add_item(p_out);
 }
 
-void ColourManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void ColourManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
@@ -62,7 +62,7 @@ void ColourManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint,
         m_global_entry->read(version, p_stream, p_abort);
         const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
         m_entries.remove_all();
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             entry_ptr_t ptr = std::make_shared<Entry>();
             ptr->read(version, p_stream, p_abort);
             m_entries.add_item(ptr);
@@ -81,9 +81,9 @@ void ColourManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_
     }
 
     pfc::array_t<bool> mask;
-    t_size i;
-    t_size count = m_entries.get_count();
-    t_size counter = 0;
+    size_t i;
+    size_t count = m_entries.get_count();
+    size_t counter = 0;
     mask.set_count(count);
     for (i = 0; i < count; i++)
         if (mask[i] = clients.have_item(m_entries[i]->guid))
@@ -132,7 +132,7 @@ void ColourManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, a
 }
 
 void ColourManagerData::Entry::import(
-    stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort)
+    stream_reader* p_reader, size_t stream_size, t_uint32 type, abort_callback& p_abort)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
     t_uint32 element_id;

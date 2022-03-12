@@ -16,7 +16,7 @@ void ButtonsToolbar::Button::CustomImage::get_path(pfc::string8& p_out) const
     // pfc::string8 fullPath;
 
     if (b_relative_to_drive) {
-        t_size index_colon = fb2kexe.find_first(':');
+        size_t index_colon = fb2kexe.find_first(':');
         if (index_colon != pfc_infinite)
             p_out.add_string(fb2kexe.get_ptr(), index_colon + 1);
     } else if (!b_absolute)

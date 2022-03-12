@@ -41,7 +41,7 @@ std::vector<MenuItemInfo> get_dynamic_main_menu_node_items(
         if (!name_part.is_empty())
             name_parts.emplace_back(name_part);
 
-        for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
+        for (size_t i = 0, count = ptr_node->get_children_count(); i < count; i++) {
             mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
             if (ptr_child.is_valid()) {
                 auto child_items = get_dynamic_main_menu_node_items(command_id, ptr_child, name_parts);
@@ -253,7 +253,7 @@ bool mainmenunode_subguid_to_path(
         }
             return false;
         case mainmenu_node::type_group: {
-            for (t_size i = 0, count = ptr_node->get_children_count(); i < count; i++) {
+            for (size_t i = 0, count = ptr_node->get_children_count(); i < count; i++) {
                 mainmenu_node::ptr ptr_child = ptr_node->get_child(i);
                 pfc::string8 name;
                 if (mainmenunode_subguid_to_path(ptr_child, p_subguid, name)) {

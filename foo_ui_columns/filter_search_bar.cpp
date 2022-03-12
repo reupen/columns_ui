@@ -12,20 +12,20 @@ void g_send_metadb_handles_to_playlist(tHandles& handles, bool b_play = false)
 {
     const auto playlist_api = playlist_manager::get();
     const auto playback_api = play_control::get();
-    t_size index_insert = pfc_infinite;
+    size_t index_insert = pfc_infinite;
     if (!b_play && playback_api->is_playing()) {
-        t_size playlist = playlist_api->get_playing_playlist();
+        size_t playlist = playlist_api->get_playing_playlist();
         pfc::string8 name;
         if (playlist_api->playlist_get_name(playlist, name) && !stricmp_utf8("Filter Results", name)) {
-            t_size index_old = playlist_api->find_playlist("Filter Results (Playback)", pfc_infinite);
+            size_t index_old = playlist_api->find_playlist("Filter Results (Playback)", pfc_infinite);
             playlist_api->playlist_rename(playlist, "Filter Results (Playback)", pfc_infinite);
             index_insert = index_old < playlist ? playlist : playlist + 1;
             if (index_old != pfc_infinite)
                 playlist_api->remove_playlist(index_old);
         }
     }
-    // t_size index_remove = playlist_api->find_playlist("Filter Results", pfc_infinite);
-    t_size index = NULL;
+    // size_t index_remove = playlist_api->find_playlist("Filter Results", pfc_infinite);
+    size_t index = NULL;
     if (index_insert != pfc_infinite)
         index = playlist_api->create_playlist(
             b_play ? "Filter Results (Playback)" : "Filter Results", pfc_infinite, index_insert);
@@ -55,7 +55,7 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
             hostex->get_children(siblings);
 
         // Let's avoid recursion for once
-        t_size j = siblings.get_count();
+        size_t j = siblings.get_count();
         while (j) {
             j--;
             uie::window_ptr p_window = siblings[j];
@@ -68,8 +68,8 @@ void g_get_search_bar_sibling_streams(FilterSearchToolbar const* p_serach_bar, p
                 if (!p_out.have_item(p_filter->m_stream))
                     p_out.add_item(p_filter->m_stream);
             } else if (p_window->service_query_t(p_splitter)) {
-                t_size splitter_child_count = p_splitter->get_panel_count();
-                for (t_size k = 0; k < splitter_child_count; k++) {
+                size_t splitter_child_count = p_splitter->get_panel_count();
+                for (size_t k = 0; k < splitter_child_count; k++) {
                     uie::splitter_item_ptr p_splitter_child;
                     p_splitter->get_panel(k, p_splitter_child);
                     if (p_splitter_child->get_window_ptr().is_valid()
@@ -87,7 +87,7 @@ namespace {
 uie::window_factory<FilterSearchToolbar> g_filter_search_bar;
 }
 
-void FilterSearchToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void FilterSearchToolbar::set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
         const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
@@ -179,7 +179,7 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
     if (p_streams.get_count() == 0)
         p_streams = FilterPanel::g_streams;
 
-    t_size stream_count = p_streams.get_count();
+    size_t stream_count = p_streams.get_count();
     bool b_diff = strcmp(m_active_search_string, str) != 0;
     if (!stream_count)
         b_force_autosend = b_diff;
@@ -205,14 +205,14 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
         }
 
         bool b_autosent = false;
-        for (t_size i = 0; i < stream_count; i++) {
+        for (size_t i = 0; i < stream_count; i++) {
             FilterStream::ptr p_stream = p_streams[i];
 
             p_stream->m_source_overriden = !b_reset;
             p_stream->m_source_handles = m_active_handles;
 
             if (!b_stream_update) {
-                t_size filter_count = p_stream->m_windows.get_count();
+                size_t filter_count = p_stream->m_windows.get_count();
                 if (filter_count) {
                     bool b_stream_visible = p_stream->is_visible(); // mask_visible.get(i);
                     pfc::list_t<FilterPanel*> ordered_windows;
@@ -358,7 +358,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             break;
         case idc_favourite: {
             const auto query = uGetWindowText(m_search_editbox);
-            t_size index;
+            size_t index;
             if (!query.is_empty()) {
                 if (cfg_favourites.find_item(query, index)) {
                     cfg_favourites.remove_by_idx(index);
@@ -621,10 +621,10 @@ LRESULT FilterSearchToolbar::on_search_edit_message(HWND wnd, UINT msg, WPARAM w
                 if (ComboBox_GetDroppedState(m_search_editbox) == TRUE)
                 {
                     int index = ComboBox_GetCurSel(m_search_editbox);
-                    if (index != -1 && (t_size)index < cfg_favourites.get_count())
+                    if (index != -1 && (size_t)index < cfg_favourites.get_count())
                     {
                         cfg_favourites.remove_by_idx(index);
-                        for (t_size i = 0, count = g_active_instances.get_count(); i<count; i++)
+                        for (size_t i = 0, count = g_active_instances.get_count(); i<count; i++)
                             if (g_active_instances[i]->m_search_editbox)
                                 ComboBox_DeleteString(g_active_instances[i]->m_search_editbox, index);
                     }

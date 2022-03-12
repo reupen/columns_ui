@@ -46,8 +46,8 @@ public:
     void g_populate_tree(HWND wnd_tree, cui::fcl::group_list& list, const cui::fcl::group_list_filtered& filtered,
         HTREEITEM ti_parent = TVI_ROOT)
     {
-        t_size count = filtered.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = filtered.get_count();
+        for (size_t i = 0; i < count; i++) {
             pfc::string8 name;
             filtered[i]->get_name(name);
             HTREEITEM item = treeview::insert_item(wnd_tree, name, m_nodes.size(), ti_parent);
@@ -84,8 +84,8 @@ public:
             if (m_import) {
                 cui::fcl::dataset_list datasets;
                 std::unordered_set<GUID> groupslist;
-                t_size count = datasets.get_count();
-                for (t_size j = 0; j < count; j++) {
+                size_t count = datasets.get_count();
+                for (size_t j = 0; j < count; j++) {
                     if (m_filter.count(datasets[j]->get_guid()) > 0) {
                         GUID guid = datasets[j]->get_group();
                         groupslist.emplace(guid);
@@ -99,7 +99,7 @@ public:
                         }
                     }
                 }
-                t_size i = m_groups.get_count();
+                size_t i = m_groups.get_count();
                 for (; i; i--)
                     if (groupslist.count(m_groups[i - 1]->get_guid()) == 0)
                         m_groups.remove_by_idx(i - 1);
@@ -116,8 +116,8 @@ public:
             switch (wp) {
             case IDOK: {
                 HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
-                t_size count = m_nodes.size();
-                for (t_size i = 0; i < count; i++) {
+                size_t count = m_nodes.size();
+                for (size_t i = 0; i < count; i++) {
                     m_nodes[i].checked = 0 != TreeView_GetCheckState(wnd_tree, m_nodes[i].item);
                 }
                 HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
@@ -150,8 +150,8 @@ public:
     }
     bool have_node_checked(const GUID& pguid)
     {
-        t_size count = m_nodes.size();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = m_nodes.size();
+        for (size_t i = 0; i < count; i++) {
             if (m_nodes[i].group->get_guid() == pguid)
                 return m_nodes[i].checked;
         }
@@ -186,8 +186,8 @@ class PanelInfoList : public pfc::list_t<PanelInfo> {
 public:
     bool get_name_by_guid(const GUID& guid, pfc::string8& p_out)
     {
-        t_size count = get_count();
-        for (t_size i = 0; i < count; i++)
+        size_t count = get_count();
+        for (size_t i = 0; i < count; i++)
             if (get_item(i).guid == guid) {
                 p_out = get_item(i).name;
                 return true;
@@ -292,7 +292,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
         {
             pfc::list_t<bool> mask;
             const auto count = p_file->read_lendian_t<uint32_t>(p_abort);
-            for (t_size i = 0; i < count; i++) {
+            for (size_t i = 0; i < count; i++) {
                 PanelInfo info;
                 p_file->read_lendian_t(info.guid, p_abort);
                 p_file->read_string(info.name, p_abort);
@@ -304,12 +304,12 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             panel_info.remove_mask(mask.get_ptr());
         }
         {
-            t_size count = panel_info.get_count();
+            size_t count = panel_info.get_count();
             if (count) {
                 throw exception_fcl_dependentpanelmissing();
                 /*pfc::string8 msg, name;
                 msg << "Import aborted: The following required panels are not present.\r\n\r\nGUID, Name\r\n";
-                t_size i, count = panel_info.get_count();
+                size_t i, count = panel_info.get_count();
                 for (i=0; i<count; i++)
                 {
                     msg << pfc::print_guid(panel_info[i].guid);
@@ -404,9 +404,9 @@ class ExportFeedbackReceiver
     , public pfc::list_t<GUID> {
 public:
     void add_required_panels(const list_base_const_t<GUID>& panels) override { add_items(panels); }
-    t_size find_or_add_guid(const GUID& guid)
+    size_t find_or_add_guid(const GUID& guid)
     {
-        t_size index = find_item(guid);
+        size_t index = find_item(guid);
         if (index == pfc_infinite)
             index = add_item(guid);
         return index;
@@ -436,8 +436,8 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
     pfc::list_t<GUID> groups;
 
     if (!is_quiet) {
-        const t_size count = pFCLDialog.m_nodes.size();
-        for (t_size i = 0; i < count; i++)
+        const size_t count = pFCLDialog.m_nodes.size();
+        for (size_t i = 0; i < count; i++)
             if (pFCLDialog.m_nodes[i].checked)
                 groups.add_item(pFCLDialog.m_nodes[i].group->get_guid());
     }
@@ -453,13 +453,13 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
         p_file->write_lendian_t(mode, p_abort);
 
         stream_writer_memblock mem;
-        t_size actualtotal = 0;
+        size_t actualtotal = 0;
         {
             cui::fcl::dataset_list export_items;
-            t_size count = export_items.get_count();
+            size_t count = export_items.get_count();
             pfc::array_t<ExportFeedbackReceiver> feeds;
             feeds.set_count(count);
-            for (t_size i = 0; i < count; i++) {
+            for (size_t i = 0; i < count; i++) {
                 if (is_quiet || groups.have_item(export_items[i]->get_group())) {
                     pfc::string8 name;
                     export_items[i]->get_name(name);
@@ -469,7 +469,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
                     export_items[i]->get_data(&writer, mode, feeds[i], p_abort);
                     const auto pcount = gsl::narrow<uint32_t>(feeds[i].get_count());
                     mem.write_lendian_t(pcount, p_abort);
-                    for (t_size j = 0; j < pcount; j++) {
+                    for (size_t j = 0; j < pcount; j++) {
                         const auto temp = gsl::narrow<uint32_t>(feedback.find_or_add_guid(feeds[i][j]));
                         mem.write_lendian_t(temp, p_abort);
                     }
@@ -481,9 +481,9 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
         }
 
         {
-            t_size pcount = feedback.get_count();
+            size_t pcount = feedback.get_count();
             p_file->write_lendian_t(gsl::narrow<uint32_t>(pcount), p_abort);
-            for (t_size j = 0; j < pcount; j++) {
+            for (size_t j = 0; j < pcount; j++) {
                 uie::window_ptr ptr;
                 pfc::string8 name;
                 if (uie::window::create_by_guid(feedback[j], ptr))
@@ -498,7 +498,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
             {
                 windows.add_item(ptr);
             }
-            t_size i, count = windows.get_count();
+            size_t i, count = windows.get_count();
             p_file->write_lendian_t(count, p_abort);
             for (i=0; i<count; i++)
             {

@@ -45,19 +45,19 @@ fbh::ConfigBool cfg_show_artwork(
     g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
 
-void ConfigGroups::swap(t_size index1, t_size index2)
+void ConfigGroups::swap(size_t index1, size_t index2)
 {
     m_groups.swap_items(index1, index2);
     PlaylistView::g_on_groups_change();
 }
-void ConfigGroups::replace_group(t_size index, const Group& p_group)
+void ConfigGroups::replace_group(size_t index, const Group& p_group)
 {
     m_groups.replace_item(index, p_group);
     PlaylistView::g_on_groups_change();
 }
-t_size ConfigGroups::add_group(const Group& p_group, bool notify_playlist_views)
+size_t ConfigGroups::add_group(const Group& p_group, bool notify_playlist_views)
 {
-    t_size ret = m_groups.add_item(p_group);
+    size_t ret = m_groups.add_item(p_group);
     if (notify_playlist_views)
         PlaylistView::g_on_groups_change();
     return ret;
@@ -71,7 +71,7 @@ void ConfigGroups::set_groups(const pfc::list_base_const_t<Group>& p_groups, boo
         PlaylistView::g_on_groups_change();
 }
 
-void ConfigGroups::remove_group(t_size index)
+void ConfigGroups::remove_group(size_t index)
 {
     m_groups.remove_by_idx(index);
     PlaylistView::g_on_groups_change();
@@ -111,9 +111,9 @@ void PlaylistView::refresh_groups(bool b_update_columns)
     pfc::string8 playlist_name;
     m_playlist_api->activeplaylist_get_name(playlist_name);
 
-    t_size count = cfg_grouping ? g_groups.get_groups().get_count() : 0;
-    t_size used_count = 0;
-    for (t_size i = 0; i < count; i++) {
+    size_t count = cfg_grouping ? g_groups.get_groups().get_count() : 0;
+    size_t used_count = 0;
+    for (size_t i = 0; i < count; i++) {
         bool b_valid = false;
         switch (g_groups.get_groups()[i].filter_type) {
         case FILTER_NONE:
@@ -137,11 +137,11 @@ void PlaylistView::refresh_groups(bool b_update_columns)
     set_group_count(used_count, b_update_columns);
 }
 
-t_size PlaylistView::column_index_display_to_actual(t_size display_index)
+size_t PlaylistView::column_index_display_to_actual(size_t display_index)
 {
-    t_size count = m_column_mask.get_count();
-    t_size counter = 0;
-    for (t_size i = 0; i < count; i++) {
+    size_t count = m_column_mask.get_count();
+    size_t counter = 0;
+    for (size_t i = 0; i < count; i++) {
         if (m_column_mask[i])
             if (counter++ == display_index)
                 return i;
@@ -149,11 +149,11 @@ t_size PlaylistView::column_index_display_to_actual(t_size display_index)
     throw pfc::exception_bug_check();
 }
 
-t_size PlaylistView::column_index_actual_to_display(t_size actual_index)
+size_t PlaylistView::column_index_actual_to_display(size_t actual_index)
 {
-    t_size count = m_column_mask.get_count();
-    t_size counter = 0;
-    for (t_size i = 0; i < count; i++) {
+    size_t count = m_column_mask.get_count();
+    size_t counter = 0;
+    for (size_t i = 0; i < count; i++) {
         if (m_column_mask[i]) {
             counter++;
             if (i == actual_index)
@@ -165,9 +165,9 @@ t_size PlaylistView::column_index_actual_to_display(t_size actual_index)
 }
 void PlaylistView::on_column_widths_change()
 {
-    t_size count = m_column_mask.get_count();
+    size_t count = m_column_mask.get_count();
     std::vector<int> widths;
-    for (t_size i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
         if (m_column_mask[i])
             widths.emplace_back(g_columns[i]->width);
     set_column_widths(widths);
@@ -199,9 +199,9 @@ void PlaylistView::refresh_columns()
         p_compiler->compile_safe(m_script_global, cfg_globalstring);
     p_compiler->compile_safe(m_script_global_style, cfg_colour);
 
-    t_size count = g_columns.get_count();
+    size_t count = g_columns.get_count();
     m_column_mask.set_size(count);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         PlaylistViewColumn* source = g_columns[i].get();
         bool b_valid = false;
         if (source->show) {
@@ -271,11 +271,11 @@ void PlaylistView::refresh_all_items_text()
 {
     update_items(0, get_item_count());
 }
-void PlaylistView::update_items(t_size index, t_size count)
+void PlaylistView::update_items(size_t index, size_t count)
 {
-    for (t_size i = 0; i < count; i++) {
-        t_size cg = get_item(i + index)->get_group_count();
-        for (t_size j = 0; j < cg; j++)
+    for (size_t i = 0; i < count; i++) {
+        size_t cg = get_item(i + index)->get_group_count();
+        for (size_t j = 0; j < cg; j++)
             get_item(i + index)->get_group(j)->m_style_data.release();
         get_item(i + index)->m_style_data.set_count(0);
     }
@@ -418,7 +418,7 @@ int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
 {
     return StrCmpLogicalW(a.get_ptr(), b.get_ptr());
 }
-void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_selection_only)
+void PlaylistView::notify_sort_column(size_t index, bool b_descending, bool b_selection_only)
 {
     const auto active_playlist = m_playlist_api->get_active_playlist();
     if (active_playlist != -1
@@ -428,7 +428,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
         const auto count = m_playlist_api->activeplaylist_get_item_count();
 
         pfc::list_t<pfc::array_t<WCHAR>, pfc::alloc_fast_aggressive> data;
-        pfc::list_t<t_size, pfc::alloc_fast_aggressive> source_indices;
+        pfc::list_t<size_t, pfc::alloc_fast_aggressive> source_indices;
         data.set_count(count);
         source_indices.prealloc(count);
 
@@ -445,7 +445,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
         SYSTEMTIME st;
         GetLocalTime(&st);
 
-        t_size counter = 0;
+        size_t counter = 0;
 
         for (n = 0; n < count; n++) {
             if (!b_selection_only || mask[n]) {
@@ -502,7 +502,7 @@ void PlaylistView::notify_sort_column(t_size index, bool b_descending, bool b_se
         m_playlist_api->activeplaylist_undo_backup();
         if (b_selection_only) {
             mmh::Permutation order2(count);
-            t_size count2 = data.get_count();
+            size_t count2 = data.get_count();
             for (n = 0; n < count2; n++) {
                 order2[source_indices[n]] = source_indices[order[n]];
             }
@@ -628,7 +628,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
 
     HMENU menu = CreatePopupMenu();
     HMENU selection_menu = CreatePopupMenu();
-    t_size index = pfc_infinite;
+    size_t index = pfc_infinite;
     if (!(hittest.flags & HHT_NOWHERE) && is_header_column_real(hittest.iItem)) {
         index = header_column_to_real_column(hittest.iItem);
         uAppendMenu(menu, (MF_STRING), IDM_ASC, "&Sort ascending");
@@ -710,7 +710,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         cfg_show_artwork = !cfg_show_artwork;
         g_on_show_artwork_change();
     } else if (cmd >= IDM_CUSTOM_BASE) {
-        if (t_size(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
+        if (size_t(cmd - IDM_CUSTOM_BASE) < g_columns.get_count()) {
             g_columns[cmd - IDM_CUSTOM_BASE]->show = !g_columns[cmd - IDM_CUSTOM_BASE]->show; // g_columns
             g_on_columns_change();
         }
@@ -835,7 +835,7 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     return true;
 }
 
-void PlaylistView::notify_update_item_data(t_size index)
+void PlaylistView::notify_update_item_data(size_t index)
 {
     string_array& p_out = get_item_subitems(index);
     PlaylistViewItem* p_item = get_item(index);
@@ -861,9 +861,9 @@ void PlaylistView::notify_update_item_data(t_size index)
     CellStyleData style_data_item = CellStyleData::g_create_default();
 
     bool colour_global_av = false;
-    t_size i;
-    t_size count = m_column_data.get_count();
-    t_size count_display_groups = get_item_display_group_count(index);
+    size_t i;
+    size_t count = m_column_data.get_count();
+    size_t count_display_groups = get_item_display_group_count(index);
     p_out.resize(count);
     get_item(index)->m_style_data.set_count(count);
 
@@ -872,9 +872,9 @@ void PlaylistView::notify_update_item_data(t_size index)
 
     SetGlobalTitleformatHook<false, true> tf_hook_get_global(globals);
 
-    t_size item_index = get_item_display_index(index);
+    size_t item_index = get_item_display_index(index);
     for (i = 0; i < count_display_groups; i++) {
-        t_size count_groups = p_item->get_group_count();
+        size_t count_groups = p_item->get_group_count();
         CellStyleData style_data_group = CellStyleData::g_create_default();
         if (ptr.is_valid() && m_script_global_style.is_valid()) {
             StyleTitleformatHook tf_hook_style(style_data_group, item_index - i - 1, true);
@@ -926,14 +926,14 @@ void PlaylistView::notify_update_item_data(t_size index)
     }
 }
 
-const style_data_t& PlaylistView::get_style_data(t_size index)
+const style_data_t& PlaylistView::get_style_data(size_t index)
 {
     if (get_item(index)->m_style_data.get_count() != get_column_count()) {
         notify_update_item_data(index);
     }
     return get_item(index)->m_style_data;
 }
-bool PlaylistView::notify_on_middleclick(bool on_item, t_size index)
+bool PlaylistView::notify_on_middleclick(bool on_item, size_t index)
 {
     return playlist_item_helpers::MiddleClickActionManager::run(cfg_playlist_middle_action, on_item, index);
 }
@@ -945,7 +945,7 @@ bool PlaylistView::notify_on_doubleleftclick_nowhere()
 }
 
 void PlaylistView::get_insert_items(
-    /*t_size p_playlist, */ t_size start, t_size count, InsertItemsContainer& items)
+    /*size_t p_playlist, */ size_t start, size_t count, InsertItemsContainer& items)
 {
     items.set_count(count);
 
@@ -982,11 +982,11 @@ void PlaylistView::reset_items()
     insert_items(0, items.get_size(), items.get_ptr());
 }
 
-t_size PlaylistView::get_highlight_item()
+size_t PlaylistView::get_highlight_item()
 {
     if (play_control::get()->is_playing()) {
-        t_size playing_index;
-        t_size playing_playlist;
+        size_t playing_index;
+        size_t playing_playlist;
         m_playlist_api->get_playing_item_location(&playing_playlist, &playing_index);
         if (playing_playlist == m_playlist_api->get_active_playlist())
             return playing_index;
@@ -1035,11 +1035,11 @@ bool PlaylistView::notify_on_keyboard_keydown_paste()
     return playlist_utils::paste_at_focused_item(get_wnd());
 };
 
-t_size PlaylistView::storage_get_focus_item()
+size_t PlaylistView::storage_get_focus_item()
 {
     return playlist_manager::get()->activeplaylist_get_focus_item();
 }
-void PlaylistView::storage_set_focus_item(t_size index)
+void PlaylistView::storage_set_focus_item(size_t index)
 {
     pfc::vartoggle_t<bool> tog(m_ignore_callback, true);
     playlist_manager::get()->activeplaylist_set_focus_item(index);
@@ -1055,14 +1055,14 @@ bool PlaylistView::storage_set_selection_state(
 
     const auto api = playlist_manager::get();
 
-    t_size count = api->activeplaylist_get_item_count();
+    size_t count = api->activeplaylist_get_item_count();
     bit_array_bittable previous_state(count);
 
     api->activeplaylist_get_selection_mask(previous_state);
 
     bool b_changed = false;
 
-    for (t_size i = 0; i < count; i++)
+    for (size_t i = 0; i < count; i++)
         if (p_affected.get(i) && (p_status.get(i) != previous_state.get(i))) {
             b_changed = true;
             if (p_changed)
@@ -1074,19 +1074,19 @@ bool PlaylistView::storage_set_selection_state(
     api->activeplaylist_set_selection(p_affected, p_status);
     return b_changed;
 }
-bool PlaylistView::storage_get_item_selected(t_size index)
+bool PlaylistView::storage_get_item_selected(size_t index)
 {
     return playlist_manager::get()->activeplaylist_is_item_selected(index);
 }
-t_size PlaylistView::storage_get_selection_count(t_size max)
+size_t PlaylistView::storage_get_selection_count(size_t max)
 {
     return playlist_manager::get()->activeplaylist_get_selection_count(max);
 }
 
-void PlaylistView::execute_default_action(t_size index, t_size column, bool b_keyboard, bool b_ctrl)
+void PlaylistView::execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl)
 {
     if (b_keyboard && b_ctrl) {
-        t_size active = m_playlist_api->get_active_playlist();
+        size_t active = m_playlist_api->get_active_playlist();
         if (active != -1)
             m_playlist_api->queue_add_item_playlist(active, index);
     } else {

@@ -91,8 +91,8 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
             break;
         case IDC_UP: {
             if (m_field_list.get_selection_count(2) == 1) {
-                t_size index = 0;
-                t_size count = m_field_list.get_item_count();
+                size_t index = 0;
+                size_t count = m_field_list.get_item_count();
                 while (!m_field_list.get_item_selected(index) && index < count)
                     index++;
                 if (index && m_fields.get_count()) {
@@ -107,8 +107,8 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
         } break;
         case IDC_DOWN: {
             if (m_field_list.get_selection_count(2) == 1) {
-                t_size index = 0;
-                t_size count = m_field_list.get_item_count();
+                size_t index = 0;
+                size_t count = m_field_list.get_item_count();
                 while (!m_field_list.get_item_selected(index) && index < count)
                     index++;
                 if (index + 1 < count && index + 1 < m_fields.get_count()) {
@@ -125,7 +125,7 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
             Field temp;
             temp.m_name_friendly = "<enter name here>";
             temp.m_name = "<ENTER FIELD HERE>";
-            t_size index = m_fields.add_item(temp);
+            size_t index = m_fields.add_item(temp);
 
             pfc::list_t<uih::ListView::InsertItem> items;
             m_field_list.get_insert_items(index, 1, items);
@@ -140,8 +140,8 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
                 bit_array_bittable mask(m_field_list.get_item_count());
                 m_field_list.get_selection_state(mask);
                 // bool b_found = false;
-                t_size index = 0;
-                t_size count = m_field_list.get_item_count();
+                size_t index = 0;
+                size_t count = m_field_list.get_item_count();
                 while (index < count) {
                     if (mask[index])
                         break;
@@ -150,7 +150,7 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
                 if (index < count && index < m_fields.get_count()) {
                     m_fields.remove_by_idx(index);
                     m_field_list.remove_item(index);
-                    t_size new_count = m_field_list.get_item_count();
+                    size_t new_count = m_field_list.get_item_count();
                     if (new_count) {
                         if (index < new_count)
                             m_field_list.set_item_selected_single(index);

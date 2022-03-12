@@ -58,16 +58,16 @@ void ConfigRebar::export_config(
         set_rebar_info(g_rebar_window->get_band_states());
     }
 
-    t_size count = m_entries.size();
+    size_t count = m_entries.size();
     p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         feedback.add_required_panel(m_entries[i].m_guid);
         m_entries[i].export_to_fcl_stream(p_out, mode, p_abort);
     }
 }
 
 void ConfigRebar::import_config(
-    stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
+    stream_reader* p_reader, size_t size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     t_uint32 version;
     std::vector<RebarBandState> new_entries;
@@ -75,7 +75,7 @@ void ConfigRebar::import_config(
     if (version > 0)
         throw exception_io_unsupported_format();
     const auto count = p_reader->read_lendian_t<uint32_t>(p_abort);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         RebarBandState item;
         item.import_from_fcl_stream(p_reader, mode, p_abort);
 
@@ -199,7 +199,7 @@ void ConfigRebar::get_data_raw(stream_writer* out, abort_callback& p_abort)
     // Extra data added in version 0.5.0
     out->write_lendian_t(static_cast<uint32_t>(StreamVersion::VersionCurrent), p_abort);
 
-    for (t_size n = 0; n < num; n++) {
+    for (size_t n = 0; n < num; n++) {
         stream_writer_memblock extraData;
         m_entries[n].write_extra(&extraData, p_abort);
         out->write_lendian_t(gsl::narrow<uint32_t>(extraData.m_data.get_size()), p_abort);

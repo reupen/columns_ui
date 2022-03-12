@@ -19,7 +19,7 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         feedback.add_required_panels(panels);
     }
     const GUID& get_group() const override { return cui::fcl::groups::layout; }
-    void set_data(stream_reader* p_reader, t_size size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         pfc::list_t<GUID> panels;
@@ -43,8 +43,8 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
             presets.add_item(pres);
         }
 
-        t_size count = panels.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = panels.get_count();
+        for (size_t i = 0; i < count; i++) {
             uie::window_ptr ptr;
             if (!uie::window::create_by_guid(panels[i], ptr)) {
                 missingpanels = true;
@@ -81,13 +81,13 @@ class ToolbarLayoutDataSet : public fcl::dataset_v2 {
     {
         g_cfg_rebar.export_config(p_writer, type, feedback, p_abort);
     }
-    void set_data(stream_reader* p_reader, t_size size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t size, t_uint32 type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         pfc::list_t<GUID> panels;
         g_cfg_rebar.import_config(p_reader, size, type, panels, p_abort);
-        t_size count = panels.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = panels.get_count();
+        for (size_t i = 0; i < count; i++) {
             feedback.add_required_panel("", panels[i]);
         }
     }
@@ -117,7 +117,7 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
         out.write_item(identifier_status_pane, settings::show_status_pane);
         out.write_item(identifier_allow_locked_panel_resizing, settings::allow_locked_panel_resizing.get_value());
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);

@@ -383,11 +383,11 @@ void FlatSplitterPanel::get_panels_sizes(
     }
 }
 
-bool FlatSplitterPanel::can_resize_divider(t_size index) const
+bool FlatSplitterPanel::can_resize_divider(size_t index) const
 {
-    t_size count_left = 0;
-    t_size count_right = 0;
-    for (t_size i = 0, count = m_panels.get_count(); i < count; i++) {
+    size_t count_left = 0;
+    size_t count_right = 0;
+    for (size_t i = 0, count = m_panels.get_count(); i < count; i++) {
         if (can_resize_panel(i)) {
             if (i <= index)
                 count_left++;
@@ -398,7 +398,7 @@ bool FlatSplitterPanel::can_resize_divider(t_size index) const
     return count_left && count_right;
 }
 
-bool FlatSplitterPanel::can_resize_panel(t_size index) const
+bool FlatSplitterPanel::can_resize_panel(size_t index) const
 {
     const auto& panel = m_panels[index];
 
@@ -674,8 +674,8 @@ void FlatSplitterPanel::get_supported_panels(
     uie::window_host_ptr ptr;
     if (temp->service_query_t(ptr))
         (static_cast<FlatSplitterPanelHost*>(ptr.get_ptr()))->set_window_ptr(this);
-    t_size count = p_windows.get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = p_windows.get_count();
+    for (size_t i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
 }
 
@@ -687,8 +687,8 @@ bool FlatSplitterPanel::is_point_ours(
             p_hierarchy.add_item(this);
             return true;
         }
-        t_size count = m_panels.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = m_panels.get_count();
+        for (size_t i = 0; i < count; i++) {
             uie::splitter_window_v2_ptr sptr;
             if (m_panels[i]->m_child.is_valid()) {
                 if (m_panels[i]->m_child->service_query_t(sptr)) {
@@ -878,7 +878,7 @@ void FlatSplitterPanel::write_config(stream_writer* p_writer, bool is_export, ab
     }
 }
 
-void FlatSplitterPanel::read_config(stream_reader* config, t_size p_size, bool is_import, abort_callback& p_abort)
+void FlatSplitterPanel::read_config(stream_reader* config, size_t p_size, bool is_import, abort_callback& p_abort)
 {
     if (p_size) {
         t_uint32 version;
@@ -920,12 +920,12 @@ void FlatSplitterPanel::read_config(stream_reader* config, t_size p_size, bool i
     }
 }
 
-void FlatSplitterPanel::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void FlatSplitterPanel::import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     read_config(p_reader, p_size, true, p_abort);
 }
 
-void FlatSplitterPanel::set_config(stream_reader* config, t_size p_size, abort_callback& p_abort)
+void FlatSplitterPanel::set_config(stream_reader* config, size_t p_size, abort_callback& p_abort)
 {
     read_config(config, p_size, false, p_abort);
 }
@@ -1098,8 +1098,8 @@ void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, un
 void FlatSplitterPanel::FlatSplitterPanelHost::get_children(pfc::list_base_t<window::ptr>& p_out)
 {
     if (m_this.is_valid()) {
-        t_size count = m_this->m_panels.get_count();
-        for (t_size i = 0; i < count; i++) {
+        size_t count = m_this->m_panels.get_count();
+        for (size_t i = 0; i < count; i++) {
             if (m_this->m_panels[i]->m_child.is_valid())
                 p_out.add_item(m_this->m_panels[i]->m_child);
         }
@@ -1120,7 +1120,7 @@ const GUID& FlatSplitterPanel::FlatSplitterPanelHost::get_host_guid() const
 
 void FlatSplitterPanel::g_on_size_change()
 {
-    for (t_size index = 0; index < g_instances.get_count(); index++) {
+    for (size_t index = 0; index < g_instances.get_count(); index++) {
         g_instances[index]->on_size_changed();
     }
 }

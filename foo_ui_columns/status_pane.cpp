@@ -58,7 +58,7 @@ void StatusPane::update_playback_status_text()
     }
 }
 
-void StatusPane::get_length_data(bool& p_selection, t_size& p_count, pfc::string_base& p_out)
+void StatusPane::get_length_data(bool& p_selection, size_t& p_count, pfc::string_base& p_out)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> sels;
     double length = 0;

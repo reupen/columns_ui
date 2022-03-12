@@ -10,13 +10,13 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     uie::window_ptr p_this_temp = this;
     HMENU menu = CreatePopupMenu();
 
-    t_size index = get_focus_item();
+    size_t index = get_focus_item();
 
     playlist_position_reference_tracker indexTracked(false);
     indexTracked.m_playlist = index;
 
-    t_size num = m_playlist_api->get_playlist_count();
-    t_size active = m_playlist_api->get_active_playlist();
+    size_t num = m_playlist_api->get_playlist_count();
+    size_t active = m_playlist_api->get_active_playlist();
     bool b_index_valid = index < num;
 
     if (b_index_valid)
@@ -81,7 +81,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
             recycler_ids.set_count(recycler_count);
             HMENU recycler_popup = CreatePopupMenu();
             pfc::string8_fast_aggressive temp;
-            for (t_size i = 0; i < recycler_count; i++) {
+            for (size_t i = 0; i < recycler_count; i++) {
                 m_playlist_api->recycler_get_name(i, temp);
                 recycler_ids[i] = m_playlist_api->recycler_get_id(i); // Menu Message Loop !
                 uAppendMenu(recycler_popup, MF_STRING, ID_RECYCLER_BASE + i, temp);
@@ -129,12 +129,12 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     index = indexTracked.m_playlist;
 
     if (cmd > 0) {
-        if ((t_size)cmd >= m_contextmenu_manager_base) {
+        if ((size_t)cmd >= m_contextmenu_manager_base) {
             if (m_contextmenu_manager.is_valid()) {
                 m_contextmenu_manager->execute_by_id(cmd - m_contextmenu_manager_base);
             }
         } else if (cmd >= ID_RECYCLER_BASE) {
-            if (t_size(cmd - ID_RECYCLER_BASE) < recycler_ids.get_count())
+            if (size_t(cmd - ID_RECYCLER_BASE) < recycler_ids.get_count())
                 m_playlist_api->recycler_restore_by_id(recycler_ids[cmd - ID_RECYCLER_BASE]);
         } else {
             switch (cmd) {
@@ -151,11 +151,11 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
                 break;
             case ID_CUT:
                 if (b_index_valid)
-                    playlist_manager_utils::cut(pfc::list_single_ref_t<t_size>(index));
+                    playlist_manager_utils::cut(pfc::list_single_ref_t<size_t>(index));
                 break;
             case ID_COPY:
                 if (b_index_valid)
-                    playlist_manager_utils::copy(pfc::list_single_ref_t<t_size>(index));
+                    playlist_manager_utils::copy(pfc::list_single_ref_t<size_t>(index));
                 break;
             case ID_PASTE:
                 if (b_index_valid)
@@ -210,7 +210,7 @@ bool PlaylistSwitcher::notify_on_contextmenu(const POINT& pt, bool from_keyboard
     m_contextmenu_manager.release();
     m_contextmenu_manager_base = NULL;
 
-    /*t_size index_active = m_playlist_api->get_active_playlist();
+    /*size_t index_active = m_playlist_api->get_active_playlist();
     if (index_active != pfc_infinite && index_active < get_item_count())
     {
         set_item_selected_single(index_active, false);

@@ -212,8 +212,8 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 
             POINT pttab = pti;
 
-            t_size newPlaylistIndex = pfc_infinite;
-            t_size target_index = playlist_api->get_active_playlist();
+            size_t newPlaylistIndex = pfc_infinite;
+            size_t target_index = playlist_api->get_active_playlist();
 
             if (p_list->wnd_tabs && wnd == p_list->wnd_tabs) {
                 RECT tabs;

@@ -23,22 +23,22 @@ enum TrackingMode {
     track_selection,
 };
 
-bool g_track_mode_includes_now_playing(t_size mode)
+bool g_track_mode_includes_now_playing(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
 
-bool g_track_mode_includes_playlist(t_size mode)
+bool g_track_mode_includes_playlist(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-bool g_track_mode_includes_auto(t_size mode)
+bool g_track_mode_includes_auto(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-bool g_track_mode_includes_selection(t_size mode)
+bool g_track_mode_includes_selection(size_t mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
@@ -181,10 +181,10 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_LBUTTONDOWN: {
         const auto start_artwork_type_index = get_displayed_artwork_type_index();
         auto artwork_type_index = start_artwork_type_index;
-        const t_size count = g_artwork_types.size();
+        const size_t count = g_artwork_types.size();
         bool artwork_found = false;
 
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             artwork_type_index = (artwork_type_index + 1) % count;
 
             if (!refresh_image(artwork_type_index))
@@ -375,10 +375,10 @@ void ArtworkPanel::on_completion(unsigned p_code)
     m_artwork_type_override_index = m_selected_artwork_type_index;
 
     bool b_found = false;
-    t_size count = g_artwork_types.size();
+    size_t count = g_artwork_types.size();
     if (m_lock_type)
         count = std::min(size_t{1}, count);
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         if (refresh_image()) {
             b_found = true;
             break;
@@ -600,7 +600,7 @@ ArtworkPanel::class_data& ArtworkPanel::get_class_data() const
         WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT | flags, 0, IDC_HAND);
 }
 
-void ArtworkPanel::set_config(stream_reader* p_reader, t_size size, abort_callback& p_abort)
+void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort)
 {
     if (size) {
         p_reader->read_lendian_t(m_track_mode, p_abort);

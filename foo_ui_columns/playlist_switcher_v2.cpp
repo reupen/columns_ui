@@ -11,11 +11,11 @@ const GUID PlaylistSwitcher::g_guid_font
 
 std::vector<PlaylistSwitcher*> PlaylistSwitcher::g_windows;
 
-void PlaylistSwitcher::get_insert_items(t_size base, t_size count, pfc::list_t<InsertItem>& p_out)
+void PlaylistSwitcher::get_insert_items(size_t base, size_t count, pfc::list_t<InsertItem>& p_out)
 {
     p_out.set_count(count);
 
-    for (t_size i = 0; i < count; i++) {
+    for (size_t i = 0; i < count; i++) {
         p_out[i].m_subitems.resize(1);
         p_out[i].m_subitems[0].set_string(format_playlist_title(i + base));
     }
@@ -27,19 +27,19 @@ void PlaylistSwitcher::refresh_all_items()
 
     add_items(0, m_playlist_api->get_playlist_count());
 
-    t_size index = m_playlist_api->get_active_playlist();
+    size_t index = m_playlist_api->get_active_playlist();
     if (index != pfc_infinite)
         set_item_selected_single(index, false);
 }
 
-void PlaylistSwitcher::refresh_items(t_size base, t_size count, bool b_update)
+void PlaylistSwitcher::refresh_items(size_t base, size_t count, bool b_update)
 {
     pfc::list_t<InsertItem> items_insert;
     get_insert_items(base, count, items_insert);
     replace_items(base, items_insert);
 }
 
-void PlaylistSwitcher::add_items(t_size base, t_size count)
+void PlaylistSwitcher::add_items(size_t base, size_t count)
 {
     pfc::list_t<InsertItem> items_insert;
     get_insert_items(base, count, items_insert);
@@ -53,12 +53,12 @@ void PlaylistSwitcher::refresh_columns()
 
 void PlaylistSwitcher::move_selection(int delta)
 {
-    t_size count = m_playlist_api->get_playlist_count();
+    size_t count = m_playlist_api->get_playlist_count();
     order_helper order(count);
     {
-        t_size from = get_selected_item_single();
+        size_t from = get_selected_item_single();
         if (from != pfc_infinite) {
-            t_size to = from;
+            size_t to = from;
             if (delta) {
                 if (delta > 0)
                     while (delta && to + 1 < count) {

@@ -315,12 +315,12 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                         || hi.category == HitTestCategory::OnItemObscuredBelow
                         || hi.category == HitTestCategory::OnItemObscuredAbove
                         || hi.category == HitTestCategory::NotOnItem) {
-                        t_size count = m_playlist_api->get_playlist_count();
+                        size_t count = m_playlist_api->get_playlist_count();
                         order_helper order(count);
                         {
-                            t_size from = m_window->get_selected_item_single();
+                            size_t from = m_window->get_selected_item_single();
                             if (from != pfc_infinite) {
-                                t_size to = hi.insertion_index;
+                                size_t to = hi.insertion_index;
                                 if (to > from)
                                     to--;
                                 if (from != to && to < count) {
@@ -343,7 +343,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                     }
                 } else {
                     {
-                        t_size index_insert = m_playlist_api->get_playlist_count();
+                        size_t index_insert = m_playlist_api->get_playlist_count();
 
                         if (hi.category == HitTestCategory::OnUnobscuredItem
                             || hi.category == HitTestCategory::OnGroupHeader
@@ -352,10 +352,10 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                             || hi.category == HitTestCategory::NotOnItem)
                             index_insert = hi.insertion_index;
 
-                        t_size index_activate = NULL;
+                        size_t index_activate = NULL;
 
-                        t_size count = data.get_entry_count();
-                        for (t_size i = 0; i < count; i++) {
+                        size_t count = data.get_entry_count();
+                        for (size_t i = 0; i < count; i++) {
                             pfc::string8 name;
                             metadb_handle_list handles;
                             mem_block_container_impl sidedata;
@@ -366,7 +366,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                             stream_reader_memblock_ref side_data_reader(
                                 static_cast<t_uint8*>(sidedata.get_ptr()), sidedata.get_size());
                             abort_callback_dummy p_abort;
-                            t_size index = m_playlist_api->create_playlist_ex(
+                            size_t index = m_playlist_api->create_playlist_ex(
                                 name, pfc_infinite, index_insert + i, handles, &side_data_reader, p_abort);
                             if (i == 0)
                                 index_activate = index;
@@ -384,7 +384,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                 m_ole_api->parse_dataobject(pDataObj, dropped_data);
 
                 bool create_new = true;
-                t_size idx = pfc_infinite;
+                size_t idx = pfc_infinite;
 
                 if (hi.category == HitTestCategory::OnUnobscuredItem || hi.category == HitTestCategory::OnGroupHeader
                     || hi.category == HitTestCategory::OnItemObscuredBelow

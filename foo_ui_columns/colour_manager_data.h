@@ -5,7 +5,7 @@ public:
     static const GUID g_cfg_guid;
     enum { cfg_version = 0 };
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
-    void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
+    void set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort) override;
     class Entry {
     public:
         enum ExportItemID {
@@ -39,7 +39,7 @@ public:
         cui::colours::colour_mode_t colour_mode;
         void write(stream_writer* p_stream, abort_callback& p_abort);
         void _export(stream_writer* p_stream, abort_callback& p_abort);
-        virtual void import(stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort);
+        virtual void import(stream_reader* p_reader, size_t stream_size, t_uint32 type, abort_callback& p_abort);
         void read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort);
         void reset_colors();
         explicit Entry(bool b_global = false);

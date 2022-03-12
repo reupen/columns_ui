@@ -15,7 +15,7 @@ void ConfigFontDescription::get_data_raw(stream_writer* stream, abort_callback& 
     stream->write_lendian_t(m_font_description.point_size_tenths, aborter);
 }
 
-void ConfigFontDescription::set_data_raw(stream_reader* stream, t_size size_hint, abort_callback& aborter)
+void ConfigFontDescription::set_data_raw(stream_reader* stream, size_t size_hint, abort_callback& aborter)
 {
     m_font_description.log_font = read_font(stream, aborter);
     m_font_description.estimate_point_size();
@@ -51,7 +51,7 @@ LOGFONT read_font(stream_reader* stream, abort_callback& aborter)
 void write_font(stream_writer* stream, const LOGFONT& log_font, abort_callback& aborter)
 {
     LOGFONT lf = log_font;
-    t_size face_len = pfc::wcslen_max(lf.lfFaceName, std::size(lf.lfFaceName));
+    size_t face_len = pfc::wcslen_max(lf.lfFaceName, std::size(lf.lfFaceName));
 
     if (face_len < std::size(lf.lfFaceName)) {
         memset(lf.lfFaceName + face_len, 0, sizeof(WCHAR) * (std::size(lf.lfFaceName) - face_len));

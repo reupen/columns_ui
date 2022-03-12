@@ -54,7 +54,7 @@ private:
 public:
     void export_config(stream_writer* p_out, t_uint32 mode, fcl::t_export_feedback& feedback, abort_callback& p_abort);
     void import_config(
-        stream_reader* p_reader, t_size size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
+        stream_reader* p_reader, size_t size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 
     explicit ConfigRebar(const GUID& p_guid) : cfg_var(p_guid) { reset(); }
 

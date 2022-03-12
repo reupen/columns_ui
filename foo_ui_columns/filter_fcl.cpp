@@ -79,7 +79,7 @@ class SettingsDataSet : public cui::fcl::dataset {
         out.write_item(static_cast<uint32_t>(SettingIdentifier::SortOnAddScript), cfg_sort_string);
         out.write_item(static_cast<uint32_t>(SettingIdentifier::VerticalItemPadding), cfg_vertical_item_padding);
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
@@ -168,7 +168,7 @@ class FavouritesDataSet : public cui::fcl::dataset {
             p_writer->write(data.get_ptr(), size, p_abort);
         }
     }
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         uint32_t count{};
@@ -199,7 +199,7 @@ class FavouritesDataSet : public cui::fcl::dataset {
         return data;
     }
 
-    pfc::string8 read_favourite(stream_reader* reader, t_size size, abort_callback& aborter)
+    pfc::string8 read_favourite(stream_reader* reader, size_t size, abort_callback& aborter)
     {
         pfc::string8 favourite;
         fbh::fcl::Reader fcl_reader(reader, size, aborter);
@@ -247,7 +247,7 @@ class FieldsDataSet : public cui::fcl::dataset {
         }
     }
 
-    void set_data(stream_reader* p_reader, t_size stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         uint32_t count{};
@@ -280,7 +280,7 @@ class FieldsDataSet : public cui::fcl::dataset {
         return data;
     }
 
-    Field read_field(stream_reader* reader, t_size size, abort_callback& aborter)
+    Field read_field(stream_reader* reader, size_t size, abort_callback& aborter)
     {
         Field field;
         fbh::fcl::Reader fcl_reader(reader, size, aborter);

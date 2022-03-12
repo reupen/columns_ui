@@ -56,7 +56,7 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
     if (!stricmp_utf8_max(profilepath, "file://", 7))
         profilepath += 7;
     pfc::string8 str_base = profilepath;
-    t_size blen = str_base.get_length();
+    size_t blen = str_base.get_length();
     if (blen && str_base[blen - 1] == '\\')
         str_base.truncate(blen - 1);
     // uGetModuleFileName(NULL, str_base);
@@ -130,7 +130,7 @@ void ButtonsToolbar::ConfigParam::import_from_file(const char* p_path, bool add)
     }
 }
 
-void ButtonsToolbar::ConfigParam::on_selection_change(t_size index)
+void ButtonsToolbar::ConfigParam::on_selection_change(size_t index)
 {
     m_selection = index != pfc_infinite && index < m_buttons.size() ? &m_buttons[index] : nullptr;
     m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
@@ -162,7 +162,7 @@ void ButtonsToolbar::ConfigParam::populate_buttons_list()
     m_button_list.insert_items(0, count, items.get_ptr());
 }
 
-void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(t_size index, t_size count, bool b_update_display)
+void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(size_t index, size_t count, bool b_update_display)
 {
     const auto real_count = m_buttons.size();
 
@@ -325,7 +325,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 item.m_subitems.resize(2);
                 item.m_subitems[0] = button.get_name().c_str();
                 item.m_subitems[1] = button.get_type_desc().c_str();
-                t_size index_list = m_button_list.get_item_count();
+                size_t index_list = m_button_list.get_item_count();
                 m_button_list.insert_items(index_list, 1, &item);
                 m_button_list.set_item_selected_single(index_list);
                 m_button_list.ensure_visible(index_list);
@@ -346,7 +346,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
             }
         } break;
         case IDC_REMOVE: {
-            t_size index = m_button_list.get_selected_item_single();
+            size_t index = m_button_list.get_selected_item_single();
             if (index != pfc_infinite) {
                 m_button_list.remove_item(index);
                 m_buttons.erase(m_buttons.begin() + index);
@@ -359,7 +359,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
 #if 0
         case IDC_UP:
         {
-            t_size index = m_button_list.get_selected_item_single();
+            size_t index = m_button_list.get_selected_item_single();
 
             if (index != pfc_infinite && index < m_buttons.size() && index)
             {
@@ -376,7 +376,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         break;
         case IDC_DOWN:
         {
-            t_size index = m_button_list.get_selected_item_single();
+            size_t index = m_button_list.get_selected_item_single();
             if (index != pfc_infinite && index + 1 < m_buttons.size())
             {
                 m_buttons.swap_items(index, index + 1);

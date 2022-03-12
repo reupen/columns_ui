@@ -25,7 +25,7 @@ static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg,
 
         EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), state.value.filter_type != FILTER_NONE);
 
-        SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (t_size)state.value.filter_type, 0);
+        SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (size_t)state.value.filter_type, 0);
         uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, state.value.filter_playlists);
 
         uSetDlgItemText(wnd, IDC_VALUE, state.value.string);
@@ -93,7 +93,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (lpnm->idFrom == IDC_GROUPS) {
             if (lpnm->code == NM_DBLCLK) {
                 auto lpnmia = (LPNMITEMACTIVATE)lp;
-                if (lpnmia->iItem != -1 && (t_size)lpnmia->iItem < g_groups.get_groups().get_count()) {
+                if (lpnmia->iItem != -1 && (size_t)lpnmia->iItem < g_groups.get_groups().get_count()) {
                     edit_view_param p;
                     p.b_new = false;
                     p.idx = lpnmia->iItem;

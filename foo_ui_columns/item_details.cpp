@@ -106,7 +106,7 @@ bool ItemDetails::show_config_popup(HWND wnd_parent)
     return false;
 }
 
-void ItemDetails::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ItemDetails::set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
         const auto version = p_reader->read_lendian_t<uint32_t>(p_abort);
@@ -528,9 +528,9 @@ void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool
 {
     if (!p_fromhook && !m_nowplaying_active) {
         bool b_refresh = false;
-        t_size count = m_handles.get_count();
-        for (t_size i = 0; i < count && !b_refresh; i++) {
-            t_size index = pfc_infinite;
+        size_t count = m_handles.get_count();
+        for (size_t i = 0; i < count && !b_refresh; i++) {
+            size_t index = pfc_infinite;
             if (p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, m_handles[i], index))
                 b_refresh = true;
         }
@@ -607,7 +607,7 @@ void ItemDetails::on_size()
     on_size(RECT_CX(rc), RECT_CY(rc));
 }
 
-void ItemDetails::on_size(t_size cx, t_size cy)
+void ItemDetails::on_size(size_t cx, size_t cy)
 {
     reset_display_info();
     invalidate_all(false);
@@ -999,15 +999,15 @@ void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
     }
 }
 
-void ItemDetails::on_playback_order_changed(t_size p_new_index) {}
+void ItemDetails::on_playback_order_changed(size_t p_new_index) {}
 
 void ItemDetails::on_default_format_changed() {}
 
 void ItemDetails::on_playlist_locked(bool p_locked) {}
 
-void ItemDetails::on_playlist_renamed(const char* p_new_name, t_size p_new_name_len) {}
+void ItemDetails::on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) {}
 
-void ItemDetails::on_item_ensure_visible(t_size p_idx) {}
+void ItemDetails::on_item_ensure_visible(size_t p_idx) {}
 
 void ItemDetails::on_items_replaced(
     const bit_array& p_mask, const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data)
@@ -1018,39 +1018,39 @@ void ItemDetails::on_items_modified_fromplayback(const bit_array& p_mask, play_c
 
 void ItemDetails::on_items_modified(const bit_array& p_mask) {}
 
-void ItemDetails::on_items_removed(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
+void ItemDetails::on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) {}
 
-void ItemDetails::on_items_removing(const bit_array& p_mask, t_size p_old_count, t_size p_new_count) {}
+void ItemDetails::on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) {}
 
-void ItemDetails::on_items_reordered(const t_size* p_order, t_size p_count) {}
+void ItemDetails::on_items_reordered(const size_t* p_order, size_t p_count) {}
 
 void ItemDetails::on_items_added(
-    t_size p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
+    size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
 {
 }
 
-void ItemDetails::on_item_focus_change(t_size p_from, t_size p_to) {}
+void ItemDetails::on_item_focus_change(size_t p_from, size_t p_to) {}
 
 void ItemDetails::on_volume_change(float p_new_val) {}
 
 void ItemDetails::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
 
-bool ItemDetails::g_track_mode_includes_selection(t_size mode)
+bool ItemDetails::g_track_mode_includes_selection(size_t mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-bool ItemDetails::g_track_mode_includes_auto(t_size mode)
+bool ItemDetails::g_track_mode_includes_auto(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-bool ItemDetails::g_track_mode_includes_plalist(t_size mode)
+bool ItemDetails::g_track_mode_includes_plalist(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
-bool ItemDetails::g_track_mode_includes_now_playing(t_size mode)
+bool ItemDetails::g_track_mode_includes_now_playing(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }

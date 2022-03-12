@@ -23,8 +23,8 @@ public:
                 p_hierarchy.add_item(this);
                 return true;
             }
-            t_size count = m_panels.get_count();
-            for (t_size i = 0; i < count; i++) {
+            size_t count = m_panels.get_count();
+            for (size_t i = 0; i < count; i++) {
                 uie::splitter_window_v2_ptr sptr;
                 if (m_panels[i]->m_child.is_valid()) {
                     if (m_panels[i]->m_child->service_query_t(sptr)) {
@@ -57,12 +57,12 @@ public:
 
     enum { stream_version_current = 0 };
 
-    void set_config(stream_reader* config, t_size p_size, abort_callback& p_abort) override;
+    void set_config(stream_reader* config, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* out, abort_callback& p_abort) const override;
 
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
-    void import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+    void import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
 
     class TabStackSplitterHost;
 
@@ -124,8 +124,8 @@ public:
     static void g_on_font_change();
     void on_size_changed(unsigned width, unsigned height);
     void on_size_changed();
-    void on_active_tab_changing(t_size index_from);
-    void on_active_tab_changed(t_size index_to);
+    void on_active_tab_changing(size_t index_from);
+    void on_active_tab_changed(size_t index_to);
 
     TabStackPanel() = default;
 
@@ -133,7 +133,7 @@ private:
     PanelList m_panels;
     PanelList m_active_panels;
     HWND m_wnd_tabs{nullptr};
-    t_size m_active_tab{(std::numeric_limits<size_t>::max)()};
+    size_t m_active_tab{(std::numeric_limits<size_t>::max)()};
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;
     t_int32 m_mousewheel_delta{NULL};

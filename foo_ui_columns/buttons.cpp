@@ -31,7 +31,7 @@ unsigned ButtonsToolbar::get_type() const
     return ui_extension::type_toolbar;
 }
 
-void ButtonsToolbar::import_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ButtonsToolbar::import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     ConfigParam param;
     param.m_selection = nullptr;
@@ -298,8 +298,8 @@ void ButtonsToolbar::create_toolbar()
 
 void ButtonsToolbar::destroy_toolbar()
 {
-    t_size count = m_buttons.size();
-    for (t_size i = 0; i < count; i++)
+    size_t count = m_buttons.size();
+    for (size_t i = 0; i < count; i++)
         if (m_buttons[i].m_interface.is_valid())
             m_buttons[i].m_interface->deregister_callback(m_buttons[i].m_callback);
     DestroyWindow(wnd_toolbar);
@@ -342,7 +342,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
 
             RECT rc = {0, 0, 0, 0};
-            t_size count = m_buttons.size();
+            size_t count = m_buttons.size();
             int cx = lpwp->cx;
             int cy = lpwp->cy;
             int extra = 0;
@@ -536,7 +536,7 @@ void ButtonsToolbar::get_config(stream_writer* out, abort_callback& p_abort) con
     }
 }
 
-void ButtonsToolbar::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void ButtonsToolbar::set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     if (!p_size)
         return;

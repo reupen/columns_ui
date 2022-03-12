@@ -16,8 +16,8 @@ FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 
 void FontManagerData::g_on_common_font_changed(uint32_t mask)
 {
-    t_size count = m_callbacks.get_count();
-    for (t_size i = 0; i < count; i++)
+    size_t count = m_callbacks.get_count();
+    for (size_t i = 0; i < count; i++)
         m_callbacks[i]->on_font_changed(mask);
 }
 
@@ -33,8 +33,8 @@ void FontManagerData::register_common_callback(cui::fonts::common_callback* p_ca
 
 void FontManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
 {
-    t_size count = m_entries.get_count();
-    for (t_size i = 0; i < count; i++) {
+    size_t count = m_entries.get_count();
+    for (size_t i = 0; i < count; i++) {
         if (m_entries[i]->guid == p_guid) {
             p_out = m_entries[i];
             return;
@@ -54,7 +54,7 @@ void FontManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
     }
 }
 
-void FontManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+void FontManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
     t_uint32 version;
     p_stream->read_lendian_t(version, p_abort);
@@ -63,7 +63,7 @@ void FontManagerData::set_data_raw(stream_reader* p_stream, t_size p_sizehint, a
         m_common_labels_entry->read(version, p_stream, p_abort);
         const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
         m_entries.remove_all();
-        for (t_size i = 0; i < count; i++) {
+        for (size_t i = 0; i < count; i++) {
             entry_ptr_t ptr = std::make_shared<Entry>();
             ptr->read(version, p_stream, p_abort);
             m_entries.add_item(ptr);
@@ -128,7 +128,7 @@ void FontManagerData::Entry::reset_fonts()
     font_description.estimate_point_size();
 }
 
-void FontManagerData::Entry::import(stream_reader* p_reader, t_size stream_size, t_uint32 type, abort_callback& p_abort)
+void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size, t_uint32 type, abort_callback& p_abort)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
     t_uint32 element_id;

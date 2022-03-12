@@ -79,8 +79,8 @@ public:
             uSendDlgItemMessageText(wnd, IDC_EDITFIELD, WM_SETTEXT, 0, m_column->edit_field);
 
             SendDlgItemMessage(wnd, IDC_SHOW_COLUMN, BM_SETCHECK, m_column->show, 0);
-            SendDlgItemMessage(wnd, IDC_ALIGNMENT, CB_SETCURSEL, (t_size)m_column->align, 0);
-            SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (t_size)m_column->filter_type, 0);
+            SendDlgItemMessage(wnd, IDC_ALIGNMENT, CB_SETCURSEL, (size_t)m_column->align, 0);
+            SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (size_t)m_column->filter_type, 0);
 
             SetDlgItemInt(wnd, IDC_WIDTH, m_column->width, false);
             SetDlgItemInt(wnd, IDC_PARTS, m_column->parts, false);
@@ -641,7 +641,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     AppendMenu(menu, MF_SEPARATOR, NULL, nullptr);
                 if (item > 0)
                     AppendMenu(menu, MF_STRING, ID_UP, L"Move &up");
-                if (item >= 0 && (t_size(item + 1)) < m_columns.get_count())
+                if (item >= 0 && (size_t(item + 1)) < m_columns.get_count())
                     AppendMenu(menu, MF_STRING, ID_DOWN, L"Move &down");
 
                 int cmd
@@ -654,20 +654,20 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     if (cmd == ID_NEW) {
                         PlaylistViewColumn::ptr temp = std::make_shared<PlaylistViewColumn>();
                         temp->name = "New Column";
-                        t_size insert = m_columns.insert_item(
-                            temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
+                        size_t insert = m_columns.insert_item(
+                            temp, idx >= 0 && (size_t)idx < m_columns.get_count() ? idx : m_columns.get_count());
                         uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(insert), 0, "New Column");
                         ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
                         ListView_EnsureVisible(wnd_lv, insert, FALSE);
-                    } else if (idx >= 0 && (t_size)idx < m_columns.get_count()) {
+                    } else if (idx >= 0 && (size_t)idx < m_columns.get_count()) {
                         if (cmd == ID_REMOVE) {
                             m_columns.remove_by_idx(idx);
-                            t_size new_count = m_columns.get_count();
+                            size_t new_count = m_columns.get_count();
                             ListView_DeleteItem(wnd_lv, idx);
 
-                            if (idx > 0 && (t_size)idx == new_count)
+                            if (idx > 0 && (size_t)idx == new_count)
                                 idx--;
-                            if (idx >= 0 && (t_size)idx < new_count)
+                            if (idx >= 0 && (size_t)idx < new_count)
                                 ListView_SetItemState(wnd_lv, idx, LVIS_SELECTED, LVIS_SELECTED);
                             if (new_count == 0)
                                 SendMessage(wnd, MSG_SELECTION_CHANGED, NULL, NULL);
@@ -680,7 +680,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                                 ListView_EnsureVisible(wnd_lv, idx - 1, FALSE);
                             }
                         } else if (cmd == ID_DOWN) {
-                            if ((t_size)(idx + 1) < m_columns.get_count() && m_columns.move_down(idx)) {
+                            if ((size_t)(idx + 1) < m_columns.get_count() && m_columns.move_down(idx)) {
                                 uih::list_view_insert_item_text(wnd_lv, idx, 0, m_columns[idx]->name, true);
                                 uih::list_view_insert_item_text(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
                                 ListView_SetItemState(wnd_lv, idx + 1, LVIS_SELECTED, LVIS_SELECTED);
@@ -713,7 +713,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case MSG_SELECTION_CHANGED: {
         int item = (ListView_GetNextItem(GetDlgItem(m_wnd, IDC_COLUMNS), -1, LVNI_SELECTED));
-        m_child->set_column(item != -1 && item >= 0 && (t_size)item < m_columns.get_count()
+        m_child->set_column(item != -1 && item >= 0 && (size_t)item < m_columns.get_count()
                 ? m_columns[item]
                 : PlaylistViewColumn::ptr());
     }
@@ -733,7 +733,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             case LVN_ITEMCHANGED: {
                 auto lpnmlv = (LPNMLISTVIEW)lp;
                 if (m_child) {
-                    if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (t_size)lpnmlv->iItem < m_columns.get_count()) {
+                    if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (size_t)lpnmlv->iItem < m_columns.get_count()) {
                         if ((lpnmlv->uNewState & LVIS_SELECTED) != (lpnmlv->uOldState & LVIS_SELECTED))
                             PostMessage(wnd, MSG_SELECTION_CHANGED, NULL, NULL);
                     }
@@ -782,7 +782,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_DOWN: {
             HWND wnd_lv = GetDlgItem(wnd, IDC_COLUMNS);
             int idx = ListView_GetNextItem(wnd_lv, -1, LVNI_SELECTED);
-            if (idx >= 0 && (t_size(idx + 1)) < m_columns.get_count() && m_columns.move_down(idx)) {
+            if (idx >= 0 && (size_t(idx + 1)) < m_columns.get_count() && m_columns.move_down(idx)) {
                 uih::list_view_insert_item_text(wnd_lv, idx, 0, m_columns[idx]->name, true);
                 uih::list_view_insert_item_text(wnd_lv, idx + 1, 0, m_columns[idx + 1]->name, true);
                 ListView_SetItemState(wnd_lv, idx + 1, LVIS_SELECTED, LVIS_SELECTED);
@@ -797,8 +797,8 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             {
                 PlaylistViewColumn::ptr temp = std::make_shared<PlaylistViewColumn>();
                 temp->name = "New Column";
-                t_size insert = m_columns.insert_item(
-                    temp, idx >= 0 && (t_size)idx < m_columns.get_count() ? idx : m_columns.get_count());
+                size_t insert = m_columns.insert_item(
+                    temp, idx >= 0 && (size_t)idx < m_columns.get_count() ? idx : m_columns.get_count());
                 uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(insert), 0, "New Column");
                 ListView_SetItemState(wnd_lv, insert, LVIS_SELECTED, LVIS_SELECTED);
                 ListView_EnsureVisible(wnd_lv, insert, FALSE);

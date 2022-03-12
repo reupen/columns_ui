@@ -6,8 +6,8 @@ namespace cui::panels::filter {
 bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTINFO& ht)
 {
     HMENU menu = CreatePopupMenu();
-    t_size count = g_field_data.get_count();
-    for (t_size i = 0; i < count; i++) {
+    size_t count = g_field_data.get_count();
+    for (size_t i = 0; i < count; i++) {
         pfc::stringcvt::string_wide_from_utf8 wide(g_field_data[i].m_name);
         {
             MENUITEMINFO mii{};
