@@ -136,7 +136,7 @@ private:
     size_t m_active_tab{(std::numeric_limits<size_t>::max)()};
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;
-    t_int32 m_mousewheel_delta{NULL};
+    int32_t m_mousewheel_delta{NULL};
     wil::unique_hfont g_font;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };

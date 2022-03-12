@@ -57,7 +57,7 @@ private:
     unsigned m_switch_playlist{0};
     bool initialised{false};
 
-    t_int32 m_mousewheel_delta{0};
+    int32_t m_mousewheel_delta{0};
     UINT ID_CUSTOM_BASE{NULL};
 
     service_ptr_t<contextmenu_manager> p_manager;

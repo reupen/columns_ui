@@ -133,10 +133,10 @@ void FlatSplitterPanel::refresh_children()
                         m_panels[n]->m_size_limits.max_height = mmi.ptMaxTrackSize.y;
 
                         /*console::formatter() << "name: " << name <<
-                        " min width: " << (t_int32)mmi.ptMinTrackSize.x
-                        << " min height: " << (t_int32)mmi.ptMinTrackSize.y
-                        << " max width: " << (t_int32)mmi.ptMaxTrackSize.y
-                        << " max height: " << (t_int32)mmi.ptMaxTrackSize.y;*/
+                        " min width: " << (int32_t)mmi.ptMinTrackSize.x
+                        << " min height: " << (int32_t)mmi.ptMinTrackSize.y
+                        << " max width: " << (int32_t)mmi.ptMaxTrackSize.y
+                        << " max height: " << (int32_t)mmi.ptMaxTrackSize.y;*/
 
                     } else {
                         m_panels[n]->m_container.destroy();
@@ -1087,7 +1087,7 @@ void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, un
         p_ext->m_size_limits.max_width = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
         pfc::string8 name;
         p_ext->m_child->get_name(name);
-        // console::formatter() << "change: name: " << name << " min width: " << (t_int32)mmi.ptMinTrackSize.x;
+        // console::formatter() << "change: name: " << name << " min width: " << (int32_t)mmi.ptMinTrackSize.x;
 
         m_this->on_size_changed();
 

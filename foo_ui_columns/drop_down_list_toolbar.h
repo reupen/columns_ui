@@ -124,7 +124,7 @@ private:
     bool m_initialised{false};
     bool m_process_next_char{true};
     bool m_processing_selection_change{false};
-    t_int32 m_mousewheel_delta{0};
+    int32_t m_mousewheel_delta{0};
 };
 
 template <class ToolbarArgs>
