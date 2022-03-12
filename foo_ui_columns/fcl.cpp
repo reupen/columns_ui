@@ -272,7 +272,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
         class RawDataSet {
         public:
             GUID guid{};
-            pfc::array_t<t_uint8> data;
+            pfc::array_t<uint8_t> data;
         };
 
         service_ptr_t<file> p_file;
@@ -339,7 +339,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                 panel_indices[i].set_count(pcount);
                 for (uint32_t j = 0; j < pcount; j++)
                     p_file->read_lendian_t(panel_indices[i][j], p_abort);
-                // pfc::array_t<t_uint8> data;
+                // pfc::array_t<uint8_t> data;
                 const auto size = p_file->read_lendian_t<uint32_t>(p_abort);
                 datasets[i].data.set_size(size);
                 p_file->read(datasets[i].data.get_ptr(), size, p_abort);

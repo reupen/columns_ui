@@ -909,7 +909,7 @@ void FlatSplitterPanel::read_config(stream_reader* config, size_t p_size, bool i
                         break;
                     throw;
                 }
-                pfc::array_staticsize_t<t_uint8> columnExtraData(extraDataSize);
+                pfc::array_staticsize_t<uint8_t> columnExtraData(extraDataSize);
                 config->read(columnExtraData.get_ptr(), columnExtraData.get_size(), p_abort);
                 stream_reader_memblock_ref columnReader(columnExtraData);
                 panels[i]->read_extra(&columnReader, p_abort);

@@ -233,7 +233,7 @@ void ConfigRebar::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort
         for (uint32_t i = 0; i < itemCount; i++) {
             uint32_t extraDataSize;
             p_reader->read_lendian_t(extraDataSize, p_abort);
-            pfc::array_staticsize_t<t_uint8> columnExtraData(extraDataSize);
+            pfc::array_staticsize_t<uint8_t> columnExtraData(extraDataSize);
             p_reader->read(columnExtraData.get_ptr(), columnExtraData.get_size(), p_abort);
             stream_reader_memblock_ref columnReader(columnExtraData);
             m_entries[i].read_extra(&columnReader, p_abort);

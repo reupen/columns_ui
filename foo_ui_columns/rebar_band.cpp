@@ -41,7 +41,7 @@ void RebarBandState::import_from_fcl_stream(stream_reader* reader, uint32_t fcl_
     reader->read_lendian_t(mem_size, aborter);
 
     if (mem_size) {
-        pfc::array_t<t_uint8> data;
+        pfc::array_t<uint8_t> data;
         data.set_size(mem_size);
         reader->read(data.get_ptr(), mem_size, aborter);
 

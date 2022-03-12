@@ -65,7 +65,7 @@ class FontsDataSet : public fcl::dataset {
             reader.read_item(element_id);
             reader.read_item(element_size);
 
-            pfc::array_t<t_uint8> data;
+            pfc::array_t<uint8_t> data;
             data.set_size(element_size);
             reader.read(data.get_ptr(), data.get_size());
 
@@ -92,7 +92,7 @@ class FontsDataSet : public fcl::dataset {
                     reader2.read_item(element_id2);
                     reader2.read_item(element_size2);
                     if (element_id2 == identifier_client_entry) {
-                        pfc::array_t<t_uint8> data2;
+                        pfc::array_t<uint8_t> data2;
                         data2.set_size(element_size2);
                         reader2.read(data2.get_ptr(), data2.get_size());
                         stream_reader_memblock_ref element_reader(data2);

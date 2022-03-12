@@ -4,7 +4,7 @@ class ConfigLayout : public cfg_var {
 public:
     class Preset {
     public:
-        pfc::array_t<t_uint8> m_val;
+        pfc::array_t<uint8_t> m_val;
         GUID m_guid{};
         pfc::string_simple m_name;
         void write(stream_writer* out, abort_callback& p_abort);
@@ -121,7 +121,7 @@ private:
 
     uie::window_ptr m_child;
     GUID m_child_guid{columns_ui::panels::guid_playlist_view_v2};
-    pfc::array_t<t_uint8> m_child_data;
+    pfc::array_t<uint8_t> m_child_data;
     HWND m_child_wnd{nullptr};
     bool m_layout_editing_active{false};
     LiveEditData m_live_edit_data;

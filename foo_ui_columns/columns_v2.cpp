@@ -147,7 +147,7 @@ void ConfigColumns::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abo
         for (size_t i = 0; i < num; i++) {
             uint32_t columnExtraDataSize;
             p_reader->read_lendian_t(columnExtraDataSize, p_abort);
-            pfc::array_staticsize_t<t_uint8> columnExtraData(columnExtraDataSize);
+            pfc::array_staticsize_t<uint8_t> columnExtraData(columnExtraDataSize);
             p_reader->read(columnExtraData.get_ptr(), columnExtraData.get_size(), p_abort);
             stream_reader_memblock_ref columnReader(columnExtraData);
             items[i]->read_extra(&columnReader, streamVersion, p_abort);

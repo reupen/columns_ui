@@ -4,9 +4,9 @@
 
 namespace cui::splitter_utils {
 
-pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_full_v3_impl_t* item);
-pfc::array_t<t_uint8> serialise_splitter_item(const uie::splitter_item_t* item);
-std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(std::span<t_uint8> data);
+pfc::array_t<uint8_t> serialise_splitter_item(const uie::splitter_item_full_v3_impl_t* item);
+pfc::array_t<uint8_t> serialise_splitter_item(const uie::splitter_item_t* item);
+std::unique_ptr<uie::splitter_item_full_v3_impl_t> deserialise_splitter_item(std::span<uint8_t> data);
 
 CLIPFORMAT get_splitter_item_clipboard_format();
 

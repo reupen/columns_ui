@@ -3,7 +3,7 @@
 class VisualisationPanel : public ui_extension::container_ui_extension {
     static const wchar_t* class_name;
     bool initialised{false};
-    pfc::array_t<t_uint8> m_data;
+    pfc::array_t<uint8_t> m_data;
     service_ptr_t<class VisualisationPanelInterface> m_interface;
     uie::visualisation_ptr p_vis;
     unsigned m_frame;
@@ -48,9 +48,9 @@ public:
     void set_vis_data(const void* p_data, size_t p_size)
     {
         m_data.set_size(0);
-        m_data.append_fromptr((t_uint8*)p_data, p_size);
+        m_data.append_fromptr((uint8_t*)p_data, p_size);
     }
-    void get_vis_data(pfc::array_t<t_uint8>& p_out) const
+    void get_vis_data(pfc::array_t<uint8_t>& p_out) const
     {
         if (p_vis.is_valid()) {
             p_out.set_size(0);

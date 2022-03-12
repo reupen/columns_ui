@@ -262,7 +262,7 @@ void TabStackPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
     t->read_lendian_t(m_guid, p_abort);
     unsigned size;
     t->read_lendian_t(size, p_abort);
-    pfc::array_t<t_uint8> data;
+    pfc::array_t<uint8_t> data;
     data.set_size(size);
     t->read(data.get_ptr(), size, p_abort);
     t->read_lendian_t(m_use_custom_title, p_abort);

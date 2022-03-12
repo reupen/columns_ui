@@ -176,7 +176,7 @@ private:
     static HFONT g_font;
 
     GUID m_child_guid{};
-    mutable pfc::array_t<t_uint8> m_child_data;
+    mutable pfc::array_t<uint8_t> m_child_data;
     service_ptr_t<WindowHost> m_host;
     ui_extension::window_ptr m_child;
     HWND m_child_wnd{nullptr};

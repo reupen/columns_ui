@@ -390,7 +390,7 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
     p_reader->read_lendian_t(guid, p_abort);
     p_reader->read_string(name, p_abort);
 
-    pfc::array_t<t_uint8> data, conf;
+    pfc::array_t<uint8_t> data, conf;
     uint32_t size;
     p_reader->read_lendian_t(size, p_abort);
     data.set_size(size);

@@ -515,7 +515,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
                 set_frame_style(m_frame);
                 unsigned size = 0;
                 r->read_lendian_t(size, p_abort);
-                pfc::array_t<t_uint8> m_data;
+                pfc::array_t<uint8_t> m_data;
                 m_data.set_size(size);
                 r->read(m_data.get_ptr(), size, p_abort);
                 set_vis_data(m_data.get_ptr(), m_data.get_size());
@@ -524,7 +524,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
     }
     void get_config(stream_writer* data, abort_callback& p_abort) const override
     {
-        pfc::array_t<t_uint8> m_data;
+        pfc::array_t<uint8_t> m_data;
         data->write_lendian_t(get_frame_style(), p_abort);
         get_vis_data(m_data);
         data->write_lendian_t(gsl::narrow<uint32_t>(m_data.get_size()), p_abort);
@@ -544,7 +544,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
             uie::visualization::create_by_guid(
                 get_visualisation_guid(), reinterpret_cast<uie::visualisation_ptr&>(p_temp));
 
-        pfc::array_t<t_uint8> m_data;
+        pfc::array_t<uint8_t> m_data;
         if (!p_temp->b_active) {
             try {
                 abort_callback_dummy p_abort;

@@ -464,7 +464,7 @@ void PlaylistTabs::export_config(stream_writer* p_writer, abort_callback& p_abor
         } else
             throw fcl::exception_missing_panel();
     }
-    pfc::array_t<t_uint8> data;
+    pfc::array_t<uint8_t> data;
     stream_writer_memblock_ref w(data);
     if (ptr.is_valid())
         ptr->export_config(&w, abortCallback);
@@ -480,7 +480,7 @@ void PlaylistTabs::import_config(stream_reader* p_reader, size_t p_size, abort_c
         p_reader->read_lendian_t(size, p_abort);
         m_child_data.set_size(0);
         // m_child_data.set_size(size);
-        pfc::array_t<t_uint8> data;
+        pfc::array_t<uint8_t> data;
         data.set_size(size);
         p_reader->read(data.get_ptr(), size, p_abort);
         uie::window_ptr ptr;

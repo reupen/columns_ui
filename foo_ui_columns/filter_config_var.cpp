@@ -67,7 +67,7 @@ void ConfigFields::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abor
                 uint32_t extra_data_size;
                 p_stream->read_lendian_t(extra_data_size, p_abort);
 
-                pfc::array_staticsize_t<t_uint8> column_extra_data(extra_data_size);
+                pfc::array_staticsize_t<uint8_t> column_extra_data(extra_data_size);
                 p_stream->read(column_extra_data.get_ptr(), column_extra_data.get_size(), p_abort);
 
                 stream_reader_memblock_ref column_reader(column_extra_data);

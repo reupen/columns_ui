@@ -364,7 +364,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                             data.get_entry_content(i, handles);
                             data.get_side_data(i, sidedata);
                             stream_reader_memblock_ref side_data_reader(
-                                static_cast<t_uint8*>(sidedata.get_ptr()), sidedata.get_size());
+                                static_cast<uint8_t*>(sidedata.get_ptr()), sidedata.get_size());
                             abort_callback_dummy p_abort;
                             size_t index = m_playlist_api->create_playlist_ex(
                                 name, pfc_infinite, index_insert + i, handles, &side_data_reader, p_abort);

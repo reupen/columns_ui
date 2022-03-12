@@ -101,7 +101,7 @@ void FlatSplitterPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
     t->read_lendian_t(m_show_toggle_area, p_abort);
     unsigned data_size;
     t->read_lendian_t(data_size, p_abort);
-    pfc::array_t<t_uint8> data;
+    pfc::array_t<uint8_t> data;
     data.set_size(data_size);
     t->read(data.get_ptr(), data_size, p_abort);
     t->read_lendian_t(m_use_custom_title, p_abort);

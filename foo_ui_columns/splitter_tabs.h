@@ -77,7 +77,7 @@ public:
     public:
         GUID m_guid{};
         HWND m_wnd{nullptr};
-        pfc::array_t<t_uint8> m_child_data;
+        pfc::array_t<uint8_t> m_child_data;
         SizeLimit m_size_limits;
         uie::window_ptr m_child;
         bool m_use_custom_title{false};
