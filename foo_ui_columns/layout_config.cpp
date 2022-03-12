@@ -354,7 +354,7 @@ const pfc::list_base_const_t<ConfigLayout::Preset>& ConfigLayout::get_presets() 
 
 void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
-    out->write_lendian_t(t_uint32(stream_version_current), p_abort);
+    out->write_lendian_t(uint32_t(stream_version_current), p_abort);
     out->write_lendian_t(gsl::narrow<uint32_t>(m_active), p_abort);
     const auto count = gsl::narrow<uint32_t>(m_presets.get_count());
     out->write_lendian_t(count, p_abort);
@@ -376,7 +376,7 @@ void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
 
 void ConfigLayout::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     p_reader->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
         m_presets.remove_all();

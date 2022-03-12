@@ -67,12 +67,12 @@ class ItemPropertiesConfig {
 public:
     pfc::list_t<Field> m_fields;
     uint32_t m_edge_style;
-    t_uint32 m_info_sections_mask;
+    uint32_t m_info_sections_mask;
     bool m_show_columns, m_show_groups;
 
     bool m_initialising;
     static INT_PTR CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    ItemPropertiesConfig(pfc::list_t<Field> p_fields, uint32_t edge_style, t_uint32 info_sections_mask,
+    ItemPropertiesConfig(pfc::list_t<Field> p_fields, uint32_t edge_style, uint32_t info_sections_mask,
         bool b_show_columns, bool b_show_groups);
 
     bool run_modal(HWND wnd);
@@ -207,7 +207,7 @@ private:
     bool m_callback_registered{false};
     uint32_t m_tracking_mode;
 
-    t_uint32 m_info_sections_mask;
+    uint32_t m_info_sections_mask;
     bool m_show_column_titles, m_show_group_titles;
 
     bool m_autosizing_columns{true};

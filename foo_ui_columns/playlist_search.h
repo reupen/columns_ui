@@ -20,7 +20,7 @@ class progressive_search {
     pfc::string8_fastalloc m_buffer;
     const auto api = playlist_manager::get();
     unsigned active;
-    t_uint32 m_mode;
+    uint32_t m_mode;
 #ifdef SEARCH_CACHING_ENABLED
     pfc::array_t<pfc::string_simple> m_formatted;
 #endif
@@ -139,7 +139,7 @@ public:
         const auto tf_api = titleformat_compiler::get();
         tf_api->compile(m_to, src);
     }
-    void set_mode(t_uint32 mode) { m_mode = mode; }
+    void set_mode(uint32_t mode) { m_mode = mode; }
     bool on_key(WPARAM wp)
     {
         switch (wp) {
@@ -203,7 +203,7 @@ class quickfind_window : public ui_helpers::container_window {
 
     unsigned height;
     pfc::string8 m_pattern;
-    t_uint32 m_mode;
+    uint32_t m_mode;
 
 protected:
     HWND wnd_edit;

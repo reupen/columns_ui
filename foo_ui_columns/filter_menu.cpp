@@ -23,7 +23,7 @@ bool FilterPanel::notify_on_contextmenu_header(const POINT& pt, const HDHITTESTI
             mii.cch = gsl::narrow<UINT>(wide.length());
             mii.wID = gsl::narrow<UINT>(i + 1);
             InsertMenuItem(menu, gsl::narrow<UINT>(i), TRUE, &mii);
-            // console::formatter() << (t_uint32)GetLastError();
+            // console::formatter() << (uint32_t)GetLastError();
         }
     }
     int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr);

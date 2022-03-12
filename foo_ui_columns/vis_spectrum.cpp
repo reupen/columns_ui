@@ -509,7 +509,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
     void set_config(stream_reader* r, size_t p_size, abort_callback& p_abort) override
     {
         if (p_size) {
-            t_uint32 m_frame;
+            uint32_t m_frame;
             r->read_lendian_t(m_frame, p_abort);
             {
                 set_frame_style(m_frame);

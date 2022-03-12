@@ -172,7 +172,7 @@ public:
             ConfigParam& m_param;
             static CLIPFORMAT g_clipformat();
             struct DDData {
-                t_uint32 version;
+                uint32_t version;
                 HWND wnd;
             };
             class ButtonsListDropTarget : public IDropTarget {

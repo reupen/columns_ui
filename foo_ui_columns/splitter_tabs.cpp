@@ -355,7 +355,7 @@ bool TabStackPanel::set_config_item(size_t index, const GUID& p_type, stream_rea
 void TabStackPanel::set_config(stream_reader* config, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
-        t_uint32 version;
+        uint32_t version;
         config->read_lendian_t(version, p_abort);
         if (version <= stream_version_current) {
             m_panels.remove_all();
@@ -374,7 +374,7 @@ void TabStackPanel::set_config(stream_reader* config, size_t p_size, abort_callb
 }
 void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) const
 {
-    out->write_lendian_t((t_uint32)stream_version_current, p_abort);
+    out->write_lendian_t((uint32_t)stream_version_current, p_abort);
     const auto count = m_panels.get_count();
     out->write_lendian_t(gsl::narrow<uint32_t>(m_active_tab), p_abort);
     out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
@@ -385,7 +385,7 @@ void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) cons
 
 void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
-    p_writer->write_lendian_t((t_uint32)stream_version_current, p_abort);
+    p_writer->write_lendian_t((uint32_t)stream_version_current, p_abort);
     const auto count = m_panels.get_count();
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_active_tab), p_abort);
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
@@ -396,7 +396,7 @@ void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abo
 
 void TabStackPanel::import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     p_reader->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
         m_panels.remove_all();

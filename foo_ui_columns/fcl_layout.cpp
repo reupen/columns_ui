@@ -11,7 +11,7 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         static const GUID guid = {0x2cf00365, 0xf2d7, 0x4e78, {0x9f, 0xca, 0xc1, 0xd5, 0x6e, 0x27, 0x7, 0xd8}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         pfc::list_t<GUID> panels;
@@ -19,24 +19,24 @@ class LayoutDataSet : public cui::fcl::dataset_v2 {
         feedback.add_required_panels(panels);
     }
     const GUID& get_group() const override { return cui::fcl::groups::layout; }
-    void set_data(stream_reader* p_reader, size_t size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         pfc::list_t<GUID> panels;
         bool missingpanels = false;
 
-        t_uint32 version;
+        uint32_t version;
         p_reader->read_lendian_t(version, p_abort);
         if (version > 0)
             throw pfc::exception("Need new columns ui");
-        t_uint32 pcount;
-        t_uint32 active;
+        uint32_t pcount;
+        uint32_t active;
         p_reader->read_lendian_t(active, p_abort);
         p_reader->read_lendian_t(pcount, p_abort);
 
         pfc::list_t<ConfigLayout::Preset> presets;
 
-        for (t_uint32 j = 0; j < pcount; j++) {
+        for (uint32_t j = 0; j < pcount; j++) {
             ConfigLayout::Preset pres;
             if (!g_layout_window.import_config_to_object(p_reader, size, type, pres, panels, p_abort))
                 missingpanels = true;
@@ -76,12 +76,12 @@ class ToolbarLayoutDataSet : public fcl::dataset_v2 {
         return guid;
     }
     const GUID& get_group() const override { return fcl::groups::toolbars; }
-    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         g_cfg_rebar.export_config(p_writer, type, feedback, p_abort);
     }
-    void set_data(stream_reader* p_reader, size_t size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         pfc::list_t<GUID> panels;
@@ -109,7 +109,7 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
         static const GUID guid = {0x78aa8894, 0x4b2c, 0x477d, {0xb2, 0x33, 0xe7, 0xa7, 0xa7, 0x66, 0x3d, 0x24}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, cui::fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, cui::fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -117,12 +117,12 @@ class MiscLayoutDataSet : public cui::fcl::dataset {
         out.write_item(identifier_status_pane, settings::show_status_pane);
         out.write_item(identifier_allow_locked_panel_resizing, settings::allow_locked_panel_resizing.get_value());
     }
-    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, cui::fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, cui::fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
 
         while (reader.get_remaining()) {
             reader.read_item(element_id);

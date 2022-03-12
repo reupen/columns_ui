@@ -8,7 +8,7 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
 {
     if (ptr_node.is_valid()) {
         pfc::string8 name_part;
-        t_uint32 flags;
+        uint32_t flags;
         ptr_node->get_display(name_part, flags);
 
         switch (ptr_node->get_type()) {

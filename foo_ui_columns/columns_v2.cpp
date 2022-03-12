@@ -127,7 +127,7 @@ void ConfigColumns::set_data_raw(stream_reader* p_reader, size_t p_sizehint, abo
     list_t<PlaylistViewColumn::ptr> items;
     ColumnStreamVersion streamVersion = ColumnStreamVersion::streamVersion0;
 
-    t_uint32 num;
+    uint32_t num;
     p_reader->read_lendian_t(num, p_abort);
     for (size_t i = 0; i < num; i++) {
         PlaylistViewColumn::ptr item = std::make_shared<PlaylistViewColumn>();

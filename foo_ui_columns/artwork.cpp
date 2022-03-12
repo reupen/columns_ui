@@ -56,7 +56,7 @@ const std::vector<GUID> g_artwork_types{
 void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(m_track_mode, p_abort);
-    p_writer->write_lendian_t(static_cast<t_uint32>(current_stream_version), p_abort);
+    p_writer->write_lendian_t(static_cast<uint32_t>(current_stream_version), p_abort);
     p_writer->write_lendian_t(m_preserve_aspect_ratio, p_abort);
     p_writer->write_lendian_t(m_lock_type, p_abort);
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_selected_artwork_type_index), p_abort);
@@ -604,7 +604,7 @@ void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callba
 {
     if (size) {
         p_reader->read_lendian_t(m_track_mode, p_abort);
-        t_uint32 version = pfc_infinite;
+        uint32_t version = pfc_infinite;
         try {
             p_reader->read_lendian_t(version, p_abort);
         } catch (exception_io_data_truncation const&) {

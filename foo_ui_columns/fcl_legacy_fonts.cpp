@@ -17,17 +17,17 @@ class LegacyFontsDataSet : public fcl::dataset {
         static const GUID guid = {0xa297be7, 0xde43, 0x49da, {0x8d, 0x8e, 0xc8, 0xd8, 0x88, 0xcf, 0x10, 0x14}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
     }
-    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         const auto api = fb2k::std_api_get<fonts::manager>();
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
         bool font_read{false};
 
         while (reader.get_remaining()) {

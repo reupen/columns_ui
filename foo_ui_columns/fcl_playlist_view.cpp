@@ -33,14 +33,14 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         static const GUID guid = {0x1d5291b1, 0x392d, 0x4469, {0xb9, 0x5, 0x91, 0x20, 0x2b, 0x80, 0xeb, 0x7b}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
         out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.get_raw_value().value);
         out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.get_raw_value().dpi);
     }
-    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         const auto api = fb2k::std_api_get<fonts::manager>();
@@ -48,8 +48,8 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         g_colour_manager_data.find_by_guid(pfc::guid_null, colour_manager_entry);
 
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
         bool b_colour_read = false;
 
         bool item_padding_read = false;

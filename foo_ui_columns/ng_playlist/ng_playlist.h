@@ -23,12 +23,12 @@ void set_font_size(bool up);
 
 class BasePlaylistCallback : public playlist_callback {
 public:
-    void initialise_playlist_callback(t_uint32 p_flags = flag_all)
+    void initialise_playlist_callback(uint32_t p_flags = flag_all)
     {
         playlist_manager::get()->register_callback(this, p_flags);
     }
     void deinitialise_playlist_callback() { playlist_manager::get()->unregister_callback(this); }
-    void set_callback_flags(t_uint32 p_flags) { playlist_manager::get()->modify_callback(this, p_flags); }
+    void set_callback_flags(uint32_t p_flags) { playlist_manager::get()->modify_callback(this, p_flags); }
     // dummy implementations - avoid possible pure virtual function calls!
     void on_items_added(size_t p_playlist, size_t p_start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
         const bit_array& p_selection) override

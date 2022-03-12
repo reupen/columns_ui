@@ -22,7 +22,7 @@ class ColoursDataSet : public fcl::dataset {
         identifier_client_entries,
         identifier_client_entry = 0,
     };
-    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
@@ -47,12 +47,12 @@ class ColoursDataSet : public fcl::dataset {
                 identifier_client_entries, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
     }
-    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
 
         while (reader.get_remaining()) {
             reader.read_item(element_id);
@@ -77,8 +77,8 @@ class ColoursDataSet : public fcl::dataset {
                 g_colour_manager_data.m_entries.set_count(count);
 
                 for (size_t i = 0; i < count; i++) {
-                    t_uint32 element_id2;
-                    t_uint32 element_size2;
+                    uint32_t element_id2;
+                    uint32_t element_size2;
                     reader2.read_item(element_id2);
                     reader2.read_item(element_size2);
                     if (element_id2 == identifier_client_entry) {

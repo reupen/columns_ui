@@ -30,19 +30,19 @@ class PlaylistSwitcherAppearanceDataSet : public fcl::dataset {
         static const GUID guid = {0x1de0cf38, 0x5e8e, 0x439c, {0x8f, 0x1, 0xb8, 0x99, 0x99, 0x75, 0xac, 0xd}};
         return guid;
     }
-    void get_data(stream_writer* p_writer, t_uint32 type, fcl::t_export_feedback& feedback,
+    void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
         out.write_item(identifier_item_height, settings::playlist_switcher_item_padding.get_raw_value().value);
         out.write_item(identifier_item_height_dpi, settings::playlist_switcher_item_padding.get_raw_value().dpi);
     }
-    void set_data(stream_reader* p_reader, size_t stream_size, t_uint32 type, fcl::t_import_feedback& feedback,
+    void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
     {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-        t_uint32 element_id;
-        t_uint32 element_size;
+        uint32_t element_id;
+        uint32_t element_size;
 
         bool font_read{false};
         bool item_padding_read = false;

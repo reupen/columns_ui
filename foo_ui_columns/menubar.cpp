@@ -18,7 +18,7 @@ public:
     pfc::string8 m_name;
     pfc::array_t<TCHAR> m_name_with_accelerators;
     GUID m_guid{};
-    t_uint32 m_sort_priority{NULL};
+    uint32_t m_sort_priority{NULL};
 
     MainMenuRootGroup() = default;
 

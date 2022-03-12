@@ -14,7 +14,7 @@ public:
     Alignment align{ALIGN_LEFT};
     PlaylistFilterType filter_type{FILTER_NONE};
     pfc::string8 filter;
-    t_uint32 parts{1};
+    uint32_t parts{1};
     bool show{true};
     pfc::string8 edit_field;
 

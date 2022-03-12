@@ -157,7 +157,7 @@ public:
         }
         return false;
     }
-    t_uint32 get_mode() const { return m_mode; }
+    uint32_t get_mode() const { return m_mode; }
     explicit FCLDialog(bool b_import = false, std::unordered_set<GUID> p_list = {})
         : m_import(b_import)
         , m_filter(std::move(p_list))
@@ -165,7 +165,7 @@ public:
     }
 
 private:
-    t_uint32 m_mode{0};
+    uint32_t m_mode{0};
     bool m_import;
     std::unordered_set<GUID> m_filter;
 };
@@ -279,14 +279,14 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
         abort_callback_impl p_abort;
         filesystem::g_open_read(p_file, path, p_abort);
         GUID guid;
-        t_uint32 version;
+        uint32_t version;
         p_file->read_lendian_t(guid, p_abort);
         if (guid != g_fcl_header)
             throw pfc::exception("Unrecognised file header");
         p_file->read_lendian_t(version, p_abort);
         if (version > fcl_stream_version)
             throw pfc::exception("Need a newer version of Columns UI");
-        t_uint32 mode = cui::fcl::type_public;
+        uint32_t mode = cui::fcl::type_public;
         if (version >= 1)
             p_file->read_lendian_t(mode, p_abort);
         {
@@ -323,7 +323,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
         {
             const auto count = p_file->read_lendian_t<uint32_t>(p_abort);
 
-            pfc::array_t<pfc::array_t<t_uint32>> panel_indices;
+            pfc::array_t<pfc::array_t<uint32_t>> panel_indices;
             panel_indices.set_count(count);
 
             std::vector<RawDataSet> datasets;
@@ -334,10 +334,10 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                 pfc::string8 name;
                 p_file->read_lendian_t(datasets[i].guid, p_abort);
                 p_file->read_string(name, p_abort);
-                t_uint32 pcount;
+                uint32_t pcount;
                 p_file->read_lendian_t(pcount, p_abort);
                 panel_indices[i].set_count(pcount);
-                for (t_uint32 j = 0; j < pcount; j++)
+                for (uint32_t j = 0; j < pcount; j++)
                     p_file->read_lendian_t(panel_indices[i][j], p_abort);
                 // pfc::array_t<t_uint8> data;
                 const auto size = p_file->read_lendian_t<uint32_t>(p_abort);
@@ -447,7 +447,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
         abort_callback_impl p_abort;
         filesystem::g_open_write_new(p_file, path, p_abort);
         p_file->write_lendian_t(g_fcl_header, p_abort);
-        p_file->write_lendian_t((t_uint32)fcl_stream_version, p_abort);
+        p_file->write_lendian_t((uint32_t)fcl_stream_version, p_abort);
 
         const uint32_t mode = is_quiet ? cui::fcl::type_private : pFCLDialog.get_mode();
         p_file->write_lendian_t(mode, p_abort);
@@ -473,7 +473,7 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
                         const auto temp = gsl::narrow<uint32_t>(feedback.find_or_add_guid(feeds[i][j]));
                         mem.write_lendian_t(temp, p_abort);
                     }
-                    mem.write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
+                    mem.write_lendian_t((uint32_t)writer.m_data.get_size(), p_abort);
                     mem.write(writer.m_data.get_ptr(), writer.m_data.get_size(), p_abort);
                     actualtotal++;
                 }

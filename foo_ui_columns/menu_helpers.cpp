@@ -17,7 +17,7 @@ std::vector<MenuItemInfo> get_dynamic_main_menu_node_items(
     GUID command_id, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts)
 {
     pfc::string8 name_part;
-    t_uint32 flags;
+    uint32_t flags;
     ptr_node->get_display(name_part, flags);
 
     switch (ptr_node->get_type()) {
@@ -246,7 +246,7 @@ bool mainmenunode_subguid_to_path(
         switch (ptr_node->get_type()) {
         case mainmenu_node::type_command: {
             if (p_subguid == ptr_node->get_guid()) {
-                t_uint32 flags;
+                uint32_t flags;
                 ptr_node->get_display(p_out, flags);
                 return true;
             }
@@ -260,7 +260,7 @@ bool mainmenunode_subguid_to_path(
                     if (b_is_root)
                         p_out = name;
                     else {
-                        t_uint32 flags;
+                        uint32_t flags;
                         ptr_node->get_display(p_out, flags);
                         p_out << "/" << name;
                     }

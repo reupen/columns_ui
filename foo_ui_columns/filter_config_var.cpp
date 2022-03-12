@@ -42,11 +42,11 @@ ConfigFavourites cfg_favourites(g_guid_favouritequeries);
 
 void ConfigFields::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
-        t_uint32 count;
-        t_uint32 i;
+        uint32_t count;
+        uint32_t i;
         p_stream->read_lendian_t(count, p_abort);
         set_count(count);
         for (i = 0; i < count; i++) {
@@ -78,9 +78,9 @@ void ConfigFields::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abor
 }
 void ConfigFields::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
-    p_stream->write_lendian_t((t_uint32)stream_version_current, p_abort);
-    t_uint32 i;
-    t_uint32 count = gsl::narrow<uint32_t>(get_count());
+    p_stream->write_lendian_t((uint32_t)stream_version_current, p_abort);
+    uint32_t i;
+    uint32_t count = gsl::narrow<uint32_t>(get_count());
     p_stream->write_lendian_t(count, p_abort);
     for (i = 0; i < count; i++) {
         const auto& field = (*this)[i];
@@ -147,24 +147,24 @@ void ConfigFields::fix_name(pfc::string8& p_name)
 
 void ConfigFavourites::get_data_raw(stream_writer* p_stream, abort_callback& p_abort)
 {
-    t_uint32 m = gsl::narrow<t_uint32>(get_count());
-    t_uint32 v = 0;
+    uint32_t m = gsl::narrow<uint32_t>(get_count());
+    uint32_t v = 0;
     p_stream->write_lendian_t(v, p_abort);
     p_stream->write_lendian_t(m, p_abort);
-    for (t_uint32 n = 0; n < m; n++)
+    for (uint32_t n = 0; n < m; n++)
         p_stream->write_string(get_item(n), p_abort);
 }
 
 void ConfigFavourites::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 count;
-    t_uint32 version;
+    uint32_t count;
+    uint32_t version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= 0) {
         p_stream->read_lendian_t(count, p_abort);
         pfc::string8_fast_aggressive temp;
         temp.prealloc(32);
-        for (t_uint32 n = 0; n < count; n++) {
+        for (uint32_t n = 0; n < count; n++) {
             p_stream->read_string(temp, p_abort);
             add_item(temp);
         }

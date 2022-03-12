@@ -155,7 +155,7 @@ void ButtonsToolbar::Button::read_from_file(ConfigVersion p_version, const char*
         p_file->read_lendian_t(size, p_abort);
         // if (size > p_file->get_size(p_abort) - p_file->get_position(p_abort))
         //    throw exception_io_data();
-        read += sizeof(t_uint32) + sizeof(t_uint32) + size;
+        read += sizeof(uint32_t) + sizeof(uint32_t) + size;
         switch (id) {
         case I_BUTTON_TYPE:
             p_file->read_lendian_t(m_type, p_abort);

@@ -56,7 +56,7 @@ void ColourManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
 
 void ColourManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= cfg_version) {
         m_global_entry->read(version, p_stream, p_abort);
@@ -89,7 +89,7 @@ void ColourManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_
         if (mask[i] = clients.have_item(m_entries[i]->guid))
             counter++;
 
-    p_stream->write_lendian_t(static_cast<t_uint32>(cfg_version), p_abort);
+    p_stream->write_lendian_t(static_cast<uint32_t>(cfg_version), p_abort);
     m_global_entry->write(p_stream, p_abort);
     p_stream->write_lendian_t(gsl::narrow<uint32_t>(counter), p_abort);
     for (i = 0; i < count; i++)
@@ -117,10 +117,10 @@ void ColourManagerData::Entry::reset_colors()
     use_custom_active_item_frame = false;
 }
 
-void ColourManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
+void ColourManagerData::Entry::read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort)
 {
     p_stream->read_lendian_t(guid, p_abort);
-    p_stream->read_lendian_t((t_uint32&)colour_mode, p_abort);
+    p_stream->read_lendian_t((uint32_t&)colour_mode, p_abort);
     p_stream->read_lendian_t(text, p_abort);
     p_stream->read_lendian_t(selection_text, p_abort);
     p_stream->read_lendian_t(inactive_selection_text, p_abort);
@@ -132,11 +132,11 @@ void ColourManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, a
 }
 
 void ColourManagerData::Entry::import(
-    stream_reader* p_reader, size_t stream_size, t_uint32 type, abort_callback& p_abort)
+    stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-    t_uint32 element_id;
-    t_uint32 element_size;
+    uint32_t element_id;
+    uint32_t element_size;
 
     while (reader.get_remaining()) {
         reader.read_item(element_id);
@@ -147,7 +147,7 @@ void ColourManagerData::Entry::import(
             reader.read_item(guid);
             break;
         case identifier_mode:
-            reader.read_item((t_uint32&)colour_mode);
+            reader.read_item((uint32_t&)colour_mode);
             break;
         case identifier_text:
             reader.read_item(text);
@@ -184,7 +184,7 @@ void ColourManagerData::Entry::_export(stream_writer* p_stream, abort_callback& 
 {
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
-    out.write_item(identifier_mode, (t_uint32)colour_mode);
+    out.write_item(identifier_mode, (uint32_t)colour_mode);
     if (colour_mode == cui::colours::colour_mode_custom) {
         out.write_item(identifier_text, text);
         out.write_item(identifier_selection_text, selection_text);
@@ -200,7 +200,7 @@ void ColourManagerData::Entry::_export(stream_writer* p_stream, abort_callback& 
 void ColourManagerData::Entry::write(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t(guid, p_abort);
-    p_stream->write_lendian_t((t_uint32)colour_mode, p_abort);
+    p_stream->write_lendian_t((uint32_t)colour_mode, p_abort);
     p_stream->write_lendian_t(text, p_abort);
     p_stream->write_lendian_t(selection_text, p_abort);
     p_stream->write_lendian_t(inactive_selection_text, p_abort);

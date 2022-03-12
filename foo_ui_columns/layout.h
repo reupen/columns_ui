@@ -68,8 +68,8 @@ public:
     bool set_focus();
     void show_window();
 
-    void export_config(stream_writer* p_out, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
-    bool import_config_to_object(stream_reader* p_reader, size_t size, t_uint32 mode, ConfigLayout::Preset& p_out,
+    void export_config(stream_writer* p_out, uint32_t mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
+    bool import_config_to_object(stream_reader* p_reader, size_t size, uint32_t mode, ConfigLayout::Preset& p_out,
         pfc::list_base_t<GUID>& panels, abort_callback& p_abort);
 
     void show_menu_access_keys();

@@ -97,7 +97,7 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
             case I_BUTTONS: {
                 service_ptr_t<genrand_service> genrand = genrand_service::g_create();
                 genrand->seed(GetTickCount());
-                t_uint32 dirname = genrand->genrand(pfc_infinite);
+                uint32_t dirname = genrand->genrand(pfc_infinite);
 
                 unsigned count;
                 p_file->read_lendian_t(count, p_abort);

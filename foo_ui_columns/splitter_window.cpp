@@ -860,7 +860,7 @@ void FlatSplitterPanel::export_config(stream_writer* p_writer, abort_callback& p
 
 void FlatSplitterPanel::write_config(stream_writer* p_writer, bool is_export, abort_callback& p_abort) const
 {
-    p_writer->write_lendian_t(static_cast<t_uint32>(stream_version_current), p_abort);
+    p_writer->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
     const auto count = m_panels.get_count();
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
     for (size_t i = 0; i < count; i++) {
@@ -881,7 +881,7 @@ void FlatSplitterPanel::write_config(stream_writer* p_writer, bool is_export, ab
 void FlatSplitterPanel::read_config(stream_reader* config, size_t p_size, bool is_import, abort_callback& p_abort)
 {
     if (p_size) {
-        t_uint32 version;
+        uint32_t version;
         config->read_lendian_t(version, p_abort);
         if (version <= stream_version_current) {
             PanelList panels;

@@ -33,7 +33,7 @@ public:
 
     unsigned get_type() const override { return uie::type_toolbar; }
 
-    t_uint32 get_flags() const override { return flag_default_flags_plus_transparent_background; }
+    uint32_t get_flags() const override { return flag_default_flags_plus_transparent_background; }
 
 private:
     class FontClient : public fonts::client {

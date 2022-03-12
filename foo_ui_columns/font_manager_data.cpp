@@ -56,7 +56,7 @@ void FontManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
 
 void FontManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     p_stream->read_lendian_t(version, p_abort);
     if (version <= cfg_version) {
         m_common_items_entry->read(version, p_stream, p_abort);
@@ -128,11 +128,11 @@ void FontManagerData::Entry::reset_fonts()
     font_description.estimate_point_size();
 }
 
-void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size, t_uint32 type, abort_callback& p_abort)
+void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort)
 {
     fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
-    t_uint32 element_id;
-    t_uint32 element_size;
+    uint32_t element_id;
+    uint32_t element_size;
 
     while (reader.get_remaining()) {
         reader.read_item(element_id);
@@ -143,7 +143,7 @@ void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size,
             reader.read_item(guid);
             break;
         case identifier_mode:
-            reader.read_item((t_uint32&)font_mode);
+            reader.read_item((uint32_t&)font_mode);
             break;
         case identifier_font:
             reader.read_item(font_description.log_font);
@@ -163,17 +163,17 @@ void FontManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_
 {
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
-    out.write_item(identifier_mode, (t_uint32)font_mode);
+    out.write_item(identifier_mode, (uint32_t)font_mode);
     if (font_mode == cui::fonts::font_mode_custom) {
         out.write_item(identifier_font, font_description.log_font);
     }
     out.write_item(identifier_point_size_tenths, font_description.point_size_tenths);
 }
 
-void FontManagerData::Entry::read(t_uint32 version, stream_reader* p_stream, abort_callback& p_abort)
+void FontManagerData::Entry::read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort)
 {
     p_stream->read_lendian_t(guid, p_abort);
-    p_stream->read_lendian_t((t_uint32&)font_mode, p_abort);
+    p_stream->read_lendian_t((uint32_t&)font_mode, p_abort);
     font_description.log_font = cui::fonts::read_font(p_stream, p_abort);
     font_description.estimate_point_size();
 }
@@ -197,7 +197,7 @@ LOGFONT FontManagerData::Entry::get_normalised_font(unsigned dpi)
 void FontManagerData::Entry::write(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t(guid, p_abort);
-    p_stream->write_lendian_t((t_uint32)font_mode, p_abort);
+    p_stream->write_lendian_t((uint32_t)font_mode, p_abort);
     cui::fonts::write_font(p_stream, font_description.log_font, p_abort);
 }
 

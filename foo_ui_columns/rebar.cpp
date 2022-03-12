@@ -48,10 +48,10 @@ void create_rebar()
 }
 
 void ConfigRebar::export_config(
-    stream_writer* p_out, t_uint32 mode, fcl::t_export_feedback& feedback, abort_callback& p_abort)
+    stream_writer* p_out, uint32_t mode, fcl::t_export_feedback& feedback, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
-    p_out->write_lendian_t((t_uint32)stream_version, p_abort);
+    p_out->write_lendian_t((uint32_t)stream_version, p_abort);
 
     if (g_rebar_window) {
         g_rebar_window->refresh_band_configs();
@@ -67,9 +67,9 @@ void ConfigRebar::export_config(
 }
 
 void ConfigRebar::import_config(
-    stream_reader* p_reader, size_t size, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
+    stream_reader* p_reader, size_t size, uint32_t mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
-    t_uint32 version;
+    uint32_t version;
     std::vector<RebarBandState> new_entries;
     p_reader->read_lendian_t(version, p_abort);
     if (version > 0)

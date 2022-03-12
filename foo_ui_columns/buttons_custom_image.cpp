@@ -270,7 +270,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
 
                 const auto imagesize = gsl::narrow<uint32_t>(p_image->get_size(p_abort));
 
-                const auto size = gsl::narrow<uint32_t>(imagesize + name.length() + 4 * sizeof(t_uint32));
+                const auto size = gsl::narrow<uint32_t>(imagesize + name.length() + 4 * sizeof(uint32_t));
                 p_file.write_lendian_t(size, p_abort);
 
                 p_file.write_lendian_t(IMAGE_NAME, p_abort);

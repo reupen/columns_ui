@@ -381,7 +381,7 @@ void __get_panel_list_recur(const uie::window_ptr& p_wnd, pfc::list_base_t<GUID>
     }
 }
 
-bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize, t_uint32 mode,
+bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize, uint32_t mode,
     ConfigLayout::Preset& p_out, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     // uie::splitter_item_ptr item = new uie::splitter_item_simple_t;
@@ -391,7 +391,7 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
     p_reader->read_string(name, p_abort);
 
     pfc::array_t<t_uint8> data, conf;
-    t_uint32 size;
+    uint32_t size;
     p_reader->read_lendian_t(size, p_abort);
     data.set_size(size);
     p_reader->read(data.get_ptr(), size, p_abort);
@@ -434,10 +434,10 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
 }
 
 void LayoutWindow::export_config(
-    stream_writer* p_out, t_uint32 mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
+    stream_writer* p_out, uint32_t mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
     enum { stream_version = 0 };
-    p_out->write_lendian_t((t_uint32)stream_version, p_abort);
+    p_out->write_lendian_t((uint32_t)stream_version, p_abort);
     size_t count = cfg_layout.get_presets().get_count();
     p_out->write_lendian_t(gsl::narrow<uint32_t>(cfg_layout.get_active()), p_abort);
     p_out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
@@ -464,8 +464,8 @@ void LayoutWindow::export_config(
                     }
                     __get_panel_list_recur(ptr, panels);
                     ptr->export_config(&writer, p_abort);
-                    p_out->write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
-                    p_out->write(writer.m_data.get_ptr(), (t_uint32)writer.m_data.get_size(), p_abort);
+                    p_out->write_lendian_t((uint32_t)writer.m_data.get_size(), p_abort);
+                    p_out->write(writer.m_data.get_ptr(), (uint32_t)writer.m_data.get_size(), p_abort);
                 }
             } else {
                 p_out->write_lendian_t(item->get_panel_guid(), p_abort);
@@ -485,8 +485,8 @@ void LayoutWindow::export_config(
                     __get_panel_list_recur(ptr, panels);
                 }
 
-                p_out->write_lendian_t((t_uint32)writer.m_data.get_size(), p_abort);
-                p_out->write(writer.m_data.get_ptr(), (t_uint32)writer.m_data.get_size(), p_abort);
+                p_out->write_lendian_t((uint32_t)writer.m_data.get_size(), p_abort);
+                p_out->write(writer.m_data.get_ptr(), (uint32_t)writer.m_data.get_size(), p_abort);
             }
         } catch (const pfc::exception& ex) {
             pfc::string_formatter formatter;

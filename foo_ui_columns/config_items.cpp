@@ -47,7 +47,7 @@ fbh::ConfigString config_main_window_title_script(
 static const GUID guid_inline_metafield_edit_mode
     = {0x2b6eaf5c, 0x970a, 0x4432, {0xb8, 0x9, 0x12, 0xe8, 0xce, 0xf6, 0xdc, 0xde}};
 
-cfg_int_t<t_uint32> cfg_inline_metafield_edit_mode(
+cfg_int_t<uint32_t> cfg_inline_metafield_edit_mode(
     guid_inline_metafield_edit_mode, config_get_inline_metafield_edit_mode_default_value());
 
 // {737954D1-1814-4d94-852D-A5CB8D7025ED}
@@ -165,11 +165,11 @@ void config_reset_activate_target_playlist_on_dropped_items()
         config_get_activate_target_playlist_on_dropped_items_default_value());
 }
 
-void config_set_inline_metafield_edit_mode(t_uint32 value)
+void config_set_inline_metafield_edit_mode(uint32_t value)
 {
     cfg_inline_metafield_edit_mode = value;
 }
-t_uint32 config_get_inline_metafield_edit_mode()
+uint32_t config_get_inline_metafield_edit_mode()
 {
     return cfg_inline_metafield_edit_mode;
 }
@@ -177,7 +177,7 @@ void config_reset_inline_metafield_edit_mode()
 {
     config_set_inline_metafield_edit_mode(config_get_inline_metafield_edit_mode_default_value());
 }
-t_uint32 config_get_inline_metafield_edit_mode_default_value()
+uint32_t config_get_inline_metafield_edit_mode_default_value()
 {
     return mode_columns;
 }

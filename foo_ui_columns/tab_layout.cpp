@@ -678,7 +678,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         case (CBN_SELCHANGE << 16) | IDC_CAPTIONSTYLE:
             set_item_property(wnd, uie::splitter_window::uint32_orientation,
-                (t_uint32)(SendMessage((HWND)lp, CB_GETCURSEL, 0, 0) ? 1 : 0));
+                (uint32_t)(SendMessage((HWND)lp, CB_GETCURSEL, 0, 0) ? 1 : 0));
             break;
         case IDC_CONFIGURE:
             run_configure(wnd);
