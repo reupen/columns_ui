@@ -5,7 +5,9 @@
 
 namespace cui::dark {
 
-bool does_os_support_dark_mode()
+namespace {
+
+bool check_windows_10_build(DWORD build_number)
 {
     OSVERSIONINFOEX osviex{};
     osviex.dwOSVersionInfoSize = sizeof(osviex);
@@ -16,9 +18,23 @@ bool does_os_support_dark_mode()
 
     osviex.dwMajorVersion = 10;
     osviex.dwMinorVersion = 0;
-    osviex.dwBuildNumber = 19041;
+    osviex.dwBuildNumber = build_number;
 
-    return VerifyVersionInfoW(&osviex, VER_MAJORVERSION | VER_MINORVERSION | VER_SERVICEPACKMAJOR, mask) != FALSE;
+    return VerifyVersionInfoW(&osviex, VER_MAJORVERSION | VER_MINORVERSION | VER_BUILDNUMBER, mask) != FALSE;
+}
+
+bool is_windows_11_rtm_or_newer()
+{
+    static auto is_22000_or_newer = check_windows_10_build(22000);
+    return is_22000_or_newer;
+}
+
+} // namespace
+
+bool does_os_support_dark_mode()
+{
+    static auto is_19041_or_newer = check_windows_10_build(19041);
+    return is_19041_or_newer;
 }
 
 bool are_private_apis_allowed()
@@ -67,18 +83,40 @@ consteval COLORREF create_grey(const int value)
     return RGB(value, value, value);
 }
 
-enum class DarkColour : COLORREF {
-    DARK_000 = create_grey(32),
-    DARK_100 = create_grey(42),
-    DARK_190 = create_grey(51),
-    DARK_200 = create_grey(56),
-    DARK_300 = create_grey(77),
-    DARK_400 = create_grey(88),
-    DARK_500 = create_grey(98),
-    DARK_600 = create_grey(119),
-    DARK_750 = create_grey(166),
-    DARK_999 = create_grey(255),
+enum class DarkColourID : COLORREF {
+    DARK_000,
+    DARK_200,
+    DARK_300,
+    DARK_400,
+    DARK_500,
+    DARK_600,
+    DARK_750,
+    DARK_999,
 };
+
+COLORREF get_base_dark_colour(DarkColourID colour_id)
+{
+    switch (colour_id) {
+    case DarkColourID::DARK_000:
+        return is_windows_11_rtm_or_newer() ? create_grey(25) : create_grey(32);
+    case DarkColourID::DARK_200:
+        return create_grey(51);
+    case DarkColourID::DARK_300:
+        return create_grey(77);
+    case DarkColourID::DARK_400:
+        return create_grey(88);
+    case DarkColourID::DARK_500:
+        return create_grey(98);
+    case DarkColourID::DARK_600:
+        return create_grey(119);
+    case DarkColourID::DARK_750:
+        return create_grey(166);
+    case DarkColourID::DARK_999:
+        return create_grey(255);
+    default:
+        uBugCheck();
+    }
+}
 
 wil::unique_hbrush get_dark_colour_brush(ColourID colour_id)
 {
@@ -137,67 +175,69 @@ COLORREF get_dark_colour(ColourID colour_id)
 {
     switch (colour_id) {
     case ColourID::LayoutBackground:
-        return WI_EnumValue(DarkColour::DARK_190);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::PanelCaptionText:
-        return WI_EnumValue(DarkColour::DARK_999);
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::PanelCaptionBackground:
-        return WI_EnumValue(DarkColour::DARK_300);
+        return get_base_dark_colour(DarkColourID::DARK_300);
     case ColourID::ToolbarDivider:
-        return WI_EnumValue(DarkColour::DARK_400);
+        return get_base_dark_colour(DarkColourID::DARK_400);
     case ColourID::ToolbarFlatHotBackground:
-        return WI_EnumValue(DarkColour::DARK_500);
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::ToolbarFlatHotText:
-        return WI_EnumValue(DarkColour::DARK_999);
+        return get_base_dark_colour(DarkColourID::DARK_999);
+    case ColourID::RebarBackground:
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::RebarBandBorder:
-        return WI_EnumValue(DarkColour::DARK_400);
+        return get_base_dark_colour(DarkColourID::DARK_400);
     case ColourID::StatusBarBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::StatusBarText:
-        return WI_EnumValue(DarkColour::DARK_999);
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::StatusPaneBackground:
-        return WI_EnumValue(DarkColour::DARK_190);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::StatusPaneText:
-        return WI_EnumValue(DarkColour::DARK_999);
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::StatusPaneTopLine:
-        return WI_EnumValue(DarkColour::DARK_190);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::TabControlBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::TabControlItemBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::TabControlItemText:
-        return WI_EnumValue(DarkColour::DARK_999);
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::TabControlItemBorder:
-        return WI_EnumValue(DarkColour::DARK_000);
+        return get_base_dark_colour(DarkColourID::DARK_000);
     case ColourID::TabControlActiveItemBackground:
-        return WI_EnumValue(DarkColour::DARK_500);
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::TabControlHotItemBackground:
-        return WI_EnumValue(DarkColour::DARK_300);
+        return get_base_dark_colour(DarkColourID::DARK_300);
     case ColourID::TabControlHotActiveItemBackground:
-        return WI_EnumValue(DarkColour::DARK_600);
+        return get_base_dark_colour(DarkColourID::DARK_600);
     case ColourID::TrackbarChannel:
-        return WI_EnumValue(DarkColour::DARK_400);
+        return get_base_dark_colour(DarkColourID::DARK_400);
     case ColourID::TrackbarThumb:
         if (const auto modern_colours = system_appearance_manager::get_modern_colours())
             return modern_colours->accent;
 
-        return WI_EnumValue(DarkColour::DARK_600);
+        return get_base_dark_colour(DarkColourID::DARK_600);
     case ColourID::TrackbarHotThumb:
         if (const auto modern_colours = system_appearance_manager::get_modern_colours())
             return modern_colours->accent_light_1;
 
-        return WI_EnumValue(DarkColour::DARK_750);
+        return get_base_dark_colour(DarkColourID::DARK_750);
     case ColourID::TrackbarDisabledThumb:
-        return WI_EnumValue(DarkColour::DARK_400);
+        return get_base_dark_colour(DarkColourID::DARK_400);
     case ColourID::VolumeChannelTopEdge:
-        return WI_EnumValue(DarkColour::DARK_500);
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::VolumeChannelBottomAndRightEdge:
-        return WI_EnumValue(DarkColour::DARK_500);
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::VolumePopupBackground:
-        return WI_EnumValue(DarkColour::DARK_200);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::VolumePopupBorder:
-        return WI_EnumValue(DarkColour::DARK_300);
+        return get_base_dark_colour(DarkColourID::DARK_300);
     case ColourID::VolumePopupText:
-        return WI_EnumValue(DarkColour::DARK_999);
+        return get_base_dark_colour(DarkColourID::DARK_999);
     default:
         uBugCheck();
     }
@@ -228,15 +268,15 @@ COLORREF get_dark_system_colour(int system_colour_id)
     case COLOR_BTNTEXT:
     case COLOR_HIGHLIGHTTEXT:
     case COLOR_WINDOWTEXT:
-        return RGB(255, 255, 255);
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case COLOR_WINDOW:
-        return RGB(32, 32, 32);
+        return get_base_dark_colour(DarkColourID::DARK_000);
     case COLOR_HIGHLIGHT:
-        return RGB(98, 98, 98);
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case COLOR_BTNFACE:
-        return RGB(51, 51, 51);
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case COLOR_WINDOWFRAME:
-        return RGB(119, 119, 119);
+        return get_base_dark_colour(DarkColourID::DARK_600);
     default:
         return RGB(255, 0, 0);
     }

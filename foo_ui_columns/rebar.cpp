@@ -348,7 +348,6 @@ HWND RebarWindow::init()
                 | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
             0, 0, 0, 0, main_window.get_wnd(), (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
 
-        reopen_themes();
         m_dark_mode_notifier = std::make_unique<cui::colours::dark_mode_notifier>([this] { on_themechanged(); });
     }
 
@@ -464,7 +463,6 @@ bool RebarWindow::set_menu_focus()
 
 void RebarWindow::on_themechanged()
 {
-    reopen_themes();
     SetWindowPos(wnd_rebar, nullptr, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOZORDER | SWP_NOSIZE | SWP_FRAMECHANGED);
     RedrawWindow(wnd_rebar, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN);
 }
@@ -473,14 +471,10 @@ std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnm
 {
     switch (lpnmcd->dwDrawStage) {
     case CDDS_PREERASE: {
-        if (!(colours::is_dark_mode_active() && m_toolbar_theme))
+        if (!colours::is_dark_mode_active())
             return {};
 
-        COLORREF cr{RGB(255, 0, 0)};
-        if (FAILED(GetThemeColor(m_toolbar_theme.get(), 0, 0, TMT_FILLCOLOR, &cr)))
-            return {};
-
-        wil::unique_hbrush brush(CreateSolidBrush(cr));
+        const auto brush = get_colour_brush(dark::ColourID::RebarBackground, true);
 
         RECT rc{};
         GetClientRect(lpnmcd->hdr.hwndFrom, &rc);
@@ -613,7 +607,6 @@ void RebarWindow::destroy()
     destroy_bands();
     DestroyWindow(wnd_rebar);
     wnd_rebar = nullptr;
-    m_toolbar_theme.reset();
 }
 
 void RebarWindow::update_bands()
@@ -801,14 +794,6 @@ void RebarWindow::fix_z_order()
             DeferWindowPos(dwp, band.m_wnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
     EndDeferWindowPos(dwp);
-}
-
-void RebarWindow::reopen_themes()
-{
-    if (cui::colours::is_dark_mode_active())
-        m_toolbar_theme.reset(OpenThemeData(wnd_rebar, L"DarkMode::Toolbar"));
-    else
-        m_toolbar_theme.reset();
 }
 
 ui_extension::window_host& get_rebar_host()
