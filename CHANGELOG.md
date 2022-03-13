@@ -54,6 +54,13 @@
 - A problem where the playlist tabs panel had an incorrect maximum width or
   height was fixed. [[#449](https://github.com/reupen/columns_ui/pull/449)]
 
+- The hover colour of text in a buttons toolbar in flat mode was corrected so
+  that it is typically white in light mode.
+  [[#479](https://github.com/reupen/columns_ui/pull/479)]
+
+  (This change has the side effect of an uglier hover animation on some versions
+  of Windows.)
+
 - Various bugs with the positioning and sizing of panel captions were fixed.
   [[#418](https://github.com/reupen/columns_ui/pull/418)]
 

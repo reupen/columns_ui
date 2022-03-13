@@ -128,7 +128,7 @@ std::string ButtonsToolbar::Button::get_name(bool short_form) const
         return temp.c_str();
     }
     case TYPE_SEPARATOR:
-        return "-";
+        return "";
     case TYPE_MENU_ITEM_CONTEXT:
         return menu_helpers::contextpath_from_guid(m_guid, m_subcommand, short_form);
     case TYPE_MENU_ITEM_MAIN:

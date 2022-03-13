@@ -103,6 +103,8 @@ const TCHAR* ButtonsToolbar::class_name = _T("{D75D4E2D-603B-4699-9C49-64DDFFE56
 
 void ButtonsToolbar::create_toolbar()
 {
+    const auto is_dark = colours::is_dark_mode_active();
+
     std::vector<TBBUTTON> tbbuttons(m_buttons.size());
     std::vector<ButtonImage> images(m_buttons.size());
     std::vector<ButtonImage> images_hot(m_buttons.size());
@@ -188,15 +190,13 @@ void ButtonsToolbar::create_toolbar()
             m_hot_images.reset(
                 ImageList_Create(width, height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
 
-        // SendMessage(wnd_toolbar, TB_ADDSTRING,  NULL, (LPARAM)_T("\0")); //Add a empty string at index 0
-
         for (auto&& [n, tbbutton] : ranges::views::enumerate(tbbuttons)) {
             tbbutton.iString = -1; //"It works"
 
             if (m_buttons[n].m_type == TYPE_SEPARATOR) {
                 tbbutton.idCommand = gsl::narrow<int>(n);
-                tbbutton.fsState = TBSTATE_ENABLED;
-                tbbutton.fsStyle = BTNS_SEP;
+                tbbutton.fsStyle = is_dark ? BTNS_BUTTON | BTNS_SHOWTEXT : BTNS_SEP;
+                tbbutton.iBitmap = I_IMAGENONE;
             } else {
                 m_buttons[n].m_callback.set_wnd(this);
                 m_buttons[n].m_callback.set_id(gsl::narrow<int>(n));
@@ -225,7 +225,8 @@ void ButtonsToolbar::create_toolbar()
                     name.append_fromptr(str_conv.get_ptr(), str_conv.length());
                     name.append_single(0);
                     name.append_single(0);
-                    tbbutton.iString = SendMessage(wnd_toolbar, TB_ADDSTRING, NULL, (LPARAM)name.get_ptr());
+                    tbbutton.iString
+                        = SendMessage(wnd_toolbar, TB_ADDSTRING, NULL, reinterpret_cast<LPARAM>(name.get_ptr()));
                 }
 
                 if (m_buttons[n].m_interface.is_valid()) {
@@ -247,44 +248,52 @@ void ButtonsToolbar::create_toolbar()
         SendMessage(wnd_toolbar, TB_SETEXTENDEDSTYLE, 0,
             ex_style | TBSTYLE_EX_DRAWDDARROWS | (!m_text_below ? TBSTYLE_EX_MIXEDBUTTONS : 0));
 
-        SendMessage(wnd_toolbar, TB_SETBITMAPSIZE, (WPARAM)0, MAKELONG(width, height));
+        SendMessage(wnd_toolbar, TB_SETBITMAPSIZE, 0, MAKELONG(width, height));
         // SendMessage(wnd_toolbar, TB_SETBUTTONSIZE, (WPARAM) 0, MAKELONG(width,height));
 
         // todo: custom padding
-        const auto padding = SendMessage(wnd_toolbar, TB_GETPADDING, (WPARAM)0, 0);
+        const auto padding = SendMessage(wnd_toolbar, TB_GETPADDING, 0, 0);
+
         if (m_appearance == APPEARANCE_NOEDGE) {
-            SendMessage(wnd_toolbar, TB_SETPADDING, (WPARAM)0, MAKELPARAM(0, 0));
-            DLLVERSIONINFO2 dvi;
-            HRESULT hr = uih::get_comctl32_version(dvi);
-            if (SUCCEEDED(hr) && dvi.info1.dwMajorVersion >= 6) {
-                /*
-                HTHEME thm;
-                uxtheme_api_ptr p_uxtheme;
-                uxtheme_handle::g_create(p_uxtheme);
-                thm = p_uxtheme->OpenThemeData(wnd_toolbar, L"Toolbar");
-                MARGINS mg;
-                p_uxtheme->GetThemeMargins(thm, NULL, 1, 1, 3602, NULL, &mg);
-                p_uxtheme->CloseThemeData(thm);
-                TBMETRICS temp;
-                memset(&temp, 0, sizeof(temp));
-                temp.cbSize = sizeof(temp);
-                temp.dwMask = TBMF_BUTTONSPACING;
-                temp.cxButtonSpacing =-4;
-                temp.cyButtonSpacing=0;
-                //SendMessage(wnd_toolbar, TB_SETMETRICS, 0, (LPARAM)&temp);
-                temp.dwMask = TBMF_BUTTONSPACING|TBMF_BARPAD|TBMF_PAD;*/
-            }
+            SendMessage(wnd_toolbar, TB_SETPADDING, 0, MAKELPARAM(0, 0));
+            /*
+            HTHEME thm;
+            thm = p_uxtheme->OpenThemeData(wnd_toolbar, L"Toolbar");
+            MARGINS mg;
+            p_uxtheme->GetThemeMargins(thm, NULL, 1, 1, 3602, NULL, &mg);
+            p_uxtheme->CloseThemeData(thm);
+            TBMETRICS temp;
+            memset(&temp, 0, sizeof(temp));
+            temp.cbSize = sizeof(temp);
+            temp.dwMask = TBMF_BUTTONSPACING;
+            temp.cxButtonSpacing =-4;
+            temp.cyButtonSpacing=0;
+            //SendMessage(wnd_toolbar, TB_SETMETRICS, 0, (LPARAM)&temp);
+            temp.dwMask = TBMF_BUTTONSPACING|TBMF_BARPAD|TBMF_PAD;*/
         } else if (m_appearance == APPEARANCE_FLAT)
-            SendMessage(wnd_toolbar, TB_SETPADDING, (WPARAM)0, MAKELPARAM(5, HIWORD(padding)));
+            SendMessage(wnd_toolbar, TB_SETPADDING, 0, MAKELPARAM(5, HIWORD(padding)));
 
         if (m_standard_images)
-            SendMessage(wnd_toolbar, TB_SETIMAGELIST, (WPARAM)0, (LPARAM)m_standard_images.get());
+            SendMessage(wnd_toolbar, TB_SETIMAGELIST, 0, reinterpret_cast<LPARAM>(m_standard_images.get()));
         if (m_hot_images)
-            SendMessage(wnd_toolbar, TB_SETHOTIMAGELIST, (WPARAM)0, (LPARAM)m_hot_images.get());
+            SendMessage(wnd_toolbar, TB_SETHOTIMAGELIST, 0, reinterpret_cast<LPARAM>(m_hot_images.get()));
 
-        SendMessage(wnd_toolbar, TB_BUTTONSTRUCTSIZE, (WPARAM)sizeof(TBBUTTON), 0);
+        SendMessage(wnd_toolbar, TB_BUTTONSTRUCTSIZE, sizeof(TBBUTTON), 0);
 
-        SendMessage(wnd_toolbar, TB_ADDBUTTONS, (WPARAM)tbbuttons.size(), (LPARAM)tbbuttons.data());
+        SendMessage(wnd_toolbar, TB_ADDBUTTONS, tbbuttons.size(), reinterpret_cast<LPARAM>(tbbuttons.data()));
+
+        if (is_dark) {
+            for (auto&& [n, button] : ranges::views::enumerate(m_buttons)) {
+                if (button.m_type != TYPE_SEPARATOR)
+                    continue;
+
+                TBBUTTONINFO tbbi{};
+                tbbi.cbSize = sizeof(tbbi);
+                tbbi.cx = 5_spx;
+                tbbi.dwMask = TBIF_BYINDEX | TBIF_SIZE;
+                SendMessage(wnd_toolbar, TB_SETBUTTONINFO, n, reinterpret_cast<LPARAM>(&tbbi));
+            }
+        }
 
         for (auto&& button : m_buttons) {
             if (button.m_interface.is_valid())
@@ -410,30 +419,44 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return TBDDRET_DEFAULT;
         }
         case NM_CUSTOMDRAW: {
-            auto lptbcd = (LPNMTBCUSTOMDRAW)lp;
+            const auto lptbcd = reinterpret_cast<LPNMTBCUSTOMDRAW>(lp);
             switch ((lptbcd)->nmcd.dwDrawStage) {
             case CDDS_PREPAINT:
-                return (CDRF_NOTIFYITEMDRAW);
+                return CDRF_NOTIFYITEMDRAW;
             case CDDS_ITEMPREPAINT: {
-                if (m_appearance != APPEARANCE_NOEDGE && !m_text_below && lptbcd->nmcd.dwItemSpec >= 0
-                    && lptbcd->nmcd.dwItemSpec < m_buttons.size()
-                    && m_buttons[lptbcd->nmcd.dwItemSpec].m_show == SHOW_TEXT) {
-                    DLLVERSIONINFO2 dvi;
-                    HRESULT hr = uih::get_comctl32_version(dvi);
-                    if (SUCCEEDED(hr) && dvi.info1.dwMajorVersion >= 6)
-                        lptbcd->rcText.left
-                            -= LOWORD(SendMessage(wnd_toolbar, TB_GETPADDING, (WPARAM)0, 0)) + 2; // Hack for commctrl6
+                const auto is_dark = colours::is_dark_mode_active();
+                const auto index = lptbcd->nmcd.dwItemSpec;
+
+                if (is_dark && index < m_buttons.size() && m_buttons[index].m_type == TYPE_SEPARATOR) {
+                    const auto divider_brush = get_colour_brush(dark::ColourID::ToolbarDivider, true);
+                    const auto divider_width = uih::scale_dpi_value(1, USER_DEFAULT_SCREEN_DPI * 2);
+                    const auto& item_rect = lptbcd->nmcd.rc;
+                    RECT line_rect{};
+                    line_rect.top = item_rect.top + 1_spx;
+                    line_rect.bottom = item_rect.bottom - 1_spx;
+                    line_rect.left = item_rect.left + (RECT_CX(item_rect) - divider_width) / 2;
+                    line_rect.right = line_rect.left + divider_width;
+                    FillRect(lptbcd->nmcd.hdc, &line_rect, divider_brush.get());
                 }
+
+                if (m_appearance != APPEARANCE_NOEDGE && !m_text_below && index < m_buttons.size()
+                    && m_buttons[index].m_show == SHOW_TEXT) {
+                    // Workaround for commctrl6
+                    lptbcd->rcText.left -= LOWORD(SendMessage(wnd_toolbar, TB_GETPADDING, 0, 0)) + 2;
+                }
+
                 if (m_appearance == APPEARANCE_FLAT) {
-                    LRESULT rv = TBCDRF_NOEDGES | TBCDRF_NOOFFSET;
+                    LRESULT ret = TBCDRF_NOEDGES | TBCDRF_NOOFFSET | TBCDRF_HILITEHOTTRACK;
+
                     if (lptbcd->nmcd.uItemState & CDIS_HOT) {
-                        lptbcd->clrText = GetSysColor(COLOR_HIGHLIGHTTEXT);
-                    } else {
+                        lptbcd->clrText = get_colour(dark::ColourID::ToolbarFlatHotText, is_dark);
+                        ret |= TBCDRF_USECDCOLORS;
                     }
-                    lptbcd->clrHighlightHotTrack = GetSysColor(COLOR_HIGHLIGHT);
-                    rv |= TBCDRF_HILITEHOTTRACK;
-                    return rv;
+
+                    lptbcd->clrHighlightHotTrack = get_colour(dark::ColourID::ToolbarFlatHotBackground, is_dark);
+                    return ret;
                 }
+
                 if (m_appearance == APPEARANCE_NOEDGE) {
                     return TBCDRF_NOEDGES | TBCDRF_NOBACKGROUND;
                 }
