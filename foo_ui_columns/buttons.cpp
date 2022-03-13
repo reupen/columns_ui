@@ -424,10 +424,10 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             case CDDS_PREPAINT:
                 return CDRF_NOTIFYITEMDRAW;
             case CDDS_ITEMPREPAINT: {
+                const auto is_dark = colours::is_dark_mode_active();
                 const auto index = lptbcd->nmcd.dwItemSpec;
 
-                if (colours::is_dark_mode_active() && index < m_buttons.size()
-                    && m_buttons[index].m_type == TYPE_SEPARATOR) {
+                if (is_dark && index < m_buttons.size() && m_buttons[index].m_type == TYPE_SEPARATOR) {
                     const auto divider_brush = get_colour_brush(dark::ColourID::ToolbarDivider, true);
                     const auto divider_width = uih::scale_dpi_value(1, USER_DEFAULT_SCREEN_DPI * 2);
                     const auto& item_rect = lptbcd->nmcd.rc;
@@ -446,12 +446,15 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
 
                 if (m_appearance == APPEARANCE_FLAT) {
+                    LRESULT ret = TBCDRF_NOEDGES | TBCDRF_NOOFFSET | TBCDRF_HILITEHOTTRACK;
+
                     if (lptbcd->nmcd.uItemState & CDIS_HOT) {
-                        lptbcd->clrText = GetSysColor(COLOR_HIGHLIGHTTEXT);
+                        lptbcd->clrText = get_colour(dark::ColourID::ToolbarFlatHotText, is_dark);
+                        ret |= TBCDRF_USECDCOLORS;
                     }
 
-                    lptbcd->clrHighlightHotTrack = GetSysColor(COLOR_HIGHLIGHT);
-                    return TBCDRF_NOEDGES | TBCDRF_NOOFFSET | TBCDRF_HILITEHOTTRACK;
+                    lptbcd->clrHighlightHotTrack = get_colour(dark::ColourID::ToolbarFlatHotBackground, is_dark);
+                    return ret;
                 }
 
                 if (m_appearance == APPEARANCE_NOEDGE) {

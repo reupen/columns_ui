@@ -102,6 +102,10 @@ int get_light_colour_system_id(ColourID colour_id)
         return COLOR_BTNTEXT;
     case ColourID::StatusPaneTopLine:
         return COLOR_3DDKSHADOW;
+    case ColourID::ToolbarFlatHotBackground:
+        return COLOR_HIGHLIGHT;
+    case ColourID::ToolbarFlatHotText:
+        return COLOR_HIGHLIGHTTEXT;
     case ColourID::VolumeChannelTopEdge:
         return COLOR_3DSHADOW;
     case ColourID::VolumeChannelBottomAndRightEdge:
@@ -140,6 +144,10 @@ COLORREF get_dark_colour(ColourID colour_id)
         return WI_EnumValue(DarkColour::DARK_300);
     case ColourID::ToolbarDivider:
         return WI_EnumValue(DarkColour::DARK_400);
+    case ColourID::ToolbarFlatHotBackground:
+        return WI_EnumValue(DarkColour::DARK_500);
+    case ColourID::ToolbarFlatHotText:
+        return WI_EnumValue(DarkColour::DARK_999);
     case ColourID::RebarBandBorder:
         return WI_EnumValue(DarkColour::DARK_400);
     case ColourID::StatusBarBackground:
