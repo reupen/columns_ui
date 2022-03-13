@@ -11,6 +11,7 @@ enum class ColourID {
     LayoutBackground,
     PanelCaptionText,
     PanelCaptionBackground,
+    RebarBackground,
     RebarBandBorder,
     StatusBarBackground,
     StatusBarText,
