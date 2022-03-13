@@ -24,6 +24,7 @@ enum class ColourID {
     TabControlActiveItemBackground,
     TabControlHotItemBackground,
     TabControlHotActiveItemBackground,
+    ToolbarDivider,
     TrackbarChannel,
     TrackbarThumb,
     TrackbarHotThumb,

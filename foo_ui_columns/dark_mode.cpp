@@ -138,6 +138,8 @@ COLORREF get_dark_colour(ColourID colour_id)
         return WI_EnumValue(DarkColour::DARK_999);
     case ColourID::PanelCaptionBackground:
         return WI_EnumValue(DarkColour::DARK_300);
+    case ColourID::ToolbarDivider:
+        return WI_EnumValue(DarkColour::DARK_400);
     case ColourID::RebarBandBorder:
         return WI_EnumValue(DarkColour::DARK_400);
     case ColourID::StatusBarBackground:
