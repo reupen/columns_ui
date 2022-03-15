@@ -253,13 +253,26 @@ bool TabColours::get_change_colour_enabled(cui::colours::colour_identifier_t p_i
 void TabColours::update_fills()
 {
     cui::colours::helper p_manager(m_element_guid);
+
     if (p_manager.get_themed() && (!m_element_api.is_valid() || m_element_api->get_themes_supported())) {
-        g_fill_selection_background.set_fill_themed(
-            L"ListView", LVP_LISTITEM, LISS_SELECTED, p_manager.get_colour(cui::colours::colour_selection_background));
-        g_fill_selection_background_inactive.set_fill_themed(L"ListView", LVP_LISTITEM, LISS_SELECTEDNOTFOCUS,
+        const auto is_dark = cui::colours::is_dark_mode_active();
+        const auto list_view_theme_class = is_dark ? L"DarkMode_ItemsView::ListView"sv : L"Explorer::ListView"sv;
+
+        g_fill_selection_background.set_fill_themed(uih::FillWindow::Mode::ThemeBackgroundFill,
+            list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTED, is_dark,
+            p_manager.get_colour(cui::colours::colour_selection_background));
+
+        g_fill_selection_background_inactive.set_fill_themed(uih::FillWindow::Mode::ThemeBackgroundFill,
+            list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTEDNOTFOCUS, is_dark,
             p_manager.get_colour(cui::colours::colour_inactive_selection_background));
-        g_fill_selection_text_inactive.set_fill_themed_colour(L"ListView", COLOR_BTNTEXT);
-        g_fill_selection_text.set_fill_themed_colour(L"ListView", COLOR_BTNTEXT);
+
+        g_fill_selection_text.set_fill_themed(uih::FillWindow::Mode::ThemeTextColourFill, list_view_theme_class.data(),
+            LVP_LISTITEM, LISS_SELECTED, is_dark, p_manager.get_colour(cui::colours::colour_selection_text));
+
+        g_fill_selection_text_inactive.set_fill_themed(uih::FillWindow::Mode::ThemeTextColourFill,
+            list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTEDNOTFOCUS, is_dark,
+            p_manager.get_colour(cui::colours::colour_inactive_selection_text));
+
     } else {
         g_fill_selection_text.set_fill_colour(p_manager.get_colour(cui::colours::colour_selection_text));
         g_fill_selection_background.set_fill_colour(p_manager.get_colour(cui::colours::colour_selection_background));
@@ -268,6 +281,7 @@ void TabColours::update_fills()
         g_fill_selection_text_inactive.set_fill_colour(
             p_manager.get_colour(cui::colours::colour_inactive_selection_text));
     }
+
     g_fill_text.set_fill_colour(p_manager.get_colour(cui::colours::colour_text));
     g_fill_background.set_fill_colour(p_manager.get_colour(cui::colours::colour_background));
     g_fill_active_item_frame.set_fill_colour(p_manager.get_colour(cui::colours::colour_active_item_frame));
