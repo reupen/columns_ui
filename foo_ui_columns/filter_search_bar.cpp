@@ -572,7 +572,7 @@ void FilterSearchToolbar::s_update_colours()
     for (auto&& window : s_windows) {
         const HWND wnd = window->m_search_editbox;
         if (wnd)
-            RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
+            RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
     }
 }
 
