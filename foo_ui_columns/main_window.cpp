@@ -141,7 +141,7 @@ void cui::MainWindow::shutdown()
 {
     DestroyWindow(m_wnd);
     UnregisterClass(main_window_class_name, core_api::get_my_instance());
-    status_bar::volume_popup_window.class_release();
+    status_bar::volume_popup_window.deregister_class();
     m_wnd = nullptr;
     if (g_icon)
         DestroyIcon(g_icon);

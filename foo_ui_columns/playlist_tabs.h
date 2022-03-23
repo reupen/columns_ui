@@ -12,7 +12,7 @@ void remove_playlist_helper(size_t index);
 constexpr unsigned SWITCH_TIMER_ID = 670u;
 
 class PlaylistTabs
-    : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2>
+    : public uie::container_uie_window_v3_t<uie::splitter_window_v2>
     , public playlist_callback {
 public:
     enum : uint32_t { MSG_RESET_SIZE_LIMITS = WM_USER + 3 };
@@ -62,7 +62,7 @@ private:
 
     service_ptr_t<contextmenu_manager> p_manager;
 
-    class_data& get_class_data() const override;
+    uie::container_window_v3_config get_window_config() override { return {L"{ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}"}; }
 
 public:
     static pfc::ptr_list_t<PlaylistTabs> list_wnd;

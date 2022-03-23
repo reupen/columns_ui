@@ -79,6 +79,20 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 
 ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio) {}
 
+uie::container_window_v3_config ArtworkPanel::get_window_config()
+{
+    uie::container_window_v3_config config(L"columns_ui_artwork_view_VaODDnIsit0", false);
+
+    if (cfg_edge_style == 1)
+        config.extended_window_styles |= WS_EX_CLIENTEDGE;
+    else if (cfg_edge_style == 2)
+        config.extended_window_styles |= WS_EX_STATICEDGE;
+
+    config.class_cursor = IDC_HAND;
+
+    return config;
+}
+
 void ArtworkPanel::g_on_edge_style_change()
 {
     for (auto& window : g_windows) {
@@ -587,17 +601,6 @@ ArtworkPanel::CompletionNotifyForwarder::CompletionNotifyForwarder(ArtworkPanel*
 void ArtworkPanel::CompletionNotifyForwarder::on_completion(unsigned p_code)
 {
     m_this->on_completion(p_code);
-}
-
-ArtworkPanel::class_data& ArtworkPanel::get_class_data() const
-{
-    DWORD flags = 0;
-    if (cfg_edge_style == 1)
-        flags |= WS_EX_CLIENTEDGE;
-    if (cfg_edge_style == 2)
-        flags |= WS_EX_STATICEDGE;
-    __implement_get_class_data_ex2(_T("CUI Artwork View"), _T(""), false, true, 0,
-        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT | flags, 0, IDC_HAND);
 }
 
 void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort)

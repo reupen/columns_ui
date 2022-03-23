@@ -103,24 +103,31 @@ void handle_modern_colours_changed()
         (*callback)();
 }
 
-class AppearanceMessageWindow : public ui_helpers::container_window_autorelease_t {
+class AppearanceMessageWindow {
 public:
-    static void s_initialise()
+    void initialise()
     {
-        if (!s_initialised) {
-            auto ptr = new AppearanceMessageWindow;
-            ptr->create(nullptr);
-            s_initialised = true;
+        if (!m_window) {
+            uie::container_window_v3_config config(L"{BDCEC7A3-7230-4671-A5F7-B19A989DCA81}", false);
+            config.window_styles = 0;
+            config.extended_window_styles = 0;
+
+            m_window = std::make_unique<uie::container_window_v3>(
+                config, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+
+            m_window->create(nullptr);
         }
     }
 
-private:
-    class_data& get_class_data() const override
+    void deinitialise()
     {
-        __implement_get_class_data_ex(_T("{BDCEC7A3-7230-4671-A5F7-B19A989DCA81}"), _T(""), false, 0, 0, 0, 0);
+        if (m_window)
+            m_window->destroy();
+        m_window.reset();
     }
 
-    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override
+private:
+    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_CREATE:
@@ -179,27 +186,29 @@ private:
             }
             m_ui_settings.reset();
             break;
-        case WM_CLOSE:
-            destroy();
-            delete this;
-            return 0;
         }
         return DefWindowProc(wnd, msg, wp, lp);
     }
 
-    static bool s_initialised;
-
+    std::unique_ptr<uie::container_window_v3> m_window;
     std::optional<UISettings> m_ui_settings;
     winrt::event_token m_colours_changed_token;
 };
 
-bool AppearanceMessageWindow::s_initialised = false;
+AppearanceMessageWindow message_window;
+
+class InitQuit : public initquit {
+    void on_init() override {}
+    void on_quit() override { message_window.deinitialise(); }
+};
+
+initquit_factory_t<InitQuit> _;
 
 } // namespace
 
 void initialise()
 {
-    AppearanceMessageWindow::s_initialise();
+    message_window.initialise();
 }
 
 std::optional<ModernColours> get_modern_colours()

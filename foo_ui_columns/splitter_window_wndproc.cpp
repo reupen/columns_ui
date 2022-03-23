@@ -33,9 +33,6 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         g_instances.remove_item(this);
         m_wnd = nullptr;
         break;
-    case WM_ERASEBKGND:
-        dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));
-        return TRUE;
     case WM_SHOWWINDOW:
         if (wp == TRUE && lp == 0) {
             const auto count = m_panels.get_count();

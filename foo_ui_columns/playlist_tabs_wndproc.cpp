@@ -57,9 +57,6 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         });
         break;
     }
-    case WM_ERASEBKGND:
-        dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));
-        return TRUE;
     case WM_SHOWWINDOW: {
         if (wp == TRUE && lp == NULL && !IsWindowVisible(m_child_wnd)) {
             ShowWindow(m_child_wnd, SW_SHOWNORMAL);

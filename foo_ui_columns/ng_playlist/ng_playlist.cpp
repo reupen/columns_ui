@@ -34,7 +34,6 @@ const GUID g_artwork_lowpriority = {0xcb1c1c5d, 0x4f99, 0x4c24, {0xb2, 0x39, 0xa
 const GUID g_guid_grouping = {0xa28cc736, 0x2b8b, 0x484c, {0xb7, 0xa9, 0x4c, 0xc3, 0x12, 0xdb, 0xd3, 0x57}};
 
 std::vector<PlaylistView*> PlaylistView::g_windows;
-PlaylistView::SharedMesageWindow PlaylistView::g_global_mesage_window;
 
 ConfigGroups g_groups(g_groups_guid);
 
@@ -414,6 +413,27 @@ void PlaylistView::s_redraw_all()
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
+void PlaylistView::s_create_message_window()
+{
+    uie::container_window_v3_config config(L"{columns_ui_playlist_view_message_window_goJRO8xwg7s}", false);
+    config.window_styles = 0;
+    config.extended_window_styles = 0;
+
+    s_message_window = std::make_unique<uie::container_window_v3>(
+        config, [](auto&& wnd, auto&& msg, auto&& wp, auto&& lp) -> LRESULT {
+            if (msg == WM_TIMECHANGE)
+                g_on_time_change();
+            return DefWindowProc(wnd, msg, wp, lp);
+        });
+    s_message_window->create(nullptr);
+}
+
+void PlaylistView::s_destroy_message_window()
+{
+    s_message_window->destroy();
+    s_message_window.reset();
+}
+
 int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
 {
     return StrCmpLogicalW(a.get_ptr(), b.get_ptr());
@@ -565,7 +585,8 @@ void PlaylistView::notify_on_create()
     RegisterDragDrop(get_wnd(), IDT_playlist.get());
 
     if (g_windows.empty())
-        g_global_mesage_window.create(nullptr);
+        s_create_message_window();
+
     g_windows.push_back(this);
 
     set_day_timer();
@@ -578,7 +599,7 @@ void PlaylistView::notify_on_destroy()
 {
     std::erase(g_windows, this);
     if (g_windows.empty())
-        g_global_mesage_window.destroy();
+        s_destroy_message_window();
 
     RevokeDragDrop(get_wnd());
     m_playlist_api->unregister_callback(static_cast<playlist_callback_single*>(this));

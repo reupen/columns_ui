@@ -151,28 +151,7 @@ void ItemDetails::get_menu_items(ui_extension::menu_hook_t& p_hook)
     p_hook.add_node(p_node);
 }
 
-ItemDetails::MessageWindow ItemDetails::g_message_window;
-
 std::vector<ItemDetails*> ItemDetails::g_windows;
-
-ItemDetails::MessageWindow::class_data& ItemDetails::MessageWindow::get_class_data() const
-{
-    __implement_get_class_data_ex(_T("\r\n{6EB3EA81-7C5E-468d-B507-E5527F52361B}"), _T(""), false, 0, 0, 0, 0);
-}
-
-LRESULT ItemDetails::MessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_CREATE:
-        break;
-    case WM_ACTIVATEAPP:
-        g_on_app_activate(wp != 0);
-        break;
-    case WM_DESTROY:
-        break;
-    }
-    return DefWindowProc(wnd, msg, wp, lp);
-}
 
 void ItemDetails::g_on_app_activate(bool b_activated)
 {
@@ -680,7 +659,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_font_changes.m_default_font->m_height = uih::get_font_height(m_font_changes.m_default_font->m_font.get());
 
         if (g_windows.empty())
-            g_message_window.create(nullptr);
+            s_create_message_window();
+
         g_windows.push_back(this);
 
         titleformat_compiler::get()->compile_safe(m_to, m_script);
@@ -691,8 +671,9 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case WM_DESTROY: {
         std::erase(g_windows, this);
+
         if (g_windows.empty())
-            g_message_window.destroy();
+            s_destroy_message_window();
 
         m_font_changes.m_default_font.reset();
 
@@ -941,6 +922,27 @@ ItemDetails::ItemDetails()
 {
 }
 
+void ItemDetails::s_create_message_window()
+{
+    uie::container_window_v3_config config(L"{6EB3EA81-7C5E-468d-B507-E5527F52361B}", false);
+    config.window_styles = 0;
+    config.extended_window_styles = 0;
+
+    s_message_window = std::make_unique<uie::container_window_v3>(
+        config, [](auto&& wnd, auto&& msg, auto&& wp, auto&& lp) -> LRESULT {
+            if (msg == WM_ACTIVATEAPP)
+                g_on_app_activate(wp != 0);
+            return DefWindowProc(wnd, msg, wp, lp);
+        });
+    s_message_window->create(nullptr);
+}
+
+void ItemDetails::s_destroy_message_window()
+{
+    s_message_window->destroy();
+    s_message_window.reset();
+}
+
 void ItemDetails::set_config_wnd(HWND wnd)
 {
     m_wnd_config = wnd;
@@ -1050,21 +1052,21 @@ bool ItemDetails::g_track_mode_includes_plalist(size_t mode)
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
 
+uie::container_window_v3_config ItemDetails::get_window_config()
+{
+    uie::container_window_v3_config config(L"columns_ui_item_details_E0D8v091EU8", false);
+
+    if (m_edge_style == 1)
+        config.extended_window_styles |= WS_EX_CLIENTEDGE;
+    if (m_edge_style == 2)
+        config.extended_window_styles |= WS_EX_STATICEDGE;
+
+    return config;
+}
+
 bool ItemDetails::g_track_mode_includes_now_playing(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
-}
-
-ItemDetails::class_data& ItemDetails::get_class_data() const
-{
-    DWORD flags = 0;
-    if (m_edge_style == 1)
-        flags |= WS_EX_CLIENTEDGE;
-    if (m_edge_style == 2)
-        flags |= WS_EX_STATICEDGE;
-    __implement_get_class_data_ex(_T("\r\nCUI_Item_Details_Panel"), _T(""), false, 0,
-        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT | flags, 0);
-    //__implement_get_class_data(L"", false);
 }
 
 uie::window_factory<ItemDetails> g_item_details;

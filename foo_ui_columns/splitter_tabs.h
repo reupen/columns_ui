@@ -2,11 +2,12 @@
 
 namespace cui::panels::tab_stack {
 
-class TabStackPanel : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
+class TabStackPanel : public uie::container_uie_window_v3_t<uie::splitter_window_v2> {
     using t_self = TabStackPanel;
 
 public:
-    class_data& get_class_data() const override;
+    uie::container_window_v3_config get_window_config() override { return {L"{5CB67C98-B77F-4926-A79F-49D9B21B9705}"}; }
+
     void get_name(pfc::string_base& p_out) const override;
     const GUID& get_extension_guid() const override;
     void get_category(pfc::string_base& p_out) const override;

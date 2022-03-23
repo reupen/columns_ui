@@ -280,11 +280,6 @@ void TabStackPanel::Panel::import(stream_reader* t, abort_callback& p_abort)
     //    throw pfc::exception_not_implemented();
 }
 
-TabStackPanel::class_data& TabStackPanel::get_class_data() const
-{
-    __implement_get_class_data_ex(_T("{5CB67C98-B77F-4926-A79F-49D9B21B9705}"), _T(""), false, 0,
-        WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
-}
 void TabStackPanel::get_name(pfc::string_base& p_out) const
 {
     p_out = "Tab stack";
@@ -512,9 +507,6 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
         });
     } break;
-    case WM_ERASEBKGND:
-        dark::draw_layout_background(wnd, reinterpret_cast<HDC>(wp));
-        return TRUE;
     case WM_KEYDOWN: {
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
             && g_process_keydown_keyboard_shortcuts(wp))

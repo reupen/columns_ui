@@ -1,6 +1,6 @@
 #pragma once
 
-class VisualisationPanel : public ui_extension::container_ui_extension {
+class VisualisationPanel : public uie::container_uie_window_v3 {
     static const wchar_t* class_name;
     bool initialised{false};
     pfc::array_t<uint8_t> m_data;
@@ -18,15 +18,16 @@ public:
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
-    class_data& get_class_data() const override
+    uie::container_window_v3_config get_window_config() override
     {
-        DWORD flags = WS_EX_CONTROLPARENT;
-        if (m_frame == 1)
-            flags |= WS_EX_CLIENTEDGE;
-        if (m_frame == 2)
-            flags |= WS_EX_STATICEDGE;
+        uie::container_window_v3_config config(class_name, false);
 
-        __implement_get_class_data_ex(class_name, _T(""), false, 0, WS_CHILD | WS_CLIPCHILDREN, flags, 0);
+        if (m_frame == 1)
+            config.extended_window_styles |= WS_EX_CLIENTEDGE;
+        else if (m_frame == 2)
+            config.extended_window_styles |= WS_EX_STATICEDGE;
+
+        return config;
     }
 
     VisualisationPanel();

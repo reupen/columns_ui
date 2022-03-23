@@ -4,8 +4,7 @@
 namespace cui::status_pane {
 
 class StatusPane
-    : public ui_helpers::container_window
-    , private playlist_callback_single
+    : playlist_callback_single
     , play_callback {
     class StatusPaneVolumeBarAttributes {
     public:
@@ -37,14 +36,7 @@ class StatusPane
         }
 
         StatusPaneTitleformatHook() = default;
-
-    private:
     };
-
-    class_data& get_class_data() const override
-    {
-        __implement_get_class_data_child_ex3(L"CUI_STATUS_PAIN", false, true, CS_DBLCLKS, IDC_ARROW);
-    }
 
     /** PLAYLIST CALLBACKS */
     void on_items_added(
@@ -171,7 +163,17 @@ class StatusPane
     void get_length_data(bool& p_selection, size_t& p_count, pfc::string_base& p_out);
 
 public:
-    StatusPane() = default;
+    StatusPane()
+    {
+        m_window = std::make_unique<uie::container_window_v3>(
+            uie::container_window_v3_config(L"columns_ui_status_pane_mN4A3Qy1Spk", false, CS_DBLCLKS),
+            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    }
+
+    HWND create(HWND parent) const { return m_window->create(parent); }
+    void destroy() const { m_window->destroy(); }
+    HWND get_wnd() const { return m_window->get_wnd(); }
+
     int get_ideal_height() const
     {
         return uih::get_font_height(m_font.get()) * 2 + uih::scale_dpi_value(2) + uih::scale_dpi_value(4)
@@ -189,7 +191,7 @@ public:
         m_menu_text.reset();
         invalidate_all();
     }
-    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
+    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     void on_font_changed();
 
@@ -205,6 +207,7 @@ private:
     bool m_menu_active{false};
     wil::unique_hfont m_font;
     HTHEME m_theme{nullptr};
+    std::unique_ptr<uie::container_window_v3> m_window;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 

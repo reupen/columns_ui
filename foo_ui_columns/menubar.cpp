@@ -58,7 +58,7 @@ public:
 };
 
 class MenuToolbar
-    : public ui_extension::container_uie_window_t<uie::menu_window_v2>
+    : public uie::container_uie_window_v3_t<uie::menu_window_v2>
     , uih::MessageHook {
 public:
     //    static pfc::ptr_list_t<playlists_list_window> list_wnd;
@@ -74,7 +74,12 @@ public:
     service_ptr_t<mainmenu_manager> p_manager;
     service_ptr_t<ui_status_text_override> m_status_override;
 
-    class_data& get_class_data() const override { __implement_get_class_data_child_ex(class_name, true, false); }
+    uie::container_window_v3_config get_window_config() override
+    {
+        uie::container_window_v3_config config(class_name);
+        config.invalidate_children_on_move_or_resize = true;
+        return config;
+    }
 
     HWND wnd_menu{nullptr};
     HWND wnd_prev_focus{nullptr};
@@ -113,7 +118,6 @@ public:
     HWND get_previous_focus_window() const override;
 
     MenuToolbar();
-    ~MenuToolbar();
 
 private:
     void set_window_theme();
@@ -129,8 +133,6 @@ private:
 bool MenuToolbar::hooked = false;
 
 MenuToolbar::MenuToolbar() : p_manager(nullptr) {}
-
-MenuToolbar::~MenuToolbar() = default;
 
 const TCHAR* MenuToolbar::class_name = _T("{76E6DB50-0DE3-4f30-A7E4-93FD628B1401}");
 

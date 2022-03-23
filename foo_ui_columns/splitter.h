@@ -7,7 +7,7 @@ enum Orientation {
     vertical,
 };
 
-class FlatSplitterPanel : public uie::container_ui_extension_t<ui_helpers::container_window, uie::splitter_window_v2> {
+class FlatSplitterPanel : public uie::container_uie_window_v3_t<uie::splitter_window_v2> {
 public:
     virtual Orientation get_orientation() const = 0;
     static int g_get_caption_size();
@@ -84,20 +84,22 @@ private:
     };
     class Panel : public std::enable_shared_from_this<Panel> {
     public:
-        class PanelContainer
-            : public container_window
-            , private fbh::LowLevelMouseHookManager::HookCallback {
+        class PanelContainer : fbh::LowLevelMouseHookManager::HookCallback {
         public:
             enum { MSG_AUTOHIDE_END = WM_USER + 2 };
 
             explicit PanelContainer(Panel* p_panel);
 
             ~PanelContainer();
+
+            HWND create(HWND parent) const;
+            void destroy() const;
+            HWND get_wnd() const { return m_wnd; }
+
             void set_window_ptr(FlatSplitterPanel* p_ptr);
             void enter_autohide_hook();
             // private:
-            class_data& get_class_data() const override;
-            LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
+            LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
             void on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs) override;
             service_ptr_t<FlatSplitterPanel> m_this;
 
@@ -112,7 +114,10 @@ private:
             void close_theme();
             bool test_autohide_window(HWND wnd);
 
+            inline constexpr static auto class_name = L"foo_ui_columns_splitter_panel_child_container";
+
             HWND m_wnd{};
+            std::unique_ptr<uie::container_window_v3> m_window;
             std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
         } m_container;
 

@@ -5,7 +5,7 @@
 namespace cui::artwork_panel {
 
 class ArtworkPanel
-    : public uie::container_ui_extension_t<>
+    : public uie::container_uie_window_v3
     , public now_playing_album_art_notify
     , public play_callback
     , public playlist_callback_single
@@ -79,7 +79,7 @@ public:
     ArtworkPanel();
 
 private:
-    class_data& get_class_data() const override;
+    uie::container_window_v3_config get_window_config() override;
 
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ArtworkPanel> p_this;

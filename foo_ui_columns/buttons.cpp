@@ -8,11 +8,6 @@
 
 namespace cui::toolbars::buttons {
 
-ButtonsToolbar::class_data& ButtonsToolbar::get_class_data() const
-{
-    __implement_get_class_data_child_ex(class_name, true, false);
-}
-
 const GUID& ButtonsToolbar::get_extension_guid() const
 {
     return extension_guid;
