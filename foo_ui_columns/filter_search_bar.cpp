@@ -164,6 +164,13 @@ void FilterSearchToolbar::on_size(int cx, int cy)
     SetWindowPos(m_wnd_toolbar, nullptr, cx - m_toolbar_cx, 0, m_toolbar_cx, cy, SWP_NOZORDER);
 }
 
+void FilterSearchToolbar::on_size()
+{
+    RECT rc{};
+    GetClientRect(get_wnd(), &rc);
+    on_size(RECT_CX(rc), RECT_CY(rc));
+}
+
 void FilterSearchToolbar::on_search_editbox_change()
 {
     if (m_query_timer_active)
@@ -277,10 +284,12 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
             return 0;
         }
         break;
-    case WM_SETFOCUS:
+    case WM_WINDOWPOSCHANGED: {
+        const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+        if (!(lpwp->flags & SWP_NOSIZE) || (lpwp->flags & SWP_FRAMECHANGED))
+            on_size(lpwp->cx, lpwp->cy);
         break;
-    case WM_KILLFOCUS:
-        break;
+    }
     case msg_favourite_selected:
         if (m_query_timer_active) {
             KillTimer(get_wnd(), TIMER_QUERY);

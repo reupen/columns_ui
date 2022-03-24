@@ -4,7 +4,7 @@
 
 namespace cui::toolbars::buttons {
 
-class ButtonsToolbar : public ui_extension::container_ui_extension {
+class ButtonsToolbar : public uie::container_uie_window_v3 {
 public:
     enum ConfigVersion { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
 
@@ -271,7 +271,12 @@ public:
     static const GUID g_guid_fcb;
 
 private:
-    class_data& get_class_data() const override;
+    uie::container_window_v3_config get_window_config() override
+    {
+        uie::container_window_v3_config config(class_name);
+        config.invalidate_children_on_move_or_resize = true;
+        return config;
+    }
 
     static const TCHAR* class_name;
     int width{0};

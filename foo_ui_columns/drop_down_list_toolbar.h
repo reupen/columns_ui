@@ -1,7 +1,7 @@
 #pragma once
 
 template <class ToolbarArgs>
-class DropDownListToolbar : public ui_extension::container_ui_extension {
+class DropDownListToolbar : public ui_extension::container_uie_window_v3 {
 public:
     static void s_update_active_item_safe()
     {
@@ -61,10 +61,7 @@ public:
     void get_category(pfc::string_base& out) const override { out.set_string("Toolbars"); }
     bool is_available(const uie::window_host_ptr& p_host) const override { return ToolbarArgs::is_available(); }
     void get_menu_items(uie::menu_hook_t& p_hook) override { ToolbarArgs::get_menu_items(p_hook); }
-    class_data& get_class_data() const override
-    {
-        __implement_get_class_data_child_ex(ToolbarArgs::class_name, false, false);
-    }
+    uie::container_window_v3_config get_window_config() override { return {ToolbarArgs::class_name}; }
 
 private:
     class FontClient : public cui::fonts::client {
@@ -290,16 +287,15 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
             ToolbarArgs::on_last_window_destroyed();
         }
         std::erase(s_windows, this);
-
         m_initialised = false;
-        const auto count = get_class_data().refcount;
-        DestroyWindow(m_wnd_combo);
-        if (count == 1) {
+        break;
+    }
+    case WM_NCDESTROY:
+        if (s_windows.empty()) {
             s_items_font.reset();
             s_background_brush.reset();
         }
         break;
-    }
     case WM_CTLCOLOREDIT:
     case WM_CTLCOLORLISTBOX: {
         const auto dc = reinterpret_cast<HDC>(wp);

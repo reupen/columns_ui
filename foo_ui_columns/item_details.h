@@ -117,23 +117,18 @@ private:
 };
 
 class ItemDetails
-    : public uie::container_ui_extension
+    : public uie::container_uie_window_v3
     , public ui_selection_callback
     , public play_callback
     , public playlist_callback_single
     , public metadb_io_callback_dynamic {
-    class MessageWindow : public container_window {
-        class_data& get_class_data() const override;
-        LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-    };
-
-    static MessageWindow g_message_window;
+    inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
     enum {
         MSG_REFRESH = WM_USER + 2,
     };
 
-    class_data& get_class_data() const override;
+    uie::container_window_v3_config get_window_config() override;
 
 public:
     enum TrackingMode {
@@ -299,6 +294,9 @@ public:
     ItemDetails();
 
 private:
+    static void s_create_message_window();
+    static void s_destroy_message_window();
+
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
     void register_callback();

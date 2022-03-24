@@ -309,33 +309,12 @@ class PlaylistView
     friend class NgTfThread;
     friend class PlaylistViewRenderer;
 
-    class SharedMesageWindow : public ui_helpers::container_window {
-        class_data& get_class_data() const override
-        {
-            __implement_get_class_data_ex(_T("NGPV_GMW"), _T(""), false, 0, 0, 0, 0);
-        }
-
-        LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override
-        {
-            switch (msg) {
-            case WM_CREATE:
-                break;
-            case WM_TIMECHANGE:
-                g_on_time_change();
-                break;
-            case WM_DESTROY:
-                break;
-            }
-            return DefWindowProc(wnd, msg, wp, lp);
-        }
-    };
-
 public:
     PlaylistView();
     ~PlaylistView();
 
     static std::vector<PlaylistView*> g_windows;
-    static SharedMesageWindow g_global_mesage_window;
+    inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
     static void g_on_groups_change();
     static void g_on_columns_change();
@@ -403,6 +382,10 @@ private:
         }
         size_t get_group_count() { return m_groups.size(); }
     };
+
+    static void s_create_message_window();
+    static void s_destroy_message_window();
+
     virtual void flush_artwork_images()
     {
         if (m_artwork_manager) {

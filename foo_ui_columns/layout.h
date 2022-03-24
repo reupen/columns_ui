@@ -52,7 +52,7 @@ private:
 };
 
 class LayoutWindow
-    : public ui_helpers::container_window
+    : public uie::container_window_v3
     , private uih::MessageHook {
 public:
     enum { MSG_LAYOUT_SET_FOCUS = WM_USER + 2, MSG_EDIT_PANEL };
@@ -82,7 +82,11 @@ public:
     void set_layout_editing_active(bool b_val);
     bool get_layout_editing_active();
 
-    LayoutWindow() = default;
+    LayoutWindow()
+        : uie::container_window_v3(uie::container_window_v3_config(L"{DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}"),
+            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); })
+    {
+    }
 
 private:
     class LiveEditData {
@@ -101,12 +105,7 @@ private:
     void run_live_edit_base(const LiveEditData& p_data);
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
 
-    class_data& get_class_data() const override
-    {
-        __implement_get_class_data(_T("{DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}"), false);
-    }
-
-    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
+    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     void create_child();
     void destroy_child();

@@ -4,10 +4,8 @@
 #include "dark_mode_trackbar.h"
 #include "system_appearance_manager.h"
 
-template <bool b_vertical, bool b_popup, typename t_attributes, class t_base = ui_helpers::container_window>
-class VolumeBar
-    : public t_base
-    , private play_callback {
+template <bool b_vertical, bool b_popup, typename t_attributes>
+class VolumeBar : play_callback {
     class VolumeTrackBar : public uih::Trackbar {
         void get_channel_rect(RECT* rc) const override
         {
@@ -74,10 +72,10 @@ class VolumeBar
                 }
             }
         }
-        VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
+        VolumeBar<b_vertical, b_popup, t_attributes>* m_this;
 
     public:
-        explicit VolumeTrackBar(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this) {}
+        explicit VolumeTrackBar(VolumeBar<b_vertical, b_popup, t_attributes>* p_this) : m_this(p_this) {}
     } m_child;
 
     class VolumeTrackBarCallback : public uih::TrackbarCallback {
@@ -102,12 +100,10 @@ class VolumeBar
             }
             return false;
         }
-        VolumeBar<b_vertical, b_popup, t_attributes, t_base>* m_this;
+        VolumeBar<b_vertical, b_popup, t_attributes>* m_this;
 
     public:
-        explicit VolumeTrackBarCallback(VolumeBar<b_vertical, b_popup, t_attributes, t_base>* p_this) : m_this(p_this)
-        {
-        }
+        explicit VolumeTrackBarCallback(VolumeBar<b_vertical, b_popup, t_attributes>* p_this) : m_this(p_this) {}
     } m_track_bar_host;
 
 public:
@@ -142,7 +138,7 @@ public:
             m_child.set_custom_colours({});
     }
 
-    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override
+    LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_CREATE: {
@@ -303,19 +299,26 @@ public:
         return DefWindowProc(wnd, msg, wp, lp);
     }
 
-    VolumeBar() : m_child(this), m_track_bar_host(this) {}
+    VolumeBar() : m_child(this), m_track_bar_host(this)
+    {
+        uie::container_window_v3_config config(t_attributes::get_class_name(), !b_popup);
+        config.window_styles = b_popup ? WS_POPUP | WS_CLIPCHILDREN : WS_CHILD | WS_CLIPCHILDREN;
+        config.extended_window_styles = b_popup ? WS_EX_TOOLWINDOW | WS_EX_TOPMOST : WS_EX_CONTROLPARENT;
+
+        m_window = std::make_unique<uie::container_window_v3>(
+            config, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    }
     VolumeBar(const VolumeBar&) = delete;
     VolumeBar& operator=(const VolumeBar&) = delete;
     VolumeBar(VolumeBar&&) = delete;
     VolumeBar& operator=(VolumeBar&&) = delete;
     ~VolumeBar() = default;
 
-    ui_helpers::container_window::class_data& get_class_data() const override
-    {
-        __implement_get_class_data_ex(t_attributes::get_class_name(), _T(""), !b_popup, 0,
-            b_popup ? WS_POPUP | WS_CLIPCHILDREN : WS_CHILD | WS_CLIPCHILDREN,
-            b_popup ? WS_EX_TOOLWINDOW | WS_EX_TOPMOST : WS_EX_CONTROLPARENT, 0);
-    }
+    HWND create(HWND parent, int x, int y, int cx, int cy) const { return m_window->create(parent, x, y, cx, cy); }
+    HWND create(HWND parent) const { return m_window->create(parent); }
+    void destroy() const { m_window->destroy(); }
+    HWND get_wnd() const { return m_window->get_wnd(); }
+    void deregister_class() const { m_window->deregister_class(); }
 
     void update_position()
     {
@@ -365,6 +368,7 @@ private:
     wil::unique_hfont m_font_caption;
     ULONG_PTR m_Gdiplus_token{NULL};
     bool m_using_gdiplus{false};
+    std::unique_ptr<uie::container_window_v3> m_window;
     std::unique_ptr<cui::colours::dark_mode_notifier> m_dark_mode_notifier;
     std::unique_ptr<cui::system_appearance_manager::EventToken> m_modern_colours_changed_token;
 };

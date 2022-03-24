@@ -783,12 +783,6 @@ void FB2KAPI PlaylistTabs::on_items_removing(
 {
 }
 
-PlaylistTabs::class_data& PlaylistTabs::get_class_data() const
-{
-    __implement_get_class_data_ex(_T("{ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}"), _T(""), false, 0,
-        WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
-}
-
 void g_on_autohide_tabs_change()
 {
     const auto count = PlaylistTabs::list_wnd.get_count();

@@ -5,7 +5,7 @@
 ### Features
 
 - Support for the Windows 10 and 11 dark mode was added.
-  [[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C2022-03-23)]
+  [[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C2022-03-31)]
 
 - The status bar can now show the number of selected tracks.
   [[#450](https://github.com/reupen/columns_ui/pull/450)]

@@ -88,12 +88,7 @@ class ItemProperties
     , public ui_selection_callback
     , public play_callback
     , public metadb_io_callback_dynamic {
-    class MessageWindow : public ui_helpers::container_window {
-        class_data& get_class_data() const override;
-        LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-    };
-
-    static MessageWindow g_message_window;
+    inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
     enum {
         MSG_REFRESH = WM_USER + 2,
@@ -192,6 +187,9 @@ public:
     ItemProperties();
 
 private:
+    static void s_create_message_window();
+    static void s_destroy_message_window();
+
     void register_callback();
     void deregister_callback();
     void on_app_activate(bool b_activated);

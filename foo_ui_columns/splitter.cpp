@@ -6,10 +6,9 @@ namespace cui::panels::splitter {
 pfc::ptr_list_t<FlatSplitterPanel> FlatSplitterPanel::g_instances;
 
 class HorizontalSplitterPanel : public FlatSplitterPanel {
-    class_data& get_class_data() const override
+    uie::container_window_v3_config get_window_config() override
     {
-        __implement_get_class_data_ex(_T("{72FACC90-BB7E-4733-8449-D7537232AD26}"), _T(""), false, 0,
-            WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
+        return {L"{72FACC90-BB7E-4733-8449-D7537232AD26}", true, CS_DBLCLKS};
     }
     void get_name(pfc::string_base& p_out) const override { p_out = "Horizontal splitter"; }
     const GUID& get_extension_guid() const override
@@ -22,10 +21,9 @@ class HorizontalSplitterPanel : public FlatSplitterPanel {
 };
 
 class VerticalSplitterPanel : public FlatSplitterPanel {
-    class_data& get_class_data() const override
+    uie::container_window_v3_config get_window_config() override
     {
-        __implement_get_class_data_ex(_T("{77653A44-66D1-49e0-9A7A-1C71898C0441}"), _T(""), false, 0,
-            WS_CHILD | WS_CLIPCHILDREN, WS_EX_CONTROLPARENT, CS_DBLCLKS);
+        return {L"{77653A44-66D1-49e0-9A7A-1C71898C0441}", true, CS_DBLCLKS};
     }
     void get_name(pfc::string_base& p_out) const override { p_out = "Vertical splitter"; }
     const GUID& get_extension_guid() const override

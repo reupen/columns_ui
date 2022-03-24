@@ -5,7 +5,7 @@
 
 namespace cui::panels::filter {
 
-class FilterSearchToolbar : public uie::container_uie_window_v2 {
+class FilterSearchToolbar : public uie::container_uie_window_v3 {
 public:
     static bool g_activate();
     static bool g_filter_search_bar_has_stream(
@@ -33,7 +33,12 @@ public:
 
     unsigned get_type() const override { return uie::type_toolbar; }
 
-    uint32_t get_flags() const override { return flag_default_flags_plus_transparent_background; }
+    uie::container_window_v3_config get_window_config() override
+    {
+        uie::container_window_v3_config config(L"columns_ui_filter_search_toolbar_smuVaKiMNUs");
+        config.invalidate_children_on_move_or_resize = true;
+        return config;
+    }
 
 private:
     class FontClient : public fonts::client {
@@ -72,8 +77,6 @@ private:
     static void s_update_colours();
     static void s_update_font();
 
-    const GUID& get_class_guid() override { return toolbars::guid_filter_search_bar; }
-
     void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
     void get_menu_items(uie::menu_hook_t& p_hook) override;
@@ -90,12 +93,11 @@ private:
     void update_toolbar_icons() const;
     void create_edit();
     void recalculate_dimensions();
-    void on_size(int cx, int cy) override;
+    void on_size(int cx, int cy);
+    void on_size();
     void activate();
 
     LRESULT on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
-    using uie::container_uie_window_v2::on_size;
 
     static constexpr GUID font_client_id
         = {0xfc156d41, 0xcbb, 0x4b98, {0x88, 0x8b, 0x36, 0x4f, 0x38, 0x17, 0x2a, 0x2e}};

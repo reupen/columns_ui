@@ -45,8 +45,6 @@ cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
 cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_show_group_titles, true);
 
-ItemProperties::MessageWindow ItemProperties::g_message_window;
-
 std::vector<ItemProperties*> ItemProperties::g_windows;
 
 // {862F8A37-16E0-4a74-B27E-2B73DB567D0F}
@@ -70,30 +68,12 @@ void ItemProperties::s_on_dark_mode_status_change()
         window->set_use_dark_mode(is_dark);
 }
 
-ItemProperties::MessageWindow::class_data& ItemProperties::MessageWindow::get_class_data() const
-{
-    __implement_get_class_data_ex(_T("{9D0A0408-59AC-4a96-A3EF-FF26B7B7C118}"), _T(""), false, 0, 0, 0, 0);
-}
-
-LRESULT ItemProperties::MessageWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_CREATE:
-        break;
-    case WM_ACTIVATEAPP:
-        g_on_app_activate(wp != 0);
-        break;
-    case WM_DESTROY:
-        break;
-    }
-    return DefWindowProc(wnd, msg, wp, lp);
-}
-
 void ItemProperties::g_on_app_activate(bool b_activated)
 {
     for (auto& window : g_windows)
         window->on_app_activate(b_activated);
 }
+
 void ItemProperties::on_app_activate(bool b_activated)
 {
     if (b_activated) {
@@ -215,14 +195,15 @@ void ItemProperties::notify_on_create()
     refresh_contents();
 
     if (g_windows.empty())
-        g_message_window.create(nullptr);
+        s_create_message_window();
+
     g_windows.push_back(this);
 }
 void ItemProperties::notify_on_destroy()
 {
     std::erase(g_windows, this);
     if (g_windows.empty())
-        g_message_window.destroy();
+        s_destroy_message_window();
 
     play_callback_manager::get()->unregister_callback(this);
     metadb_io_v3::get()->unregister_callback(this);
@@ -722,6 +703,27 @@ ItemProperties::ItemProperties()
     m_fields.add_item(Field("Disc number", "DISCNUMBER"));
     m_fields.add_item(Field("Total discs", "TOTALDISCS"));
     m_fields.add_item(Field("Comment", "COMMENT"));
+}
+
+void ItemProperties::s_create_message_window()
+{
+    uie::container_window_v3_config config(L"{9D0A0408-59AC-4a96-A3EF-FF26B7B7C118}", false);
+    config.window_styles = 0;
+    config.extended_window_styles = 0;
+
+    s_message_window = std::make_unique<uie::container_window_v3>(
+        config, [](auto&& wnd, auto&& msg, auto&& wp, auto&& lp) -> LRESULT {
+            if (msg == WM_ACTIVATEAPP)
+                g_on_app_activate(wp != 0);
+            return DefWindowProc(wnd, msg, wp, lp);
+        });
+    s_message_window->create(nullptr);
+}
+
+void ItemProperties::s_destroy_message_window()
+{
+    s_message_window->destroy();
+    s_message_window.reset();
 }
 
 void ItemProperties::notify_save_inline_edit(const char* value)

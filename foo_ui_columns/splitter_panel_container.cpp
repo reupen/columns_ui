@@ -22,7 +22,7 @@ void FlatSplitterPanel::Panel::PanelContainer::close_theme()
 
 bool FlatSplitterPanel::Panel::PanelContainer::test_autohide_window(HWND wnd)
 {
-    return IsChild(get_wnd(), wnd) || wnd == get_wnd() || wnd == m_this->get_wnd();
+    return IsChild(m_wnd, wnd) || wnd == m_wnd || wnd == m_this->get_wnd();
 }
 
 void FlatSplitterPanel::Panel::PanelContainer::on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs)
@@ -45,10 +45,10 @@ void FlatSplitterPanel::Panel::PanelContainer::on_hooked_message(WPARAM msg, con
             if (!(wnd_capture && test_autohide_window(wnd_capture)) && !(wnd_pt && test_autohide_window(wnd_pt))
                 && !m_this->test_divider_pt(pt, index)) {
                 if (!m_timer_active)
-                    PostMessage(get_wnd(), MSG_AUTOHIDE_END, 0, 0);
+                    PostMessage(m_wnd, MSG_AUTOHIDE_END, 0, 0);
             } else {
                 if (m_timer_active) {
-                    KillTimer(get_wnd(), HOST_AUTOHIDE_TIMER_ID);
+                    KillTimer(m_wnd, HOST_AUTOHIDE_TIMER_ID);
                     m_timer_active = false;
                 }
             }
@@ -229,7 +229,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         if (m_this.is_valid() && m_panel->m_autohide) {
             if ((m_panel->m_hidden)) {
                 m_panel->m_hidden = false;
-                m_this->get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
+                m_this->get_host()->on_size_limit_change(m_wnd, uie::size_limit_all);
                 m_this->on_size_changed();
                 enter_autohide_hook();
             }
@@ -240,7 +240,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
             if (cfg_sidebar_use_custom_show_delay && !cfg_sidebar_show_delay) {
                 if ((m_panel->m_hidden)) {
                     m_panel->m_hidden = false;
-                    m_this->get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
+                    m_this->get_host()->on_size_limit_change(m_wnd, uie::size_limit_all);
                     m_this->on_size_changed();
                     enter_autohide_hook();
                 }
@@ -351,12 +351,6 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-FlatSplitterPanel::Panel::PanelContainer::class_data& FlatSplitterPanel::Panel::PanelContainer::get_class_data() const
-{
-    __implement_get_class_data_ex(_T("foo_ui_columns_splitter_panel_child_container"), _T(""), false, NULL,
-        WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS, WS_EX_CONTROLPARENT, CS_DBLCLKS);
-}
-
 void FlatSplitterPanel::Panel::PanelContainer::enter_autohide_hook()
 {
     if (!m_hook_active) {
@@ -372,11 +366,24 @@ void FlatSplitterPanel::Panel::PanelContainer::set_window_ptr(FlatSplitterPanel*
 
 FlatSplitterPanel::Panel::PanelContainer::~PanelContainer() = default;
 
+HWND FlatSplitterPanel::Panel::PanelContainer::create(HWND parent) const
+{
+    return m_window->create(parent);
+}
+
+void FlatSplitterPanel::Panel::PanelContainer::destroy() const
+{
+    m_window->destroy();
+}
+
 FlatSplitterPanel::Panel::PanelContainer::PanelContainer(Panel* p_panel)
     : m_panel(p_panel)
     , m_hook_active(false)
     , m_timer_active(false)
 {
+    uie::container_window_v3_config config{class_name, true, CS_DBLCLKS};
+    m_window = std::make_unique<uie::container_window_v3>(
+        config, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }
 
 } // namespace cui::panels::splitter
