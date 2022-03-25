@@ -478,6 +478,12 @@ void TabStackPanel::set_styles(bool visible)
     }
 }
 
+void TabStackPanel::set_up_down_window_theme() const
+{
+    if (m_up_down_control_wnd)
+        SetWindowTheme(m_up_down_control_wnd, colours::is_dark_mode_active() ? L"DarkMode_Explorer" : nullptr, nullptr);
+}
+
 LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
@@ -502,10 +508,12 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         on_size_changed();
         // ShowWindow(m_wnd_tabs, SW_SHOWNORMAL);
         g_windows.emplace_back(this);
-        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([wnd, wnd_tabs = m_wnd_tabs] {
-            RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
-            RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
-        });
+        m_dark_mode_notifier
+            = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}, wnd, wnd_tabs = m_wnd_tabs] {
+                  set_up_down_window_theme();
+                  RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+                  RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+              });
     } break;
     case WM_KEYDOWN: {
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
@@ -910,6 +918,25 @@ LRESULT WINAPI TabStackPanel::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
 LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
+    case WM_PARENTNOTIFY:
+        switch (LOWORD(wp)) {
+        case WM_CREATE: {
+            const auto child_window = reinterpret_cast<HWND>(lp);
+            std::array<wchar_t, 128> class_name{};
+            GetClassName(child_window, class_name.data(), class_name.size());
+
+            if (!wcsncmp(UPDOWN_CLASSW, class_name.data(), class_name.size())) {
+                m_up_down_control_wnd = child_window;
+                set_up_down_window_theme();
+            }
+            break;
+        }
+        case WM_DESTROY:
+            if (m_up_down_control_wnd == reinterpret_cast<HWND>(lp))
+                m_up_down_control_wnd = nullptr;
+            break;
+        }
+        break;
     case WM_ERASEBKGND:
         return FALSE;
     case WM_PAINT:

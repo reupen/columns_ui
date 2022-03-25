@@ -43,27 +43,6 @@ public:
         service_ptr_t<PlaylistTabs> m_this;
     };
 
-private:
-    service_ptr_t<ui_status_text_override> m_status_override;
-
-    WNDPROC tabproc{nullptr};
-
-    bool m_dragging{false};
-    size_t m_dragging_idx{0};
-    RECT m_dragging_rect{};
-
-    bool m_playlist_switched{false};
-    bool m_switch_timer{false};
-    unsigned m_switch_playlist{0};
-    bool initialised{false};
-
-    int32_t m_mousewheel_delta{0};
-    UINT ID_CUSTOM_BASE{NULL};
-
-    service_ptr_t<contextmenu_manager> p_manager;
-
-    uie::container_window_v3_config get_window_config() override { return {L"{ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}"}; }
-
 public:
     static pfc::ptr_list_t<PlaylistTabs> list_wnd;
 
@@ -173,7 +152,28 @@ public:
     void on_child_position_change();
 
 private:
+    uie::container_window_v3_config get_window_config() override { return {L"{ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}"}; }
+    void set_up_down_window_theme() const;
+
     static HFONT g_font;
+
+    service_ptr_t<ui_status_text_override> m_status_override;
+
+    WNDPROC tabproc{nullptr};
+
+    bool m_dragging{false};
+    size_t m_dragging_idx{0};
+    RECT m_dragging_rect{};
+
+    bool m_playlist_switched{false};
+    bool m_switch_timer{false};
+    unsigned m_switch_playlist{0};
+    bool initialised{false};
+
+    int32_t m_mousewheel_delta{0};
+    UINT ID_CUSTOM_BASE{NULL};
+
+    service_ptr_t<contextmenu_manager> p_manager;
 
     GUID m_child_guid{};
     mutable pfc::array_t<uint8_t> m_child_data;
@@ -181,6 +181,7 @@ private:
     ui_extension::window_ptr m_child;
     HWND m_child_wnd{nullptr};
     HWND m_host_wnd{nullptr};
+    HWND m_up_down_control_wnd{};
 
     unsigned m_child_top{0};
 
