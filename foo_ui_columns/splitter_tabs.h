@@ -119,6 +119,7 @@ public:
     void destroy_children();
     void adjust_rect(bool b_larger, RECT* rc);
     void set_styles(bool visible = true);
+    void set_up_down_window_theme() const;
 
     void update_size_limits();
     void on_font_change();
@@ -134,6 +135,7 @@ private:
     PanelList m_panels;
     PanelList m_active_panels;
     HWND m_wnd_tabs{nullptr};
+    HWND m_up_down_control_wnd{};
     size_t m_active_tab{(std::numeric_limits<size_t>::max)()};
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;

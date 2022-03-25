@@ -266,6 +266,25 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         else
             uih::paint_subclassed_window_with_buffering(wnd, tabproc);
         return 0;
+    case WM_PARENTNOTIFY:
+        switch (LOWORD(wp)) {
+        case WM_CREATE: {
+            const auto child_window = reinterpret_cast<HWND>(lp);
+            std::array<wchar_t, 128> class_name{};
+            GetClassName(child_window, class_name.data(), class_name.size());
+
+            if (!wcsncmp(UPDOWN_CLASSW, class_name.data(), class_name.size())) {
+                m_up_down_control_wnd = child_window;
+                set_up_down_window_theme();
+            }
+            break;
+        }
+        case WM_DESTROY:
+            if (m_up_down_control_wnd == reinterpret_cast<HWND>(lp))
+                m_up_down_control_wnd = nullptr;
+            break;
+        }
+        break;
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_KEYDOWN: {
@@ -421,6 +440,12 @@ void PlaylistTabs::on_child_position_change()
         uie::size_limit_maximum_height | uie::size_limit_maximum_width | uie::size_limit_minimum_height
             | uie::size_limit_minimum_width);
     // on_size();
+}
+
+void PlaylistTabs::set_up_down_window_theme() const
+{
+    if (m_up_down_control_wnd)
+        SetWindowTheme(m_up_down_control_wnd, colours::is_dark_mode_active() ? L"DarkMode_Explorer" : nullptr, nullptr);
 }
 
 void PlaylistTabs::refresh_child_data(abort_callback& aborter) const
