@@ -114,79 +114,60 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         }
     } break;
     case WM_PAINT: {
-        PAINTSTRUCT ps;
-        HDC dc = BeginPaint(wnd, &ps);
-        if (m_this.is_valid()) {
-            size_t index = 0;
-            if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->m_panels[index]->m_show_caption) {
-                RECT rc_client;
-                RECT rc_dummy;
-                GetClientRect(wnd, &rc_client);
+        PAINTSTRUCT ps{};
+        const auto paint_dc = wil::BeginPaint(wnd, &ps);
+        const uih::BufferedDC buffered_dc(paint_dc.get(), ps.rcPaint);
 
-                const auto caption_size = g_get_caption_size();
+        uie::win32::paint_background_using_parent(wnd, buffered_dc.get(), false);
 
-                auto cx = m_this->m_panels[index]->m_caption_orientation == vertical ? caption_size : rc_client.right;
-                auto cy = m_this->m_panels[index]->m_caption_orientation == vertical ? rc_client.bottom : caption_size;
+        if (!m_this.is_valid())
+            return 0;
 
-                RECT rc_caption = {0, 0, cx, cy};
+        size_t index = 0;
+        if (!m_this->m_panels.find_by_wnd(wnd, index) && m_this->m_panels[index]->m_show_caption)
+            return 0;
 
-                if (IntersectRect(&rc_dummy, &ps.rcPaint, &rc_caption)) {
-                    const auto is_dark = colours::is_dark_mode_active();
-                    if (m_theme && !is_dark) {
-                        DrawThemeBackground(m_theme.get(), dc, 0, 0, &rc_caption, nullptr);
-                    } else {
-                        const auto back_brush = get_colour_brush(dark::ColourID::PanelCaptionBackground, is_dark);
-                        FillRect(dc, &rc_caption, back_brush.get());
-                    }
+        const auto orientation = m_this->m_panels[index]->m_caption_orientation;
 
-                    pfc::string8 text;
-                    uGetWindowText(wnd, text);
+        RECT rc_client{};
+        GetClientRect(wnd, &rc_client);
 
-                    HFONT old = SelectFont(dc,
-                        m_panel->m_caption_orientation == horizontal ? g_font_menu_horizontal.get()
-                                                                     : g_font_menu_vertical.get());
-                    // rc_caption.left += 11;
-                    uDrawPanelTitle(dc, &rc_caption, text, gsl::narrow<int>(text.length()),
-                        m_this->m_panels[index]->m_caption_orientation == vertical, is_dark);
-                    SelectFont(dc, old);
+        const auto caption_size = g_get_caption_size();
 
-#if 0
-                    RECT rc_button = { cx - 15, 0, cx, cy };
-                    HTHEME thm = OpenThemeData(wnd, L"ListView");
-                    DrawThemeBackground(thm, dc, m_this->m_panels[index]->m_hidden ? LVP_EXPANDBUTTON : LVP_COLLAPSEBUTTON, LVCB_NORMAL, &rc_button, &rc_button);
-                    CloseThemeData(thm);
-#endif
-                }
-            }
+        auto cx = orientation == vertical ? caption_size : rc_client.right;
+        auto cy = orientation == vertical ? rc_client.bottom : caption_size;
+
+        RECT rc_caption = {0, 0, cx, cy};
+
+        RECT rc_dummy{};
+        if (!IntersectRect(&rc_dummy, &ps.rcPaint, &rc_caption))
+            return 0;
+
+        const auto is_dark = colours::is_dark_mode_active();
+        if (m_theme && !is_dark) {
+            DrawThemeBackground(m_theme.get(), buffered_dc.get(), 0, 0, &rc_caption, nullptr);
+        } else {
+            const auto back_brush = get_colour_brush(dark::ColourID::PanelCaptionBackground, is_dark);
+            FillRect(buffered_dc.get(), &rc_caption, back_brush.get());
         }
-        EndPaint(wnd, &ps);
+
+        pfc::string8 text;
+        uGetWindowText(wnd, text);
+
+        auto _ = wil::SelectObject(buffered_dc.get(),
+            m_panel->m_caption_orientation == horizontal ? g_font_menu_horizontal.get() : g_font_menu_vertical.get());
+        uDrawPanelTitle(
+            buffered_dc.get(), &rc_caption, text, gsl::narrow<int>(text.length()), orientation == vertical, is_dark);
         return 0;
     }
     case WM_ERASEBKGND: {
-        RECT rc_caption = {0, 0, 0, 0};
-        RECT rc_fill;
-        RECT rc_client;
-        GetClientRect(wnd, &rc_client);
-        if (m_this.is_valid()) {
-            size_t index = 0;
-            if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->m_panels[index]->m_show_caption) {
-                unsigned caption_size = g_get_caption_size();
+        const auto dc = reinterpret_cast<HDC>(wp);
+        if (WindowFromDC(dc) == wnd)
+            return FALSE;
 
-                unsigned cx
-                    = m_this->m_panels[index]->m_caption_orientation == vertical ? caption_size : rc_client.right;
-                unsigned cy
-                    = m_this->m_panels[index]->m_caption_orientation == vertical ? rc_client.bottom : caption_size;
-
-                // RECT rc_caption = {0, 0, cx, cy};
-                rc_caption.right = cx;
-                rc_caption.bottom = cy;
-            }
-        }
-        SubtractRect(&rc_fill, &rc_client, &rc_caption);
-        const auto brush_fill = dark::get_system_colour_brush(COLOR_BTNFACE, colours::is_dark_mode_active());
-        FillRect(HDC(wp), &rc_fill, brush_fill.get());
-    }
+        uie::win32::paint_background_using_parent(wnd, dc, false);
         return TRUE;
+    }
     case WM_WINDOWPOSCHANGED:
         if (m_this.is_valid()) {
             auto lpwp = (LPWINDOWPOS)lp;
@@ -381,7 +362,7 @@ FlatSplitterPanel::Panel::PanelContainer::PanelContainer(Panel* p_panel)
     , m_hook_active(false)
     , m_timer_active(false)
 {
-    uie::container_window_v3_config config{class_name, true, CS_DBLCLKS};
+    uie::container_window_v3_config config{class_name, false, CS_DBLCLKS};
     m_window = std::make_unique<uie::container_window_v3>(
         config, [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 }

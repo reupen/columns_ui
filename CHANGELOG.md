@@ -40,9 +40,6 @@
 - The default no-cover artwork image was updated.
   [[#437](https://github.com/reupen/columns_ui/pull/437)]
 
-- Flickering when resizing the Playlist tabs and Tab stack panels was
-  eliminated. [[#451](https://github.com/reupen/columns_ui/pull/451)]
-
 - The 'View/Show toolbars' menu item is now only shown if the shift key is held
   down when opening the View menu.
   [[#410](https://github.com/reupen/columns_ui/pull/410)]
@@ -61,6 +58,12 @@
 
   (This change has the side effect of an uglier hover animation on some versions
   of Windows.)
+
+- Flickering when resizing the Playlist tabs and Tab stack panels was
+  eliminated. [[#451](https://github.com/reupen/columns_ui/pull/451)]
+
+- Flickering of panel captions when resizing a panel was eliminated.
+  [[#496](https://github.com/reupen/columns_ui/pull/496)]
 
 - Various bugs with the positioning and sizing of panel captions were fixed.
   [[#418](https://github.com/reupen/columns_ui/pull/418)]
