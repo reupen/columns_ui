@@ -72,6 +72,10 @@
   position was corrected so that it's based on the actual pointer size, rather
   than a fixed offset. [[#494](https://github.com/reupen/columns_ui/pull/494)]
 
+- A problem where toolbar sizing grips didn’t render correctly when resizing the
+  main window vertically was fixed.
+  [[#495](https://github.com/reupen/columns_ui/pull/495)]
+
 - Various truncated labels in Playlist view preferences were corrected.
   [[#469](https://github.com/reupen/columns_ui/pull/469)]
 
