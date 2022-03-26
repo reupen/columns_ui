@@ -365,7 +365,7 @@ void cui::MainWindow::resize_child_windows()
                     rc_main_client.right - rc_main_client.left,
                     rc_main_client.bottom - rc_main_client.top - rebar_height - status_height, SWP_NOZORDER);
             if (rebar::g_rebar) {
-                RedrawWindow(rebar::g_rebar, nullptr, nullptr, RDW_INVALIDATE);
+                RedrawWindow(rebar::g_rebar, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE);
                 dwp = DeferWindowPos(dwp, rebar::g_rebar, nullptr, 0, 0, rc_main_client.right - rc_main_client.left,
                     rebar_height, SWP_NOZORDER);
             }
