@@ -34,14 +34,8 @@ void FlatSplitterPanel::Panel::on_size(int cx, int cy)
 
     if (m_wnd_child)
         SetWindowPos(m_wnd_child, nullptr, x, y, cx - x, cy - y, SWP_NOZORDER);
-    if (caption_size /*&& (m_caption_orientation == vertical || (m_container.m_uxtheme.is_valid() && m_container.m_theme))*/)
-    {
-        int caption_cx = m_caption_orientation == vertical ? caption_size : cx;
-        int caption_cy = m_caption_orientation == vertical ? cy : caption_size;
 
-        RECT rc_caption = {0, 0, caption_cx, caption_cy};
-        RedrawWindow(m_wnd, &rc_caption, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
-    }
+    RedrawWindow(m_wnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE);
 }
 
 void FlatSplitterPanel::Panel::on_size()
