@@ -70,9 +70,6 @@ public:
 };
 
 class RebarWindow {
-private:
-    void destroy_bands();
-
 public:
     HWND wnd_rebar{nullptr};
     BandCache cache;
@@ -123,16 +120,22 @@ public:
 
     auto find_band_by_hwnd(HWND wnd)
     {
-        return std::find_if(std::begin(m_bands), std::end(m_bands), [&wnd](auto&& item) { return item.m_wnd == wnd; });
+        return std::ranges::find_if(m_bands, [&wnd](auto&& item) { return item.m_wnd == wnd; });
     }
 
 private:
+    static LRESULT WINAPI s_handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    LRESULT WINAPI handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    void destroy_bands();
+
     /**
      * For some reason, the z-order gets messed up after adding bands to the rebar control.
      * This makes sure that the z-order for bands goes from top to bottom.
      */
     void fix_z_order();
 
+    WNDPROC m_rebar_wnd_proc{nullptr};
     std::vector<RebarBand> m_bands;
     std::unique_ptr<cui::colours::dark_mode_notifier> m_dark_mode_notifier;
 

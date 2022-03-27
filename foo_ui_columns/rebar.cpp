@@ -335,25 +335,30 @@ ui_extension::window_host_factory_single<RebarWindowHost> g_ui_ext_host_rebar;
 
 HWND RebarWindow::init()
 {
-    HWND rv = nullptr;
-
     auto& band_states = g_cfg_rebar.get_rebar_info();
 
     m_bands = band_states | ranges::views::transform([](auto&& band_state) { return RebarBand{band_state}; })
         | ranges::to<std::vector>();
 
     if (!wnd_rebar) {
-        rv = wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
+        wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
             WS_BORDER | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE | RBS_AUTOSIZE
                 | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
-            0, 0, 0, 0, main_window.get_wnd(), (HMENU)ID_REBAR, core_api::get_my_instance(), nullptr);
+            0, 0, 0, 0, main_window.get_wnd(), reinterpret_cast<HMENU>(ID_REBAR), core_api::get_my_instance(), nullptr);
+
+        if (!wnd_rebar)
+            return nullptr;
+
+        SetWindowLongPtr(wnd_rebar, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(this));
+        m_rebar_wnd_proc = reinterpret_cast<WNDPROC>(
+            SetWindowLongPtr(wnd_rebar, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(s_handle_hooked_message)));
 
         m_dark_mode_notifier = std::make_unique<cui::colours::dark_mode_notifier>([this] { on_themechanged(); });
     }
 
     refresh_bands();
 
-    return rv;
+    return wnd_rebar;
 }
 
 void RebarWindow::refresh_band_configs()
@@ -784,6 +789,36 @@ void RebarWindow::refresh_bands(bool force_destroy_bands)
     }
 
     fix_z_order();
+}
+
+LRESULT RebarWindow::s_handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    const auto self = reinterpret_cast<RebarWindow*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
+    return self ? self->handle_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
+}
+
+LRESULT RebarWindow::handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+{
+    switch (msg) {
+    case WM_ERASEBKGND: {
+        const auto dc = reinterpret_cast<HDC>(wp);
+        if (WindowFromDC(dc) != wnd)
+            return CallWindowProc(m_rebar_wnd_proc, wnd, WM_ERASEBKGND, wp, lp);
+
+        return FALSE;
+    }
+    case WM_PAINT: {
+        PAINTSTRUCT ps{};
+        const auto paint_dc = wil::BeginPaint(wnd, &ps);
+        const auto buffered_dc = uih::BufferedDC(paint_dc.get(), ps.rcPaint);
+
+        CallWindowProc(m_rebar_wnd_proc, wnd, WM_ERASEBKGND, reinterpret_cast<WPARAM>(buffered_dc.get()), 0);
+        CallWindowProc(m_rebar_wnd_proc, wnd, WM_PRINTCLIENT, reinterpret_cast<WPARAM>(buffered_dc.get()), PRF_CLIENT);
+
+        return 0;
+    }
+    }
+    return CallWindowProc(m_rebar_wnd_proc, wnd, msg, wp, lp);
 }
 
 void RebarWindow::fix_z_order()
