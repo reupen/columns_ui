@@ -65,6 +65,10 @@
 - Flickering of panel captions when resizing a panel was eliminated.
   [[#496](https://github.com/reupen/columns_ui/pull/496)]
 
+- Various glitches with the rendering of toolbar sizing grips were fixed.
+  [[#495](https://github.com/reupen/columns_ui/pull/495),
+  [#497](https://github.com/reupen/columns_ui/pull/497)]
+
 - Various bugs with the positioning and sizing of panel captions were fixed.
   [[#418](https://github.com/reupen/columns_ui/pull/418)]
 
@@ -74,10 +78,6 @@
 - The position of seekbar and volume bar tooltips relative to the pointer
   position was corrected so that it's based on the actual pointer size, rather
   than a fixed offset. [[#494](https://github.com/reupen/columns_ui/pull/494)]
-
-- A problem where toolbar sizing grips didn’t render correctly when resizing the
-  main window vertically was fixed.
-  [[#495](https://github.com/reupen/columns_ui/pull/495)]
 
 - Various truncated labels in Playlist view preferences were corrected.
   [[#469](https://github.com/reupen/columns_ui/pull/469)]
