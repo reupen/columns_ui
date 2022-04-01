@@ -314,7 +314,7 @@ void ButtonsToolbar::destroy_toolbar()
 
 void ButtonsToolbar::set_window_theme() const
 {
-    SetWindowTheme(wnd_toolbar, cui::colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
+    SetWindowTheme(wnd_toolbar, colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
 }
 
 LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

@@ -44,8 +44,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         abort_callback& p_abort) override
     {
         const auto api = fb2k::std_api_get<fonts::manager>();
-        ColourManagerData::entry_ptr_t colour_manager_entry;
-        g_colour_manager_data.find_by_guid(pfc::guid_null, colour_manager_entry);
+        const auto colour_manager_entry = g_colour_manager_data.get_global_entry(false);
 
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         uint32_t element_id;
@@ -73,37 +72,37 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
                 int use_custom_colours{};
                 reader.read_item(use_custom_colours);
                 if (use_custom_colours == 2)
-                    colour_manager_entry->colour_mode = colours::colour_mode_themed;
+                    colour_manager_entry->colour_set.colour_mode = colours::colour_mode_themed;
                 else if (use_custom_colours == 1)
-                    colour_manager_entry->colour_mode = colours::colour_mode_custom;
+                    colour_manager_entry->colour_set.colour_mode = colours::colour_mode_custom;
                 else
-                    colour_manager_entry->colour_mode = colours::colour_mode_system;
+                    colour_manager_entry->colour_set.colour_mode = colours::colour_mode_system;
                 break;
             }
             case colours_pview_use_system_focus_frame: {
                 int use_system_frame{};
                 reader.read_item(use_system_frame);
-                colour_manager_entry->use_custom_active_item_frame = !use_system_frame;
+                colour_manager_entry->colour_set.use_custom_active_item_frame = !use_system_frame;
                 break;
             }
             case colours_pview_background:
                 b_colour_read = true;
-                reader.read_item(colour_manager_entry->background);
+                reader.read_item(colour_manager_entry->colour_set.background);
                 break;
             case colours_pview_selection_background:
-                reader.read_item(colour_manager_entry->selection_background);
+                reader.read_item(colour_manager_entry->colour_set.selection_background);
                 break;
             case colours_pview_inactive_selection_background:
-                reader.read_item(colour_manager_entry->inactive_selection_background);
+                reader.read_item(colour_manager_entry->colour_set.inactive_selection_background);
                 break;
             case colours_pview_text:
-                reader.read_item(colour_manager_entry->text);
+                reader.read_item(colour_manager_entry->colour_set.text);
                 break;
             case colours_pview_selection_text:
-                reader.read_item(colour_manager_entry->selection_text);
+                reader.read_item(colour_manager_entry->colour_set.selection_text);
                 break;
             case colours_pview_inactive_selection_text:
-                reader.read_item(colour_manager_entry->inactive_selection_text);
+                reader.read_item(colour_manager_entry->colour_set.inactive_selection_text);
                 break;
             case colours_pview_header_font: {
                 LOGFONT lf{};
@@ -129,10 +128,6 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
             }
         }
 
-        // on_header_font_change();
-        // on_playlist_font_change();
-        // pvt::ng_playlist_view_t::g_on_font_change();
-        // pvt::ng_playlist_view_t::g_on_header_font_change();
         if (b_colour_read)
             on_global_colours_change();
 

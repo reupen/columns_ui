@@ -100,8 +100,8 @@ extern const GUID g_guid_columns_ui_preferences_page;
 
 void on_global_colours_change();
 
-cui::colours::colour_mode_t g_get_global_colour_mode();
-void g_set_global_colour_mode(cui::colours::colour_mode_t p_mode);
+cui::colours::colour_mode_t g_get_global_colour_mode(bool is_dark = cui::colours::is_dark_mode_active());
+void g_set_global_colour_mode(cui::colours::colour_mode_t p_mode, bool is_dark = cui::colours::is_dark_mode_active());
 
 namespace cui {
 namespace prefs {

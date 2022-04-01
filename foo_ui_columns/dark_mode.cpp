@@ -307,7 +307,7 @@ void draw_layout_background(HWND wnd, HDC dc)
     RECT rc{};
     GetClientRect(wnd, &rc);
 
-    const auto brush = dark::get_colour_brush(ColourID::LayoutBackground, colours::is_dark_mode_active());
+    const auto brush = get_colour_brush(ColourID::LayoutBackground, colours::is_dark_mode_active());
     FillRect(dc, &rc, brush.get());
 }
 

@@ -137,7 +137,7 @@ private:
 
     WNDPROC m_rebar_wnd_proc{nullptr};
     std::vector<RebarBand> m_bands;
-    std::unique_ptr<cui::colours::dark_mode_notifier> m_dark_mode_notifier;
+    std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 
     friend class RebarWindowHost;
 };

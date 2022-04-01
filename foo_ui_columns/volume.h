@@ -29,9 +29,9 @@ class VolumeBar : play_callback {
                 Trackbar::draw_channel(dc, rc);
             else {
                 const auto is_dark = cui::colours::is_dark_mode_active();
-                const auto top_edge_colour = cui::dark::get_colour(cui::dark::ColourID::VolumeChannelTopEdge, is_dark);
+                const auto top_edge_colour = get_colour(cui::dark::ColourID::VolumeChannelTopEdge, is_dark);
                 const auto bottom_and_right_edge_colour
-                    = cui::dark::get_colour(cui::dark::ColourID::VolumeChannelBottomAndRightEdge, is_dark);
+                    = get_colour(cui::dark::ColourID::VolumeChannelBottomAndRightEdge, is_dark);
 
                 if (m_this->get_using_gdiplus()) {
                     Gdiplus::Graphics graphics(dc);
@@ -223,8 +223,8 @@ public:
             // Note: In non-pop-up mode, this is handled by uie::container_window
             RECT rect{};
             GetClientRect(wnd, &rect);
-            const auto brush = cui::dark::get_colour_brush(
-                cui::dark::ColourID::VolumePopupBackground, cui::colours::is_dark_mode_active());
+            const auto brush
+                = get_colour_brush(cui::dark::ColourID::VolumePopupBackground, cui::colours::is_dark_mode_active());
             FillRect(reinterpret_cast<HDC>(wp), &rect, brush.get());
             return TRUE;
         }
@@ -238,7 +238,7 @@ public:
                 RECT rect{};
                 GetClientRect(wnd, &rect);
 
-                const auto border_colour = cui::dark::get_colour(cui::dark::ColourID::VolumePopupBorder, is_dark);
+                const auto border_colour = get_colour(cui::dark::ColourID::VolumePopupBorder, is_dark);
                 const auto pen = wil::unique_hpen(CreatePen(PS_INSIDEFRAME, 1_spx, border_colour));
                 const auto _select_pen = wil::SelectObject(ps.hdc, pen.get());
                 const auto _select_brush = wil::SelectObject(ps.hdc, GetStockObject(NULL_BRUSH));

@@ -65,7 +65,7 @@ public:
     }
 };
 
-extern ColourManagerData g_colour_manager_data;
+extern cui::colours::ColourManagerData g_colour_manager_data;
 extern FontManagerData g_font_manager_data;
 
 namespace cui::colours {

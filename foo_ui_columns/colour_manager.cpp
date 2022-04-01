@@ -12,8 +12,8 @@ namespace {
 class ColourManagerInstance : public colours::manager_instance {
 public:
     explicit ColourManagerInstance(const GUID& p_client_guid)
-        : m_light_entry(g_colour_manager_data.get_entry_by_guid(p_client_guid, false))
-        , m_dark_entry(g_colour_manager_data.get_entry_by_guid(p_client_guid, true))
+        : m_light_entry(g_colour_manager_data.get_entry(p_client_guid, false))
+        , m_dark_entry(g_colour_manager_data.get_entry(p_client_guid, true))
         , m_global_light_entry(g_colour_manager_data.get_global_entry(false))
         , m_global_dark_entry(g_colour_manager_data.get_global_entry(true))
     {
@@ -22,7 +22,7 @@ public:
     COLORREF get_colour(const colours::colour_identifier_t& p_identifier) const override
     {
         system_appearance_manager::initialise();
-        auto entry = active_entry();
+        const auto entry = active_entry();
         if (entry->colour_set.colour_mode == colours::colour_mode_system
             || entry->colour_set.colour_mode == colours::colour_mode_themed) {
             const auto system_colour_id = get_system_colour_id(p_identifier);
