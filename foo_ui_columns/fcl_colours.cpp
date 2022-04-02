@@ -2,6 +2,7 @@
 
 #include "config_appearance.h"
 #include "tab_colours.h"
+#include "tab_dark_mode.h"
 
 namespace cui {
 
@@ -20,32 +21,44 @@ class ColoursDataSet : public fcl::dataset {
     enum Identifier {
         identifier_global_light_entry,
         identifier_light_entries,
+        identifier_global_dark_entry,
+        identifier_dark_entries,
+        identifier_mode,
         identifier_client_entry = 0,
     };
     void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
         abort_callback& p_abort) const override
     {
         fbh::fcl::Writer out(p_writer, p_abort);
-        // p_writer->write_lendian_t(stream_version, p_abort);
-        {
+
+        out.write_item(identifier_mode, cui::colours::dark_mode_status.get());
+
+        std::initializer_list<std::tuple<Identifier, colours::Entry::Ptr>> global_identifiers_and_entries
+            = {{identifier_global_light_entry, g_colour_manager_data.m_global_light_entry},
+                {identifier_global_dark_entry, g_colour_manager_data.m_global_dark_entry}};
+
+        for (auto&& [id, entry] : global_identifiers_and_entries) {
             stream_writer_memblock mem;
-            g_colour_manager_data.m_global_light_entry->_export(&mem, p_abort);
-            out.write_item(
-                identifier_global_light_entry, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
+            entry->_export(&mem, p_abort);
+            out.write_item(id, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
-        {
+
+        std::initializer_list<std::tuple<Identifier, std::vector<colours::Entry::Ptr>&>> identifiers_and_entries
+            = {{identifier_light_entries, g_colour_manager_data.m_light_entries},
+                {identifier_dark_entries, g_colour_manager_data.m_dark_entries}};
+
+        for (auto&& [id, entries] : identifiers_and_entries) {
             stream_writer_memblock mem;
             fbh::fcl::Writer out2(&mem, p_abort);
-            size_t count = g_colour_manager_data.m_light_entries.size();
+            const size_t count = entries.size();
             mem.write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
-            for (size_t i = 0; i < count; i++) {
+            for (auto&& entry : entries) {
                 stream_writer_memblock mem2;
-                g_colour_manager_data.m_light_entries[i]->_export(&mem2, p_abort);
+                entry->_export(&mem2, p_abort);
                 out2.write_item(
                     identifier_client_entry, mem2.m_data.get_ptr(), gsl::narrow<uint32_t>(mem2.m_data.get_size()));
             }
-            out.write_item(
-                identifier_light_entries, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
+            out.write_item(id, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
@@ -55,43 +68,56 @@ class ColoursDataSet : public fcl::dataset {
         uint32_t element_id;
         uint32_t element_size;
 
+        const auto old_is_dark = cui::colours::is_dark_mode_active();
+        bool mode_read{};
+
         while (reader.get_remaining()) {
             reader.read_item(element_id);
             reader.read_item(element_size);
 
-            pfc::array_t<uint8_t> data;
-            data.set_size(element_size);
-            reader.read(data.get_ptr(), data.get_size());
-
             switch (element_id) {
-            case identifier_global_light_entry: {
-                stream_reader_memblock_ref colour_reader(data);
-                g_colour_manager_data.m_global_light_entry->import(&colour_reader, data.get_size(), type, p_abort);
+            case identifier_mode:
+                colours::dark_mode_status.set(reader.read_item<int32_t>());
+                mode_read = true;
+                break;
+            case identifier_global_light_entry:
+            case identifier_global_dark_entry: {
+                std::vector<uint8_t> data(element_size);
+                reader.read(data.data(), data.size());
+
+                stream_reader_memblock_ref colour_reader(data.data(), data.size());
+                const auto entry = g_colour_manager_data.get_global_entry(element_id == identifier_global_dark_entry);
+                entry->import(&colour_reader, data.size(), type, p_abort);
             } break;
-            case identifier_light_entries: {
-                stream_reader_memblock_ref stream2(data);
-                fbh::fcl::Reader reader2(&stream2, data.get_size(), p_abort);
+            case identifier_light_entries:
+            case identifier_dark_entries: {
+                std::vector<uint8_t> data(element_size);
+                reader.read(data.data(), data.size());
 
-                const auto count = reader2.read_item<uint32_t>();
+                stream_reader_memblock_ref stream2(data.data(), data.size());
+                fbh::fcl::Reader sub_reader(&stream2, data.size(), p_abort);
 
-                g_colour_manager_data.m_light_entries.clear();
-                g_colour_manager_data.m_light_entries.resize(count);
+                const auto count = sub_reader.read_item<uint32_t>();
 
-                for (size_t i = 0; i < count; i++) {
-                    uint32_t element_id2;
-                    uint32_t element_size2;
-                    reader2.read_item(element_id2);
-                    reader2.read_item(element_size2);
-                    if (element_id2 == identifier_client_entry) {
-                        pfc::array_t<uint8_t> data2;
-                        data2.set_size(element_size2);
-                        reader2.read(data2.get_ptr(), data2.get_size());
-                        stream_reader_memblock_ref colour_reader(data2);
-                        g_colour_manager_data.m_light_entries[i] = std::make_shared<colours::Entry>(false);
-                        g_colour_manager_data.m_light_entries[i]->import(
-                            &colour_reader, data2.get_size(), type, p_abort);
+                auto& entries = element_id == identifier_dark_entries ? g_colour_manager_data.m_dark_entries
+                                                                      : g_colour_manager_data.m_light_entries;
+
+                entries.clear();
+                entries.reserve(count);
+
+                for (auto _ : ranges::views::iota(0u, count)) {
+                    const auto sub_element_id = sub_reader.read_item<uint32_t>();
+                    const auto sub_element_size = sub_reader.read_item<uint32_t>();
+                    if (sub_element_id == identifier_client_entry) {
+                        std::vector<uint8_t> data2(sub_element_size);
+                        sub_reader.read(data2.data(), data2.size());
+
+                        stream_reader_memblock_ref colour_reader(data2.data(), data2.size());
+                        auto entry = std::make_shared<colours::Entry>(false);
+                        entry->import(&colour_reader, data2.size(), type, p_abort);
+                        entries.emplace_back(std::move(entry));
                     } else
-                        reader2.skip(element_size2);
+                        sub_reader.skip(sub_element_size);
                 }
             } break;
             default:
@@ -100,13 +126,20 @@ class ColoursDataSet : public fcl::dataset {
             }
         }
 
+        if (!mode_read)
+            colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Disabled));
+
+        g_tab_dark_mode.refresh();
+
+        if (old_is_dark != colours::is_dark_mode_active())
+            return;
+
         g_tab_appearance.handle_external_configuration_change();
 
         colours::common_colour_callback_manager.s_on_common_colour_changed(colours::colour_flag_all);
-        service_enum_t<colours::client> colour_enum;
-        colours::client::ptr ptr;
-        while (colour_enum.next(ptr))
-            ptr->on_colour_changed(colours::colour_flag_all);
+
+        for (auto enumerator = colours::client::enumerate(); !enumerator.finished(); ++enumerator)
+            (*enumerator)->on_colour_changed(colours::colour_flag_all);
     }
 };
 
