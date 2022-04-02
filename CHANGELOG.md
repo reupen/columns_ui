@@ -4,8 +4,20 @@
 
 ### Features
 
-- Support for the Windows 10 and 11 dark mode was added.
-  [[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C2022-03-31)]
+- Support for the Windows 10 and 11 dark mode was added on Windows 10 20H1 and
+  newer.
+  [[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C2022-04-09)]
+
+  This can be enabled from the Mode tab on the Colours and fonts preferences
+  page.
+
+  Light and dark modes have independent colour settings. However, any custom
+  colours that are currently active will be copied to dark mode settings on
+  upgrade.
+
+  The default value for a custom colour can be reselected by clicking on the
+  Change... button for that colour, and selecting the first colour from the
+  'Custom colours:' section of the colour picker dialogue box.
 
 - The status bar can now show the number of selected tracks.
   [[#450](https://github.com/reupen/columns_ui/pull/450)]

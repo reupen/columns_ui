@@ -10,7 +10,7 @@
 #include "tab_fonts.h"
 
 TabDarkMode g_tab_dark_mode;
-ColourManagerData g_colour_manager_data;
+cui::colours::ColourManagerData g_colour_manager_data;
 FontManagerData g_font_manager_data;
 TabColours g_tab_appearance;
 TabFonts g_tab_appearance_fonts;
@@ -46,8 +46,8 @@ void handle_effective_dark_mode_status_change()
     if (wnd)
         SetWindowRedraw(wnd, FALSE);
 
-    g_colour_manager_data.g_on_common_bool_changed(bool_flag_dark_mode_enabled);
-    g_colour_manager_data.g_on_common_colour_changed(colour_flag_all);
+    common_colour_callback_manager.s_on_common_bool_changed(bool_flag_dark_mode_enabled);
+    common_colour_callback_manager.s_on_common_colour_changed(colour_flag_all);
     ColoursClientList colours_clients;
     ColoursClientList::g_get_list(colours_clients);
 
@@ -57,6 +57,8 @@ void handle_effective_dark_mode_status_change()
 
         client.m_ptr->on_colour_changed(colour_flag_all);
     }
+
+    g_tab_appearance.handle_external_configuration_change();
 
     if (wnd) {
         SetWindowRedraw(wnd, TRUE);
@@ -88,50 +90,49 @@ bool handle_system_dark_mode_availability_change()
 
 } // namespace cui::colours
 
-cui::colours::colour_mode_t g_get_global_colour_mode()
+cui::colours::colour_mode_t g_get_global_colour_mode(bool is_dark)
 {
-    ColourManagerData::entry_ptr_t ptr;
-    g_colour_manager_data.find_by_guid(pfc::guid_null, ptr);
-    return ptr->colour_mode;
+    const auto ptr = g_colour_manager_data.get_global_entry(is_dark);
+    return ptr->colour_set.colour_mode;
 }
 
-void g_set_global_colour_mode(cui::colours::colour_mode_t mode)
+void g_set_global_colour_mode(cui::colours::colour_mode_t mode, bool is_dark)
 {
-    ColourManagerData::entry_ptr_t ptr;
-    g_colour_manager_data.find_by_guid(pfc::guid_null, ptr);
-    if (ptr->colour_mode != mode) {
-        ptr->colour_mode = mode;
-        g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
-        if (g_tab_appearance.is_active()) {
-            g_tab_appearance.update_mode_combobox();
-            g_tab_appearance.update_fills();
-        }
-        ColoursClientList m_colours_client_list;
-        ColoursClientList::g_get_list(m_colours_client_list);
-        size_t count = m_colours_client_list.get_count();
-        for (size_t i = 0; i < count; i++) {
-            ColourManagerData::entry_ptr_t p_data;
-            g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
-            if (p_data->colour_mode == cui::colours::colour_mode_global)
-                m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
-        }
+    const auto ptr = g_colour_manager_data.get_global_entry(is_dark);
+    if (ptr->colour_set.colour_mode == mode)
+        return;
+
+    ptr->colour_set.colour_mode = mode;
+
+    if (is_dark != cui::colours::is_dark_mode_active())
+        return;
+
+    cui::colours::common_colour_callback_manager.s_on_common_colour_changed(cui::colours::colour_flag_all);
+    if (g_tab_appearance.is_active()) {
+        g_tab_appearance.handle_external_configuration_change();
+    }
+    ColoursClientList m_colours_client_list;
+    ColoursClientList::g_get_list(m_colours_client_list);
+    size_t count = m_colours_client_list.get_count();
+    for (size_t i = 0; i < count; i++) {
+        const auto p_data = g_colour_manager_data.get_entry(m_colours_client_list[i].m_guid);
+        if (p_data->colour_set.colour_mode == cui::colours::colour_mode_global)
+            m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
     }
 }
 
 void on_global_colours_change()
 {
     if (g_tab_appearance.is_active()) {
-        g_tab_appearance.update_mode_combobox();
-        g_tab_appearance.update_fills();
+        g_tab_appearance.handle_external_configuration_change();
     }
-    g_colour_manager_data.g_on_common_colour_changed(cui::colours::colour_flag_all);
+    cui::colours::common_colour_callback_manager.s_on_common_colour_changed(cui::colours::colour_flag_all);
     ColoursClientList m_colours_client_list;
     ColoursClientList::g_get_list(m_colours_client_list);
     size_t count = m_colours_client_list.get_count();
     for (size_t i = 0; i < count; i++) {
-        ColourManagerData::entry_ptr_t p_data;
-        g_colour_manager_data.find_by_guid(m_colours_client_list[i].m_guid, p_data);
-        if (p_data->colour_mode == cui::colours::colour_mode_global)
+        const auto p_data = g_colour_manager_data.get_entry(m_colours_client_list[i].m_guid);
+        if (p_data->colour_set.colour_mode == cui::colours::colour_mode_global)
             m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
     }
 }
@@ -192,7 +193,8 @@ static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and 
     std::size(g_tabs_appearance), g_guid_colour_preferences, g_guid_columns_ui_preferences_page, &cfg_child_appearance);
 
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}
-const GUID ColourManagerData::g_cfg_guid = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
+const GUID cui::colours::ColourManagerData::g_cfg_guid
+    = {0x15fd4ff9, 0x622, 0x4077, {0xbf, 0xbb, 0xdf, 0x1, 0x2, 0xb6, 0xa0, 0x68}};
 
 // {6B71F91C-6B7E-4dbe-B27B-C493AA513FD0}
 const GUID FontManagerData::g_cfg_guid = {0x6b71f91c, 0x6b7e, 0x4dbe, {0xb2, 0x7b, 0xc4, 0x93, 0xaa, 0x51, 0x3f, 0xd0}};

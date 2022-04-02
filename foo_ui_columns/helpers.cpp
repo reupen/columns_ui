@@ -99,7 +99,7 @@ HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
 
 BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool is_font_vertical, bool is_dark)
 {
-    const COLORREF cr_fore = cui::dark::get_colour(cui::dark::ColourID::PanelCaptionText, is_dark);
+    const COLORREF cr_fore = get_colour(cui::dark::ColourID::PanelCaptionText, is_dark);
 
     SetBkMode(dc, TRANSPARENT);
     SetTextColor(dc, cr_fore);

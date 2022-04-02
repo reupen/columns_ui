@@ -353,7 +353,7 @@ HWND RebarWindow::init()
         m_rebar_wnd_proc = reinterpret_cast<WNDPROC>(
             SetWindowLongPtr(wnd_rebar, GWLP_WNDPROC, reinterpret_cast<LONG_PTR>(s_handle_hooked_message)));
 
-        m_dark_mode_notifier = std::make_unique<cui::colours::dark_mode_notifier>([this] { on_themechanged(); });
+        m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([this] { on_themechanged(); });
     }
 
     refresh_bands();

@@ -563,6 +563,9 @@
     <ClCompile Include="font_manager.cpp">
       <Filter>Colours and fonts</Filter>
     </ClCompile>
+    <ClCompile Include="colour_utils.cpp">
+      <Filter>Colours and fonts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -805,6 +808,9 @@
     </ClInclude>
     <ClInclude Include="vis_spectrum.h">
       <Filter>Spectrum analyser</Filter>
+    </ClInclude>
+    <ClInclude Include="colour_utils.h">
+      <Filter>Colours and fonts</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

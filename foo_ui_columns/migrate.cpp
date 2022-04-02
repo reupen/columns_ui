@@ -85,6 +85,8 @@ namespace v200 {
 
 cfg_bool has_migrated_spectrum_analyser_colours(
     {0x2ce47e0, 0xd964, 0x4f16, {0x83, 0x57, 0xd1, 0x1f, 0xb4, 0x43, 0xf2, 0x58}}, false);
+cfg_bool has_migrated_custom_colours(
+    {0x6541170b, 0xc305, 0x4ae5, {0xa4, 0x84, 0x3c, 0x2, 0xcb, 0xf6, 0x2c, 0x7e}}, false);
 
 cfg_int cfg_legacy_spectrum_analyser_background_colour(
     GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}},
@@ -93,7 +95,7 @@ cfg_int cfg_legacy_spectrum_analyser_foreground_colour(
     GUID{0x421d3d3f, 0x5289, 0xb1e4, {0x9b, 0x91, 0xab, 0x51, 0xd3, 0xad, 0xbc, 0x4d}},
     get_default_colour(::colours::COLOUR_TEXT));
 
-void migrate()
+void migrate_spectrum_analyser_colours()
 {
     if (has_migrated_spectrum_analyser_colours)
         return;
@@ -107,12 +109,43 @@ void migrate()
         && cfg_legacy_spectrum_analyser_foreground_colour == get_default_colour(::colours::COLOUR_TEXT))
         return;
 
-    ColourManagerData::entry_ptr_t colours_entry;
-    g_colour_manager_data.find_by_guid(toolbars::spectrum_analyser::colour_client_id, colours_entry);
+    const auto colours_entry = g_colour_manager_data.get_entry(toolbars::spectrum_analyser::colour_client_id, false);
 
-    colours_entry->colour_mode = colours::colour_mode_custom;
-    colours_entry->background = cfg_legacy_spectrum_analyser_background_colour;
-    colours_entry->text = cfg_legacy_spectrum_analyser_foreground_colour;
+    colours_entry->colour_set.colour_mode = colours::colour_mode_custom;
+    colours_entry->colour_set.background = cfg_legacy_spectrum_analyser_background_colour;
+    colours_entry->colour_set.text = cfg_legacy_spectrum_analyser_foreground_colour;
+}
+
+void migrate_custom_colours_entry(const colours::Entry::Ptr& light_entry)
+{
+    if (light_entry->colour_set.colour_mode != colours::colour_mode_custom)
+        return;
+
+    auto default_colour_set = create_default_colour_set(false, colours::colour_mode_custom);
+    default_colour_set.use_custom_active_item_frame = light_entry->colour_set.use_custom_active_item_frame;
+
+    if (light_entry->colour_set == default_colour_set)
+        return;
+
+    const auto dark_entry = g_colour_manager_data.get_entry(light_entry->id, true);
+
+    dark_entry->colour_set = light_entry->colour_set;
+}
+
+void migrate_custom_colours()
+{
+    if (has_migrated_custom_colours)
+        return;
+
+    has_migrated_custom_colours = true;
+
+    if (main_window::config_get_is_first_run())
+        return;
+
+    migrate_custom_colours_entry(g_colour_manager_data.m_global_light_entry);
+
+    for (auto&& entry : g_colour_manager_data.m_light_entries)
+        migrate_custom_colours_entry(entry);
 }
 
 } // namespace v200
@@ -120,7 +153,8 @@ void migrate()
 void migrate_all()
 {
     v100::migrate();
-    v200::migrate();
+    v200::migrate_spectrum_analyser_colours();
+    v200::migrate_custom_colours();
 }
 
 } // namespace cui::migrate

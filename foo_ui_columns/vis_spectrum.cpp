@@ -160,7 +160,7 @@ void SpectrumAnalyserVisualisation::paint_background(HDC dc, const RECT* rc_clie
     colours::helper colours(colour_client_id);
 
     if (!s_background_brush)
-        s_background_brush.reset(CreateSolidBrush(colours.get_colour(cui::colours::colour_background)));
+        s_background_brush.reset(CreateSolidBrush(colours.get_colour(colours::colour_background)));
 
     FillRect(dc, rc_client, s_background_brush.get());
 }
@@ -484,7 +484,7 @@ void SpectrumAnalyserVisualisation::set_config(stream_reader* r, size_t p_size, 
 
 void SpectrumAnalyserVisualisation::get_config(stream_writer* data, abort_callback& p_abort) const
 {
-    cui::colours::helper colours(colour_client_id);
+    colours::helper colours(colour_client_id);
 
     data->write_lendian_t(colours.get_colour(colours::colour_text), p_abort);
     data->write_lendian_t(colours.get_colour(colours::colour_background), p_abort);

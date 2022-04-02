@@ -44,7 +44,7 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         auto bm_old = (HBITMAP)SelectObject(dc_mem, bm_mem);
 
         if (colours::is_dark_mode_active())
-            FillRect(dc_mem, &rc, dark::get_colour_brush(dark::ColourID::StatusBarBackground, true).get());
+            FillRect(dc_mem, &rc, get_colour_brush(dark::ColourID::StatusBarBackground, true).get());
         else
             CallWindowProc(state->status_proc, wnd, WM_ERASEBKGND, (WPARAM)dc_mem, NULL);
 
@@ -359,7 +359,7 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     if (text.empty())
         return;
 
-    const auto text_colour = dark::get_colour(dark::ColourID::StatusBarText, colours::is_dark_mode_active());
+    const auto text_colour = get_colour(dark::ColourID::StatusBarText, colours::is_dark_mode_active());
 
     if (part_id == StatusBarPartID::PlaybackInformation) {
         text_out_colours_tab(dc, text.data(), gsl::narrow<int>(text.size()), 0, 0, &rc, FALSE, text_colour, true, false,

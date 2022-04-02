@@ -393,7 +393,7 @@ LRESULT FilterSearchToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
 
 void FilterSearchToolbar::set_window_themes() const
 {
-    const auto is_dark = cui::colours::is_dark_mode_active();
+    const auto is_dark = colours::is_dark_mode_active();
 
     if (m_search_editbox)
         SetWindowTheme(m_search_editbox, is_dark ? L"DarkMode_CFD" : nullptr, nullptr);
@@ -404,7 +404,7 @@ void FilterSearchToolbar::set_window_themes() const
 
 void FilterSearchToolbar::update_toolbar_icons() const
 {
-    const auto is_dark = cui::colours::is_dark_mode_active();
+    const auto is_dark = colours::is_dark_mode_active();
     const int cx = GetSystemMetrics(SM_CXSMICON);
     const int cy = GetSystemMetrics(SM_CYSMICON);
 
@@ -544,7 +544,7 @@ void FilterSearchToolbar::recalculate_dimensions()
 void FilterSearchToolbar::ColourClient::on_bool_changed(uint32_t mask) const
 {
     if (mask & colours::bool_flag_dark_mode_enabled)
-        FilterSearchToolbar::s_on_dark_mode_status_change();
+        s_on_dark_mode_status_change();
 }
 
 LRESULT WINAPI FilterSearchToolbar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
