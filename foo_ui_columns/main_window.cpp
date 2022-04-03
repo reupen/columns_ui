@@ -8,6 +8,7 @@
 
 #include "main_window.h"
 
+#include "config_appearance.h"
 #include "status_pane.h"
 #include "layout.h"
 #include "dark_mode.h"
@@ -63,6 +64,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     migrate::migrate_all();
 
     if (main_window::config_get_is_first_run()) {
+        colours::dark_mode_status.set(WI_EnumValue(colours::DarkModeStatus::UseSystemSetting));
+
         if (!cfg_layout.get_presets().get_count())
             cfg_layout.reset_presets();
     }
