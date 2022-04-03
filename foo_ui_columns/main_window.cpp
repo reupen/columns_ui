@@ -278,7 +278,7 @@ void cui::MainWindow::on_destroy()
 
 void cui::MainWindow::set_dark_mode_attributes(bool is_update) const
 {
-    if (!dark::does_os_support_dark_mode())
+    if (!m_wnd || !dark::does_os_support_dark_mode())
         return;
 
     const auto is_dark = colours::is_dark_mode_active();

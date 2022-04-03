@@ -42,9 +42,23 @@ fbh::ConfigInt32 dark_mode_status(
 void handle_effective_dark_mode_status_change()
 {
     const auto wnd = main_window.get_wnd();
+    bool is_redraw_disabled{};
 
-    if (wnd)
-        SetWindowRedraw(wnd, FALSE);
+    if (wnd) {
+        is_redraw_disabled = GetProp(wnd, L"SysSetRedraw") != nullptr;
+        if (!is_redraw_disabled) {
+            SetWindowRedraw(wnd, FALSE);
+        }
+    }
+
+    auto _ = gsl::finally([wnd, is_redraw_disabled] {
+        if (wnd && !is_redraw_disabled) {
+            SetWindowRedraw(wnd, TRUE);
+            RedrawWindow(wnd, nullptr, nullptr,
+                RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
+            main_window.set_dark_mode_attributes(true);
+        }
+    });
 
     common_colour_callback_manager.s_on_common_bool_changed(bool_flag_dark_mode_enabled);
     common_colour_callback_manager.s_on_common_colour_changed(colour_flag_all);
@@ -59,13 +73,6 @@ void handle_effective_dark_mode_status_change()
     }
 
     g_tab_appearance.handle_external_configuration_change();
-
-    if (wnd) {
-        SetWindowRedraw(wnd, TRUE);
-        RedrawWindow(wnd, nullptr, nullptr,
-            RDW_INVALIDATE | RDW_ERASE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW | RDW_ERASENOW);
-        main_window.set_dark_mode_attributes(true);
-    }
 }
 
 bool handle_system_dark_mode_status_change()

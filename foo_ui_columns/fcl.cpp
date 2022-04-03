@@ -362,7 +362,11 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
             cui::fcl::dataset_list export_items;
             ImportFeedbackReceiver feed;
 
-            uih::DisableRedrawScope p_NoRedraw(cui::main_window.get_wnd());
+            const auto old_is_dark = cui::colours::is_dark_mode_active();
+            std::unique_ptr<uih::DisableRedrawScope> disable_redraw;
+
+            if (cui::main_window.get_wnd())
+                disable_redraw = std::make_unique<uih::DisableRedrawScope>(cui::main_window.get_wnd());
 
             for (auto export_item_index : ranges::views::iota(size_t{0}, export_items.get_count())) {
                 auto ptr = export_items[export_item_index];
@@ -374,6 +378,12 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
                         data_set_iter->data.get_ptr(), data_set_iter->data.get_size(), mode, feed, p_abort);
                 }
             }
+            const auto new_is_dark = cui::colours::is_dark_mode_active();
+            disable_redraw.reset();
+
+            if (old_is_dark != new_is_dark)
+                cui::main_window.set_dark_mode_attributes(true);
+
             if (feed.get_count()) {
                 throw pfc::exception("Bug check: panels missing");
             }

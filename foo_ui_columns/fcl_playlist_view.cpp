@@ -3,6 +3,7 @@
 #include "colour_manager_data.h"
 #include "config.h"
 #include "config_appearance.h"
+#include "tab_dark_mode.h"
 
 namespace cui {
 
@@ -128,8 +129,15 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
             }
         }
 
-        if (b_colour_read)
-            on_global_colours_change();
+        if (b_colour_read) {
+            const auto old_is_dark = colours::is_dark_mode_active();
+            colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Disabled));
+
+            g_tab_dark_mode.refresh();
+
+            if (old_is_dark == colours::is_dark_mode_active())
+                on_global_colours_change();
+        }
 
         if (font_read)
             refresh_appearance_prefs();
