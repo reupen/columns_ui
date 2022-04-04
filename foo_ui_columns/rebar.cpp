@@ -808,13 +808,7 @@ LRESULT RebarWindow::handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM
         return FALSE;
     }
     case WM_PAINT: {
-        PAINTSTRUCT ps{};
-        const auto paint_dc = wil::BeginPaint(wnd, &ps);
-        const auto buffered_dc = uih::BufferedDC(paint_dc.get(), ps.rcPaint);
-
-        CallWindowProc(m_rebar_wnd_proc, wnd, WM_ERASEBKGND, reinterpret_cast<WPARAM>(buffered_dc.get()), 0);
-        CallWindowProc(m_rebar_wnd_proc, wnd, WM_PRINTCLIENT, reinterpret_cast<WPARAM>(buffered_dc.get()), PRF_CLIENT);
-
+        uih::paint_subclassed_window_with_buffering(wnd, m_rebar_wnd_proc);
         return 0;
     }
     }
