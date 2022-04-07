@@ -491,9 +491,6 @@
     <ClCompile Include="commandline.cpp">
       <Filter>FCL files</Filter>
     </ClCompile>
-    <ClCompile Include="status_bar_font_client.cpp">
-      <Filter>Status bar</Filter>
-    </ClCompile>
     <ClCompile Include="menu_items.cpp">
       <Filter>Menu items</Filter>
     </ClCompile>
@@ -892,5 +889,7 @@
     <Image Include="assets\dark-star-grey.ico">
       <Filter>Resources</Filter>
     </Image>
+    <Image Include="assets\dark-padlock.ico" />
+    <Image Include="assets\light-padlock.ico" />
   </ItemGroup>
 </Project>

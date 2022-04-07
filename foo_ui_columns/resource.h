@@ -32,6 +32,8 @@
 #define IDI_DARK_STAROFF                166
 #define IDI_DARK_STARON                 167
 #define IDI_DARK_RESET                  168
+#define IDI_DARK_PADLOCK                169
+#define IDI_LIGHT_PADLOCK               171
 #define IDD_RENAME_PLAYLIST             185
 #define IDD_PREFS_TAB_HOST              191
 #define IDD_PREFS_PLAYLIST_TABS         193
@@ -260,7 +262,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        169
+#define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1184
 #define _APS_NEXT_SYMED_VALUE           101
