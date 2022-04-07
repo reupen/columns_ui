@@ -4,7 +4,6 @@
 #include "config_appearance.h"
 #include "layout.h"
 #include "main_window.h"
-#include "vis_spectrum.h"
 
 namespace cui::migrate {
 
@@ -83,8 +82,6 @@ void migrate()
 
 namespace v200 {
 
-cfg_bool has_migrated_spectrum_analyser_colours(
-    {0x2ce47e0, 0xd964, 0x4f16, {0x83, 0x57, 0xd1, 0x1f, 0xb4, 0x43, 0xf2, 0x58}}, false);
 cfg_bool has_migrated_custom_colours(
     {0x6541170b, 0xc305, 0x4ae5, {0xa4, 0x84, 0x3c, 0x2, 0xcb, 0xf6, 0x2c, 0x7e}}, false);
 
@@ -94,27 +91,6 @@ cfg_int cfg_legacy_spectrum_analyser_background_colour(
 cfg_int cfg_legacy_spectrum_analyser_foreground_colour(
     GUID{0x421d3d3f, 0x5289, 0xb1e4, {0x9b, 0x91, 0xab, 0x51, 0xd3, 0xad, 0xbc, 0x4d}},
     get_default_colour(::colours::COLOUR_TEXT));
-
-void migrate_spectrum_analyser_colours()
-{
-    if (has_migrated_spectrum_analyser_colours)
-        return;
-
-    has_migrated_spectrum_analyser_colours = true;
-
-    if (main_window::config_get_is_first_run())
-        return;
-
-    if (cfg_legacy_spectrum_analyser_background_colour == get_default_colour(::colours::COLOUR_BACK)
-        && cfg_legacy_spectrum_analyser_foreground_colour == get_default_colour(::colours::COLOUR_TEXT))
-        return;
-
-    const auto colours_entry = g_colour_manager_data.get_entry(toolbars::spectrum_analyser::colour_client_id, false);
-
-    colours_entry->colour_set.colour_mode = colours::colour_mode_custom;
-    colours_entry->colour_set.background = cfg_legacy_spectrum_analyser_background_colour;
-    colours_entry->colour_set.text = cfg_legacy_spectrum_analyser_foreground_colour;
-}
 
 void migrate_custom_colours_entry(const colours::Entry::Ptr& light_entry)
 {
@@ -153,7 +129,6 @@ void migrate_custom_colours()
 void migrate_all()
 {
     v100::migrate();
-    v200::migrate_spectrum_analyser_colours();
     v200::migrate_custom_colours();
 }
 

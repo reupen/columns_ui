@@ -1,9 +1,45 @@
 #include "pch.h"
 #include "vis_spectrum.h"
 
+#include "config_appearance.h"
+#include "main_window.h"
 #include "vis_gen_host.h"
 
 namespace cui::toolbars::spectrum_analyser {
+
+namespace {
+
+cfg_bool has_migrated_spectrum_analyser_colours(
+    {0x2ce47e0, 0xd964, 0x4f16, {0x83, 0x57, 0xd1, 0x1f, 0xb4, 0x43, 0xf2, 0x58}}, false);
+
+void migrate_spectrum_analyser_colours(COLORREF foreground, COLORREF background)
+{
+    if (has_migrated_spectrum_analyser_colours)
+        return;
+
+    has_migrated_spectrum_analyser_colours = true;
+
+    if (main_window::config_get_is_first_run())
+        return;
+
+    if (foreground == get_default_colour(::colours::COLOUR_TEXT)
+        && background == get_default_colour(::colours::COLOUR_BACK))
+        return;
+
+    auto set_entry_colours = [foreground, background](const colours::Entry::Ptr& entry) {
+        entry->colour_set.colour_mode = colours::colour_mode_custom;
+        entry->colour_set.background = background;
+        entry->colour_set.text = foreground;
+    };
+
+    const auto light_entry = g_colour_manager_data.get_entry(toolbars::spectrum_analyser::colour_client_id, false);
+    set_entry_colours(light_entry);
+
+    const auto dark_entry = g_colour_manager_data.get_entry(toolbars::spectrum_analyser::colour_client_id, true);
+    set_entry_colours(dark_entry);
+}
+
+} // namespace
 
 enum {
     MODE_STANDARD,
@@ -471,8 +507,11 @@ void SpectrumAnalyserVisualisation::get_name(pfc::string_base& out) const
 void SpectrumAnalyserVisualisation::set_config(stream_reader* r, size_t p_size, abort_callback& p_abort)
 {
     if (p_size) {
-        r->read_lendian_t<COLORREF>(p_abort);
-        r->read_lendian_t<COLORREF>(p_abort);
+        const auto legacy_foreground = r->read_lendian_t<COLORREF>(p_abort);
+        const auto legacy_background = r->read_lendian_t<COLORREF>(p_abort);
+
+        migrate_spectrum_analyser_colours(legacy_foreground, legacy_background);
+
         r->read_lendian_t(mode, p_abort);
         try {
             r->read_lendian_t(m_scale, p_abort);
