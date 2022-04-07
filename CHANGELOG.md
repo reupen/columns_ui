@@ -25,8 +25,8 @@
 - Improvements were made to the status bar layout logic (including better DPI
   scaling). [[#432](https://github.com/reupen/columns_ui/pull/432)]
 
-- The status bar playlist lock icon was replaced with the 🔒 character.
-  [[#432](https://github.com/reupen/columns_ui/pull/432)]
+- The status bar playlist lock icon was updated.
+  [[#513](https://github.com/reupen/columns_ui/pull/513)]
 
 - The default playback button icons were tweaked. This includes the removal of
   subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435),

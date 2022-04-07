@@ -17,14 +17,44 @@ struct StatusBarState {
     std::string track_length_text;
     std::string track_count_text;
     std::string volume_text;
+    wil::unique_hfont font;
+    wil::unique_hicon lock_icon;
     std::unique_ptr<colours::dark_mode_notifier> dark_mode_notifier;
 };
 
 std::optional<StatusBarState> state;
 
-} // namespace
+constexpr GUID font_client_status_guid = {0xb9d5ea18, 0x5827, 0x40be, {0xa8, 0x96, 0x30, 0x2a, 0x71, 0xbc, 0xaa, 0x9c}};
 
-extern HFONT g_status_font;
+void on_status_font_change()
+{
+    if (!g_status)
+        return;
+
+    SetWindowFont(g_status, nullptr, FALSE);
+
+    state->lock_icon.reset();
+    state->font.reset(fb2k::std_api_get<fonts::manager>()->get_font(font_client_status_guid));
+
+    SetWindowFont(g_status, state->font.get(), TRUE);
+
+    set_part_sizes(t_parts_all);
+    main_window.resize_child_windows();
+}
+
+class StatusBarFontClient : public fonts::client {
+public:
+    const GUID& get_client_guid() const override { return font_client_status_guid; }
+    void get_name(pfc::string_base& p_out) const override { p_out = "Status bar"; }
+
+    fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
+
+    void on_font_changed() const override { on_status_font_change(); }
+};
+
+StatusBarFontClient::factory<StatusBarFontClient> g_font_client_status;
+
+} // namespace
 
 LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -118,10 +148,6 @@ void destroy_window()
         DestroyWindow(g_status);
         g_status = nullptr;
     }
-    if (g_status_font) {
-        DeleteObject(g_status_font);
-        g_status_font = nullptr;
-    }
     state.reset();
 }
 
@@ -134,8 +160,7 @@ std::string get_playlist_lock_text()
 
     pfc::string8 lock_name;
     api->playlist_lock_query_name(playlist_index, lock_name);
-
-    return fmt::format("{} {}", u8"🔒"_pcc, lock_name.get_ptr());
+    return lock_name.get_ptr();
 }
 
 int calculate_volume_size(const char* p_text)
@@ -157,7 +182,8 @@ int calculate_selected_count_size(const char* p_text)
 
 int calculate_playback_lock_size(const char* p_text)
 {
-    return win32_helpers::status_bar_get_text_width(g_status, p_text);
+    return uih::get_font_height(state->font.get()) - 2_spx + 2_spx
+        + win32_helpers::status_bar_get_text_width(g_status, p_text);
 }
 
 std::string get_selected_length_text(unsigned dp = 0)
@@ -295,18 +321,24 @@ void create_window()
 {
     if (cfg_status && !g_status) {
         g_status = CreateWindowEx(0, STATUSCLASSNAME, nullptr, WS_CHILD | SBARS_SIZEGRIP, 0, 0, 0, 0,
-            main_window.get_wnd(), (HMENU)ID_STATUS, core_api::get_my_instance(), nullptr);
+            main_window.get_wnd(), reinterpret_cast<HMENU>(ID_STATUS), core_api::get_my_instance(), nullptr);
+
+        if (!g_status)
+            return;
 
         state = StatusBarState{};
 
-        state->status_proc = (WNDPROC)SetWindowLongPtr(g_status, GWLP_WNDPROC, (LPARAM)(g_status_hook));
+        state->status_proc = reinterpret_cast<WNDPROC>(
+            SetWindowLongPtr(g_status, GWLP_WNDPROC, reinterpret_cast<LPARAM>(g_status_hook)));
 
         SetWindowPos(g_status, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
         on_status_font_change();
 
-        state->dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
-            [wnd = g_status] { RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
+        state->dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([wnd = g_status] {
+            state->lock_icon.reset();
+            RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
+        });
 
         set_part_sizes(t_parts_all);
 
@@ -367,11 +399,26 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
         return;
     }
 
+    const auto font_height = uih::get_dc_font_height(dc);
+    int x = rc.left;
+    const int y = rc.top + (RECT_CY(rc) - font_height) / 2;
+    const auto icon_size = font_height - 2_spx;
+
+    if (part_id == StatusBarPartID::PlaylistLock) {
+        if (!state->lock_icon) {
+            const WORD resource_id = colours::is_dark_mode_active() ? IDI_DARK_PADLOCK : IDI_LIGHT_PADLOCK;
+            state->lock_icon.reset(static_cast<HICON>(LoadImage(
+                wil::GetModuleInstanceHandle(), MAKEINTRESOURCE(resource_id), IMAGE_ICON, icon_size, icon_size, 0)));
+        }
+        const auto icon_y = rc.top + (RECT_CY(rc) - icon_size) / 2;
+
+        DrawIconEx(dc, x, icon_y, state->lock_icon.get(), icon_size, icon_size, 0, nullptr, DI_NORMAL);
+        x += icon_size + 2_spx;
+    }
+
     const auto utf16_text = pfc::stringcvt::string_wide_from_utf8(text.data(), text.size());
     SetTextColor(dc, text_colour);
     SetBkMode(dc, TRANSPARENT);
-    const int x = rc.left;
-    const int y = rc.top + (RECT_CY(rc) - uih::get_dc_font_height(dc)) / 2;
     ExtTextOutW(dc, x, y, ETO_CLIPPED, &rc, utf16_text, gsl::narrow<UINT>(utf16_text.length()), nullptr);
 }
 

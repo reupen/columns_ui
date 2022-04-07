@@ -1053,6 +1053,10 @@ IDI_DARK_STARON         ICON                    "assets\\dark-star-gold.ico"
 
 IDI_DARK_RESET          ICON                    "assets\\dark-reset.ico"
 
+IDI_DARK_PADLOCK        ICON                    "assets\\dark-padlock.ico"
+
+IDI_LIGHT_PADLOCK       ICON                    "assets\\light-padlock.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
