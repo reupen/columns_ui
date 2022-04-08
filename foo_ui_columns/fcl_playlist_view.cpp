@@ -12,7 +12,7 @@ namespace {
 class PlaylistViewAppearanceDataSet : public fcl::dataset {
     enum ItemID {
         /** Legacy */
-        colours_pview_mode,
+        colours_pview_scheme,
         colours_pview_background,
         colours_pview_selection_background,
         colours_pview_inactive_selection_background,
@@ -69,15 +69,15 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
                 reader.read_item(item_padding.dpi);
                 item_padding_read = true;
                 break;
-            case colours_pview_mode: {
+            case colours_pview_scheme: {
                 int use_custom_colours{};
                 reader.read_item(use_custom_colours);
                 if (use_custom_colours == 2)
-                    colour_manager_entry->colour_set.colour_mode = colours::colour_mode_themed;
+                    colour_manager_entry->colour_set.colour_scheme = colours::ColourSchemeThemed;
                 else if (use_custom_colours == 1)
-                    colour_manager_entry->colour_set.colour_mode = colours::colour_mode_custom;
+                    colour_manager_entry->colour_set.colour_scheme = colours::ColourSchemeCustom;
                 else
-                    colour_manager_entry->colour_set.colour_mode = colours::colour_mode_system;
+                    colour_manager_entry->colour_set.colour_scheme = colours::ColourSchemeSystem;
                 break;
             }
             case colours_pview_use_system_focus_frame: {

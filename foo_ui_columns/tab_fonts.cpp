@@ -45,8 +45,8 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
-        m_wnd_colours_mode = GetDlgItem(wnd, IDC_COLOURS_MODE);
-        m_wnd_colours_element = GetDlgItem(wnd, IDC_COLOURS_ELEMENT);
+        m_wnd_colours_mode = GetDlgItem(wnd, IDC_FONT_MODE);
+        m_wnd_colours_element = GetDlgItem(wnd, IDC_FONT_ELEMENT);
 
         FontsClientList::g_get_list(m_fonts_client_list);
 
@@ -85,14 +85,14 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 on_font_changed();
             }
         } break;
-        case IDC_COLOURS_MODE | (CBN_SELCHANGE << 16): {
+        case IDC_FONT_MODE | (CBN_SELCHANGE << 16): {
             int idx = ComboBox_GetCurSel((HWND)lp);
             m_element_ptr->font_mode = (cui::fonts::font_mode_t)ComboBox_GetItemData((HWND)lp, idx);
             update_font_desc();
             update_change();
             on_font_changed();
         } break;
-        case IDC_COLOURS_ELEMENT | (CBN_SELCHANGE << 16): {
+        case IDC_FONT_ELEMENT | (CBN_SELCHANGE << 16): {
             int idx = ComboBox_GetCurSel((HWND)lp);
             m_element_api.release();
             if (idx != -1) {

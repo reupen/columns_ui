@@ -150,14 +150,14 @@ private:
             ColoursClientList::g_get_list(m_colours_client_list);
             size_t count = m_colours_client_list.get_count();
             bool b_global_custom
-                = g_colour_manager_data.get_global_entry()->colour_set.colour_mode == colours::colour_mode_custom;
+                = g_colour_manager_data.get_global_entry()->colour_set.colour_scheme == colours::ColourSchemeCustom;
             if (!b_global_custom)
                 colours::common_colour_callback_manager.s_on_common_colour_changed(colours::colour_flag_all);
             for (size_t i = 0; i < count; i++) {
                 const auto p_data = g_colour_manager_data.get_entry(m_colours_client_list[i].m_guid);
-                if (p_data->colour_set.colour_mode == colours::colour_mode_system
-                    || p_data->colour_set.colour_mode == colours::colour_mode_themed
-                    || (p_data->colour_set.colour_mode == colours::colour_mode_global && !b_global_custom)) {
+                if (p_data->colour_set.colour_scheme == colours::ColourSchemeSystem
+                    || p_data->colour_set.colour_scheme == colours::ColourSchemeThemed
+                    || (p_data->colour_set.colour_scheme == colours::ColourSchemeGlobal && !b_global_custom)) {
                     m_colours_client_list[i].m_ptr->on_colour_changed(colours::colour_flag_all);
                 }
             }

@@ -5,7 +5,7 @@
 
 class TabColours : public PreferencesTab {
     HWND m_wnd{nullptr};
-    HWND m_wnd_colours_mode{nullptr};
+    HWND m_wnd_colour_scheme{nullptr};
     HWND m_wnd_colours_element{nullptr};
     uih::FillWindow g_fill_text;
     uih::FillWindow g_fill_background;
@@ -35,7 +35,7 @@ private:
 
     void update_fills();
     void update_buttons();
-    void update_mode_combobox();
+    void update_scheme_combobox();
     void update_title() const;
 
     void on_colour_changed();

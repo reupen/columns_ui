@@ -2,8 +2,10 @@
 
 namespace cui::colours {
 
+enum ColourScheme { ColourSchemeGlobal, ColourSchemeSystem, ColourSchemeThemed, ColourSchemeCustom };
+
 struct ColourSet {
-    colour_mode_t colour_mode{};
+    ColourScheme colour_scheme{};
     COLORREF text{};
     COLORREF selection_text{};
     COLORREF inactive_selection_text{};
@@ -19,7 +21,7 @@ struct ColourSet {
     void write(stream_writer* stream, abort_callback& aborter) const;
 };
 
-ColourSet create_default_colour_set(bool is_dark, colour_mode_t mode = colour_mode_global);
+ColourSet create_default_colour_set(bool is_dark, ColourScheme scheme = ColourSchemeGlobal);
 
 class Entry {
 public:
@@ -27,7 +29,7 @@ public:
 
     enum ExportItemID {
         identifier_id,
-        identifier_mode,
+        identifier_scheme,
         identifier_background,
         identifier_selection_background,
         identifier_inactive_selection_background,

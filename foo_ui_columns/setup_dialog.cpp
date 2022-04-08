@@ -1,15 +1,21 @@
 #include "pch.h"
-#include "ng_playlist/ng_playlist.h"
+
 #include "setup_dialog.h"
+
+#include "dark_mode.h"
+#include "ng_playlist/ng_playlist.h"
 #include "main_window.h"
 
 INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
+        m_wnd = wnd;
         modeless_dialog_manager::g_add(wnd);
+        s_instances.emplace_back(this);
 
         HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
+        HWND wnd_mode = GetDlgItem(wnd, IDC_DARK_MODE);
         HWND wnd_theming = GetDlgItem(wnd, IDC_THEMING);
         HWND wnd_grouping = GetDlgItem(wnd, IDC_GROUPING);
 
@@ -58,16 +64,26 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
         for (size_t i = 0; i < count; i++) {
             uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(i), 0, m_presets[i].m_name, false);
         }
+
+        EnableWindow(wnd_mode, cui::dark::does_os_support_dark_mode());
+        ComboBox_InsertString(wnd_mode, 0, L"Light");
+        ComboBox_InsertString(wnd_mode, 1, L"Dark");
+        ComboBox_InsertString(wnd_mode, 2, L"Use system setting");
+
+        m_previous_mode = static_cast<cui::colours::DarkModeStatus>(cui::colours::dark_mode_status.get());
+        ComboBox_SetCurSel(wnd_mode, cui::colours::dark_mode_status.get());
+
         ComboBox_InsertString(wnd_theming, 0, L"No");
         ComboBox_InsertString(wnd_theming, 1, L"Yes");
-        m_previous_light_colour_mode = g_get_global_colour_mode(false);
-        m_previous_dark_colour_mode = g_get_global_colour_mode(true);
-        const auto active_colour_mode = g_get_global_colour_mode();
+
+        m_previous_light_colour_scheme = g_get_global_colour_scheme(false);
+        m_previous_dark_colour_scheme = g_get_global_colour_scheme(true);
+        const auto active_colour_scheme = g_get_global_colour_scheme();
 
         size_t select = -1;
-        if (active_colour_mode == cui::colours::colour_mode_themed)
+        if (active_colour_scheme == cui::colours::ColourSchemeThemed)
             select = 1;
-        else if (active_colour_mode == cui::colours::colour_mode_system)
+        else if (active_colour_scheme == cui::colours::ColourSchemeSystem)
             select = 0;
 
         ComboBox_SetCurSel(wnd_theming, select);
@@ -97,9 +113,11 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
     case WM_COMMAND:
         switch (wp) {
         case IDCANCEL: {
-            cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
-            g_set_global_colour_mode(m_previous_light_colour_mode, false);
-            g_set_global_colour_mode(m_previous_dark_colour_mode, true);
+            if (m_preset_changed)
+                cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
+            cui::colours::dark_mode_status.set(WI_EnumValue(m_previous_mode));
+            g_set_global_colour_scheme(m_previous_light_colour_scheme, false);
+            g_set_global_colour_scheme(m_previous_dark_colour_scheme, true);
             cui::panels::playlist_view::cfg_show_artwork = m_previous_show_artwork;
             cui::panels::playlist_view::cfg_grouping = m_previous_show_grouping;
             cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
@@ -111,16 +129,21 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
         case IDOK:
             DestroyWindow(wnd);
             return 0;
-        case (CBN_SELCHANGE << 16) | IDC_THEMING: {
-            const size_t selection = ComboBox_GetCurSel(HWND(lp));
+        case CBN_SELCHANGE << 16 | IDC_THEMING: {
+            const size_t selection = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             if (selection == 1)
-                g_set_global_colour_mode(cui::colours::colour_mode_themed);
+                g_set_global_colour_scheme(cui::colours::ColourSchemeThemed);
             else if (selection == 0)
-                g_set_global_colour_mode(cui::colours::colour_mode_system);
+                g_set_global_colour_scheme(cui::colours::ColourSchemeSystem);
             break;
         }
-        case (CBN_SELCHANGE << 16) | IDC_GROUPING: {
-            size_t selection = ComboBox_GetCurSel(HWND(lp));
+        case CBN_SELCHANGE << 16 | IDC_DARK_MODE: {
+            const auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+            cui::colours::dark_mode_status.set(index);
+            break;
+        }
+        case CBN_SELCHANGE << 16 | IDC_GROUPING: {
+            size_t selection = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             if (selection >= 2)
                 cui::panels::playlist_view::cfg_show_artwork = true;
             if (selection >= 1)
@@ -151,6 +174,7 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
                         uie::splitter_item_ptr ptr;
                         m_presets[lpnmlv->iItem].get(ptr);
                         cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr());
+                        m_preset_changed = true;
                     }
                 }
             }
@@ -161,6 +185,7 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
         break;
     } break;
     case WM_DESTROY:
+        std::erase(s_instances, this);
         modeless_dialog_manager::g_remove(wnd);
         break;
     case WM_NCDESTROY:
@@ -170,10 +195,17 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
     return FALSE;
 }
 
-void QuickSetupDialog::g_run()
+void QuickSetupDialog::s_run()
 {
     uih::modeless_dialog_box(
         IDD_QUICK_SETUP, cui::main_window.get_wnd(), [dialog = std::make_shared<QuickSetupDialog>()](auto&&... args) {
             return dialog->SetupDialogProc(std::forward<decltype(args)>(args)...);
         });
+}
+
+void QuickSetupDialog::s_refresh()
+{
+    for (auto instance : s_instances) {
+        ComboBox_SetCurSel(GetDlgItem(instance->m_wnd, IDC_DARK_MODE), cui::colours::dark_mode_status.get());
+    }
 }

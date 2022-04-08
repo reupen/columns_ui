@@ -9,7 +9,7 @@ namespace cui::colours {
 
 CommonColourCallbackManager common_colour_callback_manager;
 
-ColourSet create_default_colour_set(bool is_dark, colour_mode_t mode)
+ColourSet create_default_colour_set(bool is_dark, ColourScheme scheme)
 {
     ColourSet colour_set;
     std::initializer_list<std::tuple<COLORREF&, colour_identifier_t>> colour_identifier_pairs
@@ -23,7 +23,7 @@ ColourSet create_default_colour_set(bool is_dark, colour_mode_t mode)
     for (auto&& [colour, identifier] : colour_identifier_pairs)
         colour = dark::get_system_colour(get_system_colour_id(identifier), is_dark);
 
-    colour_set.colour_mode = mode;
+    colour_set.colour_scheme = scheme;
 
     return colour_set;
 }
@@ -144,13 +144,13 @@ void ColourManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_
 }
 
 Entry::Entry(bool is_dark, bool b_global)
-    : colour_set(create_default_colour_set(is_dark, b_global ? colour_mode_themed : colour_mode_global))
+    : colour_set(create_default_colour_set(is_dark, b_global ? ColourSchemeThemed : ColourSchemeGlobal))
 {
 }
 
 void ColourSet::read(uint32_t version, stream_reader* stream, abort_callback& aborter)
 {
-    stream->read_lendian_t((uint32_t&)colour_mode, aborter);
+    stream->read_lendian_t((uint32_t&)colour_scheme, aborter);
     stream->read_lendian_t(text, aborter);
     stream->read_lendian_t(selection_text, aborter);
     stream->read_lendian_t(inactive_selection_text, aborter);
@@ -163,7 +163,7 @@ void ColourSet::read(uint32_t version, stream_reader* stream, abort_callback& ab
 
 void ColourSet::write(stream_writer* stream, abort_callback& aborter) const
 {
-    stream->write_lendian_t((uint32_t)colour_mode, aborter);
+    stream->write_lendian_t((uint32_t)colour_scheme, aborter);
     stream->write_lendian_t(text, aborter);
     stream->write_lendian_t(selection_text, aborter);
     stream->write_lendian_t(inactive_selection_text, aborter);
@@ -194,8 +194,8 @@ void Entry::import(stream_reader* p_reader, size_t stream_size, uint32_t type, a
         case identifier_id:
             reader.read_item(id);
             break;
-        case identifier_mode:
-            reader.read_item((uint32_t&)colour_set.colour_mode);
+        case identifier_scheme:
+            reader.read_item((uint32_t&)colour_set.colour_scheme);
             break;
         case identifier_text:
             reader.read_item(colour_set.text);
@@ -232,8 +232,8 @@ void Entry::_export(stream_writer* p_stream, abort_callback& p_abort)
 {
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_id, id);
-    out.write_item(identifier_mode, (uint32_t)colour_set.colour_mode);
-    if (colour_set.colour_mode == colour_mode_custom) {
+    out.write_item(identifier_scheme, (uint32_t)colour_set.colour_scheme);
+    if (colour_set.colour_scheme == ColourSchemeCustom) {
         out.write_item(identifier_text, colour_set.text);
         out.write_item(identifier_selection_text, colour_set.selection_text);
         out.write_item(identifier_inactive_selection_text, colour_set.inactive_selection_text);
@@ -248,7 +248,7 @@ void Entry::_export(stream_writer* p_stream, abort_callback& p_abort)
 void Entry::write(stream_writer* p_stream, abort_callback& p_abort)
 {
     p_stream->write_lendian_t(id, p_abort);
-    p_stream->write_lendian_t((uint32_t)colour_set.colour_mode, p_abort);
+    p_stream->write_lendian_t((uint32_t)colour_set.colour_scheme, p_abort);
     p_stream->write_lendian_t(colour_set.text, p_abort);
     p_stream->write_lendian_t(colour_set.selection_text, p_abort);
     p_stream->write_lendian_t(colour_set.inactive_selection_text, p_abort);

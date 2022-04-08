@@ -27,7 +27,7 @@ void migrate_spectrum_analyser_colours(COLORREF foreground, COLORREF background)
         return;
 
     auto set_entry_colours = [foreground, background](const colours::Entry::Ptr& entry) {
-        entry->colour_set.colour_mode = colours::colour_mode_custom;
+        entry->colour_set.colour_scheme = colours::ColourSchemeCustom;
         entry->colour_set.background = background;
         entry->colour_set.text = foreground;
     };

@@ -460,7 +460,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         update_title();
         break;
     case MSG_RUN_INITIAL_SETUP:
-        QuickSetupDialog::g_run();
+        QuickSetupDialog::s_run();
         return 0;
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;

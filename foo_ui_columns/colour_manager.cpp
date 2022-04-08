@@ -23,8 +23,8 @@ public:
     {
         system_appearance_manager::initialise();
         const auto entry = active_entry();
-        if (entry->colour_set.colour_mode == colours::colour_mode_system
-            || entry->colour_set.colour_mode == colours::colour_mode_themed) {
+        if (entry->colour_set.colour_scheme == colours::ColourSchemeSystem
+            || entry->colour_set.colour_scheme == colours::ColourSchemeThemed) {
             const auto system_colour_id = get_system_colour_id(p_identifier);
             return dark::get_system_colour(system_colour_id, colours::is_dark_mode_active());
         }
@@ -70,14 +70,14 @@ public:
         }
     }
 
-    bool get_themed() const override { return active_entry()->colour_set.colour_mode == colours::colour_mode_themed; }
+    bool get_themed() const override { return active_entry()->colour_set.colour_scheme == colours::ColourSchemeThemed; }
 
 private:
     [[nodiscard]] colours::Entry::Ptr active_entry() const
     {
         auto& global_entry = colours::is_dark_mode_active() ? m_global_dark_entry : m_global_light_entry;
         auto& entry = colours::is_dark_mode_active() ? m_dark_entry : m_light_entry;
-        return entry->colour_set.colour_mode == colours::colour_mode_global ? global_entry : entry;
+        return entry->colour_set.colour_scheme == colours::ColourSchemeGlobal ? global_entry : entry;
     }
 
     colours::Entry::Ptr m_light_entry;
