@@ -14,6 +14,7 @@ public:
     void refresh();
 
 private:
+    bool m_is_updating{};
     HWND m_wnd{nullptr};
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 };

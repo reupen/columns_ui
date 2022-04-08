@@ -8,6 +8,7 @@
 #include "tab_colours.h"
 #include "tab_dark_mode.h"
 #include "tab_fonts.h"
+#include "setup_dialog.h"
 
 TabDarkMode g_tab_dark_mode;
 cui::colours::ColourManagerData g_colour_manager_data;
@@ -25,6 +26,9 @@ const GUID dark_mode_status_id = {0x1278cd90, 0x1d95, 0x48e8, {0x87, 0x3a, 0x1, 
 
 fbh::ConfigInt32 dark_mode_status(
     dark_mode_status_id, WI_EnumValue(DarkModeStatus::Disabled), [](auto&& new_value, auto&& old_value) {
+        g_tab_dark_mode.refresh();
+        QuickSetupDialog::s_refresh();
+
         const auto old_enabled = old_value == WI_EnumValue(DarkModeStatus::Enabled)
             || (old_value == WI_EnumValue(DarkModeStatus::UseSystemSetting)
                 && system_appearance_manager::is_dark_mode_enabled());

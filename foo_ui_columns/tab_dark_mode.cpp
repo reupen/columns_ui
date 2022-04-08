@@ -17,7 +17,7 @@ bool TabDarkMode::is_active()
 
 void TabDarkMode::refresh()
 {
-    if (!is_active())
+    if (!is_active() || m_is_updating)
         return;
 
     const auto disabled_wnd = GetDlgItem(m_wnd, IDC_DARK_MODE_DISABLED);
@@ -85,7 +85,9 @@ INT_PTR TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DESTROY:
         m_wnd = nullptr;
         break;
-    case WM_COMMAND:
+    case WM_COMMAND: {
+        pfc::vartoggle_t _(m_is_updating, true);
+
         switch (wp) {
         case IDC_DARK_MODE_ENABLED:
             cui::colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Enabled));
@@ -98,6 +100,7 @@ INT_PTR TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         }
         break;
+    }
     }
     return 0;
 }
