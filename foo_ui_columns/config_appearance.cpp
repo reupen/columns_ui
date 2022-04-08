@@ -101,19 +101,19 @@ bool handle_system_dark_mode_availability_change()
 
 } // namespace cui::colours
 
-cui::colours::colour_mode_t g_get_global_colour_mode(bool is_dark)
+cui::colours::ColourScheme g_get_global_colour_scheme(bool is_dark)
 {
     const auto ptr = g_colour_manager_data.get_global_entry(is_dark);
-    return ptr->colour_set.colour_mode;
+    return ptr->colour_set.colour_scheme;
 }
 
-void g_set_global_colour_mode(cui::colours::colour_mode_t mode, bool is_dark)
+void g_set_global_colour_scheme(cui::colours::ColourScheme scheme, bool is_dark)
 {
     const auto ptr = g_colour_manager_data.get_global_entry(is_dark);
-    if (ptr->colour_set.colour_mode == mode)
+    if (ptr->colour_set.colour_scheme == scheme)
         return;
 
-    ptr->colour_set.colour_mode = mode;
+    ptr->colour_set.colour_scheme = scheme;
 
     if (is_dark != cui::colours::is_dark_mode_active())
         return;
@@ -127,7 +127,7 @@ void g_set_global_colour_mode(cui::colours::colour_mode_t mode, bool is_dark)
     size_t count = m_colours_client_list.get_count();
     for (size_t i = 0; i < count; i++) {
         const auto p_data = g_colour_manager_data.get_entry(m_colours_client_list[i].m_guid);
-        if (p_data->colour_set.colour_mode == cui::colours::colour_mode_global)
+        if (p_data->colour_set.colour_scheme == cui::colours::ColourSchemeGlobal)
             m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
     }
 }
@@ -143,7 +143,7 @@ void on_global_colours_change()
     size_t count = m_colours_client_list.get_count();
     for (size_t i = 0; i < count; i++) {
         const auto p_data = g_colour_manager_data.get_entry(m_colours_client_list[i].m_guid);
-        if (p_data->colour_set.colour_mode == cui::colours::colour_mode_global)
+        if (p_data->colour_set.colour_scheme == cui::colours::ColourSchemeGlobal)
             m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
     }
 }

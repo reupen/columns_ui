@@ -9,7 +9,7 @@ namespace {
 class PlaylistSwitcherAppearanceDataSet : public fcl::dataset {
     enum ItemID {
         /** Legacy */
-        colours_switcher_mode, // not used
+        colours_switcher_scheme, // not used
         colours_switcher_background,
         colours_switcher_selection_background,
         colours_switcher_inactive_selection_background,

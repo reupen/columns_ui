@@ -216,7 +216,7 @@
 #define IDC_RESET_PRESETS               1128
 #define IDC_CUSTOM_TITLE                1129
 #define IDC_DUPLICATE_PRESET            1130
-#define IDC_COLOURS_MODE                1131
+#define IDC_COLOURS_SCHEME              1131
 #define IDC_COLOURS_ELEMENT             1132
 #define IDC_THEMING                     1134
 #define IDC_DEST                        1135
@@ -256,6 +256,8 @@
 #define IDC_DARK_MODE_MESSAGE           1181
 #define IDC_SELCOUNT                    1183
 #define IDC_DARK_MODE_USE_SYSTEM_SETTING 1183
+#define IDC_FONT_ELEMENT                1184
+#define IDC_FONT_MODE                   1185
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -265,7 +267,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1184
+#define _APS_NEXT_CONTROL_VALUE         1186
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

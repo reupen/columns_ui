@@ -94,10 +94,10 @@ cfg_int cfg_legacy_spectrum_analyser_foreground_colour(
 
 void migrate_custom_colours_entry(const colours::Entry::Ptr& light_entry)
 {
-    if (light_entry->colour_set.colour_mode != colours::colour_mode_custom)
+    if (light_entry->colour_set.colour_scheme != colours::ColourSchemeCustom)
         return;
 
-    auto default_colour_set = create_default_colour_set(false, colours::colour_mode_custom);
+    auto default_colour_set = create_default_colour_set(false, colours::ColourSchemeCustom);
     default_colour_set.use_custom_active_item_frame = light_entry->colour_set.use_custom_active_item_frame;
 
     if (light_entry->colour_set == default_colour_set)

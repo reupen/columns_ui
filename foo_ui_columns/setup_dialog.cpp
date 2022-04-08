@@ -75,14 +75,15 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
 
         ComboBox_InsertString(wnd_theming, 0, L"No");
         ComboBox_InsertString(wnd_theming, 1, L"Yes");
-        m_previous_light_colour_mode = g_get_global_colour_mode(false);
-        m_previous_dark_colour_mode = g_get_global_colour_mode(true);
-        const auto active_colour_mode = g_get_global_colour_mode();
+
+        m_previous_light_colour_scheme = g_get_global_colour_scheme(false);
+        m_previous_dark_colour_scheme = g_get_global_colour_scheme(true);
+        const auto active_colour_scheme = g_get_global_colour_scheme();
 
         size_t select = -1;
-        if (active_colour_mode == cui::colours::colour_mode_themed)
+        if (active_colour_scheme == cui::colours::ColourSchemeThemed)
             select = 1;
-        else if (active_colour_mode == cui::colours::colour_mode_system)
+        else if (active_colour_scheme == cui::colours::ColourSchemeSystem)
             select = 0;
 
         ComboBox_SetCurSel(wnd_theming, select);
@@ -115,8 +116,8 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
             if (m_preset_changed)
                 cfg_layout.set_preset(cfg_layout.get_active(), m_previous_layout.get_ptr());
             cui::colours::dark_mode_status.set(WI_EnumValue(m_previous_mode));
-            g_set_global_colour_mode(m_previous_light_colour_mode, false);
-            g_set_global_colour_mode(m_previous_dark_colour_mode, true);
+            g_set_global_colour_scheme(m_previous_light_colour_scheme, false);
+            g_set_global_colour_scheme(m_previous_dark_colour_scheme, true);
             cui::panels::playlist_view::cfg_show_artwork = m_previous_show_artwork;
             cui::panels::playlist_view::cfg_grouping = m_previous_show_grouping;
             cui::panels::playlist_view::PlaylistView::g_on_show_artwork_change();
@@ -131,9 +132,9 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
         case CBN_SELCHANGE << 16 | IDC_THEMING: {
             const size_t selection = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             if (selection == 1)
-                g_set_global_colour_mode(cui::colours::colour_mode_themed);
+                g_set_global_colour_scheme(cui::colours::ColourSchemeThemed);
             else if (selection == 0)
-                g_set_global_colour_mode(cui::colours::colour_mode_system);
+                g_set_global_colour_scheme(cui::colours::ColourSchemeSystem);
             break;
         }
         case CBN_SELCHANGE << 16 | IDC_DARK_MODE: {

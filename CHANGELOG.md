@@ -19,6 +19,12 @@
   Change... button for that colour, and selecting the first colour from the
   'Custom colours:' section of the colour picker dialogue box.
 
+  Third-party panels that contain system UI elements like scroll bars will need
+  updating to fully support dark mode.
+
+  The previous mode setting on the Colours tab of Colours and fonts preferences
+  has been renamed scheme to disambiguate it from the new mode setting.
+
 - The status bar can now show the number of selected tracks.
   [[#450](https://github.com/reupen/columns_ui/pull/450)]
 
