@@ -137,7 +137,7 @@ BEGIN
     CONTROL         "Activate target playlist after dropping files",IDC_ACTIVATE_TARGET,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,152,10
     LTEXT           "Drag and drop",IDC_TITLE1,7,4,313,16
-    LTEXT           "If a formatted string is not identical for all dropped files, the next string in the list will be used",-1,7,224,306,8
+    LTEXT           "If a formatted string is not identical for all dropped files, the next string in the list will be used",-1,7,224,313,20
 END
 
 IDD_PREFS_LAYOUT_PRESETS DIALOGEX 0, 0, 327, 272
@@ -164,7 +164,7 @@ BEGIN
     LTEXT           "Caption orientation",IDC_STATIC,174,182,67,8
     COMBOBOX        IDC_CAPTIONSTYLE,173,193,73,51,CBS_DROPDOWNLIST | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Configure panel...",IDC_CONFIGURE,173,216,73,14,WS_DISABLED
-    LTEXT           "Use the tree context menu to make changes",IDC_STATIC,7,233,146,8
+    LTEXT           "Use the tree context menu to make changes",IDC_STATIC,7,233,150,8
     PUSHBUTTON      "Apply",IDC_APPLY,7,251,55,14
 END
 
