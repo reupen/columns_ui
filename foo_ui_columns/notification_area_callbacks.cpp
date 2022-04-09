@@ -14,7 +14,7 @@ public:
     void on_playback_stop(play_control::t_stop_reason p_reason) override
     {
         if (g_icon_created && p_reason != play_control::stop_reason_shutting_down) {
-            uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTICATION_ICON, g_icon,
+            uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTIFICATION_ICON, g_icon,
                 core_version_info_v2::get()->get_name());
         }
     }

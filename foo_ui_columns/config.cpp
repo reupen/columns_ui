@@ -8,7 +8,7 @@
 
 cui::fonts::ConfigFontDescription cfg_editor_font(
     GUID{0xd429d322, 0xd236, 0x7356, {0x33, 0x25, 0x4b, 0x67, 0xc5, 0xd4, 0x50, 0x3e}}, {get_menu_font()});
-cfg_int cfg_child(GUID{0xf20b83d0, 0x5890, 0xba6f, {0xe8, 0x62, 0x69, 0x30, 0xe2, 0x6b, 0xc8, 0x1c}}, 0);
+cfg_int cfg_root_page_active_tab(GUID{0x4d4dc1fb, 0xe64c, 0x469f, {0xb7, 0xdf, 0x26, 0x1f, 0x76, 0x8e, 0x92, 0xdc}}, 0);
 cfg_int cfg_child_panels(GUID{0x1a8d8760, 0x4f60, 0x4800, {0x93, 0x81, 0x32, 0x32, 0x66, 0xa0, 0x6c, 0xff}}, 0);
 cfg_int cfg_child_playlist(GUID{0xbc6c99d4, 0x51c1, 0xf76e, {0x10, 0x9c, 0x62, 0x92, 0x92, 0xbd, 0xbd, 0xb2}}, 0);
 
@@ -16,7 +16,8 @@ cui::panels::playlist_view::GroupsPreferencesTab g_tab_grouping;
 
 static PreferencesTab* g_tabs[] = {
     g_get_tab_main(),
-    g_get_tab_status(),
+    g_get_tab_status_bar(),
+    g_get_tab_status_pane(),
     g_get_tab_sys(),
     g_get_tab_artwork(),
 };
@@ -61,7 +62,7 @@ namespace cui {
 namespace prefs {
 
 service_factory_single_t<PreferencesTabsHost> page_main("Columns UI", g_tabs, std::size(g_tabs),
-    g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_child);
+    g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_root_page_active_tab);
 service_factory_single_t<PreferencesTabsHost> page_playlist_view("Playlist view", g_tabs_playlist_view,
     std::size(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
 service_factory_single_t<PreferencesTabsHost> page_playlist_switcher("Playlist switcher", g_tabs_panels,

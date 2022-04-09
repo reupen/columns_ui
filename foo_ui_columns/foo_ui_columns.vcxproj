@@ -295,6 +295,7 @@
     <ClCompile Include="status_bar_callbacks.cpp" />
     <ClCompile Include="tab_dark_mode.cpp" />
     <ClCompile Include="tab_playlist_swticher.cpp" />
+    <ClCompile Include="tab_status_pane.cpp" />
     <ClCompile Include="title_formatting.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="config_defaults.cpp" />
@@ -388,7 +389,7 @@
     <ClCompile Include="tab_notification_area.cpp" />
     <ClCompile Include="tab_playlist_tabs.cpp" />
     <ClCompile Include="tab_playlist_dd.cpp" />
-    <ClCompile Include="tab_status.cpp" />
+    <ClCompile Include="tab_status_bar.cpp" />
     <ClCompile Include="user_interface_impl.cpp" />
     <ClCompile Include="utf8api.cpp" />
     <ClCompile Include="volume.cpp" />

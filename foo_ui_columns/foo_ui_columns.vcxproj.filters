@@ -193,7 +193,7 @@
     <ClCompile Include="tab_notification_area.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include="tab_status.cpp">
+    <ClCompile Include="tab_status_bar.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
     <ClCompile Include="tab_global.cpp">
@@ -562,6 +562,9 @@
     </ClCompile>
     <ClCompile Include="colour_utils.cpp">
       <Filter>Colours and fonts</Filter>
+    </ClCompile>
+    <ClCompile Include="tab_status_pane.cpp">
+      <Filter>Config UI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

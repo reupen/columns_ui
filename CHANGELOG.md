@@ -25,6 +25,9 @@
   The previous mode setting on the Colours tab of Colours and fonts preferences
   has been renamed scheme to disambiguate it from the new mode setting.
 
+- Status bar and status pane preferences were fully separated.
+  [[#516](https://github.com/reupen/columns_ui/pull/516)]
+
 - The status bar can now show the number of selected tracks.
   [[#450](https://github.com/reupen/columns_ui/pull/450)]
 

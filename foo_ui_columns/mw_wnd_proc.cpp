@@ -453,9 +453,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case MSG_SET_AOT:
         SetWindowPos(wnd, wp ? HWND_TOPMOST : HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
         break;
-    case MSG_UPDATE_STATUS:
-        status_bar::regenerate_text();
-        break;
     case MSG_UPDATE_TITLE:
         update_title();
         break;
@@ -526,7 +523,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (process_keydown(msg, lp, wp))
             return 0;
         break;
-    case MSG_NOTICATION_ICON:
+    case MSG_NOTIFICATION_ICON:
         if (lp == WM_LBUTTONUP) {
             // if (b_wasDown)
             standard_commands::main_activate_or_hide();

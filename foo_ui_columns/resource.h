@@ -67,6 +67,7 @@
 #define IDD_COLUMN_STYLE_SCRIPT         233
 #define IDD_PREFS_PLAYLIST_SWITCHER     234
 #define IDD_PREFS_DARK_MODE             235
+#define IDD_PREFS_STATUS_PANE           236
 #define IDC_LIST                        1003
 #define IDC_COLUMNS                     1003
 #define IDC_INFOSECTIONS                1003

@@ -4,8 +4,26 @@
 #include "status_pane.h"
 
 #include "dark_mode.h"
+#include "menu_items.h"
 
 namespace cui::status_pane {
+
+namespace {
+
+const auto* default_status_pane_script
+    = u8"// This is the default script for the content of the main status pane section during playback.\r\n"
+      u8"\r\n"
+      u8"%artist% – %title%\r\n"
+      u8"$crlf()\r\n"
+      u8"%codec% | %bitrate% kbps | %samplerate% Hz | $caps(%channels%) | %playback_time%[ / %length%]"_pcc;
+
+}
+
+fbh::ConfigString status_pane_script(GUID{0x952b7029, 0x8dd5, 0x46e8, {0xbc, 0xbe, 0x67, 0xf, 0xd5, 0x2, 0x6f, 0x3f}},
+    default_status_pane_script, [](auto&&) { g_status_pane.refresh_playing_text_section(); });
+
+ConfigMenuItem double_click_action(GUID{0x55c049ba, 0x9f46, 0x4986, {0xa4, 0xf5, 0xf8, 0x3d, 0x14, 0x49, 0x29, 0x9b}},
+    cui::main_menu::commands::activate_now_playing_id);
 
 // {522E01C6-EA7C-49f2-AE5E-702B8C6B4B24}
 const GUID StatusPane::g_guid_font = {0x522e01c6, 0xea7c, 0x49f2, {0xae, 0x5e, 0x70, 0x2b, 0x8c, 0x6b, 0x4b, 0x24}};
@@ -55,6 +73,24 @@ void StatusPane::update_playback_status_text()
         m_track_label = api->is_paused() ? "Paused:" : "Playing:";
     } else {
         m_track_label = "";
+    }
+}
+
+void StatusPane::update_playing_text()
+{
+    metadb_handle_ptr track;
+    const auto play_api = play_control::get();
+    play_api->get_now_playing(track);
+    if (track.is_valid()) {
+        service_ptr_t<titleformat_object> to_status;
+        titleformat_compiler::get()->compile_safe(to_status, status_pane_script.get());
+        StatusPaneTitleformatHook tf_hook;
+        play_api->playback_format_title_ex(
+            track, &tf_hook, playing1, to_status, nullptr, play_control::display_level_all);
+
+        track.release();
+    } else {
+        playing1.reset();
     }
 }
 
