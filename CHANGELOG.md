@@ -101,6 +101,10 @@
   position was corrected so that it's based on the actual pointer size, rather
   than a fixed offset. [[#494](https://github.com/reupen/columns_ui/pull/494)]
 
+- The item indentation of the layout tree on the Layout preferences page was
+  corrected to scale with the system DPI setting.
+  [[#517](https://github.com/reupen/columns_ui/pull/517)]
+
 - Various truncated labels in preferences were corrected.
   [[#469](https://github.com/reupen/columns_ui/pull/469),
   [#516](https://github.com/reupen/columns_ui/pull/516)]

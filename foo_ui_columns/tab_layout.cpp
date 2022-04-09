@@ -534,8 +534,9 @@ void LayoutTab::switch_to_preset(HWND wnd, size_t index)
 INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
-    case WM_INITDIALOG: {
+    case WM_INITDIALOG:
         m_wnd_tree = GetDlgItem(wnd, IDC_TREE);
+        TreeView_SetIndent(m_wnd_tree, 0);
         uih::tree_view_set_explorer_theme(m_wnd_tree);
         cfg_layout.save_active_preset();
         if (!cfg_layout.get_presets().get_count())
@@ -553,7 +554,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         uSendDlgItemMessageText(wnd, IDC_CAPTIONSTYLE, CB_ADDSTRING, 0, "Vertical");
 
         m_initialised = true;
-    } break;
+        break;
     case WM_DESTROY:
         m_initialised = false;
         apply();
