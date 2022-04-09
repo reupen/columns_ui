@@ -3,6 +3,9 @@
 
 namespace cui::status_pane {
 
+extern fbh::ConfigString status_pane_script;
+extern ConfigMenuItem double_click_action;
+
 class StatusPane
     : playlist_callback_single
     , play_callback {
@@ -135,7 +138,7 @@ class StatusPane
         update_playlist_data();
         invalidate_all();
     }
-    void invalidate_all(bool b_update = true)
+    void invalidate_all(bool b_update = true) const
     {
         RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | (b_update ? RDW_UPDATENOW : NULL));
     }
@@ -143,23 +146,7 @@ class StatusPane
 
     void update_playback_status_text();
 
-    void update_playing_text()
-    {
-        metadb_handle_ptr track;
-        const auto play_api = play_control::get();
-        play_api->get_now_playing(track);
-        if (track.is_valid()) {
-            service_ptr_t<titleformat_object> to_status;
-            titleformat_compiler::get()->compile_safe(to_status, main_window::config_status_bar_script.get());
-            StatusPaneTitleformatHook tf_hook;
-            play_api->playback_format_title_ex(
-                track, &tf_hook, playing1, to_status, nullptr, play_control::display_level_all);
-
-            track.release();
-        } else {
-            playing1.reset();
-        }
-    }
+    void update_playing_text();
     void get_length_data(bool& p_selection, size_t& p_count, pfc::string_base& p_out);
 
 public:
@@ -173,6 +160,15 @@ public:
     HWND create(HWND parent) const { return m_window->create(parent); }
     void destroy() const { m_window->destroy(); }
     HWND get_wnd() const { return m_window->get_wnd(); }
+
+    void refresh_playing_text_section()
+    {
+        if (!get_wnd())
+            return;
+
+        update_playing_text();
+        invalidate_all();
+    }
 
     int get_ideal_height() const
     {

@@ -2,6 +2,7 @@
 #include "fcl.h"
 #include "ng_playlist/ng_playlist_groups.h"
 #include "ng_playlist/ng_playlist.h"
+#include "status_pane.h"
 
 namespace cui::panels::playlist_view {
 
@@ -388,6 +389,7 @@ class TitlesDataSet : public fcl::dataset {
         identifier_notification_icon_tooltip,
         identifier_copy_command,
         identifier_playlist,
+        identifier_status_pane,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Titles"; }
     const GUID& get_group() const override { return fcl::groups::titles_common; }
@@ -403,6 +405,7 @@ class TitlesDataSet : public fcl::dataset {
         fbh::fcl::Writer out(p_writer, p_abort);
 
         out.write_item(identifier_status_bar, main_window::config_status_bar_script.get());
+        out.write_item(identifier_status_pane, status_pane::status_pane_script);
         out.write_item(identifier_notification_icon_tooltip, main_window::config_notification_icon_script.get());
         out.write_item(identifier_main_window_title, main_window::config_main_window_title_script.get());
     }
@@ -412,10 +415,13 @@ class TitlesDataSet : public fcl::dataset {
         fbh::fcl::Reader reader(p_reader, stream_size, p_abort);
         uint32_t element_id;
         uint32_t element_size;
+        std::unordered_set<uint32_t> read_elements;
 
         while (reader.get_remaining()) {
             reader.read_item(element_id);
             reader.read_item(element_size);
+
+            read_elements.emplace(element_id);
 
             pfc::string8 buffer;
 
@@ -432,10 +438,18 @@ class TitlesDataSet : public fcl::dataset {
                 reader.read_item(buffer, element_size);
                 main_window::config_status_bar_script.set(buffer);
                 break;
+            case identifier_status_pane:
+                reader.read_item(buffer, element_size);
+                status_pane::status_pane_script = buffer;
+                break;
             default:
                 reader.skip(element_size);
                 break;
             }
+        }
+
+        if (read_elements.contains(identifier_status_bar) && !read_elements.contains(identifier_status_pane)) {
+            status_pane::status_pane_script = main_window::config_status_bar_script.get();
         }
     }
 };

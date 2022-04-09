@@ -32,7 +32,8 @@ PreferencesTab* g_get_tab_playlist_switcher();
 PreferencesTab* g_get_tab_playlist_tabs();
 PreferencesTab* g_get_tab_playlist_dd();
 PreferencesTab* g_get_tab_main();
-PreferencesTab* g_get_tab_status();
+PreferencesTab* g_get_tab_status_bar();
+PreferencesTab* g_get_tab_status_pane();
 PreferencesTab* g_get_tab_global();
 
 void refresh_appearance_prefs();

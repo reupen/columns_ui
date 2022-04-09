@@ -137,7 +137,7 @@ BEGIN
     CONTROL         "Activate target playlist after dropping files",IDC_ACTIVATE_TARGET,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,47,152,10
     LTEXT           "Drag and drop",IDC_TITLE1,7,4,313,16
-    LTEXT           "If a formatted string is not identical for all dropped files, the next string in the list will be used",-1,7,224,306,8
+    LTEXT           "If a formatted string is not identical for all dropped files, the next string in the list will be used",-1,7,224,313,20
 END
 
 IDD_PREFS_LAYOUT_PRESETS DIALOGEX 0, 0, 327, 272
@@ -164,7 +164,7 @@ BEGIN
     LTEXT           "Caption orientation",IDC_STATIC,174,182,67,8
     COMBOBOX        IDC_CAPTIONSTYLE,173,193,73,51,CBS_DROPDOWNLIST | WS_DISABLED | WS_VSCROLL | WS_TABSTOP
     PUSHBUTTON      "Configure panel...",IDC_CONFIGURE,173,216,73,14,WS_DISABLED
-    LTEXT           "Use the tree context menu to make changes",IDC_STATIC,7,233,146,8
+    LTEXT           "Use the tree context menu to make changes",IDC_STATIC,7,233,150,8
     PUSHBUTTON      "Apply",IDC_APPLY,7,251,55,14
 END
 
@@ -450,21 +450,18 @@ STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    LTEXT           "Status bar and pane",IDC_TITLE1,7,4,312,17
-    LTEXT           "Title formatting script",IDC_STATIC,7,30,73,8
-    EDITTEXT        IDC_STRING,7,41,312,47,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
-    LTEXT           "Double-click action",IDC_STATIC,7,97,66,8
-    COMBOBOX        IDC_MENU_DBLCLK,7,108,312,136,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "",IDC_MENU_DESC,7,122,312,10
-    LTEXT           "Status bar",IDC_TITLE2,7,150,312,15
-    CONTROL         "Show status bar",IDC_SHOW_STATUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,176,68,10
-    CONTROL         "Show playlist lock status",IDC_SHOW_LOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,194,96,10
+    LTEXT           "Status bar",IDC_TITLE1,7,4,312,17
+    CONTROL         "Show status bar",IDC_SHOW_STATUS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,29,68,10
+    CONTROL         "Show playlist lock status",IDC_SHOW_LOCK,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,49,96,10
     CONTROL         "Show total length of selected tracks",IDC_SELTIME,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,113,176,134,10
-    CONTROL         "Show number of selected tracks",IDC_SELCOUNT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,113,194,124,10
-    CONTROL         "Show volume",IDC_VOL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,254,176,61,10
-    LTEXT           "Status pane",IDC_TITLE3,7,227,312,14
-    CONTROL         "Show status pane",IDC_SHOW_STATUSPANE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,254,74,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,69,134,10
+    CONTROL         "Show number of selected tracks",IDC_SELCOUNT,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,89,124,10
+    CONTROL         "Show volume",IDC_VOL,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,109,61,10
+    LTEXT           "Title formatting script",IDC_STATIC,7,136,73,8
+    EDITTEXT        IDC_STRING,7,147,312,63,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Double-click action",IDC_STATIC,7,229,66,8
+    COMBOBOX        IDC_MENU_DBLCLK,7,240,312,136,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_MENU_DESC,7,254,312,10
 END
 
 IDD_PREFS_COLOURS DIALOGEX 0, 0, 327, 268
@@ -693,6 +690,21 @@ BEGIN
     CONTROL         "Use system setting",IDC_DARK_MODE_USE_SYSTEM_SETTING,
                     "Button",BS_AUTORADIOBUTTON,7,59,78,10
     LTEXT           "",IDC_DARK_MODE_MESSAGE,7,81,313,20
+END
+
+IDD_PREFS_STATUS_PANE DIALOGEX 0, 0, 327, 271
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "Status pane",IDC_TITLE1,7,4,312,17
+    CONTROL         "Show status pane",IDC_SHOW_STATUSPANE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,74,10
+    LTEXT           "Title formatting script",IDC_STATIC,7,54,73,8
+    EDITTEXT        IDC_STRING,7,65,312,78,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Use $crlf() to start a second line",IDC_STATIC,7,145,110,8
+    LTEXT           "Double-click action",IDC_STATIC,7,171,66,8
+    COMBOBOX        IDC_MENU_DBLCLK,7,182,312,136,CBS_DROPDOWNLIST | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "",IDC_MENU_DESC,7,196,312,10
 END
 
 
@@ -995,6 +1007,14 @@ BEGIN
         RIGHTMARGIN, 320
         TOPMARGIN, 4
         BOTTOMMARGIN, 261
+    END
+
+    IDD_PREFS_STATUS_PANE, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 319
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 264
     END
 END
 #endif    // APSTUDIO_INVOKED

@@ -3,7 +3,7 @@
 #include "migrate.h"
 #include "config_appearance.h"
 #include "layout.h"
-#include "main_window.h"
+#include "status_pane.h"
 
 namespace cui::migrate {
 
@@ -82,15 +82,25 @@ void migrate()
 
 namespace v200 {
 
+cfg_bool has_migrated_status_pane(
+    {0x1577e396, 0xf6bb, 0x4086, {0x93, 0xfc, 0x46, 0xd7, 0x4f, 0xc5, 0xac, 0xc4}}, false);
+
+void migrate_status_pane()
+{
+    if (has_migrated_status_pane)
+        return;
+
+    has_migrated_status_pane = true;
+
+    if (main_window::config_get_is_first_run())
+        return;
+
+    status_pane::double_click_action = cfg_statusdbl;
+    status_pane::status_pane_script = main_window::config_status_bar_script.get();
+}
+
 cfg_bool has_migrated_custom_colours(
     {0x6541170b, 0xc305, 0x4ae5, {0xa4, 0x84, 0x3c, 0x2, 0xcb, 0xf6, 0x2c, 0x7e}}, false);
-
-cfg_int cfg_legacy_spectrum_analyser_background_colour(
-    GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}},
-    get_default_colour(::colours::COLOUR_BACK));
-cfg_int cfg_legacy_spectrum_analyser_foreground_colour(
-    GUID{0x421d3d3f, 0x5289, 0xb1e4, {0x9b, 0x91, 0xab, 0x51, 0xd3, 0xad, 0xbc, 0x4d}},
-    get_default_colour(::colours::COLOUR_TEXT));
 
 void migrate_custom_colours_entry(const colours::Entry::Ptr& light_entry)
 {
@@ -129,6 +139,7 @@ void migrate_custom_colours()
 void migrate_all()
 {
     v100::migrate();
+    v200::migrate_status_pane();
     v200::migrate_custom_colours();
 }
 
