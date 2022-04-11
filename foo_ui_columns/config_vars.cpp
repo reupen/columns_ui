@@ -108,8 +108,11 @@ ConfigMenuItem cfg_statusdbl(GUID{0x21440b3f, 0x4c1d, 0xb049, {0x46, 0xe1, 0x37,
 cfg_string cfg_pgenstring(GUID{0x07bee8c2, 0xc6f1, 0x9db3, {0x52, 0x55, 0x43, 0x28, 0x1f, 0xb3, 0xf1, 0xe6}},
     "%album%\\$directory(%_path%,2)");
 
-const char* g_default_colour
-    = "$if(%_themed%,,$if($and(%isplaying%,$not(%_is_group%)),\r\n"
+const char* default_global_style_script
+    = "// Uncomment the next line to enable the shading of alternate rows\r\n"
+      "// $puts(shade-alternate-rows,1)\r\n"
+      "\r\n"
+      "$if($get(shade-alternate-rows),$if($and(%isplaying%,$not(%_is_group%)),\r\n"
       "\r\n"
       "$puts(back,$offset_colour(%_back%,$offset_colour($calculate_blend_target(%_back%),ff0000,20),25))\r\n"
       "$puts(back-selected,$offset_colour(%_selected_back%,$offset_colour($calculate_blend_target(%_selected_back%),"
@@ -133,7 +136,7 @@ const char* g_default_colour
       "$set_style(back,$get(back),$get(back-selected),$get(back-selected-no-focus)))";
 
 cfg_string cfg_colour(
-    GUID{0xa41b3a98, 0x3834, 0x3b7c, {0x58, 0xae, 0x1d, 0x46, 0xb0, 0xf9, 0x4b, 0x0d}}, g_default_colour);
+    GUID{0xa41b3a98, 0x3834, 0x3b7c, {0x58, 0xae, 0x1d, 0x46, 0xb0, 0xf9, 0x4b, 0x0d}}, default_global_style_script);
 
 ConfigMenuItem cfg_playlist_double(GUID{0xffc47d9d, 0xb43d, 0x8fad, {0x8f, 0xb3, 0x42, 0x84, 0xbf, 0x9a, 0x22, 0x2a}});
 cfg_string cfg_playlist_switcher_tagz(

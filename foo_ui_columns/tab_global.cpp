@@ -4,6 +4,8 @@
 #include "help.h"
 #include "prefs_utils.h"
 
+extern const char* default_global_style_script;
+
 static cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}}, 0);
 
 class TabGlobal : public PreferencesTab {
@@ -128,8 +130,7 @@ public:
                         g_editor_font_notify.on_change();
                     }
                 } else if (cmd == IDM_RESETSTYLE) {
-                    extern const char* g_default_colour;
-                    cfg_colour = g_default_colour;
+                    cfg_colour = default_global_style_script;
                     if (g_cur_tab2 == 1)
                         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
                     cui::panels::playlist_view::PlaylistView::g_update_all_items();

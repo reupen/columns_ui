@@ -25,6 +25,12 @@
   The previous mode setting on the Colours tab of Colours and fonts preferences
   has been renamed scheme to disambiguate it from the new mode setting.
 
+- The shading of alternate rows in the playlist view was disabled by default in
+  new installations. [[#522](https://github.com/reupen/columns_ui/pull/522)]
+
+  This can be enabled by uncommenting the second line in the default global
+  style script.
+
 - Status bar and status pane preferences were fully separated.
   [[#516](https://github.com/reupen/columns_ui/pull/516)]
 
