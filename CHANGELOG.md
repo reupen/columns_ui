@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 2.0.0-alpha.1
 
 ### Features
 
@@ -18,6 +18,10 @@
   The default value for a custom colour can be reselected by clicking on the
   Change... button for that colour, and selecting the first colour from the
   'Custom colours:' section of the colour picker dialogue box.
+
+  Dark menus aren’t enabled on Windows 11 builds newer than 22598. This is to
+  avoid unexpected problems on untested builds, because the Windows APIs to
+  enable dark menus aren’t public.
 
   Third-party panels that contain system UI elements like scroll bars will need
   updating to fully support dark mode.
