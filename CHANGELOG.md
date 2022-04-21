@@ -6,7 +6,7 @@
 
 - Support for the Windows 10 and 11 dark mode was added on Windows 10 20H1 and
   newer.
-  [[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C2022-04-09)]
+  [[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C%3D2022-04-21)]
 
   This can be enabled from the Mode tab on the Colours and fonts preferences
   page.
@@ -39,13 +39,15 @@
   [[#516](https://github.com/reupen/columns_ui/pull/516)]
 
 - The status bar can now show the number of selected tracks.
-  [[#450](https://github.com/reupen/columns_ui/pull/450)]
+  [[#450](https://github.com/reupen/columns_ui/pull/450), contributed by
+  [@m0vie](https://github.com/m0vie)]
 
 - Improvements were made to the status bar layout logic (including better DPI
   scaling). [[#432](https://github.com/reupen/columns_ui/pull/432)]
 
 - The status bar playlist lock icon was updated.
-  [[#513](https://github.com/reupen/columns_ui/pull/513)]
+  [[#432](https://github.com/reupen/columns_ui/pull/432),
+  [#513](https://github.com/reupen/columns_ui/pull/513)]
 
 - The default playback button icons were tweaked. This includes the removal of
   subtle glow effects. [[#435](https://github.com/reupen/columns_ui/pull/435),
@@ -66,7 +68,7 @@
 
   (Note that selection colours are not supported.)
 
-- The filter search button icons were updated.
+- The Filter search button icons were updated.
   [[#438](https://github.com/reupen/columns_ui/pull/438)]
 
 - The default no-cover artwork image was updated.
