@@ -121,6 +121,11 @@
   [[#469](https://github.com/reupen/columns_ui/pull/469),
   [#516](https://github.com/reupen/columns_ui/pull/516)]
 
+### Removals
+
+- Support for foobar2000 1.4 was removed. foobar2000 1.5 is now the minimum
+  version required.
+
 ### Internal changes
 
 - The component is now compiled using Visual Studio 2022 17.1 and the /std:c++20
