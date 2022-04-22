@@ -514,23 +514,28 @@ void SpectrumAnalyserVisualisation::get_name(pfc::string_base& out) const
 
 void SpectrumAnalyserVisualisation::set_config(stream_reader* r, size_t p_size, abort_callback& p_abort)
 {
-    if (p_size) {
-        const auto legacy_foreground = r->read_lendian_t<COLORREF>(p_abort);
-        const auto legacy_background = r->read_lendian_t<COLORREF>(p_abort);
+    if (!p_size) {
+        has_migrated_spectrum_analyser_colours = true;
+        return;
+    }
 
-        migrate_spectrum_analyser_colours(legacy_foreground, legacy_background);
+    const auto legacy_foreground = r->read_lendian_t<COLORREF>(p_abort);
+    const auto legacy_background = r->read_lendian_t<COLORREF>(p_abort);
 
-        r->read_lendian_t(mode, p_abort);
-        try {
-            r->read_lendian_t(m_scale, p_abort);
-            r->read_lendian_t(m_vertical_scale, p_abort);
-        } catch (const exception_io_data_truncation&) {
-        }
+    migrate_spectrum_analyser_colours(legacy_foreground, legacy_background);
+
+    r->read_lendian_t(mode, p_abort);
+    try {
+        r->read_lendian_t(m_scale, p_abort);
+        r->read_lendian_t(m_vertical_scale, p_abort);
+    } catch (const exception_io_data_truncation&) {
     }
 }
 
 void SpectrumAnalyserVisualisation::get_config(stream_writer* data, abort_callback& p_abort) const
 {
+    has_migrated_spectrum_analyser_colours = true;
+
     colours::helper colours(colour_client_id);
 
     data->write_lendian_t(colours.get_colour(colours::colour_text), p_abort);
