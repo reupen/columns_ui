@@ -7,7 +7,7 @@
 
 constexpr auto unknown_windows_build_message
     = "Your version of Windows has not been tested for dark mode compatibility. Some dark mode features have been disabled."sv;
-constexpr auto windows_too_old_message = "Dark mode requires Windows 10 20H1 or newer."sv;
+constexpr auto windows_too_old_message = "Dark mode requires Windows 10 version 2004 or newer."sv;
 constexpr auto dark_mode_unavailable_message = "Dark mode is unavailable due to the current system settings."sv;
 
 bool TabDarkMode::is_active()

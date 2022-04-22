@@ -4,8 +4,8 @@
 
 ### Features
 
-- Support for the Windows 10 and 11 dark mode was added on Windows 10 20H1 and
-  newer.
+- Support for the Windows 10 and 11 dark mode was added on Windows 10 version
+  2004 and newer.
   [[multiple pull requests](https://github.com/reupen/columns_ui/pulls?q=is%3Apr+is%3Aclosed+label%3A%22dark+mode%22+merged%3A%3C%3D2022-04-21)]
 
   This can be enabled from the Mode tab on the Colours and fonts preferences
@@ -32,8 +32,8 @@
 - The shading of alternate rows in the playlist view was disabled by default in
   new installations. [[#522](https://github.com/reupen/columns_ui/pull/522)]
 
-  This can be enabled by uncommenting the second line in the default global
-  style script.
+  It can still be enabled (in new installations) by uncommenting the second line
+  in the default global style script.
 
 - Status bar and status pane preferences were fully separated.
   [[#516](https://github.com/reupen/columns_ui/pull/516)]
@@ -59,7 +59,8 @@
   there. [[#466](https://github.com/reupen/columns_ui/pull/466),
   [#470](https://github.com/reupen/columns_ui/pull/470),
   [#473](https://github.com/reupen/columns_ui/pull/473),
-  [#514](https://github.com/reupen/columns_ui/pull/514)]
+  [#514](https://github.com/reupen/columns_ui/pull/514),
+  [#540](https://github.com/reupen/columns_ui/pull/540)]
 
 - The Filter search toolbar is now integrated with the Colours and fonts
   preferences page, and its font, foreground colour and background colour are
