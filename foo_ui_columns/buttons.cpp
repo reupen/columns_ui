@@ -159,8 +159,7 @@ void ButtonsToolbar::create_toolbar()
                     } else {
                         images[n].load(button.m_custom_image);
 
-                        SIZE szt;
-                        images[n].get_size(szt);
+                        const auto szt = images[n].get_size();
                         sz.cx = std::max(sz.cx, szt.cx);
                         sz.cy = std::max(sz.cy, szt.cy);
                     }

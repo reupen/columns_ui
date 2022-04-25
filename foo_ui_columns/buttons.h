@@ -129,10 +129,10 @@ public:
     };
 
     class ButtonImage {
-        HBITMAP m_bm{nullptr};
-        HICON m_icon{nullptr};
+        wil::unique_hbitmap m_bm;
+        wil::unique_hicon m_icon;
         ui_extension::t_mask m_mask_type{uie::MASK_NONE};
-        HBITMAP m_bm_mask{nullptr};
+        wil::unique_hbitmap m_bm_mask;
         COLORREF m_mask_colour{0};
 
     public:
@@ -141,12 +141,11 @@ public:
         ButtonImage& operator=(const ButtonImage&) = delete;
         ButtonImage(ButtonImage&&) = delete;
         ButtonImage& operator=(ButtonImage&&) = delete;
-        ~ButtonImage();
         bool is_valid() const;
         void load(const Button::CustomImage& p_image);
         void load(const service_ptr_t<uie::button>& p_in, COLORREF colour_btnface, unsigned cx, unsigned cy);
         unsigned add_to_imagelist(HIMAGELIST iml);
-        void get_size(SIZE& p_out);
+        SIZE get_size() const;
     };
 
     HWND wnd_toolbar{nullptr};
