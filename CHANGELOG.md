@@ -1,5 +1,12 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A bug which stopped ICO files from working as custom hot images in the buttons
+  toolbar was fixed. [[#547](https://github.com/reupen/columns_ui/pull/547)]
+
 ## 2.0.0-alpha.1
 
 ### Features

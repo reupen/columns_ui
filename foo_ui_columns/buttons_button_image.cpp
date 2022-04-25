@@ -13,9 +13,10 @@ ButtonsToolbar::ButtonImage::~ButtonImage()
     if (m_icon)
         DestroyIcon(m_icon);
 }
-bool ButtonsToolbar::ButtonImage::is_valid()
+
+bool ButtonsToolbar::ButtonImage::is_valid() const
 {
-    return m_bm != nullptr;
+    return m_bm != nullptr || m_icon != nullptr;
 }
 
 void ButtonsToolbar::ButtonImage::load(const Button::CustomImage& p_image)

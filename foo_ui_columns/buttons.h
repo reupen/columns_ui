@@ -142,7 +142,7 @@ public:
         ButtonImage(ButtonImage&&) = delete;
         ButtonImage& operator=(ButtonImage&&) = delete;
         ~ButtonImage();
-        bool is_valid();
+        bool is_valid() const;
         void load(const Button::CustomImage& p_image);
         void load(const service_ptr_t<uie::button>& p_in, COLORREF colour_btnface, unsigned cx, unsigned cy);
         unsigned add_to_imagelist(HIMAGELIST iml);
