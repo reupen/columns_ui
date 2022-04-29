@@ -2,6 +2,18 @@
 
 ## Development version
 
+### Features
+
+- When mixed size images are used in the buttons toolbar, they are now all
+  resized to the size of the largest non-hot custom image.
+  [[#548](https://github.com/reupen/columns_ui/pull/548)]
+
+  (Previously, images in the wrong size would display incorrectly or otherwise
+  misbehave.)
+
+  A message is also printed to the console when mixed size custom images are
+  detected.
+
 ### Bug fixes
 
 - A bug which stopped ICO files from working as custom hot images in the buttons

@@ -127,21 +127,18 @@ void ButtonsToolbar::create_toolbar()
             }
         }
 
-        SIZE sz = {0, 0};
-
-        bit_array_bittable mask(m_buttons.size());
-
+        int button_width{};
+        int button_height{};
         size_t image_count{};
 
         for (auto&& [n, button] : ranges::views::enumerate(m_buttons)) {
             if (button.m_type != TYPE_SEPARATOR) {
                 button.m_callback.set_wnd(this);
                 button.m_callback.set_id(gsl::narrow<int>(n));
-                service_enum_t<ui_extension::button> e;
-                service_ptr_t<ui_extension::button> ptr;
-                while (e.next(ptr)) {
-                    if (ptr->get_item_guid() == button.m_guid) {
-                        button.m_interface = ptr;
+
+                for (auto enumerator = uie::button::enumerate(); !enumerator.finished(); ++enumerator) {
+                    if ((*enumerator)->get_item_guid() == button.m_guid) {
+                        button.m_interface = *enumerator;
                         break;
                     }
                 }
@@ -150,39 +147,56 @@ void ButtonsToolbar::create_toolbar()
                     ++image_count;
 
                     if (button.m_use_custom_hot)
-                        images_hot[n].load(button.m_custom_hot_image);
-                    if (!button.m_use_custom) {
-                        if (button.m_interface.is_valid()) {
-                            mask.set(n, true);
-                            // images[n].load(button.m_interface, colour_btntext);
-                        }
-                    } else {
-                        images[n].load(button.m_custom_image);
+                        images_hot[n].preload(button.m_custom_hot_image);
+                    if (button.m_use_custom) {
+                        images[n].preload(button.m_custom_image);
 
-                        const auto szt = images[n].get_size();
-                        sz.cx = std::max(sz.cx, szt.cx);
-                        sz.cy = std::max(sz.cy, szt.cy);
+                        const auto [image_width, image_height] = images[n].get_size().value_or(std::make_tuple(0, 0));
+                        button_width = std::max(button_width, image_width);
+                        button_height = std::max(button_height, image_height);
                     }
                 }
             }
         }
-        if (sz.cx == 0 && sz.cy == 0) {
-            sz.cx = GetSystemMetrics(SM_CXSMICON);
-            sz.cy = GetSystemMetrics(SM_CYSMICON);
-        }
-        for (auto&& [n, button] : ranges::views::enumerate(m_buttons)) {
-            if (mask[n])
-                images[n].load(button.m_interface, colour_btntext, sz.cx, sz.cy);
+
+        if (button_width == 0 && button_height == 0) {
+            button_width = GetSystemMetrics(SM_CXSMICON);
+            button_height = GetSystemMetrics(SM_CYSMICON);
         }
 
-        width = sz.cx;
-        height = sz.cy;
+        bool any_images_resized{};
+        bool any_hot_images_resized{};
+
+        for (auto&& [n, button] : ranges::views::enumerate(m_buttons)) {
+            const auto resized = images[n].load(
+                button.m_use_custom ? std::make_optional(std::ref(button.m_custom_image)) : std::nullopt,
+                button.m_interface, colour_btntext, button_width, button_height);
+
+            any_images_resized = any_images_resized || resized;
+
+            if (button.m_use_custom_hot) {
+                const auto resized_hot = images_hot[n].load(
+                    button.m_custom_hot_image, nullptr, colour_btntext, button_width, button_height);
+
+                any_hot_images_resized = any_hot_images_resized || resized_hot;
+            }
+        }
+
+        if (any_images_resized)
+            console::print(reinterpret_cast<const char*>(fmt::format(
+                u8"Buttons toolbar – resized some custom non-hot images to {} x {}px", button_width, button_height)
+                                                             .c_str()));
+
+        if (any_hot_images_resized)
+            console::print(reinterpret_cast<const char*>(fmt::format(
+                u8"Buttons toolbar – resized some custom hot images to {} x {}px", button_width, button_height)
+                                                             .c_str()));
 
         m_standard_images.reset(
-            ImageList_Create(width, height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
+            ImageList_Create(button_width, button_height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
         if (b_need_hot)
-            m_hot_images.reset(
-                ImageList_Create(width, height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
+            m_hot_images.reset(ImageList_Create(
+                button_width, button_height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
 
         for (auto&& [n, tbbutton] : ranges::views::enumerate(tbbuttons)) {
             tbbutton.iString = -1; //"It works"
@@ -242,7 +256,7 @@ void ButtonsToolbar::create_toolbar()
         SendMessage(wnd_toolbar, TB_SETEXTENDEDSTYLE, 0,
             ex_style | TBSTYLE_EX_DRAWDDARROWS | (!m_text_below ? TBSTYLE_EX_MIXEDBUTTONS : 0));
 
-        SendMessage(wnd_toolbar, TB_SETBITMAPSIZE, 0, MAKELONG(width, height));
+        SendMessage(wnd_toolbar, TB_SETBITMAPSIZE, 0, MAKELONG(button_width, button_height));
         // SendMessage(wnd_toolbar, TB_SETBUTTONSIZE, (WPARAM) 0, MAKELONG(width,height));
 
         // todo: custom padding

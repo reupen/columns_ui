@@ -4,16 +4,24 @@
 
 namespace cui::wic {
 
-void check_hresult(HRESULT hr)
+namespace {
+
+wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_path(std::string_view path)
 {
-    pfc::string8 message;
-    if (FAILED(hr))
-        throw pfc::exception(message << "WIC error: " << format_win32_error(hr));
+    const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+
+    pfc::stringcvt::string_wide_from_utf8 utf16_path(path.data(), path.size());
+
+    wil::com_ptr_t<IWICBitmapDecoder> bitmap_decoder;
+    check_hresult(imaging_factory->CreateDecoderFromFilename(
+        utf16_path.get_ptr(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &bitmap_decoder));
+
+    return bitmap_decoder;
 }
 
 wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_data(const void* data, size_t size)
 {
-    auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+    const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
 
     wil::com_ptr_t<IStream> stream;
     stream.attach(SHCreateMemStream(static_cast<const BYTE*>(data), gsl::narrow<UINT>(size)));
@@ -25,17 +33,14 @@ wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_data(const void* data, siz
     return bitmap_decoder;
 }
 
-wil::com_ptr_t<IWICBitmapDecoder> create_decoder_from_path(std::string_view path)
+wil::com_ptr_t<IWICBitmap> create_bitmap_from_hbitmap(HBITMAP bitmap)
 {
-    auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+    const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
 
-    pfc::stringcvt::string_wide_from_utf8 utf16_path(path.data(), path.size());
+    wil::com_ptr_t<IWICBitmap> wic_bitmap;
+    check_hresult(imaging_factory->CreateBitmapFromHBITMAP(bitmap, nullptr, WICBitmapUseAlpha, &wic_bitmap));
 
-    wil::com_ptr_t<IWICBitmapDecoder> bitmap_decoder;
-    check_hresult(imaging_factory->CreateDecoderFromFilename(
-        utf16_path.get_ptr(), nullptr, GENERIC_READ, WICDecodeMetadataCacheOnDemand, &bitmap_decoder));
-
-    return bitmap_decoder;
+    return wic_bitmap;
 }
 
 wil::com_ptr_t<IWICBitmapSource> get_image_frame(const wil::com_ptr_t<IWICBitmapDecoder>& bitmap_decoder)
@@ -66,11 +71,50 @@ BitmapData decode_image(const wil::com_ptr_t<IWICBitmapSource>& bitmap_source)
     return image_data;
 }
 
-wil::unique_hbitmap create_hbitmap_from_path(const char* path)
+} // namespace
+
+void check_hresult(HRESULT hr)
+{
+    pfc::string8 message;
+    if (FAILED(hr))
+        throw wic_error(message << "WIC error: " << format_win32_error(hr));
+}
+
+wil::com_ptr_t<IWICBitmapSource> resize_bitmap_source(
+    const wil::com_ptr_t<IWICBitmapSource>& original_bitmap, int width, int height)
+{
+    const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+
+    wil::com_ptr_t<IWICBitmapScaler> bitmap_scaler;
+    check_hresult(imaging_factory->CreateBitmapScaler(&bitmap_scaler));
+
+    try {
+        check_hresult(bitmap_scaler->Initialize(original_bitmap.get(), gsl::narrow<unsigned>(width),
+            gsl::narrow<unsigned>(height), WICBitmapInterpolationModeHighQualityCubic));
+    } catch (const wic_error&) {
+        check_hresult(bitmap_scaler->Initialize(original_bitmap.get(), gsl::narrow<unsigned>(width),
+            gsl::narrow<unsigned>(height), WICBitmapInterpolationModeFant));
+    }
+
+    return bitmap_scaler;
+}
+
+wil::unique_hbitmap resize_hbitmap(HBITMAP hbitmap, int width, int height)
+{
+    wil::com_ptr_t<IWICBitmapSource> bitmap_source = create_bitmap_from_hbitmap(hbitmap);
+    bitmap_source = resize_bitmap_source(bitmap_source, width, height);
+    return create_hbitmap_from_bitmap_source(bitmap_source);
+}
+
+wil::com_ptr_t<IWICBitmapSource> create_bitmap_source_from_path(const char* path)
 {
     const auto decoder = create_decoder_from_path(path);
-    const auto converted_bitmap = get_image_frame(decoder);
-    const auto bitmap_data = decode_image(converted_bitmap);
+    return get_image_frame(decoder);
+}
+
+wil::unique_hbitmap create_hbitmap_from_bitmap_source(const wil::com_ptr_t<IWICBitmapSource>& source)
+{
+    const auto bitmap_data = decode_image(source);
 
     BITMAPINFOHEADER bmi{};
 
