@@ -12,7 +12,7 @@ CLIPFORMAT ButtonsToolbar::ConfigParam::ButtonsList::g_clipformat()
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 {
     set_single_selection(true);
-    set_columns({{"Name", 300}, {"Type", 150}});
+    set_columns({{"Name", 225_spx}, {"Type", 150_spx}});
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_create()
 {

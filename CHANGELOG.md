@@ -26,6 +26,10 @@
 - A GDI object leak when using ICO files as custom button images was fixed.
   [[#547](https://github.com/reupen/columns_ui/pull/547)]
 
+- The initial widths of the list view columns in the Buttons and Item properties
+  options dialogue boxes were updated to scale with the system DPI setting.
+  [[#550](https://github.com/reupen/columns_ui/pull/550)]
+
 ## 2.0.0-alpha.1
 
 ### Features
