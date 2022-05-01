@@ -30,6 +30,9 @@
   options dialogue boxes were updated to scale with the system DPI setting.
   [[#550](https://github.com/reupen/columns_ui/pull/550)]
 
+- A truncated label in the Item properties options dialogue box was corrected.
+  [[#550](https://github.com/reupen/columns_ui/pull/550)]
+
 ## 2.0.0-alpha.1
 
 ### Features
