@@ -213,7 +213,7 @@ COLORREF get_dark_colour(ColourID colour_id)
     case ColourID::TabControlHotItemBackground:
         return get_base_dark_colour(DarkColourID::DARK_300);
     case ColourID::TabControlHotActiveItemBackground:
-        return get_base_dark_colour(DarkColourID::DARK_600);
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::TrackbarChannel:
         return get_base_dark_colour(DarkColourID::DARK_400);
     case ColourID::TrackbarThumb:

@@ -14,6 +14,10 @@
   A message is also printed to the console when mixed size custom images are
   detected.
 
+- Active tabs in the Tab stack and Playlist tabs panels no longer change colour
+  on hover when dark mode is active.
+  [[#549](https://github.com/reupen/columns_ui/pull/549)]
+
 ### Bug fixes
 
 - A bug which stopped ICO files from working as custom hot images in the buttons
