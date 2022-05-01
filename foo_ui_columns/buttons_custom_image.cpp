@@ -3,9 +3,14 @@
 
 namespace cui::toolbars::buttons {
 
-void ButtonsToolbar::Button::CustomImage::get_path(pfc::string8& p_out) const
+bool ButtonsToolbar::Button::CustomImage::is_ico() const
 {
-    p_out.reset();
+    return !_stricmp(pfc::string_extension(m_path), "ico");
+}
+
+pfc::string8 ButtonsToolbar::Button::CustomImage::get_path() const
+{
+    pfc::string8 full_path;
 
     bool b_absolute = string_find_first(m_path, ':') != pfc_infinite
         || (m_path.length() > 1 && m_path.get_ptr()[0] == '\\' && m_path.get_ptr()[1] == '\\');
@@ -18,10 +23,12 @@ void ButtonsToolbar::Button::CustomImage::get_path(pfc::string8& p_out) const
     if (b_relative_to_drive) {
         size_t index_colon = fb2kexe.find_first(':');
         if (index_colon != pfc_infinite)
-            p_out.add_string(fb2kexe.get_ptr(), index_colon + 1);
+            full_path.add_string(fb2kexe.get_ptr(), index_colon + 1);
     } else if (!b_absolute)
-        p_out << string_directory(fb2kexe) << "\\";
-    p_out += m_path;
+        full_path << string_directory(fb2kexe) << "\\";
+    full_path += m_path;
+
+    return full_path;
 }
 void ButtonsToolbar::Button::CustomImage::write(stream_writer* out, abort_callback& p_abort) const
 {
@@ -255,38 +262,36 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
         p_file.write_lendian_t(gsl::narrow<uint32_t>(m_path.length()), p_abort);
         p_file.write(m_path.get_ptr(), m_path.length(), p_abort);
     } else {
-        pfc::string8 realPath;
-        pfc::string8 canPath;
+        pfc::string8 full_path;
         try {
             p_file.write_lendian_t(I_BUTTON_CUSTOM_IMAGE_DATA, p_abort);
 
-            {
-                service_ptr_t<file> p_image;
-                get_path(realPath);
-                filesystem::g_get_canonical_path(realPath, canPath);
-                filesystem::g_open(p_image, canPath, filesystem::open_mode_read, p_abort);
+            pfc::string8 canonical_path;
+            service_ptr_t<file> p_image;
+            full_path = get_path();
+            filesystem::g_get_canonical_path(full_path, canonical_path);
+            filesystem::g_open(p_image, canonical_path, filesystem::open_mode_read, p_abort);
 
-                const auto name = string_filename_ext(m_path);
+            const auto name = string_filename_ext(m_path);
 
-                const auto imagesize = gsl::narrow<uint32_t>(p_image->get_size(p_abort));
+            const auto imagesize = gsl::narrow<uint32_t>(p_image->get_size(p_abort));
 
-                const auto size = gsl::narrow<uint32_t>(imagesize + name.length() + 4 * sizeof(uint32_t));
-                p_file.write_lendian_t(size, p_abort);
+            const auto size = gsl::narrow<uint32_t>(imagesize + name.length() + 4 * sizeof(uint32_t));
+            p_file.write_lendian_t(size, p_abort);
 
-                p_file.write_lendian_t(IMAGE_NAME, p_abort);
-                p_file.write_lendian_t(gsl::narrow<uint32_t>(name.length()), p_abort);
-                p_file.write(name.get_ptr(), name.length(), p_abort);
+            p_file.write_lendian_t(IMAGE_NAME, p_abort);
+            p_file.write_lendian_t(gsl::narrow<uint32_t>(name.length()), p_abort);
+            p_file.write(name.get_ptr(), name.length(), p_abort);
 
-                p_file.write_lendian_t(IMAGE_DATA, p_abort);
-                p_file.write_lendian_t((unsigned)imagesize, p_abort);
-                pfc::array_t<uint8_t> temp;
-                temp.set_size((unsigned)imagesize);
-                p_image->read(temp.get_ptr(), temp.get_size(), p_abort);
-                p_file.write(temp.get_ptr(), temp.get_size(), p_abort);
-            }
+            p_file.write_lendian_t(IMAGE_DATA, p_abort);
+            p_file.write_lendian_t((unsigned)imagesize, p_abort);
+            pfc::array_t<uint8_t> temp;
+            temp.set_size((unsigned)imagesize);
+            p_image->read(temp.get_ptr(), temp.get_size(), p_abort);
+            p_file.write(temp.get_ptr(), temp.get_size(), p_abort);
         } catch (const pfc::exception& err) {
             pfc::string_formatter formatter;
-            throw pfc::exception(formatter << "Error reading file \"" << realPath << "\" : " << err.what());
+            throw pfc::exception(formatter << "Error reading file \"" << full_path << "\" : " << err.what());
         }
     }
     if (m_mask_type == uie::MASK_BITMAP) {
