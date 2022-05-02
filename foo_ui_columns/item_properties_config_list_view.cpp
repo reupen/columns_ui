@@ -44,7 +44,7 @@ bool FieldsList::notify_before_create_inline_edit(
 void FieldsList::notify_on_create()
 {
     set_single_selection(true);
-    set_columns({{"Name", 150}, {"Field", 150}});
+    set_columns({{"Name", 125_spx}, {"Field", 125_spx}});
 
     size_t count = m_fields.get_count();
     pfc::list_t<InsertItem> items;
