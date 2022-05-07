@@ -5,7 +5,7 @@
 ### Features
 
 - When mixed size images are used in the buttons toolbar, they are now all
-  resized to the size of the largest non-hot custom image.
+  resized to the same size.
   [[#548](https://github.com/reupen/columns_ui/pull/548)]
 
   (Previously, images in the wrong size would display incorrectly or otherwise
@@ -13,6 +13,13 @@
 
   A message is also printed to the console when mixed size custom images are
   detected.
+
+- A custom icon size can now be used in the buttons toolbar (with custom images
+  resized as neccessary).
+  [[#551](https://github.com/reupen/columns_ui/pull/551)]
+
+- The buttons toolbar options dialogue box was updated, with some terminology
+  changed. [[#551](https://github.com/reupen/columns_ui/pull/551)]
 
 - Active tabs in the Tab stack and Playlist tabs panels no longer change colour
   on hover when dark mode is active.
@@ -32,6 +39,16 @@
 
 - A truncated label in the Item properties options dialogue box was corrected.
   [[#550](https://github.com/reupen/columns_ui/pull/550)]
+
+### Removals
+
+- Exported buttons toolbar configurations (FCB files) aren’t compatible with
+  older versions of Columns UI.
+  [[#551](https://github.com/reupen/columns_ui/pull/551)]
+
+- Exported configurations (FCL files) containing a buttons toolbar in the layout
+  aren’t compatible with older versions of Columns UI.
+  [[#551](https://github.com/reupen/columns_ui/pull/551)]
 
 ## 2.0.0-alpha.1
 

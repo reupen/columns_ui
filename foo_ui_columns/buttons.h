@@ -6,10 +6,16 @@ namespace cui::toolbars::buttons {
 
 class ButtonsToolbar : public uie::container_uie_window_v3 {
 public:
-    enum ConfigVersion { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
+    enum class ConfigVersion { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
+    enum class FCBVersion { VERSION_1, VERSION_2, VERSION_3, VERSION_CURRENT = VERSION_3 };
 
     /** For config dialog */
     enum { MSG_BUTTON_CHANGE = WM_USER + 2, MSG_COMMAND_CHANGE = WM_USER + 3 };
+
+    enum class IconSize : int32_t {
+        Automatic,
+        Custom,
+    };
 
     enum Filter : int32_t {
         FILTER_NONE,
@@ -41,6 +47,9 @@ public:
         I_TEXT_BELOW,
         I_APPEARANCE,
         I_BUTTONS,
+        I_ICON_SIZE,
+        I_WIDTH,
+        I_HEIGHT,
     };
     enum ButtonIdentifier {
         I_BUTTON_TYPE,
@@ -83,7 +92,7 @@ public:
             void write(stream_writer* out, abort_callback& p_abort) const;
             void read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort);
             void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
-            void read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
+            void read_from_file(FCBVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
                 unsigned p_size, abort_callback& p_abort);
         };
 
@@ -126,7 +135,7 @@ public:
         std::string get_name(bool short_form = false) const;
         std::string get_name_with_type() const;
         void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
-        void read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
+        void read_from_file(FCBVersion p_version, const char* p_base, const char* p_name, stream_reader* p_file,
             unsigned p_size, abort_callback& p_abort);
     };
 
@@ -217,15 +226,6 @@ public:
             explicit ButtonsList(ConfigParam& p_param) : m_param(p_param) {}
         } m_button_list;
 
-        modal_dialog_scope m_scope;
-        // uih::ListView m_button_list;
-        Button* m_selection{nullptr};
-        HWND m_wnd{nullptr}, m_child{nullptr};
-        unsigned m_active{0};
-        Button::CustomImage* m_image{nullptr};
-        std::vector<Button> m_buttons;
-        bool m_text_below{false};
-        Appearance m_appearance{APPEARANCE_NORMAL};
         void export_to_file(const char* p_path, bool b_paths = false);
         void import_from_file(const char* p_path, bool add);
         void export_to_stream(stream_writer* p_writer, bool b_paths, abort_callback& p_abort);
@@ -233,12 +233,27 @@ public:
 
         static INT_PTR CALLBACK g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
         BOOL ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+        void update_size_field_status();
 
         void on_selection_change(size_t index);
         void populate_buttons_list();
         void refresh_buttons_list_items(size_t index, size_t count, bool b_update_display = true);
 
         ConfigParam();
+
+        modal_dialog_scope m_scope;
+        // uih::ListView m_button_list;
+        bool m_initialising{};
+        Button* m_selection{nullptr};
+        HWND m_wnd{nullptr}, m_child{nullptr};
+        unsigned m_active{0};
+        Button::CustomImage* m_image{nullptr};
+        std::vector<Button> m_buttons;
+        bool m_text_below{false};
+        Appearance m_appearance{APPEARANCE_NORMAL};
+        IconSize m_icon_size{IconSize::Automatic};
+        uih::IntegerAndDpi<int32_t> m_width{16};
+        uih::IntegerAndDpi<int32_t> m_height{16};
     };
 
     static INT_PTR CALLBACK ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -247,7 +262,8 @@ public:
     bool show_config_popup(HWND wnd_parent) override;
 
     template <class List>
-    void configure(List&& buttons, bool text_below, Appearance appearance)
+    void configure(List&& buttons, bool text_below, Appearance appearance, IconSize icon_size,
+        uih::IntegerAndDpi<int32_t> width, uih::IntegerAndDpi<int32_t> height)
     {
         const auto was_initialised = initialised;
         if (was_initialised) {
@@ -255,6 +271,9 @@ public:
         }
         m_text_below = text_below;
         m_appearance = appearance;
+        m_icon_size = icon_size;
+        m_width = width;
+        m_height = height;
         m_buttons = buttons;
         if (was_initialised) {
             create_toolbar();
@@ -277,10 +296,6 @@ public:
     void import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void export_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
-    //    virtual void write_to_file(stream_writer * out);
-
-    static const GUID g_guid_fcb;
-
 private:
     uie::container_window_v3_config get_window_config() override
     {
@@ -297,6 +312,9 @@ private:
     std::vector<Button> m_buttons;
     bool m_text_below{false};
     Appearance m_appearance{APPEARANCE_NORMAL};
+    IconSize m_icon_size{IconSize::Automatic};
+    uih::IntegerAndDpi<int32_t> m_width{16};
+    uih::IntegerAndDpi<int32_t> m_height{16};
     wil::unique_himagelist m_standard_images;
     wil::unique_himagelist m_hot_images;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;

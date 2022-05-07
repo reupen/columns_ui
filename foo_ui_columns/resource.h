@@ -140,7 +140,6 @@
 #define IDC_COMMAND                     1038
 #define IDC_VOL                         1039
 #define IDC_TAB1                        1039
-#define IDC_IMAGE_TYPE                  1039
 #define IDC_TAB                         1039
 #define IDC_SORT_ARROWS                 1039
 #define IDC_PLISTEDGE                   1040
@@ -150,7 +149,6 @@
 #define IDC_SHOW_LOCK                   1041
 #define IDC_BROWSE                      1041
 #define IDC_SELTIME                     1042
-#define IDC_COMMAND_DESC                1042
 #define IDC_HHTRACK                     1043
 #define IDC_SHOW_STATUSPANE             1043
 #define IDC_TFHELP                      1044
@@ -171,7 +169,7 @@
 #define IDC_MENU_DBLCLK                 1053
 #define IDC_REMOVE_UNDERSCORES          1053
 #define IDC_APPEARANCE                  1053
-#define IDC_IMAGE_SIZE                  1054
+#define IDC_ICON_SIZE                   1054
 #define IDC_TEXT                        1055
 #define IDC_USE_CUSTOM_TEXT             1056
 #define IDC_PICK_COLOUR                 1057
@@ -244,7 +242,6 @@
 #define IDC_COLOUR_CODE                 1166
 #define IDC_TITLE1                      1168
 #define IDC_TITLE2                      1169
-#define IDC_TITLE3                      1170
 #define IDC_DISPLAY_SCRIPT              1173
 #define IDC_SORTING_SCRIPT              1174
 #define IDC_STYLE_SCRIPT                1175
@@ -259,6 +256,8 @@
 #define IDC_DARK_MODE_USE_SYSTEM_SETTING 1183
 #define IDC_FONT_ELEMENT                1184
 #define IDC_FONT_MODE                   1185
+#define IDC_WIDTH_SPIN                  1187
+#define IDC_HEIGHT_SPIN                 1188
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -268,7 +267,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        172
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1186
+#define _APS_NEXT_CONTROL_VALUE         1189
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

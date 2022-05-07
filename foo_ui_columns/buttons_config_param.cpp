@@ -3,10 +3,17 @@
 
 namespace cui::toolbars::buttons {
 
+namespace {
+
+constexpr GUID fcb_header_v1 = {0xafd89390, 0x8e1f, 0x434c, {0xb9, 0xc5, 0xa4, 0xc1, 0x26, 0x1b, 0xb7, 0x92}};
+constexpr GUID fcb_header_v2 = {0xa7d77fe1, 0xcee2, 0x4fee, {0xa0, 0x7, 0xe9, 0xfc, 0x97, 0xdd, 0x2b, 0xc7}};
+
+} // namespace
+
 void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b_paths, abort_callback& p_abort)
 {
-    p_file->write_lendian_t(g_guid_fcb, p_abort);
-    p_file->write_lendian_t(VERSION_CURRENT, p_abort);
+    p_file->write_lendian_t(fcb_header_v2, p_abort);
+    p_file->write_lendian_t(WI_EnumValue(FCBVersion::VERSION_CURRENT), p_abort);
 
     const auto count = gsl::narrow<uint32_t>(m_buttons.size());
 
@@ -17,6 +24,20 @@ void ButtonsToolbar::ConfigParam::export_to_stream(stream_writer* p_file, bool b
     p_file->write_lendian_t(I_APPEARANCE, p_abort);
     p_file->write_lendian_t(mmh::sizeof_t<uint32_t>(m_appearance), p_abort);
     p_file->write_lendian_t(m_appearance, p_abort);
+
+    p_file->write_lendian_t(I_ICON_SIZE, p_abort);
+    p_file->write_lendian_t(mmh::sizeof_t<uint32_t>(m_icon_size), p_abort);
+    p_file->write_lendian_t(WI_EnumValue(m_icon_size), p_abort);
+
+    p_file->write_lendian_t(I_WIDTH, p_abort);
+    p_file->write_lendian_t(gsl::narrow<uint32_t>(sizeof(int32_t) * 2), p_abort);
+    p_file->write_lendian_t(m_width.value, p_abort);
+    p_file->write_lendian_t(m_width.dpi, p_abort);
+
+    p_file->write_lendian_t(I_HEIGHT, p_abort);
+    p_file->write_lendian_t(gsl::narrow<uint32_t>(sizeof(int32_t) * 2), p_abort);
+    p_file->write_lendian_t(m_height.value, p_abort);
+    p_file->write_lendian_t(m_height.dpi, p_abort);
 
     p_file->write_lendian_t(I_BUTTONS, p_abort);
 
@@ -63,56 +84,75 @@ void ButtonsToolbar::ConfigParam::import_from_stream(stream_reader* p_file, bool
     // unsigned pos = str_base.find_last('\\');
     // if (pos != -1)
     //    str_base.truncate(pos);
+
+    GUID header_id = p_file->read_lendian_t<GUID>(p_abort);
+
+    if (header_id != fcb_header_v1 && header_id != fcb_header_v2)
+        throw exception_io_data();
+
+    const auto vers = static_cast<FCBVersion>(p_file->read_lendian_t<int32_t>(p_abort));
+
+    if (vers > FCBVersion::VERSION_CURRENT)
+        throw "This buttons toolbar configuration requires a newer version of Columns UI.";
+
     if (!add)
         m_buttons.clear();
 
+    while (true) //! p_file.is_eof(p_abort)
     {
-        GUID temp;
-        p_file->read_lendian_t(temp, p_abort);
-        if (temp != g_guid_fcb)
-            throw exception_io_data();
-        ConfigVersion vers;
-        p_file->read_lendian_t(vers, p_abort);
-        if (vers > VERSION_CURRENT)
-            throw "Fcb version is newer than component";
-        while (true) //! p_file.is_eof(p_abort)
-        {
-            Identifier id;
-            try {
-                p_file->read_lendian_t(id, p_abort);
-            } catch (exception_io_data_truncation const&) {
-                break;
-            }
-            unsigned size;
-            p_file->read_lendian_t(size, p_abort);
-            // if (size > p_file->get_size(p_abort) - p_file->get_position(p_abort))
-            //    throw exception_io_data();
-            switch (id) {
-            case I_TEXT_BELOW:
-                p_file->read_lendian_t(m_text_below, p_abort);
-                break;
-            case I_APPEARANCE:
-                p_file->read_lendian_t(m_appearance, p_abort);
-                break;
-            case I_BUTTONS: {
-                service_ptr_t<genrand_service> genrand = genrand_service::g_create();
-                genrand->seed(GetTickCount());
-                uint32_t dirname = genrand->genrand(pfc_infinite);
+        Identifier id;
+        try {
+            p_file->read_lendian_t(id, p_abort);
+        } catch (exception_io_data_truncation const&) {
+            break;
+        }
+        unsigned size;
+        p_file->read_lendian_t(size, p_abort);
+        // if (size > p_file->get_size(p_abort) - p_file->get_position(p_abort))
+        //    throw exception_io_data();
+        switch (id) {
+        case I_TEXT_BELOW:
+            p_file->read_lendian_t(m_text_below, p_abort);
+            break;
+        case I_APPEARANCE:
+            p_file->read_lendian_t(m_appearance, p_abort);
+            break;
+        case I_ICON_SIZE:
+            m_icon_size = static_cast<IconSize>(p_file->read_lendian_t<int32_t>(p_abort));
+            break;
+        case I_WIDTH: {
+            const auto value = p_file->read_lendian_t<int32_t>(p_abort);
+            const auto dpi = p_file->read_lendian_t<int32_t>(p_abort);
+            m_width.set(value, dpi);
+            break;
+        }
+        case I_HEIGHT: {
+            const auto value = p_file->read_lendian_t<int32_t>(p_abort);
+            const auto dpi = p_file->read_lendian_t<int32_t>(p_abort);
+            m_height.set(value, dpi);
+            break;
+        }
+        case I_BUTTONS: {
+            service_ptr_t<genrand_service> genrand = genrand_service::g_create();
+            genrand->seed(GetTickCount());
+            uint32_t dirname = genrand->genrand(pfc_infinite);
 
-                unsigned count;
-                p_file->read_lendian_t(count, p_abort);
-                for (unsigned n = 0; n < count; n++) {
-                    Button temp{};
-                    unsigned size_button;
-                    p_file->read_lendian_t(size_button, p_abort);
-                    pfc::string_formatter formatter;
-                    temp.read_from_file(vers, str_base, formatter << dirname, p_file, size_button, p_abort);
-                    //                        assert(n < 7);
-                    m_buttons.emplace_back(std::move(temp));
-                }
-
-            } break;
+            unsigned count;
+            p_file->read_lendian_t(count, p_abort);
+            for (unsigned n = 0; n < count; n++) {
+                Button temp{};
+                unsigned size_button;
+                p_file->read_lendian_t(size_button, p_abort);
+                pfc::string_formatter formatter;
+                temp.read_from_file(vers, str_base, formatter << dirname, p_file, size_button, p_abort);
+                //                        assert(n < 7);
+                m_buttons.emplace_back(std::move(temp));
             }
+            break;
+        }
+        default:
+            p_file->skip(size, p_abort);
+            break;
         }
     }
 }
@@ -134,8 +174,6 @@ void ButtonsToolbar::ConfigParam::on_selection_change(size_t index)
 {
     m_selection = index != pfc_infinite && index < m_buttons.size() ? &m_buttons[index] : nullptr;
     m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
-    std::string command_desc = m_selection ? m_selection->get_name_with_type() : ""s;
-    uSendDlgItemMessageText(m_wnd, IDC_COMMAND_DESC, WM_SETTEXT, 0, command_desc.c_str());
     SendDlgItemMessage(m_wnd, IDC_SHOW, CB_SETCURSEL, m_selection ? m_selection->m_show : -1, 0);
 
     bool b_enable = index != pfc_infinite && m_selection && m_selection->m_type != TYPE_SEPARATOR;
@@ -198,8 +236,19 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
 {
     switch (msg) {
     case WM_INITDIALOG: {
+        const auto _ = pfc::vartoggle_t(m_initialising, true);
         m_wnd = wnd;
         m_scope.initialize(FindOwningPopup(wnd));
+
+        HWND icon_size_wnd = GetDlgItem(wnd, IDC_ICON_SIZE);
+        ComboBox_AddString(icon_size_wnd, L"Automatic");
+        ComboBox_AddString(icon_size_wnd, L"Custom:");
+
+        HWND width_spin_wnd = GetDlgItem(wnd, IDC_WIDTH_SPIN);
+        SendMessage(width_spin_wnd, UDM_SETRANGE32, 1, 999);
+
+        HWND height_spin_wnd = GetDlgItem(wnd, IDC_HEIGHT_SPIN);
+        SendMessage(height_spin_wnd, UDM_SETRANGE32, 1, 999);
 
         HWND wnd_show = GetDlgItem(wnd, IDC_SHOW);
 
@@ -219,8 +268,8 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         SendMessage(wnd_app, CB_ADDSTRING, 0, (LPARAM) _T("No edges"));
 
         HWND wnd_tab = GetDlgItem(wnd, IDC_TAB);
-        uTabCtrl_InsertItemText(wnd_tab, 0, "Normal image");
-        uTabCtrl_InsertItemText(wnd_tab, 1, "Hot image");
+        uTabCtrl_InsertItemText(wnd_tab, 0, "Normal icon");
+        uTabCtrl_InsertItemText(wnd_tab, 1, "Hover icon");
 
         RECT tab;
 
@@ -248,12 +297,14 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
 
         SendMessage(wnd_text, CB_SETCURSEL, m_text_below ? 1 : 0, 0);
         SendMessage(wnd_app, CB_SETCURSEL, m_appearance, 0);
+        ComboBox_SetCurSel(icon_size_wnd, WI_EnumValue(m_icon_size));
+        update_size_field_status();
 
         HWND wnd_button_list = m_button_list.create(wnd, uih::WindowPosition(14, 16, 310, 106), true);
         populate_buttons_list();
         ShowWindow(wnd_button_list, SW_SHOWNORMAL);
-    }
         return TRUE;
+    }
     case WM_DESTROY:
         m_button_list.destroy();
         break;
@@ -287,19 +338,33 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         switch (wp) {
         case IDCANCEL: {
             EndDialog(wnd, 0);
-        }
             return TRUE;
-        case (CBN_SELCHANGE << 16) | IDC_SHOW: {
+        }
+        case IDC_SHOW | CBN_SELCHANGE << 16:
             if (m_selection) {
                 m_selection->m_show = (Show)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
             }
-        } break;
-        case (CBN_SELCHANGE << 16) | IDC_TEXT_LOCATION: {
+            break;
+        case IDC_TEXT_LOCATION | CBN_SELCHANGE << 16:
             m_text_below = SendMessage((HWND)lp, CB_GETCURSEL, 0, 0) != 0;
-        } break;
-        case (CBN_SELCHANGE << 16) | IDC_APPEARANCE: {
+            break;
+        case IDC_APPEARANCE | CBN_SELCHANGE << 16:
             m_appearance = (Appearance)SendMessage((HWND)lp, CB_GETCURSEL, 0, 0);
-        } break;
+            break;
+        case IDC_ICON_SIZE | CBN_SELCHANGE << 16:
+            if (auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp)); index != CB_ERR) {
+                m_icon_size = static_cast<IconSize>(index);
+                update_size_field_status();
+            }
+            break;
+        case IDC_WIDTH | EN_CHANGE << 16:
+            if (!m_initialising)
+                m_width = static_cast<int32_t>(SendMessage(GetDlgItem(wnd, IDC_WIDTH_SPIN), UDM_GETPOS32, 0, 0));
+            break;
+        case IDC_HEIGHT | EN_CHANGE << 16:
+            if (!m_initialising)
+                m_height = static_cast<int32_t>(SendMessage(GetDlgItem(wnd, IDC_HEIGHT_SPIN), UDM_GETPOS32, 0, 0));
+            break;
         case IDC_ADD: {
             CommandPickerData p_temp;
             CommandPickerParam p_data{};
@@ -317,10 +382,6 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 button.m_subcommand = p_data.m_subcommand;
                 button.m_filter = (Filter)p_data.m_filter;
 
-                pfc::string8_fast_aggressive name;
-                // m_buttons[index].get_name(name);
-                // unsigned idx = uSendDlgItemMessageText(wnd, IDC_BUTTON_LIST, LB_ADDSTRING, 0, name);
-
                 uih::ListView::InsertItem item;
                 item.m_subitems.resize(2);
                 item.m_subitems[0] = button.get_name().c_str();
@@ -329,12 +390,9 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 m_button_list.insert_items(index_list, 1, &item);
                 m_button_list.set_item_selected_single(index_list);
                 m_button_list.ensure_visible(index_list);
-
-                // SendDlgItemMessage(wnd, IDC_BUTTON_LIST, LB_SETCURSEL, idx, 0);
-                // SendMessage(wnd, WM_COMMAND, (LBN_SELCHANGE<<16)|IDC_BUTTON_LIST,
-                // (LPARAM)GetDlgItem(wnd,IDC_BUTTON_LIST));
             }
-        } break;
+            break;
+        }
         case IDC_RESET: {
             if (win32_helpers::message_box(wnd,
                     _T("This will reset all your buttons to the default buttons. Continue?"), _T("Reset buttons"),
@@ -344,7 +402,8 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 reset_buttons(m_buttons);
                 populate_buttons_list();
             }
-        } break;
+            break;
+        }
         case IDC_REMOVE: {
             size_t index = m_button_list.get_selected_item_single();
             if (index != pfc_infinite) {
@@ -355,41 +414,8 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 else if (index)
                     m_button_list.set_item_selected_single(index - 1);
             }
-        } break;
-#if 0
-        case IDC_UP:
-        {
-            size_t index = m_button_list.get_selected_item_single();
-
-            if (index != pfc_infinite && index < m_buttons.size() && index)
-            {
-                m_buttons.swap_items(index, index - 1);
-
-                //blaarrgg, designed in the dark ages
-                m_selection = &m_buttons[index - 1];
-
-                refresh_buttons_list_items(index - 1, 2);
-                m_button_list.set_item_selected_single(index - 1);
-
-            }
+            break;
         }
-        break;
-        case IDC_DOWN:
-        {
-            size_t index = m_button_list.get_selected_item_single();
-            if (index != pfc_infinite && index + 1 < m_buttons.size())
-            {
-                m_buttons.swap_items(index, index + 1);
-
-                //blaarrgg, designed in the dark ages
-                m_selection = &m_buttons[index + 1];
-
-                refresh_buttons_list_items(index, 2);
-                m_button_list.set_item_selected_single(index + 1);
-            }
-        }
-        break;
-#endif
         case IDC_TOOLS: {
             RECT rc;
             GetWindowRect(HWND(lp), &rc);
@@ -429,22 +455,27 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                     import_from_file(path, cmd == IDM_ADD);
                     SendMessage(wnd_text, CB_SETCURSEL, m_text_below ? 1 : 0, 0);
                     SendMessage(wnd_app, CB_SETCURSEL, m_appearance, 0);
+                    ComboBox_SetCurSel(GetDlgItem(wnd, IDC_ICON_SIZE), WI_EnumValue(m_icon_size));
+                    update_size_field_status();
                     populate_buttons_list();
                 }
             }
-        } break;
+            break;
+        }
         case IDC_USE_CUSTOM_TEXT: {
             if (m_selection) {
                 m_selection->m_use_custom_text = Button_GetCheck(HWND(lp)) != 0;
                 bool b_enable = m_selection->m_type != TYPE_SEPARATOR;
                 EnableWindow(GetDlgItem(wnd, IDC_TEXT), !b_enable || m_selection->m_use_custom_text);
             }
-        } break;
+            break;
+        }
         case IDC_TEXT | (EN_CHANGE << 16): {
             if (m_selection) {
                 m_selection->m_text = uGetWindowText(HWND(lp));
             }
-        } break;
+            break;
+        }
         case IDC_PICK: {
             if (m_selection) {
                 CommandPickerData p_temp;
@@ -466,10 +497,6 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                     const auto idx = m_button_list.get_selected_item_single();
                     if (idx != pfc_infinite) {
                         refresh_buttons_list_items(idx, 1);
-
-                        const auto name = m_buttons[idx].get_name_with_type();
-
-                        uSendDlgItemMessageText(wnd, IDC_COMMAND_DESC, WM_SETTEXT, 0, name.c_str());
                     }
                     bool b_enable = m_selection->m_type != TYPE_SEPARATOR;
                     EnableWindow(GetDlgItem(wnd, IDC_SHOW), m_selection->m_type != TYPE_SEPARATOR);
@@ -478,7 +505,8 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                     SendMessage(m_child, MSG_COMMAND_CHANGE, 0, 0);
                 }
             }
-        } break;
+            break;
+        }
         case IDOK: {
             EndDialog(wnd, 1);
         }
@@ -505,6 +533,18 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         return FALSE;
     }
     return FALSE;
+}
+
+void ButtonsToolbar::ConfigParam::update_size_field_status()
+{
+    const auto _ = pfc::vartoggle_t(m_initialising, true);
+
+    const auto is_custom_size = m_icon_size == IconSize::Custom;
+    EnableWindow(GetDlgItem(m_wnd, IDC_WIDTH), is_custom_size);
+    EnableWindow(GetDlgItem(m_wnd, IDC_HEIGHT), is_custom_size);
+
+    uSetDlgItemText(m_wnd, IDC_WIDTH, is_custom_size ? std::to_string(m_width.get_scaled_value()).c_str() : "");
+    uSetDlgItemText(m_wnd, IDC_HEIGHT, is_custom_size ? std::to_string(m_height.get_scaled_value()).c_str() : "");
 }
 
 } // namespace cui::toolbars::buttons

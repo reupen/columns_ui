@@ -76,7 +76,7 @@ void ButtonsToolbar::Button::read(ConfigVersion p_version, stream_reader* reader
     reader->read_lendian_t(m_type, p_abort);
     reader->read_lendian_t(m_filter, p_abort);
     reader->read_lendian_t((GUID&)m_guid, p_abort);
-    if (p_version >= VERSION_2)
+    if (p_version >= ConfigVersion::VERSION_2)
         reader->read_lendian_t((GUID&)m_subcommand, p_abort);
     reader->read_lendian_t(m_show, p_abort);
     reader->read_lendian_t(m_use_custom, p_abort);
@@ -143,7 +143,7 @@ std::string ButtonsToolbar::Button::get_name_with_type() const
     return "["s + get_type_desc() + "] "s + get_name();
 }
 
-void ButtonsToolbar::Button::read_from_file(ConfigVersion p_version, const char* p_base, const char* p_name,
+void ButtonsToolbar::Button::read_from_file(FCBVersion p_version, const char* p_base, const char* p_name,
     stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
 {
     // t_filesize p_start = p_file->get_position(p_abort);
