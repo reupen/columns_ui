@@ -52,8 +52,8 @@ void ButtonsToolbar::Button::CustomImage::read(ConfigVersion p_version, stream_r
         reader->read_lendian_t(m_mask_colour, p_abort);
 }
 
-void ButtonsToolbar::Button::CustomImage::read_from_file(ConfigVersion p_version, const char* p_base,
-    const char* p_name, stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
+void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, const char* p_base, const char* p_name,
+    stream_reader* p_file, unsigned p_size, abort_callback& p_abort)
 {
     // t_filesize p_start = p_file->get_position(p_abort);
     t_filesize read = 0;
