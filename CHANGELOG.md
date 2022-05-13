@@ -25,6 +25,13 @@
   on hover when dark mode is active.
   [[#549](https://github.com/reupen/columns_ui/pull/549)]
 
+- Additional sizes of the default playback button icons were added to improve
+  their rendering at certain system DPI settings.
+  [[#554](https://github.com/reupen/columns_ui/pull/554)]
+
+- The default stop button icon was tweaked.
+  [[#554](https://github.com/reupen/columns_ui/pull/554)]
+
 ### Bug fixes
 
 - A bug which stopped ICO files from working as custom hot images in the buttons
@@ -49,6 +56,10 @@
 - Exported configurations (FCL files) containing a buttons toolbar in the layout
   aren’t compatible with older versions of Columns UI.
   [[#551](https://github.com/reupen/columns_ui/pull/551)]
+
+### Internal changes
+
+- The component is now compiled with Visual Studio 2022 17.2.
 
 ## 2.0.0-alpha.1
 
