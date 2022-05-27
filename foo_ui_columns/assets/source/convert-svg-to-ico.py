@@ -4,7 +4,7 @@ from glob import iglob
 from itertools import chain
 from pathlib import Path, PurePath
 
-OUTPUT_SIZES = [16, 20, 24, 32, 40, 48, 64, 256]
+OUTPUT_SIZES = [16, 20, 24, 28, 32, 36, 40, 48, 56, 64, 256]
 
 parser = argparse.ArgumentParser(
     description="Convert SVGs to ICOs. Requires Inkscape and ImageMagick to be on the path.",
