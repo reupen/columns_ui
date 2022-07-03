@@ -36,6 +36,7 @@ public:
     uie::container_window_v3_config get_window_config() override
     {
         uie::container_window_v3_config config(L"columns_ui_filter_search_toolbar_smuVaKiMNUs");
+        config.forward_wm_settingchange = false;
         config.invalidate_children_on_move_or_resize = true;
         return config;
     }
