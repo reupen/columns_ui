@@ -34,6 +34,10 @@
 
 ### Bug fixes
 
+- A bug where the padding of buttons in the buttons toolbar changed when a
+  notification about a system setting change was received was fixed.
+  [[#562](https://github.com/reupen/columns_ui/pull/562)]
+
 - A bug which stopped ICO files from working as custom hot images in the buttons
   toolbar was fixed. [[#547](https://github.com/reupen/columns_ui/pull/547)]
 

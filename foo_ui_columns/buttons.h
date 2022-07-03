@@ -300,6 +300,7 @@ private:
     uie::container_window_v3_config get_window_config() override
     {
         uie::container_window_v3_config config(class_name);
+        config.forward_wm_settingchange = false;
         config.invalidate_children_on_move_or_resize = true;
         return config;
     }
