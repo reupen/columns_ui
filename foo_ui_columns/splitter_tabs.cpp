@@ -923,7 +923,7 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
         case WM_CREATE: {
             const auto child_window = reinterpret_cast<HWND>(lp);
             std::array<wchar_t, 128> class_name{};
-            GetClassName(child_window, class_name.data(), class_name.size());
+            GetClassName(child_window, class_name.data(), gsl::narrow<int>(class_name.size()));
 
             if (!wcsncmp(UPDOWN_CLASSW, class_name.data(), class_name.size())) {
                 m_up_down_control_wnd = child_window;
