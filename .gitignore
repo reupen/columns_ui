@@ -190,6 +190,7 @@ debug-*/
 doxygen/
 .idea/
 vcpkg_installed/
+component-packages/
 __pycache__/
 
 /foo_ui_columns/version.h
