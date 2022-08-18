@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         toolset: ["v143", "clang"]
-        platform: ["win32"]
+        platform: ["win32", "x64"]
         configuration: ["release", "debug"]
         run-code-analysis: [false]
         include:
@@ -26,17 +26,22 @@ jobs:
             configuration: release
             enable-annotations: true
             publish-artefacts: true
+          - toolset: v143
+            configuration: release
+            platform: x64
+            enable-annotations: true
+            publish-artefacts: true
           - toolset: clang
             additional-build-args: '"/p:PlatformToolset=ClangCL;LinkToolExe=link.exe"'
             allowed-failure: true
-          - toolset: v143
-            configuration: release
-            platform: win32
-            run-code-analysis: true
-            allowed-failure: true
         exclude:
+          - toolset: v143
+            configuration: debug
+            platform: win32
           - toolset: clang
             configuration: debug
+          - toolset: clang
+            platform: win32
 
     steps:
       - uses: actions/checkout@v3
@@ -78,11 +83,11 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: matrix.publish-artefacts
         with:
-          name: Component package (${{ matrix.configuration }})
-          path: vc17\release-win32-v143\foo_ui_columns*.fb2k-component
+          name: Component package (${{ matrix.configuration }}, ${{ matrix.platform }})
+          path: vc17\release-*\foo_ui_columns*.fb2k-component
 
       - uses: actions/upload-artifact@v3
         if: matrix.publish-artefacts
         with:
-          name: Symbols for debugging (${{ matrix.configuration }})
-          path: vc17\release-win32-v143\foo_ui_columns.pdb
+          name: Symbols for debugging (${{ matrix.configuration }}, ${{ matrix.platform }})
+          path: vc17\release-*\foo_ui_columns.pdb
