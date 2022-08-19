@@ -10,10 +10,10 @@ parser = argparse.ArgumentParser(
     description="Convert SVGs to ICOs. Requires Inkscape and ImageMagick to be on the path.",
 )
 parser.add_argument(
-    'input_file',
+    "input_file",
     type=str,
-    nargs='+',
-    help='input SVG file',
+    nargs="+",
+    help="input SVG file",
 )
 
 
@@ -49,5 +49,5 @@ def main():
         convert_file(input_file)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

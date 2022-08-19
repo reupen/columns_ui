@@ -1,0 +1,4 @@
+[flake8]
+# W504: Line break occurred after a binary operator
+extend-select = W504
+max-line-length = 99

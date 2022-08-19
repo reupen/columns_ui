@@ -1,0 +1,5 @@
+component_name = "foo_ui_columns"
+solution_path = "vc17\\columns_ui-public.sln"
+output_path = "component-packages"
+x86_build_path = "vc17\\release-win32-v143"
+x64_build_path = "vc17\\release-x64-v143"

@@ -4,6 +4,10 @@
 
 ### Features
 
+- A 64-bit build (for x64 processors) was added for 64-bit versions of
+  foobar2000 2.0 and newer.
+  [[#568](https://github.com/reupen/columns_ui/pull/568)]
+
 - When mixed size images are used in the buttons toolbar, they are now all
   resized to the same size.
   [[#548](https://github.com/reupen/columns_ui/pull/548)]
@@ -63,7 +67,10 @@
 
 ### Internal changes
 
-- The component is now compiled with Visual Studio 2022 17.2.
+- The component is now compiled with Visual Studio 2022 17.3.
+
+- The component is now compiled using foobar2000 SDK 2022-08-10.
+  [[#568](https://github.com/reupen/columns_ui/pull/568)]
 
 ## 2.0.0-alpha.1
 
