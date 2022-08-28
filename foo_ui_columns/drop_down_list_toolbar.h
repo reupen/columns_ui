@@ -324,8 +324,13 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
             break;
         }
         case ID_COMBOBOX | CBN_DROPDOWN << 16: {
+            if constexpr (requires() { ToolbarArgs::on_click(); }) {
+                ToolbarArgs::on_click();
+            }
+
             if (ToolbarArgs::refresh_on_click)
                 refresh_all_items();
+
             break;
         }
         }

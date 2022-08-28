@@ -112,6 +112,9 @@
     <Filter Include="Colours and fonts">
       <UniqueIdentifier>{15a560a7-d486-480b-9ce9-1081f9083d13}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Audio track toolbar">
+      <UniqueIdentifier>{4b7b57c0-5b8d-4d71-afec-4ecb83b14bad}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp">
@@ -565,6 +568,9 @@
     </ClCompile>
     <ClCompile Include="tab_status_pane.cpp">
       <Filter>Config UI</Filter>
+    </ClCompile>
+    <ClCompile Include="audio_track_toolbar.cpp">
+      <Filter>Audio track toolbar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

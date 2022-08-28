@@ -8,6 +8,13 @@
   foobar2000 2.0 and newer.
   [[#568](https://github.com/reupen/columns_ui/pull/568)]
 
+- An audio track toolbar was added. When a file containing multiple audio tracks
+  (e.g. different languages) is playing, this toolbar allows you to select
+  between those tracks. [[#573](https://github.com/reupen/columns_ui/pull/573)]
+
+  It requires foobar2000 2.0 or newer and is equivalent to the ‘Stream Selector’
+  toolbar in the Default User Interface.
+
 - When mixed size images are used in the buttons toolbar, they are now all
   resized to the same size.
   [[#548](https://github.com/reupen/columns_ui/pull/548)]
