@@ -246,6 +246,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="artwork_helpers.cpp" />
+    <ClCompile Include="audio_track_toolbar.cpp" />
     <ClCompile Include="buttons_button.cpp" />
     <ClCompile Include="buttons_button_image.cpp" />
     <ClCompile Include="buttons_command_picker.cpp" />
