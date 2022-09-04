@@ -64,7 +64,7 @@ public:
 
         p_out = m_colours.get_colour(*colour_id);
 
-        return !m_colours.get_themed();
+        return m_colours.is_dark_mode_active() || !m_colours.get_themed();
     }
 
     t_ui_font query_font(const GUID& p_what) override
