@@ -10,7 +10,8 @@
 
 - Various built-in pop-up foobar2000 windows (e.g. Album List, Search, Playlist
   Manager) now use Columns UI mode, colour and font settings when Columns UI is
-  active. [[#574](https://github.com/reupen/columns_ui/pull/574)]
+  active. [[#574](https://github.com/reupen/columns_ui/pull/574),
+  [#579](https://github.com/reupen/columns_ui/pull/579)]
 
   This requires foobar2000 2.0 or newer. For colours, only the text, background
   and selection background colours can be explicitly configured. The equivalent
@@ -18,6 +19,9 @@
 
   For fonts, the default, list items and console fonts can be individually
   configured.
+
+  These changes also apply to any third-party components that use new colour and
+  font APIs added in foobar2000 2.0
 
 - An audio track toolbar was added. When a file containing multiple audio tracks
   (e.g. different languages) is playing, this toolbar allows you to select
