@@ -48,7 +48,7 @@ public:
 private:
     TabColumns() = default;
 
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
     ColumnList m_columns;
     bool initialising{false};
 };

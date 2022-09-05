@@ -166,7 +166,7 @@ public:
 
 private:
     cui::prefs::EditControlSelectAllHook m_edit_control_hook;
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
 } g_tab_global;
 
 PreferencesTab* g_get_tab_global()

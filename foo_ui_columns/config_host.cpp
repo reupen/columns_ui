@@ -3,7 +3,7 @@
 #include "config_host.h"
 #include "prefs_utils.h"
 
-void PreferencesTabsHost::make_child()
+void PreferencesInstanceTabsHost::make_child()
 {
     destroy_child();
 
@@ -14,10 +14,10 @@ void PreferencesTabsHost::make_child()
 
     TabCtrl_AdjustRect(m_wnd_tabs, FALSE, &tab);
 
-    if (m_active_tab >= (int)m_tab_count)
+    if (m_active_tab >= (int)m_tabs.size())
         m_active_tab = 0;
 
-    if (m_active_tab < (int)m_tab_count && m_active_tab >= 0) {
+    if (m_active_tab < (int)m_tabs.size() && m_active_tab >= 0) {
         m_child = m_tabs[m_active_tab]->create(m_wnd);
     }
 
@@ -34,36 +34,19 @@ void PreferencesTabsHost::make_child()
     // UpdateWindow(child);
 }
 
-INT_PTR PreferencesTabsHost::g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    PreferencesTabsHost* p_instance;
-    if (msg == WM_INITDIALOG) {
-        p_instance = reinterpret_cast<PreferencesTabsHost*>(lp);
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-    } else
-        p_instance = reinterpret_cast<PreferencesTabsHost*>(GetWindowLongPtr(wnd, DWLP_USER));
-    return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
-}
-
 namespace cui::prefs {
 HWND PreferencesTabHelper::create(
-    HWND wnd, UINT id, std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback)
+    HWND parent_window, UINT id, std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback)
 {
     m_on_message_callback = std::move(on_message_callback);
-    return CreateDialogParam(
-        mmh::get_current_instance(), MAKEINTRESOURCE(id), wnd, s_on_message, reinterpret_cast<LPARAM>(this));
-}
+    auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
 
-INT_PTR PreferencesTabHelper::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    PreferencesTabHelper* p_instance;
-    if (msg == WM_INITDIALOG) {
-        p_instance = reinterpret_cast<PreferencesTabHelper*>(lp);
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-    } else {
-        p_instance = reinterpret_cast<PreferencesTabHelper*>(GetWindowLongPtr(wnd, DWLP_USER));
+    if (m_allow_dark) {
+        auto [wnd, _] = fbh::auto_dark_modeless_dialog_box(id, parent_window, std::move(on_message_));
+        return wnd;
     }
-    return p_instance ? p_instance->on_message(wnd, msg, wp, lp) : FALSE;
+
+    return uih::modeless_dialog_box(id, parent_window, std::move(on_message_));
 }
 
 INT_PTR PreferencesTabHelper::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -108,32 +91,39 @@ void PreferencesTabsHost::show_tab(const char* tab_name)
 {
     const auto previous_tab = m_active_tab.get_value();
 
-    for (size_t n = 0; n < m_tab_count; n++) {
+    for (size_t n = 0; n < m_tabs.size(); n++) {
         if (!strcmp(m_tabs[n]->get_name(), tab_name)) {
             m_active_tab = gsl::narrow<int>(n);
             break;
         }
     }
 
-    if (m_wnd_tabs && previous_tab != m_active_tab) {
-        TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);
-
-        // See WM_WINDOWPOSCHANGED comment below
-        if (IsWindowVisible(m_wnd))
-            make_child();
+    if (previous_tab != m_active_tab && !m_instances.empty()) {
+        const auto instance = *m_instances.rbegin();
+        instance->on_active_tab_change();
     }
 
     ui_control::get()->show_preferences(get_guid());
 }
 
-INT_PTR PreferencesTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+void PreferencesInstanceTabsHost::on_active_tab_change()
+{
+    if (m_wnd_tabs) {
+        TabCtrl_SetCurSel(m_wnd_tabs, m_active_tab);
+
+        if (IsWindowVisible(m_wnd))
+            make_child();
+    }
+}
+
+INT_PTR PreferencesInstanceTabsHost::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
         m_wnd_tabs = GetDlgItem(wnd, IDC_TAB1);
         // SendMessage(wnd_tab, TCM_SETMINTABWIDTH, 0, 35);
-        const auto count = m_tab_count;
+        const auto count = m_tabs.size();
         for (size_t n = 0; n < count; n++) {
             uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(n), m_tabs[n]->get_name());
         }
