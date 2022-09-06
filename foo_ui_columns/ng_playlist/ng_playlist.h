@@ -703,7 +703,7 @@ public:
 
 private:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
 };
 } // namespace cui::panels::playlist_view
 

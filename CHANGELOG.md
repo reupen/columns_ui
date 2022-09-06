@@ -30,6 +30,11 @@
   It requires foobar2000 2.0 or newer and is equivalent to the ‘Stream Selector’
   toolbar in the Default User Interface.
 
+- Dark mode support was added for certain preference pages in foobar2000 2.0.
+  [[#582](https://github.com/reupen/columns_ui/pull/582)]
+
+  (Other pages and dialogue boxes will follow in a future release.)
+
 - When mixed size images are used in the buttons toolbar, they are now all
   resized to the same size.
   [[#548](https://github.com/reupen/columns_ui/pull/548)]

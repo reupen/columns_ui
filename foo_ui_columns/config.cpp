@@ -61,12 +61,12 @@ const GUID& config_get_main_guid()
 namespace cui {
 namespace prefs {
 
-service_factory_single_t<PreferencesTabsHost> page_main("Columns UI", g_tabs, std::size(g_tabs),
-    g_guid_columns_ui_preferences_page, preferences_page::guid_display, &cfg_root_page_active_tab);
+service_factory_single_t<PreferencesTabsHost> page_main(
+    "Columns UI", g_tabs, g_guid_columns_ui_preferences_page, preferences_page::guid_display, cfg_root_page_active_tab);
 service_factory_single_t<PreferencesTabsHost> page_playlist_view("Playlist view", g_tabs_playlist_view,
-    std::size(g_tabs_playlist_view), guid_playlist_view_page, g_guid_columns_ui_preferences_page, &cfg_child_playlist);
+    guid_playlist_view_page, g_guid_columns_ui_preferences_page, cfg_child_playlist, false);
 service_factory_single_t<PreferencesTabsHost> page_playlist_switcher("Playlist switcher", g_tabs_panels,
-    std::size(g_tabs_panels), guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, &cfg_child_panels);
+    guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, cfg_child_panels);
 
 } // namespace prefs
 } // namespace cui

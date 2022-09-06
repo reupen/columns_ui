@@ -11,7 +11,11 @@ namespace cui::prefs {
 
 class PreferencesTabHelper {
 public:
-    explicit PreferencesTabHelper(std::initializer_list<unsigned> title_ctrl_ids) : m_title_ctrl_ids(title_ctrl_ids) {}
+    explicit PreferencesTabHelper(std::initializer_list<unsigned> title_ctrl_ids, bool allow_dark = true)
+        : m_allow_dark(allow_dark)
+        , m_title_ctrl_ids(title_ctrl_ids)
+    {
+    }
 
     HWND create(
         HWND wnd, UINT id, std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback);
@@ -19,12 +23,11 @@ public:
     HWND get_control_wnd(int item_id) const { return GetDlgItem(m_wnd, item_id); }
 
 private:
-    static INT_PTR CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void on_initdialog(HWND wnd);
     void on_ncdestroy();
 
+    bool m_allow_dark{};
     HWND m_wnd{};
     HFONT m_title_font{};
     std::set<unsigned> m_title_ctrl_ids;
@@ -33,26 +36,69 @@ private:
 
 } // namespace cui::prefs
 
-class PreferencesTabsHost : public preferences_page {
+class PreferencesInstanceTabsHost : public preferences_page_instance {
 public:
-    PreferencesTabsHost(const char* p_name, PreferencesTab* const* const p_tabs, size_t p_tab_count, const GUID& p_guid,
-        const GUID& p_parent_guid, cfg_int* const p_active_tab)
-        : m_child(nullptr)
-        , m_name(p_name)
-        , m_guid(p_guid)
-        , m_parent_guid(p_parent_guid)
-        , m_tabs(p_tabs)
-        , m_tab_count(p_tab_count)
-        , m_active_tab(*p_active_tab)
-        , m_wnd(nullptr)
-        , m_wnd_tabs(nullptr)
+    PreferencesInstanceTabsHost(std::function<void(const PreferencesInstanceTabsHost*)> destroy_callback,
+        HWND parent_window, std::span<PreferencesTab*> tabs, cfg_int& active_tab, bool allow_dark)
+        : m_tabs(tabs)
+        , m_active_tab(active_tab)
+        , m_allow_dark(allow_dark)
+        , m_destroy_callback(destroy_callback)
     {
+        auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
+
+        if (m_allow_dark) {
+            std::tie(m_wnd, m_has_dark_mode)
+                = fbh::auto_dark_modeless_dialog_box(IDD_PREFS_TAB_HOST, parent_window, std::move(on_message_));
+        } else {
+            m_wnd = uih::modeless_dialog_box(IDD_PREFS_TAB_HOST, parent_window, std::move(on_message_));
+        }
     }
 
-    HWND create(HWND parent) override
+    ~PreferencesInstanceTabsHost() { m_destroy_callback(this); }
+
+    t_uint32 get_state() override { return m_has_dark_mode ? preferences_state::dark_mode_supported : 0; }
+    fb2k::hwnd_t get_wnd() override { return m_wnd; }
+    void apply() override {}
+    void reset() override {}
+
+    void on_active_tab_change();
+
+private:
+    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    void destroy_child()
     {
-        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_PREFS_TAB_HOST), parent, g_on_message,
-            reinterpret_cast<LPARAM>(this));
+        if (m_child) {
+            ShowWindow(m_child, SW_HIDE);
+            DestroyWindow(m_child);
+            m_child = nullptr;
+        }
+    }
+
+    void make_child();
+
+    HWND m_wnd{};
+    HWND m_child{};
+    HWND m_wnd_tabs{};
+    bool m_has_dark_mode{};
+    std::span<PreferencesTab*> m_tabs;
+    cfg_int& m_active_tab;
+    bool m_allow_dark{};
+    std::function<void(const PreferencesInstanceTabsHost*)> m_destroy_callback;
+};
+
+class PreferencesTabsHost : public preferences_page_v3 {
+public:
+    PreferencesTabsHost(const char* p_name, std::span<PreferencesTab*> tabs, GUID p_guid, GUID p_parent_guid,
+        cfg_int& p_active_tab, bool allow_dark = true)
+        : m_name(p_name)
+        , m_guid(p_guid)
+        , m_parent_guid(p_parent_guid)
+        , m_tabs(tabs)
+        , m_active_tab(p_active_tab)
+        , m_allow_dark(allow_dark)
+    {
     }
 
     const char* get_name() override { return m_name; }
@@ -67,34 +113,28 @@ public:
 
     bool get_help_url(pfc::string_base& p_out) override
     {
-        if (!(m_active_tab < (int)m_tab_count && m_tabs[m_active_tab]->get_help_url(p_out)))
+        if (!(m_active_tab < (int)m_tabs.size() && m_tabs[m_active_tab]->get_help_url(p_out)))
             p_out = "http://yuo.be/wiki/columns_ui:manual";
         return true;
     }
 
     void show_tab(const char* tab_name);
 
-private:
-    void destroy_child()
+    preferences_page_instance::ptr instantiate(fb2k::hwnd_t parent, preferences_page_callback::ptr callback) override
     {
-        if (m_child) {
-            ShowWindow(m_child, SW_HIDE);
-            DestroyWindow(m_child);
-            m_child = nullptr;
-        }
+        auto instance = fb2k::service_new<PreferencesInstanceTabsHost>(
+            [this](const PreferencesInstanceTabsHost* instance) { std::erase(m_instances, instance); }, parent, m_tabs,
+            m_active_tab, m_allow_dark);
+        m_instances.emplace_back(instance.get_ptr());
+        return instance;
     }
 
-    void make_child();
-
-    static INT_PTR CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
-    INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-
-    HWND m_child;
-    const char* m_name;
-    const GUID &m_guid, &m_parent_guid;
-    PreferencesTab* const* const m_tabs;
-    const size_t m_tab_count;
+private:
+    const char* m_name{};
+    const GUID m_guid{};
+    const GUID m_parent_guid{};
+    std::span<PreferencesTab*> m_tabs;
     cfg_int& m_active_tab;
-    HWND m_wnd, m_wnd_tabs;
+    bool m_allow_dark{};
+    std::vector<PreferencesInstanceTabsHost*> m_instances;
 };
