@@ -60,6 +60,9 @@
 
 ### Bug fixes
 
+- Various problems configuring a custom active item frame colour were fixed.
+  [[#581](https://github.com/reupen/columns_ui/pull/581)]
+
 - A bug where the padding of buttons in the buttons toolbar changed when a
   notification about a system setting change was received was fixed.
   [[#562](https://github.com/reupen/columns_ui/pull/562)]

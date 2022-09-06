@@ -249,9 +249,9 @@ bool TabColours::get_colour_patch_enabled(cui::colours::colour_identifier_t p_id
             return m_element_ptr->colour_set.colour_scheme == cui::colours::ColourSchemeCustom
                 || colour_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
         }
-        bool is_colour_supported = (m_element_api->get_supported_colours() & (1 << p_identifier)) != 0;
-        bool use_custom_frame_supported
-            = (m_element_api->get_supported_bools() & (1 << cui::colours::bool_flag_use_custom_active_item_frame)) != 0;
+        const bool is_colour_supported = (m_element_api->get_supported_colours() & (1 << p_identifier)) != 0;
+        const bool use_custom_frame_supported
+            = (m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame) != 0;
 
         return is_colour_supported
             && (!use_custom_frame_supported || colour_helper.get_bool(cui::colours::bool_use_custom_active_item_frame));
@@ -261,12 +261,20 @@ bool TabColours::get_colour_patch_enabled(cui::colours::colour_identifier_t p_id
 
 bool TabColours::get_change_colour_enabled(cui::colours::colour_identifier_t p_identifier)
 {
-    if (p_identifier == cui::colours::colour_active_item_frame)
+    if (p_identifier == cui::colours::colour_active_item_frame) {
+        cui::colours::helper colours(m_element_guid);
+
+        if (m_element_api.is_valid()) {
+            return m_element_ptr->colour_set.colour_scheme != cui::colours::ColourSchemeGlobal
+                && m_element_api->get_supported_colours() & cui::colours::colour_flag_active_item_frame
+                && (!(m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame)
+                    || colours.get_bool(cui::colours::bool_use_custom_active_item_frame));
+        }
+
         return m_element_ptr->colour_set.colour_scheme == cui::colours::ColourSchemeCustom
-            && (!m_element_api.is_valid() || m_element_api->get_supported_colours() & (1 << p_identifier))
-            && ((!m_element_api.is_valid()
-                    || !(m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame))
-                || cui::colours::helper(m_element_guid).get_bool(cui::colours::bool_use_custom_active_item_frame));
+            || colours.get_bool(cui::colours::bool_use_custom_active_item_frame);
+    }
+
     return (m_element_ptr->colour_set.colour_scheme == cui::colours::ColourSchemeCustom
         && (!m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier))));
 }
