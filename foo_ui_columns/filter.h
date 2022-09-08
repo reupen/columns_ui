@@ -156,7 +156,15 @@ private:
     void get_initial_handles(metadb_handle_list_t<pfc::alloc_fast_aggressive>& p_out);
     void update_subsequent_filters(bool b_allow_autosend = true);
     size_t make_data_entries(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& handles,
-        pfc::list_t<DataEntry, pfc::alloc_fast_aggressive>& p_out, bool b_show_empty);
+        std::vector<DataEntry>& p_out, bool b_show_empty) const;
+    [[nodiscard]] std::vector<DataEntry> make_data_entries_using_script_fb2k_v2(
+        const metadb_handle_list_t<pfc::alloc_fast_aggressive>& handles, bool b_show_empty) const;
+    [[nodiscard]] std::vector<DataEntry> make_data_entries_using_script_fb2k_v1(
+        const metadb_handle_list_t<pfc::alloc_fast_aggressive>& handles, bool b_show_empty) const;
+    [[nodiscard]] std::vector<DataEntry> make_data_entries_using_metadata_fb2k_v2(
+        const metadb_handle_list_t<pfc::alloc_fast_aggressive>& handles, bool b_show_empty) const;
+    [[nodiscard]] std::vector<DataEntry> make_data_entries_using_metadata_fb2k_v1(
+        const metadb_handle_list_t<pfc::alloc_fast_aggressive>& handles, bool b_show_empty) const;
     void populate_list(const metadb_handle_list_t<pfc::alloc_fast>& handles);
     void populate_list_from_chain(const metadb_handle_list_t<pfc::alloc_fast>& handles, bool b_last_in_chain);
     void refresh(bool b_allow_autosend = true);
