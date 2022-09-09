@@ -977,6 +977,27 @@ void PlaylistView::get_insert_items(
     m_playlist_api->activeplaylist_get_items(handles, bit_table);
 
     const auto group_count = m_scripts.get_count();
+    const auto metadb_v2_api = metadb_v2::tryGet();
+
+    if (metadb_v2_api.is_valid()) {
+        metadb_v2_api->queryMultiParallel_(
+            handles, [this, &handles, &items, group_count](size_t index, const metadb_v2::rec_t& rec) {
+                metadb_handle_v2::ptr track;
+                track &= handles[index];
+
+                std::string title;
+                mmh::StringAdaptor adapted_string(title);
+
+                items[index].m_groups.resize(group_count);
+
+                for (auto&& [script, group] : ranges::views::zip(m_scripts, items[index].m_groups)) {
+                    track->formatTitle_v2(rec, nullptr, adapted_string, script, nullptr);
+                    group = title.c_str();
+                }
+            });
+
+        return;
+    }
 
     concurrency::parallel_for(size_t{0}, count, [this, &items, &handles, group_count](size_t index) {
         pfc::string8_fast temp;

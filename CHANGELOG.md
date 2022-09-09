@@ -9,7 +9,8 @@
   [[#568](https://github.com/reupen/columns_ui/pull/568)]
 
 - Performance under foobar2000 2.0 was improved.
-  [[#585](https://github.com/reupen/columns_ui/pull/585)]
+  [[#585](https://github.com/reupen/columns_ui/pull/585),
+  [#587](https://github.com/reupen/columns_ui/pull/587)]
 
 - Various built-in pop-up foobar2000 windows (e.g. Album List, Search, Playlist
   Manager) now use Columns UI mode, colour and font settings when Columns UI is
