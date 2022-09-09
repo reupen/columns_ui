@@ -63,11 +63,11 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
 
     m_nodes[0].m_handles.add_items(added_tracks);
 
-    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
+    std::vector<DataEntry> data_entries;
     make_data_entries(added_tracks, data_entries, g_showemptyitems);
 
-    const DataEntry* p_data = data_entries.get_ptr();
-    const auto count{data_entries.get_count()};
+    const DataEntry* p_data = data_entries.data();
+    const auto count{data_entries.size()};
 
     for (size_t i{0}; i < count; i++) {
         const auto start = i;
@@ -130,11 +130,11 @@ void FilterPanel::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     const auto nothing_or_all_node_selected = get_nothing_or_all_node_selected();
     m_nodes[0].remove_handles(removed_tracks);
 
-    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
+    std::vector<DataEntry> data_entries;
     make_data_entries(removed_tracks, data_entries, g_showemptyitems);
 
-    const DataEntry* p_data = data_entries.get_ptr();
-    const size_t count = data_entries.get_count();
+    const DataEntry* p_data = data_entries.data();
+    const size_t count = data_entries.size();
     pfc::array_t<bool> mask_nodes;
     mask_nodes.set_count(m_nodes.get_count());
     mask_nodes.fill_null();
@@ -209,8 +209,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     const auto modified_tracks_count = modified_tracks.get_count();
     const auto nothing_or_all_node_selected = get_nothing_or_all_node_selected();
 
-    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
-    data_entries.prealloc(modified_tracks_count);
+    std::vector<DataEntry> data_entries;
 
     metadb_handle_list_t<pfc::alloc_fast_aggressive> tracks_for_next_window;
     tracks_for_next_window.prealloc(modified_tracks_count);
@@ -222,8 +221,8 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
         m_nodes[node_index].remove_handles(modified_tracks);
     }
 
-    const DataEntry* p_data = data_entries.get_ptr();
-    const auto data_entries_count = data_entries.get_count();
+    const DataEntry* p_data = data_entries.data();
+    const auto data_entries_count = data_entries.size();
 
     for (size_t i{0}; i < data_entries_count; i++) {
         const auto start = i;
@@ -294,86 +293,31 @@ void FilterPanel::on_items_modified(const pfc::list_base_const_t<metadb_handle_p
 }
 
 size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks,
-    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive>& p_out, bool b_show_empty)
+    std::vector<DataEntry>& p_out, bool b_show_empty) const
 {
-    class HandleInfo {
-    public:
-        metadb_info_container::ptr m_info;
-        size_t m_value_count{};
-        size_t m_field_index{};
-    };
-
     if (m_field_data.is_empty())
         return 0;
 
     const auto track_count = tracks.get_count();
     const auto tracks_ptr = tracks.get_ptr();
+    const auto has_metadb_v2 = static_api_test_t<metadb_v2>();
 
     if (m_field_data.m_use_script) {
-        titleformat_object_wrapper to(m_field_data.m_script);
-        p_out.set_count(track_count);
-        DataEntry* pp_out = p_out.get_ptr();
-        std::atomic<size_t> node_count{0};
-        concurrency::parallel_for(
-            size_t{0}, track_count, [&node_count, &to, tracks_ptr, b_show_empty, pp_out](size_t i) {
-                pfc::string8_fastalloc buffer;
-                buffer.prealloc(32);
-                tracks_ptr[i]->format_title(nullptr, buffer, to, nullptr);
-                if (b_show_empty || strlen_max(buffer, 1)) {
-                    const size_t node_index = node_count++;
-                    pp_out[node_index].m_handle = tracks_ptr[i];
-                    pp_out[node_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(buffer));
-                    pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[node_index].m_text.get_ptr(), buffer);
-                }
-            });
-        p_out.set_count(node_count);
+        if (has_metadb_v2)
+            p_out = make_data_entries_using_script_fb2k_v2(tracks, b_show_empty);
+        else
+            p_out = make_data_entries_using_script_fb2k_v1(tracks, b_show_empty);
     } else {
-        pfc::list_t<HandleInfo> infos;
-        infos.set_count(track_count);
-        HandleInfo* p_infos = infos.get_ptr();
-
-        size_t counter = 0;
-        size_t field_count = m_field_data.m_fields.size();
-
-        for (size_t i{0}; i < track_count; i++) {
-            if (tracks_ptr[i]->get_info_ref(p_infos[i].m_info)) {
-                for (size_t l{0}; l < field_count; l++) {
-                    p_infos[i].m_field_index = p_infos[i].m_info->info().meta_find(m_field_data.m_fields[l]);
-                    p_infos[i].m_value_count = p_infos[i].m_field_index != pfc_infinite
-                        ? p_infos[i].m_info->info().meta_enum_value_count(p_infos[i].m_field_index)
-                        : 0;
-                    counter += p_infos[i].m_value_count;
-                    if (p_infos[i].m_value_count)
-                        break;
-                }
-            } else
-                p_infos[i].m_value_count = 0;
-        }
-
-        p_out.set_count(counter);
-
-        DataEntry* pp_out = p_out.get_ptr();
-        std::atomic<size_t> out_counter{0};
-
-        concurrency::parallel_for(
-            size_t{0}, track_count, [&out_counter, tracks_ptr, p_infos, b_show_empty, pp_out](size_t i) {
-                for (size_t j{0}; j < p_infos[i].m_value_count; j++) {
-                    const char* str = p_infos[i].m_info->info().meta_enum_value(p_infos[i].m_field_index, j);
-                    if (b_show_empty || *str) {
-                        size_t out_index = out_counter++;
-                        pp_out[out_index].m_handle = tracks_ptr[i];
-                        pp_out[out_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(str));
-                        pfc::stringcvt::convert_utf8_to_wide_unchecked(pp_out[out_index].m_text.get_ptr(), str);
-                    }
-                }
-            });
-        p_out.set_count(out_counter);
+        if (has_metadb_v2)
+            p_out = make_data_entries_using_metadata_fb2k_v2(tracks, b_show_empty);
+        else
+            p_out = make_data_entries_using_metadata_fb2k_v1(tracks, b_show_empty);
     }
 
     mmh::in_place_sort(p_out, DataEntry::g_compare, false, get_sort_direction(), true);
-    const auto data_entries_count{p_out.get_count()};
+    const auto data_entries_count{p_out.size()};
 
-    DataEntry* p_data = p_out.get_ptr();
+    DataEntry* p_data = p_out.data();
     concurrency::combinable<size_t> counts;
     concurrency::parallel_for(size_t{0}, data_entries_count, [&counts, p_data, data_entries_count](size_t i) {
         if (i + 1 == data_entries_count) {
@@ -388,20 +332,184 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
     return counts.combine(std::plus<>());
 }
 
+std::vector<DataEntry> FilterPanel::make_data_entries_using_script_fb2k_v2(
+    const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks, bool b_show_empty) const
+{
+    const auto track_count = tracks.get_count();
+    std::vector<DataEntry> data_entries{track_count};
+
+    titleformat_object_wrapper to(m_field_data.m_script);
+    std::atomic<size_t> node_count{0};
+
+    metadb_v2::get()->queryMultiParallel_(
+        tracks, [&tracks, &data_entries, &to, &node_count, b_show_empty](size_t index, const metadb_v2::rec_t& rec) {
+            metadb_handle_v2::ptr track;
+            track &= tracks[index];
+
+            std::string title;
+            mmh::StringAdaptor adapted_string(title);
+
+            track->formatTitle_v2(rec, nullptr, adapted_string, to, nullptr);
+
+            if (!b_show_empty && title.empty())
+                return;
+
+            const size_t node_index = node_count++;
+            data_entries[node_index].m_handle = track;
+            data_entries[node_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(title.c_str()));
+            pfc::stringcvt::convert_utf8_to_wide_unchecked(data_entries[node_index].m_text.get_ptr(), title.c_str());
+        });
+
+    data_entries.resize(node_count);
+    return data_entries;
+}
+
+std::vector<DataEntry> FilterPanel::make_data_entries_using_script_fb2k_v1(
+    const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks, bool b_show_empty) const
+{
+    const auto track_count = tracks.get_count();
+    std::vector<DataEntry> data_entries{track_count};
+
+    titleformat_object_wrapper to(m_field_data.m_script);
+    std::atomic<size_t> node_count{0};
+
+    concurrency::parallel_for(
+        size_t{0}, track_count, [&data_entries, &tracks, &node_count, &to, b_show_empty](size_t index) {
+            pfc::string8_fastalloc buffer;
+            buffer.prealloc(32);
+            tracks[index]->format_title(nullptr, buffer, to, nullptr);
+
+            if (!b_show_empty && buffer.is_empty())
+                return;
+
+            const size_t node_index = node_count++;
+            data_entries[node_index].m_handle = tracks[index];
+            data_entries[node_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(buffer));
+            pfc::stringcvt::convert_utf8_to_wide_unchecked(data_entries[node_index].m_text.get_ptr(), buffer);
+        });
+
+    data_entries.resize(node_count);
+    return data_entries;
+}
+
+std::vector<DataEntry> FilterPanel::make_data_entries_using_metadata_fb2k_v2(
+    const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks, bool b_show_empty) const
+{
+    const auto track_count = tracks.get_count();
+    size_t field_count = m_field_data.m_fields.size();
+
+    concurrency::concurrent_vector<DataEntry> concurrent_out;
+    concurrent_out.reserve(track_count);
+
+    metadb_v2::get()->queryMultiParallel_(tracks,
+        [this, &tracks, &concurrent_out, field_count, b_show_empty](size_t track_index, const metadb_v2::rec_t& rec) {
+            if (rec.info.is_empty())
+                return;
+
+            const auto& info = rec.info->info();
+            for (size_t field_index{}; field_index < field_count; field_index++) {
+                const auto meta_index = info.meta_find(m_field_data.m_fields[field_index]);
+                if (meta_index == std::numeric_limits<size_t>::max())
+                    continue;
+
+                const auto value_count = info.meta_enum_value_count(meta_index);
+
+                for (size_t value_index{}; value_index < value_count; value_index++) {
+                    const char* str = info.meta_enum_value(meta_index, value_index);
+
+                    if (!b_show_empty && *str == 0)
+                        continue;
+
+                    DataEntry entry;
+                    entry.m_handle = tracks[track_index];
+                    entry.m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(str));
+                    pfc::stringcvt::convert_utf8_to_wide_unchecked(entry.m_text.get_ptr(), str);
+
+                    concurrent_out.push_back(std::move(entry));
+                }
+                break;
+            }
+        });
+
+    std::vector<DataEntry> data_entries;
+    data_entries.reserve(concurrent_out.size());
+    std::ranges::move(concurrent_out, std::back_inserter(data_entries));
+    return data_entries;
+}
+
+std::vector<DataEntry> FilterPanel::make_data_entries_using_metadata_fb2k_v1(
+    const metadb_handle_list_t<pfc::alloc_fast_aggressive>& tracks, bool b_show_empty) const
+{
+    class HandleInfo {
+    public:
+        metadb_info_container::ptr m_info;
+        size_t m_value_count{};
+        size_t m_field_index{};
+    };
+
+    const auto track_count = tracks.get_count();
+    const size_t field_count = m_field_data.m_fields.size();
+
+    std::vector<DataEntry> data_entries;
+    data_entries.reserve(track_count);
+
+    pfc::list_t<HandleInfo> infos;
+    infos.set_count(track_count);
+    size_t counter = 0;
+
+    for (size_t track_index{0}; track_index < track_count; track_index++) {
+        if (!tracks[track_index]->get_info_ref(infos[track_index].m_info))
+            continue;
+
+        for (size_t field_index{0}; field_index < field_count; field_index++) {
+            infos[track_index].m_field_index
+                = infos[track_index].m_info->info().meta_find(m_field_data.m_fields[field_index]);
+            infos[track_index].m_value_count = infos[track_index].m_field_index != pfc_infinite
+                ? infos[track_index].m_info->info().meta_enum_value_count(infos[track_index].m_field_index)
+                : 0;
+            counter += infos[track_index].m_value_count;
+
+            if (infos[track_index].m_value_count > 0)
+                break;
+        }
+    }
+
+    data_entries.resize(counter);
+    std::atomic<size_t> out_counter{0};
+
+    concurrency::parallel_for(
+        size_t{0}, track_count, [&tracks, &data_entries, &out_counter, &infos, b_show_empty](size_t track_index) {
+            for (size_t value_index{0}; value_index < infos[track_index].m_value_count; value_index++) {
+                const char* str
+                    = infos[track_index].m_info->info().meta_enum_value(infos[track_index].m_field_index, value_index);
+
+                if (!b_show_empty && *str == 0)
+                    return;
+
+                const size_t out_index = out_counter++;
+                data_entries[out_index].m_handle = tracks[track_index];
+                data_entries[out_index].m_text.set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(str));
+                pfc::stringcvt::convert_utf8_to_wide_unchecked(data_entries[out_index].m_text.get_ptr(), str);
+            }
+        });
+
+    data_entries.resize(out_counter);
+    return data_entries;
+}
+
 void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& handles)
 {
     clear_all_items();
     m_nodes.remove_all();
 
-    pfc::list_t<DataEntry, pfc::alloc_fast_aggressive> data_entries;
-
+    std::vector<DataEntry> data_entries;
     const auto node_count = make_data_entries(handles, data_entries, g_showemptyitems);
 
     pfc::list_t<InsertItem, pfc::alloc_fast_aggressive> items;
     items.prealloc(node_count);
 
-    DataEntry* p_data = data_entries.get_ptr();
-    const size_t data_entries_count{data_entries.get_count()};
+    DataEntry* p_data = data_entries.data();
+    const size_t data_entries_count{data_entries.size()};
 
     m_nodes.set_count(node_count + 1);
     Node* p_nodes = m_nodes.get_ptr();
