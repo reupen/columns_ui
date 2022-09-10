@@ -441,100 +441,183 @@ int g_compare_wchar(const pfc::array_t<WCHAR>& a, const pfc::array_t<WCHAR>& b)
 void PlaylistView::notify_sort_column(size_t index, bool b_descending, bool b_selection_only)
 {
     const auto active_playlist = m_playlist_api->get_active_playlist();
-    if (active_playlist != -1
-        && (!m_playlist_api->playlist_lock_is_present(active_playlist)
-            || !(m_playlist_api->playlist_lock_get_filter_mask(active_playlist) & playlist_lock::filter_reorder))) {
-        unsigned n;
-        const auto count = m_playlist_api->activeplaylist_get_item_count();
 
-        pfc::list_t<pfc::array_t<WCHAR>, pfc::alloc_fast_aggressive> data;
-        pfc::list_t<size_t, pfc::alloc_fast_aggressive> source_indices;
-        data.set_count(count);
-        source_indices.prealloc(count);
+    if (active_playlist == std::numeric_limits<size_t>::max()
+        || (m_playlist_api->playlist_lock_is_present(active_playlist)
+            && (m_playlist_api->playlist_lock_get_filter_mask(active_playlist) & playlist_lock::filter_reorder)))
+        return;
 
-        pfc::string8_fast_aggressive temp;
-        pfc::string8_fast_aggressive temp2;
-        temp.prealloc(512);
+    if (static_api_test_t<metadb_v2>())
+        sort_by_column_fb2k_v2(index, b_descending, b_selection_only);
+    else
+        sort_by_column_fb2k_v1(index, b_descending, b_selection_only);
+}
 
-        bool extra = m_script_global.is_valid() && cfg_global_sort;
+void PlaylistView::sort_by_column_fb2k_v1(size_t column_index, bool b_descending, bool b_selection_only)
+{
+    const auto count = m_playlist_api->activeplaylist_get_item_count();
 
-        bit_array_bittable mask(count);
-        if (b_selection_only)
-            m_playlist_api->activeplaylist_get_selection_mask(mask);
+    std::vector<std::wstring> data{count};
+    pfc::list_t<size_t, pfc::alloc_fast_aggressive> source_indices;
+    source_indices.prealloc(count);
 
-        SYSTEMTIME st;
-        GetLocalTime(&st);
+    pfc::string8_fast_aggressive temp;
+    pfc::string8_fast_aggressive temp2;
+    temp.prealloc(512);
 
-        size_t counter = 0;
+    bool extra = m_script_global.is_valid() && cfg_global_sort;
 
-        for (n = 0; n < count; n++) {
-            if (!b_selection_only || mask[n]) {
-                GlobalVariableList extra_items;
+    bit_array_bittable mask(count);
+    if (b_selection_only)
+        m_playlist_api->activeplaylist_get_selection_mask(mask);
 
-                {
-                    DateTitleformatHook tf_hook_date(&st);
-                    PlaylistNameTitleformatHook tf_hook_playlist_name;
+    SYSTEMTIME st;
+    GetLocalTime(&st);
 
-                    if (extra) {
-                        SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
-                        SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
-                        pfc::string8 output;
-                        m_playlist_api->activeplaylist_item_format_title(
-                            n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
-                    }
+    size_t counter = 0;
 
-                    SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
-                    SplitterTitleformatHook tf_hook(
-                        extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
-                    m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
-                        m_column_data[index].m_sort_script, nullptr, play_control::display_level_none);
+    for (size_t n{0}; n < count; n++) {
+        if (!b_selection_only || mask[n]) {
+            GlobalVariableList extra_items;
+
+            {
+                DateTitleformatHook tf_hook_date(&st);
+                PlaylistNameTitleformatHook tf_hook_playlist_name;
+
+                if (extra) {
+                    SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
+                    SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+                    pfc::string8 output;
+                    m_playlist_api->activeplaylist_item_format_title(
+                        n, &tf_hook, output, m_script_global, nullptr, play_control::display_level_none);
                 }
 
-                const char* ptr = temp.get_ptr();
-                if (strchr(ptr, 3)) {
-                    titleformat_compiler::remove_color_marks(ptr, temp2);
-                    ptr = temp2;
-                }
-
-                data[counter].set_size(pfc::stringcvt::estimate_utf8_to_wide_quick(ptr));
-                pfc::stringcvt::convert_utf8_to_wide_unchecked(data[counter].get_ptr(), ptr);
-
-                counter++;
-                if (b_selection_only)
-                    source_indices.add_item(n);
+                SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
+                SplitterTitleformatHook tf_hook(
+                    extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+                m_playlist_api->activeplaylist_item_format_title(n, &tf_hook, temp,
+                    m_column_data[column_index].m_sort_script, nullptr, play_control::display_level_none);
             }
-        }
-        data.set_size(counter);
 
-        /*if (descending)
-        {
-            data.sort(sort_info_callback_base<sort_info*>::desc_sort_callback());
-        }
-        else
-        {
-            sort_info_callback_base<sort_info*>::asc_sort_callback cc;
-            data.sort(cc);
-        }*/
-
-        mmh::Permutation order(data.get_count());
-        sort_get_permutation(data.get_ptr(), order, g_compare_wchar, true, b_descending, true);
-
-        m_playlist_api->activeplaylist_undo_backup();
-        if (b_selection_only) {
-            mmh::Permutation order2(count);
-            size_t count2 = data.get_count();
-            for (n = 0; n < count2; n++) {
-                order2[source_indices[n]] = source_indices[order[n]];
+            const char* ptr = temp.get_ptr();
+            if (strchr(ptr, 3)) {
+                titleformat_compiler::remove_color_marks(ptr, temp2);
+                ptr = temp2;
             }
-            m_playlist_api->activeplaylist_reorder_items(order2.data(), count);
-        } else
-            m_playlist_api->activeplaylist_reorder_items(order.data(), count);
 
-        // if (!selection_only)
-        {
+            data[counter].resize(pfc::stringcvt::estimate_utf8_to_wide_quick(ptr));
+            pfc::stringcvt::convert_utf8_to_wide_unchecked(data[counter].data(), ptr);
+
+            counter++;
+            if (b_selection_only)
+                source_indices.add_item(n);
         }
     }
+    data.resize(counter);
+
+    mmh::Permutation order(data.size());
+    sort_get_permutation(
+        data.data(), order, [](auto&& left, auto&& right) { return StrCmpLogicalW(left.c_str(), right.c_str()); }, true,
+        b_descending, true);
+
+    m_playlist_api->activeplaylist_undo_backup();
+    if (b_selection_only) {
+        mmh::Permutation order2(count);
+        size_t count2 = data.size();
+        for (size_t n{0}; n < count2; n++) {
+            order2[source_indices[n]] = source_indices[order[n]];
+        }
+        m_playlist_api->activeplaylist_reorder_items(order2.data(), count);
+    } else
+        m_playlist_api->activeplaylist_reorder_items(order.data(), count);
 }
+
+void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending, bool b_selection_only)
+{
+    const auto playlist_size = m_playlist_api->activeplaylist_get_item_count();
+
+    bit_array_bittable mask(playlist_size);
+    if (b_selection_only)
+        m_playlist_api->activeplaylist_get_selection_mask(mask);
+
+    SYSTEMTIME st{};
+    GetLocalTime(&st);
+
+    metadb_handle_list tracks;
+
+    if (b_selection_only)
+        m_playlist_api->activeplaylist_get_selected_items(tracks);
+    else
+        m_playlist_api->activeplaylist_get_all_items(tracks);
+
+    const bool extra = m_script_global.is_valid() && cfg_global_sort;
+    std::vector<std::wstring> data{tracks.size()};
+
+    metadb_v2::get()->queryMultiParallel_(
+        tracks, [this, &tracks, &data, &st, extra, column_index](size_t index, const metadb_v2::rec_t& rec) {
+            metadb_handle_v2::ptr track;
+            track &= tracks[index];
+
+            GlobalVariableList extra_items;
+            DateTitleformatHook tf_hook_date(&st);
+            PlaylistNameTitleformatHook tf_hook_playlist_name;
+
+            if (extra) {
+                SetGlobalTitleformatHook<true, false> tf_hook_set_global(extra_items);
+                SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+                pfc::string8 output;
+                track->formatTitle_v2(rec, &tf_hook, output, m_script_global, nullptr);
+            }
+
+            std::string title;
+            mmh::StringAdaptor adapted_title(title);
+
+            SetGlobalTitleformatHook<false, true> tf_hook_get_global(extra_items);
+            SplitterTitleformatHook tf_hook(
+                extra ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+            track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_data[column_index].m_sort_script, nullptr);
+
+            const char* ptr = title.c_str();
+            if (strchr(ptr, 3)) {
+                pfc::string8_fast_aggressive title_without_colour_codes;
+                title_without_colour_codes.prealloc(title.length());
+
+                titleformat_compiler::remove_color_marks(ptr, title_without_colour_codes);
+                ptr = title_without_colour_codes;
+            }
+
+            data[index].resize(pfc::stringcvt::estimate_utf8_to_wide_quick(ptr));
+            pfc::stringcvt::convert_utf8_to_wide_unchecked(data[index].data(), ptr);
+        });
+
+    mmh::Permutation sorted_items_order(data.size());
+    sort_get_permutation(
+        data.data(), sorted_items_order,
+        [](auto&& left, auto&& right) { return StrCmpLogicalW(left.c_str(), right.c_str()); }, true, b_descending,
+        true);
+
+    m_playlist_api->activeplaylist_undo_backup();
+
+    if (!b_selection_only) {
+        m_playlist_api->activeplaylist_reorder_items(sorted_items_order.data(), playlist_size);
+    } else {
+        std::vector<size_t> source_indices;
+        source_indices.reserve(tracks.size());
+
+        for (auto index : std::ranges::views::iota(size_t{}, playlist_size)) {
+            if (mask[index])
+                source_indices.emplace_back(index);
+        }
+
+        mmh::Permutation all_items_order(playlist_size);
+
+        for (auto index : std::ranges::views::iota(size_t{}, tracks.size())) {
+            all_items_order[source_indices[index]] = source_indices[sorted_items_order[index]];
+        }
+        m_playlist_api->activeplaylist_reorder_items(all_items_order.data(), playlist_size);
+    }
+}
+
 void PlaylistView::notify_on_initialisation()
 {
     set_use_dark_mode(colours::is_dark_mode_active());
@@ -977,6 +1060,27 @@ void PlaylistView::get_insert_items(
     m_playlist_api->activeplaylist_get_items(handles, bit_table);
 
     const auto group_count = m_scripts.get_count();
+    const auto metadb_v2_api = metadb_v2::tryGet();
+
+    if (metadb_v2_api.is_valid()) {
+        metadb_v2_api->queryMultiParallel_(
+            handles, [this, &handles, &items, group_count](size_t index, const metadb_v2::rec_t& rec) {
+                metadb_handle_v2::ptr track;
+                track &= handles[index];
+
+                std::string title;
+                mmh::StringAdaptor adapted_string(title);
+
+                items[index].m_groups.resize(group_count);
+
+                for (auto&& [script, group] : ranges::views::zip(m_scripts, items[index].m_groups)) {
+                    track->formatTitle_v2(rec, nullptr, adapted_string, script, nullptr);
+                    group = title.c_str();
+                }
+            });
+
+        return;
+    }
 
     concurrency::parallel_for(size_t{0}, count, [this, &items, &handles, group_count](size_t index) {
         pfc::string8_fast temp;
