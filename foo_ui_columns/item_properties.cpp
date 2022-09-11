@@ -382,19 +382,43 @@ private:
     bool m_include_unknown_sections{};
 };
 
-template <class Container>
-class TrackPropertyInfoSourceProvider : public track_property_provider_v3_info_source {
+class TrackPropertyInfoSourceProviderV3 : public track_property_provider_v3_info_source {
 public:
-    explicit TrackPropertyInfoSourceProvider(Container& items) : m_items(items) {}
-    metadb_info_container::ptr get_info(size_t index) override { return m_items[index]; }
+    TrackPropertyInfoSourceProviderV3(
+        const std::vector<metadb_v2_rec_t>& recs, const std::vector<metadb_info_container::ptr>& info_refs)
+        : m_recs(recs)
+        , m_info_refs(info_refs)
+    {
+    }
+
+    metadb_info_container::ptr get_info(size_t index) override
+    {
+        auto info_ref = m_recs.empty() ? m_info_refs[index] : m_recs[index].info;
+
+        if (!info_ref.is_valid())
+            return m_dummy_info_ref;
+
+        return info_ref;
+    }
 
 private:
-    Container& m_items;
+    metadb_info_container::ptr m_dummy_info_ref{fb2k::service_new<metadb_info_container_const_impl>()};
+    const std::vector<metadb_v2_rec_t>& m_recs;
+    const std::vector<metadb_info_container::ptr>& m_info_refs;
+};
+
+class TrackPropertyInfoSourceProviderV5 : public track_property_provider_v5_info_source {
+public:
+    explicit TrackPropertyInfoSourceProviderV5(const std::vector<metadb_v2_rec_t>& recs) : m_recs(recs) {}
+    metadb_v2_rec_t get_info(size_t index) override { return m_recs[index]; }
+
+private:
+    const std::vector<metadb_v2_rec_t>& m_recs;
 };
 
 decltype(std::declval<TrackPropertyCallback>().to_sorted_vector()) get_track_properties(
-    const std::vector<metadb_info_container::ptr>& info_refs, const std::vector<std::string>& info_sections,
-    bool include_unknown_sections, const metadb_handle_list& tracks)
+    const std::vector<metadb_v2_rec_t>& recs, const std::vector<metadb_info_container::ptr>& info_refs,
+    const std::vector<std::string>& info_sections, bool include_unknown_sections, const metadb_handle_list& tracks)
 {
     if (!tracks.get_count())
         return {};
@@ -416,11 +440,12 @@ decltype(std::declval<TrackPropertyCallback>().to_sorted_vector()) get_track_pro
             main_thread_providers.emplace_back(std::move(enumerator_value));
     }
 
-    TrackPropertyInfoSourceProvider info_source(info_refs);
+    TrackPropertyInfoSourceProviderV3 info_source_v3(recs, info_refs);
+    TrackPropertyInfoSourceProviderV5 info_source_v5(recs);
 
     for (auto&& provider : main_thread_providers) {
         if (track_property_provider_v3::ptr provider_v3; provider->service_query_t(provider_v3)) {
-            provider_v3->enumerate_properties_v3(tracks, info_source, props);
+            provider_v3->enumerate_properties_v3(tracks, info_source_v3, props);
         } else if (track_property_provider_v2::ptr provider_v2; provider->service_query_t(provider_v2)) {
             provider_v2->enumerate_properties_v2(tracks, props);
         } else {
@@ -428,10 +453,18 @@ decltype(std::declval<TrackPropertyCallback>().to_sorted_vector()) get_track_pro
         }
     }
 
-    concurrency::parallel_for(
-        size_t{0}, thread_safe_providers.size(), [&thread_safe_providers, &props, &info_source, &tracks](auto&& index) {
+    concurrency::parallel_for(size_t{0}, thread_safe_providers.size(),
+        [&thread_safe_providers, &props, &info_source_v3, &info_source_v5, &tracks, has_recs{!recs.empty()}](
+            auto&& index) {
             auto&& provider = thread_safe_providers[index];
-            provider->enumerate_properties_v4(tracks, info_source, props, fb2k::noAbort);
+
+            track_property_provider_v5::ptr provider_v5;
+            if (has_recs && (provider_v5 &= provider)) {
+                provider_v5->enumerate_properties_v5(tracks, info_source_v5, props, fb2k::noAbort);
+                return;
+            }
+
+            provider->enumerate_properties_v4(tracks, info_source_v3, props, fb2k::noAbort);
         });
 
     return props.to_sorted_vector();
@@ -447,27 +480,43 @@ void ItemProperties::refresh_contents()
     metadata_aggregators.resize(field_count);
 
     pfc::list_t<InsertItem> items;
-    size_t i;
     size_t count = m_handles.get_count();
 
+    std::vector<metadb_v2_rec_t> recs;
     std::vector<metadb_info_container::ptr> info_refs;
-    info_refs.resize(count);
 
-    for (i = 0; i < count; i++)
-        info_refs[i] = m_handles[i]->get_info_ref();
+    const auto metadb_v2_api = metadb_v2::tryGet();
 
-    concurrency::parallel_for(size_t{0}, field_count, [&metadata_aggregators, &info_refs, this](auto&& field_index) {
-        auto& metadata_aggregator = metadata_aggregators[field_index];
+    const auto has_metadb_v2 = metadb_v2_api.is_valid();
 
-        for (size_t i = 0; i < m_handles.get_count(); i++) {
-            auto&& info_ref = info_refs[i];
+    if (has_metadb_v2) {
+        recs.resize(count);
 
-            if (!metadata_aggregator.process_file_info(m_fields[field_index].m_name, &info_ref->info()))
-                break;
-        }
-    });
+        metadb_v2_api->queryMultiParallel_(
+            m_handles, [&recs, &info_refs](size_t index, const metadb_v2_rec_t& rec) { recs[index] = rec; });
+    } else {
+        info_refs.resize(count);
 
-    for (i = 0; i < field_count; i++) {
+        for (size_t i{}; i < count; i++)
+            info_refs[i] = m_handles[i]->get_info_ref();
+    }
+
+    file_info_const_impl dummy_file_info;
+
+    concurrency::parallel_for(size_t{0}, field_count,
+        [&metadata_aggregators, &info_refs, &recs, &dummy_file_info, has_metadb_v2, this](auto&& field_index) {
+            auto& metadata_aggregator = metadata_aggregators[field_index];
+
+            for (size_t i = 0; i < m_handles.get_count(); i++) {
+                auto& info_ref = has_metadb_v2 ? recs[i].info : info_refs[i];
+                auto& info = info_ref.is_valid() ? info_ref->info() : dummy_file_info;
+
+                if (!metadata_aggregator.process_file_info(m_fields[field_index].m_name, &info))
+                    break;
+            }
+        });
+
+    for (size_t i{}; i < field_count; i++) {
         auto& field = m_fields[i];
         auto& aggregator = metadata_aggregators[i];
 
@@ -513,7 +562,7 @@ void ItemProperties::refresh_contents()
         }
     }
 
-    auto track_properties = get_track_properties(info_refs, info_sections, include_unknown_sections, m_handles);
+    auto track_properties = get_track_properties(recs, info_refs, info_sections, include_unknown_sections, m_handles);
 
     for (auto&& [section, values] : track_properties) {
         for (auto&& value : values) {

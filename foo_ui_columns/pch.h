@@ -64,6 +64,7 @@
 #include "../foobar2000/SDK/foobar2000.h"
 #include "../foobar2000/SDK/core_api.h"
 #include "../foobar2000/SDK/file_info_filter_impl.h"
+#include "../foobar2000/SDK/metadb_info_container_impl.h"
 #include "../foobar2000/helpers/playlist_position_reference_tracker.h"
 
 #include "../columns_ui-sdk/ui_extension.h"
