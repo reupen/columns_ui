@@ -16,7 +16,8 @@
 - Various built-in pop-up foobar2000 windows (e.g. Album List, Search, Playlist
   Manager) now use Columns UI mode, colour and font settings when Columns UI is
   active. [[#574](https://github.com/reupen/columns_ui/pull/574),
-  [#579](https://github.com/reupen/columns_ui/pull/579)]
+  [#579](https://github.com/reupen/columns_ui/pull/579),
+  [#590](https://github.com/reupen/columns_ui/pull/590)]
 
   This requires foobar2000 2.0 or newer. For colours, only the text, background
   and selection background colours can be explicitly configured. The equivalent
