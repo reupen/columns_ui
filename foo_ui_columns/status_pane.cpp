@@ -5,6 +5,7 @@
 
 #include "dark_mode.h"
 #include "menu_items.h"
+#include "metadb_helpers.h"
 
 namespace cui::status_pane {
 
@@ -114,7 +115,7 @@ void StatusPane::get_length_data(bool& p_selection, size_t& p_count, pfc::string
     else
         playlist_api->activeplaylist_get_all_items(sels);
 
-    length = sels.calc_total_duration();
+    length = helpers::calculate_tracks_total_length(sels);
 
     p_out = pfc::format_time_ex(length, 0);
     p_count = count;

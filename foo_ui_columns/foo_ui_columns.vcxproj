@@ -426,6 +426,7 @@
     <ClInclude Include="item_details.h" />
     <ClInclude Include="item_properties.h" />
     <ClInclude Include="menu_helpers.h" />
+    <ClInclude Include="metadb_helpers.h" />
     <ClInclude Include="mw_drop_target.h" />
     <ClInclude Include="system_appearance_manager.h" />
     <ClInclude Include="button_items.h" />

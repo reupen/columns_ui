@@ -818,6 +818,9 @@
     <ClInclude Include="colour_utils.h">
       <Filter>Colours and fonts</Filter>
     </ClInclude>
+    <ClInclude Include="metadb_helpers.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
