@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "playlist_switcher_title_formatting.h"
+
+#include "metadb_helpers.h"
 #include "title_formatting.h"
 
 namespace cui {
@@ -21,7 +23,7 @@ public:
     double total_duration()
     {
         if (!m_total_duration)
-            m_total_duration = tracks().calc_total_duration();
+            m_total_duration = helpers::calculate_tracks_total_length(tracks());
 
         return *m_total_duration;
     }

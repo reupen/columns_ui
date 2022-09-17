@@ -2,6 +2,7 @@
 #include "status_bar.h"
 
 #include "main_window.h"
+#include "metadb_helpers.h"
 
 extern HWND g_status;
 
@@ -199,7 +200,7 @@ std::string get_selected_length_text(unsigned dp = 0)
     sels.prealloc(count);
 
     playlist_api->activeplaylist_get_selected_items(sels);
-    length = sels.calc_total_duration();
+    length = helpers::calculate_tracks_total_length(sels);
 
     return pfc::format_time_ex(length, dp).get_ptr();
 }
