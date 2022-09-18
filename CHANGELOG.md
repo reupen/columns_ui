@@ -38,7 +38,8 @@
   toolbar in the Default User Interface.
 
 - Dark mode support was added for certain preference pages in foobar2000 2.0.
-  [[#582](https://github.com/reupen/columns_ui/pull/582)]
+  [[#582](https://github.com/reupen/columns_ui/pull/582),
+  [#592](https://github.com/reupen/columns_ui/pull/592)]
 
   (Other pages and dialogue boxes will follow in a future release.)
 

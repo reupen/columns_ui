@@ -258,8 +258,6 @@ LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool 
     return LazyResource<wil::unique_hbrush>{[colour_id, is_dark] { return get_colour_brush(colour_id, is_dark); }};
 }
 
-namespace {
-
 COLORREF get_dark_system_colour(int system_colour_id)
 {
     // Unfortunately, these are hard-coded as there doesn't seem to be a simple
@@ -281,8 +279,6 @@ COLORREF get_dark_system_colour(int system_colour_id)
         return RGB(255, 0, 0);
     }
 }
-
-} // namespace
 
 COLORREF get_system_colour(int system_colour_id, bool is_dark)
 {
