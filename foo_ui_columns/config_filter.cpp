@@ -2,8 +2,9 @@
 #include "filter.h"
 #include "filter_config_var.h"
 #include "config.h"
+#include "core_dark_list_view.h"
 
-class FieldList : public uih::ListView {
+class FieldList : public cui::helpers::CoreDarkListView {
 public:
     size_t m_edit_index, m_edit_column;
     FieldList() : m_edit_index(pfc_infinite), m_edit_column(pfc_infinite) {}
@@ -69,8 +70,6 @@ public:
         m_edit_column = pfc_infinite;
         m_edit_index = pfc_infinite;
     }
-
-private:
 };
 
 static class TabFilterFields : public PreferencesTab {
@@ -220,7 +219,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     bool m_initialising{false};
 } g_tab_filter_fields;
 
@@ -297,7 +296,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     bool m_initialising{false};
 } g_tab_filter_appearance;
 
@@ -406,7 +405,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     bool m_initialising{false};
 } g_tab_filter_behaviour;
 
@@ -417,4 +416,4 @@ cfg_int cfg_child_filters({0xe57a430e, 0x51bb, 0x4fcc, {0xb0, 0xbc, 0x9d, 0x22, 
 constexpr GUID guid_filters_page = {0x71a480e2, 0x9007, 0x4315, {0x8d, 0xf3, 0x81, 0x63, 0x6c, 0x74, 0xa, 0xad}};
 
 service_factory_single_t<PreferencesTabsHost> page_filters(
-    "Filters", g_tabs_filters, guid_filters_page, g_guid_columns_ui_preferences_page, cfg_child_filters, false);
+    "Filters", g_tabs_filters, guid_filters_page, g_guid_columns_ui_preferences_page, cfg_child_filters);

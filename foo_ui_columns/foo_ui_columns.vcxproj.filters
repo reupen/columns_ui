@@ -572,6 +572,9 @@
     <ClCompile Include="audio_track_toolbar.cpp">
       <Filter>Audio track toolbar</Filter>
     </ClCompile>
+    <ClCompile Include="core_dark_list_view.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -819,6 +822,9 @@
       <Filter>Colours and fonts</Filter>
     </ClInclude>
     <ClInclude Include="metadb_helpers.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="core_dark_list_view.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

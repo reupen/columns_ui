@@ -258,6 +258,7 @@
     <ClCompile Include="colour_utils.cpp" />
     <ClCompile Include="columns_v2.cpp" />
     <ClCompile Include="colour_manager.cpp" />
+    <ClCompile Include="core_dark_list_view.cpp" />
     <ClCompile Include="font_manager.cpp" />
     <ClCompile Include="system_appearance_manager.cpp" />
     <ClCompile Include="dark_mode.cpp" />
@@ -420,6 +421,7 @@
     <ClInclude Include="config_appearance.h" />
     <ClInclude Include="config_defaults.h" />
     <ClInclude Include="config_items.h" />
+    <ClInclude Include="core_dark_list_view.h" />
     <ClInclude Include="font_manager_data.h" />
     <ClInclude Include="gdiplus.h" />
     <ClInclude Include="get_msg_hook.h" />

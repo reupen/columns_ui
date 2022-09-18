@@ -81,6 +81,7 @@ void set_titlebar_mode(HWND wnd, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_colour_brush(ColourID colour_id, bool is_dark);
 [[nodiscard]] LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool is_dark);
 
+[[nodiscard]] COLORREF get_dark_system_colour(int system_colour_id);
 [[nodiscard]] COLORREF get_system_colour(int system_colour_id, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark);
 
