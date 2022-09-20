@@ -43,6 +43,10 @@
 
   (Other pages and dialogue boxes will follow in a future release.)
 
+- The edit box that appears during inline editing in Columns UI list views now
+  has a dark appearance when dark mode is on.
+  [[#593](https://github.com/reupen/columns_ui/pull/593)]
+
 - When mixed size images are used in the buttons toolbar, they are now all
   resized to the same size.
   [[#548](https://github.com/reupen/columns_ui/pull/548)]
@@ -89,6 +93,10 @@
 - The initial widths of the list view columns in the Buttons and Item properties
   options dialogue boxes were updated to scale with the system DPI setting.
   [[#550](https://github.com/reupen/columns_ui/pull/550)]
+
+- Rendering glitches in the edit box that appears during inline editing in
+  Columns UI list views were fixed.
+  [[#593](https://github.com/reupen/columns_ui/pull/593)]
 
 - A truncated label in the Item properties options dialogue box was corrected.
   [[#550](https://github.com/reupen/columns_ui/pull/550)]

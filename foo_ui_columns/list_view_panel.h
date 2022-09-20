@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dark_mode.h"
+
 template <typename t_appearance_client, typename t_window = uie::window>
 class ListViewPanelBase
     : public uih::ListView
@@ -9,6 +11,8 @@ public:
         std::unique_ptr<uih::lv::RendererBase> renderer = std::make_unique<uih::lv::DefaultRenderer>())
         : ListView(std::move(renderer))
     {
+        set_dark_edit_colours(
+            cui::dark::get_dark_system_colour(COLOR_WINDOWTEXT), cui::dark::get_dark_system_colour(COLOR_WINDOW));
     }
 
     HWND create_or_transfer_window(
