@@ -13,6 +13,8 @@ void CoreDarkListView::notify_on_initialisation()
         return;
 
     set_use_dark_mode(manager->is_dark_mode());
+    set_dark_edit_colours(
+        cui::dark::get_dark_system_colour(COLOR_WINDOWTEXT), cui::dark::get_dark_system_colour(COLOR_WINDOW));
     m_ui_config_callback = std::make_unique<UIConfigCallback>(this, manager);
 }
 
