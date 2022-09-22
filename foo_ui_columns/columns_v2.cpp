@@ -91,7 +91,7 @@ bool ColumnList::move(size_t from, size_t to)
 bool ColumnList::move_down(size_t idx)
 {
     const auto count = get_count();
-    if (idx >= 0 && idx < (count - 1)) {
+    if (count > 0 && idx < count - 1) {
         order_helper order(count);
         order.swap(idx, idx + 1);
         reorder(order.get_ptr());

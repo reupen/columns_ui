@@ -121,7 +121,7 @@ void PlaylistSwitcher::notify_on_initialisation()
 {
     set_use_dark_mode(colours::is_dark_mode_active());
     set_autosize(true);
-    set_single_selection(true);
+    set_selection_mode(SelectionMode::SingleStrict);
     set_show_header(false);
     set_edge_style(cfg_plistframe);
     set_vertical_item_padding(settings::playlist_switcher_item_padding);

@@ -12,13 +12,6 @@ public:
 };
 
 class TabColumns : public PreferencesTab {
-private:
-    HWND m_wnd_child{nullptr};
-    HWND m_wnd{nullptr};
-    HWND m_wnd_lv{nullptr};
-    std::unique_ptr<ColumnTab> m_child;
-    // edit_column_window_options m_tab_options;
-    // edit_column_window_scripts m_tab_scripts;
 public:
     static TabColumns& get_instance()
     {
@@ -46,9 +39,47 @@ public:
     }
 
 private:
+    class ColumnsListView : public uih::ListView {
+    public:
+        explicit ColumnsListView(TabColumns* tab) : m_tab(*tab) {}
+
+        void notify_on_initialisation() override
+        {
+            set_selection_mode(SelectionMode::SingleRelaxed);
+            set_show_header(false);
+            set_columns({{"Column", 100}});
+            set_autosize(true);
+        }
+
+        void notify_on_selection_change(const pfc::bit_array& p_affected, const pfc::bit_array& p_status,
+            notification_source_t p_notification_source) override
+        {
+            m_tab.on_column_list_selection_change();
+        }
+
+        bool notify_on_contextmenu(const POINT& pt, bool from_keyboard) override
+        {
+            return m_tab.on_column_list_contextmenu(pt, from_keyboard);
+        }
+
+    private:
+        TabColumns& m_tab;
+    };
+
     TabColumns() = default;
 
+    bool on_column_list_contextmenu(const POINT& pt, bool from_keyboard);
+    void on_column_list_selection_change();
+    void add_column(size_t index);
+    void remove_column(size_t index);
+    void move_column_up(size_t index);
+    void move_column_down(size_t index);
+
+    HWND m_wnd_child{nullptr};
+    HWND m_wnd{nullptr};
+    std::unique_ptr<ColumnTab> m_child;
     cui::prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
     ColumnList m_columns;
+    ColumnsListView m_columns_list_view{this};
     bool initialising{false};
 };

@@ -19,7 +19,7 @@ public:
         GetClientRect(get_wnd(), &rc);
         const auto client_width = rc.right - rc.left;
 
-        set_single_selection(true);
+        set_selection_mode(SelectionMode::SingleRelaxed);
         set_columns({{"Name", client_width / 3}, {"Field", client_width * 2 / 3}});
     }
     bool notify_before_create_inline_edit(
