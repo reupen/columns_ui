@@ -41,12 +41,8 @@ HWND PreferencesTabHelper::create(
     m_on_message_callback = std::move(on_message_callback);
     auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
 
-    if (m_allow_dark) {
-        auto [wnd, _] = fbh::auto_dark_modeless_dialog_box(id, parent_window, std::move(on_message_));
-        return wnd;
-    }
-
-    return uih::modeless_dialog_box(id, parent_window, std::move(on_message_));
+    auto [wnd, _] = fbh::auto_dark_modeless_dialog_box(id, parent_window, std::move(on_message_));
+    return wnd;
 }
 
 INT_PTR PreferencesTabHelper::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

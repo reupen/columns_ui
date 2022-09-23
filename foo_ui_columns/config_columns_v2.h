@@ -1,12 +1,12 @@
 #pragma once
 
+#include "core_dark_list_view.h"
+
 class ColumnTab {
 public:
     virtual ~ColumnTab() = default;
 
-    virtual HWND create(HWND wnd) = 0;
-    // virtual void destroy(HWND wnd)=0;
-    // virtual const char * get_name()=0;
+    virtual HWND create(HWND parent_window) = 0;
     virtual void set_column(const PlaylistViewColumn::ptr& column) = 0;
     virtual void get_column(PlaylistViewColumn::ptr& p_out) = 0;
 };
@@ -39,12 +39,14 @@ public:
     }
 
 private:
-    class ColumnsListView : public uih::ListView {
+    class ColumnsListView : public cui::helpers::CoreDarkListView {
     public:
         explicit ColumnsListView(TabColumns* tab) : m_tab(*tab) {}
 
         void notify_on_initialisation() override
         {
+            CoreDarkListView::notify_on_initialisation();
+
             set_selection_mode(SelectionMode::SingleRelaxed);
             set_show_header(false);
             set_columns({{"Column", 100}});
@@ -78,7 +80,7 @@ private:
     HWND m_wnd_child{nullptr};
     HWND m_wnd{nullptr};
     std::unique_ptr<ColumnTab> m_child;
-    cui::prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
     ColumnList m_columns;
     ColumnsListView m_columns_list_view{this};
     bool initialising{false};

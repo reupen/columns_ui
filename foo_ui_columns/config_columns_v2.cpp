@@ -22,10 +22,12 @@ class EditColumnWindowOptions : public ColumnTab {
 public:
     void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
     using self_t = EditColumnWindowOptions;
-    HWND create(HWND wnd) override
+    HWND create(HWND parent_window) override
     {
-        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_OPTIONS), wnd, g_on_message,
-            reinterpret_cast<LPARAM>(this));
+        auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
+
+        auto [wnd, _] = fbh::auto_dark_modeless_dialog_box(IDD_COLUMN_OPTIONS, parent_window, std::move(on_message_));
+        return wnd;
     }
     // virtual const char * get_name()=0;
     explicit EditColumnWindowOptions(PlaylistViewColumn::ptr column)
@@ -97,16 +99,6 @@ public:
             m_column = column;
             refresh_me(m_wnd);
         }
-    }
-    static INT_PTR CALLBACK g_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        self_t* p_data = nullptr;
-        if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<self_t*>(lp);
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-        } else
-            p_data = reinterpret_cast<self_t*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
     }
 
     INT_PTR CALLBACK on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -236,10 +228,13 @@ public:
 
     void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
 
-    HWND create(HWND wnd) override
+    HWND create(HWND parent_window) override
     {
-        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_DISPLAY_SCRIPT), wnd,
-            s_on_message, reinterpret_cast<LPARAM>(this));
+        auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
+
+        auto [wnd, _]
+            = fbh::auto_dark_modeless_dialog_box(IDD_COLUMN_DISPLAY_SCRIPT, parent_window, std::move(on_message_));
+        return wnd;
     }
 
     void set_column(const PlaylistViewColumn::ptr& column) override
@@ -258,17 +253,6 @@ public:
     }
 
 private:
-    static INT_PTR CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        SelfType* p_data = nullptr;
-        if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<SelfType*>(lp);
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-        } else
-            p_data = reinterpret_cast<SelfType*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
-    }
-
     void update_controls()
     {
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
@@ -327,10 +311,13 @@ public:
 
     void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
 
-    HWND create(HWND wnd) override
+    HWND create(HWND parent_window) override
     {
-        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_STYLE_SCRIPT), wnd,
-            s_on_message, reinterpret_cast<LPARAM>(this));
+        auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
+
+        auto [wnd, _]
+            = fbh::auto_dark_modeless_dialog_box(IDD_COLUMN_STYLE_SCRIPT, parent_window, std::move(on_message_));
+        return wnd;
     }
 
     void set_column(const PlaylistViewColumn::ptr& column) override
@@ -346,17 +333,6 @@ public:
     }
 
 private:
-    static INT_PTR CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        SelfType* p_data = nullptr;
-        if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<SelfType*>(lp);
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-        } else
-            p_data = reinterpret_cast<SelfType*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
-    }
-
     void update_controls()
     {
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);
@@ -424,10 +400,13 @@ public:
 
     void get_column(PlaylistViewColumn::ptr& p_out) override { p_out = m_column; }
 
-    HWND create(HWND wnd) override
+    HWND create(HWND parent_window) override
     {
-        return CreateDialogParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_COLUMN_SORTING_SCRIPT), wnd,
-            s_on_message, reinterpret_cast<LPARAM>(this));
+        auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
+
+        auto [wnd, _]
+            = fbh::auto_dark_modeless_dialog_box(IDD_COLUMN_SORTING_SCRIPT, parent_window, std::move(on_message_));
+        return wnd;
     }
 
     void set_column(const PlaylistViewColumn::ptr& column) override
@@ -446,17 +425,6 @@ public:
     }
 
 private:
-    static INT_PTR CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-    {
-        SelfType* p_data = nullptr;
-        if (msg == WM_INITDIALOG) {
-            p_data = reinterpret_cast<SelfType*>(lp);
-            SetWindowLongPtr(wnd, DWLP_USER, lp);
-        } else
-            p_data = reinterpret_cast<SelfType*>(GetWindowLongPtr(wnd, DWLP_USER));
-        return p_data ? p_data->on_message(wnd, msg, wp, lp) : FALSE;
-    }
-
     void update_controls()
     {
         pfc::vartoggle_t<bool> initialising_toggle(initialising, true);

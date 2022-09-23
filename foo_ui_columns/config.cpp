@@ -64,7 +64,7 @@ namespace prefs {
 service_factory_single_t<PreferencesTabsHost> page_main(
     "Columns UI", g_tabs, g_guid_columns_ui_preferences_page, preferences_page::guid_display, cfg_root_page_active_tab);
 service_factory_single_t<PreferencesTabsHost> page_playlist_view("Playlist view", g_tabs_playlist_view,
-    guid_playlist_view_page, g_guid_columns_ui_preferences_page, cfg_child_playlist, false);
+    guid_playlist_view_page, g_guid_columns_ui_preferences_page, cfg_child_playlist);
 service_factory_single_t<PreferencesTabsHost> page_playlist_switcher("Playlist switcher", g_tabs_panels,
     guid_playlist_switcher_page, g_guid_columns_ui_preferences_page, cfg_child_panels);
 

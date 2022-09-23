@@ -11,11 +11,7 @@ namespace cui::prefs {
 
 class PreferencesTabHelper {
 public:
-    explicit PreferencesTabHelper(std::initializer_list<unsigned> title_ctrl_ids, bool allow_dark = true)
-        : m_allow_dark(allow_dark)
-        , m_title_ctrl_ids(title_ctrl_ids)
-    {
-    }
+    explicit PreferencesTabHelper(std::initializer_list<unsigned> title_ctrl_ids) : m_title_ctrl_ids(title_ctrl_ids) {}
 
     HWND create(
         HWND wnd, UINT id, std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback);
@@ -27,7 +23,6 @@ private:
     void on_initdialog(HWND wnd);
     void on_ncdestroy();
 
-    bool m_allow_dark{};
     HWND m_wnd{};
     HFONT m_title_font{};
     std::set<unsigned> m_title_ctrl_ids;
@@ -39,20 +34,15 @@ private:
 class PreferencesInstanceTabsHost : public preferences_page_instance {
 public:
     PreferencesInstanceTabsHost(std::function<void(const PreferencesInstanceTabsHost*)> destroy_callback,
-        HWND parent_window, std::span<PreferencesTab*> tabs, cfg_int& active_tab, bool allow_dark)
+        HWND parent_window, std::span<PreferencesTab*> tabs, cfg_int& active_tab)
         : m_tabs(tabs)
         , m_active_tab(active_tab)
-        , m_allow_dark(allow_dark)
         , m_destroy_callback(destroy_callback)
     {
         auto on_message_ = [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); };
 
-        if (m_allow_dark) {
-            std::tie(m_wnd, m_has_dark_mode)
-                = fbh::auto_dark_modeless_dialog_box(IDD_PREFS_TAB_HOST, parent_window, std::move(on_message_));
-        } else {
-            m_wnd = uih::modeless_dialog_box(IDD_PREFS_TAB_HOST, parent_window, std::move(on_message_));
-        }
+        std::tie(m_wnd, m_has_dark_mode)
+            = fbh::auto_dark_modeless_dialog_box(IDD_PREFS_TAB_HOST, parent_window, std::move(on_message_));
     }
 
     ~PreferencesInstanceTabsHost() { m_destroy_callback(this); }
@@ -84,20 +74,18 @@ private:
     bool m_has_dark_mode{};
     std::span<PreferencesTab*> m_tabs;
     cfg_int& m_active_tab;
-    bool m_allow_dark{};
     std::function<void(const PreferencesInstanceTabsHost*)> m_destroy_callback;
 };
 
 class PreferencesTabsHost : public preferences_page_v3 {
 public:
-    PreferencesTabsHost(const char* p_name, std::span<PreferencesTab*> tabs, GUID p_guid, GUID p_parent_guid,
-        cfg_int& p_active_tab, bool allow_dark = true)
+    PreferencesTabsHost(
+        const char* p_name, std::span<PreferencesTab*> tabs, GUID p_guid, GUID p_parent_guid, cfg_int& p_active_tab)
         : m_name(p_name)
         , m_guid(p_guid)
         , m_parent_guid(p_parent_guid)
         , m_tabs(tabs)
         , m_active_tab(p_active_tab)
-        , m_allow_dark(allow_dark)
     {
     }
 
@@ -124,7 +112,7 @@ public:
     {
         auto instance = fb2k::service_new<PreferencesInstanceTabsHost>(
             [this](const PreferencesInstanceTabsHost* instance) { std::erase(m_instances, instance); }, parent, m_tabs,
-            m_active_tab, m_allow_dark);
+            m_active_tab);
         m_instances.emplace_back(instance.get_ptr());
         return instance;
     }
@@ -135,6 +123,5 @@ private:
     const GUID m_parent_guid{};
     std::span<PreferencesTab*> m_tabs;
     cfg_int& m_active_tab;
-    bool m_allow_dark{};
     std::vector<PreferencesInstanceTabsHost*> m_instances;
 };

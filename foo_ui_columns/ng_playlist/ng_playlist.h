@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core_dark_list_view.h"
 #include "ng_playlist_style.h"
 #include "../config.h"
 #include "../list_view_panel.h"
@@ -693,12 +694,14 @@ public:
 
 class GroupsPreferencesTab : public PreferencesTab {
 public:
-    class GroupsListView : public uih::ListView {
+    class GroupsListView : public helpers::CoreDarkListView {
     public:
         explicit GroupsListView(GroupsPreferencesTab* tab) : m_tab(*tab) {}
 
         void notify_on_initialisation() override
         {
+            helpers::CoreDarkListView::notify_on_initialisation();
+
             set_selection_mode(SelectionMode::SingleRelaxed);
             set_show_header(false);
             set_columns({{"Group", 100}});
@@ -733,7 +736,7 @@ private:
 
     HWND m_wnd{};
     GroupsListView m_groups_list_view{this};
-    prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
+    prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 };
 } // namespace cui::panels::playlist_view
 

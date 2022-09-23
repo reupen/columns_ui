@@ -201,7 +201,7 @@ constexpr GUID g_guid_colour_preferences
     = {0x41e6d7ed, 0xa1dc, 0x4d84, {0x9b, 0xc9, 0x35, 0x2d, 0xaf, 0x77, 0x88, 0xb0}};
 
 static service_factory_single_t<PreferencesTabsHost> g_config_tabs("Colours and fonts", g_tabs_appearance,
-    g_guid_colour_preferences, g_guid_columns_ui_preferences_page, cfg_child_appearance, true);
+    g_guid_colour_preferences, g_guid_columns_ui_preferences_page, cfg_child_appearance);
 
 // {15FD4FF9-0622-4077-BFBB-DF0102B6A068}
 const GUID cui::colours::ColourManagerData::g_cfg_guid

@@ -37,11 +37,12 @@
   It requires foobar2000 2.0 or newer and is equivalent to the ‘Stream Selector’
   toolbar in the Default User Interface.
 
-- Dark mode support was added for certain preference pages in foobar2000 2.0.
+- Dark mode support was added for Columns UI preference pages in foobar2000 2.0.
   [[#582](https://github.com/reupen/columns_ui/pull/582),
-  [#592](https://github.com/reupen/columns_ui/pull/592)]
+  [#592](https://github.com/reupen/columns_ui/pull/592),
+  [#595](https://github.com/reupen/columns_ui/pull/595)]
 
-  (Other pages and dialogue boxes will follow in a future release.)
+  Other dialogue boxes will follow in a future release.
 
 - The edit box that appears during inline editing in Columns UI list views now
   has a dark appearance when dark mode is on.
