@@ -693,6 +693,27 @@ public:
 
 class GroupsPreferencesTab : public PreferencesTab {
 public:
+    class GroupsListView : public uih::ListView {
+    public:
+        explicit GroupsListView(GroupsPreferencesTab* tab) : m_tab(*tab) {}
+
+        void notify_on_initialisation() override
+        {
+            set_selection_mode(SelectionMode::SingleRelaxed);
+            set_show_header(false);
+            set_columns({{"Group", 100}});
+            set_autosize(true);
+        }
+
+    private:
+        void execute_default_action(size_t index, size_t column, bool b_keyboard, bool b_ctrl) override
+        {
+            m_tab.on_group_default_action(index);
+        }
+
+        GroupsPreferencesTab& m_tab;
+    };
+
     HWND create(HWND wnd) override
     {
         return m_helper.create(wnd, IDD_PREFS_PVIEW_GROUPS,
@@ -707,6 +728,11 @@ public:
 
 private:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    void on_group_default_action(size_t index);
+
+    HWND m_wnd{};
+    GroupsListView m_groups_list_view{this};
     prefs::PreferencesTabHelper m_helper{{{IDC_TITLE1}}, false};
 };
 } // namespace cui::panels::playlist_view

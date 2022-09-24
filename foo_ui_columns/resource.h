@@ -91,7 +91,6 @@
 #define IDC_HEADER                      1015
 #define IDC_AUTOSEND                    1015
 #define IDC_GLOBALSORT                  1016
-#define IDC_GROUPS                      1016
 #define IDC_SHOWEMPTY                   1016
 #define IDC_CUSTOM_COLOUR               1017
 #define IDC_DROP_AT_END                 1017
