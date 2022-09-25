@@ -23,10 +23,12 @@ class CoreDarkListView : public uih::ListView {
         ui_config_manager::ptr m_manager;
     };
 
+protected:
     void notify_on_initialisation() override;
     void notify_on_destroy() override;
     void render_get_colour_data(ColourData& p_out) override;
 
+private:
     std::unique_ptr<UIConfigCallback> m_ui_config_callback;
 };
 

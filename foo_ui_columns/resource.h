@@ -69,7 +69,6 @@
 #define IDD_PREFS_DARK_MODE             235
 #define IDD_PREFS_STATUS_PANE           236
 #define IDC_LIST                        1003
-#define IDC_COLUMNS                     1003
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
@@ -92,7 +91,6 @@
 #define IDC_HEADER                      1015
 #define IDC_AUTOSEND                    1015
 #define IDC_GLOBALSORT                  1016
-#define IDC_GROUPS                      1016
 #define IDC_SHOWEMPTY                   1016
 #define IDC_CUSTOM_COLOUR               1017
 #define IDC_DROP_AT_END                 1017

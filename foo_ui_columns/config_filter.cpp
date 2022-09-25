@@ -19,7 +19,7 @@ public:
         GetClientRect(get_wnd(), &rc);
         const auto client_width = rc.right - rc.left;
 
-        set_single_selection(true);
+        set_selection_mode(SelectionMode::SingleRelaxed);
         set_columns({{"Name", client_width / 3}, {"Field", client_width * 2 / 3}});
     }
     bool notify_before_create_inline_edit(
@@ -219,7 +219,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
     bool m_initialising{false};
 } g_tab_filter_fields;
 
@@ -296,7 +296,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
     bool m_initialising{false};
 } g_tab_filter_appearance;
 
@@ -405,7 +405,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
     bool m_initialising{false};
 } g_tab_filter_behaviour;
 
