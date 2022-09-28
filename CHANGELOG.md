@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 2.0.0-alpha.2
 
 ### Features
 
@@ -15,20 +15,29 @@
   [#591](https://github.com/reupen/columns_ui/pull/591)]
 
 - Various built-in pop-up foobar2000 windows (e.g. Album List, Search, Playlist
-  Manager) now use Columns UI mode, colour and font settings when Columns UI is
-  active. [[#574](https://github.com/reupen/columns_ui/pull/574),
+  Manager) now use Columns UI colours and fonts when Columns UI is active.
+  [[#574](https://github.com/reupen/columns_ui/pull/574),
   [#579](https://github.com/reupen/columns_ui/pull/579),
   [#590](https://github.com/reupen/columns_ui/pull/590)]
 
-  This requires foobar2000 2.0 or newer. For colours, only the text, background
-  and selection background colours can be explicitly configured. The equivalent
-  of the Default UI highlight colour currently isn’t configurable.
+  This requires foobar2000 2.0 or newer.
+
+  For colours, only the text, background and selection background colours can be
+  explicitly configured. The equivalent of the Default UI highlight colour
+  currently isn’t configurable.
 
   For fonts, the default, list items and console fonts can be individually
   configured.
 
   These changes also apply to any third-party components that use new colour and
   font APIs added in foobar2000 2.0
+
+- Dark mode support was added for Columns UI preference pages when using
+  foobar2000 2.0. [[#582](https://github.com/reupen/columns_ui/pull/582),
+  [#592](https://github.com/reupen/columns_ui/pull/592),
+  [#595](https://github.com/reupen/columns_ui/pull/595)]
+
+  Other dialogue boxes will follow in a future release.
 
 - An audio track toolbar was added. When a file containing multiple audio tracks
   (e.g. different languages) is playing, this toolbar allows you to select
@@ -37,37 +46,27 @@
   It requires foobar2000 2.0 or newer and is equivalent to the ‘Stream Selector’
   toolbar in the Default User Interface.
 
-- Dark mode support was added for Columns UI preference pages in foobar2000 2.0.
-  [[#582](https://github.com/reupen/columns_ui/pull/582),
-  [#592](https://github.com/reupen/columns_ui/pull/592),
-  [#595](https://github.com/reupen/columns_ui/pull/595)]
-
-  Other dialogue boxes will follow in a future release.
-
-- The edit box that appears during inline editing in Columns UI list views now
-  has a dark appearance when dark mode is on.
+- The edit box that appears when using inline editing in Columns UI list views
+  now has a dark appearance when dark mode is on.
   [[#593](https://github.com/reupen/columns_ui/pull/593)]
 
 - When mixed size images are used in the buttons toolbar, they are now all
   resized to the same size.
   [[#548](https://github.com/reupen/columns_ui/pull/548)]
 
-  (Previously, images in the wrong size would display incorrectly or otherwise
-  misbehave.)
+  (Previously, images in the wrong size would display incorrectly or other
+  problems would occur.)
 
   A message is also printed to the console when mixed size custom images are
   detected.
 
-- A custom icon size can now be used in the buttons toolbar (with custom images
-  resized as neccessary).
-  [[#551](https://github.com/reupen/columns_ui/pull/551)]
+- A custom icon size can now be used in the buttons toolbar.
+  [[#552](https://github.com/reupen/columns_ui/pull/552)]
+
+  If set, custom images will be resized as necessary.
 
 - The buttons toolbar options dialogue box was updated, with some terminology
-  changed. [[#551](https://github.com/reupen/columns_ui/pull/551)]
-
-- Active tabs in the Tab stack and Playlist tabs panels no longer change colour
-  on hover when dark mode is active.
-  [[#549](https://github.com/reupen/columns_ui/pull/549)]
+  changed. [[#552](https://github.com/reupen/columns_ui/pull/552)]
 
 - Additional sizes of the default playback button icons were added to improve
   their rendering at certain system DPI settings.
@@ -76,13 +75,17 @@
 - The default stop button icon was tweaked.
   [[#554](https://github.com/reupen/columns_ui/pull/554)]
 
+- Active tabs in the Tab stack and Playlist tabs panels no longer change colour
+  on hover when dark mode is active.
+  [[#549](https://github.com/reupen/columns_ui/pull/549)]
+
 ### Bug fixes
 
-- Various problems configuring a custom active item frame colour were fixed.
-  [[#581](https://github.com/reupen/columns_ui/pull/581)]
+- Various problems relating to configuring a custom active item frame colour
+  were fixed. [[#581](https://github.com/reupen/columns_ui/pull/581)]
 
 - A bug where the padding of buttons in the buttons toolbar changed when a
-  notification about a system setting change was received was fixed.
+  system notification about a setting change was received was fixed.
   [[#562](https://github.com/reupen/columns_ui/pull/562)]
 
 - A bug which stopped ICO files from working as custom hot images in the buttons
@@ -106,11 +109,11 @@
 
 - Exported buttons toolbar configurations (FCB files) aren’t compatible with
   older versions of Columns UI.
-  [[#551](https://github.com/reupen/columns_ui/pull/551)]
+  [[#552](https://github.com/reupen/columns_ui/pull/552)]
 
 - Exported configurations (FCL files) containing a buttons toolbar in the layout
   aren’t compatible with older versions of Columns UI.
-  [[#551](https://github.com/reupen/columns_ui/pull/551)]
+  [[#552](https://github.com/reupen/columns_ui/pull/552)]
 
 ### Internal changes
 
