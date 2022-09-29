@@ -39,6 +39,10 @@
 
   Other dialogue boxes will follow in a future release.
 
+- Dark menus were enabled on Windows 11 version 22H2.
+  [[#594](https://github.com/reupen/columns_ui/pull/594), contributed by
+  [@marc2k3](https://github.com/marc2k3)]
+
 - An audio track toolbar was added. When a file containing multiple audio tracks
   (e.g. different languages) is playing, this toolbar allows you to select
   between those tracks. [[#573](https://github.com/reupen/columns_ui/pull/573)]
