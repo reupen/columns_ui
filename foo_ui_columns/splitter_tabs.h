@@ -126,8 +126,8 @@ public:
     static void g_on_font_change();
     void on_size_changed(unsigned width, unsigned height);
     void on_size_changed();
-    void on_active_tab_changing(size_t index_from);
-    void on_active_tab_changed(size_t index_to);
+    void on_active_tab_changing(int index_from);
+    void on_active_tab_changed(int index_to);
 
     TabStackPanel() = default;
 
@@ -136,7 +136,7 @@ private:
     PanelList m_active_panels;
     HWND m_wnd_tabs{nullptr};
     HWND m_up_down_control_wnd{};
-    size_t m_active_tab{(std::numeric_limits<size_t>::max)()};
+    std::optional<size_t> m_active_tab;
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;
     int32_t m_mousewheel_delta{NULL};

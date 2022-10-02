@@ -1,5 +1,12 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A crash in 64-bit builds after adding a Tab stack to the layout was fixed.
+  [[#606](https://github.com/reupen/columns_ui/pull/606)]
+
 ## 2.0.0-alpha.2
 
 ### Features
