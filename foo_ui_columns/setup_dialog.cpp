@@ -159,6 +159,33 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
         }
         }
         break;
+    case WM_NOTIFY: {
+        auto lpnm = (LPNMHDR)lp;
+        switch (lpnm->idFrom) {
+        case IDC_LIST: {
+            switch (lpnm->code) {
+            case LVN_ITEMCHANGED: {
+                auto lpnmlv = (LPNMLISTVIEW)lp;
+                if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (size_t)lpnmlv->iItem < m_presets.get_count()) {
+                    if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED)) {
+                        uie::splitter_item_ptr ptr;
+                        m_presets[lpnmlv->iItem].get(ptr);
+                        cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr());
+                        m_preset_changed = true;
+                    }
+                }
+                return 0;
+            }
+            default:
+                break;
+            }
+            break;
+        }
+        default:
+            break;
+        }
+        break;
+    }
     case WM_CLOSE:
         DestroyWindow(wnd);
         return 0;
