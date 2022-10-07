@@ -69,6 +69,8 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
     const DataEntry* p_data = data_entries.data();
     const auto count{data_entries.size()};
 
+    auto transaction = start_transaction();
+
     for (size_t i{0}; i < count; i++) {
         const auto start = i;
         while (p_data[i].m_same_as_next && i + 1 < count)
@@ -101,7 +103,7 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
 
             m_nodes.insert_item(node, index_item);
             InsertItem item;
-            insert_items(index_item, 1, &item);
+            transaction.insert_items(index_item, 1, &item);
         }
     }
 
@@ -224,6 +226,8 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     const DataEntry* p_data = data_entries.data();
     const auto data_entries_count = data_entries.size();
 
+    auto transaction = start_transaction();
+
     for (size_t i{0}; i < data_entries_count; i++) {
         const auto start = i;
         while (p_data[i].m_same_as_next && i + 1 < data_entries_count)
@@ -257,7 +261,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
 
             m_nodes.insert_item(node, index_item);
             InsertItem item;
-            insert_items(index_item, 1, &item);
+            transaction.insert_items(index_item, 1, &item);
         }
     }
 
@@ -270,7 +274,7 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
         mask_nodes[node_index] = m_nodes[node_index].m_handles.get_count() == 0;
     }
     m_nodes.remove_mask(mask_nodes.get_ptr());
-    remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()));
+    transaction.remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()));
     update_first_node_text(true);
 
     if (next_window) {
