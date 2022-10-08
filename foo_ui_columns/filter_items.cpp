@@ -17,7 +17,7 @@ void FilterPanel::populate_list_from_chain(const metadb_handle_list_t<pfc::alloc
         b_all_was_selected = selection[0];
         for (size_t i = 1; i < count; i++)
             if (selection[i])
-                previous_nodes.emplace_back(m_nodes[i].m_value);
+                previous_nodes.emplace_back(m_nodes[i]->m_value);
     }
 
     populate_list(handles);
@@ -61,13 +61,15 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
     metadb_handle_list_t<pfc::alloc_fast_aggressive> tracks_for_next_window;
     tracks_for_next_window.prealloc(added_tracks.get_count());
 
-    m_nodes[0].m_handles.add_items(added_tracks);
+    m_nodes[0]->m_handles.add_items(added_tracks);
 
     std::vector<DataEntry> data_entries;
     make_data_entries(added_tracks, data_entries, g_showemptyitems);
 
     const DataEntry* p_data = data_entries.data();
     const auto count{data_entries.size()};
+
+    auto transaction = start_transaction();
 
     for (size_t i{0}; i < count; i++) {
         const auto start = i;
@@ -80,28 +82,28 @@ void FilterPanel::add_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>& ad
             p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
 
         if (exact_match) {
-            const size_t current_count = m_nodes[index_item].m_handles.get_count();
+            const size_t current_count = m_nodes[index_item]->m_handles.get_count();
             const bool selected = !nothing_or_all_node_selected && get_item_selected(index_item);
 
-            m_nodes[index_item].m_handles.set_count(current_count + handles_count);
+            m_nodes[index_item]->m_handles.set_count(current_count + handles_count);
 
             for (size_t k{0}; k < handles_count; k++)
-                m_nodes[index_item].m_handles[current_count + k] = p_data[start + k].m_handle;
+                m_nodes[index_item]->m_handles[current_count + k] = p_data[start + k].m_handle;
 
             if (selected && handles_count)
                 tracks_for_next_window.add_items_fromptr(
-                    m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
+                    m_nodes[index_item]->m_handles.get_ptr() + current_count, handles_count);
         } else {
-            Node node;
-            node.m_value = p_data[start].m_text.get_ptr();
-            node.m_handles.set_count(handles_count);
+            auto node = std::make_shared<Node>();
+            node->m_value = p_data[start].m_text.get_ptr();
+            node->m_handles.set_count(handles_count);
 
             for (size_t k{0}; k < handles_count; k++)
-                node.m_handles[k] = p_data[start + k].m_handle;
+                node->m_handles[k] = p_data[start + k].m_handle;
 
             m_nodes.insert_item(node, index_item);
             InsertItem item;
-            insert_items(index_item, 1, &item);
+            transaction.insert_items(index_item, 1, &item);
         }
     }
 
@@ -128,7 +130,7 @@ void FilterPanel::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     tracks_for_next_window.prealloc(removed_tracks.get_count());
 
     const auto nothing_or_all_node_selected = get_nothing_or_all_node_selected();
-    m_nodes[0].remove_handles(removed_tracks);
+    m_nodes[0]->remove_handles(removed_tracks);
 
     std::vector<DataEntry> data_entries;
     make_data_entries(removed_tracks, data_entries, g_showemptyitems);
@@ -153,12 +155,12 @@ void FilterPanel::remove_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
             const auto selected = !nothing_or_all_node_selected && get_item_selected(index_item);
 
             for (size_t k{0}; k < group_size; k++) {
-                m_nodes[index_item].m_handles.remove_item(p_data[start + k].m_handle);
+                m_nodes[index_item]->m_handles.remove_item(p_data[start + k].m_handle);
                 if (selected)
                     tracks_for_next_window.add_item(p_data[start + k].m_handle);
             }
 
-            if (m_nodes[index_item].m_handles.get_count() == 0) {
+            if (m_nodes[index_item]->m_handles.get_count() == 0) {
                 mask_nodes[index_item] = true;
             }
         }
@@ -218,11 +220,13 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
 
     auto node_count = m_nodes.get_count();
     for (size_t node_index{1}; node_index < node_count; node_index++) {
-        m_nodes[node_index].remove_handles(modified_tracks);
+        m_nodes[node_index]->remove_handles(modified_tracks);
     }
 
     const DataEntry* p_data = data_entries.data();
     const auto data_entries_count = data_entries.size();
+
+    auto transaction = start_transaction();
 
     for (size_t i{0}; i < data_entries_count; i++) {
         const auto start = i;
@@ -235,29 +239,29 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
             p_data[start].m_text.get_ptr(), 1, index_item, get_sort_direction());
 
         if (exact_match) {
-            const auto current_count = m_nodes[index_item].m_handles.get_count();
-            m_nodes[index_item].m_handles.set_count(current_count + handles_count);
+            const auto current_count = m_nodes[index_item]->m_handles.get_count();
+            m_nodes[index_item]->m_handles.set_count(current_count + handles_count);
 
             const auto selected = !nothing_or_all_node_selected && get_item_selected(index_item);
 
             for (size_t k{0}; k < handles_count; k++) {
-                m_nodes[index_item].m_handles[current_count + k] = p_data[start + k].m_handle;
+                m_nodes[index_item]->m_handles[current_count + k] = p_data[start + k].m_handle;
             }
 
             if (selected && handles_count)
                 tracks_for_next_window.add_items_fromptr(
-                    m_nodes[index_item].m_handles.get_ptr() + current_count, handles_count);
+                    m_nodes[index_item]->m_handles.get_ptr() + current_count, handles_count);
         } else {
-            Node node;
-            node.m_value = p_data[start].m_text.get_ptr();
-            node.m_handles.set_count(handles_count);
+            auto node = std::make_shared<Node>();
+            node->m_value = p_data[start].m_text.get_ptr();
+            node->m_handles.set_count(handles_count);
 
             for (size_t k{0}; k < handles_count; k++)
-                node.m_handles[k] = p_data[start + k].m_handle;
+                node->m_handles[k] = p_data[start + k].m_handle;
 
             m_nodes.insert_item(node, index_item);
             InsertItem item;
-            insert_items(index_item, 1, &item);
+            transaction.insert_items(index_item, 1, &item);
         }
     }
 
@@ -267,10 +271,10 @@ void FilterPanel::update_nodes(metadb_handle_list_t<pfc::alloc_fast_aggressive>&
     mask_nodes.set_count(node_count);
     mask_nodes[0] = false;
     for (size_t node_index{1}; node_index < node_count; ++node_index) {
-        mask_nodes[node_index] = m_nodes[node_index].m_handles.get_count() == 0;
+        mask_nodes[node_index] = m_nodes[node_index]->m_handles.get_count() == 0;
     }
     m_nodes.remove_mask(mask_nodes.get_ptr());
-    remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()));
+    transaction.remove_items(pfc::bit_array_table(mask_nodes.get_ptr(), mask_nodes.get_size()));
     update_first_node_text(true);
 
     if (next_window) {
@@ -512,9 +516,11 @@ void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& han
     const size_t data_entries_count{data_entries.size()};
 
     m_nodes.set_count(node_count + 1);
-    Node* p_nodes = m_nodes.get_ptr();
-    p_nodes[0].m_handles.add_items(handles);
-    p_nodes[0].m_value = L"All";
+    std::ranges::transform(m_nodes, m_nodes.begin(), [](auto&&) { return std::make_shared<Node>(); });
+
+    const auto* p_nodes = m_nodes.get_ptr();
+    p_nodes[0]->m_handles.add_items(handles);
+    p_nodes[0]->m_value = L"All";
 
     for (size_t i{0}, j{1}; i < data_entries_count; i++) {
         const size_t start{i};
@@ -524,10 +530,10 @@ void FilterPanel::populate_list(const metadb_handle_list_t<pfc::alloc_fast>& han
 
         PFC_ASSERT(j < m_nodes.get_count());
 
-        p_nodes[j].m_handles.set_count(handles_count);
+        p_nodes[j]->m_handles.set_count(handles_count);
         for (size_t k{0}; k < handles_count; k++)
-            p_nodes[j].m_handles[k] = p_data[start + k].m_handle;
-        p_nodes[j].m_value = p_data[start].m_text.get_ptr();
+            p_nodes[j]->m_handles[k] = p_data[start + k].m_handle;
+        p_nodes[j]->m_value = p_data[start].m_text.get_ptr();
         j++;
     }
     update_first_node_text();

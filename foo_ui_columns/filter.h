@@ -29,6 +29,8 @@ public:
 
 class Node {
 public:
+    using Ptr = std::shared_ptr<Node>;
+
     metadb_handle_list_t<pfc::alloc_fast_aggressive> m_handles;
     std::wstring m_value;
     bool m_handles_sorted{false};
@@ -36,8 +38,8 @@ public:
     void ensure_handles_sorted();
     void remove_handles(metadb_handle_list_cref to_remove);
 
-    static int g_compare(const Node& i1, const WCHAR* i2);
-    static int g_compare_ptr_with_node(const Node& i1, const Node& i2);
+    static int g_compare(const Node::Ptr& i1, const WCHAR* i2);
+    static int g_compare_ptr_with_node(const Node::Ptr& i1, const Node::Ptr& i2);
 };
 
 class FieldData {
@@ -224,7 +226,7 @@ private:
     pfc::string8 m_edit_previous_value;
     std::vector<pfc::string8> m_edit_fields;
     metadb_handle_list m_edit_handles;
-    pfc::list_t<Node> m_nodes;
+    pfc::list_t<Node::Ptr> m_nodes;
     bool m_show_search{false};
     bool m_pending_sort_direction{false};
     contextmenu_manager::ptr m_contextmenu_manager;

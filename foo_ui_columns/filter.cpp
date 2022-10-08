@@ -381,7 +381,7 @@ void FilterPanel::g_update_subsequent_filters(const pfc::list_base_const_t<Filte
         handles.remove_all();
         windows[i]->get_initial_handles(handles);
         if (b_check_needs_update) {
-            metadb_handle_list items1(windows[i]->m_nodes[0].m_handles);
+            metadb_handle_list items1(windows[i]->m_nodes[0]->m_handles);
             handles.sort_by_pointer();
             items1.sort_by_pointer();
             if (!pfc::comparator_array<>::compare(items1, handles)) {
@@ -455,7 +455,7 @@ void FilterPanel::notify_update_item_data(size_t index)
     auto& subitems = get_item_subitems(index);
     subitems.resize(1);
 
-    subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index].m_value.c_str());
+    subitems[0] = pfc::stringcvt::string_utf8_from_wide(m_nodes[index]->m_value.c_str());
 }
 
 size_t FilterPanel::get_highlight_item()
@@ -505,15 +505,15 @@ void FilterPanel::get_selection_handles(
         if (get_item_selected(i)) {
             b_found = true;
             if (b_sort)
-                m_nodes[i].ensure_handles_sorted();
-            p_out.add_items(m_nodes[i].m_handles);
+                m_nodes[i]->ensure_handles_sorted();
+            p_out.add_items(m_nodes[i]->m_handles);
         }
     }
     if (!b_found) {
         if (fallback) {
             if (b_sort)
-                m_nodes[0].ensure_handles_sorted();
-            p_out.add_items(m_nodes[0].m_handles);
+                m_nodes[0]->ensure_handles_sorted();
+            p_out.add_items(m_nodes[0]->m_handles);
         }
     } else {
         fbh::metadb_handle_list_remove_duplicates(p_out);
@@ -535,7 +535,7 @@ void FilterPanel::do_items_action(const bit_array& p_nodes, Action action)
     size_t count = m_nodes.get_count();
     for (i = 0; i < count; i++)
         if (p_nodes[i])
-            handles.add_items(m_nodes[i].m_handles);
+            handles.add_items(m_nodes[i]->m_handles);
 
     if (!handles.get_count())
         return;
@@ -571,7 +571,7 @@ void FilterPanel::do_items_action(const bit_array& p_nodes, Action action)
                 if (p_nodes[i]) {
                     if (playlist_name.get_length())
                         playlist_name << ", ";
-                    playlist_name << pfc::stringcvt::string_utf8_from_wide(m_nodes[i].m_value.c_str());
+                    playlist_name << pfc::stringcvt::string_utf8_from_wide(m_nodes[i]->m_value.c_str());
                 }
             }
         }
@@ -683,7 +683,7 @@ void FilterPanel::update_first_node_text(bool b_update)
                 temp << "s";
             temp << ")";
         }
-        m_nodes[0].m_value = pfc::stringcvt::string_wide_from_utf8(temp).get_ptr();
+        m_nodes[0]->m_value = pfc::stringcvt::string_wide_from_utf8(temp).get_ptr();
         if (b_update)
             update_items(0, 1);
     }
@@ -727,14 +727,14 @@ void Node::remove_handles(metadb_handle_list_cref to_remove)
     m_handles.remove_mask(remove_mask.get_ptr());
 }
 
-int Node::g_compare(const Node& i1, const WCHAR* i2)
+int Node::g_compare(const Node::Ptr& i1, const WCHAR* i2)
 {
-    return StrCmpLogicalW(i1.m_value.c_str(), i2);
+    return StrCmpLogicalW(i1->m_value.c_str(), i2);
 }
 
-int Node::g_compare_ptr_with_node(const Node& i1, const Node& i2)
+int Node::g_compare_ptr_with_node(const Node::Ptr& i1, const Node::Ptr& i2)
 {
-    return StrCmpLogicalW(i1.m_value.c_str(), i2.m_value.c_str());
+    return StrCmpLogicalW(i1->m_value.c_str(), i2->m_value.c_str());
 }
 
 void FilterPanel::refresh_stream()

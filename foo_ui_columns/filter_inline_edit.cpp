@@ -15,11 +15,11 @@ bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<size_t>
     size_t indices_count = indices.get_count();
     if (!m_field_data.m_use_script && !m_field_data.m_fields.empty() && indices_count == 1
         && indices[0] < m_nodes.get_count()) {
-        m_edit_handles = m_nodes[indices[0]].m_handles;
+        m_edit_handles = m_nodes[indices[0]]->m_handles;
 
         m_edit_fields = m_field_data.m_fields;
 
-        p_text = (m_edit_previous_value = pfc::stringcvt::string_utf8_from_wide(m_nodes[indices[0]].m_value.c_str()));
+        p_text = (m_edit_previous_value = pfc::stringcvt::string_utf8_from_wide(m_nodes[indices[0]]->m_value.c_str()));
 
         return true;
     }
