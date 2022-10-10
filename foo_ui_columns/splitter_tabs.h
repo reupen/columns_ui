@@ -115,6 +115,8 @@ public:
 
     void create_tabs();
     void destroy_tabs();
+    void show_tab_window(HWND wnd);
+    void hide_tab_window();
     void refresh_children();
     void destroy_children();
     void adjust_rect(bool b_larger, RECT* rc);
@@ -126,7 +128,6 @@ public:
     static void g_on_font_change();
     void on_size_changed(unsigned width, unsigned height);
     void on_size_changed();
-    void on_active_tab_changing(int index_from);
     void on_active_tab_changed(int index_to);
 
     TabStackPanel() = default;
@@ -136,6 +137,7 @@ private:
     PanelList m_active_panels;
     HWND m_wnd_tabs{nullptr};
     HWND m_up_down_control_wnd{};
+    HWND m_active_child_wnd{};
     std::optional<size_t> m_active_tab;
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;

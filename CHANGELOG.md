@@ -5,10 +5,15 @@
 ### Features
 
 - The performance of the Filter panel when handling dynamic media library
-  changes was improved. [[#608](https://github.com/reupen/columns_ui/pull/608)]
+  changes was improved. [[#609](https://github.com/reupen/columns_ui/pull/609)]
 
   This includes reducing Filter panel initialisation time in foobar2000 2.0
   during foobar2000 start-up.
+
+### Bug fixes
+
+- Flickering or flashing when switching tabs in the Tab stack panel was reduced.
+  [[#610](https://github.com/reupen/columns_ui/pull/610)]
 
 ## 2.0.0-alpha.3
 
