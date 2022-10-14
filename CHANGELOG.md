@@ -5,7 +5,8 @@
 ### Features
 
 - The performance of the Filter panel when handling dynamic media library
-  changes was improved. [[#609](https://github.com/reupen/columns_ui/pull/609)]
+  changes was improved. [[#609](https://github.com/reupen/columns_ui/pull/609),
+  [#611](https://github.com/reupen/columns_ui/pull/611)]
 
   This includes reducing Filter panel initialisation time in foobar2000 2.0
   during foobar2000 start-up.
