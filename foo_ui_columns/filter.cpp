@@ -846,15 +846,20 @@ void FilterPanel::notify_on_create()
     refresh_columns();
     refresh_groups();
 
+    auto library_v4 = library_manager_v4::tryGet();
+    auto is_library_initialised = !library_v4.is_valid() || library_v4->is_initialized();
+
     pfc::hires_timer timer0;
     timer0.start();
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     get_initial_handles(handles);
     populate_list(handles);
     double time = timer0.query();
-    console::formatter formatter;
-    formatter << "Filter Panel - " << m_field_data.m_name << ": initialised in " << pfc::format_float(time, 0, 3)
-              << " s";
+
+    if (is_library_initialised && handles.size() > 0)
+        console::print(fmt::format("Filter panel - {}: initialised in {} s", m_field_data.m_name.c_str(),
+            pfc::format_float(time, 0, 3).c_str())
+                           .c_str());
 
     g_windows.push_back(this);
     fbh::library_callback_manager::register_callback(this);
