@@ -11,6 +11,10 @@
   This includes reducing Filter panel initialisation time in foobar2000 2.0
   during foobar2000 start-up.
 
+- The Filter panel no longer reports initialisation times in foobar2000 2.0 when
+  it loads before the media library has initialised.
+  [[#612](https://github.com/reupen/columns_ui/pull/612)]
+
 ### Bug fixes
 
 - Flickering or flashing when switching tabs in the Tab stack panel was reduced.
