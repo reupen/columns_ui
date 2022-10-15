@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 2.0.0-alpha.4
 
 ### Features
 
@@ -17,7 +17,11 @@
 
 ### Bug fixes
 
-- Flickering or flashing when switching tabs in the Tab stack panel was reduced.
+- A crash, when clicking Move down on the Grouping tab in playlist view
+  preferences without a group selected, was fixed.
+  [[#613](https://github.com/reupen/columns_ui/pull/613)]
+
+- Flickering when switching tabs in the Tab stack panel was reduced.
   [[#610](https://github.com/reupen/columns_ui/pull/610)]
 
 ## 2.0.0-alpha.3
