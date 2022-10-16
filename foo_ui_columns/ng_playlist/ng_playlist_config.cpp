@@ -114,7 +114,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             const auto index = m_groups_list_view.get_selected_item_single();
             auto& groups = g_groups.get_groups();
 
-            if (index + 1 >= groups.size())
+            if (index == std::numeric_limits<size_t>::max() || index + 1 >= groups.size())
                 break;
 
             g_groups.swap(index, index + 1);
