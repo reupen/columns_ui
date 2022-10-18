@@ -1,5 +1,13 @@
 # Change log
 
+## 2.0.0-alpha.5
+
+### Features
+
+- A further improvement was made to the performance of the Filter panel when
+  handling dynamic media library changes.
+  [[#615](https://github.com/reupen/columns_ui/pull/615)]
+
 ## 2.0.0-alpha.4
 
 ### Features
