@@ -8,6 +8,10 @@
   tabs and Tab stack panels when dark mode is active was fixed.
   [[#622](https://github.com/reupen/columns_ui/pull/622)]
 
+- A bug where toggling the Alternative selection model playlist view option
+  didn’t function correctly was fixed.
+  [[#623](https://github.com/reupen/columns_ui/pull/623)]
+
 ## 2.0.0-alpha.5
 
 ### Features

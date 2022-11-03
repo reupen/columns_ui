@@ -89,7 +89,7 @@ public:
                     ComboBox_GetItemData(reinterpret_cast<HWND>(lp), ComboBox_GetCurSel(reinterpret_cast<HWND>(lp))));
             } break;
             case IDC_SELECTION_MODEL:
-                cfg_alternative_sel = Button_GetCheck(reinterpret_cast<HWND>(lp)) != BST_CHECKED;
+                cfg_alternative_sel = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_view::PlaylistView::g_on_alternate_selection_change();
                 break;
             case IDC_SORT_ARROWS:
