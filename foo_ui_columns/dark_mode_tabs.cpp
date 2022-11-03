@@ -118,15 +118,12 @@ void handle_tab_control_paint(HWND wnd)
             LineTo(buffered_dc.get(), item_rect.left, item_rect.bottom);
         }
 
-        SIZE sz{};
-        GetTextExtentPoint32(buffered_dc.get(), item.text.data(), gsl::narrow<int>(item.text.length()), &sz);
-
         // Position using original rect, but shift up 1px if it's the active tab
-        const auto x = item.rc.left + (RECT_CX(item.rc) - sz.cx) / 2;
-        const auto y = item.rc.top + (RECT_CY(item.rc) - sz.cy) / 2 - (item.is_active ? 1_spx : 0);
+        RECT text_rect = {item.rc.left, item.rc.top - (item.is_active ? 1_spx : 0), item.rc.right,
+            item.rc.bottom - (item.is_active ? 1_spx : 0)};
 
-        ExtTextOut(buffered_dc.get(), x, y, ETO_CLIPPED, &item_rect, item.text.data(),
-            gsl::narrow<UINT>(item.text.length()), nullptr);
+        DrawTextEx(buffered_dc.get(), const_cast<wchar_t*>(item.text.data()), gsl::narrow<int>(item.text.length()),
+            &text_rect, DT_CENTER | DT_HIDEPREFIX | DT_SINGLELINE | DT_VCENTER, nullptr);
     }
 }
 

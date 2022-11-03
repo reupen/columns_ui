@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A bug where ampersands didn’t render correctly in tab names in the Playlist
+  tabs and Tab stack panels when dark mode is active was fixed.
+  [[#622](https://github.com/reupen/columns_ui/pull/622)]
+
 ## 2.0.0-alpha.5
 
 ### Features
