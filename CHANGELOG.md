@@ -12,6 +12,9 @@
   didn’t function correctly was fixed.
   [[#623](https://github.com/reupen/columns_ui/pull/623)]
 
+- A crash when a third-party spiltter incorrectly destroys a built-in panel was
+  resolved. [[#624](https://github.com/reupen/columns_ui/pull/624)]
+
 ## 2.0.0-alpha.5
 
 ### Features
