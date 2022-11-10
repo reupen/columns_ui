@@ -15,6 +15,14 @@
 - A crash when a third-party spiltter incorrectly destroys a built-in panel was
   resolved. [[#624](https://github.com/reupen/columns_ui/pull/624)]
 
+### Internal changes
+
+- The component is now compiled with Visual Studio 2022 17.4.
+
+- The component is now compiled using foobar2000 SDK 2022-10-20.
+  [[#625](https://github.com/reupen/columns_ui/pull/625),
+  [#626](https://github.com/reupen/columns_ui/pull/626)]
+
 ## 2.0.0-alpha.5
 
 ### Features
