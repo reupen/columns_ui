@@ -16,6 +16,7 @@ struct BitmapData {
 
 void check_hresult(HRESULT hr);
 wil::com_ptr_t<IWICBitmapSource> create_bitmap_source_from_path(const char* path);
+wil::com_ptr_t<IWICBitmapSource> create_bitmap_source_from_bitmap_data(const BitmapData& bitmap_data);
 wil::unique_hbitmap create_hbitmap_from_bitmap_source(const wil::com_ptr_t<IWICBitmapSource>& source);
 wil::com_ptr_t<IWICBitmapSource> resize_bitmap_source(
     const wil::com_ptr_t<IWICBitmapSource>& original_bitmap, int width, int height);

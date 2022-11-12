@@ -3,9 +3,17 @@
 
 namespace cui::toolbars::buttons {
 
-bool ButtonsToolbar::Button::CustomImage::is_ico() const
+ButtonsToolbar::CustomImageContentType ButtonsToolbar::Button::CustomImage::content_type() const
 {
-    return !_stricmp(pfc::string_extension(m_path), "ico");
+    const auto extension = string_extension(m_path);
+
+    if (!_stricmp(extension, "ico"))
+        return CustomImageContentType::Ico;
+
+    if (!_stricmp(extension, "svg"))
+        return CustomImageContentType::Svg;
+
+    return CustomImageContentType::Other;
 }
 
 pfc::string8 ButtonsToolbar::Button::CustomImage::get_path() const

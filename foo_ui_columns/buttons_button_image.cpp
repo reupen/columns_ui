@@ -16,7 +16,7 @@ void ButtonsToolbar::ButtonImage::preload(const Button::CustomImage& p_image)
     m_mask_type = p_image.m_mask_type;
     m_mask_colour = p_image.m_mask_colour;
 
-    if (p_image.is_ico())
+    if (p_image.content_type() != CustomImageContentType::Other)
         return;
 
     const pfc::string8 full_path = p_image.get_path();
@@ -35,13 +35,25 @@ void ButtonsToolbar::ButtonImage::preload(const Button::CustomImage& p_image)
 bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& custom_image, int width, int height)
 {
     const pfc::string8 full_path = custom_image.get_path();
+    const auto content_type = custom_image.content_type();
 
-    if (custom_image.is_ico()) {
+    if (content_type == CustomImageContentType::Ico) {
         m_icon.reset(static_cast<HICON>(
             uLoadImage(wil::GetModuleInstanceHandle(), full_path, IMAGE_ICON, width, height, LR_LOADFROMFILE)));
 
         if (!m_icon)
             fbh::print_to_console(u8"Buttons toolbar – loading icon failed. Path: "_pcc, full_path.get_ptr());
+        return false;
+    }
+
+    if (content_type == CustomImageContentType::Svg) {
+        try {
+            load_custom_svg_image(full_path, width, height);
+        } catch (const std::exception& ex) {
+            fbh::print_to_console(
+                u8"Buttons toolbar – loading SVG file failed. Path: "_pcc, full_path.get_ptr(), " Error: ", ex.what());
+        }
+
         return false;
     }
 
@@ -61,6 +73,32 @@ bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& c
         m_bitmap_source.reset();
     }
     return false;
+}
+
+void ButtonsToolbar::ButtonImage::load_custom_svg_image(const char* full_path, int width, int height)
+{
+    svg_services::svg_renderer::ptr svg_api;
+
+    if (!fb2k::std_api_try_get(svg_api)) {
+        throw exception_service_not_found(
+            u8"A compatible version of the SVG services component is required for SVG support."_pcc);
+    }
+
+    abort_callback_dummy aborter;
+    const auto svg_data = filesystem::g_readWholeFile(full_path, 52'000'000, aborter);
+
+    const auto render_width = width;
+    const auto render_height = height;
+
+    wic::BitmapData bitmap_data{gsl::narrow<unsigned>(render_width), gsl::narrow<unsigned>(render_height),
+        gsl::narrow<unsigned>(render_width) * 4, {}};
+    bitmap_data.data.resize(bitmap_data.stride * bitmap_data.height);
+
+    svg_api->render(svg_data->data(), svg_data->size(), render_width, render_height, bitmap_data.data.data(),
+        bitmap_data.data.size());
+
+    const auto bitmap_source = create_bitmap_source_from_bitmap_data(bitmap_data);
+    m_bm = wic::create_hbitmap_from_bitmap_source(bitmap_source);
 }
 
 void ButtonsToolbar::ButtonImage::load_default_image(

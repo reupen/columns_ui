@@ -2,6 +2,13 @@
 
 ## Development version
 
+### Features
+
+- Support for static SVG files was added to the Buttons toolbar.
+  [[#628](https://github.com/reupen/columns_ui/pull/628)]
+
+  This requires the SVG services component. Text is not supported.
+
 ### Bug fixes
 
 - A bug where ampersands didn’t render correctly in tab names in the Playlist
