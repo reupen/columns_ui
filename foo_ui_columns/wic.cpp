@@ -112,6 +112,18 @@ wil::com_ptr_t<IWICBitmapSource> create_bitmap_source_from_path(const char* path
     return get_image_frame(decoder);
 }
 
+wil::com_ptr_t<IWICBitmapSource> create_bitmap_source_from_bitmap_data(const BitmapData& bitmap_data)
+{
+    const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+    wil::com_ptr_t<IWICBitmap> bitmap;
+
+    check_hresult(imaging_factory->CreateBitmapFromMemory(bitmap_data.width, bitmap_data.height,
+        GUID_WICPixelFormat32bppBGRA, bitmap_data.stride, gsl::narrow<UINT>(bitmap_data.data.size()),
+        const_cast<BYTE*>(bitmap_data.data.data()), &bitmap));
+
+    return bitmap;
+}
+
 wil::unique_hbitmap create_hbitmap_from_bitmap_source(const wil::com_ptr_t<IWICBitmapSource>& source)
 {
     const auto bitmap_data = decode_image(source);

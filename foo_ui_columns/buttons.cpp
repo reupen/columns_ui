@@ -682,11 +682,19 @@ INT_PTR CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, 
                     || (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY))
                     temp.reset();
 
-                constexpr auto extension_mask
-                    = "Image Files (*.bmp;*.gif;*.ico;*.png;*.tiff;*.webp)|*.bmp;*.gif;*.ico;*.png;*.tiff;*.webp|All "
-                      "Files (*.*)|*.*";
+                std::vector extensions = {"*.bmp"s, "*.gif"s, "*.ico"s, "*.png"s, "*.tiff"s, "*.webp"s};
 
-                if (uGetOpenFileName(wnd, extension_mask, 0, "png", "Choose image", nullptr, temp, FALSE)) {
+                if (static_api_test_t<svg_services::svg_renderer>()) {
+                    extensions.emplace_back("*.svg"s);
+                    std::ranges::sort(extensions);
+                }
+
+                const auto joined_extensions = mmh::join(extensions, ";");
+
+                const auto extension_mask = fmt::format("Image Files ({extensions})|{extensions}|All Files (*.*)|*.*",
+                    fmt::arg("extensions", joined_extensions.c_str()));
+
+                if (uGetOpenFileName(wnd, extension_mask.c_str(), 0, "png", "Choose image", nullptr, temp, FALSE)) {
                     ptr->m_image->m_path = temp;
                     uSendDlgItemMessageText(
                         wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (true) ? ptr->m_image->m_path.get_ptr() : "");

@@ -77,6 +77,12 @@ public:
 
     enum ImageIdentifier { IMAGE_NAME, IMAGE_DATA, IMAGE_PATH };
 
+    enum class CustomImageContentType {
+        Ico,
+        Svg,
+        Other,
+    };
+
     class Button {
     public:
         class CustomImage {
@@ -86,9 +92,9 @@ public:
             COLORREF m_mask_colour{};
             ui_extension::t_mask m_mask_type{uie::MASK_NONE};
 
-            [[nodiscard]] bool is_ico() const;
-
+            [[nodiscard]] CustomImageContentType content_type() const;
             [[nodiscard]] pfc::string8 get_path() const;
+
             void write(stream_writer* out, abort_callback& p_abort) const;
             void read(ConfigVersion p_version, stream_reader* reader, abort_callback& p_abort);
             void write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort);
@@ -156,6 +162,7 @@ public:
 
     private:
         bool load_custom_image(const Button::CustomImage& custom_image, int width, int height);
+        void load_custom_svg_image(const char* full_path, int width, int height);
         void load_default_image(
             const service_ptr_t<uie::button>& button_ptr, COLORREF colour_btnface, int width, int height);
 
