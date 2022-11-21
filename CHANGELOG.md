@@ -9,6 +9,9 @@
 
   This requires the SVG services component. Text is not supported.
 
+- Performance when typing into the playlist view to jump to an item was improved
+  in foobar2000 2.0. [[#629](https://github.com/reupen/columns_ui/pull/629)]
+
 ### Bug fixes
 
 - A bug where ampersands didn’t render correctly in tab names in the Playlist

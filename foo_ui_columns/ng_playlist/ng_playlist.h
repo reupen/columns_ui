@@ -384,6 +384,27 @@ private:
         size_t get_group_count() { return m_groups.size(); }
     };
 
+    class PlaylistViewSearchContext : public ListViewSearchContextBase {
+    public:
+        explicit PlaylistViewSearchContext(titleformat_object::ptr global_script, titleformat_object::ptr column_script)
+            : m_global_script(std::move(global_script))
+            , m_column_script(std::move(column_script))
+        {
+        }
+
+        const char* get_item_text(size_t index) override;
+
+    private:
+        SYSTEMTIME m_systemtime;
+        metadb_handle_list m_tracks;
+        std::vector<std::optional<std::string>> m_items;
+        std::optional<size_t> m_start_index;
+        playlist_manager_v4::ptr m_playlist_manager{playlist_manager_v4::get()};
+        metadb_v2::ptr m_metadb{metadb_v2::get()};
+        titleformat_object::ptr m_global_script{};
+        titleformat_object::ptr m_column_script{};
+    };
+
     static void s_create_message_window();
     static void s_destroy_message_window();
 
@@ -463,6 +484,15 @@ private:
     PlaylistViewItem* get_item(size_t index) { return static_cast<PlaylistViewItem*>(ListView::get_item(index)); }
 
     void notify_update_item_data(size_t index) override;
+
+    std::unique_ptr<ListViewSearchContextBase> create_search_context() override
+    {
+        if (!static_api_test_t<metadb_v2>() || m_column_data.size() == 0) {
+            return ListViewPanelBase::create_search_context();
+        }
+
+        return std::make_unique<PlaylistViewSearchContext>(m_script_global, m_column_data[0].m_display_script);
+    }
 
     const style_data_t& get_style_data(size_t index);
     void get_insert_items(size_t start, size_t count, InsertItemsContainer& items);

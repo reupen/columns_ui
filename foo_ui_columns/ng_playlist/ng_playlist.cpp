@@ -413,6 +413,55 @@ void PlaylistView::s_redraw_all()
         RedrawWindow(window->get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
+const char* PlaylistView::PlaylistViewSearchContext::get_item_text(size_t index)
+{
+    constexpr size_t max_batch_size = 1000;
+
+    if (!m_start_index) {
+        m_playlist_manager->activeplaylist_get_all_items(m_tracks);
+        m_items.resize(m_tracks.size());
+        GetLocalTime(&m_systemtime);
+        m_start_index = index;
+    } else if (m_items[index]) {
+        return m_items[index]->c_str();
+    }
+
+    const auto batch_end_index
+        = std::min(index + max_batch_size, index < *m_start_index ? *m_start_index : m_tracks.size());
+
+    const auto batch_size = batch_end_index - index;
+    const auto batch_tracks = pfc::list_partial_ref_t(m_tracks, index, batch_size);
+
+    const bool has_global_variables = m_global_script.is_valid();
+
+    m_metadb->queryMulti_(batch_tracks, [this, index, has_global_variables](size_t offset, const metadb_v2_rec_t& rec) {
+        metadb_handle_v2::ptr track;
+        track &= m_tracks[index + offset];
+
+        GlobalVariableList global_variables;
+        DateTitleformatHook tf_hook_date(&m_systemtime);
+        PlaylistNameTitleformatHook tf_hook_playlist_name;
+
+        if (has_global_variables) {
+            SetGlobalTitleformatHook<true, false> tf_hook_set_global(global_variables);
+            SplitterTitleformatHook tf_hook(&tf_hook_set_global, &tf_hook_date, &tf_hook_playlist_name);
+            pfc::string8 _;
+            track->formatTitle_v2(rec, &tf_hook, _, m_global_script, nullptr);
+        }
+
+        std::string title;
+        mmh::StringAdaptor adapted_title(title);
+
+        SetGlobalTitleformatHook<false, true> tf_hook_get_global(global_variables);
+        SplitterTitleformatHook tf_hook(
+            has_global_variables ? &tf_hook_get_global : nullptr, &tf_hook_date, &tf_hook_playlist_name);
+        track->formatTitle_v2(rec, &tf_hook, adapted_title, m_column_script, nullptr);
+        m_items[index + offset] = std::move(title);
+    });
+
+    return m_items[index]->c_str();
+}
+
 void PlaylistView::s_create_message_window()
 {
     uie::container_window_v3_config config(L"{columns_ui_playlist_view_message_window_goJRO8xwg7s}", false);
