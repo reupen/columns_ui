@@ -350,10 +350,10 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         bool b_was_focused = GetFocus() == wnd;
         if (!b_was_focused)
             m_no_next_edit = true;
-        //#ifdef INLINE_EDIT
+        // #ifdef INLINE_EDIT
         exit_inline_edit();
         //            g_no_next_edit = false;
-        //#endif
+        // #endif
         dragged = false;
         SetFocus(wnd);
         SetCapture(wnd);
@@ -374,10 +374,10 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (idx >= 0) {
             //        playlist_oper * playlist_api = playlist_api;
             //                playlist_api->set_playback_cursor(idx);
-            //#ifdef INLINE_EDIT
+            // #ifdef INLINE_EDIT
             m_prev_sel = (playlist_api->activeplaylist_is_item_selected(idx) && !m_wnd_edit
                 && (playlist_api->activeplaylist_get_selection_count(2) == 1));
-            //#endif
+            // #endif
 
             if (!is_visible(idx))
                 SendMessage(wnd_playlist, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0), 0);
@@ -502,9 +502,9 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         drag_type = 0;
         dragstartitem = 0;
         dragitem = 0;
-        //#ifdef INLINE_EDIT
+        // #ifdef INLINE_EDIT
         m_no_next_edit = false;
-        //#endif
+        // #endif
     } break;
     case WM_MOUSEMOVE: {
         if (false && g_tooltip) {
@@ -723,11 +723,11 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         int idx = hittest_item(GET_X_LPARAM(lp), GET_Y_LPARAM(lp), true);
 
         if (idx >= 0) {
-            //#ifdef INLINE_EDIT
+            // #ifdef INLINE_EDIT
             exit_inline_edit();
             m_no_next_edit = true;
-            //#endif
-            // if (!is_visible(idx)) SendMessage(wnd_playlist, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0),0);
+            // #endif
+            //  if (!is_visible(idx)) SendMessage(wnd_playlist, WM_VSCROLL, MAKEWPARAM(SB_LINEDOWN, 0),0);
 
 #if 0
             // DEATH's code
@@ -1128,7 +1128,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
         return 0;
 
-    //#ifdef INLINE_EDIT
+    // #ifdef INLINE_EDIT
     case WM_PARENTNOTIFY: {
         if (wp == WM_DESTROY) {
             if (m_wnd_edit && (HWND)lp == m_wnd_edit)
@@ -1161,7 +1161,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     } break;
 
-    //#endif
+    // #endif
     case WM_NOTIFY:
         switch (((LPNMHDR)lp)->idFrom) {
         case ID_PLAYLIST_TOOLTIP:

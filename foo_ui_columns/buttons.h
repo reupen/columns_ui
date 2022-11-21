@@ -373,33 +373,23 @@ public:
 
 namespace pfc {
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::ImageIdentifier> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::ImageIdentifier> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::CustomImageIdentifier> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::CustomImageIdentifier> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::ButtonIdentifier> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::ButtonIdentifier> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::Identifier> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Identifier> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::Appearance> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Appearance> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::ConfigVersion> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::ConfigVersion> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::Show> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Show> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::Filter> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Filter> : public traits_rawobject {};
 template <>
-class traits_t<cui::toolbars::buttons::ButtonsToolbar::Type> : public traits_rawobject {
-};
+class traits_t<cui::toolbars::buttons::ButtonsToolbar::Type> : public traits_rawobject {};
 template <>
-class traits_t<uie::t_mask> : public traits_rawobject {
-};
+class traits_t<uie::t_mask> : public traits_rawobject {};
 } // namespace pfc

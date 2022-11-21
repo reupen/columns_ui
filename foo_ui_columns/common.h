@@ -14,11 +14,9 @@ enum Alignment {
 
 namespace pfc {
 template <>
-class traits_t<PlaylistFilterType> : public traits_rawobject {
-};
+class traits_t<PlaylistFilterType> : public traits_rawobject {};
 template <>
-class traits_t<Alignment> : public traits_rawobject {
-};
+class traits_t<Alignment> : public traits_rawobject {};
 } // namespace pfc
 
 const char* strchr_n(const char* src, char c, unsigned len = -1);
