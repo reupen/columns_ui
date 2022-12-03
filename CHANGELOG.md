@@ -25,6 +25,9 @@
 - A crash when a third-party spiltter incorrectly destroys a built-in panel was
   resolved. [[#624](https://github.com/reupen/columns_ui/pull/624)]
 
+- Excess top and bottom button padding in a buttons toolbar in ‘no edges’ mode
+  was removed. [[#638](https://github.com/reupen/columns_ui/pull/638)]
+
 ### Internal changes
 
 - The component is now compiled with Visual Studio 2022 17.4.
