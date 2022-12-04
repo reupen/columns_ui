@@ -267,7 +267,6 @@ void ButtonsToolbar::create_toolbar()
             ex_style | TBSTYLE_EX_DRAWDDARROWS | (!m_text_below ? TBSTYLE_EX_MIXEDBUTTONS : 0));
 
         SendMessage(wnd_toolbar, TB_SETBITMAPSIZE, 0, MAKELONG(button_width, button_height));
-        // SendMessage(wnd_toolbar, TB_SETBUTTONSIZE, (WPARAM) 0, MAKELONG(width,height));
 
         // todo: custom padding
         const auto padding = SendMessage(wnd_toolbar, TB_GETPADDING, 0, 0);
@@ -319,6 +318,14 @@ void ButtonsToolbar::create_toolbar()
         }
 
         ShowWindow(wnd_toolbar, SW_SHOWNORMAL);
+
+        const auto all_buttons_without_text
+            = ranges::all_of(m_buttons, [](auto&& button) { return button.m_show == SHOW_IMAGE; });
+
+        if (all_buttons_without_text && m_appearance == APPEARANCE_NOEDGE) {
+            SendMessage(wnd_toolbar, TB_SETBUTTONSIZE, 0, MAKELONG(button_width, button_height));
+        }
+
         SendMessage(wnd_toolbar, TB_AUTOSIZE, 0, 0);
     }
 }
