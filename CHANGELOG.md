@@ -5,7 +5,8 @@
 ### Features
 
 - Support for static SVG files was added to the Buttons toolbar.
-  [[#628](https://github.com/reupen/columns_ui/pull/628)]
+  [[#628](https://github.com/reupen/columns_ui/pull/628),
+  [#643](https://github.com/reupen/columns_ui/pull/643)]
 
   This requires the SVG services component. Text is not supported.
 

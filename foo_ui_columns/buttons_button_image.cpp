@@ -77,7 +77,7 @@ bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& c
 
 void ButtonsToolbar::ButtonImage::load_custom_svg_image(const char* full_path, int width, int height)
 {
-    svg_services::svg_renderer::ptr svg_api;
+    svg_services::svg_services::ptr svg_api;
 
     if (!fb2k::std_api_try_get(svg_api)) {
         throw exception_service_not_found(
@@ -94,8 +94,9 @@ void ButtonsToolbar::ButtonImage::load_custom_svg_image(const char* full_path, i
         gsl::narrow<unsigned>(render_width) * 4, {}};
     bitmap_data.data.resize(bitmap_data.stride * bitmap_data.height);
 
-    svg_api->render(svg_data->data(), svg_data->size(), render_width, render_height, bitmap_data.data.data(),
-        bitmap_data.data.size());
+    const auto svg_document = svg_api->open(svg_data->data(), svg_data->size());
+    svg_document->render(render_width, render_height, svg_services::Position::Centred, svg_services::ScalingMode::Fit,
+        svg_services::PixelFormat::BGRA, bitmap_data.data.data(), bitmap_data.data.size());
 
     const auto bitmap_source = create_bitmap_source_from_bitmap_data(bitmap_data);
     m_bm = wic::create_hbitmap_from_bitmap_source(bitmap_source);
@@ -137,8 +138,6 @@ void ButtonsToolbar::ButtonImage::load_default_image(
     } catch (const std::exception& ex) {
         fbh::print_to_console(u8"Buttons toolbar – error resizing default image: "_pcc, ex.what());
     }
-
-    return;
 }
 
 bool ButtonsToolbar::ButtonImage::load(std::optional<std::reference_wrapper<Button::CustomImage>> custom_image,

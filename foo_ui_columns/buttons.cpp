@@ -691,7 +691,7 @@ INT_PTR CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, 
 
                 std::vector extensions = {"*.bmp"s, "*.gif"s, "*.ico"s, "*.png"s, "*.tiff"s, "*.webp"s};
 
-                if (static_api_test_t<svg_services::svg_renderer>()) {
+                if (static_api_test_t<svg_services::svg_services>()) {
                     extensions.emplace_back("*.svg"s);
                     std::ranges::sort(extensions);
                 }
