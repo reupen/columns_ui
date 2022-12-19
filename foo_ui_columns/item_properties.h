@@ -200,7 +200,8 @@ private:
     static std::vector<ItemProperties*> g_windows;
 
     ui_selection_holder::ptr m_selection_holder;
-    metadb_handle_list m_handles, m_selection_handles;
+    metadb_handle_list m_handles;
+    metadb_handle_list m_selection_handles;
     pfc::list_t<Field> m_fields;
     bool m_callback_registered{false};
     uint32_t m_tracking_mode;
@@ -216,6 +217,9 @@ private:
     size_t m_edit_column, m_edit_index;
     pfc::string8 m_edit_field;
     metadb_handle_list m_edit_handles;
+
+    library_meta_autocomplete::ptr m_library_autocomplete_v1;
+    library_meta_autocomplete_v2::ptr m_library_autocomplete_v2;
 };
 
 } // namespace cui::panels::item_properties
