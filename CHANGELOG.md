@@ -19,6 +19,10 @@
   The list of values is provided by the foobar2000 core and can be configured in
   Advanced preferences, under Display/Autocomplete fields.
 
+- Autcompletion in playlist view inline editing was updated to use the latest
+  foobar2000 API on foobar2000 1.6.1 and newer.
+  [[#647](https://github.com/reupen/columns_ui/pull/647)]
+
 ### Bug fixes
 
 - A bug where ampersands didn’t render correctly in tab names in the Playlist

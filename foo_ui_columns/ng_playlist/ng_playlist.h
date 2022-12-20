@@ -682,8 +682,8 @@ private:
     std::shared_ptr<ArtworkReaderManager> m_artwork_manager;
     ui_selection_holder::ptr m_selection_holder;
 
-    // pfc::list_t<group_t> m_groups;
-    // pfc::list_t<style_data_t> m_style_data;
+    library_meta_autocomplete::ptr m_library_autocomplete_v1;
+    library_meta_autocomplete_v2::ptr m_library_autocomplete_v2;
 };
 
 class PlaylistViewDropTarget : public IDropTarget {

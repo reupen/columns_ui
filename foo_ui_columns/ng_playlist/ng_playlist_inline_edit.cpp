@@ -103,14 +103,22 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t
         p_text = "<multiple values>";
     }
 
-    try {
-        library_meta_autocomplete::ptr p_library_autocomplete = standard_api_create_t<library_meta_autocomplete>();
-        p_flags |= inline_edit_autocomplete;
-        pfc::com_ptr_t<IUnknown> pUnk;
-        p_library_autocomplete->get_value_list(m_edit_field, pUnk);
-        pAutocompleteEntries = pUnk.get_ptr();
-    } catch (exception_service_not_found const&) {
+    if (m_library_autocomplete_v2.is_empty() && m_library_autocomplete_v1.is_empty()) {
+        if (!library_meta_autocomplete_v2::tryGet(m_library_autocomplete_v2)) {
+            m_library_autocomplete_v1 = library_meta_autocomplete::get();
+        }
     }
+
+    p_flags |= inline_edit_autocomplete;
+    pfc::com_ptr_t<IUnknown> autocomplete_entries;
+
+    if (m_library_autocomplete_v2.is_valid())
+        m_library_autocomplete_v2->get_value_list_async(m_edit_field, autocomplete_entries);
+    else
+        m_library_autocomplete_v1->get_value_list(m_edit_field, autocomplete_entries);
+
+    pAutocompleteEntries = autocomplete_entries.get_ptr();
+
     return true;
 }
 
