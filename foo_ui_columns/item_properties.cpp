@@ -212,6 +212,8 @@ void ItemProperties::notify_on_destroy()
     m_selection_handles.remove_all();
     m_edit_handles.remove_all();
     m_selection_holder.release();
+    m_library_autocomplete_v1.reset();
+    m_library_autocomplete_v2.reset();
 }
 
 void ItemProperties::notify_on_set_focus(HWND wnd_lost)
@@ -844,36 +846,53 @@ void ItemProperties::notify_save_inline_edit(const char* value)
 bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
     pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
 {
-    size_t indices_count = indices.get_count();
-    if (m_handles.get_count() && column == 1 && indices_count == 1 && indices[0] < m_fields.get_count()) {
-        m_edit_index = indices[0];
-        m_edit_column = column;
-        m_edit_field = m_fields[m_edit_index].m_name;
-        m_edit_handles = m_handles;
+    const size_t indices_count = indices.get_count();
 
-        pfc::string8_fast_aggressive text;
-        pfc::string8_fast_aggressive temp;
-        {
-            metadb_info_container::ptr p_info;
-            if (m_edit_handles[0]->get_info_ref(p_info))
-                g_print_field(m_edit_field, p_info->info(), text);
-            size_t count = m_handles.get_count();
-            for (size_t i = 1; i < count; i++) {
-                temp.reset();
-                if (m_edit_handles[i]->get_info_ref(p_info))
-                    g_print_field(m_edit_field, p_info->info(), temp);
-                if (strcmp(temp, text) != 0) {
-                    text = "<mixed values>";
-                    break;
-                }
+    if (m_handles.get_count() == 0 || column != 1 || indices_count != 1 || indices[0] >= m_fields.get_count())
+        return false;
+
+    m_edit_index = indices[0];
+    m_edit_column = column;
+    m_edit_field = m_fields[m_edit_index].m_name;
+    m_edit_handles = m_handles;
+
+    if (m_library_autocomplete_v2.is_empty() && m_library_autocomplete_v1.is_empty()) {
+        if (!library_meta_autocomplete_v2::tryGet(m_library_autocomplete_v2)) {
+            m_library_autocomplete_v1 = library_meta_autocomplete::get();
+        }
+    }
+
+    p_flags |= inline_edit_autocomplete;
+    pfc::com_ptr_t<IUnknown> autocomplete_entries;
+
+    if (m_library_autocomplete_v2.is_valid())
+        m_library_autocomplete_v2->get_value_list_async(m_edit_field, autocomplete_entries);
+    else
+        m_library_autocomplete_v1->get_value_list(m_edit_field, autocomplete_entries);
+
+    pAutocompleteEntries = autocomplete_entries.get_ptr();
+
+    pfc::string8_fast_aggressive text;
+    pfc::string8_fast_aggressive temp;
+    {
+        metadb_info_container::ptr p_info;
+        if (m_edit_handles[0]->get_info_ref(p_info))
+            g_print_field(m_edit_field, p_info->info(), text);
+        size_t count = m_handles.get_count();
+        for (size_t i = 1; i < count; i++) {
+            temp.reset();
+            if (m_edit_handles[i]->get_info_ref(p_info))
+                g_print_field(m_edit_field, p_info->info(), temp);
+            if (strcmp(temp, text) != 0) {
+                text = "<mixed values>";
+                break;
             }
         }
-
-        p_text = text;
-
-        return true;
     }
-    return false;
+
+    p_text = text;
+
+    return true;
 }
 
 void ItemProperties::g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out)

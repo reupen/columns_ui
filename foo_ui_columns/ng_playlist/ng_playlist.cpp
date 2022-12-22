@@ -743,6 +743,9 @@ void PlaylistView::notify_on_destroy()
     m_playlist_api.release();
     m_column_mask.set_size(0);
 
+    m_library_autocomplete_v1.reset();
+    m_library_autocomplete_v2.reset();
+
     m_artwork_manager->deinitialise();
     m_artwork_manager.reset();
 
