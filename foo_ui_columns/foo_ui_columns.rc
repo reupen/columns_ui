@@ -1091,6 +1091,56 @@ IDB_LIGHT_NOCOVER       PNG                     "assets\\vectors\\rendered\\ligh
 
 IDB_DARK_NOCOVER        PNG                     "assets\\vectors\\rendered\\dark-placeholder-artwork.png"
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// SVG
+//
+
+IDV_LIGHT_PLAY          SVG                     "assets\\vectors\\minified\\light-play.svg"
+
+IDV_LIGHT_STOP          SVG                     "assets\\vectors\\minified\\light-stop.svg"
+
+IDV_LIGHT_NEXT          SVG                     "assets\\vectors\\minified\\light-next.svg"
+
+IDV_LIGHT_RAND          SVG                     "assets\\vectors\\minified\\light-play-random.svg"
+
+IDV_LIGHT_OPEN          SVG                     "assets\\vectors\\minified\\light-open.svg"
+
+IDV_LIGHT_PAUSE         SVG                     "assets\\vectors\\minified\\light-pause.svg"
+
+IDV_LIGHT_PREV          SVG                     "assets\\vectors\\minified\\light-previous.svg"
+
+IDV_LIGHT_STARON        SVG                     "assets\\vectors\\minified\\light-star-gold.svg"
+
+IDV_LIGHT_STAROFF       SVG                     "assets\\vectors\\minified\\light-star-grey.svg"
+
+IDV_LIGHT_RESET         SVG                     "assets\\vectors\\minified\\light-reset.svg"
+
+IDV_DARK_NEXT           SVG                     "assets\\vectors\\minified\\dark-next.svg"
+
+IDV_DARK_OPEN           SVG                     "assets\\vectors\\minified\\dark-open.svg"
+
+IDV_DARK_PAUSE          SVG                     "assets\\vectors\\minified\\dark-pause.svg"
+
+IDV_DARK_PLAY           SVG                     "assets\\vectors\\minified\\dark-play.svg"
+
+IDV_DARK_RAND           SVG                     "assets\\vectors\\minified\\dark-play-random.svg"
+
+IDV_DARK_PREV           SVG                     "assets\\vectors\\minified\\dark-previous.svg"
+
+IDV_DARK_STOP           SVG                     "assets\\vectors\\minified\\dark-stop.svg"
+
+IDV_DARK_STAROFF        SVG                     "assets\\vectors\\minified\\dark-star-grey.svg"
+
+IDV_DARK_STARON         SVG                     "assets\\vectors\\minified\\dark-star-gold.svg"
+
+IDV_DARK_RESET          SVG                     "assets\\vectors\\minified\\dark-reset.svg"
+
+IDV_DARK_PADLOCK        SVG                     "assets\\vectors\\minified\\dark-padlock.svg"
+
+IDV_LIGHT_PADLOCK       SVG                     "assets\\vectors\\minified\\light-padlock.svg"
+
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////
 
