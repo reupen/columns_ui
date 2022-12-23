@@ -1037,49 +1037,49 @@ IDB_BLANK               BITMAP                  "assets\\blank.bmp"
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-IDI_LIGHT_PLAY          ICON                    "assets\\light-play.ico"
+IDI_LIGHT_PLAY          ICON                    "assets\\vectors\\rendered\\light-play.ico"
 
-IDI_LIGHT_STOP          ICON                    "assets\\light-stop.ico"
+IDI_LIGHT_STOP          ICON                    "assets\\vectors\\rendered\\light-stop.ico"
 
-IDI_LIGHT_NEXT          ICON                    "assets\\light-next.ico"
+IDI_LIGHT_NEXT          ICON                    "assets\\vectors\\rendered\\light-next.ico"
 
-IDI_LIGHT_RAND          ICON                    "assets\\light-play-random.ico"
+IDI_LIGHT_RAND          ICON                    "assets\\vectors\\rendered\\light-play-random.ico"
 
-IDI_LIGHT_OPEN          ICON                    "assets\\light-open.ico"
+IDI_LIGHT_OPEN          ICON                    "assets\\vectors\\rendered\\light-open.ico"
 
-IDI_LIGHT_PAUSE         ICON                    "assets\\light-pause.ico"
+IDI_LIGHT_PAUSE         ICON                    "assets\\vectors\\rendered\\light-pause.ico"
 
-IDI_LIGHT_PREV          ICON                    "assets\\light-previous.ico"
+IDI_LIGHT_PREV          ICON                    "assets\\vectors\\rendered\\light-previous.ico"
 
-IDI_LIGHT_STARON        ICON                    "assets\\light-star-gold.ico"
+IDI_LIGHT_STARON        ICON                    "assets\\vectors\\rendered\\light-star-gold.ico"
 
-IDI_LIGHT_STAROFF       ICON                    "assets\\light-star-grey.ico"
+IDI_LIGHT_STAROFF       ICON                    "assets\\vectors\\rendered\\light-star-grey.ico"
 
-IDI_LIGHT_RESET         ICON                    "assets\\light-reset.ico"
+IDI_LIGHT_RESET         ICON                    "assets\\vectors\\rendered\\light-reset.ico"
 
-IDI_DARK_NEXT           ICON                    "assets\\dark-next.ico"
+IDI_DARK_NEXT           ICON                    "assets\\vectors\\rendered\\dark-next.ico"
 
-IDI_DARK_OPEN           ICON                    "assets\\dark-open.ico"
+IDI_DARK_OPEN           ICON                    "assets\\vectors\\rendered\\dark-open.ico"
 
-IDI_DARK_PAUSE          ICON                    "assets\\dark-pause.ico"
+IDI_DARK_PAUSE          ICON                    "assets\\vectors\\rendered\\dark-pause.ico"
 
-IDI_DARK_PLAY           ICON                    "assets\\dark-play.ico"
+IDI_DARK_PLAY           ICON                    "assets\\vectors\\rendered\\dark-play.ico"
 
-IDI_DARK_RAND           ICON                    "assets\\dark-play-random.ico"
+IDI_DARK_RAND           ICON                    "assets\\vectors\\rendered\\dark-play-random.ico"
 
-IDI_DARK_PREV           ICON                    "assets\\dark-previous.ico"
+IDI_DARK_PREV           ICON                    "assets\\vectors\\rendered\\dark-previous.ico"
 
-IDI_DARK_STOP           ICON                    "assets\\dark-stop.ico"
+IDI_DARK_STOP           ICON                    "assets\\vectors\\rendered\\dark-stop.ico"
 
-IDI_DARK_STAROFF        ICON                    "assets\\dark-star-grey.ico"
+IDI_DARK_STAROFF        ICON                    "assets\\vectors\\rendered\\dark-star-grey.ico"
 
-IDI_DARK_STARON         ICON                    "assets\\dark-star-gold.ico"
+IDI_DARK_STARON         ICON                    "assets\\vectors\\rendered\\dark-star-gold.ico"
 
-IDI_DARK_RESET          ICON                    "assets\\dark-reset.ico"
+IDI_DARK_RESET          ICON                    "assets\\vectors\\rendered\\dark-reset.ico"
 
-IDI_DARK_PADLOCK        ICON                    "assets\\dark-padlock.ico"
+IDI_DARK_PADLOCK        ICON                    "assets\\vectors\\rendered\\dark-padlock.ico"
 
-IDI_LIGHT_PADLOCK       ICON                    "assets\\light-padlock.ico"
+IDI_LIGHT_PADLOCK       ICON                    "assets\\vectors\\rendered\\light-padlock.ico"
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1087,9 +1087,9 @@ IDI_LIGHT_PADLOCK       ICON                    "assets\\light-padlock.ico"
 // PNG
 //
 
-IDB_LIGHT_NOCOVER       PNG                     "assets\\light-placeholder-artwork.png"
+IDB_LIGHT_NOCOVER       PNG                     "assets\\vectors\\rendered\\light-placeholder-artwork.png"
 
-IDB_DARK_NOCOVER        PNG                     "assets\\dark-placeholder-artwork.png"
+IDB_DARK_NOCOVER        PNG                     "assets\\vectors\\rendered\\dark-placeholder-artwork.png"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

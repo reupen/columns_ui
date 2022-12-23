@@ -530,30 +530,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\blank.bmp" />
-    <Image Include="assets\dark-next.ico" />
-    <Image Include="assets\dark-open.ico" />
-    <Image Include="assets\dark-padlock.ico" />
-    <Image Include="assets\dark-pause.ico" />
-    <Image Include="assets\dark-play-random.ico" />
-    <Image Include="assets\dark-play.ico" />
-    <Image Include="assets\dark-previous.ico" />
-    <Image Include="assets\dark-reset.ico" />
-    <Image Include="assets\dark-star-gold.ico" />
-    <Image Include="assets\dark-star-grey.ico" />
-    <Image Include="assets\dark-stop.ico" />
-    <Image Include="assets\light-next.ico" />
-    <Image Include="assets\light-open.ico" />
-    <Image Include="assets\light-padlock.ico" />
-    <Image Include="assets\light-pause.ico" />
-    <Image Include="assets\light-placeholder-artwork.png" />
-    <Image Include="assets\light-play-random.ico" />
-    <Image Include="assets\light-play.ico" />
-    <Image Include="assets\light-previous.ico" />
-    <Image Include="assets\dark-placeholder-artwork.png" />
-    <Image Include="assets\light-reset.ico" />
-    <Image Include="assets\light-star-gold.ico" />
-    <Image Include="assets\light-star-grey.ico" />
-    <Image Include="assets\light-stop.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
