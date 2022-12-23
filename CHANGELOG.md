@@ -23,6 +23,9 @@
   foobar2000 API on foobar2000 1.6.1 and newer.
   [[#647](https://github.com/reupen/columns_ui/pull/647)]
 
+- Dark menus were enabled on Windows 11 build 22623.
+  [[#649](https://github.com/reupen/columns_ui/pull/649)]
+
 ### Bug fixes
 
 - A bug where ampersands didn’t render correctly in tab names in the Playlist
