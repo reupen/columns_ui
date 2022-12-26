@@ -42,16 +42,12 @@
     <clipPath
        clipPathUnits="userSpaceOnUse"
        id="clipPath1867">
-      <path
-         style="display:inline;fill:none;fill-opacity:1;stroke:none;stroke-width:6.5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-         sodipodi:type="inkscape:offset"
-         inkscape:radius="0"
-         inkscape:original="M 128 0 A 128 128 0 0 0 0 128 A 128 128 0 0 0 128 256 A 128 128 0 0 0 256 128 A 128 128 0 0 0 128 0 z "
-         xlink:href="#circle1409"
-         id="path1869"
-         inkscape:href="#circle1409"
-         d="M 128,0 A 128,128 0 0 0 0,128 128,128 0 0 0 128,256 128,128 0 0 0 256,128 128,128 0 0 0 128,0 Z"
-         clip-path="none" />
+      <circle
+         cx="128"
+         cy="128"
+         r="128"
+         style="display:inline;fill:none;stroke:none"
+         id="circle198" />
     </clipPath>
   </defs>
   <g
