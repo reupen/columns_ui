@@ -2,6 +2,8 @@
 
 #include "wic.h"
 
+#include "gdi.h"
+
 namespace cui::wic {
 
 namespace {
@@ -128,31 +130,8 @@ wil::unique_hbitmap create_hbitmap_from_bitmap_source(const wil::com_ptr_t<IWICB
 {
     const auto bitmap_data = decode_image(source);
 
-    BITMAPINFOHEADER bmi{};
-
-    bmi.biSize = sizeof(bmi);
-    bmi.biWidth = gsl::narrow<long>(bitmap_data.width);
-    bmi.biHeight = -gsl::narrow<long>(bitmap_data.height);
-    bmi.biPlanes = 1;
-    bmi.biBitCount = 32;
-    bmi.biCompression = BI_RGB;
-    bmi.biClrUsed = 0;
-    bmi.biClrImportant = 0;
-
-    std::array<uint8_t, sizeof(BITMAPINFOHEADER)> bm_data{};
-
-    auto* bi = reinterpret_cast<BITMAPINFO*>(bm_data.data());
-    bi->bmiHeader = bmi;
-
-    void* data{};
-    wil::unique_hbitmap hbitmap(CreateDIBSection(nullptr, bi, DIB_RGB_COLORS, &data, nullptr, 0));
-
-    if (data) {
-        GdiFlush();
-        memcpy(data, bitmap_data.data.data(), bitmap_data.data.size());
-    }
-
-    return hbitmap;
+    return gdi::create_hbitmap_from_32bpp_data(gsl::narrow<int>(bitmap_data.width),
+        gsl::narrow<int>(bitmap_data.height), bitmap_data.data.data(), bitmap_data.data.size());
 }
 
 BitmapData decode_image_data(const void* data, size_t size)

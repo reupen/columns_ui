@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "dark_mode.h"
+#include "resource_utils.h"
 
 void g_ui_selection_manager_register_callback_no_now_playing_fallback(ui_selection_callback* p_callback)
 {
@@ -60,13 +61,11 @@ void g_compare_file_with_bytes(
     }
 }
 
-HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext)
+HBITMAP LoadMonoBitmap(WORD uid, COLORREF cr_btntext)
 {
     HBITMAP rv = nullptr;
-    HRSRC rs = FindResource(core_api::get_my_instance(), MAKEINTRESOURCE(uid), RT_BITMAP);
-    HGLOBAL glb = LoadResource(core_api::get_my_instance(), rs);
-    void* p_res = LockResource(glb);
-    auto* p_bih = (LPBITMAPINFO)p_res;
+    const auto [data, _] = cui::resource_utils::get_resource_data(uid, RT_BITMAP);
+    auto* p_bih = (LPBITMAPINFO)data;
     if (p_bih) {
         unsigned num_colours = p_bih->bmiHeader.biClrUsed;
         if (!num_colours && p_bih->bmiHeader.biBitCount <= 8)

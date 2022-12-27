@@ -1,4 +1,5 @@
 #pragma once
+#include "icons.h"
 
 namespace colours {
 enum ColourID {
@@ -57,10 +58,8 @@ public:
     HWND get_wnd() const { return m_wnd; }
 
 private:
-    static constexpr WORD light_taskbar_icons[]
-        = {IDI_LIGHT_STOP, IDI_LIGHT_PREV, IDI_LIGHT_PAUSE, IDI_LIGHT_PLAY, IDI_LIGHT_NEXT, IDI_LIGHT_RAND};
-    static constexpr WORD dark_taskbar_icons[]
-        = {IDI_DARK_STOP, IDI_DARK_PREV, IDI_DARK_PAUSE, IDI_DARK_PLAY, IDI_DARK_NEXT, IDI_DARK_RAND};
+    static constexpr std::array taskbar_icon_configs{icons::built_in::stop, icons::built_in::previous,
+        icons::built_in::pause, icons::built_in::play, icons::built_in::next, icons::built_in::random};
 
     static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static void warn_if_ui_hacks_installed();

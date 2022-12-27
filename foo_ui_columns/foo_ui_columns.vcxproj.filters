@@ -575,6 +575,18 @@
     <ClCompile Include="core_dark_list_view.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="gdi.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="svg.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_utils.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="icons.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -825,6 +837,18 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="core_dark_list_view.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="gdi.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="svg.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_utils.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="icons.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

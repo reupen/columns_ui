@@ -88,8 +88,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             const int cy = GetSystemMetrics(SM_CYSMICON);
 
             m_taskbar_button_images.reset(
-                ImageList_Create(cx, cy, ILC_COLOR32, gsl::narrow<int>(std::size(light_taskbar_icons)), 0));
-            ImageList_SetImageCount(m_taskbar_button_images.get(), gsl::narrow<int>(std::size(light_taskbar_icons)));
+                ImageList_Create(cx, cy, ILC_COLOR32, gsl::narrow<int>(std::size(taskbar_icon_configs)), 0));
+            ImageList_SetImageCount(m_taskbar_button_images.get(), gsl::narrow<int>(std::size(taskbar_icon_configs)));
 
             if (update_taskbar_button_images())
                 queue_taskbar_button_update(false);

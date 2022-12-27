@@ -4,11 +4,19 @@
 
 ### Features
 
-- Support for static SVG files was added to the Buttons toolbar.
-  [[#628](https://github.com/reupen/columns_ui/pull/628),
+- Support for static [SVG files](https://en.wikipedia.org/wiki/SVG) was added to
+  the Buttons toolbar. [[#628](https://github.com/reupen/columns_ui/pull/628),
   [#643](https://github.com/reupen/columns_ui/pull/643)]
 
-  This requires the SVG services component. Text is not supported.
+  This requires the [SVG services component](https://yuo.be/svg-services).
+
+- Built-in icons in non-standard sizes are now rendered using an
+  [SVG image](https://en.wikipedia.org/wiki/SVG) when the
+  [SVG services component](https://yuo.be/svg-services) is installed.
+  [[#650](https://github.com/reupen/columns_ui/pull/650)]
+
+  This improves quality for icons displayed in sizes where a pre-rendered
+  version in that size isn’t bundled in Columns UI.
 
 - Performance when typing into the playlist view to jump to an item was improved
   in foobar2000 2.0. [[#629](https://github.com/reupen/columns_ui/pull/629)]

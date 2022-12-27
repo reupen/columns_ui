@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "ng_playlist.h"
+#include "resource_utils.h"
 #include "wic.h"
 
 namespace cui::panels::playlist_view {
@@ -8,15 +9,12 @@ bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback
 {
     bool ret = false;
     const WORD resource_id = colours::is_dark_mode_active() ? IDB_DARK_NOCOVER : IDB_LIGHT_NOCOVER;
-    HRSRC rsrc = FindResource(core_api::get_my_instance(), MAKEINTRESOURCE(resource_id), L"PNG");
-    HGLOBAL handle = LoadResource(core_api::get_my_instance(), rsrc);
-    DWORD size = SizeofResource(core_api::get_my_instance(), rsrc);
-    LPVOID ptr = LockResource(handle);
-    if (ptr && size) {
-        p_out = album_art_data_impl::g_create(ptr, size);
+    const auto [data, size] = resource_utils::get_resource_data(resource_id, L"PNG");
+
+    if (data && size) {
+        p_out = album_art_data_impl::g_create(data, size);
         ret = true;
     }
-    FreeResource(handle);
     return ret;
 }
 

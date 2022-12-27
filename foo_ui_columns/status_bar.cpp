@@ -19,6 +19,7 @@ struct StatusBarState {
     std::string track_count_text;
     std::string volume_text;
     wil::unique_hfont font;
+    wil::unique_hbitmap lock_bitmap;
     wil::unique_hicon lock_icon;
     std::unique_ptr<colours::dark_mode_notifier> dark_mode_notifier;
 };
@@ -35,6 +36,7 @@ void on_status_font_change()
     SetWindowFont(g_status, nullptr, FALSE);
 
     state->lock_icon.reset();
+    state->lock_bitmap.reset();
     state->font.reset(fb2k::std_api_get<fonts::manager>()->get_font(font_client_status_guid));
 
     SetWindowFont(g_status, state->font.get(), TRUE);
@@ -337,6 +339,7 @@ void create_window()
         on_status_font_change();
 
         state->dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([wnd = g_status] {
+            state->lock_bitmap.reset();
             state->lock_icon.reset();
             RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
         });
@@ -406,14 +409,26 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     const auto icon_size = font_height - 2_spx;
 
     if (part_id == StatusBarPartID::PlaylistLock) {
-        if (!state->lock_icon) {
-            const WORD resource_id = colours::is_dark_mode_active() ? IDI_DARK_PADLOCK : IDI_LIGHT_PADLOCK;
-            state->lock_icon.reset(static_cast<HICON>(LoadImage(
-                wil::GetModuleInstanceHandle(), MAKEINTRESOURCE(resource_id), IMAGE_ICON, icon_size, icon_size, 0)));
-        }
         const auto icon_y = rc.top + (RECT_CY(rc) - icon_size) / 2;
 
-        DrawIconEx(dc, x, icon_y, state->lock_icon.get(), icon_size, icon_size, 0, nullptr, DI_NORMAL);
+        if (icons::use_svg_icon(icon_size, icon_size)) {
+            if (!state->lock_bitmap) {
+                state->lock_bitmap
+                    = render_svg(icons::built_in::padlock, icon_size, icon_size, svg_services::PixelFormat::PBGRA);
+            }
+
+            const wil::unique_hdc compatible_dc(CreateCompatibleDC(dc));
+            auto _ = wil::SelectObject(compatible_dc.get(), state->lock_bitmap.get());
+            constexpr BLENDFUNCTION blend_function{AC_SRC_OVER, 0, 255, AC_SRC_ALPHA};
+            GdiAlphaBlend(
+                dc, x, icon_y, icon_size, icon_size, compatible_dc.get(), 0, 0, icon_size, icon_size, blend_function);
+        } else {
+            if (!state->lock_icon) {
+                state->lock_icon = load_icon(icons::built_in::padlock, icon_size, icon_size);
+            }
+
+            DrawIconEx(dc, x, icon_y, state->lock_icon.get(), icon_size, icon_size, 0, nullptr, DI_NORMAL);
+        }
         x += icon_size + 2_spx;
     }
 

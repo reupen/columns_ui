@@ -3,6 +3,7 @@
 
 #include "dark_mode.h"
 #include "menu_items.h"
+#include "svg.h"
 
 #define ID_BUTTONS 2001
 
@@ -691,7 +692,7 @@ INT_PTR CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, 
 
                 std::vector extensions = {"*.bmp"s, "*.gif"s, "*.ico"s, "*.png"s, "*.tiff"s, "*.webp"s};
 
-                if (static_api_test_t<svg_services::svg_services>()) {
+                if (svg::is_available()) {
                     extensions.emplace_back("*.svg"s);
                     std::ranges::sort(extensions);
                 }
