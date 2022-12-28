@@ -12,11 +12,14 @@
 #include "status_pane.h"
 #include "layout.h"
 #include "dark_mode.h"
+#include "icons.h"
 #include "notification_area.h"
 #include "status_bar.h"
 #include "migrate.h"
 #include "legacy_artwork_config.h"
 #include "rebar.h"
+#include "resource_utils.h"
+#include "svg.h"
 
 cui::rebar::RebarWindow* g_rebar_window = nullptr;
 LayoutWindow g_layout_window;
@@ -199,12 +202,16 @@ bool cui::MainWindow::update_taskbar_button_images() const
     if (!ImageList_GetIconSize(m_taskbar_button_images.get(), &cx, &cy))
         return false;
 
-    const auto icons = colours::is_dark_mode_active() ? dark_taskbar_icons : light_taskbar_icons;
-
-    for (size_t i = 0; i < std::size(light_taskbar_icons); i++) {
-        wil::unique_hicon icon(static_cast<HICON>(
-            LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(icons[i]), IMAGE_ICON, cx, cy, NULL)));
-        ImageList_ReplaceIcon(m_taskbar_button_images.get(), gsl::narrow<int>(i), icon.get());
+    if (icons::use_svg_icon(cx, cy)) {
+        for (auto [index, icon_config] : ranges::views::enumerate(taskbar_icon_configs)) {
+            auto hbitmap = render_svg(icon_config, cx, cy);
+            ImageList_Replace(m_taskbar_button_images.get(), gsl::narrow<int>(index), hbitmap.get(), nullptr);
+        }
+    } else {
+        for (auto [index, icon_config] : ranges::views::enumerate(taskbar_icon_configs)) {
+            auto icon = load_icon(icon_config, cx, cy);
+            ImageList_ReplaceIcon(m_taskbar_button_images.get(), gsl::narrow<int>(index), icon.get());
+        }
     }
 
     return SUCCEEDED(m_taskbar_list->ThumbBarSetImageList(m_wnd, m_taskbar_button_images.get()));

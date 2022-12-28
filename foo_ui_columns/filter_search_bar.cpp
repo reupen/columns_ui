@@ -4,6 +4,7 @@
 
 #include "filter_config_var.h"
 #include "filter_utils.h"
+#include "icons.h"
 
 namespace cui::panels::filter {
 
@@ -404,24 +405,27 @@ void FilterSearchToolbar::set_window_themes() const
 
 void FilterSearchToolbar::update_toolbar_icons() const
 {
-    const auto is_dark = colours::is_dark_mode_active();
     const int cx = GetSystemMetrics(SM_CXSMICON);
     const int cy = GetSystemMetrics(SM_CYSMICON);
 
-    const WORD grey_star_resource_id = is_dark ? IDI_DARK_STAROFF : IDI_LIGHT_STAROFF;
-    const WORD gold_star_resource_id = is_dark ? IDI_DARK_STARON : IDI_LIGHT_STARON;
-    const WORD reset_resource_id = is_dark ? IDI_DARK_RESET : IDI_LIGHT_RESET;
+    if (icons::use_svg_icon(cx, cy)) {
+        const auto grey_star = render_svg(icons::built_in::grey_star, cx, cy);
+        const auto gold_star = render_svg(icons::built_in::gold_star, cx, cy);
+        const auto reset = render_svg(icons::built_in::reset, cx, cy);
 
-    wil::unique_hicon grey_star(static_cast<HICON>(
-        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(grey_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
-    wil::unique_hicon gold_star(static_cast<HICON>(
-        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(gold_star_resource_id), IMAGE_ICON, cx, cy, NULL)));
-    wil::unique_hicon reset(static_cast<HICON>(
-        LoadImage(core_api::get_my_instance(), MAKEINTRESOURCE(reset_resource_id), IMAGE_ICON, cx, cy, NULL)));
+        ImageList_Replace(m_imagelist, 0, grey_star.get(), nullptr);
+        ImageList_Replace(m_imagelist, 1, gold_star.get(), nullptr);
+        ImageList_Replace(m_imagelist, 2, reset.get(), nullptr);
 
-    ImageList_ReplaceIcon(m_imagelist, 0, grey_star.get());
-    ImageList_ReplaceIcon(m_imagelist, 1, gold_star.get());
-    ImageList_ReplaceIcon(m_imagelist, 2, reset.get());
+    } else {
+        const auto grey_star = load_icon(icons::built_in::grey_star, cx, cy);
+        const auto gold_star = load_icon(icons::built_in::gold_star, cx, cy);
+        const auto reset = load_icon(icons::built_in::reset, cx, cy);
+
+        ImageList_ReplaceIcon(m_imagelist, 0, grey_star.get());
+        ImageList_ReplaceIcon(m_imagelist, 1, gold_star.get());
+        ImageList_ReplaceIcon(m_imagelist, 2, reset.get());
+    }
 }
 
 void FilterSearchToolbar::refresh_favourites(bool is_initial)

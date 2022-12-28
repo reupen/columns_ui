@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="256.0px"
+   height="256.0px"
+   viewBox="0 0 256.0 256.0"
+   version="1.1"
+   id="SVGRoot"
+   sodipodi:docname="dark-stop.svg"
+   inkscape:version="1.1.2 (b8e25be833, 2022-02-05)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview14"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:document-units="px"
+     showgrid="true"
+     inkscape:zoom="4.8728976"
+     inkscape:cx="20.111237"
+     inkscape:cy="124.97697"
+     inkscape:window-width="3840"
+     inkscape:window-height="2068"
+     inkscape:window-x="-12"
+     inkscape:window-y="-12"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid20" />
+  </sodipodi:namedview>
+  <defs
+     id="defs9">
+    <clipPath
+       clipPathUnits="userSpaceOnUse"
+       id="clipPath1867">
+      <circle
+         cx="128"
+         cy="128"
+         r="128"
+         style="display:inline;fill:none;stroke:none"
+         id="circle198" />
+    </clipPath>
+  </defs>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <circle
+       style="display:inline;fill:#000000;fill-opacity:1"
+       id="path69"
+       r="128"
+       cy="128"
+       cx="128" />
+    <circle
+       style="display:inline;fill:none;fill-opacity:1;stroke:#ffffff;stroke-width:20;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.55"
+       id="circle1613"
+       cx="128"
+       cy="128"
+       r="128"
+       clip-path="url(#clipPath1867)" />
+    <rect
+       style="fill:#ffffff;fill-opacity:1"
+       id="rect1356"
+       width="88"
+       height="88"
+       x="84"
+       y="84" />
+  </g>
+</svg>

@@ -260,6 +260,10 @@
     <ClCompile Include="colour_manager.cpp" />
     <ClCompile Include="core_dark_list_view.cpp" />
     <ClCompile Include="font_manager.cpp" />
+    <ClCompile Include="gdi.cpp" />
+    <ClCompile Include="icons.cpp" />
+    <ClCompile Include="resource_utils.cpp" />
+    <ClCompile Include="svg.cpp" />
     <ClCompile Include="system_appearance_manager.cpp" />
     <ClCompile Include="dark_mode.cpp" />
     <ClCompile Include="dark_mode_tabs.cpp" />
@@ -423,13 +427,17 @@
     <ClInclude Include="config_items.h" />
     <ClInclude Include="core_dark_list_view.h" />
     <ClInclude Include="font_manager_data.h" />
+    <ClInclude Include="gdi.h" />
     <ClInclude Include="gdiplus.h" />
     <ClInclude Include="get_msg_hook.h" />
+    <ClInclude Include="icons.h" />
     <ClInclude Include="item_details.h" />
     <ClInclude Include="item_properties.h" />
     <ClInclude Include="menu_helpers.h" />
     <ClInclude Include="metadb_helpers.h" />
     <ClInclude Include="mw_drop_target.h" />
+    <ClInclude Include="resource_utils.h" />
+    <ClInclude Include="svg.h" />
     <ClInclude Include="system_appearance_manager.h" />
     <ClInclude Include="button_items.h" />
     <ClInclude Include="dark_mode.h" />
@@ -530,30 +538,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\blank.bmp" />
-    <Image Include="assets\dark-next.ico" />
-    <Image Include="assets\dark-open.ico" />
-    <Image Include="assets\dark-padlock.ico" />
-    <Image Include="assets\dark-pause.ico" />
-    <Image Include="assets\dark-play-random.ico" />
-    <Image Include="assets\dark-play.ico" />
-    <Image Include="assets\dark-previous.ico" />
-    <Image Include="assets\dark-reset.ico" />
-    <Image Include="assets\dark-star-gold.ico" />
-    <Image Include="assets\dark-star-grey.ico" />
-    <Image Include="assets\dark-stop.ico" />
-    <Image Include="assets\light-next.ico" />
-    <Image Include="assets\light-open.ico" />
-    <Image Include="assets\light-padlock.ico" />
-    <Image Include="assets\light-pause.ico" />
-    <Image Include="assets\light-placeholder-artwork.png" />
-    <Image Include="assets\light-play-random.ico" />
-    <Image Include="assets\light-play.ico" />
-    <Image Include="assets\light-previous.ico" />
-    <Image Include="assets\dark-placeholder-artwork.png" />
-    <Image Include="assets\light-reset.ico" />
-    <Image Include="assets\light-star-gold.ico" />
-    <Image Include="assets\light-star-grey.ico" />
-    <Image Include="assets\light-stop.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

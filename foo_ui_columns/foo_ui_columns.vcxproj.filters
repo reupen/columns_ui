@@ -575,6 +575,18 @@
     <ClCompile Include="core_dark_list_view.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="gdi.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="svg.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="resource_utils.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="icons.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -827,6 +839,18 @@
     <ClInclude Include="core_dark_list_view.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="gdi.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="svg.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="resource_utils.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="icons.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
@@ -841,73 +865,5 @@
     <Image Include="assets\blank.bmp">
       <Filter>Resources</Filter>
     </Image>
-    <Image Include="assets\light-next.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-open.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-pause.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-placeholder-artwork.png">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-play.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-play-random.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-previous.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-reset.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-star-gold.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-star-grey.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\light-stop.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-next.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-open.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-pause.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-play.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-play-random.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-previous.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-stop.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-placeholder-artwork.png">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-reset.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-star-gold.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-star-grey.ico">
-      <Filter>Resources</Filter>
-    </Image>
-    <Image Include="assets\dark-padlock.ico" />
-    <Image Include="assets\light-padlock.ico" />
   </ItemGroup>
 </Project>

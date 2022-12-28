@@ -6,7 +6,7 @@ bool g_ui_selection_manager_is_now_playing_fallback();
 void g_compare_file_with_bytes(
     const service_ptr_t<file>& p1, const pfc::array_t<uint8_t>& p2, bool& b_same, abort_callback& p_abort);
 
-HBITMAP LoadMonoBitmap(INT_PTR uid, COLORREF cr_btntext);
+HBITMAP LoadMonoBitmap(WORD uid, COLORREF cr_btntext);
 BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, bool is_font_vertical, bool is_dark);
 
 namespace cui::helpers {

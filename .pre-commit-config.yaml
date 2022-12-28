@@ -3,6 +3,7 @@ default_language_version:
 exclude: |
   (?x)(
       ^foo_ui_columns/resource.h|
+      ^foo_ui_columns/assets/vectors/minified/.*|
       .rc|
       .vcxproj|
       .vcxproj.filters

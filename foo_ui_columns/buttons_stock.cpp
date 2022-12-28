@@ -1,5 +1,9 @@
 #include "pch.h"
 
+#include "icons.h"
+#include "resource_utils.h"
+#include "svg.h"
+
 /** Creates toggle buttons from standard config objects */
 #define __DEFINE_MENU_BUTTON(_namespace, _guid_command, _guid_config)                                                \
     namespace _namespace {                                                                                           \
@@ -92,34 +96,35 @@ __DEFINE_MENU_BUTTON(
 __DEFINE_MENU_BUTTON(d, standard_commands::guid_main_always_on_top, standard_config_objects::bool_ui_always_on_top)
 
 /**Defines icons for buttons */
-template <const GUID& MenutItemID, WORD LightIconID, WORD DarkIconID>
+template <const GUID& MenutItemID, icons::IconConfig icon_config>
 class ButtonMenuItemWithBitmap : public uie::button_v2 {
     const GUID& get_item_guid() const override { return MenutItemID; }
 
     HANDLE get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, unsigned cx_hint, unsigned cy_hint,
         unsigned& handle_type) const override
     {
-        const auto icon_id = colours::is_dark_mode_active() ? DarkIconID : LightIconID;
-        auto icon = (HICON)LoadImage(
-            core_api::get_my_instance(), MAKEINTRESOURCE(icon_id), IMAGE_ICON, cx_hint, cy_hint, NULL);
+        const auto cx = gsl::narrow<int>(cx_hint);
+        const auto cy = gsl::narrow<int>(cy_hint);
+
+        if (icons::use_svg_icon(cx, cy)) {
+            handle_type = handle_type_bitmap;
+            return render_svg(icon_config, cx, cy).release();
+        }
+
         handle_type = handle_type_icon;
-        return (HANDLE)icon;
+        return load_icon(icon_config, cx, cy).release();
     }
 };
 
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_stop, IDI_LIGHT_STOP, IDI_DARK_STOP>>
-    g_button_stop;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_open, IDI_LIGHT_OPEN, IDI_DARK_OPEN>>
-    g_button_open;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_play, IDI_LIGHT_PLAY, IDI_DARK_PLAY>>
-    g_button_play;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_pause, IDI_LIGHT_PAUSE, IDI_DARK_PAUSE>>
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_stop, icons::built_in::stop>> g_button_stop;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_open, icons::built_in::open>> g_button_open;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_play, icons::built_in::play>> g_button_play;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_pause, icons::built_in::pause>>
     g_button_pause;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_next, IDI_LIGHT_NEXT, IDI_DARK_NEXT>>
-    g_button_next;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_previous, IDI_LIGHT_PREV, IDI_DARK_PREV>>
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_next, icons::built_in::next>> g_button_next;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_previous, icons::built_in::previous>>
     g_button_previous;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_random, IDI_LIGHT_RAND, IDI_DARK_RAND>>
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_random, icons::built_in::random>>
     g_button_random;
 
 class ButtonBlank : public ui_extension::custom_button {
