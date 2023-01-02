@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 2.0.0-beta.1
 
 ### Features
 
@@ -49,6 +49,10 @@
 
 - Excess top and bottom button padding in a buttons toolbar in ‘no edges’ mode
   was removed. [[#638](https://github.com/reupen/columns_ui/pull/638)]
+
+- Various truncated labels in the Buttons toolbar options dialogue box were
+  corrected. [[#641](https://github.com/reupen/columns_ui/pull/641), contributed
+  by [@marc2k3](https://github.com/marc2k3)]
 
 ### Internal changes
 
