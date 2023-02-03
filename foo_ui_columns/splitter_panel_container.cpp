@@ -124,7 +124,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
             return 0;
 
         size_t index = 0;
-        if (!m_this->m_panels.find_by_wnd(wnd, index) && m_this->m_panels[index]->m_show_caption)
+        if (!m_this->m_panels.find_by_wnd(wnd, index) || !m_this->m_panels[index]->m_show_caption)
             return 0;
 
         const auto orientation = m_this->m_panels[index]->m_caption_orientation;
