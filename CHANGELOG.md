@@ -1,5 +1,18 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A bug where panel captions rendered in the background of some panels was
+  fixed. [[#659](https://github.com/reupen/columns_ui/pull/659), contributed by
+  [@marc2k3](https://github.com/marc2k3)]
+
+### Internal changes
+
+- The component is now compiled using foobar2000 SDK 2023-01-18.
+  [[#625](https://github.com/reupen/columns_ui/pull/660)]
+
 ## 2.0.0-beta.1
 
 ### Features
