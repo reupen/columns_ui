@@ -918,7 +918,9 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
         ID_CUSTOM_BASE = 0x8000,
     };
 
-    const auto playlist_selection_exists = m_playlist_api->activeplaylist_get_selection_count(1) > 0;
+    playlist_position_reference_tracker selected_item;
+    const auto selection_count = m_playlist_api->activeplaylist_get_selection_count(2);
+    const auto playlist_selection_exists = selection_count > 0;
     const auto show_shortcuts = standard_config_objects::query_show_keyboard_shortcuts_in_menus();
     HMENU menu = CreatePopupMenu();
 
@@ -926,6 +928,34 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     const auto mainmenu_flags = show_shortcuts ? mainmenu_manager::flag_show_shortcuts : 0;
     const auto mainmenu_part
         = playlist_selection_exists ? mainmenu_groups::edit_part2_selection : mainmenu_groups::edit_part1;
+
+    if (selection_count == 1) {
+        selected_item.m_playlist = m_playlist_api->get_active_playlist();
+
+        pfc::bit_array_bittable selection(m_playlist_api->activeplaylist_get_item_count());
+        m_playlist_api->activeplaylist_get_selection_mask(selection);
+
+        for (const auto index : std::ranges::views::iota(size_t{}, selection.size())) {
+            if (selection[index]) {
+                selected_item.m_item = index;
+                break;
+            }
+        }
+
+        constexpr auto play_text = L"Play"sv;
+
+        MENUITEMINFO mii{};
+        mii.cbSize = sizeof(MENUITEMINFO);
+        mii.fMask = MIIM_STRING | MIIM_ID | MIIM_STATE;
+        mii.dwTypeData = const_cast<wchar_t*>(play_text.data());
+        mii.cch = gsl::narrow<UINT>(play_text.size());
+        mii.wID = ID_PLAY;
+        mii.fState = MFS_DEFAULT;
+
+        InsertMenuItem(menu, 0, TRUE, &mii);
+        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+    }
+
     mainmenu_api->instantiate(mainmenu_part);
     mainmenu_api->generate_menu_win32(menu, ID_SELECTION, ID_CUSTOM_BASE - ID_SELECTION, mainmenu_flags);
 
@@ -973,7 +1003,12 @@ bool PlaylistView::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
     m_mainmenu_manager.release();
     m_contextmenu_manager.release();
 
-    if (cmd == ID_CUT) {
+    if (cmd == ID_PLAY) {
+        if (selected_item.m_playlist != std::numeric_limits<size_t>::max()
+            && selected_item.m_item != std::numeric_limits<size_t>::max()) {
+            m_playlist_api->playlist_execute_default_action(selected_item.m_playlist, selected_item.m_item);
+        }
+    } else if (cmd == ID_CUT) {
         playlist_utils::cut();
     } else if (cmd == ID_COPY) {
         playlist_utils::copy();

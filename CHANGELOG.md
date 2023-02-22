@@ -2,6 +2,11 @@
 
 ## Development version
 
+### Features
+
+- A Play command was added to the playlist view context menu when right-clicking
+  on a single track. [[#665](https://github.com/reupen/columns_ui/pull/665)]
+
 ### Bug fixes
 
 - A bug where panel captions rendered in the background of some panels was
@@ -11,7 +16,7 @@
 ### Internal changes
 
 - The component is now compiled using foobar2000 SDK 2023-01-18.
-  [[#625](https://github.com/reupen/columns_ui/pull/660)]
+  [[#660](https://github.com/reupen/columns_ui/pull/660)]
 
 ## 2.0.0-beta.1
 
