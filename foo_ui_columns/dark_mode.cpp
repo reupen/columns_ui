@@ -37,6 +37,12 @@ bool does_os_support_dark_mode()
     return is_19041_or_newer;
 }
 
+bool is_native_dark_mode_spin_available()
+{
+    // Earliest known build number – exact build number unknown.
+    return check_windows_10_build(22579);
+}
+
 bool are_private_apis_allowed()
 {
     OSVERSIONINFO osvi{};
@@ -190,6 +196,18 @@ COLORREF get_dark_colour(ColourID colour_id)
         return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::RebarBandBorder:
         return get_base_dark_colour(DarkColourID::DARK_400);
+    case ColourID::SpinBackground:
+        return get_base_dark_colour(DarkColourID::DARK_200);
+    case ColourID::SpinButtonBorder:
+        return get_base_dark_colour(DarkColourID::DARK_400);
+    case ColourID::SpinButtonArrow:
+        return get_base_dark_colour(DarkColourID::DARK_999);
+    case ColourID::SpinButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_000);
+    case ColourID::SpinHotButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_300);
+    case ColourID::SpinPressedButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::StatusBarBackground:
         return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::StatusBarText:
@@ -241,6 +259,13 @@ COLORREF get_dark_colour(ColourID colour_id)
     default:
         uBugCheck();
     }
+}
+
+Gdiplus::Color get_dark_gdiplus_colour(ColourID colour_id)
+{
+    Gdiplus::Color colour;
+    colour.SetFromCOLORREF(get_dark_colour(colour_id));
+    return colour;
 }
 
 COLORREF get_colour(ColourID colour_id, bool is_dark)

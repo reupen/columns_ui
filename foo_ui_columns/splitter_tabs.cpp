@@ -487,8 +487,17 @@ void TabStackPanel::set_styles(bool visible)
 
 void TabStackPanel::set_up_down_window_theme() const
 {
-    if (m_up_down_control_wnd)
-        SetWindowTheme(m_up_down_control_wnd, colours::is_dark_mode_active() ? L"DarkMode_Explorer" : nullptr, nullptr);
+    if (!m_up_down_control_wnd)
+        return;
+
+    const auto is_dark = colours::is_dark_mode_active();
+
+    if (is_dark)
+        dark::spin::add_window(m_up_down_control_wnd);
+    else
+        dark::spin::remove_window(m_up_down_control_wnd);
+
+    SetWindowTheme(m_up_down_control_wnd, is_dark ? L"DarkMode_Explorer" : nullptr, nullptr);
 }
 
 LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

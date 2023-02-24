@@ -4,6 +4,12 @@
 
 ### Features
 
+- The left and right scroll buttons in the Tab stack and Playlist tabs panels
+  are now dark themed on all supported operating systems when dark mode is
+  enabled. [[#666](https://github.com/reupen/columns_ui/pull/666)]
+
+  (Previously, they were only dark themed on Windows 11 22H2 and newer.)
+
 - A Play command was added to the playlist view context menu when right-clicking
   on a single track. [[#665](https://github.com/reupen/columns_ui/pull/665)]
 

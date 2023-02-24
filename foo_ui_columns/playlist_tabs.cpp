@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "playlist_tabs.h"
 
+#include "dark_mode_spin.h"
 #include "dark_mode_tabs.h"
 #include "playlist_manager_utils.h"
 
@@ -444,8 +445,17 @@ void PlaylistTabs::on_child_position_change()
 
 void PlaylistTabs::set_up_down_window_theme() const
 {
-    if (m_up_down_control_wnd)
-        SetWindowTheme(m_up_down_control_wnd, colours::is_dark_mode_active() ? L"DarkMode_Explorer" : nullptr, nullptr);
+    if (!m_up_down_control_wnd)
+        return;
+
+    const auto is_dark = colours::is_dark_mode_active();
+
+    if (is_dark)
+        dark::spin::add_window(m_up_down_control_wnd);
+    else
+        dark::spin::remove_window(m_up_down_control_wnd);
+
+    SetWindowTheme(m_up_down_control_wnd, is_dark ? L"DarkMode_Explorer" : nullptr, nullptr);
 }
 
 void PlaylistTabs::refresh_child_data(abort_callback& aborter) const

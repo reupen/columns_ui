@@ -259,6 +259,7 @@
     <ClCompile Include="columns_v2.cpp" />
     <ClCompile Include="colour_manager.cpp" />
     <ClCompile Include="core_dark_list_view.cpp" />
+    <ClCompile Include="dark_mode_spin.cpp" />
     <ClCompile Include="font_manager.cpp" />
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
@@ -426,6 +427,7 @@
     <ClInclude Include="config_defaults.h" />
     <ClInclude Include="config_items.h" />
     <ClInclude Include="core_dark_list_view.h" />
+    <ClInclude Include="dark_mode_spin.h" />
     <ClInclude Include="font_manager_data.h" />
     <ClInclude Include="gdi.h" />
     <ClInclude Include="gdiplus.h" />

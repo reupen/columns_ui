@@ -1,5 +1,7 @@
 #pragma once
 
+#include "dark_mode_spin.h"
+
 namespace cui::panels::tab_stack {
 
 class TabStackPanel : public uie::container_uie_window_v3_t<uie::splitter_window_v2> {

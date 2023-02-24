@@ -587,6 +587,9 @@
     <ClCompile Include="icons.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="dark_mode_spin.cpp">
+      <Filter>Dark mode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -850,6 +853,9 @@
     </ClInclude>
     <ClInclude Include="icons.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="dark_mode_spin.h">
+      <Filter>Dark mode</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
