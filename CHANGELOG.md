@@ -19,6 +19,10 @@
   fixed. [[#659](https://github.com/reupen/columns_ui/pull/659), contributed by
   [@marc2k3](https://github.com/marc2k3)]
 
+- Minor rendering glitches relating to the scroll buttons in the Tab stack and
+  Playlist tabs panels with dark mode enabled were fixed.
+  [[#666](https://github.com/reupen/columns_ui/pull/666)]
+
 ### Internal changes
 
 - The component is now compiled using foobar2000 SDK 2023-01-18.

@@ -37,7 +37,7 @@ bool does_os_support_dark_mode()
     return is_19041_or_newer;
 }
 
-bool is_native_dark_mode_spin_available()
+bool is_native_dark_spin_available()
 {
     // Earliest known build number – exact build number unknown.
     return check_windows_10_build(22579);

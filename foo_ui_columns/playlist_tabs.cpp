@@ -191,8 +191,9 @@ bool PlaylistTabs::create_tabs()
         int cy = 0;
 
         wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Playlist switcher"),
-            WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | (t > 1 ? TCS_MULTILINE : 0) | (true ? WS_VISIBLE : 0), x,
-            y, cx, cy, m_host_wnd, HMENU(5002), core_api::get_my_instance(), nullptr);
+            WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | (t > 1 ? TCS_MULTILINE : 0) | (true ? WS_VISIBLE : 0)
+                | WS_CLIPCHILDREN,
+            x, y, cx, cy, m_host_wnd, HMENU(5002), core_api::get_my_instance(), nullptr);
 
         if (wnd_tabs) {
             SetWindowLongPtr(wnd_tabs, GWLP_USERDATA, (LPARAM)(this));
@@ -707,7 +708,7 @@ void PlaylistTabs::set_styles(bool visible /*= true*/)
         long flags = WS_CHILD | TCS_HOTTRACK | TCS_TABS
             | ((cfg_tabs_multiline && (TabCtrl_GetItemCount(wnd_tabs) > 1)) ? TCS_MULTILINE | TCS_RIGHTJUSTIFY
                                                                             : TCS_SINGLELINE)
-            | (visible ? WS_VISIBLE : 0) | WS_CLIPSIBLINGS | WS_TABSTOP | 0;
+            | (visible ? WS_VISIBLE : 0) | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
         if (GetWindowLongPtr(wnd_tabs, GWL_STYLE) != flags)
             SetWindowLongPtr(wnd_tabs, GWL_STYLE, flags);

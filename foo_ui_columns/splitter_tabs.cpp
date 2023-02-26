@@ -478,7 +478,7 @@ void TabStackPanel::set_styles(bool visible)
 {
     if (m_wnd_tabs) {
         long flags = WS_CHILD | TCS_HOTTRACK | TCS_TABS | (false ? TCS_MULTILINE | TCS_RIGHTJUSTIFY : TCS_SINGLELINE)
-            | (visible ? WS_VISIBLE : 0) | WS_CLIPSIBLINGS | WS_TABSTOP | 0;
+            | (visible ? WS_VISIBLE : 0) | WS_CLIPSIBLINGS | WS_CLIPCHILDREN | WS_TABSTOP;
 
         if (GetWindowLongPtr(m_wnd_tabs, GWL_STYLE) != flags)
             SetWindowLongPtr(m_wnd_tabs, GWL_STYLE, flags);
@@ -868,8 +868,8 @@ void TabStackPanel::create_tabs()
     g_font.reset(fb2k::std_api_get<fonts::manager>()->get_font(g_guid_splitter_tabs));
     RECT rc;
     GetClientRect(get_wnd(), &rc);
-    DWORD flags = WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE
-        | (true ? WS_VISIBLE : 0); // TCS_MULTILINE hack to prevent BS.
+    DWORD flags = WS_CHILD | WS_TABSTOP | TCS_HOTTRACK | TCS_TABS | TCS_MULTILINE | (true ? WS_VISIBLE : 0)
+        | WS_CLIPCHILDREN; // TCS_MULTILINE hack to prevent BS.
     m_wnd_tabs = CreateWindowEx(0, WC_TABCONTROL, _T("Tab stack"), flags, 0, 0, rc.right, rc.bottom, get_wnd(),
         HMENU(2345), core_api::get_my_instance(), nullptr);
     SetWindowLongPtr(m_wnd_tabs, GWLP_USERDATA, (LPARAM)(this));

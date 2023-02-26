@@ -76,7 +76,7 @@ private:
 
 [[nodiscard]] bool does_os_support_dark_mode();
 [[nodiscard]] bool are_private_apis_allowed();
-[[nodiscard]] bool is_native_dark_mode_spin_available();
+[[nodiscard]] bool is_native_dark_spin_available();
 
 enum class PreferredAppMode { System = 1, Dark = 2, Light = 3 };
 

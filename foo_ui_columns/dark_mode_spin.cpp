@@ -248,7 +248,7 @@ LRESULT WINAPI on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void add_window(HWND wnd)
 {
-    if (is_native_dark_mode_spin_available())
+    if (is_native_dark_spin_available())
         return;
 
     if (state::state_map.contains(wnd)) {
