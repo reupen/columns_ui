@@ -14,8 +14,19 @@ struct Tab {
 
 auto get_tab_hot_item_index(HWND wnd)
 {
+    POINT pt{};
+    GetMessagePos(&pt);
+
+    if (const auto up_down_window = GetFirstChild(wnd)) {
+        RECT rect{};
+        GetWindowRect(up_down_window, &rect);
+
+        if (IsWindowVisible(up_down_window) && pt.x >= rect.left)
+            return -1;
+    }
+
     TCHITTESTINFO tchti{};
-    GetMessagePos(&tchti.pt);
+    tchti.pt = pt;
     MapWindowPoints(HWND_DESKTOP, wnd, &tchti.pt, 1);
 
     return TabCtrl_HitTest(wnd, &tchti);

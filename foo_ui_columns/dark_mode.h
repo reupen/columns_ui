@@ -13,6 +13,12 @@ enum class ColourID {
     PanelCaptionBackground,
     RebarBackground,
     RebarBandBorder,
+    SpinBackground,
+    SpinButtonArrow,
+    SpinButtonBackground,
+    SpinButtonBorder,
+    SpinHotButtonBackground,
+    SpinPressedButtonBackground,
     StatusBarBackground,
     StatusBarText,
     StatusPaneTopLine,
@@ -70,6 +76,7 @@ private:
 
 [[nodiscard]] bool does_os_support_dark_mode();
 [[nodiscard]] bool are_private_apis_allowed();
+[[nodiscard]] bool is_native_dark_spin_available();
 
 enum class PreferredAppMode { System = 1, Dark = 2, Light = 3 };
 
@@ -77,6 +84,7 @@ void set_app_mode(PreferredAppMode mode);
 void set_titlebar_mode(HWND wnd, bool is_dark);
 
 [[nodiscard]] COLORREF get_dark_colour(ColourID colour_id);
+[[nodiscard]] Gdiplus::Color get_dark_gdiplus_colour(ColourID colour_id);
 [[nodiscard]] COLORREF get_colour(ColourID colour_id, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_colour_brush(ColourID colour_id, bool is_dark);
 [[nodiscard]] LazyResource<wil::unique_hbrush> get_colour_brush_lazy(ColourID colour_id, bool is_dark);
