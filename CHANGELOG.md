@@ -7,6 +7,11 @@
 - Dark mode support was added to the spectrum analyser options dialogue box.
   [[#673](https://github.com/reupen/columns_ui/pull/673)]
 
+### Internal changes
+
+- Various dependencies were updated.
+  [[#674](https://github.com/reupen/columns_ui/pull/674)]
+
 ## 2.0.0-beta.2
 
 ### Features
