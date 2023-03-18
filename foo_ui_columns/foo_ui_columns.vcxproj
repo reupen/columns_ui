@@ -515,6 +515,28 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
+    <None Include="assets\vectors\minified\dark-next.svg" />
+    <None Include="assets\vectors\minified\dark-open.svg" />
+    <None Include="assets\vectors\minified\dark-padlock.svg" />
+    <None Include="assets\vectors\minified\dark-pause.svg" />
+    <None Include="assets\vectors\minified\dark-play-random.svg" />
+    <None Include="assets\vectors\minified\dark-play.svg" />
+    <None Include="assets\vectors\minified\dark-previous.svg" />
+    <None Include="assets\vectors\minified\dark-reset.svg" />
+    <None Include="assets\vectors\minified\dark-star-gold.svg" />
+    <None Include="assets\vectors\minified\dark-star-grey.svg" />
+    <None Include="assets\vectors\minified\dark-stop.svg" />
+    <None Include="assets\vectors\minified\light-next.svg" />
+    <None Include="assets\vectors\minified\light-open.svg" />
+    <None Include="assets\vectors\minified\light-padlock.svg" />
+    <None Include="assets\vectors\minified\light-pause.svg" />
+    <None Include="assets\vectors\minified\light-play-random.svg" />
+    <None Include="assets\vectors\minified\light-play.svg" />
+    <None Include="assets\vectors\minified\light-previous.svg" />
+    <None Include="assets\vectors\minified\light-reset.svg" />
+    <None Include="assets\vectors\minified\light-star-gold.svg" />
+    <None Include="assets\vectors\minified\light-star-grey.svg" />
+    <None Include="assets\vectors\minified\light-stop.svg" />
     <None Include="version.h.template" />
   </ItemGroup>
   <ItemGroup>
@@ -545,6 +567,30 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="assets\blank.bmp" />
+    <Image Include="assets\vectors\rendered\dark-next.ico" />
+    <Image Include="assets\vectors\rendered\dark-open.ico" />
+    <Image Include="assets\vectors\rendered\dark-padlock.ico" />
+    <Image Include="assets\vectors\rendered\dark-pause.ico" />
+    <Image Include="assets\vectors\rendered\dark-placeholder-artwork.png" />
+    <Image Include="assets\vectors\rendered\dark-play-random.ico" />
+    <Image Include="assets\vectors\rendered\dark-play.ico" />
+    <Image Include="assets\vectors\rendered\dark-previous.ico" />
+    <Image Include="assets\vectors\rendered\dark-reset.ico" />
+    <Image Include="assets\vectors\rendered\dark-star-gold.ico" />
+    <Image Include="assets\vectors\rendered\dark-star-grey.ico" />
+    <Image Include="assets\vectors\rendered\dark-stop.ico" />
+    <Image Include="assets\vectors\rendered\light-next.ico" />
+    <Image Include="assets\vectors\rendered\light-open.ico" />
+    <Image Include="assets\vectors\rendered\light-padlock.ico" />
+    <Image Include="assets\vectors\rendered\light-pause.ico" />
+    <Image Include="assets\vectors\rendered\light-placeholder-artwork.png" />
+    <Image Include="assets\vectors\rendered\light-play-random.ico" />
+    <Image Include="assets\vectors\rendered\light-play.ico" />
+    <Image Include="assets\vectors\rendered\light-previous.ico" />
+    <Image Include="assets\vectors\rendered\light-reset.ico" />
+    <Image Include="assets\vectors\rendered\light-star-gold.ico" />
+    <Image Include="assets\vectors\rendered\light-star-grey.ico" />
+    <Image Include="assets\vectors\rendered\light-stop.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

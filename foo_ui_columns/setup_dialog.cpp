@@ -6,20 +6,29 @@
 #include "ng_playlist/ng_playlist.h"
 #include "main_window.h"
 
-INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (const auto result = m_dialog_helper.handle_message(wnd, msg, wp, lp))
+        return *result;
+
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
         modeless_dialog_manager::g_add(wnd);
         s_instances.emplace_back(this);
 
-        HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
+        m_dialog_helper.add_buttons({IDOK, IDCANCEL});
+        m_dialog_helper.add_combo_boxes({IDC_DARK_MODE, IDC_THEMING, IDC_GROUPING});
+        m_dialog_helper.set_window_themes();
+
+        m_presets_list_view.create(wnd, {14, 18, 240, 67}, true);
+        LOGFONT font{};
+        GetObject(GetWindowFont(wnd), sizeof(font), &font);
+        m_presets_list_view.set_font(&font);
+
         HWND wnd_mode = GetDlgItem(wnd, IDC_DARK_MODE);
         HWND wnd_theming = GetDlgItem(wnd, IDC_THEMING);
         HWND wnd_grouping = GetDlgItem(wnd, IDC_GROUPING);
-
-        uih::list_view_set_explorer_theme(wnd_lv);
 
         const auto monitor = MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST);
         MONITORINFO monitor_info{};
@@ -39,31 +48,21 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
             SetWindowPos(wnd, nullptr, left, top, 0, 0, SWP_NOZORDER | SWP_NOSIZE);
         }
 
-        ListView_SetExtendedListViewStyleEx(
-            wnd_lv, LVS_EX_FULLROWSELECT | 0x10000000, LVS_EX_FULLROWSELECT | 0x10000000);
-
         LVCOLUMN lvc{};
         lvc.mask = LVCF_TEXT | LVCF_WIDTH;
-
-        // MapDialogWidth(wnd, 228);
-
-        RECT rc;
-        GetClientRect(wnd_lv, &rc);
-
-        uih::list_view_insert_column_text(wnd_lv, 0, _T("Preset"), RECT_CX(rc));
-
-        SendMessage(wnd_lv, WM_SETREDRAW, FALSE, 0);
 
         cfg_layout.get_preset(cfg_layout.get_active(), m_previous_layout);
 
         LayoutWindow::g_get_default_presets(m_presets);
 
-        LVITEM lvi{};
-        lvi.mask = LVIF_TEXT;
-        size_t count = m_presets.get_count();
-        for (size_t i = 0; i < count; i++) {
-            uih::list_view_insert_item_text(wnd_lv, gsl::narrow<int>(i), 0, m_presets[i].m_name, false);
-        }
+        std::vector<uih::ListView::InsertItem> insert_items;
+        insert_items.reserve(m_presets.size());
+
+        std::ranges::transform(m_presets, std::back_inserter(insert_items), [](const auto& preset) {
+            return uih::ListView::InsertItem{{preset.m_name.c_str()}, {}};
+        });
+
+        m_presets_list_view.insert_items(0, insert_items.size(), insert_items.data());
 
         EnableWindow(wnd_mode, cui::dark::does_os_support_dark_mode());
         ComboBox_InsertString(wnd_mode, 0, L"Light");
@@ -98,18 +97,9 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
         select = cui::panels::playlist_view::cfg_grouping ? (cui::panels::playlist_view::cfg_show_artwork ? 2 : 1) : 0;
         ComboBox_SetCurSel(wnd_grouping, select);
 
-        // ListView_SetItemState(wnd_lv, 0, LVIS_SELECTED|LVIS_FOCUSED, LVIS_SELECTED|LVIS_FOCUSED);
-        SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
-        RedrawWindow(wnd_lv, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+        ShowWindow(m_presets_list_view.get_wnd(), SW_SHOWNORMAL);
+        return TRUE;
     }
-        return TRUE;
-    case WM_CTLCOLORSTATIC:
-        SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
-        SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
-    case WM_PAINT:
-        uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDCANCEL));
-        return TRUE;
     case WM_COMMAND:
         switch (wp) {
         case IDCANCEL: {
@@ -159,37 +149,11 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
         }
         }
         break;
-    case WM_NOTIFY: {
-        auto lpnm = (LPNMHDR)lp;
-        switch (lpnm->idFrom) {
-        case IDC_LIST: {
-            switch (lpnm->code) {
-            case LVN_ITEMCHANGED: {
-                auto lpnmlv = (LPNMLISTVIEW)lp;
-                if (lpnmlv->iItem != -1 && lpnmlv->iItem >= 0 && (size_t)lpnmlv->iItem < m_presets.get_count()) {
-                    if ((lpnmlv->uNewState & LVIS_SELECTED) && !(lpnmlv->uOldState & LVIS_SELECTED)) {
-                        uie::splitter_item_ptr ptr;
-                        m_presets[lpnmlv->iItem].get(ptr);
-                        cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr());
-                        m_preset_changed = true;
-                    }
-                }
-                return 0;
-            }
-            default:
-                break;
-            }
-            break;
-        }
-        default:
-            break;
-        }
-        break;
-    }
     case WM_CLOSE:
         DestroyWindow(wnd);
         return 0;
     case WM_DESTROY:
+        m_presets_list_view.destroy();
         std::erase(s_instances, this);
         modeless_dialog_manager::g_remove(wnd);
         break;
@@ -200,11 +164,24 @@ INT_PTR QuickSetupDialog::SetupDialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM 
     return FALSE;
 }
 
+void QuickSetupDialog::on_preset_list_selection_change()
+{
+    const auto index = m_presets_list_view.get_selected_item_single();
+
+    if (index == std::numeric_limits<size_t>::max())
+        return;
+
+    uie::splitter_item_ptr ptr;
+    m_presets[index].get(ptr);
+    cfg_layout.set_preset(cfg_layout.get_active(), ptr.get_ptr());
+    m_preset_changed = true;
+}
+
 void QuickSetupDialog::s_run()
 {
     uih::modeless_dialog_box(
         IDD_QUICK_SETUP, cui::main_window.get_wnd(), [dialog = std::make_shared<QuickSetupDialog>()](auto&&... args) {
-            return dialog->SetupDialogProc(std::forward<decltype(args)>(args)...);
+            return dialog->handle_dialog_message(std::forward<decltype(args)>(args)...);
         });
 }
 

@@ -115,6 +115,12 @@
     <Filter Include="Audio track toolbar">
       <UniqueIdentifier>{4b7b57c0-5b8d-4d71-afec-4ecb83b14bad}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resources\ico">
+      <UniqueIdentifier>{03cafbd5-1e54-4d08-bf0a-175543e4cfd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources\svg">
+      <UniqueIdentifier>{c0bc6330-d052-4fa8-951d-a3e70400bf6f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp">
@@ -876,6 +882,72 @@
   <ItemGroup>
     <None Include=".clang-format" />
     <None Include="version.h.template" />
+    <None Include="assets\vectors\minified\dark-next.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-open.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-padlock.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-pause.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-play.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-play-random.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-previous.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-reset.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-star-gold.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-star-grey.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\dark-stop.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-next.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-open.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-padlock.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-pause.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-play.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-play-random.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-previous.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-reset.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-star-gold.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-star-grey.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-stop.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="foo_ui_columns.rc">
@@ -885,6 +957,78 @@
   <ItemGroup>
     <Image Include="assets\blank.bmp">
       <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-placeholder-artwork.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-placeholder-artwork.png">
+      <Filter>Resources</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-next.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-open.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-padlock.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-pause.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-play.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-play-random.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-previous.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-reset.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-star-gold.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-star-grey.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-stop.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-next.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-open.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-padlock.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-pause.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-play.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-play-random.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-previous.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-reset.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-star-gold.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-star-grey.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-stop.ico">
+      <Filter>Resources\ico</Filter>
     </Image>
   </ItemGroup>
 </Project>
