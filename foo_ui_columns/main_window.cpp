@@ -300,22 +300,7 @@ void cui::MainWindow::set_dark_mode_attributes(bool is_update) const
 
     update_taskbar_button_images();
 
-    if (!IsWindowVisible(m_wnd))
-        return;
-
-    // The below is a hack to force the titlebar to redraw (nothing else works).
-    RECT rc{};
-    if (!GetWindowRect(m_wnd, &rc))
-        return;
-
-    const auto cx = RECT_CX(rc);
-    const auto cy = RECT_CY(rc);
-
-    if (cx <= 0)
-        return;
-
-    SetWindowPos(m_wnd, nullptr, 0, 0, cx - 1, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-    SetWindowPos(m_wnd, nullptr, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    dark::force_titlebar_redraw(m_wnd);
 }
 
 void cui::MainWindow::create_child_windows()

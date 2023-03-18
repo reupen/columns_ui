@@ -370,7 +370,7 @@ private:
     bool m_using_gdiplus{false};
     std::unique_ptr<uie::container_window_v3> m_window;
     std::unique_ptr<cui::colours::dark_mode_notifier> m_dark_mode_notifier;
-    std::unique_ptr<cui::system_appearance_manager::EventToken> m_modern_colours_changed_token;
+    std::unique_ptr<cui::EventToken> m_modern_colours_changed_token;
 };
 
 class PopupVolumeBarAttributes {

@@ -15,12 +15,13 @@ void CoreDarkListView::notify_on_initialisation()
     set_use_dark_mode(manager->is_dark_mode());
     set_dark_edit_colours(
         cui::dark::get_dark_system_colour(COLOR_WINDOWTEXT), cui::dark::get_dark_system_colour(COLOR_WINDOW));
-    m_ui_config_callback = std::make_unique<UIConfigCallback>(this, manager);
+    m_dark_mode_status_callback
+        = dark::add_status_callback([this] { set_use_dark_mode(dark::is_active_ui_dark(false)); }, false);
 }
 
 void CoreDarkListView::notify_on_destroy()
 {
-    m_ui_config_callback.reset();
+    m_dark_mode_status_callback.reset();
 }
 
 void CoreDarkListView::render_get_colour_data(ColourData& p_out)

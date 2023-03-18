@@ -2,6 +2,8 @@
 #include "vis_spectrum.h"
 
 #include "config_appearance.h"
+#include "dark_mode.h"
+#include "dark_mode_dialog.h"
 #include "main_window.h"
 #include "vis_gen_host.h"
 
@@ -257,6 +259,8 @@ public:
     SpectrumAnalyserVisualisation* ptr;
     unsigned frame;
     bool b_show_frame;
+    dark::DialogDarkModeHelper dark_mode_helper;
+
     SpectrumAnalyserConfigData(unsigned p_mode, uint32_t scale, uint32_t vertical_scale,
         SpectrumAnalyserVisualisation* p_spec, bool p_show_frame = false, unsigned p_frame = 0)
         : mode(p_mode)
@@ -276,9 +280,18 @@ public:
 
 static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
+    if (const auto result = state.dark_mode_helper.handle_message(wnd, msg, wp, lp))
+        return *result;
+
     switch (msg) {
     case WM_INITDIALOG: {
         state.m_scope.initialize(FindOwningPopup(wnd));
+
+        state.dark_mode_helper.add_buttons({IDOK, IDCANCEL});
+        state.dark_mode_helper.add_checkboxes({IDC_BARS});
+        state.dark_mode_helper.add_combo_boxes({IDC_FRAME_COMBO, IDC_SCALE, IDC_VERTICAL_SCALE});
+        state.dark_mode_helper.set_window_themes();
+
         SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, state.ptr->mode == MODE_BARS, 0);
         HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
         EnableWindow(wnd_combo, state.b_show_frame);
@@ -301,12 +314,6 @@ static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWN
         ComboBox_SetCurSel(wnd_combo, state.m_vertical_scale);
         return TRUE;
     }
-    case WM_ERASEBKGND:
-        SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
-        return TRUE;
-    case WM_PAINT:
-        uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
-        return TRUE;
     case WM_CTLCOLORSTATIC:
         return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_3DHIGHLIGHT));
     case WM_COMMAND:

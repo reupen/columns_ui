@@ -82,6 +82,7 @@ enum class PreferredAppMode { System = 1, Dark = 2, Light = 3 };
 
 void set_app_mode(PreferredAppMode mode);
 void set_titlebar_mode(HWND wnd, bool is_dark);
+void force_titlebar_redraw(HWND wnd);
 
 [[nodiscard]] COLORREF get_dark_colour(ColourID colour_id);
 [[nodiscard]] Gdiplus::Color get_dark_gdiplus_colour(ColourID colour_id);
@@ -94,5 +95,6 @@ void set_titlebar_mode(HWND wnd, bool is_dark);
 [[nodiscard]] wil::unique_hbrush get_system_colour_brush(int system_colour_id, bool is_dark);
 
 void draw_layout_background(HWND wnd, HDC dc);
+void handle_modern_background_paint(HWND wnd, HWND wnd_button, bool is_dark);
 
 } // namespace cui::dark
