@@ -590,6 +590,12 @@
     <ClCompile Include="dark_mode_spin.cpp">
       <Filter>Dark mode</Filter>
     </ClCompile>
+    <ClCompile Include="dark_mode_dialog.cpp">
+      <Filter>Dark mode</Filter>
+    </ClCompile>
+    <ClCompile Include="dark_mode_active_ui.cpp">
+      <Filter>Dark mode</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -856,6 +862,15 @@
     </ClInclude>
     <ClInclude Include="dark_mode_spin.h">
       <Filter>Dark mode</Filter>
+    </ClInclude>
+    <ClInclude Include="dark_mode_dialog.h">
+      <Filter>Dark mode</Filter>
+    </ClInclude>
+    <ClInclude Include="dark_mode_active_ui.h">
+      <Filter>Dark mode</Filter>
+    </ClInclude>
+    <ClInclude Include="event_token.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

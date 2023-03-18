@@ -1,4 +1,5 @@
 #pragma once
+#include "event_token.h"
 
 namespace cui::system_appearance_manager {
 
@@ -13,10 +14,6 @@ struct ModernColours {
         return (GetRValue(background) + GetGValue(background) + GetBValue(background))
             < (GetRValue(foreground) + GetGValue(foreground) + GetBValue(foreground));
     }
-};
-
-struct EventToken {
-    virtual ~EventToken() {}
 };
 
 using ModernColoursChangedHandler = std::function<void()>;

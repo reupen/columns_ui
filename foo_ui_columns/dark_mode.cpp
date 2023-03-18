@@ -82,6 +82,26 @@ void set_titlebar_mode(HWND wnd, bool is_dark)
     DwmSetWindowAttribute(wnd, DWMWA_USE_IMMERSIVE_DARK_MODE, &value, sizeof(value));
 }
 
+void force_titlebar_redraw(HWND wnd)
+{
+    if (!IsWindowVisible(wnd))
+        return;
+
+    // The below is a hack to force the titlebar to redraw (nothing else works).
+    RECT rc{};
+    if (!GetWindowRect(wnd, &rc))
+        return;
+
+    const auto cx = RECT_CX(rc);
+    const auto cy = RECT_CY(rc);
+
+    if (cx <= 0)
+        return;
+
+    SetWindowPos(wnd, nullptr, 0, 0, cx - 1, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    SetWindowPos(wnd, nullptr, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
 namespace {
 
 consteval COLORREF create_grey(const int value)
@@ -330,6 +350,13 @@ void draw_layout_background(HWND wnd, HDC dc)
 
     const auto brush = get_colour_brush(ColourID::LayoutBackground, colours::is_dark_mode_active());
     FillRect(dc, &rc, brush.get());
+}
+
+void handle_modern_background_paint(HWND wnd, HWND wnd_button, bool is_dark)
+{
+    const auto top_background_brush = get_system_colour_brush(COLOR_WINDOW, is_dark);
+    const auto bottom_background_brush = get_system_colour_brush(COLOR_3DFACE, is_dark);
+    uih::handle_modern_background_paint(wnd, wnd_button, top_background_brush.get(), bottom_background_brush.get());
 }
 
 } // namespace cui::dark
