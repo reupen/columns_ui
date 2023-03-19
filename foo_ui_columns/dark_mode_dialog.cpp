@@ -20,6 +20,7 @@ private:
 
     HWND m_wnd{};
     wil::unique_hbrush m_main_background_brush;
+    wil::unique_hbrush m_edit_background_brush;
     wil::unique_htheme m_button_theme;
     DialogDarkModeConfig m_config;
     std::unique_ptr<EventToken> m_dark_mode_status_callback;
@@ -41,6 +42,7 @@ void DialogDarkModeHelper::apply_dark_mode_attributes()
     set_window_theme(m_config.button_ids, L"DarkMode_Explorer", is_dark);
     set_window_theme(m_config.checkbox_ids, L"DarkMode_Explorer", is_dark);
     set_window_theme(m_config.combo_box_ids, L"DarkMode_CFD", is_dark);
+    set_window_theme(m_config.edit_ids, L"DarkMode_CFD", is_dark);
 }
 
 std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -54,6 +56,7 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, 
     case WM_NCDESTROY:
         m_dark_mode_status_callback.reset();
         m_main_background_brush.reset();
+        m_edit_background_brush.reset();
         m_wnd = nullptr;
         break;
     case WM_THEMECHANGED:
@@ -69,6 +72,20 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, 
         if (const auto result = handle_wm_notify(wnd, reinterpret_cast<LPNMHDR>(lp)))
             return result;
         break;
+    case WM_CTLCOLOREDIT: {
+        const auto is_dark = is_active_ui_dark();
+
+        if (!is_dark)
+            break;
+
+        if (!m_edit_background_brush)
+            m_edit_background_brush = get_colour_brush(ColourID::EditBackground, true);
+
+        const auto dc = reinterpret_cast<HDC>(wp);
+        SetBkColor(dc, get_colour(ColourID::EditBackground, true));
+        SetTextColor(dc, get_system_colour(COLOR_WINDOWTEXT, true));
+        return reinterpret_cast<INT_PTR>(m_edit_background_brush.get());
+    }
     case WM_CTLCOLORLISTBOX:
     case WM_CTLCOLORSTATIC: {
         const auto is_dark = is_active_ui_dark();

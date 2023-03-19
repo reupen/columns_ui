@@ -8,6 +8,7 @@
 namespace cui::dark {
 
 enum class ColourID {
+    EditBackground,
     LayoutBackground,
     PanelCaptionText,
     PanelCaptionBackground,
