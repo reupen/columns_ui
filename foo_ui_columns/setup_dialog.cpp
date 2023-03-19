@@ -8,18 +8,11 @@
 
 INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    if (const auto result = m_dialog_helper.handle_message(wnd, msg, wp, lp))
-        return *result;
-
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
         modeless_dialog_manager::g_add(wnd);
         s_instances.emplace_back(this);
-
-        m_dialog_helper.add_buttons({IDOK, IDCANCEL});
-        m_dialog_helper.add_combo_boxes({IDC_DARK_MODE, IDC_THEMING, IDC_GROUPING});
-        m_dialog_helper.set_window_themes();
 
         m_presets_list_view.create(wnd, {14, 18, 240, 67}, true);
         LOGFONT font{};
@@ -179,10 +172,12 @@ void QuickSetupDialog::on_preset_list_selection_change()
 
 void QuickSetupDialog::s_run()
 {
-    uih::modeless_dialog_box(
-        IDD_QUICK_SETUP, cui::main_window.get_wnd(), [dialog = std::make_shared<QuickSetupDialog>()](auto&&... args) {
-            return dialog->handle_dialog_message(std::forward<decltype(args)>(args)...);
-        });
+    const cui::dark::DialogDarkModeConfig dark_mode_config{
+        .button_ids = {IDOK, IDCANCEL}, .combo_box_ids = {IDC_DARK_MODE, IDC_THEMING, IDC_GROUPING}};
+
+    modeless_dialog_box(IDD_QUICK_SETUP, dark_mode_config, cui::main_window.get_wnd(),
+        [dialog = std::make_shared<QuickSetupDialog>()](
+            auto&&... args) { return dialog->handle_dialog_message(std::forward<decltype(args)>(args)...); });
 }
 
 void QuickSetupDialog::s_refresh()

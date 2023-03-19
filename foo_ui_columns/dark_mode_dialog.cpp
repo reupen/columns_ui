@@ -2,17 +2,45 @@
 
 #include "dark_mode_dialog.h"
 
-#include "main_window.h"
-
 namespace cui::dark {
 
-void DialogDarkModeHelper::set_window_themes()
+namespace {
+
+class DialogDarkModeHelper {
+public:
+    explicit DialogDarkModeHelper(DialogDarkModeConfig config) : m_config(std::move(config)) {}
+
+    [[nodiscard]] std::optional<INT_PTR> handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+private:
+    [[nodiscard]] std::optional<INT_PTR> handle_wm_notify(HWND wnd, LPNMHDR lpnm);
+    void on_dark_mode_change();
+    void apply_dark_mode_attributes();
+    void set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark);
+
+    HWND m_wnd{};
+    wil::unique_hbrush m_main_background_brush;
+    wil::unique_htheme m_button_theme;
+    DialogDarkModeConfig m_config;
+    std::unique_ptr<EventToken> m_dark_mode_status_callback;
+};
+
+void DialogDarkModeHelper::set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark)
+{
+    if (!m_wnd)
+        return;
+
+    for (const auto id : ids)
+        SetWindowTheme(GetDlgItem(m_wnd, id), is_dark ? dark_class : nullptr, nullptr);
+}
+
+void DialogDarkModeHelper::apply_dark_mode_attributes()
 {
     const auto is_dark = is_active_ui_dark();
     set_titlebar_mode(m_wnd, is_dark);
-    set_window_theme(m_button_ids, L"DarkMode_Explorer", is_dark);
-    set_window_theme(m_checkbox_ids, L"DarkMode_Explorer", is_dark);
-    set_window_theme(m_combo_box_ids, L"DarkMode_CFD", is_dark);
+    set_window_theme(m_config.button_ids, L"DarkMode_Explorer", is_dark);
+    set_window_theme(m_config.checkbox_ids, L"DarkMode_Explorer", is_dark);
+    set_window_theme(m_config.combo_box_ids, L"DarkMode_CFD", is_dark);
 }
 
 std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -20,6 +48,7 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, 
     switch (msg) {
     case WM_INITDIALOG:
         m_wnd = wnd;
+        apply_dark_mode_attributes();
         m_dark_mode_status_callback = add_status_callback([this] { on_dark_mode_change(); });
         break;
     case WM_NCDESTROY:
@@ -64,7 +93,7 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_wm_notify(HWND wnd, LPNMHDR 
         if (lpnm->idFrom > gsl::narrow_cast<UINT_PTR>(std::numeric_limits<int>::max()))
             break;
 
-        if (!m_checkbox_ids.contains(gsl::narrow_cast<int>(lpnm->idFrom)) || !is_active_ui_dark())
+        if (!m_config.checkbox_ids.contains(gsl::narrow_cast<int>(lpnm->idFrom)) || !is_active_ui_dark())
             break;
 
         const auto lpnmcd = reinterpret_cast<LPNMCUSTOMDRAW>(lpnm);
@@ -114,11 +143,42 @@ void DialogDarkModeHelper::on_dark_mode_change()
     m_main_background_brush.reset();
 
     SetWindowRedraw(m_wnd, FALSE);
-    set_window_themes();
+    apply_dark_mode_attributes();
     SetWindowRedraw(m_wnd, TRUE);
     RedrawWindow(m_wnd, nullptr, nullptr,
         RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN | RDW_FRAME | RDW_UPDATENOW | RDW_ERASENOW);
 
     force_titlebar_redraw(m_wnd);
 }
+
+} // namespace
+
+INT_PTR modal_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config, HWND parent_window,
+    std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message)
+{
+    return uih::modal_dialog_box(resource_id, parent_window,
+        [helper = std::make_shared<DialogDarkModeHelper>(std::move(dark_mode_config)),
+            on_message{std::move(on_message)}](HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+            if (const auto result = helper->handle_message(wnd, msg, wp, lp))
+                return *result;
+
+            return on_message(wnd, msg, wp, lp);
+        });
+}
+
+HWND modeless_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config, HWND parent_window,
+    std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message)
+{
+    const auto wnd = uih::modeless_dialog_box(resource_id, parent_window,
+        [helper = std::make_shared<DialogDarkModeHelper>(std::move(dark_mode_config)),
+            on_message{std::move(on_message)}](HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
+            if (const auto result = helper->handle_message(wnd, msg, wp, lp))
+                return *result;
+
+            return on_message(wnd, msg, wp, lp);
+        });
+
+    return wnd;
+}
+
 } // namespace cui::dark
