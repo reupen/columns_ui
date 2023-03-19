@@ -40,7 +40,6 @@ private:
     INT_PTR handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void on_preset_list_selection_change();
 
-    cui::dark::DialogDarkModeHelper m_dialog_helper;
     PresetsListView m_presets_list_view{this};
     HWND m_wnd{};
     bool m_preset_changed{};

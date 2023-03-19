@@ -2,7 +2,6 @@
 #include "vis_spectrum.h"
 
 #include "config_appearance.h"
-#include "dark_mode.h"
 #include "dark_mode_dialog.h"
 #include "main_window.h"
 #include "vis_gen_host.h"
@@ -10,6 +9,10 @@
 namespace cui::toolbars::spectrum_analyser {
 
 namespace {
+
+const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
+    .checkbox_ids = {IDC_BARS},
+    .combo_box_ids = {IDC_FRAME_COMBO, IDC_SCALE, IDC_VERTICAL_SCALE}};
 
 cfg_int cfg_legacy_spectrum_analyser_background_colour(
     GUID{0x2bb960d2, 0xb1a8, 0x5741, {0x55, 0xb6, 0x13, 0x3f, 0xb1, 0x80, 0x37, 0x88}},
@@ -259,7 +262,6 @@ public:
     SpectrumAnalyserVisualisation* ptr;
     unsigned frame;
     bool b_show_frame;
-    dark::DialogDarkModeHelper dark_mode_helper;
 
     SpectrumAnalyserConfigData(unsigned p_mode, uint32_t scale, uint32_t vertical_scale,
         SpectrumAnalyserVisualisation* p_spec, bool p_show_frame = false, unsigned p_frame = 0)
@@ -280,17 +282,9 @@ public:
 
 static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    if (const auto result = state.dark_mode_helper.handle_message(wnd, msg, wp, lp))
-        return *result;
-
     switch (msg) {
     case WM_INITDIALOG: {
         state.m_scope.initialize(FindOwningPopup(wnd));
-
-        state.dark_mode_helper.add_buttons({IDOK, IDCANCEL});
-        state.dark_mode_helper.add_checkboxes({IDC_BARS});
-        state.dark_mode_helper.add_combo_boxes({IDC_FRAME_COMBO, IDC_SCALE, IDC_VERTICAL_SCALE});
-        state.dark_mode_helper.set_window_themes();
 
         SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, state.ptr->mode == MODE_BARS, 0);
         HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
@@ -348,7 +342,7 @@ static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWN
 bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
 {
     SpectrumAnalyserConfigData param(mode, m_scale, m_vertical_scale, this);
-    const auto dialog_result = uih::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
+    const auto dialog_result = modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
         [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
 
     if (dialog_result > 0) {
@@ -616,7 +610,7 @@ class SpectrumAnalyserVisualisationPanel : public VisualisationPanel {
         SpectrumAnalyserConfigData param(
             p_temp->mode, p_temp->m_scale, p_temp->m_vertical_scale, p_temp.get_ptr(), true, get_frame_style());
 
-        const auto dialog_result = uih::modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, wnd_parent,
+        const auto dialog_result = modal_dialog_box(IDD_SPECTRUM_ANALYSER_OPTIONS, dark_mode_config, wnd_parent,
             [&param](auto&&... args) { return SpectrumPopupProc(param, std::forward<decltype(args)>(args)...); });
 
         if (dialog_result > 0) {

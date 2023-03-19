@@ -200,6 +200,8 @@ wil::unique_hbrush get_light_colour_brush(ColourID colour_id)
 COLORREF get_dark_colour(ColourID colour_id)
 {
     switch (colour_id) {
+    case ColourID::EditBackground:
+        return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::LayoutBackground:
         return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::PanelCaptionText:
