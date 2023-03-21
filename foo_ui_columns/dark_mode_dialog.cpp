@@ -16,6 +16,7 @@ private:
     [[nodiscard]] std::optional<INT_PTR> handle_wm_notify(HWND wnd, LPNMHDR lpnm);
     void on_dark_mode_change();
     void apply_dark_mode_attributes();
+    void set_tree_view_theme(bool is_dark);
     void set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark);
 
     HWND m_wnd{};
@@ -25,6 +26,19 @@ private:
     DialogDarkModeConfig m_config;
     std::unique_ptr<EventToken> m_dark_mode_status_callback;
 };
+
+void DialogDarkModeHelper::set_tree_view_theme(bool is_dark)
+{
+    if (!m_wnd)
+        return;
+
+    for (const auto id : m_config.tree_view_ids) {
+        const auto tree_view_wnd = GetDlgItem(m_wnd, id);
+        SetWindowTheme(tree_view_wnd, is_dark ? L"DarkMode_Explorer" : L"Explorer", nullptr);
+        TreeView_SetBkColor(tree_view_wnd, is_dark ? get_dark_colour(ColourID::TreeViewBackground) : -1);
+        TreeView_SetTextColor(tree_view_wnd, is_dark ? get_dark_colour(ColourID::TreeViewText) : -1);
+    }
+}
 
 void DialogDarkModeHelper::set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark)
 {
@@ -43,6 +57,7 @@ void DialogDarkModeHelper::apply_dark_mode_attributes()
     set_window_theme(m_config.checkbox_ids, L"DarkMode_Explorer", is_dark);
     set_window_theme(m_config.combo_box_ids, L"DarkMode_CFD", is_dark);
     set_window_theme(m_config.edit_ids, L"DarkMode_CFD", is_dark);
+    set_tree_view_theme(is_dark);
 }
 
 std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

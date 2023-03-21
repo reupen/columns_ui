@@ -39,6 +39,8 @@ enum class ColourID {
     TrackbarThumb,
     TrackbarHotThumb,
     TrackbarDisabledThumb,
+    TreeViewBackground,
+    TreeViewText,
     VolumeChannelTopEdge,
     VolumeChannelBottomAndRightEdge,
     VolumePopupBackground,
