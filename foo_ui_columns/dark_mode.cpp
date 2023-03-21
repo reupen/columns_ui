@@ -268,6 +268,10 @@ COLORREF get_dark_colour(ColourID colour_id)
         return get_base_dark_colour(DarkColourID::DARK_750);
     case ColourID::TrackbarDisabledThumb:
         return get_base_dark_colour(DarkColourID::DARK_400);
+    case ColourID::TreeViewBackground:
+        return get_base_dark_colour(DarkColourID::DARK_000);
+    case ColourID::TreeViewText:
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::VolumeChannelTopEdge:
         return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::VolumeChannelBottomAndRightEdge:

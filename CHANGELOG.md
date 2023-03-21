@@ -6,7 +6,8 @@
 
 - Dark mode support was added to various dialogue boxes.
   [[#673](https://github.com/reupen/columns_ui/pull/673),
-  [#676](https://github.com/reupen/columns_ui/pull/676)]
+  [#676](https://github.com/reupen/columns_ui/pull/676),
+  [#679](https://github.com/reupen/columns_ui/pull/679)]
 
 ### Internal changes
 

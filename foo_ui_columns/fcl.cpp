@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "fcl.h"
+
+#include "dark_mode_dialog.h"
 #include "main_window.h"
 
 // {EBD87879-65A7-4242-821B-812AF9F68E8F}
@@ -65,11 +67,11 @@ public:
         case WM_INITDIALOG: {
             if (m_import)
                 SetWindowText(wnd, _T("Select settings to import"));
-            HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
-            HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
-            SetWindowLongPtr(wnd_tree, GWL_STYLE, GetWindowLongPtr(wnd_tree, GWL_STYLE) | TVS_CHECKBOXES);
 
-            uih::tree_view_set_explorer_theme(wnd_tree);
+            const HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
+            TreeView_SetExtendedStyle(wnd_tree, TVS_EX_DOUBLEBUFFER, TVS_EX_DOUBLEBUFFER);
+
+            const HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
 
             if (wnd_combo) {
                 ComboBox_AddString(wnd_combo, L"Any foobar2000 installation");
@@ -351,9 +353,13 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
 
             FCLDialog pFCLDialog(true, std::move(datasetsguids));
             if (!quiet) {
-                const auto dialog_result = uih::modal_dialog_box(IDD_FCL_IMPORT, wnd, [&pFCLDialog](auto&&... args) {
-                    return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...);
-                });
+                const cui::dark::DialogDarkModeConfig dark_mode_config{
+                    .button_ids = {IDOK, IDCANCEL}, .tree_view_ids = {IDC_TREE}};
+
+                const auto dialog_result
+                    = modal_dialog_box(IDD_FCL_IMPORT, dark_mode_config, wnd, [&pFCLDialog](auto&&... args) {
+                          return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...);
+                      });
 
                 if (dialog_result <= 0)
                     throw exception_aborted();
@@ -427,7 +433,10 @@ void g_export_layout(HWND wnd, pfc::string8 path, bool is_quiet)
 {
     FCLDialog pFCLDialog;
     if (!is_quiet) {
-        const auto dialog_result = uih::modal_dialog_box(IDD_FCL_EXPORT, wnd,
+        const cui::dark::DialogDarkModeConfig dark_mode_config{
+            .button_ids = {IDOK, IDCANCEL}, .combo_box_ids = {IDC_DEST}, .tree_view_ids = {IDC_TREE}};
+
+        const auto dialog_result = modal_dialog_box(IDD_FCL_EXPORT, dark_mode_config, wnd,
             [&pFCLDialog](auto&&... args) { return pFCLDialog.FCLDialogProc(std::forward<decltype(args)>(args)...); });
 
         if (dialog_result <= 0)
