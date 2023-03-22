@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "dark_mode_dialog.h"
 #include "ng_playlist.h"
 #include "ng_playlist_groups.h"
 
@@ -56,7 +57,10 @@ static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg,
 
 static bool run_edit_view(edit_view_param& param, HWND parent)
 {
-    const auto dialog_result = uih::modal_dialog_box(IDD_EDIT_GROUP, parent,
+    dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK, IDCANCEL},
+        .combo_box_ids = {IDC_PLAYLIST_FILTER_TYPE},
+        .edit_ids = {IDC_VALUE, IDC_PLAYLIST_FILTER_STRING}};
+    const auto dialog_result = modal_dialog_box(IDD_EDIT_GROUP, dark_mode_config, parent,
         [&param](auto&&... args) { return EditViewProc(param, std::forward<decltype(args)>(args)...); });
 
     return dialog_result > 0;

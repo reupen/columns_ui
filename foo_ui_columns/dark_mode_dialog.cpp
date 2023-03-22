@@ -16,7 +16,8 @@ private:
     [[nodiscard]] std::optional<INT_PTR> handle_wm_notify(HWND wnd, LPNMHDR lpnm);
     void on_dark_mode_change();
     void apply_dark_mode_attributes();
-    void set_tree_view_theme(bool is_dark);
+    void set_edit_theme(bool is_dark) const;
+    void set_tree_view_theme(bool is_dark) const;
     void set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark);
 
     HWND m_wnd{};
@@ -27,7 +28,7 @@ private:
     std::unique_ptr<EventToken> m_dark_mode_status_callback;
 };
 
-void DialogDarkModeHelper::set_tree_view_theme(bool is_dark)
+void DialogDarkModeHelper::set_tree_view_theme(bool is_dark) const
 {
     if (!m_wnd)
         return;
@@ -37,6 +38,19 @@ void DialogDarkModeHelper::set_tree_view_theme(bool is_dark)
         SetWindowTheme(tree_view_wnd, is_dark ? L"DarkMode_Explorer" : L"Explorer", nullptr);
         TreeView_SetBkColor(tree_view_wnd, is_dark ? get_dark_colour(ColourID::TreeViewBackground) : -1);
         TreeView_SetTextColor(tree_view_wnd, is_dark ? get_dark_colour(ColourID::TreeViewText) : -1);
+    }
+}
+
+void DialogDarkModeHelper::set_edit_theme(bool is_dark) const
+{
+    if (!m_wnd)
+        return;
+
+    for (const auto id : m_config.edit_ids) {
+        const auto edit_wnd = GetDlgItem(m_wnd, id);
+        const auto is_scrollable = (GetWindowLongPtr(edit_wnd, GWL_STYLE) & (WS_VSCROLL | WS_HSCROLL)) != 0;
+        const auto dark_class = is_scrollable ? L"DarkMode_Explorer" : L"DarkMode_CFD";
+        SetWindowTheme(edit_wnd, is_dark ? dark_class : L"Explorer", nullptr);
     }
 }
 
@@ -56,7 +70,7 @@ void DialogDarkModeHelper::apply_dark_mode_attributes()
     set_window_theme(m_config.button_ids, L"DarkMode_Explorer", is_dark);
     set_window_theme(m_config.checkbox_ids, L"DarkMode_Explorer", is_dark);
     set_window_theme(m_config.combo_box_ids, L"DarkMode_CFD", is_dark);
-    set_window_theme(m_config.edit_ids, L"DarkMode_CFD", is_dark);
+    set_edit_theme(is_dark);
     set_tree_view_theme(is_dark);
 }
 
