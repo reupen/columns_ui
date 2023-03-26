@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core_dark_list_view.h"
 #include "list_view_panel.h"
 
 namespace cui::panels::item_properties {
@@ -23,7 +24,7 @@ public:
     Field() = default;
 };
 
-class FieldsList : public uih::ListView {
+class FieldsList : public helpers::CoreDarkListView {
 public:
     size_t m_edit_index, m_edit_column;
     pfc::list_t<Field>& m_fields;
@@ -71,7 +72,6 @@ public:
     bool m_show_columns, m_show_groups;
 
     bool m_initialising;
-    static INT_PTR CALLBACK g_DialogProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     ItemPropertiesConfig(pfc::list_t<Field> p_fields, uint32_t edge_style, uint32_t info_sections_mask,
         bool b_show_columns, bool b_show_groups);
 
