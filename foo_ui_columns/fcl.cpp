@@ -69,6 +69,10 @@ public:
                 SetWindowText(wnd, _T("Select settings to import"));
 
             const HWND wnd_tree = GetDlgItem(wnd, IDC_TREE);
+
+            const auto current_styles = GetWindowLongPtr(wnd_tree, GWL_STYLE);
+            SetWindowLongPtr(wnd_tree, GWL_STYLE, current_styles | TVS_CHECKBOXES);
+
             TreeView_SetExtendedStyle(wnd_tree, TVS_EX_DOUBLEBUFFER, TVS_EX_DOUBLEBUFFER);
 
             const HWND wnd_combo = m_import ? nullptr : GetDlgItem(wnd, IDC_DEST);
