@@ -63,7 +63,8 @@ void FieldsList::get_insert_items(size_t base, size_t count, pfc::list_t<InsertI
 }
 
 FieldsList::FieldsList(pfc::list_t<Field>& p_fields)
-    : m_edit_index(pfc_infinite)
+    : helpers::CoreDarkListView(true)
+    , m_edit_index(pfc_infinite)
     , m_edit_column(pfc_infinite)
     , m_fields(p_fields)
 {
