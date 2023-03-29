@@ -130,17 +130,17 @@ DWORD ArtworkReader::on_thread()
 unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("artwork_reader_ng_t::read_artwork");
-    const GUID artwork_type_id = album_art_ids::cover_front;
+    constexpr GUID artwork_type_id = album_art_ids::cover_front;
 
     m_bitmaps.clear();
 
     const auto p_album_art_manager_v2 = album_art_manager_v2::get();
 
     album_art_data_ptr data;
-    auto artwork_api_v2 = p_album_art_manager_v2->open(
-        pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), pfc::list_single_ref_t<GUID>(artwork_type_id), p_abort);
 
     try {
+        const auto artwork_api_v2 = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle),
+            pfc::list_single_ref_t<GUID>(artwork_type_id), p_abort);
         data = artwork_api_v2->query(artwork_type_id, p_abort);
     } catch (const exception_aborted&) {
         throw;
