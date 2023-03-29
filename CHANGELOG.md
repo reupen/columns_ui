@@ -15,6 +15,12 @@
   [[#680](https://github.com/reupen/columns_ui/pull/680), contributed by
   [@marc2k3](https://github.com/marc2k3)]
 
+### Bug fixes
+
+- A crash when artwork is enabled in the playlist view and certain input
+  components are used was fixed.
+  [[#684](https://github.com/reupen/columns_ui/pull/684)]
+
 ### Internal changes
 
 - Various dependencies were updated.
