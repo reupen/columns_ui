@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "item_details.h"
 #include "config.h"
+#include "dark_mode_dialog.h"
 
 namespace cui::panels::item_details {
 
@@ -195,9 +196,13 @@ void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this) &&
 {
     m_modal = false;
     m_this = p_this;
-    uih::modeless_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd, [config{std::move(*this)}](auto&&... args) mutable {
-        return config.on_message(std::forward<decltype(args)>(args)...);
-    });
+    dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR, IDC_GEN_FONT, IDOK, IDCANCEL},
+        .combo_box_ids = {IDC_HALIGN, IDC_VALIGN, IDC_EDGESTYLE},
+        .edit_ids = {IDC_SCRIPT, IDC_COLOUR_CODE, IDC_FONT_CODE}};
+    modeless_dialog_box(
+        IDD_ITEM_DETAILS_OPTIONS, dark_mode_config, wnd, [config{std::move(*this)}](auto&&... args) mutable {
+            return config.on_message(std::forward<decltype(args)>(args)...);
+        });
 }
 
 bool ItemDetailsConfig::run_modal(HWND wnd)
