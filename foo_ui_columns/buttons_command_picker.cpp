@@ -1,11 +1,15 @@
 #include "pch.h"
 #include "buttons.h"
+#include "dark_mode_dialog.h"
 
 namespace cui::toolbars::buttons {
 
 std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
 {
-    const auto dialog_result = uih::modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, wnd,
+    dark::DialogDarkModeConfig dark_mode_config{
+        .button_ids = {IDOK, IDCANCEL}, .list_box_ids = {IDC_GROUP, IDC_ITEM, IDC_COMMAND}};
+
+    const auto dialog_result = modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, dark_mode_config, wnd,
         [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
 
     return {dialog_result > 0, m_data};

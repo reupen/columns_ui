@@ -10,7 +10,8 @@
   [#679](https://github.com/reupen/columns_ui/pull/679),
   [#682](https://github.com/reupen/columns_ui/pull/682),
   [#683](https://github.com/reupen/columns_ui/pull/683),
-  [#685](https://github.com/reupen/columns_ui/pull/685)]
+  [#685](https://github.com/reupen/columns_ui/pull/685),
+  [#686](https://github.com/reupen/columns_ui/pull/686)]
 
 - Dark menus were enabled on Windows 11 build 22624.
   [[#680](https://github.com/reupen/columns_ui/pull/680), contributed by
