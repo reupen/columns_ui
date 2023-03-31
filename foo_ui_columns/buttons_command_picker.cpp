@@ -1,9 +1,21 @@
 #include "pch.h"
 #include "buttons.h"
+#include "dark_mode_dialog.h"
 
 namespace cui::toolbars::buttons {
 
-bool CommandPickerData::__populate_mainmenu_dynamic_recur(
+std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
+{
+    dark::DialogDarkModeConfig dark_mode_config{
+        .button_ids = {IDOK, IDCANCEL}, .list_box_ids = {IDC_GROUP, IDC_ITEM, IDC_COMMAND}};
+
+    const auto dialog_result = modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, dark_mode_config, wnd,
+        [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+
+    return {dialog_result > 0, m_data};
+}
+
+bool CommandPickerDialog::__populate_mainmenu_dynamic_recur(
     CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root)
 {
     if (ptr_node.is_valid()) {
@@ -19,7 +31,7 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
             p_data->m_subcommand = ptr_node->get_guid();
             ptr_node->get_description(p_data->m_desc);
 
-            auto& data_item = m_data.emplace_back(std::move(p_data));
+            auto& data_item = m_commands.emplace_back(std::move(p_data));
 
             auto path = mmh::join(name_parts, "/");
             const auto idx = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(path.c_str()));
@@ -42,7 +54,7 @@ bool CommandPickerData::__populate_mainmenu_dynamic_recur(
     }
     return false;
 }
-bool CommandPickerData::__populate_commands_recur(
+bool CommandPickerDialog::__populate_commands_recur(
     CommandData& data, std::list<std::string> name_parts, contextmenu_item_node* p_node, bool b_root)
 {
     if (!p_node)
@@ -68,7 +80,7 @@ bool CommandPickerData::__populate_commands_recur(
         p_data->m_subcommand = p_node->get_guid();
         p_node->get_description(p_data->m_desc);
 
-        auto& data_item = m_data.emplace_back(std::move(p_data));
+        auto& data_item = m_commands.emplace_back(std::move(p_data));
 
         const auto path = mmh::join(name_parts, "/");
         const auto idx = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(path.c_str()));
@@ -79,12 +91,12 @@ bool CommandPickerData::__populate_commands_recur(
     return false;
 }
 
-void CommandPickerData::populate_commands()
+void CommandPickerDialog::populate_commands()
 {
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
-    m_data.clear();
+    m_commands.clear();
     SendMessage(wnd_command, WM_SETREDRAW, FALSE, 0);
-    if (m_group == 2) {
+    if (m_data.group == 2) {
         service_enum_t<contextmenu_item> e;
         service_ptr_t<contextmenu_item> ptr;
 
@@ -111,7 +123,7 @@ void CommandPickerData::populate_commands()
 
                         auto p_data = std::make_unique<CommandData>(data);
                         ptr->get_item_description(p_service_item_index, p_data->m_desc);
-                        auto& data_item = m_data.emplace_back(std::move(p_data));
+                        auto& data_item = m_commands.emplace_back(std::move(p_data));
 
                         const auto path = mmh::join(name_parts, "/");
                         const auto idx
@@ -122,7 +134,7 @@ void CommandPickerData::populate_commands()
                 }
             }
         }
-    } else if (m_group == 3) {
+    } else if (m_data.group == 3) {
         service_enum_t<mainmenu_commands> e;
         service_ptr_t<mainmenu_commands> ptr;
 
@@ -155,7 +167,7 @@ void CommandPickerData::populate_commands()
                     } else {
                         auto p_data = std::make_unique<CommandData>(data);
                         ptr->get_description(p_service_item_index, p_data->m_desc);
-                        auto& data_item = m_data.emplace_back(std::move(p_data));
+                        auto& data_item = m_commands.emplace_back(std::move(p_data));
 
                         auto path = mmh::join(name_parts, "/");
                         const auto idx
@@ -165,7 +177,7 @@ void CommandPickerData::populate_commands()
                 }
             }
         }
-    } else if (m_group == 1) {
+    } else if (m_data.group == 1) {
         service_enum_t<uie::button> e;
         service_ptr_t<uie::button> ptr;
         while (e.next(ptr)) {
@@ -174,7 +186,7 @@ void CommandPickerData::populate_commands()
                 auto p_data = std::make_unique<CommandData>();
                 p_data->m_guid = ptr->get_item_guid();
                 p_button->get_description(p_data->m_desc);
-                auto& data_item = m_data.emplace_back(std::move(p_data));
+                auto& data_item = m_commands.emplace_back(std::move(p_data));
                 pfc::string8 temp;
                 p_button->get_name(temp);
                 const auto idx = ListBox_AddString(wnd_command, pfc::stringcvt::string_wide_from_utf8(temp.c_str()));
@@ -187,7 +199,7 @@ void CommandPickerData::populate_commands()
         LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, n, 0);
         CommandData* p_data = ((CommandData*)ret);
 
-        if (ret != LB_ERR && p_data->m_guid == m_guid && p_data->m_subcommand == m_subcommand) {
+        if (ret != LB_ERR && p_data->m_guid == m_data.guid && p_data->m_subcommand == m_data.subcommand) {
             SendMessage(wnd_command, LB_SETCURSEL, n, 0);
             update_description();
             break;
@@ -195,7 +207,7 @@ void CommandPickerData::populate_commands()
     }
     SendMessage(wnd_command, WM_SETREDRAW, TRUE, 0);
 }
-void CommandPickerData::update_description()
+void CommandPickerDialog::update_description()
 {
     LRESULT p_command = SendMessage(wnd_command, LB_GETCURSEL, 0, 0);
     if (p_command != LB_ERR) {
@@ -208,21 +220,7 @@ void CommandPickerData::update_description()
         uSendDlgItemMessageText(m_wnd, IDC_DESC, WM_SETTEXT, 0, "");
 }
 
-void CommandPickerData::set_data(const CommandPickerParam& p_data)
-{
-    m_group = p_data.m_group;
-    m_guid = p_data.m_guid;
-    m_subcommand = p_data.m_subcommand;
-    m_filter = p_data.m_filter;
-}
-void CommandPickerData::get_data(CommandPickerParam& p_data) const
-{
-    p_data.m_group = m_group;
-    p_data.m_guid = m_guid;
-    p_data.m_subcommand = m_subcommand;
-    p_data.m_filter = m_filter;
-}
-void CommandPickerData::initialise(HWND wnd)
+void CommandPickerDialog::initialise(HWND wnd)
 {
     m_wnd = wnd;
     wnd_group = GetDlgItem(wnd, IDC_GROUP);
@@ -239,23 +237,25 @@ void CommandPickerData::initialise(HWND wnd)
     SendMessage(wnd_filter, LB_ADDSTRING, 0, (LPARAM) _T("Current playlist selection"));
     SendMessage(wnd_filter, LB_ADDSTRING, 0, (LPARAM) _T("Active selection"));
 
-    SendMessage(wnd_group, LB_SETCURSEL, m_group, 0);
+    SendMessage(wnd_group, LB_SETCURSEL, m_data.group, 0);
 }
-void CommandPickerData::deinitialise(HWND wnd)
+
+void CommandPickerDialog::deinitialise(HWND wnd)
 {
     SendMessage(wnd_group, LB_RESETCONTENT, 0, 0);
     SendMessage(wnd_filter, LB_RESETCONTENT, 0, 0);
     SendMessage(wnd_command, LB_RESETCONTENT, 0, 0);
-    m_data.clear();
+    m_commands.clear();
 }
-INT_PTR CommandPickerData::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+
+INT_PTR CommandPickerDialog::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
         m_scope.initialize(FindOwningPopup(wnd));
         initialise(wnd);
         populate_commands();
-        SendMessage(wnd_filter, LB_SETCURSEL, (WPARAM)m_filter, 0);
+        SendMessage(wnd_filter, LB_SETCURSEL, static_cast<WPARAM>(m_data.filter), 0);
     }
         return TRUE;
     case WM_DESTROY:
@@ -274,28 +274,28 @@ INT_PTR CommandPickerData::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_COMMAND:
         switch (wp) {
         case IDC_GROUP | (LBN_SELCHANGE << 16):
-            m_group = ListBox_GetCurSel(wnd_group);
-            m_guid = {};
-            m_subcommand = {};
+            m_data.group = ListBox_GetCurSel(wnd_group);
+            m_data.guid = {};
+            m_data.subcommand = {};
             populate_commands();
             return TRUE;
         case IDC_ITEM | (LBN_SELCHANGE << 16): {
             const auto p_filter = ListBox_GetCurSel(wnd_filter);
             if (p_filter != LB_ERR)
-                m_filter = p_filter;
+                m_data.filter = p_filter;
         }
             return TRUE;
         case IDC_COMMAND | (LBN_SELCHANGE << 16): {
-            m_guid = {};
-            m_subcommand = {};
+            m_data.guid = {};
+            m_data.subcommand = {};
 
             const auto p_command = ListBox_GetCurSel(wnd_command);
             if (p_command != LB_ERR) {
                 LRESULT ret = SendMessage(wnd_command, LB_GETITEMDATA, p_command, 0);
                 auto* p_data = (CommandData*)ret;
                 if (ret != LB_ERR) {
-                    m_guid = p_data->m_guid;
-                    m_subcommand = p_data->m_subcommand;
+                    m_data.guid = p_data->m_guid;
+                    m_data.subcommand = p_data->m_subcommand;
                 }
             }
             update_description();

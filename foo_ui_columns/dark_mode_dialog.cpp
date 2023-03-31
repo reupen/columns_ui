@@ -71,6 +71,7 @@ void DialogDarkModeHelper::apply_dark_mode_attributes()
     set_window_theme(m_config.checkbox_ids, L"DarkMode_Explorer", is_dark);
     set_window_theme(m_config.combo_box_ids, L"DarkMode_CFD", is_dark);
     set_edit_theme(is_dark);
+    set_window_theme(m_config.list_box_ids, L"DarkMode_Explorer", is_dark);
     set_tree_view_theme(is_dark);
 }
 
