@@ -328,31 +328,26 @@ private:
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 };
 
-class CommandPickerParam {
-public:
-    GUID m_guid{};
-    GUID m_subcommand{};
-    int m_group{ButtonsToolbar::TYPE_SEPARATOR};
-    int m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
+struct CommandPickerData {
+    GUID guid{};
+    GUID subcommand{};
+    int group{ButtonsToolbar::TYPE_SEPARATOR};
+    int filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
 };
 
-class CommandPickerData {
-    modal_dialog_scope m_scope;
+class CommandPickerDialog {
+public:
+    CommandPickerDialog(CommandPickerData data = {}) : m_data(std::move(data)) {}
+
+    std::tuple<bool, CommandPickerData> open_modal(HWND wnd);
+
+private:
     class CommandData {
     public:
         GUID m_guid{};
         GUID m_subcommand{};
         pfc::string8 m_desc;
     };
-    std::vector<std::unique_ptr<CommandData>> m_data;
-    HWND m_wnd{};
-    HWND wnd_group{};
-    HWND wnd_filter{};
-    HWND wnd_command{};
-    int m_group{ButtonsToolbar::TYPE_SEPARATOR};
-    GUID m_guid{};
-    GUID m_subcommand{};
-    int m_filter{ButtonsToolbar::FILTER_ACTIVE_SELECTION};
 
     bool __populate_mainmenu_dynamic_recur(
         CommandData& data, const mainmenu_node::ptr& ptr_node, std::list<std::string> name_parts, bool b_root);
@@ -360,13 +355,17 @@ class CommandPickerData {
         CommandData& data, std::list<std::string> name_parts, contextmenu_item_node* p_node, bool b_root);
     void populate_commands();
     void update_description();
-
-public:
-    void set_data(const CommandPickerParam& p_data);
-    void get_data(CommandPickerParam& p_data) const;
     void initialise(HWND wnd);
     void deinitialise(HWND wnd);
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+
+    modal_dialog_scope m_scope;
+    std::vector<std::unique_ptr<CommandData>> m_commands;
+    HWND m_wnd{};
+    HWND wnd_group{};
+    HWND wnd_filter{};
+    HWND wnd_command{};
+    CommandPickerData m_data;
 };
 
 } // namespace cui::toolbars::buttons

@@ -366,21 +366,14 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 m_height = static_cast<int32_t>(SendMessage(GetDlgItem(wnd, IDC_HEIGHT_SPIN), UDM_GETPOS32, 0, 0));
             break;
         case IDC_ADD: {
-            CommandPickerData p_temp;
-            CommandPickerParam p_data{};
-            p_temp.set_data(p_data);
+            CommandPickerDialog command_picker_dialog;
 
-            const auto dialog_result = uih::modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, wnd,
-                [&p_temp](auto&&... args) { return p_temp.on_message(std::forward<decltype(args)>(args)...); });
-
-            if (dialog_result > 0) {
+            if (const auto [succeeded, data] = command_picker_dialog.open_modal(wnd); succeeded) {
                 auto& button = m_buttons.emplace_back(Button{});
-
-                p_temp.get_data(p_data);
-                button.m_type = (Type)p_data.m_group;
-                button.m_guid = p_data.m_guid;
-                button.m_subcommand = p_data.m_subcommand;
-                button.m_filter = (Filter)p_data.m_filter;
+                button.m_type = static_cast<Type>(data.group);
+                button.m_guid = data.guid;
+                button.m_subcommand = data.subcommand;
+                button.m_filter = static_cast<Filter>(data.filter);
 
                 uih::ListView::InsertItem item;
                 item.m_subitems.resize(2);
@@ -478,20 +471,14 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
         }
         case IDC_PICK: {
             if (m_selection) {
-                CommandPickerData p_temp;
-                CommandPickerParam p_data{
-                    m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter};
-                p_temp.set_data(p_data);
+                CommandPickerDialog command_picker_dialog(
+                    {m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter});
 
-                const auto dialog_result = uih::modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, wnd,
-                    [&p_temp](auto&&... args) { return p_temp.on_message(std::forward<decltype(args)>(args)...); });
-
-                if (dialog_result > 0) {
-                    p_temp.get_data(p_data);
-                    m_selection->m_type = (Type)p_data.m_group;
-                    m_selection->m_guid = p_data.m_guid;
-                    m_selection->m_subcommand = p_data.m_subcommand;
-                    m_selection->m_filter = (Filter)p_data.m_filter;
+                if (const auto [succeeded, data] = command_picker_dialog.open_modal(wnd); succeeded) {
+                    m_selection->m_type = static_cast<Type>(data.group);
+                    m_selection->m_guid = data.guid;
+                    m_selection->m_subcommand = data.subcommand;
+                    m_selection->m_filter = static_cast<Filter>(data.filter);
                     m_selection->m_interface.release();
 
                     const auto idx = m_button_list.get_selected_item_single();
