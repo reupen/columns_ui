@@ -31,9 +31,7 @@ void ButtonsToolbar::import_config(stream_reader* p_reader, size_t p_size, abort
 {
     ConfigParam param;
     param.m_selection = nullptr;
-    param.m_child = nullptr;
     param.m_active = 0;
-    param.m_image = nullptr;
     param.m_text_below = m_text_below;
     param.m_appearance = m_appearance;
     param.m_icon_size = m_icon_size;
@@ -50,9 +48,7 @@ void ButtonsToolbar::export_config(stream_writer* p_writer, abort_callback& p_ab
     ConfigParam param;
     param.m_selection = nullptr;
     param.m_buttons = m_buttons;
-    param.m_child = nullptr;
     param.m_active = 0;
-    param.m_image = nullptr;
     param.m_text_below = m_text_below;
     param.m_appearance = m_appearance;
     param.m_icon_size = m_icon_size;
@@ -627,114 +623,20 @@ void ButtonsToolbar::set_config(stream_reader* p_reader, size_t p_size, abort_ca
     }
 }
 
-INT_PTR CALLBACK ButtonsToolbar::ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_INITDIALOG:
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-        SHAutoComplete(GetDlgItem(wnd, IDC_IMAGE_PATH), SHACF_FILESYSTEM);
-        return TRUE;
-    case MSG_COMMAND_CHANGE: {
-        auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
-        if (ptr->m_selection) {
-            bool& b_custom = (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom);
-            bool b_enable = ptr->m_selection && ptr->m_selection->m_type != TYPE_SEPARATOR;
-            EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_ICON), b_enable);
-            EnableWindow(GetDlgItem(wnd, IDC_IMAGE_PATH), b_enable && b_custom);
-            EnableWindow(GetDlgItem(wnd, IDC_BROWSE), b_enable && b_custom);
-        }
-    } break;
-    case MSG_BUTTON_CHANGE: {
-        auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
-        bool b_custom = ptr->m_selection
-            ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom)
-            : false;
-
-        Button_SetCheck(GetDlgItem(wnd, IDC_USE_CUSTOM_ICON), b_custom ? BST_CHECKED : BST_UNCHECKED);
-        uSendDlgItemMessageText(
-            wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (ptr->m_selection && b_custom) ? ptr->m_image->m_path.get_ptr() : "");
-        bool b_enable = ptr->m_selection && ptr->m_selection->m_type != TYPE_SEPARATOR;
-        EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_ICON), b_enable);
-        EnableWindow(GetDlgItem(wnd, IDC_IMAGE_PATH), b_enable && b_custom);
-        EnableWindow(GetDlgItem(wnd, IDC_BROWSE), b_enable && b_custom);
-    } break;
-    case WM_COMMAND:
-        switch (wp) {
-        case IDC_USE_CUSTOM_ICON: {
-            auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
-            if (ptr->m_selection && ptr->m_image) {
-                bool& b_custom = (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom);
-                b_custom = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                EnableWindow(GetDlgItem(wnd, IDC_IMAGE_PATH), b_custom);
-                EnableWindow(GetDlgItem(wnd, IDC_BROWSE), b_custom);
-                uSendDlgItemMessageText(wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0,
-                    (ptr->m_selection && b_custom) ? ptr->m_image->m_path.get_ptr() : "");
-            }
-            break;
-        }
-        case (EN_CHANGE << 16) | IDC_IMAGE_PATH: {
-            auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
-            if (ptr->m_image) {
-                ptr->m_image->m_path = uGetWindowText((HWND)lp);
-            }
-            break;
-        }
-        case IDC_BROWSE: {
-            auto* ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
-            bool b_custom = ptr->m_selection
-                ? (ptr->m_active ? ptr->m_selection->m_use_custom_hot : ptr->m_selection->m_use_custom)
-                : false;
-            if (ptr->m_image && b_custom) {
-                pfc::string8 temp;
-                if (!uGetFullPathName(ptr->m_selection->m_custom_image.m_path, temp)
-                    || (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY))
-                    temp.reset();
-
-                std::vector extensions = {"*.bmp"s, "*.gif"s, "*.ico"s, "*.png"s, "*.tiff"s, "*.webp"s};
-
-                if (svg::is_available()) {
-                    extensions.emplace_back("*.svg"s);
-                    std::ranges::sort(extensions);
-                }
-
-                const auto joined_extensions = mmh::join(extensions, ";");
-
-                const auto extension_mask = fmt::format("Image Files ({extensions})|{extensions}|All Files (*.*)|*.*",
-                    fmt::arg("extensions", joined_extensions.c_str()));
-
-                if (uGetOpenFileName(wnd, extension_mask.c_str(), 0, "png", "Choose image", nullptr, temp, FALSE)) {
-                    ptr->m_image->m_path = temp;
-                    uSendDlgItemMessageText(
-                        wnd, IDC_IMAGE_PATH, WM_SETTEXT, 0, (true) ? ptr->m_image->m_path.get_ptr() : "");
-                }
-            }
-            break;
-        }
-        default:
-            return FALSE;
-        }
-    default:
-        return FALSE;
-    }
-    return FALSE;
-}
-
 bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
 {
     ConfigParam param;
     param.m_selection = nullptr;
     param.m_buttons = m_buttons;
-    param.m_child = nullptr;
     param.m_active = 0;
-    param.m_image = nullptr;
     param.m_text_below = m_text_below;
     param.m_appearance = m_appearance;
     param.m_icon_size = m_icon_size;
     param.m_width = m_width;
     param.m_height = m_height;
 
-    const auto dialog_result = DialogBoxParam(mmh::get_current_instance(), MAKEINTRESOURCE(IDD_BUTTONS_OPTIONS),
-        wnd_parent, ConfigParam::g_ConfigPopupProc, reinterpret_cast<LPARAM>(&param));
+    const auto dialog_result = uih::modal_dialog_box(IDD_BUTTONS_OPTIONS, wnd_parent,
+        [&param](auto&&... args) { return param.on_dialog_message(std::forward<decltype(args)>(args)...); });
 
     if (dialog_result > 0) {
         configure(
