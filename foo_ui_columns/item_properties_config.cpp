@@ -45,19 +45,9 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
         Button_SetCheck(GetDlgItem(wnd, IDC_SHOWCOLUMNS), m_show_columns ? BST_CHECKED : BST_UNCHECKED);
         Button_SetCheck(GetDlgItem(wnd, IDC_SHOWGROUPS), m_show_groups ? BST_CHECKED : BST_UNCHECKED);
     } break;
-    case WM_DESTROY: {
+    case WM_DESTROY:
         m_field_list.destroy();
-    } break;
-    case WM_ERASEBKGND:
-        SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
-        return TRUE;
-    case WM_PAINT:
-        uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
-        return TRUE;
-    case WM_CTLCOLORSTATIC:
-        SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
-        SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
+        break;
     case WM_NOTIFY: {
         const auto lpnm = reinterpret_cast<LPNMHDR>(lp);
 
