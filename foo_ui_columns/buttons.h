@@ -2,6 +2,8 @@
 
 #include "pch.h"
 
+#include "core_dark_list_view.h"
+
 namespace cui::toolbars::buttons {
 
 class ButtonsToolbar : public uie::container_uie_window_v3 {
@@ -195,7 +197,7 @@ public:
     class ConfigParam {
     public:
         // service_ptr_t<toolbar_extension> m_this;
-        class ButtonsList : public uih::ListView {
+        class ButtonsList : public helpers::CoreDarkListView {
             ConfigParam& m_param;
             static CLIPFORMAT g_clipformat();
             struct DDData {
@@ -230,7 +232,7 @@ public:
             bool do_drag_drop(WPARAM wp) override;
 
         public:
-            explicit ButtonsList(ConfigParam& p_param) : m_param(p_param) {}
+            explicit ButtonsList(ConfigParam& p_param) : CoreDarkListView(true), m_param(p_param) {}
         } m_button_list;
 
         void export_to_file(const char* p_path, bool b_paths = false);

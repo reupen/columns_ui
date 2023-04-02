@@ -8,6 +8,8 @@
 namespace cui::dark {
 
 enum class ColourID {
+    CheckboxDisabledText,
+    CheckboxText,
     EditBackground,
     LayoutBackground,
     PanelCaptionText,
@@ -15,10 +17,17 @@ enum class ColourID {
     RebarBackground,
     RebarBandBorder,
     SpinBackground,
+    SpinBuddyButtonBackground,
+    SpinBuddyButtonBorder,
     SpinButtonArrow,
     SpinButtonBackground,
     SpinButtonBorder,
+    SpinDisabledButtonBackground,
+    SpinDisabledBuddyButtonBackground,
+    SpinDisabledBuddyButtonBorder,
+    SpinHotBuddyButtonBackground,
     SpinHotButtonBackground,
+    SpinPressedBuddyButtonBackground,
     SpinPressedButtonBackground,
     StatusBarBackground,
     StatusBarText,

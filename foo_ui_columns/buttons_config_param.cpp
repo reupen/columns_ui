@@ -561,6 +561,9 @@ void ButtonsToolbar::ConfigParam::update_size_field_status()
 
     uSetDlgItemText(m_wnd, IDC_WIDTH, is_custom_size ? std::to_string(m_width.get_scaled_value()).c_str() : "");
     uSetDlgItemText(m_wnd, IDC_HEIGHT, is_custom_size ? std::to_string(m_height.get_scaled_value()).c_str() : "");
+
+    RedrawWindow(GetDlgItem(m_wnd, IDC_WIDTH_SPIN), nullptr, nullptr, RDW_INVALIDATE);
+    RedrawWindow(GetDlgItem(m_wnd, IDC_HEIGHT_SPIN), nullptr, nullptr, RDW_INVALIDATE);
 }
 
 } // namespace cui::toolbars::buttons

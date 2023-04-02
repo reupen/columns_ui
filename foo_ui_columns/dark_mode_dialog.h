@@ -11,6 +11,7 @@ struct DialogDarkModeConfig {
     std::unordered_set<int> combo_box_ids;
     std::unordered_set<int> edit_ids;
     std::unordered_set<int> list_box_ids;
+    std::unordered_set<int> spin_ids;
     std::unordered_set<int> tree_view_ids;
 };
 
