@@ -64,7 +64,6 @@
 #define IDD_PREFS_PLAYLIST_TABS         202
 #define IDD_PREFS_NOTIFICATION_AREA     203
 #define IDD_SPECTRUM_ANALYSER_OPTIONS   204
-#define IDD_BUTTON_IMAGE                205
 #define IDD_BUTTON_COMMAND_PICKER       206
 #define IDD_FCL_IMPORT                  207
 #define IDD_RESULTS                     209
@@ -150,27 +149,26 @@
 #define IDC_NEW                         1030
 #define IDC_BROWSE_ICON                 1031
 #define IDC_FILTER_HELP                 1031
+#define IDC_USE_CUSTOM_HOVER_ICON       1032
 #define IDC_AUTOSWITCH                  1034
 #define IDC_USE_TRANSPARENCY            1035
 #define IDC_PLEDGE                      1035
 #define IDC_NOWPL                       1036
 #define IDC_INLINE_MODE                 1036
-#define IDC_BUTTON_LIST                 1037
 #define IDC_RESET                       1038
 #define IDC_COMMAND                     1038
 #define IDC_VOL                         1039
 #define IDC_TAB1                        1039
-#define IDC_TAB                         1039
 #define IDC_SORT_ARROWS                 1039
 #define IDC_PLISTEDGE                   1040
 #define IDC_SHOW_STATUS                 1040
-#define IDC_IMAGE_PATH                  1040
 #define IDC_PLAUTOHIDE                  1041
 #define IDC_SHOW_LOCK                   1041
-#define IDC_BROWSE                      1041
 #define IDC_SELTIME                     1042
+#define IDC_HOVER_ICON_PATH             1042
 #define IDC_HHTRACK                     1043
 #define IDC_SHOW_STATUSPANE             1043
+#define IDC_BROWSE_HOVER_ICON           1043
 #define IDC_TFHELP                      1044
 #define IDC_SPINPL                      1045
 #define IDC_EDIT                        1046
@@ -278,6 +276,10 @@
 #define IDC_FONT_MODE                   1185
 #define IDC_WIDTH_SPIN                  1187
 #define IDC_HEIGHT_SPIN                 1188
+#define IDC_ICON_PATH                   1189
+#define IDC_BUTTONS_H1                  1190
+#define IDC_BUTTON_OPTIONS_H2           1191
+#define IDC_TOOLBAR_OPTIONS_H1          1192
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -287,7 +289,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        194
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1189
+#define _APS_NEXT_CONTROL_VALUE         1191
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

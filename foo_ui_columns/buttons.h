@@ -238,8 +238,7 @@ public:
         void export_to_stream(stream_writer* p_writer, bool b_paths, abort_callback& p_abort);
         void import_from_stream(stream_reader* p_reader, bool add, abort_callback& p_abort);
 
-        static INT_PTR CALLBACK g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-        BOOL ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+        INT_PTR on_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
         void update_size_field_status();
 
         void on_selection_change(size_t index);
@@ -252,9 +251,10 @@ public:
         // uih::ListView m_button_list;
         bool m_initialising{};
         Button* m_selection{nullptr};
-        HWND m_wnd{nullptr}, m_child{nullptr};
+        HWND m_wnd{nullptr};
+        wil::unique_hfont m_h1_font;
+        wil::unique_hfont m_h2_font;
         unsigned m_active{0};
-        Button::CustomImage* m_image{nullptr};
         std::vector<Button> m_buttons;
         bool m_text_below{false};
         Appearance m_appearance{APPEARANCE_NORMAL};
@@ -262,8 +262,6 @@ public:
         uih::IntegerAndDpi<int32_t> m_width{16};
         uih::IntegerAndDpi<int32_t> m_height{16};
     };
-
-    static INT_PTR CALLBACK ConfigChildProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
     bool have_config_popup() const override { return true; }
     bool show_config_popup(HWND wnd_parent) override;

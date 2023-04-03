@@ -261,16 +261,6 @@ INT_PTR CommandPickerDialog::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
     case WM_DESTROY:
         deinitialise(wnd);
         return TRUE;
-    case WM_ERASEBKGND:
-        SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
-        return TRUE;
-    case WM_PAINT:
-        uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
-        return TRUE;
-    case WM_CTLCOLORSTATIC:
-        SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
-        SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
     case WM_COMMAND:
         switch (wp) {
         case IDC_GROUP | (LBN_SELCHANGE << 16):

@@ -1,5 +1,7 @@
 #include "pch.h"
 #include "buttons.h"
+#include "prefs_utils.h"
+#include "svg.h"
 
 namespace cui::toolbars::buttons {
 
@@ -173,7 +175,6 @@ void ButtonsToolbar::ConfigParam::import_from_file(const char* p_path, bool add)
 void ButtonsToolbar::ConfigParam::on_selection_change(size_t index)
 {
     m_selection = index != pfc_infinite && index < m_buttons.size() ? &m_buttons[index] : nullptr;
-    m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image) : nullptr;
     SendDlgItemMessage(m_wnd, IDC_SHOW, CB_SETCURSEL, m_selection ? m_selection->m_show : -1, 0);
 
     bool b_enable = index != pfc_infinite && m_selection && m_selection->m_type != TYPE_SEPARATOR;
@@ -184,7 +185,24 @@ void ButtonsToolbar::ConfigParam::on_selection_change(size_t index)
     EnableWindow(GetDlgItem(m_wnd, IDC_SHOW), b_enable);
     EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_TEXT), b_enable);
     EnableWindow(GetDlgItem(m_wnd, IDC_TEXT), b_enable && m_selection->m_use_custom_text);
-    SendMessage(m_child, MSG_BUTTON_CHANGE, 0, 0);
+
+    const auto has_custom_icon = m_selection && m_selection->m_use_custom;
+    const auto has_custom_hover_icon = m_selection && m_selection->m_use_custom_hot;
+
+    Button_SetCheck(GetDlgItem(m_wnd, IDC_USE_CUSTOM_ICON), has_custom_icon ? BST_CHECKED : BST_UNCHECKED);
+    uSetDlgItemText(m_wnd, IDC_ICON_PATH, has_custom_icon ? m_selection->m_custom_image.m_path.get_ptr() : "");
+
+    EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_ICON), b_enable);
+    EnableWindow(GetDlgItem(m_wnd, IDC_ICON_PATH), b_enable && has_custom_icon);
+    EnableWindow(GetDlgItem(m_wnd, IDC_BROWSE_ICON), b_enable && has_custom_icon);
+
+    Button_SetCheck(GetDlgItem(m_wnd, IDC_USE_CUSTOM_HOVER_ICON), has_custom_hover_icon ? BST_CHECKED : BST_UNCHECKED);
+    uSetDlgItemText(
+        m_wnd, IDC_HOVER_ICON_PATH, has_custom_hover_icon ? m_selection->m_custom_hot_image.m_path.get_ptr() : "");
+
+    EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_HOVER_ICON), b_enable);
+    EnableWindow(GetDlgItem(m_wnd, IDC_HOVER_ICON_PATH), b_enable && has_custom_hover_icon);
+    EnableWindow(GetDlgItem(m_wnd, IDC_BROWSE_HOVER_ICON), b_enable && has_custom_hover_icon);
 }
 
 void ButtonsToolbar::ConfigParam::populate_buttons_list()
@@ -217,28 +235,20 @@ void ButtonsToolbar::ConfigParam::refresh_buttons_list_items(size_t index, size_
     m_button_list.replace_items(index, items);
 }
 
-INT_PTR CALLBACK ButtonsToolbar::ConfigParam::g_ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    ConfigParam* ptr = nullptr;
-    switch (msg) {
-    case WM_INITDIALOG:
-        SetWindowLongPtr(wnd, DWLP_USER, lp);
-        ptr = reinterpret_cast<ConfigParam*>(lp);
-        break;
-    default:
-        ptr = reinterpret_cast<ConfigParam*>(GetWindowLongPtr(wnd, DWLP_USER));
-        break;
-    }
-    return ptr ? ptr->ConfigPopupProc(wnd, msg, wp, lp) : FALSE;
-}
-
-BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG: {
         const auto _ = pfc::vartoggle_t(m_initialising, true);
         m_wnd = wnd;
         m_scope.initialize(FindOwningPopup(wnd));
+
+        m_h1_font.reset(prefs::create_default_ui_font(12));
+        m_h2_font.reset(prefs::create_default_ui_font(10));
+
+        SetWindowFont(GetDlgItem(m_wnd, IDC_BUTTONS_H1), m_h1_font.get(), FALSE);
+        SetWindowFont(GetDlgItem(m_wnd, IDC_BUTTON_OPTIONS_H2), m_h2_font.get(), FALSE);
+        SetWindowFont(GetDlgItem(m_wnd, IDC_TOOLBAR_OPTIONS_H1), m_h1_font.get(), FALSE);
 
         HWND icon_size_wnd = GetDlgItem(wnd, IDC_ICON_SIZE);
         ComboBox_AddString(icon_size_wnd, L"Automatic");
@@ -252,55 +262,30 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
 
         HWND wnd_show = GetDlgItem(wnd, IDC_SHOW);
 
-        SendMessage(wnd_show, CB_ADDSTRING, 0, (LPARAM) _T("Image"));
-        SendMessage(wnd_show, CB_ADDSTRING, 0, (LPARAM) _T("Image and text"));
-        SendMessage(wnd_show, CB_ADDSTRING, 0, (LPARAM) _T("Text"));
+        ComboBox_AddString(wnd_show, L"Icon");
+        ComboBox_AddString(wnd_show, L"Icon and text");
+        ComboBox_AddString(wnd_show, L"Text");
 
         HWND wnd_text = GetDlgItem(wnd, IDC_TEXT_LOCATION);
 
-        SendMessage(wnd_text, CB_ADDSTRING, 0, (LPARAM) _T("Right"));
-        SendMessage(wnd_text, CB_ADDSTRING, 0, (LPARAM) _T("Below"));
+        ComboBox_AddString(wnd_text, L"Right");
+        ComboBox_AddString(wnd_text, L"Below");
 
         HWND wnd_app = GetDlgItem(wnd, IDC_APPEARANCE);
 
-        SendMessage(wnd_app, CB_ADDSTRING, 0, (LPARAM) _T("Normal"));
-        SendMessage(wnd_app, CB_ADDSTRING, 0, (LPARAM) _T("Flat"));
-        SendMessage(wnd_app, CB_ADDSTRING, 0, (LPARAM) _T("No edges"));
+        ComboBox_AddString(wnd_app, L"Normal");
+        ComboBox_AddString(wnd_app, L"Flat");
+        ComboBox_AddString(wnd_app, L"No edges");
 
-        HWND wnd_tab = GetDlgItem(wnd, IDC_TAB);
-        uTabCtrl_InsertItemText(wnd_tab, 0, "Normal icon");
-        uTabCtrl_InsertItemText(wnd_tab, 1, "Hover icon");
-
-        RECT tab;
-
-        GetWindowRect(wnd_tab, &tab);
-        MapWindowPoints(HWND_DESKTOP, wnd, (LPPOINT)&tab, 2);
-
-        TabCtrl_AdjustRect(wnd_tab, FALSE, &tab);
-
-        m_child = CreateDialogParam(
-            core_api::get_my_instance(), MAKEINTRESOURCE(IDD_BUTTON_IMAGE), wnd, ConfigChildProc, (LPARAM)this);
-
-        SetWindowPos(m_child, HWND_TOP, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
-
-        if (m_child) {
-            {
-                EnableThemeDialogTexture(m_child, ETDT_ENABLETAB);
-            }
-        }
-
-        SetWindowPos(m_child, nullptr, tab.left, tab.top, tab.right - tab.left, tab.bottom - tab.top, SWP_NOZORDER);
-        // SetWindowPos(wnd_tab,HWND_BOTTOM,0,0,0,0,SWP_NOMOVE|SWP_NOSIZE);
-
-        ShowWindow(m_child, SW_NORMAL);
-        UpdateWindow(m_child);
-
-        SendMessage(wnd_text, CB_SETCURSEL, m_text_below ? 1 : 0, 0);
-        SendMessage(wnd_app, CB_SETCURSEL, m_appearance, 0);
+        ComboBox_SetCurSel(wnd_text, m_text_below ? 1 : 0);
+        ComboBox_SetCurSel(wnd_app, m_appearance);
         ComboBox_SetCurSel(icon_size_wnd, WI_EnumValue(m_icon_size));
         update_size_field_status();
 
-        HWND wnd_button_list = m_button_list.create(wnd, uih::WindowPosition(14, 16, 310, 106), true);
+        SHAutoComplete(GetDlgItem(wnd, IDC_ICON_PATH), SHACF_FILESYSTEM);
+        SHAutoComplete(GetDlgItem(wnd, IDC_HOVER_ICON_PATH), SHACF_FILESYSTEM);
+
+        HWND wnd_button_list = m_button_list.create(wnd, uih::WindowPosition(14, 24, 310, 106), true);
         populate_buttons_list();
         ShowWindow(wnd_button_list, SW_SHOWNORMAL);
         return TRUE;
@@ -308,32 +293,20 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
     case WM_DESTROY:
         m_button_list.destroy();
         break;
-#if 0
+    case WM_NCDESTROY:
+        m_h1_font.reset();
+        m_h2_font.reset();
+        break;
+    case WM_ERASEBKGND:
+        SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
+        return TRUE;
     case WM_PAINT:
         uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
         return TRUE;
     case WM_CTLCOLORSTATIC:
-        SetBkColor((HDC)wp, GetSysColor(COLOR_WINDOW));
-        SetTextColor((HDC)wp, GetSysColor(COLOR_WINDOWTEXT));
-        return (BOOL)GetSysColorBrush(COLOR_WINDOW);
-#endif
-        // case WM_ERASEBKGND:
-        //    SetWindowLongPtr(wnd, DWLP_MSGRESULT, FALSE);
-        //    return TRUE;
-        // case WM_PAINT:
-        //    uih::handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK));
-        //    return TRUE;
-        // case WM_CTLCOLORBTN:
-        // case WM_CTLCOLORDLG:
-        // case WM_CTLCOLORSTATIC:
-        /*SetBkColor((HDC)wp, GetSysColor(COLOR_3DDKSHADOW));
-        SetDCBrushColor((HDC)wp, GetSysColor(COLOR_3DDKSHADOW));
-        SetDCPenColor((HDC)wp, GetSysColor(COLOR_3DDKSHADOW));
-        SetBkMode((HDC)wp, TRANSPARENT);
-        //SetROP2((HDC)wp, R2_BLACK);
-        SelectBrush((HDC)wp, GetSysColorBrush(COLOR_3DDKSHADOW));
-        return (BOOL)GetSysColorBrush(COLOR_3DDKSHADOW);*/
-        // return FALSE;
+        SetBkColor(reinterpret_cast<HDC>(wp), GetSysColor(COLOR_WINDOW));
+        SetTextColor(reinterpret_cast<HDC>(wp), GetSysColor(COLOR_WINDOWTEXT));
+        return reinterpret_cast<INT_PTR>(GetSysColorBrush(COLOR_WINDOW));
     case WM_COMMAND:
         switch (wp) {
         case IDCANCEL: {
@@ -438,7 +411,7 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
                 }
             } else if (cmd == IDM_LOAD || cmd == IDM_ADD) {
                 pfc::string8 path;
-                if (uGetOpenFileName(wnd, "fcb Files (*.fcb)|*.fcb|All Files (*.*)|*.*", 0, "fcb", "Open file", nullptr,
+                if (uGetOpenFileName(wnd, "fcb files (*.fcb)|*.fcb|All files (*.*)|*.*", 0, "fcb", "Open file", nullptr,
                         path, FALSE)) {
                     m_button_list.remove_items(bit_array_true());
 
@@ -470,50 +443,106 @@ BOOL ButtonsToolbar::ConfigParam::ConfigPopupProc(HWND wnd, UINT msg, WPARAM wp,
             break;
         }
         case IDC_PICK: {
-            if (m_selection) {
-                CommandPickerDialog command_picker_dialog(
-                    {m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter});
+            if (!m_selection)
+                break;
 
-                if (const auto [succeeded, data] = command_picker_dialog.open_modal(wnd); succeeded) {
-                    m_selection->m_type = static_cast<Type>(data.group);
-                    m_selection->m_guid = data.guid;
-                    m_selection->m_subcommand = data.subcommand;
-                    m_selection->m_filter = static_cast<Filter>(data.filter);
-                    m_selection->m_interface.release();
+            CommandPickerDialog command_picker_dialog(
+                {m_selection->m_guid, m_selection->m_subcommand, m_selection->m_type, m_selection->m_filter});
 
-                    const auto idx = m_button_list.get_selected_item_single();
-                    if (idx != pfc_infinite) {
-                        refresh_buttons_list_items(idx, 1);
-                    }
-                    bool b_enable = m_selection->m_type != TYPE_SEPARATOR;
-                    EnableWindow(GetDlgItem(wnd, IDC_SHOW), m_selection->m_type != TYPE_SEPARATOR);
-                    EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_TEXT), b_enable);
-                    EnableWindow(GetDlgItem(wnd, IDC_TEXT), !b_enable || m_selection->m_use_custom_text);
-                    SendMessage(m_child, MSG_COMMAND_CHANGE, 0, 0);
-                }
+            const auto [succeeded, data] = command_picker_dialog.open_modal(wnd);
+
+            if (!succeeded)
+                break;
+
+            m_selection->m_type = static_cast<Type>(data.group);
+            m_selection->m_guid = data.guid;
+            m_selection->m_subcommand = data.subcommand;
+            m_selection->m_filter = static_cast<Filter>(data.filter);
+            m_selection->m_interface.release();
+
+            const auto idx = m_button_list.get_selected_item_single();
+            if (idx != pfc_infinite) {
+                refresh_buttons_list_items(idx, 1);
+            }
+            bool b_enable = m_selection->m_type != TYPE_SEPARATOR;
+            EnableWindow(GetDlgItem(wnd, IDC_SHOW), m_selection->m_type != TYPE_SEPARATOR);
+            EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_TEXT), b_enable);
+            EnableWindow(GetDlgItem(wnd, IDC_TEXT), b_enable && m_selection->m_use_custom_text);
+
+            EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_ICON), b_enable);
+            EnableWindow(GetDlgItem(wnd, IDC_ICON_PATH), b_enable && m_selection->m_use_custom);
+            EnableWindow(GetDlgItem(wnd, IDC_BROWSE_ICON), b_enable && m_selection->m_use_custom);
+
+            EnableWindow(GetDlgItem(wnd, IDC_USE_CUSTOM_HOVER_ICON), b_enable);
+            EnableWindow(GetDlgItem(wnd, IDC_HOVER_ICON_PATH), b_enable && m_selection->m_use_custom_hot);
+            EnableWindow(GetDlgItem(wnd, IDC_BROWSE_HOVER_ICON), b_enable && m_selection->m_use_custom_hot);
+
+            break;
+        }
+        case IDC_USE_CUSTOM_ICON:
+        case IDC_USE_CUSTOM_HOVER_ICON: {
+            if (!m_selection)
+                break;
+
+            bool is_hover = wp == IDC_USE_CUSTOM_HOVER_ICON;
+            auto& image = is_hover ? m_selection->m_custom_hot_image : m_selection->m_custom_image;
+            bool& has_custom_icon = (is_hover ? m_selection->m_use_custom_hot : m_selection->m_use_custom);
+            has_custom_icon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+
+            EnableWindow(GetDlgItem(wnd, is_hover ? IDC_HOVER_ICON_PATH : IDC_ICON_PATH), has_custom_icon);
+            EnableWindow(GetDlgItem(wnd, is_hover ? IDC_BROWSE_HOVER_ICON : IDC_BROWSE_ICON), has_custom_icon);
+            uSetDlgItemText(
+                wnd, is_hover ? IDC_HOVER_ICON_PATH : IDC_ICON_PATH, has_custom_icon ? image.m_path.get_ptr() : "");
+            break;
+        }
+        case (EN_CHANGE << 16) | IDC_ICON_PATH:
+            if (m_selection && m_selection->m_use_custom)
+                m_selection->m_custom_image.m_path = uGetWindowText(reinterpret_cast<HWND>(lp));
+            break;
+        case (EN_CHANGE << 16) | IDC_HOVER_ICON_PATH:
+            if (m_selection && m_selection->m_use_custom_hot)
+                m_selection->m_custom_hot_image.m_path = uGetWindowText(reinterpret_cast<HWND>(lp));
+            break;
+        case IDC_BROWSE_ICON:
+        case IDC_BROWSE_HOVER_ICON: {
+            if (!m_selection)
+                break;
+
+            const bool is_hover = wp == IDC_BROWSE_HOVER_ICON;
+            auto& image = is_hover ? m_selection->m_custom_hot_image : m_selection->m_custom_image;
+            bool& has_custom_icon = (is_hover ? m_selection->m_use_custom_hot : m_selection->m_use_custom);
+
+            if (!has_custom_icon)
+                break;
+
+            pfc::string8 temp;
+            if (!uGetFullPathName(image.m_path, temp) || (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY))
+                temp.reset();
+
+            std::vector extensions = {"*.bmp"s, "*.gif"s, "*.ico"s, "*.png"s, "*.tiff"s, "*.webp"s};
+
+            if (svg::is_available()) {
+                extensions.emplace_back("*.svg"s);
+                std::ranges::sort(extensions);
+            }
+
+            const auto joined_extensions = mmh::join(extensions, ";");
+
+            const auto extension_mask
+                = fmt::format("Icon and image files ({extensions})|{extensions}|All files (*.*)|*.*",
+                    fmt::arg("extensions", joined_extensions.c_str()));
+
+            if (uGetOpenFileName(wnd, extension_mask.c_str(), 0, "png", "Select icon", nullptr, temp, FALSE)) {
+                image.m_path = temp;
+                uSetDlgItemText(wnd, is_hover ? IDC_HOVER_ICON_PATH : IDC_ICON_PATH, temp);
             }
             break;
         }
-        case IDOK: {
+        case IDOK:
             EndDialog(wnd, 1);
-        }
             return TRUE;
         default:
             return FALSE;
-        }
-        break;
-    case WM_NOTIFY:
-        switch (((LPNMHDR)lp)->idFrom) {
-        case IDC_TAB:
-            switch (((LPNMHDR)lp)->code) {
-            case TCN_SELCHANGE: {
-                m_active = TabCtrl_GetCurSel(GetDlgItem(wnd, IDC_TAB));
-                m_image = m_selection ? (m_active ? &m_selection->m_custom_hot_image : &m_selection->m_custom_image)
-                                      : nullptr;
-                SendMessage(m_child, MSG_BUTTON_CHANGE, 0, 0);
-            } break;
-            }
-            break;
         }
         break;
     default:
