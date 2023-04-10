@@ -2,6 +2,8 @@
 
 #include "dark_mode_dialog.h"
 
+#include "dark_mode_spin.h"
+
 namespace cui::dark {
 
 namespace {
@@ -17,6 +19,7 @@ private:
     void on_dark_mode_change();
     void apply_dark_mode_attributes();
     void set_edit_theme(bool is_dark) const;
+    void set_spin_theme(bool is_dark) const;
     void set_tree_view_theme(bool is_dark) const;
     void set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark);
 
@@ -54,6 +57,22 @@ void DialogDarkModeHelper::set_edit_theme(bool is_dark) const
     }
 }
 
+void DialogDarkModeHelper::set_spin_theme(bool is_dark) const
+{
+    if (!m_wnd)
+        return;
+
+    for (const auto id : m_config.spin_ids) {
+        const auto spin_wnd = GetDlgItem(m_wnd, id);
+        SetWindowTheme(spin_wnd, is_dark ? L"DarkMode_Explorer" : nullptr, nullptr);
+
+        if (is_dark)
+            spin::add_window(spin_wnd);
+        else
+            spin::remove_window(spin_wnd);
+    }
+}
+
 void DialogDarkModeHelper::set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark)
 {
     if (!m_wnd)
@@ -72,6 +91,7 @@ void DialogDarkModeHelper::apply_dark_mode_attributes()
     set_window_theme(m_config.combo_box_ids, L"DarkMode_CFD", is_dark);
     set_edit_theme(is_dark);
     set_window_theme(m_config.list_box_ids, L"DarkMode_Explorer", is_dark);
+    set_spin_theme(is_dark);
     set_tree_view_theme(is_dark);
 }
 
@@ -166,7 +186,10 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_wm_notify(HWND wnd, LPNMHDR 
             RECT rect_text = lpnmcd->rc;
             rect_text.left += box_size.cx + zero_digit_size.cx / 2;
 
-            SetTextColor(dc, get_system_colour(COLOR_WINDOWTEXT, true));
+            const auto is_disabled = (lpnmcd->uItemState & CDIS_DISABLED) != 0;
+            const auto text_colour
+                = get_dark_colour(is_disabled ? ColourID::CheckboxDisabledText : ColourID::CheckboxText);
+            SetTextColor(dc, text_colour);
 
             // Multi-line text not currently handled
             DrawTextEx(dc, text.data(), gsl::narrow<int>(text.size()), &rect_text,

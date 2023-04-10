@@ -112,10 +112,13 @@ consteval COLORREF create_grey(const int value)
 enum class DarkColourID : COLORREF {
     DARK_000,
     DARK_200,
+    DARK_250,
     DARK_300,
     DARK_400,
     DARK_500,
     DARK_600,
+    DARK_700,
+    DARK_740,
     DARK_750,
     DARK_999,
 };
@@ -127,6 +130,8 @@ COLORREF get_base_dark_colour(DarkColourID colour_id)
         return is_windows_11_rtm_or_newer() ? create_grey(25) : create_grey(32);
     case DarkColourID::DARK_200:
         return create_grey(51);
+    case DarkColourID::DARK_250:
+        return create_grey(64);
     case DarkColourID::DARK_300:
         return create_grey(77);
     case DarkColourID::DARK_400:
@@ -135,6 +140,10 @@ COLORREF get_base_dark_colour(DarkColourID colour_id)
         return create_grey(98);
     case DarkColourID::DARK_600:
         return create_grey(119);
+    case DarkColourID::DARK_700:
+        return create_grey(131);
+    case DarkColourID::DARK_740:
+        return create_grey(155);
     case DarkColourID::DARK_750:
         return create_grey(166);
     case DarkColourID::DARK_999:
@@ -200,6 +209,10 @@ wil::unique_hbrush get_light_colour_brush(ColourID colour_id)
 COLORREF get_dark_colour(ColourID colour_id)
 {
     switch (colour_id) {
+    case ColourID::CheckboxDisabledText:
+        return get_base_dark_colour(DarkColourID::DARK_700);
+    case ColourID::CheckboxText:
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::EditBackground:
         return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::LayoutBackground:
@@ -220,14 +233,28 @@ COLORREF get_dark_colour(ColourID colour_id)
         return get_base_dark_colour(DarkColourID::DARK_400);
     case ColourID::SpinBackground:
         return get_base_dark_colour(DarkColourID::DARK_200);
+    case ColourID::SpinBuddyButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_200);
+    case ColourID::SpinBuddyButtonBorder:
+        return get_base_dark_colour(DarkColourID::DARK_740);
     case ColourID::SpinButtonBorder:
         return get_base_dark_colour(DarkColourID::DARK_400);
     case ColourID::SpinButtonArrow:
         return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::SpinButtonBackground:
         return get_base_dark_colour(DarkColourID::DARK_000);
-    case ColourID::SpinHotButtonBackground:
+    case ColourID::SpinDisabledBuddyButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_000);
+    case ColourID::SpinDisabledBuddyButtonBorder:
+        return get_base_dark_colour(DarkColourID::DARK_250);
+    case ColourID::SpinDisabledButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_000);
+    case ColourID::SpinHotBuddyButtonBackground:
         return get_base_dark_colour(DarkColourID::DARK_300);
+    case ColourID::SpinHotButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_250);
+    case ColourID::SpinPressedBuddyButtonBackground:
+        return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::SpinPressedButtonBackground:
         return get_base_dark_colour(DarkColourID::DARK_500);
     case ColourID::StatusBarBackground:

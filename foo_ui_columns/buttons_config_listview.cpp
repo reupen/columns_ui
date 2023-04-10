@@ -11,6 +11,7 @@ CLIPFORMAT ButtonsToolbar::ConfigParam::ButtonsList::g_clipformat()
 
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 {
+    CoreDarkListView::notify_on_initialisation();
     set_selection_mode(SelectionMode::SingleRelaxed);
     set_columns({{"Name", 225_spx}, {"Type", 150_spx}});
 }

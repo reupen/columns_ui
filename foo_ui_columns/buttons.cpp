@@ -2,8 +2,8 @@
 #include "buttons.h"
 
 #include "dark_mode.h"
+#include "dark_mode_dialog.h"
 #include "menu_items.h"
-#include "svg.h"
 
 #define ID_BUTTONS 2001
 
@@ -635,7 +635,14 @@ bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
     param.m_width = m_width;
     param.m_height = m_height;
 
-    const auto dialog_result = uih::modal_dialog_box(IDD_BUTTONS_OPTIONS, wnd_parent,
+    dark::DialogDarkModeConfig dark_mode_config{.button_ids
+        = {IDC_PICK, IDC_ADD, IDC_REMOVE, IDC_RESET, IDC_BROWSE_ICON, IDC_BROWSE_HOVER_ICON, IDC_TOOLS, IDOK, IDCANCEL},
+        .checkbox_ids = {IDC_USE_CUSTOM_TEXT, IDC_USE_CUSTOM_ICON, IDC_USE_CUSTOM_HOVER_ICON},
+        .combo_box_ids = {IDC_SHOW, IDC_TEXT_LOCATION, IDC_APPEARANCE, IDC_ICON_SIZE},
+        .edit_ids = {IDC_TEXT, IDC_ICON_PATH, IDC_HOVER_ICON_PATH, IDC_WIDTH, IDC_HEIGHT},
+        .spin_ids = {IDC_WIDTH_SPIN, IDC_HEIGHT_SPIN}};
+
+    const auto dialog_result = modal_dialog_box(IDD_BUTTONS_OPTIONS, dark_mode_config, wnd_parent,
         [&param](auto&&... args) { return param.on_dialog_message(std::forward<decltype(args)>(args)...); });
 
     if (dialog_result > 0) {
