@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "fcl.h"
 
+#include "core_dark_list_view.h"
 #include "dark_mode_dialog.h"
 #include "main_window.h"
 
@@ -209,7 +210,8 @@ public:
     static HWND s_open(HWND parent_wnd, PanelInfoList items, bool aborted)
     {
         auto dialog = std::make_shared<ImportResultsDialog>(std::move(items), aborted);
-        const auto wnd = uih::modeless_dialog_box(IDD_RESULTS, parent_wnd,
+        const cui::dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK}};
+        const auto wnd = modeless_dialog_box(IDD_RESULTS, dark_mode_config, parent_wnd,
             [dialog](auto&&... args) { return dialog->handle_dialog_message(std::forward<decltype(args)>(args)...); });
         ShowWindow(wnd, SW_SHOWNORMAL);
         return wnd;
@@ -222,36 +224,24 @@ private:
         case WM_INITDIALOG: {
             modeless_dialog_manager::g_add(wnd);
             SetWindowText(wnd, L"FCL import results");
-            HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
-            uih::list_view_set_explorer_theme(wnd_lv);
-
             SetWindowText(GetDlgItem(wnd, IDC_CAPTION),
                 m_aborted ? L"The layout import was aborted because the following required panels are not installed:"
                           : L"Some parts of the layout may not have imported because the following panels are not "
                             L"installed:");
 
-            LVCOLUMN lvc{};
-            lvc.mask = LVCF_TEXT | LVCF_WIDTH;
+            m_list_view.create(wnd, {7, 21, 443, 192}, true);
+            m_list_view.set_columns({{"Name", 200_spx}, {"GUID", 300_spx}});
 
-            uih::list_view_insert_column_text(wnd_lv, 0, L"Name", 150);
-            uih::list_view_insert_column_text(wnd_lv, 1, L"GUID", 300);
+            const auto items = ranges::views::transform(m_items, [](auto&& item) {
+                return uih::ListView::InsertItem{{item.name, pfc::print_guid(item.guid)}, {}};
+            }) | ranges::to_vector;
 
-            SendMessage(wnd_lv, WM_SETREDRAW, FALSE, 0);
-
-            LVITEM lvi{};
-            lvi.mask = LVIF_TEXT;
-            const auto count = gsl::narrow<int>(m_items.get_count());
-            for (int i = 0; i < count; i++) {
-                pfc::string8 temp;
-                uih::list_view_insert_item_text(wnd_lv, i, 0, m_items[i].name, false);
-                uih::list_view_insert_item_text(wnd_lv, i, 1, pfc::print_guid(m_items[i].guid), true);
-            }
-            SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
-            RedrawWindow(wnd_lv, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
+            m_list_view.insert_items(0, items.size(), items.data());
+            ShowWindow(m_list_view.get_wnd(), SW_SHOWNORMAL);
         } break;
         case WM_COMMAND:
             switch (wp) {
-            case IDCANCEL:
+            case IDOK:
                 DestroyWindow(wnd);
                 return 0;
             }
@@ -269,6 +259,7 @@ private:
 
     PanelInfoList m_items;
     bool m_aborted{};
+    cui::helpers::CoreDarkListView m_list_view{true};
 };
 
 PFC_DECLARE_EXCEPTION(exception_fcl_dependentpanelmissing, pfc::exception, "Missing dependent panel(s)")
