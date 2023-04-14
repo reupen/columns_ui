@@ -67,7 +67,7 @@ jobs:
       - name: Set up MSBuild logger
         if: matrix.enable-annotations
         run: |
-          Invoke-WebRequest -Uri https://github.com/reupen/msbuild-github-logger/releases/download/v1.0.0/Reupen.MSBuild.GitHubLogger.dll -OutFile "$Env:Temp\Reupen.MSBuild.GitHubLogger.dll"
+          Invoke-WebRequest -Uri https://github.com/reupen/msbuild-github-logger/releases/download/v1.0.1/Reupen.MSBuild.GitHubLogger.dll -OutFile "$Env:Temp\Reupen.MSBuild.GitHubLogger.dll"
 
       - name: Build
         run: |
