@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "fcl.h"
 
+#include "core_dark_list_view.h"
 #include "dark_mode_dialog.h"
 #include "main_window.h"
 
@@ -202,64 +203,64 @@ public:
     }
 };
 
-class ImportResultsData {
+class ImportResultsDialog {
 public:
-    PanelInfoList m_items;
-    bool m_aborted;
-    ImportResultsData(PanelInfoList items, bool baborted) : m_items(std::move(items)), m_aborted(baborted) {}
-};
+    ImportResultsDialog(PanelInfoList items, bool aborted) : m_items(std::move(items)), m_aborted(aborted) {}
 
-BOOL g_ImportResultsProc(const ImportResultsData& data, HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
-{
-    switch (msg) {
-    case WM_INITDIALOG: {
-        modeless_dialog_manager::g_add(wnd);
-        SetWindowText(wnd, _T("FCL import results"));
-        HWND wnd_lv = GetDlgItem(wnd, IDC_LIST);
-        uih::list_view_set_explorer_theme(wnd_lv);
-
-        SetWindowText(GetDlgItem(wnd, IDC_CAPTION),
-            (data.m_aborted
-                    ? _T("The layout import was aborted because the following required panels are not installed:")
-                    : _T("Some parts of the layout may not have imported because the following panels are not ")
-                      _T("installed:")));
-
-        LVCOLUMN lvc{};
-        lvc.mask = LVCF_TEXT | LVCF_WIDTH;
-
-        uih::list_view_insert_column_text(wnd_lv, 0, _T("Name"), 150);
-        uih::list_view_insert_column_text(wnd_lv, 1, _T("GUID"), 300);
-
-        SendMessage(wnd_lv, WM_SETREDRAW, FALSE, 0);
-
-        LVITEM lvi{};
-        lvi.mask = LVIF_TEXT;
-        const auto count = gsl::narrow<int>(data.m_items.get_count());
-        for (int i = 0; i < count; i++) {
-            pfc::string8 temp;
-            uih::list_view_insert_item_text(wnd_lv, i, 0, data.m_items[i].name, false);
-            uih::list_view_insert_item_text(wnd_lv, i, 1, pfc::print_guid(data.m_items[i].guid), true);
-        }
-        SendMessage(wnd_lv, WM_SETREDRAW, TRUE, 0);
-        RedrawWindow(wnd_lv, nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
-    } break;
-    case WM_COMMAND:
-        switch (wp) {
-        case IDCANCEL:
-            DestroyWindow(wnd);
-            return 0;
-        }
-        break;
-    case WM_CLOSE:
-        DestroyWindow(wnd);
-        return 0;
-    case WM_NCDESTROY:
-        modeless_dialog_manager::g_remove(wnd);
-        break;
+    static HWND s_open(HWND parent_wnd, PanelInfoList items, bool aborted)
+    {
+        auto dialog = std::make_shared<ImportResultsDialog>(std::move(items), aborted);
+        const cui::dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDOK}};
+        const auto wnd = modeless_dialog_box(IDD_RESULTS, dark_mode_config, parent_wnd,
+            [dialog](auto&&... args) { return dialog->handle_dialog_message(std::forward<decltype(args)>(args)...); });
+        ShowWindow(wnd, SW_SHOWNORMAL);
+        return wnd;
     }
 
-    return FALSE;
-}
+private:
+    BOOL handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        switch (msg) {
+        case WM_INITDIALOG: {
+            modeless_dialog_manager::g_add(wnd);
+            SetWindowText(wnd, L"FCL import results");
+            SetWindowText(GetDlgItem(wnd, IDC_CAPTION),
+                m_aborted ? L"The layout import was aborted because the following required panels are not installed:"
+                          : L"Some parts of the layout may not have imported because the following panels are not "
+                            L"installed:");
+
+            m_list_view.create(wnd, {7, 21, 443, 192}, true);
+            m_list_view.set_columns({{"Name", 200_spx}, {"GUID", 300_spx}});
+
+            const auto items = ranges::views::transform(m_items, [](auto&& item) {
+                return uih::ListView::InsertItem{{item.name, pfc::print_guid(item.guid)}, {}};
+            }) | ranges::to_vector;
+
+            m_list_view.insert_items(0, items.size(), items.data());
+            ShowWindow(m_list_view.get_wnd(), SW_SHOWNORMAL);
+        } break;
+        case WM_COMMAND:
+            switch (wp) {
+            case IDOK:
+                DestroyWindow(wnd);
+                return 0;
+            }
+            break;
+        case WM_CLOSE:
+            DestroyWindow(wnd);
+            return 0;
+        case WM_NCDESTROY:
+            modeless_dialog_manager::g_remove(wnd);
+            break;
+        }
+
+        return FALSE;
+    }
+
+    PanelInfoList m_items;
+    bool m_aborted{};
+    cui::helpers::CoreDarkListView m_list_view{true};
+};
 
 PFC_DECLARE_EXCEPTION(exception_fcl_dependentpanelmissing, pfc::exception, "Missing dependent panel(s)")
 
@@ -400,11 +401,7 @@ void g_import_layout(HWND wnd, const char* path, bool quiet)
         }
     } catch (const exception_aborted&) {
     } catch (const exception_fcl_dependentpanelmissing&) {
-        ImportResultsData data(panel_info, true);
-        const auto wnd_results = uih::modeless_dialog_box(IDD_RESULTS, wnd, [data{std::move(data)}](auto&&... args) {
-            return g_ImportResultsProc(data, std::forward<decltype(args)>(args)...);
-        });
-        ShowWindow(wnd_results, SW_SHOWNORMAL);
+        ImportResultsDialog::s_open(wnd, panel_info, true);
     } catch (const pfc::exception& ex) {
         popup_message::g_show(ex.what(), "Error");
     }
