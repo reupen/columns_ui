@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 2.0.0-rc.1
 
 ### Features
 
@@ -16,7 +16,8 @@
   [@marc2k3](https://github.com/marc2k3)),
   [#689](https://github.com/reupen/columns_ui/pull/689),
   [#692](https://github.com/reupen/columns_ui/pull/692),
-  [#695](https://github.com/reupen/columns_ui/pull/695)]
+  [#695](https://github.com/reupen/columns_ui/pull/695),
+  [#697](https://github.com/reupen/columns_ui/pull/697)]
 
 - Dark menus were enabled on Windows 11 build 22624.
   [[#680](https://github.com/reupen/columns_ui/pull/680), contributed by
