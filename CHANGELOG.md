@@ -28,6 +28,10 @@
   components are used was fixed.
   [[#684](https://github.com/reupen/columns_ui/pull/684)]
 
+- The title bar of a maximised main window now correctly updates when switching
+  between light and dark mode on Windows 10.
+  [[#696](https://github.com/reupen/columns_ui/pull/696)]
+
 ### Internal changes
 
 - Various dependencies were updated.
