@@ -84,22 +84,31 @@ void set_titlebar_mode(HWND wnd, bool is_dark)
 
 void force_titlebar_redraw(HWND wnd)
 {
-    if (!IsWindowVisible(wnd))
+    if (is_windows_11_rtm_or_newer() || !IsWindowVisible(wnd))
         return;
 
-    // The below is a hack to force the titlebar to redraw (nothing else works).
-    RECT rc{};
-    if (!GetWindowRect(wnd, &rc))
+    // The below is a hack to force the titlebar to redraw on Windows 10 (little else works).
+    // Does not handle layered windows without alpha.
+    const auto ex_styles = GetWindowLongPtr(wnd, GWL_EXSTYLE);
+
+    if (!ex_styles)
         return;
 
-    const auto cx = RECT_CX(rc);
-    const auto cy = RECT_CY(rc);
+    if (ex_styles & WS_EX_LAYERED) {
+        BYTE alpha{};
+        DWORD flags{};
 
-    if (cx <= 0)
-        return;
+        if (!GetLayeredWindowAttributes(wnd, nullptr, &alpha, &flags))
+            return;
 
-    SetWindowPos(wnd, nullptr, 0, 0, cx - 1, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
-    SetWindowPos(wnd, nullptr, 0, 0, cx, cy, SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+        const auto is_opaque = alpha == 255;
+        SetLayeredWindowAttributes(wnd, NULL, is_opaque ? 254 : alpha, is_opaque ? flags : flags ^ LWA_ALPHA);
+        SetLayeredWindowAttributes(wnd, NULL, alpha, flags);
+    } else {
+        SetWindowLongPtr(wnd, GWL_EXSTYLE, ex_styles | WS_EX_LAYERED);
+        SetLayeredWindowAttributes(wnd, 0, 254, LWA_ALPHA);
+        SetWindowLongPtr(wnd, GWL_EXSTYLE, ex_styles);
+    }
 }
 
 namespace {
