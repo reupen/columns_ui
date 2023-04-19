@@ -1,8 +1,7 @@
 # Columns UI
 
-[![Build status](https://github.com/reupen/columns_ui/actions/workflows/build.yml/badge.svg)](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amaster)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/reupen/columns_ui/master.svg)](https://results.pre-commit.ci/latest/github/reupen/columns_ui/master)
-[![Codiga code quality](https://api.codiga.io/project/31411/score/svg)](https://app.codiga.io/project/31411/dashboard)
+[![Build status](https://github.com/reupen/columns_ui/actions/workflows/build.yml/badge.svg)](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amain)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/reupen/columns_ui/main.svg)](https://results.pre-commit.ci/latest/github/reupen/columns_ui/main)
 [![Codacy code quality](https://app.codacy.com/project/badge/Grade/7a892c27551745ea883810ab7493983d)](https://www.codacy.com/gh/reupen/columns_ui/dashboard)
 
 Columns UI is released under the Lesser GNU Public Licence (see COPYING and
@@ -19,7 +18,7 @@ Stable and pre-release versions can be downloaded from the
 
 If you’re logged into GitHub, you can download the latest development version by
 visiting the
-[list of recent GitHub Actions builds](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amaster),
+[list of recent GitHub Actions builds](https://github.com/reupen/columns_ui/actions/workflows/build.yml?query=branch%3Amain),
 clicking on the most recent entry with a green tick, and then scrolling down to
 the links named ‘Component package (release, win32)’ and ‘Component package
 (release, x64)’ at the bottom.
