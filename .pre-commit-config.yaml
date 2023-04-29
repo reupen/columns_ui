@@ -30,12 +30,12 @@ repos:
     hooks:
       - id: black
   - repo: https://github.com/pre-commit/mirrors-prettier
-    rev: v3.0.0-alpha.6
+    rev: v3.0.0-alpha.9-for-vscode
     hooks:
       - id: prettier
         types_or: [json, markdown, yaml]
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v16.0.1
+    rev: v16.0.2
     hooks:
       - id: clang-format
         types_or: [c++]
