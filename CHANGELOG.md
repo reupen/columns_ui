@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- The scroll bars in the DSP preset and output device toolbars are now dark
+  themed when dark mode is active.
+  [[#703](https://github.com/reupen/columns_ui/pull/703)]
+
 ## 2.0.0-rc.1
 
 ### Features

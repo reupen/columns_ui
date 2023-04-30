@@ -101,8 +101,8 @@ private:
     void set_window_theme() const;
     void refresh_all_items();
     void update_active_item();
-    int calculate_max_item_width();
-    int calculate_height();
+    int calculate_max_item_width() const;
+    int calculate_height() const;
 
     static constexpr INT_PTR ID_COMBOBOX = 1001;
     static constexpr unsigned initial_height = 300;
@@ -115,8 +115,9 @@ private:
     inline static std::vector<DropDownListToolbar<ToolbarArgs>*> s_windows;
 
     typename ToolbarArgs::ItemList m_items;
-    HWND m_wnd_combo{nullptr};
-    WNDPROC m_order_proc{nullptr};
+    HWND m_wnd_combo{};
+    HWND m_wnd_combo_list_box{};
+    WNDPROC m_order_proc{};
     int m_max_item_width{0};
     bool m_initialised{false};
     bool m_process_next_char{true};
@@ -127,7 +128,11 @@ private:
 template <class ToolbarArgs>
 void DropDownListToolbar<ToolbarArgs>::set_window_theme() const
 {
-    SetWindowTheme(m_wnd_combo, cui::colours::is_dark_mode_active() ? L"DarkMode_CFD" : nullptr, nullptr);
+    const auto is_dark = cui::colours::is_dark_mode_active();
+    SetWindowTheme(m_wnd_combo, is_dark ? L"DarkMode_CFD" : nullptr, nullptr);
+
+    if (m_wnd_combo_list_box)
+        SetWindowTheme(m_wnd_combo_list_box, is_dark ? L"DarkMode_Explorer" : nullptr, nullptr);
 }
 
 template <class ToolbarArgs>
@@ -190,7 +195,7 @@ void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
 }
 
 template <class ToolbarArgs>
-int DropDownListToolbar<ToolbarArgs>::calculate_height()
+int DropDownListToolbar<ToolbarArgs>::calculate_height() const
 {
     RECT rc{};
     GetWindowRect(m_wnd_combo, &rc);
@@ -198,7 +203,7 @@ int DropDownListToolbar<ToolbarArgs>::calculate_height()
 }
 
 template <class ToolbarArgs>
-int DropDownListToolbar<ToolbarArgs>::calculate_max_item_width()
+int DropDownListToolbar<ToolbarArgs>::calculate_max_item_width() const
 {
     const int fallback_width = uih::scale_dpi_value(50);
 
@@ -268,6 +273,12 @@ LRESULT DropDownListToolbar<ToolbarArgs>::on_message(HWND wnd, UINT msg, WPARAM 
 
         if (m_wnd_combo) {
             SetWindowLongPtr(m_wnd_combo, GWLP_USERDATA, reinterpret_cast<LPARAM>(this));
+
+            COMBOBOXINFO cbi{};
+            cbi.cbSize = sizeof cbi;
+
+            if (GetComboBoxInfo(m_wnd_combo, &cbi))
+                m_wnd_combo_list_box = cbi.hwndList;
 
             set_window_theme();
 
