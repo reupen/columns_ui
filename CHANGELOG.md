@@ -12,6 +12,11 @@
   older versions of Windows was fixed.
   [[#704](https://github.com/reupen/columns_ui/pull/704)]
 
+### Internal changes
+
+- The component is now compiled using foobar2000 SDK 2023-04-18.
+  [[#699](https://github.com/reupen/columns_ui/pull/699)]
+
 ## 2.0.0-rc.1
 
 ### Features
