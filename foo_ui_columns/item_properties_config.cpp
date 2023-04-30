@@ -45,9 +45,15 @@ INT_PTR CALLBACK ItemPropertiesConfig::on_message(HWND wnd, UINT msg, WPARAM wp,
         Button_SetCheck(GetDlgItem(wnd, IDC_SHOWCOLUMNS), m_show_columns ? BST_CHECKED : BST_UNCHECKED);
         Button_SetCheck(GetDlgItem(wnd, IDC_SHOWGROUPS), m_show_groups ? BST_CHECKED : BST_UNCHECKED);
     } break;
-    case WM_DESTROY:
+    case WM_DESTROY: {
+        const auto wnd_sections_tree = GetDlgItem(wnd, IDC_INFOSECTIONS);
+        HIMAGELIST state_image_list = TreeView_GetImageList(wnd_sections_tree, TVSIL_STATE);
+        TreeView_SetImageList(wnd_sections_tree, nullptr, TVSIL_STATE);
+        ImageList_Destroy(state_image_list);
+
         m_field_list.destroy();
         break;
+    }
     case WM_NOTIFY: {
         const auto lpnm = reinterpret_cast<LPNMHDR>(lp);
 
