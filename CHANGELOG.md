@@ -8,6 +8,10 @@
   themed when dark mode is active.
   [[#703](https://github.com/reupen/columns_ui/pull/703)]
 
+- A leak of GDI objects when closing the Item properties options dialogue box on
+  older versions of Windows was fixed.
+  [[#704](https://github.com/reupen/columns_ui/pull/704)]
+
 ## 2.0.0-rc.1
 
 ### Features
