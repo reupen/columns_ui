@@ -12,6 +12,9 @@
   older versions of Windows was fixed.
   [[#704](https://github.com/reupen/columns_ui/pull/704)]
 
+- Some buttons toolbar console messages were updated to refer to hover icons
+  instead of hot images. [[#708](https://github.com/reupen/columns_ui/pull/708)]
+
 ### Internal changes
 
 - The component is now compiled using foobar2000 SDK 2023-04-18.
