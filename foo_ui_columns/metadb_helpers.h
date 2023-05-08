@@ -11,8 +11,15 @@ double calculate_tracks_total_length(auto& tracks)
 
     std::vector<double> lengths(tracks.size());
     metadb_v2_api->queryMultiParallel_(tracks, [&lengths](size_t index, const metadb_v2_rec_t& rec) {
-        if (rec.info.is_valid())
-            lengths[index] = rec.info->info().get_length();
+        if (!rec.info.is_valid())
+            return;
+
+        const auto length = rec.info->info().get_length();
+
+        if (length < 0.0)
+            return;
+
+        lengths[index] = length;
     });
     return std::reduce(lengths.begin(), lengths.end());
 }

@@ -12,6 +12,10 @@
   older versions of Windows was fixed.
   [[#704](https://github.com/reupen/columns_ui/pull/704)]
 
+- Certain internet radio streams no longer have a negative length in the
+  playlist switcher, status bar and status pane on foobar2000 2.0.
+  [[#721](https://github.com/reupen/columns_ui/pull/721)]
+
 - Some buttons toolbar console messages were updated to refer to hover icons
   instead of hot images. [[#708](https://github.com/reupen/columns_ui/pull/708)]
 
