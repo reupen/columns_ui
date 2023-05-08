@@ -16,6 +16,10 @@
   playlist switcher, status bar and status pane on foobar2000 2.0.
   [[#721](https://github.com/reupen/columns_ui/pull/721)]
 
+- Incorrect rendering of the hover item when using the mouse wheel in the
+  playlist tabs and tab stack panels was fixed.
+  [[#723](https://github.com/reupen/columns_ui/pull/723)]
+
 - Some buttons toolbar console messages were updated to refer to hover icons
   instead of hot images. [[#708](https://github.com/reupen/columns_ui/pull/708)]
 
