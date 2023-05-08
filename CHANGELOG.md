@@ -1,14 +1,14 @@
 # Change log
 
-## Development version
+## 2.0.0
 
 ### Bug fixes
 
-- The scroll bars in the DSP preset and output device toolbars are now dark
-  themed when dark mode is active.
+- Scroll bars in the DSP preset and output device toolbars now have a dark
+  appearance when dark mode is active.
   [[#703](https://github.com/reupen/columns_ui/pull/703)]
 
-- A leak of GDI objects when closing the Item properties options dialogue box on
+- A GDI-object leak when closing the Item properties options dialogue box on
   older versions of Windows was fixed.
   [[#704](https://github.com/reupen/columns_ui/pull/704)]
 
@@ -16,8 +16,8 @@
   playlist switcher, status bar and status pane on foobar2000 2.0.
   [[#721](https://github.com/reupen/columns_ui/pull/721)]
 
-- Incorrect rendering of the hover item when using the mouse wheel in the
-  playlist tabs and tab stack panels was fixed.
+- In the playlist tabs and tab stack panels, the hover item now rerenders
+  correctly after using the mouse wheel.
   [[#723](https://github.com/reupen/columns_ui/pull/723)]
 
 - Some buttons toolbar console messages were updated to refer to hover icons
