@@ -1008,54 +1008,48 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
         if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
         break;
-    case WM_MOUSEWHEEL:
-        if ((GetWindowLongPtr(wnd, GWL_STYLE) & TCS_MULTILINE) == NULL) {
-            // unsigned scroll_lines = GetNumScrollLines();
+    case WM_MOUSEWHEEL: {
+        if ((GetWindowLongPtr(wnd, GWL_STYLE) & TCS_MULTILINE) != 0)
+            return 0;
 
-            HWND wnd_child = GetWindow(wnd, GW_CHILD);
-            WCHAR str_class[129]{};
-            if (wnd_child && RealGetWindowClass(wnd_child, str_class, gsl::narrow<UINT>(std::size(str_class) - 1))
-                && !wcscmp(str_class, UPDOWN_CLASS) && IsWindowVisible(wnd_child)) {
-                INT min = NULL;
-                INT max = NULL;
-                INT index = NULL;
-                BOOL err = FALSE;
-                SendMessage(wnd_child, UDM_GETRANGE32, (WPARAM)&min, (LPARAM)&max);
-                index = static_cast<int>(SendMessage(wnd_child, UDM_GETPOS32, (WPARAM)NULL, (LPARAM)&err));
+        if (!m_up_down_control_wnd || !IsWindowVisible(m_up_down_control_wnd))
+            return 0;
 
-                // if (!err)
-                {
-                    if (max) {
-                        int zDelta = short(HIWORD(wp));
+        int min{};
+        int max{};
+        SendMessage(
+            m_up_down_control_wnd, UDM_GETRANGE32, reinterpret_cast<WPARAM>(&min), reinterpret_cast<LPARAM>(&max));
 
-                        // int delta = MulDiv(zDelta, scroll_lines, 120);
-                        m_mousewheel_delta += zDelta;
-                        int scroll_lines = 1; // GetNumScrollLines();
-                        // if (scroll_lines == -1)
-                        // scroll_lines = count;
+        const auto index = gsl::narrow<int>(SendMessage(m_up_down_control_wnd, UDM_GETPOS32, NULL, NULL));
 
-                        if (m_mousewheel_delta * scroll_lines >= WHEEL_DELTA) {
-                            if (index > min) {
-                                SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_THUMBPOSITION, index - 1), NULL);
-                                SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_ENDSCROLL, 0), NULL);
-                                SendMessage(wnd_child, UDM_SETPOS32, NULL, index - 1);
-                            }
-                            m_mousewheel_delta = 0;
-                        } else if (m_mousewheel_delta * scroll_lines <= -WHEEL_DELTA) {
-                            if (index + 1 <= max) {
-                                SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_THUMBPOSITION, index + 1), NULL);
-                                SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_ENDSCROLL, 0), NULL);
-                                SendMessage(wnd_child, UDM_SETPOS32, NULL, index + 1);
-                            }
-                            m_mousewheel_delta = 0;
-                        }
-                    }
-                }
+        if (max == 0)
+            return 0;
 
-                return 0;
-            }
+        const int wheel_delta = GET_WHEEL_DELTA_WPARAM(wp);
+
+        m_mousewheel_delta += wheel_delta;
+
+        POINT pt{GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+        ScreenToClient(wnd, &pt);
+
+        if (abs(m_mousewheel_delta) < WHEEL_DELTA)
+            return 0;
+
+        if (m_mousewheel_delta > 0 && index > min) {
+            SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_THUMBPOSITION, index - 1), NULL);
+            SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_ENDSCROLL, 0), NULL);
+            SendMessage(m_up_down_control_wnd, UDM_SETPOS32, NULL, index - 1);
+            SendMessage(wnd, WM_MOUSEMOVE, GET_KEYSTATE_WPARAM(wp), POINTTOPOINTS(pt));
+        } else if (m_mousewheel_delta < 0 && index + 1 <= max) {
+            SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_THUMBPOSITION, index + 1), NULL);
+            SendMessage(wnd, WM_HSCROLL, MAKEWPARAM(SB_ENDSCROLL, 0), NULL);
+            SendMessage(m_up_down_control_wnd, UDM_SETPOS32, NULL, index + 1);
+            SendMessage(wnd, WM_MOUSEMOVE, GET_KEYSTATE_WPARAM(wp), POINTTOPOINTS(pt));
         }
-        break;
+
+        m_mousewheel_delta = 0;
+        return 0;
+    }
     }
     return CallWindowProc(m_tab_proc, wnd, msg, wp, lp);
 }
