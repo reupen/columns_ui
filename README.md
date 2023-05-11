@@ -106,7 +106,7 @@ With these installed, open a Developer Command Prompt for VS 2022 from the start
 menu, switch to the Columns UI source directory and run:
 
 ```powershell
-msbuild /m "/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;Platform=Win32;Configuration=Release" vc17\columns_ui-public.sln
+msbuild /m "/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;VcpkgAutoLink=true;Platform=Win32;Configuration=Release" vc17\columns_ui-public.sln
 ```
 
 (Note: Currently `lld-link.exe` can't be used due to
