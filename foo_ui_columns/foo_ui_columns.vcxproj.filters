@@ -878,6 +878,9 @@
     <ClInclude Include="event_token.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="core_drop_down_list_toolbar.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
