@@ -1,5 +1,12 @@
 # Change log
 
+## Development version
+
+### Features
+
+- A playlist selector toolbar was added.
+  [[#729](https://github.com/reupen/columns_ui/pull/729)]
+
 ## 2.0.0
 
 ### Bug fixes

@@ -121,6 +121,9 @@
     <Filter Include="Resources\svg">
       <UniqueIdentifier>{c0bc6330-d052-4fa8-951d-a3e70400bf6f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Playlist selector toolbar">
+      <UniqueIdentifier>{0eaa631f-d75d-4656-a064-8a6201707260}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp">
@@ -601,6 +604,9 @@
     </ClCompile>
     <ClCompile Include="dark_mode_active_ui.cpp">
       <Filter>Dark mode</Filter>
+    </ClCompile>
+    <ClCompile Include="playlist_selector.cpp">
+      <Filter>Playlist selector toolbar</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
