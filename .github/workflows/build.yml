@@ -32,7 +32,7 @@ jobs:
             enable-annotations: true
             publish-artefacts: true
           - toolset: clang
-            additional-build-args: '"/p:PlatformToolset=ClangCL;LinkToolExe=link.exe"'
+            additional-build-args: '"/p:PlatformToolset=ClangCL;LinkToolExe=link.exe;VcpkgAutoLink=true"'
             allowed-failure: true
         exclude:
           - toolset: v143
