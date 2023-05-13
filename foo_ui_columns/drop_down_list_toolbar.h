@@ -60,7 +60,11 @@ public:
     void get_name(pfc::string_base& out) const override { out = ToolbarArgs::name; }
     void get_category(pfc::string_base& out) const override { out.set_string("Toolbars"); }
     bool is_available(const uie::window_host_ptr& p_host) const override { return ToolbarArgs::is_available(); }
-    void get_menu_items(uie::menu_hook_t& p_hook) override { ToolbarArgs::get_menu_items(p_hook); }
+    void get_menu_items(uie::menu_hook_t& p_hook) override
+    {
+        if constexpr (requires { ToolbarArgs::get_menu_items; })
+            ToolbarArgs::get_menu_items(p_hook);
+    }
     uie::container_window_v3_config get_window_config() override { return {ToolbarArgs::class_name}; }
 
 private:

@@ -37,7 +37,6 @@ struct OutputFormatToolbarArgs {
         config.m_bitDepth = bitDepth;
         api->setCoreConfig(config);
     }
-    static void get_menu_items(uie::menu_hook_t& p_hook) {}
     static void on_first_window_created()
     {
         auto api = output_manager_v2::get();

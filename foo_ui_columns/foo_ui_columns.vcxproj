@@ -265,6 +265,7 @@
     <ClCompile Include="font_manager.cpp" />
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
+    <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
     <ClCompile Include="svg.cpp" />
     <ClCompile Include="system_appearance_manager.cpp" />
@@ -429,6 +430,7 @@
     <ClInclude Include="config_defaults.h" />
     <ClInclude Include="config_items.h" />
     <ClInclude Include="core_dark_list_view.h" />
+    <ClInclude Include="core_drop_down_list_toolbar.h" />
     <ClInclude Include="dark_mode_dialog.h" />
     <ClInclude Include="dark_mode_active_ui.h" />
     <ClInclude Include="dark_mode_spin.h" />

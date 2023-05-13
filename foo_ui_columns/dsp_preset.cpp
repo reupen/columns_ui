@@ -3,9 +3,6 @@
 #include "drop_down_list_toolbar.h"
 #include "panel_menu_item.h"
 
-// Not exposed in the foobar2000 SDK
-constexpr GUID dsp_manager_page_id{0xEB1878C9, 0x4B31, 0x46E3, {0x95, 0x2B, 0x6F, 0x7E, 0x1F, 0xD3, 0x63, 0xDD}};
-
 struct DspPresetToolbarArgs {
     using ID = size_t;
     using ItemList = std::vector<std::tuple<ID, std::string>>;
@@ -44,7 +41,7 @@ struct DspPresetToolbarArgs {
     static void get_menu_items(uie::menu_hook_t& p_hook)
     {
         p_hook.add_node(new cui::panel_helpers::CommandMenuNode{
-            "DSP Manager", [] { ui_control::get()->show_preferences(dsp_manager_page_id); }});
+            "DSP Manager", [] { ui_control::get()->show_preferences(preferences_page::guid_dsp); }});
     }
     static constexpr void on_first_window_created() {}
     static constexpr void on_last_window_destroyed() {}
