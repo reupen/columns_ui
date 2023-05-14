@@ -112,9 +112,11 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     const bool rem_pos = remember_window_pos();
 
     if (rem_pos && !main_window::config_get_is_first_run()) {
-        SetWindowPlacement(m_wnd, &cfg_window_placement_columns.get_value());
+        const auto placement = cfg_window_placement_columns.get_value();
+
+        SetWindowPlacement(m_wnd, &placement);
         resize_child_windows();
-        ShowWindow(m_wnd, cfg_window_placement_columns.get_value().showCmd);
+        ShowWindow(m_wnd, placement.showCmd);
 
         if (g_icon_created && cfg_go_to_tray)
             ShowWindow(m_wnd, SW_HIDE);

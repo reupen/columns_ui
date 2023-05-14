@@ -15,12 +15,16 @@ extern advconfig_checkbox_factory advbool_close_to_notification_icon;
 extern cfg_bool cfg_playlist_tabs_middle_click;
 } // namespace cui::config
 
-class ConfigWindowPlacement : public cfg_struct_t<WINDOWPLACEMENT> {
-    using cfg_struct_t<WINDOWPLACEMENT>::operator=;
-    void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
-
+class ConfigWindowPlacement : public cfg_var {
 public:
     explicit ConfigWindowPlacement(const GUID& p_guid);
+
+    void get_data_raw(stream_writer* out, abort_callback& p_abort) override;
+    void set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort) override;
+    WINDOWPLACEMENT get_value() const;
+
+    WINDOWPLACEMENT m_value{};
+    int32_t m_dpi{USER_DEFAULT_SCREEN_DPI};
 };
 
 class ConfigMenuItem : public cfg_struct_t<MenuItemIdentifier> {

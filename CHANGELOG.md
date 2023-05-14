@@ -7,6 +7,12 @@
 - A playlist selector toolbar was added.
   [[#729](https://github.com/reupen/columns_ui/pull/729)]
 
+### Bug fixes
+
+- If the system DPI setting changes between foobar2000 sessions, the main window
+  size is now adjusted accordingly when foobar2000 starts.
+  [[#732](https://github.com/reupen/columns_ui/pull/732)]
+
 ## 2.0.0
 
 ### Bug fixes
