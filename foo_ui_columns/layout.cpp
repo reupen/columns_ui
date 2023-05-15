@@ -838,7 +838,7 @@ bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPAR
                     RECT rc;
                     GetRelativeRect(lpmsg->hwnd, HWND_DESKTOP, &rc);
 
-                    POINT pt = {rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2};
+                    POINT pt = {rc.left + wil::rect_width(rc) / 2, rc.top + wil::rect_height(rc) / 2};
 
                     pfc::list_t<uie::window::ptr> hierarchy;
                     if (!sw2.is_valid() || sw2->is_point_ours(lpmsg->hwnd, pt, hierarchy)) {
@@ -849,7 +849,7 @@ bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPAR
                             wnd_panel = hierarchy[hierarchy.get_count() - 1]->get_wnd();
 
                             GetRelativeRect(wnd_panel, HWND_DESKTOP, &rc);
-                            POINT pt = {rc.left + RECT_CX(rc) / 2, rc.top + RECT_CY(rc) / 2};
+                            POINT pt = {rc.left + wil::rect_width(rc) / 2, rc.top + wil::rect_height(rc) / 2};
 
                             run_live_edit_base_delayed(wnd_panel, pt, hierarchy);
                         }
@@ -929,8 +929,8 @@ LRESULT LayoutWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     RECT rc;
                     GetRelativeRect(m_child_wnd, HWND_DESKTOP, &rc);
 
-                    pt.x = rc.left + RECT_CX(rc)/2;
-                    pt.y = rc.top + RECT_CY(rc)/2;
+                    pt.x = rc.left + wil::rect_width(rc)/2;
+                    pt.y = rc.top + wil::rect_height(rc)/2;
                 }
                 run_live_edit_base(pt);
             }

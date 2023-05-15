@@ -234,7 +234,7 @@ int DropDownListToolbar<ToolbarArgs>::calculate_max_item_width() const
     RECT rc_client{};
     GetClientRect(m_wnd_combo, &rc_client);
 
-    const auto non_item_space = RECT_CX(rc_client) - RECT_CX(cbi.rcItem);
+    const auto non_item_space = wil::rect_width(rc_client) - wil::rect_width(cbi.rcItem);
     return max_item_width + non_item_space;
 }
 

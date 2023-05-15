@@ -15,13 +15,14 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, s
     GetObject(bm.get(), sizeof(BITMAP), &bminfo);
 
     RECT rc_bitmap;
-    rc_bitmap.left = rc.left + (RECT_CX(rc) - bminfo.bmWidth) / 2;
+    rc_bitmap.left = rc.left + (wil::rect_width(rc) - bminfo.bmWidth) / 2;
     rc_bitmap.top = rc.top;
-    rc_bitmap.right = rc_bitmap.left + std::min(bminfo.bmWidth, RECT_CX(rc));
-    rc_bitmap.bottom = rc_bitmap.top + std::min(bminfo.bmHeight, RECT_CY(rc));
+    rc_bitmap.right = rc_bitmap.left + std::min(bminfo.bmWidth, wil::rect_width(rc));
+    rc_bitmap.bottom = rc_bitmap.top + std::min(bminfo.bmHeight, wil::rect_height(rc));
 
     HBITMAP bm_old = SelectBitmap(dcc, bm.get());
-    BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, RECT_CX(rc_bitmap), RECT_CY(rc_bitmap), dcc, 0, 0, SRCCOPY);
+    BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap), dcc, 0,
+        0, SRCCOPY);
     SelectBitmap(dcc, bm_old);
     DeleteDC(dcc);
 }
@@ -162,9 +163,9 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
 
     auto cx = static_cast<long>(std::min(text_width, MAXLONG));
 
-    RECT rc_line = {cx + uih::scale_dpi_value(7), rc.top + RECT_CY(rc) / 2 - uih::scale_dpi_value(1) / 2,
+    RECT rc_line = {cx + uih::scale_dpi_value(7), rc.top + wil::rect_height(rc) / 2 - uih::scale_dpi_value(1) / 2,
         rc.right - uih::scale_dpi_value(4),
-        rc.top + RECT_CY(rc) / 2 - uih::scale_dpi_value(1) / 2 + uih::scale_dpi_value(1)};
+        rc.top + wil::rect_height(rc) / 2 - uih::scale_dpi_value(1) / 2 + uih::scale_dpi_value(1)};
 
     if (rc_line.right > rc_line.left) {
         if (b_theme_enabled && context.list_view_theme

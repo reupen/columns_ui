@@ -451,7 +451,7 @@ void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, c
         rc_line.left = rc_placement.left;
         rc_line.right = rc_placement.right;
 
-        const auto line_width = RECT_CX(rc_line);
+        const auto line_width = wil::rect_width(rc_line);
         const auto line_text_width = wrapped_line_sizes[line_index].m_width;
 
         if (line_text_width < line_width) {

@@ -231,7 +231,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 HDC dcc = CreateCompatibleDC(dc);
 
                 HBITMAP bm_old = SelectBitmap(dcc, m_bitmap.get());
-                BitBlt(dc, 0, 0, RECT_CX(rc), RECT_CY(rc), dcc, 0, 0, SRCCOPY);
+                BitBlt(dc, 0, 0, wil::rect_width(rc), wil::rect_height(rc), dcc, 0, 0, SRCCOPY);
                 SelectBitmap(dcc, bm_old);
                 DeleteDC(dcc);
             } else {
@@ -488,13 +488,13 @@ void ArtworkPanel::refresh_cached_bitmap()
 {
     RECT rc;
     GetClientRect(get_wnd(), &rc);
-    if (RECT_CX(rc) && RECT_CY(rc) && m_image) {
+    if (wil::rect_width(rc) && wil::rect_height(rc) && m_image) {
         HDC dc = nullptr;
         HDC dcc = nullptr;
         dc = GetDC(get_wnd());
         dcc = CreateCompatibleDC(dc);
 
-        m_bitmap.reset(CreateCompatibleBitmap(dc, RECT_CX(rc), RECT_CY(rc)));
+        m_bitmap.reset(CreateCompatibleBitmap(dc, wil::rect_width(rc), wil::rect_height(rc)));
 
         HBITMAP bm_old = SelectBitmap(dcc, m_bitmap.get());
 
@@ -503,9 +503,9 @@ void ArtworkPanel::refresh_cached_bitmap()
         err = graphics.GetLastStatus();
 
         double ar_source = (double)m_image->GetWidth() / (double)m_image->GetHeight();
-        double ar_dest = (double)RECT_CX(rc) / (double)RECT_CY(rc);
-        unsigned cx = RECT_CX(rc);
-        unsigned cy = RECT_CY(rc);
+        double ar_dest = (double)wil::rect_width(rc) / (double)wil::rect_height(rc);
+        unsigned cx = wil::rect_width(rc);
+        unsigned cy = wil::rect_height(rc);
 
         graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
         graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
@@ -516,17 +516,17 @@ void ArtworkPanel::refresh_cached_bitmap()
 
         if (m_preserve_aspect_ratio) {
             if (ar_dest < ar_source)
-                cy = (unsigned)floor((double)RECT_CX(rc) / ar_source);
+                cy = (unsigned)floor((double)wil::rect_width(rc) / ar_source);
             else if (ar_dest > ar_source)
-                cx = (unsigned)floor((double)RECT_CY(rc) * ar_source);
+                cx = (unsigned)floor((double)wil::rect_height(rc) * ar_source);
         }
-        if ((RECT_CY(rc) - cy) % 2)
+        if ((wil::rect_height(rc) - cy) % 2)
             cy++;
-        if ((RECT_CX(rc) - cx) % 2)
+        if ((wil::rect_width(rc) - cx) % 2)
             cx++;
 
         if (m_image->GetWidth() >= 2 && m_image->GetHeight() >= 2) {
-            Gdiplus::Rect destRect(INT((RECT_CX(rc) - cx) / 2), INT((RECT_CY(rc) - cy) / 2), cx, cy);
+            Gdiplus::Rect destRect(INT((wil::rect_width(rc) - cx) / 2), INT((wil::rect_height(rc) - cy) / 2), cx, cy);
             graphics.SetClip(destRect);
             Gdiplus::ImageAttributes imageAttributes;
             imageAttributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
