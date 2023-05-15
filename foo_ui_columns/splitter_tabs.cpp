@@ -451,10 +451,10 @@ void TabStackPanel::update_size_limits()
     RECT rcmax = {0, 0, (LONG)m_size_limits.max_width, (LONG)m_size_limits.max_height};
     adjust_rect(TRUE, &rcmin);
     adjust_rect(TRUE, &rcmax);
-    m_size_limits.min_width = RECT_CX(rcmin);
-    m_size_limits.max_width = RECT_CX(rcmax);
-    m_size_limits.min_height = RECT_CY(rcmin);
-    m_size_limits.max_height = RECT_CY(rcmax);
+    m_size_limits.min_width = wil::rect_width(rcmin);
+    m_size_limits.max_width = wil::rect_width(rcmax);
+    m_size_limits.min_height = wil::rect_height(rcmin);
+    m_size_limits.max_height = wil::rect_height(rcmax);
 }
 
 void TabStackPanel::adjust_rect(bool b_larger, RECT* rc)
@@ -933,7 +933,7 @@ void TabStackPanel::on_size_changed()
 {
     RECT rc;
     GetClientRect(get_wnd(), &rc);
-    on_size_changed(RECT_CX(rc), RECT_CY(rc));
+    on_size_changed(wil::rect_width(rc), wil::rect_height(rc));
 }
 
 void TabStackPanel::on_active_tab_changed(int signed_index_to)

@@ -187,7 +187,7 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
 
     double ar_source = (double)cx_source / (double)cy_source;
     double ar_dest = (double)ocx / (double)ocy;
-    // unsigned cx = RECT_CX(rc), cy = RECT_CY(rc);
+    // unsigned cx = wil::rect_width(rc), cy = wil::rect_height(rc);
 
     if (ar_dest < ar_source)
         cy = (unsigned)floor((double)ocx / ar_source);

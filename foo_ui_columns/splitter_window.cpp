@@ -409,12 +409,12 @@ bool FlatSplitterPanel::can_resize_panel(size_t index) const
         RECT rc_window;
         GetWindowRect(panel->m_wnd_child, &rc_window);
 
-        if (get_orientation() == vertical && RECT_CY(rc_window) == panel->m_size_limits.max_height
-            && RECT_CY(rc_window) == panel->m_size_limits.min_height)
+        if (get_orientation() == vertical && wil::rect_height(rc_window) == panel->m_size_limits.max_height
+            && wil::rect_height(rc_window) == panel->m_size_limits.min_height)
             return false;
 
-        if (get_orientation() == horizontal && RECT_CX(rc_window) == panel->m_size_limits.max_width
-            && RECT_CX(rc_window) == panel->m_size_limits.min_width)
+        if (get_orientation() == horizontal && wil::rect_width(rc_window) == panel->m_size_limits.max_width
+            && wil::rect_width(rc_window) == panel->m_size_limits.min_width)
             return false;
     }
 

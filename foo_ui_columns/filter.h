@@ -125,7 +125,7 @@ public:
     bool is_visible() const
     {
         RECT rc;
-        return get_wnd() && IsWindowVisible(get_wnd()) && GetClientRect(get_wnd(), &rc) && RECT_CY(rc) > 0;
+        return get_wnd() && IsWindowVisible(get_wnd()) && GetClientRect(get_wnd(), &rc) && wil::rect_height(rc) > 0;
     }
 
     const GUID& get_extension_guid() const override;

@@ -28,7 +28,7 @@ void quickfind_window::on_size()
 {
     RECT rc;
     GetWindowRect(get_wnd(), &rc);
-    on_size(RECT_CX(rc), RECT_CY(rc));
+    on_size(wil::rect_width(rc), wil::rect_height(rc));
 }
 
 LRESULT quickfind_window::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

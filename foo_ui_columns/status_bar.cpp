@@ -405,11 +405,11 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
 
     const auto font_height = uih::get_dc_font_height(dc);
     int x = rc.left;
-    const int y = rc.top + (RECT_CY(rc) - font_height) / 2;
+    const int y = rc.top + (wil::rect_height(rc) - font_height) / 2;
     const auto icon_size = font_height - 2_spx;
 
     if (part_id == StatusBarPartID::PlaylistLock) {
-        const auto icon_y = rc.top + (RECT_CY(rc) - icon_size) / 2;
+        const auto icon_y = rc.top + (wil::rect_height(rc) - icon_size) / 2;
 
         if (icons::use_svg_icon(icon_size, icon_size)) {
             if (!state->lock_bitmap) {

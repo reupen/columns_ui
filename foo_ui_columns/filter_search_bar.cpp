@@ -169,7 +169,7 @@ void FilterSearchToolbar::on_size()
 {
     RECT rc{};
     GetClientRect(get_wnd(), &rc);
-    on_size(RECT_CX(rc), RECT_CY(rc));
+    on_size(wil::rect_width(rc), wil::rect_height(rc));
 }
 
 void FilterSearchToolbar::on_search_editbox_change()
@@ -533,7 +533,7 @@ void FilterSearchToolbar::recalculate_dimensions()
 
     RECT client_rect{};
     GetClientRect(m_search_editbox, &client_rect);
-    m_combo_cx = RECT_CX(client_rect) - RECT_CX(cbi.rcItem);
+    m_combo_cx = wil::rect_width(client_rect) - wil::rect_width(cbi.rcItem);
 
     RECT window_rect{};
     GetWindowRect(m_search_editbox, &window_rect);

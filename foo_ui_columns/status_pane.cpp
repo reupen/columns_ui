@@ -61,7 +61,7 @@ void StatusPane::render_background(HDC dc, const RECT& rc)
             20, GetRValue(top_line_colour), GetGValue(top_line_colour), GetBValue(top_line_colour));
         const Gdiplus::Color gradient_end(
             0, GetRValue(top_line_colour), GetGValue(top_line_colour), GetBValue(top_line_colour));
-        const Gdiplus::Rect rect(rc.left, rc.top, RECT_CX(rc), uih::scale_dpi_value(2));
+        const Gdiplus::Rect rect(rc.left, rc.top, wil::rect_width(rc), uih::scale_dpi_value(2));
         Gdiplus::LinearGradientBrush lgb(rect, gradient_start, gradient_end, Gdiplus::LinearGradientModeVertical);
         Gdiplus::Graphics(dc).FillRectangle(&lgb, rect);
     }

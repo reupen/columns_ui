@@ -456,7 +456,7 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     RECT line_rect{};
                     line_rect.top = item_rect.top + 1_spx;
                     line_rect.bottom = item_rect.bottom - 1_spx;
-                    line_rect.left = item_rect.left + (RECT_CX(item_rect) - divider_width) / 2;
+                    line_rect.left = item_rect.left + (wil::rect_width(item_rect) - divider_width) / 2;
                     line_rect.right = line_rect.left + divider_width;
                     FillRect(lptbcd->nmcd.hdc, &line_rect, divider_brush.get());
                 }

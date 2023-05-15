@@ -225,11 +225,11 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
     si_new.nMin = 0;
 
     if (scrollbar_type == ScrollbarType::vertical) {
-        si_new.nPage = std::max(RECT_CY(rc), 1l);
+        si_new.nPage = std::max(wil::rect_height(rc), 1l);
         si_new.nMax = std::max(m_display_sz.cy - 1, 1l);
     } else {
         const auto padding_size = 2_spx * 2;
-        si_new.nPage = std::max(RECT_CX(rc), 1l);
+        si_new.nPage = std::max(wil::rect_width(rc), 1l);
         si_new.nMax = m_hscroll ? std::max(m_display_sz.cx + padding_size - 1, 1l) : 0l;
     }
 
@@ -583,7 +583,7 @@ void ItemDetails::on_size()
 {
     RECT rc;
     GetClientRect(get_wnd(), &rc);
-    on_size(RECT_CX(rc), RECT_CY(rc));
+    on_size(wil::rect_width(rc), wil::rect_height(rc));
 }
 
 void ItemDetails::on_size(size_t cx, size_t cy)
@@ -815,7 +815,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         HDC dc_mem = CreateCompatibleDC(ps.hdc);
 
         RECT& rc = ps.rcPaint;
-        HBITMAP bm_mem = CreateCompatibleBitmap(ps.hdc, RECT_CX(rc), RECT_CY(rc));
+        HBITMAP bm_mem = CreateCompatibleBitmap(ps.hdc, wil::rect_width(rc), wil::rect_height(rc));
         HBITMAP bm_old = SelectBitmap(dc_mem, bm_mem);
 
         OffsetWindowOrgEx(dc_mem, +rc.left, +rc.top, nullptr);
@@ -830,8 +830,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         RECT rc_client;
         GetClientRect(wnd, &rc_client);
 
-        const int client_height = RECT_CY(rc_client);
-        const int client_width = RECT_CX(rc_client);
+        const int client_height = wil::rect_height(rc_client);
+        const int client_width = wil::rect_width(rc_client);
 
         auto background_colour = p_helper.get_colour(colours::colour_background);
         FillRect(dc_mem, &rc, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
@@ -859,7 +859,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             p_helper.get_colour(colours::colour_text), (uih::alignment)m_horizontal_alignment);
         SelectFont(dc_mem, fnt_old);
 
-        BitBlt(ps.hdc, rc.left, rc.top, RECT_CX(rc), RECT_CY(rc), dc_mem, rc.left, rc.top, SRCCOPY);
+        BitBlt(ps.hdc, rc.left, rc.top, wil::rect_width(rc), wil::rect_height(rc), dc_mem, rc.left, rc.top, SRCCOPY);
 
         SelectBitmap(dc_mem, bm_old);
         DeleteObject(bm_mem);
