@@ -7,6 +7,10 @@
 - A playlist selector toolbar was added.
   [[#729](https://github.com/reupen/columns_ui/pull/729)]
 
+- The Item details panel no longer reads full metadata from non-playing files on
+  foobar2000 2.0 and newer, as full metadata is always available on these
+  versions. [[#734](https://github.com/reupen/columns_ui/pull/734)]
+
 ### Bug fixes
 
 - If the system DPI setting changes between foobar2000 sessions, the main window
