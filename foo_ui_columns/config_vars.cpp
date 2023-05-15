@@ -158,20 +158,44 @@ ConfigWindowPlacement cfg_window_placement_columns(
 static cfg_bool cfg_colours_fonts_imported(
     {0x27dfb9b0, 0x2621, 0x4935, {0xb6, 0x70, 0x2, 0x57, 0x69, 0x45, 0xc0, 0x12}}, true);
 
-ConfigWindowPlacement::ConfigWindowPlacement(const GUID& p_guid)
-    : cfg_struct_t<WINDOWPLACEMENT>(p_guid, get_def_window_pos())
-{
-}
+ConfigWindowPlacement::ConfigWindowPlacement(const GUID& p_guid) : cfg_var(p_guid), m_value(get_def_window_pos()) {}
 
 void ConfigWindowPlacement::get_data_raw(stream_writer* out, abort_callback& p_abort)
 {
     if (cui::main_window.get_wnd() && remember_window_pos()) {
         WINDOWPLACEMENT wp{};
         wp.length = sizeof(wp);
-        if (GetWindowPlacement(cui::main_window.get_wnd(), &wp))
-            *this = wp;
+        if (GetWindowPlacement(cui::main_window.get_wnd(), &wp)) {
+            m_value = wp;
+            m_dpi = gsl::narrow<int32_t>(uih::get_system_dpi_cached().cx);
+        }
     }
-    const WINDOWPLACEMENT& wp = get_value();
 
-    out->write(&wp, sizeof(wp), p_abort);
+    out->write(&m_value, sizeof(m_value), p_abort);
+    out->write_lendian_t(m_dpi, p_abort);
+}
+
+void ConfigWindowPlacement::set_data_raw(stream_reader* p_stream, t_size p_sizehint, abort_callback& p_abort)
+{
+    WINDOWPLACEMENT value{};
+    p_stream->read_object(&value, sizeof(value), p_abort);
+    m_value = value;
+
+    try {
+        m_dpi = p_stream->read_lendian_t<int32_t>(p_abort);
+    } catch (const exception_io_data_truncation&) {
+        m_dpi = gsl::narrow<int32_t>(uih::get_system_dpi_cached().cx);
+    }
+}
+
+WINDOWPLACEMENT ConfigWindowPlacement::get_value() const
+{
+    WINDOWPLACEMENT value{m_value};
+
+    value.rcNormalPosition.top = uih::scale_dpi_value(m_value.rcNormalPosition.top, m_dpi);
+    value.rcNormalPosition.left = uih::scale_dpi_value(m_value.rcNormalPosition.left, m_dpi);
+    value.rcNormalPosition.bottom = uih::scale_dpi_value(m_value.rcNormalPosition.bottom, m_dpi);
+    value.rcNormalPosition.right = uih::scale_dpi_value(m_value.rcNormalPosition.right, m_dpi);
+
+    return value;
 }
