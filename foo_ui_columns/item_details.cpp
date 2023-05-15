@@ -270,6 +270,9 @@ void ItemDetails::set_handles(const metadb_handle_list& handles)
 
 void ItemDetails::request_full_file_info()
 {
+    if (static_api_test_t<metadb_v2>())
+        return;
+
     if (m_full_file_info_requested)
         return;
 
