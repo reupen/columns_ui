@@ -26,6 +26,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
+            uih::enhance_edit_control(wnd, IDC_STRING);
             SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
             refresh_me(wnd);
             m_initialised = true;

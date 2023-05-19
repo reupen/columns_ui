@@ -33,11 +33,15 @@ INT_PTR LayoutMiscTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SendDlgItemMessage(wnd, IDC_USE_CUSTOM_SHOW_DELAY, BM_SETCHECK, cfg_sidebar_use_custom_show_delay, 0);
         SendDlgItemMessage(wnd, IDC_ALLOW_LOCKED_PANEL_RESIZING, BM_SETCHECK, settings::allow_locked_panel_resizing, 0);
 
+        uih::enhance_edit_control(wnd, IDC_SHOW_DELAY);
         SendDlgItemMessage(wnd, IDC_SHOW_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
+
+        uih::enhance_edit_control(wnd, IDC_HIDE_DELAY);
         SendDlgItemMessage(wnd, IDC_HIDE_DELAY_SPIN, UDM_SETRANGE32, 0, 10000);
 
         const HWND wnd_custom_divider_width_spin = GetDlgItem(wnd, IDC_CUSTOM_DIVIDER_WIDTH_SPIN);
 
+        uih::enhance_edit_control(wnd, IDC_CUSTOM_DIVIDER_WIDTH);
         SetDlgItemInt(wnd, IDC_CUSTOM_DIVIDER_WIDTH, settings::custom_splitter_divider_width, FALSE);
         SendMessage(wnd_custom_divider_width_spin, UDM_SETRANGE32, 0, 20);
 

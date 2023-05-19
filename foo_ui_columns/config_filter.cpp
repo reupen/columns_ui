@@ -238,6 +238,7 @@ public:
 
         ComboBox_SetCurSel(wnd_edge_style, cui::panels::filter::cfg_edgestyle);
 
+        uih::enhance_edit_control(wnd, IDC_PADDING);
         SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETRANGE32, -100, 100);
         SendDlgItemMessage(wnd, IDC_SPINPADDING, UDM_SETPOS32, 0, cui::panels::filter::cfg_vertical_item_padding);
 
@@ -333,6 +334,7 @@ public:
         Button_SetCheck(wnd_sort, cui::panels::filter::cfg_sort ? BST_CHECKED : BST_UNCHECKED);
 
         const auto wnd_sort_string = GetDlgItem(wnd, IDC_SORT_STRING);
+        uih::enhance_edit_control(wnd_sort_string);
         uSetWindowText(wnd_sort_string, cui::panels::filter::cfg_sort_string);
 
         const auto wnd_autosend_reverse_sort = GetDlgItem(wnd, IDC_REVERSE_SORT_TRACKS);

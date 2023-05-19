@@ -26,6 +26,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
+            uih::enhance_edit_control(wnd, IDC_STRING);
             refresh_me(wnd);
             m_initialised = true;
         }

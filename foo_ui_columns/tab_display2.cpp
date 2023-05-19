@@ -36,6 +36,9 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             m_menu_cache = cui::helpers::get_main_menu_items();
+
+            uih::enhance_edit_control(wnd, IDC_HEIGHT);
+
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "None");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Sunken");
             uSendDlgItemMessageText(wnd, IDC_PLEDGE, CB_ADDSTRING, 0, "Grey");

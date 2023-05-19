@@ -18,6 +18,8 @@ public:
                 wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cui::status_pane::double_click_action, m_cache, false);
 
             SendDlgItemMessage(wnd, IDC_SHOW_STATUSPANE, BM_SETCHECK, settings::show_status_pane, 0);
+
+            uih::enhance_edit_control(wnd, IDC_STRING);
             uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, cui::status_pane::status_pane_script);
             break;
         case WM_DESTROY:

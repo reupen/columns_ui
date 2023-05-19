@@ -535,9 +535,12 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_INITDIALOG:
+        uih::enhance_edit_control(wnd, IDC_CUSTOM_TITLE);
+
         m_wnd_tree = GetDlgItem(wnd, IDC_TREE);
         TreeView_SetIndent(m_wnd_tree, 0);
         uih::tree_view_set_explorer_theme(m_wnd_tree);
+
         cfg_layout.save_active_preset();
         if (!cfg_layout.get_presets().get_count())
             cfg_layout.reset_presets();
@@ -547,6 +550,7 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_active_preset = 0;
             m_changed = true;
         }
+
         initialise_presets(wnd);
         initialise_tree(wnd);
 

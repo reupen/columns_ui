@@ -35,6 +35,7 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
             SetWindowText(GetDlgItem(wnd, IDCANCEL), L"Close");
         }
 
+        uih::enhance_edit_control(wnd, IDC_SCRIPT);
         uSetWindowText(GetDlgItem(wnd, IDC_SCRIPT), m_script);
         HWND wnd_combo = GetDlgItem(wnd, IDC_EDGESTYLE);
         ComboBox_AddString(wnd_combo, L"None");
@@ -54,9 +55,11 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         ComboBox_AddString(wnd_combo, L"Bottom");
         ComboBox_SetCurSel(wnd_combo, m_vertical_alignment);
 
+        uih::enhance_edit_control(wnd, IDC_FONT_CODE);
         fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, m_code_generator_selected_font);
         uSetDlgItemText(wnd, IDC_FONT_CODE, format_font_code(m_code_generator_selected_font).c_str());
 
+        uih::enhance_edit_control(wnd, IDC_COLOUR_CODE);
         colour_code_gen(wnd, IDC_COLOUR_CODE, false, true);
 
         if (!m_modal) {

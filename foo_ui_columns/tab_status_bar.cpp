@@ -22,6 +22,7 @@ public:
             SendDlgItemMessage(wnd, IDC_SHOW_STATUS, BM_SETCHECK, cfg_status, 0);
             SendDlgItemMessage(wnd, IDC_SHOW_LOCK, BM_SETCHECK, main_window::config_get_status_show_lock(), 0);
 
+            uih::enhance_edit_control(wnd, IDC_STRING);
             uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, main_window::config_status_bar_script.get());
             break;
         case WM_DESTROY:

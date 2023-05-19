@@ -8,7 +8,10 @@ static class TabPlaylistViewArtwork : public PreferencesTab {
         SendDlgItemMessage(wnd, IDC_SHOWARTWORK, BM_SETCHECK, cui::panels::playlist_view::cfg_show_artwork, 0);
         SendDlgItemMessage(
             wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, cui::panels::playlist_view::cfg_artwork_reflection, 0);
+
+        uih::enhance_edit_control(wnd, IDC_ARTWORKWIDTH);
         SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETRANGE32, 0, MAXLONG);
+
         SendDlgItemMessage(
             wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETPOS32, NULL, cui::panels::playlist_view::cfg_artwork_width);
     }
