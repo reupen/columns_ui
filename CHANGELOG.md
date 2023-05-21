@@ -11,6 +11,10 @@
   foobar2000 2.0 and newer, as full metadata is always available on these
   versions. [[#734](https://github.com/reupen/columns_ui/pull/734)]
 
+- The behaviour of Ctrl+Backspace and Ctrl+A was made consistent across edit
+  controls that are part of Columns UI itself.
+  [[#735](https://github.com/reupen/columns_ui/pull/735)]
+
 ### Bug fixes
 
 - If the system DPI setting changes between foobar2000 sessions, the main window

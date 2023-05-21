@@ -16,8 +16,11 @@ public:
 
             SendDlgItemMessage(wnd, IDC_MCLICK, BM_SETCHECK, cfg_mclick, 0);
             SendDlgItemMessage(wnd, IDC_PLISTEDGE, CB_SETCURSEL, cfg_plistframe, 0);
+            uih::enhance_edit_control(wnd, IDC_PLHEIGHT);
             SendDlgItemMessage(wnd, IDC_SPINPL, UDM_SETPOS32, 0, settings::playlist_switcher_item_padding);
             SendDlgItemMessage(wnd, IDC_USE_PLAYLIST_TF, BM_SETCHECK, cfg_playlist_switcher_use_tagz, 0);
+
+            uih::enhance_edit_control(wnd, IDC_PLAYLIST_TF);
             uSendDlgItemMessageText(wnd, IDC_PLAYLIST_TF, WM_SETTEXT, 0, cfg_playlist_switcher_tagz);
 
             m_initialised = true;

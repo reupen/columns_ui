@@ -250,13 +250,17 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
         SetWindowFont(GetDlgItem(m_wnd, IDC_BUTTON_OPTIONS_H2), m_h2_font.get(), FALSE);
         SetWindowFont(GetDlgItem(m_wnd, IDC_TOOLBAR_OPTIONS_H1), m_h1_font.get(), FALSE);
 
+        uih::enhance_edit_control(wnd, IDC_TEXT);
+
         HWND icon_size_wnd = GetDlgItem(wnd, IDC_ICON_SIZE);
         ComboBox_AddString(icon_size_wnd, L"Automatic");
         ComboBox_AddString(icon_size_wnd, L"Custom:");
 
+        uih::enhance_edit_control(wnd, IDC_WIDTH);
         HWND width_spin_wnd = GetDlgItem(wnd, IDC_WIDTH_SPIN);
         SendMessage(width_spin_wnd, UDM_SETRANGE32, 1, 999);
 
+        uih::enhance_edit_control(wnd, IDC_HEIGHT);
         HWND height_spin_wnd = GetDlgItem(wnd, IDC_HEIGHT_SPIN);
         SendMessage(height_spin_wnd, UDM_SETRANGE32, 1, 999);
 
@@ -283,7 +287,10 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
         update_size_field_status();
 
         SHAutoComplete(GetDlgItem(wnd, IDC_ICON_PATH), SHACF_FILESYSTEM);
+        uih::enhance_edit_control(wnd, IDC_ICON_PATH);
+
         SHAutoComplete(GetDlgItem(wnd, IDC_HOVER_ICON_PATH), SHACF_FILESYSTEM);
+        uih::enhance_edit_control(wnd, IDC_HOVER_ICON_PATH);
 
         HWND wnd_button_list = m_button_list.create(wnd, uih::WindowPosition(14, 24, 310, 106), true);
         populate_buttons_list();

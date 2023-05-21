@@ -50,7 +50,7 @@ public:
 
             refresh_me(wnd);
 
-            m_edit_control_hook.attach(GetDlgItem(wnd, IDC_STRING));
+            uih::enhance_edit_control(wnd, IDC_STRING);
             g_editor_font_notify.set(GetDlgItem(wnd, IDC_STRING));
         }
 
@@ -165,7 +165,6 @@ public:
     }
 
 private:
-    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
 } g_tab_global;
 

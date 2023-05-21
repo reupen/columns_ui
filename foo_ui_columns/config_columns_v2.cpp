@@ -59,7 +59,6 @@ public:
             SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, 0, 0);
         }
 
-        EnableWindow(GetDlgItem(wnd, IDC_STRING), show);
         EnableWindow(GetDlgItem(wnd, IDC_NAME), show);
         EnableWindow(GetDlgItem(wnd, IDC_WIDTH), show);
         EnableWindow(GetDlgItem(wnd, IDC_PARTS), show);
@@ -74,6 +73,12 @@ public:
     void refresh_me(HWND wnd, bool init = false)
     {
         initialising = true;
+
+        uih::enhance_edit_control(wnd, IDC_NAME);
+        uih::enhance_edit_control(wnd, IDC_WIDTH);
+        uih::enhance_edit_control(wnd, IDC_PARTS);
+        uih::enhance_edit_control(wnd, IDC_PLAYLIST_FILTER_STRING);
+        uih::enhance_edit_control(wnd, IDC_EDITFIELD);
 
         if (m_column) {
             uSendDlgItemMessageText(wnd, IDC_NAME, WM_SETTEXT, 0, m_column->name);
@@ -114,8 +119,6 @@ public:
             uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show on all playlists");
             uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show only on playlists:");
             uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Hide on playlists:");
-
-            SendDlgItemMessage(wnd, IDC_STRING, EM_LIMITTEXT, 0, 0);
 
             refresh_me(wnd, true);
         }
@@ -271,7 +274,7 @@ private:
         case WM_INITDIALOG:
             m_wnd = wnd;
             Edit_LimitText(edit_control(), 0);
-            m_edit_control_hook.attach(edit_control());
+            uih::enhance_edit_control(edit_control());
             g_editor_font_notify.set(edit_control());
             colour_code_gen(wnd, IDC_COLOUR, true, true);
             update_controls();
@@ -299,7 +302,6 @@ private:
 
     HWND edit_control() const { return GetDlgItem(m_wnd, IDC_DISPLAY_SCRIPT); }
 
-    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     HWND m_wnd;
     bool initialising;
     PlaylistViewColumn::ptr m_column;
@@ -355,7 +357,7 @@ private:
             m_wnd = wnd;
             colour_code_gen(wnd, IDC_COLOUR, true, true);
             Edit_LimitText(edit_control(), 0);
-            m_edit_control_hook.attach(edit_control());
+            uih::enhance_edit_control(edit_control());
             g_editor_font_notify.set(edit_control());
             update_controls();
             break;
@@ -388,7 +390,6 @@ private:
     HWND edit_control() const { return GetDlgItem(m_wnd, IDC_STYLE_SCRIPT); }
     HWND custom_colour_control() const { return GetDlgItem(m_wnd, IDC_CUSTOM_COLOUR); }
 
-    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     HWND m_wnd;
     bool initialising;
     PlaylistViewColumn::ptr m_column;
@@ -446,7 +447,7 @@ private:
         case WM_INITDIALOG:
             m_wnd = wnd;
             Edit_LimitText(edit_control(), 0);
-            m_edit_control_hook.attach(edit_control());
+            uih::enhance_edit_control(edit_control());
             g_editor_font_notify.set(edit_control());
             update_controls();
             break;
@@ -477,7 +478,6 @@ private:
     HWND edit_control() const { return GetDlgItem(m_wnd, IDC_SORTING_SCRIPT); }
     HWND custom_sorting_control() const { return GetDlgItem(m_wnd, IDC_CUSTOM_SORT); }
 
-    cui::prefs::EditControlSelectAllHook m_edit_control_hook;
     HWND m_wnd;
     bool initialising;
     PlaylistViewColumn::ptr m_column;

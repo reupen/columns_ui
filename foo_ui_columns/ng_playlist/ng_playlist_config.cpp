@@ -26,8 +26,10 @@ static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg,
         EnableWindow(GetDlgItem(wnd, IDC_PLAYLIST_FILTER_STRING), state.value.filter_type != FILTER_NONE);
 
         SendDlgItemMessage(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_SETCURSEL, (size_t)state.value.filter_type, 0);
+        uih::enhance_edit_control(wnd, IDC_PLAYLIST_FILTER_STRING);
         uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, state.value.filter_playlists);
 
+        uih::enhance_edit_control(wnd, IDC_VALUE);
         uSetDlgItemText(wnd, IDC_VALUE, state.value.string);
     } break;
     case WM_COMMAND:
