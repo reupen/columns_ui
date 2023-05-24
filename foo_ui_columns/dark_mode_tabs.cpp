@@ -92,6 +92,17 @@ void handle_tab_control_paint(HWND wnd)
     if (ps.fErase)
         FillRect(buffered_dc.get(), &ps.rcPaint, *get_colour_brush_lazy(ColourID::TabControlBackground, is_dark));
 
+    RECT client_rect{};
+    GetClientRect(wnd, &client_rect);
+
+    if (const HWND spin_wnd = GetWindow(wnd, GW_CHILD); IsWindowVisible(spin_wnd)) {
+        RECT spin_rect{};
+        if (GetWindowRect(spin_wnd, &spin_rect)) {
+            MapWindowPoints(HWND_DESKTOP, wnd, reinterpret_cast<LPPOINT>(&spin_rect), 2);
+            ExcludeClipRect(buffered_dc.get(), spin_rect.left, 0, client_rect.right, client_rect.bottom);
+        }
+    }
+
     for (auto&& [index, item] : ranges::views::enumerate(items)) {
         const auto is_new_line = index == 0 || items[index - 1].rc.top != item.rc.top;
 
