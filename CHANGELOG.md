@@ -21,6 +21,10 @@
   size is now adjusted accordingly when foobar2000 starts.
   [[#732](https://github.com/reupen/columns_ui/pull/732)]
 
+- In the playlist tabs and tab stack panels, a small rendering glitch below the
+  left and right scroll buttons when scrolling left and right with dark mode
+  enabled was fixed. [[#737](https://github.com/reupen/columns_ui/pull/737)]
+
 ## 2.0.0
 
 ### Bug fixes
