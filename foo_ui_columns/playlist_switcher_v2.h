@@ -121,6 +121,14 @@ public:
     void notify_on_create() override;
     void notify_on_destroy() override;
 
+    std::unique_ptr<ListViewSearchContextBase> create_search_context() override
+    {
+        if (cfg_playlist_switcher_use_tagz)
+            return std::make_unique<SearchContext>();
+
+        return ListViewPanelBase::create_search_context();
+    }
+
     void move_selection(int delta) override;
 
     bool notify_before_create_inline_edit(
@@ -316,6 +324,18 @@ public:
     }
 
 private:
+    class SearchContext : public ListViewSearchContextBase {
+    public:
+        const char* get_item_text(size_t index) override
+        {
+            playlist_manager::get()->playlist_get_name(index, m_playlist_name);
+            return m_playlist_name.c_str();
+        }
+
+    private:
+        pfc::string8 m_playlist_name;
+    };
+
     contextmenu_manager::ptr m_contextmenu_manager;
     UINT m_contextmenu_manager_base{NULL};
     ui_status_text_override::ptr m_status_text_override;
