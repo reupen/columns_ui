@@ -9,7 +9,6 @@ static class TabPlaylistViewArtwork : public PreferencesTab {
         SendDlgItemMessage(
             wnd, IDC_ARTWORKREFLECTION, BM_SETCHECK, cui::panels::playlist_view::cfg_artwork_reflection, 0);
 
-        uih::enhance_edit_control(wnd, IDC_ARTWORKWIDTH);
         SendDlgItemMessage(wnd, IDC_ARTWORKWIDTHSPIN, UDM_SETRANGE32, 0, MAXLONG);
 
         SendDlgItemMessage(
@@ -21,6 +20,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG:
+            uih::enhance_edit_control(wnd, IDC_ARTWORKWIDTH);
             refresh_me(wnd);
             m_initialised = true;
             break;
