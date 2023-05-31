@@ -74,12 +74,6 @@ public:
     {
         initialising = true;
 
-        uih::enhance_edit_control(wnd, IDC_NAME);
-        uih::enhance_edit_control(wnd, IDC_WIDTH);
-        uih::enhance_edit_control(wnd, IDC_PARTS);
-        uih::enhance_edit_control(wnd, IDC_PLAYLIST_FILTER_STRING);
-        uih::enhance_edit_control(wnd, IDC_EDITFIELD);
-
         if (m_column) {
             uSendDlgItemMessageText(wnd, IDC_NAME, WM_SETTEXT, 0, m_column->name);
             uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_STRING, WM_SETTEXT, 0, m_column->filter);
@@ -111,6 +105,12 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             m_wnd = wnd;
+
+            uih::enhance_edit_control(wnd, IDC_NAME);
+            uih::enhance_edit_control(wnd, IDC_WIDTH);
+            uih::enhance_edit_control(wnd, IDC_PARTS);
+            uih::enhance_edit_control(wnd, IDC_PLAYLIST_FILTER_STRING);
+            uih::enhance_edit_control(wnd, IDC_EDITFIELD);
 
             uSendDlgItemMessageText(wnd, IDC_ALIGNMENT, CB_ADDSTRING, 0, "Left");
             uSendDlgItemMessageText(wnd, IDC_ALIGNMENT, CB_ADDSTRING, 0, "Centre");

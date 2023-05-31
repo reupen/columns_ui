@@ -9,7 +9,8 @@
 
 - The behaviour of Ctrl+Backspace and Ctrl+A was made consistent across edit
   controls that are part of Columns UI itself.
-  [[#735](https://github.com/reupen/columns_ui/pull/735)]
+  [[#735](https://github.com/reupen/columns_ui/pull/735),
+  [#740](https://github.com/reupen/columns_ui/pull/740)]
 
 - When title formatting is used in the playlist switcher panel, typing in the
   panel now always searches by the actual playlist name and not the displayed
