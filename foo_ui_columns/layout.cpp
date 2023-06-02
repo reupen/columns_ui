@@ -865,29 +865,36 @@ bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPAR
         return false;
     }
     if (p_type == uih::MessageHookType::type_mouse) {
-        auto* lpmhs = (LPMOUSEHOOKSTRUCT)lp;
-        if (lpmhs->hwnd == get_wnd() || IsChild(get_wnd(), lpmhs->hwnd)) {
-            uie::splitter_window_v2_ptr sw2;
-            if (m_child.is_valid()) {
-                m_child->service_query_t(sw2);
-                if (wp == WM_RBUTTONDOWN || wp == WM_RBUTTONUP) {
-                    pfc::list_t<uie::window::ptr> hierarchy;
-                    if (!sw2.is_valid() || sw2->is_point_ours(lpmhs->hwnd, lpmhs->pt, hierarchy)) {
-                        if (wp == WM_RBUTTONUP) {
-                            if (!sw2.is_valid())
-                                hierarchy.add_item(m_child);
-                            if (!m_trans_fill.get_wnd()) {
-                                POINT pt = lpmhs->pt;
-                                run_live_edit_base_delayed(lpmhs->hwnd, pt, hierarchy);
-                            }
-                        } else if (wp == WM_RBUTTONDOWN)
-                            SendMessage(lpmhs->hwnd, WM_CANCELMODE, NULL, NULL);
-                        return true;
-                    }
-                }
-            }
+        const auto* lpmhs = reinterpret_cast<LPMOUSEHOOKSTRUCT>(lp);
+        if (lpmhs->hwnd != get_wnd() && !IsChild(get_wnd(), lpmhs->hwnd))
+            return false;
+
+        uie::splitter_window_v2_ptr splitter_v2;
+        if (!m_child.is_valid())
+            return false;
+
+        m_child->service_query_t(splitter_v2);
+
+        const auto is_rbutton_down = wp == WM_RBUTTONDOWN || wp == WM_NCRBUTTONDOWN;
+        const auto is_rbutton_up = wp == WM_RBUTTONUP || wp == WM_NCRBUTTONUP;
+
+        if (!is_rbutton_down && !is_rbutton_up)
+            return false;
+
+        pfc::list_t<uie::window::ptr> hierarchy;
+        if (splitter_v2.is_valid() && !splitter_v2->is_point_ours(lpmhs->hwnd, lpmhs->pt, hierarchy))
+            return false;
+
+        if (is_rbutton_down) {
+            SendMessage(lpmhs->hwnd, WM_CANCELMODE, NULL, NULL);
+        } else {
+            if (!splitter_v2.is_valid())
+                hierarchy.add_item(m_child);
+
+            if (!m_trans_fill.get_wnd())
+                run_live_edit_base_delayed(lpmhs->hwnd, lpmhs->pt, hierarchy);
         }
-        return false;
+        return true;
     }
     return false;
 }
