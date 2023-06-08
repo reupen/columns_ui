@@ -265,6 +265,7 @@
     <ClCompile Include="font_manager.cpp" />
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
+    <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
     <ClCompile Include="svg.cpp" />
@@ -325,7 +326,7 @@
     <ClCompile Include="ng_playlist\ng_playlist_artwork.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_callbacks.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_clipboard.cpp" />
-    <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
+    <ClCompile Include="ng_playlist\ng_playlist_prefs_groups.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_dropsource.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_droptarget.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_inline_edit.cpp" />
