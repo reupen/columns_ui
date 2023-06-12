@@ -7,6 +7,10 @@
 - A playlist selector toolbar was added.
   [[#729](https://github.com/reupen/columns_ui/pull/729)]
 
+- The built-in playlist view now remembers vertical scroll positions of
+  playlists after closing and reopening foobar2000, on foobar2000 2.0 and newer.
+  [[#742](https://github.com/reupen/columns_ui/pull/742)]
+
 - The behaviour of Ctrl+Backspace and Ctrl+A was made consistent across edit
   controls that are part of Columns UI itself.
   [[#735](https://github.com/reupen/columns_ui/pull/735),
@@ -160,7 +164,7 @@
   The list of values is provided by the foobar2000 core and can be configured in
   Advanced preferences, under Display/Autocomplete fields.
 
-- Autcompletion in playlist view inline editing was updated to use the latest
+- Autocompletion in playlist view inline editing was updated to use the latest
   foobar2000 API on foobar2000 1.6.1 and newer.
   [[#647](https://github.com/reupen/columns_ui/pull/647)]
 

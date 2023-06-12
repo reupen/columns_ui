@@ -93,12 +93,39 @@ PlaylistView::PlaylistView()
 
 PlaylistView::~PlaylistView() = default;
 
-void PlaylistView::populate_list()
+void PlaylistView::on_first_show()
+{
+    const auto playlist_index = playlist_manager::get()->get_active_playlist();
+
+    if (playlist_index == std::numeric_limits<size_t>::max())
+        return;
+
+    const auto position = m_playlist_cache.get_item(playlist_index).saved_scroll_position;
+
+    if (position) {
+        restore_scroll_position(*position);
+    } else if (const size_t focus = get_focus_item(); focus != std::numeric_limits<size_t>::max()) {
+        ensure_visible(focus);
+    }
+}
+
+void PlaylistView::populate_list(const std::optional<uih::lv::SavedScrollPosition>& scroll_position)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
     m_playlist_api->activeplaylist_get_all_items(data);
-    on_items_added(0, data, bit_array_false());
+    insert_tracks(0, data, scroll_position);
 }
+
+void PlaylistView::insert_tracks(size_t index, const pfc::list_base_const_t<metadb_handle_ptr>& tracks,
+    const std::optional<uih::lv::SavedScrollPosition>& scroll_position)
+{
+    clear_sort_column();
+    InsertItemsContainer items;
+    get_insert_items(index, tracks.size(), items);
+    insert_items(index, items.size(), items.get_ptr(), scroll_position);
+    refresh_all_items_text();
+}
+
 void PlaylistView::refresh_groups(bool b_update_columns)
 {
     const auto p_compiler = titleformat_compiler::get();
@@ -698,7 +725,8 @@ void PlaylistView::notify_on_initialisation()
     m_artwork_manager->initialise();
 
     m_playlist_api = standard_api_create_t<playlist_manager>();
-    m_playlist_cache.initialise_playlist_callback();
+    m_playlist_cache.initialise(m_initial_scroll_positions);
+    m_initial_scroll_positions.clear();
     initialise_playlist_callback(flag_on_playlist_activate);
 
     refresh_columns();
@@ -729,13 +757,14 @@ void PlaylistView::notify_on_create()
 
 void PlaylistView::notify_on_destroy()
 {
+    m_playlist_cache.set_item(m_playlist_api->get_active_playlist(), save_scroll_position());
     std::erase(g_windows, this);
     if (g_windows.empty())
         s_destroy_message_window();
 
     RevokeDragDrop(get_wnd());
     m_playlist_api->unregister_callback(static_cast<playlist_callback_single*>(this));
-    m_playlist_cache.deinitialise_playlist_callback();
+    m_playlist_cache.deinitialise();
     deinitialise_playlist_callback();
     m_column_data.remove_all();
     m_script_global.release();

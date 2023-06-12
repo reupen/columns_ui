@@ -70,34 +70,64 @@ public:
     void on_playlist_locked(size_t p_playlist, bool p_locked) override {}
 };
 
-template <class item_t>
-class PlaylistCache
-    : private BasePlaylistCallback
-    , public pfc::list_t<item_t> {
-    void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) override
-    {
-        this->insert_item(item_t(), p_index);
-    }
-    void on_playlists_reorder(const size_t* p_order, size_t p_count) override { this->reorder(p_order); }
-    void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
-    {
-        this->remove_mask(p_mask);
-    }
-
-public:
-    void initialise_playlist_callback()
-    {
-        this->set_count(playlist_manager::get()->get_playlist_count());
-        BasePlaylistCallback::initialise_playlist_callback();
-    }
-    using BasePlaylistCallback::deinitialise_playlist_callback;
+struct PlaylistCacheItem {
+    std::optional<GUID> playlist_id;
+    std::optional<uih::lv::SavedScrollPosition> saved_scroll_position;
 };
 
-class PlaylistCacheItem {
+template <class item_t>
+class PlaylistCache : BasePlaylistCallback {
 public:
-    bool m_initialised{false};
-    int m_scroll_position{NULL};
-    PlaylistCacheItem() = default;
+    void initialise(const std::unordered_map<GUID, uih::lv::SavedScrollPosition>& initial_data)
+    {
+        const auto api = playlist_manager::get();
+        const auto playlist_count = api->get_playlist_count();
+        m_items.set_size(playlist_count);
+
+        playlist_manager_v5::ptr api_v5;
+        if (api->service_query_t(api_v5)) {
+            for (const auto playlist_index : std::ranges::views::iota(size_t{}, playlist_count)) {
+                auto playlist_id = api_v5->playlist_get_guid(playlist_index);
+                m_items[playlist_index].playlist_id = playlist_id;
+
+                const auto iter = initial_data.find(playlist_id);
+                if (iter != initial_data.end()) {
+                    m_items[playlist_index].saved_scroll_position = iter->second;
+                }
+            }
+        }
+
+        initialise_playlist_callback();
+    }
+    void deinitialise() { deinitialise_playlist_callback(); }
+
+    void set_item(size_t index, uih::lv::SavedScrollPosition saved_scroll_position)
+    {
+        m_items[index].saved_scroll_position = saved_scroll_position;
+    }
+    const PlaylistCacheItem& get_item(size_t index) const { return m_items[index]; }
+    auto size() const { return m_items.get_size(); }
+
+    auto begin() const { return m_items.begin(); }
+    auto end() const { return m_items.end(); }
+
+private:
+    void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) override
+    {
+        std::optional<GUID> playlist_id;
+        playlist_manager_v5::ptr api;
+        if (playlist_manager_v5::tryGet(api)) {
+            playlist_id = api->playlist_get_guid(p_index);
+        }
+        m_items.insert_item({playlist_id, {}}, p_index);
+    }
+    void on_playlists_reorder(const size_t* p_order, size_t p_count) override { m_items.reorder(p_order); }
+    void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
+    {
+        m_items.remove_mask(p_mask);
+    }
+
+    pfc::list_t<PlaylistCacheItem> m_items;
 };
 
 class ColumnData {
@@ -346,6 +376,9 @@ public:
     void get_category(pfc::string_base& out) const override;
     unsigned get_type() const override;
 
+    void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
+    void set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort) override;
+
     bool m_dragging{false};
     wil::com_ptr_t<IDataObject> m_DataObject;
     size_t m_dragging_initial_playlist;
@@ -537,19 +570,22 @@ private:
     using BasePlaylistCallback::on_playlist_locked;
     using BasePlaylistCallback::on_playlist_renamed;
 
+    void on_first_show() override;
+
     void on_playlist_activate(size_t p_old, size_t p_new) override
     {
         if (p_old != pfc_infinite) {
-            m_playlist_cache[p_old].m_initialised = true;
-            m_playlist_cache[p_old].m_scroll_position = _get_scroll_position();
+            m_playlist_cache.set_item(p_old, save_scroll_position());
         }
     }
 
-    virtual void populate_list();
-    virtual void refresh_groups(bool b_update_columns = false);
-    virtual void refresh_columns();
-    virtual void on_groups_change();
-    virtual void on_columns_change();
+    void populate_list(const std::optional<uih::lv::SavedScrollPosition>& scroll_position = std::nullopt);
+    void insert_tracks(size_t index, const pfc::list_base_const_t<metadb_handle_ptr>& tracks,
+        const std::optional<uih::lv::SavedScrollPosition>& scroll_position = std::nullopt);
+    void refresh_groups(bool b_update_columns = false);
+    void refresh_columns();
+    void on_groups_change();
+    void on_columns_change();
     void on_column_widths_change();
     size_t column_index_display_to_actual(size_t display_index);
     size_t column_index_actual_to_display(size_t actual_index);
@@ -677,7 +713,8 @@ private:
     UINT m_mainmenu_manager_base{NULL};
     UINT m_contextmenu_manager_base{NULL};
 
-    PlaylistCache<PlaylistCacheItem> m_playlist_cache;
+    std::unordered_map<GUID, uih::lv::SavedScrollPosition> m_initial_scroll_positions;
+    mutable PlaylistCache<PlaylistCacheItem> m_playlist_cache;
 
     std::shared_ptr<ArtworkReaderManager> m_artwork_manager;
     ui_selection_holder::ptr m_selection_holder;

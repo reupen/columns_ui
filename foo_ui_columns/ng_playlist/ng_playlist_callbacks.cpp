@@ -119,35 +119,19 @@ void PlaylistView::on_playlist_switch()
 {
     clear_sort_column();
     clear_all_items();
-    size_t playlist_index = m_playlist_api->get_active_playlist();
-    bool b_scrolled = false;
-    if (playlist_index != pfc_infinite && m_playlist_cache[playlist_index].m_initialised) {
-        b_scrolled = true;
-        _set_scroll_position(m_playlist_cache[playlist_index].m_scroll_position);
-    } else
+    const auto playlist_index = m_playlist_api->get_active_playlist();
+    const auto scroll_position = m_playlist_cache.get_item(playlist_index).saved_scroll_position;
+
+    if (!scroll_position)
         _set_scroll_position(0);
-    size_t focus = m_playlist_api->activeplaylist_get_focus_item();
-    /*
-    {
-        int pos = 0;
-        if (focus != pfc_infinite)
-        {
-            RECT rc;
-            get_items_rect(&rc);
-            size_t offset = RECT_CY(rc);
-            if (get_item_height()>offset)
-                offset -= get_item_height();
-            else
-                offset=0;
-            offset /= 2;
-            pos = get_item_position(focus) + offset;
-        }
-        _set_scroll_position(pos);
-    }*/
+
+    const auto focus = m_playlist_api->activeplaylist_get_focus_item();
+
     refresh_groups();
     refresh_columns();
-    populate_list();
-    if (!b_scrolled && focus != pfc_infinite)
+    populate_list(scroll_position);
+
+    if (!scroll_position && focus != pfc_infinite)
         ensure_visible(focus);
 }
 void PlaylistView::on_playlist_renamed(const char* p_new_name, size_t p_new_name_len)
