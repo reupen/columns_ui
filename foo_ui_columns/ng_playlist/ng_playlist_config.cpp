@@ -9,7 +9,10 @@ constexpr uint16_t STREAM_VERSION = 1;
 void PlaylistView::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     if (get_wnd()) {
-        m_playlist_cache.set_item(m_playlist_api->get_active_playlist(), save_scroll_position());
+        const auto active_playlist = m_playlist_api->get_active_playlist();
+
+        if (active_playlist != std::numeric_limits<size_t>::max())
+            m_playlist_cache.set_item(active_playlist, save_scroll_position());
     }
 
     p_writer->write_lendian_t(STREAM_VERSION, p_abort);
@@ -35,7 +38,7 @@ void PlaylistView::get_config(stream_writer* p_writer, abort_callback& p_abort) 
     p_writer->write(writer_items.m_data.get_ptr(), writer_items.m_data.size(), p_abort);
 }
 
-void PlaylistView::set_config(stream_reader* p_reader, t_size p_size, abort_callback& p_abort)
+void PlaylistView::set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
     const auto version = p_reader->read_lendian_t<uint16_t>(p_abort);
 
