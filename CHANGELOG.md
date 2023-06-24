@@ -9,7 +9,8 @@
 
 - The built-in playlist view now remembers vertical scroll positions of
   playlists after closing and reopening foobar2000, on foobar2000 2.0 and newer.
-  [[#742](https://github.com/reupen/columns_ui/pull/742)]
+  [[#742](https://github.com/reupen/columns_ui/pull/742),
+  [#743](https://github.com/reupen/columns_ui/pull/743)]
 
 - The behaviour of Ctrl+Backspace and Ctrl+A was made consistent across edit
   controls that are part of Columns UI itself.

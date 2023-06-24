@@ -724,10 +724,9 @@ void PlaylistView::notify_on_initialisation()
     m_artwork_manager = std::make_shared<ArtworkReaderManager>();
     m_artwork_manager->initialise();
 
-    m_playlist_api = standard_api_create_t<playlist_manager>();
+    m_playlist_api = playlist_manager_v4::get();
     m_playlist_cache.initialise(m_initial_scroll_positions);
     m_initial_scroll_positions.clear();
-    initialise_playlist_callback(flag_on_playlist_activate);
 
     refresh_columns();
     refresh_groups();
@@ -739,7 +738,10 @@ void PlaylistView::notify_on_create()
 
     populate_list();
 
-    m_playlist_api->register_callback(static_cast<playlist_callback_single*>(this), playlist_callback::flag_all);
+    m_playlist_api->register_callback(this,
+        flag_all
+            & ~(flag_on_default_format_changed | flag_on_playlist_locked | flag_on_playlist_created
+                | flag_on_playlists_reorder | flag_on_playlists_removed | flag_on_playlists_removing));
 
     wil::com_ptr_t<PlaylistViewDropTarget> IDT_playlist = new PlaylistViewDropTarget(this);
     RegisterDragDrop(get_wnd(), IDT_playlist.get());
@@ -757,15 +759,17 @@ void PlaylistView::notify_on_create()
 
 void PlaylistView::notify_on_destroy()
 {
-    m_playlist_cache.set_item(m_playlist_api->get_active_playlist(), save_scroll_position());
+    if (const auto active_playlist = m_playlist_api->get_active_playlist();
+        active_playlist != std::numeric_limits<size_t>::max())
+        m_playlist_cache.set_item(active_playlist, save_scroll_position());
+
     std::erase(g_windows, this);
     if (g_windows.empty())
         s_destroy_message_window();
 
     RevokeDragDrop(get_wnd());
-    m_playlist_api->unregister_callback(static_cast<playlist_callback_single*>(this));
+    m_playlist_api->unregister_callback(this);
     m_playlist_cache.deinitialise();
-    deinitialise_playlist_callback();
     m_column_data.remove_all();
     m_script_global.release();
     m_script_global_style.release();
