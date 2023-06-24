@@ -60,7 +60,11 @@ void PlaylistView::on_items_selection_change(size_t playlist, const bit_array& p
 
 void PlaylistView::on_item_focus_change(size_t playlist, size_t p_from, size_t p_to)
 {
-    if (m_ignore_callback || playlist != m_playlist_api->get_active_playlist())
+    if (playlist != m_playlist_api->get_active_playlist()) {
+        m_playlist_cache.set_item(playlist, std::nullopt);
+    }
+
+    if (m_ignore_callback)
         return;
 
     on_focus_change(p_from, p_to);

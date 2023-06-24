@@ -313,12 +313,17 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 
             } else {
                 playlist_api->playlist_clear_selection(target_index);
-                playlist_api->playlist_add_items(target_index, data, bit_array_true());
-                if (main_window::config_get_activate_target_playlist_on_dropped_items())
-                    playlist_api->set_active_playlist(target_index);
-            }
 
-            data.remove_all();
+                const auto index = fbh::as_optional(
+                    playlist_api->playlist_insert_items(target_index, fbh::max_size_t, data, bit_array_true()));
+
+                if (index) {
+                    playlist_api->playlist_set_focus_item(target_index, *index);
+
+                    if (main_window::config_get_activate_target_playlist_on_dropped_items())
+                        playlist_api->set_active_playlist(target_index);
+                }
+            }
         }
     }
 
