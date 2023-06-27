@@ -12,6 +12,14 @@
   [[#742](https://github.com/reupen/columns_ui/pull/742),
   [#743](https://github.com/reupen/columns_ui/pull/743)]
 
+- If the focused item in a non-active playlist changes, the built-in playlist
+  view now scrolls to that focused item when the playlist is next activated.
+  [[#745](https://github.com/reupen/columns_ui/pull/745)]
+
+- In the playlist switcher and playlist tabs, when adding items to a playlist
+  using drag and drop, the first new item added to the playlist is now focused.
+  [[#745](https://github.com/reupen/columns_ui/pull/745)]
+
 - The behaviour of Ctrl+Backspace and Ctrl+A was made consistent across edit
   controls that are part of Columns UI itself.
   [[#735](https://github.com/reupen/columns_ui/pull/735),

@@ -53,9 +53,9 @@ public:
     }
     void deinitialise() { m_callback.reset(); }
 
-    void set_item(size_t index, uih::lv::SavedScrollPosition saved_scroll_position)
+    void set_item(size_t index, std::optional<uih::lv::SavedScrollPosition> saved_scroll_position)
     {
-        m_items[index].saved_scroll_position = saved_scroll_position;
+        m_items[index].saved_scroll_position = std::move(saved_scroll_position);
     }
     const PlaylistCacheItem& get_item(size_t index) const { return m_items[index]; }
     auto size() const { return m_items.get_size(); }
