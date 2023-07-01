@@ -341,10 +341,14 @@ HWND RebarWindow::init()
         | ranges::to<std::vector>();
 
     if (!wnd_rebar) {
+        RECT main_window_client_rect{};
+        GetClientRect(main_window.get_wnd(), &main_window_client_rect);
+
         wnd_rebar = CreateWindowEx(WS_EX_TOOLWINDOW | WS_EX_CONTROLPARENT, REBARCLASSNAME, nullptr,
             WS_BORDER | WS_CHILD | WS_CLIPCHILDREN | WS_CLIPSIBLINGS | RBS_VARHEIGHT | RBS_DBLCLKTOGGLE | RBS_AUTOSIZE
                 | RBS_BANDBORDERS | CCS_NODIVIDER | CCS_NOPARENTALIGN | 0,
-            0, 0, 0, 0, main_window.get_wnd(), reinterpret_cast<HMENU>(ID_REBAR), core_api::get_my_instance(), nullptr);
+            0, 0, wil::rect_width(main_window_client_rect), 0, main_window.get_wnd(), reinterpret_cast<HMENU>(ID_REBAR),
+            wil::GetModuleInstanceHandle(), nullptr);
 
         if (!wnd_rebar)
             return nullptr;
@@ -553,7 +557,7 @@ void RebarWindow::save_bands()
 
         if (!b_death)
             destructive_reorder(m_bands, order);
-        refresh_bands(false);
+        refresh_bands();
     }
 }
 
@@ -583,26 +587,19 @@ bool RebarWindow::delete_band(const GUID& id)
 
 void RebarWindow::destroy_bands()
 {
-    abort_callback_dummy abortCallbackDummy;
+    for (auto&& band : m_bands) {
+        if (!band.m_window.is_valid())
+            continue;
 
-    const auto count = static_cast<UINT>(SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0));
-
-    if (count > 0 && count == m_bands.size()) {
-        for (auto&& band : m_bands) {
-            SendMessage(wnd_rebar, RB_SHOWBAND, 0, FALSE);
-            SendMessage(wnd_rebar, RB_DELETEBAND, 0, 0);
-            if (band.m_window.is_valid()) {
-                band.m_state.m_config.set_size(0);
-                stream_writer_memblock_ref data(band.m_state.m_config);
-                try {
-                    band.m_window->get_config(&data, abortCallbackDummy);
-                } catch (const pfc::exception&) {
-                }
-                band.m_window->destroy_window();
-                band.m_wnd = nullptr;
-                band.m_window.release();
-            }
+        band.m_state.m_config.set_size(0);
+        stream_writer_memblock_ref data(band.m_state.m_config);
+        try {
+            band.m_window->get_config(&data, fb2k::noAbort);
+        } catch (const pfc::exception&) {
         }
+        band.m_window->destroy_window();
+        band.m_wnd = nullptr;
+        band.m_window.release();
     }
 }
 
@@ -616,7 +613,7 @@ void RebarWindow::destroy()
 
 void RebarWindow::update_bands()
 {
-    refresh_bands(false);
+    refresh_bands();
     uih::rebar_show_all_bands(wnd_rebar);
 }
 
@@ -632,7 +629,7 @@ void RebarWindow::delete_band(size_t n)
         }
         cache.add_entry(m_bands[n].m_state.m_guid, m_bands[n].m_state.m_width);
         m_bands.erase(m_bands.begin() + n);
-        refresh_bands(false);
+        refresh_bands();
     }
 }
 
@@ -649,7 +646,7 @@ void RebarWindow::delete_band(HWND wnd, bool destroy)
         }
         cache.add_entry(iter->m_state.m_guid, iter->m_state.m_width);
         m_bands.erase(iter);
-        refresh_bands(false);
+        refresh_bands();
     }
 }
 
@@ -661,13 +658,13 @@ std::vector<RebarBandState> RebarWindow::get_band_states() const
 void RebarWindow::add_band(const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
     m_bands.emplace_back(RebarBand{RebarBandState{guid, width}, p_ext});
-    refresh_bands(false);
+    refresh_bands();
 }
 
 void RebarWindow::insert_band(unsigned idx, const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
     m_bands.emplace(m_bands.begin() + idx, RebarBand{RebarBandState{guid, width}, p_ext});
-    refresh_bands(false);
+    refresh_bands();
 }
 
 void RebarWindow::update_band(size_t n, bool size)
@@ -708,12 +705,9 @@ void RebarWindow::update_band(size_t n, bool size)
     }
 }
 
-void RebarWindow::refresh_bands(bool force_destroy_bands)
+void RebarWindow::refresh_bands()
 {
     abort_callback_dummy aborter;
-
-    if (force_destroy_bands)
-        destroy_bands();
 
     auto& host = g_ui_ext_host_rebar.get_static_instance();
     auto count = m_bands.size();

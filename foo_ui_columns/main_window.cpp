@@ -485,13 +485,18 @@ void on_show_status_pane_change()
 
 void on_show_toolbars_change()
 {
-    if (cui::main_window.get_wnd()) {
+    if (const auto main_wnd = cui::main_window.get_wnd()) {
+        SetWindowRedraw(main_wnd, FALSE);
+
         cui::rebar::create_rebar();
+        cui::main_window.resize_child_windows();
+
         if (cui::rebar::g_rebar) {
             ShowWindow(cui::rebar::g_rebar, SW_SHOWNORMAL);
-            UpdateWindow(cui::rebar::g_rebar);
         }
-        cui::main_window.resize_child_windows();
+
+        SetWindowRedraw(main_wnd, TRUE);
+        RedrawWindow(main_wnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ERASE | RDW_ALLCHILDREN);
     }
 }
 
