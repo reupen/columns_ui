@@ -42,6 +42,9 @@
 - Live editing no longer misbehaves when right-clicking on scroll bars.
   [[#741](https://github.com/reupen/columns_ui/pull/741)]
 
+- Visual glitches when toggling the Show toolbars option were fixed.
+  [[#750](https://github.com/reupen/columns_ui/pull/750)]
+
 - In the playlist tabs and tab stack panels, a small rendering glitch below the
   left and right scroll buttons when scrolling left and right with dark mode
   enabled was fixed. [[#737](https://github.com/reupen/columns_ui/pull/737)]

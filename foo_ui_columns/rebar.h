@@ -116,7 +116,7 @@ public:
 
     void save_bands();
     void destroy();
-    void refresh_bands(bool force_destroy_bands = true);
+    void refresh_bands();
 
     auto find_band_by_hwnd(HWND wnd)
     {
