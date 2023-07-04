@@ -35,6 +35,17 @@
 
 ### Bug fixes
 
+- In the themed and system colour schemes, if ‘Use custom active item frame’ is
+  enabled, the configured colour is now correctly shown on the preferences page
+  and used for the focused item frame in supported panels.
+  [[#754](https://github.com/reupen/columns_ui/pull/754)]
+
+  Previously, changing the colour had no effect on the actual colour used or
+  shown in preferences. If you were using the themed or system colour schemes
+  and had ‘Use custom active item frame’ enabled, the colour of the focused item
+  frame may change after upgrading due to the saved custom colour now correctly
+  being used.
+
 - If the system DPI setting changes between foobar2000 sessions, the main window
   size is now adjusted accordingly when foobar2000 starts.
   [[#732](https://github.com/reupen/columns_ui/pull/732)]
