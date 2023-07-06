@@ -23,8 +23,13 @@ public:
     {
         system_appearance_manager::initialise();
         const auto entry = active_entry();
-        if (entry->colour_set.colour_scheme == colours::ColourSchemeSystem
-            || entry->colour_set.colour_scheme == colours::ColourSchemeThemed) {
+
+        const auto is_custom_active_item_frame
+            = p_identifier == colours::colour_active_item_frame && entry->colour_set.use_custom_active_item_frame;
+
+        if ((entry->colour_set.colour_scheme == colours::ColourSchemeSystem
+                || entry->colour_set.colour_scheme == colours::ColourSchemeThemed)
+            && !is_custom_active_item_frame) {
             const auto system_colour_id = get_system_colour_id(p_identifier);
             return dark::get_system_colour(system_colour_id, colours::is_dark_mode_active());
         }
