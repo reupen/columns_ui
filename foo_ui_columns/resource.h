@@ -56,8 +56,12 @@
 #define IDV_DARK_RESET                  191
 #define IDV_DARK_PADLOCK                192
 #define IDV_LIGHT_PADLOCK               193
+#define IDV_DARK_STOP_AFTER_CURRENT     194
+#define IDV_LIGHT_STOP_AFTER_CURRENT    195
 #define IDD_PREFS_PVIEW_GENERAL         196
+#define IDI_DARK_STOP_AFTER_CURRENT     196
 #define IDD_PREFS_PLAYLISTS_DRAGDROP    197
+#define IDI_LIGHT_STOP_AFTER_CURRENT    197
 #define IDD_PREFS_LAYOUT_PRESETS        198
 #define IDD_RENAME_PLAYLIST             200
 #define IDD_PREFS_TAB_HOST              201
@@ -287,7 +291,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        194
+#define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
 #define _APS_NEXT_CONTROL_VALUE         1191
 #define _APS_NEXT_SYMED_VALUE           101

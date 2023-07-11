@@ -116,16 +116,18 @@ class ButtonMenuItemWithBitmap : public uie::button_v2 {
     }
 };
 
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_stop, icons::built_in::stop>> g_button_stop;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_open, icons::built_in::open>> g_button_open;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_play, icons::built_in::play>> g_button_play;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_pause, icons::built_in::pause>>
-    g_button_pause;
-uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_next, icons::built_in::next>> g_button_next;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_open, icons::built_in::open>> _button_open;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_play, icons::built_in::play>> _button_play;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_pause, icons::built_in::pause>> _button_pause;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_next, icons::built_in::next>> _button_next;
 uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_previous, icons::built_in::previous>>
-    g_button_previous;
+    _button_previous;
 uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_random, icons::built_in::random>>
-    g_button_random;
+    _button_random;
+uie::button_factory<ButtonMenuItemWithBitmap<standard_commands::guid_main_stop, icons::built_in::stop>> _button_stop;
+uie::button_factory<
+    ButtonMenuItemWithBitmap<standard_commands::guid_main_stop_after_current, icons::built_in::stop_after_current>>
+    _button_stop_after_current;
 
 class ButtonBlank : public ui_extension::custom_button {
     const GUID& get_item_guid() const override

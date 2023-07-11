@@ -960,6 +960,12 @@
     <None Include="assets\vectors\minified\light-stop.svg">
       <Filter>Resources\svg</Filter>
     </None>
+    <None Include="assets\vectors\minified\dark-stop-after-current.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
+    <None Include="assets\vectors\minified\light-stop-after-current.svg">
+      <Filter>Resources\svg</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="foo_ui_columns.rc">
@@ -1040,6 +1046,12 @@
       <Filter>Resources\ico</Filter>
     </Image>
     <Image Include="assets\vectors\rendered\light-stop.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\dark-stop-after-current.ico">
+      <Filter>Resources\ico</Filter>
+    </Image>
+    <Image Include="assets\vectors\rendered\light-stop-after-current.ico">
       <Filter>Resources\ico</Filter>
     </Image>
   </ItemGroup>

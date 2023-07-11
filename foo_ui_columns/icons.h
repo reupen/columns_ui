@@ -50,6 +50,7 @@ constexpr IconConfig previous(MAKE_ICON_CONFIG_CTOR_ARGS(PREV));
 constexpr IconConfig random(MAKE_ICON_CONFIG_CTOR_ARGS(RAND));
 constexpr IconConfig reset(MAKE_ICON_CONFIG_CTOR_ARGS(RESET));
 constexpr IconConfig stop(MAKE_ICON_CONFIG_CTOR_ARGS(STOP));
+constexpr IconConfig stop_after_current(MAKE_ICON_CONFIG_CTOR_ARGS(STOP_AFTER_CURRENT));
 
 } // namespace built_in
 
