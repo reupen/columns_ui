@@ -61,11 +61,23 @@
 #include <winrt/windows.foundation.h>
 #include <winrt/windows.ui.viewmanagement.h>
 
+#ifdef __clang__
+#pragma clang diagnostic push
+#pragma clang diagnostic warning "-Wambiguous-reversed-operator"
+#pragma clang diagnostic warning "-Winconsistent-missing-override"
+#pragma clang diagnostic warning "-Woverloaded-virtual"
+#pragma clang diagnostic warning "-Wreorder-ctor"
+#endif
+
 #include "../foobar2000/SDK/foobar2000.h"
 #include "../foobar2000/SDK/core_api.h"
 #include "../foobar2000/SDK/file_info_filter_impl.h"
 #include "../foobar2000/SDK/metadb_info_container_impl.h"
 #include "../foobar2000/helpers/playlist_position_reference_tracker.h"
+
+#ifdef __clang__
+#pragma clang diagnostic pop
+#endif
 
 #include "../svg-services/api/api.h"
 #include "../columns_ui-sdk/ui_extension.h"

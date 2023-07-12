@@ -302,8 +302,6 @@ size_t FilterPanel::make_data_entries(const metadb_handle_list_t<pfc::alloc_fast
     if (m_field_data.is_empty())
         return 0;
 
-    const auto track_count = tracks.get_count();
-    const auto tracks_ptr = tracks.get_ptr();
     const auto has_metadb_v2 = static_api_test_t<metadb_v2>();
 
     if (m_field_data.m_use_script) {

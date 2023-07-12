@@ -44,7 +44,7 @@ public:
 
     void write(stream_writer* stream, abort_callback& aborter);
     void _export(stream_writer* p_stream, abort_callback& p_abort);
-    virtual void import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort);
+    void import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort);
     void read(uint32_t version, stream_reader* stream, abort_callback& aborter);
     explicit Entry(bool is_dark, bool b_global = false);
 };

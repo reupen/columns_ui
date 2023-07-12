@@ -170,7 +170,6 @@ void DropDownListToolbar<ToolbarArgs>::update_active_item_safe()
 template <class ToolbarArgs>
 void DropDownListToolbar<ToolbarArgs>::refresh_all_items()
 {
-    auto&& active_item_id = ToolbarArgs::get_active_item();
     m_items = ToolbarArgs::get_items();
 
     ComboBox_ResetContent(m_wnd_combo);

@@ -18,7 +18,7 @@ std::unique_ptr<Gdiplus::Bitmap> create_bitmap_from_32bpp_data(
 
     const uint8_t* src = data;
     uint8_t* dst = static_cast<uint8_t*>(image_data.Scan0);
-    for (auto i : ranges::views::iota(0u, image_data.Height)) {
+    for (auto i [[maybe_unused]] : ranges::views::iota(0u, image_data.Height)) {
         memcpy(dst, src, image_data.Width * 4);
         dst += image_data.Stride;
         src += stride;

@@ -27,7 +27,7 @@ public:
         void read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort);
         void read_extra_data(stream_reader* p_stream, abort_callback& p_abort);
         void _export(stream_writer* p_stream, abort_callback& p_abort);
-        virtual void import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort);
+        void import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort);
         void reset_fonts();
 
         Entry();

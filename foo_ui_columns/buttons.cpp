@@ -496,18 +496,23 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 data.prealloc(api->activeplaylist_get_selection_count(pfc_infinite));
                 api->activeplaylist_get_selected_items(data);
                 caller = contextmenu_item::caller_active_playlist_selection;
-            } break;
+                break;
+            }
             case FILTER_ACTIVE_SELECTION: {
                 auto api = ui_selection_manager_v2::get();
                 api->get_selection(data, ui_selection_manager_v2::flag_no_now_playing);
                 caller = contextmenu_item::caller_undefined;
-            } break;
+                break;
+            }
             case FILTER_PLAYING: {
                 metadb_handle_ptr hdle;
                 if (play_control::get()->get_now_playing(hdle))
                     data.add_item(hdle);
                 caller = contextmenu_item::caller_now_playing;
-            } break;
+                break;
+            }
+            case FILTER_NONE:
+                break;
             }
 
             switch (m_buttons[wp].m_type) {
@@ -525,6 +530,8 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (m_buttons[wp].m_interface.is_valid() && m_buttons[wp].m_interface->service_query_t(p_button))
                     p_button->execute(data);
             } break;
+            case TYPE_SEPARATOR:
+                break;
             }
         } else
             console::print("buttons toolbar: error index out of range!");

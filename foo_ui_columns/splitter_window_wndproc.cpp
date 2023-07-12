@@ -162,21 +162,14 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         HWND child = RealChildWindowFromPoint(wnd, pt);
         if (child == wnd) {
             size_t p_panel = -1;
-            bool b_have_next = false;
-            bool b_on_divider = false;
 
-            b_on_divider = find_by_divider_pt(pt, p_panel);
+            const auto b_on_divider = find_by_divider_pt(pt, p_panel);
 
             if (b_on_divider) {
-                if (p_panel < m_panels.get_count()) {
-                    b_have_next = (p_panel + 1 < m_panels.get_count());
-                }
-
                 if (is_index_valid(p_panel))
                     start_autohide_dehide(p_panel);
             }
         }
-
     } break;
     case WM_LBUTTONDOWN:
     case WM_MOUSEMOVE: {

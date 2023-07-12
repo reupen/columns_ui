@@ -13,7 +13,7 @@ class MenuItemButtonWithIcon : public uie::button_v2 {
     HANDLE get_item_bitmap(unsigned command_state_index, COLORREF cr_btntext, unsigned cx_hint, unsigned cy_hint,
         unsigned& handle_type) const override
     {
-        if (!icon_config)
+        if constexpr (icon_config == nullptr)
             return nullptr;
 
         const auto cx = gsl::narrow<int>(cx_hint);

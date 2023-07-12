@@ -508,9 +508,12 @@ void LayoutWindow::create_child()
             console::formatter formatter;
             formatter << "Error setting panel config: " << ex.what();
         }
-        if (m_child_wnd = m_child->create_or_transfer_window(get_wnd(),
-                uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()),
-                ui_helpers::window_position_t(rc))) {
+
+        m_child_wnd = m_child->create_or_transfer_window(get_wnd(),
+            uie::window_host_ptr(&g_window_host_layout_factory.get_static_instance()),
+            ui_helpers::window_position_t(rc));
+
+        if (m_child_wnd) {
             SetWindowLongPtr(m_child_wnd, GWL_STYLE, GetWindowLongPtr(m_child_wnd, GWL_STYLE) | WS_CLIPSIBLINGS);
         }
     }

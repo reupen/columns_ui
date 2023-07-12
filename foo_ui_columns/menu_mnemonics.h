@@ -53,7 +53,7 @@ public:
     bool check_string(const char* src)
     { // check for existing mnemonics
         const char* ptr = src;
-        while (ptr = strchr(ptr, '&')) {
+        while ((ptr = strchr(ptr, '&'))) {
             if (ptr[1] == '&')
                 ptr += 2;
             else {
