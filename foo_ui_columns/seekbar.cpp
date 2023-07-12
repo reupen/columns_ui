@@ -22,10 +22,9 @@ void SeekBarToolbar::SeekBarTrackbarCallback::get_tooltip_text(unsigned pos, uih
 
 void SeekBarToolbar::set_custom_colours()
 {
-    if (colours::is_dark_mode_active())
-        m_child.set_custom_colours(dark::get_dark_trackbar_colours());
-    else
-        m_child.set_custom_colours({});
+    const auto is_dark = colours::is_dark_mode_active();
+    m_child.set_custom_colours(is_dark ? std::make_optional(dark::get_dark_trackbar_colours()) : std::nullopt);
+    m_child.set_are_tooltips_dark(is_dark);
 }
 
 void SeekBarToolbar::update_seekbars(bool positions_only)
