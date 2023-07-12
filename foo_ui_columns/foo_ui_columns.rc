@@ -1066,6 +1066,10 @@ IDI_DARK_PADLOCK        ICON                    "assets\\vectors\\rendered\\dark
 
 IDI_LIGHT_PADLOCK       ICON                    "assets\\vectors\\rendered\\light-padlock.ico"
 
+IDI_DARK_STOP_AFTER_CURRENT ICON                    "assets\\vectors\\rendered\\dark-stop-after-current.ico"
+
+IDI_LIGHT_STOP_AFTER_CURRENT ICON                    "assets\\vectors\\rendered\\light-stop-after-current.ico"
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1125,6 +1129,10 @@ IDV_DARK_RESET          SVG                     "assets\\vectors\\minified\\dark
 IDV_DARK_PADLOCK        SVG                     "assets\\vectors\\minified\\dark-padlock.svg"
 
 IDV_LIGHT_PADLOCK       SVG                     "assets\\vectors\\minified\\light-padlock.svg"
+
+IDV_DARK_STOP_AFTER_CURRENT SVG                     "assets\\vectors\\minified\\dark-stop-after-current.svg"
+
+IDV_LIGHT_STOP_AFTER_CURRENT SVG                     "assets\\vectors\\minified\\light-stop-after-current.svg"
 
 #endif    // English (United Kingdom) resources
 /////////////////////////////////////////////////////////////////////////////

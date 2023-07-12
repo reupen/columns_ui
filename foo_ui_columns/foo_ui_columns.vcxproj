@@ -528,6 +528,7 @@
     <None Include="assets\vectors\minified\dark-reset.svg" />
     <None Include="assets\vectors\minified\dark-star-gold.svg" />
     <None Include="assets\vectors\minified\dark-star-grey.svg" />
+    <None Include="assets\vectors\minified\dark-stop-after-current.svg" />
     <None Include="assets\vectors\minified\dark-stop.svg" />
     <None Include="assets\vectors\minified\light-next.svg" />
     <None Include="assets\vectors\minified\light-open.svg" />
@@ -539,6 +540,7 @@
     <None Include="assets\vectors\minified\light-reset.svg" />
     <None Include="assets\vectors\minified\light-star-gold.svg" />
     <None Include="assets\vectors\minified\light-star-grey.svg" />
+    <None Include="assets\vectors\minified\light-stop-after-current.svg" />
     <None Include="assets\vectors\minified\light-stop.svg" />
     <None Include="version.h.template" />
   </ItemGroup>
@@ -581,6 +583,7 @@
     <Image Include="assets\vectors\rendered\dark-reset.ico" />
     <Image Include="assets\vectors\rendered\dark-star-gold.ico" />
     <Image Include="assets\vectors\rendered\dark-star-grey.ico" />
+    <Image Include="assets\vectors\rendered\dark-stop-after-current.ico" />
     <Image Include="assets\vectors\rendered\dark-stop.ico" />
     <Image Include="assets\vectors\rendered\light-next.ico" />
     <Image Include="assets\vectors\rendered\light-open.ico" />
@@ -593,6 +596,7 @@
     <Image Include="assets\vectors\rendered\light-reset.ico" />
     <Image Include="assets\vectors\rendered\light-star-gold.ico" />
     <Image Include="assets\vectors\rendered\light-star-grey.ico" />
+    <Image Include="assets\vectors\rendered\light-stop-after-current.ico" />
     <Image Include="assets\vectors\rendered\light-stop.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
