@@ -26,7 +26,8 @@
   [#740](https://github.com/reupen/columns_ui/pull/740)]
 
 - A built-in icon for the stop after current command was added to the Buttons
-  toolbar. [[#757](https://github.com/reupen/columns_ui/pull/757)]
+  toolbar. [[#757](https://github.com/reupen/columns_ui/pull/757),
+  [#762](https://github.com/reupen/columns_ui/pull/762)]
 
 - When title formatting is used in the playlist switcher panel, typing in the
   panel now always searches by the actual playlist name and not the displayed
