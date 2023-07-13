@@ -132,10 +132,9 @@ public:
 
     void set_custom_colours()
     {
-        if (cui::colours::is_dark_mode_active())
-            m_child.set_custom_colours(cui::dark::get_dark_trackbar_colours());
-        else
-            m_child.set_custom_colours({});
+        const auto is_dark = cui::colours::is_dark_mode_active();
+        m_child.set_custom_colours(is_dark ? std::make_optional(cui::dark::get_dark_trackbar_colours()) : std::nullopt);
+        m_child.set_are_tooltips_dark(is_dark);
     }
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
