@@ -164,17 +164,13 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::DragOver(DWORD grfKeySta
             rc_items.top += m_window->get_item_height();
             rc_items.bottom -= m_window->get_item_height();
 
-            bool b_scrolling = false;
-
             if (ptt.y < rc_items.top && ptt.y < rc_items.bottom) {
                 m_window->create_timer_scroll_up();
-                b_scrolling = true;
             } else
                 m_window->destroy_timer_scroll_up();
 
             if (ptt.y >= rc_items.top && ptt.y >= rc_items.bottom) {
                 m_window->create_timer_scroll_down();
-                b_scrolling = true;
             } else
                 m_window->destroy_timer_scroll_down();
 

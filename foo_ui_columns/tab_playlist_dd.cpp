@@ -77,7 +77,7 @@ public:
     HWND create(HWND wnd) override
     {
         return m_helper.create(wnd, IDD_PREFS_PLAYLISTS_DRAGDROP,
-            [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
+            [](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
     const char* get_name() override { return "Drag and drop"; }
     bool get_help_url(pfc::string_base& p_out) override

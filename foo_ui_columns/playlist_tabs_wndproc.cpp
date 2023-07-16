@@ -201,7 +201,6 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (wnd_tabs) {
             uie::window_ptr p_this_temp = this;
             POINT pt = {(short)LOWORD(lp), (short)HIWORD(lp)};
-            int old_idx = 0;
             unsigned idx = 0;
 
             bool b_keyb_invoked = pt.x == -1 && pt.y == -1;
@@ -388,7 +387,6 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                         case ID_SWITCH:
                             if (b_index_valid) {
                                 playlist_api->set_active_playlist(idx);
-                                old_idx = idx;
                             }
                             break;
                         case ID_REMOVE:

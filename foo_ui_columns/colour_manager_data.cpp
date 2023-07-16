@@ -96,7 +96,7 @@ void ColourManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint,
         m_global_light_entry->read(version, p_stream, p_abort);
         const auto light_count = p_stream->read_lendian_t<uint32_t>(p_abort);
         m_light_entries.clear();
-        for (auto _ : ranges::views::iota(0u, light_count)) {
+        for (auto _ [[maybe_unused]] : ranges::views::iota(0u, light_count)) {
             auto ptr = std::make_shared<Entry>(false);
             ptr->read(version, p_stream, p_abort);
             m_light_entries.emplace_back(std::move(ptr));
@@ -106,7 +106,7 @@ void ColourManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint,
             m_global_dark_entry->read(version, p_stream, p_abort);
             const auto dark_count = p_stream->read_lendian_t<uint32_t>(p_abort);
             m_dark_entries.clear();
-            for (auto _ : ranges::views::iota(0u, dark_count)) {
+            for (auto _ [[maybe_unused]] : ranges::views::iota(0u, dark_count)) {
                 auto ptr = std::make_shared<Entry>(true);
                 ptr->read(version, p_stream, p_abort);
                 m_dark_entries.emplace_back(std::move(ptr));

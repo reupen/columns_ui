@@ -495,7 +495,7 @@ void ItemProperties::refresh_contents()
         recs.resize(count);
 
         metadb_v2_api->queryMultiParallel_(
-            m_handles, [&recs, &info_refs](size_t index, const metadb_v2_rec_t& rec) { recs[index] = rec; });
+            m_handles, [&recs](size_t index, const metadb_v2_rec_t& rec) { recs[index] = rec; });
     } else {
         info_refs.resize(count);
 

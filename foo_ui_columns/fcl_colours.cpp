@@ -105,7 +105,7 @@ class ColoursDataSet : public fcl::dataset {
                 entries.clear();
                 entries.reserve(count);
 
-                for (auto _ : ranges::views::iota(0u, count)) {
+                for (auto _ [[maybe_unused]] : ranges::views::iota(0u, count)) {
                     const auto sub_element_id = sub_reader.read_item<uint32_t>();
                     const auto sub_element_size = sub_reader.read_item<uint32_t>();
                     if (sub_element_id == identifier_client_entry) {

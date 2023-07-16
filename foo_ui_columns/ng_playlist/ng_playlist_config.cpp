@@ -52,7 +52,7 @@ void PlaylistView::set_config(stream_reader* p_reader, size_t p_size, abort_call
         return;
     }
 
-    for (auto _ : std::ranges::views::iota(0u, count)) {
+    for (auto _ [[maybe_unused]] : std::ranges::views::iota(0u, count)) {
         const auto item_size = p_reader->read_lendian_t<uint32_t>(p_abort);
         std::vector<uint8_t> item_data(item_size);
         p_reader->read(item_data.data(), item_data.size(), p_abort);

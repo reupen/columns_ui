@@ -257,7 +257,7 @@ void ItemDetails::set_handles(const metadb_handle_list& handles)
 {
     const auto old_handles = std::move(m_handles);
     m_handles = handles;
-    if (handles.get_count() == 0 || old_handles.get_count() == 0 || handles[0] != old_handles[0]) {
+    if (handles.get_count() == 0 || old_handles.get_count() == 0 || handles[0].get_ptr() != old_handles[0].get_ptr()) {
         if (m_full_file_info_request) {
             m_full_file_info_request->abort();
             m_aborting_full_file_info_requests.emplace_back(std::move(m_full_file_info_request));

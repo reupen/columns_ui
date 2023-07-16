@@ -498,9 +498,7 @@ void ArtworkPanel::refresh_cached_bitmap()
 
         HBITMAP bm_old = SelectBitmap(dcc, m_bitmap.get());
 
-        unsigned err = 0;
         Gdiplus::Graphics graphics(dcc);
-        err = graphics.GetLastStatus();
 
         double ar_source = (double)m_image->GetWidth() / (double)m_image->GetHeight();
         double ar_dest = (double)wil::rect_width(rc) / (double)wil::rect_height(rc);
@@ -512,7 +510,7 @@ void ArtworkPanel::refresh_cached_bitmap()
 
         COLORREF cr = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
         Gdiplus::SolidBrush br(Gdiplus::Color(LOBYTE(LOWORD(cr)), HIBYTE(LOWORD(cr)), LOBYTE(HIWORD(cr))));
-        err = graphics.FillRectangle(&br, 0, 0, cx, cy);
+        graphics.FillRectangle(&br, 0, 0, cx, cy);
 
         if (m_preserve_aspect_ratio) {
             if (ar_dest < ar_source)
@@ -533,7 +531,6 @@ void ArtworkPanel::refresh_cached_bitmap()
 
             graphics.DrawImage(&*m_image, destRect, 0, 0, m_image->GetWidth(), m_image->GetHeight(), Gdiplus::UnitPixel,
                 &imageAttributes);
-            err = graphics.GetLastStatus();
         }
 
         SelectBitmap(dcc, bm_old);

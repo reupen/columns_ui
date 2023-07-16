@@ -202,9 +202,7 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
     wil::unique_hbitmap bitmap(CreateCompatibleBitmap(dc, cx, cy + reflect_cy));
     HBITMAP bm_old = SelectBitmap(dcc, bitmap.get());
 
-    unsigned err = 0;
     Gdiplus::Graphics graphics(dcc);
-    err = graphics.GetLastStatus();
     graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
     graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
 
@@ -262,7 +260,6 @@ wil::unique_hbitmap g_create_hbitmap_from_image(
                 }*/
             }
         }
-        err = graphics.GetLastStatus();
     }
     // m_bitmap = pfc::rcnew_t<Gdiplus::CachedBitmap>(&bm, &_graphics);
     // err = m_bitmap->GetLastStatus();

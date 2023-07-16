@@ -1,0 +1,7 @@
+<Project>
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalOptions Condition="'$(PlatformToolset)'=='ClangCL'">%(AdditionalOptions) -Wno-error=ambiguous-reversed-operator -Wno-error=delete-non-abstract-non-virtual-dtor -Wno-error=deprecated-declarations</AdditionalOptions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+</Project>

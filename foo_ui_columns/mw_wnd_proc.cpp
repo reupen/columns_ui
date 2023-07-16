@@ -343,8 +343,6 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 unsigned IDM_EXT_BASE = IDM_BASE + 1;
 
-                HWND child = RealChildWindowFromPoint(rebar::g_rebar_window->wnd_rebar, pt_client);
-
                 RBHITTESTINFO rbht;
                 rbht.pt = pt_client;
 

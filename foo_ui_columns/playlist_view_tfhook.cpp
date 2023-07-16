@@ -28,7 +28,6 @@ void PlaylistNameTitleformatHook::initialise()
 int date_to_julian(const SYSTEMTIME* st)
 {
     int year = st->wYear - 1;
-    int hour = st->wHour;
     int day = st->wDay - (st->wHour > 11 ? 0 : 1);
     int monthdays = 0;
     switch (st->wMonth) {

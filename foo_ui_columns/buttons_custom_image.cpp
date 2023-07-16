@@ -66,7 +66,7 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
     // t_filesize p_start = p_file->get_position(p_abort);
     t_filesize read = 0;
     while (/*p_file->get_position(p_abort) - p_start*/ read < p_size /* && !p_file->is_eof(p_abort)*/) {
-        Identifier id;
+        CustomImageIdentifier id;
         p_file->read_lendian_t(id, p_abort);
         unsigned size;
         p_file->read_lendian_t(size, p_abort);
@@ -75,10 +75,10 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
         pfc::array_t<char> path, maskpath;
         read += 8 + size;
         switch (id) {
-        case I_BUTTON_MASK_TYPE:
+        case I_CUSTOM_BUTTON_MASK_TYPE:
             p_file->read_lendian_t(m_mask_type, p_abort);
             break;
-        case I_BUTTON_MASK_COLOUR:
+        case I_CUSTOM_BUTTON_MASK_COLOUR:
             p_file->read_lendian_t(m_mask_colour, p_abort);
             break;
         case I_CUSTOM_BUTTON_MASK_PATH:
@@ -91,14 +91,14 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
             p_file->read(path.get_ptr(), path.get_size(), p_abort);
             m_path.set_string(path.get_ptr(), path.get_size());
         } break;
-        case I_BUTTON_CUSTOM_IMAGE_DATA: {
+        case I_CUSTOM_BUTTON_IMAGE_DATA: {
             t_filesize read2 = 0;
             // t_filesize p_start_data = p_file->get_position(p_abort);
             pfc::array_t<char> name;
             pfc::array_t<uint8_t> data;
             while (read2 /*p_file->get_position(p_abort) - p_start_data*/ < size /* && !p_file->is_eof(p_abort)*/) {
                 DWORD size_data;
-                Identifier id_data;
+                ImageIdentifier id_data;
                 p_file->read_lendian_t(id_data, p_abort);
                 p_file->read_lendian_t(size_data, p_abort);
                 // if (size_data > p_file->get_size(p_abort) - p_file->get_position(p_abort))
@@ -172,14 +172,14 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
                 m_path = wname.c_str();
             }
         } break;
-        case I_BUTTON_CUSTOM_IMAGE_MASK_DATA: {
+        case I_CUSTOM_BUTTON_MASK_DATA: {
             t_filesize read2 = 0;
             // t_filesize p_start_data = p_file->get_position(p_abort);
             pfc::array_t<char> name;
             pfc::array_t<uint8_t> data;
             while (read2 /*p_file->get_position(p_abort) - p_start_data*/ < size /* && !p_file->is_eof(p_abort)*/) {
                 DWORD size_data;
-                Identifier id_data;
+                ImageIdentifier id_data;
                 p_file->read_lendian_t(id_data, p_abort);
                 p_file->read_lendian_t(size_data, p_abort);
                 // if (size_data > p_file->get_size(p_abort) - p_file->get_position(p_abort))
@@ -261,7 +261,7 @@ void ButtonsToolbar::Button::CustomImage::read_from_file(FCBVersion p_version, c
 
 void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, bool b_paths, abort_callback& p_abort)
 {
-    p_file.write_lendian_t(I_BUTTON_MASK_TYPE, p_abort);
+    p_file.write_lendian_t(I_CUSTOM_BUTTON_MASK_TYPE, p_abort);
     p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_mask_type), p_abort);
     p_file.write_lendian_t(m_mask_type, p_abort);
 
@@ -272,7 +272,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
     } else {
         pfc::string8 full_path;
         try {
-            p_file.write_lendian_t(I_BUTTON_CUSTOM_IMAGE_DATA, p_abort);
+            p_file.write_lendian_t(I_CUSTOM_BUTTON_IMAGE_DATA, p_abort);
 
             pfc::string8 canonical_path;
             service_ptr_t<file> p_image;
@@ -309,7 +309,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
             p_file.write(m_mask_path.get_ptr(), m_mask_path.length(), p_abort);
         } else {
             try {
-                p_file.write_lendian_t(I_BUTTON_CUSTOM_IMAGE_MASK_DATA, p_abort);
+                p_file.write_lendian_t(I_CUSTOM_BUTTON_MASK_DATA, p_abort);
 
                 service_ptr_t<file> p_image;
                 filesystem::g_open(p_image, m_mask_path, filesystem::open_mode_read, p_abort);
@@ -340,7 +340,7 @@ void ButtonsToolbar::Button::CustomImage::write_to_file(stream_writer& p_file, b
     }
 
     if (m_mask_type == uie::MASK_COLOUR) {
-        p_file.write_lendian_t(I_BUTTON_MASK_COLOUR, p_abort);
+        p_file.write_lendian_t(I_CUSTOM_BUTTON_MASK_COLOUR, p_abort);
         p_file.write_lendian_t(mmh::sizeof_t<uint32_t>(m_mask_colour), p_abort);
         p_file.write_lendian_t(m_mask_colour, p_abort);
     }
