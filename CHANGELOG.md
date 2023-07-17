@@ -60,8 +60,10 @@
   frame may change after upgrading due to the saved custom colour now correctly
   being used.
 
-- Tooltips in the seekbar and volume bar are now dark themed when dark mode is
-  active. [[#760](https://github.com/reupen/columns_ui/pull/760)]
+- Tooltips in the buttons toolbar, seekbar and volume bar are now dark themed
+  when dark mode is active.
+  [[#760](https://github.com/reupen/columns_ui/pull/760),
+  [#764](https://github.com/reupen/columns_ui/pull/764)]
 
 - If the system DPI setting changes between foobar2000 sessions, the main window
   size is now adjusted accordingly when foobar2000 starts.
