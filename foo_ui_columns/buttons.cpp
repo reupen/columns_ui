@@ -498,6 +498,12 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             break;
         }
+        case NM_TOOLTIPSCREATED: {
+            const auto lpnmttc = reinterpret_cast<LPNMTOOLTIPSCREATED>(lp);
+            SetWindowTheme(
+                lpnmttc->hwndToolTips, colours::is_dark_mode_active() ? L"DarkMode_Explorer" : nullptr, nullptr);
+            break;
+        }
         }
         break;
     }
