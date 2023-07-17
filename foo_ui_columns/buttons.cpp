@@ -346,7 +346,8 @@ void ButtonsToolbar::set_window_theme() const
 
 LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    if (msg == WM_CREATE) {
+    switch (msg) {
+    case WM_CREATE: {
         wnd_host = wnd;
         Gdiplus::GdiplusStartupInput gdiplusStartupInput;
         m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
@@ -356,7 +357,9 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             destroy_toolbar();
             create_toolbar();
         });
-    } else if (msg == WM_DESTROY) {
+        break;
+    }
+    case WM_DESTROY:
         m_dark_mode_notifier.reset();
         destroy_toolbar();
         m_buttons.clear();
@@ -366,74 +369,82 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             Gdiplus::GdiplusShutdown(m_gdiplus_instance);
             m_gdiplus_initialised = false;
         }
-    } else if (msg == WM_WINDOWPOSCHANGED) {
-        auto lpwp = (LPWINDOWPOS)lp;
-        if (!(lpwp->flags & SWP_NOSIZE)) {
-            // SIZE sz = {0,0};
-            // SendMessage(wnd_menu, TB_GETMAXSIZE, NULL, (LPARAM)&sz);
+        break;
+    case WM_WINDOWPOSCHANGED: {
+        const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
 
-            RECT rc = {0, 0, 0, 0};
-            size_t count = m_buttons.size();
-            int cx = lpwp->cx;
-            int cy = lpwp->cy;
-            int extra = 0;
-            if (count && (BOOL)SendMessage(wnd_toolbar, TB_GETITEMRECT, count - 1, (LPARAM)(&rc))) {
-                cx = std::min(cx, gsl::narrow_cast<int>(rc.right));
-                cy = std::min(cy, gsl::narrow_cast<int>(rc.bottom));
-                extra = (lpwp->cy - rc.bottom) / 2;
-            }
-            SetWindowPos(wnd_toolbar, nullptr, 0, extra, cx, cy, SWP_NOZORDER);
+        if (lpwp->flags & SWP_NOSIZE)
+            break;
+
+        RECT rc = {0, 0, 0, 0};
+        const size_t count = m_buttons.size();
+        int cx = lpwp->cx;
+        int cy = lpwp->cy;
+        int extra = 0;
+        if (count && SendMessage(wnd_toolbar, TB_GETITEMRECT, count - 1, reinterpret_cast<LPARAM>(&rc))) {
+            cx = std::min(cx, gsl::narrow_cast<int>(rc.right));
+            cy = std::min(cy, gsl::narrow_cast<int>(rc.bottom));
+            extra = (lpwp->cy - rc.bottom) / 2;
         }
-    } else if (msg == WM_SIZE) {
-    } else if (msg == WM_GETMINMAXINFO) {
-        if (m_buttons.size()) {
-            auto mmi = LPMINMAXINFO(lp);
-
-            RECT rc = {0, 0, 0, 0};
-
-            if (SendMessage(wnd_toolbar, TB_GETITEMRECT, m_buttons.size() - 1, (LPARAM)(&rc))) {
-                mmi->ptMinTrackSize.x = rc.right;
-                mmi->ptMinTrackSize.y = rc.bottom;
-                mmi->ptMaxTrackSize.y = rc.bottom;
-                return 0;
-            }
-        }
+        SetWindowPos(wnd_toolbar, nullptr, 0, extra, cx, cy, SWP_NOZORDER);
+        break;
     }
+    case WM_GETMINMAXINFO: {
+        if (m_buttons.empty())
+            break;
 
-    else if (msg == WM_USER + 2) {
-        if (wnd_toolbar && wp < m_buttons.size() && m_buttons[wp].m_interface.is_valid()) {
-            unsigned state = m_buttons[wp].m_interface->get_button_state();
-            if (state & uie::BUTTON_STATE_PRESSED) {
-                PostMessage(wnd_toolbar, TB_PRESSBUTTON, wp, MAKELONG(TRUE, 0));
-            }
+        const auto mmi = reinterpret_cast<LPMINMAXINFO>(lp);
+
+        RECT rc = {0, 0, 0, 0};
+
+        if (SendMessage(wnd_toolbar, TB_GETITEMRECT, m_buttons.size() - 1, reinterpret_cast<LPARAM>(&rc))) {
+            mmi->ptMinTrackSize.x = rc.right;
+            mmi->ptMinTrackSize.y = rc.bottom;
+            mmi->ptMaxTrackSize.y = rc.bottom;
+            return 0;
         }
+        break;
     }
+    case WM_USER + 2: {
+        if (!wnd_toolbar || wp >= m_buttons.size() || !m_buttons[wp].m_interface.is_valid())
+            break;
 
-    else if (msg == WM_NOTIFY && ((LPNMHDR)lp)->idFrom == ID_BUTTONS) {
-        switch (((LPNMHDR)lp)->code) {
+        const unsigned state = m_buttons[wp].m_interface->get_button_state();
+        if (state & uie::BUTTON_STATE_PRESSED) {
+            PostMessage(wnd_toolbar, TB_PRESSBUTTON, wp, MAKELONG(TRUE, 0));
+        }
+        break;
+    }
+    case WM_NOTIFY: {
+        if (reinterpret_cast<LPNMHDR>(lp)->idFrom != ID_BUTTONS)
+            break;
+
+        switch (reinterpret_cast<LPNMHDR>(lp)->code) {
         case TBN_ENDDRAG: {
-            auto lpnmtb = (LPNMTOOLBAR)lp;
+            const auto lpnmtb = reinterpret_cast<LPNMTOOLBARW>(lp);
             PostMessage(wnd, WM_USER + 2, lpnmtb->iItem, NULL);
-        } break;
+            break;
+        }
         case TBN_GETINFOTIP: {
-            auto lpnmtbgit = (LPNMTBGETINFOTIP)lp;
+            const auto lpnmtbgit = reinterpret_cast<LPNMTBGETINFOTIPW>(lp);
             if (!m_buttons[lpnmtbgit->iItem].m_interface.is_valid()
                 || (m_buttons[lpnmtbgit->iItem].m_interface->get_button_state() & uie::BUTTON_STATE_SHOW_TOOLTIP)) {
                 const auto text = m_buttons[lpnmtbgit->iItem].get_name(true);
                 StringCchCopy(
                     lpnmtbgit->pszText, lpnmtbgit->cchTextMax, pfc::stringcvt::string_wide_from_utf8(text.c_str()));
             }
-        } break;
+            break;
+        }
         case TBN_DROPDOWN: {
-            auto lpnmtb = (LPNMTOOLBAR)lp;
-            pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> menu_items = new ui_extension::menu_hook_impl;
+            const auto lpnmtb = reinterpret_cast<LPNMTOOLBARW>(lp);
+            const pfc::refcounted_object_ptr_t menu_items = new ui_extension::menu_hook_impl;
 
             m_buttons[lpnmtb->iItem].m_interface->get_menu_items(*menu_items.get_ptr());
-            HMENU menu = CreatePopupMenu();
+            const HMENU menu = CreatePopupMenu();
             menu_items->win32_build_menu(menu, 1, pfc_infinite);
             POINT pt = {lpnmtb->rcButton.left, lpnmtb->rcButton.bottom};
             MapWindowPoints(lpnmtb->hdr.hwndFrom, HWND_DESKTOP, &pt, 1);
-            int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON | TPM_RETURNCMD, pt.x, pt.y, wnd, nullptr);
+            const int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON | TPM_RETURNCMD, pt.x, pt.y, wnd, nullptr);
             if (cmd)
                 menu_items->execute_by_id(cmd);
             DestroyMenu(menu);
@@ -482,86 +493,96 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 if (m_appearance == APPEARANCE_NOEDGE) {
                     return TBCDRF_NOEDGES | TBCDRF_NOBACKGROUND;
                 }
-            } break;
+                break;
             }
-        } break;
+            }
+            break;
         }
-    } else if (msg == WM_COMMAND) {
-        if (wp >= 0 && wp < m_buttons.size()) {
-            GUID caller = pfc::guid_null;
-            metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
-            switch (m_buttons[wp].m_filter) {
-            case FILTER_PLAYLIST: {
-                const auto api = playlist_manager::get();
-                data.prealloc(api->activeplaylist_get_selection_count(pfc_infinite));
-                api->activeplaylist_get_selected_items(data);
-                caller = contextmenu_item::caller_active_playlist_selection;
-                break;
-            }
-            case FILTER_ACTIVE_SELECTION: {
-                auto api = ui_selection_manager_v2::get();
-                api->get_selection(data, ui_selection_manager_v2::flag_no_now_playing);
-                caller = contextmenu_item::caller_undefined;
-                break;
-            }
-            case FILTER_PLAYING: {
-                metadb_handle_ptr hdle;
-                if (play_control::get()->get_now_playing(hdle))
-                    data.add_item(hdle);
-                caller = contextmenu_item::caller_now_playing;
-                break;
-            }
-            case FILTER_NONE:
-                break;
-            }
-
-            switch (m_buttons[wp].m_type) {
-            case TYPE_MENU_ITEM_CONTEXT:
-                menu_helpers::run_command_context_ex(m_buttons[wp].m_guid, m_buttons[wp].m_subcommand, data, caller);
-                break;
-            case TYPE_MENU_ITEM_MAIN:
-                if (m_buttons[wp].m_subcommand != pfc::guid_null)
-                    mainmenu_commands::g_execute_dynamic(m_buttons[wp].m_guid, m_buttons[wp].m_subcommand);
-                else
-                    mainmenu_commands::g_execute(m_buttons[wp].m_guid);
-                break;
-            case TYPE_BUTTON: {
-                service_ptr_t<uie::custom_button> p_button;
-                if (m_buttons[wp].m_interface.is_valid() && m_buttons[wp].m_interface->service_query_t(p_button))
-                    p_button->execute(data);
-            } break;
-            case TYPE_SEPARATOR:
-                break;
-            }
-        } else
+        }
+        break;
+    }
+    case WM_COMMAND: {
+        if (wp >= m_buttons.size()) {
             console::print("buttons toolbar: error index out of range!");
-    } else if (msg == WM_CONTEXTMENU) {
-        if (HWND(wp) == wnd_toolbar) {
-            if (lp != -1) {
-                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
-                POINT pts = pt;
-                ScreenToClient(wnd_toolbar, &pt);
-                const auto lresult = SendMessage(wnd_toolbar, TB_HITTEST, 0, (LPARAM)&pt);
-                if (lresult >= 0 && // not a separator
-                    lresult < std::ssize(m_buttons) && m_buttons[lresult].m_interface.is_valid())
-
-                {
-                    pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> menu_items
-                        = new ui_extension::menu_hook_impl;
-
-                    m_buttons[lresult].m_interface->get_menu_items(*menu_items.get_ptr());
-                    if (menu_items->get_children_count()) {
-                        HMENU menu = CreatePopupMenu();
-                        menu_items->win32_build_menu(menu, 1, pfc_infinite);
-                        int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON | TPM_RETURNCMD, pts.x, pts.y, wnd, nullptr);
-                        if (cmd)
-                            menu_items->execute_by_id(cmd);
-                        DestroyMenu(menu);
-                        return 0;
-                    }
-                }
-            }
+            break;
         }
+
+        GUID caller = pfc::guid_null;
+        metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
+
+        switch (m_buttons[wp].m_filter) {
+        case FILTER_PLAYLIST: {
+            const auto api = playlist_manager::get();
+            data.prealloc(api->activeplaylist_get_selection_count(pfc_infinite));
+            api->activeplaylist_get_selected_items(data);
+            caller = contextmenu_item::caller_active_playlist_selection;
+            break;
+        }
+        case FILTER_ACTIVE_SELECTION: {
+            const auto api = ui_selection_manager_v2::get();
+            api->get_selection(data, ui_selection_manager_v2::flag_no_now_playing);
+            caller = contextmenu_item::caller_undefined;
+            break;
+        }
+        case FILTER_PLAYING: {
+            metadb_handle_ptr hdle;
+            if (play_control::get()->get_now_playing(hdle))
+                data.add_item(hdle);
+            caller = contextmenu_item::caller_now_playing;
+            break;
+        }
+        case FILTER_NONE:
+            break;
+        }
+
+        switch (m_buttons[wp].m_type) {
+        case TYPE_MENU_ITEM_CONTEXT:
+            menu_helpers::run_command_context_ex(m_buttons[wp].m_guid, m_buttons[wp].m_subcommand, data, caller);
+            break;
+        case TYPE_MENU_ITEM_MAIN:
+            if (m_buttons[wp].m_subcommand != pfc::guid_null)
+                mainmenu_commands::g_execute_dynamic(m_buttons[wp].m_guid, m_buttons[wp].m_subcommand);
+            else
+                mainmenu_commands::g_execute(m_buttons[wp].m_guid);
+            break;
+        case TYPE_BUTTON: {
+            service_ptr_t<uie::custom_button> p_button;
+            if (m_buttons[wp].m_interface.is_valid() && m_buttons[wp].m_interface->service_query_t(p_button))
+                p_button->execute(data);
+        } break;
+        case TYPE_SEPARATOR:
+            break;
+        }
+        break;
+    }
+    case WM_CONTEXTMENU: {
+        if (reinterpret_cast<HWND>(wp) != wnd_toolbar || lp != -1)
+            break;
+
+        POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+        POINT pts = pt;
+        ScreenToClient(wnd_toolbar, &pt);
+        const auto hittest_index = SendMessage(wnd_toolbar, TB_HITTEST, 0, reinterpret_cast<LPARAM>(&pt));
+
+        if (hittest_index < 0 || hittest_index >= std::ssize(m_buttons)
+            || !m_buttons[hittest_index].m_interface.is_valid())
+            break;
+
+        pfc::refcounted_object_ptr_t menu_items = new ui_extension::menu_hook_impl;
+
+        m_buttons[hittest_index].m_interface->get_menu_items(*menu_items.get_ptr());
+
+        if (!menu_items->get_children_count())
+            break;
+
+        const HMENU menu = CreatePopupMenu();
+        menu_items->win32_build_menu(menu, 1, pfc_infinite);
+        const int cmd = TrackPopupMenuEx(menu, TPM_LEFTBUTTON | TPM_RETURNCMD, pts.x, pts.y, wnd, nullptr);
+        if (cmd)
+            menu_items->execute_by_id(cmd);
+        DestroyMenu(menu);
+        return 0;
+    }
     }
 
     return DefWindowProc(wnd, msg, wp, lp);
