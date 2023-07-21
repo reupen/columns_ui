@@ -251,7 +251,7 @@ void cui::MainWindow::update_taskbar_buttons(bool update) const
 
 void cui::MainWindow::queue_taskbar_button_update(bool update)
 {
-    fb2k::inMainThread([update, this] { update_taskbar_buttons(update); });
+    PostMessage(m_wnd, update ? MSG_UPDATE_TASKBAR_BUTTONS : MSG_CREATE_TASKBAR_BUTTONS, 0, 0);
 }
 
 void cui::MainWindow::warn_if_ui_hacks_installed()

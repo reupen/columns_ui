@@ -60,6 +60,9 @@
   frame may change after upgrading due to the saved custom colour now correctly
   being used.
 
+- A problem causing a slight delay when starting playback of a track was worked
+  around. [[#765](https://github.com/reupen/columns_ui/pull/765)]
+
 - Tooltips in the buttons toolbar, seekbar and volume bar are now dark themed
   when dark mode is active.
   [[#760](https://github.com/reupen/columns_ui/pull/760),

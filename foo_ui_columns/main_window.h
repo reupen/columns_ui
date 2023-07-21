@@ -22,7 +22,14 @@ COLORREF get_default_colour(colours::ColourID index, bool themed = false);
 #define ID_PLAYLIST_TOOLTIP 50
 
 /** Main window custom message numbers */
-enum { MSG_SET_AOT = WM_USER + 3, MSG_UPDATE_TITLE, MSG_RUN_INITIAL_SETUP, MSG_NOTIFICATION_ICON };
+enum {
+    MSG_SET_AOT = WM_USER + 3,
+    MSG_UPDATE_TITLE,
+    MSG_RUN_INITIAL_SETUP,
+    MSG_NOTIFICATION_ICON,
+    MSG_CREATE_TASKBAR_BUTTONS,
+    MSG_UPDATE_TASKBAR_BUTTONS
+};
 
 bool remember_window_pos();
 
