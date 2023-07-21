@@ -457,6 +457,12 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case MSG_RUN_INITIAL_SETUP:
         QuickSetupDialog::s_run();
         return 0;
+    case MSG_CREATE_TASKBAR_BUTTONS:
+        update_taskbar_buttons(false);
+        return 0;
+    case MSG_UPDATE_TASKBAR_BUTTONS:
+        update_taskbar_buttons(true);
+        return 0;
     case WM_GETDLGCODE:
         return DLGC_WANTALLKEYS;
     case WM_ERASEBKGND:
