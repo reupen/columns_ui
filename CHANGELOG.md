@@ -60,6 +60,9 @@
   frame may change after upgrading due to the saved custom colour now correctly
   being used.
 
+- Inline editing in list views now always saves and exits when clicking outside
+  the edit box. [[#769](https://github.com/reupen/columns_ui/pull/769)]
+
 - A problem causing a slight delay when starting playback of a track was worked
   around. [[#765](https://github.com/reupen/columns_ui/pull/765)]
 
