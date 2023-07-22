@@ -10,15 +10,18 @@ void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, s
     if (!bm)
         return;
 
+    RECT deflated_rect{rc};
+    InflateRect(&deflated_rect, -m_playlist_view->get_artwork_left_right_padding(), 0);
+
     HDC dcc = CreateCompatibleDC(context.dc);
     BITMAP bminfo{};
     GetObject(bm.get(), sizeof(BITMAP), &bminfo);
 
     RECT rc_bitmap;
-    rc_bitmap.left = rc.left + (wil::rect_width(rc) - bminfo.bmWidth) / 2;
-    rc_bitmap.top = rc.top;
-    rc_bitmap.right = rc_bitmap.left + std::min(bminfo.bmWidth, wil::rect_width(rc));
-    rc_bitmap.bottom = rc_bitmap.top + std::min(bminfo.bmHeight, wil::rect_height(rc));
+    rc_bitmap.left = deflated_rect.left + (wil::rect_width(deflated_rect) - bminfo.bmWidth) / 2;
+    rc_bitmap.top = deflated_rect.top;
+    rc_bitmap.right = rc_bitmap.left + std::min(bminfo.bmWidth, wil::rect_width(deflated_rect));
+    rc_bitmap.bottom = rc_bitmap.top + std::min(bminfo.bmHeight, wil::rect_height(deflated_rect));
 
     HBITMAP bm_old = SelectBitmap(dcc, bm.get());
     BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap), dcc, 0,

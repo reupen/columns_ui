@@ -34,7 +34,7 @@ std::vector<PlaylistView*> PlaylistView::g_windows;
 
 ConfigGroups g_groups(g_groups_guid);
 
-cfg_bool cfg_artwork_reflection(g_artwork_reflection, true);
+cfg_bool cfg_artwork_reflection(g_artwork_reflection, false);
 
 fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { button_items::ShowGroupsButton::s_on_change(); });
 fbh::ConfigBool cfg_show_artwork(
@@ -694,6 +694,7 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
 void PlaylistView::notify_on_initialisation()
 {
     set_use_dark_mode(colours::is_dark_mode_active());
+    set_group_level_indentation_enabled(false);
     set_group_info_area_size(
         cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
     set_show_group_info_area(cfg_show_artwork);
