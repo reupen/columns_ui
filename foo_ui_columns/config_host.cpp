@@ -63,21 +63,29 @@ INT_PTR PreferencesTabHelper::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM l
 void PreferencesTabHelper::on_initdialog(HWND wnd)
 {
     m_wnd = wnd;
-    m_title_font = create_default_title_font();
+    m_h1_font.reset(create_default_title_font());
 
-    const auto children = helpers::get_child_windows(wnd, [this, wnd](HWND wnd_child) {
-        return GetAncestor(wnd_child, GA_PARENT) == wnd
-            && m_title_ctrl_ids.find(GetDlgCtrlID(wnd_child)) != m_title_ctrl_ids.end();
-    });
-    for (auto&& child : children) {
-        SetWindowFont(child, m_title_font, FALSE);
-    }
+    if (!m_h2_ctrl_ids.empty())
+        m_h2_font.reset(create_default_ui_font(10));
+
+    const auto set_font = [wnd](auto&& font, auto&& ctrl_ids) {
+        const auto windows = helpers::get_child_windows(wnd, [wnd, &ctrl_ids](HWND wnd_child) {
+            return GetAncestor(wnd_child, GA_PARENT) == wnd && ctrl_ids.contains(GetDlgCtrlID(wnd_child));
+        });
+
+        for (auto&& child : windows) {
+            SetWindowFont(child, font.get(), FALSE);
+        }
+    };
+
+    set_font(m_h1_font, m_h1_ctrl_ids);
+    set_font(m_h2_font, m_h2_ctrl_ids);
 }
 
 void PreferencesTabHelper::on_ncdestroy()
 {
-    DeleteFont(m_title_font);
-    m_title_font = nullptr;
+    m_h1_font.reset();
+    m_h2_font.reset();
     m_wnd = nullptr;
 }
 

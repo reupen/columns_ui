@@ -11,7 +11,11 @@ namespace cui::prefs {
 
 class PreferencesTabHelper {
 public:
-    explicit PreferencesTabHelper(std::initializer_list<unsigned> title_ctrl_ids) : m_title_ctrl_ids(title_ctrl_ids) {}
+    PreferencesTabHelper(std::set<unsigned> h1_ctrl_ids, std::set<unsigned> h2_ctrl_ids = {})
+        : m_h1_ctrl_ids(std::move(h1_ctrl_ids))
+        , m_h2_ctrl_ids(std::move(h2_ctrl_ids))
+    {
+    }
 
     HWND create(
         HWND wnd, UINT id, std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message_callback);
@@ -24,8 +28,10 @@ private:
     void on_ncdestroy();
 
     HWND m_wnd{};
-    HFONT m_title_font{};
-    std::set<unsigned> m_title_ctrl_ids;
+    wil::unique_hfont m_h1_font{};
+    wil::unique_hfont m_h2_font{};
+    std::set<unsigned> m_h1_ctrl_ids;
+    std::set<unsigned> m_h2_ctrl_ids;
     std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> m_on_message_callback;
 };
 

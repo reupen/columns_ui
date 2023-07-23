@@ -107,7 +107,7 @@ public:
         p_out = "http://yuo.be/wiki/columns_ui:config:main";
         return true;
     }
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1, IDC_TITLE2};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 } g_tab_main;
 
 PreferencesTab* g_get_tab_main()

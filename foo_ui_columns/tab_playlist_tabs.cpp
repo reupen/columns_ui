@@ -53,7 +53,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 } g_tab_playlist_tabs;
 
 PreferencesTab* g_get_tab_playlist_tabs()

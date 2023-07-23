@@ -88,7 +88,7 @@ public:
         p_out = "http://yuo.be/wiki/columns_ui:config:notification_area";
         return true;
     }
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 } g_tab_sys;
 
 PreferencesTab* g_get_tab_sys()

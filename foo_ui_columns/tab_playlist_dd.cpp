@@ -87,7 +87,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 } g_tab_playlist_dd;
 
 bool TabPlaylistSwitcherDragAndDrop::initialised = false;

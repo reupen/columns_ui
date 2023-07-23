@@ -72,7 +72,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     bool m_initialised{};
 
 } g_tab_playlist_switcher;

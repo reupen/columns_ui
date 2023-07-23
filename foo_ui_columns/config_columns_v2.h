@@ -80,7 +80,7 @@ private:
     HWND m_wnd_child{nullptr};
     HWND m_wnd{nullptr};
     std::unique_ptr<ColumnTab> m_child;
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     ColumnList m_columns;
     ColumnsListView m_columns_list_view{this};
     bool initialising{false};

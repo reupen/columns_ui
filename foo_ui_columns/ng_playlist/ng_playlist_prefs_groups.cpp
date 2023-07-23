@@ -71,7 +71,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
-        m_groups_list_view.create(wnd, {7, 51, 313, 195}, true);
+        m_groups_list_view.create(wnd, {7, 105, 313, 140}, true);
 
         LOGFONT font{};
         GetObject(GetWindowFont(wnd), sizeof(font), &font);
@@ -89,15 +89,41 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         ShowWindow(m_groups_list_view.get_wnd(), SW_SHOWNORMAL);
 
         Button_SetCheck(GetDlgItem(wnd, IDC_GROUPING), cfg_grouping ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(GetDlgItem(wnd, IDC_INDENT_GROUPS), cfg_indent_groups ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(GetDlgItem(wnd, IDC_USE_CUSTOM_INDENTATION),
+            cfg_use_custom_group_indentation_amount ? BST_CHECKED : BST_UNCHECKED);
 
+        SendDlgItemMessage(wnd, IDC_INDENTATION_AMOUNT_SPIN, UDM_SETRANGE32, 0, 256);
+        SendDlgItemMessage(wnd, IDC_INDENTATION_AMOUNT_SPIN, UDM_SETPOS32, NULL, cfg_custom_group_indentation_amount);
+
+        refresh_enabled_options();
+
+        m_initialised = true;
         break;
     }
     case WM_COMMAND:
         switch (wp) {
         case IDC_GROUPING: {
-            cfg_grouping = Button_GetCheck(HWND(lp)) == BST_CHECKED;
+            cfg_grouping = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+            refresh_enabled_options();
             PlaylistView::g_on_groups_change();
-        } break;
+            break;
+        }
+        case IDC_INDENT_GROUPS:
+            cfg_indent_groups = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+            refresh_enabled_options();
+            break;
+        case IDC_USE_CUSTOM_INDENTATION:
+            cfg_use_custom_group_indentation_amount = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+            refresh_enabled_options();
+            break;
+        case (EN_CHANGE << 16) | IDC_INDENTATION_AMOUNT:
+            if (m_initialised) {
+                cfg_custom_group_indentation_amount
+                    = mmh::strtoul_n(uGetWindowText(reinterpret_cast<HWND>(lp)).get_ptr(), pfc_infinite);
+                PlaylistView::s_on_group_indentation_amount_change();
+            }
+            break;
         case IDC_GROUP_UP: {
             const auto index = m_groups_list_view.get_selected_item_single();
             auto& groups = g_groups.get_groups();
@@ -166,6 +192,16 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     return 0;
+}
+
+void GroupsPreferencesTab::refresh_enabled_options() const
+{
+    EnableWindow(GetDlgItem(m_wnd, IDC_INDENT_GROUPS), cfg_grouping);
+    EnableWindow(GetDlgItem(m_wnd, IDC_USE_CUSTOM_INDENTATION), cfg_grouping && cfg_indent_groups);
+    EnableWindow(GetDlgItem(m_wnd, IDC_INDENTATION_AMOUNT),
+        cfg_grouping && cfg_indent_groups && cfg_use_custom_group_indentation_amount);
+    EnableWindow(GetDlgItem(m_wnd, IDC_INDENTATION_AMOUNT_SPIN),
+        cfg_grouping && cfg_indent_groups && cfg_use_custom_group_indentation_amount);
 }
 
 void GroupsPreferencesTab::on_group_default_action(size_t index)

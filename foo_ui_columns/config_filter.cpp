@@ -219,7 +219,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     bool m_initialising{false};
 } g_tab_filter_fields;
 
@@ -297,7 +297,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     bool m_initialising{false};
 } g_tab_filter_appearance;
 
@@ -407,7 +407,7 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
     bool m_initialising{false};
 } g_tab_filter_behaviour;
 

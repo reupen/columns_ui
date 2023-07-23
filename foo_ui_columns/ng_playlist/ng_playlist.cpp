@@ -37,6 +37,13 @@ ConfigGroups g_groups(g_groups_guid);
 cfg_bool cfg_artwork_reflection(g_artwork_reflection, false);
 
 fbh::ConfigBool cfg_grouping(g_guid_grouping, true, [](auto&&) { button_items::ShowGroupsButton::s_on_change(); });
+fbh::ConfigBool cfg_indent_groups({0x2e3d28c7, 0x7e99, 0x410f, {0xa5, 0x50, 0xd1, 0x5c, 0xc0, 0x6e, 0xa5, 0x51}}, true,
+    [](auto&&) { PlaylistView::s_on_indent_groups_change(); });
+fbh::ConfigBool cfg_use_custom_group_indentation_amount(
+    {0x53cad633, 0xa735, 0x4880, {0x91, 0x45, 0xd9, 0x11, 0x98, 0x5e, 0x51, 0xe6}}, false,
+    [](auto&&) { PlaylistView::s_on_group_indentation_amount_change(); });
+fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount(
+    {0x3d1b3bce, 0x25d2, 0x4dde, {0x8e, 0x99, 0x20, 0xfb, 0xc9, 0x6c, 0xbf, 0xec}}, 10);
 fbh::ConfigBool cfg_show_artwork(
     g_show_artwork_guid, false, [](auto&&) { button_items::ShowArtworkButton::s_on_change(); });
 fbh::ConfigUint32DpiAware cfg_artwork_width(g_artwork_width_guid, 100);
@@ -261,11 +268,41 @@ void PlaylistView::refresh_columns()
     set_columns(columns);
 }
 
+void PlaylistView::set_group_info_area_size()
+{
+    ListView::set_group_info_area_size(cfg_artwork_width + get_artwork_left_right_padding() * 2,
+        cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
+}
+
 void PlaylistView::g_on_groups_change()
 {
     for (auto& window : g_windows)
         window->on_groups_change();
 }
+
+void PlaylistView::s_on_indent_groups_change()
+{
+    if (!cfg_grouping)
+        return;
+
+    for (const auto& window : g_windows) {
+        window->on_artwork_width_change();
+        window->set_group_level_indentation_enabled(cfg_indent_groups);
+    }
+}
+
+void PlaylistView::s_on_group_indentation_amount_change()
+{
+    if (!cfg_grouping)
+        return;
+
+    for (const auto& window : g_windows) {
+        window->set_group_level_indentation_amount(cfg_use_custom_group_indentation_amount
+                ? std::make_optional<int>(cfg_custom_group_indentation_amount)
+                : std::nullopt);
+    }
+}
+
 void PlaylistView::on_groups_change()
 {
     if (get_wnd()) {
@@ -319,16 +356,22 @@ void PlaylistView::g_on_alternate_selection_change()
     for (auto& window : g_windows)
         window->set_alternate_selection_model(cfg_alternative_sel != 0);
 }
+
 void PlaylistView::g_on_artwork_width_change(const PlaylistView* p_skip)
 {
     for (auto& window : g_windows) {
         if (window != p_skip) {
-            window->flush_artwork_images();
-            window->set_group_info_area_size(
-                cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
+            window->on_artwork_width_change();
         }
     }
 }
+
+void PlaylistView::on_artwork_width_change()
+{
+    flush_artwork_images();
+    set_group_info_area_size();
+}
+
 void PlaylistView::g_flush_artwork(bool b_redraw, const PlaylistView* p_skip)
 {
     for (auto& window : g_windows) {
@@ -694,9 +737,12 @@ void PlaylistView::sort_by_column_fb2k_v2(size_t column_index, bool b_descending
 void PlaylistView::notify_on_initialisation()
 {
     set_use_dark_mode(colours::is_dark_mode_active());
-    set_group_level_indentation_enabled(false);
-    set_group_info_area_size(
-        cfg_artwork_width, cfg_artwork_width + (cfg_artwork_reflection ? (cfg_artwork_width * 3) / 11 : 0));
+    set_group_level_indentation_enabled(cfg_indent_groups);
+
+    if (cfg_use_custom_group_indentation_amount)
+        set_group_level_indentation_amount(cfg_custom_group_indentation_amount);
+
+    set_group_info_area_size();
     set_show_group_info_area(cfg_show_artwork);
     set_show_header(cfg_header != 0);
     set_autosize(cfg_nohscroll != 0);

@@ -16,7 +16,7 @@ public:
 private:
     bool m_is_updating{};
     HWND m_wnd{nullptr};
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
 
 extern TabDarkMode g_tab_dark_mode;
