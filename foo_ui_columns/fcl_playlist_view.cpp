@@ -4,6 +4,7 @@
 #include "config.h"
 #include "config_appearance.h"
 #include "tab_dark_mode.h"
+#include "ng_playlist/ng_playlist.h"
 
 namespace cui {
 
@@ -25,6 +26,9 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         /** Non-legacy */
         identifier_vertical_item_padding,
         identifier_vertical_item_padding_dpi,
+        identifier_indent_groups,
+        identifier_use_custom_group_indentation_amount,
+        identifier_custom_group_indentation_amount,
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours"; }
     const GUID& get_group() const override { return fcl::groups::colours_and_fonts; }
@@ -40,6 +44,11 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
         fbh::fcl::Writer out(p_writer, p_abort);
         out.write_item(identifier_vertical_item_padding, settings::playlist_view_item_padding.get_raw_value().value);
         out.write_item(identifier_vertical_item_padding_dpi, settings::playlist_view_item_padding.get_raw_value().dpi);
+        out.write_item(identifier_indent_groups, panels::playlist_view::cfg_indent_groups);
+        out.write_item(
+            identifier_custom_group_indentation_amount, panels::playlist_view::cfg_custom_group_indentation_amount);
+        out.write_item(identifier_use_custom_group_indentation_amount,
+            panels::playlist_view::cfg_use_custom_group_indentation_amount);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -68,6 +77,15 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
             case identifier_vertical_item_padding_dpi:
                 reader.read_item(item_padding.dpi);
                 item_padding_read = true;
+                break;
+            case identifier_indent_groups:
+                reader.read_item(panels::playlist_view::cfg_indent_groups);
+                break;
+            case identifier_use_custom_group_indentation_amount:
+                reader.read_item(panels::playlist_view::cfg_use_custom_group_indentation_amount);
+                break;
+            case identifier_custom_group_indentation_amount:
+                reader.read_item(panels::playlist_view::cfg_custom_group_indentation_amount);
                 break;
             case colours_pview_scheme: {
                 int use_custom_colours{};
@@ -144,6 +162,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
 
         if (item_padding_read)
             settings::playlist_view_item_padding = item_padding;
+
         // refresh_all_playlist_views();
         // pvt::ng_playlist_view_t::g_update_all_items();
     }

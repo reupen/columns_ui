@@ -12,6 +12,9 @@ extern const GUID g_guid_items_font, g_guid_header_font, g_guid_group_header_fon
 extern cfg_bool cfg_artwork_reflection;
 extern fbh::ConfigUint32DpiAware cfg_artwork_width;
 extern fbh::ConfigBool cfg_grouping;
+extern fbh::ConfigBool cfg_indent_groups;
+extern fbh::ConfigBool cfg_use_custom_group_indentation_amount;
+extern fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount;
 extern fbh::ConfigBool cfg_show_artwork;
 
 wil::unique_hbitmap g_create_hbitmap_from_image(
@@ -323,6 +326,8 @@ public:
     inline static std::unique_ptr<uie::container_window_v3> s_message_window;
 
     static void g_on_groups_change();
+    static void s_on_indent_groups_change();
+    static void s_on_group_indentation_amount_change();
     static void g_on_columns_change();
     static void g_on_column_widths_change(const PlaylistView* p_skip = nullptr);
     static void g_update_all_items();
@@ -415,7 +420,7 @@ private:
 
     static void s_create_message_window();
     static void s_destroy_message_window();
-    static auto get_artwork_left_right_padding() { return 5_spx; }
+    static auto get_artwork_left_right_padding() { return cfg_indent_groups ? 0 : 5_spx; }
 
     virtual void flush_artwork_images()
     {
@@ -540,7 +545,9 @@ private:
         const std::optional<uih::lv::SavedScrollPosition>& scroll_position = std::nullopt);
     void refresh_groups(bool b_update_columns = false);
     void refresh_columns();
+    void set_group_info_area_size();
     void on_groups_change();
+    void on_artwork_width_change();
     void on_columns_change();
     void on_column_widths_change();
     size_t column_index_display_to_actual(size_t display_index);
@@ -755,12 +762,14 @@ public:
 
 private:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    void refresh_enabled_options() const;
 
     void on_group_default_action(size_t index);
 
     HWND m_wnd{};
+    bool m_initialised{};
     GroupsListView m_groups_list_view{this};
-    prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}, {IDC_H2_TITLE}};
 };
 } // namespace cui::panels::playlist_view
 

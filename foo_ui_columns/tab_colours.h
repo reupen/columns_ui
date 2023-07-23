@@ -40,7 +40,7 @@ private:
 
     void on_colour_changed();
 
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
 
 extern TabColours g_tab_appearance;

@@ -1,5 +1,14 @@
 # Change log
 
+## 2.1.0-beta.2
+
+### Features
+
+- Indentation of grouping levels in the playlist view was made configurable.
+  [[#773](https://github.com/reupen/columns_ui/pull/773)]
+
+  The default configuration matches the behaviour of Columns UI 2.0.0.
+
 ## 2.1.0-beta.1
 
 ### Features

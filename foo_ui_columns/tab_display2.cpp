@@ -148,7 +148,7 @@ public:
 private:
     bool m_initialised{};
     std::vector<MenuItemInfo> m_menu_cache;
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 } g_tab_display2;
 
 PreferencesTab* g_get_tab_display2()

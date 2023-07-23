@@ -71,7 +71,7 @@ public:
         p_out = "http://yuo.be/wiki/columns_ui:config:status_bar";
         return true;
     }
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 } g_tab_status_bar;
 
 PreferencesTab* g_get_tab_status_bar()

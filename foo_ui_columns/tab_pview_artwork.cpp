@@ -64,7 +64,7 @@ public:
 
 private:
     bool m_initialised{};
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 } g_tab_pview_artwork;
 
 PreferencesTab* g_get_tab_pview_artwork()

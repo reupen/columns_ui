@@ -93,7 +93,6 @@
 #define IDD_PREFS_PLAYLIST_SWITCHER     234
 #define IDD_PREFS_DARK_MODE             235
 #define IDD_PREFS_STATUS_PANE           236
-#define IDC_LIST                        1003
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
@@ -134,6 +133,7 @@
 #define IDC_ARTWORKWIDTHSPIN            1020
 #define IDC_BALLOON                     1021
 #define IDC_PLAYLIST_FILTER_TYPE        1021
+#define IDC_INDENTATION_AMOUNT_SPIN     1021
 #define IDC_MCLICK                      1022
 #define IDC_GROUP_UP                    1022
 #define IDC_MCLICK3                     1023
@@ -260,7 +260,9 @@
 #define IDC_ALLOW_LOCKED_PANEL_RESIZING 1163
 #define IDC_GEN_COLOUR                  1164
 #define IDC_SHOWGROUPS                  1164
+#define IDC_INDENT_GROUPS               1164
 #define IDC_GEN_FONT                    1165
+#define IDC_USE_CUSTOM_INDENTATION      1165
 #define IDC_COLOUR_CODE                 1166
 #define IDC_TITLE1                      1168
 #define IDC_TITLE2                      1169
@@ -283,7 +285,9 @@
 #define IDC_ICON_PATH                   1189
 #define IDC_BUTTONS_H1                  1190
 #define IDC_BUTTON_OPTIONS_H2           1191
+#define IDC_INDENTATION_AMOUNT          1191
 #define IDC_TOOLBAR_OPTIONS_H1          1192
+#define IDC_H2_TITLE                    1192
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -293,7 +297,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1191
+#define _APS_NEXT_CONTROL_VALUE         1192
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

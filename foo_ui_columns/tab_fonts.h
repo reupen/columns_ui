@@ -33,5 +33,5 @@ public:
 
 private:
     bool initialising{false};
-    cui::prefs::PreferencesTabHelper m_helper{IDC_TITLE1};
+    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };

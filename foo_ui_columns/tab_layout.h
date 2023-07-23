@@ -103,7 +103,7 @@ private:
     size_t m_active_preset{};
     std::unordered_map<HTREEITEM, LayoutTabNode::ptr> m_node_map;
     LayoutTabNode::ptr m_node_root;
-    PreferencesTabHelper m_helper{IDC_TITLE1};
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
 
 } // namespace cui::prefs
