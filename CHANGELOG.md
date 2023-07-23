@@ -7,6 +7,13 @@
 - A playlist selector toolbar was added.
   [[#729](https://github.com/reupen/columns_ui/pull/729)]
 
+- Grouping in the built-in playlist view was updated
+  [[#770](https://github.com/reupen/columns_ui/pull/770)]:
+
+  - each group level is no longer indented
+  - padding either side of artwork was reduced
+  - artwork reflection is now disabled by default
+
 - The built-in playlist view now remembers vertical scroll positions of
   playlists after closing and reopening foobar2000, on foobar2000 2.0 and newer.
   [[#742](https://github.com/reupen/columns_ui/pull/742),

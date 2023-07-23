@@ -300,7 +300,7 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
     PlaylistViewGroup* group = item->get_group(group_count - 1);
 
     if (!group->m_artwork_load_attempted) {
-        const auto cx = get_group_info_area_width();
+        const auto cx = get_group_info_area_width() - 2 * get_artwork_left_right_padding();
         const auto cy = get_group_info_area_height();
 
         ArtworkCompletionNotify::ptr_t ptr = std::make_shared<ArtworkCompletionNotify>();
