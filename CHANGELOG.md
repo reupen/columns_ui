@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 2.1.0-beta.1
 
 ### Features
 
@@ -10,7 +10,7 @@
 - Grouping in the built-in playlist view was updated
   [[#770](https://github.com/reupen/columns_ui/pull/770)]:
 
-  - each group level is no longer indented
+  - each grouping level is no longer indented
   - padding either side of artwork was reduced
   - artwork reflection is now disabled by default
 
@@ -21,11 +21,11 @@
 
 - If the focused item in a non-active playlist changes, the built-in playlist
   view now scrolls to that focused item when the playlist is next activated.
-  [[#745](https://github.com/reupen/columns_ui/pull/745)]
+  [[#746](https://github.com/reupen/columns_ui/pull/746)]
 
 - In the playlist switcher and playlist tabs, when adding items to a playlist
   using drag and drop, the first new item added to the playlist is now focused.
-  [[#745](https://github.com/reupen/columns_ui/pull/745)]
+  [[#746](https://github.com/reupen/columns_ui/pull/746)]
 
 - The behaviour of Ctrl+Backspace and Ctrl+A was made consistent across edit
   controls that are part of Columns UI itself.
@@ -64,17 +64,11 @@
   dark mode when the themed scheme is active.
   [[#755](https://github.com/reupen/columns_ui/pull/755)]
 
-  Previously, changing the colour had no effect on the actual colour used or
-  shown in preferences. If you were using the themed or system colour schemes
-  and had ‘Use custom active item frame’ enabled, the colour of the focused item
-  frame may change after upgrading due to the saved custom colour now correctly
-  being used.
-
 - Inline editing in list views now always saves and exits when clicking outside
   the edit box. [[#769](https://github.com/reupen/columns_ui/pull/769)]
 
 - A problem causing a slight delay when starting playback of a track was worked
-  around. [[#765](https://github.com/reupen/columns_ui/pull/765)]
+  around. [[#766](https://github.com/reupen/columns_ui/pull/766)]
 
 - Tooltips in the buttons toolbar, seekbar and volume bar are now dark themed
   when dark mode is active.
