@@ -44,6 +44,9 @@
   foobar2000 2.0 and newer, as full metadata is always available on these
   versions. [[#734](https://github.com/reupen/columns_ui/pull/734)]
 
+- Dark menus were enabled on Windows 11 build 22631.
+  [[#771](https://github.com/reupen/columns_ui/pull/771)]
+
 ### Bug fixes
 
 - In the themed and system colour schemes, if ‘Use custom active item frame’ is
