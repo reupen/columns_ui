@@ -1,11 +1,18 @@
 # Change log
 
+## 2.1.0-beta.3
+
+### Bug fixes
+
+- Performance regressions in the playlist view during operations such as sorting
+  were fixed. [[#776](https://github.com/reupen/columns_ui/pull/776)]
+
 ## 2.1.0-beta.2
 
 ### Features
 
 - Indentation of grouping levels in the playlist view was made configurable.
-  [[#773](https://github.com/reupen/columns_ui/pull/773)]
+  [[#774](https://github.com/reupen/columns_ui/pull/774)]
 
   The default configuration matches the behaviour of Columns UI 2.0.0.
 
@@ -97,6 +104,10 @@
 - In the playlist tabs and tab stack panels, a small rendering glitch below the
   left and right scroll buttons when scrolling left and right with dark mode
   enabled was fixed. [[#737](https://github.com/reupen/columns_ui/pull/737)]
+
+### Internal changes
+
+- The component is now compiled with Visual Studio 2022 17.6.
 
 ## 2.0.0
 
