@@ -21,7 +21,7 @@ void PlaylistView::on_items_reordered(size_t playlist, const size_t* p_order, si
         return;
 
     clear_sort_column();
-    for (auto i : std::ranges::views::iota(size_t{}, p_count)) {
+    for (size_t i = 0; i < p_count; i++) {
         const size_t start = i;
         while (i < p_count && p_order[i] != i) {
             i++;
@@ -78,7 +78,7 @@ void PlaylistView::on_items_modified(size_t playlist, const bit_array& p_mask)
     clear_sort_column();
     const size_t count = m_playlist_api->activeplaylist_get_item_count();
 
-    for (auto i : std::ranges::views::iota(size_t{}, count)) {
+    for (size_t i = 0; i < count; i++) {
         const size_t start = i;
         while (i < count && p_mask[i]) {
             i++;
@@ -99,7 +99,7 @@ void PlaylistView::on_items_modified_fromplayback(
 
     const size_t count = m_playlist_api->activeplaylist_get_item_count();
 
-    for (auto i : std::ranges::views::iota(size_t{}, count)) {
+    for (size_t i = 0; i < count; i++) {
         const size_t start = i;
         while (i < count && p_mask[i]) {
             i++;
