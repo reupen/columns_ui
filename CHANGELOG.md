@@ -1,5 +1,12 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- The tab order of controls on the Grouping tab on the playlist view preferences
+  page was corrected. [[#781](https://github.com/reupen/columns_ui/pull/781)]
+
 ## 2.1.0-beta.3
 
 ### Bug fixes
