@@ -72,6 +72,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_INITDIALOG: {
         m_wnd = wnd;
         m_groups_list_view.create(wnd, {7, 105, 313, 140}, true);
+        SetWindowPos(m_groups_list_view.get_wnd(), GetDlgItem(wnd, IDC_H2_TITLE), 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 
         LOGFONT font{};
         GetObject(GetWindowFont(wnd), sizeof(font), &font);
