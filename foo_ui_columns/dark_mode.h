@@ -90,7 +90,7 @@ private:
 [[nodiscard]] bool are_private_apis_allowed();
 [[nodiscard]] bool is_native_dark_spin_available();
 
-enum class PreferredAppMode { System = 1, Dark = 2, Light = 3 };
+enum class PreferredAppMode : int { NotSet, System, Dark, Light };
 
 void set_app_mode(PreferredAppMode mode);
 void set_titlebar_mode(HWND wnd, bool is_dark);

@@ -191,7 +191,7 @@ void TabColours::update_scheme_combobox()
 
 void TabColours::update_title() const
 {
-    if (cui::dark::are_private_apis_allowed())
+    if (cui::dark::does_os_support_dark_mode())
         uSetDlgItemText(
             m_wnd, IDC_TITLE1, cui::colours::is_dark_mode_active() ? "Dark mode colours" : "Light mode colours");
 }
