@@ -7,7 +7,9 @@ namespace cui::status_bar {
 
 class StatusBarPlayCalllback : public play_callback_static {
 public:
-    enum { flags = flag_on_playback_all | flag_on_volume_change };
+    enum {
+        flags = flag_on_playback_all | flag_on_volume_change
+    };
 
     unsigned get_flags() override { return flags; }
 

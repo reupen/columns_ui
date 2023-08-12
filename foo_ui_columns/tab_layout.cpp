@@ -742,7 +742,14 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
             SendMessage(m_wnd_tree, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&ti));
             if (ti.hItem) {
-                enum { ID_REMOVE = 1, ID_MOVE_UP, ID_MOVE_DOWN, ID_COPY, ID_PASTE, ID_CHANGE_BASE };
+                enum {
+                    ID_REMOVE = 1,
+                    ID_MOVE_UP,
+                    ID_MOVE_DOWN,
+                    ID_COPY,
+                    ID_PASTE,
+                    ID_CHANGE_BASE
+                };
                 unsigned ID_INSERT_BASE = ID_CHANGE_BASE + 1;
                 HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti.hItem);
 

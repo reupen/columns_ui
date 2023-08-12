@@ -58,7 +58,9 @@ public:
         size_t index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const override;
     bool set_config_item(size_t index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
 
-    enum { stream_version_current = 0 };
+    enum {
+        stream_version_current = 0
+    };
 
     void set_config(stream_reader* config, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* out, abort_callback& p_abort) const override;

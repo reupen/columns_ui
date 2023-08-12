@@ -29,7 +29,9 @@ class PlaylistSwitcher
         ID_RECYCLER_BASE
     };
 
-    enum { TIMER_SWITCH = TIMER_BASE };
+    enum {
+        TIMER_SWITCH = TIMER_BASE
+    };
 
     class DropSource : public IDropSource {
         long refcount;

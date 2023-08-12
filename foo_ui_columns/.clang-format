@@ -36,7 +36,7 @@ AllowAllArgumentsOnNextLine: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortBlocksOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
-AllowShortEnumsOnASingleLine: true
+AllowShortEnumsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: Inline
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: All
@@ -133,8 +133,8 @@ InsertTrailingCommas: None
 IntegerLiteralSeparator:
   Binary: 0
   BinaryMinDigits: 0
-  Decimal: 0
-  DecimalMinDigits: 0
+  Decimal: 3
+  DecimalMinDigits: 5
   Hex: 0
   HexMinDigits: 0
 JavaScriptQuotes: Leave
@@ -168,7 +168,7 @@ QualifierAlignment: Leave
 ReferenceAlignment: Pointer
 ReflowComments: true
 RemoveBracesLLVM: false
-RemoveSemicolon: false
+RemoveSemicolon: true
 RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Leave

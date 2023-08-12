@@ -1054,7 +1054,14 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
                 //            int idx = hittest_item(px.x, px.y);
 
-                enum { ID_PLAY = 1, ID_CUT, ID_COPY, ID_PASTE, ID_SELECTION, ID_CUSTOM_BASE = 0x8000 };
+                enum {
+                    ID_PLAY = 1,
+                    ID_CUT,
+                    ID_COPY,
+                    ID_PASTE,
+                    ID_SELECTION,
+                    ID_CUSTOM_BASE = 0x8000
+                };
                 HMENU menu = CreatePopupMenu(); // LoadMenu(core_api::get_my_instance(),MAKEINTRESOURCE(IDR_TREEPOPUP));
 
                 service_ptr_t<contextmenu_manager> p_manager_context;

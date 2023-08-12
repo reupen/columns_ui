@@ -8,7 +8,10 @@
 extern cfg_int g_cur_tab;
 extern cfg_uint g_last_colour;
 
-enum { MSG_COLUMN_NAME_CHANGED = WM_USER + 2, MSG_SELECTION_CHANGED };
+enum {
+    MSG_COLUMN_NAME_CHANGED = WM_USER + 2,
+    MSG_SELECTION_CHANGED
+};
 struct ColumnTimes {
     service_ptr_t<titleformat_object> to_display;
     service_ptr_t<titleformat_object> to_colour;
@@ -192,7 +195,14 @@ void show_title_formatting_help_menu(HWND wnd, unsigned edit_ctrl_id)
     GetWindowRect(GetDlgItem(wnd, IDC_TFHELP), &rc);
     const HMENU menu = CreatePopupMenu();
 
-    enum { IDM_TFHELP = 1, IDM_STYLE_HELP, IDM_GLOBALS_HELP, IDM_SPEEDTEST, IDM_PREVIEW, IDM_EDITORFONT };
+    enum {
+        IDM_TFHELP = 1,
+        IDM_STYLE_HELP,
+        IDM_GLOBALS_HELP,
+        IDM_SPEEDTEST,
+        IDM_PREVIEW,
+        IDM_EDITORFONT
+    };
 
     uAppendMenu(menu, MF_STRING, IDM_TFHELP, "Title formatting &help");
     uAppendMenu(menu, MF_STRING, IDM_STYLE_HELP, "&Style script help");
@@ -688,7 +698,12 @@ void TabColumns::show_column(size_t index)
 
 bool TabColumns::on_column_list_contextmenu(const POINT& pt, bool from_keyboard)
 {
-    enum { ID_REMOVE = 1, ID_UP, ID_DOWN, ID_NEW };
+    enum {
+        ID_REMOVE = 1,
+        ID_UP,
+        ID_DOWN,
+        ID_NEW
+    };
     const auto item = m_columns_list_view.get_selected_item_single();
     const auto is_item_selected = item != std::numeric_limits<size_t>::max();
 

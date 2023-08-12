@@ -179,7 +179,11 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 
         if (process && m_last_rmb) {
             process = false;
-            enum { ID_DROP = 1, ID_NEW_PLAYLIST, ID_CANCEL };
+            enum {
+                ID_DROP = 1,
+                ID_NEW_PLAYLIST,
+                ID_CANCEL
+            };
 
             HMENU menu = CreatePopupMenu();
 

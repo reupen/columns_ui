@@ -100,7 +100,11 @@ fcl::dataset_factory<ToolbarLayoutDataSet> g_export_toolbars_t;
 } // namespace cui::rebar
 
 class MiscLayoutDataSet : public cui::fcl::dataset {
-    enum ItemID { identifier_status, identifier_status_pane, identifier_allow_locked_panel_resizing };
+    enum ItemID {
+        identifier_status,
+        identifier_status_pane,
+        identifier_allow_locked_panel_resizing
+    };
     void get_name(pfc::string_base& p_out) const override { p_out = "Misc layout"; }
     const GUID& get_group() const override { return cui::fcl::groups::layout; }
     const GUID& get_guid() const override

@@ -21,7 +21,9 @@ public:
 
     size_t get_panel_count() const override;
     uie::splitter_item_t* get_panel(size_t index) const override;
-    enum { stream_version_current = 0 };
+    enum {
+        stream_version_current = 0
+    };
 
     void set_config(stream_reader* config, size_t p_size, abort_callback& p_abort) override;
     void import_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
@@ -86,7 +88,9 @@ private:
     public:
         class PanelContainer : fbh::LowLevelMouseHookManager::HookCallback {
         public:
-            enum { MSG_AUTOHIDE_END = WM_USER + 2 };
+            enum {
+                MSG_AUTOHIDE_END = WM_USER + 2
+            };
 
             explicit PanelContainer(Panel* p_panel);
 

@@ -15,7 +15,9 @@ class PlaylistTabs
     : public uie::container_uie_window_v3_t<uie::splitter_window_v2>
     , public playlist_callback {
 public:
-    enum : uint32_t { MSG_RESET_SIZE_LIMITS = WM_USER + 3 };
+    enum : uint32_t {
+        MSG_RESET_SIZE_LIMITS = WM_USER + 3
+    };
     class WindowHost : public ui_extension::window_host {
     public:
         unsigned is_resize_supported(HWND wnd) const override;

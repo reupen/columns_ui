@@ -13,7 +13,9 @@ extern HWND g_status;
 extern bool g_icon_created;
 
 namespace statusbar_contextmenus {
-enum { ID_BASE = 1 };
+enum {
+    ID_BASE = 1
+};
 
 service_ptr_t<contextmenu_manager> g_main_nowplaying;
 } // namespace statusbar_contextmenus
@@ -290,7 +292,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CONTEXTMENU:
         if (g_status && (HWND)wp == g_status) {
             POINT pt = {(short)(LOWORD(lp)), (short)(HIWORD(lp))};
-            enum { ID_CUSTOM_BASE = 1 };
+            enum {
+                ID_CUSTOM_BASE = 1
+            };
             HMENU menu = CreatePopupMenu();
             service_ptr_t<contextmenu_manager> p_manager;
             contextmenu_manager::g_create(p_manager);
@@ -321,7 +325,11 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         } else if ((HWND)wp == rebar::g_rebar) {
             if (rebar::g_rebar_window) {
-                enum { IDM_LOCK = 1, IDM_CLOSE, IDM_BASE };
+                enum {
+                    IDM_LOCK = 1,
+                    IDM_CLOSE,
+                    IDM_BASE
+                };
 
                 ui_extension::window_info_list_simple moo;
 

@@ -11,7 +11,7 @@ enum ColourID {
     COLOUR_SELECTED_TEXT_NO_FOCUS,
     COLOUR_FRAME,
 };
-}
+} // namespace colours
 
 COLORREF get_default_colour(colours::ColourID index, bool themed = false);
 
@@ -40,8 +40,15 @@ void on_show_status_pane_change();
 void on_show_toolbars_change();
 
 namespace taskbar_buttons {
-enum { ID_FIRST = 667, ID_STOP = ID_FIRST, ID_PREV, ID_PLAY_OR_PAUSE, ID_NEXT, ID_RAND };
-}
+enum {
+    ID_FIRST = 667,
+    ID_STOP = ID_FIRST,
+    ID_PREV,
+    ID_PLAY_OR_PAUSE,
+    ID_NEXT,
+    ID_RAND
+};
+} // namespace taskbar_buttons
 
 namespace cui {
 class MainWindow {

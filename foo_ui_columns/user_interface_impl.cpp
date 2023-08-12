@@ -106,8 +106,8 @@ public:
     {
         return colours::colour_flag_background | colours::colour_flag_selection_background | colours::colour_flag_text;
     }
-    uint32_t get_supported_bools() const override { return 0; };
-    bool get_themes_supported() const override { return false; };
+    uint32_t get_supported_bools() const override { return 0; }
+    bool get_themes_supported() const override { return false; }
     void on_colour_changed(uint32_t changed_items_mask) const override
     {
         if (ui_config_manager_impl.is_valid())
@@ -123,7 +123,7 @@ public:
 class CoreConsoleFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return core_console_font_client_id; }
-    void get_name(pfc::string_base& p_out) const override { p_out = "Core: Console"; };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Core: Console"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
     void on_font_changed() const override
     {
@@ -135,7 +135,7 @@ public:
 class CoreDefaultFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return core_default_font_client_id; }
-    void get_name(pfc::string_base& p_out) const override { p_out = "Core: Default"; };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Core: Default"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
     void on_font_changed() const override
     {
@@ -147,7 +147,7 @@ public:
 class CoreListsFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return core_lists_font_client_id; }
-    void get_name(pfc::string_base& p_out) const override { p_out = "Core: List items"; };
+    void get_name(pfc::string_base& p_out) const override { p_out = "Core: List items"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
     void on_font_changed() const override
     {

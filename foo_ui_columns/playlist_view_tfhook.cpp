@@ -70,7 +70,7 @@ int date_to_julian(const SYSTEMTIME* st)
     if ((st->wYear % 4) && (!(st->wYear % 100) || (st->wYear % 400)))
         yeardays++;
 
-    return (year / 4 - year / 100 + year / 400) + (year * 365) + yeardays + day + 1721395 + 29;
+    return (year / 4 - year / 100 + year / 400) + (year * 365) + yeardays + day + 1'721'395 + 29;
 }
 
 bool DateTitleformatHook::process_field(
