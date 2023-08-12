@@ -295,7 +295,7 @@ void cui::MainWindow::set_dark_mode_attributes(bool is_update) const
 
     const auto is_dark = colours::is_dark_mode_active();
     dark::set_titlebar_mode(m_wnd, is_dark);
-    set_app_mode(is_dark ? dark::PreferredAppMode::Dark : dark::PreferredAppMode::Light);
+    dark::set_app_mode(is_dark ? dark::PreferredAppMode::Dark : dark::PreferredAppMode::Light);
 
     if (!is_update)
         return;

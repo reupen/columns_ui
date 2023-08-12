@@ -2,6 +2,12 @@
 
 ## Development version
 
+### Features
+
+- Dark menus were enabled on Windows 11 builds greater than 22631.
+  [[#788](https://github.com/reupen/columns_ui/pull/788), contributed by
+  [@razielanarki](https://github.com/razielanarki)]
+
 ### Bug fixes
 
 - The tab order of controls on the Grouping tab on the playlist view preferences

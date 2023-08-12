@@ -45,15 +45,7 @@ bool is_native_dark_spin_available()
 
 bool are_private_apis_allowed()
 {
-    OSVERSIONINFO osvi{};
-    osvi.dwOSVersionInfoSize = sizeof(osvi);
-#pragma warning(suppress : 4996)
-    GetVersionEx(&osvi);
-
-    if (osvi.dwMajorVersion != 10 || osvi.dwMinorVersion != 0)
-        return false;
-
-    return osvi.dwBuildNumber >= 19041 && osvi.dwBuildNumber <= 22631;
+    return does_os_support_dark_mode();
 }
 
 void set_app_mode(PreferredAppMode mode)
@@ -61,7 +53,7 @@ void set_app_mode(PreferredAppMode mode)
     if (!are_private_apis_allowed())
         return;
 
-    using SetPreferredAppModeProc = int(__stdcall*)(int);
+    using SetPreferredAppModeProc = PreferredAppMode(__stdcall*)(PreferredAppMode);
     using FlushMenuThemesProc = void(__stdcall*)();
 
     const wil::unique_hmodule uxtheme(THROW_LAST_ERROR_IF_NULL(LoadLibrary(L"uxtheme.dll")));
@@ -72,7 +64,7 @@ void set_app_mode(PreferredAppMode mode)
     const auto flush_menu_themes
         = reinterpret_cast<FlushMenuThemesProc>(GetProcAddress(uxtheme.get(), MAKEINTRESOURCEA(136)));
 
-    set_preferred_app_mode(WI_EnumValue(mode));
+    set_preferred_app_mode(mode);
     flush_menu_themes();
 }
 
