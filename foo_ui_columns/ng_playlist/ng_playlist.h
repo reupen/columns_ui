@@ -194,7 +194,9 @@ public:
 
     void reset() { abort_current_tasks(); }
 
-    enum { max_readers = 4 };
+    enum {
+        max_readers = 4
+    };
 
     void request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, int cx, int cy,
         COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify);
@@ -368,7 +370,9 @@ protected:
 
 private:
     static const GUID g_extension_guid;
-    enum { timer_date_change = TIMER_BASE };
+    enum {
+        timer_date_change = TIMER_BASE
+    };
 
     class PlaylistViewGroup : public Group {
     public:

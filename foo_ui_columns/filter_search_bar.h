@@ -62,13 +62,24 @@ private:
         void on_colour_changed(uint32_t mask) const override { s_update_colours(); }
     };
 
-    enum { id_edit = 668, id_toolbar };
+    enum {
+        id_edit = 668,
+        id_toolbar
+    };
 
-    enum { idc_clear = 1001, idc_favourite = 1002, msg_favourite_selected = WM_USER + 2 };
+    enum {
+        idc_clear = 1001,
+        idc_favourite = 1002,
+        msg_favourite_selected = WM_USER + 2
+    };
 
-    enum { TIMER_QUERY = 1001 };
+    enum {
+        TIMER_QUERY = 1001
+    };
 
-    enum { config_version_current = 0 };
+    enum {
+        config_version_current = 0
+    };
 
     static LRESULT WINAPI g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 

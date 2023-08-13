@@ -88,9 +88,13 @@ class FilterPanel
 public:
     FilterPanel() : ListViewPanelBase(std::make_unique<uih::lv::DefaultRenderer>(true)) {}
 
-    enum { TIMER_QUERY = TIMER_BASE };
+    enum {
+        TIMER_QUERY = TIMER_BASE
+    };
 
-    enum { config_version_current = 1 };
+    enum {
+        config_version_current = 1
+    };
 
     enum Action {
         action_send_to_autosend,

@@ -393,7 +393,13 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
             RECT rc;
             GetWindowRect(HWND(lp), &rc);
             HMENU menu = CreatePopupMenu();
-            enum { IDM_SET_MASK = 1, IDM_EXPORT, IDM_SAVE, IDM_LOAD, IDM_ADD };
+            enum {
+                IDM_SET_MASK = 1,
+                IDM_EXPORT,
+                IDM_SAVE,
+                IDM_LOAD,
+                IDM_ADD
+            };
 
             // AppendMenu(menu,MF_SEPARATOR,0,0);
             AppendMenu(menu, MF_STRING, IDM_LOAD, _T("Load from file..."));

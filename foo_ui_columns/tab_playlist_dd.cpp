@@ -26,7 +26,7 @@ public:
         case WM_INITDIALOG: {
             uih::enhance_edit_control(wnd, IDC_DROP_STRING);
             uih::enhance_edit_control(wnd, IDC_SWITCH_DELAY);
-            SendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETRANGE32, 0, 10000);
+            SendDlgItemMessage(wnd, IDC_SWITCH_SPIN, UDM_SETRANGE32, 0, 10'000);
 
             refresh_me(wnd);
             initialised = true;

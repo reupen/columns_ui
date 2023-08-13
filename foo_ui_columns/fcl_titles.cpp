@@ -30,7 +30,6 @@ class PlaylistViewColumnsDataSet : public fcl::dataset {
         identifier_show,
         identifier_edit_field,
         identifier_width_dpi
-
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Columns"; }
     const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }
@@ -170,13 +169,14 @@ class PlaylistViewGroupsDataSet : public fcl::dataset {
         identifier_artwork_reflection,*/
     };
 
-    enum GroupItemID { identifier_group };
+    enum GroupItemID {
+        identifier_group
+    };
 
     enum GroupSubItemID {
         identifier_script,
         identifier_playlist_filter_mode,
         identifier_playlist_filter_string,
-
     };
     void get_name(pfc::string_base& p_out) const override { p_out = "Groups"; }
     const GUID& get_group() const override { return fcl::groups::titles_playlist_view; }

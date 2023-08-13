@@ -226,7 +226,9 @@ public:
     void get_category(pfc::string_base& out) const override;
     unsigned get_type() const override;
 
-    enum { stream_version_current = 2 };
+    enum {
+        stream_version_current = 2
+    };
     void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
     bool have_config_popup() const override;
@@ -250,7 +252,9 @@ public:
     void on_volume_change(float p_new_val) override;
 
     // PL
-    enum { playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch };
+    enum {
+        playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch
+    };
     void on_playlist_switch() override;
     void on_item_focus_change(size_t p_from, size_t p_to) override;
 
@@ -390,7 +394,9 @@ public:
     service_ptr_t<ItemDetails> m_this;
     HWND m_wnd{};
 
-    enum { timer_id = 100 };
+    enum {
+        timer_id = 100
+    };
 
     ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign);
 

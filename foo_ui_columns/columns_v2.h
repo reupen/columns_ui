@@ -45,7 +45,6 @@ enum class ColumnStreamVersion {
     streamVersion0 = 0,
     streamVersion1 = 1,
     streamVersionCurrent = streamVersion1
-
 };
 
 class PlaylistViewColumn : public PlaylistViewColumnBase {

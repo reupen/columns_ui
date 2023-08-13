@@ -26,7 +26,9 @@ void g_compare_file_with_bytes(
         t_filesize bytes = p1->get_size(p_abort);
 
         if (bytes == p2.get_size()) {
-            enum { BUFSIZE = 1024 * 1024 };
+            enum {
+                BUFSIZE = 1024 * 1024
+            };
             auto size = (unsigned)(BUFSIZE < bytes ? BUFSIZE : bytes);
             pfc::array_t<uint8_t> temp, temp2;
             temp.set_size(size);

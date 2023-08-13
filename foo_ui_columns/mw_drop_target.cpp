@@ -43,7 +43,10 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(
 
     if (process && g_last_rmb) {
         process = false;
-        enum { ID_DROP = 1, ID_CANCEL };
+        enum {
+            ID_DROP = 1,
+            ID_CANCEL
+        };
 
         HMENU menu = CreatePopupMenu();
 

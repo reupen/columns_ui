@@ -1288,41 +1288,41 @@ bool PlaylistView::notify_on_keyboard_keydown_filter(UINT msg, WPARAM wp, LPARAM
     uie::window_ptr p_this = this;
     bool ret = get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp);
     return ret;
-};
+}
 bool PlaylistView::notify_on_keyboard_keydown_remove()
 {
     m_playlist_api->activeplaylist_undo_backup();
     m_playlist_api->activeplaylist_remove_selection();
     return true;
-};
+}
 
 bool PlaylistView::notify_on_keyboard_keydown_search()
 {
     return standard_commands::main_playlist_search();
-};
+}
 
 bool PlaylistView::notify_on_keyboard_keydown_undo()
 {
     m_playlist_api->activeplaylist_undo_restore();
     return true;
-};
+}
 bool PlaylistView::notify_on_keyboard_keydown_redo()
 {
     m_playlist_api->activeplaylist_redo_restore();
     return true;
-};
+}
 bool PlaylistView::notify_on_keyboard_keydown_cut()
 {
     return playlist_utils::cut();
-};
+}
 bool PlaylistView::notify_on_keyboard_keydown_copy()
 {
     return playlist_utils::copy();
-};
+}
 bool PlaylistView::notify_on_keyboard_keydown_paste()
 {
     return playlist_utils::paste_at_focused_item(get_wnd());
-};
+}
 
 size_t PlaylistView::storage_get_focus_item()
 {
@@ -1381,7 +1381,7 @@ void PlaylistView::execute_default_action(size_t index, size_t column, bool b_ke
     } else {
         m_playlist_api->activeplaylist_execute_default_action(index);
     }
-};
+}
 void PlaylistView::move_selection(int delta)
 {
     m_playlist_api->activeplaylist_undo_backup();

@@ -436,7 +436,9 @@ bool LayoutWindow::import_config_to_object(stream_reader* p_reader, size_t psize
 void LayoutWindow::export_config(
     stream_writer* p_out, uint32_t mode, pfc::list_base_t<GUID>& panels, abort_callback& p_abort)
 {
-    enum { stream_version = 0 };
+    enum {
+        stream_version = 0
+    };
     p_out->write_lendian_t((uint32_t)stream_version, p_abort);
     size_t count = cfg_layout.get_presets().get_count();
     p_out->write_lendian_t(gsl::narrow<uint32_t>(cfg_layout.get_active()), p_abort);
@@ -630,7 +632,15 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
 
     uie::window_info_list_simple panels;
     g_get_panels_info(supported_panels, panels);
-    enum { ID_REMOVE = 1, ID_SHOW_CAPTION, ID_LOCKED, ID_COPY, ID_PASTE_ADD, ID_PARENT_PASTE_INSERT, ID_CHANGE_BASE };
+    enum {
+        ID_REMOVE = 1,
+        ID_SHOW_CAPTION,
+        ID_LOCKED,
+        ID_COPY,
+        ID_PASTE_ADD,
+        ID_PARENT_PASTE_INSERT,
+        ID_CHANGE_BASE
+    };
 
     pfc::string8 temp;
     p_window->get_name(temp);

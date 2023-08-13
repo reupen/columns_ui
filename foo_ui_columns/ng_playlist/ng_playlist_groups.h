@@ -35,7 +35,9 @@ private:
 };
 
 class ConfigGroups : public cfg_var {
-    enum { stream_version_current = 1 };
+    enum {
+        stream_version_current = 1
+    };
 
 public:
     const pfc::list_base_const_t<Group>& get_groups() const { return m_groups; }

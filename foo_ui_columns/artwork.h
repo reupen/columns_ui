@@ -41,7 +41,9 @@ public:
     void on_playback_time(double p_time) override {}
     void on_volume_change(float p_new_val) override {}
 
-    enum { playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch };
+    enum {
+        playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch
+    };
     void on_playlist_switch() override;
     void on_item_focus_change(size_t p_from, size_t p_to) override {}
 
@@ -151,7 +153,9 @@ private:
     };
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;
-    enum { current_stream_version = 3 };
+    enum {
+        current_stream_version = 3
+    };
 
     void set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;

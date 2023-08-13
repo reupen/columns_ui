@@ -3,7 +3,9 @@
 
 class MainWindowPlayCallback : public play_callback_static {
 public:
-    enum { flags = flag_on_playback_all };
+    enum {
+        flags = flag_on_playback_all
+    };
 
     unsigned get_flags() override { return flags; }
     void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}

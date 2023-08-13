@@ -25,7 +25,7 @@ bool check_windows_10_build(DWORD build_number)
 
 bool is_windows_11_rtm_or_newer()
 {
-    static auto is_22000_or_newer = check_windows_10_build(22000);
+    static auto is_22000_or_newer = check_windows_10_build(22'000);
     return is_22000_or_newer;
 }
 
@@ -33,14 +33,14 @@ bool is_windows_11_rtm_or_newer()
 
 bool does_os_support_dark_mode()
 {
-    static auto is_19041_or_newer = check_windows_10_build(19041);
+    static auto is_19041_or_newer = check_windows_10_build(19'041);
     return is_19041_or_newer;
 }
 
 bool is_native_dark_spin_available()
 {
     // Earliest known build number – exact build number unknown.
-    return check_windows_10_build(22579);
+    return check_windows_10_build(22'579);
 }
 
 bool are_private_apis_allowed()

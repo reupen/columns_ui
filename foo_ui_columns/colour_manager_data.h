@@ -2,7 +2,12 @@
 
 namespace cui::colours {
 
-enum ColourScheme { ColourSchemeGlobal, ColourSchemeSystem, ColourSchemeThemed, ColourSchemeCustom };
+enum ColourScheme {
+    ColourSchemeGlobal,
+    ColourSchemeSystem,
+    ColourSchemeThemed,
+    ColourSchemeCustom
+};
 
 struct ColourSet {
     ColourScheme colour_scheme{};
@@ -52,7 +57,9 @@ public:
 class ColourManagerData : public cfg_var {
 public:
     static const GUID g_cfg_guid;
-    enum { cfg_version = 0 };
+    enum {
+        cfg_version = 0
+    };
     void get_data_raw(stream_writer* p_stream, abort_callback& p_abort) override;
     void set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort) override;
 

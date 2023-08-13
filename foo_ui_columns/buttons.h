@@ -8,11 +8,23 @@ namespace cui::toolbars::buttons {
 
 class ButtonsToolbar : public uie::container_uie_window_v3 {
 public:
-    enum class ConfigVersion { VERSION_1, VERSION_2, VERSION_CURRENT = VERSION_2 };
-    enum class FCBVersion { VERSION_1, VERSION_2, VERSION_3, VERSION_CURRENT = VERSION_3 };
+    enum class ConfigVersion {
+        VERSION_1,
+        VERSION_2,
+        VERSION_CURRENT = VERSION_2
+    };
+    enum class FCBVersion {
+        VERSION_1,
+        VERSION_2,
+        VERSION_3,
+        VERSION_CURRENT = VERSION_3
+    };
 
     /** For config dialog */
-    enum { MSG_BUTTON_CHANGE = WM_USER + 2, MSG_COMMAND_CHANGE = WM_USER + 3 };
+    enum {
+        MSG_BUTTON_CHANGE = WM_USER + 2,
+        MSG_COMMAND_CHANGE = WM_USER + 3
+    };
 
     enum class IconSize : int32_t {
         Automatic,
@@ -80,7 +92,11 @@ public:
         I_CUSTOM_BUTTON_MASK_COLOUR = 11
     };
 
-    enum ImageIdentifier { IMAGE_NAME, IMAGE_DATA, IMAGE_PATH };
+    enum ImageIdentifier {
+        IMAGE_NAME,
+        IMAGE_DATA,
+        IMAGE_PATH
+    };
 
     enum class CustomImageContentType {
         Ico,
@@ -163,7 +179,7 @@ public:
         bool load(std::optional<std::reference_wrapper<Button::CustomImage>> custom_image,
             const service_ptr_t<uie::button>& button_ptr, COLORREF colour_btnface, int width, int height);
         unsigned add_to_imagelist(HIMAGELIST iml);
-        [[nodiscard]] std::optional<std::tuple<int, int>> get_size() const { return m_bitmap_source_size; };
+        [[nodiscard]] std::optional<std::tuple<int, int>> get_size() const { return m_bitmap_source_size; }
 
     private:
         bool load_custom_image(const Button::CustomImage& custom_image, int width, int height);

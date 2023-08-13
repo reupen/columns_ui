@@ -588,7 +588,9 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_CONTEXTMENU: {
-        enum { IDM_BASE = 1 };
+        enum {
+            IDM_BASE = 1
+        };
 
         POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         if (pt.x == -1 && pt.y == -1)

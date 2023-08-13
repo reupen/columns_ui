@@ -106,7 +106,9 @@ public:
     void get_category(pfc::string_base& out) const override;
     unsigned get_type() const override;
 
-    enum { config_version_current = 5 };
+    enum {
+        config_version_current = 5
+    };
     void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 

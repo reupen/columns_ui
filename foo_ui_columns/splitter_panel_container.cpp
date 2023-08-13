@@ -245,7 +245,14 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
 
         break;
     case WM_CONTEXTMENU: {
-        enum { IDM_CLOSE = 1, IDM_MOVE_UP, IDM_MOVE_DOWN, IDM_LOCK, IDM_CAPTION, IDM_BASE };
+        enum {
+            IDM_CLOSE = 1,
+            IDM_MOVE_UP,
+            IDM_MOVE_DOWN,
+            IDM_LOCK,
+            IDM_CAPTION,
+            IDM_BASE
+        };
 
         POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         if (pt.x == -1 && pt.y == -1)

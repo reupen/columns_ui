@@ -9,7 +9,9 @@ namespace cui {
 namespace {
 
 class ColoursDataSet : public fcl::dataset {
-    enum { stream_version = 0 };
+    enum {
+        stream_version = 0
+    };
     void get_name(pfc::string_base& p_out) const override { p_out = "Colours (unified)"; }
     const GUID& get_group() const override { return fcl::groups::colours_and_fonts; }
     const GUID& get_guid() const override

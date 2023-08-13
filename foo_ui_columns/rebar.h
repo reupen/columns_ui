@@ -44,7 +44,11 @@ public:
 
 class ConfigRebar : public cfg_var {
 private:
-    enum class StreamVersion : uint32_t { Version0 = 0, Version1 = 1, VersionCurrent = Version1 };
+    enum class StreamVersion : uint32_t {
+        Version0 = 0,
+        Version1 = 1,
+        VersionCurrent = Version1
+    };
 
     std::vector<RebarBandState> m_entries;
 

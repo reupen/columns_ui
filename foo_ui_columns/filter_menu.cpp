@@ -68,7 +68,9 @@ void FilterPanel::notify_on_menu_select(WPARAM wp, LPARAM lp)
 bool FilterPanel::notify_on_contextmenu(const POINT& pt, bool from_keyboard)
 {
     uie::window_ptr p_this_temp = this;
-    enum { ID_BASE = action_add_to_active + 2 };
+    enum {
+        ID_BASE = action_add_to_active + 2
+    };
     metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
     handles.prealloc(m_nodes.get_count());
     get_selection_handles(handles, true, true);

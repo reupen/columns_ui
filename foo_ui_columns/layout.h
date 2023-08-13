@@ -42,7 +42,9 @@ public:
     explicit ConfigLayout(const GUID& p_guid);
 
 private:
-    enum { stream_version_current = 0 };
+    enum {
+        stream_version_current = 0
+    };
 
     pfc::list_t<Preset> m_presets;
 
@@ -55,7 +57,10 @@ class LayoutWindow
     : public uie::container_window_v3
     , private uih::MessageHook {
 public:
-    enum { MSG_LAYOUT_SET_FOCUS = WM_USER + 2, MSG_EDIT_PANEL };
+    enum {
+        MSG_LAYOUT_SET_FOCUS = WM_USER + 2,
+        MSG_EDIT_PANEL
+    };
 
     static void g_get_default_presets(pfc::list_t<ConfigLayout::Preset>& p_out);
 
