@@ -8,10 +8,19 @@
   [[#788](https://github.com/reupen/columns_ui/pull/788), contributed by
   [@razielanarki](https://github.com/razielanarki)]
 
+### Internal changes
+
+- The component is now compiled using foobar2000 SDK 2023-05-10.
+  [[#799](https://github.com/reupen/columns_ui/pull/799)]
+
 ### Bug fixes
 
 - The tab order of controls on the Grouping tab on the playlist view preferences
   page was corrected. [[#781](https://github.com/reupen/columns_ui/pull/781)]
+
+- A problem where 'UnregisterClass failed: Class does not exist.' was logged to
+  the console when quitting foobar2000 was fixed.
+  [[#802](https://github.com/reupen/columns_ui/pull/802)]
 
 ## 2.1.0-beta.3
 
