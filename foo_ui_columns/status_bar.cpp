@@ -147,10 +147,14 @@ void regenerate_text()
 
 void destroy_window()
 {
+    if (volume_popup_window.get_wnd())
+        volume_popup_window.destroy();
+
     if (g_status) {
         DestroyWindow(g_status);
         g_status = nullptr;
     }
+
     state.reset();
 }
 
