@@ -22,6 +22,9 @@
   the console when quitting foobar2000 was fixed.
   [[#802](https://github.com/reupen/columns_ui/pull/802)]
 
+- The copyright year was updated.
+  [[#803](https://github.com/reupen/columns_ui/pull/803)]
+
 ## 2.1.0-beta.3
 
 ### Bug fixes

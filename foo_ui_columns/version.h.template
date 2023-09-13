@@ -1,9 +1,10 @@
 #pragma once
 
 // Note that version.h is automatically generated from version.h.template
-// by the pre-build script scripts\pre-build.ps1
+// by the pre-build script scripts\pre-build.py
 
 #define CUI_COMPILATION_DATE "${{ Date }}"
+#define CUI_COMPILATION_YEAR "${{ Year }}"
 
 namespace cui {
 
