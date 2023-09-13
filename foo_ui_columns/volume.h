@@ -272,7 +272,7 @@ public:
             }
         } break;
         case WM_CLOSE:
-            DestroyWindow(wnd);
+            destroy();
             return 0;
         case WM_ACTIVATE: {
             if (b_popup) {
