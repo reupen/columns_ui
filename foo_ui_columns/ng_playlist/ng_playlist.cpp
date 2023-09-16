@@ -372,7 +372,7 @@ void PlaylistView::on_artwork_width_change()
     set_group_info_area_size();
 }
 
-void PlaylistView::g_flush_artwork(bool b_redraw, const PlaylistView* p_skip)
+void PlaylistView::s_flush_artwork(bool b_redraw, const PlaylistView* p_skip)
 {
     for (auto& window : g_windows) {
         if (window != p_skip) {
@@ -409,7 +409,7 @@ void PlaylistView::g_on_group_header_font_change()
     for (auto& window : g_windows)
         window->set_group_font(&lf);
 }
-void PlaylistView::g_update_all_items()
+void PlaylistView::s_update_all_items()
 {
     for (auto& window : g_windows)
         window->update_all_items();
@@ -1467,8 +1467,10 @@ PlaylistViewGroupFontClient::factory<PlaylistViewGroupFontClient> g_font_group_h
 void ColoursClient::on_colour_changed(uint32_t mask) const
 {
     if (cfg_show_artwork && cfg_artwork_reflection && (mask & (colours::colour_flag_background)))
-        PlaylistView::g_flush_artwork();
-    PlaylistView::g_update_all_items();
+        PlaylistView::s_flush_artwork();
+
+    PlaylistView::s_update_all_items();
+    PlaylistView::s_redraw_all();
 }
 
 void ColoursClient::on_bool_changed(uint32_t mask) const

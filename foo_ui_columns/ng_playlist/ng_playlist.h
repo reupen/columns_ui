@@ -332,12 +332,12 @@ public:
     static void s_on_group_indentation_amount_change();
     static void g_on_columns_change();
     static void g_on_column_widths_change(const PlaylistView* p_skip = nullptr);
-    static void g_update_all_items();
+    static void s_update_all_items();
     static void g_on_autosize_change();
     static void g_on_show_artwork_change();
     static void g_on_alternate_selection_change();
     static void g_on_artwork_width_change(const PlaylistView* p_skip = nullptr);
-    static void g_flush_artwork(bool b_redraw = false, const PlaylistView* p_skip = nullptr);
+    static void s_flush_artwork(bool b_redraw = false, const PlaylistView* p_skip = nullptr);
     static void g_on_vertical_item_padding_change();
     static void g_on_show_header_change();
     static void g_on_playback_follows_cursor_change(bool b_val);

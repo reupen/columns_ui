@@ -15,6 +15,11 @@
 
 ### Bug fixes
 
+- A bug where the empty area at the bottom of a playlist view with a small
+  number of items did not immediately update after changing the background
+  colour in preferences was fixed.
+  [[#804](https://github.com/reupen/columns_ui/pull/804)]
+
 - The tab order of controls on the Grouping tab on the playlist view preferences
   page was corrected. [[#781](https://github.com/reupen/columns_ui/pull/781)]
 

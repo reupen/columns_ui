@@ -376,7 +376,7 @@ class PlaylistViewMiscDataSet : public fcl::dataset {
         PlaylistView::g_on_autosize_change();
         PlaylistView::g_on_vertical_item_padding_change();
         PlaylistView::g_on_show_header_change();
-        PlaylistView::g_update_all_items();
+        PlaylistView::s_update_all_items();
     }
 };
 
