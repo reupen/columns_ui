@@ -75,7 +75,7 @@ public:
         case WM_DESTROY: {
             g_editor_font_notify.release();
             save_string(wnd);
-            cui::panels::playlist_view::PlaylistView::g_update_all_items();
+            cui::panels::playlist_view::PlaylistView::s_update_all_items();
         } break;
 
         case WM_COMMAND:
@@ -133,7 +133,7 @@ public:
                     cfg_colour = default_global_style_script;
                     if (g_cur_tab2 == 1)
                         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
-                    cui::panels::playlist_view::PlaylistView::g_update_all_items();
+                    cui::panels::playlist_view::PlaylistView::s_update_all_items();
                 }
             }
 
@@ -143,7 +143,7 @@ public:
                 break;
             case IDC_APPLY:
                 save_string(wnd);
-                cui::panels::playlist_view::PlaylistView::g_update_all_items();
+                cui::panels::playlist_view::PlaylistView::s_update_all_items();
                 break;
             case IDC_PICK_COLOUR:
                 colour_code_gen(wnd, IDC_COLOUR, false, false);
