@@ -23,6 +23,10 @@
 - The tab order of controls on the Grouping tab on the playlist view preferences
   page was corrected. [[#781](https://github.com/reupen/columns_ui/pull/781)]
 
+- A problem where messages containing 'Unsupported format or corrupted file'
+  were logged to the console when adding a new playlist view panel to the layout
+  was fixed. [[#806](https://github.com/reupen/columns_ui/pull/806)]
+
 - A problem where 'UnregisterClass failed: Class does not exist.' was logged to
   the console when quitting foobar2000 was fixed.
   [[#802](https://github.com/reupen/columns_ui/pull/802)]
