@@ -40,6 +40,9 @@ void PlaylistView::get_config(stream_writer* p_writer, abort_callback& p_abort) 
 
 void PlaylistView::set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort)
 {
+    if (p_size == 0)
+        return;
+
     const auto version = p_reader->read_lendian_t<uint16_t>(p_abort);
 
     if (version > STREAM_VERSION)
