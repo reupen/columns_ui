@@ -537,7 +537,14 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                   RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
                   RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
               });
-    } break;
+
+        m_get_message_hook_token = uih::register_message_hook(
+            uih::MessageHookType::type_get_message, [this, wnd](int code, WPARAM wp, LPARAM lp) -> bool {
+                helpers::handle_tabs_ctrl_tab(reinterpret_cast<LPMSG>(lp), wnd, m_wnd_tabs);
+                return false;
+            });
+        break;
+    }
     case WM_KEYDOWN: {
         if (wp != VK_LEFT && wp != VK_RIGHT && get_host()->get_keyboard_shortcuts_enabled()
             && g_process_keydown_keyboard_shortcuts(wp))
@@ -553,6 +560,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return 0;
         break;
     case WM_DESTROY:
+        m_get_message_hook_token.reset();
         m_dark_mode_notifier.reset();
         std::erase(g_windows, this);
         destroy_children();
@@ -654,24 +662,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case 2345:
             switch (((LPNMHDR)lp)->code) {
             case TCN_SELCHANGE:
-                on_active_tab_changed(TabCtrl_GetCurSel(m_wnd_tabs));
-                if (*m_active_tab && *m_active_tab < m_active_panels.get_count() && GetFocus() != m_wnd_tabs) {
-                    HWND wnd_root = GetAncestor(m_wnd_tabs, GA_ROOT);
-                    HWND wnd_focus = nullptr;
-                    if (wnd_root) {
-                        wnd_focus = m_active_panels[*m_active_tab]->m_wnd;
-                        if (!(GetWindowLongPtr(wnd_focus, GWL_STYLE) & WS_TABSTOP))
-                            wnd_focus = GetNextDlgTabItem(wnd_root, m_wnd_tabs, FALSE);
-                        if (wnd_focus
-                            && (IsChild(m_active_panels[*m_active_tab]->m_wnd, wnd_focus)
-                                || m_active_panels[*m_active_tab]->m_wnd == wnd_focus))
-                            SetFocus(wnd_focus);
-                        else
-                            wnd_focus = nullptr;
-                    }
-                    if (!wnd_focus)
-                        SetFocus(m_wnd_tabs);
-                }
+                on_active_tab_changed(TabCtrl_GetCurSel(m_wnd_tabs), true);
                 break;
             }
             break;
@@ -683,7 +674,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void TabStackPanel::show_tab_window(HWND wnd)
 {
-    assert(!m_active_child_wnd);
+    assert(!m_active_child_wnd || wnd == m_active_child_wnd);
     m_active_child_wnd = wnd;
     ShowWindow(wnd, SW_SHOWNORMAL);
 }
@@ -938,8 +929,12 @@ void TabStackPanel::on_size_changed()
     on_size_changed(wil::rect_width(rc), wil::rect_height(rc));
 }
 
-void TabStackPanel::on_active_tab_changed(int signed_index_to)
+void TabStackPanel::on_active_tab_changed(int signed_index_to, bool from_interaction)
 {
+    const auto wnd_focus = GetFocus();
+    const auto was_child_focused
+        = wnd_focus && (wnd_focus == m_active_child_wnd || IsChild(m_active_child_wnd, wnd_focus));
+
     hide_tab_window();
     m_active_tab.reset();
 
@@ -956,6 +951,36 @@ void TabStackPanel::on_active_tab_changed(int signed_index_to)
         if (found_index != std::numeric_limits<size_t>::max())
             m_active_tab = found_index;
     }
+
+    if (!m_active_tab || wnd_focus == m_wnd_tabs || (!from_interaction && !was_child_focused))
+        return;
+
+    const HWND wnd_root = GetAncestor(m_wnd_tabs, GA_ROOT);
+
+    if (!wnd_root)
+        return;
+
+    const auto wnd_child = m_panels[*m_active_tab]->m_wnd;
+
+    HWND wnd_new_focus = wnd_child;
+
+    if (!(GetWindowLongPtr(wnd_new_focus, GWL_STYLE) & WS_TABSTOP))
+        wnd_new_focus = GetNextDlgTabItem(wnd_new_focus, wnd_new_focus, FALSE);
+
+    const auto should_focus = [=] {
+        if (!wnd_new_focus)
+            return false;
+
+        if (wnd_child != wnd_new_focus && !IsChild(wnd_child, wnd_new_focus))
+            return false;
+
+        return (GetWindowLongPtr(wnd_new_focus, GWL_STYLE) & WS_TABSTOP) != 0;
+    }();
+
+    if (should_focus)
+        SetFocus(wnd_new_focus);
+    else
+        SetFocus(m_wnd_tabs);
 }
 
 LRESULT WINAPI TabStackPanel::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)

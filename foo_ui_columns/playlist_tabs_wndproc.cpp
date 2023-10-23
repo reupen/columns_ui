@@ -57,6 +57,12 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                   RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
                   RedrawWindow(wnd_tabs, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
               });
+
+        m_get_message_hook_token = uih::register_message_hook(
+            uih::MessageHookType::type_get_message, [wnd, this](int code, WPARAM wp, LPARAM lp) -> bool {
+                helpers::handle_tabs_ctrl_tab(reinterpret_cast<LPMSG>(lp), wnd, wnd_tabs);
+                return false;
+            });
         break;
     }
     case WM_SHOWWINDOW: {
@@ -80,6 +86,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
         return 0;
     case WM_DESTROY: {
+        m_get_message_hook_token.reset();
         m_dark_mode_notifier.reset();
         playlist_manager::get()->unregister_callback(this);
         destroy_child();

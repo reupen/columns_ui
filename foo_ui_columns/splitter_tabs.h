@@ -132,7 +132,7 @@ public:
     static void g_on_font_change();
     void on_size_changed(unsigned width, unsigned height);
     void on_size_changed();
-    void on_active_tab_changed(int index_to);
+    void on_active_tab_changed(int index_to, bool from_interaction = false);
 
     TabStackPanel() = default;
 
@@ -148,6 +148,7 @@ private:
     int32_t m_mousewheel_delta{NULL};
     wil::unique_hfont g_font;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
+    std::unique_ptr<uih::EventToken> m_get_message_hook_token;
 };
 
 } // namespace cui::panels::tab_stack
