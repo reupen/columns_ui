@@ -31,4 +31,6 @@ std::vector<HWND> get_child_windows(HWND wnd, std::function<bool(HWND)> filter =
 pfc::string8 get_last_win32_error_message();
 bool open_web_page(HWND wnd, const wchar_t* url);
 void clip_minmaxinfo(MINMAXINFO& mmi);
+void handle_tabs_ctrl_tab(MSG* msg, HWND wnd_container, HWND wnd_tabs);
+
 } // namespace cui::helpers

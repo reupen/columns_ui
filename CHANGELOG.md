@@ -4,14 +4,23 @@
 
 ### Features
 
+- Ctrl+Tab and Shift+Ctrl+Tab can now be used in Tab stack and Playlist tabs to
+  switch to the next and previous tab respectively.
+  [[#817](https://github.com/reupen/columns_ui/pull/817)]
+
+### Bug fixes
+
+- When switching tabs, the Tab stack panel now updates the keyboard focus to the
+  first focusable element in the new tab.
+  [[#817](https://github.com/reupen/columns_ui/pull/817)]
+
+## v2.1.0
+
+### Features
+
 - Dark menus were enabled on Windows 11 builds greater than 22631.
   [[#788](https://github.com/reupen/columns_ui/pull/788), contributed by
   [@razielanarki](https://github.com/razielanarki)]
-
-### Internal changes
-
-- The component is now compiled using foobar2000 SDK 2023-05-10.
-  [[#799](https://github.com/reupen/columns_ui/pull/799)]
 
 ### Bug fixes
 
@@ -33,6 +42,13 @@
 
 - The copyright year was updated.
   [[#803](https://github.com/reupen/columns_ui/pull/803)]
+
+### Internal changes
+
+- The component is now compiled using foobar2000 SDK 2023-05-10.
+  [[#799](https://github.com/reupen/columns_ui/pull/799)]
+
+- The component is now compiled with Visual Studio 2022 17.7.
 
 ## 2.1.0-beta.3
 

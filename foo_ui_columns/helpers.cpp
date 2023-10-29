@@ -170,4 +170,75 @@ void clip_minmaxinfo(MINMAXINFO& mmi)
     mmi.ptMaxTrackSize.x = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
 }
 
+namespace {
+
+bool is_tab_control(HWND wnd)
+{
+    std::array<wchar_t, 256> class_name{};
+    RealGetWindowClass(wnd, class_name.data(), gsl::narrow<UINT>(class_name.size()));
+    return wcsncmp(class_name.data(), WC_TABCONTROL, class_name.size()) == 0;
+}
+
+HWND find_parent_tab_control(HWND child, HWND root)
+{
+    if (is_tab_control(child))
+        return child;
+
+    HWND wnd = child;
+
+    while (wnd != root) {
+        HWND next = wnd;
+        while ((next = GetWindow(next, GW_HWNDNEXT))) {
+            if (is_tab_control(next)) {
+                return next;
+            }
+        }
+
+        wnd = GetAncestor(wnd, GA_PARENT);
+    }
+
+    return nullptr;
+}
+
+} // namespace
+
+void handle_tabs_ctrl_tab(MSG* msg, HWND wnd_container, HWND wnd_tabs)
+{
+    if (msg->message != WM_KEYDOWN || msg->wParam != VK_TAB)
+        return;
+
+    if (msg->hwnd != wnd_container && !IsChild(wnd_container, msg->hwnd))
+        return;
+
+    if ((GetKeyState(VK_CONTROL) & 0x8000) == 0)
+        return;
+
+    const auto closest_tab_control = find_parent_tab_control(msg->hwnd, wnd_container);
+
+    if (closest_tab_control && closest_tab_control != wnd_tabs)
+        return;
+
+    // Don't bother with sending and checking WM_GETDLGCODE – too many false positives
+
+    msg->message = WM_NULL;
+    msg->lParam = 0;
+    msg->wParam = 0;
+
+    const auto index = TabCtrl_GetCurSel(wnd_tabs);
+    const auto count = TabCtrl_GetItemCount(wnd_tabs);
+
+    if (count == 0)
+        return;
+
+    const auto new_index = [=] {
+        if (GetKeyState(VK_SHIFT) & 0x8000)
+            return index <= 0 ? count - 1 : index - 1;
+
+        return index < 0 || index + 1 == count ? 0 : index + 1;
+    }();
+
+    if (index != new_index)
+        TabCtrl_SetCurFocus(wnd_tabs, new_index);
+}
+
 } // namespace cui::helpers
