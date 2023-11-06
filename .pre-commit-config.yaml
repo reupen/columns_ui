@@ -35,7 +35,7 @@ repos:
       - id: prettier
         types_or: [json, markdown, yaml]
   - repo: https://github.com/pre-commit/mirrors-clang-format
-    rev: v17.0.3
+    rev: v17.0.4
     hooks:
       - id: clang-format
         types_or: [c++]
