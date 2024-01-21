@@ -244,6 +244,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         }
     } break;
+    case WM_DISPLAYCHANGE:
+        RedrawWindow(wnd, nullptr, nullptr, RDW_ALLCHILDREN | RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
+        break;
     case WM_ACTIVATE: {
         if ((LOWORD(wp) == WA_INACTIVE)) {
             if (!uih::are_keyboard_cues_enabled())
