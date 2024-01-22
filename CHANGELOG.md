@@ -14,6 +14,14 @@
   first focusable element in the new tab.
   [[#817](https://github.com/reupen/columns_ui/pull/817)]
 
+- A Windows bug causing visual glitches after running a full-screen game with
+  certain monitor configurations was worked around.
+  [[#843](https://github.com/reupen/columns_ui/pull/843)]
+
+### Internal changes
+
+- The component is now compiled with Visual Studio 2022 17.8.
+
 ## v2.1.0
 
 ### Features
