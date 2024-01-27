@@ -807,6 +807,9 @@ LRESULT RebarWindow::handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM
         uih::paint_subclassed_window_with_buffering(wnd, m_rebar_wnd_proc);
         return 0;
     }
+    case WM_THEMECHANGED:
+        on_themechanged();
+        break;
     }
     return CallWindowProc(m_rebar_wnd_proc, wnd, msg, wp, lp);
 }
