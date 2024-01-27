@@ -69,6 +69,7 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         break;
     case WM_THEMECHANGED:
         reopen_theme();
+        RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE);
         break;
     case WM_DESTROY:
         m_dark_mode_notifier.reset();

@@ -775,6 +775,7 @@ void PlaylistView::notify_on_initialisation()
     refresh_columns();
     refresh_groups();
 }
+
 void PlaylistView::notify_on_create()
 {
     pfc::hires_timer timer;

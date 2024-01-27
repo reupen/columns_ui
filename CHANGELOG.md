@@ -18,6 +18,9 @@
   certain monitor configurations was worked around.
   [[#843](https://github.com/reupen/columns_ui/pull/843)]
 
+- Support for high contrast themes on recent versions of Windows was improved.
+  [[#847](https://github.com/reupen/columns_ui/pull/847)]
+
 ### Internal changes
 
 - The component is now compiled with Visual Studio 2022 17.8.

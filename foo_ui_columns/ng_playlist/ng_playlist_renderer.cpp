@@ -36,11 +36,16 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
 {
     colours::helper p_helper(ColoursClient::g_guid);
 
+    const auto calculated_use_highlight = b_highlight && !context.m_is_high_contrast_active;
+
     int theme_state = NULL;
-    if (b_selected)
-        theme_state = (b_highlight ? LISS_HOTSELECTED : (b_window_focused ? LISS_SELECTED : LISS_SELECTEDNOTFOCUS));
-    else if (b_highlight)
+
+    if (b_selected) {
+        theme_state = (calculated_use_highlight ? LISS_HOTSELECTED
+                                                : (b_window_focused ? LISS_SELECTED : LISS_SELECTEDNOTFOCUS));
+    } else if (calculated_use_highlight) {
         theme_state = LISS_HOT;
+    }
 
     bool b_theme_enabled = p_helper.get_themed();
     // NB Third param of IsThemePartDefined "must be 0". But this works.
