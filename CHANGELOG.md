@@ -8,6 +8,10 @@
   switch to the next and previous tab respectively.
   [[#817](https://github.com/reupen/columns_ui/pull/817)]
 
+- A command was added to the Artwork view context menu to open the displayed
+  image in the foobar2000 picture viewer (requires foobar2000 1.6.2 or newer).
+  [[#849](https://github.com/reupen/columns_ui/pull/849)]
+
 ### Bug fixes
 
 - When switching tabs, the Tab stack panel now updates the keyboard focus to the
