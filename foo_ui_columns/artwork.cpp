@@ -64,6 +64,12 @@ void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) 
 
 void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
+    if (is_core_image_viewer_available()) {
+        p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Open in pop-up viewer",
+            "Opens the image in the foobar2000 picture viewer.", 0,
+            [this, self = ptr{this}] { open_core_image_viewer(); })));
+    }
+
     p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node(
         "Reload artwork", "Reloads the currently displayed artwork.", 0, [this, self = ptr{this}] {
             flush_image();
@@ -340,6 +346,29 @@ void ArtworkPanel::force_reload_artwork()
         if (m_artwork_loader)
             m_artwork_loader->reset();
     }
+}
+
+bool ArtworkPanel::is_core_image_viewer_available() const
+{
+    if (fb2k::imageViewer::ptr api; !fb2k::imageViewer::tryGet(api)) {
+        return false;
+    }
+
+    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const album_art_data_ptr data = m_artwork_loader->get_image(artwork_type_id);
+
+    return data.is_valid();
+}
+
+void ArtworkPanel::open_core_image_viewer() const
+{
+    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const album_art_data_ptr data = m_artwork_loader->get_image(artwork_type_id);
+
+    if (!data.is_valid())
+        return;
+
+    fb2k::imageViewer::get()->show(GetParent(get_wnd()), data);
 }
 
 void ArtworkPanel::on_playlist_switch()

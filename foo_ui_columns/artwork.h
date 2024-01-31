@@ -77,6 +77,8 @@ public:
     static void s_on_dark_mode_status_change();
 
     void force_reload_artwork();
+    bool is_core_image_viewer_available() const;
+    void open_core_image_viewer() const;
 
     ArtworkPanel();
 
