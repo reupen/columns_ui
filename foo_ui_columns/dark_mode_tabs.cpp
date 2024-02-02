@@ -17,13 +17,8 @@ auto get_tab_hot_item_index(HWND wnd)
     POINT pt{};
     GetMessagePos(&pt);
 
-    if (const auto up_down_window = GetFirstChild(wnd)) {
-        RECT rect{};
-        GetWindowRect(up_down_window, &rect);
-
-        if (IsWindowVisible(up_down_window) && pt.x >= rect.left)
-            return -1;
-    }
+    if (WindowFromPoint(pt) != wnd)
+        return -1;
 
     TCHITTESTINFO tchti{};
     tchti.pt = pt;
@@ -74,7 +69,9 @@ void handle_tab_control_paint(HWND wnd)
 
     constexpr auto is_dark = true;
     const auto border_colour = get_colour(ColourID::TabControlItemBorder, is_dark);
-    const wil::unique_hpen border_pen(CreatePen(PS_SOLID, 1_spx, border_colour));
+    // Tab control doesn't scale the border
+    constexpr auto border_width = 1;
+    const wil::unique_hpen border_pen(CreatePen(PS_SOLID, border_width, border_colour));
     const auto default_item_brush = get_colour_brush_lazy(ColourID::TabControlItemBackground, is_dark);
     const auto hot_item_brush = get_colour_brush_lazy(ColourID::TabControlHotItemBackground, is_dark);
     const auto hot_active_item_brush = get_colour_brush_lazy(ColourID::TabControlHotActiveItemBackground, is_dark);
@@ -105,13 +102,15 @@ void handle_tab_control_paint(HWND wnd)
 
     for (auto&& [index, item] : ranges::views::enumerate(items)) {
         const auto is_new_line = index == 0 || items[index - 1].rc.top != item.rc.top;
-
         auto item_rect = item.rc;
+
         if (item.is_active) {
-            item_rect.top -= 1_spx;
-            // Scale and round 0.5 for these two
-            item_rect.left -= uih::scale_dpi_value(1, USER_DEFAULT_SCREEN_DPI * 2);
-            item_rect.right += uih::scale_dpi_value(1, USER_DEFAULT_SCREEN_DPI * 2);
+            // Not scaled by tab control
+            constexpr auto active_tab_enlargement = 2;
+
+            item_rect.top -= active_tab_enlargement;
+            item_rect.left -= active_tab_enlargement;
+            item_rect.right += active_tab_enlargement;
         }
 
         RECT _intersect_rect{};
@@ -131,18 +130,20 @@ void handle_tab_control_paint(HWND wnd)
 
             return *default_item_brush;
         }();
+
         FillRect(buffered_dc.get(), &item_rect, item_back_brush);
 
-        MoveToEx(buffered_dc.get(), item_rect.right, item_rect.bottom, nullptr);
-        LineTo(buffered_dc.get(), item_rect.right, item_rect.top);
-        LineTo(buffered_dc.get(), item_rect.left, item_rect.top);
-        if (is_new_line || item.is_active) {
+        const auto draw_left_border = is_new_line || item.is_active;
+        MoveToEx(buffered_dc.get(), item_rect.right - border_width, item_rect.bottom, nullptr);
+        LineTo(buffered_dc.get(), item_rect.right - border_width, item_rect.top);
+        LineTo(buffered_dc.get(), item_rect.left - (draw_left_border ? 0 : border_width), item_rect.top);
+
+        if (draw_left_border) {
             LineTo(buffered_dc.get(), item_rect.left, item_rect.bottom);
         }
 
-        // Position using original rect, but shift up 1px if it's the active tab
-        RECT text_rect = {item.rc.left, item.rc.top - (item.is_active ? 1_spx : 0), item.rc.right,
-            item.rc.bottom - (item.is_active ? 1_spx : 0)};
+        RECT text_rect = {item_rect.left, item_rect.top + border_width - (item.is_active ? 2_spx : 0), item_rect.right,
+            item_rect.bottom};
 
         DrawTextEx(buffered_dc.get(), const_cast<wchar_t*>(item.text.data()), gsl::narrow<int>(item.text.length()),
             &text_rect, DT_CENTER | DT_HIDEPREFIX | DT_SINGLELINE | DT_VCENTER, nullptr);
