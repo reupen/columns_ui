@@ -14,6 +14,9 @@
 
 ### Bug fixes
 
+- Various rendering glitches in Playlist tabs and Tab stack when dark mode is
+  active were fixed. [[#851](https://github.com/reupen/columns_ui/pull/851)]
+
 - When switching tabs, the Tab stack panel now updates the keyboard focus to the
   first focusable element in the new tab.
   [[#817](https://github.com/reupen/columns_ui/pull/817)]
