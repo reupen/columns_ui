@@ -47,6 +47,9 @@ cfg_uint cfg_track_mode(g_guid_track_mode, track_auto_playlist_playing);
 cfg_bool cfg_preserve_aspect_ratio(g_guid_preserve_aspect_ratio, true);
 cfg_uint cfg_edge_style(g_guid_edge_style, 0);
 
+fbh::ConfigInt32 click_action({0x01b0f35f, 0xcdca, 0x49ba, {0xac, 0x39, 0x0a, 0x91, 0x81, 0xa1, 0x6f, 0xc1}},
+    WI_EnumValue(ClickAction::show_next_artwork_type));
+
 // {E32DCBA9-A2BF-4901-AB43-228628071410}
 static const GUID g_guid_colour_client = {0xe32dcba9, 0xa2bf, 0x4901, {0xab, 0x43, 0x22, 0x86, 0x28, 0x7, 0x14, 0x10}};
 
@@ -199,31 +202,16 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_LBUTTONDOWN: {
-        const auto start_artwork_type_index = get_displayed_artwork_type_index();
-        auto artwork_type_index = start_artwork_type_index;
-        const size_t count = g_artwork_types.size();
-        bool artwork_found = false;
-
-        for (size_t i = 0; i < count; i++) {
-            artwork_type_index = (artwork_type_index + 1) % count;
-
-            if (!refresh_image(artwork_type_index))
-                continue;
-
-            artwork_found = true;
-
-            if (artwork_type_index != start_artwork_type_index) {
-                m_artwork_type_override_index.reset();
-                m_selected_artwork_type_index = artwork_type_index;
-            }
+        switch (static_cast<ClickAction>(click_action.get())) {
+        case ClickAction::open_image_viewer:
+            open_core_image_viewer();
+            break;
+        case ClickAction::show_next_artwork_type:
+            show_next_artwork_type();
             break;
         }
-
-        if (!artwork_found) {
-            m_artwork_type_override_index.reset();
-            show_stub_image();
-        }
-    } break;
+        break;
+    }
     case WM_PAINT: {
         PAINTSTRUCT ps;
         HDC dc = BeginPaint(wnd, &ps);
@@ -368,7 +356,32 @@ void ArtworkPanel::open_core_image_viewer() const
     if (!data.is_valid())
         return;
 
-    fb2k::imageViewer::get()->show(GetParent(get_wnd()), data);
+    if (fb2k::imageViewer::ptr api; fb2k::imageViewer::tryGet(api)) {
+        api->show(GetParent(get_wnd()), data);
+    }
+}
+
+void ArtworkPanel::show_next_artwork_type()
+{
+    const auto start_artwork_type_index = get_displayed_artwork_type_index();
+    auto artwork_type_index = start_artwork_type_index;
+    const size_t count = g_artwork_types.size();
+
+    for (size_t i = 0; i < count; i++) {
+        artwork_type_index = (artwork_type_index + 1) % count;
+
+        if (!refresh_image(artwork_type_index))
+            continue;
+
+        if (artwork_type_index != start_artwork_type_index) {
+            m_artwork_type_override_index.reset();
+            m_selected_artwork_type_index = artwork_type_index;
+        }
+        return;
+    }
+
+    m_artwork_type_override_index.reset();
+    show_stub_image();
 }
 
 void ArtworkPanel::on_playlist_switch()

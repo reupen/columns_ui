@@ -64,14 +64,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         return nullptr;
     }
 
+    migrate::apply_first_run_defaults();
     migrate::migrate_all();
-
-    if (main_window::config_get_is_first_run()) {
-        colours::dark_mode_status.set(WI_EnumValue(colours::DarkModeStatus::UseSystemSetting));
-
-        if (!cfg_layout.get_presets().get_count())
-            cfg_layout.reset_presets();
-    }
 
     m_hook_proc = hook;
 

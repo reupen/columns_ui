@@ -4,6 +4,13 @@
 
 namespace cui::artwork_panel {
 
+enum class ClickAction : int32_t {
+    open_image_viewer,
+    show_next_artwork_type,
+};
+
+extern fbh::ConfigInt32 click_action;
+
 class ArtworkPanel
     : public uie::container_uie_window_v3
     , public now_playing_album_art_notify
@@ -79,6 +86,7 @@ public:
     void force_reload_artwork();
     bool is_core_image_viewer_available() const;
     void open_core_image_viewer() const;
+    void show_next_artwork_type();
 
     ArtworkPanel();
 
