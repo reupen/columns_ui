@@ -500,14 +500,16 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     LTEXT           "Artwork view panel",IDC_TITLE2,7,4,252,16
-    LTEXT           "Panel edge style",IDC_STATIC,7,30,55,8
-    COMBOBOX        IDC_EDGESTYLE,7,41,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Artwork sources",IDC_TITLE1,7,77,252,16
-    LTEXT           "Artwork sources are now configured on the Display preferences page. Columns UI no longer has separate artwork source settings.",IDC_STATIC,7,102,312,23
-    PUSHBUTTON      "Go to Display preferences",IDC_OPEN_DISPLAY_PREFERENCES,7,133,148,14
-    LTEXT           "You previously had artwork sources configured in Columns UI. If artwork is no longer displaying correctly, manually copy your previous configuration to Display preferences.",IDC_VIEW_OLD_ARTWORK_SOURCES_TEXT,7,129,312,22
-    PUSHBUTTON      "View previously configured artwork sources",IDC_VIEW_OLD_ARTWORK_SOURCES,7,158,178,14
-    PUSHBUTTON      "Go to Display preferences",IDC_PREVIOUS_OPEN_DISPLAY_PREFERENCES,7,181,179,14
+    LTEXT           "Action to perform on click",IDC_STATIC,7,28,87,8
+    COMBOBOX        IDC_CLICK_ACTION,7,39,140,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Panel edge style",IDC_STATIC,7,63,55,8
+    COMBOBOX        IDC_EDGESTYLE,7,74,40,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Artwork sources",IDC_TITLE1,7,115,252,16
+    LTEXT           "Artwork sources are now configured on the Display preferences page. Columns UI no longer has separate artwork source settings.",IDC_STATIC,7,140,312,23
+    PUSHBUTTON      "Go to Display preferences",IDC_OPEN_DISPLAY_PREFERENCES,7,171,148,14
+    LTEXT           "You previously had artwork sources configured in Columns UI. If artwork is no longer displaying correctly, manually copy your previous configuration to Display preferences.",IDC_VIEW_OLD_ARTWORK_SOURCES_TEXT,7,167,312,22
+    PUSHBUTTON      "View previously configured artwork sources",IDC_VIEW_OLD_ARTWORK_SOURCES,7,196,178,14
+    PUSHBUTTON      "Go to Display preferences",IDC_PREVIOUS_OPEN_DISPLAY_PREFERENCES,7,219,179,14
 END
 
 IDD_ITEM_PROPS_OPTIONS DIALOGEX 0, 0, 268, 385

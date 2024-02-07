@@ -30,11 +30,30 @@ public:
     void refresh_me(HWND wnd)
     {
         m_initialising = true;
-        const HWND wnd_combo = GetDlgItem(wnd, IDC_EDGESTYLE);
-        ComboBox_AddString(wnd_combo, L"None");
-        ComboBox_AddString(wnd_combo, L"Sunken");
-        ComboBox_AddString(wnd_combo, L"Grey");
-        ComboBox_SetCurSel(wnd_combo, cui::artwork_panel::cfg_edge_style);
+
+        const HWND edge_style_wnd = GetDlgItem(wnd, IDC_EDGESTYLE);
+        ComboBox_AddString(edge_style_wnd, L"None");
+        ComboBox_AddString(edge_style_wnd, L"Sunken");
+        ComboBox_AddString(edge_style_wnd, L"Grey");
+        ComboBox_SetCurSel(edge_style_wnd, cui::artwork_panel::cfg_edge_style);
+
+        const HWND click_action_wnd = GetDlgItem(wnd, IDC_CLICK_ACTION);
+
+        if (fb2k::imageViewer::ptr api; fb2k::imageViewer::tryGet(api)) {
+            uih::combo_box_add_string_data(click_action_wnd, L"Open foobar2000 picture viewer",
+                WI_EnumValue(cui::artwork_panel::ClickAction::open_image_viewer));
+        }
+
+        uih::combo_box_add_string_data(click_action_wnd, L"Show next available artwork type",
+            WI_EnumValue(cui::artwork_panel::ClickAction::show_next_artwork_type));
+
+        const auto click_action_index
+            = uih::combo_box_find_item_by_data(click_action_wnd, cui::artwork_panel::click_action);
+
+        if (click_action_index != CB_ERR) {
+            ComboBox_SetCurSel(click_action_wnd, click_action_index);
+        }
+
         m_initialising = false;
     }
 
@@ -65,6 +84,16 @@ public:
                 cui::artwork_panel::cfg_edge_style = ComboBox_GetCurSel((HWND)lp);
                 cui::artwork_panel::ArtworkPanel::g_on_edge_style_change();
                 break;
+            case IDC_CLICK_ACTION | (CBN_SELCHANGE << 16): {
+                auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
+
+                if (index == CB_ERR)
+                    break;
+
+                cui::artwork_panel::click_action
+                    = gsl::narrow<int32_t>(ComboBox_GetItemData(reinterpret_cast<HWND>(lp), index));
+                break;
+            }
             }
         }
         return 0;

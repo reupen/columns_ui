@@ -1,6 +1,8 @@
 #include "pch.h"
 
 #include "migrate.h"
+
+#include "artwork.h"
 #include "config_appearance.h"
 #include "layout.h"
 #include "status_pane.h"
@@ -141,6 +143,21 @@ void migrate_all()
     v100::migrate();
     v200::migrate_status_pane();
     v200::migrate_custom_colours();
+}
+
+void apply_first_run_defaults()
+{
+    if (!main_window::config_get_is_first_run())
+        return;
+
+    colours::dark_mode_status.set(WI_EnumValue(colours::DarkModeStatus::UseSystemSetting));
+
+    if (!cfg_layout.get_presets().get_count())
+        cfg_layout.reset_presets();
+
+    if (fb2k::imageViewer::ptr api; fb2k::imageViewer::tryGet(api)) {
+        artwork_panel::click_action = WI_EnumValue(artwork_panel::ClickAction::open_image_viewer);
+    }
 }
 
 } // namespace cui::migrate

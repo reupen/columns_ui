@@ -250,6 +250,7 @@
 #define IDC_EDGESTYLE                   1155
 #define IDC_PRECEDENCE                  1156
 #define IDC_HALIGN                      1156
+#define IDC_CLICK_ACTION                1156
 #define IDC_VALIGN                      1157
 #define IDC_ARTWORKWIDTH                1158
 #define IDC_QUICKSETUP                  1159

@@ -8,8 +8,14 @@
   switch to the next and previous tab respectively.
   [[#817](https://github.com/reupen/columns_ui/pull/817)]
 
+- An option to make clicking on the Artwork view panel open the displayed image
+  in the foobar2000 picture viewer was added on foobar2000 1.6.2 or newer.
+  [[#853](https://github.com/reupen/columns_ui/pull/853)]
+
+  This is now the default for new installations.
+
 - A command was added to the Artwork view context menu to open the displayed
-  image in the foobar2000 picture viewer (requires foobar2000 1.6.2 or newer).
+  image in the foobar2000 picture viewer on foobar2000 1.6.2 or newer.
   [[#849](https://github.com/reupen/columns_ui/pull/849)]
 
 ### Bug fixes
