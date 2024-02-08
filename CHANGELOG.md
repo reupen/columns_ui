@@ -34,6 +34,10 @@
 - Support for high contrast themes on recent versions of Windows was improved.
   [[#847](https://github.com/reupen/columns_ui/pull/847)]
 
+- A bug where dynamic internet radio artwork may not have been immediately shown
+  after changing the ‘Displayed track’ in the Artwork view panel was fixed.
+  [[#854](https://github.com/reupen/columns_ui/pull/854)]
+
 ### Internal changes
 
 - The component is now compiled with Visual Studio 2022 17.8.

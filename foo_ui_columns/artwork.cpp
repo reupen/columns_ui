@@ -317,6 +317,7 @@ void ArtworkPanel::force_reload_artwork()
     if (g_track_mode_includes_now_playing(m_track_mode) && play_control::get()->is_playing()) {
         play_control::get()->get_now_playing(handle);
         is_from_playback = true;
+        m_dynamic_artwork_pending = now_playing_album_art_notify_manager::get()->current().is_valid();
     } else if (g_track_mode_includes_playlist(m_track_mode)) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
