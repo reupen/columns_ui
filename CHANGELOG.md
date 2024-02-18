@@ -18,6 +18,13 @@
   image in the foobar2000 picture viewer on foobar2000 1.6.2 or newer.
   [[#849](https://github.com/reupen/columns_ui/pull/849)]
 
+- Clearing the Filter search toolbar now returns all items in the media library
+  if there are no Filter panels in the layout.
+  [[#857](https://github.com/reupen/columns_ui/pull/857)]
+
+  This makes the behaviour consistent with what happens when there are Filter
+  panels in the layout.
+
 ### Bug fixes
 
 - Various rendering glitches in Playlist tabs and Tab stack when dark mode is
