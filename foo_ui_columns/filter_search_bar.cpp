@@ -184,22 +184,28 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
 {
     pfc::list_t<FilterStream::ptr> p_streams;
     g_get_search_bar_sibling_streams(this, p_streams);
+
     if (p_streams.get_count() == 0)
         p_streams = FilterPanel::g_streams;
 
     size_t stream_count = p_streams.get_count();
     bool b_diff = strcmp(m_active_search_string, str) != 0;
+
     if (!stream_count)
         b_force_autosend = b_diff;
+
+    const auto library_api = library_manager::get();
+
     if (b_diff || b_force_autosend || b_stream_update) {
         m_active_search_string = str;
 
-        bool b_reset = m_active_search_string.is_empty();
+        const auto is_empty = m_active_search_string.is_empty();
 
-        if (b_reset) {
+        if (is_empty) {
             m_active_handles.remove_all();
         } else if (b_diff) {
-            library_manager::get()->get_all_items(m_active_handles);
+            library_api->get_all_items(m_active_handles);
+
             try {
                 auto api = search_filter_manager_v2::get()->create_ex(m_active_search_string,
                     fb2k::service_new<completion_notify_dummy>(), search_filter_manager_v2::KFlagSuppressNotify);
@@ -216,7 +222,7 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
         for (size_t i = 0; i < stream_count; i++) {
             FilterStream::ptr p_stream = p_streams[i];
 
-            p_stream->m_source_overriden = !b_reset;
+            p_stream->m_source_overriden = !is_empty;
             p_stream->m_source_handles = m_active_handles;
 
             if (!b_stream_update) {
@@ -237,8 +243,16 @@ void FilterSearchToolbar::commit_search_results(const char* str, bool b_force_au
                 }
             }
         }
-        if (!b_stream_update && (stream_count == 0 || !b_autosent) && (cfg_autosend || b_force_autosend))
-            g_send_metadb_handles_to_playlist(m_active_handles);
+
+        if (!b_stream_update && (stream_count == 0 || !b_autosent) && (cfg_autosend || b_force_autosend)) {
+            if (is_empty) {
+                metadb_handle_list all_items;
+                library_api->get_all_items(all_items);
+                g_send_metadb_handles_to_playlist(all_items);
+            } else {
+                g_send_metadb_handles_to_playlist(m_active_handles);
+            }
+        }
     }
 }
 
