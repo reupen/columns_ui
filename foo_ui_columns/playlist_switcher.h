@@ -4,9 +4,9 @@ namespace cui::panels::playlist_switcher {
 
 class PlaylistSwitcherColoursClient : public colours::client {
 public:
-    static const GUID g_guid;
+    static constexpr GUID id{0xeb38a997, 0x3b5f, 0x4126, {0x87, 0x46, 0x26, 0x2a, 0xa9, 0xc1, 0xf9, 0x4b}};
 
-    const GUID& get_client_guid() const override { return g_guid; }
+    const GUID& get_client_guid() const override { return id; }
 
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist switcher"; }
 

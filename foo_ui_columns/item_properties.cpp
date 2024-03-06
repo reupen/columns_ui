@@ -45,32 +45,28 @@ cfg_uint cfg_selection_properties_info_sections(g_guid_selection_poperties_info_
 cfg_bool cfg_selection_poperties_show_column_titles(g_guid_selection_poperties_show_column_titles, true);
 cfg_bool cfg_selection_poperties_show_group_titles(g_guid_selection_poperties_show_group_titles, true);
 
-std::vector<ItemProperties*> ItemProperties::g_windows;
-
-// {862F8A37-16E0-4a74-B27E-2B73DB567D0F}
-const GUID ItemPropertiesColoursClient::g_guid
-    = {0x862f8a37, 0x16e0, 0x4a74, {0xb2, 0x7e, 0x2b, 0x73, 0xdb, 0x56, 0x7d, 0xf}};
+std::vector<ItemProperties*> ItemProperties::s_windows;
 
 namespace {
 colours::client::factory<ItemPropertiesColoursClient> g_appearance_client_impl;
 }
 
-void ItemProperties::g_redraw_all()
+void ItemProperties::s_redraw_all()
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->invalidate_all();
 }
 
 void ItemProperties::s_on_dark_mode_status_change()
 {
     const auto is_dark = colours::is_dark_mode_active();
-    for (auto&& window : g_windows)
+    for (auto&& window : s_windows)
         window->set_use_dark_mode(is_dark);
 }
 
-void ItemProperties::g_on_app_activate(bool b_activated)
+void ItemProperties::s_on_app_activate(bool b_activated)
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->on_app_activate(b_activated);
 }
 
@@ -194,15 +190,15 @@ void ItemProperties::notify_on_create()
     metadb_io_v3::get()->register_callback(this);
     refresh_contents();
 
-    if (g_windows.empty())
+    if (s_windows.empty())
         s_create_message_window();
 
-    g_windows.push_back(this);
+    s_windows.push_back(this);
 }
 void ItemProperties::notify_on_destroy()
 {
-    std::erase(g_windows, this);
-    if (g_windows.empty())
+    std::erase(s_windows, this);
+    if (s_windows.empty())
         s_destroy_message_window();
 
     play_callback_manager::get()->unregister_callback(this);
@@ -683,7 +679,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { ItemProperties::g_on_font_items_change(); }
+    void on_font_changed() const override { ItemProperties::s_on_font_items_change(); }
 };
 
 class HeaderFontClientItemProperties : public fonts::client {
@@ -693,7 +689,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { ItemProperties::g_on_font_header_change(); }
+    void on_font_changed() const override { ItemProperties::s_on_font_header_change(); }
 };
 
 class GroupClientItemProperties : public fonts::client {
@@ -703,31 +699,31 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { ItemProperties::g_on_font_groups_change(); }
+    void on_font_changed() const override { ItemProperties::s_on_font_groups_change(); }
 };
-void ItemProperties::g_on_font_items_change()
+void ItemProperties::s_on_font_items_change()
 {
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->set_font(&lf);
     }
 }
 
-void ItemProperties::g_on_font_groups_change()
+void ItemProperties::s_on_font_groups_change()
 {
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->set_group_font(&lf);
     }
 }
 
-void ItemProperties::g_on_font_header_change()
+void ItemProperties::s_on_font_header_change()
 {
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->set_header_font(&lf);
     }
 }
@@ -765,7 +761,7 @@ void ItemProperties::s_create_message_window()
     s_message_window = std::make_unique<uie::container_window_v3>(
         config, [](auto&& wnd, auto&& msg, auto&& wp, auto&& lp) -> LRESULT {
             if (msg == WM_ACTIVATEAPP)
-                g_on_app_activate(wp != 0);
+                s_on_app_activate(wp != 0);
             return DefWindowProc(wnd, msg, wp, lp);
         });
     s_message_window->create(nullptr);
@@ -809,7 +805,7 @@ void ItemProperties::notify_save_inline_edit(const char* value)
             infos_ptr.add_item(&infos[i]);
             if (!mask[i]) {
                 pfc::string8 old_value;
-                g_print_field(m_edit_field, infos[i], old_value);
+                s_print_field(m_edit_field, infos[i], old_value);
                 if (!(mask[i] = !((strcmp(old_value, value))))) {
                     infos[i].meta_remove_field(m_edit_field);
                     for (size_t j = 0; j < value_count; j++)
@@ -877,12 +873,12 @@ bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size
     {
         metadb_info_container::ptr p_info;
         if (m_edit_handles[0]->get_info_ref(p_info))
-            g_print_field(m_edit_field, p_info->info(), text);
+            s_print_field(m_edit_field, p_info->info(), text);
         size_t count = m_handles.get_count();
         for (size_t i = 1; i < count; i++) {
             temp.reset();
             if (m_edit_handles[i]->get_info_ref(p_info))
-                g_print_field(m_edit_field, p_info->info(), temp);
+                s_print_field(m_edit_field, p_info->info(), temp);
             if (strcmp(temp, text) != 0) {
                 text = "<mixed values>";
                 break;
@@ -895,7 +891,7 @@ bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size
     return true;
 }
 
-void ItemProperties::g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out)
+void ItemProperties::s_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out)
 {
     size_t meta_index = p_info.meta_find(field);
     if (meta_index != pfc_infinite) {
@@ -1070,7 +1066,7 @@ const char* ItemProperties::MenuNodeTrackMode::get_name(uint32_t source)
 
 void ItemPropertiesColoursClient::on_colour_changed(uint32_t mask) const
 {
-    ItemProperties::g_redraw_all();
+    ItemProperties::s_redraw_all();
 }
 
 void ItemPropertiesColoursClient::on_bool_changed(uint32_t mask) const

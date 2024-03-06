@@ -34,7 +34,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
     std::vector<uih::lv::RendererSubItem> sub_items, int indentation, bool b_selected, bool b_window_focused,
     bool b_highlight, bool should_hide_focus, bool b_focused, RECT rc)
 {
-    colours::helper p_helper(ColoursClient::g_guid);
+    colours::helper p_helper(ColoursClient::id);
 
     const auto calculated_use_highlight = b_highlight && !context.m_is_high_contrast_active;
 
@@ -144,7 +144,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
 void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index,
     std::string_view text, int indentation, size_t level, RECT rc)
 {
-    colours::helper p_helper(ColoursClient::g_guid);
+    colours::helper p_helper(ColoursClient::id);
     bool b_theme_enabled = p_helper.get_themed();
 
     int text_width = NULL;

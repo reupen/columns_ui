@@ -280,9 +280,9 @@ private:
 
 class ColoursClient : public colours::client {
 public:
-    static const GUID g_guid;
+    static constexpr GUID id{0xc882d3ac, 0xc014, 0x44df, {0x9c, 0x7e, 0x2d, 0xad, 0xf3, 0x76, 0x45, 0xa0}};
 
-    const GUID& get_client_guid() const override { return g_guid; }
+    const GUID& get_client_guid() const override { return id; }
 
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view"; }
 

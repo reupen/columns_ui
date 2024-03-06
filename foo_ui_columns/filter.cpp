@@ -913,9 +913,6 @@ pfc::list_t<FieldData> FilterPanel::g_field_data;
 
 pfc::list_t<FilterStream::ptr> FilterPanel::g_streams;
 
-// {4D6774AF-C292-44ac-8A8F-3B0855DCBDF4}
-const GUID AppearanceClient::g_guid = {0x4d6774af, 0xc292, 0x44ac, {0x8a, 0x8f, 0x3b, 0x8, 0x55, 0xdc, 0xbd, 0xf4}};
-
 namespace {
 colours::client::factory<AppearanceClient> g_appearance_client_impl;
 }

@@ -45,9 +45,9 @@ size_t g_get_info_section_id_by_name(const char* p_name);
 
 class ItemPropertiesColoursClient : public colours::client {
 public:
-    static const GUID g_guid;
+    static constexpr GUID id{0x862f8a37, 0x16e0, 0x4a74, {0xb2, 0x7e, 0x2b, 0x73, 0xdb, 0x56, 0x7d, 0xf}};
 
-    const GUID& get_client_guid() const override { return g_guid; }
+    const GUID& get_client_guid() const override { return id; }
 
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties"; }
 
@@ -157,7 +157,7 @@ public:
     void notify_on_column_size_change(size_t index, int new_width) override;
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
-    static void g_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out);
+    static void s_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out);
     bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
         pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
     void notify_save_inline_edit(const char* value) override;
@@ -179,12 +179,12 @@ public:
 
     void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
 
-    static void g_on_app_activate(bool b_activated);
-    static void g_redraw_all();
+    static void s_on_app_activate(bool b_activated);
+    static void s_redraw_all();
     static void s_on_dark_mode_status_change();
-    static void g_on_font_items_change();
-    static void g_on_font_header_change();
-    static void g_on_font_groups_change();
+    static void s_on_font_items_change();
+    static void s_on_font_header_change();
+    static void s_on_font_groups_change();
 
     ItemProperties();
 
@@ -199,7 +199,7 @@ private:
     void on_tracking_mode_change();
     bool check_process_on_selection_changed();
 
-    static std::vector<ItemProperties*> g_windows;
+    static std::vector<ItemProperties*> s_windows;
 
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles;

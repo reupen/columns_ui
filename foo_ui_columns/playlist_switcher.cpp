@@ -23,10 +23,6 @@ public:
 
 PlaylistSwitcherFontClient::factory<PlaylistSwitcherFontClient> g_font_client_switcher;
 
-// {EB38A997-3B5F-4126-8746-262AA9C1F94B}
-const GUID PlaylistSwitcherColoursClient::g_guid
-    = {0xeb38a997, 0x3b5f, 0x4126, {0x87, 0x46, 0x26, 0x2a, 0xa9, 0xc1, 0xf9, 0x4b}};
-
 PlaylistSwitcherColoursClient::factory<PlaylistSwitcherColoursClient> g_appearance_client_ps_impl;
 
 void PlaylistSwitcherColoursClient::on_colour_changed(uint32_t mask) const
