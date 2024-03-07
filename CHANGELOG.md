@@ -25,6 +25,9 @@
   This makes the behaviour consistent with what happens when there are Filter
   panels in the layout.
 
+- The way metadata changes are saved in Item properties and Filter panel was
+  improved. [[#863](https://github.com/reupen/columns_ui/pull/863)]
+
 ### Bug fixes
 
 - Various rendering glitches in Playlist tabs and Tab stack when dark mode is
