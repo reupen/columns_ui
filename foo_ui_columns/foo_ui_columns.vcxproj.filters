@@ -611,6 +611,9 @@
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp">
       <Filter>Playlist view</Filter>
     </ClCompile>
+    <ClCompile Include="file_info_utils.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -888,6 +891,9 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="core_drop_down_list_toolbar.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="file_info_utils.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,62 +1,9 @@
 #include "pch.h"
+
+#include "file_info_utils.h"
 #include "ng_playlist.h"
 
 namespace cui::panels::playlist_view {
-
-namespace {
-
-std::string_view trim_string(std::string_view value)
-{
-    const auto start = value.find_first_not_of(' ');
-    const auto end = value.find_last_not_of(' ');
-
-    if (start > end || start == std::string_view::npos)
-        return ""sv;
-
-    return value.substr(start, end - start + 1);
-}
-
-auto get_info_field_values(const file_info& info, std::string_view field)
-{
-    std::vector<std::string_view> values;
-
-    for (size_t i{}; i < info.meta_get_count_by_name(field.data()); ++i) {
-        values.emplace_back(info.meta_get(field.data(), i));
-    }
-
-    return values;
-}
-
-class InlineEditFileInfoFilter : public file_info_filter {
-public:
-    InlineEditFileInfoFilter(std::string field, std::vector<std::string> new_values)
-        : m_field(std::move(field))
-        , m_new_values(std::move(new_values))
-    {
-    }
-
-    bool apply_filter(metadb_handle_ptr p_location, t_filestats p_stats, file_info& p_info) override
-    {
-        auto old_values = get_info_field_values(p_info, m_field);
-        std::vector<std::string_view> new_values;
-        ranges::push_back(new_values, m_new_values);
-
-        if (old_values == new_values)
-            return false;
-
-        p_info.meta_remove_field(m_field.data());
-
-        for (auto&& value : m_new_values)
-            p_info.meta_add_ex(m_field.data(), m_field.length(), value.data(), value.length());
-
-        return true;
-    }
-
-    std::string m_field;
-    std::vector<std::string> m_new_values;
-};
-
-} // namespace
 
 bool PlaylistView::notify_before_create_inline_edit(
     const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse)
@@ -87,7 +34,7 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t
         metadb_info_container::ptr info_container = m_edit_handles[i]->get_info_ref();
 
         auto& info = info_container->info();
-        auto item_values = get_info_field_values(info, m_edit_field.get_ptr());
+        auto item_values = helpers::get_meta_field_values(info, m_edit_field.get_ptr());
 
         if (i == 0) {
             values = item_values;
@@ -124,28 +71,11 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t
 
 void PlaylistView::notify_save_inline_edit(const char* value)
 {
-    const std::string_view value_view(value);
-    std::vector<std::string> values;
+    auto values = helpers::split_meta_value(value);
+    const auto filter
+        = fb2k::service_new<helpers::SingleFieldFileInfoFilter>(m_edit_field.get_ptr(), std::move(values));
 
-    size_t offset{};
-    for (;;) {
-        const size_t index = value_view.find(";"sv, offset);
-        const auto substr = value_view.substr(offset, index - offset);
-        const auto trimmed_substr = trim_string(substr);
-
-        if (trimmed_substr.length() > 0)
-            values.emplace_back(trimmed_substr);
-
-        if (index == std::string_view::npos)
-            break;
-
-        offset = index + 1;
-    }
-
-    const auto tagger_api = metadb_io_v2::get();
-
-    const auto filter = fb2k::service_new<InlineEditFileInfoFilter>(m_edit_field.get_ptr(), values);
-    tagger_api->update_info_async(m_edit_handles, filter, GetAncestor(get_wnd(), GA_ROOT),
+    metadb_io_v2::get()->update_info_async(m_edit_handles, filter, GetAncestor(get_wnd(), GA_ROOT),
         metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui, nullptr);
 }
 

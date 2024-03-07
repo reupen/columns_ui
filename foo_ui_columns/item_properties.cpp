@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "item_properties.h"
 
+#include "file_info_utils.h"
+
 namespace cui::panels::item_properties {
 
 // {8F6069CD-2E36-4ead-B171-93F3DFF0073A}
@@ -775,68 +777,22 @@ void ItemProperties::s_destroy_message_window()
 
 void ItemProperties::notify_save_inline_edit(const char* value)
 {
-    const auto tagger_api = metadb_io_v2::get();
-    if (strcmp(value, "<mixed values>") != 0) {
-        pfc::list_t<pfc::string8> values;
-        const char* ptr = value;
-        const char* start = ptr;
-        while (*ptr) {
-            start = ptr;
-            while (*ptr != ';' && *ptr)
-                ptr++;
-            values.add_item(pfc::string8(start, ptr - start));
-            while (*ptr == ' ' || *ptr == ';')
-                ptr++;
-        }
+    auto _ = gsl::finally([this] {
+        m_edit_column = pfc_infinite;
+        m_edit_index = pfc_infinite;
+        m_edit_field.reset();
+        m_edit_handles.remove_all();
+    });
 
-        size_t value_count = values.get_count();
+    if (strcmp(value, "<mixed values>") == 0)
+        return;
 
-        metadb_handle_list ptrs(m_edit_handles);
-        pfc::list_t<file_info_impl> infos;
-        pfc::list_t<bool> mask;
-        pfc::list_t<const file_info*> infos_ptr;
-        size_t count = ptrs.get_count();
-        mask.set_count(count);
-        infos.set_count(count);
-        // infos.set_count(count);
-        for (size_t i = 0; i < count; i++) {
-            assert(ptrs[i].is_valid());
-            mask[i] = !ptrs[i]->get_info(infos[i]);
-            infos_ptr.add_item(&infos[i]);
-            if (!mask[i]) {
-                pfc::string8 old_value;
-                s_print_field(m_edit_field, infos[i], old_value);
-                if (!(mask[i] = !((strcmp(old_value, value))))) {
-                    infos[i].meta_remove_field(m_edit_field);
-                    for (size_t j = 0; j < value_count; j++)
-                        infos[i].meta_add(m_edit_field, values[j]);
-                }
-            }
-        }
-        infos_ptr.remove_mask(mask.get_ptr());
-        ptrs.remove_mask(mask.get_ptr());
+    auto values = helpers::split_meta_value(value);
+    const auto filter
+        = fb2k::service_new<helpers::SingleFieldFileInfoFilter>(m_edit_field.get_ptr(), std::move(values));
 
-        {
-            service_ptr_t<file_info_filter_impl> filter = new service_impl_t<file_info_filter_impl>(ptrs, infos_ptr);
-            tagger_api->update_info_async(ptrs, filter, GetAncestor(get_wnd(), GA_ROOT),
-                metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui,
-                nullptr);
-        }
-    }
-
-    /*if (m_edit_index < m_fields.get_count())
-    {
-    (m_edit_column ? m_fields[m_edit_index].m_name : m_fields[m_edit_index].m_name_friendly) = value;
-    pfc::list_t<uih::ListView:: InsertItem> items;
-    items.set_count(1);
-    items[0].m_subitems.add_item(m_fields[m_edit_index].m_name_friendly);
-    items[0].m_subitems.add_item(m_fields[m_edit_index].m_name);
-    replace_items(m_edit_index, items);
-    }*/
-    m_edit_column = pfc_infinite;
-    m_edit_index = pfc_infinite;
-    m_edit_field.reset();
-    m_edit_handles.remove_all();
+    metadb_io_v2::get()->update_info_async(m_edit_handles, filter, GetAncestor(get_wnd(), GA_ROOT),
+        metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui, nullptr);
 }
 
 bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
