@@ -50,7 +50,7 @@ protected:
     bool should_show_drag_text(size_t selection_count) override { return true; }
     void render_get_colour_data(ColourData& p_out) override
     {
-        cui::colours::helper p_helper(t_appearance_client::g_guid);
+        cui::colours::helper p_helper(t_appearance_client::id);
         p_out.m_themed = p_helper.get_themed();
         p_out.m_use_custom_active_item_frame = p_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
         p_out.m_text = p_helper.get_colour(cui::colours::colour_text);

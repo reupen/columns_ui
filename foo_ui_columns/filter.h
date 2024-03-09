@@ -6,9 +6,9 @@ namespace cui::panels::filter {
 
 class AppearanceClient : public colours::client {
 public:
-    static const GUID g_guid;
+    static constexpr GUID id{0x4d6774af, 0xc292, 0x44ac, {0x8a, 0x8f, 0x3b, 0x8, 0x55, 0xdc, 0xbd, 0xf4}};
 
-    const GUID& get_client_guid() const override { return g_guid; }
+    const GUID& get_client_guid() const override { return id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel"; }
     uint32_t get_supported_colours() const override { return colours::colour_flag_all; }
     uint32_t get_supported_bools() const override

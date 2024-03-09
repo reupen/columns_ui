@@ -1418,8 +1418,6 @@ const GUID PlaylistView::g_extension_guid
 
 uie::window_factory<PlaylistView> g_pvt;
 
-// {C882D3AC-C014-44df-9C7E-2DADF37645A0}
-const GUID ColoursClient::g_guid = {0xc882d3ac, 0xc014, 0x44df, {0x9c, 0x7e, 0x2d, 0xad, 0xf3, 0x76, 0x45, 0xa0}};
 ColoursClient::factory<ColoursClient> g_appearance_client_ngpv_impl;
 
 // {19F8E0B3-E822-4f07-B200-D4A67E4872F9}

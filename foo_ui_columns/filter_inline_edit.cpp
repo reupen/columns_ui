@@ -27,52 +27,35 @@ bool FilterPanel::notify_create_inline_edit(const pfc::list_base_const_t<size_t>
 }
 void FilterPanel::notify_save_inline_edit(const char* value)
 {
-    const auto tagger_api = metadb_io_v2::get();
-    {
-        metadb_handle_list ptrs(m_edit_handles);
-        pfc::list_t<file_info_impl> infos;
-        pfc::list_t<bool> mask;
-        pfc::list_t<const file_info*> infos_ptr;
-        size_t count = ptrs.get_count();
-        mask.set_count(count);
-        infos.set_count(count);
-        // infos.set_count(count);
-        for (size_t i = 0; i < count; i++) {
-            assert(ptrs[i].is_valid());
-            mask[i] = !ptrs[i]->get_info(infos[i]);
-            infos_ptr.add_item(&infos[i]);
-            if (!mask[i]) {
-                bool b_remove = true;
-                size_t jcount = m_edit_fields.size();
-                for (size_t j = 0; j < jcount; j++) {
-                    size_t field_index = infos[i].meta_find(m_edit_fields[j]);
-                    if (field_index != pfc_infinite) {
-                        size_t field_count = infos[i].meta_enum_value_count(field_index);
+    auto apply_filter = [edit_fields = m_edit_fields, edit_previous_value = m_edit_previous_value,
+                            value = std::string{value}](trackRef location, t_filestats stats, file_info& info) -> bool {
+        bool changed = false;
 
-                        for (size_t k = 0; k < field_count; k++) {
-                            const char* ptr = infos[i].meta_enum_value(field_index, k);
-                            if (((!ptr && m_edit_previous_value.is_empty())
-                                    || !stricmp_utf8(m_edit_previous_value, ptr))
-                                && strcmp(value, ptr) != 0) {
-                                infos[i].meta_modify_value(field_index, k, value);
-                                b_remove = false;
-                            }
-                        }
-                    }
+        for (auto& field : edit_fields) {
+            const size_t field_index = info.meta_find(field);
+
+            if (field_index == std::numeric_limits<size_t>::max())
+                continue;
+
+            size_t value_count = info.meta_enum_value_count(field_index);
+
+            for (auto value_index : std::ranges::views::iota(size_t{}, value_count)) {
+                auto field_value = info.meta_enum_value(field_index, value_index);
+
+                if (!stricmp_utf8(edit_previous_value, field_value) && strcmp(value.c_str(), field_value) != 0) {
+                    info.meta_modify_value(field_index, value_index, value.c_str());
+                    changed = true;
                 }
-                mask[i] = b_remove;
             }
         }
-        infos_ptr.remove_mask(mask.get_ptr());
-        ptrs.remove_mask(mask.get_ptr());
 
-        {
-            service_ptr_t<file_info_filter_impl> filter = new service_impl_t<file_info_filter_impl>(ptrs, infos_ptr);
-            tagger_api->update_info_async(ptrs, filter, GetAncestor(get_wnd(), GA_ROOT),
-                metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui,
-                nullptr);
-        }
-    }
+        return changed;
+    };
+
+    auto filter = file_info_filter::create(std::move(apply_filter));
+
+    metadb_io_v2::get()->update_info_async(m_edit_handles, filter, GetAncestor(get_wnd(), GA_ROOT),
+        metadb_io_v2::op_flag_no_errors | metadb_io_v2::op_flag_background | metadb_io_v2::op_flag_delay_ui, nullptr);
 }
 void FilterPanel::notify_exit_inline_edit()
 {

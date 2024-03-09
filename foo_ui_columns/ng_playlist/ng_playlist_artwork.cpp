@@ -310,7 +310,7 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
         m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
         std::shared_ptr<ArtworkReader> p_reader;
         m_artwork_manager->request(handle, p_reader, cx, cy,
-            colours::helper(ColoursClient::g_guid).get_colour(colours::colour_background), cfg_artwork_reflection,
+            colours::helper(ColoursClient::id).get_colour(colours::colour_background), cfg_artwork_reflection,
             std::move(ptr));
         group->m_artwork_load_attempted = true;
         return nullptr;

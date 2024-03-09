@@ -266,6 +266,7 @@
     <ClCompile Include="dark_mode_active_ui.cpp" />
     <ClCompile Include="dark_mode_dialog.cpp" />
     <ClCompile Include="dark_mode_spin.cpp" />
+    <ClCompile Include="file_info_utils.cpp" />
     <ClCompile Include="font_manager.cpp" />
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
@@ -440,6 +441,7 @@
     <ClInclude Include="dark_mode_active_ui.h" />
     <ClInclude Include="dark_mode_spin.h" />
     <ClInclude Include="event_token.h" />
+    <ClInclude Include="file_info_utils.h" />
     <ClInclude Include="font_manager_data.h" />
     <ClInclude Include="gdi.h" />
     <ClInclude Include="gdiplus.h" />
