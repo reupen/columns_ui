@@ -30,6 +30,10 @@
 
 ### Bug fixes
 
+- A bug sometimes causing the playlist view vertical scroll position to show
+  incorrectly after switching playlists was fixed.
+  [[#866](https://github.com/reupen/columns_ui/pull/866)]
+
 - Various rendering glitches in Playlist tabs and Tab stack when dark mode is
   active were fixed. [[#851](https://github.com/reupen/columns_ui/pull/851)]
 
