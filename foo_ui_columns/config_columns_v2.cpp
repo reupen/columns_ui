@@ -558,9 +558,8 @@ void TabColumns::refresh_me(HWND wnd, bool init)
     std::vector<uih::ListView::InsertItem> insert_items;
     insert_items.reserve(m_columns.get_count());
 
-    std::ranges::transform(m_columns, std::back_inserter(insert_items), [](const auto& column) {
-        return uih::ListView::InsertItem{{column->name.c_str()}, {}};
-    });
+    std::ranges::transform(m_columns, std::back_inserter(insert_items),
+        [](const auto& column) { return uih::ListView::InsertItem{{column->name.c_str()}, {}}; });
 
     m_columns_list_view.insert_items(0, insert_items.size(), insert_items.data());
 

@@ -67,7 +67,7 @@ public:
         PlaylistFilterType p_filter_type, const char* p_filter_string, unsigned p_parts, bool b_show,
         const char* p_edit_field)
         : PlaylistViewColumnBase(pname, pspec, b_use_custom_colour, p_colour_spec, b_use_custom_sort, p_sort_spec,
-            p_width, p_align, p_filter_type, p_filter_string, p_parts, b_show, p_edit_field)
+              p_width, p_align, p_filter_type, p_filter_string, p_parts, b_show, p_edit_field)
     {
     }
 

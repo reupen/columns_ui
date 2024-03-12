@@ -66,8 +66,8 @@ public:
 
     ImportCommandLineHandler()
         : m_single_file_helper{u8"Import configuration – Columns UI"_pcc, "No file to import specified.",
-            "Too many files to import specified. You can only import one file at a time, "
-            "and should use double quotes around paths containing spaces."}
+              "Too many files to import specified. You can only import one file at a time, "
+              "and should use double quotes around paths containing spaces."}
     {
     }
 
@@ -118,8 +118,8 @@ public:
 
     ExportCommandLineHandler()
         : m_single_file_helper{u8"Export configuration – Columns UI"_pcc, "No file to export to specified.",
-            "Too many destination files specified. You must specify only one destination path, "
-            "and should use double quotes around paths containing spaces."}
+              "Too many destination files specified. You must specify only one destination path, "
+              "and should use double quotes around paths containing spaces."}
     {
     }
 

@@ -650,7 +650,7 @@ class ColourClient : public colours::client {
     }
     uint32_t get_supported_bools() const override { return colours::bool_flag_dark_mode_enabled; }
     bool get_themes_supported() const override { return false; }
-    void on_bool_changed(uint32_t mask) const override{};
+    void on_bool_changed(uint32_t mask) const override {};
     void on_colour_changed(uint32_t mask) const override
     {
         SpectrumAnalyserVisualisation::s_flush_brushes();

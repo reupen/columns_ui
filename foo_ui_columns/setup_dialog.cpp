@@ -51,9 +51,8 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
         std::vector<uih::ListView::InsertItem> insert_items;
         insert_items.reserve(m_presets.size());
 
-        std::ranges::transform(m_presets, std::back_inserter(insert_items), [](const auto& preset) {
-            return uih::ListView::InsertItem{{preset.m_name.c_str()}, {}};
-        });
+        std::ranges::transform(m_presets, std::back_inserter(insert_items),
+            [](const auto& preset) { return uih::ListView::InsertItem{{preset.m_name.c_str()}, {}}; });
 
         m_presets_list_view.insert_items(0, insert_items.size(), insert_items.data());
 
