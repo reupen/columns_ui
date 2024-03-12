@@ -71,7 +71,7 @@ private:
     public:
         PlaylistCallback(PlaylistCache* owner)
             : playlist_callback_impl_base(
-                flag_on_playlist_created | flag_on_playlists_reorder | flag_on_playlists_removed)
+                  flag_on_playlist_created | flag_on_playlists_reorder | flag_on_playlists_removed)
             , m_owner{owner}
         {
         }

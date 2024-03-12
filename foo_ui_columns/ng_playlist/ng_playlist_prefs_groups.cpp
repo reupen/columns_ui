@@ -82,9 +82,8 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         insert_items.reserve(g_groups.get_groups().get_count());
 
         auto& groups = g_groups.get_groups();
-        std::transform(groups.begin(), groups.end(), std::back_inserter(insert_items), [](const auto& group) {
-            return uih::ListView::InsertItem{{group.string}, {}};
-        });
+        std::transform(groups.begin(), groups.end(), std::back_inserter(insert_items),
+            [](const auto& group) { return uih::ListView::InsertItem{{group.string}, {}}; });
 
         m_groups_list_view.insert_items(0, insert_items.size(), insert_items.data());
         ShowWindow(m_groups_list_view.get_wnd(), SW_SHOWNORMAL);

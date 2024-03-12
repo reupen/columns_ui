@@ -89,7 +89,7 @@ public:
 
     LayoutWindow()
         : container_window_v3(uie::container_window_v3_config(L"{DA9A1375-A411-48a9-AF74-4AC29FF9BE9C}"),
-            [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); })
+              [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); })
     {
     }
 
