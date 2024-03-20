@@ -68,4 +68,40 @@ bool SingleFieldFileInfoFilter::apply_filter(metadb_handle_ptr p_location, t_fil
     return true;
 }
 
+bool EditMetadataFieldValueAggregator::process_file_info(const char* field, const file_info* info)
+{
+    if (m_truncated)
+        return false;
+
+    auto values = get_meta_field_values(*info, field);
+
+    if (!m_first_track_values) {
+        m_first_track_values
+            = values | ranges::views::transform([](auto&& item) { return std::string{item}; }) | ranges::to_vector;
+    } else if (!m_mixed_values) {
+        m_mixed_values = !std::ranges::equal(*m_first_track_values, values);
+    }
+
+    for (auto& value : values)
+        add_value(value);
+
+    return !m_truncated;
+}
+
+void EditMetadataFieldValueAggregator::add_value(const std::string_view& value)
+{
+    if (m_mixed_values && m_values.size() >= max_values)
+        return;
+
+    const auto has_value = [&value](auto&& other) { return value == other; };
+
+    if (ranges::any_of(m_values, has_value))
+        return;
+
+    m_values.emplace_back(value);
+
+    if (m_mixed_values && m_values.size() == max_values)
+        m_truncated = true;
+}
+
 } // namespace cui::helpers
