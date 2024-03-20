@@ -20,4 +20,19 @@ public:
     std::vector<std::string> m_new_values;
 };
 
+class EditMetadataFieldValueAggregator {
+public:
+    bool process_file_info(const char* field, const file_info* info);
+
+    std::vector<std::string> m_values;
+    bool m_truncated{false};
+    bool m_mixed_values{};
+
+private:
+    void add_value(const std::string_view& value);
+
+    static constexpr size_t max_values = 32;
+    std::optional<std::vector<std::string>> m_first_track_values;
+};
+
 } // namespace cui::helpers

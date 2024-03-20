@@ -540,8 +540,7 @@ void ItemProperties::refresh_contents()
         }
 
         if (aggregator.m_truncated)
-            temp << "; "
-                    "\xe2\x80\xa6";
+            temp << u8"; …"_pcc;
         else if (count_values > 0 && aggregator.m_some_values_missing)
             temp << "; (not set)";
 
@@ -784,9 +783,6 @@ void ItemProperties::notify_save_inline_edit(const char* value)
         m_edit_handles.remove_all();
     });
 
-    if (strcmp(value, "<mixed values>") == 0)
-        return;
-
     auto values = helpers::split_meta_value(value);
     const auto filter
         = fb2k::service_new<helpers::SingleFieldFileInfoFilter>(m_edit_field.get_ptr(), std::move(values));
@@ -823,26 +819,24 @@ bool ItemProperties::notify_create_inline_edit(const pfc::list_base_const_t<size
         m_library_autocomplete_v1->get_value_list(m_edit_field, autocomplete_entries);
 
     pAutocompleteEntries = autocomplete_entries.get_ptr();
+    helpers::EditMetadataFieldValueAggregator aggregator;
 
-    pfc::string8_fast_aggressive text;
-    pfc::string8_fast_aggressive temp;
-    {
-        metadb_info_container::ptr p_info;
-        if (m_edit_handles[0]->get_info_ref(p_info))
-            s_print_field(m_edit_field, p_info->info(), text);
-        size_t count = m_handles.get_count();
-        for (size_t i = 1; i < count; i++) {
-            temp.reset();
-            if (m_edit_handles[i]->get_info_ref(p_info))
-                s_print_field(m_edit_field, p_info->info(), temp);
-            if (strcmp(temp, text) != 0) {
-                text = "<mixed values>";
-                break;
-            }
-        }
+    for (const auto& track : m_edit_handles) {
+        const auto info_container = track->get_info_ref();
+        aggregator.process_file_info(m_edit_field, &info_container->info());
     }
 
-    p_text = text;
+    const auto joined = mmh::join(aggregator.m_values, "; "s);
+
+    if (aggregator.m_mixed_values) {
+        p_text = u8"«mixed values» "_pcc;
+        p_text += joined.c_str();
+
+        if (aggregator.m_truncated)
+            p_text += u8"; …"_pcc;
+    } else {
+        p_text = joined.c_str();
+    }
 
     return true;
 }

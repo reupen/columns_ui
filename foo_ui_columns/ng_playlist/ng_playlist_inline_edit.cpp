@@ -28,26 +28,23 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t
             return false;
     }
 
-    bool matching = true;
+    helpers::EditMetadataFieldValueAggregator aggregator;
 
-    for (size_t i = 0; i < indices_count; i++) {
-        metadb_info_container::ptr info_container = m_edit_handles[i]->get_info_ref();
-
-        auto& info = info_container->info();
-        auto item_values = helpers::get_meta_field_values(info, m_edit_field.get_ptr());
-
-        if (i == 0) {
-            values = item_values;
-        } else if (item_values != values) {
-            matching = false;
-            break;
-        }
+    for (const auto& track : m_edit_handles) {
+        const auto info_container = track->get_info_ref();
+        aggregator.process_file_info(m_edit_field, &info_container->info());
     }
 
-    if (matching) {
-        p_text = mmh::join<decltype(values)&, std::string_view, std::string>(values, "; "sv).c_str();
+    const auto joined = mmh::join(aggregator.m_values, "; "s);
+
+    if (aggregator.m_mixed_values) {
+        p_text = u8"«mixed values» "_pcc;
+        p_text += joined.c_str();
+
+        if (aggregator.m_truncated)
+            p_text += u8"; …"_pcc;
     } else {
-        p_text = "<multiple values>";
+        p_text = joined.c_str();
     }
 
     if (m_library_autocomplete_v2.is_empty() && m_library_autocomplete_v1.is_empty()) {
