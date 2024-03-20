@@ -6,16 +6,15 @@ namespace playlist_utils {
 bool check_clipboard()
 {
     const auto api = ole_interaction::get();
-    wil::com_ptr_t<IDataObject> pDO;
-    if (FAILED(OleGetClipboard(&pDO)))
+    wil::com_ptr_t<IDataObject> data_object;
+
+    if (FAILED(OleGetClipboard(&data_object)))
         return false;
 
-    bool b_native;
+    bool is_native{};
     DWORD dummy = DROPEFFECT_COPY;
-    if (FAILED(api->check_dataobject(pDO.get(), dummy, b_native)))
-        return false;
 
-    return b_native;
+    return SUCCEEDED(api->check_dataobject(data_object.get(), dummy, is_native));
 }
 
 bool cut()
@@ -64,9 +63,9 @@ bool paste(HWND wnd, size_t index)
 
     dropped_files_data_impl data;
     metadb_handle_list handles;
-    bool b_native;
+    bool is_native;
     DWORD dummy = DROPEFFECT_COPY;
-    HRESULT hr = ole_api->check_dataobject(pDO.get(), dummy, b_native);
+    HRESULT hr = ole_api->check_dataobject(pDO.get(), dummy, is_native);
     if (FAILED(hr))
         return false;
 
@@ -74,7 +73,7 @@ bool paste(HWND wnd, size_t index)
     if (FAILED(hr))
         return false;
 
-    data.to_handles(handles, b_native, GetAncestor(wnd, GA_ROOT));
+    data.to_handles(handles, !is_native, GetAncestor(wnd, GA_ROOT));
     playlist_api->activeplaylist_undo_backup();
     playlist_api->activeplaylist_clear_selection();
     playlist_api->activeplaylist_insert_items(index, handles, bit_array_true());
