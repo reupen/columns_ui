@@ -39,6 +39,10 @@
   incorrectly after switching playlists was fixed.
   [[#866](https://github.com/reupen/columns_ui/pull/866)]
 
+- A bug where files copied in File Explorer couldn’t be pasted in the playlist
+  view using the context menu was fixed.
+  [[#873](https://github.com/reupen/columns_ui/pull/873)]
+
 - Various rendering glitches in Playlist tabs and Tab stack when dark mode is
   active were fixed. [[#851](https://github.com/reupen/columns_ui/pull/851)]
 

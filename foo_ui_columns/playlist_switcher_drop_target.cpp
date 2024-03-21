@@ -117,7 +117,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::DragEnter(
         m_ole_api->get_clipboard_format(m_ole_api->KClipboardFormatMultiFPL), pDataObj);
 
     m_is_accepted_type = ui_drop_item_callback::g_is_accepted_type(pDataObj, pdwEffect)
-        || S_OK == m_ole_api->check_dataobject(pDataObj, dummy, native);
+        || SUCCEEDED(m_ole_api->check_dataobject(pDataObj, dummy, native));
     if (!m_is_accepted_type) {
         *pdwEffect = DROPEFFECT_NONE;
         uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
