@@ -50,7 +50,7 @@ jobs:
           submodules: true
 
       - name: Set up MSBuild
-        uses: microsoft/setup-msbuild@v1.3
+        uses: microsoft/setup-msbuild@v2
 
       - name: Cache dependencies
         uses: actions/cache@v4
