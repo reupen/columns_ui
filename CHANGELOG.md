@@ -39,6 +39,10 @@
   incorrectly after switching playlists was fixed.
   [[#866](https://github.com/reupen/columns_ui/pull/866)]
 
+- A bug with inline editing in the playlist view, Item properties and Filter
+  panels where it wasn’t possible to click on autocomplete suggestions was
+  fixed. [[#886](https://github.com/reupen/columns_ui/pull/886)]
+
 - A bug where files copied in File Explorer couldn’t be pasted in the playlist
   view using the context menu was fixed.
   [[#873](https://github.com/reupen/columns_ui/pull/873)]
