@@ -61,6 +61,13 @@
 - Support for high contrast themes on recent versions of Windows was improved.
   [[#847](https://github.com/reupen/columns_ui/pull/847)]
 
+- A bug in the Buttons toolbar where item group ‘None’ caused the context menu
+  command not to be executed was fixed.
+  [[#889](https://github.com/reupen/columns_ui/pull/889)]
+
+  Note: An item group of ‘None’ is used to execute a context menu command
+  without any tracks, which isn’t normally useful.
+
 - A bug where dynamic internet radio artwork may not have been immediately shown
   after changing the ‘Displayed track’ in the Artwork view panel was fixed.
   [[#854](https://github.com/reupen/columns_ui/pull/854)]

@@ -513,10 +513,11 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         }
 
+        const auto& button = m_buttons[wp];
         GUID caller = pfc::guid_null;
         metadb_handle_list_t<pfc::alloc_fast_aggressive> data;
 
-        switch (m_buttons[wp].m_filter) {
+        switch (button.m_filter) {
         case FILTER_PLAYLIST: {
             const auto api = playlist_manager::get();
             data.prealloc(api->activeplaylist_get_selection_count(pfc_infinite));
@@ -541,19 +542,28 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
         }
 
-        switch (m_buttons[wp].m_type) {
-        case TYPE_MENU_ITEM_CONTEXT:
-            menu_helpers::run_command_context_ex(m_buttons[wp].m_guid, m_buttons[wp].m_subcommand, data, caller);
+        switch (button.m_type) {
+        case TYPE_MENU_ITEM_CONTEXT: {
+            if (button.m_filter != FILTER_NONE && data.size() == 0)
+                break;
+
+            service_ptr_t<contextmenu_item> item;
+            uint32_t index{};
+
+            if (menu_item_resolver::g_resolve_context_command(button.m_guid, item, index))
+                item->item_execute_simple(index, button.m_subcommand, data, caller);
+
             break;
+        }
         case TYPE_MENU_ITEM_MAIN:
-            if (m_buttons[wp].m_subcommand != pfc::guid_null)
-                mainmenu_commands::g_execute_dynamic(m_buttons[wp].m_guid, m_buttons[wp].m_subcommand);
+            if (button.m_subcommand != pfc::guid_null)
+                mainmenu_commands::g_execute_dynamic(button.m_guid, button.m_subcommand);
             else
-                mainmenu_commands::g_execute(m_buttons[wp].m_guid);
+                mainmenu_commands::g_execute(button.m_guid);
             break;
         case TYPE_BUTTON: {
             service_ptr_t<uie::custom_button> p_button;
-            if (m_buttons[wp].m_interface.is_valid() && m_buttons[wp].m_interface->service_query_t(p_button))
+            if (button.m_interface.is_valid() && button.m_interface->service_query_t(p_button))
                 p_button->execute(data);
         } break;
         case TYPE_SEPARATOR:
