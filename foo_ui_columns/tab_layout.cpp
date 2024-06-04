@@ -616,6 +616,22 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         } break;
         case IDC_DELETE_PRESET: {
+            const auto is_shift_down = GetKeyState(VK_SHIFT) & 0x8000;
+
+            if (!is_shift_down) {
+                pfc::string8 preset_name;
+                cfg_layout.get_preset_name(m_active_preset, preset_name);
+
+                const auto confirmation_message
+                    = fmt::format(u8"Are you sure that you want to delete the layout preset ‘{}’?",
+                        reinterpret_cast<const char8_t*>(preset_name.c_str()));
+
+                if (uMessageBox(wnd, reinterpret_cast<const char*>(confirmation_message.c_str()), "Delete preset",
+                        MB_YESNO | MB_ICONWARNING)
+                    != IDYES)
+                    break;
+            }
+
             deinitialise_tree(wnd);
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
             size_t count = cfg_layout.delete_preset(m_active_preset);
