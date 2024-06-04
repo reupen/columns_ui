@@ -33,6 +33,12 @@
 - The way metadata changes are saved in Item properties and Filter panel was
   improved. [[#863](https://github.com/reupen/columns_ui/pull/863)]
 
+- Deleting layout presets in preferences is now a two-step process to avoid
+  accidental deletions. [[#891](https://github.com/reupen/columns_ui/pull/891)]
+
+  (The confirmation dialogue box can be bypassed by holding down Shift while
+  clicking the button.)
+
 ### Bug fixes
 
 - A bug sometimes causing the playlist view vertical scroll position to show
