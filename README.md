@@ -125,3 +125,9 @@ If successful, a component package will be created in the `component-packages`
 directory.
 
 (A Visual Studio Developer Command Prompt is not required to run the script.)
+
+## Documentation site
+
+This repo also includes the source for a
+[documentation site](https://columns-ui.readthedocs.io) in the `docs` directory.
+See [docs/README.md](./docs/README.md) for more information.

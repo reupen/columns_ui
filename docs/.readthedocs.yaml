@@ -1,0 +1,16 @@
+version: 2
+
+sphinx:
+  configuration: docs/source/conf.py
+
+formats: all
+
+python:
+  install:
+    - method: pip
+      path: docs
+
+build:
+  os: ubuntu-24.04
+  tools:
+    python: "3.12"
