@@ -19,6 +19,8 @@ struct StatusBarState {
     std::string track_count_text;
     std::string volume_text;
     wil::unique_hfont font;
+    std::optional<uih::direct_write::Context> direct_write_ctx;
+    std::optional<uih::direct_write::TextFormat> direct_write_text_format;
     wil::unique_hbitmap lock_bitmap;
     wil::unique_hicon lock_icon;
     std::unique_ptr<colours::dark_mode_notifier> dark_mode_notifier;
@@ -37,7 +39,25 @@ void on_status_font_change()
 
     state->lock_icon.reset();
     state->lock_bitmap.reset();
-    state->font.reset(fb2k::std_api_get<fonts::manager>()->get_font(font_client_status_guid));
+
+    LOGFONT log_font{};
+    fb2k::std_api_get<fonts::manager>()->get_font(font_client_status_guid, log_font);
+
+    const LOGFONT log_font_unscaled = fb2k::std_api_get<fonts::manager_v2>()->get_client_font(font_client_status_guid);
+
+    state->font.reset(CreateFontIndirect(&log_font));
+    state->direct_write_text_format.reset();
+
+    try {
+        if (!state->direct_write_ctx)
+            state->direct_write_ctx = std::make_optional<uih::direct_write::Context>();
+    }
+    CATCH_LOG();
+
+    if (state->direct_write_ctx) {
+        state->direct_write_text_format = state->direct_write_ctx->create_text_format_with_fallback(
+            log_font_unscaled, gsl::narrow_cast<float>(-log_font_unscaled.lfHeight));
+    }
 
     SetWindowFont(g_status, state->font.get(), TRUE);
 
@@ -172,25 +192,36 @@ std::string get_playlist_lock_text()
 
 int calculate_volume_size(const char* p_text)
 {
-    return win32_helpers::status_bar_get_text_width(g_status, p_text);
+    if (!state->direct_write_text_format)
+        return 0;
+
+    return state->direct_write_text_format->measure_text_width(p_text);
 }
 
 int calculate_selected_length_size(const char* p_text)
 {
-    return std::max(win32_helpers::status_bar_get_text_width(g_status, p_text),
-        win32_helpers::status_bar_get_text_width(g_status, "0d 00:00:00"));
+    if (!state->direct_write_text_format)
+        return 0;
+
+    return std::max(state->direct_write_text_format->measure_text_width(p_text),
+        state->direct_write_text_format->measure_text_width(L"0d 00:00:00"));
 }
 
 int calculate_selected_count_size(const char* p_text)
 {
-    return std::max(win32_helpers::status_bar_get_text_width(g_status, p_text),
-        win32_helpers::status_bar_get_text_width(g_status, "0,000 tracks"));
+    if (!state->direct_write_text_format)
+        return 0;
+
+    return std::max(state->direct_write_text_format->measure_text_width(p_text),
+        state->direct_write_text_format->measure_text_width(L"0,000 tracks"));
 }
 
 int calculate_playback_lock_size(const char* p_text)
 {
-    return uih::get_font_height(state->font.get()) - 2_spx + 2_spx
-        + win32_helpers::status_bar_get_text_width(g_status, p_text);
+    const auto icon_width = uih::get_font_height(state->font.get()) - 2_spx + 2_spx;
+
+    return icon_width
+        + (state->direct_write_text_format ? state->direct_write_text_format->measure_text_width(p_text) : 0);
 }
 
 std::string get_selected_length_text(unsigned dp = 0)
@@ -402,15 +433,15 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     const auto text_colour = get_colour(dark::ColourID::StatusBarText, colours::is_dark_mode_active());
 
     if (part_id == StatusBarPartID::PlaybackInformation) {
-        text_out_colours_tab(dc, text.data(), gsl::narrow<int>(text.size()), 0, 0, &rc, FALSE, text_colour, true, false,
-            uih::ALIGN_LEFT);
+        if (state->direct_write_text_format)
+            uih::direct_write::text_out_columns_and_colours(
+                *state->direct_write_text_format, dc, text, 0, 0, rc, false, text_colour, true, true, uih::ALIGN_LEFT);
         return;
     }
 
     const auto font_height = uih::get_dc_font_height(dc);
-    int x = rc.left;
-    const int y = rc.top + (wil::rect_height(rc) - font_height) / 2;
     const auto icon_size = font_height - 2_spx;
+    int x = rc.left;
 
     if (part_id == StatusBarPartID::PlaylistLock) {
         const auto icon_y = rc.top + (wil::rect_height(rc) - icon_size) / 2;
@@ -436,10 +467,9 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
         x += icon_size + 2_spx;
     }
 
-    const auto utf16_text = pfc::stringcvt::string_wide_from_utf8(text.data(), text.size());
-    SetTextColor(dc, text_colour);
-    SetBkMode(dc, TRANSPARENT);
-    ExtTextOutW(dc, x, y, ETO_CLIPPED, &rc, utf16_text, gsl::narrow<UINT>(utf16_text.length()), nullptr);
+    if (state->direct_write_text_format)
+        uih::direct_write::text_out_columns_and_colours(
+            *state->direct_write_text_format, dc, text, x - rc.left, 0, rc, false, text_colour, false, false);
 }
 
 } // namespace

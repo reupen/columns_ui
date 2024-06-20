@@ -4,6 +4,12 @@
 
 ### Features
 
+- Text in the status bar is now rendered using DirectWrite.
+  [[#897](https://github.com/reupen/columns_ui/pull/897)]
+
+  This includes colour font support on Windows 8.1 and newer (allowing the use
+  of, for example, colour emojis).
+
 - Ctrl+Tab and Shift+Ctrl+Tab can now be used in Tab stack and Playlist tabs to
   switch to the next and previous tab respectively.
   [[#817](https://github.com/reupen/columns_ui/pull/817)]
