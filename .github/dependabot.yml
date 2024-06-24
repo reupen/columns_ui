@@ -18,3 +18,12 @@ updates:
       submodules:
         patterns:
           - "*"
+
+  - package-ecosystem: pip
+    directory: /docs
+    schedule:
+      interval: monthly
+    groups:
+      docs:
+        patterns:
+          - "*"

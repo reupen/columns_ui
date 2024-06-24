@@ -88,7 +88,7 @@
 
 - The component is now compiled with Visual Studio 2022 17.9.
 
-## v2.1.0
+## 2.1.0
 
 ### Features
 
