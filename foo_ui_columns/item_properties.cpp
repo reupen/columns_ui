@@ -173,11 +173,11 @@ void ItemProperties::notify_on_initialisation()
     set_autosize(m_autosizing_columns);
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
-    set_font(&lf);
+    set_font(lf);
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
-    set_header_font(&lf);
+    set_header_font(lf);
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
-    set_group_font(&lf);
+    set_group_font(lf);
     set_edge_style(m_edge_style);
     set_show_header(m_show_column_titles);
     set_group_level_indentation_enabled(false);
@@ -707,7 +707,7 @@ void ItemProperties::s_on_font_items_change()
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
     for (auto& window : s_windows) {
-        window->set_font(&lf);
+        window->set_font(lf);
     }
 }
 
@@ -716,7 +716,7 @@ void ItemProperties::s_on_font_groups_change()
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
     for (auto& window : s_windows) {
-        window->set_group_font(&lf);
+        window->set_group_font(lf);
     }
 }
 
@@ -725,7 +725,7 @@ void ItemProperties::s_on_font_header_change()
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
     for (auto& window : s_windows) {
-        window->set_header_font(&lf);
+        window->set_header_font(lf);
     }
 }
 

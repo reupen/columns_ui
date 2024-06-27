@@ -92,9 +92,11 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
 
             FillRect(context.dc, &rc_subitem, wil::unique_hbrush(CreateSolidBrush(cr_back)).get());
         }
-        text_out_colours_tab(context.dc, sub_item.text.data(), sub_item.text.size(),
-            uih::scale_dpi_value(1) + (column_index == 0 ? indentation : 0), uih::scale_dpi_value(3), &rc_subitem,
-            b_selected, cr_text, true, cfg_ellipsis != 0, sub_item.alignment);
+
+        if (context.m_item_text_format)
+            text_out_columns_and_colours(*context.m_item_text_format, context.dc, sub_item.text,
+                1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, b_selected, cr_text, true, true,
+                sub_item.alignment, cfg_ellipsis != 0);
 
         const auto frame_width = uih::scale_dpi_value(1);
 
@@ -144,10 +146,11 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
 void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index,
     std::string_view text, int indentation, size_t level, RECT rc)
 {
+    if (!context.m_group_text_format)
+        return;
+
     colours::helper p_helper(ColoursClient::id);
     bool b_theme_enabled = p_helper.get_themed();
-
-    int text_width = NULL;
 
     const auto* group = m_playlist_view->get_item(item_index)->get_group(group_index);
     if (!group->m_style_data.is_valid())
@@ -165,15 +168,20 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
         FillRect(context.dc, &rc, br.get());
     }
 
-    text_out_colours_tab(context.dc, text.data(), text.size(),
-        uih::scale_dpi_value(1) + indentation * gsl::narrow<int>(level), uih::scale_dpi_value(3), &rc, false, cr, true,
-        cfg_ellipsis != 0, uih::ALIGN_LEFT, nullptr, true, true, &text_width);
+    const auto x_offset = 1_spx + indentation * gsl::narrow<int>(level);
+    const auto border = 3_spx;
 
-    auto cx = static_cast<long>(std::min(text_width, MAXLONG));
+    const auto text_width = text_out_columns_and_colours(*context.m_group_text_format, context.dc, text, x_offset,
+        border, rc, false, cr, true, false, uih::ALIGN_LEFT, cfg_ellipsis != 0);
 
-    RECT rc_line = {cx + uih::scale_dpi_value(7), rc.top + wil::rect_height(rc) / 2 - uih::scale_dpi_value(1) / 2,
-        rc.right - uih::scale_dpi_value(4),
-        rc.top + wil::rect_height(rc) / 2 - uih::scale_dpi_value(1) / 2 + uih::scale_dpi_value(1)};
+    const auto line_height = 1_spx;
+    const auto line_top = rc.top + wil::rect_height(rc) / 2 - line_height / 2;
+    RECT rc_line = {
+        rc.left + x_offset + border * 2 + text_width + 3_spx,
+        line_top,
+        rc.right - 4_spx,
+        line_top + line_height,
+    };
 
     if (rc_line.right > rc_line.left) {
         if (b_theme_enabled && context.list_view_theme

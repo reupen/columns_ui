@@ -581,7 +581,7 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         LOGFONT font{};
         GetObject(GetWindowFont(wnd), sizeof(font), &font);
-        m_columns_list_view.set_font(&font);
+        m_columns_list_view.set_font(font);
 
         m_columns.set_entries_copy(g_columns, true);
 

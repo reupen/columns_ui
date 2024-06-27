@@ -17,7 +17,7 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
         m_presets_list_view.create(wnd, {14, 18, 240, 67}, true);
         LOGFONT font{};
         GetObject(GetWindowFont(wnd), sizeof(font), &font);
-        m_presets_list_view.set_font(&font);
+        m_presets_list_view.set_font(font);
 
         HWND wnd_mode = GetDlgItem(wnd, IDC_DARK_MODE);
         HWND wnd_theming = GetDlgItem(wnd, IDC_THEMING);

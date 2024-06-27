@@ -4,8 +4,10 @@
 
 ### Features
 
-- Text in the status bar is now rendered using DirectWrite.
-  [[#897](https://github.com/reupen/columns_ui/pull/897)]
+- Text in list views (such as the playlist view, playlist switcther, Filter
+  panel and Item properties) and in the status bar is now rendered using
+  DirectWrite. [[#897](https://github.com/reupen/columns_ui/pull/897),
+  [#904](https://github.com/reupen/columns_ui/pull/904)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).

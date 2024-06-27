@@ -196,7 +196,7 @@ void FilterPanel::g_on_font_items_change()
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
     for (auto& window : g_windows) {
-        window->set_font(&lf);
+        window->set_font(lf);
     }
 }
 
@@ -205,7 +205,7 @@ void FilterPanel::g_on_font_header_change()
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
     for (auto& window : g_windows) {
-        window->set_header_font(&lf);
+        window->set_header_font(lf);
     }
 }
 void FilterPanel::g_redraw_all()
@@ -794,9 +794,9 @@ void FilterPanel::notify_on_initialisation()
 
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
-    set_font(&lf);
+    set_font(lf);
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
-    set_header_font(&lf);
+    set_header_font(lf);
 
     size_t index = g_windows.size();
     if (index == 0) {
