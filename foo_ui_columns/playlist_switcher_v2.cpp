@@ -114,7 +114,7 @@ void PlaylistSwitcher::g_on_font_items_change()
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_font, lf);
     for (auto& window : g_windows) {
-        window->set_font(&lf);
+        window->set_font(lf);
     }
 }
 void PlaylistSwitcher::notify_on_initialisation()
@@ -128,7 +128,7 @@ void PlaylistSwitcher::notify_on_initialisation()
 
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_font, lf);
-    set_font(&lf);
+    set_font(lf);
 }
 void PlaylistSwitcher::notify_on_create()
 {

@@ -19,7 +19,7 @@ struct StatusBarState {
     std::string track_count_text;
     std::string volume_text;
     wil::unique_hfont font;
-    std::optional<uih::direct_write::Context> direct_write_ctx;
+    uih::direct_write::Context::Ptr direct_write_ctx;
     std::optional<uih::direct_write::TextFormat> direct_write_text_format;
     wil::unique_hbitmap lock_bitmap;
     wil::unique_hicon lock_icon;
@@ -50,7 +50,7 @@ void on_status_font_change()
 
     try {
         if (!state->direct_write_ctx)
-            state->direct_write_ctx = std::make_optional<uih::direct_write::Context>();
+            state->direct_write_ctx = uih::direct_write::Context::s_create();
     }
     CATCH_LOG();
 

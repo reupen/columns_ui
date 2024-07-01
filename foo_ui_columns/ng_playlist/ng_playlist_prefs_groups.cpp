@@ -76,7 +76,7 @@ BOOL GroupsPreferencesTab::ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         LOGFONT font{};
         GetObject(GetWindowFont(wnd), sizeof(font), &font);
-        m_groups_list_view.set_font(&font);
+        m_groups_list_view.set_font(font);
 
         std::vector<uih::ListView::InsertItem> insert_items;
         insert_items.reserve(g_groups.get_groups().get_count());

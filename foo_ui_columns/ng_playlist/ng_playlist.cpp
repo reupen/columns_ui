@@ -393,21 +393,21 @@ void PlaylistView::g_on_font_change()
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_items_font, lf);
     for (auto& window : g_windows)
-        window->set_font(&lf);
+        window->set_font(lf);
 }
 void PlaylistView::g_on_header_font_change()
 {
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_header_font, lf);
     for (auto& window : g_windows)
-        window->set_header_font(&lf);
+        window->set_header_font(lf);
 }
 void PlaylistView::g_on_group_header_font_change()
 {
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_group_header_font, lf);
     for (auto& window : g_windows)
-        window->set_group_font(&lf);
+        window->set_group_font(lf);
 }
 void PlaylistView::s_update_all_items()
 {
@@ -751,11 +751,11 @@ void PlaylistView::notify_on_initialisation()
     set_vertical_item_padding(settings::playlist_view_item_padding);
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_items_font, lf);
-    set_font(&lf);
+    set_font(lf);
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_header_font, lf);
-    set_header_font(&lf);
+    set_header_font(lf);
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_group_header_font, lf);
-    set_group_font(&lf);
+    set_group_font(lf);
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);
     set_edge_style(cfg_frame);
