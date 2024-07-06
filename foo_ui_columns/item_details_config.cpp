@@ -17,6 +17,10 @@ std::string format_font_code(const LOGFONT& lf)
         lf.lfItalic ? "italic;"sv : ""sv);
 }
 
+const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR, IDC_GEN_FONT, IDOK, IDCANCEL},
+    .combo_box_ids = {IDC_HALIGN, IDC_VALIGN, IDC_EDGESTYLE},
+    .edit_ids = {IDC_SCRIPT, IDC_COLOUR_CODE, IDC_FONT_CODE}};
+
 } // namespace
 
 INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
@@ -189,9 +193,6 @@ void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this) &&
 {
     m_modal = false;
     m_this = p_this;
-    dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR, IDC_GEN_FONT, IDOK, IDCANCEL},
-        .combo_box_ids = {IDC_HALIGN, IDC_VALIGN, IDC_EDGESTYLE},
-        .edit_ids = {IDC_SCRIPT, IDC_COLOUR_CODE, IDC_FONT_CODE}};
     modeless_dialog_box(
         IDD_ITEM_DETAILS_OPTIONS, dark_mode_config, wnd, [config{std::move(*this)}](auto&&... args) mutable {
             return config.on_message(std::forward<decltype(args)>(args)...);
@@ -201,7 +202,7 @@ void ItemDetailsConfig::run_modeless(HWND wnd, ItemDetails* p_this) &&
 bool ItemDetailsConfig::run_modal(HWND wnd)
 {
     m_modal = true;
-    const auto dialog_result = uih::modal_dialog_box(IDD_ITEM_DETAILS_OPTIONS, wnd,
+    const auto dialog_result = modal_dialog_box(IDD_ITEM_DETAILS_OPTIONS, dark_mode_config, wnd,
         [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
     return dialog_result > 0;
 }

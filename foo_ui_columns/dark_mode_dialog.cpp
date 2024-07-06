@@ -79,7 +79,8 @@ void DialogDarkModeHelper::set_window_theme(auto&& ids, const wchar_t* dark_clas
         return;
 
     for (const auto id : ids)
-        SetWindowTheme(GetDlgItem(m_wnd, id), is_dark ? dark_class : nullptr, nullptr);
+        if (const auto control_wnd = GetDlgItem(m_wnd, id))
+            SetWindowTheme(control_wnd, is_dark ? dark_class : nullptr, nullptr);
 }
 
 void DialogDarkModeHelper::apply_dark_mode_attributes()
