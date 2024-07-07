@@ -82,6 +82,10 @@
   Note: An item group of ‘None’ is used to execute a context menu command
   without any tracks, which isn’t normally useful.
 
+- The Item details options dialogue box now respects the current dark mode
+  setting when opened from the Layout preferences page.
+  [[#909](https://github.com/reupen/columns_ui/pull/909)]
+
 - A bug where dynamic internet radio artwork may not have been immediately shown
   after changing the ‘Displayed track’ in the Artwork view panel was fixed.
   [[#854](https://github.com/reupen/columns_ui/pull/854)]
