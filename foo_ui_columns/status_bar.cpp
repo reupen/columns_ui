@@ -190,38 +190,39 @@ std::string get_playlist_lock_text()
     return lock_name.get_ptr();
 }
 
-int calculate_volume_size(const char* p_text)
+int calculate_volume_size(std::string_view text)
 {
     if (!state->direct_write_text_format)
         return 0;
 
-    return state->direct_write_text_format->measure_text_width(p_text);
+    return state->direct_write_text_format->measure_text_width(mmh::to_utf16(text));
 }
 
-int calculate_selected_length_size(const char* p_text)
+int calculate_selected_length_size(std::string_view text)
 {
     if (!state->direct_write_text_format)
         return 0;
 
-    return std::max(state->direct_write_text_format->measure_text_width(p_text),
+    return std::max(state->direct_write_text_format->measure_text_width(mmh::to_utf16(text)),
         state->direct_write_text_format->measure_text_width(L"0d 00:00:00"));
 }
 
-int calculate_selected_count_size(const char* p_text)
+int calculate_selected_count_size(std::string_view text)
 {
     if (!state->direct_write_text_format)
         return 0;
 
-    return std::max(state->direct_write_text_format->measure_text_width(p_text),
+    return std::max(state->direct_write_text_format->measure_text_width(mmh::to_utf16(text)),
         state->direct_write_text_format->measure_text_width(L"0,000 tracks"));
 }
 
-int calculate_playback_lock_size(const char* p_text)
+int calculate_playback_lock_size(std::string_view text)
 {
     const auto icon_width = uih::get_font_height(state->font.get()) - 2_spx + 2_spx;
 
     return icon_width
-        + (state->direct_write_text_format ? state->direct_write_text_format->measure_text_width(p_text) : 0);
+        + (state->direct_write_text_format ? state->direct_write_text_format->measure_text_width(mmh::to_utf16(text))
+                                           : 0);
 }
 
 std::string get_selected_length_text(unsigned dp = 0)
@@ -293,7 +294,7 @@ void set_part_sizes(unsigned p_parts)
                 state->playlist_lock_text = get_playlist_lock_text();
             }
 
-            const auto part_size = calculate_playback_lock_size(state->playlist_lock_text.c_str()) + part_padding;
+            const auto part_size = calculate_playback_lock_size(state->playlist_lock_text) + part_padding;
             playlist_lock_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 
@@ -301,7 +302,7 @@ void set_part_sizes(unsigned p_parts)
             if ((p_parts & t_part_length))
                 state->track_length_text = get_selected_length_text();
 
-            const auto part_size = calculate_selected_length_size(state->track_length_text.c_str()) + part_padding;
+            const auto part_size = calculate_selected_length_size(state->track_length_text) + part_padding;
             track_length_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 
@@ -309,7 +310,7 @@ void set_part_sizes(unsigned p_parts)
             if ((p_parts & t_part_count))
                 state->track_count_text = get_selected_count_text();
 
-            const auto part_size = calculate_selected_count_size(state->track_count_text.c_str()) + part_padding;
+            const auto part_size = calculate_selected_count_size(state->track_count_text) + part_padding;
             track_count_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 
@@ -317,7 +318,7 @@ void set_part_sizes(unsigned p_parts)
             if ((p_parts & t_part_volume))
                 state->volume_text = get_volume_text();
 
-            const auto part_size = calculate_volume_size(state->volume_text.c_str()) + part_padding;
+            const auto part_size = calculate_volume_size(state->volume_text) + part_padding;
             volume_pos = gsl::narrow<uint8_t>(m_parts.add_item(part_size));
         }
 

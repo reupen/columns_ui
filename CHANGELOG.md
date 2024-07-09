@@ -7,10 +7,14 @@
 - Text in list views (such as the playlist view, playlist switcther, Filter
   panel and Item properties) and in the status bar is now rendered using
   DirectWrite. [[#897](https://github.com/reupen/columns_ui/pull/897),
-  [#904](https://github.com/reupen/columns_ui/pull/904)]
+  [#904](https://github.com/reupen/columns_ui/pull/904),
+  [#910](https://github.com/reupen/columns_ui/pull/910)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).
+
+- The positioning of tooltips in list views for centre- and right-aligned
+  columns was improved. [[#910](https://github.com/reupen/columns_ui/pull/910)]
 
 - Ctrl+Tab and Shift+Ctrl+Tab can now be used in Tab stack and Playlist tabs to
   switch to the next and previous tab respectively.
