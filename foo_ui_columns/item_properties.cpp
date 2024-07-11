@@ -616,16 +616,11 @@ void ItemProperties::on_playback_stop(play_control::t_stop_reason p_reason)
 
 void ItemProperties::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
 {
-    if (!p_fromhook) {
-        bool b_refresh = false;
-        size_t count = m_handles.get_count();
-        for (size_t i = 0; i < count && !b_refresh; i++) {
-            size_t index = pfc_infinite;
-            if (p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, m_handles[i], index))
-                b_refresh = true;
-        }
-        if (b_refresh) {
+    for (auto&& track : m_handles) {
+        if (size_t index{};
+            p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, track, index)) {
             refresh_contents();
+            break;
         }
     }
 }

@@ -86,9 +86,20 @@
   Note: An item group of ‘None’ is used to execute a context menu command
   without any tracks, which isn’t normally useful.
 
+- Item details now updates when it’s tracking the current selection and a
+  component indicates a custom title formatting field has changed.
+  [[#912](https://github.com/reupen/columns_ui/pull/912)]
+
 - The Item details options dialogue box now respects the current dark mode
   setting when opened from the Layout preferences page.
   [[#909](https://github.com/reupen/columns_ui/pull/909)]
+
+- Item properties now updates when a component indicates a custom title
+  formatting field has changed.
+  [[#912](https://github.com/reupen/columns_ui/pull/912)]
+
+  (Although Item properties doesn’t use title formatting, this change makes the
+  panel update when things like playback statistics change.)
 
 - A bug where dynamic internet radio artwork may not have been immediately shown
   after changing the ‘Displayed track’ in the Artwork view panel was fixed.
