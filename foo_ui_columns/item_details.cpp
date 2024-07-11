@@ -508,16 +508,14 @@ void ItemDetails::on_items_selection_change(const bit_array& p_affected, const b
 
 void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
 {
-    if (!p_fromhook && !m_nowplaying_active) {
-        bool b_refresh = false;
-        size_t count = m_handles.get_count();
-        for (size_t i = 0; i < count && !b_refresh; i++) {
-            size_t index = pfc_infinite;
-            if (p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, m_handles[i], index))
-                b_refresh = true;
-        }
-        if (b_refresh) {
+    if (m_nowplaying_active)
+        return;
+
+    for (auto&& track : m_handles) {
+        if (size_t index{};
+            p_items_sorted.bsearch_t(pfc::compare_t<metadb_handle_ptr, metadb_handle_ptr>, track, index)) {
             refresh_contents();
+            break;
         }
     }
 }
