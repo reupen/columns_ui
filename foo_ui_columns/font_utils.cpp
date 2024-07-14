@@ -9,6 +9,11 @@ void FontDescription::estimate_point_size()
     point_size_tenths = -MulDiv(log_font.lfHeight, 720, uih::get_system_dpi_cached().cy);
 }
 
+void FontDescription::recalculate_log_font_height()
+{
+    log_font.lfHeight = -MulDiv(point_size_tenths, uih::get_system_dpi_cached().cy, 720);
+}
+
 void ConfigFontDescription::get_data_raw(stream_writer* stream, abort_callback& aborter)
 {
     write_font(stream, m_font_description.log_font, aborter);

@@ -243,10 +243,8 @@
 #define IDC_DEST                        1135
 #define IDC_DARK_MODE                   1135
 #define IDC_SORT_STRING                 1143
-#define IDC_FONT_DESC                   1144
 #define IDC_CHANGE_TEXT_BACK            1149
 #define IDC_CHANGE_SELBACK              1150
-#define IDC_CHANGE_FONT                 1152
 #define IDC_EDGESTYLE                   1155
 #define IDC_PRECEDENCE                  1156
 #define IDC_HALIGN                      1156
@@ -281,7 +279,9 @@
 #define IDC_DARK_MODE_USE_SYSTEM_SETTING 1183
 #define IDC_FONT_ELEMENT                1184
 #define IDC_FONT_MODE                   1185
+#define IDC_FONT_FAMILY                 1186
 #define IDC_WIDTH_SPIN                  1187
+#define IDC_FONT_FACE                   1187
 #define IDC_HEIGHT_SPIN                 1188
 #define IDC_ICON_PATH                   1189
 #define IDC_BUTTONS_H1                  1190
@@ -289,6 +289,8 @@
 #define IDC_INDENTATION_AMOUNT          1191
 #define IDC_TOOLBAR_OPTIONS_H1          1192
 #define IDC_H2_TITLE                    1192
+#define IDC_FONT_SIZE                   1192
+#define IDC_FONT_SIZE_SPIN              1193
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -298,7 +300,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1192
+#define _APS_NEXT_CONTROL_VALUE         1194
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

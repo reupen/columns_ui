@@ -8,10 +8,27 @@
   panel and Item properties) and in the status bar is now rendered using
   DirectWrite. [[#897](https://github.com/reupen/columns_ui/pull/897),
   [#904](https://github.com/reupen/columns_ui/pull/904),
-  [#910](https://github.com/reupen/columns_ui/pull/910)]
+  [#910](https://github.com/reupen/columns_ui/pull/910),
+  [#913](https://github.com/reupen/columns_ui/pull/913),
+  [#915](https://github.com/reupen/columns_ui/pull/915)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).
+
+  Tabular figures (numerals) are now also used for supported fonts that default
+  to proportional figures (such as some Segoe UI variants).
+
+- A new DirectWrite-based font picker was added to the Colours and fonts
+  preferences page. [[#916](https://github.com/reupen/columns_ui/pull/916)]
+
+  This features better grouping of font families and now allows the entry of
+  non-integer font sizes (to one decimal place).
+
+  Note that some font styles will currently revert to the closest supported GDI
+  equivalent when selected.
+
+  Some legacy font types that aren’t supported by DirectWrite are also no longer
+  selectable. Furthermore, some previously hidden fonts may now be visible.
 
 - The positioning of tooltips in list views for centre- and right-aligned
   columns was improved. [[#910](https://github.com/reupen/columns_ui/pull/910)]

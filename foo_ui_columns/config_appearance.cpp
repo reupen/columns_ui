@@ -184,8 +184,8 @@ void refresh_appearance_prefs()
 {
     if (g_tab_appearance_fonts.is_active()) {
         g_tab_appearance_fonts.update_mode_combobox();
-        g_tab_appearance_fonts.update_font_desc();
-        g_tab_appearance_fonts.update_change();
+        g_tab_appearance_fonts.restore_font_selection_state();
+        g_tab_appearance_fonts.enable_or_disable_font_selection();
     }
 }
 

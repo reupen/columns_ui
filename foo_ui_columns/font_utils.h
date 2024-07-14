@@ -7,6 +7,7 @@ struct FontDescription {
     int point_size_tenths{};
 
     void estimate_point_size();
+    void recalculate_log_font_height();
 };
 
 class ConfigFontDescription : public cfg_var {
