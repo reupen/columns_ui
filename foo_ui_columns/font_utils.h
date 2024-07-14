@@ -7,6 +7,7 @@ struct FontDescription {
     int point_size_tenths{};
 
     void estimate_point_size();
+    void recalculate_log_font_height();
 };
 
 class ConfigFontDescription : public cfg_var {
@@ -37,5 +38,13 @@ void get_next_font_size_step(LOGFONT& log_font, bool up);
 
 LOGFONT read_font(stream_reader* stream, abort_callback& aborter);
 void write_font(stream_writer* stream, const LOGFONT& log_font, abort_callback& aborter);
+
+struct SystemFont {
+    LOGFONT log_font{};
+    float size{};
+};
+
+SystemFont get_icon_font_for_dpi(unsigned dpi);
+SystemFont get_menu_font_for_dpi(unsigned dpi);
 
 } // namespace cui::fonts
