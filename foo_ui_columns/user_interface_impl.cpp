@@ -237,6 +237,13 @@ public:
     }
 };
 
+class InitQuit : public initquit {
+    void on_init() override { fbh::enable_wil_console_logging(); }
+    void on_quit() override {}
+};
+
+initquit_factory_t<InitQuit> _;
+
 user_interface_factory<UserInterfaceImpl> _user_interface_impl;
 colours::client::factory<CoreColoursClient> _core_colours_client;
 fonts::client::factory<CoreDefaultFontClient> _core_default_font_client;

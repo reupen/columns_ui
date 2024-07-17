@@ -68,6 +68,9 @@
   (The confirmation dialogue box can be bypassed by holding down Shift while
   clicking the button.)
 
+- Some diagnostic logging to the foobar2000 console was added when unexpected
+  errors occur. [[#916](https://github.com/reupen/columns_ui/pull/916)]
+
 ### Bug fixes
 
 - A bug sometimes causing the playlist view vertical scroll position to show

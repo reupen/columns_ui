@@ -48,6 +48,8 @@ const wchar_t* unsupported_os_message
 
 HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
 {
+    fbh::enable_wil_console_logging();
+
     if (!IsWindows7SP1OrGreater()) {
         MessageBox(
             nullptr, unsupported_os_message, L"Columns UI - Unsupported operating system", MB_OK | MB_ICONEXCLAMATION);
