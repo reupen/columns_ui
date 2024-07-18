@@ -31,27 +31,28 @@ void FontManagerData::register_common_callback(cui::fonts::common_callback* p_ca
     m_callbacks.add_item(p_callback);
 }
 
-void FontManagerData::find_by_guid(const GUID& p_guid, entry_ptr_t& p_out)
+FontManagerData::entry_ptr_t FontManagerData::find_by_guid(GUID id)
 {
-    size_t count = m_entries.get_count();
-    for (size_t i = 0; i < count; i++) {
-        if (m_entries[i]->guid == p_guid) {
-            p_out = m_entries[i];
-            return;
+    for (auto&& entry : m_entries) {
+        if (entry->guid == id) {
+            return entry;
         }
     }
-    {
-        p_out = std::make_shared<Entry>();
-        p_out->guid = p_guid;
-        cui::fonts::client::ptr ptr;
-        if (cui::fonts::client::create_by_guid(p_guid, ptr)) {
-            if (ptr->get_default_font_type() == cui::fonts::font_type_items)
-                p_out->font_mode = cui::fonts::font_mode_common_items;
-            else
-                p_out->font_mode = cui::fonts::font_mode_common_labels;
-        }
-        m_entries.add_item(p_out);
+
+    auto entry = std::make_shared<Entry>();
+    entry->guid = id;
+    cui::fonts::client::ptr ptr;
+
+    if (cui::fonts::client::create_by_guid(id, ptr)) {
+        if (ptr->get_default_font_type() == cui::fonts::font_type_items)
+            entry->font_mode = cui::fonts::font_mode_common_items;
+        else
+            entry->font_mode = cui::fonts::font_mode_common_labels;
     }
+
+    m_entries.add_item(entry);
+
+    return entry;
 }
 
 void FontManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)

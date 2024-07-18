@@ -39,7 +39,7 @@ public:
     entry_ptr_t m_common_items_entry;
     entry_ptr_t m_common_labels_entry;
 
-    void find_by_guid(const GUID& p_guid, entry_ptr_t& p_out);
+    entry_ptr_t find_by_guid(GUID id);
 
     void register_common_callback(cui::fonts::common_callback* p_callback);
     void deregister_common_callback(cui::fonts::common_callback* p_callback);

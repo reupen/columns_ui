@@ -12,8 +12,7 @@ public:
     void get_font(const GUID& p_guid, LOGFONT& p_out) const override
     {
         system_appearance_manager::initialise();
-        FontManagerData::entry_ptr_t p_entry;
-        g_font_manager_data.find_by_guid(p_guid, p_entry);
+        const auto p_entry = g_font_manager_data.find_by_guid(p_guid);
         if (p_entry->font_mode == fonts::font_mode_common_items)
             get_font(fonts::font_type_items, p_out);
         else if (p_entry->font_mode == fonts::font_mode_common_labels)
@@ -43,8 +42,7 @@ public:
 
     void set_font(const GUID& p_guid, const LOGFONT& p_font) override
     {
-        FontManagerData::entry_ptr_t p_entry;
-        g_font_manager_data.find_by_guid(p_guid, p_entry);
+        const auto p_entry = g_font_manager_data.find_by_guid(p_guid);
         p_entry->font_mode = fonts::font_mode_custom;
         p_entry->font_description.log_font = p_font;
         p_entry->font_description.estimate_point_size();
@@ -69,8 +67,7 @@ public:
     [[nodiscard]] LOGFONT get_client_font(GUID p_guid, unsigned dpi) const override
     {
         system_appearance_manager::initialise();
-        FontManagerData::entry_ptr_t p_entry;
-        g_font_manager_data.find_by_guid(p_guid, p_entry);
+        const auto p_entry = g_font_manager_data.find_by_guid(p_guid);
 
         if (p_entry->font_mode == fonts::font_mode_common_items)
             return get_common_font(fonts::font_type_items, dpi);
@@ -91,15 +88,10 @@ public:
 
         if (entry->font_mode == fonts::font_mode_system) {
             if (p_type == fonts::font_type_items) {
-                LOGFONT lf{};
-                uih::dpi::system_parameters_info_for_dpi(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, dpi);
-                return lf;
+                return fonts::get_items_font_for_dpi(dpi).log_font;
             }
 
-            NONCLIENTMETRICS ncm{};
-            ncm.cbSize = sizeof(NONCLIENTMETRICS);
-            uih::dpi::system_parameters_info_for_dpi(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, dpi);
-            return ncm.lfMenuFont;
+            return fonts::get_labels_font_for_dpi(dpi).log_font;
         }
 
         return entry->get_normalised_font(dpi);
@@ -107,8 +99,7 @@ public:
 
     void set_client_font(GUID guid, const LOGFONT& p_font, int point_size_tenths) override
     {
-        FontManagerData::entry_ptr_t p_entry;
-        g_font_manager_data.find_by_guid(guid, p_entry);
+        const auto p_entry = g_font_manager_data.find_by_guid(guid);
         p_entry->font_mode = fonts::font_mode_custom;
         p_entry->font_description.log_font = p_font;
         p_entry->font_description.point_size_tenths = point_size_tenths;

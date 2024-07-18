@@ -52,7 +52,7 @@ void TabFonts::on_face_change()
 
 void TabFonts::update_font_size_edit()
 {
-    const auto font_size_tenths = m_element_ptr->font_description.point_size_tenths;
+    const auto font_size_tenths = get_current_font_size();
     const auto font_size_float = gsl::narrow_cast<float>(font_size_tenths) / 10.0f;
     const auto font_size_text = fmt::format(L"{:.01f}", font_size_float);
 
@@ -63,7 +63,7 @@ void TabFonts::update_font_size_edit()
 
 void TabFonts::update_font_size_spin() const
 {
-    const auto font_size_tenths = m_element_ptr->font_description.point_size_tenths;
+    const auto font_size_tenths = get_current_font_size();
     SendMessage(m_font_size_spin, UDM_SETPOS32, 0, font_size_tenths);
 }
 
@@ -225,7 +225,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_MEASUREITEM: {
-        auto mis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lp);
+        const auto mis = reinterpret_cast<LPMEASUREITEMSTRUCT>(lp);
 
         if (!m_direct_write_context || mis->CtlType != ODT_COMBOBOX
             || (mis->CtlID != IDC_FONT_FAMILY && mis->CtlID != IDC_FONT_FACE))
@@ -244,9 +244,9 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return TRUE;
     }
     case WM_DRAWITEM: {
-        auto dis = reinterpret_cast<LPDRAWITEMSTRUCT>(lp);
+        const auto dis = reinterpret_cast<LPDRAWITEMSTRUCT>(lp);
 
-        if (auto result = handle_wm_drawitem(dis); result)
+        if (const auto result = handle_wm_drawitem(dis); result)
             return *result;
 
         break;
@@ -275,7 +275,8 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         switch (wp) {
         case IDC_FONT_MODE | (CBN_SELCHANGE << 16): {
             const int idx = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-            m_element_ptr->font_mode = static_cast<cui::fonts::font_mode_t>(ComboBox_GetItemData((HWND)lp, idx));
+            m_element_ptr->font_mode
+                = static_cast<cui::fonts::font_mode_t>(ComboBox_GetItemData(reinterpret_cast<HWND>(lp), idx));
             restore_font_selection_state();
             enable_or_disable_font_selection();
             on_font_changed();
@@ -291,7 +292,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     m_element_ptr = g_font_manager_data.m_common_labels_entry;
                 else if (idx >= 2) {
                     m_element_api = m_fonts_client_list[idx - 2].m_ptr;
-                    g_font_manager_data.find_by_guid(m_fonts_client_list[idx - 2].m_guid, m_element_ptr);
+                    m_element_ptr = g_font_manager_data.find_by_guid(m_fonts_client_list[idx - 2].m_guid);
                 }
             }
             update_mode_combobox();
@@ -422,8 +423,7 @@ void TabFonts::on_font_changed()
     g_font_manager_data.g_on_common_font_changed(1 << index_element);
 
     for (auto&& client : m_fonts_client_list) {
-        FontManagerData::entry_ptr_t p_data;
-        g_font_manager_data.find_by_guid(client.m_guid, p_data);
+        const auto p_data = g_font_manager_data.find_by_guid(client.m_guid);
         if (index_element == 0 && p_data->font_mode == cui::fonts::font_mode_common_items) {
             client.m_ptr->on_font_changed();
         } else if (index_element == 1 && p_data->font_mode == cui::fonts::font_mode_common_labels)
@@ -478,7 +478,7 @@ LOGFONT TabFonts::get_current_log_font() const
 {
     LOGFONT log_font{};
 
-    size_t index_element = ComboBox_GetCurSel(m_element_combobox);
+    const size_t index_element = ComboBox_GetCurSel(m_element_combobox);
     if (index_element <= 1)
         fb2k::std_api_get<cui::fonts::manager>()->get_font(
             static_cast<cui::fonts::font_type_t>(index_element), log_font);
@@ -486,6 +486,33 @@ LOGFONT TabFonts::get_current_log_font() const
         fb2k::std_api_get<cui::fonts::manager>()->get_font(m_element_api->get_client_guid(), log_font);
 
     return log_font;
+}
+
+int TabFonts::get_current_font_size() const
+{
+    auto entry = m_element_ptr;
+    const auto is_common_items = entry->font_mode == cui::fonts::font_mode_common_items;
+    const auto is_common_labels = entry->font_mode == cui::fonts::font_mode_common_labels;
+
+    const auto resolved_entry = [&] {
+        if (is_common_items)
+            return g_font_manager_data.m_common_items_entry;
+
+        if (is_common_labels)
+            return g_font_manager_data.m_common_labels_entry;
+
+        return entry;
+    }();
+
+    if (resolved_entry->font_mode == cui::fonts::font_mode_system) {
+        const auto system_font = is_common_items ? cui::fonts::get_items_font_for_dpi(USER_DEFAULT_SCREEN_DPI)
+                                                 : cui::fonts::get_labels_font_for_dpi(USER_DEFAULT_SCREEN_DPI);
+
+        const auto point_size = system_font.size * 72.0f / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI);
+        return gsl::narrow_cast<int>(std::roundf(point_size * 10.0f));
+    }
+
+    return entry->font_description.point_size_tenths;
 }
 
 void TabFonts::update_mode_combobox() const

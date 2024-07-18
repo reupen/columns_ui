@@ -178,7 +178,51 @@ const GUID filter_items = {0xd93f1ef3, 0x4aee, 0x4632, {0xb5, 0xbf, 0x2, 0x20, 0
 
 // {FCA8752B-C064-41c4-9BE3-E125C7C7FC34}
 const GUID filter_header = {0xfca8752b, 0xc064, 0x41c4, {0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34}};
+
 } // namespace fonts
+
+namespace cui::fonts {
+
+namespace {
+
+float scale_font_size(long height, unsigned dpi)
+{
+    return gsl::narrow_cast<float>(height) * gsl::narrow_cast<float>(dpi)
+        / gsl::narrow_cast<float>(uih::get_system_dpi_cached().cx);
+}
+
+} // namespace
+
+SystemFont get_items_font_for_dpi(unsigned dpi)
+{
+    LOGFONT lf{};
+    try {
+        uih::dpi::system_parameters_info_for_dpi(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, dpi);
+    } catch (const uih::dpi::DpiAwareFunctionUnavailableError&) {
+        SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0);
+        lf.lfHeight = MulDiv(lf.lfHeight, dpi, uih::get_system_dpi_cached().cx);
+
+        return {lf, scale_font_size(-lf.lfHeight, dpi)};
+    }
+
+    return {lf, gsl::narrow_cast<float>(-lf.lfHeight)};
+}
+
+SystemFont get_labels_font_for_dpi(unsigned dpi)
+{
+    NONCLIENTMETRICS ncm{};
+    ncm.cbSize = sizeof(NONCLIENTMETRICS);
+    try {
+        uih::dpi::system_parameters_info_for_dpi(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, dpi);
+    } catch (const uih::dpi::DpiAwareFunctionUnavailableError&) {
+        SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+        ncm.lfMenuFont.lfHeight = MulDiv(ncm.lfMenuFont.lfHeight, dpi, uih::get_system_dpi_cached().cx);
+        return {ncm.lfMenuFont, scale_font_size(-ncm.lfMenuFont.lfHeight, dpi)};
+    }
+    return {ncm.lfMenuFont, gsl::narrow_cast<float>(-ncm.lfMenuFont.lfHeight)};
+}
+
+} // namespace cui::fonts
 
 void refresh_appearance_prefs()
 {

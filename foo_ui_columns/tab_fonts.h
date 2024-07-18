@@ -6,14 +6,8 @@
 class TabFonts : public PreferencesTab {
 public:
     void update_mode_combobox() const;
-
-    LOGFONT get_current_log_font() const;
-
-    void enable_or_disable_font_selection() const;
-
     void restore_font_selection_state();
-
-    void on_font_changed();
+    void enable_or_disable_font_selection() const;
 
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     HWND create(HWND wnd) override;
@@ -23,6 +17,10 @@ public:
 
 private:
     std::optional<INT_PTR> handle_wm_drawitem(LPDRAWITEMSTRUCT dis);
+
+    LOGFONT get_current_log_font() const;
+    int get_current_font_size() const;
+    void on_font_changed();
 
     void on_family_change();
     void on_face_change();

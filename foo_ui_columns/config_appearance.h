@@ -68,6 +68,19 @@ public:
 extern cui::colours::ColourManagerData g_colour_manager_data;
 extern FontManagerData g_font_manager_data;
 
+namespace cui::fonts {
+
+struct SystemFont {
+    LOGFONT log_font{};
+    float size{};
+};
+
+SystemFont get_items_font_for_dpi(unsigned dpi);
+SystemFont get_labels_font_for_dpi(unsigned dpi);
+float resolve_font_size(GUID id);
+
+} // namespace cui::fonts
+
 namespace cui::colours {
 
 enum class DarkModeStatus {
