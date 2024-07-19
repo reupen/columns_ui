@@ -173,8 +173,8 @@ private:
                 g_font_manager_data.g_on_common_font_changed(
                     wp == SPI_GETICONTITLELOGFONT ? fonts::font_type_flag_items : fonts::font_type_flag_labels);
                 for (size_t i = 0; i < count; i++) {
-                    FontManagerData::entry_ptr_t p_data;
-                    g_font_manager_data.find_by_guid(m_fonts_client_list[i].m_guid, p_data);
+                    const auto p_data = g_font_manager_data.find_by_guid(m_fonts_client_list[i].m_guid);
+
                     if (wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == fonts::font_mode_common_items)
                         m_fonts_client_list[i].m_ptr->on_font_changed();
                     else if (wp == SPI_GETICONTITLELOGFONT && p_data->font_mode == fonts::font_mode_common_labels)

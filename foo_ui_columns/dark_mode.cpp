@@ -214,6 +214,10 @@ COLORREF get_dark_colour(ColourID colour_id)
         return get_base_dark_colour(DarkColourID::DARK_700);
     case ColourID::CheckboxText:
         return get_base_dark_colour(DarkColourID::DARK_999);
+    case ColourID::ComboBoxEditBackground:
+        return get_base_dark_colour(DarkColourID::DARK_200);
+    case ColourID::ComboBoxEditText:
+        return get_base_dark_colour(DarkColourID::DARK_999);
     case ColourID::EditBackground:
         return get_base_dark_colour(DarkColourID::DARK_200);
     case ColourID::LayoutBackground:

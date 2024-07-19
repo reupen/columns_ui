@@ -9,6 +9,11 @@ void FontDescription::estimate_point_size()
     point_size_tenths = -MulDiv(log_font.lfHeight, 720, uih::get_system_dpi_cached().cy);
 }
 
+void FontDescription::recalculate_log_font_height()
+{
+    log_font.lfHeight = -MulDiv(point_size_tenths, uih::get_system_dpi_cached().cy, 720);
+}
+
 void ConfigFontDescription::get_data_raw(stream_writer* stream, abort_callback& aborter)
 {
     write_font(stream, m_font_description.log_font, aborter);
@@ -164,6 +169,45 @@ int CALLBACK FontSizesProc(const LOGFONT* log_font, const TEXTMETRIC* ptm, DWORD
 
     font_size_info->changed = true;
     return 0;
+}
+
+namespace {
+
+float scale_font_size(long height, unsigned dpi)
+{
+    return gsl::narrow_cast<float>(height) * gsl::narrow_cast<float>(dpi)
+        / gsl::narrow_cast<float>(uih::get_system_dpi_cached().cx);
+}
+
+} // namespace
+
+SystemFont get_icon_font_for_dpi(unsigned dpi)
+{
+    LOGFONT lf{};
+    try {
+        uih::dpi::system_parameters_info_for_dpi(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, dpi);
+    } catch (const uih::dpi::DpiAwareFunctionUnavailableError&) {
+        SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0);
+        lf.lfHeight = MulDiv(lf.lfHeight, dpi, uih::get_system_dpi_cached().cx);
+
+        return {lf, scale_font_size(-lf.lfHeight, dpi)};
+    }
+
+    return {lf, gsl::narrow_cast<float>(-lf.lfHeight)};
+}
+
+SystemFont get_menu_font_for_dpi(unsigned dpi)
+{
+    NONCLIENTMETRICS ncm{};
+    ncm.cbSize = sizeof(NONCLIENTMETRICS);
+    try {
+        uih::dpi::system_parameters_info_for_dpi(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, dpi);
+    } catch (const uih::dpi::DpiAwareFunctionUnavailableError&) {
+        SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+        ncm.lfMenuFont.lfHeight = MulDiv(ncm.lfMenuFont.lfHeight, dpi, uih::get_system_dpi_cached().cx);
+        return {ncm.lfMenuFont, scale_font_size(-ncm.lfMenuFont.lfHeight, dpi)};
+    }
+    return {ncm.lfMenuFont, gsl::narrow_cast<float>(-ncm.lfMenuFont.lfHeight)};
 }
 
 } // namespace cui::fonts

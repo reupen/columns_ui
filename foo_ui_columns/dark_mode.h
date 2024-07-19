@@ -10,6 +10,8 @@ namespace cui::dark {
 enum class ColourID {
     CheckboxDisabledText,
     CheckboxText,
+    ComboBoxEditBackground,
+    ComboBoxEditText,
     EditBackground,
     LayoutBackground,
     PanelCaptionText,
