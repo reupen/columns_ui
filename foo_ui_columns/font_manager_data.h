@@ -40,6 +40,7 @@ public:
     entry_ptr_t m_common_labels_entry;
 
     entry_ptr_t find_by_guid(GUID id);
+    cui::fonts::FontDescription resolve_font_description(const entry_ptr_t& entry);
 
     void register_common_callback(cui::fonts::common_callback* p_callback);
     void deregister_common_callback(cui::fonts::common_callback* p_callback);

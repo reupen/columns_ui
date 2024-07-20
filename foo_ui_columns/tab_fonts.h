@@ -18,8 +18,8 @@ public:
 private:
     std::optional<INT_PTR> handle_wm_drawitem(LPDRAWITEMSTRUCT dis);
 
-    LOGFONT get_current_log_font() const;
     int get_current_font_size_tenths() const;
+    FontManagerData::entry_ptr_t get_current_resolved_entry() const;
     void on_font_changed();
 
     void on_family_change();
@@ -54,7 +54,7 @@ private:
     std::vector<std::optional<uih::direct_write::TextFormat>> m_font_families_text_formats;
     std::vector<std::optional<uih::direct_write::TextFormat>> m_font_faces_text_formats;
     std::optional<std::reference_wrapper<uih::direct_write::FontFamily>> m_font_family;
-    std::optional<uih::direct_write::Font> m_font_face;
+    std::optional<std::reference_wrapper<uih::direct_write::Font>> m_font_face;
 
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };

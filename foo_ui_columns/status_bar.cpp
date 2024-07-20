@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "status_bar.h"
 
+#include "font_manager_v3.h"
 #include "main_window.h"
 #include "metadb_helpers.h"
 
@@ -40,11 +41,8 @@ void on_status_font_change()
     state->lock_icon.reset();
     state->lock_bitmap.reset();
 
-    LOGFONT log_font{};
-    fb2k::std_api_get<fonts::manager>()->get_font(font_client_status_guid, log_font);
-
-    const LOGFONT log_font_unscaled = fb2k::std_api_get<fonts::manager_v2>()->get_client_font(font_client_status_guid);
-
+    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(font_client_status_guid);
+    const auto log_font = font->log_font();
     state->font.reset(CreateFontIndirect(&log_font));
     state->direct_write_text_format.reset();
 
@@ -52,11 +50,14 @@ void on_status_font_change()
         if (!state->direct_write_ctx)
             state->direct_write_ctx = uih::direct_write::Context::s_create();
     }
-    CATCH_LOG();
+    CATCH_LOG()
 
     if (state->direct_write_ctx) {
-        state->direct_write_text_format = state->direct_write_ctx->create_text_format_with_fallback(
-            log_font_unscaled, gsl::narrow_cast<float>(-log_font_unscaled.lfHeight));
+        wil::com_ptr_t<IDWriteTextFormat> text_format{};
+        text_format.attach(font->create_text_format().detach());
+
+        state->direct_write_text_format
+            = text_format ? std::make_optional(state->direct_write_ctx->wrap_text_format(text_format)) : std::nullopt;
     }
 
     SetWindowFont(g_status, state->font.get(), TRUE);

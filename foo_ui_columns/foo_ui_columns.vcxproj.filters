@@ -614,6 +614,9 @@
     <ClCompile Include="font_utils.cpp">
       <Filter>Colours and fonts</Filter>
     </ClCompile>
+    <ClCompile Include="font_manager_v3.cpp">
+      <Filter>Colours and fonts</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -894,6 +897,9 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="font_utils.h">
+      <Filter>Colours and fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="font_manager_v3.h">
       <Filter>Colours and fonts</Filter>
     </ClInclude>
   </ItemGroup>

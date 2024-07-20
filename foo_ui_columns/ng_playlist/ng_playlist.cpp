@@ -2,6 +2,7 @@
 
 #include "ng_playlist.h"
 
+#include "font_manager_v3.h"
 #include "ng_playlist_groups.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
@@ -388,27 +389,35 @@ void PlaylistView::g_on_vertical_item_padding_change()
     for (auto& window : g_windows)
         window->set_vertical_item_padding(settings::playlist_view_item_padding);
 }
+
 void PlaylistView::g_on_font_change()
 {
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_items_font, lf);
+    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_items_font);
+    const auto text_format = font->create_wil_text_format();
+    const auto log_font = font->log_font();
+
     for (auto& window : g_windows)
-        window->set_font(lf);
+        window->set_font(text_format, log_font);
 }
+
 void PlaylistView::g_on_header_font_change()
 {
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_header_font, lf);
+    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_header_font);
+    const auto log_font = font->log_font();
+
     for (auto& window : g_windows)
-        window->set_header_font(lf);
+        window->set_header_font(log_font);
 }
+
 void PlaylistView::g_on_group_header_font_change()
 {
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_group_header_font, lf);
+    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_group_header_font);
+    const auto text_format = font->create_wil_text_format();
+
     for (auto& window : g_windows)
-        window->set_group_font(lf);
+        window->set_group_font(text_format);
 }
+
 void PlaylistView::s_update_all_items()
 {
     for (auto& window : g_windows)
@@ -749,13 +758,19 @@ void PlaylistView::notify_on_initialisation()
     set_always_show_focus(
         config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false));
     set_vertical_item_padding(settings::playlist_view_item_padding);
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_items_font, lf);
-    set_font(lf);
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_header_font, lf);
-    set_header_font(lf);
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_group_header_font, lf);
-    set_group_font(lf);
+
+    const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
+    const auto items_font = font_api->get_client_font(g_guid_items_font);
+    const auto items_text_format = items_font->create_wil_text_format();
+    const auto items_log_font = items_font->log_font();
+    set_font(items_text_format, items_log_font);
+
+    const auto header_font = font_api->get_client_font(g_guid_header_font);
+    set_header_font(header_font->log_font());
+
+    const auto group_font = font_api->get_client_font(g_guid_group_header_font);
+    set_group_font(group_font->create_wil_text_format());
+
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);
     set_edge_style(cfg_frame);

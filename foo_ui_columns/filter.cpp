@@ -4,6 +4,7 @@
 #include "filter_config_var.h"
 #include "filter_search_bar.h"
 #include "filter_utils.h"
+#include "font_manager_v3.h"
 
 namespace cui::panels::filter {
 
@@ -193,19 +194,22 @@ void FilterPanel::s_on_dark_mode_status_change()
 
 void FilterPanel::g_on_font_items_change()
 {
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
+    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_filter_items_font_client);
+    const auto text_format = font->create_wil_text_format();
+    const auto log_font = font->log_font();
+
     for (auto& window : g_windows) {
-        window->set_font(lf);
+        window->set_font(text_format, log_font);
     }
 }
 
 void FilterPanel::g_on_font_header_change()
 {
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
+    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_filter_header_font_client);
+    const auto log_font = font->log_font();
+
     for (auto& window : g_windows) {
-        window->set_header_font(lf);
+        window->set_header_font(log_font);
     }
 }
 void FilterPanel::g_redraw_all()
@@ -792,11 +796,14 @@ void FilterPanel::notify_on_initialisation()
     set_sorting_enabled(cfg_allow_sorting);
     set_show_sort_indicators(cfg_show_sort_indicators);
 
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_items_font_client, lf);
-    set_font(lf);
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_filter_header_font_client, lf);
-    set_header_font(lf);
+    const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
+    const auto items_font = font_api->get_client_font(g_guid_filter_items_font_client);
+    const auto items_text_format = items_font->create_wil_text_format();
+    const auto items_log_font = items_font->log_font();
+    set_font(items_text_format, items_log_font);
+
+    const auto header_font = font_api->get_client_font(g_guid_filter_header_font_client);
+    set_header_font(header_font->log_font());
 
     size_t index = g_windows.size();
     if (index == 0) {
