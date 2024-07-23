@@ -24,6 +24,7 @@ public:
 
     void get_font(const fonts::font_type_t p_type, LOGFONT& p_out) const override
     {
+        system_appearance_manager::initialise();
         FontManagerData::entry_ptr_t p_entry;
         if (p_type == fonts::font_type_items)
             p_entry = g_font_manager_data.m_common_items_entry;
@@ -45,7 +46,7 @@ public:
         const auto p_entry = g_font_manager_data.find_by_guid(p_guid);
         p_entry->font_mode = fonts::font_mode_custom;
         p_entry->font_description.log_font = p_font;
-        p_entry->font_description.estimate_point_size();
+        p_entry->font_description.estimate_point_and_dip_size();
         fonts::client::ptr ptr;
         if (fonts::client::create_by_guid(p_guid, ptr))
             ptr->on_font_changed();
@@ -80,6 +81,7 @@ public:
 
     [[nodiscard]] LOGFONT get_common_font(const fonts::font_type_t p_type, unsigned dpi) const override
     {
+        system_appearance_manager::initialise();
         FontManagerData::entry_ptr_t entry;
         if (p_type == fonts::font_type_items)
             entry = g_font_manager_data.m_common_items_entry;

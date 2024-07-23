@@ -7,11 +7,11 @@ FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 {
     m_common_items_entry = std::make_shared<Entry>();
     uGetIconFont(&m_common_items_entry->font_description.log_font);
-    m_common_items_entry->font_description.estimate_point_size();
+    m_common_items_entry->font_description.estimate_point_and_dip_size();
 
     m_common_labels_entry = std::make_shared<Entry>();
     uGetMenuFont(&m_common_labels_entry->font_description.log_font);
-    m_common_labels_entry->font_description.estimate_point_size();
+    m_common_labels_entry->font_description.estimate_point_and_dip_size();
 }
 
 void FontManagerData::g_on_common_font_changed(uint32_t mask)
@@ -53,6 +53,37 @@ FontManagerData::entry_ptr_t FontManagerData::find_by_guid(GUID id)
     m_entries.add_item(entry);
 
     return entry;
+}
+
+cui::fonts::FontDescription FontManagerData::resolve_font_description(const entry_ptr_t& entry)
+{
+    const auto is_common_items = entry->font_mode == cui::fonts::font_mode_common_items;
+    const auto is_common_labels = entry->font_mode == cui::fonts::font_mode_common_labels;
+
+    const auto resolved_entry = [&] {
+        if (is_common_items)
+            return m_common_items_entry;
+
+        if (is_common_labels)
+            return m_common_labels_entry;
+
+        return entry;
+    }();
+
+    if (resolved_entry->font_mode == cui::fonts::font_mode_system) {
+        const auto system_font = is_common_items ? cui::fonts::get_icon_font_for_dpi(USER_DEFAULT_SCREEN_DPI)
+                                                 : cui::fonts::get_menu_font_for_dpi(USER_DEFAULT_SCREEN_DPI);
+
+        cui::fonts::FontDescription description{system_font.log_font};
+        description.fill_wss();
+        const auto point_size = system_font.size * 72.0f / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI);
+        description.point_size_tenths = gsl::narrow_cast<int>(point_size * 10.0f + 0.5f);
+        description.dip_size = system_font.size;
+        return description;
+    }
+
+    resolved_entry->font_description.fill_wss();
+    return resolved_entry->font_description;
 }
 
 void FontManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, abort_callback& p_abort)
@@ -126,7 +157,7 @@ FontManagerData::Entry::Entry()
 void FontManagerData::Entry::reset_fonts()
 {
     uGetIconFont(&font_description.log_font);
-    font_description.estimate_point_size();
+    font_description.estimate_point_and_dip_size();
 }
 
 void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size, uint32_t type, abort_callback& p_abort)
@@ -148,7 +179,7 @@ void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size,
             break;
         case identifier_font:
             reader.read_item(font_description.log_font);
-            font_description.estimate_point_size();
+            font_description.estimate_point_and_dip_size();
             break;
         case identifier_point_size_tenths:
             reader.read_item(font_description.point_size_tenths);
@@ -174,9 +205,9 @@ void FontManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_
 void FontManagerData::Entry::read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort)
 {
     p_stream->read_lendian_t(guid, p_abort);
-    p_stream->read_lendian_t((uint32_t&)font_mode, p_abort);
+    p_stream->read_lendian_t(reinterpret_cast<uint32_t&>(font_mode), p_abort);
     font_description.log_font = cui::fonts::read_font(p_stream, p_abort);
-    font_description.estimate_point_size();
+    font_description.estimate_point_and_dip_size();
 }
 
 void FontManagerData::Entry::read_extra_data(stream_reader* stream, abort_callback& aborter)
@@ -186,6 +217,23 @@ void FontManagerData::Entry::read_extra_data(stream_reader* stream, abort_callba
     stream_reader_limited_ref limited_reader(stream, size);
 
     limited_reader.read_lendian_t(font_description.point_size_tenths, aborter);
+    font_description.estimate_dip_size();
+
+    try {
+        const auto has_wss = limited_reader.read_lendian_t<bool>(aborter);
+
+        if (!has_wss)
+            return;
+
+        cui::fonts::WeightStretchStyle wss;
+        wss.family_name = mmh::to_utf16(mmh::to_string_view(limited_reader.read_string(aborter)));
+        wss.weight = static_cast<DWRITE_FONT_WEIGHT>(limited_reader.read_lendian_t<int32_t>(aborter));
+        wss.stretch = static_cast<DWRITE_FONT_STRETCH>(limited_reader.read_lendian_t<int32_t>(aborter));
+        wss.style = static_cast<DWRITE_FONT_STYLE>(limited_reader.read_lendian_t<int32_t>(aborter));
+        font_description.dip_size = limited_reader.read_lendian_t<float>(aborter);
+        font_description.wss = wss;
+    } catch (const exception_io_data_truncation&) {
+    }
 }
 
 LOGFONT FontManagerData::Entry::get_normalised_font(unsigned dpi)
@@ -206,6 +254,16 @@ void FontManagerData::Entry::write_extra_data(stream_writer* stream, abort_callb
 {
     stream_writer_memblock item_stream;
     item_stream.write_lendian_t(font_description.point_size_tenths, aborter);
+    if (font_description.wss) {
+        const auto& wss = font_description.wss;
+        item_stream.write_lendian_t(true, aborter);
+        const auto family_name = mmh::to_utf8(wss->family_name);
+        item_stream.write_string(family_name, aborter);
+        item_stream.write_lendian_t(static_cast<int32_t>(wss->weight), aborter);
+        item_stream.write_lendian_t(static_cast<int32_t>(wss->stretch), aborter);
+        item_stream.write_lendian_t(static_cast<int32_t>(wss->style), aborter);
+        item_stream.write_lendian_t(font_description.dip_size, aborter);
+    }
 
     stream->write_lendian_t(gsl::narrow<uint32_t>(item_stream.m_data.get_size()), aborter);
     stream->write(item_stream.m_data.get_ptr(), item_stream.m_data.get_size(), aborter);

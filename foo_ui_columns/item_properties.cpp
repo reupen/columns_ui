@@ -2,6 +2,7 @@
 #include "item_properties.h"
 
 #include "file_info_utils.h"
+#include "font_manager_v3.h"
 
 namespace cui::panels::item_properties {
 
@@ -171,13 +172,19 @@ void ItemProperties::notify_on_initialisation()
 {
     set_use_dark_mode(colours::is_dark_mode_active());
     set_autosize(m_autosizing_columns);
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
-    set_font(lf);
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
-    set_header_font(lf);
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
-    set_group_font(lf);
+
+    const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
+    const auto items_font = font_api->get_client_font(g_guid_selection_properties_items_font_client);
+    const auto items_text_format = items_font->create_wil_text_format();
+    const auto items_log_font = items_font->log_font();
+    set_font(items_text_format, items_log_font);
+
+    const auto header_font = font_api->get_client_font(g_guid_selection_properties_header_font_client);
+    set_header_font(header_font->log_font());
+
+    const auto group_font = font_api->get_client_font(g_guid_selection_properties_group_font_client);
+    set_group_font(group_font->create_wil_text_format());
+
     set_edge_style(m_edge_style);
     set_show_header(m_show_column_titles);
     set_group_level_indentation_enabled(false);
@@ -699,28 +706,37 @@ public:
 };
 void ItemProperties::s_on_font_items_change()
 {
+    const auto font
+        = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_selection_properties_items_font_client);
+    const auto text_format = font->create_wil_text_format();
+    const auto log_font = font->log_font();
+
     LOGFONT lf;
     fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
     for (auto& window : s_windows) {
-        window->set_font(lf);
+        window->set_font(text_format, log_font);
     }
 }
 
 void ItemProperties::s_on_font_groups_change()
 {
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_group_font_client, lf);
+    const auto font
+        = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_selection_properties_group_font_client);
+    const auto text_format = font->create_wil_text_format();
+
     for (auto& window : s_windows) {
-        window->set_group_font(lf);
+        window->set_group_font(text_format);
     }
 }
 
 void ItemProperties::s_on_font_header_change()
 {
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_header_font_client, lf);
+    const auto font
+        = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_selection_properties_header_font_client);
+    const auto log_font = font->log_font();
+
     for (auto& window : s_windows) {
-        window->set_header_font(lf);
+        window->set_header_font(log_font);
     }
 }
 

@@ -2,12 +2,24 @@
 
 namespace cui::fonts {
 
+struct WeightStretchStyle {
+    std::wstring family_name{L"Segoe UI"sv};
+    DWRITE_FONT_WEIGHT weight{DWRITE_FONT_WEIGHT_REGULAR};
+    DWRITE_FONT_STRETCH stretch{DWRITE_FONT_STRETCH_NORMAL};
+    DWRITE_FONT_STYLE style{DWRITE_FONT_STYLE_NORMAL};
+};
+
 struct FontDescription {
     LOGFONT log_font{};
-    int point_size_tenths{};
+    int point_size_tenths{90};
+    float dip_size{12.0f};
+    std::optional<WeightStretchStyle> wss;
 
-    void estimate_point_size();
+    void estimate_point_and_dip_size();
+    void estimate_dip_size();
     void recalculate_log_font_height();
+    void fill_wss();
+    WeightStretchStyle get_wss_with_fallback();
 };
 
 class ConfigFontDescription : public cfg_var {

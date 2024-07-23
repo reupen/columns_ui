@@ -4,14 +4,51 @@
 
 namespace cui::fonts {
 
-void FontDescription::estimate_point_size()
+void FontDescription::estimate_point_and_dip_size()
 {
     point_size_tenths = -MulDiv(log_font.lfHeight, 720, uih::get_system_dpi_cached().cy);
+    dip_size = uih::direct_write::px_to_dip(gsl::narrow_cast<float>(log_font.lfHeight));
+}
+
+void FontDescription::estimate_dip_size()
+{
+    dip_size = gsl::narrow_cast<float>(point_size_tenths) * gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI) / 720.0f;
 }
 
 void FontDescription::recalculate_log_font_height()
 {
     log_font.lfHeight = -MulDiv(point_size_tenths, uih::get_system_dpi_cached().cy, 720);
+}
+
+void FontDescription::fill_wss()
+{
+    if (wss)
+        return;
+
+    wil::com_ptr_t<IDWriteFont> font;
+    std::wstring family_name;
+    try {
+        const auto context = uih::direct_write::Context::s_create();
+        font = context->create_font(log_font);
+
+        wil::com_ptr_t<IDWriteFontFamily> font_family;
+        THROW_IF_FAILED(font->GetFontFamily(&font_family));
+
+        wil::com_ptr_t<IDWriteLocalizedStrings> family_names;
+        THROW_IF_FAILED(font_family->GetFamilyNames(&family_names));
+
+        family_name = uih::direct_write::get_localised_string(family_names);
+    }
+    CATCH_LOG_RETURN();
+
+    wss = WeightStretchStyle{std::move(family_name), font->GetWeight(), font->GetStretch(), font->GetStyle()};
+}
+
+WeightStretchStyle FontDescription::get_wss_with_fallback()
+{
+    fill_wss();
+
+    return wss.value_or(WeightStretchStyle{});
 }
 
 void ConfigFontDescription::get_data_raw(stream_writer* stream, abort_callback& aborter)
@@ -23,7 +60,7 @@ void ConfigFontDescription::get_data_raw(stream_writer* stream, abort_callback& 
 void ConfigFontDescription::set_data_raw(stream_reader* stream, size_t size_hint, abort_callback& aborter)
 {
     m_font_description.log_font = read_font(stream, aborter);
-    m_font_description.estimate_point_size();
+    m_font_description.estimate_point_and_dip_size();
     try {
         stream->read_lendian_t(m_font_description.point_size_tenths, aborter);
     } catch (const exception_io_data_truncation&) {

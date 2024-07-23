@@ -15,8 +15,11 @@ void TabFonts::on_family_change()
     const auto index = ComboBox_GetCurSel(m_font_family_combobox);
     m_font_family = index != CB_ERR ? std::make_optional(std::reference_wrapper(m_font_families[index])) : std::nullopt;
 
-    const auto previous_font_face_name = m_font_face ? std::make_optional(m_font_face->localised_name) : std::nullopt;
+    const auto previous_font_face_name
+        = m_font_face ? std::make_optional(m_font_face->get().localised_name) : std::nullopt;
     ComboBox_ResetContent(m_font_face_combobox);
+    m_font_face.reset();
+    m_font_faces.clear();
     m_font_faces_text_formats.clear();
 
     if (!m_font_family)
@@ -47,7 +50,7 @@ void TabFonts::on_family_change()
 void TabFonts::on_face_change()
 {
     const auto index = ComboBox_GetCurSel(m_font_face_combobox);
-    m_font_face = index != CB_ERR ? std::make_optional(m_font_faces[index]) : std::nullopt;
+    m_font_face = index != CB_ERR ? std::make_optional(std::reference_wrapper(m_font_faces[index])) : std::nullopt;
 }
 
 void TabFonts::update_font_size_edit()
@@ -74,14 +77,21 @@ void TabFonts::save_font_face() const
 
     auto& font_description = m_element_ptr->font_description;
 
-    font_description.log_font = m_direct_write_context->create_log_font(m_font_face->font);
+    cui::fonts::WeightStretchStyle wss;
+    wss.family_name = m_font_family->get().localised_name;
+    wss.weight = m_font_face->get().font->GetWeight();
+    wss.stretch = m_font_face->get().font->GetStretch();
+    wss.style = m_font_face->get().font->GetStyle();
+
+    font_description.wss = wss;
+    font_description.log_font = m_direct_write_context->create_log_font(m_font_face->get().font);
     font_description.recalculate_log_font_height();
 }
 
 void TabFonts::save_size_edit() const
 {
     const auto font_size_text = uih::get_window_text(m_font_size_edit);
-    std::optional<float> font_size_float;
+    float font_size_float{};
 
     try {
         font_size_float = std::stof(font_size_text);
@@ -91,7 +101,8 @@ void TabFonts::save_size_edit() const
 
     auto& font_description = m_element_ptr->font_description;
 
-    font_description.point_size_tenths = gsl::narrow_cast<int>(std::roundf(*font_size_float * 10.0f));
+    font_description.point_size_tenths = gsl::narrow_cast<int>(std::roundf(font_size_float * 10.0f));
+    font_description.dip_size = font_size_float;
     font_description.recalculate_log_font_height();
 }
 
@@ -115,7 +126,7 @@ uih::direct_write::TextFormat& TabFonts::get_family_text_format(size_t index)
 
     if (!text_format) {
         text_format = m_direct_write_context->create_text_format(is_symbol_font ? get_icon_font_family() : family,
-            DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STYLE_NORMAL, DWRITE_FONT_STRETCH_NORMAL,
+            DWRITE_FONT_WEIGHT_REGULAR, DWRITE_FONT_STRETCH_NORMAL, DWRITE_FONT_STYLE_NORMAL,
             uih::direct_write::pt_to_dip(font_dropdown_font_size));
     }
 
@@ -130,7 +141,7 @@ uih::direct_write::TextFormat& TabFonts::get_face_text_format(size_t index)
 
     if (!text_format) {
         text_format = m_direct_write_context->create_text_format(is_symbol_font ? get_icon_font_family() : family,
-            font->GetWeight(), font->GetStyle(), font->GetStretch(),
+            font->GetWeight(), font->GetStretch(), font->GetStyle(),
             uih::direct_write::pt_to_dip(font_dropdown_font_size));
     }
 
@@ -239,7 +250,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             const auto& text_format = is_family ? get_family_text_format(index) : get_face_text_format(index);
             mis->itemHeight = text_format.get_minimum_height(text) + 4_spx;
         }
-        CATCH_LOG();
+        CATCH_LOG()
 
         return TRUE;
     }
@@ -262,6 +273,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 const auto new_font_size_tenths = std::clamp(nmupdown->iPos + nmupdown->iDelta, 10, 720);
                 m_element_ptr->font_description.point_size_tenths = new_font_size_tenths;
                 m_element_ptr->font_description.recalculate_log_font_height();
+                m_element_ptr->font_description.estimate_dip_size();
                 update_font_size_edit();
                 on_font_changed();
                 return 0;
@@ -441,28 +453,27 @@ void TabFonts::restore_font_selection_state()
     update_font_size_edit();
     update_font_size_spin();
 
-    const auto log_font = get_current_log_font();
+    const auto font_description = g_font_manager_data.resolve_font_description(m_element_ptr);
+    const auto& wss = font_description.wss;
 
-    try {
-        const auto font = m_direct_write_context->create_font(log_font);
-
-        wil::com_ptr_t<IDWriteFontFamily> family;
-        THROW_IF_FAILED(font->GetFontFamily(&family));
-
-        wil::com_ptr_t<IDWriteLocalizedStrings> localised_family_names;
-        THROW_IF_FAILED(family->GetFamilyNames(&localised_family_names));
-
-        wil::com_ptr_t<IDWriteLocalizedStrings> localised_face_names;
-        THROW_IF_FAILED(font->GetFaceNames(&localised_face_names));
-
-        const auto family_name = uih::direct_write::get_localised_string(localised_family_names);
-        const auto face_name = uih::direct_write::get_localised_string(localised_face_names);
-
-        ComboBox_SelectString(m_font_family_combobox, -1, family_name.c_str());
+    if (!wss) {
+        ComboBox_SetCurSel(m_font_family_combobox, -1);
         on_family_change();
-        ComboBox_SelectString(m_font_face_combobox, -1, face_name.c_str());
+        return;
     }
-    CATCH_LOG()
+
+    ComboBox_SelectString(m_font_family_combobox, -1, wss->family_name.c_str());
+    on_family_change();
+
+    const auto face_name
+        = m_direct_write_context->get_face_name(wss->family_name.c_str(), wss->weight, wss->stretch, wss->style);
+
+    if (!face_name) {
+        ComboBox_SetCurSel(m_font_face_combobox, -1);
+        return;
+    }
+
+    ComboBox_SelectString(m_font_face_combobox, -1, face_name->c_str());
 }
 
 void TabFonts::enable_or_disable_font_selection() const
@@ -476,45 +487,23 @@ void TabFonts::enable_or_disable_font_selection() const
     EnableWindow(m_font_size_spin, enable);
 }
 
-LOGFONT TabFonts::get_current_log_font() const
-{
-    LOGFONT log_font{};
-
-    const size_t index_element = ComboBox_GetCurSel(m_element_combobox);
-    if (index_element <= 1)
-        fb2k::std_api_get<cui::fonts::manager>()->get_font(
-            static_cast<cui::fonts::font_type_t>(index_element), log_font);
-    else
-        fb2k::std_api_get<cui::fonts::manager>()->get_font(m_element_api->get_client_guid(), log_font);
-
-    return log_font;
-}
-
 int TabFonts::get_current_font_size_tenths() const
 {
+    const auto font_description = g_font_manager_data.resolve_font_description(m_element_ptr);
+    return font_description.point_size_tenths;
+}
+
+FontManagerData::entry_ptr_t TabFonts::get_current_resolved_entry() const
+{
     auto entry = m_element_ptr;
-    const auto is_common_items = entry->font_mode == cui::fonts::font_mode_common_items;
-    const auto is_common_labels = entry->font_mode == cui::fonts::font_mode_common_labels;
 
-    const auto resolved_entry = [&] {
-        if (is_common_items)
-            return g_font_manager_data.m_common_items_entry;
+    if (entry->font_mode == cui::fonts::font_mode_common_items)
+        return g_font_manager_data.m_common_items_entry;
 
-        if (is_common_labels)
-            return g_font_manager_data.m_common_labels_entry;
+    if (entry->font_mode == cui::fonts::font_mode_common_labels)
+        return g_font_manager_data.m_common_labels_entry;
 
-        return entry;
-    }();
-
-    if (resolved_entry->font_mode == cui::fonts::font_mode_system) {
-        const auto system_font = is_common_items ? cui::fonts::get_icon_font_for_dpi(USER_DEFAULT_SCREEN_DPI)
-                                                 : cui::fonts::get_menu_font_for_dpi(USER_DEFAULT_SCREEN_DPI);
-
-        const auto point_size = system_font.size * 72.0f / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI);
-        return gsl::narrow_cast<int>(std::roundf(point_size * 10.0f));
-    }
-
-    return resolved_entry->font_description.point_size_tenths;
+    return entry;
 }
 
 void TabFonts::update_mode_combobox() const
