@@ -1,24 +1,24 @@
 {
   "name": "columns-ui",
   "version-string": "git",
-  "builtin-baseline": "a7b6122f6b6504d16d96117336a0562693579933",
+  "builtin-baseline": "6062c8fe02d38b10d5291411bc235ae4d02cfe6c",
   "dependencies": ["fmt", "ms-gsl", "range-v3", "wil"],
   "overrides": [
     {
       "name": "fmt",
-      "version": "9.1.0#1"
+      "version": "10.2.1#2"
     },
     {
       "name": "ms-gsl",
-      "version": "4.0.0"
+      "version": "4.0.0#1"
     },
     {
       "name": "range-v3",
-      "version": "0.12.0#1"
+      "version": "0.12.0#2"
     },
     {
       "name": "wil",
-      "version": "2023-04-11"
+      "version": "2024-01-22"
     }
   ]
 }
