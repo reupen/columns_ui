@@ -1,3 +1,8 @@
-[tool.isort]
-profile = "black"
-extra_standard_library = ["tomllib"]
+[project]
+requires-python = ">=3.11"
+
+[tool.ruff.lint]
+extend-select = ["B0", "I", "SIM", "UP"]
+
+[tool.ruff.lint.isort]
+split-on-trailing-comma=false
