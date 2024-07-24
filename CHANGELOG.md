@@ -130,6 +130,9 @@
 
 ### Internal changes
 
+- Various dependencies were updated.
+  [[#920](https://github.com/reupen/columns_ui/pull/920)]
+
 - The component is now compiled with Visual Studio 2022 17.9.
 
 ## 2.1.0
