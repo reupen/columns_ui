@@ -170,11 +170,7 @@ public:
         invalidate_all();
     }
 
-    int get_ideal_height() const
-    {
-        return uih::get_font_height(m_font.get()) * 2 + uih::scale_dpi_value(2) + uih::scale_dpi_value(4)
-            + uih::scale_dpi_value(3) * 2;
-    }
+    int get_ideal_height() const { return m_font_height * 2 + 2_spx + 4_spx + 3_spx * 2; }
     void enter_menu_mode(const char* p_text)
     {
         m_menu_active = true;
@@ -194,6 +190,8 @@ public:
     static const GUID g_guid_font;
 
 private:
+    void recreate_font();
+
     bool m_selection{false};
     size_t m_item_count{0};
     pfc::string8 m_length_text;
@@ -201,7 +199,9 @@ private:
     pfc::string8_fast_aggressive playing1;
     pfc::string8 m_menu_text;
     bool m_menu_active{false};
-    wil::unique_hfont m_font;
+    int m_font_height{};
+    uih::direct_write::Context::Ptr m_direct_write_context;
+    std::optional<uih::direct_write::TextFormat> m_text_format;
     HTHEME m_theme{nullptr};
     std::unique_ptr<uie::container_window_v3> m_window;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;

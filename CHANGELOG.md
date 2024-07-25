@@ -5,14 +5,16 @@
 ### Features
 
 - Text in list views (such as the playlist view, playlist switcther, Filter
-  panel and Item properties) and in the status bar is now rendered using
-  DirectWrite. [[#897](https://github.com/reupen/columns_ui/pull/897),
+  panel and Item properties) and in the status bar and pane is now rendered
+  using DirectWrite. [[#897](https://github.com/reupen/columns_ui/pull/897),
   [#904](https://github.com/reupen/columns_ui/pull/904),
   [#910](https://github.com/reupen/columns_ui/pull/910),
   [#913](https://github.com/reupen/columns_ui/pull/913),
   [#915](https://github.com/reupen/columns_ui/pull/915),
   [#919](https://github.com/reupen/columns_ui/pull/919),
-  [#924](https://github.com/reupen/columns_ui/pull/924)]
+  [#924](https://github.com/reupen/columns_ui/pull/924),
+  [#925](https://github.com/reupen/columns_ui/pull/925),
+  [#925](https://github.com/reupen/columns_ui/pull/926)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).
@@ -124,6 +126,10 @@
 
   (Although Item properties doesn’t use title formatting, this change makes the
   panel update when things like playback statistics change.)
+
+- The vertical item padding in Item properties and some list views in
+  preferences now scales with the system display scale (DPI setting).
+  [[#925](https://github.com/reupen/columns_ui/pull/925)]
 
 - A bug where dynamic internet radio artwork may not have been immediately shown
   after changing the ‘Displayed track’ in the Artwork view panel was fixed.
