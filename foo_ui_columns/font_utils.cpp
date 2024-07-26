@@ -7,7 +7,7 @@ namespace cui::fonts {
 void FontDescription::estimate_point_and_dip_size()
 {
     point_size_tenths = -MulDiv(log_font.lfHeight, 720, uih::get_system_dpi_cached().cy);
-    dip_size = uih::direct_write::px_to_dip(gsl::narrow_cast<float>(log_font.lfHeight));
+    dip_size = uih::direct_write::px_to_dip(gsl::narrow_cast<float>(-log_font.lfHeight));
 }
 
 void FontDescription::estimate_dip_size()
