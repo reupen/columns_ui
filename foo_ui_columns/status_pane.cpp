@@ -4,6 +4,7 @@
 #include "status_pane.h"
 
 #include "dark_mode.h"
+#include "font_manager_v3.h"
 #include "menu_items.h"
 #include "metadb_helpers.h"
 
@@ -43,8 +44,26 @@ StatusPaneFontClient::factory<StatusPaneFontClient> g_font_client_status_pane;
 
 void StatusPane::on_font_changed()
 {
-    m_font.reset(fonts::helper(g_guid_font).get_font());
+    recreate_font();
     main_window.resize_child_windows();
+}
+
+void StatusPane::recreate_font()
+{
+    m_text_format.reset();
+
+    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_font);
+    const auto text_format = font->create_wil_text_format();
+
+    if (!(m_direct_write_context && text_format))
+        return;
+
+    try {
+        m_text_format = m_direct_write_context->wrap_text_format(text_format);
+    }
+    CATCH_LOG()
+
+    m_font_height = m_text_format ? m_text_format->get_minimum_height() : 0;
 }
 
 void StatusPane::render_background(HDC dc, const RECT& rc)

@@ -30,7 +30,8 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         ShowWindow(m_volume_control.create(wnd), SW_SHOWNORMAL);
 
-        m_font.reset(fonts::helper(g_guid_font).get_font());
+        m_direct_write_context = uih::direct_write::Context::s_create();
+        recreate_font();
         m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
             [wnd] { RedrawWindow(wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE); });
@@ -47,7 +48,9 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_volume_control.destroy();
 
         m_dark_mode_notifier.reset();
-        m_font.reset();
+        m_direct_write_context.reset();
+        m_text_format.reset();
+
         if (m_theme) {
             CloseThemeData(m_theme);
             m_theme = nullptr;
@@ -88,9 +91,6 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto paint_dc = wil::BeginPaint(wnd, &ps);
         uih::BufferedDC dc(paint_dc.get(), ps.rcPaint);
 
-        const auto font_height = uih::get_font_height(m_font.get());
-        const auto line_height = font_height + uih::scale_dpi_value(3);
-
         RECT rc_client{};
         GetClientRect(wnd, &rc_client);
 
@@ -99,24 +99,25 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         render_background(dc.get(), rc_client);
 
+        if (!m_text_format)
+            break;
+
+        const auto line_height = m_font_height + 3_spx;
+
         RECT rc_text{rc_client};
-        rc_text.right = rc_volume.left - uih::scale_dpi_value(20);
+        rc_text.right = rc_volume.left - 20_spx;
 
         RECT rc_line_1 = rc_text;
-        rc_line_1.top += uih::scale_dpi_value(4);
+        rc_line_1.top += 4_spx;
         rc_line_1.bottom = rc_line_1.top + line_height;
 
         RECT rc_line_2 = rc_text;
         rc_line_2.top = rc_line_1.bottom;
         rc_line_2.bottom = rc_line_2.top + line_height;
 
-        const auto _ = wil::SelectObject(dc.get(), m_font.get());
-
-        constexpr auto selected_placeholder = "999999999 items selected"sv;
+        constexpr auto selected_items_placeholder = L"999999999 items selected"sv;
         const auto default_text_colour = get_colour(dark::ColourID::StatusPaneText, colours::is_dark_mode_active());
-        const auto placeholder_len
-            = uih::get_text_width(dc.get(), selected_placeholder.data(), gsl::narrow<int>(selected_placeholder.size()))
-            + uih::scale_dpi_value(20);
+        const auto selected_items_width = m_text_format->measure_text_width(selected_items_placeholder) + 20_spx;
 
         pfc::string8 items_text;
         items_text << m_item_count << " item";
@@ -125,43 +126,43 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (m_selection)
             items_text << " selected";
 
-        text_out_colours_tab(dc.get(), items_text, -1, uih::scale_dpi_value(1), uih::scale_dpi_value(3), &rc_line_1,
-            false, default_text_colour, false, false, uih::ALIGN_LEFT);
+        uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(), mmh::to_string_view(items_text),
+            1_spx, 3_spx, rc_line_1, false, default_text_colour, false, false);
+
         if (m_item_count) {
-            pfc::string_formatter formatter;
-            text_out_colours_tab(dc.get(), formatter << "Length: " << m_length_text, -1, uih::scale_dpi_value(1),
-                uih::scale_dpi_value(3), &rc_line_2, false, default_text_colour, false, false, uih::ALIGN_LEFT);
+            uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
+                fmt::format("Length: {}", m_length_text.c_str()), 1_spx, 3_spx, rc_line_2, false, default_text_colour,
+                false, false);
         }
 
         if (m_menu_active) {
-            {
-                RECT rc_item = rc_line_1;
-                text_out_colours_tab(dc.get(), m_menu_text, -1, uih::scale_dpi_value(1) + placeholder_len,
-                    uih::scale_dpi_value(3), &rc_item, false, default_text_colour, false, false, uih::ALIGN_LEFT,
-                    nullptr, true, true, nullptr);
-            }
+            uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(), mmh::to_string_view(m_menu_text),
+                1_spx + selected_items_width, 3_spx, rc_line_1, false, default_text_colour, false, false);
         } else {
-            constexpr auto playing_placeholder = "Playing:  "sv;
-            const auto placeholder2_len = uih::get_text_width(
-                dc.get(), playing_placeholder.data(), gsl::narrow<int>(playing_placeholder.size()));
+            constexpr auto playback_status_placeholder = L"Playing:  "sv;
+            const auto playback_status_width = m_text_format->measure_text_width(playback_status_placeholder);
 
-            const auto now_playing_x_end = uih::scale_dpi_value(4) + placeholder_len + placeholder2_len;
-            {
-                RECT rc_item = rc_line_1;
-                // rc_item.right = 4 + placeholder_len + placeholder2_len;
-                text_out_colours_tab(dc.get(), m_track_label, -1, uih::scale_dpi_value(4) + placeholder_len, 0,
-                    &rc_item, false, default_text_colour, false, false, uih::ALIGN_LEFT, nullptr, true, true, nullptr);
-            }
+            uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
+                mmh::to_string_view(m_track_label), 4_spx + selected_items_width, 0, rc_line_1, false,
+                default_text_colour, false, false);
+
             if (playing1.get_length()) {
-                pfc::string_list_impl playingstrings;
-                g_split_string_by_crlf(playing1.get_ptr(), playingstrings);
-                size_t lines = playingstrings.get_count();
-                if (lines)
-                    text_out_colours_tab(dc.get(), playingstrings[0], pfc_infinite, now_playing_x_end, 0, &rc_line_1,
-                        false, default_text_colour, true, false, uih::ALIGN_LEFT);
+                const auto now_playing_x_end = 4_spx + selected_items_width + playback_status_width;
+
+                pfc::string_list_impl formatted_title_lines;
+                g_split_string_by_crlf(playing1.get_ptr(), formatted_title_lines);
+
+                size_t lines = formatted_title_lines.get_count();
+
+                if (lines > 0)
+                    uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
+                        std::string_view{formatted_title_lines[0]}, now_playing_x_end, 0, rc_line_1, false,
+                        default_text_colour, true, true);
+
                 if (lines > 1)
-                    text_out_colours_tab(dc.get(), playingstrings[1], pfc_infinite, now_playing_x_end, 0, &rc_line_2,
-                        false, default_text_colour, true, false, uih::ALIGN_LEFT);
+                    uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
+                        std::string_view{formatted_title_lines[1]}, now_playing_x_end, 0, rc_line_2, false,
+                        default_text_colour, true, true);
             }
         }
 

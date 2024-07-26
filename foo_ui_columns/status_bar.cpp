@@ -56,8 +56,12 @@ void on_status_font_change()
         wil::com_ptr_t<IDWriteTextFormat> text_format{};
         text_format.attach(font->create_text_format().detach());
 
-        state->direct_write_text_format
-            = text_format ? std::make_optional(state->direct_write_ctx->wrap_text_format(text_format)) : std::nullopt;
+        if (text_format) {
+            try {
+                state->direct_write_text_format = state->direct_write_ctx->wrap_text_format(text_format);
+            }
+            CATCH_LOG()
+        }
     }
 
     SetWindowFont(g_status, state->font.get(), TRUE);
