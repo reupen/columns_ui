@@ -102,7 +102,7 @@ void TabFonts::save_size_edit() const
     auto& font_description = m_element_ptr->font_description;
 
     font_description.point_size_tenths = gsl::narrow_cast<int>(std::roundf(font_size_float * 10.0f));
-    font_description.dip_size = font_size_float;
+    font_description.dip_size = uih::direct_write::pt_to_dip(font_size_float);
     font_description.recalculate_log_font_height();
 }
 
