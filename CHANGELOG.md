@@ -132,6 +132,9 @@
   preferences now scales with the system display scale (DPI setting).
   [[#925](https://github.com/reupen/columns_ui/pull/925)]
 
+- A bug where the status bar may crash when using a very small font size was
+  fixed. [[#935](https://github.com/reupen/columns_ui/pull/935)]
+
 - A bug where dynamic internet radio artwork may not have been immediately shown
   after changing the ‘Displayed track’ in the Artwork view panel was fixed.
   [[#854](https://github.com/reupen/columns_ui/pull/854)]
