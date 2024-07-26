@@ -449,7 +449,7 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     const auto icon_size = font_height - 2_spx;
     int x = rc.left;
 
-    if (part_id == StatusBarPartID::PlaylistLock) {
+    if (part_id == StatusBarPartID::PlaylistLock && icon_size > 0) {
         const auto icon_y = rc.top + (wil::rect_height(rc) - icon_size) / 2;
 
         if (icons::use_svg_icon(icon_size, icon_size)) {
