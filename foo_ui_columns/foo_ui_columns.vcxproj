@@ -271,6 +271,7 @@
     <ClCompile Include="font_manager_v3.cpp" />
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
+    <ClCompile Include="item_details_text_v2.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
@@ -309,7 +310,6 @@
     <ClCompile Include="get_msg_hook.cpp" />
     <ClCompile Include="item_details_config.cpp" />
     <ClCompile Include="item_details_font.cpp" />
-    <ClCompile Include="item_details_text.cpp" />
     <ClCompile Include="item_properties_config.cpp" />
     <ClCompile Include="item_properties_config_list_view.cpp" />
     <ClCompile Include="layout_config.cpp" />
@@ -450,6 +450,7 @@
     <ClInclude Include="get_msg_hook.h" />
     <ClInclude Include="icons.h" />
     <ClInclude Include="item_details.h" />
+    <ClInclude Include="item_details_text_v2.h" />
     <ClInclude Include="item_properties.h" />
     <ClInclude Include="menu_helpers.h" />
     <ClInclude Include="metadb_helpers.h" />

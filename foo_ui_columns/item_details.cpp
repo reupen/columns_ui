@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "item_details.h"
 
+#include "item_details_text_v2.h"
+
 namespace cui::panels::item_details {
 
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
@@ -153,7 +155,7 @@ void ItemDetails::get_menu_items(ui_extension::menu_hook_t& p_hook)
 
 std::vector<ItemDetails*> ItemDetails::g_windows;
 
-void ItemDetails::g_on_app_activate(bool b_activated)
+void ItemDetails::s_on_app_activate(bool b_activated)
 {
     for (auto& window : g_windows)
         window->on_app_activate(b_activated);
@@ -200,7 +202,6 @@ void ItemDetails::deregister_callback()
 
 void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_position)
 {
-    update_font_change_info();
     update_display_info();
 
     double percentage_scrolled{};
@@ -222,15 +223,19 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
     GetClientRect(get_wnd(), &rc);
 
     si_new.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
-    si_new.nMin = 0;
+
+    if (scrollbar_type == ScrollbarType::horizontal)
+        si_new.nMin = m_text_area ? m_text_area->left : 0;
+    else
+        si_new.nMin = m_text_area ? m_text_area->top : 0;
 
     if (scrollbar_type == ScrollbarType::vertical) {
         si_new.nPage = std::max(wil::rect_height(rc), 1l);
-        si_new.nMax = std::max(m_display_sz.cy - 1, 1l);
+        si_new.nMax = std::max(m_text_area ? m_text_area->bottom - 1 : 1l, 1l);
     } else {
         const auto padding_size = 2_spx * 2;
         si_new.nPage = std::max(wil::rect_width(rc), 1l);
-        si_new.nMax = m_hscroll ? std::max(m_display_sz.cx + padding_size - 1, 1l) : 0l;
+        si_new.nMax = m_hscroll ? std::max(m_text_area ? m_text_area->right - 1 : 1l, 1l) : 0l;
     }
 
     if (si_new.nMax >= gsl::narrow<int>(si_new.nPage)) {
@@ -327,7 +332,7 @@ void ItemDetails::release_all_full_file_info_requests()
 void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool reset_horizontal_scroll_position)
 {
     // DisableRedrawing noRedraw(get_wnd());
-    bool b_Update = true;
+    bool b_update = true;
     if (m_handles.get_count()) {
         LOGFONT lf;
         fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
@@ -349,27 +354,21 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
             }
         }
 
-        pfc::stringcvt::string_wide_from_utf8 wide_text(temp);
-        if (std::wstring_view(wide_text.get_ptr(), wide_text.length()) != m_current_text_raw) {
-            m_current_text_raw = wide_text;
+        auto utf16_text = mmh::to_utf16(mmh::to_string_view(temp));
+        if (utf16_text != m_current_text_raw) {
+            m_current_text_raw = std::move(utf16_text);
 
-            m_raw_font_changes.set_size(0);
-            m_font_changes.reset(true);
-            m_font_change_info_valid = false;
+            // TODO: Do line endings need to be normalised?
 
-            const auto multiline_text = g_get_text_line_lengths(wide_text, m_line_lengths);
-
-            m_current_text = g_get_raw_font_changes(multiline_text.c_str(), m_raw_font_changes);
+            m_current_text = m_current_text_raw;
         } else
-            b_Update = false;
+            b_update = false;
     } else {
         m_current_text.clear();
         m_current_text_raw.clear();
-        reset_font_change_info();
-        m_line_lengths.clear();
     }
 
-    if (b_Update) {
+    if (b_update) {
         reset_display_info();
 
         update_scrollbars(reset_vertical_scroll_position, reset_horizontal_scroll_position);
@@ -378,58 +377,57 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
     }
 }
 
-void ItemDetails::update_display_info(HDC dc)
-{
-    if (!m_display_info_valid) {
-        RECT rc;
-        GetClientRect(get_wnd(), &rc);
-        const auto padding_size = uih::scale_dpi_value(2) * 2;
-
-        const auto widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
-        m_current_display_text = m_current_text;
-
-        auto display_info = g_get_multiline_text_dimensions(
-            dc, m_current_display_text, m_line_lengths, m_font_changes, m_word_wrapping, widthMax);
-
-        m_line_sizes = std::move(display_info.line_sizes);
-        m_display_sz = std::move(display_info.sz);
-
-        m_display_info_valid = true;
-    }
-}
-
 void ItemDetails::update_display_info()
 {
-    if (!m_display_info_valid) {
-        HDC dc = GetDC(get_wnd());
-        HFONT fnt_old = SelectFont(dc, m_font_changes.m_default_font->m_font.get());
-        update_display_info(dc);
-        SelectFont(dc, fnt_old);
-        ReleaseDC(get_wnd(), dc);
+    create_text_layout();
+
+    if (!m_text_layout || m_text_area)
+        return;
+
+    DWRITE_OVERHANG_METRICS overhang_metrics{};
+    try {
+        overhang_metrics = m_text_layout->get_overhang_metrics();
     }
+    CATCH_LOG_RETURN()
+
+    const auto scaling_factor = uih::direct_write::get_default_scaling_factor();
+    const auto layout_width = m_text_layout->get_max_width();
+    const auto layout_height = m_text_layout->get_max_height();
+    const auto padding = 2_spx;
+
+    RECT client_rect{};
+    GetClientRect(get_wnd(), &client_rect);
+
+    int left_px{};
+    int right_px{wil::rect_width(client_rect)};
+    int top_px{};
+    int bottom_px{wil::rect_height(client_rect)};
+
+    if (m_horizontal_alignment == uih::ALIGN_LEFT || m_horizontal_alignment == uih::ALIGN_CENTRE) {
+        right_px
+            = gsl::narrow_cast<long>(std::ceil((layout_width + overhang_metrics.right) * scaling_factor)) + padding;
+    }
+
+    if (m_horizontal_alignment == uih::ALIGN_CENTRE || m_horizontal_alignment == uih::ALIGN_RIGHT) {
+        left_px = gsl::narrow_cast<long>(std::floor(-overhang_metrics.left * scaling_factor)) - padding;
+    }
+
+    if (m_vertical_alignment == uih::ALIGN_LEFT || m_vertical_alignment == uih::ALIGN_CENTRE) {
+        bottom_px
+            = gsl::narrow_cast<long>(std::ceil((layout_height + overhang_metrics.bottom) * scaling_factor)) + padding;
+    }
+
+    if (m_vertical_alignment == uih::ALIGN_CENTRE || m_vertical_alignment == uih::ALIGN_RIGHT) {
+        top_px = gsl::narrow_cast<long>(std::floor(-overhang_metrics.top * scaling_factor)) - padding;
+    }
+
+    m_text_area = {left_px, top_px, right_px, bottom_px};
 }
+
 void ItemDetails::reset_display_info()
 {
-    m_current_display_text.clear();
-    m_line_sizes.clear();
-    m_display_sz.cy = (m_display_sz.cx = 0);
-    m_display_info_valid = false;
-}
-
-void ItemDetails::update_font_change_info()
-{
-    if (!m_font_change_info_valid) {
-        g_get_font_changes(m_raw_font_changes, m_font_changes);
-        m_raw_font_changes.set_size(0);
-        m_font_change_info_valid = true;
-    }
-}
-
-void ItemDetails::reset_font_change_info()
-{
-    m_raw_font_changes.remove_all();
-    m_font_changes.reset();
-    m_font_change_info_valid = false;
+    m_text_layout.reset();
+    m_text_area.reset();
 }
 
 void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track)
@@ -589,7 +587,19 @@ void ItemDetails::on_size()
 
 void ItemDetails::on_size(size_t cx, size_t cy)
 {
-    reset_display_info();
+    if (m_text_layout) {
+        const auto padding = 2_spx;
+        const auto max_width = std::max(0, gsl::narrow<int>(cx) - padding * 2);
+        const auto max_height = std::max(0, gsl::narrow<int>(cy) - padding * 2);
+
+        try {
+            m_text_layout->set_max_width(uih::direct_write::px_to_dip(gsl::narrow_cast<float>(max_width)));
+            m_text_layout->set_max_height(uih::direct_write::px_to_dip(gsl::narrow_cast<float>(max_height)));
+        }
+        CATCH_LOG()
+
+        m_text_area.reset();
+    }
     invalidate_all(false);
 
     if (cx != m_last_cx) {
@@ -654,10 +664,12 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
         metadb_io_v3::get()->register_callback(this);
 
-        m_font_changes.m_default_font = std::make_shared<Font>();
-        m_font_changes.m_default_font->m_font.reset(
-            fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client));
-        m_font_changes.m_default_font->m_height = uih::get_font_height(m_font_changes.m_default_font->m_font.get());
+        try {
+            m_direct_write_context = uih::direct_write::Context::s_create();
+        }
+        CATCH_LOG()
+
+        recreate_text_format();
 
         if (g_windows.empty())
             s_create_message_window();
@@ -676,8 +688,6 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (g_windows.empty())
             s_destroy_message_window();
 
-        m_font_changes.m_default_font.reset();
-
         play_callback_manager::get()->unregister_callback(this);
         metadb_io_v3::get()->unregister_callback(this);
         playlist_manager_v3::get()->unregister_callback(this);
@@ -687,6 +697,9 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_selection_handles.remove_all();
         m_selection_holder.release();
         m_to.release();
+        m_text_format.reset();
+        m_text_layout.reset();
+        m_direct_write_context.reset();
         m_last_cx = 0;
         m_last_cy = 0;
     } break;
@@ -717,7 +730,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         UINT scroll_lines = 3; // 3 is default
         SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0); // we don't support Win9X
 
-        int line_height = m_font_changes.m_default_font->m_height + 2;
+        // TODO: Is there a better way of doing this?
+        const auto line_height = m_text_format ? m_text_format->get_minimum_height() + 2_spx : 0;
 
         if (!si.nPage)
             si.nPage++;
@@ -731,8 +745,6 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         if (scroll_lines == 0)
             scroll_lines = 1;
-
-        // console::formatter() << zDelta;
 
         int delta = -MulDiv(zDelta, scroll_lines, 120);
 
@@ -761,7 +773,8 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         int new_pos = si.nPos;
 
-        int line_height = m_font_changes.m_default_font->m_height + 2;
+        // TODO: Is there a better way of doing this?
+        const auto line_height = m_text_format ? m_text_format->get_minimum_height() + 2_spx : 0;
 
         WORD p_value = LOWORD(wp);
 
@@ -808,63 +821,40 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         SCROLLINFO siv{};
         siv.cbSize = sizeof(siv);
-        siv.fMask = SIF_POS;
+        siv.fMask = SIF_POS | SIF_RANGE | SIF_PAGE;
         SCROLLINFO sih = siv;
         GetScrollInfo(wnd, SB_VERT, &siv);
         GetScrollInfo(wnd, SB_HORZ, &sih);
 
-        HDC dc_mem = CreateCompatibleDC(ps.hdc);
-
-        RECT& rc = ps.rcPaint;
-        HBITMAP bm_mem = CreateCompatibleBitmap(ps.hdc, wil::rect_width(rc), wil::rect_height(rc));
-        HBITMAP bm_old = SelectBitmap(dc_mem, bm_mem);
-
-        OffsetWindowOrgEx(dc_mem, +rc.left, +rc.top, nullptr);
-
         colours::helper p_helper(g_guid_item_details_colour_client);
 
-        HFONT fnt_old = SelectFont(dc_mem, m_font_changes.m_default_font->m_font.get());
-
-        update_font_change_info();
-        update_display_info(dc_mem);
+        update_display_info();
 
         RECT rc_client;
         GetClientRect(wnd, &rc_client);
 
-        const int client_height = wil::rect_height(rc_client);
-        const int client_width = wil::rect_width(rc_client);
+        const auto background_colour = p_helper.get_colour(colours::colour_background);
+        const auto text_colour = p_helper.get_colour(colours::colour_text);
 
-        auto background_colour = p_helper.get_colour(colours::colour_background);
-        FillRect(dc_mem, &rc, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
+        const int padding = 2_spx;
 
-        const int padding = uih::scale_dpi_value(2);
-        const int width
-            = m_hscroll ? std::max(client_width, gsl::narrow<int>(m_display_sz.cx) + padding * 2) : client_width;
+        RECT rc_placement = rc_client;
 
-        RECT rc_placement{};
-        rc_placement.left = rc_client.left + padding - sih.nPos;
-        rc_placement.right = std::max(rc_placement.left + width - padding * 2, rc_placement.left);
-        rc_placement.top = rc_client.top - siv.nPos;
+        if (m_text_layout) {
+            const auto is_horizontal_scroll_bar_visible
+                = m_hscroll && (sih.nMax - sih.nMin - 1) > gsl::narrow_cast<int>(sih.nPage);
+            const auto is_vertical_scroll_bar_visible = (siv.nMax - siv.nMin - 1) > gsl::narrow_cast<int>(siv.nPage);
+            const auto x_offset = uih::direct_write::px_to_dip(
+                gsl::narrow_cast<float>((is_horizontal_scroll_bar_visible ? -sih.nPos : 0) + padding));
+            const auto y_offset = uih::direct_write::px_to_dip(
+                gsl::narrow_cast<float>((is_vertical_scroll_bar_visible ? -siv.nPos : 0) + padding));
 
-        if (m_display_sz.cy < client_height) {
-            int extra = client_height - m_display_sz.cy;
-            if (m_vertical_alignment == uih::ALIGN_CENTRE)
-                rc_placement.top += extra / 2;
-            else if (m_vertical_alignment == uih::ALIGN_RIGHT)
-                rc_placement.top += extra;
+            try {
+                m_text_layout->render_with_background(
+                    ps.hdc, rc_placement, ps.rcPaint, background_colour, text_colour, x_offset, y_offset);
+            }
+            CATCH_LOG()
         }
-
-        rc_placement.bottom = rc_placement.top + m_display_sz.cy;
-
-        g_text_out_multiline_font(dc_mem, rc_placement, m_current_text.c_str(), m_font_changes, m_line_sizes,
-            p_helper.get_colour(colours::colour_text), (uih::alignment)m_horizontal_alignment);
-        SelectFont(dc_mem, fnt_old);
-
-        BitBlt(ps.hdc, rc.left, rc.top, wil::rect_width(rc), wil::rect_height(rc), dc_mem, rc.left, rc.top, SRCCOPY);
-
-        SelectBitmap(dc_mem, bm_old);
-        DeleteObject(bm_mem);
-        DeleteDC(dc_mem);
 
         EndPaint(wnd, &ps);
     }
@@ -873,7 +863,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void ItemDetails::g_on_font_change()
+void ItemDetails::s_on_font_change()
 {
     for (auto& window : g_windows) {
         window->on_font_change();
@@ -887,17 +877,83 @@ void ItemDetails::s_on_dark_mode_status_change()
     }
 }
 
-void ItemDetails::g_on_colours_change()
+void ItemDetails::s_on_colours_change()
 {
     for (auto& window : g_windows) {
         window->on_colours_change();
     }
 }
 
+void ItemDetails::recreate_text_format()
+{
+    if (!m_direct_write_context)
+        return;
+
+    m_text_format = create_text_format(m_direct_write_context, static_cast<uih::alignment>(m_horizontal_alignment),
+        static_cast<uih::alignment>(m_vertical_alignment), m_word_wrapping);
+}
+
+void ItemDetails::create_text_layout()
+{
+    if (!m_text_format || m_text_layout)
+        return;
+
+    RECT rect{};
+    GetClientRect(get_wnd(), &rect);
+
+    auto [render_text, colour_segments, font_segments] = process_colour_and_font_codes(m_current_text);
+
+    const auto padding = 2_spx;
+    const auto max_width = std::max(0, gsl::narrow<int>(wil::rect_width(rect)) - padding * 2);
+    const auto max_height = std::max(0, gsl::narrow<int>(wil::rect_height(rect)) - padding * 2);
+    m_text_layout = item_details::create_text_layout(*m_text_format, max_width, max_height, render_text);
+
+    if (!m_text_layout)
+        return;
+
+    for (auto& [colour, start_character, character_count] : colour_segments) {
+        try {
+            m_text_layout->set_colour(
+                colour, {gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)});
+        }
+        CATCH_LOG()
+    }
+
+    for (auto& [font, start_character, character_count] : font_segments) {
+        LOGFONT lf{};
+        wcsncpy_s(lf.lfFaceName, font.face.c_str(), _TRUNCATE);
+
+        if (font.is_bold)
+            lf.lfWeight = FW_BOLD;
+
+        if (font.is_underline)
+            lf.lfUnderline = TRUE;
+
+        if (font.is_italic)
+            lf.lfItalic = TRUE;
+
+        try {
+            const auto direct_write_font = m_direct_write_context->create_font(lf);
+
+            const auto weight = direct_write_font->GetWeight();
+            const auto stretch = direct_write_font->GetStretch();
+            const auto style = direct_write_font->GetStyle();
+            const auto size = uih::direct_write::pt_to_dip(font.size_points);
+            const auto text_range
+                = DWRITE_TEXT_RANGE{gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)};
+
+            m_text_layout->set_font(font.face.c_str(), weight, stretch, style, size, text_range);
+
+            if (font.is_underline)
+                m_text_layout->set_underline(true, text_range);
+        }
+        CATCH_LOG()
+    }
+}
+
 void ItemDetails::on_font_change()
 {
-    m_font_changes.m_default_font->m_font.reset(
-        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client));
+    recreate_text_format();
     refresh_contents();
     /*
     invalidate_all(false);
@@ -932,7 +988,7 @@ void ItemDetails::s_create_message_window()
     s_message_window = std::make_unique<uie::container_window_v3>(
         config, [](auto&& wnd, auto&& msg, auto&& wp, auto&& lp) -> LRESULT {
             if (msg == WM_ACTIVATEAPP)
-                g_on_app_activate(wp != 0);
+                s_on_app_activate(wp != 0);
             return DefWindowProc(wnd, msg, wp, lp);
         });
     s_message_window->create(nullptr);
@@ -984,22 +1040,54 @@ void ItemDetails::set_edge_style(uint32_t edge_style)
 
 void ItemDetails::set_vertical_alignment(uint32_t vertical_alignment)
 {
-    if (get_wnd()) {
-        m_vertical_alignment = vertical_alignment;
-        invalidate_all(false);
-        update_scrollbars(false, false);
-        update_now();
+    if (!get_wnd())
+        return;
+
+    m_vertical_alignment = vertical_alignment;
+
+    if (m_text_format) {
+        const auto paragraph_alignment = [vertical_alignment] {
+            switch (vertical_alignment) {
+            default:
+                return DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
+            case uih::ALIGN_CENTRE:
+                return DWRITE_PARAGRAPH_ALIGNMENT_CENTER;
+            case uih::ALIGN_RIGHT:
+                return DWRITE_PARAGRAPH_ALIGNMENT_FAR;
+            }
+        }();
+
+        try {
+            m_text_format->set_paragraph_alignment(paragraph_alignment);
+        }
+        CATCH_LOG()
     }
+
+    reset_display_info();
+    invalidate_all(false);
+    update_scrollbars(false, false);
+    update_now();
 }
 
 void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
 {
-    if (get_wnd()) {
-        m_horizontal_alignment = horizontal_alignment;
-        invalidate_all(false);
-        update_scrollbars(false, true);
-        update_now();
+    if (!get_wnd())
+        return;
+
+    m_horizontal_alignment = horizontal_alignment;
+
+    if (m_text_format) {
+        try {
+            m_text_format->set_text_alignment(
+                uih::direct_write::get_text_alignment(static_cast<uih::alignment>(horizontal_alignment)));
+        }
+        CATCH_LOG()
     }
+
+    reset_display_info();
+    invalidate_all(false);
+    update_scrollbars(false, true);
+    update_now();
 }
 
 void ItemDetails::on_playback_order_changed(size_t p_new_index) {}
@@ -1078,6 +1166,15 @@ void ItemDetails::MenuNodeWordWrap::execute()
 {
     p_this->m_word_wrapping = !p_this->m_word_wrapping;
     cfg_item_details_word_wrapping = p_this->m_word_wrapping;
+
+    if (p_this->m_text_format) {
+        try {
+            p_this->m_text_format->set_word_wrapping(
+                p_this->m_word_wrapping ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP);
+        }
+        CATCH_LOG()
+    }
+
     p_this->reset_display_info();
     p_this->invalidate_all(false);
     p_this->update_scrollbars(false, true);

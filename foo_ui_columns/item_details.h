@@ -23,84 +23,6 @@ extern cfg_uint cfg_item_details_horizontal_alignment;
 extern cfg_uint cfg_item_details_vertical_alignment;
 extern cfg_bool cfg_item_details_word_wrapping;
 
-struct LineSize {
-    size_t m_length{};
-    int m_width{0};
-    int m_height{0};
-};
-
-struct RawFont {
-    std::wstring m_face;
-    uint32_t m_point{10};
-    bool m_bold{false};
-    bool m_underline{false};
-    bool m_italic{false};
-
-    static bool s_are_equal(const RawFont& item1, const RawFont& item2);
-};
-
-bool operator==(const RawFont& item1, const RawFont& item2);
-
-class RawFontChange {
-public:
-    RawFont m_font_data;
-    bool m_reset{false};
-    size_t m_character_index{NULL};
-
-    RawFontChange() = default;
-};
-
-using RawFontChanges = pfc::list_t<RawFontChange, pfc::alloc_fast_aggressive>;
-
-using LineLengths = std::vector<size_t>;
-using LineSizes = std::vector<LineSize>;
-
-class Font {
-public:
-    using Ptr = std::shared_ptr<Font>;
-
-    RawFont m_raw_font;
-
-    wil::unique_hfont m_font;
-    int m_height{};
-};
-
-using Fonts = pfc::list_t<Font::Ptr>;
-
-class FontChanges {
-public:
-    class FontChange {
-    public:
-        size_t m_text_index{};
-        Font::Ptr m_font;
-    };
-
-    Fonts m_fonts;
-    std::vector<FontChange> m_font_changes;
-    Font::Ptr m_default_font;
-
-    bool find_font(const RawFont& raw_font, size_t& index);
-
-    void reset(bool keep_handles = false);
-};
-
-struct DisplayInfo {
-    SIZE sz{};
-    std::vector<LineSize> line_sizes;
-};
-
-DisplayInfo g_get_multiline_text_dimensions(HDC dc, std::wstring_view text, const LineLengths& line_lengths,
-    const FontChanges& font_data, bool word_wrapping, int max_width);
-
-std::wstring g_get_text_line_lengths(const wchar_t* text, LineLengths& line_lengths);
-
-void g_parse_font_format_string(const wchar_t* str, size_t len, RawFont& p_out);
-std::wstring g_get_raw_font_changes(const wchar_t* formatted_text, RawFontChanges& p_out);
-void g_get_font_changes(const RawFontChanges& raw_font_changes, FontChanges& font_changes);
-
-void g_text_out_multiline_font(HDC dc, RECT rc_placement, const wchar_t* text, const FontChanges& font_changes,
-    const LineSizes& wrapped_line_sizes, COLORREF cr_text, uih::alignment align);
-
 class TitleformatHookChangeFont : public titleformat_hook {
 public:
     bool process_field(
@@ -279,10 +201,10 @@ public:
     // ML
     void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
 
-    static void g_on_app_activate(bool b_activated);
-    static void g_on_font_change();
+    static void s_on_app_activate(bool b_activated);
+    static void s_on_font_change();
     static void s_on_dark_mode_status_change();
-    static void g_on_colours_change();
+    static void s_on_colours_change();
 
     void set_horizontal_alignment(uint32_t horizontal_alignment);
     void set_vertical_alignment(uint32_t vertical_alignment);
@@ -314,9 +236,6 @@ private:
     void release_aborted_full_file_info_requests();
     void release_all_full_file_info_requests();
 
-    void update_font_change_info();
-    void reset_font_change_info();
-    void update_display_info(HDC dc);
     void update_display_info();
     void reset_display_info();
     void on_tracking_mode_change();
@@ -339,6 +258,8 @@ private:
     void on_size();
     void on_size(size_t cx, size_t cy);
 
+    void recreate_text_format();
+    void create_text_layout();
     void on_font_change();
     void on_colours_change();
 
@@ -357,20 +278,17 @@ private:
     bool m_nowplaying_active{false};
     uint32_t m_tracking_mode;
 
-    bool m_font_change_info_valid{false};
-    FontChanges m_font_changes;
-    RawFontChanges m_raw_font_changes;
+    uih::direct_write::Context::Ptr m_direct_write_context;
+    std::optional<uih::direct_write::TextFormat> m_text_format;
+    std::optional<uih::direct_write::TextLayout> m_text_layout;
 
-    LineLengths m_line_lengths;
-    LineSizes m_line_sizes;
+    std::optional<RECT> m_text_area{};
     bool m_display_info_valid{false};
-
     SIZE m_display_sz{};
 
     pfc::string8 m_script;
     std::wstring m_current_text_raw;
     std::wstring m_current_text;
-    std::wstring m_current_display_text;
     titleformat_object::ptr m_to;
 
     uint32_t m_horizontal_alignment;
