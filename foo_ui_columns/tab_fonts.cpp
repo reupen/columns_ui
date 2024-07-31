@@ -415,7 +415,7 @@ std::optional<INT_PTR> TabFonts::handle_wm_drawitem(LPDRAWITEMSTRUCT dis)
     try {
         const auto& text_format = is_family ? get_family_text_format(index) : get_face_text_format(index);
         const auto text_layout = text_format.create_text_layout(text, max_width, max_height);
-        text_layout.render(buffered_dc.get(), dis->rcItem, text_colour);
+        text_layout.render_with_transparent_background(buffered_dc.get(), dis->rcItem, text_colour);
     }
     CATCH_LOG()
 

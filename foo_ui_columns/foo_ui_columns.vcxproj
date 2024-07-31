@@ -450,6 +450,7 @@
     <ClInclude Include="get_msg_hook.h" />
     <ClInclude Include="icons.h" />
     <ClInclude Include="item_details.h" />
+    <ClInclude Include="item_details_text.h" />
     <ClInclude Include="item_properties.h" />
     <ClInclude Include="menu_helpers.h" />
     <ClInclude Include="metadb_helpers.h" />

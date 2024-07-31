@@ -5,8 +5,9 @@
 ### Features
 
 - Text in list views (such as the playlist view, playlist switcther, Filter
-  panel and Item properties) and in the status bar and pane is now rendered
-  using DirectWrite. [[#897](https://github.com/reupen/columns_ui/pull/897),
+  panel and Item properties), Item details and in the status bar and pane is now
+  rendered using DirectWrite.
+  [[#897](https://github.com/reupen/columns_ui/pull/897),
   [#904](https://github.com/reupen/columns_ui/pull/904),
   [#910](https://github.com/reupen/columns_ui/pull/910),
   [#913](https://github.com/reupen/columns_ui/pull/913),
@@ -15,7 +16,8 @@
   [#924](https://github.com/reupen/columns_ui/pull/924),
   [#925](https://github.com/reupen/columns_ui/pull/925),
   [#926](https://github.com/reupen/columns_ui/pull/926),
-  [#936](https://github.com/reupen/columns_ui/pull/936)]
+  [#936](https://github.com/reupen/columns_ui/pull/936),
+  [#947](https://github.com/reupen/columns_ui/pull/947)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).
@@ -38,6 +40,10 @@
 
   Some legacy font types that aren’t supported by DirectWrite are also no longer
   selectable. Furthermore, some previously hidden fonts may now be visible.
+
+- The `$set_font()` Item details title formatting function now allows
+  non-integer font sizes to be specified.
+  [[#947](https://github.com/reupen/columns_ui/pull/947)]
 
 - The positioning of tooltips in list views for centre- and right-aligned
   columns was improved. [[#910](https://github.com/reupen/columns_ui/pull/910)]
