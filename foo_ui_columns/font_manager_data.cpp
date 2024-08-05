@@ -90,25 +90,42 @@ void FontManagerData::set_data_raw(stream_reader* p_stream, size_t p_sizehint, a
 {
     uint32_t version;
     p_stream->read_lendian_t(version, p_abort);
-    if (version <= cfg_version) {
-        m_common_items_entry->read(version, p_stream, p_abort);
-        m_common_labels_entry->read(version, p_stream, p_abort);
-        const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
-        m_entries.remove_all();
-        for (size_t i = 0; i < count; i++) {
-            entry_ptr_t ptr = std::make_shared<Entry>();
-            ptr->read(version, p_stream, p_abort);
-            m_entries.add_item(ptr);
-        }
-        try {
-            m_common_items_entry->read_extra_data(p_stream, p_abort);
-            m_common_labels_entry->read_extra_data(p_stream, p_abort);
+    if (version > cfg_version)
+        return;
 
-            for (auto&& entry : m_entries) {
-                entry->read_extra_data(p_stream, p_abort);
-            }
-        } catch (const exception_io_data_truncation&) {
-        }
+    m_common_items_entry->read(version, p_stream, p_abort);
+    m_common_labels_entry->read(version, p_stream, p_abort);
+    const auto count = p_stream->read_lendian_t<uint32_t>(p_abort);
+    m_entries.remove_all();
+
+    for (size_t i = 0; i < count; i++) {
+        entry_ptr_t ptr = std::make_shared<Entry>();
+        ptr->read(version, p_stream, p_abort);
+        m_entries.add_item(ptr);
+    }
+
+    try {
+        m_common_items_entry->read_extra_data(p_stream, p_abort);
+    } catch (const exception_io_data_truncation&) {
+        return;
+    }
+
+    m_common_labels_entry->read_extra_data(p_stream, p_abort);
+
+    for (auto&& entry : m_entries) {
+        entry->read_extra_data(p_stream, p_abort);
+    }
+
+    try {
+        m_common_items_entry->read_extra_data_v2(p_stream, p_abort);
+    } catch (const exception_io_data_truncation&) {
+        return;
+    }
+
+    m_common_labels_entry->read_extra_data_v2(p_stream, p_abort);
+
+    for (auto&& entry : m_entries) {
+        entry->read_extra_data_v2(p_stream, p_abort);
     }
 }
 
@@ -147,6 +164,13 @@ void FontManagerData::get_data_raw(stream_writer* p_stream, abort_callback& p_ab
     for (auto&& i : ranges::views::iota(size_t{0}, count))
         if (mask[i])
             m_entries[i]->write_extra_data(p_stream, p_abort);
+
+    m_common_items_entry->write_extra_data_v2(p_stream, p_abort);
+    m_common_labels_entry->write_extra_data_v2(p_stream, p_abort);
+
+    for (auto&& i : ranges::views::iota(size_t{0}, count))
+        if (mask[i])
+            m_entries[i]->write_extra_data_v2(p_stream, p_abort);
 }
 
 FontManagerData::Entry::Entry()
@@ -212,28 +236,36 @@ void FontManagerData::Entry::read(uint32_t version, stream_reader* p_stream, abo
 
 void FontManagerData::Entry::read_extra_data(stream_reader* stream, abort_callback& aborter)
 {
-    uint32_t size{};
-    stream->read_lendian_t(size, aborter);
-    stream_reader_limited_ref limited_reader(stream, size);
+    const auto size = stream->read_lendian_t<uint32_t>(aborter);
+    std::vector<uint8_t> data(size);
+    stream->read(data.data(), data.size(), aborter);
 
-    limited_reader.read_lendian_t(font_description.point_size_tenths, aborter);
+    stream_reader_memblock_ref extra_reader(data.data(), data.size());
+
+    extra_reader.read_lendian_t(font_description.point_size_tenths, aborter);
     font_description.estimate_dip_size();
+}
 
-    try {
-        const auto has_wss = limited_reader.read_lendian_t<bool>(aborter);
+void FontManagerData::Entry::read_extra_data_v2(stream_reader* stream, abort_callback& aborter)
+{
+    const auto size = stream->read_lendian_t<uint32_t>(aborter);
+    std::vector<uint8_t> data(size);
+    stream->read(data.data(), data.size(), aborter);
 
-        if (!has_wss)
-            return;
+    stream_reader_memblock_ref extra_reader(data.data(), data.size());
 
-        cui::fonts::WeightStretchStyle wss;
-        wss.family_name = mmh::to_utf16(mmh::to_string_view(limited_reader.read_string(aborter)));
-        wss.weight = static_cast<DWRITE_FONT_WEIGHT>(limited_reader.read_lendian_t<int32_t>(aborter));
-        wss.stretch = static_cast<DWRITE_FONT_STRETCH>(limited_reader.read_lendian_t<int32_t>(aborter));
-        wss.style = static_cast<DWRITE_FONT_STYLE>(limited_reader.read_lendian_t<int32_t>(aborter));
-        font_description.dip_size = limited_reader.read_lendian_t<float>(aborter);
-        font_description.wss = wss;
-    } catch (const exception_io_data_truncation&) {
-    }
+    const auto has_wss = extra_reader.read_lendian_t<bool>(aborter);
+
+    if (!has_wss)
+        return;
+
+    cui::fonts::WeightStretchStyle wss;
+    wss.family_name = mmh::to_utf16(mmh::to_string_view(extra_reader.read_string(aborter)));
+    wss.weight = static_cast<DWRITE_FONT_WEIGHT>(extra_reader.read_lendian_t<int32_t>(aborter));
+    wss.stretch = static_cast<DWRITE_FONT_STRETCH>(extra_reader.read_lendian_t<int32_t>(aborter));
+    wss.style = static_cast<DWRITE_FONT_STYLE>(extra_reader.read_lendian_t<int32_t>(aborter));
+    font_description.dip_size = extra_reader.read_lendian_t<float>(aborter);
+    font_description.wss = wss;
 }
 
 LOGFONT FontManagerData::Entry::get_normalised_font(unsigned dpi)
@@ -250,19 +282,30 @@ void FontManagerData::Entry::write(stream_writer* p_stream, abort_callback& p_ab
     cui::fonts::write_font(p_stream, font_description.log_font, p_abort);
 }
 
-void FontManagerData::Entry::write_extra_data(stream_writer* stream, abort_callback& aborter)
+void FontManagerData::Entry::write_extra_data(stream_writer* stream, abort_callback& aborter) const
 {
     stream_writer_memblock item_stream;
     item_stream.write_lendian_t(font_description.point_size_tenths, aborter);
+
+    stream->write_lendian_t(gsl::narrow<uint32_t>(item_stream.m_data.get_size()), aborter);
+    stream->write(item_stream.m_data.get_ptr(), item_stream.m_data.get_size(), aborter);
+}
+
+void FontManagerData::Entry::write_extra_data_v2(stream_writer* stream, abort_callback& aborter) const
+{
+    stream_writer_memblock item_stream;
+
     if (font_description.wss) {
-        const auto& wss = font_description.wss;
         item_stream.write_lendian_t(true, aborter);
+        const auto& wss = font_description.wss;
         const auto family_name = mmh::to_utf8(wss->family_name);
         item_stream.write_string(family_name, aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->weight), aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->stretch), aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->style), aborter);
         item_stream.write_lendian_t(font_description.dip_size, aborter);
+    } else {
+        item_stream.write_lendian_t(false, aborter);
     }
 
     stream->write_lendian_t(gsl::narrow<uint32_t>(item_stream.m_data.get_size()), aborter);

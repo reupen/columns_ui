@@ -26,7 +26,8 @@
 - A new DirectWrite-based font picker was added to the Colours and fonts
   preferences page. [[#916](https://github.com/reupen/columns_ui/pull/916),
   [#919](https://github.com/reupen/columns_ui/pull/919),
-  [#927](https://github.com/reupen/columns_ui/pull/927)]
+  [#927](https://github.com/reupen/columns_ui/pull/927),
+  [#943](https://github.com/reupen/columns_ui/pull/943)]
 
   This features better grouping of font families and now allows the entry of
   non-integer font sizes (to one decimal place).
