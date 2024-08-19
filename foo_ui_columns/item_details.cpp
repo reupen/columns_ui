@@ -442,7 +442,7 @@ void ItemDetails::reset_display_info()
 
 void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track)
 {
-    if (g_track_mode_includes_now_playing(m_tracking_mode)) {
+    if (s_track_mode_includes_now_playing(m_tracking_mode)) {
         m_nowplaying_active = true;
         set_handles(pfc::list_single_ref_t<metadb_handle_ptr>(p_track));
     }
@@ -481,7 +481,7 @@ void ItemDetails::on_playback_time(double p_time)
 
 void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
 {
-    if (g_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
+    if (s_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
         m_nowplaying_active = false;
 
@@ -497,8 +497,8 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
 
 void ItemDetails::on_playlist_switch()
 {
-    if (g_track_mode_includes_plalist(m_tracking_mode)
-        && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (s_track_mode_includes_playlist(m_tracking_mode)
+        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
@@ -506,8 +506,8 @@ void ItemDetails::on_playlist_switch()
 }
 void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
 {
-    if (g_track_mode_includes_plalist(m_tracking_mode)
-        && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (s_track_mode_includes_playlist(m_tracking_mode)
+        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
@@ -547,8 +547,8 @@ void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handl
         else
             m_selection_handles = p_selection;
 
-        if (g_track_mode_includes_selection(m_tracking_mode)
-            && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+        if (s_track_mode_includes_selection(m_tracking_mode)
+            && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
             set_handles(m_selection_handles);
         }
     }
@@ -565,14 +565,14 @@ void ItemDetails::on_tracking_mode_change()
 
     m_nowplaying_active = false;
 
-    if (g_track_mode_includes_now_playing(m_tracking_mode) && play_control::get()->is_playing()) {
+    if (s_track_mode_includes_now_playing(m_tracking_mode) && play_control::get()->is_playing()) {
         metadb_handle_ptr item;
         if (playback_control::get()->get_now_playing(item))
             handles.add_item(item);
         m_nowplaying_active = true;
-    } else if (g_track_mode_includes_plalist(m_tracking_mode)) {
+    } else if (s_track_mode_includes_playlist(m_tracking_mode)) {
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-    } else if (g_track_mode_includes_selection(m_tracking_mode)) {
+    } else if (s_track_mode_includes_selection(m_tracking_mode)) {
         handles = m_selection_handles;
     }
     set_handles(handles);
@@ -1119,17 +1119,17 @@ void ItemDetails::on_volume_change(float p_new_val) {}
 
 void ItemDetails::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
 
-bool ItemDetails::g_track_mode_includes_selection(size_t mode)
+bool ItemDetails::s_track_mode_includes_selection(size_t mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-bool ItemDetails::g_track_mode_includes_auto(size_t mode)
+bool ItemDetails::s_track_mode_includes_auto(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-bool ItemDetails::g_track_mode_includes_plalist(size_t mode)
+bool ItemDetails::s_track_mode_includes_playlist(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
@@ -1146,7 +1146,7 @@ uie::container_window_v3_config ItemDetails::get_window_config()
     return config;
 }
 
-bool ItemDetails::g_track_mode_includes_now_playing(size_t mode)
+bool ItemDetails::s_track_mode_includes_now_playing(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }

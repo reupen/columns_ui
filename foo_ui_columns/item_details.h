@@ -62,13 +62,13 @@ public:
         track_selection,
     };
 
-    bool g_track_mode_includes_now_playing(size_t mode);
+    bool s_track_mode_includes_now_playing(size_t mode);
 
-    bool g_track_mode_includes_plalist(size_t mode);
+    bool s_track_mode_includes_playlist(size_t mode);
 
-    bool g_track_mode_includes_auto(size_t mode);
+    bool s_track_mode_includes_auto(size_t mode);
 
-    bool g_track_mode_includes_selection(size_t mode);
+    bool s_track_mode_includes_selection(size_t mode);
 
     class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
         service_ptr_t<ItemDetails> p_this;
@@ -297,7 +297,7 @@ private:
     bool m_word_wrapping{};
     bool m_is_updating_scroll_bars{};
 
-    HWND m_wnd_config{nullptr};
+    HWND m_wnd_config{};
 };
 
 class ItemDetailsConfig {
