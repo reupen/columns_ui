@@ -4,44 +4,6 @@
 
 namespace cui::panels::item_details {
 
-bool are_strings_equal(std::wstring_view left, std::wstring_view right)
-{
-    return CompareStringEx(LOCALE_NAME_INVARIANT, NORM_IGNORECASE, left.data(), gsl::narrow<int>(left.length()),
-               right.data(), gsl::narrow<int>(right.length()), nullptr, nullptr, 0)
-        == CSTR_EQUAL;
-}
-
-bool RawFont::s_are_equal(const RawFont& item1, const RawFont& item2)
-{
-    return are_strings_equal(item1.m_face, item2.m_face) && item1.m_point == item2.m_point
-        && item1.m_bold == item2.m_bold && item1.m_italic == item2.m_italic && item1.m_underline == item2.m_underline;
-}
-
-bool operator==(const RawFont& item1, const RawFont& item2)
-{
-    return RawFont::s_are_equal(item1, item2);
-}
-
-void FontChanges::reset(bool keep_handles)
-{
-    if (!keep_handles)
-        m_fonts.set_size(0);
-    m_font_changes.resize(0);
-}
-
-bool FontChanges::find_font(const RawFont& raw_font, size_t& index)
-{
-    size_t count = m_fonts.get_count();
-    for (size_t i = 0; i < count; i++) {
-        if (m_fonts[i]->m_raw_font == raw_font) {
-            index = i;
-            return true;
-        }
-    }
-
-    return false;
-}
-
 TitleformatHookChangeFont::TitleformatHookChangeFont(const LOGFONT& lf)
 {
     HDC dc = GetDC(nullptr);
@@ -85,6 +47,7 @@ bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, co
         }
         return true;
     }
+
     if (!stricmp_utf8_ex(p_name, p_name_length, "reset_font", pfc_infinite)) {
         switch (p_params->get_param_count()) {
         case 0: {
@@ -118,40 +81,6 @@ bool TitleformatHookChangeFont::process_field(
     return false;
 }
 
-void g_parse_font_format_string(const wchar_t* str, size_t len, RawFont& p_out)
-{
-    size_t ptr = 0;
-    while (ptr < len) {
-        size_t keyStart = ptr;
-        while (ptr < len && str[ptr] != '=' && str[ptr] != ';')
-            ptr++;
-        size_t keyLen = ptr - keyStart;
-
-        bool valueValid = false;
-        size_t valueStart = 0;
-        size_t valueLen = 0;
-
-        if (str[ptr] == '=') {
-            ptr++;
-            valueStart = ptr;
-            while (ptr < len && str[ptr] != ';')
-                ptr++;
-            valueLen = ptr - valueStart;
-            ptr++;
-            valueValid = true;
-        } else if (ptr < len)
-            ptr++;
-
-        if (are_strings_equal(L"bold"sv, {&str[keyStart], keyLen})) {
-            p_out.m_bold = (!valueValid || are_strings_equal(L"true"sv, {&str[valueStart], valueLen}));
-        } else if (are_strings_equal(L"italic"sv, {&str[keyStart], keyLen})) {
-            p_out.m_italic = (!valueValid || are_strings_equal(L"true"sv, {&str[valueStart], valueLen}));
-        } else if (are_strings_equal(L"underline"sv, {&str[keyStart], keyLen})) {
-            p_out.m_underline = (!valueValid || are_strings_equal(L"true"sv, {&str[valueStart], valueLen}));
-        }
-    }
-}
-
 class ItemDetailsFontClient : public fonts::client {
 public:
     const GUID& get_client_guid() const override { return g_guid_item_details_font_client; }
@@ -159,7 +88,7 @@ public:
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { ItemDetails::g_on_font_change(); }
+    void on_font_changed() const override { ItemDetails::s_on_font_change(); }
 };
 
 class ItemDetailsColoursClient : public colours::client {
@@ -180,7 +109,7 @@ public:
         if (mask & colours::bool_flag_dark_mode_enabled)
             ItemDetails::s_on_dark_mode_status_change();
     }
-    void on_colour_changed(uint32_t mask) const override { ItemDetails::g_on_colours_change(); }
+    void on_colour_changed(uint32_t mask) const override { ItemDetails::s_on_colours_change(); }
 };
 
 namespace {

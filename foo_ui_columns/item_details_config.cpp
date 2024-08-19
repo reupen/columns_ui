@@ -153,10 +153,10 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         case IDC_VALIGN:
             switch (HIWORD(wp)) {
             case CBN_SELCHANGE:
-                m_vertical_alignment = ComboBox_GetCurSel((HWND)lp);
+                m_vertical_alignment = static_cast<VerticalAlignment>(ComboBox_GetCurSel((HWND)lp));
                 if (!m_modal) {
                     m_this->set_vertical_alignment(m_vertical_alignment);
-                    cfg_item_details_vertical_alignment = m_vertical_alignment;
+                    cfg_item_details_vertical_alignment = WI_EnumValue(m_vertical_alignment);
                 }
                 break;
             }
@@ -207,7 +207,7 @@ bool ItemDetailsConfig::run_modal(HWND wnd)
     return dialog_result > 0;
 }
 
-ItemDetailsConfig::ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, uint32_t valign)
+ItemDetailsConfig::ItemDetailsConfig(const char* p_text, uint32_t edge_style, uint32_t halign, VerticalAlignment valign)
     : m_script(p_text)
     , m_edge_style(edge_style)
     , m_horizontal_alignment(halign)

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "item_details.h"
 
+#include "item_details_text.h"
+
 namespace cui::panels::item_details {
 
 // {59B4F428-26A5-4a51-89E5-3945D327B4CB}
@@ -50,7 +52,8 @@ pfc::string8 cfg_item_details_script = "$set_font(%default_font_face%,$add(%defa
 #endif
 cfg_bool cfg_item_details_hscroll(g_guid_item_details_hscroll, false);
 cfg_uint cfg_item_details_horizontal_alignment(g_guid_item_details_horizontal_alignment, uih::ALIGN_CENTRE);
-cfg_uint cfg_item_details_vertical_alignment(g_guid_item_details_vertical_alignment, uih::ALIGN_CENTRE);
+cfg_uint cfg_item_details_vertical_alignment(
+    g_guid_item_details_vertical_alignment, WI_EnumValue(VerticalAlignment::Centre));
 cfg_bool cfg_item_details_word_wrapping(g_guid_item_details_word_wrapping, true);
 
 void ItemDetails::MenuNodeOptions::execute()
@@ -92,7 +95,7 @@ bool ItemDetails::show_config_popup(HWND wnd_parent)
         m_horizontal_alignment = dialog.m_horizontal_alignment;
         m_vertical_alignment = dialog.m_vertical_alignment;
         cfg_item_details_horizontal_alignment = m_horizontal_alignment;
-        cfg_item_details_vertical_alignment = m_vertical_alignment;
+        cfg_item_details_vertical_alignment = WI_EnumValue(m_vertical_alignment);
 
         if (get_wnd()) {
             m_to.release();
@@ -119,7 +122,8 @@ void ItemDetails::set_config(stream_reader* p_reader, size_t p_size, abort_callb
                 p_reader->read_lendian_t(m_word_wrapping, p_abort);
                 if (version >= 2) {
                     p_reader->read_lendian_t(m_edge_style, p_abort);
-                    p_reader->read_lendian_t(m_vertical_alignment, p_abort);
+
+                    m_vertical_alignment = static_cast<VerticalAlignment>(p_reader->read_lendian_t<int32_t>(p_abort));
                 }
             }
         }
@@ -135,7 +139,7 @@ void ItemDetails::get_config(stream_writer* p_writer, abort_callback& p_abort) c
     p_writer->write_lendian_t(m_horizontal_alignment, p_abort);
     p_writer->write_lendian_t(m_word_wrapping, p_abort);
     p_writer->write_lendian_t(m_edge_style, p_abort);
-    p_writer->write_lendian_t(m_vertical_alignment, p_abort);
+    p_writer->write_lendian_t(static_cast<int32_t>(m_vertical_alignment), p_abort);
 }
 
 void ItemDetails::get_menu_items(ui_extension::menu_hook_t& p_hook)
@@ -151,11 +155,9 @@ void ItemDetails::get_menu_items(ui_extension::menu_hook_t& p_hook)
     p_hook.add_node(p_node);
 }
 
-std::vector<ItemDetails*> ItemDetails::g_windows;
-
-void ItemDetails::g_on_app_activate(bool b_activated)
+void ItemDetails::s_on_app_activate(bool b_activated)
 {
-    for (auto& window : g_windows)
+    for (auto& window : s_windows)
         window->on_app_activate(b_activated);
 }
 void ItemDetails::on_app_activate(bool b_activated)
@@ -200,7 +202,12 @@ void ItemDetails::deregister_callback()
 
 void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_position)
 {
-    update_font_change_info();
+    if (m_is_updating_scroll_bars)
+        return;
+
+    m_is_updating_scroll_bars = true;
+    auto _ = gsl::finally([this] { m_is_updating_scroll_bars = false; });
+
     update_display_info();
 
     double percentage_scrolled{};
@@ -211,8 +218,8 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
 
         GetScrollInfo(get_wnd(), static_cast<int>(scrollbar_type), &si_old);
 
-        if (si_old.nMax > 0)
-            percentage_scrolled = static_cast<double>(si_old.nPos) / static_cast<double>(si_old.nMax);
+        if (const auto range = si_old.nMax - si_old.nMin + 1; range > 0)
+            percentage_scrolled = static_cast<double>(si_old.nPos - si_old.nMin) / static_cast<double>(range);
     }
 
     SCROLLINFO si_new{};
@@ -222,25 +229,32 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
     GetClientRect(get_wnd(), &rc);
 
     si_new.fMask = SIF_RANGE | SIF_PAGE | SIF_POS;
-    si_new.nMin = 0;
 
     if (scrollbar_type == ScrollbarType::vertical) {
         si_new.nPage = std::max(wil::rect_height(rc), 1l);
-        si_new.nMax = std::max(m_display_sz.cy - 1, 1l);
+        si_new.nMin = m_text_rect ? m_text_rect->top : 0l;
+        si_new.nMax = m_text_rect ? std::max(m_text_rect->bottom - 1, m_text_rect->top) : 0l;
     } else {
-        const auto padding_size = 2_spx * 2;
         si_new.nPage = std::max(wil::rect_width(rc), 1l);
-        si_new.nMax = m_hscroll ? std::max(m_display_sz.cx + padding_size - 1, 1l) : 0l;
+        si_new.nMin = m_text_rect ? m_text_rect->left : 0l;
+        si_new.nMax
+            = m_text_rect && m_hscroll && !m_word_wrapping ? std::max(m_text_rect->right - 1, m_text_rect->left) : 0l;
     }
 
-    if (si_new.nMax >= gsl::narrow<int>(si_new.nPage)) {
+    const auto range = si_new.nMax - si_new.nMin + 1;
+
+    if (range >= gsl::narrow<int>(si_new.nPage)) {
         if (!reset_position) {
-            si_new.nPos = static_cast<int>(percentage_scrolled * static_cast<double>(si_new.nMax));
-        } else if (scrollbar_type == ScrollbarType::horizontal) {
+            si_new.nPos = si_new.nMin + static_cast<int>(percentage_scrolled * static_cast<double>(range));
+        } else if (scrollbar_type == ScrollbarType::vertical) {
+            si_new.nPos = si_new.nMin;
+        } else {
             if (m_horizontal_alignment == uih::ALIGN_RIGHT)
-                si_new.nPos = si_new.nMax - gsl::narrow<int>(si_new.nPage) - 1;
+                si_new.nPos = si_new.nMax;
             else if (m_horizontal_alignment == uih::ALIGN_CENTRE)
-                si_new.nPos = (si_new.nMax + 1 - gsl::narrow<int>(si_new.nPage)) / 2;
+                si_new.nPos = si_new.nMin + (range - gsl::narrow<int>(si_new.nPage)) / 2;
+            else
+                si_new.nPos = si_new.nMin;
         }
     }
 
@@ -249,8 +263,13 @@ void ItemDetails::update_scrollbar(ScrollbarType scrollbar_type, bool reset_posi
 
 void ItemDetails::update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position)
 {
+    const auto last_client_height = m_last_cy;
+    const auto last_client_width = m_last_cx;
     update_scrollbar(ScrollbarType::vertical, reset_vertical_position);
     update_scrollbar(ScrollbarType::horizontal, reset_horizontal_position);
+
+    if (m_last_cy != last_client_height || (m_word_wrapping && m_last_cx != last_client_width))
+        update_scrollbar(ScrollbarType::vertical, reset_vertical_position);
 }
 
 void ItemDetails::set_handles(const metadb_handle_list& handles)
@@ -326,8 +345,8 @@ void ItemDetails::release_all_full_file_info_requests()
 
 void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool reset_horizontal_scroll_position)
 {
-    // DisableRedrawing noRedraw(get_wnd());
-    bool b_Update = true;
+    bool b_update = true;
+
     if (m_handles.get_count()) {
         LOGFONT lf;
         fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
@@ -349,27 +368,16 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
             }
         }
 
-        pfc::stringcvt::string_wide_from_utf8 wide_text(temp);
-        if (std::wstring_view(wide_text.get_ptr(), wide_text.length()) != m_current_text_raw) {
-            m_current_text_raw = wide_text;
-
-            m_raw_font_changes.set_size(0);
-            m_font_changes.reset(true);
-            m_font_change_info_valid = false;
-
-            const auto multiline_text = g_get_text_line_lengths(wide_text, m_line_lengths);
-
-            m_current_text = g_get_raw_font_changes(multiline_text.c_str(), m_raw_font_changes);
+        auto utf16_text = mmh::to_utf16(mmh::to_string_view(temp));
+        if (utf16_text != m_formatted_text) {
+            m_formatted_text = std::move(utf16_text);
         } else
-            b_Update = false;
+            b_update = false;
     } else {
-        m_current_text.clear();
-        m_current_text_raw.clear();
-        reset_font_change_info();
-        m_line_lengths.clear();
+        m_formatted_text.clear();
     }
 
-    if (b_Update) {
+    if (b_update) {
         reset_display_info();
 
         update_scrollbars(reset_vertical_scroll_position, reset_horizontal_scroll_position);
@@ -378,63 +386,63 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
     }
 }
 
-void ItemDetails::update_display_info(HDC dc)
-{
-    if (!m_display_info_valid) {
-        RECT rc;
-        GetClientRect(get_wnd(), &rc);
-        const auto padding_size = uih::scale_dpi_value(2) * 2;
-
-        const auto widthMax = rc.right > padding_size ? rc.right - padding_size : 0;
-        m_current_display_text = m_current_text;
-
-        auto display_info = g_get_multiline_text_dimensions(
-            dc, m_current_display_text, m_line_lengths, m_font_changes, m_word_wrapping, widthMax);
-
-        m_line_sizes = std::move(display_info.line_sizes);
-        m_display_sz = std::move(display_info.sz);
-
-        m_display_info_valid = true;
-    }
-}
-
 void ItemDetails::update_display_info()
 {
-    if (!m_display_info_valid) {
-        HDC dc = GetDC(get_wnd());
-        HFONT fnt_old = SelectFont(dc, m_font_changes.m_default_font->m_font.get());
-        update_display_info(dc);
-        SelectFont(dc, fnt_old);
-        ReleaseDC(get_wnd(), dc);
+    create_text_layout();
+
+    if (!m_text_layout || m_text_rect)
+        return;
+
+    DWRITE_TEXT_METRICS text_metrics{};
+    DWRITE_OVERHANG_METRICS overhang_metrics{};
+
+    try {
+        text_metrics = m_text_layout->get_metrics();
+        overhang_metrics = m_text_layout->get_overhang_metrics();
     }
+    CATCH_LOG_RETURN()
+
+    const auto scaling_factor = uih::direct_write::get_default_scaling_factor();
+    const auto layout_width = m_text_layout->get_max_width();
+    const auto layout_height = m_text_layout->get_max_height();
+    const auto padding = s_get_padding();
+
+    RECT client_rect{};
+    GetClientRect(get_wnd(), &client_rect);
+
+    const auto scale_min
+        = [scaling_factor](float value) { return gsl::narrow_cast<long>(std::floor(value * scaling_factor)); };
+    const auto scale_max
+        = [scaling_factor](float value) { return gsl::narrow_cast<long>(std::ceil(value * scaling_factor)); };
+
+    RECT text_rect = {
+        scale_min(text_metrics.left),
+        scale_min(text_metrics.top),
+        scale_max(text_metrics.left + text_metrics.width),
+        scale_max(text_metrics.top + text_metrics.height),
+    };
+
+    RECT overhang_rect = {
+        scale_min(-overhang_metrics.left),
+        scale_min(-overhang_metrics.top),
+        scale_max(layout_width + overhang_metrics.right),
+        scale_max(layout_height + overhang_metrics.bottom),
+    };
+
+    m_text_rect = {std::min(text_rect.left, overhang_rect.left) - padding,
+        std::min(text_rect.top, overhang_rect.top) - padding, std::max(text_rect.right, overhang_rect.right) + padding,
+        std::max(text_rect.bottom, overhang_rect.bottom) + padding};
 }
+
 void ItemDetails::reset_display_info()
 {
-    m_current_display_text.clear();
-    m_line_sizes.clear();
-    m_display_sz.cy = (m_display_sz.cx = 0);
-    m_display_info_valid = false;
-}
-
-void ItemDetails::update_font_change_info()
-{
-    if (!m_font_change_info_valid) {
-        g_get_font_changes(m_raw_font_changes, m_font_changes);
-        m_raw_font_changes.set_size(0);
-        m_font_change_info_valid = true;
-    }
-}
-
-void ItemDetails::reset_font_change_info()
-{
-    m_raw_font_changes.remove_all();
-    m_font_changes.reset();
-    m_font_change_info_valid = false;
+    m_text_layout.reset();
+    m_text_rect.reset();
 }
 
 void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track)
 {
-    if (g_track_mode_includes_now_playing(m_tracking_mode)) {
+    if (s_track_mode_includes_now_playing(m_tracking_mode)) {
         m_nowplaying_active = true;
         set_handles(pfc::list_single_ref_t<metadb_handle_ptr>(p_track));
     }
@@ -473,7 +481,7 @@ void ItemDetails::on_playback_time(double p_time)
 
 void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
 {
-    if (g_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
+    if (s_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
         m_nowplaying_active = false;
 
@@ -489,8 +497,8 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
 
 void ItemDetails::on_playlist_switch()
 {
-    if (g_track_mode_includes_plalist(m_tracking_mode)
-        && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (s_track_mode_includes_playlist(m_tracking_mode)
+        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
@@ -498,8 +506,8 @@ void ItemDetails::on_playlist_switch()
 }
 void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
 {
-    if (g_track_mode_includes_plalist(m_tracking_mode)
-        && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+    if (s_track_mode_includes_playlist(m_tracking_mode)
+        && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         set_handles(handles);
@@ -539,8 +547,8 @@ void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handl
         else
             m_selection_handles = p_selection;
 
-        if (g_track_mode_includes_selection(m_tracking_mode)
-            && (!g_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
+        if (s_track_mode_includes_selection(m_tracking_mode)
+            && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
             set_handles(m_selection_handles);
         }
     }
@@ -557,14 +565,14 @@ void ItemDetails::on_tracking_mode_change()
 
     m_nowplaying_active = false;
 
-    if (g_track_mode_includes_now_playing(m_tracking_mode) && play_control::get()->is_playing()) {
+    if (s_track_mode_includes_now_playing(m_tracking_mode) && play_control::get()->is_playing()) {
         metadb_handle_ptr item;
         if (playback_control::get()->get_now_playing(item))
             handles.add_item(item);
         m_nowplaying_active = true;
-    } else if (g_track_mode_includes_plalist(m_tracking_mode)) {
+    } else if (s_track_mode_includes_playlist(m_tracking_mode)) {
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
-    } else if (g_track_mode_includes_selection(m_tracking_mode)) {
+    } else if (s_track_mode_includes_selection(m_tracking_mode)) {
         handles = m_selection_handles;
     }
     set_handles(handles);
@@ -589,7 +597,20 @@ void ItemDetails::on_size()
 
 void ItemDetails::on_size(size_t cx, size_t cy)
 {
-    reset_display_info();
+    if (m_text_layout) {
+        const auto padding = s_get_padding();
+        const auto max_width = std::max(0, gsl::narrow<int>(cx) - padding * 2);
+        const auto max_height = std::max(0, gsl::narrow<int>(cy) - padding * 2);
+
+        try {
+            m_text_layout->set_max_width(uih::direct_write::px_to_dip(gsl::narrow_cast<float>(max_width)));
+            m_text_layout->set_max_height(uih::direct_write::px_to_dip(gsl::narrow_cast<float>(max_height)));
+        }
+        CATCH_LOG()
+
+        m_text_rect.reset();
+    }
+
     invalidate_all(false);
 
     if (cx != m_last_cx) {
@@ -654,15 +675,17 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
         metadb_io_v3::get()->register_callback(this);
 
-        m_font_changes.m_default_font = std::make_shared<Font>();
-        m_font_changes.m_default_font->m_font.reset(
-            fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client));
-        m_font_changes.m_default_font->m_height = uih::get_font_height(m_font_changes.m_default_font->m_font.get());
+        try {
+            m_direct_write_context = uih::direct_write::Context::s_create();
+        }
+        CATCH_LOG()
 
-        if (g_windows.empty())
+        recreate_text_format();
+
+        if (s_windows.empty())
             s_create_message_window();
 
-        g_windows.push_back(this);
+        s_windows.push_back(this);
 
         titleformat_compiler::get()->compile_safe(m_to, m_script);
 
@@ -671,12 +694,10 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         refresh_contents(true, true);
     } break;
     case WM_DESTROY: {
-        std::erase(g_windows, this);
+        std::erase(s_windows, this);
 
-        if (g_windows.empty())
+        if (s_windows.empty())
             s_destroy_message_window();
-
-        m_font_changes.m_default_font.reset();
 
         play_callback_manager::get()->unregister_callback(this);
         metadb_io_v3::get()->unregister_callback(this);
@@ -687,6 +708,9 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_selection_handles.remove_all();
         m_selection_holder.release();
         m_to.release();
+        m_text_format.reset();
+        m_text_layout.reset();
+        m_direct_write_context.reset();
         m_last_cx = 0;
         m_last_cy = 0;
     } break;
@@ -717,7 +741,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         UINT scroll_lines = 3; // 3 is default
         SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0); // we don't support Win9X
 
-        int line_height = m_font_changes.m_default_font->m_height + 2;
+        const auto line_height = m_text_format ? m_text_format->get_minimum_height() : 0;
 
         if (!si.nPage)
             si.nPage++;
@@ -731,8 +755,6 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         if (scroll_lines == 0)
             scroll_lines = 1;
-
-        // console::formatter() << zDelta;
 
         int delta = -MulDiv(zDelta, scroll_lines, 120);
 
@@ -761,7 +783,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         int new_pos = si.nPos;
 
-        int line_height = m_font_changes.m_default_font->m_height + 2;
+        const auto line_height = m_text_format ? m_text_format->get_minimum_height() : 0;
 
         WORD p_value = LOWORD(wp);
 
@@ -803,108 +825,144 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_ERASEBKGND:
         return TRUE;
     case WM_PAINT: {
-        PAINTSTRUCT ps;
-        BeginPaint(wnd, &ps);
+        PAINTSTRUCT ps{};
+        auto dc = wil::BeginPaint(wnd, &ps);
 
         SCROLLINFO siv{};
         siv.cbSize = sizeof(siv);
-        siv.fMask = SIF_POS;
+        siv.fMask = SIF_POS | SIF_RANGE | SIF_PAGE;
         SCROLLINFO sih = siv;
         GetScrollInfo(wnd, SB_VERT, &siv);
         GetScrollInfo(wnd, SB_HORZ, &sih);
 
-        HDC dc_mem = CreateCompatibleDC(ps.hdc);
-
-        RECT& rc = ps.rcPaint;
-        HBITMAP bm_mem = CreateCompatibleBitmap(ps.hdc, wil::rect_width(rc), wil::rect_height(rc));
-        HBITMAP bm_old = SelectBitmap(dc_mem, bm_mem);
-
-        OffsetWindowOrgEx(dc_mem, +rc.left, +rc.top, nullptr);
-
         colours::helper p_helper(g_guid_item_details_colour_client);
 
-        HFONT fnt_old = SelectFont(dc_mem, m_font_changes.m_default_font->m_font.get());
-
-        update_font_change_info();
-        update_display_info(dc_mem);
+        update_display_info();
 
         RECT rc_client;
         GetClientRect(wnd, &rc_client);
 
-        const int client_height = wil::rect_height(rc_client);
-        const int client_width = wil::rect_width(rc_client);
+        const auto background_colour = p_helper.get_colour(colours::colour_background);
+        const auto text_colour = p_helper.get_colour(colours::colour_text);
 
-        auto background_colour = p_helper.get_colour(colours::colour_background);
-        FillRect(dc_mem, &rc, wil::unique_hbrush(CreateSolidBrush(background_colour)).get());
+        if (m_text_layout && m_text_rect) {
+            const auto is_horizontal_scroll_bar_visible
+                = m_hscroll && !m_word_wrapping && (sih.nMax - sih.nMin - 1) > gsl::narrow_cast<int>(sih.nPage);
+            const auto is_vertical_scroll_bar_visible = (siv.nMax - siv.nMin - 1) > gsl::narrow_cast<int>(siv.nPage);
+            const auto x_offset = uih::direct_write::px_to_dip(
+                gsl::narrow_cast<float>(is_horizontal_scroll_bar_visible ? -sih.nPos : 0));
+            const auto y_offset
+                = uih::direct_write::px_to_dip(gsl::narrow_cast<float>(is_vertical_scroll_bar_visible ? -siv.nPos : 0));
 
-        const int padding = uih::scale_dpi_value(2);
-        const int width
-            = m_hscroll ? std::max(client_width, gsl::narrow<int>(m_display_sz.cx) + padding * 2) : client_width;
-
-        RECT rc_placement{};
-        rc_placement.left = rc_client.left + padding - sih.nPos;
-        rc_placement.right = std::max(rc_placement.left + width - padding * 2, rc_placement.left);
-        rc_placement.top = rc_client.top - siv.nPos;
-
-        if (m_display_sz.cy < client_height) {
-            int extra = client_height - m_display_sz.cy;
-            if (m_vertical_alignment == uih::ALIGN_CENTRE)
-                rc_placement.top += extra / 2;
-            else if (m_vertical_alignment == uih::ALIGN_RIGHT)
-                rc_placement.top += extra;
+            try {
+                m_text_layout->render_with_solid_background(
+                    dc.get(), x_offset, y_offset, ps.rcPaint, background_colour, text_colour);
+            }
+            CATCH_LOG()
         }
-
-        rc_placement.bottom = rc_placement.top + m_display_sz.cy;
-
-        g_text_out_multiline_font(dc_mem, rc_placement, m_current_text.c_str(), m_font_changes, m_line_sizes,
-            p_helper.get_colour(colours::colour_text), (uih::alignment)m_horizontal_alignment);
-        SelectFont(dc_mem, fnt_old);
-
-        BitBlt(ps.hdc, rc.left, rc.top, wil::rect_width(rc), wil::rect_height(rc), dc_mem, rc.left, rc.top, SRCCOPY);
-
-        SelectBitmap(dc_mem, bm_old);
-        DeleteObject(bm_mem);
-        DeleteDC(dc_mem);
-
-        EndPaint(wnd, &ps);
     }
         return 0;
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
 
-void ItemDetails::g_on_font_change()
+void ItemDetails::s_on_font_change()
 {
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->on_font_change();
     }
 }
 
 void ItemDetails::s_on_dark_mode_status_change()
 {
-    for (auto&& window : g_windows) {
+    for (auto&& window : s_windows) {
         window->set_window_theme();
     }
 }
 
-void ItemDetails::g_on_colours_change()
+void ItemDetails::s_on_colours_change()
 {
-    for (auto& window : g_windows) {
+    for (auto& window : s_windows) {
         window->on_colours_change();
+    }
+}
+
+void ItemDetails::recreate_text_format()
+{
+    if (!m_direct_write_context)
+        return;
+
+    m_text_format = create_text_format(m_direct_write_context, static_cast<uih::alignment>(m_horizontal_alignment),
+        m_vertical_alignment, m_word_wrapping);
+    reset_display_info();
+}
+
+void ItemDetails::create_text_layout()
+{
+    if (!m_text_format || m_text_layout)
+        return;
+
+    RECT rect{};
+    GetClientRect(get_wnd(), &rect);
+
+    auto [render_text, colour_segments, font_segments] = process_colour_and_font_codes(m_formatted_text);
+
+    const auto padding = s_get_padding();
+    const auto max_width = std::max(0, gsl::narrow<int>(wil::rect_width(rect)) - padding * 2);
+    const auto max_height = std::max(0, gsl::narrow<int>(wil::rect_height(rect)) - padding * 2);
+    m_text_layout = item_details::create_text_layout(*m_text_format, max_width, max_height, render_text);
+
+    if (!m_text_layout)
+        return;
+
+    for (auto& [colour, start_character, character_count] : colour_segments) {
+        try {
+            m_text_layout->set_colour(
+                colour, {gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)});
+        }
+        CATCH_LOG()
+    }
+
+    for (auto& [font, start_character, character_count] : font_segments) {
+        LOGFONT lf{};
+        wcsncpy_s(lf.lfFaceName, font.family.c_str(), _TRUNCATE);
+
+        if (font.is_bold)
+            lf.lfWeight = FW_BOLD;
+
+        if (font.is_underline)
+            lf.lfUnderline = TRUE;
+
+        if (font.is_italic)
+            lf.lfItalic = TRUE;
+
+        try {
+            const auto direct_write_font = m_direct_write_context->create_font(lf);
+
+            const auto weight = direct_write_font->GetWeight();
+            const auto stretch = direct_write_font->GetStretch();
+            const auto style = direct_write_font->GetStyle();
+            const auto size = uih::direct_write::pt_to_dip(font.size_points);
+            const auto text_range
+                = DWRITE_TEXT_RANGE{gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)};
+
+            m_text_layout->set_font(font.family.c_str(), weight, stretch, style, size, text_range);
+
+            if (font.is_underline)
+                m_text_layout->set_underline(true, text_range);
+        }
+        CATCH_LOG()
     }
 }
 
 void ItemDetails::on_font_change()
 {
-    m_font_changes.m_default_font->m_font.reset(
-        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client));
-    refresh_contents();
-    /*
-    invalidate_all(false);
-    update_scrollbar_range();
-    update_now();
-    */
+    recreate_text_format();
+    reset_display_info();
+    update_scrollbars(false, false);
+    invalidate_all();
 }
+
 void ItemDetails::on_colours_change()
 {
     invalidate_all();
@@ -914,7 +972,7 @@ ItemDetails::ItemDetails()
     : m_tracking_mode(cfg_item_details_tracking_mode)
     , m_script(cfg_item_details_script)
     , m_horizontal_alignment(cfg_item_details_horizontal_alignment)
-    , m_vertical_alignment(cfg_item_details_vertical_alignment)
+    , m_vertical_alignment(static_cast<VerticalAlignment>(cfg_item_details_vertical_alignment.get_value()))
     , m_edge_style(cfg_item_details_edge_style)
     , m_hscroll(cfg_item_details_hscroll)
     , m_word_wrapping(cfg_item_details_word_wrapping)
@@ -932,7 +990,7 @@ void ItemDetails::s_create_message_window()
     s_message_window = std::make_unique<uie::container_window_v3>(
         config, [](auto&& wnd, auto&& msg, auto&& wp, auto&& lp) -> LRESULT {
             if (msg == WM_ACTIVATEAPP)
-                g_on_app_activate(wp != 0);
+                s_on_app_activate(wp != 0);
             return DefWindowProc(wnd, msg, wp, lp);
         });
     s_message_window->create(nullptr);
@@ -982,24 +1040,47 @@ void ItemDetails::set_edge_style(uint32_t edge_style)
     }
 }
 
-void ItemDetails::set_vertical_alignment(uint32_t vertical_alignment)
+void ItemDetails::set_vertical_alignment(VerticalAlignment vertical_alignment)
 {
-    if (get_wnd()) {
-        m_vertical_alignment = vertical_alignment;
-        invalidate_all(false);
-        update_scrollbars(false, false);
-        update_now();
+    if (!get_wnd())
+        return;
+
+    m_vertical_alignment = vertical_alignment;
+
+    if (m_text_format) {
+        const auto paragraph_alignment = get_paragraph_alignment(m_vertical_alignment);
+
+        try {
+            m_text_format->set_paragraph_alignment(paragraph_alignment);
+        }
+        CATCH_LOG()
     }
+
+    reset_display_info();
+    invalidate_all(false);
+    update_scrollbars(false, false);
+    update_now();
 }
 
 void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
 {
-    if (get_wnd()) {
-        m_horizontal_alignment = horizontal_alignment;
-        invalidate_all(false);
-        update_scrollbars(false, true);
-        update_now();
+    if (!get_wnd())
+        return;
+
+    m_horizontal_alignment = horizontal_alignment;
+
+    if (m_text_format) {
+        try {
+            m_text_format->set_text_alignment(
+                uih::direct_write::get_text_alignment(static_cast<uih::alignment>(horizontal_alignment)));
+        }
+        CATCH_LOG()
     }
+
+    reset_display_info();
+    invalidate_all(false);
+    update_scrollbars(false, true);
+    update_now();
 }
 
 void ItemDetails::on_playback_order_changed(size_t p_new_index) {}
@@ -1038,17 +1119,17 @@ void ItemDetails::on_volume_change(float p_new_val) {}
 
 void ItemDetails::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
 
-bool ItemDetails::g_track_mode_includes_selection(size_t mode)
+bool ItemDetails::s_track_mode_includes_selection(size_t mode)
 {
     return mode == track_auto_selection_playing || mode == track_selection;
 }
 
-bool ItemDetails::g_track_mode_includes_auto(size_t mode)
+bool ItemDetails::s_track_mode_includes_auto(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing;
 }
 
-bool ItemDetails::g_track_mode_includes_plalist(size_t mode)
+bool ItemDetails::s_track_mode_includes_playlist(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_playlist;
 }
@@ -1065,7 +1146,7 @@ uie::container_window_v3_config ItemDetails::get_window_config()
     return config;
 }
 
-bool ItemDetails::g_track_mode_includes_now_playing(size_t mode)
+bool ItemDetails::s_track_mode_includes_now_playing(size_t mode)
 {
     return mode == track_auto_playlist_playing || mode == track_auto_selection_playing || mode == track_playing;
 }
@@ -1078,6 +1159,15 @@ void ItemDetails::MenuNodeWordWrap::execute()
 {
     p_this->m_word_wrapping = !p_this->m_word_wrapping;
     cfg_item_details_word_wrapping = p_this->m_word_wrapping;
+
+    if (p_this->m_text_format) {
+        try {
+            p_this->m_text_format->set_word_wrapping(
+                p_this->m_word_wrapping ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP);
+        }
+        CATCH_LOG()
+    }
+
     p_this->reset_display_info();
     p_this->invalidate_all(false);
     p_this->update_scrollbars(false, true);
