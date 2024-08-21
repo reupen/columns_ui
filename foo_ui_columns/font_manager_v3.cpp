@@ -82,6 +82,22 @@ public:
         auto wss = font_description.get_wss_with_fallback();
         return fb2k::service_new<Font>(log_font, wss, size);
     }
+
+    void set_client_font_size(GUID id, float size) override
+    {
+        const auto entry = g_font_manager_data.find_by_guid(id);
+
+        if (entry->font_mode != font_mode_custom) {
+            entry->font_description = g_font_manager_data.resolve_font_description(entry);
+            entry->font_mode = font_mode_custom;
+        }
+
+        entry->font_description.set_dip_size(size);
+
+        client::ptr ptr;
+        if (client::create_by_guid(id, ptr))
+            ptr->on_font_changed();
+    }
 };
 
 service_factory_t<FontManager3> _;

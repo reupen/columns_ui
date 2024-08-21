@@ -101,9 +101,7 @@ void TabFonts::save_size_edit() const
 
     auto& font_description = m_element_ptr->font_description;
 
-    font_description.point_size_tenths = gsl::narrow_cast<int>(std::roundf(font_size_float * 10.0f));
-    font_description.dip_size = uih::direct_write::pt_to_dip(font_size_float);
-    font_description.recalculate_log_font_height();
+    font_description.set_point_size(font_size_float);
 }
 
 wil::com_ptr_t<IDWriteFontFamily> TabFonts::get_icon_font_family() const
@@ -271,9 +269,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 const auto nmupdown = reinterpret_cast<LPNMUPDOWN>(lp);
                 nmupdown->iDelta *= 10;
                 const auto new_font_size_tenths = std::clamp(nmupdown->iPos + nmupdown->iDelta, 10, 720);
-                m_element_ptr->font_description.point_size_tenths = new_font_size_tenths;
-                m_element_ptr->font_description.recalculate_log_font_height();
-                m_element_ptr->font_description.estimate_dip_size();
+                m_element_ptr->font_description.set_point_size_tenths(new_font_size_tenths);
                 update_font_size_edit();
                 on_font_changed();
                 return 0;

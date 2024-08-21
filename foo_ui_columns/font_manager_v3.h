@@ -41,6 +41,7 @@ public:
 class NOVTABLE manager_v3 : public service_base {
 public:
     [[nodiscard]] virtual font::ptr get_client_font(GUID id) const = 0;
+    virtual void set_client_font_size(GUID id, float size) = 0;
 
     FB2K_MAKE_SERVICE_INTERFACE_ENTRYPOINT(manager_v3);
 };
