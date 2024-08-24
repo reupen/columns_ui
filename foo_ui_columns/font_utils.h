@@ -15,6 +15,9 @@ struct FontDescription {
     float dip_size{12.0f};
     std::optional<WeightStretchStyle> wss;
 
+    void set_dip_size(float size);
+    void set_point_size(float size);
+    void set_point_size_tenths(int size_tenths);
     void estimate_point_and_dip_size();
     void estimate_dip_size();
     void recalculate_log_font_height();
@@ -46,7 +49,6 @@ private:
 };
 
 std::optional<FontDescription> select_font(HWND wnd_parent, LOGFONT initial_font);
-void get_next_font_size_step(LOGFONT& log_font, bool up);
 
 LOGFONT read_font(stream_reader* stream, abort_callback& aborter);
 void write_font(stream_writer* stream, const LOGFONT& log_font, abort_callback& aborter);

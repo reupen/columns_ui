@@ -4,6 +4,28 @@
 
 namespace cui::fonts {
 
+void FontDescription::set_dip_size(float size)
+{
+    dip_size = size;
+    point_size_tenths
+        = gsl::narrow_cast<int>(std::roundf(size * 720.0f / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI)));
+    log_font.lfHeight = gsl::narrow_cast<long>(std::roundf(-uih::direct_write::dip_to_px(size)));
+}
+
+void FontDescription::set_point_size(float size)
+{
+    point_size_tenths = gsl::narrow_cast<int>(std::roundf(size * 10.0f));
+    dip_size = uih::direct_write::pt_to_dip(size);
+    recalculate_log_font_height();
+}
+
+void FontDescription::set_point_size_tenths(int size_tenths)
+{
+    point_size_tenths = size_tenths;
+    estimate_dip_size();
+    recalculate_log_font_height();
+}
+
 void FontDescription::estimate_point_and_dip_size()
 {
     point_size_tenths = -MulDiv(log_font.lfHeight, 720, uih::get_system_dpi_cached().cy);
@@ -141,71 +163,6 @@ std::optional<FontDescription> select_font(HWND wnd_parent, LOGFONT initial_font
         return {{lf, cf.iPointSize}};
 
     return {};
-}
-
-int CALLBACK FontSizesProc(const LOGFONT* log_font, const TEXTMETRIC* ptm, DWORD FontType, LPARAM lp);
-
-struct fontsizeinfo {
-    bool up;
-    int size;
-    int new_size;
-    int caps;
-    bool changed;
-};
-
-void get_next_font_size_step(LOGFONT& log_font, bool up)
-{
-    LOGFONT new_log_font = log_font;
-
-    HDC dc = GetDC(nullptr);
-
-    fontsizeinfo size{};
-
-    size.up = up;
-    size.caps = GetDeviceCaps(dc, LOGPIXELSY);
-    size.size = -MulDiv(new_log_font.lfHeight, 72, size.caps);
-    size.new_size = up ? size.size : 0;
-    size.changed = false;
-
-    EnumFontFamiliesEx(dc, &new_log_font, FontSizesProc, reinterpret_cast<LPARAM>(&size), 0);
-    if (size.changed)
-        new_log_font.lfHeight = -MulDiv(size.new_size, size.caps, 72);
-
-    ReleaseDC(nullptr, dc);
-
-    if (new_log_font.lfHeight)
-        log_font = new_log_font;
-}
-
-int CALLBACK FontSizesProc(const LOGFONT* log_font, const TEXTMETRIC* ptm, DWORD FontType, LPARAM lp)
-{
-    auto* font_size_info = reinterpret_cast<fontsizeinfo*>(lp);
-
-    if (FontType != TRUETYPE_FONTTYPE) {
-        const int point_size = abs(MulDiv(log_font->lfHeight, 72, font_size_info->caps));
-
-        if (font_size_info->up) {
-            if (point_size > font_size_info->size
-                && (!(font_size_info->new_size > font_size_info->size) || point_size < font_size_info->new_size)) {
-                font_size_info->new_size = point_size;
-                font_size_info->changed = true;
-            }
-        } else {
-            if (point_size < font_size_info->size && point_size > font_size_info->new_size) {
-                font_size_info->new_size = point_size;
-                font_size_info->changed = true;
-            }
-        }
-        return 1;
-    }
-
-    if (font_size_info->size > 1 && !font_size_info->up)
-        font_size_info->new_size = font_size_info->size - 1;
-    else if (font_size_info->size < MAXLONG && font_size_info->up)
-        font_size_info->new_size = font_size_info->size + 1;
-
-    font_size_info->changed = true;
-    return 0;
 }
 
 namespace {

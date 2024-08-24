@@ -81,15 +81,13 @@ void ConfigGroups::remove_group(size_t index)
     PlaylistView::g_on_groups_change();
 }
 
-void set_font_size(bool up)
+void set_font_size(float point_delta)
 {
-    LOGFONT lf_ng;
-    const auto api = fb2k::std_api_get<fonts::manager>();
-    api->get_font(g_guid_items_font, lf_ng);
+    const auto api = fb2k::std_api_get<fonts::manager_v3>();
+    auto font = api->get_client_font(g_guid_items_font);
 
-    fonts::get_next_font_size_step(lf_ng, up);
-
-    api->set_font(g_guid_items_font, lf_ng);
+    const auto dip_delta = uih::direct_write::pt_to_dip(point_delta);
+    api->set_client_font_size(g_guid_items_font, font->size() + dip_delta);
 }
 
 PlaylistView::PlaylistView()
