@@ -431,7 +431,7 @@ BEGIN
     EDITTEXT        IDC_WIDTH,7,71,65,13,ES_AUTOHSCROLL | ES_NUMBER
     LTEXT           "Size weight",-1,78,61,47,8
     EDITTEXT        IDC_PARTS,78,71,65,13,ES_AUTOHSCROLL | ES_NUMBER
-    LTEXT           "Alignment",-1,150,61,32,8
+    LTEXT           "Alignment",-1,150,61,45,8
     COMBOBOX        IDC_ALIGNMENT,150,71,65,78,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Linked meta field (for inline editing)",-1,7,95,120,8
     EDITTEXT        IDC_EDITFIELD,7,105,208,13,ES_UPPERCASE | ES_AUTOHSCROLL
