@@ -148,6 +148,10 @@
   after changing the ‘Displayed track’ in the Artwork view panel was fixed.
   [[#854](https://github.com/reupen/columns_ui/pull/854)]
 
+- A bug where the ‘Alignment’ label in the Columns tab of the Playlist view
+  preferences page was clipped for some display scale values was fixed.
+  [[#959](https://github.com/reupen/columns_ui/pull/959)]
+
 ### Internal changes
 
 - Various dependencies were updated.
