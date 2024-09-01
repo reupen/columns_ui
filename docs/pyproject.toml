@@ -9,8 +9,8 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.12"
-myst-parser = "^3.0.1"
-sphinx = "^7.4.7"
+myst-parser = "^4.0.0"
+sphinx = "^8.0.2"
 takao = "^0.2.1"
 
 [build-system]
