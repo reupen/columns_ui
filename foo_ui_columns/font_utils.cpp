@@ -204,4 +204,31 @@ SystemFont get_menu_font_for_dpi(unsigned dpi)
     return {ncm.lfMenuFont, gsl::narrow_cast<float>(-ncm.lfMenuFont.lfHeight)};
 }
 
+std::optional<uih::direct_write::TextFormat> get_text_format(
+    const uih::direct_write::Context::Ptr& context, const font::ptr& font_api)
+{
+    if (const auto text_format = font_api->create_wil_text_format()) {
+        try {
+            return context->wrap_text_format(
+                text_format, font_api->rendering_mode(), font_api->force_greyscale_antialiasing());
+        }
+        CATCH_LOG()
+    }
+    return {};
+}
+
+std::optional<uih::direct_write::TextFormat> get_text_format(const font::ptr& font_api)
+{
+    uih::direct_write::Context::Ptr context;
+    try {
+        context = uih::direct_write::Context::s_create();
+    }
+    CATCH_LOG();
+
+    if (!context)
+        return {};
+
+    return get_text_format(context, font_api);
+}
+
 } // namespace cui::fonts

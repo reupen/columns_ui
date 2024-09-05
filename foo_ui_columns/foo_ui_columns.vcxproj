@@ -295,6 +295,7 @@
     <ClCompile Include="tab_dark_mode.cpp" />
     <ClCompile Include="tab_playlist_swticher.cpp" />
     <ClCompile Include="tab_status_pane.cpp" />
+    <ClCompile Include="tab_text_rendering.cpp" />
     <ClCompile Include="title_formatting.cpp" />
     <ClCompile Include="version.cpp" />
     <ClCompile Include="config_defaults.cpp" />
@@ -497,6 +498,7 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="tab_colours.h" />
     <ClInclude Include="tab_fonts.h" />
+    <ClInclude Include="tab_text_rendering.h" />
     <ClInclude Include="utf8api.h" />
     <ClInclude Include="volume.h" />
     <ClInclude Include="seekbar.h" />

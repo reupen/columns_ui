@@ -1,4 +1,5 @@
 #pragma once
+#include "font_manager_v3.h"
 
 namespace cui::fonts {
 
@@ -60,5 +61,9 @@ struct SystemFont {
 
 SystemFont get_icon_font_for_dpi(unsigned dpi);
 SystemFont get_menu_font_for_dpi(unsigned dpi);
+
+std::optional<uih::direct_write::TextFormat> get_text_format(
+    const uih::direct_write::Context::Ptr& context, const font::ptr& font_api);
+std::optional<uih::direct_write::TextFormat> get_text_format(const font::ptr& font_api);
 
 } // namespace cui::fonts

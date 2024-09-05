@@ -48,8 +48,26 @@ public:
     void deregister_common_callback(cui::fonts::common_callback* p_callback);
 
     void g_on_common_font_changed(uint32_t mask);
+    void on_rendering_options_change();
 
     pfc::ptr_list_t<cui::fonts::common_callback> m_callbacks;
 
     FontManagerData();
 };
+
+namespace cui::fonts {
+
+enum class RenderingMode : int32_t {
+    Automatic = DWRITE_RENDERING_MODE_DEFAULT,
+    Natural = DWRITE_RENDERING_MODE_NATURAL,
+    NaturalSymmetric = DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC,
+    GdiClassic = DWRITE_RENDERING_MODE_GDI_CLASSIC,
+    GdiNatural = DWRITE_RENDERING_MODE_GDI_NATURAL,
+};
+
+extern fbh::ConfigInt32 rendering_mode;
+extern fbh::ConfigBool force_greyscale_antialiasing;
+
+DWRITE_RENDERING_MODE get_rendering_mode();
+
+} // namespace cui::fonts

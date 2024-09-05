@@ -13,10 +13,15 @@ const GUID manager_v3::class_guid{0x471a234d, 0xb81a, 0x4f6a, {0x84, 0x94, 0x5c,
 
 class Font : public font {
 public:
-    Font(LOGFONT log_font, WeightStretchStyle wss, const float size)
+    Font(LOGFONT log_font, WeightStretchStyle wss, const float size, DWRITE_RENDERING_MODE rendering_mode,
+        bool force_greyscale_antialiasing)
         : m_log_font(std::move(log_font))
         , m_wss(std::move(wss))
-        , m_size(size) {};
+        , m_size(size)
+        , m_rendering_mode(rendering_mode)
+        , m_force_greyscale_antialiasing(force_greyscale_antialiasing)
+    {
+    }
 
     const wchar_t* family_name() noexcept final { return m_wss.family_name.c_str(); }
     DWRITE_FONT_WEIGHT weight() noexcept final { return m_wss.weight; }
@@ -63,10 +68,15 @@ public:
         return {};
     }
 
+    DWRITE_RENDERING_MODE rendering_mode() noexcept override { return m_rendering_mode; }
+    bool force_greyscale_antialiasing() noexcept override { return m_force_greyscale_antialiasing; }
+
 private:
-    LOGFONT m_log_font;
-    WeightStretchStyle m_wss;
+    LOGFONT m_log_font{};
+    WeightStretchStyle m_wss{};
     float m_size{};
+    DWRITE_RENDERING_MODE m_rendering_mode{};
+    bool m_force_greyscale_antialiasing{};
 };
 
 class FontManager3 : public manager_v3 {
@@ -80,7 +90,8 @@ public:
         const auto& log_font = font_description.log_font;
         auto size = font_description.dip_size;
         auto wss = font_description.get_wss_with_fallback();
-        return fb2k::service_new<Font>(log_font, wss, size);
+        return fb2k::service_new<Font>(log_font, wss, size, static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get()),
+            force_greyscale_antialiasing.get());
     }
 
     void set_client_font_size(GUID id, float size) override

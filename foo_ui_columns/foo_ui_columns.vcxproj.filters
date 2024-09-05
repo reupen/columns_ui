@@ -617,6 +617,9 @@
     <ClCompile Include="font_manager_v3.cpp">
       <Filter>Colours and fonts</Filter>
     </ClCompile>
+    <ClCompile Include="tab_text_rendering.cpp">
+      <Filter>Config UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -904,6 +907,9 @@
     </ClInclude>
     <ClInclude Include="item_details_text.h">
       <Filter>Item details</Filter>
+    </ClInclude>
+    <ClInclude Include="tab_text_rendering.h">
+      <Filter>Config UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

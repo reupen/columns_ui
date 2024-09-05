@@ -4,6 +4,8 @@
 #include "item_details.h"
 #include "item_details_text.h"
 
+#include "font_utils.h"
+
 namespace cui::panels::item_details {
 
 namespace {
@@ -78,18 +80,17 @@ std::optional<uih::direct_write::TextFormat> create_text_format(const uih::direc
 {
     const auto api = fb2k::std_api_get<cui::fonts::manager_v3>();
     const auto font = api->get_client_font(g_guid_item_details_font_client);
-    const auto text_format = font->create_wil_text_format();
+    const auto text_format = fonts::get_text_format(context, font);
 
     if (!text_format)
         return {};
 
     try {
         const auto paragraph_alignment = get_paragraph_alignment(vertical_alignment);
-        const auto wrapped_text_format = context->wrap_text_format(text_format, false);
-        wrapped_text_format.set_text_alignment(uih::direct_write::get_text_alignment(horizontal_alignment));
-        wrapped_text_format.set_paragraph_alignment(paragraph_alignment);
-        wrapped_text_format.set_word_wrapping(word_wrapping ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP);
-        return wrapped_text_format;
+        text_format->set_text_alignment(uih::direct_write::get_text_alignment(horizontal_alignment));
+        text_format->set_paragraph_alignment(paragraph_alignment);
+        text_format->set_word_wrapping(word_wrapping ? DWRITE_WORD_WRAPPING_WRAP : DWRITE_WORD_WRAPPING_NO_WRAP);
+        return text_format;
     }
     CATCH_LOG()
 

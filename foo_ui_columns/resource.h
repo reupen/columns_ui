@@ -93,6 +93,7 @@
 #define IDD_PREFS_PLAYLIST_SWITCHER     234
 #define IDD_PREFS_DARK_MODE             235
 #define IDD_PREFS_STATUS_PANE           236
+#define IDD_PREFS_TEXT_RENDERING        237
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
@@ -291,6 +292,8 @@
 #define IDC_H2_TITLE                    1192
 #define IDC_FONT_SIZE                   1192
 #define IDC_FONT_SIZE_SPIN              1193
+#define IDC_RENDERING_MODE              1194
+#define IDC_FORCE_GREYSCALE_ANTIALIASING 1196
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -300,7 +303,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1194
+#define _APS_NEXT_CONTROL_VALUE         1197
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -1,4 +1,6 @@
 #include "pch.h"
+
+#include "font_manager_data.h"
 #include "ng_playlist.h"
 
 namespace cui::panels::playlist_view {
@@ -95,8 +97,8 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
 
         if (context.m_item_text_format)
             text_out_columns_and_colours(*context.m_item_text_format, context.dc, sub_item.text,
-                1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, b_selected, cr_text, true, true,
-                sub_item.alignment, cfg_ellipsis != 0);
+                1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, cr_text,
+                {.is_selected = b_selected, .align = sub_item.alignment, .enable_ellipses = cfg_ellipsis != 0});
 
         const auto frame_width = uih::scale_dpi_value(1);
 
@@ -172,7 +174,7 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
     const auto border = 3_spx;
 
     const auto text_width = text_out_columns_and_colours(*context.m_group_text_format, context.dc, text, x_offset,
-        border, rc, false, cr, true, false, uih::ALIGN_LEFT, cfg_ellipsis != 0);
+        border, rc, cr, {.enable_ellipses = cfg_ellipsis != 0, .enable_tab_columns = false});
 
     const auto line_height = 1_spx;
     const auto line_top = rc.top + wil::rect_height(rc) / 2 - line_height / 2;
