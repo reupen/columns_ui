@@ -126,25 +126,28 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (m_selection)
             items_text << " selected";
 
+        constexpr auto simple_text_opts
+            = uih::direct_write::TextOutOptions{.enable_colour_codes = false, .enable_tab_columns = false};
+
         uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(), mmh::to_string_view(items_text),
-            1_spx, 3_spx, rc_line_1, false, default_text_colour, false, false);
+            1_spx, 3_spx, rc_line_1, default_text_colour, simple_text_opts);
 
         if (m_item_count) {
             uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
-                fmt::format("Length: {}", m_length_text.c_str()), 1_spx, 3_spx, rc_line_2, false, default_text_colour,
-                false, false);
+                fmt::format("Length: {}", m_length_text.c_str()), 1_spx, 3_spx, rc_line_2, default_text_colour,
+                simple_text_opts);
         }
 
         if (m_menu_active) {
             uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(), mmh::to_string_view(m_menu_text),
-                1_spx + selected_items_width, 3_spx, rc_line_1, false, default_text_colour, false, false);
+                1_spx + selected_items_width, 3_spx, rc_line_1, default_text_colour, simple_text_opts);
         } else {
             constexpr auto playback_status_placeholder = L"Playing:  "sv;
             const auto playback_status_width = m_text_format->measure_text_width(playback_status_placeholder);
 
             uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
-                mmh::to_string_view(m_track_label), 4_spx + selected_items_width, 0, rc_line_1, false,
-                default_text_colour, false, false);
+                mmh::to_string_view(m_track_label), 4_spx + selected_items_width, 0, rc_line_1, default_text_colour,
+                simple_text_opts);
 
             if (playing1.get_length()) {
                 const auto now_playing_x_end = 4_spx + selected_items_width + playback_status_width;
@@ -156,13 +159,13 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 if (lines > 0)
                     uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
-                        std::string_view{formatted_title_lines[0]}, now_playing_x_end, 0, rc_line_1, false,
-                        default_text_colour, true, true);
+                        std::string_view{formatted_title_lines[0]}, now_playing_x_end, 0, rc_line_1,
+                        default_text_colour);
 
                 if (lines > 1)
                     uih::direct_write::text_out_columns_and_colours(*m_text_format, dc.get(),
-                        std::string_view{formatted_title_lines[1]}, now_playing_x_end, 0, rc_line_2, false,
-                        default_text_colour, true, true);
+                        std::string_view{formatted_title_lines[1]}, now_playing_x_end, 0, rc_line_2,
+                        default_text_colour);
             }
         }
 

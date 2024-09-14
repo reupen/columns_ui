@@ -2,6 +2,11 @@
 
 namespace cui::fonts {
 
+struct rendering_options {
+    DWRITE_RENDERING_MODE rendering_mode{DWRITE_RENDERING_MODE_DEFAULT};
+    bool force_greyscale_antialiasing{};
+};
+
 /**
  * Part of the preliminary DirectWrite-friendly manager_v3 interface.
  *
@@ -20,6 +25,11 @@ public:
     [[nodiscard]] virtual pfc::com_ptr_t<IDWriteTextFormat> create_text_format(
         const wchar_t* locale_name = L"") noexcept
         = 0;
+
+    [[nodiscard]] virtual DWRITE_RENDERING_MODE rendering_mode() noexcept = 0;
+    [[nodiscard]] virtual bool force_greyscale_antialiasing() noexcept = 0;
+
+    rendering_options get_rendering_options() { return {rendering_mode(), force_greyscale_antialiasing()}; }
 
 #ifdef __WIL_COM_INCLUDED
     wil::com_ptr_t<IDWriteTextFormat> create_wil_text_format(const wchar_t* locale_name = L"")

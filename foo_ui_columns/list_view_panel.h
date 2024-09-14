@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dark_mode.h"
+#include "font_utils.h"
 
 template <typename t_appearance_client, typename t_window = uie::window>
 class ListViewPanelBase

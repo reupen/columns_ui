@@ -5,6 +5,7 @@
 
 #include "dark_mode.h"
 #include "font_manager_v3.h"
+#include "font_utils.h"
 #include "menu_items.h"
 #include "metadb_helpers.h"
 
@@ -59,7 +60,7 @@ void StatusPane::recreate_font()
         return;
 
     try {
-        m_text_format = m_direct_write_context->wrap_text_format(text_format);
+        m_text_format = fonts::get_text_format(m_direct_write_context, font);
     }
     CATCH_LOG()
 

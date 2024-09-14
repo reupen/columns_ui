@@ -2,6 +2,7 @@
 #include "status_bar.h"
 
 #include "font_manager_v3.h"
+#include "font_utils.h"
 #include "main_window.h"
 #include "metadb_helpers.h"
 
@@ -52,17 +53,8 @@ void on_status_font_change()
     }
     CATCH_LOG()
 
-    if (state->direct_write_ctx) {
-        wil::com_ptr_t<IDWriteTextFormat> text_format{};
-        text_format.attach(font->create_text_format().detach());
-
-        if (text_format) {
-            try {
-                state->direct_write_text_format = state->direct_write_ctx->wrap_text_format(text_format);
-            }
-            CATCH_LOG()
-        }
-    }
+    if (state->direct_write_ctx)
+        state->direct_write_text_format = fonts::get_text_format(state->direct_write_ctx, font);
 
     SetWindowFont(g_status, state->font.get(), TRUE);
 
@@ -441,7 +433,7 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     if (part_id == StatusBarPartID::PlaybackInformation) {
         if (state->direct_write_text_format)
             uih::direct_write::text_out_columns_and_colours(
-                *state->direct_write_text_format, dc, text, 0, 0, rc, false, text_colour, true, true, uih::ALIGN_LEFT);
+                *state->direct_write_text_format, dc, text, 0, 0, rc, text_colour);
         return;
     }
 
@@ -474,8 +466,8 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     }
 
     if (state->direct_write_text_format)
-        uih::direct_write::text_out_columns_and_colours(
-            *state->direct_write_text_format, dc, text, x - rc.left, 0, rc, false, text_colour, false, false);
+        uih::direct_write::text_out_columns_and_colours(*state->direct_write_text_format, dc, text, x - rc.left, 0, rc,
+            text_colour, {.enable_colour_codes = false, .enable_tab_columns = false});
 }
 
 } // namespace

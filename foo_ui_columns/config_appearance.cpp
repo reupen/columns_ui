@@ -9,6 +9,7 @@
 #include "tab_dark_mode.h"
 #include "tab_fonts.h"
 #include "setup_dialog.h"
+#include "tab_text_rendering.h"
 
 TabDarkMode g_tab_dark_mode;
 cui::colours::ColourManagerData g_colour_manager_data;
@@ -189,7 +190,8 @@ void refresh_appearance_prefs()
     }
 }
 
-static PreferencesTab* g_tabs_appearance[] = {&g_tab_dark_mode, &g_tab_appearance, &g_tab_appearance_fonts};
+static PreferencesTab* g_tabs_appearance[]
+    = {&g_tab_dark_mode, &g_tab_appearance, &g_tab_appearance_fonts, &cui::prefs::get_text_rendering_tab()};
 
 // {FA25D859-C808-485d-8AB7-FCC10F29ECE5}
 const GUID g_guid_cfg_child_appearance = {0xfa25d859, 0xc808, 0x485d, {0x8a, 0xb7, 0xfc, 0xc1, 0xf, 0x29, 0xec, 0xe5}};

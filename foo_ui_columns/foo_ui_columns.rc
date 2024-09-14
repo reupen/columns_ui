@@ -715,6 +715,19 @@ BEGIN
     LTEXT           "",IDC_MENU_DESC,7,196,312,10
 END
 
+IDD_PREFS_TEXT_RENDERING DIALOGEX 0, 0, 327, 268
+STYLE DS_SETFONT | DS_3DLOOK | DS_FIXEDSYS | DS_CONTROL | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "DirectWrite text rendering",IDC_TITLE1,7,4,273,16
+    LTEXT           "Rendering mode",IDC_STATIC,7,28,101,8
+    COMBOBOX        IDC_RENDERING_MODE,7,39,172,12,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    CONTROL         "Force greyscale anti-aliasing",IDC_FORCE_GREYSCALE_ANTIALIASING,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,62,119,10
+    LTEXT           "The above options will only have an effect on parts of the UI that use DirectWrite for text rendering.\n\nThird-party panels may not support these settings.",IDC_STATIC,7,87,313,36
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -1015,6 +1028,14 @@ BEGIN
         RIGHTMARGIN, 319
         TOPMARGIN, 4
         BOTTOMMARGIN, 264
+    END
+
+    IDD_PREFS_TEXT_RENDERING, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 320
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 261
     END
 END
 #endif    // APSTUDIO_INVOKED
