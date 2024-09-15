@@ -54,7 +54,7 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
 
         Button_SetCheck(
-            m_force_greyscale_antialiasing_checkbox, fonts::force_greyscale_antialiasing ? BST_UNCHECKED : BST_CHECKED);
+            m_force_greyscale_antialiasing_checkbox, fonts::force_greyscale_antialiasing ? BST_CHECKED : BST_UNCHECKED);
 
         break;
     }
