@@ -162,7 +162,11 @@
 - Various dependencies were updated.
   [[#920](https://github.com/reupen/columns_ui/pull/920)]
 
-- The component is now compiled with Visual Studio 2022 17.9.
+- The component is now compiled using foobar2000 SDK 2024-08-07.
+  [[#833](https://github.com/reupen/columns_ui/pull/833),
+  [#970](https://github.com/reupen/columns_ui/pull/970)]
+
+- The component is now compiled with Visual Studio 2022 17.11.
 
 ## 2.1.0
 
