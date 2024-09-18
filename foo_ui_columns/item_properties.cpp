@@ -180,7 +180,7 @@ void ItemProperties::notify_on_initialisation()
     set_font(items_text_format, items_log_font);
 
     const auto header_font = font_api->get_client_font(g_guid_selection_properties_header_font_client);
-    set_header_font(header_font->log_font());
+    set_header_font(fonts::get_text_format(header_font), header_font->log_font());
 
     const auto group_font = font_api->get_client_font(g_guid_selection_properties_group_font_client);
     set_group_font(fonts::get_text_format(group_font));
@@ -734,9 +734,10 @@ void ItemProperties::s_on_font_header_change()
     const auto font
         = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_selection_properties_header_font_client);
     const auto log_font = font->log_font();
+    const auto text_format = fonts::get_text_format(font);
 
     for (auto& window : s_windows) {
-        window->set_header_font(log_font);
+        window->set_header_font(text_format, log_font);
     }
 }
 

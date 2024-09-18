@@ -402,9 +402,10 @@ void PlaylistView::g_on_header_font_change()
 {
     const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_header_font);
     const auto log_font = font->log_font();
+    const auto text_format = fonts::get_text_format(font);
 
     for (auto& window : g_windows)
-        window->set_header_font(log_font);
+        window->set_header_font(text_format, log_font);
 }
 
 void PlaylistView::g_on_group_header_font_change()
@@ -764,7 +765,7 @@ void PlaylistView::notify_on_initialisation()
     set_font(items_text_format, items_log_font);
 
     const auto header_font = font_api->get_client_font(g_guid_header_font);
-    set_header_font(header_font->log_font());
+    set_header_font(fonts::get_text_format(header_font), header_font->log_font());
 
     const auto group_font = font_api->get_client_font(g_guid_group_header_font);
     set_group_font(fonts::get_text_format(group_font));
