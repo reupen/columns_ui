@@ -207,9 +207,10 @@ void FilterPanel::g_on_font_header_change()
 {
     const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_filter_header_font_client);
     const auto log_font = font->log_font();
+    const auto text_format = fonts::get_text_format(font);
 
     for (auto& window : g_windows) {
-        window->set_header_font(log_font);
+        window->set_header_font(text_format, log_font);
     }
 }
 void FilterPanel::g_redraw_all()
@@ -803,7 +804,7 @@ void FilterPanel::notify_on_initialisation()
     set_font(items_text_format, items_log_font);
 
     const auto header_font = font_api->get_client_font(g_guid_filter_header_font_client);
-    set_header_font(header_font->log_font());
+    set_header_font(fonts::get_text_format(header_font), header_font->log_font());
 
     size_t index = g_windows.size();
     if (index == 0) {
