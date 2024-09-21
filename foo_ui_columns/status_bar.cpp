@@ -423,7 +423,8 @@ std::string_view get_draw_item_text(const StatusBarPartID part_id)
     }
 }
 
-void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::string_view text, const RECT rc)
+void draw_item_content(
+    const HWND wnd, const HDC dc, const StatusBarPartID part_id, const std::string_view text, const RECT rc)
 {
     if (text.empty())
         return;
@@ -433,7 +434,7 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     if (part_id == StatusBarPartID::PlaybackInformation) {
         if (state->direct_write_text_format)
             uih::direct_write::text_out_columns_and_colours(
-                *state->direct_write_text_format, dc, text, 0, 0, rc, text_colour);
+                *state->direct_write_text_format, wnd, dc, text, 0, 0, rc, text_colour);
         return;
     }
 
@@ -466,8 +467,8 @@ void draw_item_content(const HDC dc, const StatusBarPartID part_id, const std::s
     }
 
     if (state->direct_write_text_format)
-        uih::direct_write::text_out_columns_and_colours(*state->direct_write_text_format, dc, text, x - rc.left, 0, rc,
-            text_colour, {.enable_colour_codes = false, .enable_tab_columns = false});
+        uih::direct_write::text_out_columns_and_colours(*state->direct_write_text_format, wnd, dc, text, x - rc.left, 0,
+            rc, text_colour, {.enable_colour_codes = false, .enable_tab_columns = false});
 }
 
 } // namespace
@@ -482,7 +483,7 @@ std::optional<LRESULT> handle_draw_item(const LPDRAWITEMSTRUCT lpdis)
 
     const std::string_view text = get_draw_item_text(part_id);
 
-    draw_item_content(lpdis->hDC, part_id, text, rc);
+    draw_item_content(lpdis->hwndItem, lpdis->hDC, part_id, text, rc);
 
     return TRUE;
 }

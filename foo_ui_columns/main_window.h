@@ -89,6 +89,7 @@ private:
     pfc::string8 m_window_title;
     wil::com_ptr_t<ITaskbarList3> m_taskbar_list;
     HWND m_wnd{};
+    HMONITOR m_monitor{};
     user_interface::HookProc_t m_hook_proc{};
     bool m_should_handle_multimedia_keys{true};
     bool m_shell_hook_registered{};

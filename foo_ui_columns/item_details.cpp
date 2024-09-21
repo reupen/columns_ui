@@ -856,7 +856,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             try {
                 m_text_layout->render_with_solid_background(
-                    dc.get(), x_offset, y_offset, ps.rcPaint, background_colour, text_colour);
+                    wnd, dc.get(), x_offset, y_offset, ps.rcPaint, background_colour, text_colour);
             }
             CATCH_LOG()
         }

@@ -134,6 +134,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
         WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
         m_wnd = wnd;
+        m_monitor = MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST);
 
         if (m_should_handle_multimedia_keys) {
             WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
@@ -489,7 +490,16 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     }
     case WM_WINDOWPOSCHANGED: {
-        auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+        const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
+
+        if ((lpwp->flags & (SWP_NOMOVE | SWP_NOSIZE)) != (SWP_NOMOVE | SWP_NOSIZE)) {
+            const auto monitor = MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST);
+            if (m_monitor != monitor) {
+                m_monitor = monitor;
+                RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE | RDW_ALLCHILDREN);
+            }
+        }
+
         if (!(lpwp->flags & SWP_NOSIZE)) {
             ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
             if (styles & WS_MINIMIZE) {
@@ -502,7 +512,9 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 resize_child_windows();
             }
         }
-    } break;
+
+        break;
+    };
     case WM_SYSCOLORCHANGE:
         win32_helpers::send_message_to_direct_children(wnd, msg, wp, lp);
         break;
