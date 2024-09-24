@@ -876,9 +876,9 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
 
     HMENU menu = CreatePopupMenu();
     HMENU selection_menu = CreatePopupMenu();
-    size_t index = pfc_infinite;
-    if (!(hittest.flags & HHT_NOWHERE) && is_header_column_real(hittest.iItem)) {
-        index = header_column_to_real_column(hittest.iItem);
+    const auto column_index = (hittest.flags & HHT_NOWHERE) ? std::nullopt : get_real_column_index(hittest.iItem);
+
+    if (column_index) {
         uAppendMenu(menu, (MF_STRING), IDM_ASC, "&Sort ascending");
         uAppendMenu(menu, (MF_STRING), IDM_DES, "Sort &descending");
         uAppendMenu(selection_menu, (MF_STRING), IDM_SEL_ASC, "Sort a&scending");
@@ -939,17 +939,21 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
     int cmd = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, get_wnd(), nullptr);
     DestroyMenu(menu);
 
-    if (cmd == IDM_ASC) {
-        sort_by_column(index, false);
-    } else if (cmd == IDM_DES) {
-        sort_by_column(index, true);
-    } else if (cmd == IDM_SEL_ASC) {
-        sort_by_column(index, false, true);
-    } else if (cmd == IDM_SEL_DES) {
-        sort_by_column(index, true, true);
-    } else if (cmd == IDM_EDIT_COLUMN) {
-        TabColumns::get_instance().show_column(column_index_display_to_actual(index));
-    } else if (cmd == IDM_AUTOSIZE) {
+    if (column_index && *column_index < get_column_count()) {
+        if (cmd == IDM_ASC) {
+            sort_by_column(*column_index, false);
+        } else if (cmd == IDM_DES) {
+            sort_by_column(*column_index, true);
+        } else if (cmd == IDM_SEL_ASC) {
+            sort_by_column(*column_index, false, true);
+        } else if (cmd == IDM_SEL_DES) {
+            sort_by_column(*column_index, true, true);
+        } else if (cmd == IDM_EDIT_COLUMN) {
+            TabColumns::get_instance().show_column(column_index_display_to_actual(*column_index));
+        }
+    }
+
+    if (cmd == IDM_AUTOSIZE) {
         cfg_nohscroll = cfg_nohscroll == 0;
         g_on_autosize_change();
     } else if (cmd == IDM_PREFS) {
@@ -963,6 +967,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
             g_on_columns_change();
         }
     }
+
     return true;
 }
 void PlaylistView::notify_on_menu_select(WPARAM wp, LPARAM lp)
