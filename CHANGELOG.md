@@ -160,6 +160,10 @@
   preferences page was clipped for some display scale values was fixed.
   [[#959](https://github.com/reupen/columns_ui/pull/959)]
 
+- A bug where the playlist view did not always re-render correctly when toggling
+  the ‘Show column titles’ option was fixed.
+  [[#983](https://github.com/reupen/columns_ui/pull/983)]
+
 ### Internal changes
 
 - Various dependencies were updated.
