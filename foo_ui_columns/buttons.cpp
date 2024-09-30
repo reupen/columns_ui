@@ -192,12 +192,12 @@ void ButtonsToolbar::create_toolbar()
         if (any_images_resized)
             console::print(reinterpret_cast<const char*>(fmt::format(
                 u8"Buttons toolbar – resized some custom non-hover icons to {} x {}px", button_width, button_height)
-                                                             .c_str()));
+                    .c_str()));
 
         if (any_hot_images_resized)
             console::print(reinterpret_cast<const char*>(fmt::format(
                 u8"Buttons toolbar – resized some custom hover icons to {} x {}px", button_width, button_height)
-                                                             .c_str()));
+                    .c_str()));
 
         m_standard_images.reset(
             ImageList_Create(button_width, button_height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));

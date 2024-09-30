@@ -867,7 +867,7 @@ void FilterPanel::notify_on_create()
     if (is_library_initialised && handles.size() > 0)
         console::print(fmt::format("Filter panel - {}: initialised in {} s", m_field_data.m_name.c_str(),
             pfc::format_float(time, 0, 3).c_str())
-                           .c_str());
+                .c_str());
 
     g_windows.push_back(this);
     fbh::library_callback_manager::register_callback(this);
