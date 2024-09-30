@@ -92,7 +92,9 @@ void set_font_size(float point_delta)
 
 PlaylistView::PlaylistView()
     : ListViewPanelBase(std::make_unique<PlaylistViewRenderer>(this))
-    , m_dragging_initial_playlist(pfc_infinite) {};
+    , m_dragging_initial_playlist(pfc_infinite)
+{
+}
 
 PlaylistView::~PlaylistView() = default;
 

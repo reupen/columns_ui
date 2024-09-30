@@ -104,7 +104,7 @@ void CommandPickerDialog::populate_commands()
             {
                 unsigned p_service_item_count = ptr->get_num_items();
                 for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
-                     p_service_item_index++) {
+                    p_service_item_index++) {
                     pfc::ptrholder_t<contextmenu_item_node_root> p_node(ptr->instantiate_item(
                         p_service_item_index, metadb_handle_list(), contextmenu_item::caller_keyboard_shortcut_list));
 
@@ -144,7 +144,7 @@ void CommandPickerDialog::populate_commands()
             {
                 unsigned p_service_item_count = ptr->get_command_count();
                 for (unsigned p_service_item_index = 0; p_service_item_index < p_service_item_count;
-                     p_service_item_index++) {
+                    p_service_item_index++) {
                     CommandData data;
                     data.m_guid = ptr->get_command(p_service_item_index);
 

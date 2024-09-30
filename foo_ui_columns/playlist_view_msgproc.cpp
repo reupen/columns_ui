@@ -251,7 +251,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     unsigned count = g_get_cache().active_column_get_active_count();
                     for (unsigned column = 0; column < count; column++) {
                         if (!g_get_columns()[g_get_cache().active_column_active_to_actual(column)]
-                                 ->edit_field.is_empty()) {
+                                ->edit_field.is_empty()) {
                             // create_inline_edit_v2(start, end-start+1, column);
                             create_inline_edit_v2(indices, column);
                             break;
@@ -486,7 +486,7 @@ LRESULT playlist_view::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                                 m_edit_column = hittest_column(GET_X_LPARAM(lp), width);
                                 if (m_edit_column >= 0
                                     && !g_get_columns()[g_get_cache().active_column_active_to_actual(m_edit_column)]
-                                            ->edit_field.is_empty()) {
+                                        ->edit_field.is_empty()) {
                                     m_edit_timer = (SetTimer(wnd, EDIT_TIMER_ID, GetDoubleClickTime(), nullptr) != 0);
                                 }
                             }
