@@ -4,6 +4,164 @@
 
 #include "dark_mode.h"
 #include "dark_mode_active_ui.h"
+#include "dark_mode_dialog.h"
+
+namespace {
+
+class ConfigureAxesDialog {
+public:
+    static void g_create(HWND wnd, uih::direct_write::FontFamily font_family, uih::direct_write::Font font,
+        std::unordered_map<uint32_t, float> axis_values,
+        std::function<void(const std::unordered_map<uint32_t, float>&)> on_values_change)
+    {
+        ConfigureAxesDialog dialog(
+            std::move(font_family), std::move(font), std::move(axis_values), std::move(on_values_change));
+
+        const cui::dark::DialogDarkModeConfig dark_mode_config{
+            .button_ids = {IDOK, IDCANCEL},
+            .combo_box_ids = {IDC_AXIS},
+            .edit_ids = {IDC_AXIS_VALUE},
+            .spin_ids = {IDC_AXIS_VALUE_SPIN},
+        };
+
+        cui::dark::modal_dialog_box(IDD_FONT_AXES, dark_mode_config, wnd,
+            [&dialog](auto wnd, auto msg, auto wp, auto lp) { return dialog.handle_message(wnd, msg, wp, lp); });
+    }
+
+private:
+    ConfigureAxesDialog(uih::direct_write::FontFamily font_family, uih::direct_write::Font font,
+        std::unordered_map<uint32_t, float> axis_values,
+        std::function<void(const std::unordered_map<uint32_t, float>&)> on_values_change)
+        : m_font_family(std::move(font_family))
+        , m_font(std::move(font))
+        , m_axis_values(std::move(axis_values))
+        , m_initial_axis_values(std::move(axis_values))
+        , m_on_values_change(on_values_change)
+    {
+    }
+
+    void on_axis_change()
+    {
+        const auto index = ComboBox_GetCurSel(m_axis_wnd);
+
+        if (index == CB_ERR) {
+            m_axis.reset();
+            return;
+        }
+
+        m_axis = m_font_family.axes[index];
+
+        const auto spin_min = gsl::narrow_cast<int>(std::round(m_axis->min * 10.0f));
+        const auto spin_max = gsl::narrow_cast<int>(std::round(m_axis->max * 10.0f));
+        SendMessage(GetDlgItem(m_wnd, IDC_AXIS_VALUE_SPIN), UDM_SETRANGE32, spin_min, spin_max);
+
+        const auto tag = WI_EnumValue(m_font_family.axes[index].tag);
+
+        if (m_axis_values.contains(tag)) {
+            const auto value = m_axis_values.at(tag);
+
+            const auto axis_value_text = fmt::format(L"{:.01f}", value);
+            SetWindowText(GetDlgItem(m_wnd, IDC_AXIS_VALUE), axis_value_text.c_str());
+
+            const auto spin_pos = gsl::narrow_cast<int>(std::round(value * 10.0f));
+            SendMessage(GetDlgItem(m_wnd, IDC_AXIS_VALUE_SPIN), UDM_SETPOS32, 0, spin_pos);
+
+            m_spin_step = m_axis->max - m_axis->min >= 100.0f ? 10 : 1;
+        }
+
+        const auto axis_range_text = fmt::format(L"{} – {}", m_axis->min, m_axis->max);
+        SetWindowText(GetDlgItem(m_wnd, IDC_AXIS_RANGE), axis_range_text.c_str());
+    }
+
+    INT_PTR handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    {
+        switch (msg) {
+        case WM_INITDIALOG: {
+            m_wnd = wnd;
+            m_axis_wnd = GetDlgItem(wnd, IDC_AXIS);
+
+            for (auto&& axis : m_font_family.axes) {
+                const wchar_t name[5] = {wchar_t(axis.tag & 0xff), wchar_t((axis.tag >> 8) & 0xff),
+                    wchar_t((axis.tag >> 16) & 0xff), wchar_t((axis.tag >> 24) & 0xff), 0};
+
+                ComboBox_AddString(m_axis_wnd, name);
+            }
+
+            ComboBox_SetCurSel(m_axis_wnd, 0);
+            on_axis_change();
+
+            break;
+        }
+        case WM_COMMAND:
+            switch (wp) {
+            case IDOK:
+                EndDialog(wnd, 1);
+                break;
+            case IDCANCEL:
+                if (m_dirty)
+                    m_on_values_change(m_initial_axis_values);
+
+                EndDialog(wnd, 0);
+                break;
+            case IDC_AXIS | (CBN_SELCHANGE << 16):
+                on_axis_change();
+                break;
+            }
+            break;
+        case WM_NOTIFY: {
+            const auto nmhdr = reinterpret_cast<LPNMHDR>(lp);
+            switch (nmhdr->idFrom) {
+            case IDC_AXIS_VALUE_SPIN:
+                switch (nmhdr->code) {
+                case UDN_DELTAPOS: {
+                    if (!m_axis)
+                        break;
+
+                    const auto nmupdown = reinterpret_cast<LPNMUPDOWN>(lp);
+                    nmupdown->iDelta *= m_spin_step;
+
+                    const auto spin_min = gsl::narrow_cast<int>(std::round(m_axis->min * 10.0f));
+                    const auto spin_max = gsl::narrow_cast<int>(std::round(m_axis->max * 10.0f));
+                    const auto new_spin_value = std::clamp(nmupdown->iPos + nmupdown->iDelta, spin_min, spin_max);
+
+                    const auto new_axis_value = gsl::narrow_cast<float>(new_spin_value) / 10.0f;
+                    const auto tag = m_axis->tag;
+
+                    if (new_axis_value == m_axis_values.at(tag))
+                        return 0;
+
+                    m_dirty = true;
+                    m_axis_values.insert_or_assign(tag, new_axis_value);
+
+                    const auto axis_value_text = fmt::format(L"{:.01f}", new_axis_value);
+                    SetWindowText(GetDlgItem(m_wnd, IDC_AXIS_VALUE), axis_value_text.c_str());
+
+                    // FIXME: Throttle updates
+                    m_on_values_change(m_axis_values);
+                    return 0;
+                }
+                }
+                break;
+            }
+            break;
+        }
+        }
+        return FALSE;
+    }
+
+    uih::direct_write::FontFamily m_font_family;
+    uih::direct_write::Font m_font;
+    std::unordered_map<uint32_t, float> m_axis_values;
+    std::unordered_map<uint32_t, float> m_initial_axis_values;
+    std::function<void(const std::unordered_map<uint32_t, float>&)> m_on_values_change;
+    HWND m_wnd{};
+    HWND m_axis_wnd{};
+    int m_spin_step{10};
+    std::optional<uih::direct_write::AxisRange> m_axis;
+    bool m_dirty{};
+};
+
+} // namespace
 
 bool TabFonts::is_active() const
 {
@@ -21,6 +179,8 @@ void TabFonts::on_family_change()
     m_font_face.reset();
     m_font_faces.clear();
     m_font_faces_text_formats.clear();
+
+    EnableWindow(GetDlgItem(m_wnd, IDC_CONFIGURE_AXES), m_font_family && !m_font_family->get().axes.empty());
 
     if (!m_font_family)
         return;
@@ -79,11 +239,12 @@ void TabFonts::save_font_face() const
 
     cui::fonts::WeightStretchStyle wss;
     wss.family_name = m_font_family->get().localised_name;
-    wss.weight = m_font_face->get().font->GetWeight();
-    wss.stretch = m_font_face->get().font->GetStretch();
-    wss.style = m_font_face->get().font->GetStyle();
+    wss.weight = m_font_face->get().weight;
+    wss.stretch = m_font_face->get().stretch;
+    wss.style = m_font_face->get().style;
 
     font_description.wss = wss;
+    font_description.axis_values = m_font_face->get().axis_values;
     font_description.log_font = m_direct_write_context->create_log_font(m_font_face->get().font);
     font_description.recalculate_log_font_height();
 }
@@ -119,7 +280,7 @@ wil::com_ptr_t<IDWriteFontFamily> TabFonts::get_icon_font_family() const
 
 uih::direct_write::TextFormat& TabFonts::get_family_text_format(size_t index)
 {
-    const auto& [family, _, is_symbol_font] = m_font_families.at(index);
+    const auto& [family, _family_name, is_symbol_font, _axes] = m_font_families.at(index);
     auto& text_format = m_font_families_text_formats.at(index);
 
     if (!text_format) {
@@ -133,14 +294,13 @@ uih::direct_write::TextFormat& TabFonts::get_family_text_format(size_t index)
 
 uih::direct_write::TextFormat& TabFonts::get_face_text_format(size_t index)
 {
-    const auto& [family, _family_name, is_symbol_font] = m_font_family->get();
-    const auto& [font, _face_name] = m_font_faces.at(index);
+    const auto& [family, _family_name, is_symbol_font, _axes] = m_font_family->get();
+    const auto& font = m_font_faces.at(index);
     auto& text_format = m_font_faces_text_formats.at(index);
 
     if (!text_format) {
         text_format = m_direct_write_context->create_text_format(is_symbol_font ? get_icon_font_family() : family,
-            font->GetWeight(), font->GetStretch(), font->GetStyle(),
-            uih::direct_write::pt_to_dip(font_dropdown_font_size));
+            font.weight, font.stretch, font.style, uih::direct_write::pt_to_dip(font_dropdown_font_size));
     }
 
     return *text_format;
@@ -281,6 +441,22 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     case WM_COMMAND:
         switch (wp) {
+        case IDC_CONFIGURE_AXES: {
+            if (!m_font_family || !m_font_face || !m_element_ptr)
+                break;
+
+            auto& font_description = m_element_ptr->font_description;
+            const auto& axis_values
+                = font_description.axis_values.empty() ? m_font_face->get().axis_values : font_description.axis_values;
+
+            ConfigureAxesDialog::g_create(
+                wnd, *m_font_family, *m_font_face, axis_values, [&, this](const auto& axis_values) {
+                    font_description.axis_values = axis_values;
+                    on_font_changed();
+                });
+
+            break;
+        }
         case IDC_FONT_MODE | (CBN_SELCHANGE << 16): {
             const int idx = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             m_element_ptr->font_mode

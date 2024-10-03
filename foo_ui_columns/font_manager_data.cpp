@@ -277,6 +277,22 @@ void FontManagerData::Entry::read_extra_data_v2(stream_reader* stream, abort_cal
     wss.style = static_cast<DWRITE_FONT_STYLE>(extra_reader.read_lendian_t<int32_t>(aborter));
     font_description.dip_size = extra_reader.read_lendian_t<float>(aborter);
     font_description.wss = wss;
+
+    uint32_t axis_count{};
+    try {
+        axis_count = extra_reader.read_lendian_t<uint32_t>(aborter);
+    } catch (const exception_io_data_truncation&) {
+        return;
+    }
+
+    std::unordered_map<uint32_t, float> axis_values;
+    for (const auto index : std::views::iota(0u, axis_count)) {
+        const auto tag = extra_reader.read_lendian_t<uint32_t>(aborter);
+        const auto value = extra_reader.read_lendian_t<float>(aborter);
+        axis_values.insert_or_assign(tag, value);
+    }
+
+    font_description.axis_values = axis_values;
 }
 
 LOGFONT FontManagerData::Entry::get_normalised_font(unsigned dpi)
@@ -317,6 +333,14 @@ void FontManagerData::Entry::write_extra_data_v2(stream_writer* stream, abort_ca
         item_stream.write_lendian_t(font_description.dip_size, aborter);
     } else {
         item_stream.write_lendian_t(false, aborter);
+    }
+
+    const auto& axis_values = font_description.axis_values;
+    item_stream.write_lendian_t(gsl::narrow<uint32_t>(axis_values.size()), aborter);
+
+    for (const auto [tag, value] : axis_values) {
+        item_stream.write_lendian_t(tag, aborter);
+        item_stream.write_lendian_t(value, aborter);
     }
 
     stream->write_lendian_t(gsl::narrow<uint32_t>(item_stream.m_data.get_size()), aborter);
