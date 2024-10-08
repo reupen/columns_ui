@@ -13,10 +13,12 @@ const GUID manager_v3::class_guid{0x471a234d, 0xb81a, 0x4f6a, {0x84, 0x94, 0x5c,
 
 class Font : public font {
 public:
-    Font(LOGFONT log_font, WeightStretchStyle wss, std::unordered_map<uint32_t, float> axis_values, const float size,
-        DWRITE_RENDERING_MODE rendering_mode, bool force_greyscale_antialiasing)
+    Font(LOGFONT log_font, WeightStretchStyle wss, std::wstring typographic_family_name,
+        std::unordered_map<uint32_t, float> axis_values, const float size, DWRITE_RENDERING_MODE rendering_mode,
+        bool force_greyscale_antialiasing)
         : m_log_font(std::move(log_font))
         , m_wss(std::move(wss))
+        , m_typographic_family_name(typographic_family_name)
         , m_axis_values(axis_values)
         , m_size(size)
         , m_rendering_mode(rendering_mode)
@@ -58,8 +60,8 @@ public:
 
             if (factory_7 && !axis_values.empty()) {
                 wil::com_ptr_t<IDWriteTextFormat3> text_format_3;
-                THROW_IF_FAILED(factory_7->CreateTextFormat(family_name(), nullptr, axis_values.data(),
-                    gsl::narrow<uint32_t>(axis_values.size()), size(), L"", &text_format_3));
+                THROW_IF_FAILED(factory_7->CreateTextFormat(m_typographic_family_name.c_str(), nullptr,
+                    axis_values.data(), gsl::narrow<uint32_t>(axis_values.size()), size(), L"", &text_format_3));
                 text_format.attach(text_format_3.detach());
             } else {
                 THROW_IF_FAILED(context->factory()->CreateTextFormat(family_name(), nullptr, weight(), style(),
@@ -96,6 +98,7 @@ public:
 private:
     LOGFONT m_log_font{};
     WeightStretchStyle m_wss{};
+    std::wstring m_typographic_family_name;
     std::unordered_map<uint32_t, float> m_axis_values;
     float m_size{};
     DWRITE_RENDERING_MODE m_rendering_mode{};
@@ -114,7 +117,12 @@ public:
         auto size = font_description.dip_size;
         auto wss = font_description.get_wss_with_fallback();
         const auto& axis_values = font_description.axis_values;
-        return fb2k::service_new<Font>(log_font, wss, axis_values, size,
+
+        auto typographic_family_name = font_description.typographic_family_name.empty() && !axis_values.empty()
+            ? font_description.wss->family_name
+            : font_description.typographic_family_name;
+
+        return fb2k::service_new<Font>(log_font, wss, std::move(typographic_family_name), axis_values, size,
             static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get()), force_greyscale_antialiasing.get());
     }
 

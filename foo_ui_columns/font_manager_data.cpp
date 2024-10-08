@@ -278,12 +278,15 @@ void FontManagerData::Entry::read_extra_data_v2(stream_reader* stream, abort_cal
     font_description.dip_size = extra_reader.read_lendian_t<float>(aborter);
     font_description.wss = wss;
 
-    uint32_t axis_count{};
     try {
-        axis_count = extra_reader.read_lendian_t<uint32_t>(aborter);
+        font_description.typographic_family_name
+            = mmh::to_utf16(mmh::to_string_view(extra_reader.read_string(aborter)));
     } catch (const exception_io_data_truncation&) {
         return;
     }
+
+    uint32_t axis_count{};
+    axis_count = extra_reader.read_lendian_t<uint32_t>(aborter);
 
     std::unordered_map<uint32_t, float> axis_values;
     for (const auto index : std::views::iota(0u, axis_count)) {
@@ -325,8 +328,8 @@ void FontManagerData::Entry::write_extra_data_v2(stream_writer* stream, abort_ca
     if (font_description.wss) {
         item_stream.write_lendian_t(true, aborter);
         const auto& wss = font_description.wss;
-        const auto family_name = mmh::to_utf8(wss->family_name);
-        item_stream.write_string(family_name, aborter);
+        const auto wss_family_name = mmh::to_utf8(wss->family_name);
+        item_stream.write_string(wss_family_name, aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->weight), aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->stretch), aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->style), aborter);
@@ -334,6 +337,9 @@ void FontManagerData::Entry::write_extra_data_v2(stream_writer* stream, abort_ca
     } else {
         item_stream.write_lendian_t(false, aborter);
     }
+
+    const auto typographic_family_name = mmh::to_utf8(font_description.typographic_family_name);
+    item_stream.write_string(typographic_family_name, aborter);
 
     const auto& axis_values = font_description.axis_values;
     item_stream.write_lendian_t(gsl::narrow<uint32_t>(axis_values.size()), aborter);

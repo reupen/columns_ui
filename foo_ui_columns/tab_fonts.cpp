@@ -238,12 +238,13 @@ void TabFonts::save_font_face() const
     auto& font_description = m_element_ptr->font_description;
 
     cui::fonts::WeightStretchStyle wss;
-    wss.family_name = m_font_family->get().localised_name;
+    wss.family_name = m_font_family->get().wss_name;
     wss.weight = m_font_face->get().weight;
     wss.stretch = m_font_face->get().stretch;
     wss.style = m_font_face->get().style;
 
     font_description.wss = wss;
+    font_description.typographic_family_name = m_font_family->get().typographic_name;
     font_description.axis_values = m_font_face->get().axis_values;
     font_description.log_font = m_direct_write_context->create_log_font(m_font_face->get().font);
     font_description.recalculate_log_font_height();
@@ -280,7 +281,7 @@ wil::com_ptr_t<IDWriteFontFamily> TabFonts::get_icon_font_family() const
 
 uih::direct_write::TextFormat& TabFonts::get_family_text_format(size_t index)
 {
-    const auto& [family, _family_name, is_symbol_font, _axes] = m_font_families.at(index);
+    const auto& [family, _wss_name, _typographic_name, is_symbol_font, _axes] = m_font_families.at(index);
     auto& text_format = m_font_families_text_formats.at(index);
 
     if (!text_format) {
@@ -294,7 +295,7 @@ uih::direct_write::TextFormat& TabFonts::get_family_text_format(size_t index)
 
 uih::direct_write::TextFormat& TabFonts::get_face_text_format(size_t index)
 {
-    const auto& [family, _family_name, is_symbol_font, _axes] = m_font_family->get();
+    const auto& [family, _wss_name, _typographic_name, is_symbol_font, _axes] = m_font_family->get();
     const auto& font = m_font_faces.at(index);
     auto& text_format = m_font_faces_text_formats.at(index);
 
@@ -359,7 +360,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         m_font_families_text_formats.resize(m_font_families.size());
         for (auto&& family : m_font_families)
-            ComboBox_AddString(m_font_family_combobox, family.localised_name.c_str());
+            ComboBox_AddString(m_font_family_combobox, family.name().c_str());
 
         update_mode_combobox();
         enable_or_disable_font_selection();
@@ -402,7 +403,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         const auto is_family = mis->CtlID == IDC_FONT_FAMILY;
         const auto index = mis->itemID;
-        const auto& text = is_family ? m_font_families[index].localised_name : m_font_faces[index].localised_name;
+        const auto& text = is_family ? m_font_families[index].name() : m_font_faces[index].localised_name;
 
         try {
             const auto& text_format = is_family ? get_family_text_format(index) : get_face_text_format(index);
@@ -569,13 +570,13 @@ std::optional<INT_PTR> TabFonts::handle_wm_drawitem(LPDRAWITEMSTRUCT dis)
         return GetTextColor(dis->hDC);
     }();
 
-    auto& text = is_family ? m_font_families[index].localised_name : m_font_faces[index].localised_name;
+    auto& text = is_family ? m_font_families[index].name() : m_font_faces[index].localised_name;
 
     if (is_edit_box) {
         auto _ = wil::SelectObject(buffered_dc.get(), GetWindowFont(dis->hwndItem));
         SetBkMode(buffered_dc.get(), TRANSPARENT);
         SetTextColor(buffered_dc.get(), text_colour);
-        DrawTextEx(buffered_dc.get(), text.data(), gsl::narrow<int>(text.length()), &dis->rcItem,
+        DrawTextEx(buffered_dc.get(), const_cast<wchar_t*>(text.data()), gsl::narrow<int>(text.length()), &dis->rcItem,
             DT_SINGLELINE | DT_VCENTER, nullptr);
         draw_focus_rect();
         return TRUE;
@@ -634,18 +635,21 @@ void TabFonts::restore_font_selection_state()
         return;
     }
 
-    ComboBox_SelectString(m_font_family_combobox, -1, wss->family_name.c_str());
-    on_family_change();
+    const auto& typographic_family_name = font_description.typographic_family_name;
 
-    const auto face_name
-        = m_direct_write_context->get_face_name(wss->family_name.c_str(), wss->weight, wss->stretch, wss->style);
+    const auto resolved_names = m_direct_write_context->resolve_font_names(wss->family_name.c_str(),
+        typographic_family_name.c_str(), wss->weight, wss->stretch, wss->style, font_description.axis_values);
 
-    if (!face_name) {
-        ComboBox_SetCurSel(m_font_face_combobox, -1);
+    if (!resolved_names) {
         return;
     }
 
-    ComboBox_SelectString(m_font_face_combobox, -1, face_name->c_str());
+    const auto& [family_name, face_name] = *resolved_names;
+
+    ComboBox_SelectString(m_font_family_combobox, -1, family_name.c_str());
+    on_family_change();
+
+    ComboBox_SelectString(m_font_face_combobox, -1, face_name.c_str());
 }
 
 void TabFonts::enable_or_disable_font_selection() const
