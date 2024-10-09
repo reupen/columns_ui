@@ -94,6 +94,7 @@
 #define IDD_PREFS_DARK_MODE             235
 #define IDD_PREFS_STATUS_PANE           236
 #define IDD_PREFS_TEXT_RENDERING        237
+#define IDD_FONT_AXES                   238
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
@@ -294,6 +295,11 @@
 #define IDC_FONT_SIZE_SPIN              1193
 #define IDC_RENDERING_MODE              1194
 #define IDC_FORCE_GREYSCALE_ANTIALIASING 1196
+#define IDC_CONFIGURE_AXES              1197
+#define IDC_AXIS                        1198
+#define IDC_AXIS_VALUE                  1200
+#define IDC_AXIS_VALUE_SPIN             1201
+#define IDC_AXIS_RANGE                  1202
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -303,7 +309,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1197
+#define _APS_NEXT_CONTROL_VALUE         1203
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

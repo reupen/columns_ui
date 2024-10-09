@@ -63,14 +63,15 @@ void FontDescription::fill_wss()
     }
     CATCH_LOG_RETURN();
 
-    wss = WeightStretchStyle{std::move(family_name), font->GetWeight(), font->GetStretch(), font->GetStyle()};
+    wss = uih::direct_write::WeightStretchStyle{
+        std::move(family_name), font->GetWeight(), font->GetStretch(), font->GetStyle()};
 }
 
-WeightStretchStyle FontDescription::get_wss_with_fallback()
+uih::direct_write::WeightStretchStyle FontDescription::get_wss_with_fallback()
 {
     fill_wss();
 
-    return wss.value_or(WeightStretchStyle{});
+    return wss.value_or(uih::direct_write::WeightStretchStyle{});
 }
 
 void ConfigFontDescription::get_data_raw(stream_writer* stream, abort_callback& aborter)
