@@ -23,13 +23,17 @@
   [#969](https://github.com/reupen/columns_ui/pull/969),
   [#974](https://github.com/reupen/columns_ui/pull/974),
   [#976](https://github.com/reupen/columns_ui/pull/976),
-  [#981](https://github.com/reupen/columns_ui/pull/981)]
+  [#981](https://github.com/reupen/columns_ui/pull/981),
+  [#981](https://github.com/reupen/columns_ui/pull/989)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).
 
   Tabular figures (numerals) are now also used for supported fonts that default
   to proportional figures (such as some Segoe UI variants).
+
+  Customisation of variable font (such as Segoe UI Variable) axes of variation
+  is supported on Windows 11 23H2 and newer.
 
   Some customisation of DirectWrite text rendering is available on the new Text
   rendering tab on the Colours and fonts preferences page.

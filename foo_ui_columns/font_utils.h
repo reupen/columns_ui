@@ -15,6 +15,8 @@ struct FontDescription {
     int point_size_tenths{90};
     float dip_size{12.0f};
     std::optional<WeightStretchStyle> wss;
+    std::wstring typographic_family_name;
+    uih::direct_write::AxisValues axis_values;
 
     void set_dip_size(float size);
     void set_point_size(float size);
