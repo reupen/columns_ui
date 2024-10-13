@@ -270,13 +270,33 @@ void FontManagerData::Entry::read_extra_data_v2(stream_reader* stream, abort_cal
     if (!has_wss)
         return;
 
-    cui::fonts::WeightStretchStyle wss;
+    uih::direct_write::WeightStretchStyle wss;
     wss.family_name = mmh::to_utf16(mmh::to_string_view(extra_reader.read_string(aborter)));
     wss.weight = static_cast<DWRITE_FONT_WEIGHT>(extra_reader.read_lendian_t<int32_t>(aborter));
     wss.stretch = static_cast<DWRITE_FONT_STRETCH>(extra_reader.read_lendian_t<int32_t>(aborter));
     wss.style = static_cast<DWRITE_FONT_STYLE>(extra_reader.read_lendian_t<int32_t>(aborter));
     font_description.dip_size = extra_reader.read_lendian_t<float>(aborter);
     font_description.wss = wss;
+
+    try {
+        font_description.typographic_family_name
+            = mmh::to_utf16(mmh::to_string_view(extra_reader.read_string(aborter)));
+    } catch (const exception_io_data_truncation&) {
+        return;
+    }
+
+    uint32_t axis_count{};
+    axis_count = extra_reader.read_lendian_t<uint32_t>(aborter);
+
+    uih::direct_write::AxisValues axis_values;
+    for (const auto _ : std::views::iota(0u, axis_count)) {
+        (void)_;
+        const auto tag = extra_reader.read_lendian_t<uint32_t>(aborter);
+        const auto value = extra_reader.read_lendian_t<float>(aborter);
+        axis_values.insert_or_assign(tag, value);
+    }
+
+    font_description.axis_values = axis_values;
 }
 
 LOGFONT FontManagerData::Entry::get_normalised_font(unsigned dpi)
@@ -309,14 +329,25 @@ void FontManagerData::Entry::write_extra_data_v2(stream_writer* stream, abort_ca
     if (font_description.wss) {
         item_stream.write_lendian_t(true, aborter);
         const auto& wss = font_description.wss;
-        const auto family_name = mmh::to_utf8(wss->family_name);
-        item_stream.write_string(family_name, aborter);
+        const auto wss_family_name = mmh::to_utf8(wss->family_name);
+        item_stream.write_string(wss_family_name, aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->weight), aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->stretch), aborter);
         item_stream.write_lendian_t(static_cast<int32_t>(wss->style), aborter);
         item_stream.write_lendian_t(font_description.dip_size, aborter);
     } else {
         item_stream.write_lendian_t(false, aborter);
+    }
+
+    const auto typographic_family_name = mmh::to_utf8(font_description.typographic_family_name);
+    item_stream.write_string(typographic_family_name, aborter);
+
+    const auto& axis_values = font_description.axis_values;
+    item_stream.write_lendian_t(gsl::narrow<uint32_t>(axis_values.size()), aborter);
+
+    for (const auto [tag, value] : axis_values) {
+        item_stream.write_lendian_t(tag, aborter);
+        item_stream.write_lendian_t(value, aborter);
     }
 
     stream->write_lendian_t(gsl::narrow<uint32_t>(item_stream.m_data.get_size()), aborter);

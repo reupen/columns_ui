@@ -3,18 +3,13 @@
 
 namespace cui::fonts {
 
-struct WeightStretchStyle {
-    std::wstring family_name{L"Segoe UI"sv};
-    DWRITE_FONT_WEIGHT weight{DWRITE_FONT_WEIGHT_REGULAR};
-    DWRITE_FONT_STRETCH stretch{DWRITE_FONT_STRETCH_NORMAL};
-    DWRITE_FONT_STYLE style{DWRITE_FONT_STYLE_NORMAL};
-};
-
 struct FontDescription {
     LOGFONT log_font{};
     int point_size_tenths{90};
     float dip_size{12.0f};
-    std::optional<WeightStretchStyle> wss;
+    std::optional<uih::direct_write::WeightStretchStyle> wss;
+    std::wstring typographic_family_name;
+    uih::direct_write::AxisValues axis_values;
 
     void set_dip_size(float size);
     void set_point_size(float size);
@@ -23,7 +18,7 @@ struct FontDescription {
     void estimate_dip_size();
     void recalculate_log_font_height();
     void fill_wss();
-    WeightStretchStyle get_wss_with_fallback();
+    uih::direct_write::WeightStretchStyle get_wss_with_fallback();
 };
 
 class ConfigFontDescription : public cfg_var {
