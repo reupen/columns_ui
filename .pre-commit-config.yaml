@@ -27,7 +27,7 @@ repos:
         exclude: ^docs/source
         types_or: [json, markdown, yaml]
   - repo: https://github.com/executablebooks/mdformat
-    rev: 0.7.17
+    rev: 0.7.18
     hooks:
       - id: mdformat
         files: ^docs/source
