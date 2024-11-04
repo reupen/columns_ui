@@ -2,22 +2,9 @@
 
 #include "file_info_utils.h"
 
+#include "string.h"
+
 namespace cui::helpers {
-
-namespace {
-
-std::string_view trim_string(std::string_view value)
-{
-    const auto start = value.find_first_not_of(' ');
-    const auto end = value.find_last_not_of(' ');
-
-    if (start > end || start == std::string_view::npos)
-        return ""sv;
-
-    return value.substr(start, end - start + 1);
-}
-
-} // namespace
 
 std::vector<std::string> split_meta_value(std::string_view value)
 {
@@ -26,7 +13,7 @@ std::vector<std::string> split_meta_value(std::string_view value)
     for (size_t offset{};;) {
         const size_t index = value.find(";"sv, offset);
         const auto substr = value.substr(offset, index - offset);
-        const auto trimmed_substr = trim_string(substr);
+        const auto trimmed_substr = cui::string::trim(substr, " ");
 
         if (trimmed_substr.length() > 0)
             values.emplace_back(trimmed_substr);

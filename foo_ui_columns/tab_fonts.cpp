@@ -5,6 +5,7 @@
 #include "dark_mode.h"
 #include "dark_mode_active_ui.h"
 #include "dark_mode_dialog.h"
+#include "string.h"
 
 namespace {
 
@@ -314,17 +315,15 @@ void TabFonts::save_font_face() const
 void TabFonts::save_size_edit() const
 {
     const auto font_size_text = uih::get_window_text(m_font_size_edit);
-    float font_size_float{};
 
-    try {
-        font_size_float = std::stof(font_size_text);
-    } catch (const std::exception&) {
+    const auto font_size_float = cui::string::safe_stof(font_size_text);
+
+    if (!font_size_float)
         return;
-    }
 
     auto& font_description = m_element_ptr->font_description;
 
-    font_description.set_point_size(font_size_float);
+    font_description.set_point_size(*font_size_float);
 }
 
 const wchar_t* TabFonts::get_font_face_combobox_item_text(uint32_t index) const

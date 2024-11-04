@@ -274,6 +274,7 @@
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
+    <ClCompile Include="string.cpp" />
     <ClCompile Include="svg.cpp" />
     <ClCompile Include="system_appearance_manager.cpp" />
     <ClCompile Include="dark_mode.cpp" />
@@ -457,6 +458,7 @@
     <ClInclude Include="metadb_helpers.h" />
     <ClInclude Include="mw_drop_target.h" />
     <ClInclude Include="resource_utils.h" />
+    <ClInclude Include="string.h" />
     <ClInclude Include="svg.h" />
     <ClInclude Include="system_appearance_manager.h" />
     <ClInclude Include="button_items.h" />
