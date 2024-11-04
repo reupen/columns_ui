@@ -899,13 +899,14 @@ void ItemDetails::recreate_text_format()
 
 void ItemDetails::create_text_layout()
 {
-    if (!m_text_format || m_text_layout)
+    if (!m_text_format || m_text_layout || !m_direct_write_context)
         return;
 
     RECT rect{};
     GetClientRect(get_wnd(), &rect);
 
-    auto [render_text, colour_segments, font_segments] = process_colour_and_font_codes(m_formatted_text);
+    auto [render_text, colour_segments, font_segments]
+        = process_colour_and_font_codes(m_formatted_text, m_direct_write_context);
 
     const auto padding = s_get_padding();
     const auto max_width = std::max(0, gsl::narrow<int>(wil::rect_width(rect)) - padding * 2);
@@ -923,35 +924,83 @@ void ItemDetails::create_text_layout()
         CATCH_LOG()
     }
 
-    for (auto& [font, start_character, character_count] : font_segments) {
-        LOGFONT lf{};
-        wcsncpy_s(lf.lfFaceName, font.family.c_str(), _TRUNCATE);
+    const auto initial_font_weight = m_text_format->get_weight();
+    const auto initial_font_stretch = m_text_format->get_stretch();
+    const auto initial_font_style = m_text_format->get_style();
 
-        if (font.is_bold)
-            lf.lfWeight = FW_BOLD;
+    for (auto& [properties, start_character, character_count] : font_segments) {
+        std::optional<std::wstring> font_family;
+        std::optional<float> font_size;
+        std::optional<TextDecorationType> text_decoration;
 
-        if (font.is_underline)
-            lf.lfUnderline = TRUE;
+        auto font_weight = initial_font_weight;
+        auto font_stretch = initial_font_stretch;
+        auto font_style = initial_font_style;
 
-        if (font.is_italic)
-            lf.lfItalic = TRUE;
+        const auto text_range
+            = DWRITE_TEXT_RANGE{gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)};
 
-        try {
-            const auto direct_write_font = m_direct_write_context->create_font(lf);
-
-            const auto weight = direct_write_font->GetWeight();
-            const auto stretch = direct_write_font->GetStretch();
-            const auto style = direct_write_font->GetStyle();
-            const auto size = uih::direct_write::pt_to_dip(font.size_points);
-            const auto text_range
-                = DWRITE_TEXT_RANGE{gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)};
-
-            m_text_layout->set_font(font.family.c_str(), weight, stretch, style, size, text_range);
-
-            if (font.is_underline)
-                m_text_layout->set_underline(true, text_range);
+        for (auto&& [type, value] : properties) {
+            switch (type) {
+            case StylePropertyType::FontSize:
+                if (!std::holds_alternative<InitialValue>(value))
+                    font_size = std::get<float>(value);
+                break;
+            case StylePropertyType::FontFamily:
+                if (!std::holds_alternative<InitialValue>(value))
+                    font_family = std::get<std::wstring>(value);
+                break;
+            case StylePropertyType::FontWeight:
+                if (!std::holds_alternative<InitialValue>(value))
+                    font_weight = std::get<DWRITE_FONT_WEIGHT>(value);
+                break;
+            case StylePropertyType::FontStretch:
+                if (!std::holds_alternative<InitialValue>(value))
+                    font_stretch = initial_font_stretch;
+                else
+                    font_stretch = std::get<DWRITE_FONT_STRETCH>(value);
+                break;
+            case StylePropertyType::FontStyle:
+                if (std::holds_alternative<InitialValue>(value))
+                    font_style = initial_font_style;
+                else
+                    font_style = std::get<DWRITE_FONT_STYLE>(value);
+                break;
+            case StylePropertyType::TextDecoration:
+                if (!std::holds_alternative<InitialValue>(value))
+                    text_decoration = std::get<TextDecorationType>(value);
+                break;
+            }
         }
-        CATCH_LOG()
+
+        if (font_family) {
+            try {
+                m_text_layout->set_family(font_family->c_str(), text_range);
+            }
+            CATCH_LOG();
+        }
+
+        if (font_size) {
+            try {
+                m_text_layout->set_size(*font_size, text_range);
+            }
+            CATCH_LOG();
+        }
+
+        if (font_weight != initial_font_weight || font_stretch != initial_font_stretch
+            || font_style != initial_font_style) {
+            try {
+                m_text_layout->set_wss(font_weight, font_stretch, font_style, text_range);
+            }
+            CATCH_LOG();
+        }
+
+        if (text_decoration && *text_decoration == TextDecorationType::Underline) {
+            try {
+                m_text_layout->set_underline(true, text_range);
+            }
+            CATCH_LOG();
+        }
     }
 }
 
