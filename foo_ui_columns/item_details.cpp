@@ -943,32 +943,22 @@ void ItemDetails::create_text_layout()
         for (auto&& [type, value] : properties) {
             switch (type) {
             case StylePropertyType::FontSize:
-                if (!std::holds_alternative<InitialValue>(value))
-                    font_size = std::get<float>(value);
+                font_size = std::get<float>(value);
                 break;
             case StylePropertyType::FontFamily:
-                if (!std::holds_alternative<InitialValue>(value))
-                    font_family = std::get<std::wstring>(value);
+                font_family = std::get<std::wstring>(value);
                 break;
             case StylePropertyType::FontWeight:
-                if (!std::holds_alternative<InitialValue>(value))
-                    font_weight = std::get<DWRITE_FONT_WEIGHT>(value);
+                font_weight = std::get<DWRITE_FONT_WEIGHT>(value);
                 break;
             case StylePropertyType::FontStretch:
-                if (!std::holds_alternative<InitialValue>(value))
-                    font_stretch = initial_font_stretch;
-                else
-                    font_stretch = std::get<DWRITE_FONT_STRETCH>(value);
+                font_stretch = std::get<DWRITE_FONT_STRETCH>(value);
                 break;
             case StylePropertyType::FontStyle:
-                if (std::holds_alternative<InitialValue>(value))
-                    font_style = initial_font_style;
-                else
-                    font_style = std::get<DWRITE_FONT_STYLE>(value);
+                font_style = std::get<DWRITE_FONT_STYLE>(value);
                 break;
             case StylePropertyType::TextDecoration:
-                if (!std::holds_alternative<InitialValue>(value))
-                    text_decoration = std::get<TextDecorationType>(value);
+                text_decoration = std::get<TextDecorationType>(value);
                 break;
             }
         }

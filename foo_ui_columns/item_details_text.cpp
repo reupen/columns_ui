@@ -315,9 +315,14 @@ std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<Font
                 coloured_segments.emplace_back(
                     *cr_current, colour_segment_start, stripped_text.length() - colour_segment_start);
 
-            if (current_font && (is_eos || is_font_code))
+            if (current_font && (is_eos || is_font_code)) {
+                const auto cleaned_font = ranges::views::remove_if(*current_font, [](auto&& pair) {
+                    return std::holds_alternative<InitialValue>(pair.second);
+                }) | ranges::to<StylePropertiesMap>;
+
                 font_segments.emplace_back(
-                    *current_font, font_segment_start, stripped_text.length() - font_segment_start);
+                    cleaned_font, font_segment_start, stripped_text.length() - font_segment_start);
+            }
         }
 
         if (is_eos)
