@@ -91,6 +91,9 @@
 #include "../svg-services/api/api.h"
 #include "../columns_ui-sdk/ui_extension.h"
 #include "../ui_helpers/stdafx.h"
+#include "../ui_helpers/direct_write.h"
+#include "../ui_helpers/direct_write_text_out.h"
+#include "../ui_helpers/list_view/list_view.h"
 #include "../mmh/stdafx.h"
 #include "../fbh/stdafx.h"
 

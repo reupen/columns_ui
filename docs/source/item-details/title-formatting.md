@@ -2,7 +2,86 @@
 
 ## Functions
 
+### \$set_format
+
+```{note}
+New in Columns UI 3.0.0.
+```
+
+Changes font and text styling for subsequent text.
+
+#### Syntax
+
+```
+$set_format(
+  property-name-1: property-value-1;
+  property-name-2: property-value-2;
+  ...
+)
+```
+
+#### Properties
+
+| Property name     | Syntax                                           |
+| ----------------- | ------------------------------------------------ |
+| `font-family`     | \<font family name>    \| `initial`              |
+| `font-size`       | \<font size in points>              \| `initial` |
+| `font-weight`     | \<1–900> \| `initial`                            |
+| `font-stretch`    | \<1–9> \| `initial`                              |
+| `font-style`      | `normal` \| `italic` \| `oblique` \| `initial`   |
+| `text-decoration` | `none` \| `underline` \| `initial`               |
+
+The special `initial` value resets any particular property back to its default
+value.
+
+#### Examples
+
+##### Change the font weight temporarily
+
+```
+$set_format(
+  font-weight: 700;
+)
+
+This text is in bold.
+
+$set_format(
+  font-weight: initial;
+)
+```
+
+##### Set all properties
+
+```
+$set_format(
+  font-family: Segoe UI Variable;
+  font-size: 20;
+  font-weight: 300;
+  font-stretch: 5;
+  font-style: italic;
+  text-decoration: underline;
+)
+```
+
+### \$reset_format
+
+```{note}
+New in Columns UI 3.0.0.
+```
+
+Restores font and text styling for subsequent text to the panel defaults.
+
+#### Syntax
+
+```
+$reset_format()
+```
+
 ### \$set_font
+
+```{warning}
+Deprecated in Columns UI 3.0.0. It’s been replaced by $set_format().
+```
 
 Changes the font used for subsequent text.
 
@@ -47,7 +126,11 @@ $get(labelfont)Title$reset_font() %title%
 
 ### \$reset_font
 
-Restores the font for subsequent text to the default panel font.
+```{warning}
+Deprecated in Columns UI 3.0.0. It’s been replaced by $reset_format().
+```
+
+Restores font and text styling for subsequent text to the panel defaults.
 
 #### Syntax
 

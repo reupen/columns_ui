@@ -54,6 +54,13 @@
   Some legacy font types that aren’t supported by DirectWrite are also no longer
   selectable. Furthermore, some previously hidden fonts may now be visible.
 
+- New `$set_format()` and `$reset_format()` title formatting functions were
+  added to Item details.
+  [[#1004](https://github.com/reupen/columns_ui/pull/1004)]
+
+  These serve as replacements for the older `$set_font()` and `$reset_font()`
+  functions.
+
 - The `$set_font()` Item details title formatting function now allows
   non-integer font sizes to be specified.
   [[#947](https://github.com/reupen/columns_ui/pull/947)]

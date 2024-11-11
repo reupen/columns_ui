@@ -620,6 +620,9 @@
     <ClCompile Include="tab_text_rendering.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
+    <ClCompile Include="string.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -910,6 +913,9 @@
     </ClInclude>
     <ClInclude Include="tab_text_rendering.h">
       <Filter>Config UI</Filter>
+    </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

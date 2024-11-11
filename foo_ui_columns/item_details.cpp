@@ -44,17 +44,22 @@ const GUID g_guid_item_details_edge_style
 
 cfg_uint cfg_item_details_tracking_mode(g_guid_item_details_tracking_mode, 0);
 cfg_uint cfg_item_details_edge_style(g_guid_item_details_edge_style, 0);
-#if 0
-cfg_string cfg_item_details_script(g_guid_item_details_script, "[%artist%]$crlf()[%title%]$crlf()[%album%][$crlf()$crlf()%lyrics%]");
-#else
-pfc::string8 cfg_item_details_script = "$set_font(%default_font_face%,$add(%default_font_size%,4),)[%artist%]$crlf()[%"
-                                       "title%]$crlf()[%album%][$crlf()$crlf()%lyrics%]";
-#endif
+
 cfg_bool cfg_item_details_hscroll(g_guid_item_details_hscroll, false);
 cfg_uint cfg_item_details_horizontal_alignment(g_guid_item_details_horizontal_alignment, uih::ALIGN_CENTRE);
 cfg_uint cfg_item_details_vertical_alignment(
     g_guid_item_details_vertical_alignment, WI_EnumValue(VerticalAlignment::Centre));
 cfg_bool cfg_item_details_word_wrapping(g_guid_item_details_word_wrapping, true);
+
+const auto default_item_details_script = R"($set_format(
+  font-size: $add(%default_font_size%,4);
+)
+
+[%artist%]
+[$crlf()%title%]
+[$crlf()%album%]
+[$crlf()$crlf()%lyrics%]
+)"sv;
 
 void ItemDetails::MenuNodeOptions::execute()
 {
@@ -897,15 +902,157 @@ void ItemDetails::recreate_text_format()
     reset_display_info();
 }
 
+namespace {
+
+template <class Value>
+void process_simple_style_property(const std::vector<FontSegment>& segments, StylePropertyType property_type,
+    std::function<void(const Value&, DWRITE_TEXT_RANGE text_range)> apply_to_layout)
+{
+    struct CurrentValue {
+        Value value;
+        size_t start{};
+        size_t count{};
+    };
+
+    std::optional<CurrentValue> current_value;
+
+    const auto apply_current_value = [&] {
+        if (!current_value)
+            return;
+
+        const auto text_range = DWRITE_TEXT_RANGE{
+            gsl::narrow<uint32_t>(current_value->start), gsl::narrow<uint32_t>(current_value->count)};
+
+        try {
+            apply_to_layout(current_value->value, text_range);
+        }
+        CATCH_LOG();
+
+        current_value.reset();
+    };
+
+    for (auto& [properties, start_character, character_count] : segments) {
+        const auto iter = properties.find(property_type);
+
+        if (iter == std::end(properties)) {
+            apply_current_value();
+            continue;
+        }
+
+        const auto& segment_value = std::get<Value>(iter->second);
+
+        if (current_value
+            && (current_value->value != segment_value
+                || (current_value->start + current_value->count < start_character))) {
+            apply_current_value();
+        }
+
+        if (current_value) {
+            current_value->count += character_count;
+        } else {
+            current_value = {segment_value, start_character, character_count};
+        }
+    }
+
+    apply_current_value();
+}
+
+void process_wss_style_property(const std::vector<FontSegment>& segments,
+    const uih::direct_write::TextFormat& text_format, const uih::direct_write::TextLayout& text_layout)
+{
+    struct CurrentValue {
+        DWRITE_FONT_WEIGHT weight{};
+        DWRITE_FONT_STRETCH stretch{};
+        DWRITE_FONT_STYLE style{};
+        size_t start{};
+        size_t count{};
+    };
+
+    const auto initial_weight = text_format.get_weight();
+    const auto initial_stretch = text_format.get_stretch();
+    const auto initial_style = text_format.get_style();
+
+    std::optional<CurrentValue> current_value;
+
+    const auto apply_current_value = [&] {
+        if (!current_value)
+            return;
+
+        const auto text_range = DWRITE_TEXT_RANGE{
+            gsl::narrow<uint32_t>(current_value->start), gsl::narrow<uint32_t>(current_value->count)};
+
+        const auto weight = current_value->weight;
+        const auto stretch = current_value->stretch;
+        const auto style = current_value->style;
+
+        if (weight != initial_weight || stretch != initial_stretch || style != initial_style) {
+            try {
+                text_layout.set_wss(weight, stretch, style, text_range);
+            }
+            CATCH_LOG();
+        }
+
+        current_value.reset();
+    };
+
+    for (auto& [properties, start_character, character_count] : segments) {
+        std::optional<DWRITE_FONT_WEIGHT> weight;
+        std::optional<DWRITE_FONT_STRETCH> stretch;
+        std::optional<DWRITE_FONT_STYLE> style;
+
+        for (auto&& [type, value] : properties) {
+            switch (type) {
+            case StylePropertyType::FontWeight:
+                weight = std::get<DWRITE_FONT_WEIGHT>(value);
+                break;
+            case StylePropertyType::FontStretch:
+                stretch = std::get<DWRITE_FONT_STRETCH>(value);
+                break;
+            case StylePropertyType::FontStyle:
+                style = std::get<DWRITE_FONT_STYLE>(value);
+                break;
+            default:
+                break;
+            }
+        }
+
+        if (!(weight || stretch || style)) {
+            apply_current_value();
+            continue;
+        }
+
+        if (current_value) {
+            if (current_value->start + current_value->count < start_character)
+                apply_current_value();
+            else if (current_value->weight != weight.value_or(initial_weight)
+                || current_value->stretch != stretch.value_or(initial_stretch)
+                || current_value->style != style.value_or(initial_style))
+                apply_current_value();
+        }
+
+        if (current_value) {
+            current_value->count += character_count;
+        } else {
+            current_value = {weight.value_or(initial_weight), stretch.value_or(initial_stretch),
+                style.value_or(initial_style), start_character, character_count};
+        }
+    }
+
+    apply_current_value();
+}
+
+} // namespace
+
 void ItemDetails::create_text_layout()
 {
-    if (!m_text_format || m_text_layout)
+    if (!m_direct_write_context || !m_text_format || m_text_layout)
         return;
 
     RECT rect{};
     GetClientRect(get_wnd(), &rect);
 
-    auto [render_text, colour_segments, font_segments] = process_colour_and_font_codes(m_formatted_text);
+    auto [render_text, colour_segments, font_segments]
+        = process_colour_and_font_codes(m_formatted_text, m_direct_write_context);
 
     const auto padding = s_get_padding();
     const auto max_width = std::max(0, gsl::narrow<int>(wil::rect_width(rect)) - padding * 2);
@@ -923,36 +1070,21 @@ void ItemDetails::create_text_layout()
         CATCH_LOG()
     }
 
-    for (auto& [font, start_character, character_count] : font_segments) {
-        LOGFONT lf{};
-        wcsncpy_s(lf.lfFaceName, font.family.c_str(), _TRUNCATE);
+    process_simple_style_property<std::wstring>(font_segments, StylePropertyType::FontFamily,
+        [&](auto&& value, auto&& text_range) { m_text_layout->set_family(value.c_str(), text_range); });
 
-        if (font.is_bold)
-            lf.lfWeight = FW_BOLD;
+    process_simple_style_property<float>(
+        font_segments, StylePropertyType::FontSize, [&](auto&& value, auto&& text_range) {
+            m_text_layout->set_size(uih::direct_write::pt_to_dip(value), text_range);
+        });
 
-        if (font.is_underline)
-            lf.lfUnderline = TRUE;
-
-        if (font.is_italic)
-            lf.lfItalic = TRUE;
-
-        try {
-            const auto direct_write_font = m_direct_write_context->create_font(lf);
-
-            const auto weight = direct_write_font->GetWeight();
-            const auto stretch = direct_write_font->GetStretch();
-            const auto style = direct_write_font->GetStyle();
-            const auto size = uih::direct_write::pt_to_dip(font.size_points);
-            const auto text_range
-                = DWRITE_TEXT_RANGE{gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)};
-
-            m_text_layout->set_font(font.family.c_str(), weight, stretch, style, size, text_range);
-
-            if (font.is_underline)
+    process_simple_style_property<TextDecorationType>(
+        font_segments, StylePropertyType::TextDecoration, [&](auto&& value, auto&& text_range) {
+            if (value == TextDecorationType::Underline)
                 m_text_layout->set_underline(true, text_range);
-        }
-        CATCH_LOG()
-    }
+        });
+
+    process_wss_style_property(font_segments, *m_text_format, *m_text_layout);
 }
 
 void ItemDetails::on_font_change()
@@ -970,7 +1102,7 @@ void ItemDetails::on_colours_change()
 
 ItemDetails::ItemDetails()
     : m_tracking_mode(cfg_item_details_tracking_mode)
-    , m_script(cfg_item_details_script)
+    , m_script(default_item_details_script.data(), default_item_details_script.size())
     , m_horizontal_alignment(cfg_item_details_horizontal_alignment)
     , m_vertical_alignment(static_cast<VerticalAlignment>(cfg_item_details_vertical_alignment.get_value()))
     , m_edge_style(cfg_item_details_edge_style)
@@ -979,6 +1111,7 @@ ItemDetails::ItemDetails()
 //, m_update_scrollbar_range_in_progress(false)
 // m_library_richedit(NULL), m_wnd_richedit(NULL)
 {
+    m_script.replace_string("\n", "\r\n");
 }
 
 void ItemDetails::s_create_message_window()

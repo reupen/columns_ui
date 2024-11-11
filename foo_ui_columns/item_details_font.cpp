@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "item_details.h"
 #include "config.h"
+#include "title_formatting.h"
 
 namespace cui::panels::item_details {
 
@@ -17,38 +18,39 @@ bool TitleformatHookChangeFont::process_function(titleformat_text_out* p_out, co
     titleformat_hook_function_params* p_params, bool& p_found_flag)
 {
     p_found_flag = false;
+
     if (!stricmp_utf8_ex(p_name, p_name_length, "set_font", pfc_infinite)) {
-        switch (p_params->get_param_count()) {
-        case 2:
-        case 3: {
-            bool b_have_flags = p_params->get_param_count() == 3;
-            const char* face;
-            const char* pointsize;
-            const char* flags;
-            size_t face_length;
-            size_t pointsize_length;
-            size_t flags_length;
-            p_params->get_param(0, face, face_length);
-            p_params->get_param(1, pointsize, pointsize_length);
-            if (b_have_flags)
-                p_params->get_param(2, flags, flags_length);
-            pfc::string8 temp;
-            temp.add_byte('\x7');
-            temp.add_string(face, face_length);
-            temp.add_byte('\t');
-            temp.add_string(pointsize, pointsize_length);
-            temp.add_byte('\t');
-            if (b_have_flags)
-                temp.add_string(flags, flags_length);
-            temp.add_byte('\x7');
-            p_out->write(titleformat_inputtypes::unknown, temp);
-            p_found_flag = true;
-        }
-        }
+        const auto param_count = p_params->get_param_count();
+
+        if (param_count < 2 || param_count > 3)
+            return true;
+
+        const auto face = tf::get_param(*p_params, 0);
+        const auto size_points = tf::get_param(*p_params, 1);
+        const auto have_flags = p_params->get_param_count() == 3;
+        const auto flags = have_flags ? tf::get_param(*p_params, 2) : ""sv;
+
+        const auto value = fmt::format("\x7\x1\t{}\t{}\t{}\x7", face, size_points, flags);
+        p_out->write(titleformat_inputtypes::unknown, value.data(), value.size());
+        p_found_flag = true;
         return true;
     }
 
-    if (!stricmp_utf8_ex(p_name, p_name_length, "reset_font", pfc_infinite)) {
+    if (!stricmp_utf8_ex(p_name, p_name_length, "set_format", pfc_infinite)) {
+        const auto param_count = p_params->get_param_count();
+
+        if (param_count != 1)
+            return true;
+
+        const auto attributes = tf::get_param(*p_params, 0);
+        const auto value = fmt::format("\x7\x2\t{}\x7", attributes);
+        p_out->write(titleformat_inputtypes::unknown, value.data(), value.size());
+        p_found_flag = true;
+        return true;
+    }
+
+    if (!stricmp_utf8_ex(p_name, p_name_length, "reset_font", pfc_infinite)
+        || !stricmp_utf8_ex(p_name, p_name_length, "reset_format", pfc_infinite)) {
         switch (p_params->get_param_count()) {
         case 0: {
             p_out->write(titleformat_inputtypes::unknown,
