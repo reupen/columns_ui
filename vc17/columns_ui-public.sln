@@ -49,6 +49,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{9697
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{9A1841D3-5B7E-4831-A6B7-8B3899D66EF2}"
 	ProjectSection(SolutionItems) = preProject
+		..\.github\workflows\auto-merge.yml = ..\.github\workflows\auto-merge.yml
 		..\.github\workflows\build.yml = ..\.github\workflows\build.yml
 	EndProjectSection
 EndProject
