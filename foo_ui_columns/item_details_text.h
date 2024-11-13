@@ -1,5 +1,7 @@
 #pragma once
 
+#include "item_details_format_parser.h"
+
 namespace cui::panels::item_details {
 
 enum class VerticalAlignment {
@@ -16,28 +18,8 @@ std::optional<uih::direct_write::TextFormat> create_text_format(const uih::direc
 std::optional<uih::direct_write::TextLayout> create_text_layout(
     const uih::direct_write::TextFormat& text_format, int max_width, int max_height, std::wstring_view text);
 
-enum class TextDecorationType {
-    None,
-    Underline,
-};
-
-enum class StylePropertyType {
-    FontFamily,
-    FontSize,
-    FontWeight,
-    FontStretch,
-    FontStyle,
-    TextDecoration,
-};
-
-struct InitialPropertyValue {};
-
-using StylePropertyValue = std::variant<std::wstring, float, DWRITE_FONT_WEIGHT, DWRITE_FONT_STRETCH, DWRITE_FONT_STYLE,
-    TextDecorationType, InitialPropertyValue>;
-using StylePropertiesMap = std::unordered_map<StylePropertyType, StylePropertyValue>;
-
 struct FontSegment {
-    StylePropertiesMap font;
+    FormatProperties font;
     size_t start_character{};
     size_t character_count{};
 };

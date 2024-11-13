@@ -271,6 +271,7 @@
     <ClCompile Include="font_manager_v3.cpp" />
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
+    <ClCompile Include="item_details_format_parser.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
     <ClCompile Include="resource_utils.cpp" />
@@ -452,8 +453,10 @@
     <ClInclude Include="get_msg_hook.h" />
     <ClInclude Include="icons.h" />
     <ClInclude Include="item_details.h" />
+    <ClInclude Include="item_details_format_parser.h" />
     <ClInclude Include="item_details_text.h" />
     <ClInclude Include="item_properties.h" />
+    <ClInclude Include="lexy_user_config.hpp" />
     <ClInclude Include="menu_helpers.h" />
     <ClInclude Include="metadb_helpers.h" />
     <ClInclude Include="mw_drop_target.h" />
