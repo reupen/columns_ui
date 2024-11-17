@@ -623,6 +623,9 @@
     <ClCompile Include="string.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="item_details_format_parser.cpp">
+      <Filter>Item details</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -917,6 +920,10 @@
     <ClInclude Include="string.h">
       <Filter>Utilities</Filter>
     </ClInclude>
+    <ClInclude Include="item_details_format_parser.h">
+      <Filter>Item details</Filter>
+    </ClInclude>
+    <ClInclude Include="lexy_user_config.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

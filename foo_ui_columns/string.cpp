@@ -13,13 +13,4 @@ std::optional<float> safe_stof(const std::wstring& value)
     }
 }
 
-std::optional<int> safe_stoi(const std::wstring& value)
-{
-    try {
-        return std::stoi(value);
-    } catch (const std::exception&) {
-        return {};
-    }
-}
-
 } // namespace cui::string

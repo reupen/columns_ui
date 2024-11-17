@@ -904,8 +904,8 @@ void ItemDetails::recreate_text_format()
 
 namespace {
 
-template <class Value>
-void process_simple_style_property(const std::vector<FontSegment>& segments, StylePropertyType property_type,
+template <class Value, typename Member>
+void process_simple_style_property(const std::vector<FontSegment>& segments, Member member,
     std::function<void(const Value&, DWRITE_TEXT_RANGE text_range)> apply_to_layout)
 {
     struct CurrentValue {
@@ -932,14 +932,14 @@ void process_simple_style_property(const std::vector<FontSegment>& segments, Sty
     };
 
     for (auto& [properties, start_character, character_count] : segments) {
-        const auto iter = properties.find(property_type);
+        const auto& value = properties.*member;
 
-        if (iter == std::end(properties)) {
+        if (!value) {
             apply_current_value();
             continue;
         }
 
-        const auto& segment_value = std::get<Value>(iter->second);
+        const auto& segment_value = std::get<Value>(*value);
 
         if (current_value
             && (current_value->value != segment_value
@@ -1000,21 +1000,14 @@ void process_wss_style_property(const std::vector<FontSegment>& segments,
         std::optional<DWRITE_FONT_STRETCH> stretch;
         std::optional<DWRITE_FONT_STYLE> style;
 
-        for (auto&& [type, value] : properties) {
-            switch (type) {
-            case StylePropertyType::FontWeight:
-                weight = std::get<DWRITE_FONT_WEIGHT>(value);
-                break;
-            case StylePropertyType::FontStretch:
-                stretch = std::get<DWRITE_FONT_STRETCH>(value);
-                break;
-            case StylePropertyType::FontStyle:
-                style = std::get<DWRITE_FONT_STYLE>(value);
-                break;
-            default:
-                break;
-            }
-        }
+        if (properties.font_weight)
+            weight = std::get<DWRITE_FONT_WEIGHT>(*properties.font_weight);
+
+        if (properties.font_stretch)
+            stretch = std::get<DWRITE_FONT_STRETCH>(*properties.font_stretch);
+
+        if (properties.font_style)
+            style = std::get<DWRITE_FONT_STYLE>(*properties.font_style);
 
         if (!(weight || stretch || style)) {
             apply_current_value();
@@ -1070,16 +1063,16 @@ void ItemDetails::create_text_layout()
         CATCH_LOG()
     }
 
-    process_simple_style_property<std::wstring>(font_segments, StylePropertyType::FontFamily,
+    process_simple_style_property<std::wstring>(font_segments, &FormatProperties::font_family,
         [&](auto&& value, auto&& text_range) { m_text_layout->set_family(value.c_str(), text_range); });
 
     process_simple_style_property<float>(
-        font_segments, StylePropertyType::FontSize, [&](auto&& value, auto&& text_range) {
+        font_segments, &FormatProperties::font_size, [&](auto&& value, auto&& text_range) {
             m_text_layout->set_size(uih::direct_write::pt_to_dip(value), text_range);
         });
 
     process_simple_style_property<TextDecorationType>(
-        font_segments, StylePropertyType::TextDecoration, [&](auto&& value, auto&& text_range) {
+        font_segments, &FormatProperties::text_decoration, [&](auto&& value, auto&& text_range) {
             if (value == TextDecorationType::Underline)
                 m_text_layout->set_underline(true, text_range);
         });

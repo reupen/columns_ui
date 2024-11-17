@@ -5,6 +5,7 @@
 
 #include "font_manager_v3.h"
 #include "font_utils.h"
+#include "item_details_format_parser.h"
 #include "string.h"
 
 namespace cui::panels::item_details {
@@ -18,7 +19,29 @@ bool are_strings_equal(std::wstring_view left, std::wstring_view right)
         == CSTR_EQUAL;
 }
 
-std::optional<StylePropertiesMap> parse_font_code_v1(
+constexpr auto format_properties_members
+    = std::tuple{&FormatProperties::text_decoration, &FormatProperties::font_family, &FormatProperties::font_size,
+        &FormatProperties::font_stretch, &FormatProperties::font_style, &FormatProperties::font_weight};
+
+template <typename Callback>
+void for_each_property(FormatProperties& properties, Callback&& callback)
+{
+    std::apply([&](auto... members) { (callback(properties.*members), ...); }, format_properties_members);
+}
+
+template <typename Member>
+void merge_property(FormatProperties& target, FormatProperties& source, Member member)
+{
+    if (!(target.*member))
+        target.*member = source.*member;
+}
+
+void merge_properties(FormatProperties& target, FormatProperties& source)
+{
+    std::apply([&](auto... members) { (merge_property(target, source, members), ...); }, format_properties_members);
+}
+
+std::optional<FormatProperties> parse_font_code(
     const std::vector<std::wstring_view>& parts, const uih::direct_write::Context::Ptr& direct_write_context)
 {
     if (parts.size() < 4)
@@ -69,121 +92,20 @@ std::optional<StylePropertiesMap> parse_font_code_v1(
         wil::com_ptr_t<IDWriteLocalizedStrings> localised_strings;
         THROW_IF_FAILED(font_family->GetFamilyNames(&localised_strings));
 
-        const auto family_name = uih::direct_write::get_localised_string(localised_strings);
+        auto family_name = uih::direct_write::get_localised_string(localised_strings);
 
         const auto weight = direct_write_font->GetWeight();
         const auto stretch = direct_write_font->GetStretch();
         const auto style = direct_write_font->GetStyle();
 
-        return StylePropertiesMap{{StylePropertyType::FontFamily, family_name},
-            {StylePropertyType::FontSize, *size_points}, {StylePropertyType::FontWeight, weight},
-            {StylePropertyType::FontStretch, stretch}, {StylePropertyType::FontStyle, style},
-            {StylePropertyType::TextDecoration, text_decoration}};
+        return FormatProperties{std::move(family_name), *size_points, weight, stretch, style, text_decoration};
     }
     CATCH_LOG()
 
     return {};
 }
 
-struct PropertyParser {
-    StylePropertyType property_type;
-    std::function<std::optional<StylePropertyValue>(const std::wstring_view&)> parse;
-};
-
-std::optional<StylePropertyValue> parse_font_family(const std::wstring_view& value)
-{
-    return std::wstring(value);
-}
-
-std::optional<StylePropertyValue> parse_font_size(const std::wstring_view& value)
-{
-    return string::safe_stof(std::wstring(value));
-}
-
-std::optional<StylePropertyValue> parse_font_weight(const std::wstring_view& value)
-{
-    if (const auto converted_value = string::safe_stoi(std::wstring(value)))
-        return static_cast<DWRITE_FONT_WEIGHT>(std::clamp(*converted_value, 1, 999));
-
-    return {};
-}
-
-std::optional<StylePropertyValue> parse_font_stretch(const std::wstring_view& value)
-{
-    if (const auto converted_value = string::safe_stoi(std::wstring(value)))
-        return static_cast<DWRITE_FONT_STRETCH>(std::clamp(*converted_value, 1, 9));
-
-    return {};
-}
-
-std::optional<StylePropertyValue> parse_font_style(const std::wstring_view& value)
-{
-    if (value == L"normal")
-        return DWRITE_FONT_STYLE_NORMAL;
-
-    if (value == L"italic")
-        return DWRITE_FONT_STYLE_ITALIC;
-
-    if (value == L"oblique")
-        return DWRITE_FONT_STYLE_OBLIQUE;
-
-    return {};
-}
-
-std::optional<StylePropertyValue> parse_text_decoration(const std::wstring_view& value)
-{
-    if (value == L"underline")
-        return TextDecorationType::Underline;
-
-    if (value == L"none")
-        return TextDecorationType::None;
-
-    return {};
-}
-
-const std::unordered_map<std::wstring_view, PropertyParser> property_parsers{
-    {L"font-family"sv, {StylePropertyType::FontFamily, parse_font_family}},
-    {L"font-size"sv, {StylePropertyType::FontSize, parse_font_size}},
-    {L"font-weight"sv, {StylePropertyType::FontWeight, parse_font_weight}},
-    {L"font-stretch"sv, {StylePropertyType::FontStretch, parse_font_stretch}},
-    {L"font-style"sv, {StylePropertyType::FontStyle, parse_font_style}},
-    {L"text-decoration"sv, {StylePropertyType::TextDecoration, parse_text_decoration}}};
-
-StylePropertiesMap parse_format_code(const std::vector<std::wstring_view>& parts)
-{
-    const auto& properties_part = parts[1];
-    auto property_exprs = std::views::split(properties_part, L';');
-
-    StylePropertiesMap properties;
-
-    for (const auto& property_expr : property_exprs) {
-        const std::wstring_view style_element_view(property_expr.data(), property_expr.size());
-
-        const auto colon_index = style_element_view.find(L':');
-
-        if (colon_index == std::wstring_view::npos)
-            continue;
-
-        const auto key = string::trim(style_element_view.substr(0, colon_index));
-        const auto value = string::trim(style_element_view.substr(colon_index + 1));
-
-        const auto property_parser_iter = property_parsers.find(key);
-
-        if (property_parser_iter == std::end(property_parsers))
-            continue;
-
-        const auto& [property_type, parse] = property_parser_iter->second;
-
-        if (value == L"initial")
-            properties.insert_or_assign(property_type, InitialPropertyValue{});
-        else if (auto parsed_value = parse(value))
-            properties.insert_or_assign(property_type, *parsed_value);
-    }
-
-    return properties;
-}
-
-std::optional<StylePropertiesMap> parse_font_code(
+std::optional<FormatProperties> parse_font_code(
     std::wstring_view text, const uih::direct_write::Context::Ptr& direct_write_context)
 {
     const auto parts_split_views = std::views::split(text, L'\t') | ranges::to<std::vector>;
@@ -197,10 +119,10 @@ std::optional<StylePropertiesMap> parse_font_code(
     const auto& version = parts[0];
 
     if (version == L"\x1"sv)
-        return parse_font_code_v1(parts, direct_write_context);
+        return parse_font_code(parts, direct_write_context);
 
     if (version == L"\x2"sv)
-        return parse_format_code(parts);
+        return parse_format_properties(parts[1]);
 
     return {};
 }
@@ -266,7 +188,7 @@ std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<Font
     size_t colour_segment_start{};
     size_t font_segment_start{};
     std::optional<COLORREF> cr_current;
-    std::optional<StylePropertiesMap> current_font;
+    std::optional<FormatProperties> current_font;
 
     while (true) {
         const size_t index = text.find_first_of(L"\3\7"sv, offset);
@@ -285,9 +207,12 @@ std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<Font
                     *cr_current, colour_segment_start, stripped_text.length() - colour_segment_start);
 
             if (current_font && (is_eos || is_font_code)) {
-                const auto cleaned_font = ranges::views::remove_if(*current_font, [](auto&& pair) {
-                    return std::holds_alternative<InitialPropertyValue>(pair.second);
-                }) | ranges::to<StylePropertiesMap>;
+                FormatProperties cleaned_font{*current_font};
+                for_each_property(cleaned_font, [](auto&& member) {
+                    if (member && std::holds_alternative<InitialPropertyValue>(*member)) {
+                        member.reset();
+                    }
+                });
 
                 font_segments.emplace_back(
                     cleaned_font, font_segment_start, stripped_text.length() - font_segment_start);
@@ -319,7 +244,7 @@ std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<Font
             if (!new_properties) {
                 current_font.reset();
             } else if (current_font && continues_from_last_segment) {
-                new_properties->merge(*current_font);
+                merge_properties(*new_properties, *current_font);
                 current_font = new_properties;
             } else {
                 current_font = new_properties;

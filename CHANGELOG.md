@@ -56,7 +56,8 @@
 
 - New `$set_format()` and `$reset_format()` title formatting functions were
   added to Item details.
-  [[#1004](https://github.com/reupen/columns_ui/pull/1004)]
+  [[#1004](https://github.com/reupen/columns_ui/pull/1004),
+  [#1011](https://github.com/reupen/columns_ui/pull/1011)]
 
   These serve as replacements for the older `$set_font()` and `$reset_font()`
   functions.
