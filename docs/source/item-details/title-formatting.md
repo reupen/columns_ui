@@ -22,14 +22,14 @@ $set_format(
 
 #### Properties
 
-| Property name     | Syntax                                           |
-| ----------------- | ------------------------------------------------ |
-| `font-family`     | \<font family name>    \| `initial`              |
-| `font-size`       | \<font size in points>              \| `initial` |
-| `font-weight`     | \<1–900> \| `initial`                            |
-| `font-stretch`    | \<1–9> \| `initial`                              |
-| `font-style`      | `normal` \| `italic` \| `oblique` \| `initial`   |
-| `text-decoration` | `none` \| `underline` \| `initial`               |
+| Property name     | Syntax                                         |
+| ----------------- | ---------------------------------------------- |
+| `font-family`     | \<font family name> \| `initial`               |
+| `font-size`       | \<font size in points> \| `initial`            |
+| `font-weight`     | \<1–900> \| `initial`                          |
+| `font-stretch`    | \<1–9> \| `initial`                            |
+| `font-style`      | `normal` \| `italic` \| `oblique` \| `initial` |
+| `text-decoration` | `none` \| `underline` \| `initial`             |
 
 The special `initial` value resets any particular property back to its default
 value.
