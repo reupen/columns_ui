@@ -95,12 +95,12 @@
 #define IDD_PREFS_STATUS_PANE           236
 #define IDD_PREFS_TEXT_RENDERING        237
 #define IDD_FONT_AXES                   238
+#define IDD_ITEM_DETAILS_PICK_FONT      239
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
 #define IDC_DBLCLK                      1007
 #define IDC_NAME                        1008
-#define IDC_FONT_CODE                   1008
 #define IDC_WIDTH                       1009
 #define IDC_APPLY                       1010
 #define IDC_PARTS                       1011
@@ -262,8 +262,8 @@
 #define IDC_GEN_COLOUR                  1164
 #define IDC_SHOWGROUPS                  1164
 #define IDC_INDENT_GROUPS               1164
-#define IDC_GEN_FONT                    1165
 #define IDC_USE_CUSTOM_INDENTATION      1165
+#define IDC_FORMAT_CODE_GENERATOR       1165
 #define IDC_COLOUR_CODE                 1166
 #define IDC_TITLE1                      1168
 #define IDC_TITLE2                      1169
@@ -300,6 +300,7 @@
 #define IDC_AXIS_VALUE                  1200
 #define IDC_AXIS_VALUE_SPIN             1201
 #define IDC_AXIS_RANGE                  1202
+#define IDC_SET_FORMAT_SNIPPET          1203
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -309,7 +310,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1203
+#define _APS_NEXT_CONTROL_VALUE         1204
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

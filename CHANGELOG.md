@@ -42,7 +42,8 @@
   preferences page. [[#916](https://github.com/reupen/columns_ui/pull/916),
   [#919](https://github.com/reupen/columns_ui/pull/919),
   [#927](https://github.com/reupen/columns_ui/pull/927),
-  [#943](https://github.com/reupen/columns_ui/pull/943)]
+  [#943](https://github.com/reupen/columns_ui/pull/943),
+  [#1015](https://github.com/reupen/columns_ui/pull/1015)]
 
   This features better grouping of font families and now allows the entry of
   non-integer font sizes (to one decimal place).
@@ -57,7 +58,8 @@
 - New `$set_format()` and `$reset_format()` title formatting functions were
   added to Item details.
   [[#1004](https://github.com/reupen/columns_ui/pull/1004),
-  [#1011](https://github.com/reupen/columns_ui/pull/1011)]
+  [#1011](https://github.com/reupen/columns_ui/pull/1011),
+  [#1018](https://github.com/reupen/columns_ui/pull/1018)]
 
   These serve as replacements for the older `$set_font()` and `$reset_font()`
   functions.

@@ -2,24 +2,52 @@
 #include "item_details.h"
 #include "config.h"
 #include "dark_mode_dialog.h"
+#include "font_picker.h"
 
 namespace cui::panels::item_details {
 
 namespace {
 
-std::string format_font_code(const LOGFONT& lf)
-{
-    const auto dpi = uih::get_system_dpi_cached().cy;
-    const auto pt = -MulDiv(lf.lfHeight, 72, dpi);
-    const auto face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, std::size(lf.lfFaceName));
+constexpr auto MSG_FORMAT_GENERATOR_CLOSED = WM_USER + 0x10;
 
-    return fmt::format("$set_font({},{},{}{})", face.get_ptr(), pt, lf.lfWeight == FW_BOLD ? "bold;"sv : ""sv,
-        lf.lfItalic ? "italic;"sv : ""sv);
+std::wstring create_set_format_snippet(const fonts::FontDescription& font_description)
+{
+    const auto& desc = font_description;
+
+    if (!desc.wss)
+        return L""s;
+
+    const auto font_family
+        = desc.typographic_family_name.empty() ? desc.wss->family_name : desc.typographic_family_name;
+
+    const auto font_size = font_description.dip_size * 72.0f / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI);
+    const auto font_style = [style{desc.wss->style}] {
+        switch (style) {
+        default:
+            return L"normal";
+        case DWRITE_FONT_STYLE_OBLIQUE:
+            return L"oblique";
+        case DWRITE_FONT_STYLE_ITALIC:
+            return L"italic";
+        }
+    }();
+
+    const auto snippet = fmt::format(LR"($set_format(
+  font-family: {};
+  font-size: {};
+  font-weight: {};
+  font-stretch: {};
+  font-style: {};
+))",
+        font_family, font_size, WI_EnumValue(desc.wss->weight), WI_EnumValue(desc.wss->stretch), font_style);
+
+    return std::regex_replace(snippet, std::wregex(L"\n"), L"\r\n");
 }
 
-const dark::DialogDarkModeConfig dark_mode_config{.button_ids = {IDC_GEN_COLOUR, IDC_GEN_FONT, IDOK, IDCANCEL},
+const dark::DialogDarkModeConfig dark_mode_config{
+    .button_ids = {IDC_GEN_COLOUR, IDC_FORMAT_CODE_GENERATOR, IDOK, IDCANCEL},
     .combo_box_ids = {IDC_HALIGN, IDC_VALIGN, IDC_EDGESTYLE},
-    .edit_ids = {IDC_SCRIPT, IDC_COLOUR_CODE, IDC_FONT_CODE}};
+    .edit_ids = {IDC_SCRIPT, IDC_COLOUR_CODE}};
 
 } // namespace
 
@@ -59,10 +87,6 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         ComboBox_AddString(wnd_combo, L"Bottom");
         ComboBox_SetCurSel(wnd_combo, m_vertical_alignment);
 
-        uih::enhance_edit_control(wnd, IDC_FONT_CODE);
-        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, m_code_generator_selected_font);
-        uSetDlgItemText(wnd, IDC_FONT_CODE, format_font_code(m_code_generator_selected_font).c_str());
-
         uih::enhance_edit_control(wnd, IDC_COLOUR_CODE);
         colour_code_gen(wnd, IDC_COLOUR_CODE, false, true);
 
@@ -96,6 +120,9 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         if (wp == timer_id)
             on_timer();
         break;
+    case MSG_FORMAT_GENERATOR_CLOSED:
+        m_format_code_generator_wnd = nullptr;
+        break;
     case WM_COMMAND:
         switch (LOWORD(wp)) {
         case IDOK:
@@ -112,12 +139,8 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         case IDC_GEN_COLOUR:
             colour_code_gen(wnd, IDC_COLOUR_CODE, false, false);
             break;
-        case IDC_GEN_FONT:
-            if (const auto font_description = fonts::select_font(wnd, m_code_generator_selected_font);
-                font_description) {
-                m_code_generator_selected_font = font_description->log_font;
-                uSetDlgItemText(wnd, IDC_FONT_CODE, format_font_code(m_code_generator_selected_font).c_str());
-            }
+        case IDC_FORMAT_CODE_GENERATOR:
+            open_format_code_generator();
             break;
         case IDC_SCRIPT:
             switch (HIWORD(wp)) {
@@ -171,6 +194,63 @@ void ItemDetailsConfig::on_timer()
 {
     m_this->set_script(m_script);
     kill_timer();
+}
+
+void ItemDetailsConfig::open_format_code_generator()
+{
+    if (m_format_code_generator_wnd) {
+        SetForegroundWindow(m_format_code_generator_wnd);
+        return;
+    }
+
+    m_format_code_generator_wnd = cui::dark::modeless_dialog_box(IDD_ITEM_DETAILS_PICK_FONT,
+        {.button_ids = {IDCANCEL},
+            .combo_box_ids = {IDC_FONT_FAMILY, IDC_FONT_FACE},
+            .edit_ids = {IDC_FONT_SIZE, IDC_SET_FORMAT_SNIPPET},
+            .spin_ids = {IDC_FONT_SIZE_SPIN},
+            .last_button_id = IDCANCEL},
+        m_wnd,
+        [wnd_parent{m_wnd}, font_picker{utils::DirectWriteFontPicker{}}](
+            auto wnd, auto msg, auto wp, auto lp) mutable -> INT_PTR {
+            if (const auto result = font_picker.handle_message(wnd, msg, wp, lp); result)
+                return *result;
+
+            switch (msg) {
+            case WM_INITDIALOG: {
+                modeless_dialog_manager::g_add(wnd);
+
+                const auto font
+                    = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_item_details_font_client);
+
+                fonts::FontDescription font_description;
+                font_description.wss = uih::direct_write::WeightStretchStyle{
+                    font->family_name(), font->weight(), font->stretch(), font->style()};
+                font_description.set_dip_size(font->size());
+
+                const auto snippet_wnd = GetDlgItem(wnd, IDC_SET_FORMAT_SNIPPET);
+                uih::enhance_edit_control(snippet_wnd);
+
+                const auto on_font_changed = [snippet_wnd](const auto& font_description) {
+                    SetWindowText(snippet_wnd, create_set_format_snippet(font_description).c_str());
+                };
+                on_font_changed(font_description);
+
+                font_picker.set_font_description(std::move(font_description));
+                font_picker.on_font_changed(std::move(on_font_changed));
+                return FALSE;
+            }
+            case WM_DESTROY:
+                SendMessage(wnd_parent, MSG_FORMAT_GENERATOR_CLOSED, 0, 0);
+                modeless_dialog_manager::g_remove(wnd);
+                break;
+            case WM_COMMAND:
+                if (wp == IDCANCEL)
+                    DestroyWindow(wnd);
+                return TRUE;
+            }
+
+            return FALSE;
+        });
 }
 
 void ItemDetailsConfig::start_timer()

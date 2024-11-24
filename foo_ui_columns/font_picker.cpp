@@ -602,7 +602,8 @@ void DirectWriteFontPicker::handle_family_change(bool skip_face_change)
     m_font_faces.clear();
     m_font_faces_text_formats.clear();
 
-    EnableWindow(m_configure_axes_button, m_font_family && !m_font_family->get().axes.empty());
+    if (m_configure_axes_button)
+        EnableWindow(m_configure_axes_button, m_font_family && !m_font_family->get().axes.empty());
 
     if (!m_font_family)
         return;
@@ -614,7 +615,7 @@ void DirectWriteFontPicker::handle_family_change(bool skip_face_change)
         for (auto&& font : m_font_faces)
             ComboBox_AddString(m_font_face_combobox, font.localised_name.c_str());
 
-        if (!m_font_family->get().axes.empty())
+        if (m_configure_axes_button && !m_font_family->get().axes.empty())
             ComboBox_AddString(m_font_face_combobox, custom_axis_values_label);
     }
     CATCH_LOG()
