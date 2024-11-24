@@ -2,6 +2,7 @@
 
 #include "config_appearance.h"
 #include "config.h"
+#include "font_picker.h"
 
 class TabFonts : public PreferencesTab {
 public:
@@ -16,48 +17,15 @@ public:
     bool is_active() const;
 
 private:
-    std::optional<INT_PTR> handle_wm_drawitem(LPDRAWITEMSTRUCT dis);
-
-    int get_current_font_size_tenths() const;
     FontManagerData::entry_ptr_t get_current_resolved_entry() const;
     void on_font_changed();
 
-    void on_family_change(bool skip_face_change = false);
-    void on_face_change();
-    void update_font_size_edit();
-    void update_font_size_spin() const;
-    void save_font_face() const;
-    void save_size_edit() const;
-    const wchar_t* get_font_face_combobox_item_text(uint32_t index) const;
-
-    wil::com_ptr_t<IDWriteFontFamily> get_icon_font_family() const;
-    uih::direct_write::TextFormat& get_family_text_format(size_t index);
-    uih::direct_write::TextFormat& get_face_text_format(size_t index);
-
-    constexpr static auto font_dropdown_font_size = 9.5f;
-    constexpr static auto custom_axis_values_label = L"Custom axis values";
-
-    bool m_is_updating_font_size_edit{};
     HWND m_wnd{};
     HWND m_element_combobox{};
     HWND m_mode_combobox{};
-    HWND m_font_family_combobox{};
-    HWND m_font_face_combobox{};
-    HWND m_font_size_edit{};
-    HWND m_font_size_spin{};
-
     FontManagerData::entry_ptr_t m_element_ptr;
     cui::fonts::client::ptr m_element_api;
     FontsClientList m_fonts_client_list;
-
-    uih::direct_write::Context::Ptr m_direct_write_context;
-    std::vector<uih::direct_write::FontFamily> m_font_families;
-    std::vector<uih::direct_write::Font> m_font_faces;
-    std::vector<std::optional<uih::direct_write::TextFormat>> m_font_families_text_formats;
-    std::vector<std::optional<uih::direct_write::TextFormat>> m_font_faces_text_formats;
-    std::optional<uih::direct_write::TextFormat> m_custom_axis_values_text_format;
-    std::optional<std::reference_wrapper<uih::direct_write::FontFamily>> m_font_family;
-    std::optional<std::reference_wrapper<uih::direct_write::Font>> m_font_face;
-
+    std::optional<cui::utils::DirectWriteFontPicker> m_direct_write_font_picker;
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
