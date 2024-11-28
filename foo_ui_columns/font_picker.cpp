@@ -316,6 +316,8 @@ void DirectWriteFontPicker::handle_wm_init_dialog(HWND wnd)
     m_font_size_edit = GetDlgItem(m_wnd, IDC_FONT_SIZE);
     m_font_size_spin = GetDlgItem(m_wnd, IDC_FONT_SIZE_SPIN);
 
+    uih::enhance_edit_control(m_font_size_edit);
+
     SendMessage(m_font_family_combobox, CB_SETITEMHEIGHT, -1, 14_spx);
     SendMessage(m_font_face_combobox, CB_SETITEMHEIGHT, -1, 14_spx);
     SendMessage(m_font_size_spin, UDM_SETRANGE32, 10, 720);
