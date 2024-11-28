@@ -18,6 +18,7 @@ private:
     [[nodiscard]] std::optional<INT_PTR> handle_wm_notify(HWND wnd, LPNMHDR lpnm);
     void on_dark_mode_change();
     void apply_dark_mode_attributes();
+    void set_combobox_theme(bool is_dark) const;
     void set_edit_theme(bool is_dark) const;
     void set_spin_theme(bool is_dark) const;
     void set_tree_view_theme(bool is_dark) const;
@@ -41,6 +42,23 @@ void DialogDarkModeHelper::set_tree_view_theme(bool is_dark) const
         SetWindowTheme(tree_view_wnd, is_dark ? L"DarkMode_Explorer" : L"Explorer", nullptr);
         TreeView_SetBkColor(tree_view_wnd, is_dark ? get_dark_colour(ColourID::TreeViewBackground) : -1);
         TreeView_SetTextColor(tree_view_wnd, is_dark ? get_dark_colour(ColourID::TreeViewText) : -1);
+    }
+}
+
+void DialogDarkModeHelper::set_combobox_theme(bool is_dark) const
+{
+    if (!m_wnd)
+        return;
+
+    for (const auto id : m_config.combo_box_ids) {
+        const auto combobox_wnd = GetDlgItem(m_wnd, id);
+        SetWindowTheme(combobox_wnd, is_dark ? L"DarkMode_CFD" : nullptr, nullptr);
+
+        COMBOBOXINFO cbi{};
+        cbi.cbSize = sizeof cbi;
+
+        if (GetComboBoxInfo(combobox_wnd, &cbi) && cbi.hwndList)
+            SetWindowTheme(cbi.hwndList, is_dark ? L"DarkMode_Explorer" : nullptr, nullptr);
     }
 }
 
@@ -89,7 +107,7 @@ void DialogDarkModeHelper::apply_dark_mode_attributes()
     set_titlebar_mode(m_wnd, is_dark);
     set_window_theme(m_config.button_ids, L"DarkMode_Explorer", is_dark);
     set_window_theme(m_config.checkbox_ids, L"DarkMode_Explorer", is_dark);
-    set_window_theme(m_config.combo_box_ids, L"DarkMode_CFD", is_dark);
+    set_combobox_theme(is_dark);
     set_edit_theme(is_dark);
     set_window_theme(m_config.list_box_ids, L"DarkMode_Explorer", is_dark);
     set_spin_theme(is_dark);
@@ -117,7 +135,7 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, 
         SetWindowLongPtr(wnd, DWLP_MSGRESULT, TRUE);
         return TRUE;
     case WM_PAINT:
-        handle_modern_background_paint(wnd, GetDlgItem(wnd, IDOK), is_active_ui_dark());
+        handle_modern_background_paint(wnd, GetDlgItem(wnd, m_config.last_button_id), is_active_ui_dark());
         return TRUE;
     case WM_NOTIFY:
         if (const auto result = handle_wm_notify(wnd, reinterpret_cast<LPNMHDR>(lp)))
