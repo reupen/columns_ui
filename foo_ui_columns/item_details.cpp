@@ -962,7 +962,7 @@ void process_wss_style_property(const std::vector<FontSegment>& segments,
 {
     struct CurrentValue {
         DWRITE_FONT_WEIGHT weight{};
-        DWRITE_FONT_STRETCH stretch{};
+        std::variant<DWRITE_FONT_STRETCH, float> stretch{};
         DWRITE_FONT_STYLE style{};
         size_t start{};
         size_t count{};
@@ -997,14 +997,18 @@ void process_wss_style_property(const std::vector<FontSegment>& segments,
 
     for (auto& [properties, start_character, character_count] : segments) {
         std::optional<DWRITE_FONT_WEIGHT> weight;
-        std::optional<DWRITE_FONT_STRETCH> stretch;
+        std::optional<std::variant<DWRITE_FONT_STRETCH, float>> stretch;
         std::optional<DWRITE_FONT_STYLE> style;
 
         if (properties.font_weight)
             weight = std::get<DWRITE_FONT_WEIGHT>(*properties.font_weight);
 
-        if (properties.font_stretch)
-            stretch = std::get<DWRITE_FONT_STRETCH>(*properties.font_stretch);
+        if (properties.font_stretch) {
+            if (std::holds_alternative<float>(*properties.font_stretch))
+                stretch = std::get<float>(*properties.font_stretch);
+            else
+                stretch = std::get<DWRITE_FONT_STRETCH>(*properties.font_stretch);
+        }
 
         if (properties.font_style)
             style = std::get<DWRITE_FONT_STYLE>(*properties.font_style);

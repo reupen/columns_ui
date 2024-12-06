@@ -28,6 +28,7 @@
 #include <memory>
 #include <optional>
 #include <ranges>
+#include <regex>
 #include <set>
 #include <span>
 #include <string_view>

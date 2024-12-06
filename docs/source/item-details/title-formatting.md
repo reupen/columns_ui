@@ -27,12 +27,15 @@ $set_format(
 | `font-family`     | \<font family name> \| `initial`               |
 | `font-size`       | \<font size in points> \| `initial`            |
 | `font-weight`     | \<1–900> \| `initial`                          |
-| `font-stretch`    | \<1–9> \| `initial`                            |
+| `font-stretch`    | \<1–9> \| <percentage> \| `initial`            |
 | `font-style`      | `normal` \| `italic` \| `oblique` \| `initial` |
 | `text-decoration` | `none` \| `underline` \| `initial`             |
 
 The special `initial` value resets any particular property back to its default
 value.
+
+Percentages must use the suffix `%%` or `pc`, for example `150%%` or `150pc`
+(`%%` is an escaped `%` in the title formatting language).
 
 #### Examples
 
@@ -57,7 +60,7 @@ $set_format(
   font-family: Segoe UI Variable;
   font-size: 20;
   font-weight: 300;
-  font-stretch: 5;
+  font-stretch: 100%%;
   font-style: italic;
   text-decoration: underline;
 )
