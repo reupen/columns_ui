@@ -87,7 +87,7 @@ cui::fonts::FontDescription FontManagerData::resolve_font_description(const entr
 
         cui::fonts::FontDescription description{system_font.log_font};
         description.fill_wss();
-        const auto point_size = system_font.size * 72.0f / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI);
+        const auto point_size = uih::direct_write::dip_to_pt(system_font.size);
         description.point_size_tenths = gsl::narrow_cast<int>(point_size * 10.0f + 0.5f);
         description.dip_size = system_font.size;
         return description;

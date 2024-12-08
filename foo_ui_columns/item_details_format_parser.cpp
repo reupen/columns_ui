@@ -56,13 +56,19 @@ struct FontWeightValue {
 };
 
 struct FontStretchValue {
-    struct Stretch {
+    struct StretchClass {
         static constexpr auto rule = dsl::integer<int>;
         static constexpr auto value = lexy::callback<DWRITE_FONT_STRETCH>(
             [](int value) { return static_cast<DWRITE_FONT_STRETCH>(std::clamp(value, 1, 9)); });
     };
 
-    static constexpr auto rule = dsl::p<Initial> | dsl::p<Stretch>;
+    struct Percentage {
+        static constexpr auto rule = dsl::p<Float> + (dsl::lit<"pc"> | dsl::lit_c<'%'>);
+        static constexpr auto value = lexy::forward<float>;
+    };
+
+    static constexpr auto rule
+        = dsl::p<Initial> | dsl::peek(dsl::p<Percentage>) >> dsl::p<Percentage> | dsl::p<StretchClass>;
     static constexpr auto value = lexy::forward<decltype(FormatProperties::font_stretch)>;
 };
 

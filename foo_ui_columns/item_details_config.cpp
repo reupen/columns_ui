@@ -20,7 +20,7 @@ std::wstring create_set_format_snippet(const fonts::FontDescription& font_descri
     const auto font_family
         = desc.typographic_family_name.empty() ? desc.wss->family_name : desc.typographic_family_name;
 
-    const auto font_size = font_description.dip_size * 72.0f / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI);
+    const auto font_size = uih::direct_write::dip_to_pt(font_description.dip_size);
     const auto font_style = [style{desc.wss->style}] {
         switch (style) {
         default:
