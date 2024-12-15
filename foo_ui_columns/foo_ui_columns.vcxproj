@@ -447,7 +447,6 @@
     <ClInclude Include="dark_mode_spin.h" />
     <ClInclude Include="event_token.h" />
     <ClInclude Include="file_info_utils.h" />
-    <ClInclude Include="font_manager_v3.h" />
     <ClInclude Include="font_manager_data.h" />
     <ClInclude Include="font_picker.h" />
     <ClInclude Include="gdi.h" />

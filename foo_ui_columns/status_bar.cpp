@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "status_bar.h"
 
-#include "font_manager_v3.h"
 #include "font_utils.h"
 #include "main_window.h"
 #include "metadb_helpers.h"

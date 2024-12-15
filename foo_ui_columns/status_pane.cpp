@@ -4,7 +4,6 @@
 #include "status_pane.h"
 
 #include "dark_mode.h"
-#include "font_manager_v3.h"
 #include "font_utils.h"
 #include "menu_items.h"
 #include "metadb_helpers.h"

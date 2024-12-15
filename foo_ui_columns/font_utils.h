@@ -1,5 +1,4 @@
 #pragma once
-#include "font_manager_v3.h"
 
 namespace cui::fonts {
 

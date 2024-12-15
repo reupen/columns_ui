@@ -911,9 +911,6 @@
     <ClInclude Include="font_utils.h">
       <Filter>Colours and fonts</Filter>
     </ClInclude>
-    <ClInclude Include="font_manager_v3.h">
-      <Filter>Colours and fonts</Filter>
-    </ClInclude>
     <ClInclude Include="item_details_text.h">
       <Filter>Item details</Filter>
     </ClInclude>
