@@ -3,7 +3,6 @@
 #include "item_details.h"
 #include "item_details_text.h"
 
-#include "font_manager_v3.h"
 #include "font_utils.h"
 #include "item_details_format_parser.h"
 #include "string.h"

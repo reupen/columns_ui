@@ -1,20 +1,15 @@
 #include "pch.h"
 
-#include "font_manager_v3.h"
-
 #include "config_appearance.h"
 #include "font_utils.h"
 #include "system_appearance_manager.h"
 
 namespace cui::fonts {
 
-const GUID font::class_guid{0x6e7708d5, 0x4799, 0x45e5, {0x8f, 0x41, 0x2d, 0x68, 0xf1, 0x5d, 0x08, 0x50}};
-const GUID manager_v3::class_guid{0x471a234d, 0xb81a, 0x4f6a, {0x84, 0x94, 0x5c, 0x9f, 0xff, 0x2c, 0xf6, 0x1f}};
-
 class Font : public font {
 public:
     Font(LOGFONT log_font, uih::direct_write::WeightStretchStyle wss, std::wstring typographic_family_name,
-        uih::direct_write::AxisValues axis_values, const float size, DWRITE_RENDERING_MODE rendering_mode,
+        std::vector<DWRITE_FONT_AXIS_VALUE> axis_values, const float size, DWRITE_RENDERING_MODE rendering_mode,
         bool force_greyscale_antialiasing)
         : m_log_font(std::move(log_font))
         , m_wss(std::move(wss))
@@ -26,11 +21,26 @@ public:
     {
     }
 
-    const wchar_t* family_name() noexcept final { return m_wss.family_name.c_str(); }
+    const wchar_t* family_name(FontFamilyModel font_family_model = FontFamilyModel::Automatic) noexcept final
+    {
+        switch (font_family_model) {
+        default:
+            return m_typographic_family_name.empty() ? m_wss.family_name.c_str() : m_typographic_family_name.c_str();
+        case FontFamilyModel::WeightStretchStyle:
+            return m_wss.family_name.c_str();
+        case FontFamilyModel::Typographic:
+            return m_typographic_family_name.c_str();
+        }
+    }
+
     DWRITE_FONT_WEIGHT weight() noexcept final { return m_wss.weight; }
     DWRITE_FONT_STRETCH stretch() noexcept final { return m_wss.stretch; }
     DWRITE_FONT_STYLE style() noexcept final { return m_wss.style; }
     float size() noexcept final { return m_size > 0 ? m_size : 9.0f; }
+
+    size_t axis_count() const noexcept final { return m_axis_values.size(); }
+
+    DWRITE_FONT_AXIS_VALUE axis_value(size_t index) const final { return m_axis_values.at(index); }
 
     LOGFONT log_font() noexcept override
     {
@@ -51,15 +61,14 @@ public:
         }
 
         const auto factory_7 = context->factory().try_query<IDWriteFactory7>();
-        const auto axis_values = uih::direct_write::axis_values_to_vector(m_axis_values);
 
         try {
             pfc::com_ptr_t<IDWriteTextFormat> text_format;
 
-            if (factory_7 && !axis_values.empty()) {
+            if (factory_7 && !m_axis_values.empty()) {
                 wil::com_ptr_t<IDWriteTextFormat3> text_format_3;
                 THROW_IF_FAILED(factory_7->CreateTextFormat(m_typographic_family_name.c_str(), nullptr,
-                    axis_values.data(), gsl::narrow<uint32_t>(axis_values.size()), size(), L"", &text_format_3));
+                    m_axis_values.data(), gsl::narrow<uint32_t>(m_axis_values.size()), size(), L"", &text_format_3));
                 text_format.attach(text_format_3.detach());
             } else {
                 THROW_IF_FAILED(context->factory()->CreateTextFormat(family_name(), nullptr, weight(), style(),
@@ -73,10 +82,10 @@ public:
         try {
             pfc::com_ptr_t<IDWriteTextFormat> text_format;
 
-            if (factory_7 && !axis_values.empty()) {
+            if (factory_7 && !m_axis_values.empty()) {
                 wil::com_ptr_t<IDWriteTextFormat3> text_format_3;
-                THROW_IF_FAILED(factory_7->CreateTextFormat(L"", nullptr, axis_values.data(),
-                    gsl::narrow<uint32_t>(axis_values.size()), size(), L"", &text_format_3));
+                THROW_IF_FAILED(factory_7->CreateTextFormat(L"", nullptr, m_axis_values.data(),
+                    gsl::narrow<uint32_t>(m_axis_values.size()), size(), L"", &text_format_3));
                 text_format.attach(text_format_3.detach());
             } else {
                 THROW_IF_FAILED(context->factory()->CreateTextFormat(
@@ -97,7 +106,7 @@ private:
     LOGFONT m_log_font{};
     uih::direct_write::WeightStretchStyle m_wss{};
     std::wstring m_typographic_family_name;
-    uih::direct_write::AxisValues m_axis_values;
+    std::vector<DWRITE_FONT_AXIS_VALUE> m_axis_values;
     float m_size{};
     DWRITE_RENDERING_MODE m_rendering_mode{};
     bool m_force_greyscale_antialiasing{};
@@ -114,10 +123,10 @@ public:
         const auto& log_font = font_description.log_font;
         auto size = font_description.dip_size;
         auto wss = font_description.get_wss_with_fallback();
-        const auto& axis_values = font_description.axis_values;
+        auto axis_values = uih::direct_write::axis_values_to_vector(font_description.axis_values);
 
-        return fb2k::service_new<Font>(log_font, wss, font_description.typographic_family_name, axis_values, size,
-            static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get()), force_greyscale_antialiasing.get());
+        return fb2k::service_new<Font>(log_font, wss, font_description.typographic_family_name, std::move(axis_values),
+            size, static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get()), force_greyscale_antialiasing.get());
     }
 
     void set_client_font_size(GUID id, float size) override

@@ -2,7 +2,6 @@
 
 #include "ng_playlist.h"
 
-#include "font_manager_v3.h"
 #include "ng_playlist_groups.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"

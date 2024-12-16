@@ -2,7 +2,6 @@
 #include "item_properties.h"
 
 #include "file_info_utils.h"
-#include "font_manager_v3.h"
 
 namespace cui::panels::item_properties {
 

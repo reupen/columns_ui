@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "playlist_switcher_v2.h"
 
-#include "font_manager_v3.h"
 #include "playlist_switcher_title_formatting.h"
 
 namespace cui::panels::playlist_switcher {

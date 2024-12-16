@@ -4,7 +4,6 @@
 #include "filter_config_var.h"
 #include "filter_search_bar.h"
 #include "filter_utils.h"
-#include "font_manager_v3.h"
 
 namespace cui::panels::filter {
 
