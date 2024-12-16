@@ -129,6 +129,10 @@
 - Various rendering glitches in Playlist tabs and Tab stack when dark mode is
   active were fixed. [[#851](https://github.com/reupen/columns_ui/pull/851)]
 
+- Flickering of scroll buttons in the Playlist tabs and Tab stack when resizing
+  the panels was eliminated.
+  [[#1033](https://github.com/reupen/columns_ui/pull/1033)]
+
 - When switching tabs, the Tab stack panel now updates the keyboard focus to the
   first focusable element in the new tab.
   [[#817](https://github.com/reupen/columns_ui/pull/817)]
@@ -190,7 +194,7 @@
   [[#833](https://github.com/reupen/columns_ui/pull/833),
   [#970](https://github.com/reupen/columns_ui/pull/970)]
 
-- The component is now compiled with Visual Studio 2022 17.11.
+- The component is now compiled with Visual Studio 2022 17.12.
 
 ## 2.1.0
 

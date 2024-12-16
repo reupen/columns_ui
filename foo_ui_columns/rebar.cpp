@@ -795,18 +795,12 @@ LRESULT RebarWindow::s_handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPAR
 
 LRESULT RebarWindow::handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    switch (msg) {
-    case WM_ERASEBKGND: {
-        const auto dc = reinterpret_cast<HDC>(wp);
-        if (WindowFromDC(dc) != wnd)
-            return CallWindowProc(m_rebar_wnd_proc, wnd, WM_ERASEBKGND, wp, lp);
+    if (const auto result = uih::handle_subclassed_window_buffered_painting(m_rebar_wnd_proc, wnd, msg, wp, lp);
+        result) {
+        return *result;
+    }
 
-        return FALSE;
-    }
-    case WM_PAINT: {
-        uih::paint_subclassed_window_with_buffering(wnd, m_rebar_wnd_proc);
-        return 0;
-    }
+    switch (msg) {
     case WM_THEMECHANGED:
         on_themechanged();
         break;

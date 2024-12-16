@@ -1001,6 +1001,7 @@ LRESULT WINAPI TabStackPanel::on_hooked_message(HWND wnd, UINT msg, WPARAM wp, L
 
             if (!wcsncmp(UPDOWN_CLASSW, class_name.data(), class_name.size())) {
                 m_up_down_control_wnd = child_window;
+                uih::subclass_window_and_paint_with_buffering(child_window);
                 set_up_down_window_theme();
             }
             break;
