@@ -13,7 +13,7 @@
 #include "layout.h"
 #include "dark_mode.h"
 #include "icons.h"
-#include "notification_area.h"
+#include "system_tray.h"
 #include "status_bar.h"
 #include "migrate.h"
 #include "legacy_artwork_config.h"

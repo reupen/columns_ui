@@ -12,8 +12,8 @@ const char* default_status_bar_script
       "$if(%ispaused%,Paused,Playing) | %codec% | %bitrate% kbps | %samplerate% Hz"
       " | $caps(%channels%) | %playback_time%[ / %length%]";
 
-const char* default_notification_icon_script
-    = "//This is the default script for the content of the notification area icon tooltip "
+const char* default_system_tray_icon_script
+    = "//This is the default script for the content of the system tray icon tooltip "
       "during playback.\r\n\r\n"
       "[%title%]$crlf()[%artist%][$crlf()%album%]";
 
@@ -31,9 +31,9 @@ fbh::ConfigString config_status_bar_script(
     GUID{0xb5ca645b, 0xa5e0, 0x4c70, {0xa5, 0x98, 0xcd, 0x62, 0x5c, 0xf3, 0xcc, 0x37}}, default_status_bar_script,
     [](auto&&) { cui::status_bar::regenerate_text(); });
 
-fbh::ConfigString config_notification_icon_script(
+fbh::ConfigString config_system_tray_icon_script(
     GUID{0x85d128cf, 0x8b01, 0x4ae9, {0xb8, 0x1c, 0x6b, 0xc4, 0xbe, 0x67, 0x59, 0x9f}},
-    default_notification_icon_script);
+    default_system_tray_icon_script);
 
 fbh::ConfigString config_main_window_title_script(
     GUID{0x28b799fb, 0xbc22, 0x4e1c, {0xb9, 0x99, 0xf1, 0xe6, 0xb1, 0xf2, 0x60, 0x40}},

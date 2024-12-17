@@ -29,19 +29,19 @@ namespace cui::config {
 advconfig_branch_factory advconfig_branch_columns_ui(
     "Columns UI", advconfig_branch_columns_ui_id, advconfig_branch::guid_branch_display, 0);
 
-advconfig_branch_factory advconfig_branch_notification_area(
-    "Windows notification area", advconfig_branch_notification_area_id, advconfig_branch_columns_ui_id, 0);
+advconfig_branch_factory advconfig_branch_system_tray(
+    "System tray", advconfig_branch_system_tray_id, advconfig_branch_columns_ui_id, 0);
 
-static GUID advbool_notification_icon_x_buttons_id{
+static GUID advbool_system_tray_icon_x_buttons_id{
     0xcee3f8cc, 0x7ca6, 0x4277, {0xaa, 0xd4, 0xce, 0xc7, 0xb9, 0xd0, 0x5a, 0x63}};
-advconfig_checkbox_factory advbool_notification_icon_x_buttons(
-    "Use back/forward mouse buttons to skip track when over notification area icon",
-    advbool_notification_icon_x_buttons_id, advconfig_branch_notification_area_id, 0, false);
+advconfig_checkbox_factory advbool_system_tray_icon_x_buttons(
+    "Use back/forward mouse buttons to skip track when over system tray icon", advbool_system_tray_icon_x_buttons_id,
+    advconfig_branch_system_tray_id, 0, false);
 
-static GUID advbool_close_to_notification_icon_id{
+static GUID advbool_close_to_system_tray_icon_id{
     0x41695241, 0x7854, 0x5a5a, {0x4d, 0x69, 0x6b, 0x75, 0x57, 0x52, 0x6c, 0x44}};
-advconfig_checkbox_factory advbool_close_to_notification_icon("Close to notification area icon",
-    advbool_close_to_notification_icon_id, advconfig_branch_notification_area_id, 0, false);
+advconfig_checkbox_factory advbool_close_to_system_tray_icon(
+    "Close to system tray icon", advbool_close_to_system_tray_icon_id, advconfig_branch_system_tray_id, 0, false);
 
 cfg_bool cfg_playlist_tabs_middle_click(
     {0x3074ea96, 0x22e7, 0x464a, {0x9d, 0xac, 0xec, 0x9, 0xc0, 0xb4, 0x5e, 0x5a}}, true);

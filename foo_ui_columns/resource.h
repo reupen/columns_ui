@@ -66,7 +66,7 @@
 #define IDD_RENAME_PLAYLIST             200
 #define IDD_PREFS_TAB_HOST              201
 #define IDD_PREFS_PLAYLIST_TABS         202
-#define IDD_PREFS_NOTIFICATION_AREA     203
+#define IDD_PREFS_SYSTEM_TRAY           203
 #define IDD_SPECTRUM_ANALYSER_OPTIONS   204
 #define IDD_BUTTON_COMMAND_PICKER       206
 #define IDD_FCL_IMPORT                  207

@@ -27,7 +27,7 @@ PreferencesTab* g_get_tab_layout();
 PreferencesTab* g_get_tab_artwork();
 PreferencesTab* g_get_tab_display2();
 PreferencesTab* g_get_tab_pview_artwork();
-PreferencesTab* g_get_tab_sys();
+PreferencesTab* g_get_tab_system_tray();
 PreferencesTab* g_get_tab_playlist_switcher();
 PreferencesTab* g_get_tab_playlist_tabs();
 PreferencesTab* g_get_tab_playlist_dd();
