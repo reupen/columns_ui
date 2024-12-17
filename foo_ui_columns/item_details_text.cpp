@@ -198,24 +198,22 @@ std::tuple<std::wstring, std::vector<uih::ColouredTextSegment>, std::vector<Font
         const auto is_colour_code = !is_eos && text[index] == L'\3';
         const auto is_font_code = !is_eos && text[index] == L'\7';
 
-        if (!fragment.empty()) {
+        if (!fragment.empty())
             stripped_text.append(fragment);
 
-            if (cr_current && (is_eos || is_colour_code))
-                coloured_segments.emplace_back(
-                    *cr_current, colour_segment_start, stripped_text.length() - colour_segment_start);
+        if (cr_current && (is_eos || is_colour_code) && stripped_text.length() > colour_segment_start)
+            coloured_segments.emplace_back(
+                *cr_current, colour_segment_start, stripped_text.length() - colour_segment_start);
 
-            if (current_font && (is_eos || is_font_code)) {
-                FormatProperties cleaned_font{*current_font};
-                for_each_property(cleaned_font, [](auto&& member) {
-                    if (member && std::holds_alternative<InitialPropertyValue>(*member)) {
-                        member.reset();
-                    }
-                });
+        if (current_font && (is_eos || is_font_code) && stripped_text.length() > font_segment_start) {
+            FormatProperties cleaned_font{*current_font};
+            for_each_property(cleaned_font, [](auto&& member) {
+                if (member && std::holds_alternative<InitialPropertyValue>(*member)) {
+                    member.reset();
+                }
+            });
 
-                font_segments.emplace_back(
-                    cleaned_font, font_segment_start, stripped_text.length() - font_segment_start);
-            }
+            font_segments.emplace_back(cleaned_font, font_segment_start, stripped_text.length() - font_segment_start);
         }
 
         if (is_eos)
