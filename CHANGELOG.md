@@ -109,6 +109,10 @@
   (The confirmation dialogue box can be bypassed by holding down Shift while
   clicking the button.)
 
+- References to ‘notification area’ were changed to ‘system tray’ to align with
+  the current Windows terminology.
+  [[#1035](https://github.com/reupen/columns_ui/pull/1035)]
+
 - Some diagnostic logging to the foobar2000 console was added when unexpected
   errors occur. [[#916](https://github.com/reupen/columns_ui/pull/916)]
 

@@ -1,12 +1,10 @@
 #include "pch.h"
 #include "config.h"
-#include "notification_area.h"
+#include "system_tray.h"
 
-static class TabNotificationArea : public PreferencesTab {
+static class TabSystemTray : public PreferencesTab {
 public:
     bool m_initialised{};
-
-    //    static ptr_list_autofree_t<char> status_items;
 
     static void refresh_me(HWND wnd)
     {
@@ -18,7 +16,7 @@ public:
         SendDlgItemMessage(wnd, IDC_USE_CUSTOM_ICON, BM_SETCHECK, cfg_custom_icon, 0);
         SendDlgItemMessage(wnd, IDC_NOWPL, BM_SETCHECK, cfg_np, 0);
 
-        uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, main_window::config_notification_icon_script.get());
+        uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, main_window::config_system_tray_icon_script.get());
         EnableWindow(GetDlgItem(wnd, IDC_BROWSE_ICON), cfg_custom_icon);
     }
 
@@ -38,7 +36,7 @@ public:
         case WM_COMMAND:
             switch (wp) {
             case (EN_CHANGE << 16) | IDC_STRING:
-                main_window::config_notification_icon_script.set(uGetWindowText((HWND)lp));
+                main_window::config_system_tray_icon_script.set(uGetWindowText((HWND)lp));
                 break;
 
             case IDC_NOWPL: {
@@ -68,7 +66,7 @@ public:
             case IDC_SHOW_SYSTRAY: {
                 cfg_show_systray = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 //                EnableWindow(GetDlgItem(wnd, IDC_MINIMISE_TO_SYSTRAY), cfg_show_systray);
-                on_show_notification_area_icon_change();
+                on_show_system_tray_icon_change();
             } break;
             case IDC_BALLOON: {
                 cfg_balloon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
@@ -79,19 +77,19 @@ public:
     }
     HWND create(HWND wnd) override
     {
-        return m_helper.create(wnd, IDD_PREFS_NOTIFICATION_AREA,
+        return m_helper.create(wnd, IDD_PREFS_SYSTEM_TRAY,
             [this](auto&&... args) { return ConfigProc(std::forward<decltype(args)>(args)...); });
     }
-    const char* get_name() override { return "Notification area"; }
+    const char* get_name() override { return "System tray"; }
     bool get_help_url(pfc::string_base& p_out) override
     {
         p_out = "http://yuo.be/wiki/columns_ui:config:notification_area";
         return true;
     }
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
-} g_tab_sys;
+} g_tab_system_tray;
 
-PreferencesTab* g_get_tab_sys()
+PreferencesTab* g_get_tab_system_tray()
 {
-    return &g_tab_sys;
+    return &g_tab_system_tray;
 }

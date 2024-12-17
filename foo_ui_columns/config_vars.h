@@ -6,11 +6,11 @@ namespace cui::config {
 
 constexpr GUID advconfig_branch_columns_ui_id{
     0xd2dd7ffc, 0xf780, 0x4fa3, {0x89, 0x52, 0x38, 0xd8, 0x2c, 0x8c, 0x1e, 0x4b}};
-constexpr GUID advconfig_branch_notification_area_id{
+constexpr GUID advconfig_branch_system_tray_id{
     0x8b39648d, 0x3e4, 0x4748, {0x8d, 0xd3, 0x71, 0x6b, 0x76, 0x8a, 0x39, 0xf0}};
 
-extern advconfig_checkbox_factory advbool_notification_icon_x_buttons;
-extern advconfig_checkbox_factory advbool_close_to_notification_icon;
+extern advconfig_checkbox_factory advbool_system_tray_icon_x_buttons;
+extern advconfig_checkbox_factory advbool_close_to_system_tray_icon;
 
 extern cfg_bool cfg_playlist_tabs_middle_click;
 } // namespace cui::config

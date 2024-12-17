@@ -18,7 +18,7 @@ static PreferencesTab* g_tabs[] = {
     g_get_tab_main(),
     g_get_tab_status_bar(),
     g_get_tab_status_pane(),
-    g_get_tab_sys(),
+    g_get_tab_system_tray(),
     g_get_tab_artwork(),
 };
 

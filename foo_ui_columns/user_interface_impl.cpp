@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "status_pane.h"
 #include "status_bar.h"
-#include "notification_area.h"
+#include "system_tray.h"
 #include "main_window.h"
 
 extern bool g_icon_created;

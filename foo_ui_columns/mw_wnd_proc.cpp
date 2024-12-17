@@ -7,7 +7,7 @@
 #include "main_window.h"
 #include "rebar.h"
 #include "status_bar.h"
-#include "notification_area.h"
+#include "system_tray.h"
 
 extern HWND g_status;
 extern bool g_icon_created;
@@ -179,7 +179,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_taskbar_button_images.reset();
         break;
     case WM_CLOSE:
-        if (config::advbool_close_to_notification_icon.get()) {
+        if (config::advbool_close_to_system_tray_icon.get()) {
             cfg_go_to_tray = true;
             ShowWindow(wnd, SW_MINIMIZE);
         } else
@@ -550,7 +550,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (process_keydown(msg, lp, wp))
             return 0;
         break;
-    case MSG_NOTIFICATION_ICON:
+    case MSG_SYSTEM_TRAY_ICON:
         if (lp == WM_LBUTTONUP) {
             // if (b_wasDown)
             standard_commands::main_activate_or_hide();
@@ -572,7 +572,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             return TRUE;
         } else if (lp == WM_MOUSEMOVE) {
         } else if (lp == WM_XBUTTONUP) {
-            if (config::advbool_notification_icon_x_buttons.get()) {
+            if (config::advbool_system_tray_icon_x_buttons.get()) {
                 if (g_last_sysray_x1_down && !g_last_sysray_x2_down)
                     standard_commands::main_previous();
                 if (g_last_sysray_x2_down && !g_last_sysray_x1_down)

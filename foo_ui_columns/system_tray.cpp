@@ -1,6 +1,6 @@
 #include "pch.h"
 
-#include "notification_area.h"
+#include "system_tray.h"
 #include "main_window.h"
 
 extern HWND g_status;
@@ -18,7 +18,7 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
 
         if (track.is_valid()) {
             service_ptr_t<titleformat_object> to_systray;
-            titleformat_compiler::get()->compile_safe(to_systray, main_window::config_notification_icon_script.get());
+            titleformat_compiler::get()->compile_safe(to_systray, main_window::config_system_tray_icon_script.get());
             play_api->playback_format_title_ex(
                 track, nullptr, title, to_systray, nullptr, play_control::display_level_titles);
 
@@ -31,29 +31,29 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
         uFixAmpersandChars(title, sys);
 
         if (balloon && (cfg_balloon || force_balloon)) {
-            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTIFICATION_ICON, g_icon, sys, "", "");
-            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTIFICATION_ICON, g_icon, sys,
+            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, sys, "", "");
+            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, sys,
                 (btitle == 0 ? "Now playing:" : (btitle == 1 ? "Unpaused:" : "Paused:")), title);
         } else
-            uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_NOTIFICATION_ICON, g_icon, sys);
+            uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, sys);
     }
 }
 
 void destroy_systray_icon()
 {
     if (g_icon_created) {
-        uShellNotifyIcon(NIM_DELETE, cui::main_window.get_wnd(), 1, MSG_NOTIFICATION_ICON, nullptr, nullptr);
+        uShellNotifyIcon(NIM_DELETE, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, nullptr, nullptr);
         g_icon_created = false;
     }
 }
 
-void on_show_notification_area_icon_change()
+void on_show_system_tray_icon_change()
 {
     if (!cui::main_window.get_wnd())
         return;
 
     const auto is_iconic = IsIconic(cui::main_window.get_wnd()) != 0;
-    const auto close_to_icon = cui::config::advbool_close_to_notification_icon.get();
+    const auto close_to_icon = cui::config::advbool_close_to_system_tray_icon.get();
     if (cfg_show_systray && !g_icon_created) {
         create_systray_icon();
     } else if (!cfg_show_systray && g_icon_created && (!is_iconic || !(cfg_minimise_to_tray || close_to_icon))) {
@@ -67,8 +67,8 @@ void on_show_notification_area_icon_change()
 
 void create_systray_icon()
 {
-    uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, cui::main_window.get_wnd(), 1, MSG_NOTIFICATION_ICON,
-        g_icon, core_version_info_v2::get()->get_name());
+    uShellNotifyIcon(g_icon_created ? NIM_MODIFY : NIM_ADD, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon,
+        core_version_info_v2::get()->get_name());
     /* There was some misbehaviour with the newer messages. So we don't use them. */
     //    if (!g_icon_created)
     //        uih::shell_notify_icon(NIM_SETVERSION, cui::main_window.get_wnd(), 1, NOTIFYICON_VERSION,

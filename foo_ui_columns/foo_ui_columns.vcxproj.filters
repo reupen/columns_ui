@@ -52,9 +52,6 @@
     <Filter Include="Status bar">
       <UniqueIdentifier>{55d1a4ec-5524-4ac3-a61f-d78b064cdf91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Notification area">
-      <UniqueIdentifier>{67475e56-3bb2-46a8-8b62-8cf3417c4af0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Buttons toolbar">
       <UniqueIdentifier>{1180d005-d933-4628-b2de-deb1f0f38fd3}</UniqueIdentifier>
     </Filter>
@@ -123,6 +120,9 @@
     </Filter>
     <Filter Include="Playlist selector toolbar">
       <UniqueIdentifier>{0eaa631f-d75d-4656-a064-8a6201707260}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="System tray">
+      <UniqueIdentifier>{67475e56-3bb2-46a8-8b62-8cf3417c4af0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -202,7 +202,7 @@
     <ClCompile Include="tab_main.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include="tab_notification_area.cpp">
+    <ClCompile Include="tab_system_tray.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
     <ClCompile Include="tab_status_bar.cpp">
@@ -394,8 +394,8 @@
     <ClCompile Include="status_bar.cpp">
       <Filter>Status bar</Filter>
     </ClCompile>
-    <ClCompile Include="notification_area.cpp">
-      <Filter>Notification area</Filter>
+    <ClCompile Include="system_tray.cpp">
+      <Filter>System tray</Filter>
     </ClCompile>
     <ClCompile Include="buttons.cpp">
       <Filter>Buttons toolbar</Filter>
@@ -491,8 +491,8 @@
     <ClCompile Include="seekbar_callbacks.cpp">
       <Filter>Seek bar</Filter>
     </ClCompile>
-    <ClCompile Include="notification_area_callbacks.cpp">
-      <Filter>Notification area</Filter>
+    <ClCompile Include="system_tray_callbacks.cpp">
+      <Filter>System tray</Filter>
     </ClCompile>
     <ClCompile Include="main_window_callbacks.cpp">
       <Filter>Main window</Filter>
@@ -770,8 +770,8 @@
     <ClInclude Include="status_bar.h">
       <Filter>Status bar</Filter>
     </ClInclude>
-    <ClInclude Include="notification_area.h">
-      <Filter>Notification area</Filter>
+    <ClInclude Include="system_tray.h">
+      <Filter>System tray</Filter>
     </ClInclude>
     <ClInclude Include="buttons.h">
       <Filter>Buttons toolbar</Filter>

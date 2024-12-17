@@ -2,7 +2,7 @@
 
 namespace main_window {
 extern fbh::ConfigString config_status_bar_script;
-extern fbh::ConfigString config_notification_icon_script;
+extern fbh::ConfigString config_system_tray_icon_script;
 extern fbh::ConfigString config_main_window_title_script;
 
 enum MetafieldEditingMode {

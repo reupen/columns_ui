@@ -386,7 +386,7 @@ class TitlesDataSet : public fcl::dataset {
     enum ItemID {
         identifier_main_window_title,
         identifier_status_bar,
-        identifier_notification_icon_tooltip,
+        identifier_system_tray_icon_tooltip,
         identifier_copy_command,
         identifier_playlist,
         identifier_status_pane,
@@ -406,7 +406,7 @@ class TitlesDataSet : public fcl::dataset {
 
         out.write_item(identifier_status_bar, main_window::config_status_bar_script.get());
         out.write_item(identifier_status_pane, status_pane::status_pane_script);
-        out.write_item(identifier_notification_icon_tooltip, main_window::config_notification_icon_script.get());
+        out.write_item(identifier_system_tray_icon_tooltip, main_window::config_system_tray_icon_script.get());
         out.write_item(identifier_main_window_title, main_window::config_main_window_title_script.get());
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
@@ -430,9 +430,9 @@ class TitlesDataSet : public fcl::dataset {
                 reader.read_item(buffer, element_size);
                 main_window::config_main_window_title_script.set(buffer);
                 break;
-            case identifier_notification_icon_tooltip:
+            case identifier_system_tray_icon_tooltip:
                 reader.read_item(buffer, element_size);
-                main_window::config_notification_icon_script.set(buffer);
+                main_window::config_system_tray_icon_script.set(buffer);
                 break;
             case identifier_status_bar:
                 reader.read_item(buffer, element_size);
