@@ -2,45 +2,20 @@
 #include "dark_mode.h"
 
 #include "system_appearance_manager.h"
+#include "win32.h"
 
 namespace cui::dark {
 
-namespace {
-
-bool check_windows_10_build(DWORD build_number)
-{
-    OSVERSIONINFOEX osviex{};
-    osviex.dwOSVersionInfoSize = sizeof(osviex);
-
-    DWORDLONG mask = VerSetConditionMask(0, VER_MAJORVERSION, VER_GREATER_EQUAL);
-    mask = VerSetConditionMask(mask, VER_MINORVERSION, VER_GREATER_EQUAL);
-    mask = VerSetConditionMask(mask, VER_BUILDNUMBER, VER_GREATER_EQUAL);
-
-    osviex.dwMajorVersion = 10;
-    osviex.dwMinorVersion = 0;
-    osviex.dwBuildNumber = build_number;
-
-    return VerifyVersionInfoW(&osviex, VER_MAJORVERSION | VER_MINORVERSION | VER_BUILDNUMBER, mask) != FALSE;
-}
-
-bool is_windows_11_rtm_or_newer()
-{
-    static auto is_22000_or_newer = check_windows_10_build(22'000);
-    return is_22000_or_newer;
-}
-
-} // namespace
-
 bool does_os_support_dark_mode()
 {
-    static auto is_19041_or_newer = check_windows_10_build(19'041);
+    static auto is_19041_or_newer = win32::check_windows_10_build(19'041);
     return is_19041_or_newer;
 }
 
 bool is_native_dark_spin_available()
 {
     // Earliest known build number – exact build number unknown.
-    return check_windows_10_build(22'579);
+    return win32::check_windows_10_build(22'579);
 }
 
 bool are_private_apis_allowed()
@@ -76,7 +51,7 @@ void set_titlebar_mode(HWND wnd, bool is_dark)
 
 void force_titlebar_redraw(HWND wnd)
 {
-    if (is_windows_11_rtm_or_newer() || !IsWindowVisible(wnd))
+    if (win32::is_windows_11_rtm_or_newer() || !IsWindowVisible(wnd))
         return;
 
     // The below is a hack to force the titlebar to redraw on Windows 10 (little else works).
@@ -128,7 +103,7 @@ COLORREF get_base_dark_colour(DarkColourID colour_id)
 {
     switch (colour_id) {
     case DarkColourID::DARK_000:
-        return is_windows_11_rtm_or_newer() ? create_grey(25) : create_grey(32);
+        return win32::is_windows_11_rtm_or_newer() ? create_grey(25) : create_grey(32);
     case DarkColourID::DARK_200:
         return create_grey(51);
     case DarkColourID::DARK_250:

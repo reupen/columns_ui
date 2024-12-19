@@ -2,6 +2,7 @@
 
 #include "system_tray.h"
 #include "main_window.h"
+#include "win32.h"
 
 extern HWND g_status;
 extern HICON g_icon;
@@ -13,7 +14,7 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
         metadb_handle_ptr track;
         const auto play_api = play_control::get();
         play_api->get_now_playing(track);
-        pfc::string8 sys;
+        pfc::string8 escaped_title;
         pfc::string8 title;
 
         if (track.is_valid()) {
@@ -28,14 +29,18 @@ void update_systray(bool balloon, int btitle, bool force_balloon)
             title = core_version_info_v2::get()->get_name();
         }
 
-        uFixAmpersandChars(title, sys);
+        if (cui::win32::is_windows_11_rtm_or_newer())
+            escaped_title = title;
+        else
+            uFixAmpersandChars(title, escaped_title);
 
         if (balloon && (cfg_balloon || force_balloon)) {
-            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, sys, "", "");
-            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, sys,
+            uShellNotifyIconEx(
+                NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, escaped_title, "", "");
+            uShellNotifyIconEx(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, escaped_title,
                 (btitle == 0 ? "Now playing:" : (btitle == 1 ? "Unpaused:" : "Paused:")), title);
         } else
-            uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, sys);
+            uShellNotifyIcon(NIM_MODIFY, cui::main_window.get_wnd(), 1, MSG_SYSTEM_TRAY_ICON, g_icon, escaped_title);
     }
 }
 
