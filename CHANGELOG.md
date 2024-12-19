@@ -132,6 +132,10 @@
   view using the context menu was fixed.
   [[#873](https://github.com/reupen/columns_ui/pull/873)]
 
+- Different handling of ampersands in system tray icon tooltips in Windows 11
+  compared to previous versions of Windows was worked around.
+  [[#1040](https://github.com/reupen/columns_ui/pull/1040)]
+
 - Various rendering glitches in Playlist tabs and Tab stack when dark mode is
   active were fixed. [[#851](https://github.com/reupen/columns_ui/pull/851)]
 

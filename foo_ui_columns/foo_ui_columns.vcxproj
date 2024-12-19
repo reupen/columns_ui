@@ -430,6 +430,7 @@
     <ClCompile Include="tab_layout_misc.cpp" />
     <ClCompile Include="tab_pview_artwork.cpp" />
     <ClCompile Include="wic.cpp" />
+    <ClCompile Include="win32.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="artwork_helpers.h" />
@@ -532,6 +533,7 @@
     <ClInclude Include="urls.h" />
     <ClInclude Include="vis_spectrum.h" />
     <ClInclude Include="wic.h" />
+    <ClInclude Include="win32.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />
