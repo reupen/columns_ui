@@ -219,6 +219,45 @@ void FontManagerData::Entry::import(stream_reader* p_reader, size_t stream_size,
         case identifier_point_size_tenths:
             reader.read_item(font_description.point_size_tenths);
             break;
+        case identifier_dip_size:
+            reader.read_item(font_description.dip_size);
+            break;
+        case identifier_typographic_font_family: {
+            pfc::string8 value;
+            reader.read_item(value, element_size);
+            font_description.typographic_family_name = mmh::to_utf16(value.c_str());
+            break;
+        }
+        case identifier_weight_stretch_style: {
+            std::vector<uint8_t> wss_data(element_size);
+            reader.read(wss_data.data(), wss_data.size());
+
+            uih::direct_write::WeightStretchStyle wss;
+            stream_reader_memblock_ref wss_reader(wss_data.data(), wss_data.size());
+
+            const auto family_name = wss_reader.read_string(p_abort);
+            wss.family_name = mmh::to_utf16(family_name.c_str());
+
+            wss.weight = static_cast<DWRITE_FONT_WEIGHT>(wss_reader.read_lendian_t<int32_t>(p_abort));
+            wss.stretch = static_cast<DWRITE_FONT_STRETCH>(wss_reader.read_lendian_t<int32_t>(p_abort));
+            wss.style = static_cast<DWRITE_FONT_STYLE>(wss_reader.read_lendian_t<int32_t>(p_abort));
+
+            break;
+        }
+        case identifier_axis_values: {
+            std::vector<uint8_t> axis_values_data(element_size);
+            reader.read(axis_values_data.data(), axis_values_data.size());
+
+            stream_reader_memblock_ref axis_values_reader(axis_values_data.data(), axis_values_data.size());
+            const auto axis_count = axis_values_reader.read_lendian_t<uint32_t>(p_abort);
+
+            for (auto _ : std::ranges::views::iota(0u, axis_count)) {
+                const auto tag = axis_values_reader.read_lendian_t<uint32_t>(p_abort);
+                const auto value = axis_values_reader.read_lendian_t<float>(p_abort);
+                font_description.axis_values.insert_or_assign(tag, value);
+            }
+            break;
+        }
         default:
             reader.skip(element_size);
             break;
@@ -233,8 +272,38 @@ void FontManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_
     out.write_item(identifier_mode, (uint32_t)font_mode);
     if (font_mode == cui::fonts::font_mode_custom) {
         out.write_item(identifier_font, font_description.log_font);
+
+        if (font_description.wss) {
+            const auto& wss = *font_description.wss;
+
+            stream_writer_buffer_simple wss_writer;
+            wss_writer.write_string(mmh::to_utf8(wss.family_name).c_str(), p_abort);
+            wss_writer.write_lendian_t(gsl::narrow<int32_t>(wss.weight), p_abort);
+            wss_writer.write_lendian_t(gsl::narrow<int32_t>(wss.stretch), p_abort);
+            wss_writer.write_lendian_t(gsl::narrow<int32_t>(wss.style), p_abort);
+
+            out.write_item(identifier_weight_stretch_style, wss_writer.m_buffer.get_ptr(),
+                gsl::narrow<uint32_t>(wss_writer.m_buffer.size()));
+        }
     }
     out.write_item(identifier_point_size_tenths, font_description.point_size_tenths);
+    out.write_item(identifier_dip_size, font_description.dip_size);
+    out.write_item(identifier_typographic_font_family, mmh::to_utf8(font_description.typographic_family_name).c_str());
+
+    if (!font_description.axis_values.empty()) {
+        const auto& axis_values = font_description.axis_values;
+
+        stream_writer_buffer_simple axis_values_writer;
+        axis_values_writer.write_lendian_t(gsl::narrow<uint32_t>(axis_values.size()), p_abort);
+
+        for (auto [tag, value] : axis_values) {
+            axis_values_writer.write_lendian_t(tag, p_abort);
+            axis_values_writer.write_lendian_t(value, p_abort);
+        }
+
+        out.write_item(identifier_axis_values, axis_values_writer.m_buffer.get_ptr(),
+            gsl::narrow<uint32_t>(axis_values_writer.m_buffer.size()));
+    }
 }
 
 void FontManagerData::Entry::read(uint32_t version, stream_reader* p_stream, abort_callback& p_abort)
