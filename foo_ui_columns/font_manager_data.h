@@ -17,6 +17,10 @@ public:
             identifier_mode,
             identifier_font,
             identifier_point_size_tenths,
+            identifier_weight_stretch_style,
+            identifier_dip_size,
+            identifier_typographic_font_family,
+            identifier_axis_values,
         };
         GUID guid{};
         cui::fonts::FontDescription font_description{};

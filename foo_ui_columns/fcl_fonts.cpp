@@ -23,6 +23,9 @@ class FontsDataSet : public fcl::dataset {
         identifier_global_items,
         identifier_global_labels,
         identifier_client_entries,
+        identifier_rendering_mode,
+        identifier_force_greyscale_antialiasing,
+
         identifier_client_entry = 0,
     };
     void get_data(stream_writer* p_writer, uint32_t type, fcl::t_export_feedback& feedback,
@@ -55,6 +58,8 @@ class FontsDataSet : public fcl::dataset {
             out.write_item(
                 identifier_client_entries, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
+        out.write_item(identifier_rendering_mode, fonts::rendering_mode);
+        out.write_item(identifier_force_greyscale_antialiasing, fonts::force_greyscale_antialiasing);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -67,21 +72,29 @@ class FontsDataSet : public fcl::dataset {
             reader.read_item(element_id);
             reader.read_item(element_size);
 
-            pfc::array_t<uint8_t> data;
-            data.set_size(element_size);
-            reader.read(data.get_ptr(), data.get_size());
-
-            stream_reader_memblock_ref data_reader(data);
+            const auto get_data = [&] {
+                std::vector<uint8_t> data(element_size);
+                reader.read(data.data(), data.size());
+                return data;
+            };
 
             switch (element_id) {
-            case identifier_global_items:
-                g_font_manager_data.m_common_items_entry->import(&data_reader, data.get_size(), type, p_abort);
+            case identifier_global_items: {
+                const auto data = get_data();
+                stream_reader_memblock_ref data_reader(data.data(), data.size());
+                g_font_manager_data.m_common_items_entry->import(&data_reader, data.size(), type, p_abort);
                 break;
-            case identifier_global_labels:
-                g_font_manager_data.m_common_labels_entry->import(&data_reader, data.get_size(), type, p_abort);
+            }
+            case identifier_global_labels: {
+                const auto data = get_data();
+                stream_reader_memblock_ref data_reader(data.data(), data.size());
+                g_font_manager_data.m_common_labels_entry->import(&data_reader, data.size(), type, p_abort);
                 break;
+            }
             case identifier_client_entries: {
-                fbh::fcl::Reader reader2(&data_reader, data.get_size(), p_abort);
+                const auto data = get_data();
+                stream_reader_memblock_ref data_reader(data.data(), data.size());
+                fbh::fcl::Reader reader2(&data_reader, data.size(), p_abort);
 
                 const auto count = reader2.read_item<uint32_t>();
 
@@ -103,7 +116,14 @@ class FontsDataSet : public fcl::dataset {
                     } else
                         reader2.skip(element_size2);
                 }
-            } break;
+                break;
+            }
+            case identifier_rendering_mode:
+                reader.read_item(fonts::rendering_mode);
+                break;
+            case identifier_force_greyscale_antialiasing:
+                reader.read_item(fonts::force_greyscale_antialiasing);
+                break;
             default:
                 reader.skip(element_size);
                 break;
