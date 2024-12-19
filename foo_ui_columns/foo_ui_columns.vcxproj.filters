@@ -629,6 +629,9 @@
     <ClCompile Include="font_picker.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="win32.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -925,6 +928,9 @@
     </ClInclude>
     <ClInclude Include="lexy_user_config.hpp" />
     <ClInclude Include="font_picker.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="win32.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
