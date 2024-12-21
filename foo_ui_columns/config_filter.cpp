@@ -107,6 +107,9 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             {
+                LOGFONT font{};
+                GetObject(GetWindowFont(wnd), sizeof(font), &font);
+                m_field_list.set_font_from_log_font(font);
                 HWND wnd_fields = m_field_list.create(wnd, uih::WindowPosition(7, 30, 313, 213), true);
                 SetWindowPos(wnd_fields, HWND_TOP, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
                 ShowWindow(wnd_fields, SW_SHOWNORMAL);

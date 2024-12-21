@@ -576,12 +576,11 @@ INT_PTR TabColumns::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
-        // if (g_main_window && !cfg_nohscroll ) playlist_view::g_save_columns();
-        m_columns_list_view.create(wnd, {7, 30, 79, 215}, true);
 
         LOGFONT font{};
         GetObject(GetWindowFont(wnd), sizeof(font), &font);
         m_columns_list_view.set_font_from_log_font(font);
+        m_columns_list_view.create(wnd, {7, 30, 79, 215}, true);
 
         m_columns.set_entries_copy(g_columns, true);
 

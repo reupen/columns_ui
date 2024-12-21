@@ -28,7 +28,8 @@
   [#1030](https://github.com/reupen/columns_ui/pull/1030),
   [#1031](https://github.com/reupen/columns_ui/pull/1031),
   [#1037](https://github.com/reupen/columns_ui/pull/1037),
-  [#1039](https://github.com/reupen/columns_ui/pull/1039)]
+  [#1039](https://github.com/reupen/columns_ui/pull/1039),
+  [#1042](https://github.com/reupen/columns_ui/pull/1042)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).
