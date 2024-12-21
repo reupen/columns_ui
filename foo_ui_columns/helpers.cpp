@@ -1,6 +1,7 @@
 #include "pch.h"
 
 #include "dark_mode.h"
+#include "dark_mode_dialog.h"
 #include "resource_utils.h"
 
 void g_ui_selection_manager_register_callback_no_now_playing_fallback(ui_selection_callback* p_callback)
@@ -156,7 +157,7 @@ bool open_web_page(HWND wnd, const wchar_t* url)
     const auto process = ShellExecute(wnd, nullptr, url, nullptr, nullptr, SW_SHOWNORMAL);
     const bool succeeded = reinterpret_cast<INT_PTR>(process) > 32;
     if (!succeeded) {
-        fbh::show_info_box(wnd, "Error opening web page",
+        dark::info_box(wnd, "Error opening web page",
             "Columns UI was unable to open the web page using your default browser.", OIC_ERROR);
     }
     return succeeded;

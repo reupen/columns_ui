@@ -18,9 +18,13 @@ private:
     [[nodiscard]] std::optional<INT_PTR> handle_wm_notify(HWND wnd, LPNMHDR lpnm);
     void on_dark_mode_change();
     void apply_dark_mode_attributes();
+    void set_combobox_theme(auto&& ids, bool is_dark) const;
     void set_combobox_theme(bool is_dark) const;
+    void set_edit_theme(auto&& ids, bool is_dark) const;
     void set_edit_theme(bool is_dark) const;
+    void set_spin_theme(auto&& ids, bool is_dark) const;
     void set_spin_theme(bool is_dark) const;
+    void set_tree_view_theme(auto&& ids, bool is_dark) const;
     void set_tree_view_theme(bool is_dark) const;
     void set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark);
 
@@ -32,12 +36,12 @@ private:
     std::unique_ptr<EventToken> m_dark_mode_status_callback;
 };
 
-void DialogDarkModeHelper::set_tree_view_theme(bool is_dark) const
+void DialogDarkModeHelper::set_tree_view_theme(auto&& ids, bool is_dark) const
 {
     if (!m_wnd)
         return;
 
-    for (const auto id : m_config.tree_view_ids) {
+    for (const auto id : ids) {
         const auto tree_view_wnd = GetDlgItem(m_wnd, id);
         SetWindowTheme(tree_view_wnd, is_dark ? L"DarkMode_Explorer" : L"Explorer", nullptr);
         TreeView_SetBkColor(tree_view_wnd, is_dark ? get_dark_colour(ColourID::TreeViewBackground) : -1);
@@ -45,12 +49,17 @@ void DialogDarkModeHelper::set_tree_view_theme(bool is_dark) const
     }
 }
 
-void DialogDarkModeHelper::set_combobox_theme(bool is_dark) const
+void DialogDarkModeHelper::set_tree_view_theme(bool is_dark) const
+{
+    set_tree_view_theme(m_config.tree_view_ids, is_dark);
+}
+
+void DialogDarkModeHelper::set_combobox_theme(auto&& ids, bool is_dark) const
 {
     if (!m_wnd)
         return;
 
-    for (const auto id : m_config.combo_box_ids) {
+    for (const auto id : ids) {
         const auto combobox_wnd = GetDlgItem(m_wnd, id);
         SetWindowTheme(combobox_wnd, is_dark ? L"DarkMode_CFD" : nullptr, nullptr);
 
@@ -62,12 +71,17 @@ void DialogDarkModeHelper::set_combobox_theme(bool is_dark) const
     }
 }
 
-void DialogDarkModeHelper::set_edit_theme(bool is_dark) const
+void DialogDarkModeHelper::set_combobox_theme(bool is_dark) const
+{
+    set_combobox_theme(m_config.combo_box_ids, is_dark);
+}
+
+void DialogDarkModeHelper::set_edit_theme(auto&& ids, bool is_dark) const
 {
     if (!m_wnd)
         return;
 
-    for (const auto id : m_config.edit_ids) {
+    for (const auto id : ids) {
         const auto edit_wnd = GetDlgItem(m_wnd, id);
         const auto is_scrollable = (GetWindowLongPtr(edit_wnd, GWL_STYLE) & (WS_VSCROLL | WS_HSCROLL)) != 0;
         const auto dark_class = is_scrollable ? L"DarkMode_Explorer" : L"DarkMode_CFD";
@@ -75,12 +89,17 @@ void DialogDarkModeHelper::set_edit_theme(bool is_dark) const
     }
 }
 
-void DialogDarkModeHelper::set_spin_theme(bool is_dark) const
+void DialogDarkModeHelper::set_edit_theme(bool is_dark) const
+{
+    set_edit_theme(m_config.edit_ids, is_dark);
+}
+
+void DialogDarkModeHelper::set_spin_theme(auto&& ids, bool is_dark) const
 {
     if (!m_wnd)
         return;
 
-    for (const auto id : m_config.spin_ids) {
+    for (const auto id : ids) {
         const auto spin_wnd = GetDlgItem(m_wnd, id);
         SetWindowTheme(spin_wnd, is_dark ? L"DarkMode_Explorer" : nullptr, nullptr);
 
@@ -89,6 +108,11 @@ void DialogDarkModeHelper::set_spin_theme(bool is_dark) const
         else
             spin::remove_window(spin_wnd);
     }
+}
+
+void DialogDarkModeHelper::set_spin_theme(bool is_dark) const
+{
+    set_spin_theme(m_config.spin_ids, is_dark);
 }
 
 void DialogDarkModeHelper::set_window_theme(auto&& ids, const wchar_t* dark_class, bool is_dark)
@@ -127,6 +151,25 @@ std::optional<INT_PTR> DialogDarkModeHelper::handle_message(HWND wnd, UINT msg, 
         m_main_background_brush.reset();
         m_edit_background_brush.reset();
         m_wnd = nullptr;
+        break;
+    case WM_PARENTNOTIFY:
+        if (LOWORD(wp) == WM_CREATE) {
+            const auto id = HIWORD(wp);
+            const auto ids = {id};
+            const auto is_dark = is_active_ui_dark();
+
+            if (m_config.button_ids.contains(id) || m_config.checkbox_ids.contains(id)
+                || m_config.list_box_ids.contains(id))
+                set_window_theme(ids, L"DarkMode_Explorer", is_dark);
+            else if (m_config.combo_box_ids.contains(id))
+                set_combobox_theme(ids, is_dark);
+            else if (m_config.edit_ids.contains(id))
+                set_edit_theme(ids, is_dark);
+            else if (m_config.spin_ids.contains(id))
+                set_spin_theme(ids, is_dark);
+            else if (m_config.tree_view_ids.contains(id))
+                set_tree_view_theme(ids, is_dark);
+        }
         break;
     case WM_THEMECHANGED:
         m_button_theme.reset();
@@ -268,6 +311,16 @@ HWND modeless_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config
         });
 
     return wnd;
+}
+
+void info_box(HWND wnd_parent, const char* title, const char* text, INT icon, uih::alignment text_alignment)
+{
+    const auto handle_before_message
+        = [helper = std::make_shared<DialogDarkModeHelper>(
+               DialogDarkModeConfig{.button_ids{IDCANCEL}, .last_button_id = IDCANCEL})](HWND wnd, UINT msg, WPARAM wp,
+              LPARAM lp) -> std::optional<INT_PTR> { return helper->handle_message(wnd, msg, wp, lp); };
+
+    fbh::show_info_box(wnd_parent, title, text, icon, text_alignment, handle_before_message);
 }
 
 } // namespace cui::dark

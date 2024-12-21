@@ -3,6 +3,7 @@
 #include "filter_config_var.h"
 #include "config.h"
 #include "core_dark_list_view.h"
+#include "dark_mode_dialog.h"
 
 class FieldList : public cui::helpers::CoreDarkListView {
 public:
@@ -125,7 +126,7 @@ public:
                                    "For example, \"Album Artist;Artist\" or \"%album artist%\".\r\n\r\n"
                                    "Only the former format supports multiple values per field and is compatible with "
                                    "inline metadata editing.";
-                fbh::show_info_box(wnd, "Filter Field Help", text);
+                cui::dark::info_box(wnd, "Filter Field Help", text);
             } break;
             case IDC_UP: {
                 if (m_field_list.get_selection_count(2) == 1) {
