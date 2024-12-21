@@ -1,4 +1,6 @@
 #include "pch.h"
+
+#include "dark_mode_dialog.h"
 #include "fcl.h"
 
 static const char8_t* g_help_text = u8"syntax: foobar2000 /columnsui:<command> \"<path>\"\n\n"
@@ -40,12 +42,12 @@ public:
         const auto main_window = core_api::get_main_window();
         if (m_files.empty()) {
             ui_control::get()->activate();
-            fbh::show_info_box(main_window, m_error_title, m_no_files_error, OIC_ERROR);
+            cui::dark::info_box(main_window, m_error_title, m_no_files_error, OIC_ERROR);
             return false;
         }
         if (m_files.size() > 1) {
             ui_control::get()->activate();
-            fbh::show_info_box(main_window, m_error_title, m_too_many_files_error, OIC_ERROR);
+            cui::dark::info_box(main_window, m_error_title, m_too_many_files_error, OIC_ERROR);
             return false;
         }
         return true;

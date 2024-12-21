@@ -334,7 +334,7 @@ void DirectWriteFontPicker::handle_wm_init_dialog(HWND wnd)
         ComboBox_AddString(m_font_family_combobox, family.display_name().c_str());
 
     if (m_font_families.empty()) {
-        uih::InfoBox::g_run(
+        uih::InfoBox::s_run(
             m_wnd, "Error initialising fonts list", "There was an error listing fonts using DirectWrite.", OIC_ERROR);
     }
 }
