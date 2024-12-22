@@ -2,6 +2,7 @@
 #include "layout.h"
 
 #include "dark_mode.h"
+#include "dark_mode_dialog.h"
 #include "splitter_utils.h"
 #include "main_window.h"
 
@@ -773,11 +774,9 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         if (uie::window::create_by_guid(panels[panel_index].guid, window) && window->service_query_t(splitter)) {
             const auto count = std::min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
             if (count == p_splitter->get_panel_count()
-                || MessageBox(get_wnd(),
-                       _T("The number of child items will not fit in the selected splitter type. ")
-                       _T("Continue?"),
-                       _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
-                    == IDYES) {
+                || cui::dark::modal_info_box(get_wnd(), "Change splitter type",
+                    "The number of child items will not fit in the selected splitter type. Do you want to continue?",
+                    uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo)) {
                 for (unsigned n = 0; n < count; n++) {
                     uie::splitter_item_ptr ptr;
                     p_splitter->get_panel(n, ptr);
@@ -811,11 +810,10 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
             const auto count = std::min(p_splitter->get_panel_count(), splitter->get_maximum_panel_count());
             if (index != pfc_infinite
                 && (count == p_splitter->get_panel_count()
-                    || MessageBox(p_data.m_wnd,
-                           _T("The number of child items will not fit in the selected splitter ")
-                           _T("type. Continue?"),
-                           _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
-                        == IDYES)) {
+                    || cui::dark::modal_info_box(get_wnd(), "Change splitter type",
+                        "The number of child items will not fit in the selected splitter type. Do you want to "
+                        "continue?",
+                        uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo))) {
                 for (unsigned n = 0; n < count; n++) {
                     uie::splitter_item_ptr ptr;
                     p_splitter->get_panel(n, ptr);

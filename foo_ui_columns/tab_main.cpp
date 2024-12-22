@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "fcl.h"
 #include "config.h"
+#include "dark_mode_dialog.h"
 #include "rebar.h"
 #include "main_window.h"
 
@@ -69,10 +70,9 @@ public:
                 on_show_toolbars_change();
                 break;
             case IDC_RESET_TOOLBARS: {
-                if (win32_helpers::message_box(wnd,
-                        _T("Warning! This will reset the toolbars to the default state. Continue?"),
-                        _T("Reset toolbars?"), MB_YESNO)
-                    == IDYES) {
+                if (cui::dark::modal_info_box(wnd, "Reset toolbars",
+                        "Warning! This will reset the toolbars to the default state. Continue?",
+                        uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo)) {
                     if (cui::main_window.get_wnd())
                         cui::rebar::destroy_rebar();
                     cui::rebar::g_cfg_rebar.reset();

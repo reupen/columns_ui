@@ -2,6 +2,8 @@
 
 #include <optional>
 
+#include "dark_mode_dialog.h"
+
 namespace cui::splitter_utils {
 
 pfc::array_t<uint8_t> serialise_splitter_item(const uie::splitter_item_full_v3_impl_t* item);
@@ -26,7 +28,7 @@ void copy_splitter_item_to_clipboard_safe(HWND wnd, const SplitterItem* item)
     try {
         copy_splitter_item_to_clipboard(item);
     } catch (const exception_io& ex) {
-        uMessageBox(wnd, ex.what(), u8"Error – Copy Panel"_pcc, MB_OK | MB_ICONERROR);
+        dark::modeless_info_box(wnd, u8"Error – Copy panel"_pcc, ex.what(), uih::InfoBoxType::Error);
     }
 }
 

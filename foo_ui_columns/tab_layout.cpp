@@ -4,6 +4,7 @@
 
 #include "layout.h"
 #include "config.h"
+#include "dark_mode_dialog.h"
 #include "rename_dialog.h"
 #include "splitter_utils.h"
 
@@ -352,9 +353,9 @@ void LayoutTab::switch_splitter(HWND wnd, HTREEITEM ti, const GUID& p_guid)
     if (uie::window::create_by_guid(p_guid, window) && window->service_query_t(splitter)) {
         const auto count = std::min(old_node->m_children.size(), splitter->get_maximum_panel_count());
         if (count == old_node->m_children.size()
-            || MessageBox(wnd, _T("The number of child items will not fit in the selected splitter type. Continue?"),
-                   _T("Warning"), MB_YESNO | MB_ICONEXCLAMATION)
-                == IDYES) {
+            || dark::modal_info_box(wnd, "Change splitter type",
+                "The number of child items will not fit in the selected splitter type. Do you want to continue?",
+                uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo)) {
             for (unsigned n = 0; n < count; n++)
                 splitter->add_panel(old_node->m_children[n]->m_item->get_ptr());
             stream_writer_memblock conf;
@@ -626,9 +627,9 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     = fmt::format(u8"Are you sure that you want to delete the layout preset ‘{}’?",
                         reinterpret_cast<const char8_t*>(preset_name.c_str()));
 
-                if (uMessageBox(wnd, reinterpret_cast<const char*>(confirmation_message.c_str()), "Delete preset",
-                        MB_YESNO | MB_ICONWARNING)
-                    != IDYES)
+                if (!dark::modal_info_box(wnd, "Delete preset",
+                        reinterpret_cast<const char*>(confirmation_message.c_str()), uih::InfoBoxType::Warning,
+                        uih::InfoBoxModalType::YesNo))
                     break;
             }
 
@@ -650,12 +651,9 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_changed = true;
         } break;
         case IDC_RESET_PRESETS:
-            if (win32_helpers::message_box(wnd,
-                    _T(
-                                               "This will reset layout presets to default values. Are you sure you wish to so this?"
-                                           ),
-                    _T("Reset presets?"), MB_YESNO | MB_ICONQUESTION)
-                == IDYES) {
+            if (dark::modal_info_box(wnd, "Reset presets",
+                    "This will reset layout presets to default values. Are you sure you wish to so this?",
+                    uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo)) {
                 deinitialise_tree(wnd);
                 HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
                 ComboBox_ResetContent(wnd_combo);

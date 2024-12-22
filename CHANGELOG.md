@@ -74,8 +74,9 @@
   non-integer font sizes to be specified.
   [[#947](https://github.com/reupen/columns_ui/pull/947)]
 
-- Info boxes, such as Filter field help, are now dark themed when dark mode is
-  active. [[#1041](https://github.com/reupen/columns_ui/pull/1041)]
+- Message boxes now have a consistent appearance, and are dark themed when dark
+  mode is active. [[#1041](https://github.com/reupen/columns_ui/pull/1041),
+  [#1043](https://github.com/reupen/columns_ui/pull/1043)]
 
 - The positioning of tooltips in list views for centre- and right-aligned
   columns was improved. [[#910](https://github.com/reupen/columns_ui/pull/910)]

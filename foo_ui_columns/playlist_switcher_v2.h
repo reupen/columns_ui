@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dark_mode_dialog.h"
 #include "playlist_manager_utils.h"
 #include "playlist_switcher.h"
 #include "list_view_panel.h"
@@ -175,10 +176,10 @@ public:
         if (index < m_playlist_api->get_playlist_count()) {
             pfc::string8 name;
             m_playlist_api->playlist_get_name(index, name);
-            pfc::string_formatter formatter;
-            if (uMessageBox(get_wnd(), formatter << "Are you sure you want to delete the \"" << name << "\" playlist?",
-                    "Delete Playlist", MB_YESNO)
-                == IDYES)
+
+            if (dark::modal_info_box(get_wnd(), "Delete playlist",
+                    fmt::format("Are you sure you want to delete the \"{}\" playlist?", name.c_str()).c_str(),
+                    uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo))
                 m_playlist_api->remove_playlist_switch(index);
         }
         return true;
