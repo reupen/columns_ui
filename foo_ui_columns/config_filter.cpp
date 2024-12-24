@@ -129,7 +129,7 @@ public:
                                    "For example, \"Album Artist;Artist\" or \"%album artist%\".\r\n\r\n"
                                    "Only the former format supports multiple values per field and is compatible with "
                                    "inline metadata editing.";
-                cui::dark::info_box(wnd, "Filter Field Help", text);
+                cui::dark::modeless_info_box(wnd, "Filter Field Help", text, uih::InfoBoxType::Neutral);
             } break;
             case IDC_UP: {
                 if (m_field_list.get_selection_count(2) == 1) {

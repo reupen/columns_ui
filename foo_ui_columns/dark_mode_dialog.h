@@ -22,7 +22,10 @@ INT_PTR modal_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config
 HWND modeless_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config, HWND parent_window,
     std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message);
 
-void info_box(HWND wnd_parent, const char* title, const char* text, INT icon = OIC_INFORMATION,
+void modeless_info_box(HWND wnd_parent, const char* title, const char* message, uih::InfoBoxType type,
     uih::alignment text_alignment = uih::ALIGN_LEFT);
+
+INT_PTR modal_info_box(HWND wnd_parent, const char* title, const char* message, uih::InfoBoxType type,
+    uih::InfoBoxModalType modal_type, uih::alignment text_alignment = uih::ALIGN_LEFT);
 
 } // namespace cui::dark

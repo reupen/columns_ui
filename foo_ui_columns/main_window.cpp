@@ -12,6 +12,7 @@
 #include "status_pane.h"
 #include "layout.h"
 #include "dark_mode.h"
+#include "dark_mode_dialog.h"
 #include "icons.h"
 #include "system_tray.h"
 #include "status_bar.h"
@@ -41,8 +42,8 @@ bool remember_window_pos()
 
 const TCHAR* main_window_class_name = _T("{E7076D1C-A7BF-4f39-B771-BCBE88F2A2A8}");
 
-const wchar_t* unsupported_os_message
-    = L"Sorry, your operating system version is not supported by this version "
+const char* unsupported_os_message
+    = "Sorry, your operating system version is not supported by this version "
       "of Columns UI. Please upgrade to Windows 7 Service Pack 1 or newer and try again.\n\n"
       "Otherwise, uninstall the Columns UI component to return to the Default User Interface.";
 
@@ -51,8 +52,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     fbh::enable_wil_console_logging();
 
     if (!IsWindows7SP1OrGreater()) {
-        MessageBox(
-            nullptr, unsupported_os_message, L"Columns UI - Unsupported operating system", MB_OK | MB_ICONEXCLAMATION);
+        dark::modal_info_box(nullptr, u8"Unsupported operating system – Columns UI"_pcc, unsupported_os_message,
+            uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
         return nullptr;
     }
 
@@ -60,9 +61,12 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
 
     try {
         THROW_IF_FAILED(OleInitialize(nullptr));
-    } catch (const wil::ResultException&) {
-        MessageBox(
-            nullptr, unsupported_os_message, L"Columns UI - Failed to initialise COM", MB_OK | MB_ICONEXCLAMATION);
+    } catch (const wil::ResultException& ex) {
+        pfc::string8 message = "Unknown COM initialisation error";
+        uFormatMessage(ex.GetFailureInfo().hr, message);
+
+        dark::modal_info_box(nullptr, u8"Failed to initialise COM – Columns UI"_pcc, message.c_str(),
+            uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
         return nullptr;
     }
 

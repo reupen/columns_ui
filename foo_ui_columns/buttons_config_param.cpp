@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "buttons.h"
+#include "dark_mode_dialog.h"
 #include "prefs_utils.h"
 #include "svg.h"
 
@@ -367,10 +368,9 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
             break;
         }
         case IDC_RESET: {
-            if (win32_helpers::message_box(wnd,
-                    _T("This will reset all your buttons to the default buttons. Continue?"), _T("Reset buttons"),
-                    MB_YESNO)
-                == IDYES) {
+            if (dark::modal_info_box(wnd, "Reset buttons",
+                    "This will reset all your buttons to the default buttons. Continue?", uih::InfoBoxType::Neutral,
+                    uih::InfoBoxModalType::YesNo)) {
                 m_button_list.remove_items(bit_array_true());
                 reset_buttons(m_buttons);
                 populate_buttons_list();

@@ -2,6 +2,8 @@
 
 #include "splitter_utils.h"
 
+#include "dark_mode_dialog.h"
+
 namespace cui::splitter_utils {
 
 auto normalise_splitter_item(const uie::splitter_item_t* item)
@@ -161,7 +163,7 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipbo
     try {
         return get_splitter_item_from_clipboard();
     } catch (const exception_io& ex) {
-        uMessageBox(wnd, ex.what(), u8"Error – Paste Panel"_pcc, MB_OK | MB_ICONERROR);
+        dark::modeless_info_box(wnd, u8"Error – Paste panel"_pcc, ex.what(), uih::InfoBoxType::Error);
     }
     return {};
 }

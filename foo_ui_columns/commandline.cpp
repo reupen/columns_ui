@@ -23,7 +23,8 @@ public:
     {
         HWND parent = core_api::get_main_window();
         ui_control::get()->activate();
-        uMessageBox(parent, reinterpret_cast<const char*>(g_help_text), "Columns UI command-line help", 0);
+        cui::dark::modeless_info_box(parent, "Columns UI command-line help", reinterpret_cast<const char*>(g_help_text),
+            uih::InfoBoxType::Information);
     }
 };
 
@@ -42,12 +43,12 @@ public:
         const auto main_window = core_api::get_main_window();
         if (m_files.empty()) {
             ui_control::get()->activate();
-            cui::dark::info_box(main_window, m_error_title, m_no_files_error, OIC_ERROR);
+            cui::dark::modeless_info_box(main_window, m_error_title, m_no_files_error, uih::InfoBoxType::Error);
             return false;
         }
         if (m_files.size() > 1) {
             ui_control::get()->activate();
-            cui::dark::info_box(main_window, m_error_title, m_too_many_files_error, OIC_ERROR);
+            cui::dark::modeless_info_box(main_window, m_error_title, m_too_many_files_error, uih::InfoBoxType::Error);
             return false;
         }
         return true;
@@ -101,13 +102,13 @@ public:
 
         if (!is_quiet) {
             ui_control::get()->activate();
-            if (uMessageBox(main_window,
-                    formatter << "Are you sure you want to import " << pfc::string_filename_ext(path)
-                              << "? Your current Columns UI configuration will be lost.",
-                    "Import configuration", MB_YESNO)
-                == IDNO) {
+            const auto message
+                = fmt::format("Are you sure you want to import {}? Your current Columns UI configuration will be lost.",
+                    pfc::string_filename_ext(path).c_str());
+
+            if (!cui::dark::modal_info_box(main_window, "Import configuration", message.c_str(),
+                    uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo))
                 return;
-            }
         }
         g_import_layout(core_api::get_main_window(), path, is_quiet);
     }
