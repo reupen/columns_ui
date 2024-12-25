@@ -368,7 +368,7 @@
     <ClCompile Include="rebar.cpp" />
     <ClCompile Include="main_window_callbacks.cpp" />
     <ClCompile Include="callbacks_config.cpp" />
-    <ClCompile Include="commandline.cpp" />
+    <ClCompile Include="command_line.cpp" />
     <ClCompile Include="common.cpp" />
     <ClCompile Include="menu_items.cpp" />
     <ClCompile Include="splitter_window.cpp" />
