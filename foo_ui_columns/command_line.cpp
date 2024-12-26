@@ -3,11 +3,13 @@
 #include "dark_mode_dialog.h"
 #include "fcl.h"
 
-static const char8_t* g_help_text = u8"syntax: foobar2000 /columnsui:<command> \"<path>\"\n\n"
-                                    u8"Available commands:\n"
-                                    u8"help, ? – displays this command-line help\n"
-                                    u8"import – imports an fcl file\n"
-                                    u8"import-quiet – imports an fcl file without confirmation dialog boxes";
+static const char8_t* g_help_text
+    = u8"Available commands:\n\n"
+      u8"/columnsui:help, /columnsui:?\t\tdisplay this command-line help\n"
+      u8"/columnsui:import <fcl path>\t\timport a Columns UI configuration\n"
+      u8"/columnsui:import-quiet <fcl path>\timport a Columns UI configuration without confirming first\n"
+      u8"/columnsui:export <fcl path>\t\texport selected parts of the current Columns UI configuration\n"
+      u8"/columnsui:export-quiet <fcl path>\texport all parts of the current Columns UI configuration";
 
 class HelpCommandLineHandler : public commandline_handler {
 public:
@@ -24,7 +26,7 @@ public:
         HWND parent = core_api::get_main_window();
         ui_control::get()->activate();
         cui::dark::modeless_info_box(parent, "Columns UI command-line help", reinterpret_cast<const char*>(g_help_text),
-            uih::InfoBoxType::Information);
+            uih::InfoBoxType::Neutral, true);
     }
 };
 

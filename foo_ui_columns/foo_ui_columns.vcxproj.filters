@@ -124,6 +124,9 @@
     <Filter Include="System tray">
       <UniqueIdentifier>{67475e56-3bb2-46a8-8b62-8cf3417c4af0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Command line">
+      <UniqueIdentifier>{3a26f18b-a5d9-4a25-aec2-3d55d89697cf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="config.cpp">
@@ -497,9 +500,6 @@
     <ClCompile Include="main_window_callbacks.cpp">
       <Filter>Main window</Filter>
     </ClCompile>
-    <ClCompile Include="commandline.cpp">
-      <Filter>FCL files</Filter>
-    </ClCompile>
     <ClCompile Include="menu_items.cpp">
       <Filter>Menu items</Filter>
     </ClCompile>
@@ -631,6 +631,9 @@
     </ClCompile>
     <ClCompile Include="win32.cpp">
       <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="command_line.cpp">
+      <Filter>Command line</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

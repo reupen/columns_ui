@@ -200,6 +200,9 @@
   the ‘Show column titles’ option was fixed.
   [[#983](https://github.com/reupen/columns_ui/pull/983)]
 
+- Command-line help was updated to include previously undocumented export
+  commands. [[#1048](https://github.com/reupen/columns_ui/pull/1048)]
+
 ### Internal changes
 
 - Various dependencies were updated.
