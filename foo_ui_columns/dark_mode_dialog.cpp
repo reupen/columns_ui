@@ -313,27 +313,25 @@ HWND modeless_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config
     return wnd;
 }
 
-void modeless_info_box(
-    HWND wnd_parent, const char* title, const char* message, uih::InfoBoxType type, uih::alignment text_alignment)
+void modeless_info_box(HWND wnd_parent, const char* title, const char* message, uih::InfoBoxType type, bool no_wrap)
 {
     const auto handle_before_message
         = [helper = std::make_shared<DialogDarkModeHelper>(
                DialogDarkModeConfig{.button_ids{IDCANCEL}, .last_button_id = IDCANCEL})](HWND wnd, UINT msg, WPARAM wp,
               LPARAM lp) -> std::optional<INT_PTR> { return helper->handle_message(wnd, msg, wp, lp); };
 
-    fbh::show_info_box_modeless(wnd_parent, title, message, type, text_alignment, handle_before_message);
+    fbh::show_info_box_modeless(wnd_parent, title, message, type, no_wrap, handle_before_message);
 }
 
 INT_PTR modal_info_box(HWND wnd_parent, const char* title, const char* message, uih::InfoBoxType type,
-    uih::InfoBoxModalType modal_type, uih::alignment text_alignment)
+    uih::InfoBoxModalType modal_type, bool no_wrap)
 {
     const auto handle_before_message
         = [helper = std::make_shared<DialogDarkModeHelper>(
                DialogDarkModeConfig{.button_ids{IDCANCEL, IDOK}, .last_button_id = IDCANCEL})](HWND wnd, UINT msg,
               WPARAM wp, LPARAM lp) -> std::optional<INT_PTR> { return helper->handle_message(wnd, msg, wp, lp); };
 
-    return fbh::show_info_box_modal(
-        wnd_parent, title, message, type, modal_type, text_alignment, handle_before_message);
+    return fbh::show_info_box_modal(wnd_parent, title, message, type, modal_type, no_wrap, handle_before_message);
 }
 
 } // namespace cui::dark
