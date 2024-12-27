@@ -50,7 +50,7 @@ public:
 
     HWND wnd_tabs{nullptr};
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     PlaylistTabs() = default;
 
@@ -78,31 +78,34 @@ public:
         wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
     };
 
-    void FB2KAPI on_items_removing(
-        size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
-    // called before actually removing them
-    void FB2KAPI on_items_removed(
-        size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
+    void on_items_removing(size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
+    {
+    }
+    void on_items_removed(size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
+    {
+    }
 
-    void on_playlist_activate(size_t p_old, size_t p_new) override;
+    void on_playlist_activate(size_t p_old, size_t p_new) noexcept override;
 
-    void on_playlists_reorder(const size_t* p_order, size_t p_count) override;
-    void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) override;
-    void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
-    void on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len) override;
+    void on_playlists_reorder(const size_t* p_order, size_t p_count) noexcept override;
+    void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) noexcept override;
+    void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) noexcept override;
+    void on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len) noexcept override;
 
-    void on_items_added(size_t, size_t, const pfc::list_base_const_t<metadb_handle_ptr>&, const bit_array&) override;
-    void on_items_reordered(size_t, const size_t*, size_t) override;
-    void on_items_selection_change(size_t, const bit_array&, const bit_array&) override;
-    void on_item_focus_change(size_t, size_t, size_t) override;
-    void on_items_modified(size_t, const bit_array&) override;
-    void on_items_modified_fromplayback(size_t, const bit_array&, play_control::t_display_level) override;
-    void on_items_replaced(size_t, const bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&) override;
-    void on_item_ensure_visible(size_t, size_t) override;
-    void on_playlists_removing(const bit_array&, size_t, size_t) override;
-    void on_default_format_changed() override;
-    void on_playback_order_changed(size_t) override;
-    void on_playlist_locked(size_t, bool) override;
+    void on_items_added(size_t, size_t, const pfc::list_base_const_t<metadb_handle_ptr>&, const bit_array&) override {}
+    void on_items_reordered(size_t, const size_t*, size_t) override {}
+    void on_items_selection_change(size_t, const bit_array&, const bit_array&) override {}
+    void on_item_focus_change(size_t, size_t, size_t) override {}
+    void on_items_modified(size_t, const bit_array&) override {}
+    void on_items_modified_fromplayback(size_t, const bit_array&, play_control::t_display_level) override {}
+    void on_items_replaced(size_t, const bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&) override
+    {
+    }
+    void on_item_ensure_visible(size_t, size_t) override {}
+    void on_playlists_removing(const bit_array&, size_t, size_t) override {}
+    void on_default_format_changed() override {}
+    void on_playback_order_changed(size_t) override {}
+    void on_playlist_locked(size_t, bool) override {}
 
     void kill_switch_timer();
 

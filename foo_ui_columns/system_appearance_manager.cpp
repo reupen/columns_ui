@@ -202,7 +202,7 @@ AppearanceMessageWindow message_window;
 
 class InitQuit : public initquit {
     void on_init() override {}
-    void on_quit() override { message_window.deinitialise(); }
+    void on_quit() noexcept override { message_window.deinitialise(); }
 };
 
 initquit_factory_t<InitQuit> _;

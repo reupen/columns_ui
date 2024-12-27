@@ -12,7 +12,10 @@ BOOL uDrawPanelTitle(HDC dc, const RECT* rc_clip, const char* text, int len, boo
 namespace cui::helpers {
 
 class WindowEnum_t {
-    static BOOL CALLBACK g_EnumWindowsProc(HWND wnd, LPARAM lp) { return ((WindowEnum_t*)lp)->EnumWindowsProc(wnd); }
+    static BOOL CALLBACK g_EnumWindowsProc(HWND wnd, LPARAM lp) noexcept
+    {
+        return ((WindowEnum_t*)lp)->EnumWindowsProc(wnd);
+    }
     BOOL EnumWindowsProc(HWND wnd)
     {
         if (GetWindow(wnd, GW_OWNER) == m_wnd_owner && IsWindowVisible(wnd))

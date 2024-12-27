@@ -81,7 +81,7 @@ private:
         config_version_current = 0
     };
 
-    static LRESULT WINAPI g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static LRESULT WINAPI g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
 
     static void s_recreate_font();
     static void s_recreate_background_brush();

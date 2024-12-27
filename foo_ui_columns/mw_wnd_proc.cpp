@@ -38,7 +38,7 @@ service_ptr_t<contextmenu_manager> g_main_nowplaying;
 GetMsgHook g_get_msg_hook;
 static HWND wnd_last;
 
-LRESULT cui::MainWindow::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT cui::MainWindow::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     MainWindow* self = nullptr;
 

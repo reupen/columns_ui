@@ -983,7 +983,7 @@ void TabStackPanel::on_active_tab_changed(int signed_index_to, bool from_interac
         SetFocus(m_wnd_tabs);
 }
 
-LRESULT WINAPI TabStackPanel::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI TabStackPanel::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     auto p_this = reinterpret_cast<TabStackPanel*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->on_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);

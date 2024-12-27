@@ -60,7 +60,7 @@ ui_extension::window_factory<DropDownListToolbar<DspPresetToolbarArgs>> dsp_pres
 
 class DspPresetToolbarConfigCallback : public dsp_config_callback {
 public:
-    void on_core_settings_change(const dsp_chain_config& p_newdata) override
+    void on_core_settings_change(const dsp_chain_config& p_newdata) noexcept override
     {
         DropDownListToolbar<DspPresetToolbarArgs>::s_refresh_all_items_safe();
     }

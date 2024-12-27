@@ -13,7 +13,7 @@ static const char8_t* g_help_text
 
 class HelpCommandLineHandler : public commandline_handler {
 public:
-    result on_token(const char* token) override
+    result on_token(const char* token) noexcept override
     {
         if (stricmp_utf8_partial(token, "/columnsui:help") != 0 && stricmp_utf8_partial(token, "/columnsui:?") != 0)
             return RESULT_NOT_OURS;
@@ -76,7 +76,7 @@ public:
     {
     }
 
-    result on_token(const char* token) override
+    result on_token(const char* token) noexcept override
     {
         m_is_quiet = !stricmp_utf8(token, "/columnsui:import-quiet");
         const auto is_import = m_is_quiet || !stricmp_utf8(token, "/columnsui:import");
@@ -89,8 +89,8 @@ public:
         return RESULT_PROCESSED_EXPECT_FILES;
     }
 
-    void on_file(const char* url) override { m_single_file_helper.add_file(url); }
-    void on_files_done() override
+    void on_file(const char* url) noexcept override { m_single_file_helper.add_file(url); }
+    void on_files_done() noexcept override
     {
         if (m_single_file_helper.validate_files())
             execute_import(m_single_file_helper.get_file(), m_is_quiet);
@@ -128,7 +128,7 @@ public:
     {
     }
 
-    result on_token(const char* token) override
+    result on_token(const char* token) noexcept override
     {
         m_is_quiet = !stricmp_utf8(token, "/columnsui:export-quiet");
         const auto is_import = m_is_quiet || !stricmp_utf8(token, "/columnsui:export");
@@ -141,8 +141,8 @@ public:
         return RESULT_PROCESSED_EXPECT_FILES;
     }
 
-    void on_file(const char* url) override { m_single_file_helper.add_file(url); }
-    void on_files_done() override
+    void on_file(const char* url) noexcept override { m_single_file_helper.add_file(url); }
+    void on_files_done() noexcept override
     {
         if (m_single_file_helper.validate_files())
             execute_export(m_single_file_helper.get_file(), m_is_quiet);

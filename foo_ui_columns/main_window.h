@@ -75,7 +75,7 @@ private:
     static constexpr std::array taskbar_icon_configs{icons::built_in::stop, icons::built_in::previous,
         icons::built_in::pause, icons::built_in::play, icons::built_in::next, icons::built_in::random};
 
-    static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static LRESULT CALLBACK s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
     static void warn_if_ui_hacks_installed();
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);

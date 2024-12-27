@@ -145,7 +145,7 @@ private:
     inline static wil::unique_hbrush s_foreground_brush;
     inline static wil::unique_hbrush s_background_brush;
 
-    static void CALLBACK g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time);
+    static void CALLBACK g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time) noexcept;
 
     void refresh(const audio_chunk* p_chunk);
     static void s_create_timer()
@@ -164,9 +164,9 @@ private:
         }
     }
 
-    void FB2KAPI on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
-    void FB2KAPI on_playback_new_track(metadb_handle_ptr p_track) override { g_register_stream(this); }
-    void FB2KAPI on_playback_stop(play_control::t_stop_reason p_reason) override
+    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
+    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override { g_register_stream(this); }
+    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override
     {
         const auto should_clear = p_reason != play_control::stop_reason_shutting_down;
         g_deregister_stream(this, !should_clear);
@@ -174,19 +174,19 @@ private:
         if (should_clear)
             s_flush_brushes();
     }
-    void FB2KAPI on_playback_seek(double p_time) override {}
-    void FB2KAPI on_playback_pause(bool p_state) override
+    void on_playback_seek(double p_time) override {}
+    void on_playback_pause(bool p_state) noexcept override
     {
         if (p_state)
             g_deregister_stream(this, true);
         else
             g_register_stream(this);
     }
-    void FB2KAPI on_playback_edited(metadb_handle_ptr p_track) override {}
-    void FB2KAPI on_playback_dynamic_info(const file_info& p_info) override {}
-    void FB2KAPI on_playback_dynamic_info_track(const file_info& p_info) override {}
-    void FB2KAPI on_playback_time(double p_time) override {}
-    void FB2KAPI on_volume_change(float p_new_val) override {}
+    void on_playback_edited(metadb_handle_ptr p_track) override {}
+    void on_playback_dynamic_info(const file_info& p_info) override {}
+    void on_playback_dynamic_info_track(const file_info& p_info) override {}
+    void on_playback_time(double p_time) override {}
+    void on_volume_change(float p_new_val) override {}
 };
 
 SpectrumAnalyserVisualisation::SpectrumAnalyserVisualisation()
@@ -360,7 +360,7 @@ bool SpectrumAnalyserVisualisation::show_config_popup(HWND wnd_parent)
     return false;
 }
 
-void CALLBACK SpectrumAnalyserVisualisation::g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time)
+void CALLBACK SpectrumAnalyserVisualisation::g_timer_proc(HWND wnd, UINT msg, UINT_PTR id_event, DWORD time) noexcept
 {
     s_refresh_all();
 }

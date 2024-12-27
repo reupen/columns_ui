@@ -77,15 +77,15 @@ private:
         }
 
     private:
-        void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) override
+        void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) noexcept override
         {
             m_owner->on_playlist_created(p_index, {p_name, p_name_len});
         }
-        void on_playlists_reorder(const size_t* p_order, size_t p_count) override
+        void on_playlists_reorder(const size_t* p_order, size_t p_count) noexcept override
         {
             m_owner->on_playlists_reorder({p_order, p_count});
         }
-        void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
+        void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) noexcept override
         {
             m_owner->on_playlists_removed(p_mask, p_old_count, p_new_count);
         }
@@ -480,7 +480,7 @@ private:
     public:
         using ptr_t = std::shared_ptr<ArtworkCompletionNotify>;
 
-        void on_completion(const std::shared_ptr<ArtworkReader>& p_reader) override
+        void on_completion(const std::shared_ptr<ArtworkReader>& p_reader) noexcept override
         {
             m_window->on_artwork_read_complete(m_group, p_reader);
         }
@@ -518,20 +518,22 @@ private:
     void reset_items();
 
     void on_items_added(size_t playlist, size_t start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
-        const bit_array& p_selection) override;
-    void on_items_reordered(size_t playlist, const size_t* p_order, size_t p_count) override;
-    void on_items_removed(size_t playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
-    void on_items_selection_change(size_t playlist, const bit_array& p_affected, const bit_array& p_state) override;
-    void on_item_focus_change(size_t playlist, size_t p_from, size_t p_to) override;
-    void on_items_modified(size_t playlist, const bit_array& p_mask) override;
+        const bit_array& p_selection) noexcept override;
+    void on_items_reordered(size_t playlist, const size_t* p_order, size_t p_count) noexcept override;
+    void on_items_removed(
+        size_t playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) noexcept override;
+    void on_items_selection_change(
+        size_t playlist, const bit_array& p_affected, const bit_array& p_state) noexcept override;
+    void on_item_focus_change(size_t playlist, size_t p_from, size_t p_to) noexcept override;
+    void on_items_modified(size_t playlist, const bit_array& p_mask) noexcept override;
     void on_items_modified_fromplayback(
-        size_t playlist, const bit_array& p_mask, play_control::t_display_level p_level) override;
+        size_t playlist, const bit_array& p_mask, play_control::t_display_level p_level) noexcept override;
     void on_items_replaced(size_t playlist, const bit_array& p_mask,
-        const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) override;
-    void on_item_ensure_visible(size_t playlist, size_t p_idx) override;
+        const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) noexcept override;
+    void on_item_ensure_visible(size_t playlist, size_t p_idx) noexcept override;
 
-    void on_playlist_activate(size_t p_old, size_t p_new) override;
-    void on_playlist_renamed(size_t playlist, const char* p_new_name, size_t p_new_name_len) override;
+    void on_playlist_activate(size_t p_old, size_t p_new) noexcept override;
+    void on_playlist_renamed(size_t playlist, const char* p_new_name, size_t p_new_name_len) noexcept override;
 
     void on_items_removing(size_t playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
     void on_default_format_changed() override {}

@@ -205,6 +205,9 @@
 
 ### Internal changes
 
+- Handling of fatal unexpected C++ exceptions was improved in some scenarios.
+  [[#1049](https://github.com/reupen/columns_ui/pull/1049)]
+
 - Various dependencies were updated.
   [[#920](https://github.com/reupen/columns_ui/pull/920)]
 

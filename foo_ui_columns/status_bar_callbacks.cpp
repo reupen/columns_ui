@@ -13,28 +13,28 @@ public:
 
     unsigned get_flags() override { return flags; }
 
-    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override
+    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) noexcept override
     {
         set_playback_information("Loading track.."sv);
     }
 
-    void on_playback_new_track(metadb_handle_ptr p_track) override { regenerate_text(); }
+    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override { regenerate_text(); }
 
-    void on_playback_stop(play_control::t_stop_reason p_reason) override
+    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override
     {
         if (p_reason != play_control::stop_reason_shutting_down) {
             set_playback_information({core_version_info::g_get_version_string()});
         }
     }
-    void on_playback_seek(double p_time) override { regenerate_text(); }
-    void on_playback_pause(bool b_state) override { regenerate_text(); }
+    void on_playback_seek(double p_time) noexcept override { regenerate_text(); }
+    void on_playback_pause(bool b_state) noexcept override { regenerate_text(); }
 
-    void on_playback_edited(metadb_handle_ptr p_track) override { regenerate_text(); }
+    void on_playback_edited(metadb_handle_ptr p_track) noexcept override { regenerate_text(); }
 
-    void on_playback_dynamic_info(const file_info& p_info) override { regenerate_text(); }
-    void on_playback_dynamic_info_track(const file_info& p_info) override { regenerate_text(); }
-    void on_playback_time(double p_time) override { regenerate_text(); }
-    void on_volume_change(float p_new_val) override { set_part_sizes(t_part_volume); }
+    void on_playback_dynamic_info(const file_info& p_info) noexcept override { regenerate_text(); }
+    void on_playback_dynamic_info_track(const file_info& p_info) noexcept override { regenerate_text(); }
+    void on_playback_time(double p_time) noexcept override { regenerate_text(); }
+    void on_volume_change(float p_new_val) noexcept override { set_part_sizes(t_part_volume); }
 };
 
 static play_callback_static_factory_t<StatusBarPlayCalllback> status_bar_play_callback;
@@ -68,7 +68,7 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
     }
     void on_item_ensure_visible(size_t p_playlist, size_t idx) override {}
 
-    void on_playlist_activate(size_t p_old, size_t p_new) override
+    void on_playlist_activate(size_t p_old, size_t p_new) noexcept override
     {
         if (main_window::config_get_status_show_lock())
             set_part_sizes(t_part_lock);
@@ -82,7 +82,7 @@ class StatusBarPlaylistCallback : public playlist_callback_static {
 
     void on_default_format_changed() override {}
     void on_playback_order_changed(size_t p_new_index) override {}
-    void on_playlist_locked(size_t p_playlist, bool p_locked) override
+    void on_playlist_locked(size_t p_playlist, bool p_locked) noexcept override
     {
         if (main_window::config_get_status_show_lock())
             set_part_sizes(t_part_lock);
