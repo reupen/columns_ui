@@ -268,40 +268,41 @@ public:
     void refresh_playing_playlist() { m_playing_playlist = get_playing_playlist(); }
 
     void on_items_added(size_t p_playlist, size_t p_start, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
-        const bit_array& p_selection) override;
+        const bit_array& p_selection) noexcept override;
     void on_items_reordered(size_t p_playlist, const size_t* p_order, size_t p_count) override {}
     void on_items_removing(size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
     {
     }
-    void on_items_removed(size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
+    void on_items_removed(
+        size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) noexcept override;
     void on_items_selection_change(size_t p_playlist, const bit_array& p_affected, const bit_array& p_state) override {}
     void on_item_focus_change(size_t p_playlist, size_t p_from, size_t p_to) override {}
 
-    void on_items_modified(size_t p_playlist, const bit_array& p_mask) override;
+    void on_items_modified(size_t p_playlist, const bit_array& p_mask) noexcept override;
     void on_items_modified_fromplayback(
         size_t p_playlist, const bit_array& p_mask, play_control::t_display_level p_level) override
     {
     }
 
     void on_items_replaced(size_t p_playlist, const bit_array& p_mask,
-        const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) override;
+        const pfc::list_base_const_t<t_on_items_replaced_entry>& p_data) noexcept override;
 
     void on_item_ensure_visible(size_t p_playlist, size_t p_idx) override {}
 
-    void on_playlist_activate(size_t p_old, size_t p_new) override;
-    void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) override;
-    void on_playlists_reorder(const size_t* p_order, size_t p_count) override;
+    void on_playlist_activate(size_t p_old, size_t p_new) noexcept override;
+    void on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) noexcept override;
+    void on_playlists_reorder(const size_t* p_order, size_t p_count) noexcept override;
     void on_playlists_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
-    void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
-    void on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len) override;
+    void on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) noexcept override;
+    void on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len) noexcept override;
 
     void on_default_format_changed() override {}
     void on_playback_order_changed(size_t p_new_index) override {}
-    void on_playlist_locked(size_t p_playlist, bool p_locked) override;
+    void on_playlist_locked(size_t p_playlist, bool p_locked) noexcept override;
 
-    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override;
-    void on_playback_new_track(metadb_handle_ptr p_track) override;
-    void on_playback_stop(play_control::t_stop_reason p_reason) override;
+    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) noexcept override;
+    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override;
+    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override;
     void on_playback_seek(double p_time) override {}
     void on_playback_pause(bool p_state) override {}
     void on_playback_edited(metadb_handle_ptr p_track) override {}

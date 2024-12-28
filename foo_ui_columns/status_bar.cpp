@@ -75,7 +75,7 @@ StatusBarFontClient::factory<StatusBarFontClient> g_font_client_status;
 
 } // namespace
 
-LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     switch (msg) {
     case WM_ERASEBKGND:

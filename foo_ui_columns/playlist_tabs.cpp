@@ -121,7 +121,7 @@ void PlaylistTabs::switch_to_playlist_delayed2(unsigned idx)
 
 PlaylistTabs::~PlaylistTabs() = default;
 
-LRESULT WINAPI PlaylistTabs::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI PlaylistTabs::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     auto p_this = reinterpret_cast<PlaylistTabs*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);
@@ -710,33 +710,7 @@ void PlaylistTabs::set_styles(bool visible /*= true*/)
     }
 }
 
-void PlaylistTabs::on_playlist_locked(size_t, bool) {}
-
-void PlaylistTabs::on_playback_order_changed(size_t) {}
-
-void PlaylistTabs::on_default_format_changed() {}
-
-void PlaylistTabs::on_playlists_removing(const bit_array&, size_t, size_t) {}
-
-void PlaylistTabs::on_item_ensure_visible(size_t, size_t) {}
-
-void PlaylistTabs::on_items_replaced(size_t, const bit_array&, const pfc::list_base_const_t<t_on_items_replaced_entry>&)
-{
-}
-
-void PlaylistTabs::on_items_modified_fromplayback(size_t, const bit_array&, play_control::t_display_level) {}
-
-void PlaylistTabs::on_items_modified(size_t, const bit_array&) {}
-
-void PlaylistTabs::on_item_focus_change(size_t, size_t, size_t) {}
-
-void PlaylistTabs::on_items_selection_change(size_t, const bit_array&, const bit_array&) {}
-
-void PlaylistTabs::on_items_reordered(size_t, const size_t*, size_t) {}
-
-void PlaylistTabs::on_items_added(size_t, size_t, const pfc::list_base_const_t<metadb_handle_ptr>&, const bit_array&) {}
-
-void PlaylistTabs::on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len)
+void PlaylistTabs::on_playlist_renamed(size_t p_index, const char* p_new_name, size_t p_new_name_len) noexcept
 {
     if (wnd_tabs) {
         uTabCtrl_InsertItemText(wnd_tabs, gsl::narrow<int>(p_index), pfc::string8(p_new_name, p_new_name_len), false);
@@ -745,7 +719,7 @@ void PlaylistTabs::on_playlist_renamed(size_t p_index, const char* p_new_name, s
     }
 }
 
-void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
+void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) noexcept
 {
     bool need_move = false;
 
@@ -767,7 +741,7 @@ void PlaylistTabs::on_playlists_removed(const bit_array& p_mask, size_t p_old_co
         on_size();
 }
 
-void PlaylistTabs::on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len)
+void PlaylistTabs::on_playlist_created(size_t p_index, const char* p_name, size_t p_name_len) noexcept
 {
     if (wnd_tabs) {
         uTabCtrl_InsertItemText(wnd_tabs, gsl::narrow<int>(p_index), pfc::string8(p_name, p_name_len));
@@ -778,7 +752,7 @@ void PlaylistTabs::on_playlist_created(size_t p_index, const char* p_name, size_
         on_size();
 }
 
-void PlaylistTabs::on_playlists_reorder(const size_t* p_order, size_t p_count)
+void PlaylistTabs::on_playlists_reorder(const size_t* p_order, size_t p_count) noexcept
 {
     if (wnd_tabs) {
         const auto playlist_api = playlist_manager::get();
@@ -797,21 +771,11 @@ void PlaylistTabs::on_playlists_reorder(const size_t* p_order, size_t p_count)
     }
 }
 
-void PlaylistTabs::on_playlist_activate(size_t p_old, size_t p_new)
+void PlaylistTabs::on_playlist_activate(size_t p_old, size_t p_new) noexcept
 {
     if (wnd_tabs) {
         TabCtrl_SetCurSel(wnd_tabs, p_new);
     }
-}
-
-void FB2KAPI PlaylistTabs::on_items_removed(
-    size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
-{
-}
-
-void FB2KAPI PlaylistTabs::on_items_removing(
-    size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count)
-{
 }
 
 void g_on_autohide_tabs_change()

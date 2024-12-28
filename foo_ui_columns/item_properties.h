@@ -163,12 +163,12 @@ public:
     void notify_save_inline_edit(const char* value) override;
 
     // UI SEL API
-    void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) override;
+    void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
 
     // PC
     void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
-    void on_playback_new_track(metadb_handle_ptr p_track) override;
-    void on_playback_stop(play_control::t_stop_reason p_reason) override;
+    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override;
+    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override;
     void on_playback_seek(double p_time) override {}
     void on_playback_pause(bool p_state) override {}
     void on_playback_edited(metadb_handle_ptr p_track) override {}
@@ -177,7 +177,7 @@ public:
     void on_playback_time(double p_time) override {}
     void on_volume_change(float p_new_val) override {}
 
-    void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
+    void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept override;
 
     static void s_on_app_activate(bool b_activated);
     static void s_redraw_all();

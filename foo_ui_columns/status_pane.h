@@ -42,18 +42,18 @@ class StatusPane
     };
 
     /** PLAYLIST CALLBACKS */
-    void on_items_added(
-        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
+    void on_items_added(size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data,
+        const bit_array& p_selection) noexcept override
     {
         on_playlist_change();
     }
     void on_items_reordered(const size_t* p_order, size_t p_count) override {}
     void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
-    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
+    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) noexcept override
     {
         on_playlist_change();
     }
-    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override
+    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept override
     {
         on_playlist_change();
     }
@@ -66,7 +66,7 @@ class StatusPane
     }
     void on_item_ensure_visible(size_t p_idx) override {}
 
-    void on_playlist_switch() override { on_playlist_change(); }
+    void on_playlist_switch() noexcept override { on_playlist_change(); }
     void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
     void on_playlist_locked(bool p_locked) override {}
 
@@ -74,13 +74,13 @@ class StatusPane
     void on_playback_order_changed(size_t p_new_index) override {}
 
     /** PLAY CALLBACKS */
-    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override
+    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) noexcept override
     {
         m_track_label = "Opening...";
         invalidate_all();
     }
 
-    void on_playback_new_track(metadb_handle_ptr p_track) override
+    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override
     {
         // Note: On start-up, playback can actually be paused when we get here
         // (and on_playback_pause() won't be called).
@@ -89,7 +89,7 @@ class StatusPane
         invalidate_all();
     }
 
-    void on_playback_stop(play_control::t_stop_reason p_reason) override
+    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override
     {
         if (p_reason != playback_control::stop_reason_shutting_down) {
             m_track_label = "";
@@ -98,33 +98,33 @@ class StatusPane
         }
     }
 
-    void on_playback_seek(double p_time) override
+    void on_playback_seek(double p_time) noexcept override
     {
         update_playing_text();
         invalidate_all();
     }
-    void on_playback_pause(bool p_state) override
+    void on_playback_pause(bool p_state) noexcept override
     {
         m_track_label = p_state ? "Paused:" : "Playing:";
         update_playing_text();
         invalidate_all();
     }
-    void on_playback_edited(metadb_handle_ptr p_track) override
+    void on_playback_edited(metadb_handle_ptr p_track) noexcept override
     {
         update_playing_text();
         invalidate_all();
     }
-    void on_playback_dynamic_info(const file_info& p_info) override
+    void on_playback_dynamic_info(const file_info& p_info) noexcept override
     {
         update_playing_text();
         invalidate_all();
     }
-    void on_playback_dynamic_info_track(const file_info& p_info) override
+    void on_playback_dynamic_info_track(const file_info& p_info) noexcept override
     {
         update_playing_text();
         invalidate_all();
     }
-    void on_playback_time(double p_time) override
+    void on_playback_time(double p_time) noexcept override
     {
         update_playing_text();
         invalidate_all();

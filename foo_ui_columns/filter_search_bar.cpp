@@ -565,7 +565,7 @@ void FilterSearchToolbar::ColourClient::on_bool_changed(uint32_t mask) const
         s_on_dark_mode_status_change();
 }
 
-LRESULT WINAPI FilterSearchToolbar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI FilterSearchToolbar::g_on_search_edit_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     auto p_this = reinterpret_cast<FilterSearchToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->on_search_edit_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);

@@ -787,7 +787,7 @@ void RebarWindow::refresh_bands()
     fix_z_order();
 }
 
-LRESULT RebarWindow::s_handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT RebarWindow::s_handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     const auto self = reinterpret_cast<RebarWindow*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return self ? self->handle_hooked_message(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);

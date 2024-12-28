@@ -126,7 +126,7 @@ struct EnumChildWindowsData {
     std::function<bool(HWND)> filter;
 };
 
-static BOOL WINAPI enum_child_windows_proc(HWND wnd, LPARAM lp)
+static BOOL WINAPI enum_child_windows_proc(HWND wnd, LPARAM lp) noexcept
 {
     auto data = reinterpret_cast<EnumChildWindowsData*>(lp);
     if (!data->filter || data->filter(wnd))

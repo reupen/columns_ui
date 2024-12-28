@@ -244,7 +244,7 @@ std::optional<Direction> get_direction_at_point(HWND wnd, SpinType spin_type, PO
     return {};
 }
 
-LRESULT WINAPI on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     auto& window_state = state::state_map.at(wnd);
     auto call_next_window_proc

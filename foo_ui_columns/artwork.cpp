@@ -125,7 +125,7 @@ void ArtworkPanel::g_on_edge_style_change()
  * the same album as the previous track (determined using metadata, not
  * artwork equivalence).
  */
-void ArtworkPanel::on_album_art(album_art_data::ptr data)
+void ArtworkPanel::on_album_art(album_art_data::ptr data) noexcept
 {
     if (!m_artwork_loader || !m_artwork_loader->is_ready()) {
         m_dynamic_artwork_pending = true;
@@ -252,7 +252,7 @@ bool g_check_process_on_selection_changed()
     return processid == GetCurrentProcessId();
 }
 
-void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
+void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept
 {
     if (g_check_process_on_selection_changed()) {
         if (g_ui_selection_manager_is_now_playing_fallback())
@@ -273,7 +273,7 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
     }
 }
 
-void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
+void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason) noexcept
 {
     m_dynamic_artwork_pending = false;
 
@@ -300,7 +300,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason)
     }
 }
 
-void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track)
+void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
     m_dynamic_artwork_pending = false;
     if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader) {
@@ -385,7 +385,7 @@ void ArtworkPanel::show_next_artwork_type()
     show_stub_image();
 }
 
-void ArtworkPanel::on_playlist_switch()
+void ArtworkPanel::on_playlist_switch() noexcept
 {
     if (g_track_mode_includes_playlist(m_track_mode)
         && (!g_track_mode_includes_auto(m_track_mode) || !play_control::get()->is_playing())) {
@@ -401,7 +401,7 @@ void ArtworkPanel::on_playlist_switch()
     }
 }
 
-void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
+void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept
 {
     if (g_track_mode_includes_playlist(m_track_mode)
         && (!g_track_mode_includes_auto(m_track_mode) || !play_control::get()->is_playing())) {
@@ -638,7 +638,7 @@ colours::client::factory<ArtworkColoursClient> g_appearance_client_impl;
 
 ArtworkPanel::CompletionNotifyForwarder::CompletionNotifyForwarder(ArtworkPanel* p_this) : m_this(p_this) {}
 
-void ArtworkPanel::CompletionNotifyForwarder::on_completion(unsigned p_code)
+void ArtworkPanel::CompletionNotifyForwarder::on_completion(unsigned p_code) noexcept
 {
     m_this->on_completion(p_code);
 }

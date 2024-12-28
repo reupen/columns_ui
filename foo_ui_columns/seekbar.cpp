@@ -75,7 +75,7 @@ void SeekBarToolbar::update_seek_pos()
     }
 }
 
-VOID CALLBACK SeekBarToolbar::SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time)
+VOID CALLBACK SeekBarToolbar::SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time) noexcept
 {
     if (windows.get_count() && playback_control::get()->is_playing())
         update_seekbars(true);

@@ -238,7 +238,7 @@ public:
 };
 
 class InitQuit : public initquit {
-    void on_init() override { fbh::enable_wil_console_logging(); }
+    void on_init() noexcept override { fbh::enable_wil_console_logging(); }
     void on_quit() override {}
 };
 

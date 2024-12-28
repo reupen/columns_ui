@@ -598,7 +598,7 @@ void ItemProperties::refresh_contents()
         enable_redrawing();
 }
 
-void ItemProperties::on_playback_new_track(metadb_handle_ptr p_track)
+void ItemProperties::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
     if (m_tracking_mode == track_nowplaying || m_tracking_mode == track_automatic) {
         m_handles.remove_all();
@@ -607,7 +607,7 @@ void ItemProperties::on_playback_new_track(metadb_handle_ptr p_track)
     }
 }
 
-void ItemProperties::on_playback_stop(play_control::t_stop_reason p_reason)
+void ItemProperties::on_playback_stop(play_control::t_stop_reason p_reason) noexcept
 {
     if (p_reason != play_control::stop_reason_starting_another && p_reason != play_control::stop_reason_shutting_down) {
         if (m_tracking_mode == track_nowplaying || m_tracking_mode == track_automatic) {
@@ -620,7 +620,7 @@ void ItemProperties::on_playback_stop(play_control::t_stop_reason p_reason)
     }
 }
 
-void ItemProperties::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
+void ItemProperties::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept
 {
     for (auto&& track : m_handles) {
         if (size_t index{};
@@ -642,7 +642,7 @@ bool ItemProperties::check_process_on_selection_changed()
     return processid == GetCurrentProcessId();
 }
 
-void ItemProperties::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
+void ItemProperties::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept
 {
     if (check_process_on_selection_changed()) {
         if (g_ui_selection_manager_is_now_playing_fallback())

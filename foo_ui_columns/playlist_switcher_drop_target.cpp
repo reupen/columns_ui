@@ -403,7 +403,7 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
                         bool m_new_playlist{false};
                         pfc::string8 m_playlist_name;
 
-                        void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override
+                        void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) noexcept override
                         {
                             const auto playlist_api = playlist_manager_v4::get();
                             if ((m_new_playlist || m_insertIndexTracker.m_playlist != pfc_infinite)

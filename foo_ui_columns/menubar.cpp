@@ -86,7 +86,7 @@ public:
     pfc::list_t<MainMenuRootGroup> m_buttons;
 
     LRESULT WINAPI hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static LRESULT WINAPI main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
 
     bool on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp) override;
@@ -151,7 +151,7 @@ void MenuToolbar::set_window_theme()
     SetWindowTheme(wnd_menu, cui::colours::is_dark_mode_active() ? L"DarkMode" : nullptr, nullptr);
 }
 
-LRESULT WINAPI MenuToolbar::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+LRESULT WINAPI MenuToolbar::main_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
     auto p_this = reinterpret_cast<MenuToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
     return p_this ? p_this->hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);

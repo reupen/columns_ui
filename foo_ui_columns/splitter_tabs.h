@@ -114,7 +114,7 @@ public:
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     LRESULT WINAPI on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
-    static LRESULT WINAPI g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static LRESULT WINAPI g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
     WNDPROC m_tab_proc{nullptr};
 
     void create_tabs();

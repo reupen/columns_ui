@@ -287,7 +287,7 @@ HRESULT STDMETHODCALLTYPE PlaylistViewDropTarget::Drop(
                     playlist_position_reference_tracker m_insertIndexTracker;
                     service_ptr_t<PlaylistView> p_playlist;
 
-                    void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) override
+                    void on_completion(const pfc::list_base_const_t<metadb_handle_ptr>& p_items) noexcept override
                     {
                         const auto playlist_api = playlist_manager::get();
                         if (m_insertIndexTracker.m_playlist != pfc_infinite && p_items.get_count()) {

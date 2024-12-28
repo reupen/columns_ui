@@ -445,7 +445,7 @@ void ItemDetails::reset_display_info()
     m_text_rect.reset();
 }
 
-void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track)
+void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
     if (s_track_mode_includes_now_playing(m_tracking_mode)) {
         m_nowplaying_active = true;
@@ -453,38 +453,38 @@ void ItemDetails::on_playback_new_track(metadb_handle_ptr p_track)
     }
 }
 
-void ItemDetails::on_playback_seek(double p_time)
+void ItemDetails::on_playback_seek(double p_time) noexcept
 {
     if (m_nowplaying_active)
         refresh_contents();
 }
-void ItemDetails::on_playback_pause(bool p_state)
+void ItemDetails::on_playback_pause(bool p_state) noexcept
 {
     if (m_nowplaying_active)
         refresh_contents();
 }
-void ItemDetails::on_playback_edited(metadb_handle_ptr p_track)
+void ItemDetails::on_playback_edited(metadb_handle_ptr p_track) noexcept
 {
     if (m_nowplaying_active)
         refresh_contents();
 }
-void ItemDetails::on_playback_dynamic_info(const file_info& p_info)
+void ItemDetails::on_playback_dynamic_info(const file_info& p_info) noexcept
 {
     if (m_nowplaying_active)
         refresh_contents();
 }
-void ItemDetails::on_playback_dynamic_info_track(const file_info& p_info)
+void ItemDetails::on_playback_dynamic_info_track(const file_info& p_info) noexcept
 {
     if (m_nowplaying_active)
         refresh_contents();
 }
-void ItemDetails::on_playback_time(double p_time)
+void ItemDetails::on_playback_time(double p_time) noexcept
 {
     if (m_nowplaying_active)
         refresh_contents();
 }
 
-void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
+void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason) noexcept
 {
     if (s_track_mode_includes_now_playing(m_tracking_mode) && p_reason != play_control::stop_reason_starting_another
         && p_reason != play_control::stop_reason_shutting_down) {
@@ -500,7 +500,7 @@ void ItemDetails::on_playback_stop(play_control::t_stop_reason p_reason)
     }
 }
 
-void ItemDetails::on_playlist_switch()
+void ItemDetails::on_playlist_switch() noexcept
 {
     if (s_track_mode_includes_playlist(m_tracking_mode)
         && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
@@ -509,7 +509,7 @@ void ItemDetails::on_playlist_switch()
         set_handles(handles);
     }
 }
-void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state)
+void ItemDetails::on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept
 {
     if (s_track_mode_includes_playlist(m_tracking_mode)
         && (!s_track_mode_includes_auto(m_tracking_mode) || !play_control::get()->is_playing())) {
@@ -519,7 +519,7 @@ void ItemDetails::on_items_selection_change(const bit_array& p_affected, const b
     }
 }
 
-void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook)
+void ItemDetails::on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept
 {
     if (m_nowplaying_active)
         return;
@@ -544,7 +544,7 @@ bool ItemDetails::check_process_on_selection_changed()
     return processid == GetCurrentProcessId();
 }
 
-void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection)
+void ItemDetails::on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept
 {
     if (check_process_on_selection_changed()) {
         if (g_ui_selection_manager_is_now_playing_fallback())
@@ -1212,42 +1212,6 @@ void ItemDetails::set_horizontal_alignment(uint32_t horizontal_alignment)
     update_scrollbars(false, true);
     update_now();
 }
-
-void ItemDetails::on_playback_order_changed(size_t p_new_index) {}
-
-void ItemDetails::on_default_format_changed() {}
-
-void ItemDetails::on_playlist_locked(bool p_locked) {}
-
-void ItemDetails::on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) {}
-
-void ItemDetails::on_item_ensure_visible(size_t p_idx) {}
-
-void ItemDetails::on_items_replaced(
-    const bit_array& p_mask, const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data)
-{
-}
-
-void ItemDetails::on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) {}
-
-void ItemDetails::on_items_modified(const bit_array& p_mask) {}
-
-void ItemDetails::on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) {}
-
-void ItemDetails::on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) {}
-
-void ItemDetails::on_items_reordered(const size_t* p_order, size_t p_count) {}
-
-void ItemDetails::on_items_added(
-    size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection)
-{
-}
-
-void ItemDetails::on_item_focus_change(size_t p_from, size_t p_to) {}
-
-void ItemDetails::on_volume_change(float p_new_val) {}
-
-void ItemDetails::on_playback_starting(play_control::t_track_command p_command, bool p_paused) {}
 
 bool ItemDetails::s_track_mode_includes_selection(size_t mode)
 {

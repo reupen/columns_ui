@@ -92,7 +92,7 @@ private:
         void on_colour_changed(uint32_t mask) const override { s_update_colours(); }
     };
 
-    static LRESULT WINAPI s_on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
+    static LRESULT WINAPI s_on_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
     {
         auto p_this = reinterpret_cast<DropDownListToolbar*>(GetWindowLongPtr(wnd, GWLP_USERDATA));
         return p_this ? p_this->on_hook(wnd, msg, wp, lp) : DefWindowProc(wnd, msg, wp, lp);

@@ -160,47 +160,51 @@ public:
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;
 
     // UI SEL API
-    void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) override;
+    void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
 
     // PC
-    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override;
-    void on_playback_new_track(metadb_handle_ptr p_track) override;
-    void on_playback_stop(play_control::t_stop_reason p_reason) override;
-    void on_playback_seek(double p_time) override;
-    void on_playback_pause(bool p_state) override;
-    void on_playback_edited(metadb_handle_ptr p_track) override;
-    void on_playback_dynamic_info(const file_info& p_info) override;
-    void on_playback_dynamic_info_track(const file_info& p_info) override;
-    void on_playback_time(double p_time) override;
-    void on_volume_change(float p_new_val) override;
+    void on_playback_starting(play_control::t_track_command p_command, bool p_paused) override {}
+    void on_playback_new_track(metadb_handle_ptr p_track) noexcept override;
+    void on_playback_stop(play_control::t_stop_reason p_reason) noexcept override;
+    void on_playback_seek(double p_time) noexcept override;
+    void on_playback_pause(bool p_state) noexcept override;
+    void on_playback_edited(metadb_handle_ptr p_track) noexcept override;
+    void on_playback_dynamic_info(const file_info& p_info) noexcept override;
+    void on_playback_dynamic_info_track(const file_info& p_info) noexcept override;
+    void on_playback_time(double p_time) noexcept override;
+    void on_volume_change(float p_new_val) override {}
 
     // PL
     enum {
         playlist_callback_flags = flag_on_items_selection_change | flag_on_playlist_switch
     };
-    void on_playlist_switch() override;
-    void on_item_focus_change(size_t p_from, size_t p_to) override;
+    void on_playlist_switch() noexcept override;
+    void on_item_focus_change(size_t p_from, size_t p_to) override {}
 
     void on_items_added(
-        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override;
-    void on_items_reordered(const size_t* p_order, size_t p_count) override;
-    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
-    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override;
-    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) override;
-    void on_items_modified(const bit_array& p_mask) override;
-    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override;
+        size_t p_base, const pfc::list_base_const_t<metadb_handle_ptr>& p_data, const bit_array& p_selection) override
+    {
+    }
+    void on_items_reordered(const size_t* p_order, size_t p_count) override {}
+    void on_items_removing(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
+    void on_items_removed(const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override {}
+    void on_items_selection_change(const bit_array& p_affected, const bit_array& p_state) noexcept override;
+    void on_items_modified(const bit_array& p_mask) override {}
+    void on_items_modified_fromplayback(const bit_array& p_mask, play_control::t_display_level p_level) override {}
     void on_items_replaced(const bit_array& p_mask,
-        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override;
-    void on_item_ensure_visible(size_t p_idx) override;
+        const pfc::list_base_const_t<playlist_callback::t_on_items_replaced_entry>& p_data) override
+    {
+    }
+    void on_item_ensure_visible(size_t p_idx) override {}
 
-    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override;
-    void on_playlist_locked(bool p_locked) override;
+    void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
+    void on_playlist_locked(bool p_locked) override {}
 
-    void on_default_format_changed() override;
-    void on_playback_order_changed(size_t p_new_index) override;
+    void on_default_format_changed() override {}
+    void on_playback_order_changed(size_t p_new_index) override {}
 
     // ML
-    void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) override;
+    void on_changed_sorted(metadb_handle_list_cref p_items_sorted, bool p_fromhook) noexcept override;
 
     static void s_on_app_activate(bool b_activated);
     static void s_on_font_change();

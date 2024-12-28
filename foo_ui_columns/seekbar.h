@@ -29,7 +29,7 @@ public:
     unsigned get_type() const override;
 
     static void update_seek_timer();
-    static VOID CALLBACK SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time);
+    static VOID CALLBACK SeekTimerProc(HWND wnd, UINT msg, UINT event, DWORD time) noexcept;
     static void update_seekbars(bool positions_only = false);
 
 private:

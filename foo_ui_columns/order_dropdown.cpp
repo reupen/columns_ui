@@ -72,7 +72,7 @@ public:
     void on_playlist_renamed(const char* p_new_name, size_t p_new_name_len) override {}
     void on_playlist_locked(bool p_locked) override {}
     void on_default_format_changed() override {}
-    void on_playback_order_changed(size_t p_new_index) override
+    void on_playback_order_changed(size_t p_new_index) noexcept override
     {
         DropDownListToolbar<PlaybackOrderToolbarArgs>::s_update_active_item_safe();
     }

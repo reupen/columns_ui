@@ -128,7 +128,7 @@ public:
     }
 
 private:
-    static LRESULT WINAPI s_handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    static LRESULT WINAPI s_handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
 
     LRESULT WINAPI handle_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void destroy_bands();
