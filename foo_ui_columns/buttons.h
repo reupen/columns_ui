@@ -268,7 +268,6 @@ public:
 
         ConfigParam();
 
-        modal_dialog_scope m_scope;
         // uih::ListView m_button_list;
         bool m_initialising{};
         Button* m_selection{nullptr};
@@ -378,7 +377,6 @@ private:
     void deinitialise(HWND wnd);
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
 
-    modal_dialog_scope m_scope;
     std::vector<std::unique_ptr<CommandData>> m_commands;
     HWND m_wnd{};
     HWND wnd_group{};

@@ -255,7 +255,6 @@ void SpectrumAnalyserVisualisation::disable()
 
 class SpectrumAnalyserConfigData {
 public:
-    modal_dialog_scope m_scope;
     unsigned mode;
     uint32_t m_scale;
     uint32_t m_vertical_scale;
@@ -284,8 +283,6 @@ static INT_PTR CALLBACK SpectrumPopupProc(SpectrumAnalyserConfigData& state, HWN
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        state.m_scope.initialize(FindOwningPopup(wnd));
-
         SendDlgItemMessage(wnd, IDC_BARS, BM_SETCHECK, state.ptr->mode == MODE_BARS, 0);
         HWND wnd_combo = GetDlgItem(wnd, IDC_FRAME_COMBO);
         EnableWindow(wnd_combo, state.b_show_frame);

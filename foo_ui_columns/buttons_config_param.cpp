@@ -242,7 +242,6 @@ INT_PTR ButtonsToolbar::ConfigParam::on_dialog_message(HWND wnd, UINT msg, WPARA
     case WM_INITDIALOG: {
         const auto _ = pfc::vartoggle_t(m_initialising, true);
         m_wnd = wnd;
-        m_scope.initialize(FindOwningPopup(wnd));
 
         m_h1_font.reset(prefs::create_default_ui_font(12));
         m_h2_font.reset(prefs::create_default_ui_font(10));
