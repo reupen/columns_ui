@@ -252,7 +252,6 @@ INT_PTR CommandPickerDialog::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        m_scope.initialize(FindOwningPopup(wnd));
         initialise(wnd);
         populate_commands();
         SendMessage(wnd_filter, LB_SETCURSEL, static_cast<WPARAM>(m_data.filter), 0);

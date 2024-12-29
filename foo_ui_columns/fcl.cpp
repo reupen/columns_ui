@@ -224,7 +224,6 @@ private:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            modeless_dialog_manager::g_add(wnd);
             SetWindowText(wnd, L"FCL import results");
             SetWindowText(GetDlgItem(wnd, IDC_CAPTION),
                 m_aborted ? L"The layout import was aborted because the following required panels are not installed:"
@@ -251,9 +250,6 @@ private:
         case WM_CLOSE:
             DestroyWindow(wnd);
             return 0;
-        case WM_NCDESTROY:
-            modeless_dialog_manager::g_remove(wnd);
-            break;
         }
 
         return FALSE;

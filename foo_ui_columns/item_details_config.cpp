@@ -61,7 +61,6 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         m_wnd = wnd;
 
         if (!m_modal) {
-            modeless_dialog_manager::g_add(wnd);
             m_this->set_config_wnd(wnd);
             ShowWindow(GetDlgItem(wnd, IDOK), SW_HIDE);
             SetWindowText(GetDlgItem(wnd, IDCANCEL), L"Close");
@@ -106,9 +105,6 @@ INT_PTR CALLBACK ItemDetailsConfig::on_message(HWND wnd, UINT msg, WPARAM wp, LP
         break;
     case WM_NCDESTROY:
         m_wnd = nullptr;
-        if (!m_modal) {
-            modeless_dialog_manager::g_remove(wnd);
-        }
         break;
     case WM_CLOSE:
         if (m_modal) {
@@ -217,8 +213,6 @@ void ItemDetailsConfig::open_format_code_generator()
 
             switch (msg) {
             case WM_INITDIALOG: {
-                modeless_dialog_manager::g_add(wnd);
-
                 const auto font
                     = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_item_details_font_client);
 
@@ -241,7 +235,6 @@ void ItemDetailsConfig::open_format_code_generator()
             }
             case WM_DESTROY:
                 SendMessage(wnd_parent, MSG_FORMAT_GENERATOR_CLOSED, 0, 0);
-                modeless_dialog_manager::g_remove(wnd);
                 break;
             case WM_COMMAND:
                 if (wp == IDCANCEL)

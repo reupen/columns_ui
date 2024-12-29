@@ -203,6 +203,10 @@
 - Command-line help was updated to include previously undocumented export
   commands. [[#1048](https://github.com/reupen/columns_ui/pull/1048)]
 
+- Concurrent modal dialogue boxes are now morely consistently avoided in line
+  with foobar2000 conventions.
+  [[#1050](https://github.com/reupen/columns_ui/pull/1050)]
+
 ### Internal changes
 
 - Handling of fatal unexpected C++ exceptions was improved in some scenarios.

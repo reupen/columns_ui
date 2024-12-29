@@ -11,7 +11,6 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
     switch (msg) {
     case WM_INITDIALOG: {
         m_wnd = wnd;
-        modeless_dialog_manager::g_add(wnd);
         s_instances.emplace_back(this);
 
         m_presets_list_view.create(wnd, {14, 18, 240, 67}, true);
@@ -147,7 +146,6 @@ INT_PTR QuickSetupDialog::handle_dialog_message(HWND wnd, UINT msg, WPARAM wp, L
     case WM_DESTROY:
         m_presets_list_view.destroy();
         std::erase(s_instances, this);
-        modeless_dialog_manager::g_remove(wnd);
         break;
     case WM_NCDESTROY:
         return FALSE;

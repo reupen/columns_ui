@@ -9,7 +9,6 @@ class RenameDialogBoxState {
 public:
     pfc::string8 m_text;
     pfc::string8 m_title;
-    modal_dialog_scope m_scope;
 };
 
 static INT_PTR CALLBACK show_rename_dialog_box_proc(
@@ -17,7 +16,6 @@ static INT_PTR CALLBACK show_rename_dialog_box_proc(
 {
     switch (msg) {
     case WM_INITDIALOG:
-        state.m_scope.initialize(FindOwningPopup(wnd));
         uSetWindowText(wnd, state.m_title);
         uih::enhance_edit_control(wnd, IDC_EDIT);
         uSetDlgItemText(wnd, IDC_EDIT, state.m_text);

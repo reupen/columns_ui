@@ -86,7 +86,6 @@ private:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            m_scope.initialize(wnd);
             m_wnd = wnd;
             m_axis_wnd = GetDlgItem(wnd, IDC_AXIS);
 
@@ -205,7 +204,6 @@ private:
     uih::direct_write::AxisValues m_axis_values;
     uih::direct_write::AxisValues m_initial_axis_values;
     std::function<void(const uih::direct_write::AxisValues&)> m_on_values_change;
-    modal_dialog_scope m_scope;
     HWND m_wnd{};
     HWND m_axis_wnd{};
     int m_spin_step{10};
