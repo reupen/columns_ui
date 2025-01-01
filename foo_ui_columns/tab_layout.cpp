@@ -617,6 +617,13 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         } break;
         case IDC_DELETE_PRESET: {
+            if (cfg_layout.get_presets().size() <= 1) {
+                dark::modeless_info_box(wnd, "Delete preset",
+                    "This is the only preset. It cannot be deleted as at least one preset must exist.",
+                    uih::InfoBoxType::Information);
+                break;
+            }
+
             const auto is_shift_down = GetKeyState(VK_SHIFT) & 0x8000;
 
             if (!is_shift_down) {
@@ -635,24 +642,17 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             deinitialise_tree(wnd);
             HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
-            size_t count = cfg_layout.delete_preset(m_active_preset);
+            cfg_layout.delete_preset(m_active_preset);
             ComboBox_DeleteString(wnd_combo, m_active_preset);
-            if (!count) {
-                cfg_layout.reset_presets();
-                m_active_preset = 0;
-                initialise_presets(wnd);
-                ComboBox_SetCurSel(wnd_combo, m_active_preset);
-                initialise_tree(wnd);
-            } else {
-                ComboBox_SetCurSel(
-                    wnd_combo, m_active_preset < ComboBox_GetCount(wnd_combo) ? m_active_preset : --m_active_preset);
-                initialise_tree(wnd);
-            }
+            ComboBox_SetCurSel(
+                wnd_combo, m_active_preset < ComboBox_GetCount(wnd_combo) ? m_active_preset : --m_active_preset);
+            initialise_tree(wnd);
             m_changed = true;
-        } break;
+            break;
+        }
         case IDC_RESET_PRESETS:
             if (dark::modal_info_box(wnd, "Reset presets",
-                    "This will reset layout presets to default values. Are you sure you wish to so this?",
+                    "This will replace all layout presets with the default preset. Are you sure you wish to so this?",
                     uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo)) {
                 deinitialise_tree(wnd);
                 HWND wnd_combo = GetDlgItem(wnd, IDC_PRESETS);
