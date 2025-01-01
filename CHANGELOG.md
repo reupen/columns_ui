@@ -116,6 +116,10 @@
   (The confirmation dialogue box can be bypassed by holding down Shift while
   clicking the button.)
 
+- Deleting the last layout preset is now prevented instead of reseting layout
+  presets to the default preset.
+  [[#1053](https://github.com/reupen/columns_ui/pull/1053)]
+
 - References to ‘notification area’ were changed to ‘system tray’ to align with
   the current Windows terminology.
   [[#1035](https://github.com/reupen/columns_ui/pull/1035)]
