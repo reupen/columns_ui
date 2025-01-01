@@ -13,7 +13,7 @@ bool PlaylistView::notify_before_create_inline_edit(
 }
 
 bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
-    pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
+    pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries)
 {
     const size_t indices_count = indices.get_count();
     m_edit_handles.remove_all();
@@ -54,14 +54,14 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t
     }
 
     p_flags |= inline_edit_autocomplete;
-    pfc::com_ptr_t<IUnknown> autocomplete_entries;
+    pfc::com_ptr_t<IUnknown> local_autocomplete_entries;
 
     if (m_library_autocomplete_v2.is_valid())
-        m_library_autocomplete_v2->get_value_list_async(m_edit_field, autocomplete_entries);
+        m_library_autocomplete_v2->get_value_list_async(m_edit_field, local_autocomplete_entries);
     else
-        m_library_autocomplete_v1->get_value_list(m_edit_field, autocomplete_entries);
+        m_library_autocomplete_v1->get_value_list(m_edit_field, local_autocomplete_entries);
 
-    pAutocompleteEntries = autocomplete_entries.get_ptr();
+    autocomplete_entries.attach(local_autocomplete_entries.detach());
 
     return true;
 }

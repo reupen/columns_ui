@@ -225,6 +225,8 @@
 
 - The component is now compiled with Visual Studio 2022 17.12.
 
+- Some internal changes were made to clean up and modernise code.
+
 ## 2.1.0
 
 ### Features
