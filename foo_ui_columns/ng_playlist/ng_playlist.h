@@ -362,7 +362,7 @@ public:
     void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
 
     bool m_dragging{false};
-    wil::com_ptr_t<IDataObject> m_DataObject;
+    wil::com_ptr<IDataObject> m_DataObject;
     size_t m_dragging_initial_playlist;
 
 protected:
@@ -654,7 +654,7 @@ private:
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
     bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
-        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
+        pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
     void notify_save_inline_edit(const char* value) override;
     void notify_exit_inline_edit() override;
 
@@ -711,8 +711,8 @@ private:
     bool last_rmb;
     bool m_is_accepted_type;
     service_ptr_t<PlaylistView> p_playlist;
-    wil::com_ptr_t<IDataObject> m_DataObject;
-    wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
+    wil::com_ptr<IDataObject> m_DataObject;
+    wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
 };
 
 class PlaylistViewDropSource : public IDropSource {

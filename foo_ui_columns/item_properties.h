@@ -35,7 +35,7 @@ public:
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
     bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
-        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
+        pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
     void notify_save_inline_edit(const char* value) override;
 
 private:
@@ -159,7 +159,7 @@ public:
         const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
     static void s_print_field(const char* field, const file_info& p_info, pfc::string_base& p_out);
     bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
-        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
+        pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
     void notify_save_inline_edit(const char* value) override;
 
     // UI SEL API

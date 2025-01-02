@@ -67,8 +67,7 @@ pfc::string8 format_playlist_title(size_t index)
 
     LazyFieldCalculator lazy_fields{index};
 
-    auto file_size_getter
-        = [&lazy_fields]() { return std::string(mmh::FileSizeFormatter(lazy_fields.total_file_size())); };
+    auto file_size_getter = [&lazy_fields]() { return mmh::format_file_size(lazy_fields.total_file_size()); };
 
     auto file_size_raw_getter
         = [&lazy_fields]() { return std::string(pfc::format_uint(lazy_fields.total_file_size())); };

@@ -803,7 +803,7 @@ void PlaylistView::notify_on_create()
             & ~(flag_on_default_format_changed | flag_on_playlist_locked | flag_on_playlist_created
                 | flag_on_playlists_reorder | flag_on_playlists_removed | flag_on_playlists_removing));
 
-    wil::com_ptr_t<PlaylistViewDropTarget> IDT_playlist = new PlaylistViewDropTarget(this);
+    wil::com_ptr<PlaylistViewDropTarget> IDT_playlist = new PlaylistViewDropTarget(this);
     RegisterDragDrop(get_wnd(), IDT_playlist.get());
 
     if (g_windows.empty())

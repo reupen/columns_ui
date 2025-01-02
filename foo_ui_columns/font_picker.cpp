@@ -538,14 +538,14 @@ const wchar_t* DirectWriteFontPicker::get_font_face_combobox_item_text(uint32_t 
     return custom_axis_values_label;
 }
 
-wil::com_ptr_t<IDWriteFontFamily> DirectWriteFontPicker::get_icon_font_family() const
+wil::com_ptr<IDWriteFontFamily> DirectWriteFontPicker::get_icon_font_family() const
 {
     LOGFONT log_font{};
     THROW_IF_WIN32_BOOL_FALSE(SystemParametersInfo(SPI_GETICONTITLELOGFONT, 0, &log_font, 0));
 
     const auto font = m_direct_write_context->create_font(log_font);
 
-    wil::com_ptr_t<IDWriteFontFamily> font_family;
+    wil::com_ptr<IDWriteFontFamily> font_family;
     THROW_IF_FAILED(font->GetFontFamily(&font_family));
 
     return font_family;

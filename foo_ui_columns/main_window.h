@@ -87,7 +87,7 @@ private:
     void update_taskbar_buttons(bool update) const;
 
     pfc::string8 m_window_title;
-    wil::com_ptr_t<ITaskbarList3> m_taskbar_list;
+    wil::com_ptr<ITaskbarList3> m_taskbar_list;
     HWND m_wnd{};
     HMONITOR m_monitor{};
     user_interface::HookProc_t m_hook_proc{};

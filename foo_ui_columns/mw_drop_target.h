@@ -21,6 +21,6 @@ private:
 
     long drop_ref_count{0};
     POINTL last_over{};
-    wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
-    wil::com_ptr_t<IDataObject> m_DataObject;
+    wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
+    wil::com_ptr<IDataObject> m_DataObject;
 };

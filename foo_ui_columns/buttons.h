@@ -187,7 +187,7 @@ public:
         void load_default_image(
             const service_ptr_t<uie::button>& button_ptr, COLORREF colour_btnface, int width, int height);
 
-        wil::com_ptr_t<IWICBitmapSource> m_bitmap_source;
+        wil::com_ptr<IWICBitmapSource> m_bitmap_source;
         std::optional<std::tuple<int, int>> m_bitmap_source_size;
 
         wil::unique_hbitmap m_bm;
@@ -227,8 +227,8 @@ public:
                 long drop_ref_count;
                 bool last_rmb;
                 ButtonsList* m_button_list_view;
-                wil::com_ptr_t<IDataObject> m_DataObject;
-                wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
+                wil::com_ptr<IDataObject> m_DataObject;
+                wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
                 // pfc::string
             public:
                 HRESULT STDMETHODCALLTYPE QueryInterface(REFIID riid, LPVOID FAR* ppvObject) override;

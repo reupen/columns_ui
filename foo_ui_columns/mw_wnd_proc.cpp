@@ -150,7 +150,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (cfg_show_systray)
             create_systray_icon();
 
-        wil::com_ptr_t<MainWindowDropTarget> drop_handler = new MainWindowDropTarget;
+        wil::com_ptr<MainWindowDropTarget> drop_handler = new MainWindowDropTarget;
         RegisterDragDrop(m_wnd, drop_handler.get());
 
         create_child_windows();

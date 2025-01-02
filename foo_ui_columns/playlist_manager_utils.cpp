@@ -28,7 +28,7 @@ void rename_playlist(size_t index, HWND wnd_parent)
 bool check_clipboard()
 {
     const auto api = ole_interaction::get();
-    wil::com_ptr_t<IDataObject> pDO;
+    wil::com_ptr<IDataObject> pDO;
 
     HRESULT hr = OleGetClipboard(&pDO);
     if (FAILED(hr))
@@ -96,7 +96,7 @@ bool paste(HWND wnd, size_t index_insert)
 {
     const auto m_playlist_api = playlist_manager::get();
     const auto api = ole_interaction::get();
-    wil::com_ptr_t<IDataObject> pDO;
+    wil::com_ptr<IDataObject> pDO;
 
     HRESULT hr = OleGetClipboard(&pDO);
     if (FAILED(hr))

@@ -35,7 +35,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         initialised = true;
         list_wnd.add_item(this);
-        wil::com_ptr_t<PlaylistTabsDropTarget> m_drop_target = new PlaylistTabsDropTarget(this);
+        wil::com_ptr<PlaylistTabsDropTarget> m_drop_target = new PlaylistTabsDropTarget(this);
         RegisterDragDrop(wnd, m_drop_target.get());
 
         create_tabs();

@@ -6,7 +6,7 @@ namespace playlist_utils {
 bool check_clipboard()
 {
     const auto api = ole_interaction::get();
-    wil::com_ptr_t<IDataObject> data_object;
+    wil::com_ptr<IDataObject> data_object;
 
     if (FAILED(OleGetClipboard(&data_object)))
         return false;
@@ -56,7 +56,7 @@ bool paste(HWND wnd, size_t index)
 {
     const auto playlist_api = playlist_manager::get();
     const auto ole_api = ole_interaction::get();
-    wil::com_ptr_t<IDataObject> pDO;
+    wil::com_ptr<IDataObject> pDO;
 
     if (FAILED(OleGetClipboard(&pDO)))
         return false;

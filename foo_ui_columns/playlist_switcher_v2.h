@@ -67,10 +67,10 @@ class PlaylistSwitcher
         bool m_is_playlists;
         bool m_is_accepted_type;
         service_ptr_t<PlaylistSwitcher> m_window;
-        wil::com_ptr_t<IDataObject> m_DataObject;
+        wil::com_ptr<IDataObject> m_DataObject;
         service_ptr_t<ole_interaction_v2> m_ole_api;
         service_ptr_t<playlist_manager_v4> m_playlist_api;
-        wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
+        wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
     };
 
 public:
@@ -137,7 +137,7 @@ public:
     bool notify_before_create_inline_edit(
         const pfc::list_base_const_t<size_t>& indices, size_t column, bool b_source_mouse) override;
     bool notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
-        pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries) override;
+        pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries) override;
     void notify_save_inline_edit(const char* value) override;
 
     const char* get_drag_unit_singular() const override { return "playlist"; }
@@ -349,7 +349,7 @@ private:
     std::shared_ptr<playlist_position_reference_tracker> m_switch_playlist;
 
     bool m_dragging{false};
-    wil::com_ptr_t<IDataObject> m_DataObject;
+    wil::com_ptr<IDataObject> m_DataObject;
 
     std::shared_ptr<playlist_position_reference_tracker> m_edit_playlist;
     size_t m_playing_playlist;

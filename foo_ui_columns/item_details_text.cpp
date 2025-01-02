@@ -85,10 +85,10 @@ std::optional<FormatProperties> parse_font_code(
     try {
         const auto direct_write_font = direct_write_context->create_font(lf);
 
-        wil::com_ptr_t<IDWriteFontFamily> font_family;
+        wil::com_ptr<IDWriteFontFamily> font_family;
         THROW_IF_FAILED(direct_write_font->GetFontFamily(&font_family));
 
-        wil::com_ptr_t<IDWriteLocalizedStrings> localised_strings;
+        wil::com_ptr<IDWriteLocalizedStrings> localised_strings;
         THROW_IF_FAILED(font_family->GetFamilyNames(&localised_strings));
 
         auto family_name = uih::direct_write::get_localised_string(localised_strings);

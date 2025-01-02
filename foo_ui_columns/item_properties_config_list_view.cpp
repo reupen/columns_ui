@@ -18,7 +18,7 @@ void FieldsList::notify_save_inline_edit(const char* value)
 }
 
 bool FieldsList::notify_create_inline_edit(const pfc::list_base_const_t<size_t>& indices, size_t column,
-    pfc::string_base& p_text, size_t& p_flags, mmh::ComPtr<IUnknown>& pAutocompleteEntries)
+    pfc::string_base& p_text, size_t& p_flags, wil::com_ptr<IUnknown>& autocomplete_entries)
 {
     size_t indices_count = indices.get_count();
     if (indices_count == 1 && indices[0] < m_fields.get_count()) {

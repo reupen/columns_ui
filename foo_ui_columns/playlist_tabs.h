@@ -74,8 +74,8 @@ public:
         long drop_ref_count{};
         POINTL last_over{};
         service_ptr_t<PlaylistTabs> p_list;
-        wil::com_ptr_t<IDataObject> m_DataObject;
-        wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
+        wil::com_ptr<IDataObject> m_DataObject;
+        wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
     };
 
     void on_items_removing(size_t p_playlist, const bit_array& p_mask, size_t p_old_count, size_t p_new_count) override
