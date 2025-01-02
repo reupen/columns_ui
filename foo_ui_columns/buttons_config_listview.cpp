@@ -17,7 +17,7 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_initialisation()
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_create()
 {
-    wil::com_ptr_t<ButtonsListDropTarget> IDT_blv = new ButtonsListDropTarget(this);
+    wil::com_ptr<ButtonsListDropTarget> IDT_blv = new ButtonsListDropTarget(this);
     RegisterDragDrop(get_wnd(), IDT_blv.get());
 }
 void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_destroy()
@@ -34,7 +34,7 @@ void ButtonsToolbar::ConfigParam::ButtonsList::notify_on_selection_change(
 bool ButtonsToolbar::ConfigParam::ButtonsList::do_drag_drop(WPARAM wp)
 {
     UINT cf = g_clipformat();
-    wil::com_ptr_t<IDataObject> pDO = new CDataObject;
+    wil::com_ptr<IDataObject> pDO = new CDataObject;
 
     DDData data = {0, get_wnd()};
     uih::ole::set_blob(pDO.get(), cf, &data, sizeof(data));

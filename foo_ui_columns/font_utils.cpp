@@ -47,16 +47,16 @@ void FontDescription::fill_wss()
     if (wss)
         return;
 
-    wil::com_ptr_t<IDWriteFont> font;
+    wil::com_ptr<IDWriteFont> font;
     std::wstring family_name;
     try {
         const auto context = uih::direct_write::Context::s_create();
         font = context->create_font(log_font);
 
-        wil::com_ptr_t<IDWriteFontFamily> font_family;
+        wil::com_ptr<IDWriteFontFamily> font_family;
         THROW_IF_FAILED(font->GetFontFamily(&font_family));
 
-        wil::com_ptr_t<IDWriteLocalizedStrings> family_names;
+        wil::com_ptr<IDWriteLocalizedStrings> family_names;
         THROW_IF_FAILED(font_family->GetFamilyNames(&family_names));
 
         family_name = uih::direct_write::get_localised_string(family_names);

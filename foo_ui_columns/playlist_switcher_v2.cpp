@@ -149,7 +149,7 @@ void PlaylistSwitcher::notify_on_create()
     m_playlist_api->register_callback(this, flag_all);
     standard_api_create_t<play_callback_manager>()->register_callback(this, flag_on_playback_all, false);
 
-    wil::com_ptr_t<DropTarget> drop_target = new DropTarget(this);
+    wil::com_ptr<DropTarget> drop_target = new DropTarget(this);
     RegisterDragDrop(get_wnd(), drop_target.get());
 
     g_windows.push_back(this);

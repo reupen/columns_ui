@@ -21,7 +21,7 @@ private:
     std::optional<INT_PTR> handle_wm_draw_item(LPDRAWITEMSTRUCT dis);
 
     const wchar_t* get_font_face_combobox_item_text(uint32_t index) const;
-    wil::com_ptr_t<IDWriteFontFamily> get_icon_font_family() const;
+    wil::com_ptr<IDWriteFontFamily> get_icon_font_family() const;
     uih::direct_write::TextFormat& get_family_text_format(size_t index);
     uih::direct_write::TextFormat& get_face_text_format(size_t index);
 

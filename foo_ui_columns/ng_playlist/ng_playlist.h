@@ -362,7 +362,7 @@ public:
     void set_config(stream_reader* p_reader, size_t p_size, abort_callback& p_abort) override;
 
     bool m_dragging{false};
-    wil::com_ptr_t<IDataObject> m_DataObject;
+    wil::com_ptr<IDataObject> m_DataObject;
     size_t m_dragging_initial_playlist;
 
 protected:
@@ -711,8 +711,8 @@ private:
     bool last_rmb;
     bool m_is_accepted_type;
     service_ptr_t<PlaylistView> p_playlist;
-    wil::com_ptr_t<IDataObject> m_DataObject;
-    wil::com_ptr_t<IDropTargetHelper> m_DropTargetHelper;
+    wil::com_ptr<IDataObject> m_DataObject;
+    wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
 };
 
 class PlaylistViewDropSource : public IDropSource {
