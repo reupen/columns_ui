@@ -76,7 +76,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_FONT_MODE | (CBN_SELCHANGE << 16): {
             const int idx = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
             m_element_ptr->font_mode
-                = static_cast<cui::fonts::font_mode_t>(ComboBox_GetItemData(reinterpret_cast<HWND>(lp), idx));
+                = static_cast<cui::fonts::FontMode>(ComboBox_GetItemData(reinterpret_cast<HWND>(lp), idx));
             restore_font_selection_state();
             enable_or_disable_font_selection();
             on_font_changed();
@@ -121,8 +121,8 @@ void TabFonts::on_font_changed()
 
     for (auto&& client : m_fonts_client_list) {
         const auto p_data = g_font_manager_data.find_by_id(client.m_guid);
-        if ((index_element == 0 && p_data->font_mode == cui::fonts::font_mode_common_items)
-            || (index_element == 1 && p_data->font_mode == cui::fonts::font_mode_common_labels))
+        if ((index_element == 0 && p_data->font_mode == cui::fonts::FontMode::CommonItems)
+            || (index_element == 1 && p_data->font_mode == cui::fonts::FontMode::CommonLabels))
             g_font_manager_data.dispatch_client_font_changed(client.m_ptr);
     }
 }
@@ -135,7 +135,7 @@ void TabFonts::restore_font_selection_state()
 
 void TabFonts::enable_or_disable_font_selection() const
 {
-    const auto is_custom_mode = m_element_ptr->font_mode == cui::fonts::font_mode_custom;
+    const auto is_custom_mode = m_element_ptr->font_mode == cui::fonts::FontMode::Custom;
     m_direct_write_font_picker->set_font_selection_allowed(is_custom_mode);
 }
 
@@ -143,10 +143,10 @@ FontManagerData::entry_ptr_t TabFonts::get_current_resolved_entry() const
 {
     auto entry = m_element_ptr;
 
-    if (entry->font_mode == cui::fonts::font_mode_common_items)
+    if (entry->font_mode == cui::fonts::FontMode::CommonItems)
         return g_font_manager_data.m_common_items_entry;
 
-    if (entry->font_mode == cui::fonts::font_mode_common_labels)
+    if (entry->font_mode == cui::fonts::FontMode::CommonLabels)
         return g_font_manager_data.m_common_labels_entry;
 
     return entry;
@@ -159,15 +159,16 @@ void TabFonts::update_mode_combobox() const
     const size_t index_element = ComboBox_GetCurSel(m_element_combobox);
     if (index_element <= 1) {
         index = ComboBox_AddString(m_mode_combobox, L"System");
-        ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::font_mode_system);
+        ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::FontMode::System);
     } else {
         index = ComboBox_AddString(m_mode_combobox, L"Common (list items)");
-        ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::font_mode_common_items);
+        ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::FontMode::CommonItems);
         index = ComboBox_AddString(m_mode_combobox, L"Common (labels)");
-        ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::font_mode_common_labels);
+        ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::FontMode::CommonLabels);
     }
     index = ComboBox_AddString(m_mode_combobox, L"Custom");
-    ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::font_mode_custom);
+    ComboBox_SetItemData(m_mode_combobox, index, cui::fonts::FontMode::Custom);
 
-    ComboBox_SetCurSel(m_mode_combobox, uih::combo_box_find_item_by_data(m_mode_combobox, m_element_ptr->font_mode));
+    ComboBox_SetCurSel(
+        m_mode_combobox, uih::combo_box_find_item_by_data(m_mode_combobox, WI_EnumValue(m_element_ptr->font_mode)));
 }

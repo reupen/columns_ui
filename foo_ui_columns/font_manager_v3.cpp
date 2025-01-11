@@ -151,9 +151,9 @@ public:
         if (!entry)
             throw exception_font_client_not_found();
 
-        if (entry->font_mode != font_mode_custom) {
+        if (entry->font_mode != FontMode::Custom) {
             entry->font_description = g_font_manager_data.resolve_font_description(entry);
-            entry->font_mode = font_mode_custom;
+            entry->font_mode = FontMode::Custom;
         }
 
         entry->font_description.set_dip_size(size);

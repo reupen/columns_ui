@@ -164,17 +164,17 @@ private:
         } break;
         case WM_SETTINGCHANGE:
             if ((wp == SPI_GETICONTITLELOGFONT && g_font_manager_data.m_common_items_entry
-                    && g_font_manager_data.m_common_items_entry->font_mode == fonts::font_mode_system)
+                    && g_font_manager_data.m_common_items_entry->font_mode == fonts::FontMode::System)
                 || (wp == SPI_GETNONCLIENTMETRICS && g_font_manager_data.m_common_labels_entry
-                    && g_font_manager_data.m_common_labels_entry->font_mode == fonts::font_mode_system)) {
+                    && g_font_manager_data.m_common_labels_entry->font_mode == fonts::FontMode::System)) {
                 g_font_manager_data.g_on_common_font_changed(
                     wp == SPI_GETICONTITLELOGFONT ? fonts::font_type_flag_items : fonts::font_type_flag_labels);
 
                 for (auto client_ptr : fonts::client::enumerate()) {
                     const auto p_data = g_font_manager_data.find_by_id(client_ptr->get_client_guid());
 
-                    if ((wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == fonts::font_mode_common_items)
-                        || (wp == SPI_GETICONTITLELOGFONT && p_data->font_mode == fonts::font_mode_common_labels))
+                    if ((wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == fonts::FontMode::CommonItems)
+                        || (wp == SPI_GETICONTITLELOGFONT && p_data->font_mode == fonts::FontMode::CommonLabels))
                         g_font_manager_data.dispatch_client_font_changed(client_ptr);
                 }
             }

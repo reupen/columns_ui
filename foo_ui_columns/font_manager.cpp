@@ -14,9 +14,9 @@ public:
         system_appearance_manager::initialise();
         const auto p_entry = g_font_manager_data.find_by_id(p_guid);
 
-        if (!p_entry || p_entry->font_mode == fonts::font_mode_common_items)
+        if (!p_entry || p_entry->font_mode == fonts::FontMode::CommonItems)
             get_font(fonts::font_type_items, p_out);
-        else if (p_entry->font_mode == fonts::font_mode_common_labels)
+        else if (p_entry->font_mode == fonts::FontMode::CommonLabels)
             get_font(fonts::font_type_labels, p_out);
         else
             p_out = p_entry->get_normalised_font();
@@ -31,7 +31,7 @@ public:
         else
             p_entry = g_font_manager_data.m_common_labels_entry;
 
-        if (p_entry->font_mode == fonts::font_mode_system) {
+        if (p_entry->font_mode == fonts::FontMode::System) {
             if (p_type == fonts::font_type_items)
                 uGetIconFont(&p_out);
             else
@@ -48,7 +48,7 @@ public:
         if (!p_entry)
             return;
 
-        p_entry->font_mode = fonts::font_mode_custom;
+        p_entry->font_mode = fonts::FontMode::Custom;
         p_entry->font_description.log_font = p_font;
         p_entry->font_description.estimate_point_and_dip_size();
         fonts::client::ptr ptr;
@@ -74,10 +74,10 @@ public:
         system_appearance_manager::initialise();
         auto p_entry = g_font_manager_data.find_by_id(p_guid);
 
-        if (!p_entry || p_entry->font_mode == fonts::font_mode_common_items)
+        if (!p_entry || p_entry->font_mode == fonts::FontMode::CommonItems)
             return get_common_font(fonts::font_type_items, dpi);
 
-        if (p_entry->font_mode == fonts::font_mode_common_labels)
+        if (p_entry->font_mode == fonts::FontMode::CommonLabels)
             return get_common_font(fonts::font_type_labels, dpi);
 
         return p_entry->get_normalised_font(dpi);
@@ -92,7 +92,7 @@ public:
         else
             entry = g_font_manager_data.m_common_labels_entry;
 
-        if (entry->font_mode == fonts::font_mode_system) {
+        if (entry->font_mode == fonts::FontMode::System) {
             if (p_type == fonts::font_type_items) {
                 return fonts::get_icon_font_for_dpi(dpi).log_font;
             }
@@ -110,7 +110,7 @@ public:
         if (!p_entry)
             return;
 
-        p_entry->font_mode = fonts::font_mode_custom;
+        p_entry->font_mode = fonts::FontMode::Custom;
         p_entry->font_description.log_font = p_font;
         p_entry->font_description.point_size_tenths = point_size_tenths;
 

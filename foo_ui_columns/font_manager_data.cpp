@@ -91,9 +91,9 @@ FontManagerData::entry_ptr_t FontManagerData::find_by_id(GUID id)
 
     if (cui::fonts::client::create_by_guid(id, ptr)) {
         if (ptr->get_default_font_type() == cui::fonts::font_type_items)
-            entry->font_mode = cui::fonts::font_mode_common_items;
+            entry->font_mode = cui::fonts::FontMode::CommonItems;
         else
-            entry->font_mode = cui::fonts::font_mode_common_labels;
+            entry->font_mode = cui::fonts::FontMode::CommonLabels;
         m_entries.add_item(entry);
         return entry;
     }
@@ -103,8 +103,8 @@ FontManagerData::entry_ptr_t FontManagerData::find_by_id(GUID id)
 
 cui::fonts::FontDescription FontManagerData::resolve_font_description(const entry_ptr_t& entry)
 {
-    const auto is_common_items = entry->font_mode == cui::fonts::font_mode_common_items;
-    const auto is_common_labels = entry->font_mode == cui::fonts::font_mode_common_labels;
+    const auto is_common_items = entry->font_mode == cui::fonts::FontMode::CommonItems;
+    const auto is_common_labels = entry->font_mode == cui::fonts::FontMode::CommonLabels;
 
     const auto resolved_entry = [&] {
         if (is_common_items)
@@ -116,7 +116,7 @@ cui::fonts::FontDescription FontManagerData::resolve_font_description(const entr
         return entry;
     }();
 
-    if (resolved_entry->font_mode == cui::fonts::font_mode_system) {
+    if (resolved_entry->font_mode == cui::fonts::FontMode::System) {
         const auto system_font = is_common_items ? cui::fonts::get_icon_font_for_dpi(USER_DEFAULT_SCREEN_DPI)
                                                  : cui::fonts::get_menu_font_for_dpi(USER_DEFAULT_SCREEN_DPI);
 
@@ -305,7 +305,7 @@ void FontManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
     out.write_item(identifier_mode, (uint32_t)font_mode);
-    if (font_mode == cui::fonts::font_mode_custom) {
+    if (font_mode == cui::fonts::FontMode::Custom) {
         out.write_item(identifier_font, font_description.log_font);
 
         if (font_description.wss) {

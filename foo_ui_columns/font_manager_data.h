@@ -3,11 +3,11 @@
 
 namespace cui::fonts {
 
-enum font_mode_t {
-    font_mode_common_items,
-    font_mode_common_labels,
-    font_mode_custom,
-    font_mode_system,
+enum class FontMode {
+    CommonItems,
+    CommonLabels,
+    Custom,
+    System,
 };
 
 enum class RenderingMode : int32_t {
@@ -48,7 +48,7 @@ public:
         };
         GUID guid{};
         cui::fonts::FontDescription font_description{};
-        cui::fonts::font_mode_t font_mode{cui::fonts::font_mode_system};
+        cui::fonts::FontMode font_mode{cui::fonts::FontMode::System};
 
         LOGFONT get_normalised_font(unsigned dpi = uih::get_system_dpi_cached().cy);
 
