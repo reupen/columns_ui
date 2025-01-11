@@ -92,7 +92,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     m_element_ptr = g_font_manager_data.m_common_labels_entry;
                 else if (idx >= 2) {
                     m_element_api = m_fonts_client_list[idx - 2].m_ptr;
-                    m_element_ptr = g_font_manager_data.find_by_guid(m_fonts_client_list[idx - 2].m_guid);
+                    m_element_ptr = g_font_manager_data.find_by_id(m_fonts_client_list[idx - 2].m_guid);
                 }
             }
             update_mode_combobox();
@@ -109,7 +109,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 void TabFonts::on_font_changed()
 {
     if (m_element_api.is_valid()) {
-        m_element_api->on_font_changed();
+        g_font_manager_data.dispatch_client_font_changed(m_element_api);
         return;
     }
 
@@ -120,11 +120,10 @@ void TabFonts::on_font_changed()
     g_font_manager_data.g_on_common_font_changed(1 << index_element);
 
     for (auto&& client : m_fonts_client_list) {
-        const auto p_data = g_font_manager_data.find_by_guid(client.m_guid);
-        if (index_element == 0 && p_data->font_mode == cui::fonts::font_mode_common_items) {
-            client.m_ptr->on_font_changed();
-        } else if (index_element == 1 && p_data->font_mode == cui::fonts::font_mode_common_labels)
-            client.m_ptr->on_font_changed();
+        const auto p_data = g_font_manager_data.find_by_id(client.m_guid);
+        if ((index_element == 0 && p_data->font_mode == cui::fonts::font_mode_common_items)
+            || (index_element == 1 && p_data->font_mode == cui::fonts::font_mode_common_labels))
+            g_font_manager_data.dispatch_client_font_changed(client.m_ptr);
     }
 }
 

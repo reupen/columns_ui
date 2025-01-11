@@ -1,6 +1,30 @@
 #pragma once
 #include "font_utils.h"
 
+namespace cui::fonts {
+
+enum font_mode_t {
+    font_mode_common_items,
+    font_mode_common_labels,
+    font_mode_custom,
+    font_mode_system,
+};
+
+enum class RenderingMode : int32_t {
+    Automatic = DWRITE_RENDERING_MODE_DEFAULT,
+    Natural = DWRITE_RENDERING_MODE_NATURAL,
+    NaturalSymmetric = DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC,
+    GdiClassic = DWRITE_RENDERING_MODE_GDI_CLASSIC,
+    GdiNatural = DWRITE_RENDERING_MODE_GDI_NATURAL,
+};
+
+extern fbh::ConfigInt32 rendering_mode;
+extern fbh::ConfigBool force_greyscale_antialiasing;
+
+DWRITE_RENDERING_MODE get_rendering_mode();
+
+} // namespace cui::fonts
+
 class FontManagerData : public cfg_var {
 public:
     static const GUID g_cfg_guid;
@@ -45,8 +69,12 @@ public:
     entry_ptr_t m_common_items_entry;
     entry_ptr_t m_common_labels_entry;
 
-    entry_ptr_t find_by_guid(GUID id);
+    entry_ptr_t find_by_id(GUID id);
     cui::fonts::FontDescription resolve_font_description(const entry_ptr_t& entry);
+
+    void add_callback(GUID id, cui::basic_callback::ptr callback);
+    void remove_callback(GUID id, cui::basic_callback::ptr callback);
+    void dispatch_client_font_changed(cui::fonts::client::ptr client);
 
     void register_common_callback(cui::fonts::common_callback* p_callback);
     void deregister_common_callback(cui::fonts::common_callback* p_callback);
@@ -55,23 +83,7 @@ public:
     void on_rendering_options_change();
 
     pfc::ptr_list_t<cui::fonts::common_callback> m_callbacks;
+    std::unordered_map<GUID, std::vector<cui::basic_callback::ptr>> m_callback_map;
 
     FontManagerData();
 };
-
-namespace cui::fonts {
-
-enum class RenderingMode : int32_t {
-    Automatic = DWRITE_RENDERING_MODE_DEFAULT,
-    Natural = DWRITE_RENDERING_MODE_NATURAL,
-    NaturalSymmetric = DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC,
-    GdiClassic = DWRITE_RENDERING_MODE_GDI_CLASSIC,
-    GdiNatural = DWRITE_RENDERING_MODE_GDI_NATURAL,
-};
-
-extern fbh::ConfigInt32 rendering_mode;
-extern fbh::ConfigBool force_greyscale_antialiasing;
-
-DWRITE_RENDERING_MODE get_rendering_mode();
-
-} // namespace cui::fonts

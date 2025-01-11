@@ -83,10 +83,10 @@ void ConfigGroups::remove_group(size_t index)
 void set_font_size(float point_delta)
 {
     const auto api = fb2k::std_api_get<fonts::manager_v3>();
-    auto font = api->get_client_font(g_guid_items_font);
+    auto font = api->get_font(g_guid_items_font);
 
     const auto dip_delta = uih::direct_write::pt_to_dip(point_delta);
-    api->set_client_font_size(g_guid_items_font, font->size() + dip_delta);
+    api->set_font_size(g_guid_items_font, font->size() + dip_delta);
 }
 
 PlaylistView::PlaylistView()
@@ -391,7 +391,7 @@ void PlaylistView::g_on_vertical_item_padding_change()
 
 void PlaylistView::g_on_font_change()
 {
-    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_items_font);
+    const auto font = fonts::get_font(g_guid_items_font);
     const auto text_format = fonts::get_text_format(font);
     const auto log_font = font->log_font();
 
@@ -401,7 +401,7 @@ void PlaylistView::g_on_font_change()
 
 void PlaylistView::g_on_header_font_change()
 {
-    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_header_font);
+    const auto font = fonts::get_font(g_guid_header_font);
     const auto log_font = font->log_font();
     const auto text_format = fonts::get_text_format(font);
 
@@ -411,7 +411,7 @@ void PlaylistView::g_on_header_font_change()
 
 void PlaylistView::g_on_group_header_font_change()
 {
-    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_group_header_font);
+    const auto font = fonts::get_font(g_guid_group_header_font);
     const auto text_format = fonts::get_text_format(font);
 
     for (auto& window : g_windows)
@@ -760,15 +760,15 @@ void PlaylistView::notify_on_initialisation()
     set_vertical_item_padding(settings::playlist_view_item_padding);
 
     const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
-    const auto items_font = font_api->get_client_font(g_guid_items_font);
+    const auto items_font = font_api->get_font(g_guid_items_font);
     const auto items_text_format = fonts::get_text_format(items_font);
     const auto items_log_font = items_font->log_font();
     set_font(items_text_format, items_log_font);
 
-    const auto header_font = font_api->get_client_font(g_guid_header_font);
+    const auto header_font = font_api->get_font(g_guid_header_font);
     set_header_font(fonts::get_text_format(header_font), header_font->log_font());
 
-    const auto group_font = font_api->get_client_font(g_guid_group_header_font);
+    const auto group_font = font_api->get_font(g_guid_group_header_font);
     set_group_font(fonts::get_text_format(group_font));
 
     set_sorting_enabled(cfg_header_hottrack != 0);

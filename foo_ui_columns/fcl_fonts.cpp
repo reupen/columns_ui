@@ -131,10 +131,9 @@ class FontsDataSet : public fcl::dataset {
         }
         refresh_appearance_prefs();
         g_font_manager_data.g_on_common_font_changed(pfc_infinite);
-        service_enum_t<fonts::client> font_enum;
-        fonts::client::ptr ptr;
-        while (font_enum.next(ptr))
-            ptr->on_font_changed();
+
+        for (const auto ptr : fonts::client::enumerate())
+            g_font_manager_data.dispatch_client_font_changed(ptr);
     }
 };
 

@@ -193,7 +193,7 @@ void FilterPanel::s_on_dark_mode_status_change()
 
 void FilterPanel::g_on_font_items_change()
 {
-    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_filter_items_font_client);
+    const auto font = fonts::get_font(g_guid_filter_items_font_client);
     const auto text_format = fonts::get_text_format(font);
     const auto log_font = font->log_font();
 
@@ -204,7 +204,7 @@ void FilterPanel::g_on_font_items_change()
 
 void FilterPanel::g_on_font_header_change()
 {
-    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_filter_header_font_client);
+    const auto font = fonts::get_font(g_guid_filter_header_font_client);
     const auto log_font = font->log_font();
     const auto text_format = fonts::get_text_format(font);
 
@@ -797,12 +797,12 @@ void FilterPanel::notify_on_initialisation()
     set_show_sort_indicators(cfg_show_sort_indicators);
 
     const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
-    const auto items_font = font_api->get_client_font(g_guid_filter_items_font_client);
+    const auto items_font = font_api->get_font(g_guid_filter_items_font_client);
     const auto items_text_format = fonts::get_text_format(items_font);
     const auto items_log_font = items_font->log_font();
     set_font(items_text_format, items_log_font);
 
-    const auto header_font = font_api->get_client_font(g_guid_filter_header_font_client);
+    const auto header_font = font_api->get_font(g_guid_filter_header_font_client);
     set_header_font(fonts::get_text_format(header_font), header_font->log_font());
 
     size_t index = g_windows.size();

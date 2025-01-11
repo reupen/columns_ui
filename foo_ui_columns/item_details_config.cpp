@@ -213,8 +213,7 @@ void ItemDetailsConfig::open_format_code_generator()
 
             switch (msg) {
             case WM_INITDIALOG: {
-                const auto font
-                    = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_item_details_font_client);
+                const auto font = fonts::get_font(g_guid_item_details_font_client);
 
                 fonts::FontDescription font_description;
                 font_description.wss = uih::direct_write::WeightStretchStyle{
