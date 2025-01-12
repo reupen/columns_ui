@@ -18,9 +18,18 @@ FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 
 void FontManagerData::g_on_common_font_changed(uint32_t mask)
 {
-    size_t count = m_callbacks.get_count();
-    for (size_t i = 0; i < count; i++)
-        m_callbacks[i]->on_font_changed(mask);
+    for (const auto callback : m_callbacks)
+        callback->on_font_changed(mask);
+
+    if (mask & cui::fonts::font_type_flag_items)
+        if (const auto iter = m_callback_map.find(cui::fonts::items_font_id); iter != m_callback_map.end())
+            for (const auto& callback : iter->second)
+                (*callback)();
+
+    if (mask & cui::fonts::font_type_flag_labels)
+        if (const auto iter = m_callback_map.find(cui::fonts::labels_font_id); iter != m_callback_map.end())
+            for (const auto& callback : iter->second)
+                (*callback)();
 }
 
 void FontManagerData::on_rendering_options_change()
@@ -28,8 +37,28 @@ void FontManagerData::on_rendering_options_change()
     g_on_common_font_changed(cui::fonts::font_type_flag_items | cui::fonts::font_type_flag_labels);
 
     for (const auto& client_ptr : cui::fonts::client::enumerate()) {
-        client_ptr->on_font_changed();
+        g_font_manager_data.dispatch_client_font_changed(client_ptr);
     }
+}
+
+void FontManagerData::add_callback(GUID id, cui::basic_callback::ptr callback)
+{
+    m_callback_map[id].emplace_back(std::move(callback));
+}
+
+void FontManagerData::remove_callback(GUID id, cui::basic_callback::ptr callback)
+{
+    if (const auto iter = m_callback_map.find(id); iter != m_callback_map.end())
+        std::erase(iter->second, callback);
+}
+
+void FontManagerData::dispatch_client_font_changed(cui::fonts::client::ptr client)
+{
+    client->on_font_changed();
+
+    if (const auto iter = m_callback_map.find(client->get_client_guid()); iter != m_callback_map.end())
+        for (const auto& callback : iter->second)
+            (*callback)();
 }
 
 void FontManagerData::deregister_common_callback(cui::fonts::common_callback* p_callback)
@@ -42,8 +71,14 @@ void FontManagerData::register_common_callback(cui::fonts::common_callback* p_ca
     m_callbacks.add_item(p_callback);
 }
 
-FontManagerData::entry_ptr_t FontManagerData::find_by_guid(GUID id)
+FontManagerData::entry_ptr_t FontManagerData::find_by_id(GUID id)
 {
+    if (id == cui::fonts::items_font_id)
+        return m_common_items_entry;
+
+    if (id == cui::fonts::labels_font_id)
+        return m_common_labels_entry;
+
     for (auto&& entry : m_entries) {
         if (entry->guid == id) {
             return entry;
@@ -56,20 +91,20 @@ FontManagerData::entry_ptr_t FontManagerData::find_by_guid(GUID id)
 
     if (cui::fonts::client::create_by_guid(id, ptr)) {
         if (ptr->get_default_font_type() == cui::fonts::font_type_items)
-            entry->font_mode = cui::fonts::font_mode_common_items;
+            entry->font_mode = cui::fonts::FontMode::CommonItems;
         else
-            entry->font_mode = cui::fonts::font_mode_common_labels;
+            entry->font_mode = cui::fonts::FontMode::CommonLabels;
+        m_entries.add_item(entry);
+        return entry;
     }
 
-    m_entries.add_item(entry);
-
-    return entry;
+    return {};
 }
 
 cui::fonts::FontDescription FontManagerData::resolve_font_description(const entry_ptr_t& entry)
 {
-    const auto is_common_items = entry->font_mode == cui::fonts::font_mode_common_items;
-    const auto is_common_labels = entry->font_mode == cui::fonts::font_mode_common_labels;
+    const auto is_common_items = entry->font_mode == cui::fonts::FontMode::CommonItems;
+    const auto is_common_labels = entry->font_mode == cui::fonts::FontMode::CommonLabels;
 
     const auto resolved_entry = [&] {
         if (is_common_items)
@@ -81,7 +116,7 @@ cui::fonts::FontDescription FontManagerData::resolve_font_description(const entr
         return entry;
     }();
 
-    if (resolved_entry->font_mode == cui::fonts::font_mode_system) {
+    if (resolved_entry->font_mode == cui::fonts::FontMode::System) {
         const auto system_font = is_common_items ? cui::fonts::get_icon_font_for_dpi(USER_DEFAULT_SCREEN_DPI)
                                                  : cui::fonts::get_menu_font_for_dpi(USER_DEFAULT_SCREEN_DPI);
 
@@ -270,7 +305,7 @@ void FontManagerData::Entry::_export(stream_writer* p_stream, abort_callback& p_
     fbh::fcl::Writer out(p_stream, p_abort);
     out.write_item(identifier_guid, guid);
     out.write_item(identifier_mode, (uint32_t)font_mode);
-    if (font_mode == cui::fonts::font_mode_custom) {
+    if (font_mode == cui::fonts::FontMode::Custom) {
         out.write_item(identifier_font, font_description.log_font);
 
         if (font_description.wss) {

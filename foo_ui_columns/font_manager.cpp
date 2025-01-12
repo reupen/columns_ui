@@ -12,14 +12,14 @@ public:
     void get_font(const GUID& p_guid, LOGFONT& p_out) const override
     {
         system_appearance_manager::initialise();
-        const auto p_entry = g_font_manager_data.find_by_guid(p_guid);
-        if (p_entry->font_mode == fonts::font_mode_common_items)
+        const auto p_entry = g_font_manager_data.find_by_id(p_guid);
+
+        if (!p_entry || p_entry->font_mode == fonts::FontMode::CommonItems)
             get_font(fonts::font_type_items, p_out);
-        else if (p_entry->font_mode == fonts::font_mode_common_labels)
+        else if (p_entry->font_mode == fonts::FontMode::CommonLabels)
             get_font(fonts::font_type_labels, p_out);
-        else {
+        else
             p_out = p_entry->get_normalised_font();
-        }
     }
 
     void get_font(const fonts::font_type_t p_type, LOGFONT& p_out) const override
@@ -31,7 +31,7 @@ public:
         else
             p_entry = g_font_manager_data.m_common_labels_entry;
 
-        if (p_entry->font_mode == fonts::font_mode_system) {
+        if (p_entry->font_mode == fonts::FontMode::System) {
             if (p_type == fonts::font_type_items)
                 uGetIconFont(&p_out);
             else
@@ -43,13 +43,17 @@ public:
 
     void set_font(const GUID& p_guid, const LOGFONT& p_font) override
     {
-        const auto p_entry = g_font_manager_data.find_by_guid(p_guid);
-        p_entry->font_mode = fonts::font_mode_custom;
+        const auto p_entry = g_font_manager_data.find_by_id(p_guid);
+
+        if (!p_entry)
+            return;
+
+        p_entry->font_mode = fonts::FontMode::Custom;
         p_entry->font_description.log_font = p_font;
         p_entry->font_description.estimate_point_and_dip_size();
         fonts::client::ptr ptr;
         if (fonts::client::create_by_guid(p_guid, ptr))
-            ptr->on_font_changed();
+            g_font_manager_data.dispatch_client_font_changed(ptr);
     }
 
     void register_common_callback(fonts::common_callback* p_callback) override
@@ -68,12 +72,12 @@ public:
     [[nodiscard]] LOGFONT get_client_font(GUID p_guid, unsigned dpi) const override
     {
         system_appearance_manager::initialise();
-        const auto p_entry = g_font_manager_data.find_by_guid(p_guid);
+        auto p_entry = g_font_manager_data.find_by_id(p_guid);
 
-        if (p_entry->font_mode == fonts::font_mode_common_items)
+        if (!p_entry || p_entry->font_mode == fonts::FontMode::CommonItems)
             return get_common_font(fonts::font_type_items, dpi);
 
-        if (p_entry->font_mode == fonts::font_mode_common_labels)
+        if (p_entry->font_mode == fonts::FontMode::CommonLabels)
             return get_common_font(fonts::font_type_labels, dpi);
 
         return p_entry->get_normalised_font(dpi);
@@ -88,7 +92,7 @@ public:
         else
             entry = g_font_manager_data.m_common_labels_entry;
 
-        if (entry->font_mode == fonts::font_mode_system) {
+        if (entry->font_mode == fonts::FontMode::System) {
             if (p_type == fonts::font_type_items) {
                 return fonts::get_icon_font_for_dpi(dpi).log_font;
             }
@@ -101,14 +105,18 @@ public:
 
     void set_client_font(GUID guid, const LOGFONT& p_font, int point_size_tenths) override
     {
-        const auto p_entry = g_font_manager_data.find_by_guid(guid);
-        p_entry->font_mode = fonts::font_mode_custom;
+        const auto p_entry = g_font_manager_data.find_by_id(guid);
+
+        if (!p_entry)
+            return;
+
+        p_entry->font_mode = fonts::FontMode::Custom;
         p_entry->font_description.log_font = p_font;
         p_entry->font_description.point_size_tenths = point_size_tenths;
 
         fonts::client::ptr ptr;
         if (fonts::client::create_by_guid(guid, ptr))
-            ptr->on_font_changed();
+            g_font_manager_data.dispatch_client_font_changed(ptr);
     }
 
     void register_common_callback(fonts::common_callback* p_callback) override

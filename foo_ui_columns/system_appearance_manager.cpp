@@ -164,21 +164,18 @@ private:
         } break;
         case WM_SETTINGCHANGE:
             if ((wp == SPI_GETICONTITLELOGFONT && g_font_manager_data.m_common_items_entry
-                    && g_font_manager_data.m_common_items_entry->font_mode == fonts::font_mode_system)
+                    && g_font_manager_data.m_common_items_entry->font_mode == fonts::FontMode::System)
                 || (wp == SPI_GETNONCLIENTMETRICS && g_font_manager_data.m_common_labels_entry
-                    && g_font_manager_data.m_common_labels_entry->font_mode == fonts::font_mode_system)) {
-                FontsClientList m_fonts_client_list;
-                FontsClientList::g_get_list(m_fonts_client_list);
-                size_t count = m_fonts_client_list.get_count();
+                    && g_font_manager_data.m_common_labels_entry->font_mode == fonts::FontMode::System)) {
                 g_font_manager_data.g_on_common_font_changed(
                     wp == SPI_GETICONTITLELOGFONT ? fonts::font_type_flag_items : fonts::font_type_flag_labels);
-                for (size_t i = 0; i < count; i++) {
-                    const auto p_data = g_font_manager_data.find_by_guid(m_fonts_client_list[i].m_guid);
 
-                    if (wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == fonts::font_mode_common_items)
-                        m_fonts_client_list[i].m_ptr->on_font_changed();
-                    else if (wp == SPI_GETICONTITLELOGFONT && p_data->font_mode == fonts::font_mode_common_labels)
-                        m_fonts_client_list[i].m_ptr->on_font_changed();
+                for (auto client_ptr : fonts::client::enumerate()) {
+                    const auto p_data = g_font_manager_data.find_by_id(client_ptr->get_client_guid());
+
+                    if ((wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == fonts::FontMode::CommonItems)
+                        || (wp == SPI_GETICONTITLELOGFONT && p_data->font_mode == fonts::FontMode::CommonLabels))
+                        g_font_manager_data.dispatch_client_font_changed(client_ptr);
                 }
             }
             break;

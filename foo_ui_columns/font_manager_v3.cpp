@@ -6,7 +6,7 @@
 
 namespace cui::fonts {
 
-class Font : public font {
+class NOVTABLE Font : public font {
 public:
     Font(LOGFONT log_font, uih::direct_write::WeightStretchStyle wss, std::wstring typographic_family_name,
         std::vector<DWRITE_FONT_AXIS_VALUE> axis_values, const float size, DWRITE_RENDERING_MODE rendering_mode,
@@ -44,9 +44,13 @@ public:
 
     LOGFONT log_font() noexcept override
     {
-        LOGFONT scaled_log_font{m_log_font};
-        scaled_log_font.lfHeight = -gsl::narrow_cast<long>(uih::direct_write::dip_to_px(m_size) + 0.5f);
-        return scaled_log_font;
+        return log_font_for_scaling_factor(uih::direct_write::get_default_scaling_factor());
+    }
+
+    LOGFONT log_font_for_dpi(unsigned dpi) noexcept override
+    {
+        const auto scaling_factor = gsl::narrow_cast<float>(dpi) / gsl::narrow_cast<float>(USER_DEFAULT_SCREEN_DPI);
+        return log_font_for_scaling_factor(scaling_factor);
     }
 
     pfc::com_ptr_t<IDWriteTextFormat> create_text_format(const wchar_t* locale_name = L"") noexcept final
@@ -103,6 +107,13 @@ public:
     bool force_greyscale_antialiasing() noexcept override { return m_force_greyscale_antialiasing; }
 
 private:
+    LOGFONT log_font_for_scaling_factor(float scaling_factor) noexcept
+    {
+        LOGFONT scaled_log_font{m_log_font};
+        scaled_log_font.lfHeight = -gsl::narrow_cast<long>(uih::direct_write::dip_to_px(m_size, scaling_factor) + 0.5f);
+        return scaled_log_font;
+    }
+
     LOGFONT m_log_font{};
     uih::direct_write::WeightStretchStyle m_wss{};
     std::wstring m_typographic_family_name;
@@ -112,12 +123,16 @@ private:
     bool m_force_greyscale_antialiasing{};
 };
 
-class FontManager3 : public manager_v3 {
+class NOVTABLE FontManager3 : public manager_v3 {
 public:
-    font::ptr get_client_font(GUID id) const override
+    font::ptr get_font(GUID id) const override
     {
         system_appearance_manager::initialise();
-        const auto entry = g_font_manager_data.find_by_guid(id);
+        const auto entry = g_font_manager_data.find_by_id(id);
+
+        if (!entry)
+            throw exception_font_client_not_found();
+
         auto font_description = g_font_manager_data.resolve_font_description(entry);
 
         const auto& log_font = font_description.log_font;
@@ -129,23 +144,36 @@ public:
             size, static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get()), force_greyscale_antialiasing.get());
     }
 
-    void set_client_font_size(GUID id, float size) override
+    void set_font_size(GUID id, float size) override
     {
-        const auto entry = g_font_manager_data.find_by_guid(id);
+        const auto entry = g_font_manager_data.find_by_id(id);
 
-        if (entry->font_mode != font_mode_custom) {
+        if (!entry)
+            throw exception_font_client_not_found();
+
+        if (entry->font_mode != FontMode::Custom) {
             entry->font_description = g_font_manager_data.resolve_font_description(entry);
-            entry->font_mode = font_mode_custom;
+            entry->font_mode = FontMode::Custom;
         }
 
         entry->font_description.set_dip_size(size);
 
         client::ptr ptr;
         if (client::create_by_guid(id, ptr))
-            ptr->on_font_changed();
+            g_font_manager_data.dispatch_client_font_changed(ptr);
+    }
+
+    [[nodiscard]] callback_token::ptr on_font_changed(GUID id, basic_callback::ptr callback) override
+    {
+        g_font_manager_data.add_callback(id, callback);
+
+        return fb2k::service_new<lambda_callback_token>(
+            [id, callback] { g_font_manager_data.remove_callback(id, callback); });
     }
 };
 
+namespace {
 service_factory_t<FontManager3> _;
+}
 
 } // namespace cui::fonts

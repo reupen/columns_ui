@@ -41,7 +41,7 @@ void on_status_font_change()
     state->lock_icon.reset();
     state->lock_bitmap.reset();
 
-    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(font_client_status_guid);
+    const auto font = fonts::get_font(font_client_status_guid);
     const auto log_font = font->log_font();
     state->font.reset(CreateFontIndirect(&log_font));
     state->direct_write_text_format.reset();

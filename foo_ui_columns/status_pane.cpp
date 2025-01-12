@@ -52,7 +52,7 @@ void StatusPane::recreate_font()
 {
     m_text_format.reset();
 
-    const auto font = fb2k::std_api_get<fonts::manager_v3>()->get_client_font(g_guid_font);
+    const auto font = fonts::get_font(g_guid_font);
     const auto text_format = font->create_wil_text_format();
 
     if (!(m_direct_write_context && text_format))

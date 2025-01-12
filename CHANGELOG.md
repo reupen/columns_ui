@@ -29,7 +29,8 @@
   [#1031](https://github.com/reupen/columns_ui/pull/1031),
   [#1037](https://github.com/reupen/columns_ui/pull/1037),
   [#1039](https://github.com/reupen/columns_ui/pull/1039),
-  [#1042](https://github.com/reupen/columns_ui/pull/1042)]
+  [#1042](https://github.com/reupen/columns_ui/pull/1042),
+  [#1060](https://github.com/reupen/columns_ui/pull/1060)]
 
   This includes colour font support on Windows 8.1 and newer (allowing the use
   of, for example, colour emojis).
@@ -48,7 +49,8 @@
   [#919](https://github.com/reupen/columns_ui/pull/919),
   [#927](https://github.com/reupen/columns_ui/pull/927),
   [#943](https://github.com/reupen/columns_ui/pull/943),
-  [#1015](https://github.com/reupen/columns_ui/pull/1015)]
+  [#1015](https://github.com/reupen/columns_ui/pull/1015),
+  [#1060](https://github.com/reupen/columns_ui/pull/1060)]
 
   This features better grouping of font families and now allows the entry of
   non-integer font sizes (to one decimal place).
