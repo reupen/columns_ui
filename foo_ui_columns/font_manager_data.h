@@ -86,4 +86,5 @@ public:
     std::unordered_map<GUID, std::vector<cui::basic_callback::ptr>> m_callback_map;
 
     FontManagerData();
+    ~FontManagerData();
 };

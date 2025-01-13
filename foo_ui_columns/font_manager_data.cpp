@@ -16,6 +16,21 @@ FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
     m_common_labels_entry->font_description.estimate_point_and_dip_size();
 }
 
+FontManagerData::~FontManagerData()
+{
+    for (auto& [id, callbacks] : m_callback_map) {
+        if (callbacks.empty())
+            continue;
+
+        OutputDebugString(fmt::format(L"Columns UI: {} leaked callback(s) for font ID {} detected\n", callbacks.size(),
+            mmh::to_utf16(pfc::print_guid(id).c_str()))
+                .c_str());
+
+        for (auto& callback : callbacks)
+            callback.detach();
+    }
+}
+
 void FontManagerData::g_on_common_font_changed(uint32_t mask)
 {
     for (const auto callback : m_callbacks)
