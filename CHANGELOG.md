@@ -67,7 +67,8 @@
   [[#1004](https://github.com/reupen/columns_ui/pull/1004),
   [#1011](https://github.com/reupen/columns_ui/pull/1011),
   [#1018](https://github.com/reupen/columns_ui/pull/1018),
-  [#1023](https://github.com/reupen/columns_ui/pull/1023)]
+  [#1023](https://github.com/reupen/columns_ui/pull/1023),
+  [#1062](https://github.com/reupen/columns_ui/pull/1062)]
 
   These serve as replacements for the older `$set_font()` and `$reset_font()`
   functions.
