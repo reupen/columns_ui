@@ -1,11 +1,11 @@
 # Change log
 
-## Development version
+## 3.0.0-alpha.1
 
 ### Features
 
-- Text in list views (such as the playlist view, playlist switcther, Filter
-  panel and Item properties), Item details and in the status bar and pane is now
+- Text in list views (such as the playlist view, playlist switcher, Filter panel
+  and Item properties), Item details and in the status bar and pane is now
   rendered using DirectWrite.
   [[#897](https://github.com/reupen/columns_ui/pull/897),
   [#904](https://github.com/reupen/columns_ui/pull/904),
@@ -44,6 +44,10 @@
 
   Some customisation of DirectWrite text rendering is available on the new Text
   rendering tab on the Colours and fonts preferences page.
+
+  Note that there may be slight differences in line heights for these panels
+  compared to previous versions, depending on the font, font size and system
+  display scale (DPI setting).
 
 - A new DirectWrite-based font picker was added to the Colours and fonts
   preferences page. [[#916](https://github.com/reupen/columns_ui/pull/916),
@@ -224,9 +228,10 @@
 - Various dependencies were updated.
   [[#920](https://github.com/reupen/columns_ui/pull/920)]
 
-- The component is now compiled using foobar2000 SDK 2024-08-07.
+- The component is now compiled using foobar2000 SDK 2024-12-03.
   [[#833](https://github.com/reupen/columns_ui/pull/833),
-  [#970](https://github.com/reupen/columns_ui/pull/970)]
+  [#972](https://github.com/reupen/columns_ui/pull/972),
+  [#1050](https://github.com/reupen/columns_ui/pull/1050)]
 
 - The component is now compiled with Visual Studio 2022 17.12.
 
