@@ -455,7 +455,6 @@ HRESULT STDMETHODCALLTYPE PlaylistSwitcher::DropTarget::Drop(
 
     m_window->remove_insert_mark();
     m_window->remove_highlight_item();
-    uih::ole::set_drop_description(pDataObj, DROPIMAGE_INVALID, "", "");
 
     m_is_playlists = false;
     m_is_accepted_type = false;

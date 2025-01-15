@@ -79,10 +79,6 @@ HRESULT STDMETHODCALLTYPE MainWindowDropTarget::Drop(
         data.remove_all();
     }
 
-    if (m_DropTargetHelper)
-        m_DropTargetHelper->DragLeave();
-    uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
-
     m_DataObject.reset();
 
     return S_OK;

@@ -156,10 +156,8 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
     last_over.x = 0;
     last_over.y = 0;
 
-    if (!m_is_accepted_type) {
-        uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
+    if (!m_is_accepted_type)
         return S_OK;
-    }
 
     const auto playlist_api = playlist_manager::get();
 
