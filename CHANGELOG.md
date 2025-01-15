@@ -146,6 +146,9 @@
   panels where it wasn’t possible to click on autocomplete suggestions was
   fixed. [[#886](https://github.com/reupen/columns_ui/pull/886)]
 
+- A rare drag-and-drop crash was fixed.
+  [[#1067](https://github.com/reupen/columns_ui/pull/1067)]
+
 - A bug where files copied in File Explorer couldn’t be pasted in the playlist
   view using the context menu was fixed.
   [[#873](https://github.com/reupen/columns_ui/pull/873)]

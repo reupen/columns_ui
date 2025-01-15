@@ -20,7 +20,6 @@ private:
     static bool check_window_allowed(HWND wnd);
 
     long drop_ref_count{0};
-    POINTL last_over{};
     wil::com_ptr<IDropTargetHelper> m_DropTargetHelper;
     wil::com_ptr<IDataObject> m_DataObject;
 };

@@ -44,6 +44,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragEnter(
     POINT pt = {ptl.x, ptl.y};
     if (m_DropTargetHelper)
         m_DropTargetHelper->DragEnter(p_list->get_wnd(), pDataObj, &pt, *pdwEffect);
+
     m_DataObject = pDataObj;
 
     last_over.x = 0;
@@ -93,13 +94,6 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragOver(
 
         HWND wnd = ChildWindowFromPointEx(p_list->get_wnd(), ptm, CWP_SKIPINVISIBLE);
 
-        //    RECT plist;
-
-        //    GetWindowRect(g_plist, &plist);
-        //    RECT tabs;
-
-        //    GetWindowRect(g_tab, &tabs);
-
         if (p_list->wnd_tabs) {
             POINT pttab = pti;
 
@@ -134,6 +128,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::DragLeave()
 {
     if (m_DropTargetHelper)
         m_DropTargetHelper->DragLeave();
+
     last_over.x = 0;
     last_over.y = 0;
     p_list->kill_switch_timer();
@@ -148,6 +143,7 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 {
     POINT pt = {ptl.x, ptl.y};
     bool isAltDown = (grfKeyState & MK_ALT) != 0;
+
     if (m_DropTargetHelper)
         m_DropTargetHelper->Drop(pDataObj, &pt, *pdwEffect);
 
@@ -156,10 +152,8 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
     last_over.x = 0;
     last_over.y = 0;
 
-    if (!m_is_accepted_type) {
-        uih::ole::set_drop_description(m_DataObject.get(), DROPIMAGE_INVALID, "", "");
+    if (!m_is_accepted_type)
         return S_OK;
-    }
 
     const auto playlist_api = playlist_manager::get();
 
@@ -172,162 +166,135 @@ HRESULT STDMETHODCALLTYPE PlaylistTabs::PlaylistTabsDropTarget::Drop(
 
     HWND wnd = ChildWindowFromPointEx(p_list->get_wnd(), ptm, CWP_SKIPINVISIBLE);
 
-    if (wnd) {
-        bool process = !ui_drop_item_callback::g_on_drop(pDataObj);
+    if (!wnd)
+        return S_OK;
 
-        bool send_new_playlist = false;
+    if (ui_drop_item_callback::g_on_drop(pDataObj))
+        return S_OK;
 
-        if (process && m_last_rmb) {
-            process = false;
-            enum {
-                ID_DROP = 1,
-                ID_NEW_PLAYLIST,
-                ID_CANCEL
-            };
+    bool send_new_playlist = false;
 
-            HMENU menu = CreatePopupMenu();
+    if (m_last_rmb) {
+        enum {
+            ID_DROP = 1,
+            ID_NEW_PLAYLIST,
+            ID_CANCEL
+        };
 
-            uAppendMenu(menu, (MF_STRING), ID_DROP, "&Add files here");
-            uAppendMenu(menu, (MF_STRING), ID_NEW_PLAYLIST, "&Add files to new playlist");
-            uAppendMenu(menu, MF_SEPARATOR, 0, nullptr);
-            uAppendMenu(menu, MF_STRING, ID_CANCEL, "&Cancel");
+        HMENU menu = CreatePopupMenu();
 
-            int cmd = TrackPopupMenu(
-                menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, p_list->get_wnd(), nullptr);
-            DestroyMenu(menu);
+        uAppendMenu(menu, (MF_STRING), ID_DROP, "&Add files here");
+        uAppendMenu(menu, (MF_STRING), ID_NEW_PLAYLIST, "&Add files to new playlist");
+        uAppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+        uAppendMenu(menu, MF_STRING, ID_CANCEL, "&Cancel");
 
-            if (cmd) {
-                switch (cmd) {
-                case ID_DROP:
-                    process = true;
-                    break;
-                case ID_NEW_PLAYLIST:
-                    process = true;
-                    send_new_playlist = true;
-                    break;
+        int cmd = TrackPopupMenu(
+            menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, p_list->get_wnd(), nullptr);
+        DestroyMenu(menu);
+
+        switch (cmd) {
+        case ID_DROP:
+            break;
+        case ID_NEW_PLAYLIST:
+            send_new_playlist = true;
+            break;
+        default:
+            return S_OK;
+        }
+    }
+
+    metadb_handle_list data;
+    const auto incoming_api = playlist_incoming_item_filter::get();
+    incoming_api->process_dropped_files(pDataObj, data, true, p_list->get_wnd());
+
+    POINT pttab = pti;
+
+    size_t newPlaylistIndex = pfc_infinite;
+    size_t target_index = playlist_api->get_active_playlist();
+
+    if (p_list->wnd_tabs && wnd == p_list->wnd_tabs) {
+        RECT tabs;
+
+        GetWindowRect(p_list->wnd_tabs, &tabs);
+        if (ScreenToClient(p_list->wnd_tabs, &pttab)) {
+            TCHITTESTINFO hittest;
+            hittest.pt.x = pttab.x;
+            hittest.pt.y = pttab.y;
+            int idx = TabCtrl_HitTest(p_list->wnd_tabs, &hittest);
+
+            if (send_new_playlist || idx < 0 || isAltDown) {
+                send_new_playlist = true;
+                if (idx >= 0)
+                    newPlaylistIndex = idx;
+            } else
+                target_index = idx;
+        }
+    }
+
+    if (send_new_playlist) {
+        pfc::string8 playlist_name("Untitled");
+
+        bool named = false;
+
+        FORMATETC fe{};
+        STGMEDIUM sm{};
+        HRESULT hr = E_FAIL;
+
+        fe.cfFormat = CF_HDROP;
+        fe.ptd = nullptr;
+        fe.dwAspect = DVASPECT_CONTENT;
+        fe.lindex = -1;
+        fe.tymed = TYMED_HGLOBAL;
+
+        // User has dropped on us. Get the data from drag source
+        hr = pDataObj->GetData(&fe, &sm);
+        if (SUCCEEDED(hr)) {
+            // Display the data and release it.
+            pfc::string8 temp;
+
+            unsigned int /*n,*/ t = uDragQueryFileCount((HDROP)sm.hGlobal);
+            if (t == 1) {
+                uDragQueryFile((HDROP)sm.hGlobal, 0, temp);
+                if (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY) {
+                    playlist_name.set_string(string_filename_ext(temp));
+                    named = true;
+                } else {
+                    playlist_name.set_string(string_filename(temp));
+                    named = true;
                 }
             }
+
+            ReleaseStgMedium(&sm);
         }
 
-        if (process) {
-            metadb_handle_list data;
-            const auto incoming_api = playlist_incoming_item_filter::get();
-            incoming_api->process_dropped_files(pDataObj, data, true, p_list->get_wnd());
+        size_t new_idx;
+        if (newPlaylistIndex == pfc_infinite)
+            newPlaylistIndex = playlist_api->get_playlist_count();
 
-            POINT pttab = pti;
+        if (named && cfg_replace_drop_underscores)
+            playlist_name.replace_char('_', ' ');
+        if (!named && cfg_pgen_tf)
+            new_idx = playlist_api->create_playlist(
+                StringFormatCommonTrackTitle(data, cfg_pgenstring), pfc_infinite, newPlaylistIndex);
 
-            size_t newPlaylistIndex = pfc_infinite;
-            size_t target_index = playlist_api->get_active_playlist();
+        else
+            new_idx = playlist_api->create_playlist(playlist_name, pfc_infinite, newPlaylistIndex);
 
-            if (p_list->wnd_tabs && wnd == p_list->wnd_tabs) {
-                RECT tabs;
+        playlist_api->playlist_add_items(new_idx, data, bit_array_false());
+        if (main_window::config_get_activate_target_playlist_on_dropped_items())
+            playlist_api->set_active_playlist(new_idx);
 
-                GetWindowRect(p_list->wnd_tabs, &tabs);
-                if (ScreenToClient(p_list->wnd_tabs, &pttab)) {
-                    TCHITTESTINFO hittest;
-                    hittest.pt.x = pttab.x;
-                    hittest.pt.y = pttab.y;
-                    int idx = TabCtrl_HitTest(p_list->wnd_tabs, &hittest);
+    } else {
+        playlist_api->playlist_clear_selection(target_index);
 
-                    if (send_new_playlist || idx < 0 || isAltDown) {
-                        send_new_playlist = true;
-                        if (idx >= 0)
-                            newPlaylistIndex = idx;
-                    } else
-                        target_index = idx;
-                }
-            }
+        const auto index = fbh::as_optional(
+            playlist_api->playlist_insert_items(target_index, fbh::max_size_t, data, bit_array_true()));
 
-            if (send_new_playlist) {
-                pfc::string8 playlist_name("Untitled");
+        if (index) {
+            playlist_api->playlist_set_focus_item(target_index, *index);
 
-                bool named = false;
-
-                if (true || true) {
-                    FORMATETC fe;
-                    STGMEDIUM sm;
-                    HRESULT hr = E_FAIL;
-
-                    //                    memset(&sm, 0, sizeof(0));
-
-                    fe.cfFormat = CF_HDROP;
-                    fe.ptd = nullptr;
-                    fe.dwAspect = DVASPECT_CONTENT;
-                    fe.lindex = -1;
-                    fe.tymed = TYMED_HGLOBAL;
-
-                    // User has dropped on us. Get the data from drag source
-                    hr = pDataObj->GetData(&fe, &sm);
-                    if (SUCCEEDED(hr)) {
-                        // Display the data and release it.
-                        pfc::string8 temp;
-
-                        unsigned int /*n,*/ t = uDragQueryFileCount((HDROP)sm.hGlobal);
-                        if (t == 1) {
-                            {
-                                uDragQueryFile((HDROP)sm.hGlobal, 0, temp);
-                                if (uGetFileAttributes(temp) & FILE_ATTRIBUTE_DIRECTORY) {
-                                    playlist_name.set_string(string_filename_ext(temp));
-                                    named = true;
-                                } else {
-                                    playlist_name.set_string(string_filename(temp));
-                                    named = true;
-#if 0
-                                    pfc::string_extension ext(temp);
-
-                                    service_enum_t<playlist_loader> e;
-                                    service_ptr_t<playlist_loader> l;
-                                    if (e.first(l))
-                                        do
-                                        {
-                                            if (!strcmp(l->get_extension(), ext))
-                                            {
-                                                playlist_name.set_string(pfc::string_filename(temp));
-                                                named = true;
-                                                l.release();
-                                                break;
-                                            }
-                                            l.release();
-                                        } while (e.next(l));
-#endif
-                                }
-                            }
-                        }
-
-                        ReleaseStgMedium(&sm);
-                    }
-                }
-
-                size_t new_idx;
-                if (newPlaylistIndex == pfc_infinite)
-                    newPlaylistIndex = playlist_api->get_playlist_count();
-
-                if (named && cfg_replace_drop_underscores)
-                    playlist_name.replace_char('_', ' ');
-                if (!named && cfg_pgen_tf)
-                    new_idx = playlist_api->create_playlist(
-                        StringFormatCommonTrackTitle(data, cfg_pgenstring), pfc_infinite, newPlaylistIndex);
-
-                else
-                    new_idx = playlist_api->create_playlist(playlist_name, pfc_infinite, newPlaylistIndex);
-
-                playlist_api->playlist_add_items(new_idx, data, bit_array_false());
-                if (main_window::config_get_activate_target_playlist_on_dropped_items())
-                    playlist_api->set_active_playlist(new_idx);
-
-            } else {
-                playlist_api->playlist_clear_selection(target_index);
-
-                const auto index = fbh::as_optional(
-                    playlist_api->playlist_insert_items(target_index, fbh::max_size_t, data, bit_array_true()));
-
-                if (index) {
-                    playlist_api->playlist_set_focus_item(target_index, *index);
-
-                    if (main_window::config_get_activate_target_playlist_on_dropped_items())
-                        playlist_api->set_active_playlist(target_index);
-                }
-            }
+            if (main_window::config_get_activate_target_playlist_on_dropped_items())
+                playlist_api->set_active_playlist(target_index);
         }
     }
 

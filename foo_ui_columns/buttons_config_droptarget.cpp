@@ -75,9 +75,7 @@ HRESULT STDMETHODCALLTYPE ButtonsToolbar::ConfigParam::ButtonsList::ButtonsListD
         m_DropTargetHelper->DragOver(&pt, *pdwEffect);
 
     last_rmb = ((grfKeyState & MK_RBUTTON) != 0);
-    POINT pti;
-    pti.y = ptl.y;
-    pti.x = ptl.x;
+    POINT pti{ptl.x, ptl.y};
 
     *pdwEffect = DROPEFFECT_NONE;
     if (check_do(m_DataObject.get() /*, pdwEffect*/)) {
