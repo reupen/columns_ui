@@ -24,7 +24,7 @@
   [#974](https://github.com/reupen/columns_ui/pull/974),
   [#976](https://github.com/reupen/columns_ui/pull/976),
   [#981](https://github.com/reupen/columns_ui/pull/981),
-  [#981](https://github.com/reupen/columns_ui/pull/989),
+  [#989](https://github.com/reupen/columns_ui/pull/989),
   [#1030](https://github.com/reupen/columns_ui/pull/1030),
   [#1031](https://github.com/reupen/columns_ui/pull/1031),
   [#1037](https://github.com/reupen/columns_ui/pull/1037),
