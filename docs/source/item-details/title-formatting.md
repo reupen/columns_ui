@@ -26,7 +26,7 @@ $set_format(
 | ----------------- | ---------------------------------------------- |
 | `font-family`     | \<font family name> \| `initial`               |
 | `font-size`       | \<font size in points> \| `initial`            |
-| `font-weight`     | \<1–900> \| `initial`                          |
+| `font-weight`     | \<1–999> \| `initial`                          |
 | `font-stretch`    | \<1–9> \| <percentage> \| `initial`            |
 | `font-style`      | `normal` \| `italic` \| `oblique` \| `initial` |
 | `text-decoration` | `none` \| `underline` \| `initial`             |
