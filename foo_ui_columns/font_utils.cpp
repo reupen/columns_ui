@@ -183,9 +183,11 @@ SystemFont get_icon_font_for_dpi(unsigned dpi)
         uih::dpi::system_parameters_info_for_dpi(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, dpi);
     } catch (const uih::dpi::DpiAwareFunctionUnavailableError&) {
         SystemParametersInfo(SPI_GETICONTITLELOGFONT, sizeof(LOGFONT), &lf, 0);
+
+        const auto dip_size = scale_font_size(-lf.lfHeight, dpi);
         lf.lfHeight = MulDiv(lf.lfHeight, dpi, uih::get_system_dpi_cached().cx);
 
-        return {lf, scale_font_size(-lf.lfHeight, dpi)};
+        return {lf, dip_size};
     }
 
     return {lf, gsl::narrow_cast<float>(-lf.lfHeight)};
@@ -199,9 +201,12 @@ SystemFont get_menu_font_for_dpi(unsigned dpi)
         uih::dpi::system_parameters_info_for_dpi(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, dpi);
     } catch (const uih::dpi::DpiAwareFunctionUnavailableError&) {
         SystemParametersInfo(SPI_GETNONCLIENTMETRICS, sizeof(NONCLIENTMETRICS), &ncm, 0);
+
+        const auto dip_size = scale_font_size(-ncm.lfMenuFont.lfHeight, dpi);
         ncm.lfMenuFont.lfHeight = MulDiv(ncm.lfMenuFont.lfHeight, dpi, uih::get_system_dpi_cached().cx);
-        return {ncm.lfMenuFont, scale_font_size(-ncm.lfMenuFont.lfHeight, dpi)};
+        return {ncm.lfMenuFont, dip_size};
     }
+
     return {ncm.lfMenuFont, gsl::narrow_cast<float>(-ncm.lfMenuFont.lfHeight)};
 }
 
