@@ -1,5 +1,7 @@
 // Microsoft Visual C++ generated resource script.
 //
+#pragma code_page(65001)
+
 #include "resource.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
@@ -19,7 +21,6 @@
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENG)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_UK
-#pragma code_page(1252)
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -747,7 +748,7 @@ END
 
 IDD_ITEM_DETAILS_PICK_FONT DIALOGEX 0, 0, 200, 227
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
-CAPTION "Format code generator � Item details"
+CAPTION "Format code generator – Item details"
 FONT 8, "Segoe UI", 400, 0, 0x0
 BEGIN
     LTEXT           "Font family",-1,14,7,47,8
