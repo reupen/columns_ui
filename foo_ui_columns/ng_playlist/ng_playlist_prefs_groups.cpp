@@ -15,7 +15,7 @@ static INT_PTR CALLBACK EditViewProc(edit_view_param& state, HWND wnd, UINT msg,
 {
     switch (msg) {
     case WM_INITDIALOG: {
-        SetWindowText(wnd, state.b_new ? L"Add New Group" : L"Edit Group");
+        SetWindowText(wnd, state.b_new ? L"Add new group" : L"Edit group");
 
         uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show on all playlists");
         uSendDlgItemMessageText(wnd, IDC_PLAYLIST_FILTER_TYPE, CB_ADDSTRING, 0, "Show only on playlists:");

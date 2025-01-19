@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.0.0-alpha.2
 
 ### Bug fixes
 
@@ -11,6 +11,9 @@
 - A bug causing incorrect characters to appear in the the Item details format
   code generator dialogue box title was fixed.
   [[#1076](https://github.com/reupen/columns_ui/pull/1076)]
+
+- Some stylistic inconsistencies in dialogue box titles were fixed.
+  [[#1082](https://github.com/reupen/columns_ui/pull/1082)]
 
 - A nicer error message is now logged to the console when using $set_font() with
   a non-existent font family name.
