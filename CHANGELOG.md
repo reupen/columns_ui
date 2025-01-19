@@ -4,6 +4,10 @@
 
 ### Bug fixes
 
+- The ability to use the tab character in playlist group titles to lay out text
+  in columns was restored.
+  [[#1080](https://github.com/reupen/columns_ui/pull/1080)]
+
 - A bug causing incorrect characters to appear in the the Item details format
   code generator dialogue box title was fixed.
   [[#1076](https://github.com/reupen/columns_ui/pull/1076)]

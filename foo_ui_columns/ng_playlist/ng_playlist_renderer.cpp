@@ -174,7 +174,7 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
     const auto border = 3_spx;
 
     const auto text_width = text_out_columns_and_colours(*context.m_group_text_format, context.wnd, context.dc, text,
-        x_offset, border, rc, cr, {.enable_ellipses = cfg_ellipsis != 0, .enable_tab_columns = false});
+        x_offset, border, rc, cr, {.enable_ellipses = cfg_ellipsis != 0});
 
     const auto line_height = 1_spx;
     const auto line_top = rc.top + wil::rect_height(rc) / 2 - line_height / 2;
