@@ -12,6 +12,10 @@
   code generator dialogue box title was fixed.
   [[#1076](https://github.com/reupen/columns_ui/pull/1076)]
 
+- A nicer error message is now logged to the console when using $set_font() with
+  a non-existent font family name.
+  [[#1081](https://github.com/reupen/columns_ui/pull/1081)]
+
 ## 3.0.0-alpha.1
 
 ### Features
