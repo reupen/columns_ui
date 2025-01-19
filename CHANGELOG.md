@@ -80,6 +80,8 @@
   These serve as replacements for the older `$set_font()` and `$reset_font()`
   functions.
 
+  [Documentation for `$set_format()` and `$reset_format()`.](https://columns-ui.readthedocs.io/en/latest/item-details/title-formatting.html)
+
 - The `$set_font()` Item details title formatting function now allows
   non-integer font sizes to be specified.
   [[#947](https://github.com/reupen/columns_ui/pull/947)]
