@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A bug causing incorrect characters to appear in the the Item details format
+  code generator dialogue box title was fixed.
+  [[#1076](https://github.com/reupen/columns_ui/pull/1076)]
+
 ## 3.0.0-alpha.1
 
 ### Features
