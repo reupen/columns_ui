@@ -1,5 +1,13 @@
 # Change log
 
+## 3.0.0-alpha.3
+
+### Bug fixes
+
+- A bug where it wasn’t possible to add new buttons or change existing button
+  commands in the Buttons toolbar was fixed.
+  [[#1087](https://github.com/reupen/columns_ui/pull/1087)]
+
 ## 3.0.0-alpha.2
 
 ### Bug fixes
