@@ -9,8 +9,9 @@ std::tuple<bool, CommandPickerData> CommandPickerDialog::open_modal(HWND wnd)
     dark::DialogDarkModeConfig dark_mode_config{
         .button_ids = {IDOK, IDCANCEL}, .list_box_ids = {IDC_GROUP, IDC_ITEM, IDC_COMMAND}};
 
-    const auto dialog_result = modal_dialog_box(IDD_BUTTON_COMMAND_PICKER, dark_mode_config, wnd,
-        [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); });
+    const auto dialog_result = modal_dialog_box(
+        IDD_BUTTON_COMMAND_PICKER, dark_mode_config, wnd,
+        [this](auto&&... args) { return on_message(std::forward<decltype(args)>(args)...); }, false);
 
     return {dialog_result > 0, m_data};
 }

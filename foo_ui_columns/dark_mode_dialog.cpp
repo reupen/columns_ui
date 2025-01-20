@@ -286,16 +286,18 @@ void DialogDarkModeHelper::on_dark_mode_change()
 } // namespace
 
 INT_PTR modal_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config, HWND parent_window,
-    std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message)
+    std::function<INT_PTR(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)> on_message, bool poke)
 {
-    return fbh::modal_dialog_box(resource_id, parent_window,
+    return fbh::modal_dialog_box(
+        resource_id, parent_window,
         [helper = std::make_shared<DialogDarkModeHelper>(std::move(dark_mode_config)),
             on_message{std::move(on_message)}](HWND wnd, UINT msg, WPARAM wp, LPARAM lp) {
             if (const auto result = helper->handle_message(wnd, msg, wp, lp))
                 return *result;
 
             return on_message(wnd, msg, wp, lp);
-        });
+        },
+        poke);
 }
 
 HWND modeless_dialog_box(UINT resource_id, DialogDarkModeConfig dark_mode_config, HWND parent_window,
