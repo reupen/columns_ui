@@ -16,4 +16,4 @@ variables scripts.
 | `%_system_day_of_week%` | The current day of the week, as a number   |
 | `%_system_hour%`        | The current hour                           |
 | `%_system_julian_day%`  | The current Julian day                     |
-| `%_playlist_name%`      | The name of the active playlist            |
+| `%playlist_name%`       | The name of the active playlist            |

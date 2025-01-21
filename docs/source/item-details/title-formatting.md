@@ -27,7 +27,7 @@ $set_format(
 | `font-family`     | \<font family name> \| `initial`               |
 | `font-size`       | \<font size in points> \| `initial`            |
 | `font-weight`     | \<1–999> \| `initial`                          |
-| `font-stretch`    | \<1–9> \| <percentage> \| `initial`            |
+| `font-stretch`    | \<1–9> \| \<percentage> \| `initial`           |
 | `font-style`      | `normal` \| `italic` \| `oblique` \| `initial` |
 | `text-decoration` | `none` \| `underline` \| `initial`             |
 
@@ -38,6 +38,19 @@ Percentages must use the suffix `%%` or `pc`, for example `150%%` or `150pc`
 (`%%` is an escaped `%` in the title formatting language).
 
 #### Examples
+
+##### Set all properties
+
+```
+$set_format(
+  font-family: Segoe UI Variable;
+  font-size: 20;
+  font-weight: 300;
+  font-stretch: 100%%;
+  font-style: italic;
+  text-decoration: underline;
+)
+```
 
 ##### Change the font weight temporarily
 
@@ -50,19 +63,6 @@ This text is in bold.
 
 $set_format(
   font-weight: initial;
-)
-```
-
-##### Set all properties
-
-```
-$set_format(
-  font-family: Segoe UI Variable;
-  font-size: 20;
-  font-weight: 300;
-  font-stretch: 100%%;
-  font-style: italic;
-  text-decoration: underline;
 )
 ```
 
