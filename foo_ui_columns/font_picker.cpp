@@ -49,6 +49,32 @@ private:
     {
     }
 
+    void update_axis_value_edit()
+    {
+        if (!m_axis)
+            return;
+
+        const auto tag = WI_EnumValue(m_axis->tag);
+        const auto value = m_axis_values.at(tag);
+
+        const auto axis_value_text = fmt::format(L"{:.01f}", value);
+
+        pfc::vartoggle_t _(m_is_updating_axis_value_edit, true);
+        SetWindowText(m_axis_value_edit, axis_value_text.c_str());
+    }
+
+    void update_axis_value_spin()
+    {
+        if (!m_axis)
+            return;
+
+        const auto tag = WI_EnumValue(m_axis->tag);
+        const auto value = m_axis_values.at(tag);
+
+        const auto spin_pos = gsl::narrow_cast<int>(std::round(value * 10.0f));
+        SendMessage(m_axis_value_spin, UDM_SETPOS32, 0, spin_pos);
+    }
+
     void on_axis_change()
     {
         const auto index = ComboBox_GetCurSel(m_axis_wnd);
@@ -62,18 +88,13 @@ private:
 
         const auto spin_min = gsl::narrow_cast<int>(std::round(m_axis->min * 10.0f));
         const auto spin_max = gsl::narrow_cast<int>(std::round(m_axis->max * 10.0f));
-        SendMessage(GetDlgItem(m_wnd, IDC_AXIS_VALUE_SPIN), UDM_SETRANGE32, spin_min, spin_max);
+        SendMessage(m_axis_value_spin, UDM_SETRANGE32, spin_min, spin_max);
 
         const auto tag = WI_EnumValue(m_axis->tag);
 
         if (m_axis_values.contains(tag)) {
-            const auto value = m_axis_values.at(tag);
-
-            const auto axis_value_text = fmt::format(L"{:.01f}", value);
-            SetWindowText(GetDlgItem(m_wnd, IDC_AXIS_VALUE), axis_value_text.c_str());
-
-            const auto spin_pos = gsl::narrow_cast<int>(std::round(value * 10.0f));
-            SendMessage(GetDlgItem(m_wnd, IDC_AXIS_VALUE_SPIN), UDM_SETPOS32, 0, spin_pos);
+            update_axis_value_edit();
+            update_axis_value_spin();
 
             m_spin_step = m_axis->max - m_axis->min >= 100.0f ? 10 : 1;
         }
@@ -82,12 +103,45 @@ private:
         SetWindowText(GetDlgItem(m_wnd, IDC_AXIS_RANGE), axis_range_text.c_str());
     }
 
+    bool on_axis_value_change(float new_value)
+    {
+        const auto tag = m_axis->tag;
+        const auto clamped_new_value = std::clamp(new_value, m_axis->min, m_axis->max);
+
+        if (clamped_new_value == m_axis_values.at(tag))
+            return false;
+
+        m_dirty = true;
+        m_axis_values.insert_or_assign(tag, clamped_new_value);
+
+        const auto now = std::chrono::steady_clock::now();
+        const auto delay = m_last_apply_time
+            ? std::make_optional(
+                  std::chrono::duration_cast<std::chrono::milliseconds>(0.1s - (now - *m_last_apply_time)).count())
+            : std::nullopt;
+
+        if (m_apply_pending)
+            return true;
+
+        if (!delay || delay <= 0) {
+            m_on_values_change(m_axis_values);
+            m_last_apply_time = now;
+        } else {
+            SetTimer(m_wnd, timer_id, gsl::narrow_cast<UINT>(*delay), nullptr);
+            m_apply_pending = true;
+        }
+
+        return true;
+    }
+
     INT_PTR handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
         case WM_INITDIALOG: {
             m_wnd = wnd;
             m_axis_wnd = GetDlgItem(wnd, IDC_AXIS);
+            m_axis_value_edit = GetDlgItem(m_wnd, IDC_AXIS_VALUE);
+            m_axis_value_spin = GetDlgItem(m_wnd, IDC_AXIS_VALUE_SPIN);
 
             for (auto&& axis : m_font_family.axes) {
                 const wchar_t name[5] = {narrow_to_wchar_t(axis.tag), narrow_to_wchar_t(axis.tag >> 8),
@@ -120,6 +174,20 @@ private:
             case IDC_AXIS | (CBN_SELCHANGE << 16):
                 on_axis_change();
                 break;
+            case IDC_AXIS_VALUE | (EN_CHANGE << 16):
+                if (!m_axis || m_is_updating_axis_value_edit)
+                    break;
+
+                const auto new_value_text = uih::get_window_text(m_axis_value_edit);
+                const auto new_value_float = cui::string::safe_stof(new_value_text);
+
+                if (!new_value_float)
+                    break;
+
+                if (on_axis_value_change(*new_value_float))
+                    update_axis_value_spin();
+
+                break;
             }
             break;
         case WM_NOTIFY: {
@@ -148,34 +216,8 @@ private:
                         new_axis_value = gsl::narrow_cast<float>(new_spin_value) / 10.0f;
                     }
 
-                    const auto tag = m_axis->tag;
-
-                    if (new_axis_value == m_axis_values.at(tag))
-                        return 0;
-
-                    m_dirty = true;
-                    m_axis_values.insert_or_assign(tag, new_axis_value);
-
-                    const auto axis_value_text = fmt::format(L"{:.01f}", new_axis_value);
-                    SetWindowText(GetDlgItem(m_wnd, IDC_AXIS_VALUE), axis_value_text.c_str());
-
-                    const auto now = std::chrono::steady_clock::now();
-                    const auto delay = m_last_apply_time
-                        ? std::make_optional(
-                              std::chrono::duration_cast<std::chrono::milliseconds>(0.1s - (now - *m_last_apply_time))
-                                  .count())
-                        : std::nullopt;
-
-                    if (m_apply_pending)
-                        return 0;
-
-                    if (!delay || delay <= 0) {
-                        m_on_values_change(m_axis_values);
-                        m_last_apply_time = now;
-                    } else {
-                        SetTimer(wnd, timer_id, gsl::narrow_cast<UINT>(*delay), nullptr);
-                        m_apply_pending = true;
-                    }
+                    if (on_axis_value_change(new_axis_value))
+                        update_axis_value_edit();
 
                     return 0;
                 }
@@ -206,6 +248,9 @@ private:
     std::function<void(const uih::direct_write::AxisValues&)> m_on_values_change;
     HWND m_wnd{};
     HWND m_axis_wnd{};
+    HWND m_axis_value_edit{};
+    HWND m_axis_value_spin{};
+    bool m_is_updating_axis_value_edit{};
     int m_spin_step{10};
     std::optional<uih::direct_write::AxisRange> m_axis;
     bool m_dirty{};
