@@ -4,6 +4,10 @@
 
 ### Bug fixes
 
+- A bug where typing axis values in the dialogue box opened by the ‘Configure
+  variable font axes...’ button on the Fonts preferences tab did not work was
+  fixed. [[#1094](https://github.com/reupen/columns_ui/pull/1094)]
+
 - Truncated labels at low system display scale (DPI) setting values in the
   dialogue box opened by the ‘Configure variable font axes...’ button on the
   Fonts preferences tab were corrected.
