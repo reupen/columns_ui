@@ -1,5 +1,14 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- Truncated labels at low system display scale (DPI) setting values in the
+  dialogue box opened by the ‘Configure variable font axes...’ button on the
+  Fonts preferences tab were corrected.
+  [[#1094](https://github.com/reupen/columns_ui/pull/1094)]
+
 ## 3.0.0-alpha.3
 
 ### Bug fixes
