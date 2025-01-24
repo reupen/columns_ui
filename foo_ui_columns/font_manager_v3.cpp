@@ -71,8 +71,8 @@ public:
 
             if (factory_7 && !m_axis_values.empty()) {
                 wil::com_ptr<IDWriteTextFormat3> text_format_3;
-                THROW_IF_FAILED(factory_7->CreateTextFormat(m_typographic_family_name.c_str(), nullptr,
-                    m_axis_values.data(), gsl::narrow<uint32_t>(m_axis_values.size()), size(), L"", &text_format_3));
+                THROW_IF_FAILED(factory_7->CreateTextFormat(family_name(), nullptr, m_axis_values.data(),
+                    gsl::narrow<uint32_t>(m_axis_values.size()), size(), L"", &text_format_3));
                 text_format.attach(text_format_3.detach());
             } else {
                 THROW_IF_FAILED(context->factory()->CreateTextFormat(family_name(), nullptr, weight(), style(),

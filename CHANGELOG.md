@@ -2,7 +2,11 @@
 
 ## Development version
 
-### Bug fixes
+### 3.0.0-alpha.4
+
+- A bug where DirectWrite-rendered text did not use the correct font family on
+  Windows 10 and older versions of Windows 11 was fixed.
+  [[#1099](https://github.com/reupen/columns_ui/pull/1099)]
 
 - A bug where typing axis values in the dialogue box opened by the ‘Configure
   variable font axes...’ button on the Fonts preferences tab did not work was
