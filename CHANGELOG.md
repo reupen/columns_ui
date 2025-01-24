@@ -13,6 +13,10 @@
   Fonts preferences tab were corrected.
   [[#1094](https://github.com/reupen/columns_ui/pull/1094)]
 
+- A Windows bug causing a crash on Windows 8.1 when opening the Fonts tab on the
+  Colours and fonts preferences page was worked around.
+  [[#1098](https://github.com/reupen/columns_ui/pull/1098)]
+
 ## 3.0.0-alpha.3
 
 ### Bug fixes
