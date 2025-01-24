@@ -2,7 +2,7 @@
 
 ## Development version
 
-### 3.0.0-alpha.4
+## 3.0.0-alpha.4
 
 - A bug where DirectWrite-rendered text did not use the correct font family on
   Windows 10 and older versions of Windows 11 was fixed.
