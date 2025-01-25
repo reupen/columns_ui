@@ -163,20 +163,40 @@ private:
             }
         } break;
         case WM_SETTINGCHANGE:
-            if ((wp == SPI_GETICONTITLELOGFONT && g_font_manager_data.m_common_items_entry
-                    && g_font_manager_data.m_common_items_entry->font_mode == fonts::FontMode::System)
-                || (wp == SPI_GETNONCLIENTMETRICS && g_font_manager_data.m_common_labels_entry
-                    && g_font_manager_data.m_common_labels_entry->font_mode == fonts::FontMode::System)) {
-                g_font_manager_data.g_on_common_font_changed(
-                    wp == SPI_GETICONTITLELOGFONT ? fonts::font_type_flag_items : fonts::font_type_flag_labels);
+            switch (wp) {
+            case SPI_SETFONTSMOOTHING:
+                if (fonts::rendering_mode.get() == WI_EnumValue(fonts::RenderingMode::Automatic))
+                    g_font_manager_data.on_rendering_options_change();
+                break;
+            case SPI_SETICONTITLELOGFONT:
+                if (!g_font_manager_data.m_common_items_entry
+                    || g_font_manager_data.m_common_items_entry->font_mode != fonts::FontMode::System)
+                    break;
+
+                g_font_manager_data.g_on_common_font_changed(fonts::font_type_flag_items);
 
                 for (auto client_ptr : fonts::client::enumerate()) {
-                    const auto p_data = g_font_manager_data.find_by_id(client_ptr->get_client_guid());
+                    const auto entry = g_font_manager_data.find_by_id(client_ptr->get_client_guid());
 
-                    if ((wp == SPI_GETNONCLIENTMETRICS && p_data->font_mode == fonts::FontMode::CommonItems)
-                        || (wp == SPI_GETICONTITLELOGFONT && p_data->font_mode == fonts::FontMode::CommonLabels))
+                    if (entry->font_mode == fonts::FontMode::CommonItems)
                         g_font_manager_data.dispatch_client_font_changed(client_ptr);
                 }
+                break;
+            case SPI_SETNONCLIENTMETRICS: {
+                if (!g_font_manager_data.m_common_labels_entry
+                    || g_font_manager_data.m_common_labels_entry->font_mode != fonts::FontMode::System)
+                    break;
+
+                g_font_manager_data.g_on_common_font_changed(fonts::font_type_flag_labels);
+
+                for (auto client_ptr : fonts::client::enumerate()) {
+                    const auto entry = g_font_manager_data.find_by_id(client_ptr->get_client_guid());
+
+                    if (entry->font_mode == fonts::FontMode::CommonLabels)
+                        g_font_manager_data.dispatch_client_font_changed(client_ptr);
+                }
+                break;
+            }
             }
             break;
         case WM_NCDESTROY:
