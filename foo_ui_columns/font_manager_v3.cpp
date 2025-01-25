@@ -141,7 +141,7 @@ public:
         auto axis_values = uih::direct_write::axis_values_to_vector(font_description.axis_values);
 
         return fb2k::service_new<Font>(log_font, wss, font_description.typographic_family_name, std::move(axis_values),
-            size, static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get()), force_greyscale_antialiasing.get());
+            size, get_rendering_mode(), force_greyscale_antialiasing.get());
     }
 
     void set_font_size(GUID id, float size) override

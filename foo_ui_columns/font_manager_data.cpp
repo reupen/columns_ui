@@ -484,6 +484,12 @@ fbh::ConfigBool force_greyscale_antialiasing(
 
 DWRITE_RENDERING_MODE get_rendering_mode()
 {
+    if (rendering_mode.get() == WI_EnumValue(RenderingMode::Automatic)) {
+        BOOL font_smoothing_enabled{true};
+        SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &font_smoothing_enabled, 0);
+        return font_smoothing_enabled ? DWRITE_RENDERING_MODE_DEFAULT : DWRITE_RENDERING_MODE_ALIASED;
+    }
+
     return static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get());
 }
 
