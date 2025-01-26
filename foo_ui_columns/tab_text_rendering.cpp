@@ -13,9 +13,9 @@ constexpr auto rendering_modes = {
     std::make_tuple(fonts::RenderingMode::NaturalAutomatic, L"Automatic anti-aliasing"),
     std::make_tuple(fonts::RenderingMode::Natural, L"Horizontal anti-aliasing"),
     std::make_tuple(fonts::RenderingMode::NaturalSymmetric, L"Symmetric anti-aliasing"),
-    std::make_tuple(fonts::RenderingMode::Aliased, L"No anti-aliasing"),
     std::make_tuple(fonts::RenderingMode::GdiClassic, L"GDI-compatible, classic"),
     std::make_tuple(fonts::RenderingMode::GdiNatural, L"GDI-compatible, natural"),
+    std::make_tuple(fonts::RenderingMode::Aliased, L"GDI-compatible, no anti-aliasing"),
 };
 
 class TextRenderingTab : public PreferencesTab {

@@ -4,13 +4,15 @@
 
 ### Features
 
-- A ‘No anti-aliasing’ DirectWrite text rendering mode was added.
-  [[#1100](https://github.com/reupen/columns_ui/pull/1100)]
+- A ‘GDI-compatible, no anti-aliasing’ DirectWrite text rendering mode was
+  added. [[#1102](https://github.com/reupen/columns_ui/pull/1102),
+  [#1103](https://github.com/reupen/columns_ui/pull/1103),
+  [#1104](https://github.com/reupen/columns_ui/pull/1104)]
 
   Additionally, the previous ‘Automatic’ mode has been renamed ‘Automatic
   anti-aliasing’, and a new ‘Default’ mode has been added that selects
-  ‘Automatic anti-aliasing’ or ‘No anti-aliasing’ based on the system ‘Smooth
-  edges of screen fonts’ setting.
+  ‘Automatic anti-aliasing’ or ‘GDI-compatible, no anti-aliasing’ based on the
+  system ‘Smooth edges of screen fonts’ setting.
 
 ## 3.0.0-alpha.4
 
