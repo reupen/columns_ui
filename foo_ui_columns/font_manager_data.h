@@ -82,7 +82,7 @@ public:
     void deregister_common_callback(cui::fonts::common_callback* p_callback);
 
     void g_on_common_font_changed(uint32_t mask);
-    void on_rendering_options_change();
+    void dispatch_all_fonts_changed();
 
     pfc::ptr_list_t<cui::fonts::common_callback> m_callbacks;
     std::unordered_map<GUID, std::vector<cui::basic_callback::ptr>> m_callback_map;

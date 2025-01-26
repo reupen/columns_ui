@@ -14,6 +14,12 @@
   ‘Automatic anti-aliasing’ or ‘GDI-compatible, no anti-aliasing’ based on the
   system ‘Smooth edges of screen fonts’ setting.
 
+### Internal changes
+
+- `ui_config_callback::ui_fonts_changed()` is now called once instead of
+  multiple times when the text rendering mode is changed, or after importing an
+  FCL file.
+
 ## 3.0.0-alpha.4
 
 - A bug where DirectWrite-rendered text did not use the correct font family on
