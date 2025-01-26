@@ -166,7 +166,7 @@ private:
             switch (wp) {
             case SPI_SETFONTSMOOTHING:
                 if (fonts::rendering_mode.get() == WI_EnumValue(fonts::RenderingMode::Automatic))
-                    g_font_manager_data.on_rendering_options_change();
+                    g_font_manager_data.dispatch_all_fonts_changed();
                 break;
             case SPI_SETICONTITLELOGFONT:
                 if (!g_font_manager_data.m_common_items_entry

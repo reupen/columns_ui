@@ -2,6 +2,7 @@
 
 #include "tab_text_rendering.h"
 
+#include "config_appearance.h"
 #include "font_manager_data.h"
 
 namespace cui::prefs {
@@ -79,11 +80,13 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 break;
 
             fonts::rendering_mode = gsl::narrow<std::underlying_type_t<fonts::RenderingMode>>(data);
+            g_font_manager_data.dispatch_all_fonts_changed();
             break;
         }
         case IDC_FORCE_GREYSCALE_ANTIALIASING: {
             fonts::force_greyscale_antialiasing
                 = Button_GetCheck(m_force_greyscale_antialiasing_checkbox) == BST_CHECKED;
+            g_font_manager_data.dispatch_all_fonts_changed();
             break;
         }
         }

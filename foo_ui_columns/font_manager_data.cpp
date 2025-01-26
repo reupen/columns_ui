@@ -4,6 +4,7 @@
 #include "font_manager_data.h"
 
 #include "config_appearance.h"
+#include "core_font_ids.h"
 
 FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 {
@@ -47,12 +48,16 @@ void FontManagerData::g_on_common_font_changed(uint32_t mask)
                 (*callback)();
 }
 
-void FontManagerData::on_rendering_options_change()
+void FontManagerData::dispatch_all_fonts_changed()
 {
     g_on_common_font_changed(cui::fonts::font_type_flag_items | cui::fonts::font_type_flag_labels);
 
     for (const auto& client_ptr : cui::fonts::client::enumerate()) {
-        g_font_manager_data.dispatch_client_font_changed(client_ptr);
+        const auto client_id = client_ptr->get_client_guid();
+
+        // Avoid duplicate ui_config_callback::ui_fonts_changed() calls.
+        if (client_id != cui::fonts::core_console_font_client_id && client_id != cui::fonts::core_lists_font_client_id)
+            dispatch_client_font_changed(client_ptr);
     }
 }
 
@@ -476,11 +481,10 @@ void FontManagerData::Entry::write_extra_data_v2(stream_writer* stream, abort_ca
 namespace cui::fonts {
 
 fbh::ConfigInt32 rendering_mode({0x3168bfe2, 0x5c40, 0x4d5b, {0x96, 0xe7, 0xd3, 0x95, 0xa7, 0xf0, 0x4d, 0x67}},
-    WI_EnumValue(RenderingMode::Automatic), [](auto _) { g_font_manager_data.on_rendering_options_change(); });
+    WI_EnumValue(RenderingMode::Automatic));
 
 fbh::ConfigBool force_greyscale_antialiasing(
-    {0xa3d4e205, 0xd623, 0x4da0, {0xa7, 0x3a, 0x03, 0xa6, 0xc9, 0xf8, 0x10, 0xb5}}, false,
-    [](auto _) { g_font_manager_data.on_rendering_options_change(); });
+    {0xa3d4e205, 0xd623, 0x4da0, {0xa7, 0x3a, 0x03, 0xa6, 0xc9, 0xf8, 0x10, 0xb5}}, false);
 
 DWRITE_RENDERING_MODE get_rendering_mode()
 {

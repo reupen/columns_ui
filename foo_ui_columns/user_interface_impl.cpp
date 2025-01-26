@@ -1,4 +1,6 @@
 #include "pch.h"
+
+#include "core_font_ids.h"
 #include "status_pane.h"
 #include "status_bar.h"
 #include "system_tray.h"
@@ -11,12 +13,6 @@ namespace cui {
 namespace {
 
 constexpr GUID core_colours_client_id = {0xbbd0468d, 0x48e6, 0x4cf3, {0xa4, 0xf4, 0xc7, 0x87, 0x4c, 0xb6, 0x1d, 0x8b}};
-constexpr GUID core_console_font_client_id
-    = {0xe9f4d060, 0x6feb, 0x4626, {0xb2, 0x5d, 0xba, 0x09, 0x0f, 0x75, 0xf7, 0xa5}};
-constexpr GUID core_default_font_client_id
-    = {0x1adbc094, 0x3b35, 0x4bab, {0x82, 0xd5, 0x3b, 0xdd, 0x4a, 0x5c, 0x6a, 0xf9}};
-constexpr GUID core_lists_font_client_id
-    = {0xfc3cb3a8, 0x72db, 0x4448, {0xb1, 0x2c, 0x2e, 0xf7, 0x6a, 0x15, 0xd7, 0x53}};
 
 class UIConfigManagerImpl : public ui_config_manager {
 public:
@@ -89,9 +85,9 @@ public:
 
 private:
     colours::helper m_colours{core_colours_client_id};
-    fonts::helper m_default_font{core_default_font_client_id};
-    fonts::helper m_console_font{core_console_font_client_id};
-    fonts::helper m_lists_font{core_lists_font_client_id};
+    fonts::helper m_default_font{fonts::core_default_font_client_id};
+    fonts::helper m_console_font{fonts::core_console_font_client_id};
+    fonts::helper m_lists_font{fonts::core_lists_font_client_id};
     std::unordered_map<GUID, wil::unique_hfont> m_font_cache;
     std::vector<ui_config_callback*> m_callbacks;
 };
@@ -122,7 +118,7 @@ public:
 
 class CoreConsoleFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return core_console_font_client_id; }
+    const GUID& get_client_guid() const override { return fonts::core_console_font_client_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Core: Console"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
     void on_font_changed() const override
@@ -134,7 +130,7 @@ public:
 
 class CoreDefaultFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return core_default_font_client_id; }
+    const GUID& get_client_guid() const override { return fonts::core_default_font_client_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Core: Default"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
     void on_font_changed() const override
@@ -146,7 +142,7 @@ public:
 
 class CoreListsFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return core_lists_font_client_id; }
+    const GUID& get_client_guid() const override { return fonts::core_lists_font_client_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Core: List items"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
     void on_font_changed() const override
