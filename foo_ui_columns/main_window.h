@@ -89,12 +89,22 @@ private:
     pfc::string8 m_window_title;
     wil::com_ptr<ITaskbarList3> m_taskbar_list;
     HWND m_wnd{};
+    HWND m_last_focused_wnd{};
+    HWND m_wnd_focused_before_menu{};
     HMONITOR m_monitor{};
     user_interface::HookProc_t m_hook_proc{};
     bool m_should_handle_multimedia_keys{true};
     bool m_shell_hook_registered{};
-    ULONG_PTR m_gdiplus_instance{NULL};
-    bool m_gdiplus_initialised{false};
+    bool m_gdiplus_initialised{};
+    bool m_is_destroying{};
+    bool m_last_sysray_r_down{};
+    bool m_last_sysray_x1_down{};
+    bool m_last_sysray_x2_down{};
+    ULONG_PTR m_gdiplus_instance{};
+    UINT m_wm_taskbarcreated{};
+    UINT m_wm_taskbarbuttoncreated{};
+    UINT m_wm_shellhookmessage{};
+
     wil::unique_himagelist m_taskbar_button_images;
 };
 

@@ -21,6 +21,10 @@
   foobar2000 was minimised to the system tray.
   [[#1110](https://github.com/reupen/columns_ui/pull/1110)]
 
+- Some logic that normally occurs when main window is activated or focused was
+  surpressed while foobar2000 is exiting, as that logic is unnecessary at that
+  point. [[#1109](https://github.com/reupen/columns_ui/pull/1109)]
+
 ### Internal changes
 
 - `ui_config_callback::ui_fonts_changed()` is now called once instead of

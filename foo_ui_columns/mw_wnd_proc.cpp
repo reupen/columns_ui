@@ -36,7 +36,6 @@ service_ptr_t<contextmenu_manager> g_main_nowplaying;
 } // namespace systray_contextmenus
 
 GetMsgHook g_get_msg_hook;
-static HWND wnd_last;
 
 LRESULT cui::MainWindow::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 {
@@ -58,14 +57,6 @@ LRESULT cui::MainWindow::s_on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) 
 
 LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
-    static UINT WM_TASKBARCREATED;
-    static UINT WM_TASKBARBUTTONCREATED;
-    static UINT WM_SHELLHOOKMESSAGE;
-    static bool g_last_sysray_r_down;
-    static bool g_last_sysray_x1_down;
-    static bool g_last_sysray_x2_down;
-    static HWND g_wnd_focused_before_menu;
-
     if (m_hook_proc) {
         LRESULT ret;
         if (m_hook_proc(wnd, msg, wp, lp, &ret)) {
@@ -73,17 +64,15 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     }
 
-    // ermm we should probably use some kind of class so we can initialise this as a const value
-    if (WM_TASKBARCREATED && msg == WM_TASKBARCREATED) {
+    if (m_wm_taskbarcreated && msg == m_wm_taskbarcreated) {
         if (g_icon_created) {
             g_icon_created = false;
             create_systray_icon();
             update_systray();
         }
-        //        return 0;
     }
 
-    if (WM_TASKBARBUTTONCREATED && msg == WM_TASKBARBUTTONCREATED) {
+    if (m_wm_taskbarbuttoncreated && msg == m_wm_taskbarbuttoncreated) {
         m_taskbar_list = wil::CoCreateInstanceNoThrow<ITaskbarList3>(CLSID_TaskbarList);
         if (m_taskbar_list && SUCCEEDED(m_taskbar_list->HrInit())) {
             const int cx = GetSystemMetrics(SM_CXSMICON);
@@ -100,7 +89,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     }
 
-    if (WM_SHELLHOOKMESSAGE && msg == WM_SHELLHOOKMESSAGE && m_should_handle_multimedia_keys) {
+    if (m_wm_shellhookmessage && msg == m_wm_shellhookmessage && m_should_handle_multimedia_keys) {
         if (wp == HSHELL_APPCOMMAND) {
             const auto cmd = GET_APPCOMMAND_LPARAM(lp);
 
@@ -131,13 +120,13 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
     switch (msg) {
     case WM_CREATE: {
-        WM_TASKBARCREATED = RegisterWindowMessage(L"TaskbarCreated");
-        WM_TASKBARBUTTONCREATED = RegisterWindowMessage(L"TaskbarButtonCreated");
+        m_wm_taskbarcreated = RegisterWindowMessage(L"TaskbarCreated");
+        m_wm_taskbarbuttoncreated = RegisterWindowMessage(L"TaskbarButtonCreated");
         m_wnd = wnd;
         m_monitor = MonitorFromWindow(wnd, MONITOR_DEFAULTTONEAREST);
 
         if (m_should_handle_multimedia_keys) {
-            WM_SHELLHOOKMESSAGE = RegisterWindowMessage(TEXT("SHELLHOOK"));
+            m_wm_shellhookmessage = RegisterWindowMessage(TEXT("SHELLHOOK"));
             m_shell_hook_registered = RegisterShellHookWindow(wnd) != 0;
         }
 
@@ -162,7 +151,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
 
         return 0;
-    case WM_DESTROY: {
+    case WM_DESTROY:
+        m_is_destroying = true;
         g_get_msg_hook.deregister_hook();
         g_layout_window.destroy();
         if (m_shell_hook_registered)
@@ -174,7 +164,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         RevokeDragDrop(m_wnd);
         destroy_systray_icon();
         on_destroy();
-    } break;
+        m_is_destroying = false;
+        break;
     case WM_NCDESTROY:
         m_taskbar_button_images.reset();
         break;
@@ -248,29 +239,33 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DISPLAYCHANGE:
         RedrawWindow(wnd, nullptr, nullptr, RDW_ALLCHILDREN | RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
         break;
-    case WM_ACTIVATE: {
-        if ((LOWORD(wp) == WA_INACTIVE)) {
-            if (!uih::are_keyboard_cues_enabled())
-                SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
-            wnd_last = GetFocus();
-            if (!rebar::g_rebar_window
-                || !rebar::g_rebar_window->get_previous_menu_focus_window(g_wnd_focused_before_menu))
-                g_wnd_focused_before_menu = g_layout_window.get_previous_menu_focus_window();
+    case WM_ACTIVATE:
+        if ((LOWORD(wp) != WA_INACTIVE) || m_is_destroying)
+            break;
 
-            if (rebar::g_rebar_window)
-                rebar::g_rebar_window->hide_accelerators();
-            g_layout_window.hide_menu_access_keys();
+        if (!uih::are_keyboard_cues_enabled())
+            SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
+
+        m_last_focused_wnd = GetFocus();
+
+        if (!rebar::g_rebar_window || !rebar::g_rebar_window->get_previous_menu_focus_window(m_wnd_focused_before_menu))
+            m_wnd_focused_before_menu = g_layout_window.get_previous_menu_focus_window();
+
+        if (rebar::g_rebar_window)
+            rebar::g_rebar_window->hide_accelerators();
+
+        g_layout_window.hide_menu_access_keys();
+
+        break;
+    case WM_SETFOCUS:
+        if (!m_is_destroying) {
+            HWND wnd_focus = m_wnd_focused_before_menu ? m_wnd_focused_before_menu : m_last_focused_wnd;
+            if (wnd_focus && IsWindow(wnd_focus))
+                SetFocus(wnd_focus);
+            else
+                g_layout_window.set_focus();
         }
-    } break;
-    case WM_SETFOCUS: {
-        HWND wnd_focus = g_wnd_focused_before_menu ? g_wnd_focused_before_menu : wnd_last;
-        if (wnd_focus && IsWindow(wnd_focus))
-            SetFocus(wnd_focus);
-        else
-            g_layout_window.set_focus();
-
-        // wnd_last = 0; // meh minimised fuko
-    } break;
+        break;
     case WM_SYSCOMMAND:
         if (wp == SC_KEYMENU && !lp) {
             if (!HIBYTE(GetKeyState(VK_CONTROL))) // Workaround for obscure OS bug involving global keyboard shortcuts
@@ -555,7 +550,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // if (b_wasDown)
             standard_commands::main_activate_or_hide();
         } else if (lp == WM_RBUTTONDOWN) {
-            g_last_sysray_r_down = true;
+            m_last_sysray_r_down = true;
         }
 #if 0
             /* There was some misbehaviour with the newer messages. So we don't use them. */
@@ -567,24 +562,24 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
 #endif
         else if (lp == WM_XBUTTONDOWN) {
-            g_last_sysray_x1_down = HIBYTE(GetKeyState(VK_XBUTTON1)) != 0;
-            g_last_sysray_x2_down = HIBYTE(GetKeyState(VK_XBUTTON2)) != 0;
+            m_last_sysray_x1_down = HIBYTE(GetKeyState(VK_XBUTTON1)) != 0;
+            m_last_sysray_x2_down = HIBYTE(GetKeyState(VK_XBUTTON2)) != 0;
             return TRUE;
         } else if (lp == WM_MOUSEMOVE) {
         } else if (lp == WM_XBUTTONUP) {
             if (config::advbool_system_tray_icon_x_buttons.get()) {
-                if (g_last_sysray_x1_down && !g_last_sysray_x2_down)
+                if (m_last_sysray_x1_down && !m_last_sysray_x2_down)
                     standard_commands::main_previous();
-                if (g_last_sysray_x2_down && !g_last_sysray_x1_down)
+                if (m_last_sysray_x2_down && !m_last_sysray_x1_down)
                     standard_commands::main_next();
             }
-            g_last_sysray_x1_down = false;
-            g_last_sysray_x2_down = false;
+            m_last_sysray_x1_down = false;
+            m_last_sysray_x2_down = false;
             return TRUE;
         }
         // else if (lp == WM_CONTEXTMENU)
         else if (lp == WM_RBUTTONUP) {
-            if (g_last_sysray_r_down) {
+            if (m_last_sysray_r_down) {
                 SetForegroundWindow(wnd);
 
                 POINT pt; // = {(short)LOWORD(lp),(short)HIWORD(lp)};
