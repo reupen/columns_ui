@@ -85,12 +85,12 @@ private:
     void set_title(const char* ptr);
     bool update_taskbar_button_images() const;
     void update_taskbar_buttons(bool update) const;
+    void save_focus_state();
 
     pfc::string8 m_window_title;
     wil::com_ptr<ITaskbarList3> m_taskbar_list;
     HWND m_wnd{};
     HWND m_last_focused_wnd{};
-    HWND m_wnd_focused_before_menu{};
     HMONITOR m_monitor{};
     user_interface::HookProc_t m_hook_proc{};
     bool m_should_handle_multimedia_keys{true};

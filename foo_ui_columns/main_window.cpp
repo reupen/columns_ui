@@ -248,6 +248,25 @@ void cui::MainWindow::update_taskbar_buttons(bool update) const
     }
 }
 
+void cui::MainWindow::save_focus_state()
+{
+    HWND wnd_focused_before_menu{};
+
+    if (!rebar::g_rebar_window || !rebar::g_rebar_window->get_previous_menu_focus_window(wnd_focused_before_menu))
+        wnd_focused_before_menu = g_layout_window.get_previous_menu_focus_window();
+
+    if (wnd_focused_before_menu) {
+        m_last_focused_wnd = wnd_focused_before_menu;
+        return;
+    }
+
+    HWND wnd_focus = GetFocus();
+    if (wnd_focus && IsChild(m_wnd, wnd_focus))
+        m_last_focused_wnd = wnd_focus;
+    else
+        m_last_focused_wnd = nullptr;
+}
+
 void cui::MainWindow::queue_taskbar_button_update(bool update)
 {
     PostMessage(m_wnd, update ? MSG_UPDATE_TASKBAR_BUTTONS : MSG_CREATE_TASKBAR_BUTTONS, 0, 0);

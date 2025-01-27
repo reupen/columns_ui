@@ -239,43 +239,55 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DISPLAYCHANGE:
         RedrawWindow(wnd, nullptr, nullptr, RDW_ALLCHILDREN | RDW_ERASE | RDW_INVALIDATE | RDW_FRAME);
         break;
-    case WM_ACTIVATE:
-        if ((LOWORD(wp) != WA_INACTIVE) || m_is_destroying)
-            break;
+    case WM_ACTIVATE: {
+        const auto is_minimised = HIWORD(wp);
+        const auto state = LOWORD(wp);
+
+        if (m_is_destroying || state != WA_INACTIVE)
+            return 0;
+
+        if (!is_minimised)
+            save_focus_state();
 
         if (!uih::are_keyboard_cues_enabled())
             SendMessage(wnd, WM_UPDATEUISTATE, MAKEWPARAM(UIS_SET, UISF_HIDEFOCUS), NULL);
-
-        m_last_focused_wnd = GetFocus();
-
-        if (!rebar::g_rebar_window || !rebar::g_rebar_window->get_previous_menu_focus_window(m_wnd_focused_before_menu))
-            m_wnd_focused_before_menu = g_layout_window.get_previous_menu_focus_window();
 
         if (rebar::g_rebar_window)
             rebar::g_rebar_window->hide_accelerators();
 
         g_layout_window.hide_menu_access_keys();
 
-        break;
+        return 0;
+    }
     case WM_SETFOCUS:
-        if (!m_is_destroying) {
-            HWND wnd_focus = m_wnd_focused_before_menu ? m_wnd_focused_before_menu : m_last_focused_wnd;
-            if (wnd_focus && IsWindow(wnd_focus))
-                SetFocus(wnd_focus);
-            else
-                g_layout_window.set_focus();
-        }
+        if (m_is_destroying)
+            break;
+
+        if (m_last_focused_wnd && IsWindow(m_last_focused_wnd))
+            SetFocus(m_last_focused_wnd);
+        else
+            g_layout_window.set_focus();
         break;
     case WM_SYSCOMMAND:
-        if (wp == SC_KEYMENU && !lp) {
-            if (!HIBYTE(GetKeyState(VK_CONTROL))) // Workaround for obscure OS bug involving global keyboard shortcuts
-            {
-                if (rebar::g_rebar_window && rebar::g_rebar_window->set_menu_focus())
-                    g_layout_window.hide_menu_access_keys();
-                else
-                    g_layout_window.set_menu_focus();
-            }
+        switch (wp) {
+        case SC_KEYMENU:
+            if (lp)
+                break;
+
+            // Workaround for obscure OS bug involving global keyboard shortcuts
+            if (HIBYTE(GetKeyState(VK_CONTROL)))
+                break;
+
+            if (rebar::g_rebar_window && rebar::g_rebar_window->set_menu_focus())
+                g_layout_window.hide_menu_access_keys();
+            else
+                g_layout_window.set_menu_focus();
+
             return 0;
+        case SC_MINIMIZE:
+            if (GetForegroundWindow() == wnd)
+                save_focus_state();
+            break;
         }
         break;
     case WM_MENUCHAR: {
