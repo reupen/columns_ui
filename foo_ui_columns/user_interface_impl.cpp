@@ -187,20 +187,21 @@ public:
             SetForegroundWindow(main_window.get_wnd());
         }
     }
+
     void hide() override
     {
-        if (main_window.get_wnd()) {
+        if (is_visible())
             ShowWindow(main_window.get_wnd(), SW_MINIMIZE);
-        }
     }
+
     bool is_visible() override
     {
-        bool rv = false;
-        if (main_window.get_wnd()) {
-            rv = IsWindowVisible(main_window.get_wnd()) && !IsIconic(main_window.get_wnd());
-        }
-        return rv;
+        if (main_window.get_wnd())
+            return IsWindowVisible(main_window.get_wnd()) && !IsIconic(main_window.get_wnd());
+
+        return false;
     }
+
     void override_statusbar_text(const char* p_text) override
     {
         status_bar::set_menu_item_description(p_text);
