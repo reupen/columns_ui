@@ -14,6 +14,13 @@
   ‘Automatic anti-aliasing’ or ‘GDI-compatible, no anti-aliasing’ based on the
   system ‘Smooth edges of screen fonts’ setting.
 
+### Bug fixes
+
+- A bug was fixed where foobar2000 incorrectly appeared in the taskbar when
+  using the View/Hide menu command or the /hide command-line argument while
+  foobar2000 was minimised to the system tray.
+  [[#1110](https://github.com/reupen/columns_ui/pull/1110)]
+
 ### Internal changes
 
 - `ui_config_callback::ui_fonts_changed()` is now called once instead of
