@@ -9,6 +9,8 @@
 
 namespace cui::migrate {
 
+namespace {
+
 namespace v100 {
 
 cfg_bool has_migrated_to_v100({0xba7516e5, 0xd1f1, 0x4784, {0xa6, 0x93, 0x62, 0x72, 0x37, 0xc3, 0x7e, 0x9c}}, false);
@@ -139,11 +141,51 @@ void migrate_custom_colours()
 
 } // namespace v200
 
+namespace v300 {
+
+fbh::ConfigInt32 legacy_rendering_mode(
+    {0x3168bfe2, 0x5c40, 0x4d5b, {0x96, 0xe7, 0xd3, 0x95, 0xa7, 0xf0, 0x4d, 0x67}}, DWRITE_RENDERING_MODE_DEFAULT);
+
+cfg_bool has_migrated_rendering_mode(
+    {0xbfa0d1d0, 0x138f, 0x4a33, {0xa8, 0x4e, 0xd5, 0x79, 0xfe, 0xcd, 0x7e, 0xde}}, false);
+
+void migrate_rendering_mode()
+{
+    if (has_migrated_rendering_mode)
+        return;
+
+    has_migrated_rendering_mode = true;
+
+    const auto new_value = [] {
+        switch (static_cast<DWRITE_RENDERING_MODE>(legacy_rendering_mode.get())) {
+        default:
+            return fonts::RenderingMode::Automatic;
+        case DWRITE_RENDERING_MODE_ALIASED:
+            return fonts::RenderingMode::GdiAliased;
+        case DWRITE_RENDERING_MODE_GDI_CLASSIC:
+            return fonts::RenderingMode::GdiClassic;
+        case DWRITE_RENDERING_MODE_GDI_NATURAL:
+            return fonts::RenderingMode::GdiNatural;
+        case DWRITE_RENDERING_MODE_NATURAL:
+            return fonts::RenderingMode::Natural;
+        case DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC:
+            return fonts::RenderingMode::NaturalSymmetric;
+        }
+    }();
+
+    fonts::rendering_mode = WI_EnumValue(new_value);
+}
+
+} // namespace v300
+
+} // namespace
+
 void migrate_all()
 {
     v100::migrate();
     v200::migrate_status_pane();
     v200::migrate_custom_colours();
+    v300::migrate_rendering_mode();
 }
 
 void apply_first_run_defaults()
