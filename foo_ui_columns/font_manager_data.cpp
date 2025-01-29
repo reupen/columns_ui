@@ -480,7 +480,7 @@ void FontManagerData::Entry::write_extra_data_v2(stream_writer* stream, abort_ca
 
 namespace cui::fonts {
 
-fbh::ConfigInt32 rendering_mode({0x3168bfe2, 0x5c40, 0x4d5b, {0x96, 0xe7, 0xd3, 0x95, 0xa7, 0xf0, 0x4d, 0x67}},
+fbh::ConfigInt32 rendering_mode({0x91fdd234, 0x05f9, 0x420c, {0x9c, 0x0c, 0x3d, 0xb9, 0x2f, 0xba, 0x25, 0x06}},
     WI_EnumValue(RenderingMode::Automatic));
 
 fbh::ConfigBool force_greyscale_antialiasing(
@@ -488,13 +488,26 @@ fbh::ConfigBool force_greyscale_antialiasing(
 
 DWRITE_RENDERING_MODE get_rendering_mode()
 {
-    if (rendering_mode.get() == WI_EnumValue(RenderingMode::Automatic)) {
+    switch (static_cast<RenderingMode>(rendering_mode.get())) {
+    default:
+    case RenderingMode::Automatic: {
         BOOL font_smoothing_enabled{true};
         SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &font_smoothing_enabled, 0);
         return font_smoothing_enabled ? DWRITE_RENDERING_MODE_DEFAULT : DWRITE_RENDERING_MODE_ALIASED;
     }
-
-    return static_cast<DWRITE_RENDERING_MODE>(rendering_mode.get());
+    case RenderingMode::DirectWriteAutomatic:
+        return DWRITE_RENDERING_MODE_DEFAULT;
+    case RenderingMode::Natural:
+        return DWRITE_RENDERING_MODE_NATURAL;
+    case RenderingMode::NaturalSymmetric:
+        return DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC;
+    case RenderingMode::GdiClassic:
+        return DWRITE_RENDERING_MODE_GDI_CLASSIC;
+    case RenderingMode::GdiNatural:
+        return DWRITE_RENDERING_MODE_GDI_NATURAL;
+    case RenderingMode::GdiAliased:
+        return DWRITE_RENDERING_MODE_ALIASED;
+    }
 }
 
 } // namespace cui::fonts

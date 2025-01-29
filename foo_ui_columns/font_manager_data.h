@@ -11,13 +11,13 @@ enum class FontMode {
 };
 
 enum class RenderingMode : int32_t {
-    Automatic = 99,
-    NaturalAutomatic = DWRITE_RENDERING_MODE_DEFAULT,
-    Natural = DWRITE_RENDERING_MODE_NATURAL,
-    NaturalSymmetric = DWRITE_RENDERING_MODE_NATURAL_SYMMETRIC,
-    Aliased = DWRITE_RENDERING_MODE_ALIASED,
-    GdiClassic = DWRITE_RENDERING_MODE_GDI_CLASSIC,
-    GdiNatural = DWRITE_RENDERING_MODE_GDI_NATURAL,
+    Automatic,
+    DirectWriteAutomatic,
+    Natural,
+    NaturalSymmetric,
+    GdiClassic,
+    GdiNatural,
+    GdiAliased,
 };
 
 extern fbh::ConfigInt32 rendering_mode;
