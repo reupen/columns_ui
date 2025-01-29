@@ -16,6 +16,14 @@
 
 ### Bug fixes
 
+- A problem where DirectWrite did not render trailing whitespace for centre- and
+  right-aligned columns was worked around in list views (playlist view, playlist
+  switcher, Filter panel), and the status bar and pane.
+  [[#1111](https://github.com/reupen/columns_ui/pull/1111)]
+
+  This workaround does not apply to the Item details panel. To work around it in
+  Item details, end the affected line with a zero-width space (`$char(8203)`).
+
 - A bug was fixed where foobar2000 incorrectly appeared in the taskbar when
   using the View/Hide menu command or the /hide command-line argument while
   foobar2000 was minimised to the system tray.
