@@ -38,6 +38,12 @@
   surpressed while foobar2000 is exiting, as that logic is unnecessary at that
   point. [[#1109](https://github.com/reupen/columns_ui/pull/1109)]
 
+- An error message is now shown when trying to use Columns UI on Windows 7 SP1
+  without installing the Platform Update for Windows 7.
+  [[#1115](https://github.com/reupen/columns_ui/pull/1115)]
+
+  (Previously, this resulted in a crash.)
+
 - A problem where some panels were notified of font changes multiple times when
   the text rendering mode is changed, or after importing an FCL file, was fixed.
   [[#1105](https://github.com/reupen/columns_ui/pull/1105)]

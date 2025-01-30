@@ -70,6 +70,22 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
         return nullptr;
     }
 
+    uih::direct_write::Context::Ptr direct_write_context;
+
+    try {
+        direct_write_context = uih::direct_write::Context::s_create();
+    } catch (const wil::ResultException& ex) {
+        pfc::string8 error_message = "Unknown DirectWrite initialisation error";
+        uFormatMessage(ex.GetFailureInfo().hr, error_message);
+
+        const auto message
+            = IsWindows8OrGreater() ? error_message.get_ptr() : "The Platform Update for Windows 7 is required.";
+
+        dark::modal_info_box(nullptr, u8"Failed to initialise DirectWrite – Columns UI"_pcc, message,
+            uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
+        return nullptr;
+    }
+
     migrate::apply_first_run_defaults();
     migrate::migrate_all();
 
