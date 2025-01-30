@@ -30,7 +30,11 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         ShowWindow(m_volume_control.create(wnd), SW_SHOWNORMAL);
 
-        m_direct_write_context = uih::direct_write::Context::s_create();
+        try {
+            m_direct_write_context = uih::direct_write::Context::s_create();
+        }
+        CATCH_LOG()
+
         recreate_font();
         m_theme = IsThemeActive() && IsAppThemed() ? OpenThemeData(wnd, L"Window") : nullptr;
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>(
