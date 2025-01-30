@@ -8,7 +8,7 @@
   added. [[#1102](https://github.com/reupen/columns_ui/pull/1102),
   [#1103](https://github.com/reupen/columns_ui/pull/1103),
   [#1104](https://github.com/reupen/columns_ui/pull/1104),
-  [#1112](https://github.com/reupen/columns_ui/pull/1112)]
+  [#1113](https://github.com/reupen/columns_ui/pull/1113)]
 
   Additionally, the previous ‘Automatic’ mode has been renamed ‘Automatic
   anti-aliasing’, and a new ‘Default’ mode has been added that selects
@@ -20,14 +20,14 @@
 - A problem where DirectWrite did not render trailing whitespace for centre- and
   right-aligned columns was worked around in list views (playlist view, playlist
   switcher, Filter panel), and the status bar and pane.
-  [[#1111](https://github.com/reupen/columns_ui/pull/1111)]
+  [[#1112](https://github.com/reupen/columns_ui/pull/1112)]
 
   This workaround does not apply to the Item details panel. To work around it in
   Item details, end the affected line with a zero-width space (`$char(8203)`).
 
-- A bug was fixed where foobar2000 incorrectly appeared in the taskbar when
-  using the View/Hide menu command or the /hide command-line argument while
-  foobar2000 was minimised to the system tray.
+- A bug was fixed where foobar2000 incorrectly appeared in the taskbar after
+  running `foobar2000.exe /hide` or invoking the View/Hide main menu command
+  when foobar2000 was minimised to the system tray.
   [[#1110](https://github.com/reupen/columns_ui/pull/1110)]
 
 - A bug where the keyboard focus changed after minimising and restoring
@@ -38,11 +38,11 @@
   surpressed while foobar2000 is exiting, as that logic is unnecessary at that
   point. [[#1109](https://github.com/reupen/columns_ui/pull/1109)]
 
-### Internal changes
+- A problem where some panels were notified of font changes multiple times when
+  the text rendering mode is changed, or after importing an FCL file, was fixed.
+  [[#1105](https://github.com/reupen/columns_ui/pull/1105)]
 
-- `ui_config_callback::ui_fonts_changed()` is now called once instead of
-  multiple times when the text rendering mode is changed, or after importing an
-  FCL file.
+  This applied to the `ui_config_callback::ui_fonts_changed()` callback.
 
 ## 3.0.0-alpha.4
 
