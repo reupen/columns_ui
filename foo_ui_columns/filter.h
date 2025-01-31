@@ -4,6 +4,9 @@
 
 namespace cui::panels::filter {
 
+constexpr GUID items_font_id{0xd93f1ef3, 0x4aee, 0x4632, {0xb5, 0xbf, 0x2, 0x20, 0xce, 0xc7, 0x6d, 0xed}};
+constexpr GUID header_font_id{0xfca8752b, 0xc064, 0x41c4, {0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34}};
+
 class AppearanceClient : public colours::client {
 public:
     static constexpr GUID id{0x4d6774af, 0xc292, 0x44ac, {0x8a, 0x8f, 0x3b, 0x8, 0x55, 0xdc, 0xbd, 0xf4}};
@@ -81,7 +84,7 @@ public:
 };
 
 class FilterPanel
-    : public ListViewPanelBase<AppearanceClient, uie::window>
+    : public utils::ListViewPanelBase<AppearanceClient::id, items_font_id, header_font_id>
     , fbh::LibraryCallback {
     friend class FilterSearchToolbar;
 

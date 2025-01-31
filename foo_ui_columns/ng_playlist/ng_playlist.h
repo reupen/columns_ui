@@ -7,7 +7,9 @@
 
 namespace cui::panels::playlist_view {
 
-extern const GUID g_guid_items_font, g_guid_header_font, g_guid_group_header_font;
+constexpr GUID items_font_id = {0x19f8e0b3, 0xe822, 0x4f07, {0xb2, 0x0, 0xd4, 0xa6, 0x7e, 0x48, 0x72, 0xf9}};
+constexpr GUID header_font_id = {0x30fbd64c, 0x2031, 0x4f0b, {0xa9, 0x37, 0xf2, 0x16, 0x71, 0xa2, 0xe1, 0x95}};
+constexpr GUID group_font_id = {0xfb127ffa, 0x1b35, 0x4572, {0x9c, 0x1a, 0x4b, 0x96, 0xa5, 0xc5, 0xd5, 0x37}};
 
 extern cfg_bool cfg_artwork_reflection;
 extern fbh::ConfigUint32DpiAware cfg_artwork_width;
@@ -315,7 +317,8 @@ public:
 };
 
 class PlaylistView
-    : public ListViewPanelBase<ColoursClient, uie::playlist_window>
+    : public utils::ListViewPanelBase<ColoursClient::id, items_font_id, header_font_id, group_font_id,
+          uie::playlist_window>
     , playlist_callback {
     friend class NgTfThread;
     friend class PlaylistViewRenderer;
@@ -345,7 +348,7 @@ public:
     static void s_on_dark_mode_status_change();
     static void g_on_font_change();
     static void g_on_header_font_change();
-    static void g_on_group_header_font_change();
+    static void g_on_group_font_change();
     static void g_on_sorting_enabled_change();
     static void g_on_show_sort_indicators_change();
     static void g_on_edge_style_change();
