@@ -308,6 +308,8 @@ void DirectWriteFontPicker::set_font_description(fonts::FontDescription font_des
         typographic_family_name.c_str(), wss->weight, wss->stretch, wss->style, m_font_description->axis_values);
 
     if (!resolved_names) {
+        ComboBox_SetCurSel(m_font_family_combobox, -1);
+        handle_family_change();
         return;
     }
 
@@ -325,7 +327,9 @@ void DirectWriteFontPicker::set_font_description(fonts::FontDescription font_des
     if (!face_name.empty()) {
         const auto face_iter
             = ranges::find_if(m_font_faces, [&face_name](auto&& face) { return face.localised_name == face_name; });
-        face_index = std::distance(m_font_faces.begin(), face_iter);
+
+        if (face_iter != m_font_faces.end())
+            face_index = std::distance(m_font_faces.begin(), face_iter);
     }
 
     if (face_index) {

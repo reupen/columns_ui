@@ -44,6 +44,9 @@
 
   (Previously, this resulted in a crash.)
 
+- A crash following a failure to list available fonts on the Fonts preferences
+  page was fixed. [[#1116](https://github.com/reupen/columns_ui/pull/1116)]
+
 - A problem where some panels were notified of font changes multiple times when
   the text rendering mode is changed, or after importing an FCL file, was fixed.
   [[#1105](https://github.com/reupen/columns_ui/pull/1105)]
