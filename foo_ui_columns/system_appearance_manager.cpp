@@ -142,6 +142,9 @@ private:
                 log_winrt_error(u8"Error registering UISettings ColorValuesChanged event handler"sv, ex);
             }
             break;
+        case WM_FONTCHANGE:
+            g_font_manager_data.dispatch_all_fonts_changed();
+            break;
         case WM_SYSCOLORCHANGE: {
             if (colours::is_dark_mode_active())
                 break;
