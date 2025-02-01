@@ -15,6 +15,10 @@ struct InfoSection {
 constexpr std::array<InfoSection, 5> g_info_sections{
     {{0, "Location"}, {1, "General"}, {2, "ReplayGain"}, {3, "Playback statistics"}, {4, "All other sections", true}}};
 
+constexpr GUID items_font_id = {0x755fbb3d, 0xa8d4, 0x46f3, {0xb0, 0xba, 0x0, 0x5b, 0xa, 0x10, 0xa0, 0x1a}};
+constexpr GUID header_font_id = {0x7b9df268, 0x4ecc, 0x4e10, {0xa3, 0x8, 0xe1, 0x45, 0xda, 0x96, 0x92, 0xa5}};
+constexpr GUID group_font_id = {0xaf5a96a6, 0x96ed, 0x468f, {0x8b, 0xa1, 0xc2, 0x25, 0x33, 0xc5, 0x34, 0x91}};
+
 class Field {
 public:
     pfc::string8 m_name;
@@ -84,7 +88,7 @@ private:
 };
 
 class ItemProperties
-    : public ListViewPanelBase<ItemPropertiesColoursClient, uie::window>
+    : public utils::ListViewPanelBase<ItemPropertiesColoursClient::id, items_font_id, header_font_id, group_font_id>
     , public ui_selection_callback
     , public play_callback
     , public metadb_io_callback_dynamic {

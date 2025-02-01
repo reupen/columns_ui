@@ -13,18 +13,6 @@ static const GUID g_guid_selection_properties
 static const GUID g_guid_selection_properties_tracking_mode
     = {0x2570710, 0xe204, 0x4077, {0xae, 0xae, 0x5a, 0x0, 0xd6, 0xa2, 0xac, 0x8}};
 
-// {755FBB3D-A8D4-46f3-B0BA-005B0A10A01A}
-static const GUID g_guid_selection_properties_items_font_client
-    = {0x755fbb3d, 0xa8d4, 0x46f3, {0xb0, 0xba, 0x0, 0x5b, 0xa, 0x10, 0xa0, 0x1a}};
-
-// {7B9DF268-4ECC-4e10-A308-E145DA9692A5}
-static const GUID g_guid_selection_properties_header_font_client
-    = {0x7b9df268, 0x4ecc, 0x4e10, {0xa3, 0x8, 0xe1, 0x45, 0xda, 0x96, 0x92, 0xa5}};
-
-// {AF5A96A6-96ED-468f-8BA1-C22533C53491}
-static const GUID g_guid_selection_properties_group_font_client
-    = {0xaf5a96a6, 0x96ed, 0x468f, {0x8b, 0xa1, 0xc2, 0x25, 0x33, 0xc5, 0x34, 0x91}};
-
 // {1D921F23-1708-451a-A02E-C6657F7C4386}
 static const GUID g_guid_selection_poperties_edge_style
     = {0x1d921f23, 0x1708, 0x451a, {0xa0, 0x2e, 0xc6, 0x65, 0x7f, 0x7c, 0x43, 0x86}};
@@ -172,17 +160,9 @@ void ItemProperties::notify_on_initialisation()
     set_use_dark_mode(colours::is_dark_mode_active());
     set_autosize(m_autosizing_columns);
 
-    const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
-    const auto items_font = font_api->get_font(g_guid_selection_properties_items_font_client);
-    const auto items_text_format = fonts::get_text_format(items_font);
-    const auto items_log_font = items_font->log_font();
-    set_font(items_text_format, items_log_font);
-
-    const auto header_font = font_api->get_font(g_guid_selection_properties_header_font_client);
-    set_header_font(fonts::get_text_format(header_font), header_font->log_font());
-
-    const auto group_font = font_api->get_font(g_guid_selection_properties_group_font_client);
-    set_group_font(fonts::get_text_format(group_font));
+    recreate_items_text_format();
+    recreate_header_text_format();
+    recreate_group_text_format();
 
     set_edge_style(m_edge_style);
     set_show_header(m_show_column_titles);
@@ -676,7 +656,7 @@ void ItemProperties::on_tracking_mode_change()
 
 class ItemsFontClientItemProperties : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_selection_properties_items_font_client; }
+    const GUID& get_client_guid() const override { return items_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Items"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
@@ -686,7 +666,7 @@ public:
 
 class HeaderFontClientItemProperties : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_selection_properties_header_font_client; }
+    const GUID& get_client_guid() const override { return header_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Column titles"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
@@ -696,7 +676,7 @@ public:
 
 class GroupClientItemProperties : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_selection_properties_group_font_client; }
+    const GUID& get_client_guid() const override { return group_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Item properties: Group titles"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
@@ -705,36 +685,20 @@ public:
 };
 void ItemProperties::s_on_font_items_change()
 {
-    const auto font = fonts::get_font(g_guid_selection_properties_items_font_client);
-    const auto text_format = fonts::get_text_format(font);
-    const auto log_font = font->log_font();
-
-    LOGFONT lf;
-    fb2k::std_api_get<fonts::manager>()->get_font(g_guid_selection_properties_items_font_client, lf);
-    for (auto& window : s_windows) {
-        window->set_font(text_format, log_font);
-    }
+    for (auto& window : s_windows)
+        window->recreate_items_text_format();
 }
 
 void ItemProperties::s_on_font_groups_change()
 {
-    const auto font = fonts::get_font(g_guid_selection_properties_group_font_client);
-    const auto text_format = fonts::get_text_format(font);
-
-    for (auto& window : s_windows) {
-        window->set_group_font(text_format);
-    }
+    for (auto& window : s_windows)
+        window->recreate_group_text_format();
 }
 
 void ItemProperties::s_on_font_header_change()
 {
-    const auto font = fonts::get_font(g_guid_selection_properties_header_font_client);
-    const auto log_font = font->log_font();
-    const auto text_format = fonts::get_text_format(font);
-
-    for (auto& window : s_windows) {
-        window->set_header_font(text_format, log_font);
-    }
+    for (auto& window : s_windows)
+        window->recreate_header_text_format();
 }
 
 ItemProperties::ItemProperties()

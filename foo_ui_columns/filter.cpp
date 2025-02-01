@@ -7,10 +7,6 @@
 
 namespace cui::panels::filter {
 
-const GUID g_guid_filter_items_font_client{0xd93f1ef3, 0x4aee, 0x4632, {0xb5, 0xbf, 0x2, 0x20, 0xce, 0xc7, 0x6d, 0xed}};
-const GUID g_guid_filter_header_font_client{
-    0xfca8752b, 0xc064, 0x41c4, {0x9b, 0xe3, 0xe1, 0x25, 0xc7, 0xc7, 0xfc, 0x34}};
-
 bool FilterStream::is_visible()
 {
     for (size_t i = 0, count = m_windows.get_count(); i < count; i++)
@@ -193,25 +189,16 @@ void FilterPanel::s_on_dark_mode_status_change()
 
 void FilterPanel::g_on_font_items_change()
 {
-    const auto font = fonts::get_font(g_guid_filter_items_font_client);
-    const auto text_format = fonts::get_text_format(font);
-    const auto log_font = font->log_font();
-
-    for (auto& window : g_windows) {
-        window->set_font(text_format, log_font);
-    }
+    for (auto& window : g_windows)
+        window->recreate_items_text_format();
 }
 
 void FilterPanel::g_on_font_header_change()
 {
-    const auto font = fonts::get_font(g_guid_filter_header_font_client);
-    const auto log_font = font->log_font();
-    const auto text_format = fonts::get_text_format(font);
-
-    for (auto& window : g_windows) {
-        window->set_header_font(text_format, log_font);
-    }
+    for (auto& window : g_windows)
+        window->recreate_header_text_format();
 }
+
 void FilterPanel::g_redraw_all()
 {
     for (auto& window : g_windows)
@@ -796,14 +783,8 @@ void FilterPanel::notify_on_initialisation()
     set_sorting_enabled(cfg_allow_sorting);
     set_show_sort_indicators(cfg_show_sort_indicators);
 
-    const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
-    const auto items_font = font_api->get_font(g_guid_filter_items_font_client);
-    const auto items_text_format = fonts::get_text_format(items_font);
-    const auto items_log_font = items_font->log_font();
-    set_font(items_text_format, items_log_font);
-
-    const auto header_font = font_api->get_font(g_guid_filter_header_font_client);
-    set_header_font(fonts::get_text_format(header_font), header_font->log_font());
+    recreate_items_text_format();
+    recreate_header_text_format();
 
     size_t index = g_windows.size();
     if (index == 0) {
@@ -926,7 +907,7 @@ colours::client::factory<AppearanceClient> g_appearance_client_impl;
 
 class FilterItemFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_filter_items_font_client; }
+    const GUID& get_client_guid() const override { return items_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel: Items"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
@@ -936,7 +917,7 @@ public:
 
 class FilterHeaderFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_filter_header_font_client; }
+    const GUID& get_client_guid() const override { return header_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Filter panel: Column titles"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }

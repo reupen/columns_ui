@@ -83,10 +83,10 @@ void ConfigGroups::remove_group(size_t index)
 void set_font_size(float point_delta)
 {
     const auto api = fb2k::std_api_get<fonts::manager_v3>();
-    auto font = api->get_font(g_guid_items_font);
+    auto font = api->get_font(items_font_id);
 
     const auto dip_delta = uih::direct_write::pt_to_dip(point_delta);
-    api->set_font_size(g_guid_items_font, font->size() + dip_delta);
+    api->set_font_size(items_font_id, font->size() + dip_delta);
 }
 
 PlaylistView::PlaylistView()
@@ -391,31 +391,20 @@ void PlaylistView::g_on_vertical_item_padding_change()
 
 void PlaylistView::g_on_font_change()
 {
-    const auto font = fonts::get_font(g_guid_items_font);
-    const auto text_format = fonts::get_text_format(font);
-    const auto log_font = font->log_font();
-
     for (auto& window : g_windows)
-        window->set_font(text_format, log_font);
+        window->recreate_items_text_format();
 }
 
 void PlaylistView::g_on_header_font_change()
 {
-    const auto font = fonts::get_font(g_guid_header_font);
-    const auto log_font = font->log_font();
-    const auto text_format = fonts::get_text_format(font);
-
     for (auto& window : g_windows)
-        window->set_header_font(text_format, log_font);
+        window->recreate_header_text_format();
 }
 
-void PlaylistView::g_on_group_header_font_change()
+void PlaylistView::g_on_group_font_change()
 {
-    const auto font = fonts::get_font(g_guid_group_header_font);
-    const auto text_format = fonts::get_text_format(font);
-
     for (auto& window : g_windows)
-        window->set_group_font(text_format);
+        window->recreate_group_text_format();
 }
 
 void PlaylistView::s_update_all_items()
@@ -759,17 +748,9 @@ void PlaylistView::notify_on_initialisation()
         config_object::g_get_data_bool_simple(standard_config_objects::bool_playback_follows_cursor, false));
     set_vertical_item_padding(settings::playlist_view_item_padding);
 
-    const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
-    const auto items_font = font_api->get_font(g_guid_items_font);
-    const auto items_text_format = fonts::get_text_format(items_font);
-    const auto items_log_font = items_font->log_font();
-    set_font(items_text_format, items_log_font);
-
-    const auto header_font = font_api->get_font(g_guid_header_font);
-    set_header_font(fonts::get_text_format(header_font), header_font->log_font());
-
-    const auto group_font = font_api->get_font(g_guid_group_header_font);
-    set_group_font(fonts::get_text_format(group_font));
+    recreate_items_text_format();
+    recreate_header_text_format();
+    recreate_group_text_format();
 
     set_sorting_enabled(cfg_header_hottrack != 0);
     set_show_sort_indicators(cfg_show_sort_arrows != 0);
@@ -1440,18 +1421,9 @@ uie::window_factory<PlaylistView> g_pvt;
 
 ColoursClient::factory<ColoursClient> g_appearance_client_ngpv_impl;
 
-// {19F8E0B3-E822-4f07-B200-D4A67E4872F9}
-const GUID g_guid_items_font = {0x19f8e0b3, 0xe822, 0x4f07, {0xb2, 0x0, 0xd4, 0xa6, 0x7e, 0x48, 0x72, 0xf9}};
-
-// {30FBD64C-2031-4f0b-A937-F21671A2E195}
-const GUID g_guid_header_font = {0x30fbd64c, 0x2031, 0x4f0b, {0xa9, 0x37, 0xf2, 0x16, 0x71, 0xa2, 0xe1, 0x95}};
-
-// {FB127FFA-1B35-4572-9C1A-4B96A5C5D537}
-const GUID g_guid_group_header_font = {0xfb127ffa, 0x1b35, 0x4572, {0x9c, 0x1a, 0x4b, 0x96, 0xa5, 0xc5, 0xd5, 0x37}};
-
 class PlaylistViewItemFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_items_font; }
+    const GUID& get_client_guid() const override { return items_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Items"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
@@ -1461,7 +1433,7 @@ public:
 
 class PlaylistViewHeaderFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_header_font; }
+    const GUID& get_client_guid() const override { return header_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Column titles"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
@@ -1471,12 +1443,12 @@ public:
 
 class PlaylistViewGroupFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return g_guid_group_header_font; }
+    const GUID& get_client_guid() const override { return group_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Playlist view: Group titles"; }
 
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
 
-    void on_font_changed() const override { PlaylistView::g_on_group_header_font_change(); }
+    void on_font_changed() const override { PlaylistView::g_on_group_font_change(); }
 };
 
 PlaylistViewItemFontClient::factory<PlaylistViewItemFontClient> g_font_client_ngpv;

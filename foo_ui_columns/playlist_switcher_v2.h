@@ -7,8 +7,10 @@
 
 namespace cui::panels::playlist_switcher {
 
+constexpr GUID items_font_id = {0x70a5c273, 0x67ab, 0x4bb6, {0xb6, 0x1c, 0xf7, 0x97, 0x5a, 0x68, 0x71, 0xfd}};
+
 class PlaylistSwitcher
-    : public ListViewPanelBase<PlaylistSwitcherColoursClient, uie::window>
+    : public utils::ListViewPanelBase<PlaylistSwitcherColoursClient::id, items_font_id>
     , private playlist_callback
     , private play_callback {
     enum {

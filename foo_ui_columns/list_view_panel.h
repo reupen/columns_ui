@@ -3,7 +3,10 @@
 #include "dark_mode.h"
 #include "font_utils.h"
 
-template <typename t_appearance_client, typename t_window = uie::window>
+namespace cui::utils {
+
+template <GUID ColoursClientId, GUID ItemsFontId, GUID HeaderFontId = GUID{}, GUID GroupFontId = GUID{},
+    typename t_window = uie::window>
 class ListViewPanelBase
     : public uih::ListView
     , public t_window {
@@ -13,7 +16,7 @@ public:
         : ListView(std::move(renderer))
     {
         set_dark_edit_colours(
-            cui::dark::get_dark_system_colour(COLOR_WINDOWTEXT), cui::dark::get_dark_system_colour(COLOR_WINDOW));
+            dark::get_dark_system_colour(COLOR_WINDOWTEXT), dark::get_dark_system_colour(COLOR_WINDOW));
     }
 
     HWND create_or_transfer_window(
@@ -51,21 +54,52 @@ protected:
     bool should_show_drag_text(size_t selection_count) override { return true; }
     void render_get_colour_data(ColourData& p_out) override
     {
-        cui::colours::helper p_helper(t_appearance_client::id);
+        colours::helper p_helper(ColoursClientId);
         p_out.m_themed = p_helper.get_themed();
-        p_out.m_use_custom_active_item_frame = p_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
-        p_out.m_text = p_helper.get_colour(cui::colours::colour_text);
-        p_out.m_selection_text = p_helper.get_colour(cui::colours::colour_selection_text);
-        p_out.m_background = p_helper.get_colour(cui::colours::colour_background);
-        p_out.m_selection_background = p_helper.get_colour(cui::colours::colour_selection_background);
-        p_out.m_inactive_selection_text = p_helper.get_colour(cui::colours::colour_inactive_selection_text);
-        p_out.m_inactive_selection_background = p_helper.get_colour(cui::colours::colour_inactive_selection_background);
-        p_out.m_active_item_frame = p_helper.get_colour(cui::colours::colour_active_item_frame);
+        p_out.m_use_custom_active_item_frame = p_helper.get_bool(colours::bool_use_custom_active_item_frame);
+        p_out.m_text = p_helper.get_colour(colours::colour_text);
+        p_out.m_selection_text = p_helper.get_colour(colours::colour_selection_text);
+        p_out.m_background = p_helper.get_colour(colours::colour_background);
+        p_out.m_selection_background = p_helper.get_colour(colours::colour_selection_background);
+        p_out.m_inactive_selection_text = p_helper.get_colour(colours::colour_inactive_selection_text);
+        p_out.m_inactive_selection_background = p_helper.get_colour(colours::colour_inactive_selection_background);
+        p_out.m_active_item_frame = p_helper.get_colour(colours::colour_active_item_frame);
         if (!p_out.m_themed || !get_group_text_colour_default(p_out.m_group_text))
             p_out.m_group_text = p_out.m_text;
         p_out.m_group_background = p_out.m_background;
     }
 
+    void recreate_items_text_format()
+    {
+        const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
+        const auto items_font = font_api->get_font(ItemsFontId);
+        const auto items_text_format = fonts::get_text_format(items_font);
+        const auto items_log_font = items_font->log_font();
+        set_font(items_text_format, items_log_font);
+    }
+
+    void recreate_header_text_format()
+    {
+        if (HeaderFontId == GUID{})
+            return;
+
+        const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
+        const auto header_font = font_api->get_font(HeaderFontId);
+        set_header_font(fonts::get_text_format(header_font), header_font->log_font());
+    }
+
+    void recreate_group_text_format()
+    {
+        if (GroupFontId == GUID{})
+            return;
+
+        const auto font_api = fb2k::std_api_get<fonts::manager_v3>();
+        const auto group_font = font_api->get_font(GroupFontId);
+        set_group_font(fonts::get_text_format(group_font));
+    }
+
 private:
     uie::window_host_ptr m_window_host;
 };
+
+} // namespace cui::utils
