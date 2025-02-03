@@ -434,9 +434,9 @@ void ItemDetails::update_display_info()
         scale_max(layout_height + overhang_metrics.bottom),
     };
 
-    m_text_rect = {std::min(text_rect.left, overhang_rect.left) - padding,
-        std::min(text_rect.top, overhang_rect.top) - padding, std::max(text_rect.right, overhang_rect.right) + padding,
-        std::max(text_rect.bottom, overhang_rect.bottom) + padding};
+    m_text_rect = {std::min(text_rect.left, overhang_rect.left), std::min(text_rect.top, overhang_rect.top),
+        std::max(text_rect.right, overhang_rect.right) + padding * 2,
+        std::max(text_rect.bottom, overhang_rect.bottom) + padding * 2};
 }
 
 void ItemDetails::reset_display_info()
@@ -879,10 +879,11 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             const auto is_horizontal_scroll_bar_visible
                 = m_hscroll && !m_word_wrapping && (sih.nMax - sih.nMin - 1) > gsl::narrow_cast<int>(sih.nPage);
             const auto is_vertical_scroll_bar_visible = (siv.nMax - siv.nMin - 1) > gsl::narrow_cast<int>(siv.nPage);
+            const auto padding = gsl::narrow_cast<float>(s_get_padding());
             const auto x_offset = uih::direct_write::px_to_dip(
-                gsl::narrow_cast<float>(is_horizontal_scroll_bar_visible ? -sih.nPos : 0));
-            const auto y_offset
-                = uih::direct_write::px_to_dip(gsl::narrow_cast<float>(is_vertical_scroll_bar_visible ? -siv.nPos : 0));
+                gsl::narrow_cast<float>(is_horizontal_scroll_bar_visible ? -sih.nPos : 0) + padding);
+            const auto y_offset = uih::direct_write::px_to_dip(
+                gsl::narrow_cast<float>(is_vertical_scroll_bar_visible ? -siv.nPos : 0) + padding);
 
             try {
                 create_d2d_render_target();

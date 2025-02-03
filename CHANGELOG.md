@@ -10,6 +10,12 @@
   This includes support for SVG font glyphs on recent versions of Windows,
   including Windows 11 emojis.
 
+### Bug fixes
+
+- A bug where left and/or top padding was missing in Item details when there was
+  no horizontal or vertical scroll bar was fixed.
+  [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
+
 ## 3.0.0-alpha.5
 
 ### Features
