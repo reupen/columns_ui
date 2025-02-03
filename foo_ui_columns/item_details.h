@@ -32,11 +32,11 @@ public:
     bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
-    explicit TitleformatHookChangeFont(const LOGFONT& lf);
+    TitleformatHookChangeFont(const LOGFONT& lf, int font_size);
 
 private:
     pfc::string8 m_default_font_face;
-    size_t m_default_font_size;
+    int m_default_font_size;
 };
 
 class ItemDetails
@@ -236,7 +236,8 @@ private:
     void on_app_activate(bool b_activated);
 
     void set_handles(const metadb_handle_list& handles);
-    void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false);
+    void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false,
+        bool force_update = false);
     void request_full_file_info();
     void on_full_file_info_request_completion(std::shared_ptr<helpers::FullFileInfoRequest> request);
     void release_aborted_full_file_info_requests();

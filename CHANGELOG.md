@@ -16,6 +16,11 @@
   no horizontal or vertical scroll bar was fixed.
   [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
 
+- A bug where the `%default_font_size%` and the deprecated `%default_font_face%`
+  title formatting fields did not update in Item details after a font change
+  until another event caused a content update was fixed.
+  [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
+
 ## 3.0.0-alpha.5
 
 ### Features

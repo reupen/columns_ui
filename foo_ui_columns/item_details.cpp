@@ -348,15 +348,14 @@ void ItemDetails::release_all_full_file_info_requests()
     m_aborting_full_file_info_requests.clear();
 }
 
-void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool reset_horizontal_scroll_position)
+void ItemDetails::refresh_contents(
+    bool reset_vertical_scroll_position, bool reset_horizontal_scroll_position, bool force_update)
 {
-    bool b_update = true;
-
     if (m_handles.get_count()) {
-        LOGFONT lf;
-        fb2k::std_api_get<fonts::manager>()->get_font(g_guid_item_details_font_client, lf);
+        const auto font = fonts::get_font(g_guid_item_details_font_client);
+        const auto font_size = gsl::narrow_cast<int>(uih::direct_write::dip_to_pt(font->size()) + 0.5f);
 
-        TitleformatHookChangeFont tf_hook(lf);
+        TitleformatHookChangeFont tf_hook(font->log_font(), font_size);
         pfc::string8_fast_aggressive temp;
         temp.prealloc(2048);
 
@@ -374,21 +373,18 @@ void ItemDetails::refresh_contents(bool reset_vertical_scroll_position, bool res
         }
 
         auto utf16_text = mmh::to_utf16(mmh::to_string_view(temp));
-        if (utf16_text != m_formatted_text) {
-            m_formatted_text = std::move(utf16_text);
-        } else
-            b_update = false;
+
+        if (!force_update && utf16_text == m_formatted_text)
+            return;
+
+        m_formatted_text = std::move(utf16_text);
     } else {
         m_formatted_text.clear();
     }
 
-    if (b_update) {
-        reset_display_info();
-
-        update_scrollbars(reset_vertical_scroll_position, reset_horizontal_scroll_position);
-
-        invalidate_all();
-    }
+    reset_display_info();
+    update_scrollbars(reset_vertical_scroll_position, reset_horizontal_scroll_position);
+    invalidate_all();
 }
 
 void ItemDetails::update_display_info()
@@ -1159,9 +1155,7 @@ void ItemDetails::create_text_layout()
 void ItemDetails::on_font_change()
 {
     recreate_text_format();
-    reset_display_info();
-    update_scrollbars(false, false);
-    invalidate_all();
+    refresh_contents(false, false, true);
 }
 
 void ItemDetails::on_colours_change()
