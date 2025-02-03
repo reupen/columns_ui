@@ -588,6 +588,19 @@ void ItemDetails::update_now()
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW);
 }
 
+void ItemDetails::create_d2d_render_target()
+{
+    if (!m_d2d_context)
+        m_d2d_context = uih::d2d::Context::s_create();
+
+    if (!m_d2d_render_target)
+        m_d2d_render_target = m_d2d_context->create_hwnd_render_target(get_wnd());
+
+    const auto& rendering_params = m_text_layout->rendering_params();
+    m_d2d_render_target->SetTextRenderingParams(rendering_params->get(get_wnd()).get());
+    m_d2d_render_target->SetTextAntialiasMode(rendering_params->d2d_text_antialiasing_mode());
+}
+
 void ItemDetails::invalidate_all(bool b_update)
 {
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | (b_update ? RDW_UPDATENOW : NULL));
@@ -600,12 +613,19 @@ void ItemDetails::on_size()
     on_size(wil::rect_width(rc), wil::rect_height(rc));
 }
 
-void ItemDetails::on_size(size_t cx, size_t cy)
+void ItemDetails::on_size(int cx, int cy)
 {
+    if (m_d2d_render_target) {
+        try {
+            m_d2d_render_target->Resize({gsl::narrow<unsigned>(cx), gsl::narrow<unsigned>(cy)});
+        }
+        CATCH_LOG();
+    }
+
     if (m_text_layout) {
         const auto padding = s_get_padding();
-        const auto max_width = std::max(0, gsl::narrow<int>(cx) - padding * 2);
-        const auto max_height = std::max(0, gsl::narrow<int>(cy) - padding * 2);
+        const auto max_width = std::max(0, cx - padding * 2);
+        const auto max_height = std::max(0, cy - padding * 2);
 
         try {
             m_text_layout->set_max_width(uih::direct_write::px_to_dip(gsl::narrow_cast<float>(max_width)));
@@ -718,7 +738,12 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_direct_write_context.reset();
         m_last_cx = 0;
         m_last_cy = 0;
-    } break;
+        m_d2d_render_target.reset();
+        m_d2d_text_brush.reset();
+        m_d2d_brush_cache.clear();
+        m_d2d_context.reset();
+        break;
+    }
     case WM_SETFOCUS:
         deregister_callback();
         m_selection_holder = ui_selection_manager::get()->acquire();
@@ -860,8 +885,37 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 = uih::direct_write::px_to_dip(gsl::narrow_cast<float>(is_vertical_scroll_bar_visible ? -siv.nPos : 0));
 
             try {
-                m_text_layout->render_with_solid_background(
-                    wnd, dc.get(), x_offset, y_offset, ps.rcPaint, background_colour, text_colour);
+                create_d2d_render_target();
+
+                const auto context_1 = m_d2d_render_target.try_query<ID2D1DeviceContext1>();
+
+                if (!m_d2d_text_brush) {
+                    const auto d2d_text_colour = uih::d2d::colorref_to_d2d_color(text_colour);
+                    THROW_IF_FAILED(m_d2d_render_target->CreateSolidColorBrush(d2d_text_colour, &m_d2d_text_brush));
+                }
+
+                const auto d2d_background_colour = uih::d2d::colorref_to_d2d_color(background_colour);
+
+                m_d2d_render_target->BeginDraw();
+
+                m_d2d_render_target->Clear(d2d_background_colour);
+
+                m_d2d_render_target->DrawTextLayout({x_offset, y_offset}, m_text_layout->text_layout().get(),
+                    m_d2d_text_brush.get(),
+                    context_1 ? D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT : D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+                const auto result = m_d2d_render_target->EndDraw();
+
+                if (result == D2DERR_RECREATE_TARGET) {
+                    m_d2d_render_target.reset();
+                    m_d2d_text_brush.reset();
+                    m_d2d_brush_cache.clear();
+                    return 0;
+                }
+
+                THROW_IF_FAILED(result);
+
+                ValidateRect(wnd, nullptr);
             }
             CATCH_LOG()
         }
@@ -1059,13 +1113,30 @@ void ItemDetails::create_text_layout()
     if (!m_text_layout)
         return;
 
-    for (auto& [colour, start_character, character_count] : colour_segments) {
-        try {
-            m_text_layout->set_colour(
-                colour, {gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)});
+    try {
+        create_d2d_render_target();
+
+        std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> old_d2d_brush_cache
+            = std::move(m_d2d_brush_cache);
+
+        for (auto& [colour, start_character, character_count] : colour_segments) {
+            wil::com_ptr<ID2D1SolidColorBrush> brush;
+
+            if (auto iter = m_d2d_brush_cache.find(colour); iter != m_d2d_brush_cache.end()) {
+                brush = iter->second;
+            } else if (auto iter = old_d2d_brush_cache.find(colour); iter != old_d2d_brush_cache.end()) {
+                brush = iter->second;
+                m_d2d_brush_cache.emplace(colour, std::move(iter->second));
+            } else {
+                m_d2d_render_target->CreateSolidColorBrush(uih::d2d::colorref_to_d2d_color(colour), &brush);
+                m_d2d_brush_cache.emplace(colour, brush);
+            }
+
+            m_text_layout->set_effect(
+                brush.get(), {gsl::narrow<uint32_t>(start_character), gsl::narrow<uint32_t>(character_count)});
         }
-        CATCH_LOG()
     }
+    CATCH_LOG()
 
     process_simple_style_property<std::wstring>(font_segments, &FormatProperties::font_family,
         [&](auto&& value, auto&& text_range) { m_text_layout->set_family(value.c_str(), text_range); });
@@ -1094,6 +1165,7 @@ void ItemDetails::on_font_change()
 
 void ItemDetails::on_colours_change()
 {
+    m_d2d_text_brush.reset();
     invalidate_all();
 }
 

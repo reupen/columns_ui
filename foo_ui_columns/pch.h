@@ -63,6 +63,7 @@
 #include <wincodec.h>
 #include <strsafe.h>
 #include <strstream>
+#include <d2d1_3.h>
 
 #include <wil/cppwinrt.h>
 #include <wil/com.h>
@@ -99,6 +100,7 @@
 #include "../svg-services/api/api.h"
 #include "../columns_ui-sdk/ui_extension.h"
 #include "../ui_helpers/stdafx.h"
+#include "../ui_helpers/direct_2d.h"
 #include "../ui_helpers/direct_write.h"
 #include "../ui_helpers/direct_write_text_out.h"
 #include "../ui_helpers/list_view/list_view.h"

@@ -252,6 +252,7 @@ private:
     void set_window_theme() const;
     void invalidate_all(bool b_update = true);
     void update_now();
+    void create_d2d_render_target();
 
     enum class ScrollbarType {
         vertical = SB_VERT,
@@ -262,7 +263,7 @@ private:
     void update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position);
 
     void on_size();
-    void on_size(size_t cx, size_t cy);
+    void on_size(int cx, int cy);
 
     void recreate_text_format();
     void create_text_layout();
@@ -271,8 +272,8 @@ private:
 
     inline static std::vector<ItemDetails*> s_windows;
 
-    size_t m_last_cx{};
-    size_t m_last_cy{};
+    int m_last_cx{};
+    int m_last_cy{};
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles;
     metadb_handle_list m_selection_handles;
@@ -287,6 +288,10 @@ private:
     uih::direct_write::Context::Ptr m_direct_write_context;
     std::optional<uih::direct_write::TextFormat> m_text_format;
     std::optional<uih::direct_write::TextLayout> m_text_layout;
+    uih::d2d::Context::Ptr m_d2d_context;
+    wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
+    wil::com_ptr<ID2D1SolidColorBrush> m_d2d_text_brush;
+    std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> m_d2d_brush_cache;
 
     std::optional<RECT> m_text_rect{};
 
