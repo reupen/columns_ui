@@ -1,5 +1,26 @@
 # Change log
 
+## Development version
+
+### Features
+
+- Item details now uses Direct2D for rendering.
+  [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
+
+  This includes support for SVG font glyphs on recent versions of Windows,
+  including Windows 11 emojis.
+
+### Bug fixes
+
+- A bug where left and/or top padding was missing in Item details when there was
+  no horizontal or vertical scroll bar was fixed.
+  [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
+
+- A bug where the `%default_font_size%` and the deprecated `%default_font_face%`
+  title formatting fields did not update in Item details after a font change
+  until another event caused a content update was fixed.
+  [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
+
 ## 3.0.0-alpha.5
 
 ### Features

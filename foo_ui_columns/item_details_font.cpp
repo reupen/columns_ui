@@ -5,12 +5,8 @@
 
 namespace cui::panels::item_details {
 
-TitleformatHookChangeFont::TitleformatHookChangeFont(const LOGFONT& lf)
+TitleformatHookChangeFont::TitleformatHookChangeFont(const LOGFONT& lf, int font_size) : m_default_font_size(font_size)
 {
-    HDC dc = GetDC(nullptr);
-    m_default_font_size = -MulDiv(lf.lfHeight, 72, GetDeviceCaps(dc, LOGPIXELSY));
-    ReleaseDC(nullptr, dc);
-
     m_default_font_face = pfc::stringcvt::string_utf8_from_wide(lf.lfFaceName, std::size(lf.lfFaceName));
 }
 

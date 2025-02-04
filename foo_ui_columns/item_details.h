@@ -32,11 +32,11 @@ public:
     bool process_function(titleformat_text_out* p_out, const char* p_name, size_t p_name_length,
         titleformat_hook_function_params* p_params, bool& p_found_flag) override;
 
-    explicit TitleformatHookChangeFont(const LOGFONT& lf);
+    TitleformatHookChangeFont(const LOGFONT& lf, int font_size);
 
 private:
     pfc::string8 m_default_font_face;
-    size_t m_default_font_size;
+    int m_default_font_size;
 };
 
 class ItemDetails
@@ -236,7 +236,8 @@ private:
     void on_app_activate(bool b_activated);
 
     void set_handles(const metadb_handle_list& handles);
-    void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false);
+    void refresh_contents(bool reset_vertical_scroll_position = false, bool reset_horizontal_scroll_position = false,
+        bool force_update = false);
     void request_full_file_info();
     void on_full_file_info_request_completion(std::shared_ptr<helpers::FullFileInfoRequest> request);
     void release_aborted_full_file_info_requests();
@@ -252,6 +253,7 @@ private:
     void set_window_theme() const;
     void invalidate_all(bool b_update = true);
     void update_now();
+    void create_d2d_render_target();
 
     enum class ScrollbarType {
         vertical = SB_VERT,
@@ -262,7 +264,7 @@ private:
     void update_scrollbars(bool reset_vertical_position, bool reset_horizontal_position);
 
     void on_size();
-    void on_size(size_t cx, size_t cy);
+    void on_size(int cx, int cy);
 
     void recreate_text_format();
     void create_text_layout();
@@ -271,8 +273,8 @@ private:
 
     inline static std::vector<ItemDetails*> s_windows;
 
-    size_t m_last_cx{};
-    size_t m_last_cy{};
+    int m_last_cx{};
+    int m_last_cy{};
     ui_selection_holder::ptr m_selection_holder;
     metadb_handle_list m_handles;
     metadb_handle_list m_selection_handles;
@@ -287,6 +289,10 @@ private:
     uih::direct_write::Context::Ptr m_direct_write_context;
     std::optional<uih::direct_write::TextFormat> m_text_format;
     std::optional<uih::direct_write::TextLayout> m_text_layout;
+    uih::d2d::Context::Ptr m_d2d_context;
+    wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
+    wil::com_ptr<ID2D1SolidColorBrush> m_d2d_text_brush;
+    std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> m_d2d_brush_cache;
 
     std::optional<RECT> m_text_rect{};
 
