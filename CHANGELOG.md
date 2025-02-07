@@ -18,6 +18,17 @@
 
   This applies to Windows 8.1 and newer only.
 
+- An opt-in experimental alternative emoji font selection mode for Windows 8.1
+  and newer was added. [[#1126](https://github.com/reupen/columns_ui/pull/1126)]
+
+  This replaces the default DirectWrite emoji font selection logic to:
+
+  - enable correct handling of emoji variation selectors for emojis that have
+    both text (monochrome) and emoji presentation modes
+  - use the default presentation mode of emojis as defined in the Unicode
+    specification
+  - allow custom colour and monochrome emoji fonts to be used
+
 ### Bug fixes
 
 - A bug where left and/or top padding was missing in Item details when there was
@@ -38,6 +49,10 @@
   preferences tab did not have the expected appearance on foobar2000 1.x when
   dark mode is enabled was fixed.
   [[#1129](https://github.com/reupen/columns_ui/pull/1129)]
+
+- A potential fix was added for a crash when exiting foobar2000 after recently
+  interacting with an auto-hiding splitter.
+  [[#1131](https://github.com/reupen/columns_ui/pull/1131)]
 
 ## 3.0.0-alpha.5
 

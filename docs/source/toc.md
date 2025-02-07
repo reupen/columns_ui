@@ -56,6 +56,7 @@ caption: Other functionality
 ---
 other/image-formats
 other/cli-commands
+other/text-rendering
 ```
 
 ```{toctree}
