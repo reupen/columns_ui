@@ -5,6 +5,11 @@ namespace cui::utils {
 
 class DirectWriteFontPicker {
 public:
+    DirectWriteFontPicker(bool allow_cui_dark_mode_fallback = true)
+        : m_allow_cui_dark_mode_fallback(allow_cui_dark_mode_fallback)
+    {
+    }
+
     std::optional<INT_PTR> handle_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     void on_font_changed(std::function<void(const fonts::FontDescription&)> on_font_changed);
     void set_font_description(fonts::FontDescription font_description);
@@ -33,6 +38,7 @@ private:
     void update_font_size_spin() const;
 
     bool m_is_updating_font_size_edit{};
+    bool m_allow_cui_dark_mode_fallback{};
     HWND m_wnd{};
     HWND m_configure_axes_button{};
     HWND m_font_family_combobox{};

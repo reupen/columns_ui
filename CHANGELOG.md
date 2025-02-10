@@ -21,6 +21,11 @@
   until another event caused a content update was fixed.
   [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
 
+- A bug where the font family and font style drop-down controls on the Fonts
+  preferences tab did not have the expected appearance on foobar2000 1.x when
+  dark mode is enabled was fixed.
+  [[#1129](https://github.com/reupen/columns_ui/pull/1129)]
+
 ## 3.0.0-alpha.5
 
 ### Features

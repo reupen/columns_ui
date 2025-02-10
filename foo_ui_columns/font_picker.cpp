@@ -25,14 +25,14 @@ public:
         ConfigureAxesDialog dialog(
             std::move(font_family), std::move(font), std::move(axis_values), std::move(on_values_change));
 
-        const cui::dark::DialogDarkModeConfig dark_mode_config{
+        const dark::DialogDarkModeConfig dark_mode_config{
             .button_ids = {IDOK, IDCANCEL},
             .combo_box_ids = {IDC_AXIS},
             .edit_ids = {IDC_AXIS_VALUE},
             .spin_ids = {IDC_AXIS_VALUE_SPIN},
         };
 
-        return cui::dark::modal_dialog_box(IDD_FONT_AXES, dark_mode_config, wnd,
+        return dark::modal_dialog_box(IDD_FONT_AXES, dark_mode_config, wnd,
                    [&dialog](auto wnd, auto msg, auto wp, auto lp) { return dialog.handle_message(wnd, msg, wp, lp); })
             != 0;
     }
@@ -179,7 +179,7 @@ private:
                     break;
 
                 const auto new_value_text = uih::get_window_text(m_axis_value_edit);
-                const auto new_value_float = cui::string::safe_stof(new_value_text);
+                const auto new_value_float = string::safe_stof(new_value_text);
 
                 if (!new_value_float)
                     break;
@@ -443,7 +443,7 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_command(WPARAM wp, LPARA
         const auto previous_size = m_font_description->point_size_tenths;
         const auto font_size_text = uih::get_window_text(m_font_size_edit);
 
-        const auto font_size_float = cui::string::safe_stof(font_size_text);
+        const auto font_size_float = string::safe_stof(font_size_text);
 
         if (!font_size_float)
             break;
@@ -516,12 +516,12 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_draw_item(LPDRAWITEMSTRU
     const auto is_edit_box = (dis->itemState & ODS_COMBOBOXEDIT) != 0;
     const auto is_selected = (dis->itemState & ODS_SELECTED) != 0;
     const auto index = dis->itemID;
-    const auto is_dark = cui::dark::is_active_ui_dark();
+    const auto is_dark = dark::is_active_ui_dark(m_allow_cui_dark_mode_fallback);
     const auto hide_focus = (SendMessage(dis->hwndItem, WM_QUERYUISTATE, NULL, NULL) & UISF_HIDEFOCUS) != 0;
 
     const auto background_colour = [&dis, is_dark, is_edit_box, is_selected] {
         if (is_edit_box && is_dark)
-            return cui::dark::get_dark_colour(cui::dark::ColourID::ComboBoxEditBackground);
+            return dark::get_dark_colour(dark::ColourID::ComboBoxEditBackground);
 
         if (is_selected)
             return GetSysColor(COLOR_HIGHLIGHT);
@@ -545,7 +545,7 @@ std::optional<INT_PTR> DirectWriteFontPicker::handle_wm_draw_item(LPDRAWITEMSTRU
 
     const auto text_colour = [&dis, is_dark, is_edit_box, is_selected] {
         if (is_edit_box && is_dark)
-            return cui::dark::get_dark_colour(cui::dark::ColourID::ComboBoxEditText);
+            return dark::get_dark_colour(dark::ColourID::ComboBoxEditText);
 
         if (is_selected)
             return GetSysColor(COLOR_HIGHLIGHTTEXT);
