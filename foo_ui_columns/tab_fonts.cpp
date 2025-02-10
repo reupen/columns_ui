@@ -49,7 +49,7 @@ INT_PTR TabFonts::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         update_mode_combobox();
 
-        m_direct_write_font_picker = cui::utils::DirectWriteFontPicker();
+        m_direct_write_font_picker = cui::utils::DirectWriteFontPicker(false);
         m_direct_write_font_picker->on_font_changed([this](auto& font_description) {
             m_element_ptr->font_description = font_description;
             on_font_changed();
