@@ -163,7 +163,8 @@ public:
     void show_now_playing() override
     {
         auto play_api = play_control::get();
-        update_systray(true, play_api->is_paused() ? 2 : 0, true);
+        systray::update_icon_tooltip(
+            play_api->is_paused() ? systray::BalloonTipTitle::Paused : systray::BalloonTipTitle::NowPlaying, true);
     }
     void shutdown() override
     {
@@ -176,7 +177,7 @@ public:
         if (main_window.get_wnd()) {
             cfg_go_to_tray = false;
             if (g_icon_created && !cfg_show_systray)
-                destroy_systray_icon();
+                systray::remove_icon();
 
             if (!is_visible()) {
                 ShowWindow(main_window.get_wnd(), SW_RESTORE);
