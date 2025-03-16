@@ -67,8 +67,8 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     if (m_wm_taskbarcreated && msg == m_wm_taskbarcreated) {
         if (g_icon_created) {
             g_icon_created = false;
-            create_systray_icon();
-            update_systray();
+            systray::create_icon();
+            systray::update_icon_tooltip();
         }
     }
 
@@ -137,7 +137,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         set_title(core_version_info_v2::get()->get_name());
         if (cfg_show_systray)
-            create_systray_icon();
+            systray::create_icon();
 
         wil::com_ptr<MainWindowDropTarget> drop_handler = new MainWindowDropTarget;
         RegisterDragDrop(m_wnd, drop_handler.get());
@@ -162,7 +162,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         status_bar::destroy_window();
         m_taskbar_list.reset();
         RevokeDragDrop(m_wnd);
-        destroy_systray_icon();
+        systray::remove_icon();
         on_destroy();
         m_is_destroying = false;
         break;
@@ -512,7 +512,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             if (styles & WS_MINIMIZE) {
                 cfg_go_to_tray = cfg_go_to_tray || cfg_minimise_to_tray;
                 if (!g_icon_created && cfg_go_to_tray)
-                    create_systray_icon();
+                    systray::create_icon();
                 if (g_icon_created && cfg_go_to_tray)
                     ShowWindow(wnd, SW_HIDE);
             } else {

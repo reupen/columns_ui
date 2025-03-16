@@ -45,8 +45,8 @@ public:
             case IDC_USE_CUSTOM_ICON: {
                 cfg_custom_icon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 EnableWindow(GetDlgItem(wnd, IDC_BROWSE_ICON), cfg_custom_icon);
-                create_icon_handle();
-                create_systray_icon();
+                cui::systray::create_icon_handle();
+                cui::systray::create_icon();
             } break;
             case IDC_BROWSE_ICON: {
                 pfc::string8 path = cfg_tray_icon_path;
@@ -54,8 +54,8 @@ public:
                         nullptr, path, FALSE)) {
                     cfg_tray_icon_path = path;
                     if (cfg_custom_icon) {
-                        create_icon_handle();
-                        create_systray_icon();
+                        cui::systray::create_icon_handle();
+                        cui::systray::create_icon();
                     }
                 }
             } break;
@@ -66,7 +66,7 @@ public:
             case IDC_SHOW_SYSTRAY: {
                 cfg_show_systray = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 //                EnableWindow(GetDlgItem(wnd, IDC_MINIMISE_TO_SYSTRAY), cfg_show_systray);
-                on_show_system_tray_icon_change();
+                cui::systray::on_show_icon_change();
             } break;
             case IDC_BALLOON: {
                 cfg_balloon = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;

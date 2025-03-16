@@ -91,7 +91,7 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
 
     m_hook_proc = hook;
 
-    create_icon_handle();
+    systray::create_icon_handle();
 
     WNDCLASS wc{};
     wc.lpfnWndProc = s_on_message;

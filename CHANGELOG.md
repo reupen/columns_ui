@@ -16,6 +16,11 @@
   no horizontal or vertical scroll bar was fixed.
   [[#1120](https://github.com/reupen/columns_ui/pull/1120)]
 
+- A bug where the system tray icon did not always have the correct tooltip text
+  immediately after minimising the main window when ‘Always show icon’ is turned
+  off and ‘Minimise to icon’ is turned on was fixed.
+  [[#1151](https://github.com/reupen/columns_ui/pull/1151)]
+
 - A bug where the `%default_font_size%` and the deprecated `%default_font_face%`
   title formatting fields did not update in Item details after a font change
   until another event caused a content update was fixed.
