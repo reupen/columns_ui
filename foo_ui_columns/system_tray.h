@@ -4,8 +4,8 @@ namespace cui::systray {
 
 enum class BalloonTipTitle {
     NowPlaying,
+    Paused,
     Unpaused,
-    Paused
 };
 
 void create_icon_handle();
