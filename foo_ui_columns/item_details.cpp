@@ -660,23 +660,15 @@ void ItemDetails::scroll(INT SB, int position, bool b_absolute)
     else
         new_pos = position;
 
-    if (new_pos < si.nMin)
-        new_pos = si.nMin;
-    if (new_pos > si.nMax)
-        new_pos = si.nMax;
+    new_pos = std::clamp(new_pos, si.nMin, si.nMax);
 
     if (new_pos != si.nPos) {
         si2.cbSize = sizeof(si);
         si2.fMask = SIF_POS;
         si2.nPos = new_pos;
-        new_pos = SetScrollInfo(get_wnd(), SB, &si2, TRUE);
+        SetScrollInfo(get_wnd(), SB, &si2, TRUE);
 
-        RECT rc;
-        GetClientRect(get_wnd(), &rc);
-        int dy = SB == SB_VERT ? si.nPos - new_pos : 0;
-        int dx = SB == SB_HORZ ? si.nPos - new_pos : 0;
-        ScrollWindowEx(get_wnd(), dx, dy, &rc, &rc, nullptr, nullptr, SW_INVALIDATE);
-        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW);
+        RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
     }
 }
 
@@ -800,7 +792,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return 0;
     case WM_HSCROLL:
     case WM_VSCROLL: {
-        UINT SB = msg == WM_VSCROLL ? SB_VERT : SB_HORZ;
+        int SB = msg == WM_VSCROLL ? SB_VERT : SB_HORZ;
         SCROLLINFO si{};
         SCROLLINFO si2{};
         si.cbSize = sizeof(si);
@@ -828,32 +820,21 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (p_value == SB_TOP)
             new_pos = si.nMin;
 
-        if (new_pos < si.nMin)
-            new_pos = si.nMin;
-        if (new_pos > si.nMax)
-            new_pos = si.nMax;
+        new_pos = std::clamp(new_pos, si.nMin, si.nMax);
 
         if (new_pos != si.nPos) {
             si2.cbSize = sizeof(si);
             si2.fMask = SIF_POS;
             si2.nPos = new_pos;
-            new_pos = SetScrollInfo(wnd, SB, &si2, TRUE);
+            SetScrollInfo(wnd, SB, &si2, TRUE);
 
-            RECT rc;
-            GetClientRect(get_wnd(), &rc);
-            int dy = SB == SB_VERT ? si.nPos - new_pos : 0;
-            int dx = SB == SB_HORZ ? si.nPos - new_pos : 0;
-            ScrollWindowEx(get_wnd(), dx, dy, &rc, &rc, nullptr, nullptr, SW_INVALIDATE);
-            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW);
+            RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE | RDW_UPDATENOW);
         }
-    }
         return 0;
+    }
     case WM_ERASEBKGND:
         return TRUE;
     case WM_PAINT: {
-        PAINTSTRUCT ps{};
-        auto dc = wil::BeginPaint(wnd, &ps);
-
         SCROLLINFO siv{};
         siv.cbSize = sizeof(siv);
         siv.fMask = SIF_POS | SIF_RANGE | SIF_PAGE;
