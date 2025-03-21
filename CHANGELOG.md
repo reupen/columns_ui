@@ -6,7 +6,8 @@
 
 - Item details now uses Direct2D for rendering.
   [[#1120](https://github.com/reupen/columns_ui/pull/1120),
-  [#1153](https://github.com/reupen/columns_ui/pull/1153)]
+  [#1153](https://github.com/reupen/columns_ui/pull/1153),
+  [#1158](https://github.com/reupen/columns_ui/pull/1158)]
 
   This includes support for SVG font glyphs on recent versions of Windows,
   including Windows 11 emojis.

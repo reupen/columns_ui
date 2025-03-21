@@ -888,6 +888,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                     m_d2d_render_target.reset();
                     m_d2d_text_brush.reset();
                     m_d2d_brush_cache.clear();
+                    m_text_layout.reset();
                     return 0;
                 }
 
