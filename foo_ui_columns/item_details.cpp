@@ -878,9 +878,12 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
                 m_d2d_render_target->Clear(d2d_background_colour);
 
+                const auto use_colour_glyphs = m_text_layout->rendering_params()->use_colour_glyphs();
+
                 m_d2d_render_target->DrawTextLayout({x_offset, y_offset}, m_text_layout->text_layout().get(),
                     m_d2d_text_brush.get(),
-                    context_1 ? D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT : D2D1_DRAW_TEXT_OPTIONS_NONE);
+                    use_colour_glyphs && context_1 ? D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT
+                                                   : D2D1_DRAW_TEXT_OPTIONS_NONE);
 
                 const auto result = m_d2d_render_target->EndDraw();
 

@@ -211,12 +211,12 @@ SystemFont get_menu_font_for_dpi(unsigned dpi)
 }
 
 std::optional<uih::direct_write::TextFormat> get_text_format(
-    const uih::direct_write::Context::Ptr& context, const font::ptr& font_api)
+    const uih::direct_write::Context::Ptr& context, const font::ptr& font_api, bool set_defaults)
 {
     if (const auto text_format = font_api->create_wil_text_format()) {
         try {
-            return context->wrap_text_format(
-                text_format, font_api->rendering_mode(), font_api->force_greyscale_antialiasing());
+            return context->wrap_text_format(text_format, font_api->rendering_mode(),
+                font_api->force_greyscale_antialiasing(), font_api->use_colour_glyphs(), set_defaults);
         }
         CATCH_LOG()
     }

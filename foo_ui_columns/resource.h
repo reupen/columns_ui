@@ -296,6 +296,7 @@
 #define IDC_RENDERING_MODE              1194
 #define IDC_FORCE_GREYSCALE_ANTIALIASING 1196
 #define IDC_CONFIGURE_AXES              1197
+#define IDC_USE_COLOUR_GLYPHS           1197
 #define IDC_AXIS                        1198
 #define IDC_AXIS_VALUE                  1200
 #define IDC_AXIS_VALUE_SPIN             1201

@@ -153,7 +153,7 @@ std::optional<uih::direct_write::TextFormat> create_text_format(const uih::direc
 {
     const auto api = fb2k::std_api_get<cui::fonts::manager_v3>();
     const auto font = api->get_font(g_guid_item_details_font_client);
-    const auto text_format = fonts::get_text_format(context, font);
+    const auto text_format = fonts::get_text_format(context, font, false);
 
     if (!text_format)
         return {};

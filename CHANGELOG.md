@@ -12,6 +12,12 @@
   This includes support for SVG font glyphs on recent versions of Windows,
   including Windows 11 emojis.
 
+- An option to control whether colour glyphs are used for DirectWrite-rendered
+  text was added to the Text rendering tab on the Colours and fonts preferences
+  page. [[#1159](https://github.com/reupen/columns_ui/pull/1159)]
+
+  This applies to Windows 8.1 and newer only.
+
 ### Bug fixes
 
 - A bug where left and/or top padding was missing in Item details when there was
