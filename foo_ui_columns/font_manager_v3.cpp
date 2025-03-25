@@ -10,7 +10,7 @@ class NOVTABLE Font : public font {
 public:
     Font(LOGFONT log_font, uih::direct_write::WeightStretchStyle wss, std::wstring typographic_family_name,
         std::vector<DWRITE_FONT_AXIS_VALUE> axis_values, const float size, DWRITE_RENDERING_MODE rendering_mode,
-        bool force_greyscale_antialiasing)
+        bool force_greyscale_antialiasing, bool use_colour_glyphs)
         : m_log_font(std::move(log_font))
         , m_wss(std::move(wss))
         , m_typographic_family_name(std::move(typographic_family_name))
@@ -18,6 +18,7 @@ public:
         , m_size(size)
         , m_rendering_mode(rendering_mode)
         , m_force_greyscale_antialiasing(force_greyscale_antialiasing)
+        , m_use_colour_glyphs(use_colour_glyphs)
     {
     }
 
@@ -105,6 +106,7 @@ public:
 
     DWRITE_RENDERING_MODE rendering_mode() noexcept override { return m_rendering_mode; }
     bool force_greyscale_antialiasing() noexcept override { return m_force_greyscale_antialiasing; }
+    bool use_colour_glyphs() noexcept override { return m_use_colour_glyphs; }
 
 private:
     LOGFONT log_font_for_scaling_factor(float scaling_factor) noexcept
@@ -121,6 +123,7 @@ private:
     float m_size{};
     DWRITE_RENDERING_MODE m_rendering_mode{};
     bool m_force_greyscale_antialiasing{};
+    bool m_use_colour_glyphs{true};
 };
 
 class NOVTABLE FontManager3 : public manager_v3 {
@@ -141,7 +144,7 @@ public:
         auto axis_values = uih::direct_write::axis_values_to_vector(font_description.axis_values);
 
         return fb2k::service_new<Font>(log_font, wss, font_description.typographic_family_name, std::move(axis_values),
-            size, get_rendering_mode(), force_greyscale_antialiasing.get());
+            size, get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
     }
 
     void set_font_size(GUID id, float size) override

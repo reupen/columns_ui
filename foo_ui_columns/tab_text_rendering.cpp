@@ -37,6 +37,7 @@ private:
     HWND m_wnd{};
     HWND m_rendering_mode_combobox{};
     HWND m_force_greyscale_antialiasing_checkbox{};
+    HWND m_use_colour_glyphs{};
 
     PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
@@ -48,6 +49,7 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_wnd = wnd;
         m_rendering_mode_combobox = GetDlgItem(wnd, IDC_RENDERING_MODE);
         m_force_greyscale_antialiasing_checkbox = GetDlgItem(wnd, IDC_FORCE_GREYSCALE_ANTIALIASING);
+        m_use_colour_glyphs = GetDlgItem(wnd, IDC_USE_COLOUR_GLYPHS);
 
         for (auto&& [value, name] : rendering_modes) {
             const auto index = uih::combo_box_add_string_data(m_rendering_mode_combobox, name, WI_EnumValue(value));
@@ -56,8 +58,27 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 ComboBox_SetCurSel(m_rendering_mode_combobox, index);
         }
 
+        const auto are_colour_glyphs_supported = [] {
+            try {
+                auto context = uih::direct_write::Context::s_create();
+                return static_cast<bool>(context->factory().try_query<IDWriteFactory2>());
+            }
+            CATCH_LOG()
+
+            return false;
+        }();
+
+        if (!are_colour_glyphs_supported) {
+            const auto label = uGetWindowText(m_use_colour_glyphs) + " (requires Windows 8.1 or later)";
+            uSetWindowText(m_use_colour_glyphs, label.c_str());
+
+            EnableWindow(m_use_colour_glyphs, FALSE);
+        }
+
         Button_SetCheck(
             m_force_greyscale_antialiasing_checkbox, fonts::force_greyscale_antialiasing ? BST_CHECKED : BST_UNCHECKED);
+        Button_SetCheck(
+            m_use_colour_glyphs, are_colour_glyphs_supported && fonts::use_colour_glyphs ? BST_CHECKED : BST_UNCHECKED);
 
         break;
     }
@@ -86,6 +107,11 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_FORCE_GREYSCALE_ANTIALIASING: {
             fonts::force_greyscale_antialiasing
                 = Button_GetCheck(m_force_greyscale_antialiasing_checkbox) == BST_CHECKED;
+            g_font_manager_data.dispatch_all_fonts_changed();
+            break;
+        }
+        case IDC_USE_COLOUR_GLYPHS: {
+            fonts::use_colour_glyphs = Button_GetCheck(m_use_colour_glyphs) == BST_CHECKED;
             g_font_manager_data.dispatch_all_fonts_changed();
             break;
         }

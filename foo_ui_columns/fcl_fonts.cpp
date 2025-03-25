@@ -25,6 +25,7 @@ class FontsDataSet : public fcl::dataset {
         identifier_client_entries,
         identifier_rendering_mode,
         identifier_force_greyscale_antialiasing,
+        identifier_use_colour_glyphs,
 
         identifier_client_entry = 0,
     };
@@ -60,6 +61,7 @@ class FontsDataSet : public fcl::dataset {
         }
         out.write_item(identifier_rendering_mode, fonts::rendering_mode);
         out.write_item(identifier_force_greyscale_antialiasing, fonts::force_greyscale_antialiasing);
+        out.write_item(identifier_use_colour_glyphs, fonts::use_colour_glyphs);
     }
     void set_data(stream_reader* p_reader, size_t stream_size, uint32_t type, fcl::t_import_feedback& feedback,
         abort_callback& p_abort) override
@@ -123,6 +125,9 @@ class FontsDataSet : public fcl::dataset {
                 break;
             case identifier_force_greyscale_antialiasing:
                 reader.read_item(fonts::force_greyscale_antialiasing);
+                break;
+            case identifier_use_colour_glyphs:
+                reader.read_item(fonts::use_colour_glyphs);
                 break;
             default:
                 reader.skip(element_size);

@@ -22,6 +22,7 @@ enum class RenderingMode : int32_t {
 
 extern fbh::ConfigInt32 rendering_mode;
 extern fbh::ConfigBool force_greyscale_antialiasing;
+extern fbh::ConfigBool use_colour_glyphs;
 
 DWRITE_RENDERING_MODE get_rendering_mode();
 
