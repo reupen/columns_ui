@@ -294,14 +294,18 @@
 #define IDC_FONT_SIZE                   1192
 #define IDC_FONT_SIZE_SPIN              1193
 #define IDC_RENDERING_MODE              1194
+#define IDC_COLOUR_EMOJI_FAMILY         1195
 #define IDC_FORCE_GREYSCALE_ANTIALIASING 1196
 #define IDC_CONFIGURE_AXES              1197
 #define IDC_USE_COLOUR_GLYPHS           1197
+#define IDC_USE_ALT_EMOJI_FONT_SELECTION 1198
 #define IDC_AXIS                        1198
+#define IDC_MONOCHROME_EMOJI_FAMILY     1199
 #define IDC_AXIS_VALUE                  1200
 #define IDC_AXIS_VALUE_SPIN             1201
 #define IDC_AXIS_RANGE                  1202
 #define IDC_SET_FORMAT_SNIPPET          1203
+#define IDC_TEXT_RENDERING_NOTES        1204
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -311,7 +315,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1204
+#define _APS_NEXT_CONTROL_VALUE         1205
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

@@ -23,6 +23,9 @@ enum class RenderingMode : int32_t {
 extern fbh::ConfigInt32 rendering_mode;
 extern fbh::ConfigBool force_greyscale_antialiasing;
 extern fbh::ConfigBool use_colour_glyphs;
+extern fbh::ConfigBool use_alternative_emoji_font_selection;
+extern fbh::ConfigString colour_emoji_font_family;
+extern fbh::ConfigString monochrome_emoji_font_family;
 
 DWRITE_RENDERING_MODE get_rendering_mode();
 
