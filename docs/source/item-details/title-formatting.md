@@ -140,3 +140,19 @@ Restores font and text styling for subsequent text to the panel defaults.
 ```
 $reset_font()
 ```
+
+## Fields
+
+### %default_font_face%
+
+```{warning}
+Deprecated in Columns UI 3.0.0. Use ``$set_format(font-family: initial;)`` instead.
+```
+
+The default font family for the panel. This is a legacy, GDI-compatible font
+family name.
+
+### %default_font_size%
+
+The default font size for the panel, in points. The value is rounded to the
+nearest whole number.

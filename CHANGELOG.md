@@ -1,6 +1,6 @@
 # Change log
 
-## Development version
+## 3.0.0-alpha.6
 
 ### Features
 
@@ -53,6 +53,13 @@
 - A potential fix was added for a crash when exiting foobar2000 after recently
   interacting with an auto-hiding splitter.
   [[#1131](https://github.com/reupen/columns_ui/pull/1131)]
+
+### Internal changes
+
+- The component is now compiled using foobar2000 SDK 2025-03-07.
+  [[#1164](https://github.com/reupen/columns_ui/pull/1164)]
+
+- The component is now compiled with Visual Studio 2022 17.13.
 
 ## 3.0.0-alpha.5
 
