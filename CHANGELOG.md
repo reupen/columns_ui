@@ -19,7 +19,8 @@
   This applies to Windows 8.1 and newer only.
 
 - An opt-in experimental alternative emoji font selection mode for Windows 8.1
-  and newer was added. [[#1126](https://github.com/reupen/columns_ui/pull/1126)]
+  and newer was added. [[#1126](https://github.com/reupen/columns_ui/pull/1126),
+  [#1167](https://github.com/reupen/columns_ui/pull/1167)]
 
   This replaces the default DirectWrite emoji font selection logic to:
 
@@ -30,6 +31,13 @@
   - allow custom colour and monochrome emoji fonts to be used
 
 ### Bug fixes
+
+- A bug where some message boxes sometimes had an incorrect height was fixed.
+  [[#1157](https://github.com/reupen/columns_ui/pull/1157)]
+
+- A bug where automatically-inserted ellipses did not use the correct colour for
+  DirectWrite-rendered text was fixed.
+  [[#1157](https://github.com/reupen/columns_ui/pull/1157)]
 
 - A bug where left and/or top padding was missing in Item details when there was
   no horizontal or vertical scroll bar was fixed.
