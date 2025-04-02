@@ -192,5 +192,6 @@ doxygen/
 vcpkg_installed/
 component-packages/
 __pycache__/
+.venv/
 
 /foo_ui_columns/version.h

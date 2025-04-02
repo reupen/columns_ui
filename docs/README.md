@@ -9,26 +9,26 @@ The site is published at https://columns-ui.readthedocs.io.
 
 1. Install Python 3.12.
 
-2. Install [Poetry](https://python-poetry.org/docs/#installation).
+2. Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
 
 3. Switch to this directory.
 
 4. Run:
 
    ```shell
-   poetry install
+   uv sync
    ```
 
 5. Run:
 
    ```shell
-   poetry run .\make.bat clean
+   uv run .\make.bat clean
    ```
 
 6. Run:
 
    ```shell
-   poetry run .\make.bat html
+   uv run .\make.bat html
    ```
 
 The built docs will then be in the `build\html` directory.

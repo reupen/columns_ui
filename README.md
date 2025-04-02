@@ -41,7 +41,7 @@ This repo makes use of Git submodules. If you're not familiar with them,
 ### Build instructions
 
 Visual Studio 2022, the Windows 11 SDK (version 10.0.26100.0 or newer),
-[vcpkg](https://github.com/Microsoft/vcpkg) and Python 3.11 (including the `py`
+[vcpkg](https://github.com/Microsoft/vcpkg) and Python 3.12 (including the `py`
 launcher) are required to build Columns UI.
 
 You can use the
