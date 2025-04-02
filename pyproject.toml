@@ -1,5 +1,7 @@
 [project]
-requires-python = ">=3.11"
+name = "columns-ui"
+version = "0.0.0"
+requires-python = ">=3.12"
 
 [tool.ruff.lint]
 extend-select = ["B0", "I", "SIM", "UP"]
