@@ -216,15 +216,11 @@ std::optional<uih::direct_write::TextFormat> get_text_format(
     const uih::direct_write::Context::Ptr& context, const font::ptr& font_api, bool set_defaults)
 {
     if (const auto text_format = font_api->create_wil_text_format()) {
+        const auto rendering_opts = font_api->rendering_options();
+
         try {
-            auto wrapped_text_format = context->wrap_text_format(text_format, font_api->rendering_mode(),
-                font_api->force_greyscale_antialiasing(), font_api->use_colour_glyphs(), set_defaults);
-
-            if (use_alternative_emoji_font_selection)
-                wrapped_text_format.set_emoji_font_selection_config(uih::direct_write::EmojiFontSelectionConfig{
-                    mmh::to_utf16(colour_emoji_font_family.get()), mmh::to_utf16(monochrome_emoji_font_family.get())});
-
-            return wrapped_text_format;
+            return context->wrap_text_format(text_format, rendering_opts->rendering_mode(),
+                rendering_opts->force_greyscale_antialiasing(), rendering_opts->use_colour_glyphs(), set_defaults);
         }
         CATCH_LOG()
     }

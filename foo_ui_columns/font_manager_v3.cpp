@@ -3,22 +3,41 @@
 #include "config_appearance.h"
 #include "font_utils.h"
 #include "system_appearance_manager.h"
+#include "ui_helpers/direct_write_emoji.h"
 
 namespace cui::fonts {
+
+class NOVTABLE RenderingOptions : public rendering_options {
+public:
+    RenderingOptions(DWRITE_RENDERING_MODE rendering_mode, bool force_greyscale_antialiasing, bool use_colour_glyphs)
+        : m_rendering_mode(rendering_mode)
+        , m_force_greyscale_antialiasing(force_greyscale_antialiasing)
+        , m_use_colour_glyphs(use_colour_glyphs)
+    {
+    }
+
+    DWRITE_RENDERING_MODE rendering_mode() noexcept override { return m_rendering_mode; }
+    bool force_greyscale_antialiasing() noexcept override { return m_force_greyscale_antialiasing; }
+    bool use_colour_glyphs() noexcept override { return m_use_colour_glyphs; }
+
+private:
+    DWRITE_RENDERING_MODE m_rendering_mode{};
+    bool m_force_greyscale_antialiasing{};
+    bool m_use_colour_glyphs{true};
+};
 
 class NOVTABLE Font : public font {
 public:
     Font(LOGFONT log_font, uih::direct_write::WeightStretchStyle wss, std::wstring typographic_family_name,
-        std::vector<DWRITE_FONT_AXIS_VALUE> axis_values, const float size, DWRITE_RENDERING_MODE rendering_mode,
-        bool force_greyscale_antialiasing, bool use_colour_glyphs)
+        std::vector<DWRITE_FONT_AXIS_VALUE> axis_values, const float size, RenderingOptions::ptr rendering_opts,
+        std::optional<uih::direct_write::EmojiFontSelectionConfig> emoji_font_selection_config)
         : m_log_font(std::move(log_font))
         , m_wss(std::move(wss))
         , m_typographic_family_name(std::move(typographic_family_name))
         , m_axis_values(axis_values)
         , m_size(size)
-        , m_rendering_mode(rendering_mode)
-        , m_force_greyscale_antialiasing(force_greyscale_antialiasing)
-        , m_use_colour_glyphs(use_colour_glyphs)
+        , m_rendering_options(rendering_opts)
+        , m_emoji_font_selection_config(emoji_font_selection_config)
     {
     }
 
@@ -67,49 +86,73 @@ public:
 
         const auto factory_7 = context->factory().try_query<IDWriteFactory7>();
 
-        try {
-            pfc::com_ptr_t<IDWriteTextFormat> text_format;
+        const auto set_font_fallback = [&](auto&& text_format) {
+            if (!m_emoji_font_selection_config)
+                return;
 
-            if (factory_7 && !m_axis_values.empty()) {
-                wil::com_ptr<IDWriteTextFormat3> text_format_3;
-                THROW_IF_FAILED(factory_7->CreateTextFormat(family_name(), nullptr, m_axis_values.data(),
-                    gsl::narrow<uint32_t>(m_axis_values.size()), size(), L"", &text_format_3));
-                text_format.attach(text_format_3.detach());
-            } else {
-                THROW_IF_FAILED(context->factory()->CreateTextFormat(family_name(), nullptr, weight(), style(),
-                    stretch(), size(), locale_name, text_format.receive_ptr()));
+            try {
+                if (auto text_format_1 = text_format.template try_query<IDWriteTextFormat1>()) {
+                    const auto font_fallback = context->create_emoji_font_fallback(*m_emoji_font_selection_config);
+                    THROW_IF_FAILED(text_format_1->SetFontFallback(font_fallback.get()));
+                }
             }
+            CATCH_LOG();
+        };
 
-            return text_format;
-        }
-        CATCH_LOG()
+        const auto create_text_format = [&](auto&& create_family_name) {
+            wil::com_ptr_t<IDWriteTextFormat> text_format;
 
-        try {
-            pfc::com_ptr_t<IDWriteTextFormat> text_format;
+            try {
+                if (factory_7 && !m_axis_values.empty()) {
+                    wil::com_ptr<IDWriteTextFormat3> text_format_3;
+                    THROW_IF_FAILED(factory_7->CreateTextFormat(create_family_name, nullptr, m_axis_values.data(),
+                        gsl::narrow<uint32_t>(m_axis_values.size()), size(), locale_name, &text_format_3));
+                    text_format = std::move(text_format_3);
+                } else {
+                    THROW_IF_FAILED(context->factory()->CreateTextFormat(
+                        create_family_name, nullptr, weight(), style(), stretch(), size(), locale_name, &text_format));
+                }
 
-            if (factory_7 && !m_axis_values.empty()) {
-                wil::com_ptr<IDWriteTextFormat3> text_format_3;
-                THROW_IF_FAILED(factory_7->CreateTextFormat(L"", nullptr, m_axis_values.data(),
-                    gsl::narrow<uint32_t>(m_axis_values.size()), size(), L"", &text_format_3));
-                text_format.attach(text_format_3.detach());
-            } else {
-                THROW_IF_FAILED(context->factory()->CreateTextFormat(
-                    L"", nullptr, weight(), style(), stretch(), size(), locale_name, text_format.receive_ptr()));
+                set_font_fallback(text_format);
+
+                return text_format;
             }
+            CATCH_LOG()
 
-            return text_format;
+            return wil::com_ptr<IDWriteTextFormat>();
+        };
+
+        auto text_format = create_text_format(family_name());
+
+        if (!text_format)
+            text_format = create_text_format(L"");
+
+        pfc::com_ptr_t<IDWriteTextFormat> pfc_text_format;
+
+        pfc_text_format.attach(text_format.detach());
+
+        return pfc_text_format;
+    }
+
+    [[nodiscard]] pfc::com_ptr_t<IDWriteFontFallback> get_font_fallback() noexcept override
+    {
+        try {
+            const auto context = uih::direct_write::Context::s_create();
+            auto font_fallback = context->create_emoji_font_fallback(*m_emoji_font_selection_config);
+
+            pfc::com_ptr_t<IDWriteFontFallback> pfc_font_fallback;
+            pfc_font_fallback.attach(font_fallback.detach());
+            return pfc_font_fallback;
         }
         CATCH_LOG()
 
         return {};
     }
 
-    DWRITE_RENDERING_MODE rendering_mode() noexcept override { return m_rendering_mode; }
-    bool force_greyscale_antialiasing() noexcept override { return m_force_greyscale_antialiasing; }
-    bool use_colour_glyphs() noexcept override { return m_use_colour_glyphs; }
+    rendering_options::ptr rendering_options() noexcept override { return m_rendering_options; }
 
 private:
-    LOGFONT log_font_for_scaling_factor(float scaling_factor) noexcept
+    LOGFONT log_font_for_scaling_factor(float scaling_factor) const noexcept
     {
         LOGFONT scaled_log_font{m_log_font};
         scaled_log_font.lfHeight = -gsl::narrow_cast<long>(uih::direct_write::dip_to_px(m_size, scaling_factor) + 0.5f);
@@ -121,9 +164,8 @@ private:
     std::wstring m_typographic_family_name;
     std::vector<DWRITE_FONT_AXIS_VALUE> m_axis_values;
     float m_size{};
-    DWRITE_RENDERING_MODE m_rendering_mode{};
-    bool m_force_greyscale_antialiasing{};
-    bool m_use_colour_glyphs{true};
+    RenderingOptions::ptr m_rendering_options;
+    std::optional<uih::direct_write::EmojiFontSelectionConfig> m_emoji_font_selection_config;
 };
 
 class NOVTABLE FontManager3 : public manager_v3 {
@@ -143,8 +185,16 @@ public:
         auto wss = font_description.get_wss_with_fallback();
         auto axis_values = uih::direct_write::axis_values_to_vector(font_description.axis_values);
 
+        auto rendering_opts = fb2k::service_new<RenderingOptions>(
+            get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
+
+        auto emoji_font_selection_config = use_alternative_emoji_font_selection
+            ? std::make_optional(uih::direct_write::EmojiFontSelectionConfig{
+                  mmh::to_utf16(colour_emoji_font_family.get()), mmh::to_utf16(monochrome_emoji_font_family.get())})
+            : std::nullopt;
+
         return fb2k::service_new<Font>(log_font, wss, font_description.typographic_family_name, std::move(axis_values),
-            size, get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
+            size, std::move(rendering_opts), std::move(emoji_font_selection_config));
     }
 
     void set_font_size(GUID id, float size) override
