@@ -148,7 +148,7 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 break;
 
             fonts::rendering_mode = gsl::narrow<std::underlying_type_t<fonts::RenderingMode>>(data);
-            g_font_manager_data.dispatch_all_fonts_changed();
+            g_font_manager_data.dispatch_rendering_options_changed();
             break;
         }
         case IDC_COLOUR_EMOJI_FAMILY | (CBN_SELCHANGE << 16): {
@@ -158,7 +158,7 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 break;
 
             fonts::colour_emoji_font_family = mmh::to_utf8(m_emoji_family_names[index]).c_str();
-            g_font_manager_data.dispatch_all_fonts_changed();
+            g_font_manager_data.dispatch_font_fallback_changed();
             break;
         }
         case IDC_MONOCHROME_EMOJI_FAMILY | (CBN_SELCHANGE << 16): {
@@ -168,25 +168,25 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 break;
 
             fonts::monochrome_emoji_font_family = mmh::to_utf8(m_emoji_family_names[index]).c_str();
-            g_font_manager_data.dispatch_all_fonts_changed();
+            g_font_manager_data.dispatch_font_fallback_changed();
             break;
         }
         case IDC_FORCE_GREYSCALE_ANTIALIASING: {
             fonts::force_greyscale_antialiasing
                 = Button_GetCheck(m_force_greyscale_antialiasing_checkbox) == BST_CHECKED;
-            g_font_manager_data.dispatch_all_fonts_changed();
+            g_font_manager_data.dispatch_rendering_options_changed();
             break;
         }
         case IDC_USE_COLOUR_GLYPHS: {
             fonts::use_colour_glyphs = Button_GetCheck(m_use_colour_glyphs) == BST_CHECKED;
-            g_font_manager_data.dispatch_all_fonts_changed();
+            g_font_manager_data.dispatch_rendering_options_changed();
             break;
         }
         case IDC_USE_ALT_EMOJI_FONT_SELECTION: {
             fonts::use_alternative_emoji_font_selection
                 = Button_GetCheck(m_use_alternative_emoji_font_selection_checkbox) == BST_CHECKED;
             enable_or_disable_emoji_controls();
-            g_font_manager_data.dispatch_all_fonts_changed();
+            g_font_manager_data.dispatch_font_fallback_changed();
             break;
         }
         }

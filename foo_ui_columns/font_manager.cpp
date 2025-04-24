@@ -58,12 +58,12 @@ public:
 
     void register_common_callback(fonts::common_callback* p_callback) override
     {
-        g_font_manager_data.register_common_callback(p_callback);
+        g_font_manager_data.add_common_callback(p_callback);
     }
 
     void deregister_common_callback(fonts::common_callback* p_callback) override
     {
-        g_font_manager_data.deregister_common_callback(p_callback);
+        g_font_manager_data.remove_common_callback(p_callback);
     }
 };
 
@@ -121,12 +121,12 @@ public:
 
     void register_common_callback(fonts::common_callback* p_callback) override
     {
-        g_font_manager_data.register_common_callback(p_callback);
+        g_font_manager_data.add_common_callback(p_callback);
     }
 
     void deregister_common_callback(fonts::common_callback* p_callback) override
     {
-        g_font_manager_data.deregister_common_callback(p_callback);
+        g_font_manager_data.remove_common_callback(p_callback);
     }
 };
 

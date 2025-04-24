@@ -19,7 +19,7 @@ FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 
 FontManagerData::~FontManagerData()
 {
-    for (auto& [id, callbacks] : m_callback_map) {
+    for (auto& [id, callbacks] : m_font_callback_map) {
         if (callbacks.empty())
             continue;
 
@@ -32,25 +32,25 @@ FontManagerData::~FontManagerData()
     }
 }
 
-void FontManagerData::g_on_common_font_changed(uint32_t mask)
+void FontManagerData::dispatch_common_font_changed(uint32_t mask) const
 {
-    for (const auto callback : m_callbacks)
+    for (const auto callback : m_common_font_callbacks)
         callback->on_font_changed(mask);
 
     if (mask & cui::fonts::font_type_flag_items)
-        if (const auto iter = m_callback_map.find(cui::fonts::items_font_id); iter != m_callback_map.end())
+        if (const auto iter = m_font_callback_map.find(cui::fonts::items_font_id); iter != m_font_callback_map.end())
             for (const auto& callback : iter->second)
                 (*callback)();
 
     if (mask & cui::fonts::font_type_flag_labels)
-        if (const auto iter = m_callback_map.find(cui::fonts::labels_font_id); iter != m_callback_map.end())
+        if (const auto iter = m_font_callback_map.find(cui::fonts::labels_font_id); iter != m_font_callback_map.end())
             for (const auto& callback : iter->second)
                 (*callback)();
 }
 
-void FontManagerData::dispatch_all_fonts_changed()
+void FontManagerData::dispatch_all_fonts_changed() const
 {
-    g_on_common_font_changed(cui::fonts::font_type_flag_items | cui::fonts::font_type_flag_labels);
+    dispatch_common_font_changed(cui::fonts::font_type_flag_items | cui::fonts::font_type_flag_labels);
 
     for (const auto& client_ptr : cui::fonts::client::enumerate()) {
         const auto client_id = client_ptr->get_client_guid();
@@ -61,34 +61,70 @@ void FontManagerData::dispatch_all_fonts_changed()
     }
 }
 
-void FontManagerData::add_callback(GUID id, cui::basic_callback::ptr callback)
+void FontManagerData::add_font_callback(GUID id, cui::basic_callback::ptr callback)
 {
-    m_callback_map[id].emplace_back(std::move(callback));
+    m_font_callback_map[id].emplace_back(std::move(callback));
 }
 
-void FontManagerData::remove_callback(GUID id, cui::basic_callback::ptr callback)
+void FontManagerData::remove_font_callback(GUID id, cui::basic_callback::ptr callback)
 {
-    if (const auto iter = m_callback_map.find(id); iter != m_callback_map.end())
+    if (const auto iter = m_font_callback_map.find(id); iter != m_font_callback_map.end())
         std::erase(iter->second, callback);
 }
 
-void FontManagerData::dispatch_client_font_changed(cui::fonts::client::ptr client)
+void FontManagerData::dispatch_client_font_changed(cui::fonts::client::ptr client) const
 {
     client->on_font_changed();
 
-    if (const auto iter = m_callback_map.find(client->get_client_guid()); iter != m_callback_map.end())
+    if (const auto iter = m_font_callback_map.find(client->get_client_guid()); iter != m_font_callback_map.end())
         for (const auto& callback : iter->second)
             (*callback)();
 }
 
-void FontManagerData::deregister_common_callback(cui::fonts::common_callback* p_callback)
+void FontManagerData::add_rendering_options_callback(cui::basic_callback::ptr callback)
 {
-    m_callbacks.remove_item(p_callback);
+    m_rendering_options_callbacks.emplace_back(std::move(callback));
 }
 
-void FontManagerData::register_common_callback(cui::fonts::common_callback* p_callback)
+void FontManagerData::remove_rendering_options_callback(cui::basic_callback::ptr callback)
 {
-    m_callbacks.add_item(p_callback);
+    std::erase(m_rendering_options_callbacks, callback);
+}
+
+void FontManagerData::dispatch_rendering_options_changed() const
+{
+    for (const auto& callback : m_rendering_options_callbacks)
+        (*callback)();
+
+    dispatch_all_fonts_changed();
+}
+
+void FontManagerData::add_font_fallback_callback(cui::basic_callback::ptr callback)
+{
+    m_font_fallback_callbacks.emplace_back(std::move(callback));
+}
+
+void FontManagerData::remove_font_fallback_callback(cui::basic_callback::ptr callback)
+{
+    std::erase(m_font_fallback_callbacks, callback);
+}
+
+void FontManagerData::dispatch_font_fallback_changed() const
+{
+    for (const auto& callback : m_font_fallback_callbacks)
+        (*callback)();
+
+    dispatch_all_fonts_changed();
+}
+
+void FontManagerData::remove_common_callback(cui::fonts::common_callback* p_callback)
+{
+    m_common_font_callbacks.remove_item(p_callback);
+}
+
+void FontManagerData::add_common_callback(cui::fonts::common_callback* p_callback)
+{
+    m_common_font_callbacks.add_item(p_callback);
 }
 
 FontManagerData::entry_ptr_t FontManagerData::find_by_id(GUID id)

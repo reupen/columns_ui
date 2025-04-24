@@ -117,7 +117,7 @@ void TabFonts::on_font_changed()
     if (index_element > 1)
         return;
 
-    g_font_manager_data.g_on_common_font_changed(1 << index_element);
+    g_font_manager_data.dispatch_common_font_changed(1 << index_element);
 
     for (auto&& client : m_fonts_client_list) {
         const auto p_data = g_font_manager_data.find_by_id(client.m_guid);

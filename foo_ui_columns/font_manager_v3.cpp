@@ -134,7 +134,7 @@ public:
         return pfc_text_format;
     }
 
-    [[nodiscard]] pfc::com_ptr_t<IDWriteFontFallback> get_font_fallback() noexcept override
+    [[nodiscard]] pfc::com_ptr_t<IDWriteFontFallback> font_fallback() noexcept override
     {
         try {
             const auto context = uih::direct_write::Context::s_create();
@@ -199,6 +199,7 @@ public:
 
     void set_font_size(GUID id, float size) override
     {
+        system_appearance_manager::initialise();
         const auto entry = g_font_manager_data.find_by_id(id);
 
         if (!entry)
@@ -218,10 +219,57 @@ public:
 
     [[nodiscard]] callback_token::ptr on_font_changed(GUID id, basic_callback::ptr callback) override
     {
-        g_font_manager_data.add_callback(id, callback);
+        system_appearance_manager::initialise();
+        g_font_manager_data.add_font_callback(id, callback);
 
         return fb2k::service_new<lambda_callback_token>(
-            [id, callback] { g_font_manager_data.remove_callback(id, callback); });
+            [id, callback] { g_font_manager_data.remove_font_callback(id, callback); });
+    }
+
+    [[nodiscard]] callback_token::ptr on_default_rendering_options_changed(basic_callback::ptr callback) override
+    {
+        system_appearance_manager::initialise();
+        g_font_manager_data.add_rendering_options_callback(callback);
+
+        return fb2k::service_new<lambda_callback_token>(
+            [callback] { g_font_manager_data.remove_rendering_options_callback(callback); });
+    }
+
+    [[nodiscard]] callback_token::ptr on_default_font_fallback_changed(basic_callback::ptr callback) override
+    {
+        system_appearance_manager::initialise();
+        g_font_manager_data.add_font_fallback_callback(callback);
+
+        return fb2k::service_new<lambda_callback_token>(
+            [callback] { g_font_manager_data.remove_font_fallback_callback(callback); });
+    }
+
+    [[nodiscard]] rendering_options::ptr get_default_rendering_options() noexcept override
+    {
+        system_appearance_manager::initialise();
+        return fb2k::service_new<RenderingOptions>(
+            get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
+    }
+
+    [[nodiscard]] pfc::com_ptr_t<IDWriteFontFallback> get_default_font_fallback() noexcept override
+    {
+        if (!use_alternative_emoji_font_selection)
+            return {};
+
+        const auto emoji_font_selection_config = uih::direct_write::EmojiFontSelectionConfig{
+            mmh::to_utf16(colour_emoji_font_family.get()), mmh::to_utf16(monochrome_emoji_font_family.get())};
+
+        try {
+            const auto context = uih::direct_write::Context::s_create();
+            auto font_fallback = context->create_emoji_font_fallback(emoji_font_selection_config);
+
+            pfc::com_ptr_t<IDWriteFontFallback> pfc_font_fallback;
+            pfc_font_fallback.attach(font_fallback.detach());
+            return pfc_font_fallback;
+        }
+        CATCH_LOG()
+
+        return {};
     }
 };
 
