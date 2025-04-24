@@ -169,14 +169,14 @@ private:
             switch (wp) {
             case SPI_SETFONTSMOOTHING:
                 if (fonts::rendering_mode.get() == WI_EnumValue(fonts::RenderingMode::Automatic))
-                    g_font_manager_data.dispatch_all_fonts_changed();
+                    g_font_manager_data.dispatch_rendering_options_changed();
                 break;
             case SPI_SETICONTITLELOGFONT:
                 if (!g_font_manager_data.m_common_items_entry
                     || g_font_manager_data.m_common_items_entry->font_mode != fonts::FontMode::System)
                     break;
 
-                g_font_manager_data.g_on_common_font_changed(fonts::font_type_flag_items);
+                g_font_manager_data.dispatch_common_font_changed(fonts::font_type_flag_items);
 
                 for (auto client_ptr : fonts::client::enumerate()) {
                     const auto entry = g_font_manager_data.find_by_id(client_ptr->get_client_guid());
@@ -190,7 +190,7 @@ private:
                     || g_font_manager_data.m_common_labels_entry->font_mode != fonts::FontMode::System)
                     break;
 
-                g_font_manager_data.g_on_common_font_changed(fonts::font_type_flag_labels);
+                g_font_manager_data.dispatch_common_font_changed(fonts::font_type_flag_labels);
 
                 for (auto client_ptr : fonts::client::enumerate()) {
                     const auto entry = g_font_manager_data.find_by_id(client_ptr->get_client_guid());

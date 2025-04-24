@@ -78,19 +78,30 @@ public:
     entry_ptr_t find_by_id(GUID id);
     cui::fonts::FontDescription resolve_font_description(const entry_ptr_t& entry);
 
-    void add_callback(GUID id, cui::basic_callback::ptr callback);
-    void remove_callback(GUID id, cui::basic_callback::ptr callback);
-    void dispatch_client_font_changed(cui::fonts::client::ptr client);
+    void add_font_callback(GUID id, cui::basic_callback::ptr callback);
+    void remove_font_callback(GUID id, cui::basic_callback::ptr callback);
+    void dispatch_client_font_changed(cui::fonts::client::ptr client) const;
 
-    void register_common_callback(cui::fonts::common_callback* p_callback);
-    void deregister_common_callback(cui::fonts::common_callback* p_callback);
+    void add_rendering_options_callback(cui::basic_callback::ptr callback);
+    void remove_rendering_options_callback(cui::basic_callback::ptr callback);
+    void dispatch_rendering_options_changed() const;
 
-    void g_on_common_font_changed(uint32_t mask);
-    void dispatch_all_fonts_changed();
+    void add_font_fallback_callback(cui::basic_callback::ptr callback);
+    void remove_font_fallback_callback(cui::basic_callback::ptr callback);
+    void dispatch_font_fallback_changed() const;
 
-    pfc::ptr_list_t<cui::fonts::common_callback> m_callbacks;
-    std::unordered_map<GUID, std::vector<cui::basic_callback::ptr>> m_callback_map;
+    void add_common_callback(cui::fonts::common_callback* p_callback);
+    void remove_common_callback(cui::fonts::common_callback* p_callback);
+    void dispatch_common_font_changed(uint32_t mask) const;
+
+    void dispatch_all_fonts_changed() const;
 
     FontManagerData();
     ~FontManagerData();
+
+private:
+    pfc::ptr_list_t<cui::fonts::common_callback> m_common_font_callbacks;
+    std::unordered_map<GUID, std::vector<cui::basic_callback::ptr>> m_font_callback_map;
+    std::vector<cui::basic_callback::ptr> m_rendering_options_callbacks;
+    std::vector<cui::basic_callback::ptr> m_font_fallback_callbacks;
 };
