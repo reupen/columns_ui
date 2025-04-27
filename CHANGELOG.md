@@ -2,6 +2,11 @@
 
 ## 3.0.0-beta.1
 
+### Bug fixes
+
+- A workaround for playlist and other list view column titles not rendering on
+  Wine was added. [[#1185](https://github.com/reupen/columns_ui/pull/1185)]
+
 ### Internal changes
 
 - An updated font API for panels was implemented for release 8.0.0-beta.1 of the
