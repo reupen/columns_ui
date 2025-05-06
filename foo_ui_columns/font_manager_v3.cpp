@@ -7,29 +7,10 @@
 
 namespace cui::fonts {
 
-class NOVTABLE RenderingOptions : public rendering_options {
-public:
-    RenderingOptions(DWRITE_RENDERING_MODE rendering_mode, bool force_greyscale_antialiasing, bool use_colour_glyphs)
-        : m_rendering_mode(rendering_mode)
-        , m_force_greyscale_antialiasing(force_greyscale_antialiasing)
-        , m_use_colour_glyphs(use_colour_glyphs)
-    {
-    }
-
-    DWRITE_RENDERING_MODE rendering_mode() noexcept override { return m_rendering_mode; }
-    bool force_greyscale_antialiasing() noexcept override { return m_force_greyscale_antialiasing; }
-    bool use_colour_glyphs() noexcept override { return m_use_colour_glyphs; }
-
-private:
-    DWRITE_RENDERING_MODE m_rendering_mode{};
-    bool m_force_greyscale_antialiasing{};
-    bool m_use_colour_glyphs{true};
-};
-
 class NOVTABLE Font : public font {
 public:
     Font(LOGFONT log_font, uih::direct_write::WeightStretchStyle wss, std::wstring typographic_family_name,
-        std::vector<DWRITE_FONT_AXIS_VALUE> axis_values, const float size, RenderingOptions::ptr rendering_opts,
+        std::vector<DWRITE_FONT_AXIS_VALUE> axis_values, const float size, rendering_options::ptr rendering_opts,
         std::optional<uih::direct_write::EmojiFontSelectionConfig> emoji_font_selection_config)
         : m_log_font(std::move(log_font))
         , m_wss(std::move(wss))
@@ -41,14 +22,14 @@ public:
     {
     }
 
-    const wchar_t* family_name(FontFamilyModel font_family_model = FontFamilyModel::Automatic) noexcept final
+    const wchar_t* family_name(font_family_model font_family_model = font_family_model::automatic) noexcept final
     {
         switch (font_family_model) {
         default:
             return m_typographic_family_name.empty() ? m_wss.family_name.c_str() : m_typographic_family_name.c_str();
-        case FontFamilyModel::WeightStretchStyle:
+        case font_family_model::weight_stretch_style:
             return m_wss.family_name.c_str();
-        case FontFamilyModel::Typographic:
+        case font_family_model::typographic:
             return m_typographic_family_name.c_str();
         }
     }
@@ -164,7 +145,7 @@ private:
     std::wstring m_typographic_family_name;
     std::vector<DWRITE_FONT_AXIS_VALUE> m_axis_values;
     float m_size{};
-    RenderingOptions::ptr m_rendering_options;
+    rendering_options::ptr m_rendering_options;
     std::optional<uih::direct_write::EmojiFontSelectionConfig> m_emoji_font_selection_config;
 };
 
@@ -185,7 +166,7 @@ public:
         auto wss = font_description.get_wss_with_fallback();
         auto axis_values = uih::direct_write::axis_values_to_vector(font_description.axis_values);
 
-        auto rendering_opts = fb2k::service_new<RenderingOptions>(
+        auto rendering_opts = fb2k::service_new<rendering_options_impl>(
             get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
 
         auto emoji_font_selection_config = use_alternative_emoji_font_selection
@@ -247,7 +228,7 @@ public:
     [[nodiscard]] rendering_options::ptr get_default_rendering_options() noexcept override
     {
         system_appearance_manager::initialise();
-        return fb2k::service_new<RenderingOptions>(
+        return fb2k::service_new<rendering_options_impl>(
             get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
     }
 

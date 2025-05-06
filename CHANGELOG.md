@@ -11,7 +11,8 @@
 
 - An updated font API for panels was implemented for release 8.0.0-beta.1 of the
   Columns UI SDK. [[#1179](https://github.com/reupen/columns_ui/pull/1179),
-  [#1183](https://github.com/reupen/columns_ui/pull/1183)]
+  [#1183](https://github.com/reupen/columns_ui/pull/1183),
+  [#1192](https://github.com/reupen/columns_ui/pull/1192)]
 
 ## 3.0.0-alpha.6
 
