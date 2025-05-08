@@ -465,11 +465,13 @@ void PlaylistView::g_on_columns_change()
 }
 void PlaylistView::on_columns_change()
 {
-    if (get_wnd()) {
-        clear_all_items();
-        refresh_columns();
-        populate_list();
-    }
+    if (!get_wnd())
+        return;
+
+    const auto saved_scroll_position = save_scroll_position();
+    clear_all_items();
+    refresh_columns();
+    populate_list(saved_scroll_position);
 }
 
 void PlaylistView::s_redraw_all()
