@@ -7,6 +7,14 @@
 - A workaround for playlist and other list view column titles not rendering on
   Wine was added. [[#1185](https://github.com/reupen/columns_ui/pull/1185)]
 
+- A problem where the playlist view column titles could become incorrectly
+  positioned in some scenarios was fixed.
+  [[#1194](https://github.com/reupen/columns_ui/pull/1194)]
+
+- A problem where the playlist view vertical scroll position was reset in some
+  cases after showing and hiding columns was fixed.
+  [[#1194](https://github.com/reupen/columns_ui/pull/1194)]
+
 ### Internal changes
 
 - An updated font API for panels was implemented for release 8.0.0-beta.1 of the
