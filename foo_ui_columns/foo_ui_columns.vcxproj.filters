@@ -936,9 +936,6 @@
     <ClInclude Include="win32.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="core_font_ids.h">
-      <Filter>Colours and fonts</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

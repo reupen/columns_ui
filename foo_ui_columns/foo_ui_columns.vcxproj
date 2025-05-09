@@ -443,7 +443,6 @@
     <ClInclude Include="config_items.h" />
     <ClInclude Include="core_dark_list_view.h" />
     <ClInclude Include="core_drop_down_list_toolbar.h" />
-    <ClInclude Include="core_font_ids.h" />
     <ClInclude Include="dark_mode_dialog.h" />
     <ClInclude Include="dark_mode_active_ui.h" />
     <ClInclude Include="dark_mode_spin.h" />

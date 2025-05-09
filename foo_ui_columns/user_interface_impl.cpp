@@ -1,6 +1,5 @@
 #include "pch.h"
 
-#include "core_font_ids.h"
 #include "status_pane.h"
 #include "status_bar.h"
 #include "system_tray.h"
@@ -85,9 +84,9 @@ public:
 
 private:
     colours::helper m_colours{core_colours_client_id};
-    fonts::helper m_default_font{fonts::core_default_font_client_id};
-    fonts::helper m_console_font{fonts::core_console_font_client_id};
-    fonts::helper m_lists_font{fonts::core_lists_font_client_id};
+    fonts::helper m_default_font{fonts::core_default_font_id};
+    fonts::helper m_console_font{fonts::core_console_font_id};
+    fonts::helper m_lists_font{fonts::core_lists_font_id};
     std::unordered_map<GUID, wil::unique_hfont> m_font_cache;
     std::vector<ui_config_callback*> m_callbacks;
 };
@@ -118,7 +117,7 @@ public:
 
 class CoreConsoleFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return fonts::core_console_font_client_id; }
+    const GUID& get_client_guid() const override { return fonts::core_console_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Core: Console"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
     void on_font_changed() const override
@@ -130,7 +129,7 @@ public:
 
 class CoreDefaultFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return fonts::core_default_font_client_id; }
+    const GUID& get_client_guid() const override { return fonts::core_default_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Core: Default"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_labels; }
     void on_font_changed() const override
@@ -142,7 +141,7 @@ public:
 
 class CoreListsFontClient : public fonts::client {
 public:
-    const GUID& get_client_guid() const override { return fonts::core_lists_font_client_id; }
+    const GUID& get_client_guid() const override { return fonts::core_lists_font_id; }
     void get_name(pfc::string_base& p_out) const override { p_out = "Core: List items"; }
     fonts::font_type_t get_default_font_type() const override { return fonts::font_type_items; }
     void on_font_changed() const override
