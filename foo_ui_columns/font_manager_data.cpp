@@ -4,7 +4,6 @@
 #include "font_manager_data.h"
 
 #include "config_appearance.h"
-#include "core_font_ids.h"
 
 FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 {
@@ -56,7 +55,7 @@ void FontManagerData::dispatch_all_fonts_changed() const
         const auto client_id = client_ptr->get_client_guid();
 
         // Avoid duplicate ui_config_callback::ui_fonts_changed() calls.
-        if (client_id != cui::fonts::core_console_font_client_id && client_id != cui::fonts::core_lists_font_client_id)
+        if (client_id != cui::fonts::core_console_font_id && client_id != cui::fonts::core_lists_font_id)
             dispatch_client_font_changed(client_ptr);
     }
 }
