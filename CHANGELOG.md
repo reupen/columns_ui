@@ -2,6 +2,11 @@
 
 ## 3.0.0-beta.1
 
+### Features
+
+- The colours of the default dark mode playback button icons were adjusted
+  slightly. [[#1201](https://github.com/reupen/columns_ui/pull/1201)]
+
 ### Bug fixes
 
 - A workaround for playlist and other list view column titles not rendering on
@@ -22,6 +27,8 @@
   [#1183](https://github.com/reupen/columns_ui/pull/1183),
   [#1192](https://github.com/reupen/columns_ui/pull/1192),
   [#1195](https://github.com/reupen/columns_ui/pull/1195)]
+
+- The component is now compiled with Visual Studio 2022 17.14.
 
 ## 3.0.0-alpha.6
 

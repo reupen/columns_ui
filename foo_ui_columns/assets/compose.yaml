@@ -1,0 +1,8 @@
+services:
+  builder:
+    build: .
+    working_dir: /mnt/assets
+    volumes:
+      - type: bind
+        source: .
+        target: /mnt/assets
