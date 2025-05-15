@@ -7,6 +7,18 @@
 
 namespace cui::fonts {
 
+namespace {
+
+auto create_rendering_options()
+{
+    const auto resolved_force_greyscale_antialiasing
+        = force_greyscale_antialiasing.get() || !system_appearance_manager::is_cleartype_enabled();
+    return fb2k::service_new<rendering_options_impl>(
+        get_rendering_mode(), resolved_force_greyscale_antialiasing, use_colour_glyphs.get());
+}
+
+} // namespace
+
 class NOVTABLE Font : public font {
 public:
     Font(LOGFONT log_font, uih::direct_write::WeightStretchStyle wss, std::wstring typographic_family_name,
@@ -165,9 +177,7 @@ public:
         auto size = font_description.dip_size;
         auto wss = font_description.get_wss_with_fallback();
         auto axis_values = uih::direct_write::axis_values_to_vector(font_description.axis_values);
-
-        auto rendering_opts = fb2k::service_new<rendering_options_impl>(
-            get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
+        auto rendering_opts = create_rendering_options();
 
         auto emoji_font_selection_config = use_alternative_emoji_font_selection
             ? std::make_optional(uih::direct_write::EmojiFontSelectionConfig{
@@ -228,8 +238,7 @@ public:
     [[nodiscard]] rendering_options::ptr get_default_rendering_options() noexcept override
     {
         system_appearance_manager::initialise();
-        return fb2k::service_new<rendering_options_impl>(
-            get_rendering_mode(), force_greyscale_antialiasing.get(), use_colour_glyphs.get());
+        return create_rendering_options();
     }
 
     [[nodiscard]] pfc::com_ptr_t<IDWriteFontFallback> get_default_font_fallback() noexcept override
