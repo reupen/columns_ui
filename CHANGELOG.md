@@ -1,5 +1,13 @@
 # Change log
 
+## 3.0.0-beta.2
+
+### Bug fixes
+
+- The component is once again compiled with Visual Studio 2022 17.13 due to a
+  suspected code generation bug in version 17.14 causing the 32-bit build of
+  Columns UI to crash.
+
 ## 3.0.0-beta.1
 
 ### Features
