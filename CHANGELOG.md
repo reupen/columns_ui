@@ -5,7 +5,8 @@
 ### Features
 
 - The colours of the default dark mode playback button icons were adjusted
-  slightly. [[#1201](https://github.com/reupen/columns_ui/pull/1201)]
+  slightly. [[#1201](https://github.com/reupen/columns_ui/pull/1201),
+  [#1203](https://github.com/reupen/columns_ui/pull/1203)]
 
 ### Bug fixes
 
