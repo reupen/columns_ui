@@ -15,6 +15,8 @@ std::optional<ModernColours> modern_colours_cached;
 bool modern_colours_fetch_attempted{};
 std::optional<bool> dark_mode_available_cached;
 std::vector<std::shared_ptr<ModernColoursChangedHandler>> modern_colours_changed_callbacks;
+std::optional<bool> cleartype_enabled_cached;
+std::optional<bool> font_smoothing_enabled_cached;
 
 COLORREF winrt_color_to_colorref(const winrt::Windows::UI::Color& colour)
 {
@@ -168,8 +170,19 @@ private:
         case WM_SETTINGCHANGE:
             switch (wp) {
             case SPI_SETFONTSMOOTHING:
+                font_smoothing_enabled_cached.reset();
                 if (fonts::rendering_mode.get() == WI_EnumValue(fonts::RenderingMode::Automatic))
                     g_font_manager_data.dispatch_rendering_options_changed();
+                else
+                    g_font_manager_data.dispatch_all_fonts_changed();
+                break;
+            case SPI_SETFONTSMOOTHINGTYPE:
+            case SPI_SETFONTSMOOTHINGCONTRAST:
+            case SPI_SETFONTSMOOTHINGORIENTATION:
+                // The ClearType tuner seems to send a WM_SETTINGCHANGE message only
+                // for SPI_SETFONTSMOOTHINGORIENTATION (and at the end of the wizard at that)
+                cleartype_enabled_cached.reset();
+                g_font_manager_data.dispatch_rendering_options_changed();
                 break;
             case SPI_SETICONTITLELOGFONT:
                 if (!g_font_manager_data.m_common_items_entry
@@ -287,6 +300,28 @@ bool is_dark_mode_enabled()
 
     // Infer dark mode status as there is no public API for Win32 apps to determine it
     return modern_colours->is_dark();
+}
+
+bool is_font_smoothing_enabled()
+{
+    if (!font_smoothing_enabled_cached) {
+        BOOL font_smoothing_enabled{true};
+        SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &font_smoothing_enabled, 0);
+        font_smoothing_enabled_cached = font_smoothing_enabled != 0;
+    }
+
+    return *font_smoothing_enabled_cached;
+}
+
+bool is_cleartype_enabled()
+{
+    if (!cleartype_enabled_cached) {
+        BOOL font_smoothing_type{FE_FONTSMOOTHINGCLEARTYPE};
+        SystemParametersInfo(SPI_GETFONTSMOOTHINGTYPE, 0, &font_smoothing_type, 0);
+        cleartype_enabled_cached = font_smoothing_type == FE_FONTSMOOTHINGCLEARTYPE;
+    }
+
+    return *cleartype_enabled_cached;
 }
 
 } // namespace cui::system_appearance_manager

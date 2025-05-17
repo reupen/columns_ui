@@ -4,6 +4,7 @@
 #include "font_manager_data.h"
 
 #include "config_appearance.h"
+#include "system_appearance_manager.h"
 
 FontManagerData::FontManagerData() : cfg_var(g_cfg_guid)
 {
@@ -536,11 +537,9 @@ DWRITE_RENDERING_MODE get_rendering_mode()
 {
     switch (static_cast<RenderingMode>(rendering_mode.get())) {
     default:
-    case RenderingMode::Automatic: {
-        BOOL font_smoothing_enabled{true};
-        SystemParametersInfo(SPI_GETFONTSMOOTHING, 0, &font_smoothing_enabled, 0);
-        return font_smoothing_enabled ? DWRITE_RENDERING_MODE_DEFAULT : DWRITE_RENDERING_MODE_ALIASED;
-    }
+    case RenderingMode::Automatic:
+        return system_appearance_manager::is_font_smoothing_enabled() ? DWRITE_RENDERING_MODE_DEFAULT
+                                                                      : DWRITE_RENDERING_MODE_ALIASED;
     case RenderingMode::DirectWriteAutomatic:
         return DWRITE_RENDERING_MODE_DEFAULT;
     case RenderingMode::Natural:

@@ -9,6 +9,10 @@
 
 ### Bug fixes
 
+- DirectWrite-rendered text now automatically uses greyscale anti-aliasing if
+  ClearType (but not font smoothing) is disabled globally in Windows.
+  [[#1202](https://github.com/reupen/columns_ui/pull/1202)]
+
 - A workaround for playlist and other list view column titles not rendering on
   Wine was added. [[#1185](https://github.com/reupen/columns_ui/pull/1185)]
 
