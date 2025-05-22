@@ -157,7 +157,10 @@ public:
     void on_child_position_change();
 
 private:
-    uie::container_window_v3_config get_window_config() override { return {L"{ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}"}; }
+    uie::container_window_v3_config get_window_config() override
+    {
+        return {L"{ABB72D0D-DBF0-4bba-8C68-3357EBE07A4D}", true, CS_DBLCLKS};
+    }
     void set_up_down_window_theme() const;
 
     static HFONT g_font;

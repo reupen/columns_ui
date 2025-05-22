@@ -299,7 +299,8 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             // return 0;
         }
         SendMessage(wnd, WM_CHANGEUISTATE, MAKEWPARAM(UIS_CLEAR, UISF_HIDEFOCUS), NULL);
-    } break;
+        break;
+    }
     case WM_SYSKEYDOWN:
         if (get_host()->get_keyboard_shortcuts_enabled() && g_process_keydown_keyboard_shortcuts(wp))
             return 0;
@@ -322,7 +323,8 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }
         }
-    } break;
+        break;
+    }
     case WM_MOUSEMOVE:
         if (m_dragging && (wp & MK_LBUTTON)) {
             TCHITTESTINFO hittest;
@@ -366,24 +368,24 @@ LRESULT WINAPI PlaylistTabs::hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONUP: {
-        TCHITTESTINFO hittest;
-        hittest.pt.x = GET_X_LPARAM(lp);
-        hittest.pt.y = GET_Y_LPARAM(lp);
-        int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
+        TCHITTESTINFO hittest{};
+        hittest.pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+        const auto index = TabCtrl_HitTest(wnd_tabs, &hittest);
         const auto playlist_api = playlist_manager::get();
-        if (idx >= 0) {
+        if (index >= 0) {
             if (config::cfg_playlist_tabs_middle_click && msg == WM_MBUTTONUP) {
-                remove_playlist_helper(idx);
+                remove_playlist_helper(index);
             }
             if (cfg_plm_rename && msg == WM_LBUTTONDBLCLK) {
-                playlist_manager_utils::rename_playlist(idx, get_wnd());
+                playlist_manager_utils::rename_playlist(index, get_wnd());
             }
         } else {
             const auto new_idx = playlist_api->create_playlist(
                 pfc::string8("Untitled"), pfc_infinite, playlist_api->get_playlist_count());
             playlist_api->set_active_playlist(new_idx);
         }
-    } break;
+        break;
+    }
     case WM_MOUSEWHEEL: {
         if ((GetWindowLongPtr(wnd, GWL_STYLE) & TCS_MULTILINE) != 0)
             return 0;

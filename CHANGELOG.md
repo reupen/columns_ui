@@ -1,5 +1,13 @@
 # Change log
 
+## Development version
+
+### Bug fixes
+
+- A regression in version 2.0.0 that stopped double-clicking in empty space in
+  the Playlist tabs from creating a new playlist was fixed.
+  [[#1210](https://github.com/reupen/columns_ui/pull/1210)]
+
 ## 3.0.0-beta.2
 
 ### Bug fixes
