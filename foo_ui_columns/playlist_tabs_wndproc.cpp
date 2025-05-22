@@ -76,15 +76,16 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!(lpwp->flags & SWP_NOSIZE)) {
             on_size(lpwp->cx, lpwp->cy);
         }
-    } break;
+        break;
+    }
     case MSG_RESET_SIZE_LIMITS:
         on_child_position_change();
         break;
     case WM_GETMINMAXINFO: {
         auto lpmmi = LPMINMAXINFO(lp);
         *lpmmi = mmi;
-    }
         return 0;
+    }
     case WM_DESTROY: {
         m_get_message_hook_token.reset();
         m_dark_mode_notifier.reset();
@@ -103,35 +104,34 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             g_font = nullptr;
         }
         initialised = false;
-    } break;
+        break;
+    }
     case WM_NCDESTROY: {
         m_host_wnd = nullptr;
-    } break;
+        break;
+    }
     case WM_LBUTTONDBLCLK:
     case WM_MBUTTONUP: {
-        if (wnd_tabs) {
-            POINT temp;
-            temp.x = GET_X_LPARAM(lp);
-            temp.y = GET_Y_LPARAM(lp);
+        if (!wnd_tabs)
+            break;
 
-            HWND wnd_hit = ChildWindowFromPointEx(wnd, temp, CWP_SKIPINVISIBLE);
+        POINT pt{GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+        HWND wnd_hit = ChildWindowFromPointEx(wnd, pt, CWP_SKIPINVISIBLE);
 
-            if (wnd_hit == wnd_tabs) {
-                TCHITTESTINFO hittest;
-                hittest.pt.x = temp.x;
-                hittest.pt.y = temp.y;
-                int idx = TabCtrl_HitTest(wnd_tabs, &hittest);
+        if (wnd_hit != wnd_tabs)
+            break;
 
-                if (idx < 0) {
-                    const auto playlist_api = playlist_manager::get();
-                    const auto new_idx
-                        = playlist_api->create_playlist("Untitled", 12, playlist_api->get_playlist_count());
-                    playlist_api->set_active_playlist(new_idx);
-                    return 0;
-                }
-            }
-        }
-    } break;
+        TCHITTESTINFO hittest{};
+        hittest.pt = pt;
+
+        if (TabCtrl_HitTest(wnd_tabs, &hittest) >= 0)
+            break;
+
+        const auto playlist_api = playlist_manager::get();
+        const auto new_idx = playlist_api->create_playlist("Untitled", 12, playlist_api->get_playlist_count());
+        playlist_api->set_active_playlist(new_idx);
+        return 0;
+    }
     case WM_TIMER:
         if (wp == SWITCH_TIMER_ID) {
             m_switch_timer = false;
