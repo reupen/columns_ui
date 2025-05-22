@@ -8,18 +8,19 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG:
-            SendDlgItemMessage(wnd, IDC_MCLICK3, BM_SETCHECK, cfg_plm_rename, 0);
-            SendDlgItemMessage(wnd, IDC_PLDRAG, BM_SETCHECK, cfg_drag_pl, 0);
-            SendDlgItemMessage(wnd, IDC_PLAUTOHIDE, BM_SETCHECK, cfg_pl_autohide == 0, 0);
-            SendDlgItemMessage(
-                wnd, IDC_PLAYLIST_TABS_MCLICK, BM_SETCHECK, cui::config::cfg_playlist_tabs_middle_click, 0);
+            SendDlgItemMessage(wnd, IDC_MCLICK3, BM_SETCHECK, cfg_plm_rename ? BST_CHECKED : BST_UNCHECKED, 0);
+            SendDlgItemMessage(wnd, IDC_PLDRAG, BM_SETCHECK, cfg_drag_pl ? BST_CHECKED : BST_UNCHECKED, 0);
+            SendDlgItemMessage(wnd, IDC_PLAUTOHIDE, BM_SETCHECK, cfg_pl_autohide ? BST_CHECKED : BST_UNCHECKED, 0);
+            SendDlgItemMessage(wnd, IDC_PLAYLIST_TABS_MCLICK, BM_SETCHECK,
+                cui::config::cfg_playlist_tabs_middle_click ? BST_CHECKED : BST_UNCHECKED, 0);
 
-            SendDlgItemMessage(wnd, IDC_TABS_MULTILINE, BM_SETCHECK, cfg_tabs_multiline, 0);
+            SendDlgItemMessage(
+                wnd, IDC_TABS_MULTILINE, BM_SETCHECK, cfg_tabs_multiline ? BST_CHECKED : BST_UNCHECKED, 0);
             break;
         case WM_COMMAND:
             switch (wp) {
             case IDC_PLAUTOHIDE:
-                cfg_pl_autohide = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_UNCHECKED;
+                cfg_pl_autohide = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 cui::panels::playlist_tabs::g_on_autohide_tabs_change();
                 break;
             case IDC_PLAYLIST_TABS_MCLICK:

@@ -8,6 +8,15 @@
   the Playlist tabs from creating a new playlist was fixed.
   [[#1210](https://github.com/reupen/columns_ui/pull/1210)]
 
+- A problem where the state of the ‘Hide when a single playlist is open’
+  Playlist tabs option in Preferences was reversed was fixed.
+  [[#1211](https://github.com/reupen/columns_ui/pull/1211)]
+
+- If the Playlist tabs ‘Hide when a single playlist is open’ option is turned
+  on, a Playlist tabs panel without a child panel now has a maximum height of 0
+  when there is only one playlist.
+  [[#1211](https://github.com/reupen/columns_ui/pull/1211)]
+
 ## 3.0.0-beta.2
 
 ### Bug fixes

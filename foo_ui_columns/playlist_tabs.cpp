@@ -649,25 +649,26 @@ void PlaylistTabs::adjust_rect(bool b_larger, RECT* rc)
 void PlaylistTabs::reset_size_limits()
 {
     constexpr auto max_value = static_cast<long>(USHRT_MAX);
-    memset(&mmi, 0, sizeof(mmi));
+    memset(&m_mmi, 0, sizeof(m_mmi));
     if (m_child_wnd) {
-        mmi.ptMinTrackSize.x = 0;
-        mmi.ptMinTrackSize.y = 0;
-        mmi.ptMaxTrackSize.x = max_value;
-        mmi.ptMaxTrackSize.y = max_value;
-        SendMessage(m_child_wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-        if (mmi.ptMinTrackSize.x != 0 || mmi.ptMinTrackSize.y != 0 || mmi.ptMaxTrackSize.x < max_value
-            || mmi.ptMaxTrackSize.y < max_value) {
-            RECT rc_min = {0, 0, mmi.ptMinTrackSize.x, mmi.ptMinTrackSize.y};
-            RECT rc_max = {0, 0, std::min(mmi.ptMaxTrackSize.x, max_value), std::min(mmi.ptMaxTrackSize.y, max_value)};
+        m_mmi.ptMinTrackSize.x = 0;
+        m_mmi.ptMinTrackSize.y = 0;
+        m_mmi.ptMaxTrackSize.x = max_value;
+        m_mmi.ptMaxTrackSize.y = max_value;
+        SendMessage(m_child_wnd, WM_GETMINMAXINFO, 0, (LPARAM)&m_mmi);
+        if (m_mmi.ptMinTrackSize.x != 0 || m_mmi.ptMinTrackSize.y != 0 || m_mmi.ptMaxTrackSize.x < max_value
+            || m_mmi.ptMaxTrackSize.y < max_value) {
+            RECT rc_min = {0, 0, m_mmi.ptMinTrackSize.x, m_mmi.ptMinTrackSize.y};
+            RECT rc_max
+                = {0, 0, std::min(m_mmi.ptMaxTrackSize.x, max_value), std::min(m_mmi.ptMaxTrackSize.y, max_value)};
             if (wnd_tabs) {
                 adjust_rect(TRUE, &rc_min);
                 adjust_rect(TRUE, &rc_max);
             }
-            mmi.ptMinTrackSize.x = rc_min.right - rc_min.left;
-            mmi.ptMinTrackSize.y = rc_min.bottom - rc_min.top;
-            mmi.ptMaxTrackSize.x = rc_max.right - rc_max.left;
-            mmi.ptMaxTrackSize.y = rc_max.bottom - rc_max.top;
+            m_mmi.ptMinTrackSize.x = rc_min.right - rc_min.left;
+            m_mmi.ptMinTrackSize.y = rc_min.bottom - rc_min.top;
+            m_mmi.ptMaxTrackSize.x = rc_max.right - rc_max.left;
+            m_mmi.ptMaxTrackSize.y = rc_max.bottom - rc_max.top;
         } else {
             if (wnd_tabs) {
                 RECT rc;
@@ -675,11 +676,11 @@ void PlaylistTabs::reset_size_limits()
                 MapWindowPoints(HWND_DESKTOP, get_wnd(), (LPPOINT)&rc, 2);
                 RECT rc_child = rc;
                 adjust_rect(FALSE, &rc_child);
-                mmi.ptMinTrackSize.x = rc_child.left - rc.left + rc.right - rc_child.right;
-                mmi.ptMinTrackSize.y = rc_child.top - rc.top + rc.bottom - rc_child.bottom;
+                m_mmi.ptMinTrackSize.x = rc_child.left - rc.left + rc.right - rc_child.right;
+                m_mmi.ptMinTrackSize.y = rc_child.top - rc.top + rc.bottom - rc_child.bottom;
             }
-            mmi.ptMaxTrackSize.x = MAXLONG;
-            mmi.ptMaxTrackSize.y = MAXLONG;
+            m_mmi.ptMaxTrackSize.x = MAXLONG;
+            m_mmi.ptMaxTrackSize.y = MAXLONG;
         }
     } else {
         if (wnd_tabs) {
@@ -688,13 +689,13 @@ void PlaylistTabs::reset_size_limits()
             MapWindowPoints(HWND_DESKTOP, get_wnd(), (LPPOINT)&rc_tabs, 2);
             RECT rc_child = rc_tabs;
             adjust_rect(FALSE, &rc_child);
-            mmi.ptMinTrackSize.x = rc_child.left - rc_tabs.left + rc_tabs.right - rc_child.right;
-            mmi.ptMinTrackSize.y = rc_child.top - rc_tabs.top + rc_tabs.bottom - rc_child.bottom;
-            mmi.ptMaxTrackSize.y = mmi.ptMinTrackSize.y;
-            mmi.ptMaxTrackSize.x = MAXLONG;
+            m_mmi.ptMinTrackSize.x = rc_child.left - rc_tabs.left + rc_tabs.right - rc_child.right;
+            m_mmi.ptMinTrackSize.y = rc_child.top - rc_tabs.top + rc_tabs.bottom - rc_child.bottom;
+            m_mmi.ptMaxTrackSize.y = m_mmi.ptMinTrackSize.y;
+            m_mmi.ptMaxTrackSize.x = MAXLONG;
         } else {
-            mmi.ptMaxTrackSize.x = MAXLONG;
-            mmi.ptMaxTrackSize.y = MAXLONG;
+            m_mmi.ptMaxTrackSize.x = MAXLONG;
+            m_mmi.ptMaxTrackSize.y = 0;
         }
     }
 }
