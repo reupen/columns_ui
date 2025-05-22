@@ -83,7 +83,7 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_GETMINMAXINFO: {
         auto lpmmi = LPMINMAXINFO(lp);
-        *lpmmi = mmi;
+        *lpmmi = m_mmi;
         return 0;
     }
     case WM_DESTROY: {

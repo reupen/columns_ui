@@ -193,7 +193,7 @@ private:
 
     unsigned m_child_top{0};
 
-    MINMAXINFO mmi{};
+    MINMAXINFO m_mmi{};
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
     std::unique_ptr<uih::EventToken> m_get_message_hook_token;
 };
