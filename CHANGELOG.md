@@ -8,6 +8,10 @@
   the Playlist tabs from creating a new playlist was fixed.
   [[#1210](https://github.com/reupen/columns_ui/pull/1210)]
 
+- A problem where the state of the ‘Hide when a single playlist is open’
+  Playlist tabs option in Preferences was reversed was fixed.
+  [[#1211](https://github.com/reupen/columns_ui/pull/1211)]
+
 ## 3.0.0-beta.2
 
 ### Bug fixes
