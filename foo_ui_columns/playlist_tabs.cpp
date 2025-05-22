@@ -695,7 +695,7 @@ void PlaylistTabs::reset_size_limits()
             m_mmi.ptMaxTrackSize.x = MAXLONG;
         } else {
             m_mmi.ptMaxTrackSize.x = MAXLONG;
-            m_mmi.ptMaxTrackSize.y = MAXLONG;
+            m_mmi.ptMaxTrackSize.y = 0;
         }
     }
 }
