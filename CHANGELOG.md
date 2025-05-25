@@ -2,6 +2,11 @@
 
 ## Development version
 
+### Features
+
+- The rendering performance of built-in list views, including the playlist view,
+  was improved. [[#1212](https://github.com/reupen/columns_ui/pull/1212)]
+
 ### Bug fixes
 
 - A regression in version 2.0.0 that stopped double-clicking in empty space in

@@ -130,7 +130,7 @@ LRESULT StatusPane::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (m_selection)
             items_text << " selected";
 
-        constexpr auto simple_text_opts
+        const auto simple_text_opts
             = uih::direct_write::TextOutOptions{.enable_colour_codes = false, .enable_tab_columns = false};
 
         uih::direct_write::text_out_columns_and_colours(*m_text_format, wnd, dc.get(), mmh::to_string_view(items_text),
