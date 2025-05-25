@@ -18,15 +18,6 @@ class ArtworkPanel
     , public playlist_callback_single
     , public ui_selection_callback {
 public:
-    class CompletionNotifyForwarder : public completion_notify {
-    public:
-        void on_completion(unsigned p_code) noexcept override;
-        explicit CompletionNotifyForwarder(ArtworkPanel* p_this);
-
-    private:
-        service_ptr_t<ArtworkPanel> m_this;
-    };
-
     const GUID& get_extension_guid() const override;
     void get_name(pfc::string_base& out) const override;
     void get_category(pfc::string_base& out) const override;
@@ -78,7 +69,7 @@ public:
 
     void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
 
-    void on_completion(unsigned p_code);
+    void on_artwork_loaded(bool artwork_changed);
 
     static void g_on_colours_change();
     static void s_on_dark_mode_status_change();
@@ -166,6 +157,8 @@ private:
     enum {
         current_stream_version = 3
     };
+
+    void request_artwork(const metadb_handle_ptr& track, bool is_from_playback = false);
 
     void set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
