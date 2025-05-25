@@ -2,6 +2,8 @@
 
 namespace cui::artwork_panel {
 
+using OnArtworkReadCallback = std::function<void(bool)>;
+
 class ArtworkReader : public mmh::Thread {
 public:
     bool is_aborting();
@@ -18,15 +20,15 @@ public:
 
     void initialise(const std::vector<GUID>& artwork_type_ids,
         const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
-        const metadb_handle_ptr& p_handle, bool is_from_playback, const completion_notify_ptr& p_notify,
+        const metadb_handle_ptr& p_handle, bool is_from_playback, OnArtworkReadCallback on_artwork_read,
         std::shared_ptr<class ArtworkReaderManager> p_manager);
-    void run_notification_thisthread(DWORD state);
+    void notify_panel(bool artwork_changed);
 
 protected:
     DWORD on_thread() override;
 
 private:
-    unsigned read_artwork(abort_callback& p_abort);
+    bool read_artwork(abort_callback& p_abort);
     bool are_contents_equal(const std::unordered_map<GUID, album_art_data_ptr>& content1,
         const std::unordered_map<GUID, album_art_data_ptr>& content2);
 
@@ -34,7 +36,7 @@ private:
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
     metadb_handle_ptr m_handle;
-    completion_notify_ptr m_notify;
+    std::optional<OnArtworkReadCallback> m_on_artwork_read;
     bool m_succeeded{false};
     bool m_read_stub_image{true};
     bool m_is_from_playback{};
@@ -46,7 +48,7 @@ class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderMa
 public:
     void set_types(std::vector<GUID> types);
 
-    void request(const metadb_handle_ptr& handle, completion_notify_ptr notify, bool is_from_playback = false);
+    void request(const metadb_handle_ptr& handle, OnArtworkReadCallback on_artwork_read, bool is_from_playback = false);
     bool is_ready();
     void reset();
     void abort_current_task();
@@ -56,8 +58,7 @@ public:
 
     void deinitialise();
 
-    void on_reader_completion(DWORD state, const ArtworkReader* ptr);
-    void on_reader_abort(const ArtworkReader* ptr);
+    void on_reader_completion(bool artwork_changed, const ArtworkReader* ptr);
 
 private:
     std::vector<std::shared_ptr<ArtworkReader>> m_aborting_readers;
@@ -66,19 +67,6 @@ private:
     std::vector<GUID> m_artwork_type_ids;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
-};
-
-class ArtworkReaderNotification : public main_thread_callback {
-public:
-    void callback_run() override;
-
-    static void g_run(
-        std::shared_ptr<ArtworkReaderManager> p_manager, bool p_aborted, DWORD ret, const ArtworkReader* p_reader);
-
-    bool m_aborted;
-    DWORD m_ret;
-    const ArtworkReader* m_reader;
-    std::shared_ptr<ArtworkReaderManager> m_manager;
 };
 
 } // namespace cui::artwork_panel

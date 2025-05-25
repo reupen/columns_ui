@@ -86,6 +86,14 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
     p_hook.add_node(uie::menu_node_ptr(new MenuNodeOptions()));
 }
 
+void ArtworkPanel::request_artwork(const metadb_handle_ptr& track, bool is_from_playback)
+{
+    const auto handle_artwork_read
+        = [self{service_ptr_t{this}}](bool artwork_changed) { self->on_artwork_read(artwork_changed); };
+
+    m_artwork_loader->request(track, std::move(handle_artwork_read), is_from_playback);
+}
+
 ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio) {}
 
 uie::container_window_v3_config ArtworkPanel::get_window_config()
@@ -263,7 +271,7 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
         if (g_track_mode_includes_selection(m_track_mode)
             && (!g_track_mode_includes_auto(m_track_mode) || !play_control::get()->is_playing())) {
             if (m_selection_handles.get_count()) {
-                m_artwork_loader->request(m_selection_handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+                request_artwork(m_selection_handles[0]);
             } else {
                 flush_image();
                 if (m_artwork_loader)
@@ -288,7 +296,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason) noexce
         }
 
         if (handles.get_count()) {
-            m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+            request_artwork(handles[0]);
             b_set = true;
         }
 
@@ -306,7 +314,7 @@ void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track) noexcept
     if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader) {
         const auto data = now_playing_album_art_notify_manager::get()->current();
 
-        m_artwork_loader->request(p_track, new service_impl_t<CompletionNotifyForwarder>(this), true);
+        request_artwork(p_track, true);
     }
 }
 
@@ -329,7 +337,7 @@ void ArtworkPanel::force_reload_artwork()
     }
 
     if (handle.is_valid()) {
-        m_artwork_loader->request(handle, new service_impl_t<CompletionNotifyForwarder>(this), is_from_playback);
+        request_artwork(handle, is_from_playback);
     } else {
         flush_image();
         if (m_artwork_loader)
@@ -392,7 +400,7 @@ void ArtworkPanel::on_playlist_switch() noexcept
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
-            m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+            request_artwork(handles[0]);
         } else {
             flush_image();
             if (m_artwork_loader)
@@ -408,7 +416,7 @@ void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const 
         metadb_handle_list_t<pfc::alloc_fast_aggressive> handles;
         playlist_manager_v3::get()->activeplaylist_get_selected_items(handles);
         if (handles.get_count()) {
-            m_artwork_loader->request(handles[0], new service_impl_t<CompletionNotifyForwarder>(this));
+            request_artwork(handles[0]);
         } else {
             flush_image();
             if (m_artwork_loader)
@@ -417,13 +425,12 @@ void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const 
     }
 }
 
-void ArtworkPanel::on_completion(unsigned p_code)
+void ArtworkPanel::on_artwork_read(bool artwork_changed)
 {
     if (!get_wnd())
         return;
 
     const auto is_dynamic_artwork_pending = m_dynamic_artwork_pending && m_selected_artwork_type_index == 0;
-    const auto artwork_changed = p_code == 1;
 
     if (m_image && !is_dynamic_artwork_pending && !artwork_changed)
         return;
@@ -634,13 +641,6 @@ public:
 
 namespace {
 colours::client::factory<ArtworkColoursClient> g_appearance_client_impl;
-}
-
-ArtworkPanel::CompletionNotifyForwarder::CompletionNotifyForwarder(ArtworkPanel* p_this) : m_this(p_this) {}
-
-void ArtworkPanel::CompletionNotifyForwarder::on_completion(unsigned p_code) noexcept
-{
-    m_this->on_completion(p_code);
 }
 
 void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort)
