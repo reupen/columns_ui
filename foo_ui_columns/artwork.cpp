@@ -89,7 +89,7 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 void ArtworkPanel::request_artwork(const metadb_handle_ptr& track, bool is_from_playback)
 {
     const auto handle_artwork_read
-        = [self{service_ptr_t{this}}](bool artwork_changed) { self->on_artwork_read(artwork_changed); };
+        = [self{service_ptr_t{this}}](bool artwork_changed) { self->on_artwork_loaded(artwork_changed); };
 
     m_artwork_loader->request(track, std::move(handle_artwork_read), is_from_playback);
 }
@@ -425,7 +425,7 @@ void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const 
     }
 }
 
-void ArtworkPanel::on_artwork_read(bool artwork_changed)
+void ArtworkPanel::on_artwork_loaded(bool artwork_changed)
 {
     if (!get_wnd())
         return;

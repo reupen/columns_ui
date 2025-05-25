@@ -69,7 +69,7 @@ public:
 
     void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
 
-    void on_artwork_read(bool artwork_changed);
+    void on_artwork_loaded(bool artwork_changed);
 
     static void g_on_colours_change();
     static void s_on_dark_mode_status_change();

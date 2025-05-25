@@ -1,55 +1,62 @@
 #pragma once
 
 namespace cui::artwork_panel {
+using OnArtworkLoadedCallback = std::function<void(bool)>;
 
-using OnArtworkReadCallback = std::function<void(bool)>;
+struct ArtworkReaderArgs {
+    bool read_stub_image{};
+    metadb_handle_ptr track;
+    std::shared_ptr<class ArtworkReaderManager> manager;
+};
 
-class ArtworkReader : public mmh::Thread {
+class ArtworkReader {
 public:
-    bool is_aborting();
+    bool is_aborting() const;
     bool is_from_playback() const { return m_is_from_playback; }
     void abort();
 
-    // only called when thread closed
-    bool did_succeed();
+    bool succeeded() const;
     const std::unordered_map<GUID, album_art_data_ptr>& get_content() const;
     const std::unordered_map<GUID, album_art_data_ptr>& get_stub_images() const;
     void set_image(GUID artwork_type_id, album_art_data_ptr data);
 
-    ArtworkReader() = default;
+    ArtworkReader(std::vector<GUID> artwork_type_ids, std::unordered_map<GUID, album_art_data_ptr> previous_contents,
+        bool is_from_playback, OnArtworkLoadedCallback on_artwork_loaded)
+        : m_artwork_type_ids(std::move(artwork_type_ids))
+        , m_content{std::move(previous_contents)}
+        , m_is_from_playback(is_from_playback)
+        , m_on_artwork_loaded(std::move(on_artwork_loaded))
+    {
+    }
 
-    void initialise(const std::vector<GUID>& artwork_type_ids,
-        const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
-        const metadb_handle_ptr& p_handle, bool is_from_playback, OnArtworkReadCallback on_artwork_read,
-        std::shared_ptr<class ArtworkReaderManager> p_manager);
     void notify_panel(bool artwork_changed);
 
-protected:
-    DWORD on_thread() override;
+    void start(ArtworkReaderArgs args);
+    void wait();
+    bool is_running() const;
 
 private:
-    bool read_artwork(abort_callback& p_abort);
+    bool read_artwork(const ArtworkReaderArgs& args, abort_callback& p_abort);
     bool are_contents_equal(const std::unordered_map<GUID, album_art_data_ptr>& content1,
-        const std::unordered_map<GUID, album_art_data_ptr>& content2);
+        const std::unordered_map<GUID, album_art_data_ptr>& content2) const;
 
+    std::optional<std::jthread> m_thread;
     std::vector<GUID> m_artwork_type_ids;
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
-    metadb_handle_ptr m_handle;
-    std::optional<OnArtworkReadCallback> m_on_artwork_read;
     bool m_succeeded{false};
-    bool m_read_stub_image{true};
     bool m_is_from_playback{};
+    OnArtworkLoadedCallback m_on_artwork_loaded;
     abort_callback_impl m_abort;
-    std::shared_ptr<class ArtworkReaderManager> m_manager;
 };
 
 class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
 public:
     void set_types(std::vector<GUID> types);
 
-    void request(const metadb_handle_ptr& handle, OnArtworkReadCallback on_artwork_read, bool is_from_playback = false);
-    bool is_ready();
+    void request(
+        const metadb_handle_ptr& handle, OnArtworkLoadedCallback on_artwork_loaded, bool is_from_playback = false);
+    bool is_ready() const;
     void reset();
     void abort_current_task();
 
@@ -68,5 +75,4 @@ private:
     std::unordered_map<GUID, album_art_data_ptr> m_content;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
 };
-
 } // namespace cui::artwork_panel
