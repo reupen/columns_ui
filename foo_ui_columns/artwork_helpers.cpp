@@ -7,23 +7,45 @@ namespace cui::artwork_panel {
 void ArtworkReader::notify_panel(bool artwork_changed)
 {
     if (m_on_artwork_loaded)
-        (*m_on_artwork_loaded)(artwork_changed);
+        m_on_artwork_loaded(artwork_changed);
 
-    m_on_artwork_loaded.reset();
+    m_on_artwork_loaded = nullptr;
 }
 
-void ArtworkReader::initialise(const std::vector<GUID>& artwork_type_ids,
-    const std::unordered_map<GUID, album_art_data_ptr>& p_content_previous, bool read_stub_image,
-    const metadb_handle_ptr& p_handle, bool is_from_playback, OnArtworkLoadedCallback on_artwork_loaded,
-    std::shared_ptr<class ArtworkReaderManager> p_manager)
+void ArtworkReader::start(ArtworkReaderArgs args)
 {
-    m_artwork_type_ids = artwork_type_ids;
-    m_content = p_content_previous;
-    m_read_stub_image = read_stub_image;
-    m_handle = p_handle;
-    m_is_from_playback = is_from_playback;
-    m_on_artwork_loaded = std::move(on_artwork_loaded);
-    m_manager = std::move(p_manager);
+    m_thread = std::jthread([this, args{std::move(args)}] {
+        TRACK_CALL_TEXT("cui::artwork_panel::ArtworkReader::thread");
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+
+        bool artwork_changed{};
+
+        try {
+            artwork_changed = read_artwork(args, m_abort);
+            m_abort.check();
+            m_succeeded = true;
+        } catch (const exception_aborted&) {
+            m_content.clear();
+            artwork_changed = false;
+        } catch (const std::exception& e) {
+            m_content.clear();
+            console::print(u8"Artwork view – unhandled error reading artwork: "_pcc, e.what());
+        }
+
+        fb2k::inMainThread([manager = args.manager, artwork_changed, this]() {
+            manager->on_reader_completion(artwork_changed, this);
+        });
+    });
+}
+
+void ArtworkReader::wait()
+{
+    m_thread.reset();
+}
+
+bool ArtworkReader::is_running() const
+{
+    return m_thread && m_thread->joinable();
 }
 
 const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_stub_images() const
@@ -41,8 +63,9 @@ const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_content()
     return m_content;
 }
 
-bool ArtworkReader::did_succeed()
+bool ArtworkReader::succeeded() const
 {
+    core_api::ensure_main_thread();
     return m_succeeded;
 }
 
@@ -51,21 +74,19 @@ void ArtworkReader::abort()
     m_abort.abort();
 }
 
-bool ArtworkReader::is_aborting()
+bool ArtworkReader::is_aborting() const
 {
     return m_abort.is_aborting();
 }
 
 void ArtworkReaderManager::deinitialise()
 {
-    for (auto iter = m_aborting_readers.begin(); iter != m_aborting_readers.end();) {
-        (*iter)->wait_for_and_release_thread();
+    for (auto iter = m_aborting_readers.begin(); iter != m_aborting_readers.end();)
         iter = m_aborting_readers.erase(iter);
-    }
-    if (m_current_reader) {
-        m_current_reader->wait_for_and_release_thread();
+
+    if (m_current_reader)
         m_current_reader.reset();
-    }
+
     m_stub_images.clear();
 }
 
@@ -90,7 +111,7 @@ album_art_data_ptr ArtworkReaderManager::get_stub_image(GUID artwork_type_id)
 
 album_art_data_ptr ArtworkReaderManager::get_image(const GUID& p_what)
 {
-    if (!is_ready() || !m_current_reader->did_succeed())
+    if (!is_ready() || !m_current_reader->succeeded())
         return {};
 
     if (p_what == album_art_ids::cover_front && m_current_reader && m_current_reader->is_from_playback()) {
@@ -116,21 +137,19 @@ void ArtworkReaderManager::request(
     const metadb_handle_ptr& handle, OnArtworkLoadedCallback on_artwork_loaded, const bool is_from_playback)
 {
     std::shared_ptr<ArtworkReader> ptr_prev = m_current_reader;
-    const bool is_prev_valid = ptr_prev && !ptr_prev->is_thread_open() && ptr_prev->did_succeed();
+    const bool is_prev_valid = ptr_prev && !ptr_prev->is_running() && ptr_prev->succeeded();
     const auto read_stub_images = m_stub_images.empty();
     abort_current_task();
 
-    m_current_reader = std::make_shared<ArtworkReader>();
-    m_current_reader->initialise(m_artwork_type_ids,
-        is_prev_valid ? ptr_prev->get_content() : std::unordered_map<GUID, album_art_data_ptr>(), read_stub_images,
-        handle, is_from_playback, on_artwork_loaded, shared_from_this());
-    m_current_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
-    m_current_reader->create_thread();
+    m_current_reader = std::make_shared<ArtworkReader>(m_artwork_type_ids,
+        is_prev_valid ? ptr_prev->get_content() : std::unordered_map<GUID, album_art_data_ptr>(), is_from_playback,
+        on_artwork_loaded);
+    m_current_reader->start({read_stub_images, handle, shared_from_this()});
 }
 
-bool ArtworkReaderManager::is_ready()
+bool ArtworkReaderManager::is_ready() const
 {
-    return m_current_reader && !m_current_reader->is_thread_open();
+    return m_current_reader && !m_current_reader->is_running();
 }
 
 void ArtworkReaderManager::reset()
@@ -142,38 +161,35 @@ void ArtworkReaderManager::reset()
 
 void ArtworkReaderManager::abort_current_task()
 {
-    if (m_current_reader) {
-        if (m_current_reader->is_thread_open()) {
-            m_current_reader->abort();
-            m_aborting_readers.emplace_back(m_current_reader);
-            m_current_reader.reset();
-        }
-    }
+    if (!m_current_reader || !m_current_reader->is_running())
+        return;
+
+    m_current_reader->abort();
+    m_aborting_readers.emplace_back(m_current_reader);
+    m_current_reader.reset();
 }
 
 void ArtworkReaderManager::set_types(std::vector<GUID> types)
 {
-    m_artwork_type_ids = types;
+    m_artwork_type_ids = std::move(types);
 }
 
 void ArtworkReaderManager::on_reader_completion(bool artwork_changed, const ArtworkReader* ptr)
 {
     if (m_current_reader && ptr == &*m_current_reader) {
-        m_current_reader->wait_for_and_release_thread();
+        m_current_reader->wait();
         if (!m_current_reader->get_stub_images().empty())
             m_stub_images = m_current_reader->get_stub_images();
         m_current_reader->notify_panel(artwork_changed);
     } else {
-        auto iter = ranges::find_if(m_aborting_readers, [ptr](auto&& reader) { return &*reader == ptr; });
-        if (iter != ranges::end(m_aborting_readers)) {
-            (*iter)->wait_for_and_release_thread();
+        const auto iter = ranges::find_if(m_aborting_readers, [ptr](auto&& reader) { return &*reader == ptr; });
+        if (iter != ranges::end(m_aborting_readers))
             m_aborting_readers.erase(iter);
-        }
     }
 }
 
 bool ArtworkReader::are_contents_equal(const std::unordered_map<GUID, album_art_data_ptr>& content1,
-    const std::unordered_map<GUID, album_art_data_ptr>& content2)
+    const std::unordered_map<GUID, album_art_data_ptr>& content2) const
 {
     for (auto&& artwork_id : m_artwork_type_ids) {
         const auto content1_iter = content1.find(artwork_id);
@@ -190,30 +206,6 @@ bool ArtworkReader::are_contents_equal(const std::unordered_map<GUID, album_art_
     }
 
     return true;
-}
-
-DWORD ArtworkReader::on_thread()
-{
-    TRACK_CALL_TEXT("artwork_panel::ArtworkReader::on_thread");
-
-    bool artwork_changed{};
-
-    try {
-        artwork_changed = read_artwork(m_abort);
-        m_abort.check();
-        m_succeeded = true;
-    } catch (const exception_aborted&) {
-        m_content.clear();
-        artwork_changed = false;
-    } catch (const std::exception& e) {
-        m_content.clear();
-        console::print(u8"Artwork view – unhandled error reading artwork: "_pcc, e.what());
-    }
-
-    fb2k::inMainThread(
-        [manager = m_manager, artwork_changed, this]() { m_manager->on_reader_completion(artwork_changed, this); });
-
-    return 0;
 }
 
 album_art_data_ptr query_artwork_data(
@@ -234,9 +226,9 @@ album_art_data_ptr query_artwork_data(
     return {};
 }
 
-bool ArtworkReader::read_artwork(abort_callback& p_abort)
+bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& p_abort)
 {
-    TRACK_CALL_TEXT("artwork_reader_v2_t::read_artwork");
+    TRACK_CALL_TEXT("read_artwork");
     std::unordered_map<GUID, album_art_data_ptr> content_previous = m_content;
     m_content.clear();
 
@@ -244,8 +236,7 @@ bool ArtworkReader::read_artwork(abort_callback& p_abort)
     pfc::list_t<GUID> guids;
     guids.add_items_fromptr(m_artwork_type_ids.data(), m_artwork_type_ids.size());
 
-    const auto artwork_api_v2
-        = p_album_art_manager_v2->open(pfc::list_single_ref_t<metadb_handle_ptr>(m_handle), guids, p_abort);
+    const auto artwork_api_v2 = p_album_art_manager_v2->open(pfc::list_single_ref_t(args.track), guids, p_abort);
 
     for (auto&& artwork_id : m_artwork_type_ids) {
         const auto data = query_artwork_data(artwork_id, artwork_api_v2, p_abort);
@@ -254,7 +245,7 @@ bool ArtworkReader::read_artwork(abort_callback& p_abort)
             m_content.insert_or_assign(artwork_id, data);
     }
 
-    if (m_read_stub_image) {
+    if (args.read_stub_image) {
         const auto stub_extractor = p_album_art_manager_v2->open_stub(p_abort);
 
         for (auto&& artwork_id : m_artwork_type_ids) {
