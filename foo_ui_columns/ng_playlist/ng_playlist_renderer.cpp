@@ -38,7 +38,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
 {
     colours::helper p_helper(ColoursClient::id);
 
-    const auto calculated_use_highlight = b_highlight && !context.m_is_high_contrast_active;
+    const auto calculated_use_highlight = b_highlight && !context.high_contrast_active;
 
     int theme_state = NULL;
 
@@ -65,7 +65,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
             DrawThemeParentBackground(context.wnd, context.dc, &rc);
 
         RECT rc_background{rc};
-        if (context.m_use_dark_mode)
+        if (context.use_dark_mode)
             // This is inexplicable, but it needs to be done to get the same appearance as Windows Explorer.
             InflateRect(&rc_background, 1, 1);
         DrawThemeBackground(context.list_view_theme, context.dc, LVP_LISTITEM, theme_state, &rc_background, &rc);
@@ -95,10 +95,14 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
             FillRect(context.dc, &rc_subitem, wil::unique_hbrush(CreateSolidBrush(cr_back)).get());
         }
 
-        if (context.m_item_text_format)
-            text_out_columns_and_colours(*context.m_item_text_format, context.wnd, context.dc, sub_item.text,
+        if (context.item_text_format && context.bitmap_render_target) {
+            text_out_columns_and_colours(*context.item_text_format, context.wnd, context.dc, sub_item.text,
                 1_spx + (column_index == 0 ? indentation : 0), 3_spx, rc_subitem, cr_text,
-                {.is_selected = b_selected, .align = sub_item.alignment, .enable_ellipses = cfg_ellipsis != 0});
+                {.bitmap_render_target = context.bitmap_render_target,
+                    .is_selected = b_selected,
+                    .align = sub_item.alignment,
+                    .enable_ellipses = cfg_ellipsis != 0});
+        }
 
         const auto frame_width = uih::scale_dpi_value(1);
 
@@ -148,7 +152,7 @@ void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t 
 void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index,
     std::string_view text, int indentation, size_t level, RECT rc)
 {
-    if (!context.m_group_text_format)
+    if (!(context.group_text_format && context.bitmap_render_target))
         return;
 
     colours::helper p_helper(ColoursClient::id);
@@ -173,8 +177,9 @@ void PlaylistViewRenderer::render_group(uih::lv::RendererContext context, size_t
     const auto x_offset = 1_spx + indentation * gsl::narrow<int>(level);
     const auto border = 3_spx;
 
-    const auto text_width = text_out_columns_and_colours(*context.m_group_text_format, context.wnd, context.dc, text,
-        x_offset, border, rc, cr, {.enable_ellipses = cfg_ellipsis != 0});
+    const auto text_width
+        = text_out_columns_and_colours(*context.group_text_format, context.wnd, context.dc, text, x_offset, border, rc,
+            cr, {.bitmap_render_target = context.bitmap_render_target, .enable_ellipses = cfg_ellipsis != 0});
 
     const auto line_height = 1_spx;
     const auto line_top = rc.top + wil::rect_height(rc) / 2 - line_height / 2;
