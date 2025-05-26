@@ -249,7 +249,8 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="artwork_helpers.cpp" />
+    <ClCompile Include="artwork_decoder.cpp" />
+    <ClCompile Include="artwork_reader.cpp" />
     <ClCompile Include="audio_track_toolbar.cpp" />
     <ClCompile Include="buttons_button.cpp" />
     <ClCompile Include="buttons_button_image.cpp" />
@@ -433,7 +434,8 @@
     <ClCompile Include="win32.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="artwork_helpers.h" />
+    <ClInclude Include="artwork_decoder.h" />
+    <ClInclude Include="artwork_reader.h" />
     <ClInclude Include="buttons.h" />
     <ClInclude Include="colour_manager_data.h" />
     <ClInclude Include="colour_utils.h" />

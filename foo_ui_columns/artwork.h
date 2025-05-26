@@ -1,6 +1,7 @@
 #pragma once
 
-#include "artwork_helpers.h"
+#include "artwork_decoder.h"
+#include "artwork_reader.h"
 
 namespace cui::artwork_panel {
 
@@ -78,6 +79,7 @@ public:
     bool is_core_image_viewer_available() const;
     void open_core_image_viewer() const;
     void show_next_artwork_type();
+    void set_artwork_type_index(size_t index);
 
     ArtworkPanel();
 
@@ -166,7 +168,7 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void refresh_cached_bitmap();
     void flush_cached_bitmap();
-    bool refresh_image(std::optional<size_t> artwork_type_index_override = {});
+    void refresh_image();
     void show_stub_image();
     void flush_image(bool invalidate = true);
     void invalidate_window() const;
@@ -175,14 +177,14 @@ private:
     ULONG_PTR m_gdiplus_instance{NULL};
     bool m_gdiplus_initialised{false};
 
-    std::shared_ptr<ArtworkReaderManager> m_artwork_loader;
-    std::unique_ptr<Gdiplus::Bitmap> m_image;
+    std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
+    ArtworkDecoder m_artwork_decoder;
     wil::unique_hbitmap m_bitmap;
     size_t m_selected_artwork_type_index{0};
     std::optional<size_t> m_artwork_type_override_index{};
     uint32_t m_track_mode;
     bool m_preserve_aspect_ratio{true};
-    bool m_lock_type{false};
+    bool m_artwork_type_locked{false};
     bool m_dynamic_artwork_pending{};
     metadb_handle_list m_selection_handles;
 

@@ -6,6 +6,65 @@
 
 namespace cui::artwork_panel {
 
+namespace {
+
+wil::unique_hbitmap scale_image(Gdiplus::Bitmap& bitmap, const int client_width, const int client_height,
+    const bool preserve_aspect_ratio, const COLORREF background_colour)
+{
+    if (bitmap.GetWidth() < 2 || bitmap.GetHeight() < 2)
+        return {};
+
+    const double image_aspect_ratio
+        = gsl::narrow_cast<double>(bitmap.GetWidth()) / gsl::narrow_cast<double>(bitmap.GetHeight());
+    const double client_aspect_ratio = gsl::narrow_cast<double>(client_width) / gsl::narrow_cast<double>(client_height);
+
+    int scaled_width = client_width;
+    int scaled_height = client_height;
+
+    if (preserve_aspect_ratio) {
+        if (client_aspect_ratio < image_aspect_ratio)
+            scaled_height
+                = gsl::narrow_cast<unsigned>(floor(gsl::narrow_cast<double>(client_width) / image_aspect_ratio));
+        else if (client_aspect_ratio > image_aspect_ratio)
+            scaled_width
+                = gsl::narrow_cast<unsigned>(floor(gsl::narrow_cast<double>(client_height) * image_aspect_ratio));
+    }
+
+    if (((client_height - scaled_height) % 2) != 0)
+        ++scaled_height;
+
+    if (((client_width - scaled_width) % 2) != 0)
+        ++scaled_width;
+
+    const auto dc = wil::GetDC(nullptr);
+    const wil::unique_hdc memory_dc(CreateCompatibleDC(dc.get()));
+
+    wil::unique_hbitmap scaled_bitmap(CreateCompatibleBitmap(dc.get(), client_width, client_height));
+
+    auto _ = wil::SelectObject(memory_dc.get(), scaled_bitmap.get());
+
+    Gdiplus::Graphics graphics(memory_dc.get());
+    graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
+    graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
+
+    Gdiplus::SolidBrush brush(
+        Gdiplus::Color(GetRValue(background_colour), GetGValue(background_colour), GetBValue(background_colour)));
+    graphics.FillRectangle(&brush, 0, 0, client_width, client_height);
+
+    Gdiplus::Rect dest_rect(
+        (client_width - scaled_width) / 2, (client_height - scaled_height) / 2, scaled_width, scaled_height);
+    graphics.SetClip(dest_rect);
+    Gdiplus::ImageAttributes image_attributes;
+    image_attributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
+
+    graphics.DrawImage(
+        &bitmap, dest_rect, 0, 0, bitmap.GetWidth(), bitmap.GetHeight(), Gdiplus::UnitPixel, &image_attributes);
+
+    return scaled_bitmap;
+}
+
+} // namespace
+
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
 const GUID g_guid_track_mode = {0x5c7b29, 0x3915, 0x4b83, {0xa2, 0x83, 0xc0, 0x1a, 0x4e, 0xdc, 0x4f, 0x3a}};
 
@@ -61,7 +120,7 @@ void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) 
     p_writer->write_lendian_t(m_track_mode, p_abort);
     p_writer->write_lendian_t(static_cast<uint32_t>(current_stream_version), p_abort);
     p_writer->write_lendian_t(m_preserve_aspect_ratio, p_abort);
-    p_writer->write_lendian_t(m_lock_type, p_abort);
+    p_writer->write_lendian_t(m_artwork_type_locked, p_abort);
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_selected_artwork_type_index), p_abort);
 }
 
@@ -91,7 +150,7 @@ void ArtworkPanel::request_artwork(const metadb_handle_ptr& track, bool is_from_
     const auto handle_artwork_read
         = [self{service_ptr_t{this}}](bool artwork_changed) { self->on_artwork_loaded(artwork_changed); };
 
-    m_artwork_loader->request(track, std::move(handle_artwork_read), is_from_playback);
+    m_artwork_reader->request(track, std::move(handle_artwork_read), is_from_playback);
 }
 
 ArtworkPanel::ArtworkPanel() : m_track_mode(cfg_track_mode), m_preserve_aspect_ratio(cfg_preserve_aspect_ratio) {}
@@ -135,7 +194,7 @@ void ArtworkPanel::g_on_edge_style_change()
  */
 void ArtworkPanel::on_album_art(album_art_data::ptr data) noexcept
 {
-    if (!m_artwork_loader || !m_artwork_loader->is_ready()) {
+    if (!m_artwork_reader || !m_artwork_reader->is_ready()) {
         m_dynamic_artwork_pending = true;
         return;
     }
@@ -174,9 +233,9 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         Gdiplus::GdiplusStartupInput gdiplusStartupInput;
         m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
-        m_artwork_loader = std::make_shared<ArtworkReaderManager>();
+        m_artwork_reader = std::make_shared<ArtworkReaderManager>();
         now_playing_album_art_notify_manager::get()->add(this);
-        m_artwork_loader->set_types(g_artwork_types);
+        m_artwork_reader->set_types(g_artwork_types);
         play_callback_manager::get()->register_callback(
             this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_edited, false);
         playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
@@ -191,14 +250,14 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         play_callback_manager::get()->unregister_callback(this);
         now_playing_album_art_notify_manager::get()->remove(this);
         m_selection_handles.remove_all();
-        m_image.reset();
+        m_artwork_decoder.shut_down();
         m_bitmap.reset();
         if (m_gdiplus_initialised)
             Gdiplus::GdiplusShutdown(m_gdiplus_instance);
         m_gdiplus_initialised = false;
-        if (m_artwork_loader)
-            m_artwork_loader->deinitialise();
-        m_artwork_loader.reset();
+        if (m_artwork_reader)
+            m_artwork_reader->deinitialise();
+        m_artwork_reader.reset();
         break;
     case WM_ERASEBKGND:
         return FALSE;
@@ -243,8 +302,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             }
         }
         EndPaint(wnd, &ps);
-    }
         return 0;
+    }
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
@@ -274,8 +333,8 @@ void ArtworkPanel::on_selection_changed(const pfc::list_base_const_t<metadb_hand
                 request_artwork(m_selection_handles[0]);
             } else {
                 flush_image();
-                if (m_artwork_loader)
-                    m_artwork_loader->reset();
+                if (m_artwork_reader)
+                    m_artwork_reader->reset();
             }
         }
     }
@@ -302,8 +361,8 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason) noexce
 
         if (!b_set) {
             flush_image();
-            if (m_artwork_loader)
-                m_artwork_loader->reset();
+            if (m_artwork_reader)
+                m_artwork_reader->reset();
         }
     }
 }
@@ -311,7 +370,7 @@ void ArtworkPanel::on_playback_stop(play_control::t_stop_reason p_reason) noexce
 void ArtworkPanel::on_playback_new_track(metadb_handle_ptr p_track) noexcept
 {
     m_dynamic_artwork_pending = false;
-    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_loader) {
+    if (g_track_mode_includes_now_playing(m_track_mode) && m_artwork_reader) {
         const auto data = now_playing_album_art_notify_manager::get()->current();
 
         request_artwork(p_track, true);
@@ -340,8 +399,8 @@ void ArtworkPanel::force_reload_artwork()
         request_artwork(handle, is_from_playback);
     } else {
         flush_image();
-        if (m_artwork_loader)
-            m_artwork_loader->reset();
+        if (m_artwork_reader)
+            m_artwork_reader->reset();
     }
 }
 
@@ -352,7 +411,7 @@ bool ArtworkPanel::is_core_image_viewer_available() const
     }
 
     const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
-    const album_art_data_ptr data = m_artwork_loader->get_image(artwork_type_id);
+    const album_art_data_ptr data = m_artwork_reader->get_image(artwork_type_id);
 
     return data.is_valid();
 }
@@ -360,7 +419,7 @@ bool ArtworkPanel::is_core_image_viewer_available() const
 void ArtworkPanel::open_core_image_viewer() const
 {
     const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
-    const album_art_data_ptr data = m_artwork_loader->get_image(artwork_type_id);
+    const album_art_data_ptr data = m_artwork_reader->get_image(artwork_type_id);
 
     if (!data.is_valid())
         return;
@@ -372,25 +431,44 @@ void ArtworkPanel::open_core_image_viewer() const
 
 void ArtworkPanel::show_next_artwork_type()
 {
+    if (!m_artwork_reader || !m_artwork_reader->is_ready())
+        return;
+
     const auto start_artwork_type_index = get_displayed_artwork_type_index();
     auto artwork_type_index = start_artwork_type_index;
     const size_t count = g_artwork_types.size();
 
-    for (size_t i = 0; i < count; i++) {
+    for (size_t i = 0; i + 1 < count; i++) {
         artwork_type_index = (artwork_type_index + 1) % count;
+        const auto artwork_type_id = g_artwork_types[artwork_type_index];
+        const auto data = m_artwork_reader->get_image(artwork_type_id);
 
-        if (!refresh_image(artwork_type_index))
-            continue;
-
-        if (artwork_type_index != start_artwork_type_index) {
+        if (data.is_valid()) {
             m_artwork_type_override_index.reset();
             m_selected_artwork_type_index = artwork_type_index;
+            refresh_image();
+            break;
         }
+    }
+}
+
+void ArtworkPanel::set_artwork_type_index(size_t index)
+{
+    m_selected_artwork_type_index = index;
+    m_artwork_type_override_index.reset();
+
+    if (!m_artwork_reader || !m_artwork_reader->is_ready())
+        return;
+
+    const auto artwork_type_id = g_artwork_types[m_selected_artwork_type_index];
+    const auto data = m_artwork_reader->get_image(artwork_type_id);
+
+    if (!data.is_valid()) {
+        show_stub_image();
         return;
     }
 
-    m_artwork_type_override_index.reset();
-    show_stub_image();
+    refresh_image();
 }
 
 void ArtworkPanel::on_playlist_switch() noexcept
@@ -403,8 +481,8 @@ void ArtworkPanel::on_playlist_switch() noexcept
             request_artwork(handles[0]);
         } else {
             flush_image();
-            if (m_artwork_loader)
-                m_artwork_loader->reset();
+            if (m_artwork_reader)
+                m_artwork_reader->reset();
         }
     }
 }
@@ -419,8 +497,8 @@ void ArtworkPanel::on_items_selection_change(const bit_array& p_affected, const 
             request_artwork(handles[0]);
         } else {
             flush_image();
-            if (m_artwork_loader)
-                m_artwork_loader->reset();
+            if (m_artwork_reader)
+                m_artwork_reader->reset();
         }
     }
 }
@@ -432,7 +510,7 @@ void ArtworkPanel::on_artwork_loaded(bool artwork_changed)
 
     const auto is_dynamic_artwork_pending = m_dynamic_artwork_pending && m_selected_artwork_type_index == 0;
 
-    if (m_image && !is_dynamic_artwork_pending && !artwork_changed)
+    if (m_artwork_decoder.has_image() && !is_dynamic_artwork_pending && !artwork_changed)
         return;
 
     m_dynamic_artwork_pending = false;
@@ -440,13 +518,21 @@ void ArtworkPanel::on_artwork_loaded(bool artwork_changed)
 
     bool b_found = false;
     size_t count = g_artwork_types.size();
-    if (m_lock_type)
+
+    if (m_artwork_type_locked)
         count = std::min(size_t{1}, count);
+
     for (size_t i = 0; i < count; i++) {
-        if (refresh_image()) {
+        const auto artwork_type_index = get_displayed_artwork_type_index();
+        const auto artwork_type_id = g_artwork_types[artwork_type_index];
+        const auto data = m_artwork_reader->get_image(artwork_type_id);
+
+        if (data.is_valid()) {
+            refresh_image();
             b_found = true;
             break;
         }
+
         m_artwork_type_override_index = (*m_artwork_type_override_index + 1) % g_artwork_types.size();
     }
 
@@ -459,56 +545,33 @@ void ArtworkPanel::on_artwork_loaded(bool artwork_changed)
 void ArtworkPanel::show_stub_image()
 {
     flush_image(false);
-    // Needs to be delayed until after WIC calls are made (otherwise painting
-    // may happen prematurely).
-    auto _ = gsl::finally([this] { invalidate_window(); });
 
-    if (!m_artwork_loader || !m_artwork_loader->is_ready())
+    if (!m_artwork_reader || !m_artwork_reader->is_ready())
         return;
 
     const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
-    const album_art_data_ptr data = m_artwork_loader->get_stub_image(artwork_type_id);
+    const album_art_data_ptr data = m_artwork_reader->get_stub_image(artwork_type_id);
 
-    if (data.is_empty()) {
-        return;
-    }
-
-    try {
-        const auto bitmap_data = wic::decode_image_data(data->get_ptr(), data->get_size());
-        m_image = gdip::create_bitmap_from_wic_data(bitmap_data);
-    } catch (const std::exception& ex) {
-        fbh::print_to_console(u8"Artwork panel – loading stub image failed: "_pcc, ex.what());
-    }
+    m_artwork_decoder.decode(data, [this, self{ptr{this}}] { invalidate_window(); });
 }
 
-bool ArtworkPanel::refresh_image(std::optional<size_t> artwork_type_index_override)
+void ArtworkPanel::refresh_image()
 {
     TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
 
     flush_image(false);
-    // Needs to be delayed until after WIC calls are made (otherwise painting
-    // may happen prematurely).
-    auto _ = gsl::finally([this] { invalidate_window(); });
 
-    if (!m_artwork_loader || !m_artwork_loader->is_ready())
-        return false;
+    if (!m_artwork_reader || !m_artwork_reader->is_ready())
+        return;
 
-    const auto artwork_type_index = artwork_type_index_override.value_or(get_displayed_artwork_type_index());
+    const auto artwork_type_index = get_displayed_artwork_type_index();
     const auto artwork_type_id = g_artwork_types[artwork_type_index];
-    const auto data = m_artwork_loader->get_image(artwork_type_id);
+    const auto data = m_artwork_reader->get_image(artwork_type_id);
 
     if (data.is_empty())
-        return false;
+        return;
 
-    try {
-        const auto bitmap_data = wic::decode_image_data(data->get_ptr(), data->get_size());
-        m_image = gdip::create_bitmap_from_wic_data(bitmap_data);
-    } catch (const std::exception& ex) {
-        fbh::print_to_console(u8"Artwork panel – loading image failed: "_pcc, ex.what());
-        return false;
-    }
-
-    return static_cast<bool>(m_image);
+    m_artwork_decoder.decode(data, [this, self{ptr{this}}] { invalidate_window(); });
 }
 
 void ArtworkPanel::flush_cached_bitmap()
@@ -518,7 +581,7 @@ void ArtworkPanel::flush_cached_bitmap()
 
 void ArtworkPanel::flush_image(bool invalidate)
 {
-    m_image.reset();
+    m_artwork_decoder.reset();
     flush_cached_bitmap();
     if (invalidate)
         invalidate_window();
@@ -536,59 +599,20 @@ size_t ArtworkPanel::get_displayed_artwork_type_index() const
 
 void ArtworkPanel::refresh_cached_bitmap()
 {
-    RECT rc;
+    RECT rc{};
     GetClientRect(get_wnd(), &rc);
-    if (wil::rect_width(rc) && wil::rect_height(rc) && m_image) {
-        HDC dc = nullptr;
-        HDC dcc = nullptr;
-        dc = GetDC(get_wnd());
-        dcc = CreateCompatibleDC(dc);
+    const auto width = static_cast<int>(wil::rect_width(rc));
+    const auto height = static_cast<int>(wil::rect_height(rc));
 
-        m_bitmap.reset(CreateCompatibleBitmap(dc, wil::rect_width(rc), wil::rect_height(rc)));
-
-        HBITMAP bm_old = SelectBitmap(dcc, m_bitmap.get());
-
-        Gdiplus::Graphics graphics(dcc);
-
-        double ar_source = (double)m_image->GetWidth() / (double)m_image->GetHeight();
-        double ar_dest = (double)wil::rect_width(rc) / (double)wil::rect_height(rc);
-        unsigned cx = wil::rect_width(rc);
-        unsigned cy = wil::rect_height(rc);
-
-        graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
-        graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
-
-        COLORREF cr = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
-        Gdiplus::SolidBrush br(Gdiplus::Color(LOBYTE(LOWORD(cr)), HIBYTE(LOWORD(cr)), LOBYTE(HIWORD(cr))));
-        graphics.FillRectangle(&br, 0, 0, cx, cy);
-
-        if (m_preserve_aspect_ratio) {
-            if (ar_dest < ar_source)
-                cy = (unsigned)floor((double)wil::rect_width(rc) / ar_source);
-            else if (ar_dest > ar_source)
-                cx = (unsigned)floor((double)wil::rect_height(rc) * ar_source);
-        }
-        if ((wil::rect_height(rc) - cy) % 2)
-            cy++;
-        if ((wil::rect_width(rc) - cx) % 2)
-            cx++;
-
-        if (m_image->GetWidth() >= 2 && m_image->GetHeight() >= 2) {
-            Gdiplus::Rect destRect(INT((wil::rect_width(rc) - cx) / 2), INT((wil::rect_height(rc) - cy) / 2), cx, cy);
-            graphics.SetClip(destRect);
-            Gdiplus::ImageAttributes imageAttributes;
-            imageAttributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
-
-            graphics.DrawImage(&*m_image, destRect, 0, 0, m_image->GetWidth(), m_image->GetHeight(), Gdiplus::UnitPixel,
-                &imageAttributes);
-        }
-
-        SelectBitmap(dcc, bm_old);
-
-        DeleteDC(dcc);
-        ReleaseDC(get_wnd(), dc);
-    } else
+    if (width <= 0 || height <= 0 || !m_artwork_decoder.has_image()) {
         m_bitmap.reset();
+        return;
+    }
+
+    const auto background_colour = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
+    auto image = m_artwork_decoder.get_image();
+
+    m_bitmap = scale_image(*image, width, height, background_colour, m_preserve_aspect_ratio);
 }
 
 void ArtworkPanel::g_on_colours_change()
@@ -608,8 +632,8 @@ void ArtworkPanel::s_on_dark_mode_status_change()
         if (!window->get_wnd())
             continue;
 
-        if (window->m_artwork_loader)
-            window->m_artwork_loader->reset();
+        if (window->m_artwork_reader)
+            window->m_artwork_reader->reset();
 
         window->flush_image();
         window->force_reload_artwork();
@@ -656,7 +680,7 @@ void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callba
         if (version <= 3) {
             p_reader->read_lendian_t(m_preserve_aspect_ratio, p_abort);
             if (version >= 2) {
-                p_reader->read_lendian_t(m_lock_type, p_abort);
+                p_reader->read_lendian_t(m_artwork_type_locked, p_abort);
                 if (version >= 3) {
                     m_selected_artwork_type_index = p_reader->read_lendian_t<uint32_t>(p_abort);
                     if (m_selected_artwork_type_index >= g_artwork_types.size()) {
@@ -715,12 +739,7 @@ ArtworkPanel::MenuNodeArtworkType::MenuNodeArtworkType(ArtworkPanel* p_wnd, uint
 
 void ArtworkPanel::MenuNodeArtworkType::execute()
 {
-    p_this->m_selected_artwork_type_index = m_type;
-    p_this->m_artwork_type_override_index.reset();
-
-    if (!p_this->refresh_image()) {
-        p_this->show_stub_image();
-    }
+    p_this->set_artwork_type_index(m_type);
 }
 
 bool ArtworkPanel::MenuNodeArtworkType::get_description(pfc::string_base& p_out) const
@@ -807,6 +826,7 @@ void ArtworkPanel::MenuNodePreserveAspectRatio::execute()
     cfg_preserve_aspect_ratio = p_this->m_preserve_aspect_ratio;
     p_this->flush_cached_bitmap();
     p_this->invalidate_window();
+    p_this->refresh_cached_bitmap();
 }
 
 bool ArtworkPanel::MenuNodePreserveAspectRatio::get_description(pfc::string_base& p_out) const
@@ -843,8 +863,8 @@ ArtworkPanel::MenuNodeLockType::MenuNodeLockType(ArtworkPanel* p_wnd) : p_this(p
 
 void ArtworkPanel::MenuNodeLockType::execute()
 {
-    p_this->m_lock_type = !p_this->m_lock_type;
-    if (p_this->m_lock_type) {
+    p_this->m_artwork_type_locked = !p_this->m_artwork_type_locked;
+    if (p_this->m_artwork_type_locked) {
         p_this->m_selected_artwork_type_index = p_this->get_displayed_artwork_type_index();
         p_this->m_artwork_type_override_index.reset();
     }
@@ -858,7 +878,7 @@ bool ArtworkPanel::MenuNodeLockType::get_description(pfc::string_base& p_out) co
 bool ArtworkPanel::MenuNodeLockType::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
 {
     p_out = "Lock artwork type";
-    p_displayflags = (p_this->m_lock_type) ? state_checked : 0;
+    p_displayflags = (p_this->m_artwork_type_locked) ? state_checked : 0;
     return true;
 }
 

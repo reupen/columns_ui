@@ -17,14 +17,15 @@ public:
     void abort();
 
     bool succeeded() const;
-    const std::unordered_map<GUID, album_art_data_ptr>& get_content() const;
+    const std::unordered_map<GUID, album_art_data_ptr>& get_artwork_data() const;
     const std::unordered_map<GUID, album_art_data_ptr>& get_stub_images() const;
     void set_image(GUID artwork_type_id, album_art_data_ptr data);
 
-    ArtworkReader(std::vector<GUID> artwork_type_ids, std::unordered_map<GUID, album_art_data_ptr> previous_contents,
-        bool is_from_playback, OnArtworkLoadedCallback on_artwork_loaded)
+    ArtworkReader(std::vector<GUID> artwork_type_ids,
+        std::unordered_map<GUID, album_art_data_ptr> previous_artwork_data, bool is_from_playback,
+        OnArtworkLoadedCallback on_artwork_loaded)
         : m_artwork_type_ids(std::move(artwork_type_ids))
-        , m_content{std::move(previous_contents)}
+        , m_artwork_data{std::move(previous_artwork_data)}
         , m_is_from_playback(is_from_playback)
         , m_on_artwork_loaded(std::move(on_artwork_loaded))
     {
@@ -43,7 +44,7 @@ private:
 
     std::optional<std::jthread> m_thread;
     std::vector<GUID> m_artwork_type_ids;
-    std::unordered_map<GUID, album_art_data_ptr> m_content;
+    std::unordered_map<GUID, album_art_data_ptr> m_artwork_data;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
 
     bool m_succeeded{false};
@@ -74,7 +75,7 @@ private:
     std::shared_ptr<ArtworkReader> m_current_reader;
 
     std::vector<GUID> m_artwork_type_ids;
-    std::unordered_map<GUID, album_art_data_ptr> m_content;
+    std::unordered_map<GUID, album_art_data_ptr> m_artwork_data;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
 };
 
