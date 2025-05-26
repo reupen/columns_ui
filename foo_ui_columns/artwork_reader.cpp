@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "ng_playlist/ng_playlist.h"
-#include "artwork_helpers.h"
+#include "artwork_reader.h"
 
 namespace cui::artwork_panel {
 void ArtworkReader::notify_panel(bool artwork_changed)
@@ -24,12 +24,13 @@ void ArtworkReader::start(ArtworkReaderArgs args)
             m_abort.check();
             m_succeeded = true;
         } catch (const exception_aborted&) {
-            m_content.clear();
             artwork_changed = false;
         } catch (const std::exception& e) {
-            m_content.clear();
             console::print(u8"Artwork view – unhandled error reading artwork: "_pcc, e.what());
         }
+
+        if (!m_succeeded)
+            m_artwork_data.clear();
 
         fb2k::inMainThread([manager = args.manager, artwork_changed, this]() {
             manager->on_reader_completion(artwork_changed, this);
@@ -54,12 +55,12 @@ const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_stub_imag
 
 void ArtworkReader::set_image(GUID artwork_type_id, album_art_data_ptr data)
 {
-    m_content.insert_or_assign(artwork_type_id, data);
+    m_artwork_data.insert_or_assign(artwork_type_id, data);
 }
 
-const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_content() const
+const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_artwork_data() const
 {
-    return m_content;
+    return m_artwork_data;
 }
 
 bool ArtworkReader::succeeded() const
@@ -124,9 +125,9 @@ album_art_data_ptr ArtworkReaderManager::get_image(const GUID& p_what)
         }
     }
 
-    auto&& content = m_current_reader->get_content();
-    const auto content_iter = content.find(p_what);
-    if (content_iter != content.end())
+    auto&& artwork_data = m_current_reader->get_artwork_data();
+    const auto content_iter = artwork_data.find(p_what);
+    if (content_iter != artwork_data.end())
         return content_iter->second;
 
     return {};
@@ -141,7 +142,7 @@ void ArtworkReaderManager::request(
     abort_current_task();
 
     m_current_reader = std::make_shared<ArtworkReader>(m_artwork_type_ids,
-        is_prev_valid ? ptr_prev->get_content() : std::unordered_map<GUID, album_art_data_ptr>(), is_from_playback,
+        is_prev_valid ? ptr_prev->get_artwork_data() : std::unordered_map<GUID, album_art_data_ptr>(), is_from_playback,
         on_artwork_read);
     m_current_reader->start({read_stub_images, handle, shared_from_this()});
 }
@@ -228,8 +229,8 @@ album_art_data_ptr query_artwork_data(
 bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("read_artwork");
-    std::unordered_map<GUID, album_art_data_ptr> content_previous = m_content;
-    m_content.clear();
+    std::unordered_map<GUID, album_art_data_ptr> content_previous = m_artwork_data;
+    m_artwork_data.clear();
 
     const auto p_album_art_manager_v2 = album_art_manager_v2::get();
     pfc::list_t<GUID> guids;
@@ -241,7 +242,7 @@ bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& 
         const auto data = query_artwork_data(artwork_id, artwork_api_v2, p_abort);
 
         if (data.is_valid())
-            m_content.insert_or_assign(artwork_id, data);
+            m_artwork_data.insert_or_assign(artwork_id, data);
     }
 
     if (args.read_stub_image) {
@@ -263,6 +264,6 @@ bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& 
         }
     }
 
-    return !are_contents_equal(m_content, content_previous);
+    return !are_contents_equal(m_artwork_data, content_previous);
 }
 } // namespace cui::artwork_panel

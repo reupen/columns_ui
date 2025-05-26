@@ -322,9 +322,6 @@
     <ClCompile Include="artwork.cpp">
       <Filter>Artwork view</Filter>
     </ClCompile>
-    <ClCompile Include="artwork_helpers.cpp">
-      <Filter>Artwork view</Filter>
-    </ClCompile>
     <ClCompile Include="item_properties.cpp">
       <Filter>Item properties</Filter>
     </ClCompile>
@@ -635,6 +632,12 @@
     <ClCompile Include="command_line.cpp">
       <Filter>Command line</Filter>
     </ClCompile>
+    <ClCompile Include="artwork_decoder.cpp">
+      <Filter>Artwork view</Filter>
+    </ClCompile>
+    <ClCompile Include="artwork_reader.cpp">
+      <Filter>Artwork view</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -738,9 +741,6 @@
       <Filter>Item details</Filter>
     </ClInclude>
     <ClInclude Include="artwork.h">
-      <Filter>Artwork view</Filter>
-    </ClInclude>
-    <ClInclude Include="artwork_helpers.h">
       <Filter>Artwork view</Filter>
     </ClInclude>
     <ClInclude Include="item_properties.h">
@@ -935,6 +935,12 @@
     </ClInclude>
     <ClInclude Include="win32.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="artwork_decoder.h">
+      <Filter>Artwork view</Filter>
+    </ClInclude>
+    <ClInclude Include="artwork_reader.h">
+      <Filter>Artwork view</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
