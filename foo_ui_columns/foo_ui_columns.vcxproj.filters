@@ -638,6 +638,9 @@
     <ClCompile Include="artwork_reader.cpp">
       <Filter>Artwork view</Filter>
     </ClCompile>
+    <ClCompile Include="artwork_resizer.cpp">
+      <Filter>Artwork view</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -940,6 +943,9 @@
       <Filter>Artwork view</Filter>
     </ClInclude>
     <ClInclude Include="artwork_reader.h">
+      <Filter>Artwork view</Filter>
+    </ClInclude>
+    <ClInclude Include="artwork_resizer.h">
       <Filter>Artwork view</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,68 +2,8 @@
 
 #include "artwork.h"
 #include "config.h"
-#include "wic.h"
 
 namespace cui::artwork_panel {
-
-namespace {
-
-wil::unique_hbitmap scale_image(Gdiplus::Bitmap& bitmap, const int client_width, const int client_height,
-    const bool preserve_aspect_ratio, const COLORREF background_colour)
-{
-    if (bitmap.GetWidth() < 2 || bitmap.GetHeight() < 2)
-        return {};
-
-    const double image_aspect_ratio
-        = gsl::narrow_cast<double>(bitmap.GetWidth()) / gsl::narrow_cast<double>(bitmap.GetHeight());
-    const double client_aspect_ratio = gsl::narrow_cast<double>(client_width) / gsl::narrow_cast<double>(client_height);
-
-    int scaled_width = client_width;
-    int scaled_height = client_height;
-
-    if (preserve_aspect_ratio) {
-        if (client_aspect_ratio < image_aspect_ratio)
-            scaled_height
-                = gsl::narrow_cast<unsigned>(floor(gsl::narrow_cast<double>(client_width) / image_aspect_ratio));
-        else if (client_aspect_ratio > image_aspect_ratio)
-            scaled_width
-                = gsl::narrow_cast<unsigned>(floor(gsl::narrow_cast<double>(client_height) * image_aspect_ratio));
-    }
-
-    if (((client_height - scaled_height) % 2) != 0)
-        ++scaled_height;
-
-    if (((client_width - scaled_width) % 2) != 0)
-        ++scaled_width;
-
-    const auto dc = wil::GetDC(nullptr);
-    const wil::unique_hdc memory_dc(CreateCompatibleDC(dc.get()));
-
-    wil::unique_hbitmap scaled_bitmap(CreateCompatibleBitmap(dc.get(), client_width, client_height));
-
-    auto _ = wil::SelectObject(memory_dc.get(), scaled_bitmap.get());
-
-    Gdiplus::Graphics graphics(memory_dc.get());
-    graphics.SetPixelOffsetMode(Gdiplus::PixelOffsetModeHighQuality);
-    graphics.SetInterpolationMode(Gdiplus::InterpolationModeHighQualityBicubic);
-
-    Gdiplus::SolidBrush brush(
-        Gdiplus::Color(GetRValue(background_colour), GetGValue(background_colour), GetBValue(background_colour)));
-    graphics.FillRectangle(&brush, 0, 0, client_width, client_height);
-
-    Gdiplus::Rect dest_rect(
-        (client_width - scaled_width) / 2, (client_height - scaled_height) / 2, scaled_width, scaled_height);
-    graphics.SetClip(dest_rect);
-    Gdiplus::ImageAttributes image_attributes;
-    image_attributes.SetWrapMode(Gdiplus::WrapModeTileFlipXY);
-
-    graphics.DrawImage(
-        &bitmap, dest_rect, 0, 0, bitmap.GetWidth(), bitmap.GetHeight(), Gdiplus::UnitPixel, &image_attributes);
-
-    return scaled_bitmap;
-}
-
-} // namespace
 
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
 const GUID g_guid_track_mode = {0x5c7b29, 0x3915, 0x4b83, {0xa2, 0x83, 0xc0, 0x1a, 0x4e, 0xdc, 0x4f, 0x3a}};
@@ -251,6 +191,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         now_playing_album_art_notify_manager::get()->remove(this);
         m_selection_handles.remove_all();
         m_artwork_decoder.shut_down();
+        m_artwork_resizer.shut_down();
         m_bitmap.reset();
         if (m_gdiplus_initialised)
             Gdiplus::GdiplusShutdown(m_gdiplus_instance);
@@ -265,6 +206,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         auto lpwp = (LPWINDOWPOS)lp;
         if (!(lpwp->flags & SWP_NOSIZE)) {
             flush_cached_bitmap();
+            refresh_cached_bitmap(true);
             invalidate_window();
         }
     } break;
@@ -285,9 +227,6 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         RECT rc;
         GetClientRect(wnd, &rc);
         if (m_gdiplus_initialised) {
-            if (!m_bitmap)
-                refresh_cached_bitmap();
-
             if (m_bitmap) {
                 HDC dcc = CreateCompatibleDC(dc);
 
@@ -552,7 +491,7 @@ void ArtworkPanel::show_stub_image()
     const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
     const album_art_data_ptr data = m_artwork_loader->get_stub_image(artwork_type_id);
 
-    m_artwork_decoder.decode(data, [this, self{ptr{this}}] { invalidate_window(); });
+    m_artwork_decoder.decode(data, [this, self{ptr{this}}] { refresh_cached_bitmap(); });
 }
 
 void ArtworkPanel::refresh_image()
@@ -571,11 +510,12 @@ void ArtworkPanel::refresh_image()
     if (data.is_empty())
         return;
 
-    m_artwork_decoder.decode(data, [this, self{ptr{this}}] { invalidate_window(); });
+    m_artwork_decoder.decode(data, [this, self{ptr{this}}] { refresh_cached_bitmap(); });
 }
 
 void ArtworkPanel::flush_cached_bitmap()
 {
+    m_artwork_resizer.reset();
     m_bitmap.reset();
 }
 
@@ -596,8 +536,11 @@ size_t ArtworkPanel::get_displayed_artwork_type_index() const
     return m_artwork_type_override_index.value_or(m_selected_artwork_type_index);
 }
 
-void ArtworkPanel::refresh_cached_bitmap()
+void ArtworkPanel::refresh_cached_bitmap(bool create_low_quality_bitmap)
 {
+    if (!m_gdiplus_initialised)
+        return;
+
     RECT rc{};
     GetClientRect(get_wnd(), &rc);
     const auto width = static_cast<int>(wil::rect_width(rc));
@@ -609,9 +552,20 @@ void ArtworkPanel::refresh_cached_bitmap()
     }
 
     const auto background_colour = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
-    auto image = m_artwork_decoder.get_image();
+    const auto image = m_artwork_decoder.get_image();
 
-    m_bitmap = scale_image(*image, width, height, background_colour, m_preserve_aspect_ratio);
+    if (create_low_quality_bitmap && !m_artwork_resizer.is_running()) {
+        m_bitmap
+            = ArtworkResizer::s_scale_image(image, width, height, m_preserve_aspect_ratio, background_colour, {}, true);
+        m_bitmap_is_low_quality = true;
+    }
+
+    m_artwork_resizer.resize(
+        image, {width, height, m_preserve_aspect_ratio, background_colour}, [this, self{ptr{this}}] {
+            m_bitmap = m_artwork_resizer.get_bitmap();
+            m_bitmap_is_low_quality = false;
+            invalidate_window();
+        });
 }
 
 void ArtworkPanel::g_on_colours_change()

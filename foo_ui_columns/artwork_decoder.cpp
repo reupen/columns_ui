@@ -14,40 +14,41 @@ void ArtworkDecoder::decode(album_art_data_ptr data, std::function<void()> on_co
             task{std::weak_ptr{m_current_task}}]() noexcept {
             TRACK_CALL_TEXT("cui::artwork_panel::ArtworkDecoder::async_task");
 
-            std::unique_ptr<Gdiplus::Bitmap> bitmap;
+            wil::com_ptr<IWICBitmapSource> bitmap;
 
             try {
                 if (stop_token.stop_requested())
                     return;
 
-                const auto bitmap_data = wic::decode_image_data(data->get_ptr(), data->get_size());
+                const auto decoder = wic::create_decoder_from_data(data->get_ptr(), data->get_size());
+
+                bitmap = wic::get_image_frame(decoder);
 
                 if (stop_token.stop_requested())
                     return;
 
-                bitmap = gdip::create_bitmap_from_wic_data(bitmap_data);
             } catch (const std::exception& ex) {
                 console::print(u8"Artwork panel – loading image failed: "_pcc, ex.what());
                 return;
             }
 
-            fb2k::inMainThread([this, bitmap{std::shared_ptr(std::move(bitmap))}, stop_token{std::move(stop_token)},
-                                   task{std::move(task)}]() {
-                const auto locked_task = task.lock();
+            fb2k::inMainThread(
+                [this, bitmap{std::move(bitmap)}, stop_token{std::move(stop_token)}, task{std::move(task)}]() {
+                    const auto locked_task = task.lock();
 
-                if (stop_token.stop_requested()) {
+                    if (stop_token.stop_requested()) {
+                        if (locked_task)
+                            std::erase(m_aborting_tasks, locked_task);
+                        return;
+                    }
+
+                    assert(m_current_task == locked_task);
+                    m_current_task.reset();
+                    m_decoded_image = std::move(bitmap);
+
                     if (locked_task)
-                        std::erase(m_aborting_tasks, locked_task);
-                    return;
-                }
-
-                assert(m_current_task == locked_task);
-                m_current_task.reset();
-                m_decoded_image = std::move(bitmap);
-
-                if (locked_task)
-                    locked_task->on_complete();
-            });
+                        locked_task->on_complete();
+                });
         });
 }
 

@@ -251,6 +251,7 @@
   <ItemGroup>
     <ClCompile Include="artwork_decoder.cpp" />
     <ClCompile Include="artwork_reader.cpp" />
+    <ClCompile Include="artwork_resizer.cpp" />
     <ClCompile Include="audio_track_toolbar.cpp" />
     <ClCompile Include="buttons_button.cpp" />
     <ClCompile Include="buttons_button_image.cpp" />
@@ -436,6 +437,7 @@
   <ItemGroup>
     <ClInclude Include="artwork_decoder.h" />
     <ClInclude Include="artwork_reader.h" />
+    <ClInclude Include="artwork_resizer.h" />
     <ClInclude Include="buttons.h" />
     <ClInclude Include="colour_manager_data.h" />
     <ClInclude Include="colour_utils.h" />

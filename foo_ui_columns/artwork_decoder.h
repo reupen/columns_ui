@@ -39,11 +39,11 @@ public:
 
     bool has_image() const { return static_cast<bool>(m_decoded_image); }
 
-    std::shared_ptr<Gdiplus::Bitmap> get_image() { return m_decoded_image; }
+    wil::com_ptr<IWICBitmapSource> get_image() { return m_decoded_image; }
 
     ArtworkDecoderTask::Ptr m_current_task;
     std::vector<ArtworkDecoderTask::Ptr> m_aborting_tasks;
-    std::shared_ptr<Gdiplus::Bitmap> m_decoded_image;
+    wil::com_ptr<IWICBitmapSource> m_decoded_image;
 };
 
 } // namespace cui::artwork_panel

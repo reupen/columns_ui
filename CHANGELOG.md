@@ -7,6 +7,10 @@
 - The rendering performance of built-in list views, including the playlist view,
   was improved. [[#1212](https://github.com/reupen/columns_ui/pull/1212)]
 
+- The Artwork view now performs more operations in the background, improving UI
+  responsiveness when loading large (or otherwise slow to load) images.
+  [[#1214](https://github.com/reupen/columns_ui/pull/1214)]
+
 ### Bug fixes
 
 - A regression in version 2.0.0 that stopped double-clicking in empty space in

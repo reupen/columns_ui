@@ -2,6 +2,7 @@
 
 #include "artwork_reader.h"
 #include "artwork_decoder.h"
+#include "artwork_resizer.h"
 
 namespace cui::artwork_panel {
 
@@ -166,7 +167,7 @@ private:
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-    void refresh_cached_bitmap();
+    void refresh_cached_bitmap(bool eagerly_create_low_quality_bitmap = false);
     void flush_cached_bitmap();
     void refresh_image();
     void show_stub_image();
@@ -179,7 +180,9 @@ private:
 
     std::shared_ptr<ArtworkReaderManager> m_artwork_loader;
     ArtworkDecoder m_artwork_decoder;
-    wil::unique_hbitmap m_bitmap;
+    ArtworkResizer m_artwork_resizer;
+    wil::shared_hbitmap m_bitmap;
+    bool m_bitmap_is_low_quality{};
     size_t m_selected_artwork_type_index{0};
     std::optional<size_t> m_artwork_type_override_index{};
     uint32_t m_track_mode;
