@@ -10,14 +10,22 @@ struct ArtworkReaderArgs {
     std::shared_ptr<class ArtworkReaderManager> manager;
 };
 
+enum class ArtworkReaderStatus {
+    Pending,
+    Succeeded,
+    Failed,
+    Aborted,
+};
+
 class ArtworkReader {
 public:
     bool is_aborting() const;
     bool is_from_playback() const { return m_is_from_playback; }
     void abort();
 
-    bool succeeded() const;
+    ArtworkReaderStatus status() const;
     const std::unordered_map<GUID, album_art_data_ptr>& get_artwork_data() const;
+    const std::unordered_map<GUID, album_art_data_ptr>& get_previous_artwork_data() const;
     const std::unordered_map<GUID, album_art_data_ptr>& get_stub_images() const;
     void set_image(GUID artwork_type_id, album_art_data_ptr data);
 
@@ -25,7 +33,7 @@ public:
         std::unordered_map<GUID, album_art_data_ptr> previous_artwork_data, bool is_from_playback,
         OnArtworkLoadedCallback on_artwork_loaded)
         : m_artwork_type_ids(std::move(artwork_type_ids))
-        , m_artwork_data{std::move(previous_artwork_data)}
+        , m_previous_artwork_data{std::move(previous_artwork_data)}
         , m_is_from_playback(is_from_playback)
         , m_on_artwork_loaded(std::move(on_artwork_loaded))
     {
@@ -39,14 +47,13 @@ public:
 
 private:
     bool read_artwork(const ArtworkReaderArgs& args, abort_callback& p_abort);
-    bool are_contents_equal(const std::unordered_map<GUID, album_art_data_ptr>& content1,
-        const std::unordered_map<GUID, album_art_data_ptr>& content2) const;
 
     std::optional<std::jthread> m_thread;
     std::vector<GUID> m_artwork_type_ids;
+    std::unordered_map<GUID, album_art_data_ptr> m_previous_artwork_data;
     std::unordered_map<GUID, album_art_data_ptr> m_artwork_data;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
-    bool m_succeeded{false};
+    ArtworkReaderStatus m_status{ArtworkReaderStatus::Pending};
     bool m_is_from_playback{};
     OnArtworkLoadedCallback m_on_artwork_loaded;
     abort_callback_impl m_abort;
@@ -62,7 +69,7 @@ public:
     void reset();
     void abort_current_task();
 
-    album_art_data_ptr get_image(const GUID& p_what);
+    album_art_data_ptr get_image(const GUID& p_what) const;
     album_art_data_ptr get_stub_image(GUID artwork_type_id);
 
     void deinitialise();
@@ -74,7 +81,7 @@ private:
     std::shared_ptr<ArtworkReader> m_current_reader;
 
     std::vector<GUID> m_artwork_type_ids;
-    std::unordered_map<GUID, album_art_data_ptr> m_artwork_data;
+    std::unordered_map<GUID, album_art_data_ptr> m_previous_artwork_data;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
 };
 
