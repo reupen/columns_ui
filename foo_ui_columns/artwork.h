@@ -166,20 +166,18 @@ private:
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-    void refresh_cached_bitmap();
-    void flush_cached_bitmap();
+    void create_d2d_render_target();
     void refresh_image();
+    void clear_image();
     void show_stub_image();
-    void flush_image(bool invalidate = true);
     void invalidate_window() const;
     size_t get_displayed_artwork_type_index() const;
 
-    ULONG_PTR m_gdiplus_instance{NULL};
-    bool m_gdiplus_initialised{false};
+    wil::com_ptr<ID2D1Factory> m_d2d_factory;
+    wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
 
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
     ArtworkDecoder m_artwork_decoder;
-    wil::unique_hbitmap m_bitmap;
     size_t m_selected_artwork_type_index{0};
     std::optional<size_t> m_artwork_type_override_index{};
     uint32_t m_track_mode;

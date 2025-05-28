@@ -15,7 +15,8 @@ class ArtworkDecoder {
 public:
     ~ArtworkDecoder() { abort(); }
 
-    void decode(album_art_data_ptr data, std::function<void()> on_complete);
+    void decode(wil::com_ptr<ID2D1HwndRenderTarget> d2d_render_target, album_art_data_ptr data,
+        std::function<void()> on_complete);
 
     void abort()
     {
@@ -39,11 +40,11 @@ public:
 
     bool has_image() const { return static_cast<bool>(m_decoded_image); }
 
-    std::shared_ptr<Gdiplus::Bitmap> get_image() { return m_decoded_image; }
+    wil::com_ptr<ID2D1Bitmap> get_image() { return m_decoded_image; }
 
     ArtworkDecoderTask::Ptr m_current_task;
     std::vector<ArtworkDecoderTask::Ptr> m_aborting_tasks;
-    std::shared_ptr<Gdiplus::Bitmap> m_decoded_image;
+    wil::com_ptr<ID2D1Bitmap> m_decoded_image;
 };
 
 } // namespace cui::artwork_panel

@@ -1,11 +1,18 @@
 # Change log
 
-## Development version
+## 3.0.0-beta.3
 
 ### Features
 
 - The rendering performance of built-in list views, including the playlist view,
   was improved. [[#1212](https://github.com/reupen/columns_ui/pull/1212)]
+
+- The Artwork view now decodes images in a background thread and renders and
+  resizes images using Direct2D.
+  [[#1221](https://github.com/reupen/columns_ui/pull/1221)]
+
+  These changes are intended to improve UI responsiveness when loading large
+  images and images that are otherwise slow to decode.
 
 ### Bug fixes
 

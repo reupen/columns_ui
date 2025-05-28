@@ -21,20 +21,6 @@ wil::com_ptr<IWICBitmapDecoder> create_decoder_from_path(std::string_view path)
     return bitmap_decoder;
 }
 
-wil::com_ptr<IWICBitmapDecoder> create_decoder_from_data(const void* data, size_t size)
-{
-    const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
-
-    wil::com_ptr<IStream> stream;
-    stream.attach(SHCreateMemStream(static_cast<const BYTE*>(data), gsl::narrow<UINT>(size)));
-
-    wil::com_ptr<IWICBitmapDecoder> bitmap_decoder;
-    check_hresult(imaging_factory->CreateDecoderFromStream(
-        stream.get(), nullptr, WICDecodeMetadataCacheOnDemand, &bitmap_decoder));
-
-    return bitmap_decoder;
-}
-
 wil::com_ptr<IWICBitmap> create_bitmap_from_hbitmap(HBITMAP bitmap)
 {
     const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
@@ -45,18 +31,7 @@ wil::com_ptr<IWICBitmap> create_bitmap_from_hbitmap(HBITMAP bitmap)
     return wic_bitmap;
 }
 
-wil::com_ptr<IWICBitmapSource> get_image_frame(const wil::com_ptr<IWICBitmapDecoder>& bitmap_decoder)
-{
-    wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
-    check_hresult(bitmap_decoder->GetFrame(0, &bitmap_frame_decode));
-
-    wil::com_ptr<IWICBitmapSource> converted_bitmap;
-    check_hresult(WICConvertBitmapSource(GUID_WICPixelFormat32bppBGRA, bitmap_frame_decode.get(), &converted_bitmap));
-
-    return converted_bitmap;
-}
-
-BitmapData decode_image(const wil::com_ptr<IWICBitmapSource>& bitmap_source)
+BitmapData decode_bitmap_source(const wil::com_ptr<IWICBitmapSource>& bitmap_source)
 {
     BitmapData image_data{};
     check_hresult(bitmap_source->GetSize(&image_data.width, &image_data.height));
@@ -81,12 +56,39 @@ void check_hresult(HRESULT hr)
     if (FAILED(hr))
         throw wic_error(message << "WIC error: " << format_win32_error(hr));
 }
-
-wil::com_ptr<IWICBitmapSource> resize_bitmap_source(
-    const wil::com_ptr<IWICBitmapSource>& original_bitmap, int width, int height)
+wil::com_ptr<IWICImagingFactory> create_factory()
 {
-    const auto imaging_factory = wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+    return wil::CoCreateInstance<IWICImagingFactory>(CLSID_WICImagingFactory);
+}
 
+wil::com_ptr<IWICBitmapDecoder> create_decoder_from_data(
+    const void* data, size_t size, const wil::com_ptr<IWICImagingFactory>& imaging_factory)
+{
+    wil::com_ptr<IStream> stream;
+    stream.attach(SHCreateMemStream(static_cast<const BYTE*>(data), gsl::narrow<UINT>(size)));
+
+    wil::com_ptr<IWICBitmapDecoder> bitmap_decoder;
+    check_hresult(imaging_factory->CreateDecoderFromStream(
+        stream.get(), nullptr, WICDecodeMetadataCacheOnDemand, &bitmap_decoder));
+
+    return bitmap_decoder;
+}
+
+wil::com_ptr<IWICBitmapSource> get_image_frame(
+    const wil::com_ptr<IWICBitmapDecoder>& bitmap_decoder, REFWICPixelFormatGUID pixel_format)
+{
+    wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
+    check_hresult(bitmap_decoder->GetFrame(0, &bitmap_frame_decode));
+
+    wil::com_ptr<IWICBitmapSource> converted_bitmap;
+    check_hresult(WICConvertBitmapSource(pixel_format, bitmap_frame_decode.get(), &converted_bitmap));
+
+    return converted_bitmap;
+}
+
+wil::com_ptr<IWICBitmapSource> resize_bitmap_source(const wil::com_ptr<IWICBitmapSource>& original_bitmap, int width,
+    int height, const wil::com_ptr<IWICImagingFactory>& imaging_factory)
+{
     wil::com_ptr<IWICBitmapScaler> bitmap_scaler;
     check_hresult(imaging_factory->CreateBitmapScaler(&bitmap_scaler));
 
@@ -128,7 +130,7 @@ wil::com_ptr<IWICBitmapSource> create_bitmap_source_from_bitmap_data(const Bitma
 
 wil::unique_hbitmap create_hbitmap_from_bitmap_source(const wil::com_ptr<IWICBitmapSource>& source)
 {
-    const auto bitmap_data = decode_image(source);
+    const auto bitmap_data = decode_bitmap_source(source);
 
     return gdi::create_hbitmap_from_32bpp_data(gsl::narrow<int>(bitmap_data.width),
         gsl::narrow<int>(bitmap_data.height), bitmap_data.data.data(), bitmap_data.data.size());
@@ -138,7 +140,7 @@ BitmapData decode_image_data(const void* data, size_t size)
 {
     const auto decoder = create_decoder_from_data(data, size);
     const auto converted_bitmap = get_image_frame(decoder);
-    return decode_image(converted_bitmap);
+    return decode_bitmap_source(converted_bitmap);
 }
 
 } // namespace cui::wic
