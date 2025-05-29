@@ -1,6 +1,7 @@
 #pragma once
 
-#include "artwork_helpers.h"
+#include "artwork_decoder.h"
+#include "artwork_reader.h"
 
 namespace cui::artwork_panel {
 
@@ -18,15 +19,6 @@ class ArtworkPanel
     , public playlist_callback_single
     , public ui_selection_callback {
 public:
-    class CompletionNotifyForwarder : public completion_notify {
-    public:
-        void on_completion(unsigned p_code) noexcept override;
-        explicit CompletionNotifyForwarder(ArtworkPanel* p_this);
-
-    private:
-        service_ptr_t<ArtworkPanel> m_this;
-    };
-
     const GUID& get_extension_guid() const override;
     void get_name(pfc::string_base& out) const override;
     void get_category(pfc::string_base& out) const override;
@@ -78,7 +70,7 @@ public:
 
     void on_selection_changed(const pfc::list_base_const_t<metadb_handle_ptr>& p_selection) noexcept override;
 
-    void on_completion(unsigned p_code);
+    void on_artwork_loaded(bool artwork_changed);
 
     static void g_on_colours_change();
     static void s_on_dark_mode_status_change();
@@ -87,6 +79,7 @@ public:
     bool is_core_image_viewer_available() const;
     void open_core_image_viewer() const;
     void show_next_artwork_type();
+    void set_artwork_type_index(size_t index);
 
     ArtworkPanel();
 
@@ -167,29 +160,29 @@ private:
         current_stream_version = 3
     };
 
+    void request_artwork(const metadb_handle_ptr& track, bool is_from_playback = false);
+
     void set_config(stream_reader* p_reader, size_t size, abort_callback& p_abort) override;
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
-    void refresh_cached_bitmap();
-    void flush_cached_bitmap();
-    bool refresh_image(std::optional<size_t> artwork_type_index_override = {});
+    void create_d2d_render_target();
+    void refresh_image();
+    void clear_image();
     void show_stub_image();
-    void flush_image(bool invalidate = true);
     void invalidate_window() const;
     size_t get_displayed_artwork_type_index() const;
 
-    ULONG_PTR m_gdiplus_instance{NULL};
-    bool m_gdiplus_initialised{false};
+    wil::com_ptr<ID2D1Factory> m_d2d_factory;
+    wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
 
-    std::shared_ptr<ArtworkReaderManager> m_artwork_loader;
-    std::unique_ptr<Gdiplus::Bitmap> m_image;
-    wil::unique_hbitmap m_bitmap;
+    std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
+    ArtworkDecoder m_artwork_decoder;
     size_t m_selected_artwork_type_index{0};
     std::optional<size_t> m_artwork_type_override_index{};
     uint32_t m_track_mode;
     bool m_preserve_aspect_ratio{true};
-    bool m_lock_type{false};
+    bool m_artwork_type_locked{false};
     bool m_dynamic_artwork_pending{};
     metadb_handle_list m_selection_handles;
 
