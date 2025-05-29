@@ -5,7 +5,7 @@
 ### Features
 
 - The rendering performance of built-in list views, including the playlist view,
-  was improved. [[#1212](https://github.com/reupen/columns_ui/pull/1212)]
+  was improved. [[#1214](https://github.com/reupen/columns_ui/pull/1214)]
 
 - The Artwork view now decodes images in a background thread and renders and
   resizes images using Direct2D.
@@ -28,6 +28,10 @@
   on, a Playlist tabs panel without a child panel now has a maximum height of 0
   when there is only one playlist.
   [[#1211](https://github.com/reupen/columns_ui/pull/1211)]
+
+- Some minor improvements of how DirectWrite per-monitor rendering parameters
+  are handled were made.
+  [[#1212](https://github.com/reupen/columns_ui/pull/1212)]
 
 ## 3.0.0-beta.2
 
