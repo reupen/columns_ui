@@ -53,7 +53,7 @@ enum {
 namespace cui {
 class MainWindow {
 public:
-    HWND initialise(user_interface::HookProc_t hook);
+    HWND initialise(user_interface::HookProc_t hook, bool is_hidden = false);
     void shutdown();
     void on_query_capability();
     void update_title();

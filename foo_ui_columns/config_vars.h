@@ -112,7 +112,7 @@ extern cfg_int cfg_playlist_middle_action;
 extern cfg_int cfg_playlist_panel_delete;
 extern cfg_int cfg_nohscroll;
 
-extern cfg_bool cfg_go_to_tray;
+extern cfg_bool cfg_main_window_is_hidden;
 
 extern cfg_string cfg_tray_icon_path;
 extern cfg_string cfg_export;
