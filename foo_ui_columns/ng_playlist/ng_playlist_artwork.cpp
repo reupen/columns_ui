@@ -111,7 +111,7 @@ DWORD ArtworkReader::on_thread()
     } catch (pfc::exception const& e) {
         m_bitmaps.clear();
         console::formatter formatter;
-        formatter << u8"Playlist view – unhandled error loading artwork: "_pcc << e.what();
+        formatter << "Playlist view – unhandled error loading artwork: " << e.what();
         ret = -1;
     }
     // send this first so thread gets closed first
@@ -147,7 +147,7 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     } catch (exception_io_not_found const&) {
     } catch (pfc::exception const& e) {
         console::formatter formatter;
-        formatter << u8"Playlist view – error loading artwork: "_pcc << e.what();
+        formatter << "Playlist view – error loading artwork: " << e.what();
     }
 
     // Warning: Broken input components can intitialise COM as apartment-threaded. Hence, COM intialisation
@@ -280,7 +280,7 @@ wil::unique_hbitmap g_create_hbitmap_from_data(
         const auto bitmap_data = wic::decode_image_data(data->get_ptr(), data->get_size());
         bitmap = gdip::create_bitmap_from_wic_data(bitmap_data);
     } catch (const std::exception& ex) {
-        fbh::print_to_console(u8"Playlist view – loading image failed: "_pcc, ex.what());
+        fbh::print_to_console("Playlist view – loading image failed: ", ex.what());
         return nullptr;
     }
 

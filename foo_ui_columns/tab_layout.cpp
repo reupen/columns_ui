@@ -631,11 +631,9 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 cfg_layout.get_preset_name(m_active_preset, preset_name);
 
                 const auto confirmation_message
-                    = fmt::format(u8"Are you sure that you want to delete the layout preset ‘{}’?",
-                        reinterpret_cast<const char8_t*>(preset_name.c_str()));
+                    = fmt::format("Are you sure that you want to delete the layout preset ‘{}’?", preset_name.c_str());
 
-                if (!dark::modal_info_box(wnd, "Delete preset",
-                        reinterpret_cast<const char*>(confirmation_message.c_str()), uih::InfoBoxType::Warning,
+                if (!dark::modal_info_box(wnd, "Delete preset", confirmation_message.c_str(), uih::InfoBoxType::Warning,
                         uih::InfoBoxModalType::YesNo))
                     break;
             }

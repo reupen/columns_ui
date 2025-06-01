@@ -52,7 +52,7 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden
     fbh::enable_wil_console_logging();
 
     if (!IsWindows7SP1OrGreater()) {
-        dark::modal_info_box(nullptr, u8"Unsupported operating system – Columns UI"_pcc, unsupported_os_message,
+        dark::modal_info_box(nullptr, "Unsupported operating system – Columns UI", unsupported_os_message,
             uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
         return nullptr;
     }
@@ -65,8 +65,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden
         pfc::string8 message = "Unknown COM initialisation error";
         uFormatMessage(ex.GetFailureInfo().hr, message);
 
-        dark::modal_info_box(nullptr, u8"Failed to initialise COM – Columns UI"_pcc, message.c_str(),
-            uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
+        dark::modal_info_box(nullptr, "Failed to initialise COM – Columns UI", message.c_str(), uih::InfoBoxType::Error,
+            uih::InfoBoxModalType::OK);
         return nullptr;
     }
 
@@ -81,8 +81,8 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden
         const auto message
             = IsWindows8OrGreater() ? error_message.get_ptr() : "The Platform Update for Windows 7 is required.";
 
-        dark::modal_info_box(nullptr, u8"Failed to initialise DirectWrite – Columns UI"_pcc, message,
-            uih::InfoBoxType::Error, uih::InfoBoxModalType::OK);
+        dark::modal_info_box(nullptr, "Failed to initialise DirectWrite – Columns UI", message, uih::InfoBoxType::Error,
+            uih::InfoBoxModalType::OK);
         return nullptr;
     }
 

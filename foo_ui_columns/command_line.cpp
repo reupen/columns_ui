@@ -3,13 +3,13 @@
 #include "dark_mode_dialog.h"
 #include "fcl.h"
 
-static const char8_t* g_help_text
-    = u8"Available commands:\n\n"
-      u8"/columnsui:help, /columnsui:?\t\tdisplay this command-line help\n"
-      u8"/columnsui:import <fcl path>\t\timport a Columns UI configuration\n"
-      u8"/columnsui:import-quiet <fcl path>\timport a Columns UI configuration without confirming first\n"
-      u8"/columnsui:export <fcl path>\t\texport selected parts of the current Columns UI configuration\n"
-      u8"/columnsui:export-quiet <fcl path>\texport all parts of the current Columns UI configuration";
+static const char* g_help_text
+    = "Available commands:\n\n"
+      "/columnsui:help, /columnsui:?\t\tdisplay this command-line help\n"
+      "/columnsui:import <fcl path>\t\timport a Columns UI configuration\n"
+      "/columnsui:import-quiet <fcl path>\timport a Columns UI configuration without confirming first\n"
+      "/columnsui:export <fcl path>\t\texport selected parts of the current Columns UI configuration\n"
+      "/columnsui:export-quiet <fcl path>\texport all parts of the current Columns UI configuration";
 
 class HelpCommandLineHandler : public commandline_handler {
 public:
@@ -25,8 +25,8 @@ public:
     {
         HWND parent = core_api::get_main_window();
         ui_control::get()->activate();
-        cui::dark::modeless_info_box(parent, "Columns UI command-line help", reinterpret_cast<const char*>(g_help_text),
-            uih::InfoBoxType::Neutral, true);
+        cui::dark::modeless_info_box(
+            parent, "Columns UI command-line help", g_help_text, uih::InfoBoxType::Neutral, true);
     }
 };
 
@@ -70,7 +70,7 @@ public:
     CommandLineSingleFileHelper m_single_file_helper;
 
     ImportCommandLineHandler()
-        : m_single_file_helper{u8"Import configuration – Columns UI"_pcc, "No file to import specified.",
+        : m_single_file_helper{"Import configuration – Columns UI", "No file to import specified.",
               "Too many files to import specified. You can only import one file at a time, "
               "and should use double quotes around paths containing spaces."}
     {
@@ -122,7 +122,7 @@ public:
     CommandLineSingleFileHelper m_single_file_helper;
 
     ExportCommandLineHandler()
-        : m_single_file_helper{u8"Export configuration – Columns UI"_pcc, "No file to export to specified.",
+        : m_single_file_helper{"Export configuration – Columns UI", "No file to export to specified.",
               "Too many destination files specified. You must specify only one destination path, "
               "and should use double quotes around paths containing spaces."}
     {

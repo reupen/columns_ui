@@ -38,11 +38,11 @@ bool PlaylistView::notify_create_inline_edit(const pfc::list_base_const_t<size_t
     const auto joined = mmh::join(aggregator.m_values, "; "s);
 
     if (aggregator.m_mixed_values) {
-        p_text = u8"«mixed values» "_pcc;
+        p_text = "«mixed values» ";
         p_text += joined.c_str();
 
         if (aggregator.m_truncated)
-            p_text += u8"; …"_pcc;
+            p_text += "; …";
     } else {
         p_text = joined.c_str();
     }

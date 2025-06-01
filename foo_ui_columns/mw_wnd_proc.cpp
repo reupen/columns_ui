@@ -636,7 +636,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                             }
                             if (title2.length() > 25) {
                                 title2.truncate(24);
-                                title2 += "\xe2\x80\xa6";
+                                title2 += "…";
                             }
 
                             title.prealloc(14 + 25);
