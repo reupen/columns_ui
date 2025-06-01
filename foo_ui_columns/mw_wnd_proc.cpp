@@ -171,7 +171,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_CLOSE:
         if (config::advbool_close_to_system_tray_icon.get()) {
-            cfg_go_to_tray = true;
+            cfg_main_window_is_hidden = true;
             ShowWindow(wnd, SW_MINIMIZE);
         } else
             standard_commands::main_exit();
@@ -510,10 +510,10 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!(lpwp->flags & SWP_NOSIZE)) {
             ULONG_PTR styles = GetWindowLongPtr(wnd, GWL_STYLE);
             if (styles & WS_MINIMIZE) {
-                cfg_go_to_tray = cfg_go_to_tray || cfg_minimise_to_tray;
-                if (!g_icon_created && cfg_go_to_tray)
+                cfg_main_window_is_hidden = cfg_main_window_is_hidden || cfg_minimise_to_tray;
+                if (!g_icon_created && cfg_main_window_is_hidden)
                     systray::create_icon();
-                if (g_icon_created && cfg_go_to_tray)
+                if (g_icon_created && cfg_main_window_is_hidden)
                     ShowWindow(wnd, SW_HIDE);
             } else {
                 resize_child_windows();

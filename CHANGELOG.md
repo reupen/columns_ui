@@ -1,5 +1,19 @@
 # Change log
 
+## 3.0.0-rc.1
+
+### Features
+
+- Support for starting foobar2000 immediately hidden (without the main window
+  briefly appearing) when using `foobar2000 /hide` was added on foobar2000 2.1
+  and newer. [[#1228](https://github.com/reupen/columns_ui/pull/1228)]
+
+  Additionally, in all versions of foobar2000, when foobar2000 is started
+  minimised or closed to the system tray due to it being last closed in that
+  state, the main window is no longer briefly activated.
+
+  (Note that other third-party components can still affect the behaviour.)
+
 ## 3.0.0-beta.3
 
 ### Features

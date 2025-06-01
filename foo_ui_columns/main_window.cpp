@@ -47,7 +47,7 @@ const char* unsupported_os_message
       "of Columns UI. Please upgrade to Windows 7 Service Pack 1 or newer and try again.\n\n"
       "Otherwise, uninstall the Columns UI component to return to the Default User Interface.";
 
-HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
+HWND cui::MainWindow::initialise(user_interface::HookProc_t hook, bool is_hidden)
 {
     fbh::enable_wil_console_logging();
 
@@ -117,8 +117,7 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     }
 
     const DWORD ex_styles = main_window::config_get_transparency_enabled() ? WS_EX_LAYERED : 0;
-    const DWORD styles = WS_OVERLAPPED | WS_MAXIMIZEBOX | WS_MINIMIZEBOX | WS_CAPTION | WS_SYSMENU | WS_CLIPCHILDREN
-        | WS_CLIPSIBLINGS | WS_THICKFRAME;
+    constexpr DWORD styles = WS_OVERLAPPEDWINDOW | WS_CLIPCHILDREN | WS_CLIPSIBLINGS;
 
     m_wnd = CreateWindowEx(ex_styles, main_window_class_name, _T("foobar2000"), styles, left, top, cx, cy, nullptr,
         nullptr, core_api::get_my_instance(), &main_window);
@@ -128,17 +127,25 @@ HWND cui::MainWindow::initialise(user_interface::HookProc_t hook)
     const bool rem_pos = remember_window_pos();
 
     if (rem_pos && !main_window::config_get_is_first_run()) {
-        const auto placement = cfg_window_placement_columns.get_value();
+        auto placement = cfg_window_placement_columns.get_value();
+
+        if (((cfg_main_window_is_hidden || is_hidden) && cfg_minimise_to_tray)
+            || (cfg_main_window_is_hidden && config::advbool_close_to_system_tray_icon.get())) {
+            cfg_main_window_is_hidden = true;
+            placement.showCmd = SW_SHOWMINNOACTIVE;
+        } else {
+            cfg_main_window_is_hidden = false;
+
+            if (is_hidden)
+                placement.showCmd = SW_SHOWMINNOACTIVE;
+        }
 
         SetWindowPlacement(m_wnd, &placement);
         resize_child_windows();
-        ShowWindow(m_wnd, placement.showCmd);
 
-        if (g_icon_created && cfg_go_to_tray)
-            ShowWindow(m_wnd, SW_HIDE);
     } else {
         resize_child_windows();
-        ShowWindow(m_wnd, SW_SHOWNORMAL);
+        ShowWindow(m_wnd, is_hidden ? SW_SHOWMINNOACTIVE : SW_SHOWNORMAL);
     }
 
     if (rebar::g_rebar)
@@ -352,8 +359,6 @@ void cui::MainWindow::create_child_windows()
     status_bar::create_window();
     if (settings::show_status_pane)
         status_pane::g_status_pane.create(m_wnd);
-
-    g_layout_window.set_focus();
 }
 
 void cui::MainWindow::resize_child_windows()

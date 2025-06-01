@@ -151,11 +151,15 @@ public:
     }
 };
 
-class UserInterfaceImpl : public user_interface_v3 {
+class UserInterfaceImpl : public user_interface_v4 {
 public:
     const char* get_name() override { return "Columns UI"; }
 
-    HWND init(HookProc_t hook) override { return main_window.initialise(hook); }
+    fb2k::hwnd_t init(HookProc_t hook) override { return main_window.initialise(hook); }
+    fb2k::hwnd_t init_v4(HookProc_t hook, uint32_t flags) override
+    {
+        return main_window.initialise(hook, (flags & flagHide) != 0);
+    }
 
     GUID get_guid() override { return {0xf12d0a24, 0xa8a4, 0x4618, {0x96, 0x59, 0x6f, 0x66, 0xde, 0x6, 0x75, 0x24}}; }
 
@@ -174,7 +178,7 @@ public:
     void activate() override
     {
         if (main_window.get_wnd()) {
-            cfg_go_to_tray = false;
+            cfg_main_window_is_hidden = false;
             if (g_icon_created && !cfg_show_systray)
                 systray::remove_icon();
 
