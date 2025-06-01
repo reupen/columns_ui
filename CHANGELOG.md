@@ -14,6 +14,16 @@
 
   (Note that other third-party components can still affect the behaviour.)
 
+### Internal changes
+
+- Various dependencies were updated.
+  [[#1227](https://github.com/reupen/columns_ui/pull/1227),
+  [#1229](https://github.com/reupen/columns_ui/pull/1229)]
+
+- The
+  [`/utf-8` compiler option](https://learn.microsoft.com/en-gb/cpp/build/reference/utf-8-set-source-and-executable-character-sets-to-utf-8?view=msvc-170)
+  is now used instead of `/source-charset:utf-8`.
+
 ## 3.0.0-beta.3
 
 ### Features
