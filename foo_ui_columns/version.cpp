@@ -14,7 +14,7 @@ DECLARE_COMPONENT_VERSION("Columns UI",
     "Columns UI\n"
     "Alternative user interface\n"
     "\n"
-    u8"© musicmusic and contributors "_pcc CUI_COMPILATION_YEAR "\n"
+    "© musicmusic and contributors " CUI_COMPILATION_YEAR "\n"
     "Current version at yuo.be\n"
     "\n"
     "Built on " CUI_COMPILATION_DATE "\n"

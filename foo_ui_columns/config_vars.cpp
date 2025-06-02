@@ -142,11 +142,11 @@ cfg_string cfg_colour(
 ConfigMenuItem cfg_playlist_double(GUID{0xffc47d9d, 0xb43d, 0x8fad, {0x8f, 0xb3, 0x42, 0x84, 0xbf, 0x9a, 0x22, 0x2a}});
 cfg_string cfg_playlist_switcher_tagz(
     GUID{0x13f4b9ae, 0x5db5, 0xb083, {0x15, 0x36, 0x08, 0x4d, 0x55, 0xe3, 0xb5, 0x64}},
-    reinterpret_cast<const char*>(u8"%title%\r\n"
-                                  u8"\r\n"
-                                  u8"$tab()\r\n"
-                                  u8"\r\n"
-                                  u8"$if(%is_playing%,🔉)"));
+    "%title%\r\n"
+    "\r\n"
+    "$tab()\r\n"
+    "\r\n"
+    "$if(%is_playing%,🔉)");
 
 // {F006EC50-7F52-4037-9D48-7447BBF742AA}
 static const GUID guid_columns = {0xf006ec50, 0x7f52, 0x4037, {0x9d, 0x48, 0x74, 0x47, 0xbb, 0xf7, 0x42, 0xaa}};

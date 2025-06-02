@@ -29,7 +29,7 @@ void ButtonsToolbar::ButtonImage::preload(const Button::CustomImage& p_image)
         wic::check_hresult(m_bitmap_source->GetSize(&width, &height));
         m_bitmap_source_size = std::make_tuple(gsl::narrow<int>(width), gsl::narrow<int>(height));
     } catch (const std::exception& ex) {
-        fbh::print_to_console(u8"Buttons toolbar – loading image failed: "_pcc, ex.what());
+        fbh::print_to_console("Buttons toolbar – loading image failed: ", ex.what());
     }
 }
 
@@ -43,7 +43,7 @@ bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& c
             uLoadImage(wil::GetModuleInstanceHandle(), full_path, IMAGE_ICON, width, height, LR_LOADFROMFILE)));
 
         if (!m_icon)
-            fbh::print_to_console(u8"Buttons toolbar – loading icon failed. Path: "_pcc, full_path.get_ptr());
+            fbh::print_to_console("Buttons toolbar – loading icon failed. Path: ", full_path.get_ptr());
         return false;
     }
 
@@ -52,7 +52,7 @@ bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& c
             load_custom_svg_image(full_path, width, height);
         } catch (const std::exception& ex) {
             fbh::print_to_console(
-                u8"Buttons toolbar – loading SVG file failed. Path: "_pcc, full_path.get_ptr(), " Error: ", ex.what());
+                "Buttons toolbar – loading SVG file failed. Path: ", full_path.get_ptr(), " Error: ", ex.what());
         }
 
         return false;
@@ -69,7 +69,7 @@ bool ButtonsToolbar::ButtonImage::load_custom_image(const Button::CustomImage& c
             return resized;
         } catch (const std::exception& ex) {
             fbh::print_to_console(
-                u8"Buttons toolbar – loading image failed. Path: "_pcc, full_path.get_ptr(), " Error: ", ex.what());
+                "Buttons toolbar – loading image failed. Path: ", full_path.get_ptr(), " Error: ", ex.what());
         }
         m_bitmap_source.reset();
     }
@@ -124,7 +124,7 @@ void ButtonsToolbar::ButtonImage::load_default_image(
     try {
         m_bm = wic::resize_hbitmap(bitmap.get(), width, height);
     } catch (const std::exception& ex) {
-        fbh::print_to_console(u8"Buttons toolbar – error resizing default image: "_pcc, ex.what());
+        fbh::print_to_console("Buttons toolbar – error resizing default image: ", ex.what());
     }
 }
 

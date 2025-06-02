@@ -13,11 +13,11 @@ namespace cui::status_pane {
 namespace {
 
 const auto* default_status_pane_script
-    = u8"// This is the default script for the content of the main status pane section during playback.\r\n"
-      u8"\r\n"
-      u8"%artist% – %title%\r\n"
-      u8"$crlf()\r\n"
-      u8"%codec% | %bitrate% kbps | %samplerate% Hz | $caps(%channels%) | %playback_time%[ / %length%]"_pcc;
+    = "// This is the default script for the content of the main status pane section during playback.\r\n"
+      "\r\n"
+      "%artist% – %title%\r\n"
+      "$crlf()\r\n"
+      "%codec% | %bitrate% kbps | %samplerate% Hz | $caps(%channels%) | %playback_time%[ / %length%]";
 
 }
 

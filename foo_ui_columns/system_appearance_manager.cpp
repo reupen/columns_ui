@@ -23,12 +23,11 @@ COLORREF winrt_color_to_colorref(const winrt::Windows::UI::Color& colour)
     return RGB(colour.R, colour.G, colour.B);
 }
 
-void log_winrt_error(std::basic_string_view<char8_t> main_message, const winrt::hresult_error& ex)
+void log_winrt_error(std::string_view main_message, const winrt::hresult_error& ex)
 {
     const pfc::stringcvt::string_utf8_from_wide error_message(ex.message().c_str());
-    const auto message
-        = fmt::format(u8"Columns UI – {}: {}", main_message, reinterpret_cast<const char8_t*>(error_message.get_ptr()));
-    console::warning(reinterpret_cast<const char*>(message.c_str()));
+    const auto message = fmt::format("Columns UI – {}: {}", main_message, error_message.get_ptr());
+    console::warning(message.c_str());
 }
 
 std::optional<ModernColours> fetch_modern_colours()
@@ -42,7 +41,7 @@ std::optional<ModernColours> fetch_modern_colours()
 
         return ModernColours{background, foreground, accent, light_accent};
     } catch (const winrt::hresult_error& ex) {
-        log_winrt_error(u8"Error retrieving UISettings colours"sv, ex);
+        log_winrt_error("Error retrieving UISettings colours"sv, ex);
         return {};
     }
 }
@@ -62,7 +61,7 @@ bool fetch_dark_mode_available()
         if (AccessibilitySettings().HighContrast())
             return false;
     } catch (const winrt::hresult_error& ex) {
-        log_winrt_error(u8"Error retrieving HighContrast setting"sv, ex);
+        log_winrt_error("Error retrieving HighContrast setting"sv, ex);
     }
 
     return true;
@@ -141,7 +140,7 @@ private:
                 m_colours_changed_token = m_ui_settings->ColorValuesChanged(
                     [](auto&&, auto&&) { fb2k::inMainThread([] { handle_modern_colours_changed(); }); });
             } catch (const winrt::hresult_error& ex) {
-                log_winrt_error(u8"Error registering UISettings ColorValuesChanged event handler"sv, ex);
+                log_winrt_error("Error registering UISettings ColorValuesChanged event handler"sv, ex);
             }
             break;
         case WM_FONTCHANGE:

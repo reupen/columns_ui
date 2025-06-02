@@ -100,10 +100,9 @@ std::optional<FormatProperties> parse_font_code(
         return FormatProperties{std::move(family_name), *size_points, weight, stretch, style, text_decoration};
     } catch (...) {
         if (wil::ResultFromCaughtException() == DWRITE_E_NOFONT) {
-            console::print(reinterpret_cast<const char*>(
-                fmt::format(u8"Item details – $set_font() error: font family \"{}\" not found",
-                    reinterpret_cast<const char8_t*>(mmh::to_utf8(lf.lfFaceName).c_str()))
-                    .c_str()));
+            console::print(fmt::format(
+                "Item details – $set_font() error: font family \"{}\" not found", mmh::to_utf8(lf.lfFaceName).c_str())
+                    .c_str());
             return {};
         }
 

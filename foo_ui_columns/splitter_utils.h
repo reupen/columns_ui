@@ -28,7 +28,7 @@ void copy_splitter_item_to_clipboard_safe(HWND wnd, const SplitterItem* item)
     try {
         copy_splitter_item_to_clipboard(item);
     } catch (const exception_io& ex) {
-        dark::modeless_info_box(wnd, u8"Error – Copy panel"_pcc, ex.what(), uih::InfoBoxType::Error);
+        dark::modeless_info_box(wnd, "Error – Copy panel", ex.what(), uih::InfoBoxType::Error);
     }
 }
 

@@ -1282,7 +1282,7 @@ bool ItemDetails::s_track_mode_includes_playlist(size_t mode)
 
 uie::container_window_v3_config ItemDetails::get_window_config()
 {
-    uie::container_window_v3_config config(L"columns_ui_item_details_E0D8v091EU8", false);
+    uie::container_window_v3_config config(L"columns_ui_item_details_E0D8v091E", false);
 
     if (m_edge_style == 1)
         config.extended_window_styles |= WS_EX_CLIENTEDGE;

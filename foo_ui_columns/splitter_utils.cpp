@@ -163,7 +163,7 @@ std::unique_ptr<uie::splitter_item_full_v3_impl_t> get_splitter_item_from_clipbo
     try {
         return get_splitter_item_from_clipboard();
     } catch (const exception_io& ex) {
-        dark::modeless_info_box(wnd, u8"Error – Paste panel"_pcc, ex.what(), uih::InfoBoxType::Error);
+        dark::modeless_info_box(wnd, "Error – Paste panel", ex.what(), uih::InfoBoxType::Error);
     }
     return {};
 }

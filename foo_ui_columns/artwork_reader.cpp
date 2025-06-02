@@ -51,7 +51,7 @@ void ArtworkReader::start(ArtworkReaderArgs args)
             artwork_changed = false;
             m_status = ArtworkReaderStatus::Aborted;
         } catch (const std::exception& e) {
-            console::print(u8"Artwork view – unhandled error reading artwork: "_pcc, e.what());
+            console::print("Artwork view – unhandled error reading artwork: ", e.what());
             m_status = ArtworkReaderStatus::Failed;
         }
 
@@ -227,7 +227,7 @@ album_art_data_ptr query_artwork_data(
         throw;
     } catch (exception_album_art_not_found const&) {
     } catch (exception_io const& ex) {
-        fbh::print_to_console(u8"Artwork view – error loading artwork: "_pcc, ex.what());
+        fbh::print_to_console("Artwork view – error loading artwork: ", ex.what());
     }
 
     return {};

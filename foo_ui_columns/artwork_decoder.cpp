@@ -49,10 +49,10 @@ void ArtworkDecoder::decode(
                     const auto new_height = std::min(max_bitmap_size,
                         gsl::narrow_cast<uint32_t>(gsl::narrow_cast<float>(height) * scaling_factor + .5f));
 
-                    const auto message = fmt::format(u8"Artwork panel – image with size {0}×{1} exceeds maximum "
-                                                     u8"size of {2}×{2}, image will be pre-scaled to {3}×{4}",
+                    const auto message = fmt::format("Artwork panel – image with size {0}×{1} exceeds maximum "
+                                                     "size of {2}×{2}, image will be pre-scaled to {3}×{4}",
                         width, height, max_bitmap_size, new_width, new_height);
-                    console::print(reinterpret_cast<const char*>(message.c_str()));
+                    console::print(message.c_str());
 
                     wic_bitmap = wic::resize_bitmap_source(wic_bitmap, new_width, new_height, imaging_factory);
 
@@ -84,7 +84,7 @@ void ArtworkDecoder::decode(
                     return;
 
             } catch (const std::exception& ex) {
-                console::print(u8"Artwork panel – loading image failed: "_pcc, ex.what());
+                console::print("Artwork panel – loading image failed: ", ex.what());
                 return;
             }
 
