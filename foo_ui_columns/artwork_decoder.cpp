@@ -85,7 +85,6 @@ void ArtworkDecoder::decode(
 
             } catch (const std::exception& ex) {
                 console::print("Artwork panel – loading image failed: ", ex.what());
-                return;
             }
 
             fb2k::inMainThread(
