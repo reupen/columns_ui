@@ -14,6 +14,15 @@
 
   (Note that other third-party components can still affect the behaviour.)
 
+### Bug fixes
+
+- A bug where the previously displayed image remained in the Artwork view when
+  an image failed to decode was fixed.
+  [[#1232](https://github.com/reupen/columns_ui/pull/1232)]
+
+  If an image fails to decode, the panel will now display no image. Decoding
+  errors are logged in the console.
+
 ### Internal changes
 
 - Various dependencies were updated.
