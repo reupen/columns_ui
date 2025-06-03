@@ -430,9 +430,6 @@
     <ClCompile Include="vis_gen_host.cpp">
       <Filter>Spectrum analyser</Filter>
     </ClCompile>
-    <ClCompile Include="utf8api.cpp">
-      <Filter>Status bar</Filter>
-    </ClCompile>
     <ClCompile Include="button_items.cpp">
       <Filter>Buttons toolbar</Filter>
     </ClCompile>
@@ -784,9 +781,6 @@
     </ClInclude>
     <ClInclude Include="vis_gen_host.h">
       <Filter>Spectrum analyser</Filter>
-    </ClInclude>
-    <ClInclude Include="utf8api.h">
-      <Filter>Status bar</Filter>
     </ClInclude>
     <ClInclude Include="button_items.h">
       <Filter>Buttons toolbar</Filter>

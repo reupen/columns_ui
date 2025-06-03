@@ -113,7 +113,6 @@ using namespace uih::literals::spx;
 #include "functional.h"
 #include "resource.h"
 
-#include "utf8api.h"
 #include "helpers.h"
 #include "config_items.h"
 #include "gdiplus.h"
