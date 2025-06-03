@@ -395,7 +395,6 @@
     <ClCompile Include="tab_playlist_dd.cpp" />
     <ClCompile Include="tab_status_bar.cpp" />
     <ClCompile Include="user_interface_impl.cpp" />
-    <ClCompile Include="utf8api.cpp" />
     <ClCompile Include="volume.cpp" />
     <ClCompile Include="buttons.cpp" />
     <ClCompile Include="buttons_stock.cpp" />
@@ -508,7 +507,6 @@
     <ClInclude Include="tab_colours.h" />
     <ClInclude Include="tab_fonts.h" />
     <ClInclude Include="tab_text_rendering.h" />
-    <ClInclude Include="utf8api.h" />
     <ClInclude Include="volume.h" />
     <ClInclude Include="seekbar.h" />
     <ClInclude Include="vis_gen_host.h" />
