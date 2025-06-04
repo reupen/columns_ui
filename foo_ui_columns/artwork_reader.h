@@ -65,6 +65,7 @@ public:
     void request(
         const metadb_handle_ptr& handle, OnArtworkLoadedCallback on_artwork_loaded, bool is_from_playback = false);
     bool is_ready() const;
+    ArtworkReaderStatus status() const;
     void reset();
     void abort_current_task();
 

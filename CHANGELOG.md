@@ -1,6 +1,6 @@
 # Change log
 
-## 3.0.0-rc.1
+## 3.0.0-beta.4
 
 ### Features
 
@@ -16,12 +16,16 @@
 
 ### Bug fixes
 
+- A crash that may have occurred in the Artwork view after there was an
+  unexpected error reading artwork was fixed.
+  [[#1237](https://github.com/reupen/columns_ui/pull/1237)]
+
 - A bug where the previously displayed image remained in the Artwork view when
   an image failed to decode was fixed.
   [[#1232](https://github.com/reupen/columns_ui/pull/1232)]
 
-  If an image fails to decode, the panel will now display no image. Decoding
-  errors are logged in the console.
+  If an image fails to decode, the panel will now be blank. Decoding errors are
+  logged in the console.
 
 ### Internal changes
 
