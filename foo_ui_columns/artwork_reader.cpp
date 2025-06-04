@@ -51,8 +51,9 @@ void ArtworkReader::start(ArtworkReaderArgs args)
             artwork_changed = false;
             m_status = ArtworkReaderStatus::Aborted;
         } catch (const std::exception& e) {
-            console::print("Artwork view – unhandled error reading artwork: ", e.what());
+            console::print("Artwork view – unexpected error reading artwork: ", e.what());
             m_status = ArtworkReaderStatus::Failed;
+            artwork_changed = true;
         }
 
         if (m_status != ArtworkReaderStatus::Succeeded)
@@ -176,6 +177,14 @@ bool ArtworkReaderManager::is_ready() const
     return m_current_reader && !m_current_reader->is_running();
 }
 
+ArtworkReaderStatus ArtworkReaderManager::status() const
+{
+    if (!is_ready())
+        return ArtworkReaderStatus::Pending;
+
+    return m_current_reader->status();
+}
+
 void ArtworkReaderManager::reset()
 {
     abort_current_task();
@@ -225,9 +234,9 @@ album_art_data_ptr query_artwork_data(
             return data;
     } catch (const exception_aborted&) {
         throw;
-    } catch (exception_album_art_not_found const&) {
-    } catch (exception_io const& ex) {
-        fbh::print_to_console("Artwork view – error loading artwork: ", ex.what());
+    } catch (const exception_album_art_not_found&) {
+    } catch (const exception_io& ex) {
+        fbh::print_to_console("Artwork view – I/O error reading artwork: ", ex.what());
     }
 
     return {};

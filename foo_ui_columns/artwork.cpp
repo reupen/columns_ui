@@ -555,8 +555,18 @@ void ArtworkPanel::show_stub_image()
     if (!m_artwork_reader || !m_artwork_reader->is_ready())
         return;
 
-    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
-    const album_art_data_ptr data = m_artwork_reader->get_stub_image(artwork_type_id);
+    album_art_data_ptr data;
+
+    if (m_artwork_reader->status() != ArtworkReaderStatus::Failed) {
+        const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+        data = m_artwork_reader->get_stub_image(artwork_type_id);
+    }
+
+    if (!data.is_valid()) {
+        m_artwork_decoder.reset();
+        invalidate_window();
+        return;
+    }
 
     try {
         create_d2d_render_target();
