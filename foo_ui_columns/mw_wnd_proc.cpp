@@ -144,6 +144,19 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         create_child_windows();
 
+        if (HWND focused_wnd = GetFocus(); focused_wnd && IsChild(wnd, focused_wnd)) {
+            std::array<wchar_t, 256> class_name{};
+            GetClassName(focused_wnd, class_name.data(), gsl::narrow<int>(class_name.size()));
+
+            console::print(fmt::format(
+                L"Columns UI – window with class name ‘{}’ was unexpectedly focused during layout creation. "
+                L"The keyboard focus will be reset to a playlist view.",
+                class_name.data())
+                    .c_str());
+
+            g_layout_window.set_focus();
+        }
+
         g_get_msg_hook.register_hook();
 
         if (config_object::g_get_data_bool_simple(standard_config_objects::bool_ui_always_on_top, false))
