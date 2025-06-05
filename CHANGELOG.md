@@ -5,9 +5,15 @@
 ### Features
 
 - The performance of the playlist view was improved when reordering items.
-  [[#1238](https://github.com/reupen/columns_ui/pull/1238)]
+  [[#1239](https://github.com/reupen/columns_ui/pull/1239)]
 
-  This is mainly only for playlists that do not use grouping.
+  This mainly applies to playlists that do not use grouping.
+
+- A workaround was added to ensure a playlist view is focused when foobar2000
+  starts if a misbehaving panel steals the keyboard focus on creation.
+  [[#1240](https://github.com/reupen/columns_ui/pull/1240)]
+
+  A warning is logged in the console if this happens.
 
 ## 3.0.0-beta.4
 
