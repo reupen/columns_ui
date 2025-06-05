@@ -1,5 +1,14 @@
 # Change log
 
+## 3.0.0-beta.5
+
+### Features
+
+- The performance of the playlist view was improved when reordering items.
+  [[#1238](https://github.com/reupen/columns_ui/pull/1238)]
+
+  This is mainly only for playlists that do not use grouping.
+
 ## 3.0.0-beta.4
 
 ### Features
@@ -9,8 +18,8 @@
   and newer. [[#1228](https://github.com/reupen/columns_ui/pull/1228)]
 
   Additionally, in all versions of foobar2000, when foobar2000 is started
-  minimised or closed to the system tray due to it being last closed in that
-  state, the main window is no longer briefly activated.
+  minimised to the system tray due to it being last closed in that state, the
+  main window is no longer briefly activated.
 
   (Note that other third-party components can still affect the behaviour.)
 
@@ -26,6 +35,11 @@
 
   If an image fails to decode, the panel will now be blank. Decoding errors are
   logged in the console.
+
+- The maximum item width calculation when double-clicking on column header
+  dividers for built-in list views (with auto-sizing columns disabled) was
+  updated to use DirectWrite for calculating text width.
+  [[#1236](https://github.com/reupen/columns_ui/pull/1236)]
 
 ### Internal changes
 
