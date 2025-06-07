@@ -5,7 +5,8 @@
 ### Features
 
 - The performance of the playlist view was improved when reordering items.
-  [[#1239](https://github.com/reupen/columns_ui/pull/1239)]
+  [[#1239](https://github.com/reupen/columns_ui/pull/1239),
+  [#1241](https://github.com/reupen/columns_ui/pull/1241)]
 
   This mainly applies to playlists that do not use grouping.
 
