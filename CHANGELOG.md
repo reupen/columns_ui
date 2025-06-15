@@ -8,6 +8,12 @@
   Text Tuner did not immediately take effect after clicking the final ‘Finish’
   button was fixed. [[#1248](https://github.com/reupen/columns_ui/pull/1248)]
 
+### Internal changes
+
+- Thread descriptions were set for some worker threads on Windows 10 and newer
+  for debugging purposes.
+  [[#1248](https://github.com/reupen/columns_ui/pull/1248)]
+
 ## 3.0.0-beta.5
 
 ### Features

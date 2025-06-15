@@ -97,6 +97,7 @@ public:
 DWORD ArtworkReader::on_thread()
 {
     TRACK_CALL_TEXT("artwork_reader_ng_t::on_thread");
+    (void)mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] Playlist view artwork reader");
 
     bool b_aborted = false;
     DWORD ret = -1;
