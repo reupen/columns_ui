@@ -127,7 +127,17 @@ public:
         m_window.reset();
     }
 
+    void on_cleartype_parameters_changed()
+    {
+        if (m_window && !m_pending_cleartype_parameters_changed) {
+            SetTimer(m_window->get_wnd(), TIMER_CLEARTYPE_PARAMETERS_CHANGED, 50, nullptr);
+            m_pending_cleartype_parameters_changed = true;
+        }
+    }
+
 private:
+    static constexpr auto TIMER_CLEARTYPE_PARAMETERS_CHANGED = 1000;
+
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
         switch (msg) {
@@ -181,7 +191,7 @@ private:
                 // The ClearType tuner seems to send a WM_SETTINGCHANGE message only
                 // for SPI_SETFONTSMOOTHINGORIENTATION (and at the end of the wizard at that)
                 cleartype_enabled_cached.reset();
-                g_font_manager_data.dispatch_rendering_options_changed();
+                on_cleartype_parameters_changed();
                 break;
             case SPI_SETICONTITLELOGFONT:
                 if (!g_font_manager_data.m_common_items_entry
@@ -214,6 +224,18 @@ private:
             }
             }
             break;
+        case WM_TIMER:
+            if (wp != TIMER_CLEARTYPE_PARAMETERS_CHANGED)
+                break;
+
+            if (m_pending_cleartype_parameters_changed) {
+                m_pending_cleartype_parameters_changed = false;
+                console::print("Columns UI – detected a change to the system ClearType parameters");
+                g_font_manager_data.dispatch_all_fonts_changed();
+            }
+
+            KillTimer(wnd, TIMER_CLEARTYPE_PARAMETERS_CHANGED);
+            break;
         case WM_NCDESTROY:
             if (m_colours_changed_token) {
                 m_ui_settings->ColorValuesChanged(m_colours_changed_token);
@@ -228,13 +250,85 @@ private:
     std::unique_ptr<uie::container_window_v3> m_window;
     std::optional<UISettings> m_ui_settings;
     winrt::event_token m_colours_changed_token;
+    bool m_pending_cleartype_parameters_changed{};
 };
 
 AppearanceMessageWindow message_window;
 
+namespace registry_watcher {
+
+wil::shared_event shutting_down_event;
+std::optional<std::jthread> thread;
+
+void start()
+{
+    if (thread)
+        return;
+
+    try {
+        shutting_down_event.create(wil::EventOptions::ManualReset, nullptr);
+
+        thread = std::jthread([shutting_down_event = shutting_down_event](auto&&... args) {
+            TRACK_CALL_TEXT("cui::system_appearance_manager::registry_watcher::thread");
+
+            (void)mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] DirectWrite registry watcher");
+
+            try {
+                const auto hkey = wil::reg::open_unique_key(
+                    HKEY_CURRENT_USER, LR"(Software\Microsoft\Avalon.Graphics)", wil::reg::key_access::read);
+                wil::unique_event change_event(wil::EventOptions::None);
+
+                auto subscribe = [&] {
+                    return RegNotifyChangeKeyValue(hkey.get(), true,
+                        REG_NOTIFY_CHANGE_NAME | REG_NOTIFY_CHANGE_LAST_SET, change_event.get(), true);
+                };
+
+                THROW_IF_WIN32_ERROR(subscribe());
+
+                std::array events = {change_event.get(), shutting_down_event.get()};
+
+                while (true) {
+                    const auto wait_result = WaitForMultipleObjectsEx(2, events.data(), false, INFINITE, true);
+
+                    switch (wait_result) {
+                    case WAIT_OBJECT_0:
+                        if (core_api::are_services_available())
+                            fb2k::inMainThread([] { message_window.on_cleartype_parameters_changed(); });
+
+                        THROW_IF_WIN32_ERROR(subscribe());
+                        break;
+                    case WAIT_IO_COMPLETION:
+                        continue;
+                    default:
+                        return;
+                    }
+                }
+            }
+            CATCH_LOG()
+        });
+    }
+    CATCH_LOG()
+}
+
+void shut_down()
+{
+    if (shutting_down_event)
+        shutting_down_event.SetEvent();
+
+    thread.reset();
+
+    shutting_down_event.reset();
+}
+
+} // namespace registry_watcher
+
 class InitQuit : public initquit {
     void on_init() override {}
-    void on_quit() noexcept override { message_window.deinitialise(); }
+    void on_quit() noexcept override
+    {
+        message_window.deinitialise();
+        registry_watcher::shut_down();
+    }
 };
 
 initquit_factory_t<InitQuit> _;
@@ -243,7 +337,11 @@ initquit_factory_t<InitQuit> _;
 
 void initialise()
 {
+    if (core_api::is_shutting_down())
+        return;
+
     message_window.initialise();
+    registry_watcher::start();
 }
 
 std::optional<ModernColours> get_modern_colours()

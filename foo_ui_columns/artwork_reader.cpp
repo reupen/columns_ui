@@ -40,6 +40,7 @@ void ArtworkReader::start(ArtworkReaderArgs args)
     m_thread = std::jthread([this, args{std::move(args)}] {
         TRACK_CALL_TEXT("cui::artwork_panel::ArtworkReader::thread");
         SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+        (void)mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] Artwork view reader");
 
         bool artwork_changed{};
 
