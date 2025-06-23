@@ -40,7 +40,7 @@ private:
 
     HWND m_wnd{};
     HWND m_rendering_mode_combobox{};
-    HWND m_force_greyscale_antialiasing_checkbox{};
+    HWND m_use_greyscale_antialiasing_checkbox{};
     HWND m_use_colour_glyphs{};
     HWND m_use_alternative_emoji_font_selection_checkbox{};
     HWND m_colour_emoji_family_combobox{};
@@ -57,7 +57,7 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_INITDIALOG: {
         m_wnd = wnd;
         m_rendering_mode_combobox = GetDlgItem(wnd, IDC_RENDERING_MODE);
-        m_force_greyscale_antialiasing_checkbox = GetDlgItem(wnd, IDC_FORCE_GREYSCALE_ANTIALIASING);
+        m_use_greyscale_antialiasing_checkbox = GetDlgItem(wnd, IDC_USE_GREYSCALE_ANTIALIASING);
         m_use_colour_glyphs = GetDlgItem(wnd, IDC_USE_COLOUR_GLYPHS);
 
         for (auto&& [value, name] : rendering_modes) {
@@ -85,7 +85,7 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
 
         Button_SetCheck(
-            m_force_greyscale_antialiasing_checkbox, fonts::force_greyscale_antialiasing ? BST_CHECKED : BST_UNCHECKED);
+            m_use_greyscale_antialiasing_checkbox, fonts::use_greyscale_antialiasing ? BST_CHECKED : BST_UNCHECKED);
         Button_SetCheck(
             m_use_colour_glyphs, are_colour_glyphs_supported && fonts::use_colour_glyphs ? BST_CHECKED : BST_UNCHECKED);
 
@@ -171,9 +171,8 @@ INT_PTR TextRenderingTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             g_font_manager_data.dispatch_font_fallback_changed();
             break;
         }
-        case IDC_FORCE_GREYSCALE_ANTIALIASING: {
-            fonts::force_greyscale_antialiasing
-                = Button_GetCheck(m_force_greyscale_antialiasing_checkbox) == BST_CHECKED;
+        case IDC_USE_GREYSCALE_ANTIALIASING: {
+            fonts::use_greyscale_antialiasing = Button_GetCheck(m_use_greyscale_antialiasing_checkbox) == BST_CHECKED;
             g_font_manager_data.dispatch_rendering_options_changed();
             break;
         }

@@ -15,7 +15,7 @@ void ArtworkDecoder::decode(
             stop_token{m_current_task->stop_source.get_token()}, task{std::weak_ptr{m_current_task}}]() noexcept {
             TRACK_CALL_TEXT("cui::artwork_panel::ArtworkDecoder::async_task");
 
-            wil::com_ptr_t<ID2D1Bitmap> d2d_bitmap;
+            wil::com_ptr<ID2D1Bitmap> d2d_bitmap;
 
             try {
                 if (stop_token.stop_requested())

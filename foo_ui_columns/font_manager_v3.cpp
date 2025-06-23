@@ -11,10 +11,10 @@ namespace {
 
 auto create_rendering_options()
 {
-    const auto resolved_force_greyscale_antialiasing
-        = force_greyscale_antialiasing.get() || !system_appearance_manager::is_cleartype_enabled();
+    const auto resolved_use_greyscale_antialiasing
+        = use_greyscale_antialiasing.get() || !system_appearance_manager::is_cleartype_enabled();
     return fb2k::service_new<rendering_options_impl>(
-        get_rendering_mode(), resolved_force_greyscale_antialiasing, use_colour_glyphs.get());
+        get_rendering_mode(), resolved_use_greyscale_antialiasing, use_colour_glyphs.get());
 }
 
 } // namespace
@@ -66,15 +66,14 @@ public:
         return log_font_for_scaling_factor(scaling_factor);
     }
 
-    pfc::com_ptr_t<IDWriteTextFormat> create_text_format(const wchar_t* locale_name = L"") noexcept final
+    HRESULT create_text_format(IDWriteTextFormat** text_format_out, const wchar_t* locale_name = L"") noexcept final
     {
         uih::direct_write::Context::Ptr context;
 
         try {
             context = uih::direct_write::Context::s_create();
         } catch (...) {
-            LOG_CAUGHT_EXCEPTION();
-            return {};
+            return LOG_CAUGHT_EXCEPTION();
         }
 
         const auto factory_7 = context->factory().try_query<IDWriteFactory7>();
@@ -93,53 +92,55 @@ public:
         };
 
         const auto create_text_format = [&](auto&& create_family_name) {
-            wil::com_ptr_t<IDWriteTextFormat> text_format;
+            wil::com_ptr<IDWriteTextFormat> text_format;
 
-            try {
-                if (factory_7 && !m_axis_values.empty()) {
-                    wil::com_ptr<IDWriteTextFormat3> text_format_3;
-                    THROW_IF_FAILED(factory_7->CreateTextFormat(create_family_name, nullptr, m_axis_values.data(),
-                        gsl::narrow<uint32_t>(m_axis_values.size()), size(), locale_name, &text_format_3));
-                    text_format = std::move(text_format_3);
-                } else {
-                    THROW_IF_FAILED(context->factory()->CreateTextFormat(
-                        create_family_name, nullptr, weight(), style(), stretch(), size(), locale_name, &text_format));
-                }
-
-                set_font_fallback(text_format);
-
-                return text_format;
+            if (factory_7 && !m_axis_values.empty()) {
+                wil::com_ptr<IDWriteTextFormat3> text_format_3;
+                THROW_IF_FAILED(factory_7->CreateTextFormat(create_family_name, nullptr, m_axis_values.data(),
+                    gsl::narrow<uint32_t>(m_axis_values.size()), size(), locale_name, &text_format_3));
+                text_format = std::move(text_format_3);
+            } else {
+                THROW_IF_FAILED(context->factory()->CreateTextFormat(
+                    create_family_name, nullptr, weight(), style(), stretch(), size(), locale_name, &text_format));
             }
-            CATCH_LOG()
 
-            return wil::com_ptr<IDWriteTextFormat>();
+            set_font_fallback(text_format);
+
+            return text_format;
         };
 
-        auto text_format = create_text_format(family_name());
+        wil::com_ptr<IDWriteTextFormat> text_format;
 
-        if (!text_format)
-            text_format = create_text_format(L"");
+        try {
+            text_format = create_text_format(family_name());
+        }
+        CATCH_LOG();
 
-        pfc::com_ptr_t<IDWriteTextFormat> pfc_text_format;
+        if (!text_format) {
+            try {
+                text_format = create_text_format(L"");
+            } catch (...) {
+                return LOG_CAUGHT_EXCEPTION();
+            }
+        }
 
-        pfc_text_format.attach(text_format.detach());
-
-        return pfc_text_format;
+        *text_format_out = text_format.detach();
+        return S_OK;
     }
 
-    [[nodiscard]] pfc::com_ptr_t<IDWriteFontFallback> font_fallback() noexcept override
+    [[nodiscard]] HRESULT create_font_fallback(IDWriteFontFallback** font_fallback_out) noexcept override
     {
+        if (!m_emoji_font_selection_config)
+            return S_FALSE;
+
         try {
             const auto context = uih::direct_write::Context::s_create();
             auto font_fallback = context->create_emoji_font_fallback(*m_emoji_font_selection_config);
-
-            pfc::com_ptr_t<IDWriteFontFallback> pfc_font_fallback;
-            pfc_font_fallback.attach(font_fallback.detach());
-            return pfc_font_fallback;
+            *font_fallback_out = font_fallback.detach();
+            return S_OK;
+        } catch (...) {
+            return LOG_CAUGHT_EXCEPTION();
         }
-        CATCH_LOG()
-
-        return {};
     }
 
     rendering_options::ptr rendering_options() noexcept override { return m_rendering_options; }
@@ -241,10 +242,10 @@ public:
         return create_rendering_options();
     }
 
-    [[nodiscard]] pfc::com_ptr_t<IDWriteFontFallback> get_default_font_fallback() noexcept override
+    [[nodiscard]] HRESULT get_default_font_fallback(IDWriteFontFallback** font_fallback_out) noexcept override
     {
         if (!use_alternative_emoji_font_selection)
-            return {};
+            return S_FALSE;
 
         const auto emoji_font_selection_config = uih::direct_write::EmojiFontSelectionConfig{
             mmh::to_utf16(colour_emoji_font_family.get()), mmh::to_utf16(monochrome_emoji_font_family.get())};
@@ -252,14 +253,11 @@ public:
         try {
             const auto context = uih::direct_write::Context::s_create();
             auto font_fallback = context->create_emoji_font_fallback(emoji_font_selection_config);
-
-            pfc::com_ptr_t<IDWriteFontFallback> pfc_font_fallback;
-            pfc_font_fallback.attach(font_fallback.detach());
-            return pfc_font_fallback;
+            *font_fallback_out = font_fallback.detach();
+            return S_OK;
+        } catch (...) {
+            return LOG_CAUGHT_EXCEPTION();
         }
-        CATCH_LOG()
-
-        return {};
     }
 };
 

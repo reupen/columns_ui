@@ -24,7 +24,7 @@ class FontsDataSet : public fcl::dataset {
         identifier_global_labels,
         identifier_client_entries,
         identifier_rendering_mode,
-        identifier_force_greyscale_antialiasing,
+        identifier_use_greyscale_antialiasing,
         identifier_use_colour_glyphs,
         identifier_use_alternative_emoji_font_selection,
         identifier_colour_emoji_font_family,
@@ -63,7 +63,7 @@ class FontsDataSet : public fcl::dataset {
                 identifier_client_entries, mem.m_data.get_ptr(), gsl::narrow<uint32_t>(mem.m_data.get_size()));
         }
         out.write_item(identifier_rendering_mode, fonts::rendering_mode);
-        out.write_item(identifier_force_greyscale_antialiasing, fonts::force_greyscale_antialiasing);
+        out.write_item(identifier_use_greyscale_antialiasing, fonts::use_greyscale_antialiasing);
         out.write_item(identifier_use_colour_glyphs, fonts::use_colour_glyphs);
         out.write_item(identifier_use_alternative_emoji_font_selection, fonts::use_alternative_emoji_font_selection);
         out.write_item(identifier_colour_emoji_font_family, fonts::colour_emoji_font_family);
@@ -130,8 +130,8 @@ class FontsDataSet : public fcl::dataset {
             case identifier_rendering_mode:
                 reader.read_item(fonts::rendering_mode);
                 break;
-            case identifier_force_greyscale_antialiasing:
-                reader.read_item(fonts::force_greyscale_antialiasing);
+            case identifier_use_greyscale_antialiasing:
+                reader.read_item(fonts::use_greyscale_antialiasing);
                 break;
             case identifier_use_colour_glyphs:
                 reader.read_item(fonts::use_colour_glyphs);
