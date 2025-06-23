@@ -171,7 +171,6 @@
   [#1167](https://github.com/reupen/columns_ui/pull/1167)]
 
   This replaces the default DirectWrite emoji font selection logic to:
-
   - enable correct handling of emoji variation selectors for emojis that have
     both text (monochrome) and emoji presentation modes
   - use the default presentation mode of emojis as defined in the Unicode
@@ -624,7 +623,6 @@
 
 - Grouping in the built-in playlist view was updated
   [[#770](https://github.com/reupen/columns_ui/pull/770)]:
-
   - each grouping level is no longer indented
   - padding either side of artwork was reduced
   - artwork reflection is now disabled by default
@@ -1421,7 +1419,6 @@
   On recent versions of Windows 10, this adds support for WebP and HEIF images
   if the required codecs are installed. These are usually installed
   automatically, but can also be manually installed from the Microsoft Store:
-
   - [WebP image extensions](https://www.microsoft.com/en-gb/p/webp-image-extensions/9pg2dk419drg)
   - [HEIF image extensions](https://www.microsoft.com/en-gb/p/heif-image-extensions/9pmmsr1cgpwg)
 
@@ -1498,7 +1495,6 @@
   added. [[#262](https://github.com/reupen/columns_ui/pull/262)]
 
 - Various default settings were updated:
-
   - All built-in panels now have a default edge style of ‘none’.
     [[#242]](https://github.com/reupen/columns_ui/pull/242)
 
