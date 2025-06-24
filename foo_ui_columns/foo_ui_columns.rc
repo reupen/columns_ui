@@ -723,7 +723,7 @@ BEGIN
     LTEXT           "DirectWrite text rendering",IDC_TITLE1,7,4,273,16
     LTEXT           "Rendering mode",IDC_STATIC,7,28,101,8
     COMBOBOX        IDC_RENDERING_MODE,7,39,172,12,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    CONTROL         "Force greyscale anti-aliasing",IDC_FORCE_GREYSCALE_ANTIALIASING,
+    CONTROL         "Use greyscale anti-aliasing",IDC_USE_GREYSCALE_ANTIALIASING,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,62,119,10
     CONTROL         "Use colour glyphs when available",IDC_USE_COLOUR_GLYPHS,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,81,313,10

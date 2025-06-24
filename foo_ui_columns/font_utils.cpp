@@ -215,15 +215,14 @@ SystemFont get_menu_font_for_dpi(unsigned dpi)
 std::optional<uih::direct_write::TextFormat> get_text_format(
     const uih::direct_write::Context::Ptr& context, const font::ptr& font_api, bool set_defaults)
 {
-    if (const auto text_format = font_api->create_wil_text_format()) {
+    try {
+        const auto text_format = font_api->create_wil_text_format();
         const auto rendering_opts = font_api->rendering_options();
-
-        try {
-            return context->wrap_text_format(text_format, rendering_opts->rendering_mode(),
-                rendering_opts->force_greyscale_antialiasing(), rendering_opts->use_colour_glyphs(), set_defaults);
-        }
-        CATCH_LOG()
+        return context->wrap_text_format(text_format, rendering_opts->rendering_mode(),
+            rendering_opts->use_greyscale_antialiasing(), rendering_opts->use_colour_glyphs(), set_defaults);
     }
+    CATCH_LOG()
+
     return {};
 }
 

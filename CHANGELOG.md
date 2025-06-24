@@ -2,6 +2,13 @@
 
 ## 3.0.0-rc-1
 
+### Features
+
+- The ‘Force greyscale anti-aliasing’ text rendering option was renamed ‘Use
+  greyscale anti-aliasing’ and now uses the DirectWrite explicit greyscale
+  anti-aliasing mode (instead of using ClearType in greyscale mode).
+  [[#1255](https://github.com/reupen/columns_ui/pull/1255)]
+
 ### Bug fixes
 
 - A problem where DirectWrite-specific changes made in the Windows ClearType
