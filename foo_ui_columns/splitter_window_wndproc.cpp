@@ -35,7 +35,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         break;
     case WM_SHOWWINDOW:
         if (wp == TRUE && lp == 0) {
-            const auto count = m_panels.get_count();
+            const auto count = m_panels.size();
             for (size_t n = 0; n < count; n++) {
                 ShowWindow(m_panels[n]->m_wnd_child, SW_SHOWNORMAL);
                 ShowWindow(m_panels[n]->m_wnd, SW_SHOWNORMAL);
@@ -60,7 +60,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         lpmmi->ptMaxTrackSize.y = get_orientation() == vertical ? 0 : MAXLONG;
         lpmmi->ptMaxTrackSize.x = get_orientation() == horizontal ? 0 : MAXLONG;
 
-        const auto count = m_panels.get_count();
+        const auto count = m_panels.size();
         bool b_found = false;
 
         for (size_t n = 0; n < count; n++) {
@@ -173,92 +173,90 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     } break;
     case WM_LBUTTONDOWN:
     case WM_MOUSEMOVE: {
-        if (m_panels.get_count()) {
-            POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
-            HWND child = RealChildWindowFromPoint(wnd, pt);
-            if (child == wnd) {
-                size_t p_panel = -1;
-                bool b_have_next = false;
-                bool b_on_divider = false;
-                if (m_panel_dragging_valid) {
-                    b_on_divider = true;
-                    p_panel = m_panel_dragging;
-                } else
-                    b_on_divider = find_by_divider_pt(pt, p_panel);
+        if (m_panels.empty())
+            return 0;
 
-                if (b_on_divider) {
-                    if (p_panel < m_panels.get_count()) {
-                        b_have_next = (p_panel + 1 < m_panels.get_count());
-                    }
+        POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+        HWND child = RealChildWindowFromPoint(wnd, pt);
+        if (child == wnd) {
+            size_t p_panel = -1;
+            bool b_have_next = false;
+            bool b_on_divider = false;
+            if (m_panel_dragging_valid) {
+                b_on_divider = true;
+                p_panel = m_panel_dragging;
+            } else
+                b_on_divider = find_by_divider_pt(pt, p_panel);
 
-                    if (msg == WM_MOUSEMOVE
-                        && ((is_index_valid(p_panel) && m_panels[p_panel]->m_autohide)
-                            || (b_have_next && m_panels[p_panel + 1]->m_autohide))) {
-                        if (cfg_sidebar_use_custom_show_delay && !cfg_sidebar_show_delay) {
-                            if ((is_index_valid(p_panel))) {
-                                start_autohide_dehide(p_panel);
-                            }
-                        } else {
-                            TRACKMOUSEEVENT tme{};
+            if (b_on_divider) {
+                if (p_panel < m_panels.size()) {
+                    b_have_next = (p_panel + 1 < m_panels.size());
+                }
+
+                if (msg == WM_MOUSEMOVE
+                    && ((is_index_valid(p_panel) && m_panels[p_panel]->m_autohide)
+                        || (b_have_next && m_panels[p_panel + 1]->m_autohide))) {
+                    if (cfg_sidebar_use_custom_show_delay && !cfg_sidebar_show_delay) {
+                        if ((is_index_valid(p_panel))) {
+                            start_autohide_dehide(p_panel);
+                        }
+                    } else {
+                        TRACKMOUSEEVENT tme{};
+                        tme.cbSize = sizeof(TRACKMOUSEEVENT);
+                        tme.dwFlags = TME_QUERY;
+                        tme.hwndTrack = wnd;
+                        _TrackMouseEvent(&tme);
+
+                        if (!(tme.dwFlags & TME_HOVER)) {
+                            memset(&tme, 0, sizeof(TRACKMOUSEEVENT));
                             tme.cbSize = sizeof(TRACKMOUSEEVENT);
-                            tme.dwFlags = TME_QUERY;
                             tme.hwndTrack = wnd;
+                            tme.dwHoverTime
+                                = cfg_sidebar_use_custom_show_delay ? cfg_sidebar_show_delay : HOVER_DEFAULT;
+                            tme.dwFlags = TME_HOVER;
                             _TrackMouseEvent(&tme);
-
-                            if (!(tme.dwFlags & TME_HOVER)) {
-                                memset(&tme, 0, sizeof(TRACKMOUSEEVENT));
-                                tme.cbSize = sizeof(TRACKMOUSEEVENT);
-                                tme.hwndTrack = wnd;
-                                tme.dwHoverTime
-                                    = cfg_sidebar_use_custom_show_delay ? cfg_sidebar_show_delay : HOVER_DEFAULT;
-                                tme.dwFlags = TME_HOVER;
-                                _TrackMouseEvent(&tme);
-                            }
                         }
                     }
                 }
-
-                if (b_on_divider && is_index_valid(p_panel) && can_resize_divider(p_panel)) {
-                    SetCursor(LoadCursor(nullptr, get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS));
-
-                    if (msg == WM_LBUTTONDOWN) {
-                        save_sizes();
-
-                        m_panel_dragging = p_panel;
-                        SetCapture(wnd);
-
-                        m_last_position = (get_orientation() == vertical ? pt.y : pt.x);
-                        m_panel_dragging_valid = true;
-                    }
-                } else {
-                    if (!(wp & MK_LBUTTON))
-                        SetCursor(LoadCursor(nullptr, IDC_ARROW));
-                    m_panel_dragging_valid = false;
-                }
             }
 
-            if (m_panel_dragging_valid && wp & MK_LBUTTON && is_index_valid(m_panel_dragging)) {
-                int delta = (get_orientation() == vertical ? pt.y : pt.x) - m_last_position;
-                auto& p_panel = m_panels[m_panel_dragging];
+            if (b_on_divider && is_index_valid(p_panel) && can_resize_divider(p_panel)) {
+                SetCursor(LoadCursor(nullptr, get_orientation() == horizontal ? IDC_SIZEWE : IDC_SIZENS));
 
-                if (p_panel->m_hidden && delta) {
-                    p_panel->m_hidden = false;
-                    p_panel->m_size = 0;
-                    get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
+                if (msg == WM_LBUTTONDOWN) {
+                    save_sizes();
+
+                    m_panel_dragging = p_panel;
+                    SetCapture(wnd);
+
+                    m_last_position = (get_orientation() == vertical ? pt.y : pt.x);
+                    m_panel_dragging_valid = true;
                 }
-
-                int delta_changed = override_size(m_panel_dragging, delta);
-                m_last_position = (get_orientation() == vertical ? pt.y : pt.x) + delta_changed;
-                on_size_changed();
-                if (delta + delta_changed)
-                    start_autohide_dehide(m_panel_dragging);
+            } else {
+                if (!(wp & MK_LBUTTON))
+                    SetCursor(LoadCursor(nullptr, IDC_ARROW));
+                m_panel_dragging_valid = false;
             }
         }
-        // msg_last = msg;
-        // lp_last = lp;
-        // wp_last = wp;
 
-    } break;
+        if (m_panel_dragging_valid && wp & MK_LBUTTON && is_index_valid(m_panel_dragging)) {
+            int delta = (get_orientation() == vertical ? pt.y : pt.x) - m_last_position;
+            auto& p_panel = m_panels[m_panel_dragging];
+
+            if (p_panel->m_hidden && delta) {
+                p_panel->m_hidden = false;
+                p_panel->m_size = 0;
+                get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
+            }
+
+            int delta_changed = override_size(m_panel_dragging, delta);
+            m_last_position = (get_orientation() == vertical ? pt.y : pt.x) + delta_changed;
+            on_size_changed();
+            if (delta + delta_changed)
+                start_autohide_dehide(m_panel_dragging);
+        }
+        break;
+    }
     case WM_LBUTTONDBLCLK: {
         POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
         HWND child = ChildWindowFromPoint(wnd, pt);
@@ -279,7 +277,8 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 }
             }
         }
-    } break;
+        break;
+    }
     case WM_LBUTTONUP:
         if (m_panel_dragging_valid) {
             m_panel_dragging_valid = false;

@@ -225,28 +225,4 @@ uie::splitter_item_full_v2_t* FlatSplitterPanel::Panel::create_splitter_item(boo
     return ret;
 }
 
-bool FlatSplitterPanel::PanelList::find_by_wnd_child(HWND wnd, size_t& p_out)
-{
-    const auto count = get_count();
-    for (size_t n = 0; n < count; n++) {
-        if (get_item(n)->m_wnd_child == wnd) {
-            p_out = n;
-            return true;
-        }
-    }
-    return false;
-}
-
-bool FlatSplitterPanel::PanelList::find_by_wnd(HWND wnd, size_t& p_out)
-{
-    const auto count = get_count();
-    for (size_t n = 0; n < count; n++) {
-        if (get_item(n)->m_wnd == wnd) {
-            p_out = n;
-            return true;
-        }
-    }
-    return false;
-}
-
 } // namespace cui::panels::splitter

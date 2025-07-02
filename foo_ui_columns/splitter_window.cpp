@@ -11,34 +11,37 @@ wil::unique_hfont FlatSplitterPanel::g_font_menu_vertical;
 
 void FlatSplitterPanel::insert_panel(size_t index, const uie::splitter_item_t* p_item)
 {
-    if (index <= m_panels.get_count()) {
-        auto temp = std::make_shared<Panel>();
-        temp->set_from_splitter_item(p_item);
-        m_panels.insert_item(temp, index);
+    if (index > m_panels.size())
+        return;
 
-        if (get_wnd()) {
-            refresh_children();
-        }
-    }
+    auto temp = std::make_shared<Panel>();
+    temp->set_from_splitter_item(p_item);
+    m_panels.insert(m_panels.begin() + index, std::move(temp));
+
+    if (get_wnd())
+        refresh_children();
 }
 
 void FlatSplitterPanel::replace_panel(size_t index, const uie::splitter_item_t* p_item)
 {
-    if (index < m_panels.get_count()) {
-        if (get_wnd())
-            m_panels[index]->destroy();
-        auto temp = std::make_shared<Panel>();
-        temp->set_from_splitter_item(p_item);
-        m_panels.replace_item(index, temp);
+    if (index >= m_panels.size())
+        return;
 
-        if (get_wnd())
-            refresh_children();
-    }
+    if (get_wnd())
+        m_panels[index]->destroy();
+
+    auto temp = std::make_shared<Panel>();
+    temp->set_from_splitter_item(p_item);
+
+    m_panels[index] = std::move(temp);
+
+    if (get_wnd())
+        refresh_children();
 }
 
 void FlatSplitterPanel::destroy_children()
 {
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     for (size_t n = 0; n < count; n++) {
         std::shared_ptr<Panel> pal = m_panels[n];
         if (pal->m_child.is_valid()) {
@@ -58,9 +61,19 @@ void FlatSplitterPanel::destroy_children()
     // m_wnd = NULL;
 }
 
+std::vector<FlatSplitterPanel::Panel::Ptr>::iterator FlatSplitterPanel::find_panel_by_container_wnd(HWND wnd)
+{
+    return std::ranges::find_if(m_panels, [wnd](const Panel::Ptr& panel) { return panel->m_wnd == wnd; });
+}
+
+std::vector<FlatSplitterPanel::Panel::Ptr>::iterator FlatSplitterPanel::find_panel_by_panel_wnd(HWND wnd)
+{
+    return std::ranges::find_if(m_panels, [wnd](const Panel::Ptr& panel) { return panel->m_wnd_child == wnd; });
+}
+
 void FlatSplitterPanel::refresh_children()
 {
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     pfc::array_t<bool> new_items;
     new_items.set_count(count);
     new_items.fill_null();
@@ -165,11 +178,11 @@ void FlatSplitterPanel::on_size_changed(unsigned width, unsigned height)
 {
     pfc::list_t<unsigned> sizes;
     get_panels_sizes(width, height, sizes);
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
 
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 
-    HDWP dwp = BeginDeferWindowPos(gsl::narrow<int>(m_panels.get_count()));
+    HDWP dwp = BeginDeferWindowPos(gsl::narrow<int>(m_panels.size()));
     if (dwp) {
         unsigned size_cumulative = 0;
         for (size_t n = 0; n < count; n++) {
@@ -200,27 +213,25 @@ void FlatSplitterPanel::on_size_changed()
 
 bool FlatSplitterPanel::find_by_divider_pt(POINT& pt, size_t& p_out)
 {
-    const auto count = m_panels.get_count();
-    for (size_t n = 0; n < count; n++) {
-        std::shared_ptr<Panel> p_item = m_panels.get_item(n);
+    for (const auto [n, p_item] : ranges::views::enumerate(m_panels)) {
+        if (!p_item->m_wnd_child)
+            continue;
 
-        if (p_item->m_wnd_child) {
-            RECT rc_area;
-            GetRelativeRect(p_item->m_wnd_child, m_wnd, &rc_area);
+        RECT rc_area;
+        GetRelativeRect(p_item->m_wnd_child, m_wnd, &rc_area);
 
-            if (PtInRect(&rc_area, pt))
-                return false;
+        if (PtInRect(&rc_area, pt))
+            return false;
 
-            bool in_divider = false;
-            if (get_orientation() == vertical) {
-                in_divider = (pt.y >= rc_area.bottom) && (pt.y < (rc_area.bottom + (LONG)get_panel_divider_size(n)));
-            } else {
-                in_divider = pt.x >= rc_area.right && pt.x < (rc_area.right + (LONG)get_panel_divider_size(n));
-            }
-            if (in_divider) {
-                p_out = n;
-                return true;
-            }
+        bool in_divider = false;
+        if (get_orientation() == vertical) {
+            in_divider = (pt.y >= rc_area.bottom) && (pt.y < (rc_area.bottom + (LONG)get_panel_divider_size(n)));
+        } else {
+            in_divider = pt.x >= rc_area.right && pt.x < (rc_area.right + (LONG)get_panel_divider_size(n));
+        }
+        if (in_divider) {
+            p_out = n;
+            return true;
         }
     }
     return false;
@@ -240,7 +251,7 @@ void FlatSplitterPanel::save_sizes(unsigned width, unsigned height)
 {
     pfc::list_t<unsigned> sizes;
     get_panels_sizes(width, height, sizes);
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
 
     for (size_t n = 0; n < count; n++) {
         if (!m_panels[n]->m_hidden)
@@ -264,7 +275,7 @@ void FlatSplitterPanel::get_panels_sizes(
         unsigned parts;
     };
 
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
 
     if (count) {
         pfc::array_t<t_size_info> size_info;
@@ -387,7 +398,7 @@ bool FlatSplitterPanel::can_resize_divider(size_t index) const
 {
     size_t count_left = 0;
     size_t count_right = 0;
-    for (size_t i = 0, count = m_panels.get_count(); i < count; i++) {
+    for (size_t i = 0, count = m_panels.size(); i < count; i++) {
         if (can_resize_panel(i)) {
             if (i <= index)
                 count_left++;
@@ -421,7 +432,7 @@ bool FlatSplitterPanel::can_resize_panel(size_t index) const
     return true;
 }
 
-int FlatSplitterPanel::override_size(size_t& panel, int delta)
+int FlatSplitterPanel::override_size(const size_t panel, const int delta)
 {
     // console::formatter() << "Overriding " << panel << " by " << delta;
     struct t_min_max_info {
@@ -431,7 +442,7 @@ int FlatSplitterPanel::override_size(size_t& panel, int delta)
         // unsigned caption_height;
     };
 
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     if (count) {
         save_sizes();
         if (panel + 1 < count) {
@@ -642,7 +653,7 @@ void FlatSplitterPanel::start_autohide_dehide(size_t p_panel, bool b_next_too)
 {
     bool b_have_next = b_next_too && is_index_valid(p_panel + 1);
     auto& panel_before = m_panels[p_panel];
-    auto& panel_after = b_have_next ? m_panels[p_panel + 1] : Panel::null_ptr;
+    const auto panel_after = b_have_next ? m_panels[p_panel + 1] : Panel::Ptr{};
     if ((panel_before->m_autohide && !panel_before->m_container.m_hook_active)
         || (b_have_next && panel_after->m_autohide && !panel_after->m_container.m_hook_active)) {
         bool a1 = false;
@@ -687,7 +698,7 @@ bool FlatSplitterPanel::is_point_ours(
             p_hierarchy.add_item(this);
             return true;
         }
-        size_t count = m_panels.get_count();
+        size_t count = m_panels.size();
         for (size_t i = 0; i < count; i++) {
             uie::splitter_window_v2_ptr sptr;
             if (m_panels[i]->m_child.is_valid()) {
@@ -714,7 +725,7 @@ bool FlatSplitterPanel::is_point_ours(
 
 int FlatSplitterPanel::get_panel_divider_size(size_t index) const
 {
-    return index + 1 < m_panels.get_count() ? settings::custom_splitter_divider_width : 0;
+    return index + 1 < m_panels.size() ? settings::custom_splitter_divider_width : 0;
 }
 
 bool FlatSplitterPanel::set_config_item(
@@ -845,7 +856,7 @@ bool FlatSplitterPanel::get_config_item_supported(size_t index, const GUID& p_ty
 
 bool FlatSplitterPanel::is_index_valid(size_t index) const
 {
-    return index < m_panels.get_count();
+    return index < m_panels.size();
 }
 
 void FlatSplitterPanel::get_config(stream_writer* out, abort_callback& p_abort) const
@@ -861,7 +872,7 @@ void FlatSplitterPanel::export_config(stream_writer* p_writer, abort_callback& p
 void FlatSplitterPanel::write_config(stream_writer* p_writer, bool is_export, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(static_cast<uint32_t>(stream_version_current), p_abort);
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
     for (size_t i = 0; i < count; i++) {
         if (is_export)
@@ -884,7 +895,7 @@ void FlatSplitterPanel::read_config(stream_reader* config, size_t p_size, bool i
         uint32_t version;
         config->read_lendian_t(version, p_abort);
         if (version <= stream_version_current) {
-            PanelList panels;
+            std::vector<Panel::Ptr> panels;
 
             unsigned count;
             config->read_lendian_t(count, p_abort);
@@ -896,7 +907,7 @@ void FlatSplitterPanel::read_config(stream_reader* config, size_t p_size, bool i
                     temp->import(config, p_abort);
                 else
                     temp->read(config, p_abort);
-                panels.add_item(temp);
+                panels.emplace_back(std::move(temp));
             }
 
             // Extra data added in version 0.5.0
@@ -932,7 +943,7 @@ void FlatSplitterPanel::set_config(stream_reader* config, size_t p_size, abort_c
 
 uie::splitter_item_t* FlatSplitterPanel::get_panel(size_t index) const
 {
-    if (index < m_panels.get_count()) {
+    if (index < m_panels.size()) {
         return m_panels[index]->create_splitter_item();
     }
     return nullptr;
@@ -940,18 +951,19 @@ uie::splitter_item_t* FlatSplitterPanel::get_panel(size_t index) const
 
 size_t FlatSplitterPanel::get_panel_count() const
 {
-    return m_panels.get_count();
+    return m_panels.size();
 }
 
 void FlatSplitterPanel::remove_panel(size_t index)
 {
-    if (index < m_panels.get_count()) {
-        m_panels[index]->destroy();
-        m_panels.remove_by_idx(index);
+    if (index >= m_panels.size())
+        return;
 
-        if (get_wnd())
-            refresh_children();
-    }
+    m_panels[index]->destroy();
+    m_panels.erase(m_panels.begin() + index);
+
+    if (get_wnd())
+        refresh_children();
 }
 
 unsigned FlatSplitterPanel::get_type() const
@@ -971,23 +983,20 @@ int FlatSplitterPanel::g_get_caption_size()
 
 void FlatSplitterPanel::FlatSplitterPanelHost::relinquish_ownership(HWND wnd)
 {
-    size_t index;
-    if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
-        std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
+    const auto iter = m_this->find_panel_by_panel_wnd(wnd);
+    if (iter == m_this->m_panels.end())
+        return;
 
-        {
-            if (GetAncestor(wnd, GA_PARENT) == p_ext->m_wnd) {
-                console::warning("window left by ui extension");
-                SetParent(wnd, core_api::get_main_window());
-            }
+    const auto panel = *iter;
 
-            DestroyWindow(p_ext->m_wnd);
-            p_ext->m_wnd = nullptr;
-            p_ext->m_child.release();
-            m_this->m_panels.remove_by_idx(index);
-            m_this->on_size_changed();
-        }
-    }
+    if (GetAncestor(wnd, GA_PARENT) == panel->m_wnd)
+        console::warning("window left by ui extension");
+
+    DestroyWindow(panel->m_wnd);
+    panel->m_wnd = nullptr;
+    panel->m_child.release();
+    m_this->m_panels.erase(iter);
+    m_this->on_size_changed();
 }
 
 void FlatSplitterPanel::FlatSplitterPanelHost::set_window_ptr(FlatSplitterPanel* p_ptr)
@@ -997,46 +1006,49 @@ void FlatSplitterPanel::FlatSplitterPanelHost::set_window_ptr(FlatSplitterPanel*
 
 bool FlatSplitterPanel::FlatSplitterPanelHost::set_window_visibility(HWND wnd, bool visibility)
 {
-    bool rv = false;
     if (!m_this->get_host()->is_visible(m_this->get_wnd()))
         return m_this->get_host()->set_window_visibility(m_this->get_wnd(), visibility);
-    size_t idx = 0;
-    if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
-        if (!m_this->m_panels[idx]->m_autohide) {
-            m_this->m_panels[idx]->m_hidden = !visibility;
-            m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
-            m_this->on_size_changed();
-        }
-    }
-    return rv;
+
+    const auto iter = m_this->find_panel_by_panel_wnd(wnd);
+    if (iter == m_this->m_panels.end())
+        return false;
+
+    const auto panel = *iter;
+
+    if (panel->m_autohide)
+        return false;
+
+    panel->m_hidden = !visibility;
+    m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
+    m_this->on_size_changed();
+
+    return true;
 }
 
 bool FlatSplitterPanel::FlatSplitterPanelHost::is_visibility_modifiable(HWND wnd, bool desired_visibility) const
 {
-    bool rv = false;
-
     if (!m_this->get_host()->is_visible(m_this->get_wnd()))
         return m_this->get_host()->is_visibility_modifiable(m_this->get_wnd(), desired_visibility);
-    size_t idx = 0;
-    if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
-        rv = !m_this->m_panels[idx]->m_autohide;
-    }
-    return rv;
+
+    const auto iter = m_this->find_panel_by_panel_wnd(wnd);
+    if (iter == m_this->m_panels.end())
+        return false;
+
+    const auto panel = *iter;
+    return !panel->m_autohide;
 }
 
 bool FlatSplitterPanel::FlatSplitterPanelHost::is_visible(HWND wnd) const
 {
-    bool rv = false;
+    if (!m_this->get_host()->is_visible(m_this->get_wnd()))
+        return false;
 
-    if (!m_this->get_host()->is_visible(m_this->get_wnd())) {
-        rv = false;
-    } else {
-        size_t idx = 0;
-        if (m_this->m_panels.find_by_wnd_child(wnd, idx)) {
-            rv = !m_this->m_panels[idx]->m_hidden;
-        }
-    }
-    return rv;
+    const auto iter = m_this->find_panel_by_panel_wnd(wnd);
+    if (iter == m_this->m_panels.end())
+        return false;
+
+    const auto panel = *iter;
+    return !panel->m_hidden;
 }
 
 bool FlatSplitterPanel::FlatSplitterPanelHost::override_status_text_create(
@@ -1047,19 +1059,25 @@ bool FlatSplitterPanel::FlatSplitterPanelHost::override_status_text_create(
 
 bool FlatSplitterPanel::FlatSplitterPanelHost::request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height)
 {
-    bool rv = false;
-    if (!(flags & (get_orientation() == horizontal ? ui_extension::size_height : uie::size_width))) {
-        if (flags & (get_orientation() == vertical ? ui_extension::size_height : uie::size_width)) {
-            size_t index;
-            if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
-                int delta = (get_orientation() == horizontal ? width : height) - m_this->m_panels[index]->m_size;
-                m_this->override_size(index, delta);
-                rv = true;
-            }
-        } else
-            rv = true;
-    }
-    return rv;
+    if (!flags)
+        return true;
+
+    if (flags & (get_orientation() == horizontal ? ui_extension::size_height : uie::size_width))
+        return false;
+
+    if (!(flags & (get_orientation() == vertical ? ui_extension::size_height : uie::size_width)))
+        return false;
+
+    const auto iter = m_this->find_panel_by_panel_wnd(wnd);
+
+    if (iter == m_this->m_panels.end())
+        return false;
+
+    const int delta = (get_orientation() == horizontal ? width : height) - (*iter)->m_size;
+
+    const size_t index = std::distance(m_this->m_panels.begin(), iter);
+    m_this->override_size(index, delta);
+    return true;
 }
 
 unsigned FlatSplitterPanel::FlatSplitterPanelHost::is_resize_supported(HWND wnd) const
@@ -1074,31 +1092,32 @@ Orientation FlatSplitterPanel::FlatSplitterPanelHost::get_orientation() const
 
 void FlatSplitterPanel::FlatSplitterPanelHost::on_size_limit_change(HWND wnd, unsigned flags)
 {
-    size_t index;
-    if (m_this->m_panels.find_by_wnd_child(wnd, index)) {
-        std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
-        MINMAXINFO mmi{};
-        mmi.ptMaxTrackSize.x = MAXLONG;
-        mmi.ptMaxTrackSize.y = MAXLONG;
-        SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-        p_ext->m_size_limits.min_width = std::min(mmi.ptMinTrackSize.x, static_cast<long>(MAXSHORT));
-        p_ext->m_size_limits.min_height = std::min(mmi.ptMinTrackSize.y, static_cast<long>(MAXSHORT));
-        p_ext->m_size_limits.max_height = std::min(mmi.ptMaxTrackSize.y, static_cast<long>(MAXSHORT));
-        p_ext->m_size_limits.max_width = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
-        pfc::string8 name;
-        p_ext->m_child->get_name(name);
-        // console::formatter() << "change: name: " << name << " min width: " << (int32_t)mmi.ptMinTrackSize.x;
+    const auto iter = m_this->find_panel_by_panel_wnd(wnd);
 
-        m_this->on_size_changed();
+    if (iter == m_this->m_panels.end())
+        return;
 
-        m_this->get_host()->on_size_limit_change(m_this->get_wnd(), flags);
-    }
+    const auto p_ext = *iter;
+    MINMAXINFO mmi{};
+    mmi.ptMaxTrackSize.x = MAXLONG;
+    mmi.ptMaxTrackSize.y = MAXLONG;
+    SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+    p_ext->m_size_limits.min_width = std::min(mmi.ptMinTrackSize.x, static_cast<long>(MAXSHORT));
+    p_ext->m_size_limits.min_height = std::min(mmi.ptMinTrackSize.y, static_cast<long>(MAXSHORT));
+    p_ext->m_size_limits.max_height = std::min(mmi.ptMaxTrackSize.y, static_cast<long>(MAXSHORT));
+    p_ext->m_size_limits.max_width = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
+    pfc::string8 name;
+    p_ext->m_child->get_name(name);
+
+    m_this->on_size_changed();
+
+    m_this->get_host()->on_size_limit_change(m_this->get_wnd(), flags);
 }
 
 void FlatSplitterPanel::FlatSplitterPanelHost::get_children(pfc::list_base_t<window::ptr>& p_out)
 {
     if (m_this.is_valid()) {
-        size_t count = m_this->m_panels.get_count();
+        size_t count = m_this->m_panels.size();
         for (size_t i = 0; i < count; i++) {
             if (m_this->m_panels[i]->m_child.is_valid())
                 p_out.add_item(m_this->m_panels[i]->m_child);
