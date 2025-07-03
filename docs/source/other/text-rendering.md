@@ -28,16 +28,31 @@ rendering tab of the Colours and fonts preferences page.
 
 These options may not be supported by third-party panels.
 
-### Force greyscale anti-aliasing
+### Use greyscale anti-aliasing
 
-ClearType anti-aliasing will normally be used by default. If your monitor does
-not have an RGB or BGR pixel layout, or has a high pixel density, you may want
-to force greyscale anti-aliasing.
+Columns UI will use normally use ClearType anti-aliasing when ClearType is
+enabled in Windows.
+
+However, DirectWrite also includes a non-ClearType greyscale anti-aliasing mode,
+which can be used in place of ClearType by enabling this option. This mode is
+slightly faster than ClearType, and is preferred by Microsoft when using their
+newer app technologies.
+
+This option has no effect when anti-aliasing is disabled.
+
+If ClearType is disabled in Windows but anti-aliasing is enabled, greyscale
+anti-aliasing will be used automatically.
+
+For LCD monitors, ClearType will normally have the best legibility.
+
+Note that ClearType can also be put into a (different) greyscale mode using the
+ClearType Text Tuner utility built into Windows. (This only affects text
+rendered using DirectWrite or Windows Presentation Foundation.)
 
 ### Use colour glyphs when available
 
-When enabled, colour emoji is used on Windows 8.1 and newer. Disable this option
-to use monochrome emoji that uses the current text colour.
+When enabled, colour emojis are used on Windows 8.1 and newer. Disable this
+option to use monochrome emojis that use the current text colour.
 
 ### Use alternative emoji font selection logic
 
