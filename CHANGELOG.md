@@ -1,6 +1,10 @@
 # Change log
 
-## 3.0.0-rc-1
+## 3.0.0
+
+- There were no changes from version 3.0.0-rc.1.
+
+## 3.0.0-rc.1
 
 ### Features
 
