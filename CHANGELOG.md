@@ -1,5 +1,13 @@
 # Change log
 
+## 3.0.1
+
+### Bug fixes
+
+- A crash that occurred when closing the Artwork view or foobar2000 while the
+  Artwork view was reading artwork was fixed.
+  [[#1264](https://github.com/reupen/columns_ui/pull/1264)]
+
 ## 3.0.0
 
 - There were no changes from version 3.0.0-rc.1.

@@ -112,8 +112,10 @@ void ArtworkReaderManager::deinitialise()
     for (auto iter = m_aborting_readers.begin(); iter != m_aborting_readers.end();)
         iter = m_aborting_readers.erase(iter);
 
-    if (m_current_reader)
+    if (m_current_reader) {
+        m_current_reader->abort();
         m_current_reader.reset();
+    }
 
     m_stub_images.clear();
 }
@@ -271,7 +273,7 @@ bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& 
                 m_stub_images.insert_or_assign(artwork_id, data);
         }
 
-        if (m_stub_images.find(album_art_ids::cover_front) == m_stub_images.end()) {
+        if (!m_stub_images.contains(album_art_ids::cover_front)) {
             album_art_data_ptr data;
             panels::playlist_view::g_get_default_nocover_bitmap_data(data, p_abort);
 

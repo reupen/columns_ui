@@ -38,6 +38,14 @@ public:
     {
     }
 
+    ~ArtworkReader()
+    {
+        if (m_thread) {
+            m_abort.abort();
+            m_thread.reset();
+        }
+    }
+
     void notify_panel(bool artwork_changed);
 
     void start(ArtworkReaderArgs args);
@@ -47,7 +55,6 @@ public:
 private:
     bool read_artwork(const ArtworkReaderArgs& args, abort_callback& p_abort);
 
-    std::optional<std::jthread> m_thread;
     std::vector<GUID> m_artwork_type_ids;
     std::unordered_map<GUID, album_art_data_ptr> m_previous_artwork_data;
     std::unordered_map<GUID, album_art_data_ptr> m_artwork_data;
@@ -56,6 +63,7 @@ private:
     bool m_is_from_playback{};
     OnArtworkLoadedCallback m_on_artwork_loaded;
     abort_callback_impl m_abort;
+    std::optional<std::jthread> m_thread;
 };
 
 class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
