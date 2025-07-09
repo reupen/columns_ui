@@ -26,20 +26,20 @@ public:
                 p_hierarchy.add_item(this);
                 return true;
             }
-            size_t count = m_panels.get_count();
-            for (size_t i = 0; i < count; i++) {
+
+            for (const auto& panel : m_panels) {
                 uie::splitter_window_v2_ptr sptr;
-                if (m_panels[i]->m_child.is_valid()) {
-                    if (m_panels[i]->m_child->service_query_t(sptr)) {
+                if (panel->m_child.is_valid()) {
+                    if (panel->m_child->service_query_t(sptr)) {
                         pfc::list_t<window::ptr> temp;
                         temp.add_item(this);
                         if (sptr->is_point_ours(wnd_point, pt_screen, temp)) {
                             p_hierarchy.add_items(temp);
                             return true;
                         }
-                    } else if (wnd_point == m_panels[i]->m_wnd || IsChild(m_panels[i]->m_wnd, wnd_point)) {
+                    } else if (wnd_point == panel->m_wnd || IsChild(panel->m_wnd, wnd_point)) {
                         p_hierarchy.add_item(this);
-                        p_hierarchy.add_item(m_panels[i]->m_child);
+                        p_hierarchy.add_item(panel->m_child);
                         return true;
                     }
                 }
@@ -78,8 +78,11 @@ public:
         unsigned max_width{0};
         SizeLimit() = default;
     };
+
     class Panel {
     public:
+        using Ptr = std::shared_ptr<Panel>;
+
         GUID m_guid{};
         HWND m_wnd{nullptr};
         pfc::array_t<uint8_t> m_child_data;
@@ -105,17 +108,9 @@ public:
         service_ptr_t<class TabStackSplitterHost> m_interface;
     };
 
-    class PanelList : public pfc::list_t<std::shared_ptr<Panel>> {
-    public:
-        // bool move_up(unsigned idx);
-        // bool move_down(unsigned idx);
-        bool find_by_wnd(HWND wnd, size_t& p_out);
-    };
-
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     LRESULT WINAPI on_hooked_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
     static LRESULT WINAPI g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept;
-    WNDPROC m_tab_proc{nullptr};
 
     void create_tabs();
     void destroy_tabs();
@@ -134,12 +129,15 @@ public:
     void on_size_changed();
     void on_active_tab_changed(int index_to, bool from_interaction = false);
 
+    std::vector<Panel::Ptr>::iterator find_active_panel_by_wnd(HWND wnd);
+
     TabStackPanel() = default;
 
 private:
-    PanelList m_panels;
-    PanelList m_active_panels;
-    HWND m_wnd_tabs{nullptr};
+    std::vector<Panel::Ptr> m_panels;
+    std::vector<Panel::Ptr> m_active_panels;
+    HWND m_wnd_tabs{};
+    WNDPROC m_tab_proc{};
     HWND m_up_down_control_wnd{};
     HWND m_active_child_wnd{};
     std::optional<size_t> m_active_tab;

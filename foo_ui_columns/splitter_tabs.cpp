@@ -27,24 +27,26 @@ public:
 
     void on_size_limit_change(HWND wnd, unsigned flags) override
     {
-        size_t index;
-        if (m_this->m_panels.find_by_wnd(wnd, index)) {
-            std::shared_ptr<Panel> p_ext = m_this->m_panels[index];
-            MINMAXINFO mmi{};
-            mmi.ptMaxTrackSize.x = MAXLONG;
-            mmi.ptMaxTrackSize.y = MAXLONG;
-            SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-            p_ext->m_size_limits.min_width = std::min(mmi.ptMinTrackSize.x, static_cast<long>(MAXSHORT));
-            p_ext->m_size_limits.min_height = std::min(mmi.ptMinTrackSize.y, static_cast<long>(MAXSHORT));
-            p_ext->m_size_limits.max_height = std::min(mmi.ptMaxTrackSize.y, static_cast<long>(MAXSHORT));
-            p_ext->m_size_limits.max_width = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
+        const auto iter = m_this->find_active_panel_by_wnd(wnd);
 
-            m_this->update_size_limits();
+        if (iter == m_this->m_panels.end())
+            return;
 
-            m_this->get_host()->on_size_limit_change(m_this->get_wnd(), flags);
+        const auto p_ext = *iter;
+        MINMAXINFO mmi{};
+        mmi.ptMaxTrackSize.x = MAXLONG;
+        mmi.ptMaxTrackSize.y = MAXLONG;
+        SendMessage(wnd, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+        p_ext->m_size_limits.min_width = std::min(mmi.ptMinTrackSize.x, static_cast<long>(MAXSHORT));
+        p_ext->m_size_limits.min_height = std::min(mmi.ptMinTrackSize.y, static_cast<long>(MAXSHORT));
+        p_ext->m_size_limits.max_height = std::min(mmi.ptMaxTrackSize.y, static_cast<long>(MAXSHORT));
+        p_ext->m_size_limits.max_width = std::min(mmi.ptMaxTrackSize.x, static_cast<long>(MAXSHORT));
 
-            m_this->on_size_changed();
-        }
+        m_this->update_size_limits();
+
+        m_this->get_host()->on_size_limit_change(m_this->get_wnd(), flags);
+
+        m_this->on_size_changed();
     }
 
     unsigned is_resize_supported(HWND wnd) const override { return false; }
@@ -70,20 +72,20 @@ public:
 
     bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override
     {
-        bool rv = false;
+        if (!desired_visibility)
+            return false;
 
-        if (desired_visibility) {
-            bool b_found = false;
-            size_t idx = 0;
-            b_found = (m_this->m_active_panels.find_by_wnd(wnd, idx));
+        const auto iter = m_this->find_active_panel_by_wnd(wnd);
 
-            if (!m_this->get_host()->is_visible(m_this->get_wnd()))
-                rv = m_this->get_host()->is_visibility_modifiable(m_this->get_wnd(), desired_visibility) && b_found;
-            else
-                rv = b_found;
-        }
-        return rv;
+        if (iter == m_this->m_panels.end())
+            return false;
+
+        if (m_this->get_host()->is_visible(m_this->get_wnd()))
+            return true;
+
+        return m_this->get_host()->is_visibility_modifiable(m_this->get_wnd(), desired_visibility);
     }
+
     bool set_window_visibility(HWND wnd, bool visibility) override
     {
         bool self_is_visible = true;
@@ -91,44 +93,39 @@ public:
         if (!m_this->get_host()->is_visible(m_this->get_wnd()))
             self_is_visible = m_this->get_host()->set_window_visibility(m_this->get_wnd(), visibility);
 
-        if (self_is_visible && visibility) {
-            size_t idx = 0;
-            if (m_this->m_active_panels.find_by_wnd(wnd, idx)) {
-                TabCtrl_SetCurSel(m_this->m_wnd_tabs, idx);
-                m_this->on_active_tab_changed(TabCtrl_GetCurSel(m_this->m_wnd_tabs));
-                return true;
-            }
-        }
+        if (!(self_is_visible && visibility))
+            return false;
 
-        return false;
+        const auto iter = m_this->find_active_panel_by_wnd(wnd);
+
+        if (iter == m_this->m_panels.end())
+            return false;
+
+        TabCtrl_SetCurSel(m_this->m_wnd_tabs, std::distance(m_this->m_active_panels.begin(), iter));
+        m_this->on_active_tab_changed(TabCtrl_GetCurSel(m_this->m_wnd_tabs));
+        return true;
     }
 
     void set_window_ptr(TabStackPanel* p_ptr) { m_this = p_ptr; }
 
     void relinquish_ownership(HWND wnd) override
     {
-        size_t index;
-        if (m_this->m_active_panels.find_by_wnd(wnd, index)) {
-            std::shared_ptr<Panel> p_ext = m_this->m_active_panels[index];
+        const auto iter = m_this->find_active_panel_by_wnd(wnd);
 
-            {
-                /*if (GetAncestor(wnd, GA_PARENT) == m_this->get_wnd())
-                {
-                console::warning("window left by ui extension");
-                SetParent(wnd, core_api::get_main_window());
-                }*/
+        if (iter == m_this->m_panels.end())
+            return;
 
-                p_ext->m_wnd = nullptr;
-                p_ext->m_child.release();
-                m_this->m_active_panels.remove_by_idx(index);
-                m_this->m_panels.remove_item(p_ext);
-                TabCtrl_DeleteItem(m_this->m_wnd_tabs, index);
-                m_this->update_size_limits();
-                m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
+        const auto p_ext = *iter;
 
-                m_this->on_size_changed();
-            }
-        }
+        p_ext->m_wnd = nullptr;
+        p_ext->m_child.release();
+        TabCtrl_DeleteItem(m_this->m_wnd_tabs, std::distance(m_this->m_active_panels.begin(), iter));
+        m_this->m_active_panels.erase(iter);
+        std::erase(m_this->m_panels, p_ext);
+        m_this->update_size_limits();
+        m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
+
+        m_this->on_size_changed();
     }
 };
 
@@ -145,18 +142,6 @@ void TabStackPanel::get_supported_panels(
     size_t count = p_windows.get_count();
     for (size_t i = 0; i < count; i++)
         p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
-}
-
-bool TabStackPanel::PanelList::find_by_wnd(HWND wnd, size_t& p_out)
-{
-    const auto count = get_count();
-    for (size_t n = 0; n < count; n++) {
-        if (get_item(n)->m_wnd == wnd) {
-            p_out = n;
-            return true;
-        }
-    }
-    return false;
 }
 
 uie::splitter_item_full_v2_t* TabStackPanel::Panel::create_splitter_item()
@@ -296,11 +281,11 @@ unsigned TabStackPanel::get_type() const
 
 size_t TabStackPanel::get_panel_count() const
 {
-    return m_panels.get_count();
+    return m_panels.size();
 }
 uie::splitter_item_t* TabStackPanel::get_panel(size_t index) const
 {
-    if (index < m_panels.get_count()) {
+    if (index < m_panels.size()) {
         return m_panels[index]->create_splitter_item();
     }
     return nullptr;
@@ -314,7 +299,7 @@ bool TabStackPanel::get_config_item_supported(size_t index, const GUID& p_type) 
 bool TabStackPanel::get_config_item(
     size_t index, const GUID& p_type, stream_writer* p_out, abort_callback& p_abort) const
 {
-    if (index < m_panels.get_count()) {
+    if (index < m_panels.size()) {
         if (p_type == bool_use_custom_title) {
             p_out->write_lendian_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
@@ -329,7 +314,7 @@ bool TabStackPanel::get_config_item(
 
 bool TabStackPanel::set_config_item(size_t index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort)
 {
-    if (index < m_panels.get_count()) {
+    if (index < m_panels.size()) {
         if (p_type == bool_use_custom_title) {
             p_source->read_lendian_t(m_panels[index]->m_use_custom_title, p_abort);
             return true;
@@ -348,7 +333,7 @@ void TabStackPanel::set_config(stream_reader* config, size_t p_size, abort_callb
         uint32_t version;
         config->read_lendian_t(version, p_abort);
         if (version <= stream_version_current) {
-            m_panels.remove_all();
+            m_panels.clear();
 
             const auto raw_active_tab_index = config->read_lendian_t<uint32_t>(p_abort);
 
@@ -362,7 +347,7 @@ void TabStackPanel::set_config(stream_reader* config, size_t p_size, abort_callb
             for (unsigned n = 0; n < count; n++) {
                 auto temp = std::make_shared<Panel>();
                 temp->read(config, p_abort);
-                m_panels.add_item(temp);
+                m_panels.emplace_back(std::move(temp));
             }
         }
     }
@@ -370,7 +355,7 @@ void TabStackPanel::set_config(stream_reader* config, size_t p_size, abort_callb
 void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t((uint32_t)stream_version_current, p_abort);
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     const auto raw_active_tab_index = m_active_tab.value_or(std::numeric_limits<uint32_t>::max());
     out->write_lendian_t(gsl::narrow<uint32_t>(raw_active_tab_index), p_abort);
     out->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
@@ -382,7 +367,7 @@ void TabStackPanel::get_config(stream_writer* out, abort_callback& p_abort) cons
 void TabStackPanel::export_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t((uint32_t)stream_version_current, p_abort);
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     const auto raw_active_tab_index = m_active_tab.value_or(std::numeric_limits<uint32_t>::max());
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(raw_active_tab_index), p_abort);
     p_writer->write_lendian_t(gsl::narrow<uint32_t>(count), p_abort);
@@ -396,7 +381,7 @@ void TabStackPanel::import_config(stream_reader* p_reader, size_t p_size, abort_
     uint32_t version;
     p_reader->read_lendian_t(version, p_abort);
     if (version <= stream_version_current) {
-        m_panels.remove_all();
+        m_panels.clear();
 
         const auto raw_active_tab_index = p_reader->read_lendian_t<uint32_t>(p_abort);
 
@@ -409,7 +394,7 @@ void TabStackPanel::import_config(stream_reader* p_reader, size_t p_size, abort_
         for (unsigned n = 0; n < count; n++) {
             auto temp = std::make_shared<Panel>();
             temp->import(p_reader, p_abort);
-            m_panels.add_item(temp);
+            m_panels.emplace_back(std::move(temp));
         }
     }
 }
@@ -426,7 +411,7 @@ void TabStackPanel::update_size_limits()
 {
     m_size_limits = uie::size_limit_t();
 
-    const auto count = m_active_panels.get_count();
+    const auto count = m_active_panels.size();
 
     for (size_t n = 0; n < count; n++) {
         MINMAXINFO mmi{};
@@ -508,23 +493,29 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         SetWindowPos(m_wnd_tabs, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
         refresh_children();
 
-        size_t activetab = m_active_tab.value_or(0);
-        size_t activeindex = 0;
-        if (activetab < m_panels.get_count())
-            activeindex = m_active_panels.find_item(m_panels[activetab]);
-        if (activeindex == std::numeric_limits<size_t>::max())
-            activeindex = 0;
-        TabCtrl_SetCurSel(m_wnd_tabs, activeindex);
+        const size_t panel_index = m_active_tab.value_or(0);
+        std::optional<size_t> active_panel_index;
+
+        if (panel_index < m_panels.size()) {
+            const auto iter = std::ranges::find(m_active_panels, m_panels[panel_index]);
+
+            if (iter != m_active_panels.end())
+                active_panel_index = std::distance(m_active_panels.begin(), iter);
+        }
+
+        if (!active_panel_index && !m_active_panels.empty())
+            active_panel_index = 0;
+
+        if (active_panel_index)
+            TabCtrl_SetCurSel(m_wnd_tabs, *active_panel_index);
         set_styles();
 
         // on_active_tab_changed(activeindex);
         m_active_tab.reset();
 
-        if (activeindex < m_active_panels.get_count()) {
-            const auto panel_index = m_panels.find_item(m_active_panels[activeindex]);
-            if (panel_index != std::numeric_limits<size_t>::max()) {
-                m_active_tab = panel_index;
-            }
+        if (active_panel_index) {
+            const auto iter = std::ranges::find(m_panels, m_active_panels[*active_panel_index]);
+            m_active_tab = std::distance(m_panels.begin(), iter);
         }
 
         update_size_limits();
@@ -590,7 +581,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
         return 0;
     case WM_SHOWWINDOW: {
-        if (wp == TRUE && lp == NULL && m_active_tab && *m_active_tab < m_panels.get_count()
+        if (wp == TRUE && lp == NULL && m_active_tab && *m_active_tab < m_panels.size()
             && m_panels[*m_active_tab]->m_wnd && !IsWindowVisible(m_panels[*m_active_tab]->m_wnd)) {
             show_tab_window(m_panels[*m_active_tab]->m_wnd);
         }
@@ -614,49 +605,45 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         unsigned IDM_EXT_BASE = IDM_BASE;
 
         HWND child = ChildWindowFromPointEx(wnd, pt_client, CWP_SKIPTRANSPARENT | CWP_SKIPINVISIBLE);
-        size_t index = pfc_infinite;
+        Panel::Ptr click_panel;
 
-        bool b_found = false;
         if (HWND(wp) == m_wnd_tabs) {
             ScreenToClient(m_wnd_tabs, &pt_client_tabs);
             TCHITTESTINFO info;
             // memset(&info, 0, sizeof(TCHITTESTINFO));
             info.pt = pt_client_tabs;
-            index = TabCtrl_HitTest(m_wnd_tabs, &info);
-            if (info.flags == TCHT_ONITEM || info.flags == TCHT_ONITEMLABEL || info.flags == TCHT_ONITEMICON)
-                b_found = true;
-        } else {
-            b_found = m_active_panels.find_by_wnd(child, index);
-        }
-
-        {
-            if (b_found && index < m_active_panels.get_count()) {
-                std::shared_ptr<Panel> p_panel = m_active_panels[index];
-
-                pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
-                    = new ui_extension::menu_hook_impl;
-
-                if (p_panel->m_child.is_valid()) {
-                    p_panel->m_child->get_menu_items(*extension_menu_nodes.get_ptr());
-                    // if (extension_menu_nodes->get_children_count() > 0)
-                    //    AppendMenu(menu,MF_SEPARATOR,0,0);
-
-                    extension_menu_nodes->win32_build_menu(menu, IDM_EXT_BASE, pfc_infinite - IDM_EXT_BASE);
-                }
-                menu_helpers::win32_auto_mnemonics(menu);
-
-                unsigned cmd
-                    = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
-
-                if (cmd >= IDM_EXT_BASE) {
-                    extension_menu_nodes->execute_by_id(cmd);
-                }
-
-                DestroyMenu(menu);
+            const auto index = TabCtrl_HitTest(m_wnd_tabs, &info);
+            if ((info.flags == TCHT_ONITEM || info.flags == TCHT_ONITEMLABEL || info.flags == TCHT_ONITEMICON)
+                && index >= 0 && gsl::narrow_cast<size_t>(index) < m_active_panels.size()) {
+                click_panel = m_active_panels[index];
             }
+        } else if (child != nullptr) {
+            if (const auto iter = find_active_panel_by_wnd(child); iter != m_active_panels.end())
+                click_panel = *iter;
         }
-    }
+
+        if (!click_panel)
+            return 0;
+
+        pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
+            = new ui_extension::menu_hook_impl;
+
+        if (click_panel->m_child.is_valid()) {
+            click_panel->m_child->get_menu_items(*extension_menu_nodes.get_ptr());
+            extension_menu_nodes->win32_build_menu(menu, IDM_EXT_BASE, pfc_infinite - IDM_EXT_BASE);
+        }
+        menu_helpers::win32_auto_mnemonics(menu);
+
+        unsigned cmd
+            = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
+
+        if (cmd >= IDM_EXT_BASE) {
+            extension_menu_nodes->execute_by_id(cmd);
+        }
+
+        DestroyMenu(menu);
         return 0;
+    }
     case WM_NOTIFY: {
         switch (((LPNMHDR)lp)->idFrom) {
         case 2345:
@@ -689,7 +676,7 @@ void TabStackPanel::hide_tab_window()
 
 void TabStackPanel::refresh_children()
 {
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     for (size_t n = 0; n < count; n++) {
         if (!m_panels[n]->m_wnd) {
             m_panels[n]->set_splitter_window_ptr(this);
@@ -734,10 +721,14 @@ void TabStackPanel::refresh_children()
                         }
                     }
 
-                    size_t index = m_active_panels.find_item(m_panels[n]);
-                    bool b_newtab = index == pfc_infinite;
-                    if (b_newtab)
-                        index = m_active_panels.insert_item(m_panels[n], index);
+                    const auto iter = std::ranges::find(m_active_panels, m_panels[n]);
+
+                    size_t index = std::distance(m_active_panels.begin(), iter);
+                    const auto is_new_tab = iter == m_active_panels.end();
+
+                    if (is_new_tab)
+                        m_active_panels.emplace_back(m_panels[n]);
+
                     HWND wnd_panel = p_ext->create_or_transfer_window(
                         get_wnd(), uie::window_host_ptr(m_panels[n]->m_interface.get_ptr()));
                     if (wnd_panel) {
@@ -756,7 +747,7 @@ void TabStackPanel::refresh_children()
                         // if (p_uxtheme.load())
                         //    p_uxtheme->EnableThemeDialogTexture(wnd_panel, ETDT_ENABLETAB);
 
-                        uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(index), name, b_newtab);
+                        uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(index), name, is_new_tab);
 
                         MINMAXINFO mmi{};
                         mmi.ptMaxTrackSize.x = MAXLONG;
@@ -771,7 +762,7 @@ void TabStackPanel::refresh_children()
                         m_panels[n]->m_size_limits.max_width = mmi.ptMaxTrackSize.x;
                         m_panels[n]->m_size_limits.max_height = mmi.ptMaxTrackSize.y;
                     } else
-                        m_active_panels.remove_by_idx(index);
+                        m_active_panels.erase(m_active_panels.begin() + index);
                 }
             }
         }
@@ -784,8 +775,8 @@ void TabStackPanel::refresh_children()
         m_active_tab = tab_sel_index == -1 ? std::nullopt : std::make_optional(gsl::narrow<size_t>(tab_sel_index));
     }
 
-    if (IsWindowVisible(get_wnd()) && m_active_tab && *m_active_tab < m_panels.get_count()
-        && m_panels[*m_active_tab]->m_wnd && !IsWindowVisible(m_panels[*m_active_tab]->m_wnd)) {
+    if (IsWindowVisible(get_wnd()) && m_active_tab && *m_active_tab < m_panels.size() && m_panels[*m_active_tab]->m_wnd
+        && !IsWindowVisible(m_panels[*m_active_tab]->m_wnd)) {
         get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
         show_tab_window(m_panels[*m_active_tab]->m_wnd);
     }
@@ -793,67 +784,71 @@ void TabStackPanel::refresh_children()
 
 void TabStackPanel::destroy_children()
 {
-    const auto count = m_panels.get_count();
+    const auto count = m_panels.size();
     for (size_t n = 0; n < count; n++) {
         std::shared_ptr<Panel> pal = m_panels[n];
         pal->destroy();
     }
-    m_active_panels.remove_all();
+    m_active_panels.clear();
     m_active_child_wnd = nullptr;
 }
 
 void TabStackPanel::insert_panel(size_t index, const uie::splitter_item_t* p_item)
 {
-    if (index <= m_panels.get_count()) {
-        auto temp = std::make_shared<Panel>();
-        temp->set_from_splitter_item(p_item);
-        m_panels.insert_item(temp, index);
+    if (index > m_panels.size())
+        return;
 
-        if (get_wnd())
-            refresh_children();
-    }
+    auto temp = std::make_shared<Panel>();
+    temp->set_from_splitter_item(p_item);
+    m_panels.insert(m_panels.begin() + index, std::move(temp));
+
+    if (get_wnd())
+        refresh_children();
 }
 
 void TabStackPanel::replace_panel(size_t index, const uie::splitter_item_t* p_item)
 {
-    if (index < m_panels.get_count()) {
-        if (get_wnd()) {
-            if (m_active_child_wnd == m_panels[index]->m_wnd)
-                m_active_child_wnd = nullptr;
+    if (index >= m_panels.size())
+        return;
 
-            m_panels[index]->destroy();
-        }
-
-        size_t activeindex = m_active_panels.find_item(m_panels[index]);
-        if (activeindex != pfc_infinite) {
-            m_active_panels.remove_by_idx(activeindex);
-            TabCtrl_DeleteItem(m_wnd_tabs, activeindex);
-        }
-
-        auto temp = std::make_shared<Panel>();
-        temp->set_from_splitter_item(p_item);
-        m_panels.replace_item(index, temp);
-
-        if (get_wnd())
-            refresh_children();
-    }
-}
-
-void TabStackPanel::remove_panel(size_t index)
-{
-    if (index < m_panels.get_count()) {
-        size_t activeindex = m_active_panels.find_item(m_panels[index]);
-        if (activeindex != pfc_infinite) {
-            m_active_panels.remove_by_idx(activeindex);
-            TabCtrl_DeleteItem(m_wnd_tabs, activeindex);
-        }
-
+    if (get_wnd()) {
         if (m_active_child_wnd == m_panels[index]->m_wnd)
             m_active_child_wnd = nullptr;
 
         m_panels[index]->destroy();
-        m_panels.remove_by_idx(index);
     }
+
+    const auto iter = std::ranges::find(m_active_panels, m_panels[index]);
+    if (iter != m_active_panels.end()) {
+        TabCtrl_DeleteItem(m_wnd_tabs, std::distance(m_active_panels.begin(), iter));
+        m_active_panels.erase(iter);
+    }
+
+    auto temp = std::make_shared<Panel>();
+    temp->set_from_splitter_item(p_item);
+    m_panels[index] = std::move(temp);
+
+    if (get_wnd())
+        refresh_children();
+}
+
+void TabStackPanel::remove_panel(size_t index)
+{
+    if (index >= m_panels.size())
+        return;
+
+    const auto iter = std::ranges::find(m_active_panels, m_panels[index]);
+
+    if (iter != m_active_panels.end()) {
+        TabCtrl_DeleteItem(m_wnd_tabs, std::distance(m_active_panels.begin(), iter));
+        m_active_panels.erase(iter);
+    }
+
+    if (m_active_child_wnd == m_panels[index]->m_wnd)
+        m_active_child_wnd = nullptr;
+
+    m_panels[index]->destroy();
+    m_panels.erase(m_panels.begin() + index);
 }
 
 void TabStackPanel::create_tabs()
@@ -906,12 +901,12 @@ void TabStackPanel::on_font_change()
 }
 void TabStackPanel::on_size_changed(unsigned width, unsigned height)
 {
-    HDWP dwp = BeginDeferWindowPos(gsl::narrow<int>(m_active_panels.get_count() + 1));
+    HDWP dwp = BeginDeferWindowPos(gsl::narrow<int>(m_active_panels.size() + 1));
     if (m_wnd_tabs)
         dwp = DeferWindowPos(dwp, m_wnd_tabs, nullptr, 0, 0, width, height, SWP_NOZORDER);
     // SetWindowPos(m_wnd_tabs, NULL, 0, 0, width, height, SWP_NOZORDER);
 
-    size_t count = m_active_panels.get_count();
+    size_t count = m_active_panels.size();
     RECT rc = {0, 0, (LONG)width, (LONG)height};
     adjust_rect(FALSE, &rc);
     for (size_t i = 0; i < count; i++) {
@@ -943,13 +938,13 @@ void TabStackPanel::on_active_tab_changed(int signed_index_to, bool from_interac
 
     const auto index_to = gsl::narrow<size_t>(signed_index_to);
 
-    if (index_to < m_active_panels.get_count() && m_active_panels[index_to]->m_wnd) {
+    if (index_to < m_active_panels.size() && m_active_panels[index_to]->m_wnd) {
         show_tab_window(m_active_panels[index_to]->m_wnd);
 
-        auto found_index = m_panels.find_item(m_active_panels[index_to]);
+        const auto iter = std::ranges::find(m_active_panels, m_panels[index_to]);
 
-        if (found_index != std::numeric_limits<size_t>::max())
-            m_active_tab = found_index;
+        if (iter != m_active_panels.end())
+            m_active_tab = std::distance(m_active_panels.begin(), iter);
     }
 
     if (!m_active_tab || wnd_focus == m_wnd_tabs || (!from_interaction && !was_child_focused))
@@ -981,6 +976,11 @@ void TabStackPanel::on_active_tab_changed(int signed_index_to, bool from_interac
         SetFocus(wnd_new_focus);
     else
         SetFocus(m_wnd_tabs);
+}
+
+std::vector<TabStackPanel::Panel::Ptr>::iterator TabStackPanel::find_active_panel_by_wnd(HWND wnd)
+{
+    return std::ranges::find_if(m_active_panels, [wnd](const Panel::Ptr& panel) { return panel->m_wnd == wnd; });
 }
 
 LRESULT WINAPI TabStackPanel::g_hook_proc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
