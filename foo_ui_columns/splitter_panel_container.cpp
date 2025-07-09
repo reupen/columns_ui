@@ -28,29 +28,27 @@ bool FlatSplitterPanel::Panel::PanelContainer::test_autohide_window(HWND wnd)
 void FlatSplitterPanel::Panel::PanelContainer::on_hooked_message(WPARAM msg, const MSLLHOOKSTRUCT& mllhs)
 {
     if (msg == WM_MOUSEMOVE && m_this.is_valid() && MonitorFromPoint(mllhs.pt, MONITOR_DEFAULTTONULL)) {
-        const auto index = m_this->m_panels.find_item(m_panel->shared_from_this());
-        if (index != pfc_infinite) {
-            HWND wnd_capture = GetCapture();
-            HWND wnd_pt = WindowFromPoint(mllhs.pt);
-            POINT pt = mllhs.pt;
-            ScreenToClient(m_this->get_wnd(), &pt);
-            // if (!hwnd)
-            // hwnd = uRecursiveChildWindowFromPointv2(m_this->get_wnd(), pt);
-            // console::printf("pts: (%u, %u) pt: (%i, %i)  window: %x", mllhs.pt, pt.x, pt.y, hwnd);
+        const auto iter = std::ranges::find(m_this->m_panels, m_panel->shared_from_this());
+        if (iter == m_this->m_panels.end())
+            return;
 
-            // We need to test wnd_pt when wnd_capture is non-NULL because during drag-and-drop operations wnd_capture
-            // is an OLE window. Alternative fixes are checking the window with the keyboard focus (has side-effects)
-            // and checking the window class of wnd_capture (a hack). (For future reference: the class of wnd_capture
-            // during drag-and-drop operations is CLIPBRDWNDCLASS.)
-            if (!(wnd_capture && test_autohide_window(wnd_capture)) && !(wnd_pt && test_autohide_window(wnd_pt))
-                && !m_this->test_divider_pt(pt, index)) {
-                if (!m_timer_active)
-                    PostMessage(m_wnd, MSG_AUTOHIDE_END, 0, 0);
-            } else {
-                if (m_timer_active) {
-                    KillTimer(m_wnd, HOST_AUTOHIDE_TIMER_ID);
-                    m_timer_active = false;
-                }
+        HWND wnd_capture = GetCapture();
+        HWND wnd_pt = WindowFromPoint(mllhs.pt);
+        POINT pt = mllhs.pt;
+        ScreenToClient(m_this->get_wnd(), &pt);
+
+        // We need to test wnd_pt when wnd_capture is non-NULL because during drag-and-drop operations wnd_capture
+        // is an OLE window. Alternative fixes are checking the window with the keyboard focus (has side-effects)
+        // and checking the window class of wnd_capture (a hack). (For future reference: the class of wnd_capture
+        // during drag-and-drop operations is CLIPBRDWNDCLASS.)
+        if (!(wnd_capture && test_autohide_window(wnd_capture)) && !(wnd_pt && test_autohide_window(wnd_pt))
+            && !m_this->test_divider_pt(pt, std::distance(m_this->m_panels.begin(), iter))) {
+            if (!m_timer_active)
+                PostMessage(m_wnd, MSG_AUTOHIDE_END, 0, 0);
+        } else {
+            if (m_timer_active) {
+                KillTimer(m_wnd, HOST_AUTOHIDE_TIMER_ID);
+                m_timer_active = false;
             }
         }
     }
@@ -124,11 +122,17 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
         if (!m_this.is_valid())
             return 0;
 
-        size_t index = 0;
-        if (!m_this->m_panels.find_by_wnd(wnd, index) || !m_this->m_panels[index]->m_show_caption)
+        const auto iter = m_this->find_panel_by_container_wnd(wnd);
+
+        if (iter == m_this->m_panels.end())
             return 0;
 
-        const auto orientation = m_this->m_panels[index]->m_caption_orientation;
+        const auto panel = *iter;
+
+        if (!panel->m_show_caption)
+            return 0;
+
+        const auto orientation = panel->m_caption_orientation;
 
         RECT rc_client{};
         GetClientRect(wnd, &rc_client);
@@ -193,20 +197,27 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
             }
         }
         return 0;
-    case WM_LBUTTONDBLCLK:
-        if (m_this.is_valid()) {
-            size_t index = 0;
-            if (m_this->m_panels.find_by_wnd(wnd, index) && m_this->get_orientation() != m_panel->m_caption_orientation
-                && !m_panel->m_autohide) {
-                POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
-                if (ChildWindowFromPoint(wnd, pt) == wnd) {
-                    m_this->m_panels[index]->m_hidden = !m_this->m_panels[index]->m_hidden;
-                    m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
-                    m_this->on_size_changed();
-                }
+    case WM_LBUTTONDBLCLK: {
+        if (!m_this.is_valid())
+            return 0;
+
+        const auto iter = m_this->find_panel_by_container_wnd(wnd);
+
+        if (iter == m_this->m_panels.end())
+            return 0;
+
+        const auto panel = *iter;
+
+        if (m_this->get_orientation() != m_panel->m_caption_orientation && !m_panel->m_autohide) {
+            POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
+            if (ChildWindowFromPoint(wnd, pt) == wnd) {
+                panel->m_hidden = !panel->m_hidden;
+                m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
+                m_this->on_size_changed();
             }
         }
         return 0;
+    }
     case WM_MOUSEHOVER:
         if (m_this.is_valid() && m_panel->m_autohide) {
             if ((m_panel->m_hidden)) {
@@ -267,75 +278,79 @@ LRESULT FlatSplitterPanel::Panel::PanelContainer::on_message(HWND wnd, UINT msg,
 
         unsigned IDM_EXT_BASE = IDM_BASE;
 
-        if (m_this.is_valid()) {
-            size_t index = 0;
-            if (m_this->m_panels.find_by_wnd(wnd, index)) {
-                std::shared_ptr<Panel> p_panel = m_this->m_panels[index];
+        if (!m_this.is_valid())
+            return 0;
 
-                AppendMenu(
-                    menu, (MF_STRING | (p_panel->m_show_caption ? MF_CHECKED : 0)), IDM_CAPTION, _T("Show &caption"));
-                AppendMenu(menu, (MF_STRING | (p_panel->m_locked ? MF_CHECKED : 0)), IDM_LOCK, _T("&Lock panel"));
-                AppendMenu(menu, (MF_SEPARATOR), 0, _T(""));
-                AppendMenu(menu, (MF_STRING), IDM_MOVE_UP, _T("Move &up"));
-                AppendMenu(menu, (MF_STRING), IDM_MOVE_DOWN, _T("Move &down"));
-                AppendMenu(menu, (MF_STRING), IDM_CLOSE, _T("&Close panel"));
+        const auto iter = m_this->find_panel_by_container_wnd(wnd);
 
-                pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
-                    = new ui_extension::menu_hook_impl;
+        if (iter == m_this->m_panels.end())
+            return 0;
 
-                if (p_panel->m_child.is_valid()) {
-                    //                p_ext->build_menu(menu, IDM_EXT_BASE, pt, true, user_data);
-                    p_panel->m_child->get_menu_items(*extension_menu_nodes.get_ptr());
-                    if (extension_menu_nodes->get_children_count() > 0)
-                        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+        const auto p_panel = *iter;
 
-                    extension_menu_nodes->win32_build_menu(menu, IDM_EXT_BASE, pfc_infinite - IDM_EXT_BASE);
-                }
-                menu_helpers::win32_auto_mnemonics(menu);
+        AppendMenu(menu, (MF_STRING | (p_panel->m_show_caption ? MF_CHECKED : 0)), IDM_CAPTION, _T("Show &caption"));
+        AppendMenu(menu, (MF_STRING | (p_panel->m_locked ? MF_CHECKED : 0)), IDM_LOCK, _T("&Lock panel"));
+        AppendMenu(menu, (MF_SEPARATOR), 0, _T(""));
+        AppendMenu(menu, (MF_STRING), IDM_MOVE_UP, _T("Move &up"));
+        AppendMenu(menu, (MF_STRING), IDM_MOVE_DOWN, _T("Move &down"));
+        AppendMenu(menu, (MF_STRING), IDM_CLOSE, _T("&Close panel"));
 
-                //            menu_ext_base = IDM_EXT_BASE;
+        pfc::refcounted_object_ptr_t<ui_extension::menu_hook_impl> extension_menu_nodes
+            = new ui_extension::menu_hook_impl;
 
-                const auto cmd = static_cast<unsigned>(
-                    TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr));
+        if (p_panel->m_child.is_valid()) {
+            //                p_ext->build_menu(menu, IDM_EXT_BASE, pt, true, user_data);
+            p_panel->m_child->get_menu_items(*extension_menu_nodes.get_ptr());
+            if (extension_menu_nodes->get_children_count() > 0)
+                AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
 
-                //            menu_ext_base=0;
-
-                if (cmd >= IDM_EXT_BASE) {
-                    extension_menu_nodes->execute_by_id(cmd);
-                }
-
-                DestroyMenu(menu);
-
-                if (cmd == IDM_CLOSE && p_panel->m_child.is_valid()) {
-                    service_ptr_t<FlatSplitterPanel> p_this = m_this;
-                    p_panel->destroy();
-                    p_this->m_panels.remove_by_idx(index);
-                    p_this->get_host()->on_size_limit_change(p_this->get_wnd(), uie::size_limit_all);
-                    p_this->on_size_changed();
-                } else if (cmd == IDM_MOVE_UP) {
-                    if (index) {
-                        m_this->m_panels.swap_items(index, index - 1);
-                        m_this->on_size_changed();
-                    }
-                } else if (cmd == IDM_MOVE_DOWN) {
-                    if (index + 1 < m_this->m_panels.get_count()) {
-                        m_this->m_panels.swap_items(index, index + 1);
-                        m_this->on_size_changed();
-                    }
-                } else if (cmd == IDM_LOCK) {
-                    m_this->save_sizes();
-                    m_this->m_panels[index]->m_locked = m_this->m_panels[index]->m_locked == 0;
-                } else if (cmd == IDM_CAPTION) {
-                    // size limit chnge
-                    m_this->m_panels[index]->m_show_caption = m_this->m_panels[index]->m_show_caption == 0;
-                    m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
-                    m_this->on_size_changed();
-                    m_this->m_panels[index]->on_size();
-                }
-            }
+            extension_menu_nodes->win32_build_menu(menu, IDM_EXT_BASE, pfc_infinite - IDM_EXT_BASE);
         }
-    }
+        menu_helpers::win32_auto_mnemonics(menu);
+
+        //            menu_ext_base = IDM_EXT_BASE;
+
+        const auto cmd = static_cast<unsigned>(
+            TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr));
+
+        //            menu_ext_base=0;
+
+        if (cmd >= IDM_EXT_BASE) {
+            extension_menu_nodes->execute_by_id(cmd);
+        }
+
+        DestroyMenu(menu);
+
+        if (cmd == IDM_CLOSE && p_panel->m_child.is_valid()) {
+            service_ptr_t<FlatSplitterPanel> p_this = m_this;
+            p_panel->destroy();
+            std::erase(p_this->m_panels, p_panel);
+            p_this->get_host()->on_size_limit_change(p_this->get_wnd(), uie::size_limit_all);
+            p_this->on_size_changed();
+        } else if (cmd == IDM_MOVE_UP) {
+            if (auto new_iter = std::ranges::find(m_this->m_panels, p_panel);
+                new_iter != m_this->m_panels.begin() && new_iter != m_this->m_panels.end()) {
+                std::iter_swap(new_iter, std::prev(new_iter));
+                m_this->on_size_changed();
+            }
+        } else if (cmd == IDM_MOVE_DOWN) {
+            if (auto new_iter = std::ranges::find(m_this->m_panels, p_panel);
+                new_iter != m_this->m_panels.end() && std::next(new_iter) != m_this->m_panels.end()) {
+                std::iter_swap(new_iter, std::next(new_iter));
+                m_this->on_size_changed();
+            }
+        } else if (cmd == IDM_LOCK) {
+            m_this->save_sizes();
+            p_panel->m_locked = p_panel->m_locked == 0;
+        } else if (cmd == IDM_CAPTION) {
+            // size limit chnge
+            p_panel->m_show_caption = p_panel->m_show_caption == 0;
+            m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
+            m_this->on_size_changed();
+            p_panel->on_size();
+        }
         return 0;
+    }
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }

@@ -164,13 +164,7 @@ private:
         void destroy();
         Panel();
 
-        using ptr = std::shared_ptr<Panel>;
-        static ptr null_ptr;
-    };
-    class PanelList : public pfc::list_t<std::shared_ptr<Panel>> {
-    public:
-        bool find_by_wnd(HWND wnd, size_t& p_out);
-        bool find_by_wnd_child(HWND wnd, size_t& p_out);
+        using Ptr = std::shared_ptr<Panel>;
     };
 
     void read_config(stream_reader* p_reader, size_t p_size, bool is_import, abort_callback& p_abort);
@@ -193,13 +187,15 @@ private:
 
     bool can_resize_divider(size_t index) const;
     bool can_resize_panel(size_t index) const;
-    int override_size(size_t& panel, int delta);
+    int override_size(const size_t panel, int delta);
 
     void refresh_children();
     void destroy_children();
 
-    // unsigned get_orientation();
-    PanelList m_panels;
+    std::vector<Panel::Ptr>::iterator find_panel_by_container_wnd(HWND wnd);
+    std::vector<Panel::Ptr>::iterator find_panel_by_panel_wnd(HWND wnd);
+
+    std::vector<Panel::Ptr> m_panels;
     HWND m_wnd{nullptr};
 
     int m_last_position{};
