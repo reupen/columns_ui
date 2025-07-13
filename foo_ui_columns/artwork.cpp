@@ -35,119 +35,91 @@ std::tuple<int, int> calculate_scaled_size(
     return {scaled_width, scaled_height};
 }
 
-D2D1_COLOR_F srgb_to_linear(const D2D1_COLOR_F& srgb)
+D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustment)
 {
-    auto convert_component = [](float c) -> float {
+    auto convert_component = [white_level_adjustment](float c) -> float {
         if (c <= 0.04045f) {
-            return c / 12.92f;
-        } else {
-            return std::pow((c + 0.055f) / 1.055f, 2.4f);
+            return c / 12.92f * white_level_adjustment;
         }
+
+        return std::pow((c + 0.055f) / 1.055f, 2.4f) * white_level_adjustment;
     };
 
-    return D2D1::ColorF(convert_component(srgb.r), convert_component(srgb.g), convert_component(srgb.b),
-        srgb.a // Alpha remains unchanged
-    );
+    return D2D1::ColorF(convert_component(srgb_colour.r), convert_component(srgb_colour.g),
+        convert_component(srgb_colour.b), srgb_colour.a);
 }
 
-std::optional<UINT32> GetSDRWhiteLevel()
+HRESULT create_d3d_device(ID3D11Device** device)
 {
-    // Step 1: Get the required buffer sizes
-    UINT32 pathCount = 0;
-    UINT32 modeCount = 0;
-    LONG result = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);
-    if (result != ERROR_SUCCESS) {
-        return std::nullopt;
-    }
+    D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
+        D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1};
 
-    // Step 2: Allocate buffers
-    std::vector<DISPLAYCONFIG_PATH_INFO> paths(pathCount);
-    std::vector<DISPLAYCONFIG_MODE_INFO> modes(modeCount);
+#ifdef _DEBUG
+    auto hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0,
+        D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG, feature_levels, std::size(feature_levels),
+        D3D11_SDK_VERSION, device, nullptr, nullptr);
 
-    // Step 3: Query the display configuration
-    result = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths.data(), &modeCount, modes.data(), nullptr);
-    if (result != ERROR_SUCCESS) {
-        return std::nullopt;
-    }
+    if (SUCCEEDED(hr) || hr != DXGI_ERROR_SDK_COMPONENT_MISSING)
+        return hr;
 
-    // Step 4: For each active path, try to get the SDR white level
-    for (UINT32 i = 0; i < pathCount; ++i) {
-        DISPLAYCONFIG_SDR_WHITE_LEVEL sdrWhiteLevel = {};
-        sdrWhiteLevel.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL;
-        sdrWhiteLevel.header.size = sizeof(DISPLAYCONFIG_SDR_WHITE_LEVEL);
-        sdrWhiteLevel.header.adapterId = paths[i].targetInfo.adapterId;
-        sdrWhiteLevel.header.id = paths[i].targetInfo.id;
+    console::print("Artwork view – Direct3D debug layer not installed");
+#endif
 
-        result = DisplayConfigGetDeviceInfo(&sdrWhiteLevel.header);
-        if (result == ERROR_SUCCESS) {
-            return sdrWhiteLevel.SDRWhiteLevel;
-        }
-    }
-
-    return std::nullopt;
+    return D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, D3D11_CREATE_DEVICE_BGRA_SUPPORT, feature_levels,
+        std::size(feature_levels), D3D11_SDK_VERSION, device, nullptr, nullptr);
 }
 
-std::optional<UINT32> GetSDRWhiteLevelForMonitorDirect(HMONITOR hMonitor)
+std::optional<unsigned> get_sdr_white_level(std::wstring_view device_name)
 {
-    if (!hMonitor) {
-        return std::nullopt;
-    }
+    try {
+        std::vector<DISPLAYCONFIG_PATH_INFO> paths;
+        std::vector<DISPLAYCONFIG_MODE_INFO> modes;
+        constexpr unsigned flags = QDC_ONLY_ACTIVE_PATHS | QDC_VIRTUAL_MODE_AWARE;
+        LONG result{};
 
-    // Get monitor info to get the device name
-    MONITORINFOEXW monitorInfo = {};
-    monitorInfo.cbSize = sizeof(MONITORINFOEXW);
+        do {
+            unsigned num_paths{};
+            unsigned num_modes{};
+            THROW_IF_WIN32_ERROR(GetDisplayConfigBufferSizes(flags, &num_paths, &num_modes));
 
-    if (!GetMonitorInfoW(hMonitor, &monitorInfo)) {
-        return std::nullopt;
-    }
+            paths.resize(num_paths);
+            modes.resize(num_modes);
 
-    // Step 1: Get the required buffer sizes
-    UINT32 pathCount = 0;
-    UINT32 modeCount = 0;
-    LONG result = GetDisplayConfigBufferSizes(QDC_ONLY_ACTIVE_PATHS, &pathCount, &modeCount);
-    if (result != ERROR_SUCCESS) {
-        return std::nullopt;
-    }
+            result = QueryDisplayConfig(flags, &num_paths, paths.data(), &num_modes, modes.data(), nullptr);
 
-    // Step 2: Allocate buffers
-    std::vector<DISPLAYCONFIG_PATH_INFO> paths(pathCount);
-    std::vector<DISPLAYCONFIG_MODE_INFO> modes(modeCount);
-
-    // Step 3: Query the display configuration
-    result = QueryDisplayConfig(QDC_ONLY_ACTIVE_PATHS, &pathCount, paths.data(), &modeCount, modes.data(), nullptr);
-    if (result != ERROR_SUCCESS) {
-        return std::nullopt;
-    }
-
-    // Step 4: Find the path that corresponds to our monitor's device name
-    for (UINT32 i = 0; i < pathCount; ++i) {
-        // Get the source device name for this path
-        DISPLAYCONFIG_SOURCE_DEVICE_NAME sourceName = {};
-        sourceName.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
-        sourceName.header.size = sizeof(DISPLAYCONFIG_SOURCE_DEVICE_NAME);
-        sourceName.header.adapterId = paths[i].sourceInfo.adapterId;
-        sourceName.header.id = paths[i].sourceInfo.id;
-
-        result = DisplayConfigGetDeviceInfo(&sourceName.header);
-        if (result == ERROR_SUCCESS) {
-            // Compare with our monitor's device name
-            if (wcscmp(sourceName.viewGdiDeviceName, monitorInfo.szDevice) == 0) {
-                // Found the matching path, now get the SDR white level
-                DISPLAYCONFIG_SDR_WHITE_LEVEL sdrWhiteLevel = {};
-                sdrWhiteLevel.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL;
-                sdrWhiteLevel.header.size = sizeof(DISPLAYCONFIG_SDR_WHITE_LEVEL);
-                sdrWhiteLevel.header.adapterId = paths[i].targetInfo.adapterId;
-                sdrWhiteLevel.header.id = paths[i].targetInfo.id;
-
-                result = DisplayConfigGetDeviceInfo(&sdrWhiteLevel.header);
-                if (result == ERROR_SUCCESS) {
-                    return sdrWhiteLevel.SDRWhiteLevel;
-                }
+            if (result != ERROR_INSUFFICIENT_BUFFER) {
+                THROW_IF_WIN32_ERROR(result);
+                paths.resize(num_paths);
+                modes.resize(num_modes);
             }
+        } while (result == ERROR_INSUFFICIENT_BUFFER);
+
+        for (auto& path : paths) {
+            DISPLAYCONFIG_SOURCE_DEVICE_NAME source_name{};
+            source_name.header.adapterId = path.sourceInfo.adapterId;
+            source_name.header.id = path.sourceInfo.id;
+            source_name.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SOURCE_NAME;
+            source_name.header.size = sizeof(source_name);
+            THROW_IF_WIN32_ERROR(DisplayConfigGetDeviceInfo(&source_name.header));
+
+            if (std::wstring_view(source_name.viewGdiDeviceName, std::size(source_name.viewGdiDeviceName))
+                != device_name)
+                continue;
+
+            DISPLAYCONFIG_SDR_WHITE_LEVEL sdr_white_level{};
+            sdr_white_level.header.type = DISPLAYCONFIG_DEVICE_INFO_GET_SDR_WHITE_LEVEL;
+            sdr_white_level.header.size = sizeof(DISPLAYCONFIG_SDR_WHITE_LEVEL);
+            sdr_white_level.header.adapterId = path.targetInfo.adapterId;
+            sdr_white_level.header.id = path.targetInfo.id;
+
+            THROW_IF_WIN32_ERROR(DisplayConfigGetDeviceInfo(&sdr_white_level.header));
+
+            return sdr_white_level.SDRWhiteLevel;
         }
     }
+    CATCH_LOG()
 
-    return std::nullopt;
+    return {};
 }
 
 } // namespace
@@ -343,32 +315,41 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_d2d_factory.reset();
         m_d3d_device.reset();
         m_dxgi_swap_chain.reset();
+        m_sdr_white_level.reset();
+        m_dxgi_output_desc.reset();
+        m_image_effect.reset();
         break;
     case WM_ERASEBKGND:
         return FALSE;
     case WM_WINDOWPOSCHANGED: {
-        auto lpwp = (LPWINDOWPOS)lp;
-        if (!(lpwp->flags & SWP_NOSIZE)) {
-            if (m_dxgi_swap_chain) {
-                RECT client_rect{};
-                GetClientRect(wnd, &client_rect);
+        const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
 
-                m_d2d_device_context.reset();
+        if (!m_dxgi_swap_chain || (lpwp->flags & SWP_NOSIZE))
+            break;
 
-                HRESULT hr = m_dxgi_swap_chain->ResizeBuffers(2, gsl::narrow<unsigned>(wil::rect_width(client_rect)),
-                    gsl::narrow<unsigned>(wil::rect_height(client_rect)), DXGI_FORMAT_R16G16B16A16_FLOAT, 0);
+        if (m_dxgi_swap_chain) {
+            RECT client_rect{};
+            GetClientRect(wnd, &client_rect);
 
-                if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
-                    m_dxgi_swap_chain.reset();
-                    m_d3d_device.reset();
-                    m_d2d_device.reset();
-                } else if (FAILED(hr))
-                    LOG_HR(hr);
-            }
+            m_d2d_device_context.reset();
+            m_image_effect.reset();
 
-            invalidate_window();
+            HRESULT hr = m_dxgi_swap_chain->ResizeBuffers(2, gsl::narrow<unsigned>(wil::rect_width(client_rect)),
+                gsl::narrow<unsigned>(wil::rect_height(client_rect)), DXGI_FORMAT_R16G16B16A16_FLOAT, 0);
+
+            if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
+                m_dxgi_swap_chain.reset();
+                m_d3d_device.reset();
+                m_d2d_device.reset();
+                m_sdr_white_level.reset();
+                m_dxgi_output_desc.reset();
+            } else if (FAILED(hr))
+                LOG_HR(hr);
         }
-    } break;
+
+        invalidate_window();
+        break;
+    }
     case WM_LBUTTONDOWN: {
         switch (static_cast<ClickAction>(click_action.get())) {
         case ClickAction::open_image_viewer:
@@ -384,57 +365,36 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto background_colour = colours::helper(g_guid_colour_client).get_colour(colours::colour_background);
 
         try {
-            create_d2d_render_target();
+            create_d2d_device_context();
 
             if (!m_d2d_device_context)
                 return 0;
 
             const auto context = m_d2d_device_context.query<ID2D1DeviceContext>();
             const auto context_4 = m_d2d_device_context.query<ID2D1DeviceContext5>();
-            wil::com_ptr<ID2D1Effect> colour_management_effect;
-            wil::com_ptr<ID2D1Effect> scale_effect;
-            wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
 
-            THROW_IF_FAILED(context->CreateEffect(CLSID_D2D1ColorManagement, colour_management_effect.put()));
-            wil::com_ptr<ID2D1ColorContext1> destColorContext;
-            THROW_IF_FAILED(context_4->CreateColorContextFromDxgiColorSpace(
-                DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709, &destColorContext));
-            THROW_IF_FAILED(context->CreateEffect(CLSID_D2D1Scale, scale_effect.put()));
-            THROW_IF_FAILED(context->CreateEffect(CLSID_D2D1WhiteLevelAdjustment, white_level_adjustment_effect.put()));
+            create_image_colour_processing_effect();
 
-            const auto d2d_background_colour = srgb_to_linear(uih::d2d::colorref_to_d2d_color(background_colour));
+            const auto is_hdr_display
+                = m_dxgi_output_desc && m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+
+            const auto d2d_background_colour = [&] {
+                const auto d2d_colour = uih::d2d::colorref_to_d2d_color(background_colour);
+                if (m_dxgi_output_desc) {
+                    const auto white_level_adjustment
+                        = m_sdr_white_level && is_hdr_display ? *m_sdr_white_level / 1000.f : 1.f;
+                    return srgb_to_linear(d2d_colour, white_level_adjustment);
+                }
+
+                return d2d_colour;
+            }();
 
             m_d2d_device_context->BeginDraw();
             m_d2d_device_context->Clear(d2d_background_colour);
 
             const auto& bitmap = m_artwork_decoder.get_image();
-            const auto& color_context = m_artwork_decoder.get_color_context();
 
             if (bitmap) {
-                if (color_context) {
-                    console::print("have color_context");
-
-                    THROW_IF_FAILED(colour_management_effect->SetValue(
-                        D2D1_COLORMANAGEMENT_PROP_SOURCE_COLOR_CONTEXT, color_context.get()));
-                }
-
-                THROW_IF_FAILED(colour_management_effect->SetValue(
-                    D2D1_COLORMANAGEMENT_PROP_DESTINATION_COLOR_CONTEXT, destColorContext.get()));
-                THROW_IF_FAILED(colour_management_effect->SetValue(
-                    D2D1_COLORMANAGEMENT_PROP_QUALITY, D2D1_COLORMANAGEMENT_QUALITY_BEST));
-
-                auto monitor_sdr_level = GetSDRWhiteLevel();
-                auto input_level = monitor_sdr_level ? (float)(*monitor_sdr_level) / 1000.f * 80.f : 80.f;
-
-                console::print(input_level);
-
-                THROW_IF_FAILED(white_level_adjustment_effect->SetValue(
-                    D2D1_WHITELEVELADJUSTMENT_PROP_INPUT_WHITE_LEVEL, input_level));
-                THROW_IF_FAILED(
-                    white_level_adjustment_effect->SetValue(D2D1_WHITELEVELADJUSTMENT_PROP_OUTPUT_WHITE_LEVEL, 80.0f));
-
-                colour_management_effect->SetInput(0, bitmap.get());
-
                 auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
                 auto [render_target_width, render_target_height] = m_d2d_device_context->GetPixelSize();
 
@@ -449,22 +409,15 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 auto left = (render_target_width - scaled_width) * .5f * 96.0f / dpi_x;
                 auto top = (render_target_height - scaled_height) * .5f * 96.0f / dpi_x;
 
-                THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
-                    D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),
-                        scaled_height / gsl::narrow_cast<float>(bitmap_height))));
-                scale_effect->SetInputEffect(0, colour_management_effect.get());
-
-                white_level_adjustment_effect->SetInputEffect(0, scale_effect.get());
-
-                auto rect
-                    = D2D1::RectF(left, top, left + scaled_width * 96.0f / dpi_x, top + scaled_height * 96.0f / dpi_y);
-
-                if (context_4) {
-                    auto offset = D2D1::Point2F(left, top);
-                    context_4->DrawImage(white_level_adjustment_effect.get(), &offset, nullptr,
-                        D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
-                } else
+                if (context_4 && m_image_effect) {
+                    const auto offset = D2D1::Point2F(left, top);
+                    context_4->DrawImage(
+                        m_image_effect.get(), &offset, nullptr, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
+                } else {
+                    const auto rect = D2D1::RectF(
+                        left, top, left + scaled_width * 96.0f / dpi_x, top + scaled_height * 96.0f / dpi_y);
                     context->DrawBitmap(bitmap.get(), &rect, 1.f, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
+                }
             }
 
             auto result = m_d2d_device_context->EndDraw();
@@ -479,6 +432,9 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 m_d2d_device.reset();
                 m_d3d_device.reset();
                 m_artwork_decoder.reset();
+                m_sdr_white_level.reset();
+                m_dxgi_output_desc.reset();
+                m_image_effect.reset();
                 refresh_image();
                 return 0;
             }
@@ -492,16 +448,11 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }
-void ArtworkPanel::create_d2d_render_target()
-{
-    if (!m_d3d_device) {
-        D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
-            D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1};
 
-        THROW_IF_FAILED(D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0,
-            D3D11_CREATE_DEVICE_BGRA_SUPPORT | (_DEBUG ? D3D11_CREATE_DEVICE_DEBUG : 0), feature_levels,
-            std::size(feature_levels), D3D11_SDK_VERSION, &m_d3d_device, nullptr, nullptr));
-    }
+void ArtworkPanel::create_d2d_device_context()
+{
+    if (!m_d3d_device)
+        THROW_IF_FAILED(create_d3d_device(&m_d3d_device));
 
     if (!m_d2d_factory) {
         D2D1_FACTORY_OPTIONS options{};
@@ -523,7 +474,7 @@ void ArtworkPanel::create_d2d_render_target()
     const auto set_swap_chain = !m_dxgi_swap_chain || !m_d2d_device_context;
 
     if (!m_dxgi_swap_chain) {
-        DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+        DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
         swapChainDesc.Width = 0; // use automatic sizing
         swapChainDesc.Height = 0;
         swapChainDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
@@ -545,23 +496,36 @@ void ArtworkPanel::create_d2d_render_target()
         THROW_IF_FAILED(dxgi_factory->CreateSwapChainForHwnd(
             m_d3d_device.get(), get_wnd(), &swapChainDesc, nullptr, nullptr, &m_dxgi_swap_chain));
 
-        auto swap_chain_3 = m_dxgi_swap_chain.query<IDXGISwapChain3>();
+        if (const auto swap_chain_3 = m_dxgi_swap_chain.try_query<IDXGISwapChain3>()) {
+            UINT colour_space_flags{};
+            THROW_IF_FAILED(
+                swap_chain_3->CheckColorSpaceSupport(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709, &colour_space_flags));
 
-        UINT colour_space_flags{};
-        THROW_IF_FAILED(
-            swap_chain_3->CheckColorSpaceSupport(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709, &colour_space_flags));
+            if ((colour_space_flags & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT)) {
+                console::print("Set colour space");
 
-        if ((colour_space_flags & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT)) {
-            console::print("Set colour space");
-
-            THROW_IF_FAILED(swap_chain_3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709));
+                THROW_IF_FAILED(swap_chain_3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709));
+            }
         }
 
         THROW_IF_FAILED(dxgi_device->SetMaximumFrameLatency(1));
 
-        // wil::com_ptr<ID3D11Texture2D> backBuffer;
-        // THROW_IF_FAILED(m_dxgi_swap_chain->GetBuffer(0, __uuidof(ID3D11Texture2D), backBuffer.put_void()));
-        //
+        wil::com_ptr<IDXGIOutput> dxgi_output;
+        THROW_IF_FAILED(m_dxgi_swap_chain->GetContainingOutput(&dxgi_output));
+
+        if (const auto dxgi_output_6 = dxgi_output.try_query<IDXGIOutput6>()) {
+            DXGI_OUTPUT_DESC1 output_desc{};
+            THROW_IF_FAILED(dxgi_output_6->GetDesc1(&output_desc));
+            m_dxgi_output_desc = output_desc;
+
+            console::print(mmh::to_utf8(m_dxgi_output_desc->DeviceName).c_str());
+
+            m_sdr_white_level = get_sdr_white_level(
+                std::wstring_view(m_dxgi_output_desc->DeviceName, std::size(m_dxgi_output_desc->DeviceName)));
+
+            if (m_sdr_white_level)
+                console::print("sdr white level: ", *m_sdr_white_level);
+        }
     }
 
     if (!m_d2d_device_context) {
@@ -584,19 +548,83 @@ void ArtworkPanel::create_d2d_render_target()
 
         m_d2d_device_context->SetTarget(m_d2dTargetBitmap.get());
     }
+}
+void ArtworkPanel::create_image_colour_processing_effect()
+{
+    if (m_image_effect)
+        return;
 
-#if 0
-    if (!m_d2d_render_target) {
-        RECT rect{};
-        GetClientRect(get_wnd(), &rect);
+    const auto& bitmap = m_artwork_decoder.get_image();
 
-        const auto base_properties = D2D1::RenderTargetProperties();
-        const auto hwnd_properties = D2D1::HwndRenderTargetProperties(
-            get_wnd(), {gsl::narrow<unsigned>(wil::rect_width(rect)), gsl::narrow<unsigned>(wil::rect_height(rect))});
-        THROW_IF_FAILED(
-            m_d2d_factory->CreateHwndRenderTarget(&base_properties, &hwnd_properties, &m_d2d_render_target));
+    if (!m_d2d_device_context || !bitmap || !m_dxgi_output_desc)
+        return;
+
+    const auto& color_context = m_artwork_decoder.get_color_context();
+    const auto is_hdr_display = m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
+    const auto device_context_5 = m_d2d_device_context.query<ID2D1DeviceContext5>();
+
+    wil::com_ptr<ID2D1Effect> colour_management_effect;
+    THROW_IF_FAILED(m_d2d_device_context->CreateEffect(CLSID_D2D1ColorManagement, &colour_management_effect));
+
+    THROW_IF_FAILED(
+        colour_management_effect->SetValue(D2D1_COLORMANAGEMENT_PROP_QUALITY, D2D1_COLORMANAGEMENT_QUALITY_BEST));
+    THROW_IF_FAILED(
+        colour_management_effect->SetValue(D2D1_COLORMANAGEMENT_PROP_SOURCE_COLOR_CONTEXT, color_context.get()));
+
+    wil::com_ptr<ID2D1ColorContext1> dest_color_context;
+    THROW_IF_FAILED(device_context_5->CreateColorContextFromDxgiColorSpace(
+        DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709, &dest_color_context));
+    THROW_IF_FAILED(colour_management_effect->SetValue(
+        D2D1_COLORMANAGEMENT_PROP_DESTINATION_COLOR_CONTEXT, dest_color_context.get()));
+
+    wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
+    THROW_IF_FAILED(m_d2d_device_context->CreateEffect(CLSID_D2D1WhiteLevelAdjustment, &white_level_adjustment_effect));
+
+    const auto is_hdr_image = m_artwork_decoder.is_float();
+
+    std::optional<float> input_level{};
+    std::optional<float> output_level{};
+
+    if (m_sdr_white_level && is_hdr_display && !is_hdr_image) {
+        input_level = gsl::narrow_cast<float>(*m_sdr_white_level) / 1000.f * D2D1_SCENE_REFERRED_SDR_WHITE_LEVEL;
+        output_level = D2D1_SCENE_REFERRED_SDR_WHITE_LEVEL;
+    } else if (is_hdr_image && !is_hdr_display) {
+        input_level = D2D1_SCENE_REFERRED_SDR_WHITE_LEVEL;
+        output_level = m_dxgi_output_desc->MaxLuminance;
     }
-#endif
+
+    if (input_level)
+        THROW_IF_FAILED(
+            white_level_adjustment_effect->SetValue(D2D1_WHITELEVELADJUSTMENT_PROP_INPUT_WHITE_LEVEL, *input_level));
+
+    if (output_level)
+        THROW_IF_FAILED(
+            white_level_adjustment_effect->SetValue(D2D1_WHITELEVELADJUSTMENT_PROP_OUTPUT_WHITE_LEVEL, *output_level));
+
+    colour_management_effect->SetInput(0, bitmap.get());
+
+    wil::com_ptr<ID2D1Effect> scale_effect;
+    THROW_IF_FAILED(m_d2d_device_context->CreateEffect(CLSID_D2D1Scale, scale_effect.put()));
+
+    auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
+    auto [render_target_width, render_target_height] = m_d2d_device_context->GetPixelSize();
+
+    float dpi_x{};
+    float dpi_y{};
+    m_d2d_device_context->GetDpi(&dpi_x, &dpi_y);
+
+    const auto [scaled_width, scaled_height]
+        = calculate_scaled_size(gsl::narrow<int>(bitmap_width), gsl::narrow<int>(bitmap_height),
+            gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height), m_preserve_aspect_ratio);
+
+    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
+        D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),
+            scaled_height / gsl::narrow_cast<float>(bitmap_height))));
+    scale_effect->SetInputEffect(0, colour_management_effect.get());
+
+    white_level_adjustment_effect->SetInputEffect(0, scale_effect.get());
+
+    m_image_effect = white_level_adjustment_effect;
 }
 
 bool g_check_process_on_selection_changed()
@@ -676,10 +704,13 @@ void ArtworkPanel::force_reload_artwork()
             handle = m_selection_handles[0];
     }
 
-    if (handle.is_valid())
+    if (handle.is_valid()) {
+        m_image_effect.reset();
+        m_artwork_decoder.reset();
         request_artwork(handle, is_from_playback);
-    else
+    } else {
         clear_image();
+    }
 }
 
 bool ArtworkPanel::is_core_image_viewer_available() const
@@ -828,6 +859,8 @@ void ArtworkPanel::show_stub_image()
         data = m_artwork_reader->get_stub_image(artwork_type_id);
     }
 
+    m_image_effect.reset();
+
     if (!data.is_valid()) {
         m_artwork_decoder.reset();
         invalidate_window();
@@ -835,7 +868,7 @@ void ArtworkPanel::show_stub_image()
     }
 
     try {
-        create_d2d_render_target();
+        create_d2d_device_context();
     }
     CATCH_LOG()
 
@@ -858,9 +891,11 @@ void ArtworkPanel::refresh_image()
         return;
 
     try {
-        create_d2d_render_target();
+        create_d2d_device_context();
     }
     CATCH_LOG()
+
+    m_image_effect.reset();
 
     if (m_d2d_device_context)
         m_artwork_decoder.decode(m_d2d_device_context, data, [this, self{ptr{this}}] { invalidate_window(); });
@@ -868,6 +903,7 @@ void ArtworkPanel::refresh_image()
 
 void ArtworkPanel::clear_image()
 {
+    m_image_effect.reset();
     m_artwork_decoder.reset();
 
     if (m_artwork_reader)
