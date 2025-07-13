@@ -49,23 +49,23 @@ D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustme
         convert_component(srgb_colour.b), srgb_colour.a);
 }
 
-HRESULT create_d3d_device(ID3D11Device** device)
+HRESULT create_d3d_device(D3D_DRIVER_TYPE driver_type, ID3D11Device** device)
 {
-    D3D_FEATURE_LEVEL feature_levels[] = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1};
+    D3D_FEATURE_LEVEL feature_levels[]
+        = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
 
 #ifdef _DEBUG
-    auto hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0,
-        D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG, feature_levels, std::size(feature_levels),
-        D3D11_SDK_VERSION, device, nullptr, nullptr);
+    const auto hr
+        = D3D11CreateDevice(nullptr, driver_type, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG,
+            feature_levels, std::size(feature_levels), D3D11_SDK_VERSION, device, nullptr, nullptr);
 
-    if (SUCCEEDED(hr) || hr != DXGI_ERROR_SDK_COMPONENT_MISSING)
+    if (SUCCEEDED(hr) || (hr != DXGI_ERROR_SDK_COMPONENT_MISSING && hr != E_FAIL))
         return hr;
 
     console::print("Artwork view – Direct3D debug layer not installed");
 #endif
 
-    return D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, 0, D3D11_CREATE_DEVICE_BGRA_SUPPORT, feature_levels,
+    return D3D11CreateDevice(nullptr, driver_type, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT, feature_levels,
         std::size(feature_levels), D3D11_SDK_VERSION, device, nullptr, nullptr);
 }
 
@@ -94,7 +94,7 @@ std::optional<unsigned> get_sdr_white_level(std::wstring_view device_name)
             }
         } while (result == ERROR_INSUFFICIENT_BUFFER);
 
-        for (auto& path : paths) {
+        for (const auto& path : paths) {
             DISPLAYCONFIG_SOURCE_DEVICE_NAME source_name{};
             source_name.header.adapterId = path.sourceInfo.adapterId;
             source_name.header.id = path.sourceInfo.id;
@@ -318,6 +318,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_sdr_white_level.reset();
         m_dxgi_output_desc.reset();
         m_image_effect.reset();
+        m_swap_chain_format.reset();
         break;
     case WM_ERASEBKGND:
         return FALSE;
@@ -339,6 +340,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
                 m_dxgi_swap_chain.reset();
+                m_swap_chain_format.reset();
                 m_d3d_device.reset();
                 m_d2d_device.reset();
                 m_sdr_white_level.reset();
@@ -371,7 +373,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 return 0;
 
             const auto context = m_d2d_device_context.query<ID2D1DeviceContext>();
-            const auto context_4 = m_d2d_device_context.query<ID2D1DeviceContext5>();
+            const auto context_4 = m_d2d_device_context.try_query<ID2D1DeviceContext5>();
 
             create_image_colour_processing_effect();
 
@@ -451,8 +453,16 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
 void ArtworkPanel::create_d2d_device_context()
 {
-    if (!m_d3d_device)
-        THROW_IF_FAILED(create_d3d_device(&m_d3d_device));
+    if (!m_d3d_device) {
+        const auto hr = create_d3d_device(D3D_DRIVER_TYPE_HARDWARE, &m_d3d_device);
+
+#ifdef _DEBUG
+        LOG_IF_FAILED(hr);
+#endif
+
+        if (FAILED(hr))
+            THROW_IF_FAILED(create_d3d_device(D3D_DRIVER_TYPE_WARP, &m_d3d_device));
+    }
 
     if (!m_d2d_factory) {
         D2D1_FACTORY_OPTIONS options{};
@@ -474,43 +484,41 @@ void ArtworkPanel::create_d2d_device_context()
     const auto set_swap_chain = !m_dxgi_swap_chain || !m_d2d_device_context;
 
     if (!m_dxgi_swap_chain) {
-        DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
-        swapChainDesc.Width = 0; // use automatic sizing
-        swapChainDesc.Height = 0;
-        swapChainDesc.Format = DXGI_FORMAT_R16G16B16A16_FLOAT;
-        swapChainDesc.Stereo = false;
-        swapChainDesc.SampleDesc.Count = 1; // don't use multi-sampling
-        swapChainDesc.SampleDesc.Quality = 0;
-        swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-        swapChainDesc.BufferCount = 2; // use double buffering to enable flip
-        swapChainDesc.Scaling = DXGI_SCALING_NONE;
-        swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; // all apps must use this SwapEffect
-        swapChainDesc.Flags = 0;
-
         wil::com_ptr<IDXGIAdapter> dxgi_adapter;
         THROW_IF_FAILED(dxgi_device->GetAdapter(&dxgi_adapter));
 
         wil::com_ptr<IDXGIFactory2> dxgi_factory;
         THROW_IF_FAILED(dxgi_adapter->GetParent(__uuidof(IDXGIFactory2), dxgi_factory.put_void()));
 
+        const auto dxgi_factory_6 = dxgi_factory.try_query<IDXGIFactory6>();
+
+        DXGI_SWAP_CHAIN_DESC1 swap_chain_desc{};
+        swap_chain_desc.Width = 0;
+        swap_chain_desc.Height = 0;
+        swap_chain_desc.Format = dxgi_factory_6 ? DXGI_FORMAT_R16G16B16A16_FLOAT : DXGI_FORMAT_R8G8B8A8_UNORM;
+        swap_chain_desc.Stereo = false;
+        swap_chain_desc.SampleDesc.Count = 1;
+        swap_chain_desc.SampleDesc.Quality = 0;
+        swap_chain_desc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+        swap_chain_desc.BufferCount = 2;
+        swap_chain_desc.Scaling = mmh::is_windows_8_or_newer() ? DXGI_SCALING_NONE : DXGI_SCALING_STRETCH;
+        swap_chain_desc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
+        swap_chain_desc.Flags = 0;
+
         THROW_IF_FAILED(dxgi_factory->CreateSwapChainForHwnd(
-            m_d3d_device.get(), get_wnd(), &swapChainDesc, nullptr, nullptr, &m_dxgi_swap_chain));
+            m_d3d_device.get(), get_wnd(), &swap_chain_desc, nullptr, nullptr, &m_dxgi_swap_chain));
 
-        if (const auto swap_chain_3 = m_dxgi_swap_chain.try_query<IDXGISwapChain3>()) {
-            UINT colour_space_flags{};
-            THROW_IF_FAILED(
-                swap_chain_3->CheckColorSpaceSupport(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709, &colour_space_flags));
+        m_swap_chain_format = swap_chain_desc.Format;
 
-            if ((colour_space_flags & DXGI_SWAP_CHAIN_COLOR_SPACE_SUPPORT_FLAG_PRESENT)) {
-                console::print("Set colour space");
-
-                THROW_IF_FAILED(swap_chain_3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709));
-            }
+        if (dxgi_factory_6) {
+            const auto swap_chain_3 = m_dxgi_swap_chain.query<IDXGISwapChain3>();
+            THROW_IF_FAILED(swap_chain_3->SetColorSpace1(DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709));
         }
 
         THROW_IF_FAILED(dxgi_device->SetMaximumFrameLatency(1));
 
         wil::com_ptr<IDXGIOutput> dxgi_output;
+        // FIXME https://learn.microsoft.com/en-us/windows/win32/direct3darticles/high-dynamic-range#idxgioutput6
         THROW_IF_FAILED(m_dxgi_swap_chain->GetContainingOutput(&dxgi_output));
 
         if (const auto dxgi_output_6 = dxgi_output.try_query<IDXGIOutput6>()) {
@@ -535,16 +543,16 @@ void ArtworkPanel::create_d2d_device_context()
 
     if (set_swap_chain) {
         auto dpi = gsl::narrow_cast<float>(uih::get_system_dpi_cached().cx);
-        D2D1_BITMAP_PROPERTIES1 bitmapProperties
+        D2D1_BITMAP_PROPERTIES1 bitmap_properties
             = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-                D2D1::PixelFormat(DXGI_FORMAT_R16G16B16A16_FLOAT, D2D1_ALPHA_MODE_PREMULTIPLIED), dpi, dpi);
+                D2D1::PixelFormat(*m_swap_chain_format, D2D1_ALPHA_MODE_PREMULTIPLIED), dpi, dpi);
 
-        wil::com_ptr<IDXGISurface> dxgiBackBuffer;
-        THROW_IF_FAILED(m_dxgi_swap_chain->GetBuffer(0, __uuidof(IDXGISurface), dxgiBackBuffer.put_void()));
+        wil::com_ptr<IDXGISurface> dxgi_back_buffer;
+        THROW_IF_FAILED(m_dxgi_swap_chain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_back_buffer.put_void()));
 
         wil::com_ptr<ID2D1Bitmap1> m_d2dTargetBitmap;
         THROW_IF_FAILED(m_d2d_device_context->CreateBitmapFromDxgiSurface(
-            dxgiBackBuffer.get(), &bitmapProperties, &m_d2dTargetBitmap));
+            dxgi_back_buffer.get(), &bitmap_properties, &m_d2dTargetBitmap));
 
         m_d2d_device_context->SetTarget(m_d2dTargetBitmap.get());
     }

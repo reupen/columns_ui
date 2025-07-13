@@ -168,7 +168,6 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void create_d2d_device_context();
     void create_image_colour_processing_effect();
-    void create_scale_effect();
     void refresh_image();
     void clear_image();
     void show_stub_image();
@@ -180,6 +179,7 @@ private:
     wil::com_ptr<ID2D1DeviceContext> m_d2d_device_context;
     wil::com_ptr<ID3D11Device> m_d3d_device;
     wil::com_ptr<IDXGISwapChain1> m_dxgi_swap_chain;
+    std::optional<DXGI_FORMAT> m_swap_chain_format;
     std::optional<unsigned> m_sdr_white_level;
     std::optional<DXGI_OUTPUT_DESC1> m_dxgi_output_desc;
     wil::com_ptr<ID2D1Effect> m_image_effect;
