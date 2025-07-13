@@ -173,8 +173,11 @@ private:
     void invalidate_window() const;
     size_t get_displayed_artwork_type_index() const;
 
-    wil::com_ptr<ID2D1Factory> m_d2d_factory;
-    wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
+    wil::com_ptr<ID2D1Factory1> m_d2d_factory;
+    wil::com_ptr<ID2D1Device> m_d2d_device;
+    wil::com_ptr<ID2D1DeviceContext> m_d2d_device_context;
+    wil::com_ptr<ID3D11Device> m_d3d_device;
+    wil::com_ptr<IDXGISwapChain1> m_dxgi_swap_chain;
 
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
     ArtworkDecoder m_artwork_decoder;
