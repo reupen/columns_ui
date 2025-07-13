@@ -15,8 +15,8 @@ class ArtworkDecoder {
 public:
     ~ArtworkDecoder() { abort(); }
 
-    void decode(wil::com_ptr<ID2D1HwndRenderTarget> d2d_render_target, album_art_data_ptr data,
-        std::function<void()> on_complete);
+    void decode(
+        wil::com_ptr<ID2D1DeviceContext> d2d_render_target, album_art_data_ptr data, std::function<void()> on_complete);
 
     void abort()
     {
@@ -30,6 +30,8 @@ public:
     {
         abort();
         m_decoded_image.reset();
+        m_colour_context.reset();
+        m_is_float.reset();
     }
 
     void shut_down()
@@ -41,10 +43,14 @@ public:
     bool has_image() const { return static_cast<bool>(m_decoded_image); }
 
     wil::com_ptr<ID2D1Bitmap> get_image() { return m_decoded_image; }
+    wil::com_ptr<ID2D1ColorContext> get_colour_context() { return m_colour_context; }
+    bool is_float() const { return m_is_float.value_or(false); }
 
     ArtworkDecoderTask::Ptr m_current_task;
     std::vector<ArtworkDecoderTask::Ptr> m_aborting_tasks;
     wil::com_ptr<ID2D1Bitmap> m_decoded_image;
+    wil::com_ptr<ID2D1ColorContext> m_colour_context;
+    std::optional<bool> m_is_float{};
 };
 
 } // namespace cui::artwork_panel

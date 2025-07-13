@@ -17,10 +17,12 @@ struct ModernColours {
 };
 
 using ModernColoursChangedHandler = std::function<void()>;
+using DisplayChangedHandler = std::function<void()>;
 
 void initialise();
 [[nodiscard]] std::optional<ModernColours> get_modern_colours();
 [[nodiscard]] std::unique_ptr<EventToken> add_modern_colours_change_handler(ModernColoursChangedHandler event_handler);
+[[nodiscard]] std::unique_ptr<EventToken> add_display_changed_handler(DisplayChangedHandler event_handler);
 [[nodiscard]] bool is_dark_mode_available();
 [[nodiscard]] bool is_dark_mode_enabled();
 

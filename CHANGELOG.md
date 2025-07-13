@@ -1,5 +1,14 @@
 # Change log
 
+## Development version
+
+### Features
+
+- The Artwork view now supports Windows 10 and 11 advanced colour management,
+  with improved support for HDR images, images with an embedded colour profile
+  and images with more than eight bits per channel.
+  [[#1275](https://github.com/reupen/columns_ui/pull/1275)]
+
 ## 3.0.1
 
 ### Bug fixes
