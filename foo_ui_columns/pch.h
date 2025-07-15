@@ -86,6 +86,8 @@
 #pragma clang diagnostic warning "-Winconsistent-missing-override"
 #pragma clang diagnostic warning "-Woverloaded-virtual"
 #pragma clang diagnostic warning "-Wreorder-ctor"
+
+#pragma comment(lib, "windowsapp.lib")
 #endif
 
 #include "../foobar2000/SDK/foobar2000.h"
