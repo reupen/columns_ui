@@ -64,6 +64,8 @@
 #include <strsafe.h>
 #include <strstream>
 #include <d2d1_3.h>
+#include <d3d11_1.h>
+#include <dxgi1_6.h>
 
 #include <wil/cppwinrt.h>
 #include <wil/com.h>
