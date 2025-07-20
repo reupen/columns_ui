@@ -9,6 +9,15 @@
   and images with more than eight bits per channel.
   [[#1275](https://github.com/reupen/columns_ui/pull/1275)]
 
+### Bug fixes
+
+- The built-in spectrum analyser visualisation now uses the same frequency scale
+  as the Default UI Spectrum visualisation, and the scale is standardised for
+  all playback sample rates.
+  [[#1276](https://github.com/reupen/columns_ui/pull/1276)]
+
+  This applies only when the horizontal axis is set to use a logarithmic scale.
+
 ## 3.0.1
 
 ### Bug fixes

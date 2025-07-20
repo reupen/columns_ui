@@ -52,6 +52,62 @@ void migrate_spectrum_analyser_colours(COLORREF foreground, COLORREF background)
     set_entry_colours(dark_entry);
 }
 
+constexpr auto get_fft_bins(size_t fft_size, size_t x_index, size_t x_count, unsigned sample_rate, bool is_log)
+{
+    float start_bin{};
+    float end_bin{};
+
+    if (is_log) {
+        constexpr auto start_freq = 50.f;
+        constexpr auto end_freq = 25'000.f;
+        constexpr auto freq_ratio = end_freq / start_freq;
+        const auto nyquist_freq = static_cast<float>(sample_rate) / 2.f;
+
+        const auto normalised_x_start = static_cast<float>(x_index) / static_cast<float>(x_count);
+        const auto normalised_x_end = static_cast<float>(x_index + 1) / static_cast<float>(x_count);
+
+        const auto start = start_freq * std::pow(freq_ratio, normalised_x_start) / nyquist_freq;
+        const auto end = start_freq * std::pow(freq_ratio, normalised_x_end) / nyquist_freq;
+
+        start_bin = start * fft_size;
+        end_bin = end * fft_size;
+    } else {
+        start_bin = static_cast<float>(fft_size) * (static_cast<float>(x_index) / x_count);
+        end_bin = static_cast<float>(fft_size) * (static_cast<float>(x_index + 1) / x_count);
+    }
+
+    const size_t source_start
+        = static_cast<size_t>(std::clamp(static_cast<int>(std::lround(start_bin)), 0, static_cast<int>(fft_size) - 1));
+    size_t source_end
+        = static_cast<size_t>(std::clamp(static_cast<int>(std::lround(end_bin)), 0, static_cast<int>(fft_size) - 1));
+
+    if (source_end > source_start)
+        --source_end;
+
+    return std::make_tuple(source_start, source_end);
+}
+
+constexpr int calculate_y_position(audio_sample value, int y_count, bool is_log)
+{
+    if (is_log) {
+        constexpr auto min_db = -80.f;
+        constexpr auto max_db = 0.f;
+
+        const auto db = [&] {
+            if (value <= 0)
+                return min_db;
+
+            return std::clamp(20.f * log10(gsl::narrow_cast<float>(value)), min_db, max_db);
+        }();
+
+        const auto percentage = (db - min_db) / (max_db - min_db);
+        return std::clamp(static_cast<int>(std::lround(percentage * y_count)), 0, y_count);
+    }
+
+    const auto clamped_value = std::clamp(gsl::narrow_cast<float>(value), 0.f, 1.f);
+    return std::clamp(static_cast<int>(std::lround(y_count * clamped_value)), 0, y_count);
+}
+
 } // namespace
 
 enum {
@@ -362,43 +418,6 @@ void CALLBACK SpectrumAnalyserVisualisation::g_timer_proc(HWND wnd, UINT msg, UI
     s_refresh_all();
 }
 
-void g_scale_value(
-    size_t source_count, size_t index, size_t dest_count, size_t& source_start, size_t& source_end, bool b_log)
-{
-    double start;
-    double end;
-    if (b_log) {
-        static constexpr auto power = 500;
-        static const double exp0 = pow(power, 0);
-        static const double exp1 = pow(power, 1);
-        start = (double)source_count * (pow(power, double(index) / (double)dest_count) - exp0) / (exp1 - exp0);
-        end = (double)source_count * (pow(power, double(index + 1) / (double)dest_count) - exp0) / (exp1 - exp0);
-    } else {
-        start = (double)source_count * ((double)(index) / (double)dest_count);
-        end = (double)source_count * ((double)(index + 1) / (double)dest_count);
-    }
-    source_start = pfc::rint32(start);
-    source_end = pfc::rint32(end);
-    if (source_end > source_start)
-        --source_end;
-}
-
-int g_scale_value_single(double val, int count, bool b_log)
-{
-    double val_trans;
-    if (b_log) {
-        constexpr auto minimum_value = -4;
-        double log_val = val > 0 ? log10(val) : minimum_value;
-        if (log_val < minimum_value)
-            log_val = minimum_value;
-        val_trans = count * (log_val + -minimum_value) / -minimum_value;
-    } else {
-        double start = (double)count * val;
-        val_trans = start;
-    }
-    return std::clamp(pfc::rint32(val_trans), 0, count);
-}
-
 void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
 {
     ui_extension::visualisation_host::painter_ptr ps;
@@ -406,6 +425,7 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
 
     HDC dc = ps->get_device_context();
     const RECT* rc_client = ps->get_area();
+
     {
         paint_background(dc, rc_client);
 
@@ -415,69 +435,66 @@ void SpectrumAnalyserVisualisation::refresh(const audio_chunk* p_chunk)
             if (!s_foreground_brush)
                 s_foreground_brush.reset(CreateSolidBrush(colours.get_colour(colours::colour_text)));
 
+            const auto data = p_chunk->get_data();
+            const auto sample_count = p_chunk->get_sample_count();
+            const auto channel_count = p_chunk->get_channels();
+            const auto sample_rate = p_chunk->get_sample_rate();
+
+            if (channel_count != 1)
+                uBugCheck();
+
             if (mode == MODE_BARS) {
-                int totalbars = rc_client->right / m_bar_width;
-                if (totalbars) {
-                    const audio_sample* p_data = p_chunk->get_data();
-                    size_t sample_count = p_chunk->get_sample_count();
-                    size_t channel_count = p_chunk->get_channels();
-                    for (int i = 0; i < totalbars; i++) {
-                        double val = 0;
-                        size_t starti;
-                        size_t endi;
-                        g_scale_value(sample_count, i, totalbars, starti, endi, m_scale == scale_logarithmic);
-                        for (size_t j = starti; j <= endi; j++) {
-                            if (j < sample_count) {
-                                double sample_val = 0;
-                                for (size_t k = 0; k < channel_count; k++)
-                                    sample_val += p_data[j * channel_count + k];
-                                sample_val *= 1.0 / channel_count;
-                                val = std::max(val, sample_val);
-                            }
+                if (const int num_bars = rc_client->right / m_bar_width; num_bars > 0) {
+                    for (const auto bar_index : std::ranges::views::iota(0, num_bars)) {
+                        const auto [start_bin, end_bin] = get_fft_bins(
+                            sample_count, bar_index, num_bars, sample_rate, m_scale == scale_logarithmic);
+
+                        audio_sample value{};
+                        for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
+                            const auto bin_value = data[bin_index];
+                            value = std::max(value, bin_value);
                         }
 
-                        RECT r;
-                        r.left = 1 + i * m_bar_width;
-                        r.right = r.left + m_bar_width - m_bar_gap;
-                        r.bottom = rc_client->bottom ? rc_client->bottom - 1 : 0;
-                        r.top = rc_client->bottom
-                            - g_scale_value_single(
-                                  val, (rc_client->bottom + 1) / 2, m_vertical_scale == scale_logarithmic)
-                                * 2;
-                        if (r.bottom > r.top)
-                            FillRect(dc, &r, s_foreground_brush.get());
+                        const auto y_pos = calculate_y_position(
+                            value, (rc_client->bottom + 1) / 2, m_vertical_scale == scale_logarithmic);
+
+                        RECT bar_rect{};
+                        bar_rect.left = 1 + bar_index * m_bar_width;
+                        bar_rect.right = bar_rect.left + m_bar_width - m_bar_gap;
+                        bar_rect.bottom = rc_client->bottom ? rc_client->bottom - 1 : 0;
+                        bar_rect.top = rc_client->bottom - y_pos * 2;
+
+                        if (bar_rect.bottom > bar_rect.top)
+                            FillRect(dc, &bar_rect, s_foreground_brush.get());
                     }
+
                     for (int j = rc_client->bottom; j > rc_client->top; j -= 2) {
-                        RECT rc = {0, j - 1, rc_client->right, j};
-                        FillRect(dc, &rc, s_background_brush.get());
+                        RECT fill_rect = {0, j - 1, rc_client->right, j};
+                        FillRect(dc, &fill_rect, s_background_brush.get());
                     }
                 }
             } else {
-                const audio_sample* p_data = p_chunk->get_data();
-                size_t sample_count = p_chunk->get_sample_count();
-                size_t channel_count = p_chunk->get_channels();
-                for (int i = 0; i < rc_client->right; i++) {
-                    double val = 0;
-                    size_t starti;
-                    size_t endi;
-                    g_scale_value(sample_count, i, rc_client->right, starti, endi, m_scale == scale_logarithmic);
-                    for (size_t j = starti; j <= endi; j++) {
-                        if (j < sample_count) {
-                            double sample_val = 0;
-                            for (size_t k = 0; k < channel_count; k++)
-                                sample_val += p_data[j * channel_count + k];
-                            sample_val *= 1.0 / channel_count;
-                            val = std::max(val, sample_val);
-                        }
+                for (int x = 0; x < rc_client->right; x++) {
+                    const auto [start_bin, end_bin]
+                        = get_fft_bins(sample_count, x, rc_client->right, sample_rate, m_scale == scale_logarithmic);
+
+                    audio_sample value{};
+                    for (const auto bin_index : std::ranges::views::iota(start_bin, end_bin + 1)) {
+                        const auto bin_value = data[bin_index];
+                        value = std::max(value, bin_value);
                     }
-                    RECT r;
-                    r.left = i;
-                    r.right = i + 1;
-                    r.bottom = rc_client->bottom;
-                    r.top = rc_client->bottom
-                        - g_scale_value_single(val, rc_client->bottom, m_vertical_scale == scale_logarithmic);
-                    if (r.bottom > r.top)
-                        FillRect(dc, &r, s_foreground_brush.get());
+
+                    const auto y_pos
+                        = calculate_y_position(value, rc_client->bottom, m_vertical_scale == scale_logarithmic);
+
+                    RECT line{};
+                    line.left = x;
+                    line.right = x + 1;
+                    line.bottom = rc_client->bottom;
+                    line.top = rc_client->bottom - y_pos;
+
+                    if (line.bottom > line.top)
+                        FillRect(dc, &line, s_foreground_brush.get());
                 }
             }
         }
