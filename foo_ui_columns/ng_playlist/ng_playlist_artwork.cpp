@@ -119,26 +119,26 @@ wil::unique_hbitmap g_get_nocover_bitmap(int cx, int cy, COLORREF cr_back, bool 
     return ret;
 }
 
-void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, int cx,
-    int cy, COLORREF cr_back, bool b_reflection, OnArtworkLoadedCallback callback)
+void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, ArtworkReader::Ptr& p_out, int cx, int cy,
+    COLORREF cr_back, bool b_reflection, OnArtworkLoadedCallback callback)
 {
     auto p_new_reader = std::make_shared<ArtworkReader>(
         p_handle, cx, cy, cr_back, b_reflection, std::move(callback), shared_from_this());
-    m_pending_readers.add_item(p_new_reader);
+    m_pending_readers.emplace_back(std::move(p_new_reader));
     p_out = p_new_reader;
     flush_pending();
 }
 
 void ArtworkReaderManager::on_reader_done(const ArtworkReader* ptr)
 {
-    size_t index;
-    if (find_current_reader(ptr, index)) {
-        m_current_readers[index]->send_completion_notification();
-        m_current_readers.remove_by_idx(index);
+    if (const auto iter = std::ranges::find_if(m_current_readers, [ptr](auto&& item) { return item.get() == ptr; });
+        iter != m_current_readers.end()) {
+        (*iter)->send_completion_notification();
+        m_current_readers.erase(iter);
     } else {
-        if (find_aborting_reader(ptr, index))
-            m_aborting_readers.remove_by_idx(index);
+        std::erase_if(m_aborting_readers, [ptr](auto&& item) { return item.get() == ptr; });
     }
+
     flush_pending();
 }
 
