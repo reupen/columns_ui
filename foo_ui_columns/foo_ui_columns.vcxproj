@@ -463,6 +463,7 @@
     <ClInclude Include="menu_helpers.h" />
     <ClInclude Include="metadb_helpers.h" />
     <ClInclude Include="mw_drop_target.h" />
+    <ClInclude Include="ng_playlist\ng_playlist_artwork.h" />
     <ClInclude Include="resource_utils.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="svg.h" />

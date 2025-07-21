@@ -312,6 +312,42 @@ void PlaylistView::on_groups_change()
     }
 }
 
+wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
+{
+    if (!m_gdiplus_initialised)
+        return nullptr;
+
+    const size_t group_count = m_scripts.get_count();
+    if (group_count == 0)
+        return nullptr;
+
+    auto* item = static_cast<PlaylistViewItem*>(get_item(index_item));
+    PlaylistViewGroup* group = item->get_group(group_count - 1);
+
+    if (!group->m_artwork_load_attempted) {
+        const auto cx = get_group_info_area_width() - 2 * get_artwork_left_right_padding();
+        const auto cy = get_group_info_area_height();
+
+        ArtworkCompletionNotify::ptr_t ptr = std::make_shared<ArtworkCompletionNotify>();
+        ptr->m_group = group;
+        ptr->m_window = this;
+        metadb_handle_ptr handle;
+        m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
+        std::shared_ptr<ArtworkReader> p_reader;
+        m_artwork_manager->request(handle, p_reader, cx, cy,
+            colours::helper(ColoursClient::id).get_colour(colours::colour_background), cfg_artwork_reflection,
+            std::move(ptr));
+        group->m_artwork_load_attempted = true;
+        return nullptr;
+    }
+
+    if (group->m_artwork_load_succeeded && group->m_artwork_bitmap) {
+        return group->m_artwork_bitmap;
+    }
+
+    return nullptr;
+}
+
 void PlaylistView::update_all_items()
 {
     const auto p_compiler = titleformat_compiler::get();
