@@ -120,92 +120,51 @@ wil::unique_hbitmap g_get_nocover_bitmap(int cx, int cy, COLORREF cr_back, bool 
 }
 
 void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, int cx,
-    int cy, COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify)
+    int cy, COLORREF cr_back, bool b_reflection, OnArtworkLoadedCallback callback)
 {
-    auto p_new_reader = std::make_shared<ArtworkReader>();
-    p_new_reader->initialise(p_handle, cx, cy, cr_back, b_reflection, std::move(p_notify), shared_from_this());
+    auto p_new_reader = std::make_shared<ArtworkReader>(
+        p_handle, cx, cy, cr_back, b_reflection, std::move(callback), shared_from_this());
     m_pending_readers.add_item(p_new_reader);
     p_out = p_new_reader;
     flush_pending();
 }
 
-void ArtworkReaderManager::on_reader_completion(const ArtworkReader* ptr)
+void ArtworkReaderManager::on_reader_done(const ArtworkReader* ptr)
 {
     size_t index;
     if (find_current_reader(ptr, index)) {
-        m_current_readers[index]->wait_for_and_release_thread();
-        m_current_readers[index]->send_completion_notification(m_current_readers[index]);
+        m_current_readers[index]->send_completion_notification();
         m_current_readers.remove_by_idx(index);
     } else {
-        if (find_aborting_reader(ptr, index)) {
-            m_aborting_readers[index]->wait_for_and_release_thread();
+        if (find_aborting_reader(ptr, index))
             m_aborting_readers.remove_by_idx(index);
-        }
     }
     flush_pending();
 }
-void ArtworkReaderManager::on_reader_abort(const ArtworkReader* ptr)
+
+void ArtworkReader::start()
 {
-    on_reader_completion(ptr);
-}
+    m_thread = std::jthread([this] {
+        TRACK_CALL_TEXT("cui::playlist_view::ArtworkReader::thread");
+        SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_BELOW_NORMAL);
+        (void)mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] Playlist view artwork worker");
 
-class ArtworkReaderNotification : public main_thread_callback {
-public:
-    void callback_run() override
-    {
-        if (m_aborted)
-            m_manager->on_reader_abort(m_reader);
-        else
-            m_manager->on_reader_completion(m_reader);
-    }
+        try {
+            read_artwork(m_abort);
+            m_abort.check();
+            m_status = ArtworkReaderStatus::Succeeded;
+        } catch (const exception_aborted&) {
+            m_status = ArtworkReaderStatus::Aborted;
+        } catch (const std::exception& e) {
+            console::print("Playlist view – unexpected error reading artwork: ", e.what());
+            m_status = ArtworkReaderStatus::Failed;
+        }
 
-    static void g_run(std::shared_ptr<ArtworkReaderManager> p_manager, bool p_aborted, const ArtworkReader* p_reader)
-    {
-        service_ptr_t<ArtworkReaderNotification> ptr = new service_impl_t<ArtworkReaderNotification>;
-        ptr->m_aborted = p_aborted;
-        ptr->m_reader = p_reader;
-        ptr->m_manager = std::move(p_manager);
+        if (m_status != ArtworkReaderStatus::Succeeded)
+            m_bitmaps.clear();
 
-        main_thread_callback_manager::get()->add_callback(ptr.get_ptr());
-    }
-
-    bool m_aborted;
-    const ArtworkReader* m_reader;
-    std::shared_ptr<ArtworkReaderManager> m_manager;
-};
-
-DWORD ArtworkReader::on_thread()
-{
-    TRACK_CALL_TEXT("artwork_reader_ng_t::on_thread");
-    (void)mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] Playlist view artwork reader");
-
-    bool b_aborted = false;
-    DWORD ret = -1;
-    try {
-        ret = read_artwork(m_abort);
-        m_abort.check();
-        m_succeeded = true;
-    } catch (const exception_aborted&) {
-        m_bitmaps.clear();
-        b_aborted = true;
-        ret = ERROR_PROCESS_ABORTED;
-    } catch (pfc::exception const& e) {
-        m_bitmaps.clear();
-        console::formatter formatter;
-        formatter << "Playlist view – unhandled error loading artwork: " << e.what();
-        ret = -1;
-    }
-    // send this first so thread gets closed first
-    ArtworkReaderNotification::g_run(m_manager, b_aborted, this);
-    /*if (!b_aborted)
-    {
-    if (m_notify.is_valid())
-    {
-    m_notify->on_completion_async(m_succeeded ? ret : 1);
-    }
-    }
-    m_notify.release();*/
-    return ret;
+        fb2k::inMainThread([this] { m_manager->on_reader_done(this); });
+    });
 }
 
 unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
@@ -236,12 +195,13 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
     auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
 
     if (data.is_valid() && data->get_size() > 0) {
-        wil::shared_hbitmap bitmap = g_create_hbitmap_from_data(data, m_cx, m_cy, m_back, m_reflection);
+        wil::shared_hbitmap bitmap
+            = g_create_hbitmap_from_data(data, m_width, m_height, m_background_colour, m_show_reflection);
         m_bitmaps.insert_or_assign(artwork_type_id, std::move(bitmap));
         GdiFlush();
     }
     if (!m_bitmaps.count(artwork_type_id)) {
-        auto bm = m_manager->request_nocover_image(m_cx, m_cy, m_back, m_reflection, p_abort);
+        auto bm = m_manager->request_nocover_image(m_width, m_height, m_background_colour, m_show_reflection, p_abort);
         if (bm) {
             m_bitmaps.insert_or_assign(artwork_type_id, std::move(bm));
             GdiFlush();

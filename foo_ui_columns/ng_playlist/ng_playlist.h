@@ -293,43 +293,31 @@ private:
         // flush_artwork_images();
         g_on_artwork_width_change(nullptr /*this*/);
     }
-    void on_artwork_read_complete(const PlaylistViewGroup::ptr& p_group, const std::shared_ptr<ArtworkReader>& p_reader)
+    void on_artwork_read_complete(const PlaylistViewGroup::ptr& p_group, const ArtworkReader* p_reader)
     {
-        if (!p_reader->is_aborting()) {
-            size_t count = get_item_count();
-            size_t group_count = m_scripts.get_count();
+        if (p_reader->status() != ArtworkReaderStatus::Succeeded)
+            return;
 
-            if (group_count) {
-                for (size_t i = 0; i < count; i++) {
-                    auto* item = static_cast<PlaylistViewItem*>(get_item(i));
-                    if (item->get_group(group_count - 1) == p_group.get_ptr()) {
-                        auto&& content = p_reader->get_content();
-                        auto content_iter = content.find(album_art_ids::cover_front);
+        size_t count = get_item_count();
+        size_t group_count = m_scripts.get_count();
 
-                        if (content_iter != content.end()) {
-                            p_group->m_artwork_bitmap = content_iter->second;
-                            p_group->m_artwork_load_succeeded = true;
-                            invalidate_item_group_info_area(i);
-                        }
-                        break;
+        if (group_count) {
+            for (size_t i = 0; i < count; i++) {
+                auto* item = static_cast<PlaylistViewItem*>(get_item(i));
+                if (item->get_group(group_count - 1) == p_group.get_ptr()) {
+                    auto&& content = p_reader->get_content();
+                    auto content_iter = content.find(album_art_ids::cover_front);
+
+                    if (content_iter != content.end()) {
+                        p_group->m_artwork_bitmap = content_iter->second;
+                        p_group->m_artwork_load_succeeded = true;
+                        invalidate_item_group_info_area(i);
                     }
+                    break;
                 }
             }
         }
     }
-
-    class ArtworkCompletionNotify : public BaseArtworkCompletionNotify {
-    public:
-        using ptr_t = std::shared_ptr<ArtworkCompletionNotify>;
-
-        void on_completion(const std::shared_ptr<ArtworkReader>& p_reader) noexcept override
-        {
-            m_window->on_artwork_read_complete(m_group, p_reader);
-        }
-
-        PlaylistViewGroup::ptr m_group;
-        service_ptr_t<PlaylistView> m_window;
-    };
 
     wil::shared_hbitmap request_group_artwork(size_t index_item);
 

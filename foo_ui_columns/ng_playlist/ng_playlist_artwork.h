@@ -1,60 +1,97 @@
 #pragma once
 
 namespace cui::panels::playlist_view {
-class BaseArtworkCompletionNotify {
-public:
-    using ptr_t = std::shared_ptr<BaseArtworkCompletionNotify>;
 
-    virtual ~BaseArtworkCompletionNotify() = default;
-    virtual void on_completion(const std::shared_ptr<class ArtworkReader>& p_reader) = 0;
+using OnArtworkLoadedCallback = std::function<void(const class ArtworkReader* reader)>;
 
-private:
+enum class ArtworkReaderStatus {
+    Pending,
+    Succeeded,
+    Failed,
+    Aborted,
 };
 
-class ArtworkReader : public mmh::Thread {
+class ArtworkReader {
 public:
-    bool is_aborting() { return m_abort.is_aborting(); }
-    void abort() { m_abort.abort(); }
-
-    // only called when thread closed
-    bool did_succeed() { return m_succeeded; }
-    bool is_ready() { return !is_thread_open(); }
-    const std::unordered_map<GUID, wil::shared_hbitmap>& get_content() const { return m_bitmaps; }
-
-    void initialise(const metadb_handle_ptr& p_handle, int cx, int cy, COLORREF cr_back, bool b_reflection,
-        BaseArtworkCompletionNotify::ptr_t p_notify, std::shared_ptr<class ArtworkReaderManager> p_manager)
+    ArtworkReader(metadb_handle_ptr track, int width, int height, COLORREF background_colour, bool show_reflection,
+        OnArtworkLoadedCallback callback, std::shared_ptr<class ArtworkReaderManager> manager)
+        : m_handle(std::move(track))
+        , m_width(width)
+        , m_height(height)
+        , m_background_colour(background_colour)
+        , m_show_reflection(show_reflection)
+        , m_callback(std::move(callback))
+        , m_manager(std::move(manager))
     {
-        m_handle = p_handle;
-        m_notify = std::move(p_notify);
-        m_cx = cx;
-        m_cy = cy;
-        m_reflection = b_reflection;
-        m_back = cr_back;
-        m_manager = std::move(p_manager);
     }
-    void send_completion_notification(const std::shared_ptr<ArtworkReader>& p_this)
+
+    ~ArtworkReader()
     {
-        if (m_notify) {
-            m_notify->on_completion(p_this);
+        if (m_thread) {
+            m_abort.abort();
+            m_thread.reset();
         }
     }
 
-protected:
-    DWORD on_thread() override;
+    bool is_running() const
+    {
+        core_api::ensure_main_thread();
+        return m_thread && m_thread->joinable();
+    }
+
+    bool is_aborting() const
+    {
+        core_api::ensure_main_thread();
+        return m_abort.is_aborting();
+    }
+
+    void abort()
+    {
+        core_api::ensure_main_thread();
+        m_abort.abort();
+    }
+
+    ArtworkReaderStatus status() const
+    {
+        core_api::ensure_main_thread();
+        return m_status;
+    }
+
+    const std::unordered_map<GUID, wil::shared_hbitmap>& get_content() const
+    {
+        core_api::ensure_main_thread();
+        return m_bitmaps;
+    }
+
+    void send_completion_notification()
+    {
+        core_api::ensure_main_thread();
+        m_thread.reset();
+        m_callback(this);
+    }
+
+    void start();
+
+    void wait()
+    {
+        core_api::ensure_main_thread();
+        m_thread.reset();
+    }
 
 private:
     unsigned read_artwork(abort_callback& p_abort);
 
     std::unordered_map<GUID, wil::shared_hbitmap> m_bitmaps;
-    int m_cx{0};
-    int m_cy{0};
-    COLORREF m_back{RGB(255, 255, 255)};
-    bool m_reflection{false};
     metadb_handle_ptr m_handle;
-    BaseArtworkCompletionNotify::ptr_t m_notify;
-    bool m_succeeded{false};
-    abort_callback_impl m_abort;
+    int m_width{0};
+    int m_height{0};
+    COLORREF m_background_colour{RGB(255, 255, 255)};
+    bool m_show_reflection{false};
+    OnArtworkLoadedCallback m_callback;
     std::shared_ptr<class ArtworkReaderManager> m_manager;
+    abort_callback_impl m_abort;
+    ArtworkReaderStatus m_status{ArtworkReaderStatus::Pending};
+    std::optional<std::jthread> m_thread;
 };
 
 class ArtworkReaderManager : public std::enable_shared_from_this<ArtworkReaderManager> {
@@ -62,7 +99,7 @@ public:
     void abort_task(size_t index)
     {
         {
-            if (m_current_readers[index]->is_thread_open()) {
+            if (m_current_readers[index]->is_running()) {
                 m_current_readers[index]->abort();
                 m_aborting_readers.add_item(m_current_readers[index]);
             }
@@ -84,7 +121,7 @@ public:
     };
 
     void request(const metadb_handle_ptr& p_handle, std::shared_ptr<ArtworkReader>& p_out, int cx, int cy,
-        COLORREF cr_back, bool b_reflection, BaseArtworkCompletionNotify::ptr_t p_notify);
+        COLORREF cr_back, bool b_reflection, OnArtworkLoadedCallback p_notify);
 
     void flush_pending()
     {
@@ -94,14 +131,11 @@ public:
             if (count_pending) {
                 std::shared_ptr<ArtworkReader> p_reader = m_pending_readers[count_pending - 1];
                 m_pending_readers.remove_by_idx(count_pending - 1);
-                p_reader->set_priority(THREAD_PRIORITY_BELOW_NORMAL);
-                p_reader->create_thread();
+                p_reader->start();
                 m_current_readers.add_item(p_reader);
             }
         }
     }
-
-    void initialise() {}
 
     void deinitialise()
     {
@@ -109,12 +143,10 @@ public:
 
         size_t i = m_aborting_readers.get_count();
         for (; i; i--) {
-            m_aborting_readers[i - 1]->wait_for_and_release_thread();
             m_aborting_readers.remove_by_idx(i - 1);
         }
         i = m_current_readers.get_count();
         for (; i; i--) {
-            m_current_readers[i - 1]->wait_for_and_release_thread();
             m_current_readers.remove_by_idx(i - 1);
         }
 
@@ -124,8 +156,7 @@ public:
         }
     }
 
-    void on_reader_completion(const ArtworkReader* ptr);
-    void on_reader_abort(const ArtworkReader* ptr);
+    void on_reader_done(const ArtworkReader* ptr);
 
     ArtworkReaderManager() = default;
 

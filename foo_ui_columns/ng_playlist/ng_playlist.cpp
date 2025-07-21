@@ -328,15 +328,12 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
         const auto cx = get_group_info_area_width() - 2 * get_artwork_left_right_padding();
         const auto cy = get_group_info_area_height();
 
-        ArtworkCompletionNotify::ptr_t ptr = std::make_shared<ArtworkCompletionNotify>();
-        ptr->m_group = group;
-        ptr->m_window = this;
         metadb_handle_ptr handle;
         m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
         std::shared_ptr<ArtworkReader> p_reader;
         m_artwork_manager->request(handle, p_reader, cx, cy,
             colours::helper(ColoursClient::id).get_colour(colours::colour_background), cfg_artwork_reflection,
-            std::move(ptr));
+            [this, self{ptr{this}}, group](const ArtworkReader* reader) { on_artwork_read_complete(group, reader); });
         group->m_artwork_load_attempted = true;
         return nullptr;
     }
@@ -800,7 +797,6 @@ void PlaylistView::notify_on_initialisation()
     Gdiplus::GdiplusStartupInput gdiplusStartupInput;
     m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
     m_artwork_manager = std::make_shared<ArtworkReaderManager>();
-    m_artwork_manager->initialise();
 
     m_playlist_api = playlist_manager_v4::get();
     m_playlist_cache.initialise(m_initial_scroll_positions);
