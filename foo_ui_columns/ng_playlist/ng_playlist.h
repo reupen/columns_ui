@@ -274,6 +274,7 @@ private:
             m_artwork_manager->abort_current_tasks();
             m_artwork_manager->flush_nocover();
         }
+
         size_t count = get_item_count();
         for (size_t i = 0; i < count; i++) {
             size_t cg = get_item(i)->get_group_count();

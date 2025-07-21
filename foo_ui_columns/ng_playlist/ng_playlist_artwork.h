@@ -134,20 +134,22 @@ public:
         m_pending_readers.clear();
         m_aborting_readers.clear();
         m_current_readers.clear();
-
-        {
-            insync(m_nocover_sync);
-            m_nocover_bitmap.reset();
-        }
+        m_nocover_bitmap.reset();
     }
 
     void on_reader_done(const ArtworkReader* ptr);
 
     ArtworkReaderManager() = default;
 
+    // Called from reader worker thread
     wil::shared_hbitmap request_nocover_image(
         int cx, int cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
-    void flush_nocover() { m_nocover_bitmap.reset(); }
+
+    void flush_nocover()
+    {
+        std::scoped_lock lock(m_nocover_mutex);
+        m_nocover_bitmap.reset();
+    }
 
 private:
     static constexpr size_t max_readers{4};
@@ -156,10 +158,10 @@ private:
     std::vector<ArtworkReader::Ptr> m_current_readers;
     std::vector<ArtworkReader::Ptr> m_pending_readers;
 
-    critical_section m_nocover_sync;
+    std::mutex m_nocover_mutex;
     wil::shared_hbitmap m_nocover_bitmap;
-    size_t m_nocover_cx{0};
-    size_t m_nocover_cy{0};
+    size_t m_nocover_cx{};
+    size_t m_nocover_cy{};
 };
 
 } // namespace cui::panels::playlist_view

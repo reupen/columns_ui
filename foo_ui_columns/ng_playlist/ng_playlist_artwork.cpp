@@ -213,7 +213,8 @@ unsigned ArtworkReader::read_artwork(abort_callback& p_abort)
 wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(
     int cx, int cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort)
 {
-    insync(m_nocover_sync);
+    std::scoped_lock lock(m_nocover_mutex);
+
     if (m_nocover_bitmap && m_nocover_cx == cx && m_nocover_cy == cy)
         return m_nocover_bitmap;
 
