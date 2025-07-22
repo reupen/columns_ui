@@ -9,6 +9,9 @@
   and images with more than eight bits per channel.
   [[#1275](https://github.com/reupen/columns_ui/pull/1275)]
 
+- Direct2D is now used to scale artwork and create artwork reflections in the
+  playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281)]
+
 ### Bug fixes
 
 - The built-in spectrum analyser visualisation now uses the same frequency scale
@@ -17,6 +20,9 @@
   [[#1276](https://github.com/reupen/columns_ui/pull/1276)]
 
   This applies only when the horizontal axis is set to use a logarithmic scale.
+
+- A bug where artwork images in the playlist view varied in width by up to two
+  pixels was fixed. [[#1281](https://github.com/reupen/columns_ui/pull/1281)]
 
 ### Internal changes
 

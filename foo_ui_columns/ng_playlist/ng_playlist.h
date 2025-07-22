@@ -20,12 +20,6 @@ extern fbh::ConfigBool cfg_use_custom_group_indentation_amount;
 extern fbh::ConfigInt32DpiAware cfg_custom_group_indentation_amount;
 extern fbh::ConfigBool cfg_show_artwork;
 
-wil::unique_hbitmap g_create_hbitmap_from_image(
-    Gdiplus::Bitmap& bm, int& cx, int& cy, COLORREF cr_back, bool b_reflection);
-wil::unique_hbitmap g_create_hbitmap_from_data(
-    const album_art_data_ptr& data, int& cx, int& cy, COLORREF cr_back, bool b_reflection);
-bool g_get_default_nocover_bitmap_data(album_art_data_ptr& p_out, abort_callback& p_abort);
-wil::unique_hbitmap g_get_nocover_bitmap(int cx, int cy, COLORREF cr_back, bool b_reflection, abort_callback& p_abort);
 void set_font_size(float point_delta);
 
 struct PlaylistCacheItem {

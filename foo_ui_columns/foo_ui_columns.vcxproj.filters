@@ -635,6 +635,12 @@
     <ClCompile Include="artwork_reader.cpp">
       <Filter>Artwork view</Filter>
     </ClCompile>
+    <ClCompile Include="imaging.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
+    <ClCompile Include="d3d.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -938,6 +944,12 @@
     </ClInclude>
     <ClInclude Include="ng_playlist\ng_playlist_artwork.h">
       <Filter>Playlist view</Filter>
+    </ClInclude>
+    <ClInclude Include="imaging.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="d3d.h">
+      <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

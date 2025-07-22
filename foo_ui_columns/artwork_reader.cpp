@@ -275,7 +275,7 @@ bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& 
 
         if (!m_stub_images.contains(album_art_ids::cover_front)) {
             album_art_data_ptr data;
-            panels::playlist_view::g_get_default_nocover_bitmap_data(data, p_abort);
+            panels::playlist_view::get_default_artwork_placeholder_data(data, p_abort);
 
             if (data.is_valid())
                 m_stub_images.insert_or_assign(album_art_ids::cover_front, data);

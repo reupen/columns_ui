@@ -2,6 +2,8 @@
 
 #include "artwork.h"
 #include "config.h"
+#include "d3d.h"
+#include "imaging.h"
 
 namespace cui::artwork_panel {
 
@@ -9,33 +11,6 @@ namespace {
 
 constexpr unsigned MSG_INVALIDATE = WM_USER + 3;
 constexpr unsigned MSG_REFRESH_IMAGE = WM_USER + 4;
-
-std::tuple<int, int> calculate_scaled_size(
-    int bitmap_width, int bitmap_height, int client_width, int client_height, bool preserve_aspect_ratio)
-{
-    int scaled_width = client_width;
-    int scaled_height = client_height;
-
-    const double source_aspect_ratio = gsl::narrow_cast<double>(bitmap_width) / gsl::narrow_cast<double>(bitmap_height);
-    const double client_aspect_ratio = gsl::narrow_cast<double>(client_width) / gsl::narrow_cast<double>(client_height);
-
-    if (preserve_aspect_ratio) {
-        if (client_aspect_ratio < source_aspect_ratio)
-            scaled_height
-                = gsl::narrow_cast<unsigned>(floor(gsl::narrow_cast<double>(client_width) / source_aspect_ratio));
-        else if (client_aspect_ratio > source_aspect_ratio)
-            scaled_width
-                = gsl::narrow_cast<unsigned>(floor(gsl::narrow_cast<double>(client_height) * source_aspect_ratio));
-    }
-
-    if (((client_height - scaled_height) % 2) != 0)
-        ++scaled_height;
-
-    if (((client_width - scaled_width) % 2) != 0)
-        ++scaled_width;
-
-    return {scaled_width, scaled_height};
-}
 
 D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustment)
 {
@@ -50,26 +25,6 @@ D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustme
     return D2D1::ColorF(convert_component(srgb_colour.r) * white_level_adjustment,
         convert_component(srgb_colour.g) * white_level_adjustment,
         convert_component(srgb_colour.b) * white_level_adjustment, srgb_colour.a);
-}
-
-HRESULT create_d3d_device(D3D_DRIVER_TYPE driver_type, ID3D11Device** device, ID3D11DeviceContext** device_context)
-{
-    constexpr D3D_FEATURE_LEVEL feature_levels[]
-        = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
-
-#ifdef _DEBUG
-    const auto hr
-        = D3D11CreateDevice(nullptr, driver_type, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT | D3D11_CREATE_DEVICE_DEBUG,
-            feature_levels, std::size(feature_levels), D3D11_SDK_VERSION, device, nullptr, device_context);
-
-    if (SUCCEEDED(hr) || (hr != DXGI_ERROR_SDK_COMPONENT_MISSING && hr != E_FAIL))
-        return hr;
-
-    console::print("Artwork view – Direct3D debug layer not installed");
-#endif
-
-    return D3D11CreateDevice(nullptr, driver_type, nullptr, D3D11_CREATE_DEVICE_BGRA_SUPPORT, feature_levels,
-        std::size(feature_levels), D3D11_SDK_VERSION, device, nullptr, device_context);
 }
 
 std::optional<unsigned> get_sdr_white_level(std::wstring_view device_name)
@@ -422,9 +377,10 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 float dpi_y{};
                 m_d2d_device_context->GetDpi(&dpi_x, &dpi_y);
 
-                const auto [scaled_width, scaled_height] = calculate_scaled_size(gsl::narrow<int>(bitmap_width),
-                    gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width),
-                    gsl::narrow<int>(render_target_height), m_preserve_aspect_ratio);
+                const auto [scaled_width, scaled_height]
+                    = cui::utils::calculate_scaled_image_size(gsl::narrow<int>(bitmap_width),
+                        gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width),
+                        gsl::narrow<int>(render_target_height), m_preserve_aspect_ratio, true);
 
                 const auto left = (render_target_width - scaled_width) * .5f * 96.0f / dpi_x;
                 const auto top = (render_target_height - scaled_height) * .5f * 96.0f / dpi_x;
@@ -524,10 +480,14 @@ void ArtworkPanel::create_d2d_device_resources()
 {
     try {
         if (!m_d3d_device) {
+            constexpr std::array feature_levels
+                = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
+
             try {
-                THROW_IF_FAILED(create_d3d_device(D3D_DRIVER_TYPE_HARDWARE, &m_d3d_device, nullptr));
+                THROW_IF_FAILED(
+                    d3d::create_d3d_device(D3D_DRIVER_TYPE_HARDWARE, feature_levels, &m_d3d_device, nullptr));
             } catch (const wil::ResultException&) {
-                THROW_IF_FAILED(create_d3d_device(D3D_DRIVER_TYPE_WARP, &m_d3d_device, nullptr));
+                THROW_IF_FAILED(d3d::create_d3d_device(D3D_DRIVER_TYPE_WARP, feature_levels, &m_d3d_device, nullptr));
                 console::print(
                     "Artwork view – failed to create a hardware renderer, using a software (WARP) renderer instead");
             }
@@ -707,9 +667,9 @@ void ArtworkPanel::create_image_colour_processing_effect()
     float dpi_y{};
     m_d2d_device_context->GetDpi(&dpi_x, &dpi_y);
 
-    const auto [scaled_width, scaled_height]
-        = calculate_scaled_size(gsl::narrow<int>(bitmap_width), gsl::narrow<int>(bitmap_height),
-            gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height), m_preserve_aspect_ratio);
+    const auto [scaled_width, scaled_height] = cui::utils::calculate_scaled_image_size(gsl::narrow<int>(bitmap_width),
+        gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height),
+        m_preserve_aspect_ratio, true);
 
     THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
         D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),

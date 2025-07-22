@@ -7,29 +7,34 @@ namespace cui::panels::playlist_view {
 
 void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, size_t index, RECT rc)
 {
-    const auto bm = m_playlist_view->request_group_artwork(index);
+    const auto bitmap = m_playlist_view->request_group_artwork(index);
 
-    if (!bm)
+    if (!bitmap)
         return;
 
     RECT deflated_rect{rc};
     InflateRect(&deflated_rect, -m_playlist_view->get_artwork_left_right_padding(), 0);
 
-    HDC dcc = CreateCompatibleDC(context.dc);
-    BITMAP bminfo{};
-    GetObject(bm.get(), sizeof(BITMAP), &bminfo);
+    wil::unique_hdc bitmap_dc(CreateCompatibleDC(context.dc));
+    BITMAP bitmap_info{};
+    GetObject(bitmap.get(), sizeof(BITMAP), &bitmap_info);
 
-    RECT rc_bitmap;
-    rc_bitmap.left = deflated_rect.left + (wil::rect_width(deflated_rect) - bminfo.bmWidth) / 2;
+    RECT rc_bitmap{};
+    rc_bitmap.left = deflated_rect.left + (wil::rect_width(deflated_rect) - bitmap_info.bmWidth) / 2;
     rc_bitmap.top = deflated_rect.top;
-    rc_bitmap.right = rc_bitmap.left + std::min(bminfo.bmWidth, wil::rect_width(deflated_rect));
-    rc_bitmap.bottom = rc_bitmap.top + std::min(bminfo.bmHeight, wil::rect_height(deflated_rect));
+    rc_bitmap.right = rc_bitmap.left + std::min(bitmap_info.bmWidth, wil::rect_width(deflated_rect));
+    rc_bitmap.bottom = rc_bitmap.top + std::min(bitmap_info.bmHeight, wil::rect_height(deflated_rect));
 
-    HBITMAP bm_old = SelectBitmap(dcc, bm.get());
-    BitBlt(context.dc, rc_bitmap.left, rc_bitmap.top, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap), dcc, 0,
-        0, SRCCOPY);
-    SelectBitmap(dcc, bm_old);
-    DeleteDC(dcc);
+    auto _ = wil::SelectObject(bitmap_dc.get(), bitmap.get());
+
+    BLENDFUNCTION blend_function{};
+    blend_function.BlendOp = AC_SRC_OVER;
+    blend_function.BlendFlags = 0;
+    blend_function.SourceConstantAlpha = 255;
+    blend_function.AlphaFormat = AC_SRC_ALPHA;
+
+    AlphaBlend(context.dc, rc_bitmap.left, rc_bitmap.top, wil::rect_width(rc_bitmap), wil::rect_height(rc_bitmap),
+        bitmap_dc.get(), 0, 0, bitmap_info.bmWidth, bitmap_info.bmHeight, blend_function);
 }
 
 void PlaylistViewRenderer::render_item(uih::lv::RendererContext context, size_t index,

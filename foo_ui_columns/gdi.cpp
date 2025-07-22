@@ -4,7 +4,8 @@
 
 namespace cui::gdi {
 
-wil::unique_hbitmap create_hbitmap_from_32bpp_data(int width, int height, const void* data, size_t size)
+wil::unique_hbitmap create_hbitmap_from_32bpp_data(
+    int width, int height, const void* data, size_t size, std::optional<int> stride)
 {
     BITMAPINFOHEADER bmi{};
 
@@ -27,7 +28,16 @@ wil::unique_hbitmap create_hbitmap_from_32bpp_data(int width, int height, const 
 
     if (hbitmap_data) {
         GdiFlush();
-        memcpy(hbitmap_data, data, size);
+        if (!stride) {
+            if (size != width * height * 4)
+                uBugCheck();
+
+            memcpy(hbitmap_data, data, size);
+        } else {
+            for (const auto row_index : std::views::iota(0, height))
+                memcpy(static_cast<uint8_t*>(hbitmap_data) + row_index * width * 4,
+                    static_cast<const uint8_t*>(data) + row_index * *stride, width * 4);
+        }
     }
 
     return hbitmap;
