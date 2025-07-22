@@ -936,6 +936,9 @@
     <ClInclude Include="artwork_reader.h">
       <Filter>Artwork view</Filter>
     </ClInclude>
+    <ClInclude Include="ng_playlist\ng_playlist_artwork.h">
+      <Filter>Playlist view</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

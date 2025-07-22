@@ -18,6 +18,13 @@
 
   This applies only when the horizontal axis is set to use a logarithmic scale.
 
+### Internal changes
+
+- Some code was refactored.
+  [[#1268](https://github.com/reupen/columns_ui/pull/1268),
+  [#1269](https://github.com/reupen/columns_ui/pull/1269),
+  [#1277](https://github.com/reupen/columns_ui/pull/1277)]
+
 ## 3.0.1
 
 ### Bug fixes
