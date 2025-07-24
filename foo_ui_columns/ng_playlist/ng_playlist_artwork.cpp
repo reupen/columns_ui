@@ -348,16 +348,23 @@ void ArtworkReader::render_artwork(
 wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(
     const ArtworkRenderingContext::Ptr& context, int cx, int cy, bool b_reflection, abort_callback& p_abort)
 {
-    std::scoped_lock lock(m_nocover_mutex);
+    {
+        std::scoped_lock lock(m_nocover_mutex);
+        p_abort.check();
 
-    if (m_nocover_bitmap && m_nocover_cx == cx && m_nocover_cy == cy)
-        return m_nocover_bitmap;
+        if (m_nocover_bitmap && m_nocover_cx == cx && m_nocover_cy == cy)
+            return m_nocover_bitmap;
+    }
 
-    auto bm = get_placeholder_hbitmap(context, cx, cy, b_reflection, p_abort);
-    if (bm) {
+    auto bitmap = get_placeholder_hbitmap(context, cx, cy, b_reflection, p_abort);
+
+    if (bitmap) {
+        std::scoped_lock lock(m_nocover_mutex);
+        p_abort.check();
+
         m_nocover_cx = cx;
         m_nocover_cy = cy;
-        m_nocover_bitmap = std::move(bm);
+        m_nocover_bitmap = std::move(bitmap);
         return m_nocover_bitmap;
     }
     return nullptr;
