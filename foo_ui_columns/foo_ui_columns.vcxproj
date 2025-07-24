@@ -120,7 +120,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -160,7 +160,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -198,7 +198,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -233,7 +233,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -264,6 +264,7 @@
     <ClCompile Include="columns_v2.cpp" />
     <ClCompile Include="colour_manager.cpp" />
     <ClCompile Include="core_dark_list_view.cpp" />
+    <ClCompile Include="d3d.cpp" />
     <ClCompile Include="dark_mode_active_ui.cpp" />
     <ClCompile Include="dark_mode_dialog.cpp" />
     <ClCompile Include="dark_mode_spin.cpp" />
@@ -273,6 +274,7 @@
     <ClCompile Include="font_picker.cpp" />
     <ClCompile Include="gdi.cpp" />
     <ClCompile Include="icons.cpp" />
+    <ClCompile Include="imaging.cpp" />
     <ClCompile Include="item_details_format_parser.cpp" />
     <ClCompile Include="ng_playlist\ng_playlist_config.cpp" />
     <ClCompile Include="playlist_selector.cpp" />
@@ -444,6 +446,7 @@
     <ClInclude Include="config_items.h" />
     <ClInclude Include="core_dark_list_view.h" />
     <ClInclude Include="core_drop_down_list_toolbar.h" />
+    <ClInclude Include="d3d.h" />
     <ClInclude Include="dark_mode_dialog.h" />
     <ClInclude Include="dark_mode_active_ui.h" />
     <ClInclude Include="dark_mode_spin.h" />
@@ -455,6 +458,7 @@
     <ClInclude Include="gdiplus.h" />
     <ClInclude Include="get_msg_hook.h" />
     <ClInclude Include="icons.h" />
+    <ClInclude Include="imaging.h" />
     <ClInclude Include="item_details.h" />
     <ClInclude Include="item_details_format_parser.h" />
     <ClInclude Include="item_details_text.h" />

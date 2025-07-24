@@ -328,12 +328,15 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
         const auto cx = get_group_info_area_width() - 2 * get_artwork_left_right_padding();
         const auto cy = get_group_info_area_height();
 
-        metadb_handle_ptr handle;
-        m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
-        ArtworkReader::Ptr p_reader;
-        m_artwork_manager->request(handle, p_reader, cx, cy,
-            colours::helper(ColoursClient::id).get_colour(colours::colour_background), cfg_artwork_reflection,
-            [this, self{ptr{this}}, group](const ArtworkReader* reader) { on_artwork_read_complete(group, reader); });
+        if (cx > 0 && cy > 0) {
+            metadb_handle_ptr handle;
+            m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
+            ArtworkReader::Ptr p_reader;
+            m_artwork_manager->request(handle, p_reader, cx, cy, cfg_artwork_reflection,
+                [this, self{ptr{this}}, group](
+                    const ArtworkReader* reader) { on_artwork_read_complete(group, reader); });
+        }
+
         group->m_artwork_load_attempted = true;
         return nullptr;
     }
