@@ -7,7 +7,8 @@
 - The Artwork view now supports Windows 10 and 11 advanced colour management,
   with improved support for HDR images, images with an embedded colour profile
   and images with more than eight bits per channel.
-  [[#1275](https://github.com/reupen/columns_ui/pull/1275)]
+  [[#1275](https://github.com/reupen/columns_ui/pull/1275),
+  [#1284](https://github.com/reupen/columns_ui/pull/1284)]
 
 - Direct2D is now used to scale artwork and create artwork reflections in the
   playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281)]
