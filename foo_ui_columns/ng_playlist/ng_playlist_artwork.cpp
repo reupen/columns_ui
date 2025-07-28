@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "ng_playlist_artwork.h"
 
-#include "foo_ui_columns/d3d.h"
+#include "d3d_utils.h"
 #include "gdi.h"
 #include "imaging.h"
 #include "resource_utils.h"

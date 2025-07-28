@@ -264,7 +264,7 @@
     <ClCompile Include="columns_v2.cpp" />
     <ClCompile Include="colour_manager.cpp" />
     <ClCompile Include="core_dark_list_view.cpp" />
-    <ClCompile Include="d3d.cpp" />
+    <ClCompile Include="d3d_utils.cpp" />
     <ClCompile Include="dark_mode_active_ui.cpp" />
     <ClCompile Include="dark_mode_dialog.cpp" />
     <ClCompile Include="dark_mode_spin.cpp" />
@@ -447,7 +447,7 @@
     <ClInclude Include="config_items.h" />
     <ClInclude Include="core_dark_list_view.h" />
     <ClInclude Include="core_drop_down_list_toolbar.h" />
-    <ClInclude Include="d3d.h" />
+    <ClInclude Include="d3d_utils.h" />
     <ClInclude Include="dark_mode_dialog.h" />
     <ClInclude Include="dark_mode_active_ui.h" />
     <ClInclude Include="dark_mode_spin.h" />

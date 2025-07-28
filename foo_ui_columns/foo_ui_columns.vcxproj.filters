@@ -638,7 +638,7 @@
     <ClCompile Include="imaging.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
-    <ClCompile Include="d3d.cpp">
+    <ClCompile Include="d3d_utils.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
     <ClCompile Include="wcs.cpp">
@@ -951,7 +951,7 @@
     <ClInclude Include="imaging.h">
       <Filter>Utilities</Filter>
     </ClInclude>
-    <ClInclude Include="d3d.h">
+    <ClInclude Include="d3d_utils.h">
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="wcs.h">
