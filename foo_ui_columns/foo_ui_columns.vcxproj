@@ -120,7 +120,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;mscms.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -160,7 +160,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;mscms.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>DebugFastLink</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -198,7 +198,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;mscms.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -233,7 +233,7 @@
       <Culture>0x0809</Culture>
     </ResourceCompile>
     <Link>
-      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Urlmon.lib;comctl32.lib;shell32.lib;shlwapi.lib;Winmm.lib;gdiplus.lib;uxtheme.lib;Dwmapi.lib;usp10.lib;mscms.lib;Msimg32.lib;Windowscodecs.lib;dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;dxguid.lib;../foobar2000/shared/shared-$(Platform).lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateDebugInformation>Debug</GenerateDebugInformation>
       <DataExecutionPrevention>
       </DataExecutionPrevention>
@@ -431,6 +431,7 @@
     <ClCompile Include="tab_layout.cpp" />
     <ClCompile Include="tab_layout_misc.cpp" />
     <ClCompile Include="tab_pview_artwork.cpp" />
+    <ClCompile Include="wcs.cpp" />
     <ClCompile Include="wic.cpp" />
     <ClCompile Include="win32.cpp" />
   </ItemGroup>
@@ -537,6 +538,7 @@
     <ClInclude Include="title_formatting.h" />
     <ClInclude Include="urls.h" />
     <ClInclude Include="vis_spectrum.h" />
+    <ClInclude Include="wcs.h" />
     <ClInclude Include="wic.h" />
     <ClInclude Include="win32.h" />
   </ItemGroup>

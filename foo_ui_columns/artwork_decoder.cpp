@@ -6,25 +6,6 @@ namespace cui::artwork_panel {
 
 namespace {
 
-wil::com_ptr<IWICColorContext> get_bitmap_source_colour_context(const wil::com_ptr<IWICImagingFactory>& imaging_factory,
-    const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
-{
-    wil::com_ptr<IWICColorContext> wic_colour_context;
-    THROW_IF_FAILED(imaging_factory->CreateColorContext(&wic_colour_context));
-
-    unsigned colour_context_count{};
-    // Not supported on Wine
-    if (const auto hr = LOG_IF_FAILED(
-            bitmap_frame_decode->GetColorContexts(1, wic_colour_context.addressof(), &colour_context_count));
-        FAILED(hr))
-        return {};
-
-    if (colour_context_count > 0)
-        return wic_colour_context;
-
-    return {};
-}
-
 auto get_bitmap_source_pixel_format_info(const wil::com_ptr<IWICImagingFactory>& imaging_factory,
     const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
 {
@@ -68,7 +49,8 @@ void ArtworkDecoder::decode(
                 wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
                 THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
 
-                const auto wic_colour_context = get_bitmap_source_colour_context(imaging_factory, bitmap_frame_decode);
+                const auto wic_colour_context
+                    = wic::get_bitmap_source_colour_context(imaging_factory, bitmap_frame_decode);
                 const auto pixel_format_info
                     = get_bitmap_source_pixel_format_info(imaging_factory, bitmap_frame_decode);
 

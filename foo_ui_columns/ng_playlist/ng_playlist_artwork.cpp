@@ -1,21 +1,42 @@
 #include "pch.h"
 #include "ng_playlist_artwork.h"
 
+#include "foo_ui_columns/d3d.h"
 #include "gdi.h"
 #include "imaging.h"
 #include "resource_utils.h"
+#include "wcs.h"
 #include "wic.h"
-#include "foo_ui_columns/d3d.h"
+#include "win32.h"
 
 namespace cui::panels::playlist_view {
 
 namespace {
 
 [[nodiscard]] D2D1_RECT_U create_hbitmap_from_d2d_bitmap(const ArtworkRenderingContext::Ptr& context,
-    const wil::com_ptr<ID2D1Bitmap1>& d2d_bitmap, const int target_width, const int target_height, bool show_reflection)
+    const wil::com_ptr<ID2D1Bitmap1>& d2d_bitmap, const wil::com_ptr<ID2D1ColorContext>& dest_colour_context,
+    const int target_width, const int target_height, bool show_reflection)
 {
     const auto bitmap_pixel_size = d2d_bitmap->GetPixelSize();
     const auto bitmap_size = d2d_bitmap->GetSize();
+
+    wil::com_ptr<ID2D1Effect> colour_management_effect;
+    THROW_IF_FAILED(context->d2d_device_context->CreateEffect(CLSID_D2D1ColorManagement, &colour_management_effect));
+
+    wil::com_ptr<ID2D1ColorContext> source_colour_context;
+    d2d_bitmap->GetColorContext(&source_colour_context);
+
+    if (context->d3d_device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_10_0
+        && context->d2d_device_context->IsBufferPrecisionSupported(D2D1_BUFFER_PRECISION_32BPC_FLOAT)) {
+        THROW_IF_FAILED(
+            colour_management_effect->SetValue(D2D1_COLORMANAGEMENT_PROP_QUALITY, D2D1_COLORMANAGEMENT_QUALITY_BEST));
+    }
+
+    THROW_IF_FAILED(colour_management_effect->SetValue(
+        D2D1_COLORMANAGEMENT_PROP_SOURCE_COLOR_CONTEXT, source_colour_context.get()));
+    THROW_IF_FAILED(colour_management_effect->SetValue(
+        D2D1_COLORMANAGEMENT_PROP_DESTINATION_COLOR_CONTEXT, dest_colour_context.get()));
+    colour_management_effect->SetInput(0, d2d_bitmap.get());
 
     const auto [render_width_px, render_height_px]
         = cui::utils::calculate_scaled_image_size(static_cast<int>(bitmap_pixel_size.width),
@@ -27,9 +48,23 @@ namespace {
     const auto reflection_height_px = show_reflection ? (target_width * 3) / 11 : 0;
     const auto reflection_height_dip = static_cast<float>(reflection_height_px);
 
+    wil::com_ptr<ID2D1Effect> scale_effect;
+    THROW_IF_FAILED(context->d2d_device_context->CreateEffect(CLSID_D2D1Scale, scale_effect.put()));
+
+    THROW_IF_FAILED(
+        scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
+    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
+        D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height)));
+    scale_effect->SetInputEffect(0, colour_management_effect.get());
+
     wil::com_ptr<ID2D1RectangleGeometry> reflection_rect_geometry;
     wil::com_ptr<ID2D1LinearGradientBrush> reflection_linear_gradient_brush;
+    wil::com_ptr<ID2D1ImageBrush> reflection_image_brush;
     wil::com_ptr<ID2D1BitmapBrush1> reflection_bitmap_brush;
+
+    // Windows versions before 10 don't support image brushes for ID2D1RenderTarget::FillGeometry()
+    const auto device_context_2 = context->d2d_device_context.try_query<ID2D1DeviceContext2>();
+    const auto use_image_brush = static_cast<bool>(device_context_2);
 
     if (reflection_height_px > 0) {
         static const std::array gradient_stops{
@@ -46,10 +81,18 @@ namespace {
                 D2D1::Point2F(0.f, render_height_dip), D2D1::Point2F(0, render_height_dip + reflection_height_dip)),
             gradient_stops_collection.get(), &reflection_linear_gradient_brush));
 
-        const auto bitmap_brush_properties = D2D1::BitmapBrushProperties1(
-            D2D1_EXTEND_MODE_CLAMP, D2D1_EXTEND_MODE_CLAMP, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
-        THROW_IF_FAILED(context->d2d_device_context->CreateBitmapBrush(
-            d2d_bitmap.get(), bitmap_brush_properties, &reflection_bitmap_brush));
+        if (use_image_brush) {
+            const auto effect_image = scale_effect.query<ID2D1Image>();
+
+            const auto bitmap_brush_properties
+                = D2D1::ImageBrushProperties({0.f, 0.f, render_width_dip, render_height_dip}, D2D1_EXTEND_MODE_CLAMP,
+                    D2D1_EXTEND_MODE_CLAMP, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
+            THROW_IF_FAILED(context->d2d_device_context->CreateImageBrush(
+                effect_image.get(), bitmap_brush_properties, &reflection_image_brush));
+
+            reflection_image_brush->SetTransform(
+                D2D1::Matrix3x2F::Scale(1.f, -1.f) * D2D1::Matrix3x2F::Translation(0.f, 2.f * render_height_dip));
+        }
 
         const auto reflection_rect
             = D2D1::RectF(0, render_height_dip, render_width_dip, render_height_dip + reflection_height_dip);
@@ -60,17 +103,41 @@ namespace {
     context->d2d_device_context->BeginDraw();
     context->d2d_device_context->Clear(D2D1::ColorF(D2D1::ColorF::Black, 0.f));
 
-    const auto dest_rect = D2D1::RectF(0, 0, render_width_dip, render_height_dip);
-    context->d2d_device_context->DrawBitmap(
-        d2d_bitmap.get(), dest_rect, 1.0f, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
+    context->d2d_device_context->DrawImage(scale_effect.get(), {}, {}, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
 
     if (reflection_height_px > 0) {
-        reflection_bitmap_brush->SetTransform(
-            D2D1::Matrix3x2F::Scale(render_width_dip / bitmap_size.width, -render_height_dip / bitmap_size.height)
-            * D2D1::Matrix3x2F::Translation(0.f, 2.f * render_height_dip));
+        try {
+            if (use_image_brush) {
+                context->d2d_device_context->FillGeometry(reflection_rect_geometry.get(), reflection_image_brush.get(),
+                    reflection_linear_gradient_brush.get());
+            } else {
+                THROW_IF_FAILED(context->d2d_device_context->Flush());
 
-        context->d2d_device_context->FillGeometry(
-            reflection_rect_geometry.get(), reflection_bitmap_brush.get(), reflection_linear_gradient_brush.get());
+                wil::com_ptr<ID2D1Bitmap1> bitmap_brush_source;
+                const auto bitmap_brush_source_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_NONE,
+                    D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
+                THROW_IF_FAILED(context->d2d_device_context->CreateBitmap(
+                    {gsl::narrow<uint32_t>(render_width_px), gsl::narrow<uint32_t>(reflection_height_px)}, nullptr, 0,
+                    bitmap_brush_source_properties, &bitmap_brush_source));
+
+                const auto source_rect = D2D1::RectU(0u, gsl::narrow<uint32_t>(render_height_px - reflection_height_px),
+                    gsl::narrow<uint32_t>(render_width_px), gsl::narrow<uint32_t>(render_height_px));
+                THROW_IF_FAILED(bitmap_brush_source->CopyFromRenderTarget(
+                    nullptr, context->d2d_device_context.get(), &source_rect));
+
+                THROW_IF_FAILED(context->d2d_device_context->CreateBitmapBrush(
+                    bitmap_brush_source.get(), nullptr, nullptr, &reflection_bitmap_brush));
+
+                reflection_bitmap_brush->SetTransform(D2D1::Matrix3x2F::Scale(1.f, -1.f)
+                    * D2D1::Matrix3x2F::Translation(0.f, render_height_dip + reflection_height_dip));
+
+                context->d2d_device_context->FillGeometry(reflection_rect_geometry.get(), reflection_bitmap_brush.get(),
+                    reflection_linear_gradient_brush.get());
+            }
+        } catch (...) {
+            LOG_IF_FAILED(context->d2d_device_context->EndDraw());
+            throw;
+        }
     }
 
     THROW_IF_FAILED(context->d2d_device_context->EndDraw());
@@ -78,15 +145,73 @@ namespace {
     return D2D1::RectU(0, 0, render_width_px, render_height_px + reflection_height_px);
 }
 
-wil::unique_hbitmap create_hbitmap_from_image_data(const ArtworkRenderingContext::Ptr& context,
-    const album_art_data_ptr& data, const int width, const int height, bool b_reflection)
+[[nodiscard]] wil::com_ptr<ID2D1ColorContext> create_colour_context_for_image(
+    const ArtworkRenderingContext::Ptr& context, const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
+{
+    const auto wic_colour_context = wic::get_bitmap_source_colour_context(context->wic_factory, bitmap_frame_decode);
+
+    wil::com_ptr<ID2D1ColorContext> d2d_colour_context;
+
+    if (wic_colour_context) {
+        LOG_IF_FAILED(context->d2d_device_context->CreateColorContextFromWicColorContext(
+            wic_colour_context.get(), &d2d_colour_context));
+    } else {
+        LOG_IF_FAILED(
+            context->d2d_device_context->CreateColorContext(D2D1_COLOR_SPACE_SRGB, nullptr, 0, &d2d_colour_context));
+    }
+
+    return d2d_colour_context;
+}
+
+[[nodiscard]] wil::com_ptr<ID2D1ColorContext> get_or_create_colour_context_for_display(
+    const ArtworkRenderingContext::Ptr& context, const std::wstring& display_profile_name)
+{
+    wil::com_ptr<ID2D1ColorContext> d2d_colour_context;
+
+    if (const auto iter = context->colour_contexts.find(display_profile_name); iter != context->colour_contexts.end()) {
+        d2d_colour_context = iter->second;
+        return d2d_colour_context;
+    }
+
+    const auto colour_profile = wcs::get_display_colour_profile(display_profile_name);
+
+    if (!colour_profile.empty())
+        LOG_IF_FAILED(context->d2d_device_context->CreateColorContext(D2D1_COLOR_SPACE_CUSTOM, colour_profile.data(),
+            gsl::narrow<uint32_t>(colour_profile.size()), &d2d_colour_context));
+
+    if (!d2d_colour_context) {
+        // ID2D1DeviceContext::CreateColorContext() isn't implemented on Wine
+        LOG_IF_FAILED(
+            context->d2d_device_context->CreateColorContext(D2D1_COLOR_SPACE_SRGB, nullptr, 0, &d2d_colour_context));
+    }
+
+    context->colour_contexts.try_emplace(display_profile_name, d2d_colour_context);
+
+    return d2d_colour_context;
+}
+
+[[nodiscard]] wil::unique_hbitmap create_hbitmap_from_image_data(const ArtworkRenderingContext::Ptr& context,
+    const std::wstring& display_profile_name, const album_art_data_ptr& data, const int width, const int height,
+    bool b_reflection)
 {
     try {
         const auto decoder = wic::create_decoder_from_data(data->get_ptr(), data->get_size(), context->wic_factory);
-        const auto source = wic::get_image_frame(decoder, GUID_WICPixelFormat32bppPBGRA);
+
+        wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
+        THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
+
+        wil::com_ptr<IWICBitmapSource> converted_bitmap;
+        THROW_IF_FAILED(
+            WICConvertBitmapSource(GUID_WICPixelFormat32bppPBGRA, bitmap_frame_decode.get(), &converted_bitmap));
+
+        const auto d2d_colour_context = create_colour_context_for_image(context, bitmap_frame_decode);
+
+        auto bitmap_properties = D2D1::BitmapProperties1();
+        bitmap_properties.colorContext = d2d_colour_context.get();
 
         wil::com_ptr<ID2D1Bitmap1> d2d_bitmap;
-        const auto hr = context->d2d_device_context->CreateBitmapFromWicBitmap(source.get(), nullptr, &d2d_bitmap);
+        const auto hr = context->d2d_device_context->CreateBitmapFromWicBitmap(
+            converted_bitmap.get(), bitmap_properties, &d2d_bitmap);
 
         if (hr != E_NOTIMPL)
             THROW_IF_FAILED(hr);
@@ -96,14 +221,16 @@ wil::unique_hbitmap create_hbitmap_from_image_data(const ArtworkRenderingContext
             // method that D2D expects (but making a copy of the bitmap and trying again works fine).
             // (ID2D1DeviceContext2::CreateImageSourceFromWic() doesn't have this problem.)
             wil::com_ptr<IWICBitmap> wic_bitmap_copy;
-            THROW_IF_FAILED(
-                context->wic_factory->CreateBitmapFromSource(source.get(), WICBitmapCacheOnDemand, &wic_bitmap_copy));
+            THROW_IF_FAILED(context->wic_factory->CreateBitmapFromSource(
+                converted_bitmap.get(), WICBitmapCacheOnDemand, &wic_bitmap_copy));
 
-            THROW_IF_FAILED(
-                context->d2d_device_context->CreateBitmapFromWicBitmap(wic_bitmap_copy.get(), nullptr, &d2d_bitmap));
+            THROW_IF_FAILED(context->d2d_device_context->CreateBitmapFromWicBitmap(
+                wic_bitmap_copy.get(), bitmap_properties, &d2d_bitmap));
         }
 
-        const auto render_rect = create_hbitmap_from_d2d_bitmap(context, d2d_bitmap, width, height, b_reflection);
+        const auto dest_colour_context = get_or_create_colour_context_for_display(context, display_profile_name);
+        const auto render_rect
+            = create_hbitmap_from_d2d_bitmap(context, d2d_bitmap, dest_colour_context, width, height, b_reflection);
 
         wil::com_ptr<ID2D1Bitmap1> cpu_bitmap;
         THROW_IF_FAILED(context->d2d_device_context->CreateBitmap(
@@ -127,15 +254,16 @@ wil::unique_hbitmap create_hbitmap_from_image_data(const ArtworkRenderingContext
     }
 }
 
-wil::unique_hbitmap get_placeholder_hbitmap(const ArtworkRenderingContext::Ptr& context, const int width,
-    const int height, bool b_reflection, abort_callback& p_abort)
+wil::unique_hbitmap get_placeholder_hbitmap(const ArtworkRenderingContext::Ptr& context,
+    const std::wstring& display_profile_name, const int width, const int height, bool b_reflection,
+    abort_callback& p_abort)
 {
     album_art_extractor_instance_v2::ptr extractor = album_art_manager_v2::get()->open_stub(p_abort);
     wil::unique_hbitmap gdi_bitmap;
 
     try {
         const auto data = extractor->query(album_art_ids::cover_front, p_abort);
-        gdi_bitmap = create_hbitmap_from_image_data(context, data, width, height, b_reflection);
+        gdi_bitmap = create_hbitmap_from_image_data(context, display_profile_name, data, width, height, b_reflection);
     } catch (const exception_aborted&) {
         throw;
     } catch (exception_io_not_found const&) {
@@ -144,7 +272,8 @@ wil::unique_hbitmap get_placeholder_hbitmap(const ArtworkRenderingContext::Ptr& 
 
     if (!gdi_bitmap) {
         if (album_art_data_ptr data; get_default_artwork_placeholder_data(data, p_abort))
-            gdi_bitmap = create_hbitmap_from_image_data(context, data, width, height, b_reflection);
+            gdi_bitmap
+                = create_hbitmap_from_image_data(context, display_profile_name, data, width, height, b_reflection);
     }
 
     return gdi_bitmap;
@@ -165,14 +294,13 @@ bool get_default_artwork_placeholder_data(album_art_data_ptr& p_out, abort_callb
     return ret;
 }
 
-void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, ArtworkReader::Ptr& p_out, int cx, int cy,
+void ArtworkReaderManager::request(const metadb_handle_ptr& p_handle, HMONITOR monitor, int cx, int cy,
     bool b_reflection, OnArtworkLoadedCallback callback)
 {
-    auto p_new_reader
-        = std::make_shared<ArtworkReader>(p_handle, cx, cy, b_reflection, std::move(callback), shared_from_this());
+    auto p_new_reader = std::make_shared<ArtworkReader>(
+        p_handle, monitor, cx, cy, b_reflection, std::move(callback), shared_from_this());
     m_pending_readers.emplace_back(std::move(p_new_reader));
-    p_out = p_new_reader;
-    flush_pending();
+    start_pending_tasks();
 }
 
 void ArtworkReaderManager::on_reader_done(ArtworkRenderingContext::Ptr context, const ArtworkReader* ptr)
@@ -188,7 +316,7 @@ void ArtworkReaderManager::on_reader_done(ArtworkRenderingContext::Ptr context, 
     if (context)
         m_rendering_contexts.emplace_back(std::move(context));
 
-    flush_pending();
+    start_pending_tasks();
 }
 
 ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, unsigned height)
@@ -258,6 +386,9 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
             const auto data = read_artwork(m_abort);
             m_abort.check();
 
+            const auto display_device_key = win32::get_display_device_key(m_monitor);
+            const auto display_profile_name = wcs::get_display_colour_profile_name(display_device_key.c_str());
+
             // Warning: Broken input components can intitialise COM as apartment-threaded. Hence, COM intialisation
             // is done here, after input components have been called, to avoid conflicts.
             auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
@@ -269,14 +400,14 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
                     context->enlarge(gsl::narrow<uint32_t>(m_width), gsl::narrow<uint32_t>(m_height));
                 m_abort.check();
 
-                render_artwork(context, data, m_abort);
+                render_artwork(context, display_profile_name, data, m_abort);
             } catch (const wil::ResultException& ex) {
                 if (ex.GetErrorCode() != D2DERR_RECREATE_TARGET)
                     throw;
 
                 m_abort.check();
                 context = ArtworkRenderingContext::s_create(m_width, m_height);
-                render_artwork(context, data, m_abort);
+                render_artwork(context, display_profile_name, data, m_abort);
             }
 
             m_abort.check();
@@ -299,7 +430,12 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
         if (m_status != ArtworkReaderStatus::Succeeded)
             m_bitmaps.clear();
 
-        fb2k::inMainThread([this, context{std::move(context)}] { m_manager->on_reader_done(context, this); });
+        fb2k::inMainThread([this, context{std::move(context)}] {
+            if (m_flush_cached_colour_contexts)
+                context->colour_contexts.clear();
+
+            m_manager->on_reader_done(context, this);
+        });
     });
 }
 
@@ -326,18 +462,19 @@ album_art_data_ptr ArtworkReader::read_artwork(abort_callback& p_abort)
     return {};
 }
 
-void ArtworkReader::render_artwork(
-    const ArtworkRenderingContext::Ptr& context, album_art_data_ptr data, abort_callback& p_abort)
+void ArtworkReader::render_artwork(const ArtworkRenderingContext::Ptr& context,
+    const std::wstring& display_profile_name, album_art_data_ptr data, abort_callback& p_abort)
 {
     if (data.is_valid() && data->get_size() > 0) {
         wil::shared_hbitmap bitmap
-            = create_hbitmap_from_image_data(context, data, m_width, m_height, m_show_reflection);
+            = create_hbitmap_from_image_data(context, display_profile_name, data, m_width, m_height, m_show_reflection);
         m_bitmaps.insert_or_assign(artwork_type_id, std::move(bitmap));
         GdiFlush();
     }
 
     if (!m_bitmaps.contains(artwork_type_id)) {
-        auto bm = m_manager->request_nocover_image(context, m_width, m_height, m_show_reflection, p_abort);
+        auto bm = m_manager->request_nocover_image(
+            context, display_profile_name, m_width, m_height, m_show_reflection, p_abort);
         if (bm) {
             m_bitmaps.insert_or_assign(artwork_type_id, std::move(bm));
             GdiFlush();
@@ -345,8 +482,8 @@ void ArtworkReader::render_artwork(
     }
 }
 
-wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(
-    const ArtworkRenderingContext::Ptr& context, int cx, int cy, bool b_reflection, abort_callback& p_abort)
+wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(const ArtworkRenderingContext::Ptr& context,
+    const std::wstring& display_profile_name, int cx, int cy, bool b_reflection, abort_callback& p_abort)
 {
     {
         std::scoped_lock lock(m_nocover_mutex);
@@ -356,7 +493,7 @@ wil::shared_hbitmap ArtworkReaderManager::request_nocover_image(
             return m_nocover_bitmap;
     }
 
-    auto bitmap = get_placeholder_hbitmap(context, cx, cy, b_reflection, p_abort);
+    auto bitmap = get_placeholder_hbitmap(context, display_profile_name, cx, cy, b_reflection, p_abort);
 
     if (bitmap) {
         std::scoped_lock lock(m_nocover_mutex);

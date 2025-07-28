@@ -13,6 +13,9 @@
 - Direct2D is now used to scale artwork and create artwork reflections in the
   playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281)]
 
+- The playlist view now supports basic (legacy) per-monitor colour management
+  for artwork images. [[#1286](https://github.com/reupen/columns_ui/pull/1286)]
+
 ### Bug fixes
 
 - The built-in spectrum analyser visualisation now uses the same frequency scale

@@ -5,9 +5,19 @@
 
 namespace cui::panels::playlist_view {
 
+void PlaylistViewRenderer::render_begin(uih::lv::RendererContext context)
+{
+    const auto monitor = MonitorFromWindow(context.wnd, MONITOR_DEFAULTTONEAREST);
+
+    if (monitor != m_monitor)
+        m_playlist_view->flush_artwork_images();
+
+    m_monitor = monitor;
+}
+
 void PlaylistViewRenderer::render_group_info(uih::lv::RendererContext context, size_t index, RECT rc)
 {
-    const auto bitmap = m_playlist_view->request_group_artwork(index);
+    const auto bitmap = m_playlist_view->request_group_artwork(index, m_monitor);
 
     if (!bitmap)
         return;

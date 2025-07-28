@@ -19,6 +19,7 @@ struct ArtworkRenderingContext {
     wil::com_ptr<ID2D1Device> d2d_device;
     wil::com_ptr<ID2D1DeviceContext> d2d_device_context;
     wil::com_ptr<IWICImagingFactory> wic_factory;
+    std::unordered_map<std::wstring, wil::com_ptr<ID2D1ColorContext>> colour_contexts;
 
     static Ptr s_create(unsigned width, unsigned height);
 
@@ -29,9 +30,10 @@ class ArtworkReader {
 public:
     using Ptr = std::shared_ptr<ArtworkReader>;
 
-    ArtworkReader(metadb_handle_ptr track, int width, int height, bool show_reflection,
+    ArtworkReader(metadb_handle_ptr track, HMONITOR monitor, int width, int height, bool show_reflection,
         OnArtworkLoadedCallback callback, std::shared_ptr<class ArtworkReaderManager> manager)
         : m_handle(std::move(track))
+        , m_monitor(monitor)
         , m_width(width)
         , m_height(height)
         , m_show_reflection(show_reflection)
@@ -97,13 +99,16 @@ private:
     static constexpr GUID artwork_type_id = album_art_ids::cover_front;
 
     album_art_data_ptr read_artwork(abort_callback& p_abort);
-    void render_artwork(const ArtworkRenderingContext::Ptr& context, album_art_data_ptr data, abort_callback& p_abort);
+    void render_artwork(const ArtworkRenderingContext::Ptr& context, const std::wstring& display_profile_name,
+        album_art_data_ptr data, abort_callback& p_abort);
 
     std::unordered_map<GUID, wil::shared_hbitmap> m_bitmaps;
     metadb_handle_ptr m_handle;
+    HMONITOR m_monitor{};
     int m_width{};
     int m_height{};
     bool m_show_reflection{};
+    bool m_flush_cached_colour_contexts{};
     OnArtworkLoadedCallback m_callback;
     std::shared_ptr<class ArtworkReaderManager> m_manager;
     abort_callback_impl m_abort;
@@ -130,10 +135,10 @@ public:
 
     void reset() { abort_current_tasks(); }
 
-    void request(const metadb_handle_ptr& p_handle, ArtworkReader::Ptr& p_out, int cx, int cy, bool b_reflection,
+    void request(const metadb_handle_ptr& p_handle, HMONITOR monitor, int cx, int cy, bool b_reflection,
         OnArtworkLoadedCallback p_notify);
 
-    void flush_pending()
+    void start_pending_tasks()
     {
         if (m_current_readers.size() >= max_readers || m_pending_readers.empty())
             return;
@@ -159,8 +164,8 @@ public:
     ArtworkReaderManager() = default;
 
     // Called from reader worker thread
-    wil::shared_hbitmap request_nocover_image(
-        const ArtworkRenderingContext::Ptr& context, int cx, int cy, bool b_reflection, abort_callback& p_abort);
+    wil::shared_hbitmap request_nocover_image(const ArtworkRenderingContext::Ptr& context,
+        const std::wstring& display_profile_name, int cx, int cy, bool b_reflection, abort_callback& p_abort);
 
     void flush_nocover()
     {

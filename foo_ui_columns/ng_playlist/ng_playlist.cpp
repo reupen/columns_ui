@@ -3,6 +3,7 @@
 #include "ng_playlist.h"
 
 #include "ng_playlist_groups.h"
+#include "system_appearance_manager.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
 #include "../playlist_view_tfhooks.h"
@@ -312,7 +313,7 @@ void PlaylistView::on_groups_change()
     }
 }
 
-wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
+wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item, HMONITOR monitor)
 {
     const size_t group_count = m_scripts.get_count();
     if (group_count == 0)
@@ -328,8 +329,8 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
         if (cx > 0 && cy > 0) {
             metadb_handle_ptr handle;
             m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
-            ArtworkReader::Ptr p_reader;
-            m_artwork_manager->request(handle, p_reader, cx, cy, cfg_artwork_reflection,
+
+            m_artwork_manager->request(handle, monitor, cx, cy, cfg_artwork_reflection,
                 [this, self{ptr{this}}, group](
                     const ArtworkReader* reader) { on_artwork_read_complete(group, reader); });
         }
@@ -826,12 +827,17 @@ void PlaylistView::notify_on_create()
 
     set_day_timer();
 
+    m_display_change_token
+        = system_appearance_manager::add_display_changed_handler([this, self{ptr{this}}] { flush_artwork_images(); });
+
     console::formatter formatter;
     formatter << "Playlist view initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
 }
 
 void PlaylistView::notify_on_destroy()
 {
+    m_display_change_token.reset();
+
     if (const auto active_playlist = m_playlist_api->get_active_playlist();
         active_playlist != std::numeric_limits<size_t>::max())
         m_playlist_cache.set_item(active_playlist, save_scroll_position());
