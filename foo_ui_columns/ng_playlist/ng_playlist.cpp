@@ -314,9 +314,6 @@ void PlaylistView::on_groups_change()
 
 wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
 {
-    if (!m_gdiplus_initialised)
-        return nullptr;
-
     const size_t group_count = m_scripts.get_count();
     if (group_count == 0)
         return nullptr;
@@ -797,8 +794,6 @@ void PlaylistView::notify_on_initialisation()
     set_alternate_selection_model(cfg_alternative_sel != 0);
     set_allow_header_rearrange(true);
 
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
     m_artwork_manager = std::make_shared<ArtworkReaderManager>();
 
     m_playlist_api = playlist_manager_v4::get();
@@ -861,12 +856,6 @@ void PlaylistView::notify_on_destroy()
     m_artwork_manager.reset();
 
     m_selection_holder.release();
-
-    if (m_gdiplus_initialised) {
-        Gdiplus::GdiplusShutdown(m_gdiplus_token);
-        m_gdiplus_initialised = false;
-        m_gdiplus_token = NULL;
-    }
 }
 
 void PlaylistView::notify_on_set_focus(HWND wnd_lost)

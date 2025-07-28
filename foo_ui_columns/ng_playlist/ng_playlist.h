@@ -498,8 +498,6 @@ private:
     service_ptr_t<titleformat_object> m_script_global, m_script_global_style;
     service_ptr_t<playlist_manager_v4> m_playlist_api;
     bool m_ignore_callback{false};
-    ULONG_PTR m_gdiplus_token{NULL};
-    bool m_gdiplus_initialised{false};
 
     mainmenu_manager::ptr m_mainmenu_manager;
     contextmenu_manager::ptr m_contextmenu_manager;
