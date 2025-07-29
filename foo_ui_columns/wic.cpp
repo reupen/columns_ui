@@ -110,6 +110,25 @@ wil::unique_hbitmap resize_hbitmap(HBITMAP hbitmap, int width, int height)
     return create_hbitmap_from_bitmap_source(bitmap_source);
 }
 
+wil::com_ptr<IWICColorContext> get_bitmap_source_colour_context(const wil::com_ptr<IWICImagingFactory>& imaging_factory,
+    const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
+{
+    wil::com_ptr<IWICColorContext> wic_colour_context;
+    THROW_IF_FAILED(imaging_factory->CreateColorContext(&wic_colour_context));
+
+    unsigned colour_context_count{};
+    // Not supported on Wine
+    if (const auto hr = LOG_IF_FAILED(
+            bitmap_frame_decode->GetColorContexts(1, wic_colour_context.addressof(), &colour_context_count));
+        FAILED(hr))
+        return {};
+
+    if (colour_context_count > 0)
+        return wic_colour_context;
+
+    return {};
+}
+
 wil::com_ptr<IWICBitmapSource> create_bitmap_source_from_path(const char* path)
 {
     const auto decoder = create_decoder_from_path(path);

@@ -2,7 +2,7 @@
 
 #include "artwork.h"
 #include "config.h"
-#include "d3d.h"
+#include "d3d_utils.h"
 #include "imaging.h"
 
 namespace cui::artwork_panel {

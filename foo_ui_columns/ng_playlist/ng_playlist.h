@@ -5,6 +5,7 @@
 #include "ng_playlist_style.h"
 #include "../config.h"
 #include "../list_view_panel.h"
+#include "../win32.h"
 
 namespace cui::panels::playlist_view {
 
@@ -137,6 +138,8 @@ class PlaylistViewRenderer : public uih::lv::DefaultRenderer {
 public:
     explicit PlaylistViewRenderer(class PlaylistView* playlist_view) : m_playlist_view{playlist_view} {}
 
+    void render_begin(uih::lv::RendererContext context) override;
+
     void render_group_info(uih::lv::RendererContext context, size_t index, RECT rc) override;
 
     void render_group(uih::lv::RendererContext context, size_t item_index, size_t group_index, std::string_view text,
@@ -147,6 +150,7 @@ public:
         bool b_focused, RECT rc) override;
 
     class PlaylistView* m_playlist_view;
+    HMONITOR m_monitor{};
 };
 
 class PlaylistView
@@ -314,7 +318,7 @@ private:
         }
     }
 
-    wil::shared_hbitmap request_group_artwork(size_t index_item);
+    wil::shared_hbitmap request_group_artwork(size_t index_item, HMONITOR monitor);
 
     void update_all_items();
     void refresh_all_items_text();
@@ -489,6 +493,7 @@ private:
     void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 
 private:
+    std::unique_ptr<EventToken> m_display_change_token;
     service_list_t<titleformat_object> m_scripts;
     pfc::list_t<ColumnData> m_column_data;
     pfc::array_t<bool> m_column_mask;
@@ -498,8 +503,6 @@ private:
     service_ptr_t<titleformat_object> m_script_global, m_script_global_style;
     service_ptr_t<playlist_manager_v4> m_playlist_api;
     bool m_ignore_callback{false};
-    ULONG_PTR m_gdiplus_token{NULL};
-    bool m_gdiplus_initialised{false};
 
     mainmenu_manager::ptr m_mainmenu_manager;
     contextmenu_manager::ptr m_contextmenu_manager;

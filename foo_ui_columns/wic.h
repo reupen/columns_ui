@@ -26,6 +26,8 @@ wil::com_ptr<IWICBitmapSource> resize_bitmap_source(const wil::com_ptr<IWICBitma
 wil::com_ptr<IWICBitmapSource> get_image_frame(const wil::com_ptr<IWICBitmapDecoder>& bitmap_decoder,
     REFWICPixelFormatGUID pixel_format = GUID_WICPixelFormat32bppBGRA);
 wil::unique_hbitmap resize_hbitmap(HBITMAP original_bitmap, int width, int height);
+wil::com_ptr<IWICColorContext> get_bitmap_source_colour_context(const wil::com_ptr<IWICImagingFactory>& imaging_factory,
+    const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode);
 
 BitmapData decode_image_data(const void* data, size_t size);
 

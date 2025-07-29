@@ -4,6 +4,7 @@
 
 #include "config_appearance.h"
 #include "dark_mode.h"
+#include "wcs.h"
 
 namespace cui::system_appearance_manager {
 
@@ -158,6 +159,8 @@ private:
             g_font_manager_data.dispatch_all_fonts_changed();
             break;
         case WM_DISPLAYCHANGE:
+            wcs::reset_colour_profiles();
+
             for (const auto& callback : display_changed_callbacks)
                 (*callback)();
             break;

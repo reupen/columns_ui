@@ -3,6 +3,7 @@
 #include "ng_playlist.h"
 
 #include "ng_playlist_groups.h"
+#include "system_appearance_manager.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
 #include "../playlist_view_tfhooks.h"
@@ -312,11 +313,8 @@ void PlaylistView::on_groups_change()
     }
 }
 
-wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
+wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item, HMONITOR monitor)
 {
-    if (!m_gdiplus_initialised)
-        return nullptr;
-
     const size_t group_count = m_scripts.get_count();
     if (group_count == 0)
         return nullptr;
@@ -331,8 +329,8 @@ wil::shared_hbitmap PlaylistView::request_group_artwork(size_t index_item)
         if (cx > 0 && cy > 0) {
             metadb_handle_ptr handle;
             m_playlist_api->activeplaylist_get_item_handle(handle, index_item);
-            ArtworkReader::Ptr p_reader;
-            m_artwork_manager->request(handle, p_reader, cx, cy, cfg_artwork_reflection,
+
+            m_artwork_manager->request(handle, monitor, cx, cy, cfg_artwork_reflection,
                 [this, self{ptr{this}}, group](
                     const ArtworkReader* reader) { on_artwork_read_complete(group, reader); });
         }
@@ -797,8 +795,6 @@ void PlaylistView::notify_on_initialisation()
     set_alternate_selection_model(cfg_alternative_sel != 0);
     set_allow_header_rearrange(true);
 
-    Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-    m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_token, &gdiplusStartupInput, nullptr));
     m_artwork_manager = std::make_shared<ArtworkReaderManager>();
 
     m_playlist_api = playlist_manager_v4::get();
@@ -831,12 +827,17 @@ void PlaylistView::notify_on_create()
 
     set_day_timer();
 
+    m_display_change_token
+        = system_appearance_manager::add_display_changed_handler([this, self{ptr{this}}] { flush_artwork_images(); });
+
     console::formatter formatter;
     formatter << "Playlist view initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
 }
 
 void PlaylistView::notify_on_destroy()
 {
+    m_display_change_token.reset();
+
     if (const auto active_playlist = m_playlist_api->get_active_playlist();
         active_playlist != std::numeric_limits<size_t>::max())
         m_playlist_cache.set_item(active_playlist, save_scroll_position());
@@ -861,12 +862,6 @@ void PlaylistView::notify_on_destroy()
     m_artwork_manager.reset();
 
     m_selection_holder.release();
-
-    if (m_gdiplus_initialised) {
-        Gdiplus::GdiplusShutdown(m_gdiplus_token);
-        m_gdiplus_initialised = false;
-        m_gdiplus_token = NULL;
-    }
 }
 
 void PlaylistView::notify_on_set_focus(HWND wnd_lost)
