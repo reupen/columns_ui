@@ -108,7 +108,6 @@ private:
     int m_width{};
     int m_height{};
     bool m_show_reflection{};
-    bool m_flush_cached_colour_contexts{};
     OnArtworkLoadedCallback m_callback;
     std::shared_ptr<class ArtworkReaderManager> m_manager;
     abort_callback_impl m_abort;

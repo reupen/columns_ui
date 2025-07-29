@@ -430,12 +430,7 @@ void ArtworkReader::start(ArtworkRenderingContext::Ptr context)
         if (m_status != ArtworkReaderStatus::Succeeded)
             m_bitmaps.clear();
 
-        fb2k::inMainThread([this, context{std::move(context)}] {
-            if (m_flush_cached_colour_contexts)
-                context->colour_contexts.clear();
-
-            m_manager->on_reader_done(context, this);
-        });
+        fb2k::inMainThread([this, context{std::move(context)}] { m_manager->on_reader_done(context, this); });
     });
 }
 
