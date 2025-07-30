@@ -13,7 +13,7 @@ public:
 
 class ArtworkDecoder {
 public:
-    ~ArtworkDecoder() { abort(); }
+    ~ArtworkDecoder() { shut_down(); }
 
     void decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, bool use_advanced_colour, HMONITOR monitor,
         album_art_data_ptr data, std::function<void()> on_complete);

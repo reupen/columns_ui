@@ -40,6 +40,31 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
             wil::com_ptr<ID2D1ColorContext> d2d_display_colour_context;
             bool is_float{};
 
+            auto _ = wil::scope_exit([&] {
+                fb2k::inMainThread([this, d2d_bitmap{std::move(d2d_bitmap)},
+                                       d2d_display_colour_context{std::move(d2d_display_colour_context)},
+                                       d2d_image_colour_context{std::move(d2d_image_colour_context)}, is_float,
+                                       stop_token{std::move(stop_token)}, task{std::move(task)}]() {
+                    const auto locked_task = task.lock();
+
+                    if (stop_token.stop_requested()) {
+                        if (locked_task)
+                            std::erase(m_aborting_tasks, locked_task);
+                        return;
+                    }
+
+                    assert(m_current_task == locked_task);
+                    m_current_task.reset();
+                    m_decoded_image = std::move(d2d_bitmap);
+                    m_display_colour_context = std::move(d2d_display_colour_context);
+                    m_image_colour_context = std::move(d2d_image_colour_context);
+                    m_is_float = is_float;
+
+                    if (locked_task)
+                        locked_task->on_complete();
+                });
+            });
+
             try {
                 if (stop_token.stop_requested())
                     return;
@@ -160,34 +185,14 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
                     }
                 }
 
-                if (stop_token.stop_requested())
-                    return;
             } catch (const std::exception& ex) {
                 console::print("Artwork panel – loading image failed: ", ex.what());
+
+                d2d_bitmap.reset();
+                d2d_display_colour_context.reset();
+                d2d_image_colour_context.reset();
+                is_float = false;
             }
-
-            fb2k::inMainThread([this, d2d_bitmap{std::move(d2d_bitmap)},
-                                   d2d_display_colour_context{std::move(d2d_display_colour_context)},
-                                   d2d_image_colour_context{std::move(d2d_image_colour_context)}, is_float,
-                                   stop_token{std::move(stop_token)}, task{std::move(task)}]() {
-                const auto locked_task = task.lock();
-
-                if (stop_token.stop_requested()) {
-                    if (locked_task)
-                        std::erase(m_aborting_tasks, locked_task);
-                    return;
-                }
-
-                assert(m_current_task == locked_task);
-                m_current_task.reset();
-                m_decoded_image = std::move(d2d_bitmap);
-                m_display_colour_context = std::move(d2d_display_colour_context);
-                m_image_colour_context = std::move(d2d_image_colour_context);
-                m_is_float = is_float;
-
-                if (locked_task)
-                    locked_task->on_complete();
-            });
         });
 }
 

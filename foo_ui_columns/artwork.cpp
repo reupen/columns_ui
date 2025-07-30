@@ -588,14 +588,17 @@ void ArtworkPanel::create_d2d_device_resources()
 
 void ArtworkPanel::reset_d2d_device_resources(bool keep_devices)
 {
+    m_artwork_decoder.abort();
+
     reset_effects();
 
-    m_artwork_decoder.reset();
     m_d2d_device_context.reset();
     m_sdr_white_level.reset();
     m_dxgi_output_desc.reset();
     m_dxgi_swap_chain.reset();
     m_swap_chain_format.reset();
+
+    m_artwork_decoder.shut_down();
 
     if (m_d3d_device_context) {
         m_d3d_device_context->ClearState();
