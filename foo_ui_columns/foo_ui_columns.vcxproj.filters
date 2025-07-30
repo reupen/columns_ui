@@ -644,6 +644,9 @@
     <ClCompile Include="wcs.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="d2d_utils.cpp">
+      <Filter>Utilities</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -955,6 +958,9 @@
       <Filter>Utilities</Filter>
     </ClInclude>
     <ClInclude Include="wcs.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="d2d_utils.h">
       <Filter>Utilities</Filter>
     </ClInclude>
   </ItemGroup>

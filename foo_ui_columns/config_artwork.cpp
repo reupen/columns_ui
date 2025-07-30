@@ -2,6 +2,7 @@
 #include "legacy_artwork_config.h"
 #include "artwork.h"
 #include "config.h"
+#include "win32.h"
 
 namespace cui::artwork_panel {
 extern cfg_uint cfg_edge_style;
@@ -36,6 +37,16 @@ public:
         ComboBox_AddString(edge_style_wnd, L"Sunken");
         ComboBox_AddString(edge_style_wnd, L"Grey");
         ComboBox_SetCurSel(edge_style_wnd, cui::artwork_panel::cfg_edge_style);
+
+        const HWND use_advanced_colour_wnd = GetDlgItem(wnd, IDC_USE_ADVANCED_COLOUR);
+
+        if (!cui::win32::check_windows_10_build(17'763)) {
+            EnableWindow(use_advanced_colour_wnd, false);
+            uSetWindowText(use_advanced_colour_wnd, "Use Advanced Colour (requires Window 10 version 1809 or newer)");
+        } else if (cui::artwork_panel::colour_management_mode
+            == WI_EnumValue(cui::artwork_panel::ColourManagementMode::Advanced)) {
+            Button_SetCheck(use_advanced_colour_wnd, BST_CHECKED);
+        }
 
         const HWND click_action_wnd = GetDlgItem(wnd, IDC_CLICK_ACTION);
 
@@ -80,6 +91,14 @@ public:
                 popup_message_v2::g_show(
                     GetAncestor(wnd, GA_ROOT), format_legacy_artwork_sources(), "Previous Columns UI Artwork Sources");
                 break;
+            case IDC_USE_ADVANCED_COLOUR: {
+                const auto is_checked = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+                cui::artwork_panel::colour_management_mode
+                    = WI_EnumValue(is_checked ? cui::artwork_panel::ColourManagementMode::Advanced
+                                              : cui::artwork_panel::ColourManagementMode::Legacy);
+                cui::artwork_panel::ArtworkPanel::s_on_use_advanced_colour_change();
+                break;
+            }
             case IDC_EDGESTYLE | (CBN_SELCHANGE << 16):
                 cui::artwork_panel::cfg_edge_style = ComboBox_GetCurSel((HWND)lp);
                 cui::artwork_panel::ArtworkPanel::g_on_edge_style_change();
