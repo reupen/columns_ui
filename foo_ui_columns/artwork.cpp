@@ -673,6 +673,7 @@ void ArtworkPanel::create_image_colour_processing_effect()
 
     THROW_IF_FAILED(
         scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
+    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD));
     THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
         D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),
             scaled_height / gsl::narrow_cast<float>(bitmap_height))));
