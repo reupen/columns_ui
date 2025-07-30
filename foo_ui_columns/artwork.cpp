@@ -292,7 +292,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_dxgi_swap_chain.reset();
         m_sdr_white_level.reset();
         m_dxgi_output_desc.reset();
-        m_image_effect.reset();
+        m_output_effect.reset();
+        m_scale_effect.reset();
         m_swap_chain_format.reset();
         break;
     case WM_ERASEBKGND:
@@ -304,7 +305,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         if (m_dxgi_swap_chain) {
-            m_image_effect.reset();
+            set_scale_effect_scale(m_scale_effect);
 
             if (m_d2d_device_context) {
                 m_d2d_device_context->SetTarget(nullptr);
@@ -370,22 +371,22 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             auto image_rect = D2D1::RectF();
 
-            if (m_image_effect)
-                THROW_IF_FAILED(context->GetImageLocalBounds(m_image_effect.query<ID2D1Image>().get(), &image_rect));
+            if (m_output_effect)
+                THROW_IF_FAILED(context->GetImageLocalBounds(m_output_effect.query<ID2D1Image>().get(), &image_rect));
 
             m_d2d_device_context->BeginDraw();
             m_d2d_device_context->Clear(d2d_background_colour);
 
             const auto& bitmap = m_artwork_decoder.get_image();
 
-            if (m_image_effect) {
+            if (m_output_effect) {
                 auto [render_target_width, render_target_height] = m_d2d_device_context->GetSize();
 
                 const auto left = (render_target_width - image_rect.right) * .5f;
                 const auto top = (render_target_height - image_rect.bottom) * .5f;
 
                 const auto offset = D2D1::Point2F(left, top);
-                context->DrawImage(m_image_effect.get(), &offset, nullptr, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
+                context->DrawImage(m_output_effect.get(), &offset, nullptr, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
             }
 
             auto result = m_d2d_device_context->EndDraw();
@@ -587,8 +588,9 @@ void ArtworkPanel::create_d2d_device_resources()
 
 void ArtworkPanel::reset_d2d_device_resources(bool keep_devices)
 {
+    reset_effects();
+
     m_artwork_decoder.reset();
-    m_image_effect.reset();
     m_d2d_device_context.reset();
     m_sdr_white_level.reset();
     m_dxgi_output_desc.reset();
@@ -610,7 +612,7 @@ void ArtworkPanel::reset_d2d_device_resources(bool keep_devices)
 
 void ArtworkPanel::create_image_colour_processing_effect()
 {
-    if (m_image_effect)
+    if (m_output_effect)
         return;
 
     if (!m_dxgi_factory || !m_dxgi_factory->IsCurrent()) {
@@ -630,29 +632,15 @@ void ArtworkPanel::create_image_colour_processing_effect()
         = m_dxgi_output_desc && m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
     const auto is_advanced_colour = is_advanced_colour_active();
 
-    auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
-    auto [render_target_width, render_target_height] = m_d2d_device_context->GetPixelSize();
-
-    float dpi_x{};
-    float dpi_y{};
-    m_d2d_device_context->GetDpi(&dpi_x, &dpi_y);
-
-    const auto [scaled_width, scaled_height] = cui::utils::calculate_scaled_image_size(gsl::narrow<int>(bitmap_width),
-        gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height),
-        m_preserve_aspect_ratio, true);
-
     wil::com_ptr<ID2D1Effect> scale_effect;
-    THROW_IF_FAILED(m_d2d_device_context->CreateEffect(CLSID_D2D1Scale, scale_effect.put()));
+    THROW_IF_FAILED(m_d2d_device_context->CreateEffect(CLSID_D2D1Scale, &scale_effect));
 
     THROW_IF_FAILED(
         scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
     THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD));
-
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
-        D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),
-            scaled_height / gsl::narrow_cast<float>(bitmap_height))));
-
     scale_effect->SetInput(0, bitmap.get());
+
+    set_scale_effect_scale(scale_effect);
 
     wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
     wil::com_ptr<ID2D1ColorContext> working_colour_context;
@@ -710,7 +698,8 @@ void ArtworkPanel::create_image_colour_processing_effect()
     colour_management_effect->SetInputEffect(
         0, white_level_adjustment_effect ? white_level_adjustment_effect.get() : scale_effect.get());
 
-    m_image_effect = colour_management_effect;
+    m_scale_effect = scale_effect;
+    m_output_effect = colour_management_effect;
 }
 
 bool g_check_process_on_selection_changed()
@@ -791,7 +780,7 @@ void ArtworkPanel::force_reload_artwork()
     }
 
     if (handle.is_valid()) {
-        m_image_effect.reset();
+        reset_effects();
         m_artwork_decoder.reset();
         request_artwork(handle, is_from_playback);
     } else {
@@ -945,7 +934,7 @@ void ArtworkPanel::show_stub_image()
         data = m_artwork_reader->get_stub_image(artwork_type_id);
     }
 
-    m_image_effect.reset();
+    reset_effects();
 
     if (!data.is_valid()) {
         m_artwork_decoder.reset();
@@ -980,20 +969,52 @@ void ArtworkPanel::refresh_image()
     }
     CATCH_LOG()
 
-    m_image_effect.reset();
+    reset_effects();
 
     queue_decode(data);
 }
 
 void ArtworkPanel::clear_image()
 {
-    m_image_effect.reset();
+    reset_effects();
     m_artwork_decoder.reset();
 
     if (m_artwork_reader)
         m_artwork_reader->reset();
 
     invalidate_window();
+}
+
+void ArtworkPanel::reset_effects()
+{
+    m_scale_effect.reset();
+    m_output_effect.reset();
+}
+
+void ArtworkPanel::set_scale_effect_scale(const wil::com_ptr<ID2D1Effect>& scale_effect) const
+{
+    if (!scale_effect)
+        return;
+
+    wil::com_ptr<ID2D1Image> image;
+    scale_effect->GetInput(0, &image);
+
+    const auto bitmap = image.query<ID2D1Bitmap>();
+
+    auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
+    auto [render_target_width, render_target_height] = m_d2d_device_context->GetPixelSize();
+
+    float dpi_x{};
+    float dpi_y{};
+    m_d2d_device_context->GetDpi(&dpi_x, &dpi_y);
+
+    const auto [scaled_width, scaled_height] = cui::utils::calculate_scaled_image_size(gsl::narrow<int>(bitmap_width),
+        gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height),
+        m_preserve_aspect_ratio, true);
+
+    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
+        D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),
+            scaled_height / gsl::narrow_cast<float>(bitmap_height))));
 }
 
 void ArtworkPanel::queue_decode(const album_art_data::ptr& data)

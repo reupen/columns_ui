@@ -180,6 +180,8 @@ private:
     void create_image_colour_processing_effect();
     void refresh_image();
     void clear_image();
+    void reset_effects();
+    void set_scale_effect_scale(const wil::com_ptr<ID2D1Effect>& scale_effect) const;
     void queue_decode(const album_art_data::ptr& data);
     void show_stub_image();
     void invalidate_window() const;
@@ -196,7 +198,8 @@ private:
     std::optional<DXGI_FORMAT> m_swap_chain_format;
     std::optional<unsigned> m_sdr_white_level;
     std::optional<DXGI_OUTPUT_DESC1> m_dxgi_output_desc;
-    wil::com_ptr<ID2D1Effect> m_image_effect;
+    wil::com_ptr<ID2D1Effect> m_scale_effect;
+    wil::com_ptr<ID2D1Effect> m_output_effect;
 
     std::unique_ptr<EventToken> m_display_change_token;
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
