@@ -4,19 +4,26 @@
 
 ### Features
 
-- The Artwork view now supports Windows 10 and 11 advanced colour management,
-  with improved support for HDR images, images with an embedded colour profile
-  and images with more than eight bits per channel.
-  [[#1275](https://github.com/reupen/columns_ui/pull/1275),
+- The Artwork view now supports colour management. This improves support for
+  images with an embedded colour profile and makes image colours more consistent
+  with web browsers. [[#1275](https://github.com/reupen/columns_ui/pull/1275),
   [#1284](https://github.com/reupen/columns_ui/pull/1284),
-  [#1289](https://github.com/reupen/columns_ui/pull/1289)]
+  [#1289](https://github.com/reupen/columns_ui/pull/1289),
+  [#1290](https://github.com/reupen/columns_ui/pull/1290)]
+
+  Additionally, support for Windows Advanced Colour can be enabled in
+  Preferences on Windows 10 version 1809 and newer. This improves support for
+  HDR and high bit-depth images but is recommended only if HDR is enabled in
+  Windows.
+
+- The playlist view now supports colour management for artwork images. This
+  improves support for images with an embedded colour profile and makes image
+  colours more consistent with web browsers.
+  [[#1286](https://github.com/reupen/columns_ui/pull/1286)]
 
 - Direct2D is now used to scale artwork and create artwork reflections in the
   playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281),
   [#1289](https://github.com/reupen/columns_ui/pull/1289)]
-
-- The playlist view now supports basic (legacy) per-monitor colour management
-  for artwork images. [[#1286](https://github.com/reupen/columns_ui/pull/1286)]
 
 ### Bug fixes
 

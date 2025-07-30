@@ -11,7 +11,13 @@ enum class ClickAction : int32_t {
     show_next_artwork_type,
 };
 
+enum class ColourManagementMode : int32_t {
+    Legacy,
+    Advanced,
+};
+
 extern fbh::ConfigInt32 click_action;
+extern fbh::ConfigInt32 colour_management_mode;
 
 class ArtworkPanel
     : public uie::container_uie_window_v3
@@ -75,6 +81,7 @@ public:
 
     static void g_on_colours_change();
     static void s_on_dark_mode_status_change();
+    static void s_on_use_advanced_colour_change();
 
     void force_reload_artwork();
     bool is_core_image_viewer_available() const;
@@ -169,24 +176,30 @@ private:
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
     void update_dxgi_output_desc();
     void create_d2d_device_resources();
-    void reset_d2d_device_resources();
+    void reset_d2d_device_resources(bool keep_devices = false);
     void create_image_colour_processing_effect();
     void refresh_image();
     void clear_image();
+    void reset_effects();
+    void set_scale_effect_scale(const wil::com_ptr<ID2D1Effect>& scale_effect) const;
+    void queue_decode(const album_art_data::ptr& data);
     void show_stub_image();
     void invalidate_window() const;
     size_t get_displayed_artwork_type_index() const;
+    bool is_advanced_colour_active() const;
 
     wil::com_ptr<ID2D1Factory1> m_d2d_factory;
     wil::com_ptr<ID2D1Device> m_d2d_device;
     wil::com_ptr<ID2D1DeviceContext> m_d2d_device_context;
     wil::com_ptr<ID3D11Device> m_d3d_device;
+    wil::com_ptr<ID3D11DeviceContext> m_d3d_device_context;
     wil::com_ptr<IDXGIFactory2> m_dxgi_factory;
     wil::com_ptr<IDXGISwapChain1> m_dxgi_swap_chain;
     std::optional<DXGI_FORMAT> m_swap_chain_format;
     std::optional<unsigned> m_sdr_white_level;
     std::optional<DXGI_OUTPUT_DESC1> m_dxgi_output_desc;
-    wil::com_ptr<ID2D1Effect> m_image_effect;
+    wil::com_ptr<ID2D1Effect> m_scale_effect;
+    wil::com_ptr<ID2D1Effect> m_output_effect;
 
     std::unique_ptr<EventToken> m_display_change_token;
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
@@ -197,6 +210,7 @@ private:
     bool m_preserve_aspect_ratio{true};
     bool m_artwork_type_locked{false};
     bool m_dynamic_artwork_pending{};
+    bool m_using_flip_model_swap_chain{};
     metadb_handle_list m_selection_handles;
 
     static std::vector<ArtworkPanel*> g_windows;

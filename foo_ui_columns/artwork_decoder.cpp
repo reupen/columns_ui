@@ -2,15 +2,18 @@
 
 #include "artwork_decoder.h"
 
+#include "wcs.h"
+#include "win32.h"
+
 namespace cui::artwork_panel {
 
 namespace {
 
-auto get_bitmap_source_pixel_format_info(const wil::com_ptr<IWICImagingFactory>& imaging_factory,
-    const wil::com_ptr<IWICBitmapFrameDecode>& bitmap_frame_decode)
+auto get_bitmap_source_pixel_format_info(
+    const wil::com_ptr<IWICImagingFactory>& imaging_factory, const wil::com_ptr<IWICBitmapSource>& bitmap_source)
 {
     WICPixelFormatGUID source_pixel_format{};
-    THROW_IF_FAILED(bitmap_frame_decode->GetPixelFormat(&source_pixel_format));
+    THROW_IF_FAILED(bitmap_source->GetPixelFormat(&source_pixel_format));
 
     wil::com_ptr<IWICComponentInfo> wic_component_info;
     THROW_IF_FAILED(imaging_factory->CreateComponentInfo(source_pixel_format, &wic_component_info));
@@ -20,20 +23,47 @@ auto get_bitmap_source_pixel_format_info(const wil::com_ptr<IWICImagingFactory>&
 
 } // namespace
 
-void ArtworkDecoder::decode(
-    wil::com_ptr<ID2D1DeviceContext> d2d_render_target, album_art_data_ptr data, std::function<void()> on_complete)
+void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, bool use_advanced_colour,
+    HMONITOR monitor, album_art_data_ptr data, std::function<void()> on_complete)
 {
     reset();
     m_current_task = std::make_shared<ArtworkDecoderTask>(std::move(on_complete));
 
     m_current_task->future = std::async(std::launch::async,
-        [this, data, d2d_render_target{std::move(d2d_render_target)},
-            stop_token{m_current_task->stop_source.get_token()}, task{std::weak_ptr{m_current_task}}]() noexcept {
+        [this, data, d2d_render_target{std::move(d2d_render_target)}, monitor,
+            stop_token{m_current_task->stop_source.get_token()}, task{std::weak_ptr{m_current_task}},
+            use_advanced_colour]() noexcept {
             TRACK_CALL_TEXT("cui::artwork_panel::ArtworkDecoder::async_task");
 
             wil::com_ptr<ID2D1Bitmap> d2d_bitmap;
-            wil::com_ptr<ID2D1ColorContext> d2d_colour_context;
+            wil::com_ptr<ID2D1ColorContext> d2d_image_colour_context;
+            wil::com_ptr<ID2D1ColorContext> d2d_display_colour_context;
             bool is_float{};
+
+            auto _ = wil::scope_exit([&] {
+                fb2k::inMainThread([this, d2d_bitmap{std::move(d2d_bitmap)},
+                                       d2d_display_colour_context{std::move(d2d_display_colour_context)},
+                                       d2d_image_colour_context{std::move(d2d_image_colour_context)}, is_float,
+                                       stop_token{std::move(stop_token)}, task{std::move(task)}]() {
+                    const auto locked_task = task.lock();
+
+                    if (stop_token.stop_requested()) {
+                        if (locked_task)
+                            std::erase(m_aborting_tasks, locked_task);
+                        return;
+                    }
+
+                    assert(m_current_task == locked_task);
+                    m_current_task.reset();
+                    m_decoded_image = std::move(d2d_bitmap);
+                    m_display_colour_context = std::move(d2d_display_colour_context);
+                    m_image_colour_context = std::move(d2d_image_colour_context);
+                    m_is_float = is_float;
+
+                    if (locked_task)
+                        locked_task->on_complete();
+                });
+            });
 
             try {
                 if (stop_token.stop_requested())
@@ -49,8 +79,6 @@ void ArtworkDecoder::decode(
                 wil::com_ptr<IWICBitmapFrameDecode> bitmap_frame_decode;
                 THROW_IF_FAILED(decoder->GetFrame(0, &bitmap_frame_decode));
 
-                const auto wic_colour_context
-                    = wic::get_bitmap_source_colour_context(imaging_factory, bitmap_frame_decode);
                 const auto pixel_format_info
                     = get_bitmap_source_pixel_format_info(imaging_factory, bitmap_frame_decode);
 
@@ -60,11 +88,13 @@ void ArtworkDecoder::decode(
                 unsigned bpp{};
                 THROW_IF_FAILED(pixel_format_info->GetBitsPerPixel(&bpp));
 
+                const auto wic_colour_context
+                    = wic::get_bitmap_source_colour_context(imaging_factory, bitmap_frame_decode);
                 is_float = pixel_format_numeric_representation == WICPixelFormatNumericRepresentationFloat;
 
                 const auto target_pixel_format = [&] {
                     if (is_float)
-                        return GUID_WICPixelFormat64bppPRGBAHalf;
+                        return use_advanced_colour ? GUID_WICPixelFormat64bppPRGBAHalf : GUID_WICPixelFormat32bppPRGBA;
 
                     if (bpp > 32)
                         return GUID_WICPixelFormat64bppPRGBA;
@@ -110,10 +140,11 @@ void ArtworkDecoder::decode(
                 // Not implemented on Wine
                 if (wic_colour_context) {
                     LOG_IF_FAILED(d2d_render_target->CreateColorContextFromWicColorContext(
-                        wic_colour_context.get(), &d2d_colour_context));
+                        wic_colour_context.get(), &d2d_image_colour_context));
                 } else {
                     LOG_IF_FAILED(d2d_render_target->CreateColorContext(
-                        is_float ? D2D1_COLOR_SPACE_SCRGB : D2D1_COLOR_SPACE_SRGB, nullptr, 0, &d2d_colour_context));
+                        is_float && use_advanced_colour ? D2D1_COLOR_SPACE_SCRGB : D2D1_COLOR_SPACE_SRGB, nullptr, 0,
+                        &d2d_image_colour_context));
                 }
 
                 hr = d2d_render_target->CreateBitmapFromWicBitmap(wic_bitmap.get(), nullptr, &d2d_bitmap);
@@ -138,30 +169,30 @@ void ArtworkDecoder::decode(
 
                 if (stop_token.stop_requested())
                     return;
+
+                if (monitor) {
+                    const auto display_device_key = win32::get_display_device_key(monitor);
+                    const auto display_profile_name = wcs::get_display_colour_profile_name(display_device_key.c_str());
+                    const auto profile = wcs::get_display_colour_profile(display_profile_name);
+
+                    if (!profile.empty())
+                        LOG_IF_FAILED(d2d_render_target->CreateColorContext(D2D1_COLOR_SPACE_CUSTOM, profile.data(),
+                            gsl::narrow<uint32_t>(profile.size()), &d2d_display_colour_context));
+
+                    if (!d2d_display_colour_context) {
+                        LOG_IF_FAILED(d2d_render_target->CreateColorContext(
+                            D2D1_COLOR_SPACE_SRGB, nullptr, 0, &d2d_display_colour_context));
+                    }
+                }
+
             } catch (const std::exception& ex) {
                 console::print("Artwork panel – loading image failed: ", ex.what());
+
+                d2d_bitmap.reset();
+                d2d_display_colour_context.reset();
+                d2d_image_colour_context.reset();
+                is_float = false;
             }
-
-            fb2k::inMainThread(
-                [this, d2d_bitmap{std::move(d2d_bitmap)}, d2d_colour_context{std::move(d2d_colour_context)}, is_float,
-                    stop_token{std::move(stop_token)}, task{std::move(task)}]() {
-                    const auto locked_task = task.lock();
-
-                    if (stop_token.stop_requested()) {
-                        if (locked_task)
-                            std::erase(m_aborting_tasks, locked_task);
-                        return;
-                    }
-
-                    assert(m_current_task == locked_task);
-                    m_current_task.reset();
-                    m_decoded_image = std::move(d2d_bitmap);
-                    m_colour_context = std::move(d2d_colour_context);
-                    m_is_float = is_float;
-
-                    if (locked_task)
-                        locked_task->on_complete();
-                });
         });
 }
 
