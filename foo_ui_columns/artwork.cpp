@@ -553,10 +553,9 @@ void ArtworkPanel::create_d2d_device_resources()
             m_d2d_device_context->GetTarget(&target);
 
             if (!target) {
-                const auto dpi = gsl::narrow_cast<float>(uih::get_system_dpi_cached().cx);
                 D2D1_BITMAP_PROPERTIES1 bitmap_properties
                     = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-                        D2D1::PixelFormat(*m_swap_chain_format, D2D1_ALPHA_MODE_IGNORE), dpi, dpi);
+                        D2D1::PixelFormat(*m_swap_chain_format, D2D1_ALPHA_MODE_IGNORE));
 
                 wil::com_ptr<IDXGISurface> dxgi_back_buffer;
                 THROW_IF_FAILED(m_dxgi_swap_chain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_back_buffer.put_void()));
@@ -977,10 +976,6 @@ D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(const wil::com_ptr<ID2D1Im
 
     auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
     auto [render_target_width, render_target_height] = m_d2d_device_context->GetPixelSize();
-
-    float dpi_x{};
-    float dpi_y{};
-    m_d2d_device_context->GetDpi(&dpi_x, &dpi_y);
 
     const auto [scaled_width, scaled_height] = cui::utils::calculate_scaled_image_size(gsl::narrow<int>(bitmap_width),
         gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height),
