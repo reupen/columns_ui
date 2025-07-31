@@ -177,18 +177,25 @@ public:
 
     void activate() override
     {
-        if (main_window.get_wnd()) {
-            cfg_main_window_is_hidden = false;
-            if (g_icon_created && !cfg_show_systray)
-                systray::remove_icon();
+        const auto wnd = main_window.get_wnd();
 
-            if (!is_visible()) {
-                ShowWindow(main_window.get_wnd(), SW_RESTORE);
-                if ((GetWindowLong(main_window.get_wnd(), GWL_EXSTYLE) & WS_EX_LAYERED))
-                    RedrawWindow(main_window.get_wnd(), nullptr, nullptr,
-                        RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW);
-            }
-            SetForegroundWindow(main_window.get_wnd());
+        if (!wnd)
+            return;
+
+        cfg_main_window_is_hidden = false;
+
+        if (g_icon_created && !cfg_show_systray)
+            systray::remove_icon();
+
+        if (GetForegroundWindow() != wnd)
+            SetForegroundWindow(wnd);
+
+        if (!is_visible()) {
+            ShowWindow(wnd, SW_RESTORE);
+
+            if (GetWindowLong(wnd, GWL_EXSTYLE) & WS_EX_LAYERED)
+                RedrawWindow(
+                    wnd, nullptr, nullptr, RDW_ERASE | RDW_INVALIDATE | RDW_FRAME | RDW_ALLCHILDREN | RDW_UPDATENOW);
         }
     }
 

@@ -256,8 +256,14 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         const auto is_minimised = HIWORD(wp);
         const auto state = LOWORD(wp);
 
-        if (m_is_destroying || state != WA_INACTIVE)
+        if (m_is_destroying)
             return 0;
+
+        if (state != WA_INACTIVE) {
+            if (!GetFocus() && !IsIconic(wnd))
+                set_or_restore_focus();
+            return 0;
+        }
 
         if (!is_minimised)
             save_focus_state();
@@ -273,13 +279,7 @@ LRESULT cui::MainWindow::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         return 0;
     }
     case WM_SETFOCUS:
-        if (m_is_destroying)
-            break;
-
-        if (m_last_focused_wnd && IsWindow(m_last_focused_wnd))
-            SetFocus(m_last_focused_wnd);
-        else
-            g_layout_window.set_focus();
+        set_or_restore_focus();
         break;
     case WM_SYSCOMMAND:
         switch (wp) {

@@ -86,6 +86,7 @@ private:
     bool update_taskbar_button_images() const;
     void update_taskbar_buttons(bool update) const;
     void save_focus_state();
+    void set_or_restore_focus() const;
 
     pfc::string8 m_window_title;
     wil::com_ptr<ITaskbarList3> m_taskbar_list;

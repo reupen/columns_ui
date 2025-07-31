@@ -39,6 +39,10 @@
 - A bug where artwork images in the playlist view varied in width by up to two
   pixels was fixed. [[#1281](https://github.com/reupen/columns_ui/pull/1281)]
 
+- A bug where the focus was not restored to the previously focused child window
+  after some operations, like a ReplayGain scan, was fixed.
+  [[#1293](https://github.com/reupen/columns_ui/pull/1293)]
+
 ### Internal changes
 
 - Some code was refactored.
