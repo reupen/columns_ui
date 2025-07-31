@@ -21,24 +21,6 @@ namespace {
     const auto bitmap_pixel_size = d2d_bitmap->GetPixelSize();
     const auto bitmap_size = d2d_bitmap->GetSize();
 
-    wil::com_ptr<ID2D1Effect> colour_management_effect;
-    THROW_IF_FAILED(context->d2d_device_context->CreateEffect(CLSID_D2D1ColorManagement, &colour_management_effect));
-
-    wil::com_ptr<ID2D1ColorContext> source_colour_context;
-    d2d_bitmap->GetColorContext(&source_colour_context);
-
-    if (context->d3d_device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_10_0
-        && context->d2d_device_context->IsBufferPrecisionSupported(D2D1_BUFFER_PRECISION_32BPC_FLOAT)) {
-        THROW_IF_FAILED(
-            colour_management_effect->SetValue(D2D1_COLORMANAGEMENT_PROP_QUALITY, D2D1_COLORMANAGEMENT_QUALITY_BEST));
-    }
-
-    THROW_IF_FAILED(colour_management_effect->SetValue(
-        D2D1_COLORMANAGEMENT_PROP_SOURCE_COLOR_CONTEXT, source_colour_context.get()));
-    THROW_IF_FAILED(colour_management_effect->SetValue(
-        D2D1_COLORMANAGEMENT_PROP_DESTINATION_COLOR_CONTEXT, dest_colour_context.get()));
-    colour_management_effect->SetInput(0, d2d_bitmap.get());
-
     const auto [render_width_px, render_height_px]
         = cui::utils::calculate_scaled_image_size(static_cast<int>(bitmap_pixel_size.width),
             static_cast<int>(bitmap_pixel_size.height), target_width, target_height, true, false);
@@ -51,7 +33,14 @@ namespace {
 
     const auto scale_effect = d2d::create_scale_effect(context->d2d_device_context,
         D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height));
-    scale_effect->SetInputEffect(0, colour_management_effect.get());
+    scale_effect->SetInput(0, d2d_bitmap.get());
+
+    wil::com_ptr<ID2D1ColorContext> source_colour_context;
+    d2d_bitmap->GetColorContext(&source_colour_context);
+
+    const auto colour_management_effect
+        = d2d::create_colour_management_effect(context->d2d_device_context, source_colour_context, dest_colour_context);
+    colour_management_effect->SetInputEffect(0, scale_effect.get());
 
     wil::com_ptr<ID2D1RectangleGeometry> reflection_rect_geometry;
     wil::com_ptr<ID2D1LinearGradientBrush> reflection_linear_gradient_brush;
@@ -78,7 +67,7 @@ namespace {
             gradient_stops_collection.get(), &reflection_linear_gradient_brush));
 
         if (use_image_brush) {
-            const auto effect_image = scale_effect.query<ID2D1Image>();
+            const auto effect_image = colour_management_effect.query<ID2D1Image>();
 
             const auto bitmap_brush_properties
                 = D2D1::ImageBrushProperties({0.f, 0.f, render_width_dip, render_height_dip}, D2D1_EXTEND_MODE_CLAMP,
@@ -99,7 +88,8 @@ namespace {
     context->d2d_device_context->BeginDraw();
     context->d2d_device_context->Clear(D2D1::ColorF(D2D1::ColorF::Black, 0.f));
 
-    context->d2d_device_context->DrawImage(scale_effect.get(), {}, {}, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
+    context->d2d_device_context->DrawImage(
+        colour_management_effect.get(), {}, {}, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
 
     if (reflection_height_px > 0) {
         try {
@@ -317,8 +307,8 @@ void ArtworkReaderManager::on_reader_done(ArtworkRenderingContext::Ptr context, 
 
 ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, unsigned height)
 {
-    constexpr std::array feature_levels = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1};
+    constexpr std::array feature_levels
+        = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
 
     wil::com_ptr<ID3D11Device> d3d_device;
     try {
