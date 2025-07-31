@@ -10,7 +10,7 @@ namespace cui::artwork_panel {
 
 namespace {
 
-constexpr unsigned MSG_INVALIDATE = WM_USER + 3;
+constexpr unsigned MSG_REFRESH_EFFECTS = WM_USER + 3;
 constexpr unsigned MSG_REFRESH_IMAGE = WM_USER + 4;
 
 D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustment)
@@ -268,8 +268,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         force_reload_artwork();
         g_windows.push_back(this);
 
-        m_display_change_token
-            = system_appearance_manager::add_display_changed_handler([wnd] { PostMessage(wnd, MSG_INVALIDATE, 0, 0); });
+        m_display_change_token = system_appearance_manager::add_display_changed_handler(
+            [wnd] { PostMessage(wnd, MSG_REFRESH_EFFECTS, 0, 0); });
         break;
     }
     case WM_DESTROY:
@@ -334,7 +334,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
-    case MSG_INVALIDATE:
+    case MSG_REFRESH_EFFECTS:
+        reset_effects();
         RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
         return 0;
     case MSG_REFRESH_IMAGE:
@@ -353,7 +354,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             const auto context = m_d2d_device_context.query<ID2D1DeviceContext>();
 
-            create_image_colour_processing_effect();
+            create_effects();
 
             const auto is_hdr_display
                 = m_dxgi_output_desc && m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
@@ -605,7 +606,7 @@ void ArtworkPanel::reset_d2d_device_resources(bool keep_devices)
     }
 }
 
-void ArtworkPanel::create_image_colour_processing_effect()
+void ArtworkPanel::create_effects()
 {
     if (m_output_effect)
         return;

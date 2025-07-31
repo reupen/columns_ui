@@ -9,7 +9,8 @@
   with web browsers. [[#1275](https://github.com/reupen/columns_ui/pull/1275),
   [#1284](https://github.com/reupen/columns_ui/pull/1284),
   [#1289](https://github.com/reupen/columns_ui/pull/1289),
-  [#1290](https://github.com/reupen/columns_ui/pull/1290)]
+  [#1290](https://github.com/reupen/columns_ui/pull/1290),
+  [#1292](https://github.com/reupen/columns_ui/pull/1292)]
 
   Additionally, support for Windows Advanced Colour can be enabled in
   Preferences on Windows 10 version 1809 and newer. This improves support for
@@ -23,7 +24,8 @@
 
 - Direct2D is now used to scale artwork and create artwork reflections in the
   playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281),
-  [#1289](https://github.com/reupen/columns_ui/pull/1289)]
+  [#1289](https://github.com/reupen/columns_ui/pull/1289),
+  [#1292](https://github.com/reupen/columns_ui/pull/1292)]
 
 ### Bug fixes
 

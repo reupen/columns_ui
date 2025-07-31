@@ -177,7 +177,7 @@ private:
     void update_dxgi_output_desc();
     void create_d2d_device_resources();
     void reset_d2d_device_resources(bool keep_devices = false);
-    void create_image_colour_processing_effect();
+    void create_effects();
     void refresh_image();
     void clear_image();
     void reset_effects();
