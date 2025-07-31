@@ -104,6 +104,28 @@ public:
         Other,
     };
 
+    class ButtonStateCallback : public uie::button_callback {
+    public:
+        ButtonStateCallback(uie::button::ptr button_instance, HWND toolbar_wnd, int button_id)
+            : m_button_instance(std::move(button_instance))
+            , m_toolbar_wnd(toolbar_wnd)
+            , m_button_id(button_id)
+        {
+            m_button_instance->register_callback(*this);
+        }
+
+        ~ButtonStateCallback() { m_button_instance->deregister_callback(*this); }
+
+    private:
+        void on_button_state_change(unsigned p_new_state) final;
+
+        void on_command_state_change(unsigned p_new_state) final {}
+
+        uie::button::ptr m_button_instance;
+        HWND m_toolbar_wnd{};
+        int m_button_id{};
+    };
+
     class Button {
     public:
         class CustomImage {
@@ -134,24 +156,9 @@ public:
         pfc::string_simple m_text;
         CustomImage m_custom_image;
         CustomImage m_custom_hot_image;
-        service_ptr_t<uie::button> m_interface;
+        uie::button::ptr m_interface;
 
-        class ButtonStateCallback : public uie::button_callback {
-            void on_button_state_change(unsigned p_new_state) override; // see t_button_state
-
-            void on_command_state_change(unsigned p_new_state) override {}
-
-            service_ptr_t<ButtonsToolbar> m_this;
-            int id{};
-
-        public:
-            ButtonStateCallback& operator=(const ButtonStateCallback& p_source);
-            void set_wnd(ButtonsToolbar* p_source);
-            void set_id(int i);
-            ButtonStateCallback() = default;
-        } m_callback;
-
-        void set(const Button& p_source);
+        std::shared_ptr<ButtonStateCallback> m_callback;
 
         void write(stream_writer* out, abort_callback& p_abort) const;
 

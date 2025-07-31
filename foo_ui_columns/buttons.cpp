@@ -9,6 +9,23 @@
 
 namespace cui::toolbars::buttons {
 
+void ButtonsToolbar::ButtonStateCallback::on_button_state_change(unsigned p_new_state)
+{
+    auto tb_state = LOWORD(SendMessage(m_toolbar_wnd, TB_GETSTATE, m_button_id, 0));
+
+    if (p_new_state & uie::BUTTON_STATE_ENABLED)
+        tb_state |= TBSTATE_ENABLED;
+    else
+        tb_state &= ~TBSTATE_ENABLED;
+
+    if (p_new_state & uie::BUTTON_STATE_PRESSED)
+        tb_state |= TBSTATE_PRESSED;
+    else
+        tb_state &= ~TBSTATE_PRESSED;
+
+    SendMessage(m_toolbar_wnd, TB_SETSTATE, m_button_id, MAKELONG(tb_state, 0));
+}
+
 const GUID& ButtonsToolbar::get_extension_guid() const
 {
     return extension_guid;
@@ -137,12 +154,9 @@ void ButtonsToolbar::create_toolbar()
             if (button.m_type == TYPE_SEPARATOR)
                 continue;
 
-            button.m_callback.set_wnd(this);
-            button.m_callback.set_id(gsl::narrow<int>(n));
-
-            for (auto enumerator = uie::button::enumerate(); !enumerator.finished(); ++enumerator) {
-                if ((*enumerator)->get_item_guid() == button.m_guid) {
-                    button.m_interface = *enumerator;
+            for (const auto& instance : uie::button::enumerate()) {
+                if (instance->get_item_guid() == button.m_guid) {
+                    button.m_interface = instance;
                     break;
                 }
             }
@@ -205,35 +219,36 @@ void ButtonsToolbar::create_toolbar()
             m_hot_images.reset(ImageList_Create(
                 button_width, button_height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
 
-        for (auto&& [n, tbbutton] : ranges::views::enumerate(tbbuttons)) {
+        for (auto&& [index, tuple] :
+            ranges::views::enumerate(ranges::views::zip(tbbuttons, m_buttons, images, images_hot))) {
+            auto&& [tbbutton, button, image, hot_image] = tuple;
             tbbutton.iString = -1; //"It works"
 
-            if (m_buttons[n].m_type == TYPE_SEPARATOR) {
-                tbbutton.idCommand = gsl::narrow<int>(n);
+            if (button.m_type == TYPE_SEPARATOR) {
+                tbbutton.idCommand = gsl::narrow<int>(index);
                 tbbutton.fsStyle = is_dark ? BTNS_BUTTON | BTNS_SHOWTEXT : BTNS_SEP;
                 tbbutton.iBitmap = I_IMAGENONE;
             } else {
-                m_buttons[n].m_callback.set_wnd(this);
-                m_buttons[n].m_callback.set_id(gsl::narrow<int>(n));
-                if (m_buttons[n].m_show == SHOW_IMAGE || m_buttons[n].m_show == SHOW_IMAGE_TEXT) {
-                    tbbutton.iBitmap = images[n].add_to_imagelist(m_standard_images.get());
-                    if (!m_buttons[n].m_use_custom_hot || !images_hot[n].is_valid())
-                        images[n].add_to_imagelist(m_hot_images.get());
+                if (button.m_show == SHOW_IMAGE || button.m_show == SHOW_IMAGE_TEXT) {
+                    tbbutton.iBitmap = image.add_to_imagelist(m_standard_images.get());
+                    if (!button.m_use_custom_hot || !hot_image.is_valid())
+                        image.add_to_imagelist(m_hot_images.get());
                     else
-                        images_hot[n].add_to_imagelist(m_hot_images.get());
-                } else
+                        hot_image.add_to_imagelist(m_hot_images.get());
+                } else {
                     tbbutton.iBitmap = I_IMAGENONE;
+                }
 
-                tbbutton.idCommand = gsl::narrow<int>(n);
+                tbbutton.idCommand = gsl::narrow<int>(index);
                 tbbutton.fsState = 0;
                 tbbutton.fsStyle = BTNS_AUTOSIZE | BTNS_BUTTON;
+
                 if (!m_text_below && m_appearance != APPEARANCE_NOEDGE
-                    && (m_buttons[n].m_show == SHOW_TEXT || m_buttons[n].m_show == SHOW_IMAGE_TEXT))
+                    && (button.m_show == SHOW_TEXT || button.m_show == SHOW_IMAGE_TEXT))
                     tbbutton.fsStyle |= BTNS_SHOWTEXT;
 
-                if (/*m_text_below || (tbb_item.fsStyle & BTNS_SHOWTEXT) */ m_buttons[n].m_show == SHOW_TEXT
-                    || m_buttons[n].m_show == SHOW_IMAGE_TEXT) {
-                    const auto display_text = m_buttons[n].get_display_text();
+                if (button.m_show == SHOW_TEXT || button.m_show == SHOW_IMAGE_TEXT) {
+                    const auto display_text = button.get_display_text();
                     pfc::stringcvt::string_os_from_utf8 str_conv(display_text.c_str());
                     pfc::array_t<TCHAR, pfc::alloc_fast_aggressive> name;
                     name.prealloc(str_conv.length() + 4);
@@ -244,15 +259,17 @@ void ButtonsToolbar::create_toolbar()
                         = SendMessage(wnd_toolbar, TB_ADDSTRING, NULL, reinterpret_cast<LPARAM>(name.get_ptr()));
                 }
 
-                if (m_buttons[n].m_interface.is_valid()) {
-                    unsigned state = m_buttons[n].m_interface->get_button_state();
-                    if (m_buttons[n].m_interface->get_button_type() == uie::BUTTON_TYPE_DROPDOWN_ARROW)
+                if (button.m_interface.is_valid()) {
+                    unsigned state = button.m_interface->get_button_state();
+
+                    if (button.m_interface->get_button_type() == uie::BUTTON_TYPE_DROPDOWN_ARROW)
                         tbbutton.fsStyle |= BTNS_DROPDOWN;
+
                     if (state & uie::BUTTON_STATE_ENABLED)
                         tbbutton.fsState |= TBSTATE_ENABLED;
+
                     if (state & uie::BUTTON_STATE_PRESSED)
                         tbbutton.fsState |= TBSTATE_PRESSED;
-                    // m_buttons[n].m_interface->register_callback(m_buttons[n].m_callback);
                 } else {
                     tbbutton.fsState |= TBSTATE_ENABLED;
                 }
@@ -309,9 +326,12 @@ void ButtonsToolbar::create_toolbar()
             }
         }
 
-        for (auto&& button : m_buttons) {
-            if (button.m_interface.is_valid())
-                button.m_interface->register_callback(button.m_callback);
+        for (auto&& [index, button] : ranges::views::enumerate(m_buttons)) {
+            if (!button.m_interface.is_valid())
+                continue;
+
+            button.m_callback
+                = std::make_shared<ButtonStateCallback>(button.m_interface, wnd_toolbar, gsl::narrow<int>(index));
         }
 
         ShowWindow(wnd_toolbar, SW_SHOWNORMAL);
@@ -329,10 +349,9 @@ void ButtonsToolbar::create_toolbar()
 
 void ButtonsToolbar::destroy_toolbar()
 {
-    size_t count = m_buttons.size();
-    for (size_t i = 0; i < count; i++)
-        if (m_buttons[i].m_interface.is_valid())
-            m_buttons[i].m_interface->deregister_callback(m_buttons[i].m_callback);
+    for (auto& button : m_buttons)
+        button.m_callback.reset();
+
     DestroyWindow(wnd_toolbar);
     wnd_toolbar = nullptr;
     m_standard_images.reset();
