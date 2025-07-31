@@ -10,7 +10,7 @@ namespace cui::artwork_panel {
 
 namespace {
 
-constexpr unsigned MSG_INVALIDATE = WM_USER + 3;
+constexpr unsigned MSG_REFRESH_EFFECTS = WM_USER + 3;
 constexpr unsigned MSG_REFRESH_IMAGE = WM_USER + 4;
 
 D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustment)
@@ -268,8 +268,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         force_reload_artwork();
         g_windows.push_back(this);
 
-        m_display_change_token
-            = system_appearance_manager::add_display_changed_handler([wnd] { PostMessage(wnd, MSG_INVALIDATE, 0, 0); });
+        m_display_change_token = system_appearance_manager::add_display_changed_handler(
+            [wnd] { PostMessage(wnd, MSG_REFRESH_EFFECTS, 0, 0); });
         break;
     }
     case WM_DESTROY:
@@ -305,7 +305,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         if (m_dxgi_swap_chain) {
-            set_scale_effect_scale(m_scale_effect);
+            update_scale_effect();
 
             if (m_d2d_device_context) {
                 m_d2d_device_context->SetTarget(nullptr);
@@ -334,7 +334,8 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
-    case MSG_INVALIDATE:
+    case MSG_REFRESH_EFFECTS:
+        reset_effects();
         RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
         return 0;
     case MSG_REFRESH_IMAGE:
@@ -353,7 +354,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             const auto context = m_d2d_device_context.query<ID2D1DeviceContext>();
 
-            create_image_colour_processing_effect();
+            create_effects();
 
             const auto is_hdr_display
                 = m_dxgi_output_desc && m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
@@ -487,16 +488,8 @@ void ArtworkPanel::create_d2d_device_resources()
             }
         }
 
-        if (!m_d2d_factory) {
-            D2D1_FACTORY_OPTIONS options{};
-
-#ifdef _DEBUG
-            options.debugLevel = IsDebuggerPresent() ? D2D1_DEBUG_LEVEL_INFORMATION : D2D1_DEBUG_LEVEL_NONE;
-#endif
-
-            THROW_IF_FAILED(D2D1CreateFactory(
-                D2D1_FACTORY_TYPE_MULTI_THREADED, __uuidof(ID2D1Factory1), &options, m_d2d_factory.put_void()));
-        }
+        if (!m_d2d_factory)
+            m_d2d_factory = d2d::create_factory(D2D1_FACTORY_TYPE_MULTI_THREADED);
 
         const auto dxgi_device = m_d3d_device.query<IDXGIDevice1>();
 
@@ -560,10 +553,9 @@ void ArtworkPanel::create_d2d_device_resources()
             m_d2d_device_context->GetTarget(&target);
 
             if (!target) {
-                const auto dpi = gsl::narrow_cast<float>(uih::get_system_dpi_cached().cx);
                 D2D1_BITMAP_PROPERTIES1 bitmap_properties
                     = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
-                        D2D1::PixelFormat(*m_swap_chain_format, D2D1_ALPHA_MODE_IGNORE), dpi, dpi);
+                        D2D1::PixelFormat(*m_swap_chain_format, D2D1_ALPHA_MODE_IGNORE));
 
                 wil::com_ptr<IDXGISurface> dxgi_back_buffer;
                 THROW_IF_FAILED(m_dxgi_swap_chain->GetBuffer(0, __uuidof(IDXGISurface), dxgi_back_buffer.put_void()));
@@ -613,7 +605,7 @@ void ArtworkPanel::reset_d2d_device_resources(bool keep_devices)
     }
 }
 
-void ArtworkPanel::create_image_colour_processing_effect()
+void ArtworkPanel::create_effects()
 {
     if (m_output_effect)
         return;
@@ -635,15 +627,8 @@ void ArtworkPanel::create_image_colour_processing_effect()
         = m_dxgi_output_desc && m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
     const auto is_advanced_colour = is_advanced_colour_active();
 
-    wil::com_ptr<ID2D1Effect> scale_effect;
-    THROW_IF_FAILED(m_d2d_device_context->CreateEffect(CLSID_D2D1Scale, &scale_effect));
-
-    THROW_IF_FAILED(
-        scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD));
+    const auto scale_effect = d2d::create_scale_effect(m_d2d_device_context, calculate_scaling_factor(bitmap));
     scale_effect->SetInput(0, bitmap.get());
-
-    set_scale_effect_scale(scale_effect);
 
     wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
     wil::com_ptr<ID2D1ColorContext> working_colour_context;
@@ -655,9 +640,6 @@ void ArtworkPanel::create_image_colour_processing_effect()
         const auto working_colour_management_effect
             = d2d::create_colour_management_effect(m_d2d_device_context, image_colour_context, working_colour_context);
         working_colour_management_effect->SetInputEffect(0, scale_effect.get());
-
-        THROW_IF_FAILED(
-            m_d2d_device_context->CreateEffect(CLSID_D2D1WhiteLevelAdjustment, &white_level_adjustment_effect));
 
         const auto is_hdr_image = m_artwork_decoder.is_float();
 
@@ -672,14 +654,8 @@ void ArtworkPanel::create_image_colour_processing_effect()
             output_level = m_dxgi_output_desc ? m_dxgi_output_desc->MaxLuminance : D2D1_SCENE_REFERRED_SDR_WHITE_LEVEL;
         }
 
-        if (input_level)
-            THROW_IF_FAILED(white_level_adjustment_effect->SetValue(
-                D2D1_WHITELEVELADJUSTMENT_PROP_INPUT_WHITE_LEVEL, *input_level));
-
-        if (output_level)
-            THROW_IF_FAILED(white_level_adjustment_effect->SetValue(
-                D2D1_WHITELEVELADJUSTMENT_PROP_OUTPUT_WHITE_LEVEL, *output_level));
-
+        white_level_adjustment_effect
+            = d2d::create_white_level_adjustment_effect(m_d2d_device_context, input_level, output_level);
         white_level_adjustment_effect->SetInputEffect(0, working_colour_management_effect.get());
     }
 
@@ -994,30 +970,30 @@ void ArtworkPanel::reset_effects()
     m_output_effect.reset();
 }
 
-void ArtworkPanel::set_scale_effect_scale(const wil::com_ptr<ID2D1Effect>& scale_effect) const
+D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const
 {
-    if (!scale_effect)
-        return;
-
-    wil::com_ptr<ID2D1Image> image;
-    scale_effect->GetInput(0, &image);
-
     const auto bitmap = image.query<ID2D1Bitmap>();
 
     auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
     auto [render_target_width, render_target_height] = m_d2d_device_context->GetPixelSize();
 
-    float dpi_x{};
-    float dpi_y{};
-    m_d2d_device_context->GetDpi(&dpi_x, &dpi_y);
-
     const auto [scaled_width, scaled_height] = cui::utils::calculate_scaled_image_size(gsl::narrow<int>(bitmap_width),
         gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height),
         m_preserve_aspect_ratio, true);
 
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
-        D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),
-            scaled_height / gsl::narrow_cast<float>(bitmap_height))));
+    return D2D1::Vector2F(
+        scaled_width / gsl::narrow_cast<float>(bitmap_width), scaled_height / gsl::narrow_cast<float>(bitmap_height));
+}
+
+void ArtworkPanel::update_scale_effect() const
+{
+    if (!m_scale_effect)
+        return;
+
+    wil::com_ptr<ID2D1Image> image;
+    m_scale_effect->GetInput(0, &image);
+
+    LOG_IF_FAILED(m_scale_effect->SetValue(D2D1_SCALE_PROP_SCALE, calculate_scaling_factor(image)));
 }
 
 void ArtworkPanel::queue_decode(const album_art_data::ptr& data)

@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ng_playlist_artwork.h"
 
+#include "d2d_utils.h"
 #include "d3d_utils.h"
 #include "gdi.h"
 #include "imaging.h"
@@ -20,24 +21,6 @@ namespace {
     const auto bitmap_pixel_size = d2d_bitmap->GetPixelSize();
     const auto bitmap_size = d2d_bitmap->GetSize();
 
-    wil::com_ptr<ID2D1Effect> colour_management_effect;
-    THROW_IF_FAILED(context->d2d_device_context->CreateEffect(CLSID_D2D1ColorManagement, &colour_management_effect));
-
-    wil::com_ptr<ID2D1ColorContext> source_colour_context;
-    d2d_bitmap->GetColorContext(&source_colour_context);
-
-    if (context->d3d_device->GetFeatureLevel() >= D3D_FEATURE_LEVEL_10_0
-        && context->d2d_device_context->IsBufferPrecisionSupported(D2D1_BUFFER_PRECISION_32BPC_FLOAT)) {
-        THROW_IF_FAILED(
-            colour_management_effect->SetValue(D2D1_COLORMANAGEMENT_PROP_QUALITY, D2D1_COLORMANAGEMENT_QUALITY_BEST));
-    }
-
-    THROW_IF_FAILED(colour_management_effect->SetValue(
-        D2D1_COLORMANAGEMENT_PROP_SOURCE_COLOR_CONTEXT, source_colour_context.get()));
-    THROW_IF_FAILED(colour_management_effect->SetValue(
-        D2D1_COLORMANAGEMENT_PROP_DESTINATION_COLOR_CONTEXT, dest_colour_context.get()));
-    colour_management_effect->SetInput(0, d2d_bitmap.get());
-
     const auto [render_width_px, render_height_px]
         = cui::utils::calculate_scaled_image_size(static_cast<int>(bitmap_pixel_size.width),
             static_cast<int>(bitmap_pixel_size.height), target_width, target_height, true, false);
@@ -48,15 +31,16 @@ namespace {
     const auto reflection_height_px = show_reflection ? (target_width * 3) / 11 : 0;
     const auto reflection_height_dip = static_cast<float>(reflection_height_px);
 
-    wil::com_ptr<ID2D1Effect> scale_effect;
-    THROW_IF_FAILED(context->d2d_device_context->CreateEffect(CLSID_D2D1Scale, scale_effect.put()));
+    const auto scale_effect = d2d::create_scale_effect(context->d2d_device_context,
+        D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height));
+    scale_effect->SetInput(0, d2d_bitmap.get());
 
-    THROW_IF_FAILED(
-        scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
-        D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height)));
-    scale_effect->SetInputEffect(0, colour_management_effect.get());
+    wil::com_ptr<ID2D1ColorContext> source_colour_context;
+    d2d_bitmap->GetColorContext(&source_colour_context);
+
+    const auto colour_management_effect
+        = d2d::create_colour_management_effect(context->d2d_device_context, source_colour_context, dest_colour_context);
+    colour_management_effect->SetInputEffect(0, scale_effect.get());
 
     wil::com_ptr<ID2D1RectangleGeometry> reflection_rect_geometry;
     wil::com_ptr<ID2D1LinearGradientBrush> reflection_linear_gradient_brush;
@@ -83,7 +67,7 @@ namespace {
             gradient_stops_collection.get(), &reflection_linear_gradient_brush));
 
         if (use_image_brush) {
-            const auto effect_image = scale_effect.query<ID2D1Image>();
+            const auto effect_image = colour_management_effect.query<ID2D1Image>();
 
             const auto bitmap_brush_properties
                 = D2D1::ImageBrushProperties({0.f, 0.f, render_width_dip, render_height_dip}, D2D1_EXTEND_MODE_CLAMP,
@@ -104,7 +88,8 @@ namespace {
     context->d2d_device_context->BeginDraw();
     context->d2d_device_context->Clear(D2D1::ColorF(D2D1::ColorF::Black, 0.f));
 
-    context->d2d_device_context->DrawImage(scale_effect.get(), {}, {}, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
+    context->d2d_device_context->DrawImage(
+        colour_management_effect.get(), {}, {}, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
 
     if (reflection_height_px > 0) {
         try {
@@ -322,8 +307,8 @@ void ArtworkReaderManager::on_reader_done(ArtworkRenderingContext::Ptr context, 
 
 ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, unsigned height)
 {
-    constexpr std::array feature_levels = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1,
-        D3D_FEATURE_LEVEL_10_0, D3D_FEATURE_LEVEL_9_3, D3D_FEATURE_LEVEL_9_2, D3D_FEATURE_LEVEL_9_1};
+    constexpr std::array feature_levels
+        = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
 
     wil::com_ptr<ID3D11Device> d3d_device;
     try {
@@ -335,10 +320,7 @@ ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, u
             "Playlist view artwork – failed to create a software (WARP) renderer, using a hardware renderer instead");
     }
 
-    wil::com_ptr<ID2D1Factory1> d2d_factory;
-    THROW_IF_FAILED(
-        D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory1), d2d_factory.put_void()));
-
+    const auto d2d_factory = d2d::create_factory(D2D1_FACTORY_TYPE_SINGLE_THREADED);
     const auto dxgi_device = d3d_device.query<IDXGIDevice1>();
 
     wil::com_ptr<ID2D1Device> d2d_device;

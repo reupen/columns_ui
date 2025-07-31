@@ -19,6 +19,8 @@
 #include <crtdbg.h>
 #endif
 
+#define CUI_ENABLE_D3D_D2D_DEBUG_LAYER 0
+
 #include <algorithm>
 #include <atomic>
 #include <complex>

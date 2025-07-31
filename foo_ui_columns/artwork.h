@@ -177,11 +177,12 @@ private:
     void update_dxgi_output_desc();
     void create_d2d_device_resources();
     void reset_d2d_device_resources(bool keep_devices = false);
-    void create_image_colour_processing_effect();
+    void create_effects();
     void refresh_image();
     void clear_image();
     void reset_effects();
-    void set_scale_effect_scale(const wil::com_ptr<ID2D1Effect>& scale_effect) const;
+    D2D1_VECTOR_2F calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const;
+    void update_scale_effect() const;
     void queue_decode(const album_art_data::ptr& data);
     void show_stub_image();
     void invalidate_window() const;
