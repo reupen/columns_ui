@@ -305,7 +305,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         if (m_dxgi_swap_chain) {
-            set_scale_effect_scale(m_scale_effect);
+            update_scale_effect();
 
             if (m_d2d_device_context) {
                 m_d2d_device_context->SetTarget(nullptr);
@@ -635,15 +635,8 @@ void ArtworkPanel::create_image_colour_processing_effect()
         = m_dxgi_output_desc && m_dxgi_output_desc->ColorSpace == DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020;
     const auto is_advanced_colour = is_advanced_colour_active();
 
-    wil::com_ptr<ID2D1Effect> scale_effect;
-    THROW_IF_FAILED(m_d2d_device_context->CreateEffect(CLSID_D2D1Scale, &scale_effect));
-
-    THROW_IF_FAILED(
-        scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD));
+    const auto scale_effect = d2d::create_scale_effect(m_d2d_device_context, calculate_scaling_factor(bitmap));
     scale_effect->SetInput(0, bitmap.get());
-
-    set_scale_effect_scale(scale_effect);
 
     wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
     wil::com_ptr<ID2D1ColorContext> working_colour_context;
@@ -994,14 +987,8 @@ void ArtworkPanel::reset_effects()
     m_output_effect.reset();
 }
 
-void ArtworkPanel::set_scale_effect_scale(const wil::com_ptr<ID2D1Effect>& scale_effect) const
+D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const
 {
-    if (!scale_effect)
-        return;
-
-    wil::com_ptr<ID2D1Image> image;
-    scale_effect->GetInput(0, &image);
-
     const auto bitmap = image.query<ID2D1Bitmap>();
 
     auto [bitmap_width, bitmap_height] = bitmap->GetPixelSize();
@@ -1015,9 +1002,19 @@ void ArtworkPanel::set_scale_effect_scale(const wil::com_ptr<ID2D1Effect>& scale
         gsl::narrow<int>(bitmap_height), gsl::narrow<int>(render_target_width), gsl::narrow<int>(render_target_height),
         m_preserve_aspect_ratio, true);
 
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
-        D2D1::Vector2F(scaled_width / gsl::narrow_cast<float>(bitmap_width),
-            scaled_height / gsl::narrow_cast<float>(bitmap_height))));
+    return D2D1::Vector2F(
+        scaled_width / gsl::narrow_cast<float>(bitmap_width), scaled_height / gsl::narrow_cast<float>(bitmap_height));
+}
+
+void ArtworkPanel::update_scale_effect() const
+{
+    if (!m_scale_effect)
+        return;
+
+    wil::com_ptr<ID2D1Image> image;
+    m_scale_effect->GetInput(0, &image);
+
+    LOG_IF_FAILED(m_scale_effect->SetValue(D2D1_SCALE_PROP_SCALE, calculate_scaling_factor(image)));
 }
 
 void ArtworkPanel::queue_decode(const album_art_data::ptr& data)

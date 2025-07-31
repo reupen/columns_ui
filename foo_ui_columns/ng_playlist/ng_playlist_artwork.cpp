@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "ng_playlist_artwork.h"
 
+#include "d2d_utils.h"
 #include "d3d_utils.h"
 #include "gdi.h"
 #include "imaging.h"
@@ -48,14 +49,8 @@ namespace {
     const auto reflection_height_px = show_reflection ? (target_width * 3) / 11 : 0;
     const auto reflection_height_dip = static_cast<float>(reflection_height_px);
 
-    wil::com_ptr<ID2D1Effect> scale_effect;
-    THROW_IF_FAILED(context->d2d_device_context->CreateEffect(CLSID_D2D1Scale, scale_effect.put()));
-
-    THROW_IF_FAILED(
-        scale_effect->SetValue(D2D1_SCALE_PROP_INTERPOLATION_MODE, D2D1_SCALE_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_BORDER_MODE, D2D1_BORDER_MODE_HARD));
-    THROW_IF_FAILED(scale_effect->SetValue(D2D1_SCALE_PROP_SCALE,
-        D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height)));
+    const auto scale_effect = d2d::create_scale_effect(context->d2d_device_context,
+        D2D1::Vector2F(render_width_dip / bitmap_size.width, render_height_dip / bitmap_size.height));
     scale_effect->SetInputEffect(0, colour_management_effect.get());
 
     wil::com_ptr<ID2D1RectangleGeometry> reflection_rect_geometry;
