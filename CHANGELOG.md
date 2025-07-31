@@ -10,7 +10,8 @@
   [#1284](https://github.com/reupen/columns_ui/pull/1284),
   [#1289](https://github.com/reupen/columns_ui/pull/1289),
   [#1290](https://github.com/reupen/columns_ui/pull/1290),
-  [#1292](https://github.com/reupen/columns_ui/pull/1292)]
+  [#1292](https://github.com/reupen/columns_ui/pull/1292),
+  [#1296](https://github.com/reupen/columns_ui/pull/1296)]
 
   Additionally, support for Windows Advanced Colour can be enabled in
   Preferences on Windows 10 version 1809 and newer. This improves support for
