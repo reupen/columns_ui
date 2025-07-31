@@ -9,4 +9,7 @@ wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2
 wil::com_ptr<ID2D1Effect> create_scale_effect(
     const wil::com_ptr<ID2D1DeviceContext>& device_context, D2D1_VECTOR_2F scale);
 
+wil::com_ptr<ID2D1Effect> create_white_level_adjustment_effect(const wil::com_ptr<ID2D1DeviceContext>& device_context,
+    std::optional<float> input_white_level, std::optional<float> output_white_level);
+
 } // namespace cui::d2d

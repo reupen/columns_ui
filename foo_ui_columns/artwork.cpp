@@ -649,9 +649,6 @@ void ArtworkPanel::create_image_colour_processing_effect()
             = d2d::create_colour_management_effect(m_d2d_device_context, image_colour_context, working_colour_context);
         working_colour_management_effect->SetInputEffect(0, scale_effect.get());
 
-        THROW_IF_FAILED(
-            m_d2d_device_context->CreateEffect(CLSID_D2D1WhiteLevelAdjustment, &white_level_adjustment_effect));
-
         const auto is_hdr_image = m_artwork_decoder.is_float();
 
         std::optional<float> input_level{};
@@ -665,14 +662,8 @@ void ArtworkPanel::create_image_colour_processing_effect()
             output_level = m_dxgi_output_desc ? m_dxgi_output_desc->MaxLuminance : D2D1_SCENE_REFERRED_SDR_WHITE_LEVEL;
         }
 
-        if (input_level)
-            THROW_IF_FAILED(white_level_adjustment_effect->SetValue(
-                D2D1_WHITELEVELADJUSTMENT_PROP_INPUT_WHITE_LEVEL, *input_level));
-
-        if (output_level)
-            THROW_IF_FAILED(white_level_adjustment_effect->SetValue(
-                D2D1_WHITELEVELADJUSTMENT_PROP_OUTPUT_WHITE_LEVEL, *output_level));
-
+        white_level_adjustment_effect
+            = d2d::create_white_level_adjustment_effect(m_d2d_device_context, input_level, output_level);
         white_level_adjustment_effect->SetInputEffect(0, working_colour_management_effect.get());
     }
 

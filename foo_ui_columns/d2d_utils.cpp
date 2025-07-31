@@ -40,4 +40,21 @@ wil::com_ptr<ID2D1Effect> create_scale_effect(
     return scale_effect;
 }
 
+wil::com_ptr<ID2D1Effect> create_white_level_adjustment_effect(const wil::com_ptr<ID2D1DeviceContext>& device_context,
+    std::optional<float> input_white_level, std::optional<float> output_white_level)
+{
+    wil::com_ptr<ID2D1Effect> white_level_adjustment_effect;
+    THROW_IF_FAILED(device_context->CreateEffect(CLSID_D2D1WhiteLevelAdjustment, &white_level_adjustment_effect));
+
+    if (input_white_level)
+        THROW_IF_FAILED(white_level_adjustment_effect->SetValue(
+            D2D1_WHITELEVELADJUSTMENT_PROP_INPUT_WHITE_LEVEL, *input_white_level));
+
+    if (output_white_level)
+        THROW_IF_FAILED(white_level_adjustment_effect->SetValue(
+            D2D1_WHITELEVELADJUSTMENT_PROP_OUTPUT_WHITE_LEVEL, *output_white_level));
+
+    return white_level_adjustment_effect;
+}
+
 } // namespace cui::d2d
