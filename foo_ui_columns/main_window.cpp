@@ -290,6 +290,17 @@ void cui::MainWindow::save_focus_state()
         m_last_focused_wnd = nullptr;
 }
 
+void cui::MainWindow::set_or_restore_focus() const
+{
+    if (m_is_destroying)
+        return;
+
+    if (m_last_focused_wnd && IsWindow(m_last_focused_wnd))
+        SetFocus(m_last_focused_wnd);
+    else
+        g_layout_window.set_focus();
+}
+
 void cui::MainWindow::queue_taskbar_button_update(bool update)
 {
     PostMessage(m_wnd, update ? MSG_UPDATE_TASKBAR_BUTTONS : MSG_CREATE_TASKBAR_BUTTONS, 0, 0);
