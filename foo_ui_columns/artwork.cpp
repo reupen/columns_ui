@@ -295,6 +295,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_output_effect.reset();
         m_scale_effect.reset();
         m_swap_chain_format.reset();
+        m_scale_effect_needs_updating = false;
         break;
     case WM_ERASEBKGND:
         return FALSE;
@@ -305,8 +306,6 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             break;
 
         if (m_dxgi_swap_chain) {
-            update_scale_effect();
-
             if (m_d2d_device_context) {
                 m_d2d_device_context->SetTarget(nullptr);
             }
@@ -319,6 +318,9 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             } else if (FAILED(hr))
                 LOG_HR(hr);
         }
+
+        if (m_scale_effect)
+            m_scale_effect_needs_updating = true;
 
         invalidate_window();
         break;
@@ -607,8 +609,10 @@ void ArtworkPanel::reset_d2d_device_resources(bool keep_devices)
 
 void ArtworkPanel::create_effects()
 {
-    if (m_output_effect)
+    if (m_output_effect) {
+        update_scale_effect();
         return;
+    }
 
     if (!m_dxgi_factory || !m_dxgi_factory->IsCurrent()) {
 #ifdef _DEBUG
@@ -968,6 +972,7 @@ void ArtworkPanel::reset_effects()
 {
     m_scale_effect.reset();
     m_output_effect.reset();
+    m_scale_effect_needs_updating = false;
 }
 
 D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const
@@ -985,15 +990,17 @@ D2D1_VECTOR_2F ArtworkPanel::calculate_scaling_factor(const wil::com_ptr<ID2D1Im
         scaled_width / gsl::narrow_cast<float>(bitmap_width), scaled_height / gsl::narrow_cast<float>(bitmap_height));
 }
 
-void ArtworkPanel::update_scale_effect() const
+void ArtworkPanel::update_scale_effect()
 {
-    if (!m_scale_effect)
+    if (!(m_scale_effect && m_scale_effect_needs_updating))
         return;
 
     wil::com_ptr<ID2D1Image> image;
     m_scale_effect->GetInput(0, &image);
 
     LOG_IF_FAILED(m_scale_effect->SetValue(D2D1_SCALE_PROP_SCALE, calculate_scaling_factor(image)));
+
+    m_scale_effect_needs_updating = false;
 }
 
 void ArtworkPanel::queue_decode(const album_art_data::ptr& data)

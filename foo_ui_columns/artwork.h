@@ -182,7 +182,7 @@ private:
     void clear_image();
     void reset_effects();
     D2D1_VECTOR_2F calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const;
-    void update_scale_effect() const;
+    void update_scale_effect();
     void queue_decode(const album_art_data::ptr& data);
     void show_stub_image();
     void invalidate_window() const;
@@ -212,6 +212,7 @@ private:
     bool m_artwork_type_locked{false};
     bool m_dynamic_artwork_pending{};
     bool m_using_flip_model_swap_chain{};
+    bool m_scale_effect_needs_updating{};
     metadb_handle_list m_selection_handles;
 
     static std::vector<ArtworkPanel*> g_windows;
