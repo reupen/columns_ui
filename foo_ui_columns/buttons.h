@@ -126,6 +126,29 @@ public:
         int m_button_id{};
     };
 
+    class MainMenuStateCallback : public mainmenu_commands_v3::state_callback {
+    public:
+        MainMenuStateCallback(mainmenu_commands_v3::ptr mainmenu_commands_v3_instance, uint32_t command_index,
+            HWND toolbar_wnd, int button_id)
+            : m_mainmenu_commands_v3(std::move(mainmenu_commands_v3_instance))
+            , m_command_index(command_index)
+            , m_toolbar_wnd(toolbar_wnd)
+            , m_button_id(button_id)
+        {
+            m_mainmenu_commands_v3->add_state_callback(this);
+        }
+
+        ~MainMenuStateCallback() { m_mainmenu_commands_v3->remove_state_callback(this); }
+
+    private:
+        void menu_state_changed(const GUID& main, const GUID& sub) final;
+
+        mainmenu_commands_v3::ptr m_mainmenu_commands_v3;
+        uint32_t m_command_index{};
+        HWND m_toolbar_wnd{};
+        int m_button_id{};
+    };
+
     class Button {
     public:
         class CustomImage {
@@ -156,9 +179,14 @@ public:
         pfc::string_simple m_text;
         CustomImage m_custom_image;
         CustomImage m_custom_hot_image;
-        uie::button::ptr m_interface;
 
-        std::shared_ptr<ButtonStateCallback> m_callback;
+        uie::button::ptr m_interface;
+        mainmenu_commands_v3::ptr m_mainmenu_commands_v3;
+        std::optional<uint32_t> m_mainmenu_commands_index{};
+        std::shared_ptr<ButtonStateCallback> m_button_state_callback;
+        std::shared_ptr<MainMenuStateCallback> m_mainmenu_state_callback;
+
+        void reset_state();
 
         void write(stream_writer* out, abort_callback& p_abort) const;
 

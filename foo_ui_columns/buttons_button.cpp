@@ -3,6 +3,15 @@
 
 namespace cui::toolbars::buttons {
 
+void ButtonsToolbar::Button::reset_state()
+{
+    m_interface.reset();
+    m_mainmenu_commands_v3.reset();
+    m_mainmenu_commands_index.reset();
+    m_button_state_callback.reset();
+    m_mainmenu_state_callback.reset();
+}
+
 void ButtonsToolbar::Button::write(stream_writer* out, abort_callback& p_abort) const
 {
     out->write_lendian_t(m_type, p_abort);
