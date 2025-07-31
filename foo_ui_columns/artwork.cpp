@@ -487,16 +487,8 @@ void ArtworkPanel::create_d2d_device_resources()
             }
         }
 
-        if (!m_d2d_factory) {
-            D2D1_FACTORY_OPTIONS options{};
-
-#ifdef _DEBUG
-            options.debugLevel = IsDebuggerPresent() ? D2D1_DEBUG_LEVEL_INFORMATION : D2D1_DEBUG_LEVEL_NONE;
-#endif
-
-            THROW_IF_FAILED(D2D1CreateFactory(
-                D2D1_FACTORY_TYPE_MULTI_THREADED, __uuidof(ID2D1Factory1), &options, m_d2d_factory.put_void()));
-        }
+        if (!m_d2d_factory)
+            m_d2d_factory = d2d::create_factory(D2D1_FACTORY_TYPE_MULTI_THREADED);
 
         const auto dxgi_device = m_d3d_device.query<IDXGIDevice1>();
 

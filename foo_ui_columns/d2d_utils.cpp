@@ -2,6 +2,20 @@
 
 namespace cui::d2d {
 
+wil::com_ptr<ID2D1Factory1> create_factory(D2D1_FACTORY_TYPE factory_type)
+{
+    wil::com_ptr<ID2D1Factory1> factory;
+    D2D1_FACTORY_OPTIONS options{};
+
+#if CUI_ENABLE_D3D_D2D_DEBUG_LAYER == 1
+    options.debugLevel = IsDebuggerPresent() ? D2D1_DEBUG_LEVEL_INFORMATION : D2D1_DEBUG_LEVEL_NONE;
+#endif
+
+    THROW_IF_FAILED(D2D1CreateFactory(factory_type, __uuidof(ID2D1Factory1), &options, factory.put_void()));
+
+    return factory;
+}
+
 wil::com_ptr<ID2D1Effect> create_colour_management_effect(const wil::com_ptr<ID2D1DeviceContext>& device_context,
     const wil::com_ptr<ID2D1ColorContext>& source_color_context,
     const wil::com_ptr<ID2D1ColorContext>& dest_color_context)

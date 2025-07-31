@@ -320,10 +320,7 @@ ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, u
             "Playlist view artwork – failed to create a software (WARP) renderer, using a hardware renderer instead");
     }
 
-    wil::com_ptr<ID2D1Factory1> d2d_factory;
-    THROW_IF_FAILED(
-        D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, __uuidof(ID2D1Factory1), d2d_factory.put_void()));
-
+    const auto d2d_factory = d2d::create_factory(D2D1_FACTORY_TYPE_SINGLE_THREADED);
     const auto dxgi_device = d3d_device.query<IDXGIDevice1>();
 
     wil::com_ptr<ID2D1Device> d2d_device;
