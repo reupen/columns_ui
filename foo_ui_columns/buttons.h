@@ -368,8 +368,7 @@ private:
     static const TCHAR* class_name;
 
     WNDPROC menuproc{nullptr};
-    bool initialised{false}, m_gdiplus_initialised{false};
-    ULONG_PTR m_gdiplus_instance{};
+    bool initialised{false};
     std::vector<Button> m_buttons;
     bool m_text_below{false};
     Appearance m_appearance{APPEARANCE_NORMAL};

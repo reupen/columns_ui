@@ -414,8 +414,6 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_CREATE: {
         wnd_host = wnd;
-        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-        m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         initialised = true;
         create_toolbar();
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] {
@@ -429,10 +427,6 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         destroy_toolbar();
         wnd_host = nullptr;
         initialised = false;
-        if (m_gdiplus_initialised) {
-            Gdiplus::GdiplusShutdown(m_gdiplus_instance);
-            m_gdiplus_initialised = false;
-        }
         break;
     case WM_WINDOWPOSCHANGED: {
         const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
