@@ -123,7 +123,6 @@ using namespace uih::literals::spx;
 
 #include "helpers.h"
 #include "config_items.h"
-#include "gdiplus.h"
 #include "config_vars.h"
 #include "config_defaults.h"
 

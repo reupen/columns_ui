@@ -313,7 +313,6 @@
     <ClCompile Include="filter_search_bar.cpp" />
     <ClCompile Include="filter_config_var.cpp" />
     <ClCompile Include="font_manager_data.cpp" />
-    <ClCompile Include="gdiplus.cpp" />
     <ClCompile Include="get_msg_hook.cpp" />
     <ClCompile Include="item_details_config.cpp" />
     <ClCompile Include="item_details_font.cpp" />
@@ -458,7 +457,6 @@
     <ClInclude Include="font_manager_data.h" />
     <ClInclude Include="font_picker.h" />
     <ClInclude Include="gdi.h" />
-    <ClInclude Include="gdiplus.h" />
     <ClInclude Include="get_msg_hook.h" />
     <ClInclude Include="icons.h" />
     <ClInclude Include="imaging.h" />
