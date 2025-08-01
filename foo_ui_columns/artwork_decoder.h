@@ -41,11 +41,11 @@ public:
         m_aborting_tasks.clear();
     }
 
-    bool has_image() const { return static_cast<bool>(m_decoded_image); }
-
+    HRESULT get_error_result() const { return m_error_result.value_or(S_OK); }
+    wil::com_ptr<ID2D1ColorContext> get_display_colour_context() { return m_display_colour_context; }
     wil::com_ptr<ID2D1Bitmap> get_image() { return m_decoded_image; }
     wil::com_ptr<ID2D1ColorContext> get_image_colour_context() { return m_image_colour_context; }
-    wil::com_ptr<ID2D1ColorContext> get_display_colour_context() { return m_display_colour_context; }
+    bool has_image() const { return static_cast<bool>(m_decoded_image); }
     bool is_float() const { return m_is_float.value_or(false); }
 
     ArtworkDecoderTask::Ptr m_current_task;
@@ -54,6 +54,7 @@ public:
     wil::com_ptr<ID2D1ColorContext> m_display_colour_context;
     wil::com_ptr<ID2D1ColorContext> m_image_colour_context;
     std::optional<bool> m_is_float{};
+    std::optional<HRESULT> m_error_result{};
 };
 
 } // namespace cui::artwork_panel
