@@ -40,12 +40,13 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
             wil::com_ptr<ID2D1ColorContext> d2d_image_colour_context;
             wil::com_ptr<ID2D1ColorContext> d2d_display_colour_context;
             bool is_float{};
+            std::optional<HRESULT> error_result;
 
             auto _ = wil::scope_exit([&] {
                 fb2k::inMainThread([this, d2d_bitmap{std::move(d2d_bitmap)},
                                        d2d_display_colour_context{std::move(d2d_display_colour_context)},
-                                       d2d_image_colour_context{std::move(d2d_image_colour_context)}, is_float,
-                                       stop_token{std::move(stop_token)}, task{std::move(task)}]() {
+                                       d2d_image_colour_context{std::move(d2d_image_colour_context)}, error_result,
+                                       is_float, stop_token{std::move(stop_token)}, task{std::move(task)}]() {
                     const auto locked_task = task.lock();
 
                     if (stop_token.stop_requested()) {
@@ -60,6 +61,7 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
                     m_display_colour_context = std::move(d2d_display_colour_context);
                     m_image_colour_context = std::move(d2d_image_colour_context);
                     m_is_float = is_float;
+                    m_error_result = error_result;
 
                     if (locked_task)
                         locked_task->on_complete();
@@ -193,6 +195,7 @@ void ArtworkDecoder::decode(wil::com_ptr<ID2D1DeviceContext> d2d_render_target, 
                 d2d_display_colour_context.reset();
                 d2d_image_colour_context.reset();
                 is_float = false;
+                error_result = wil::ResultFromCaughtException();
             }
         });
 }

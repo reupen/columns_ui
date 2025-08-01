@@ -505,6 +505,8 @@ EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
     LTEXT           "Artwork view panel",IDC_TITLE2,7,4,252,16
+    CONTROL         "Use Advanced Colour (recommended only if HDR is enabled in Windows)",IDC_USE_ADVANCED_COLOUR,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,312,10
     LTEXT           "Action to perform on click",IDC_STATIC,7,53,87,8
     COMBOBOX        IDC_CLICK_ACTION,7,64,140,65,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Panel edge style",IDC_STATIC,7,88,55,8
@@ -515,8 +517,6 @@ BEGIN
     LTEXT           "You previously had artwork sources configured in Columns UI. If artwork is no longer displaying correctly, manually copy your previous configuration to Display preferences.",IDC_VIEW_OLD_ARTWORK_SOURCES_TEXT,7,187,312,22
     PUSHBUTTON      "View previously configured artwork sources",IDC_VIEW_OLD_ARTWORK_SOURCES,7,216,178,14
     PUSHBUTTON      "Go to Display preferences",IDC_PREVIOUS_OPEN_DISPLAY_PREFERENCES,7,239,179,14
-    CONTROL         "Use Advanced Colour (recommended only if HDR is enabled in Windows)",IDC_USE_ADVANCED_COLOUR,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,30,312,10
 END
 
 IDD_ITEM_PROPS_OPTIONS DIALOGEX 0, 0, 268, 385

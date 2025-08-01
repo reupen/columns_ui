@@ -13,6 +13,11 @@ namespace {
 constexpr unsigned MSG_REFRESH_EFFECTS = WM_USER + 3;
 constexpr unsigned MSG_REFRESH_IMAGE = WM_USER + 4;
 
+constexpr bool is_device_reset_error(const HRESULT hr)
+{
+    return hr == D2DERR_RECREATE_TARGET || hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET;
+}
+
 D2D1_COLOR_F srgb_to_linear(D2D1_COLOR_F srgb_colour, float white_level_adjustment)
 {
     auto convert_component = [](float value) -> float {
@@ -312,7 +317,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
             HRESULT hr = m_dxgi_swap_chain->ResizeBuffers(0, 0, 0, DXGI_FORMAT_UNKNOWN, 0);
 
-            if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
+            if (is_device_reset_error(hr)) {
                 reset_d2d_device_resources();
                 refresh_image();
             } else if (FAILED(hr))
@@ -392,22 +397,18 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
                 context->DrawImage(m_output_effect.get(), &offset, nullptr, D2D1_INTERPOLATION_MODE_HIGH_QUALITY_CUBIC);
             }
 
-            auto result = m_d2d_device_context->EndDraw();
+            THROW_IF_FAILED(m_d2d_device_context->EndDraw());
 
-            if (result != D2DERR_RECREATE_TARGET)
-                THROW_IF_FAILED(result);
-
-            result = m_dxgi_swap_chain->Present(1, 0);
-
-            if (result == DXGI_ERROR_DEVICE_REMOVED || result == DXGI_ERROR_DEVICE_RESET) {
+            THROW_IF_FAILED(m_dxgi_swap_chain->Present(1, 0));
+        } catch (...) {
+            if (is_device_reset_error(wil::ResultFromCaughtException())) {
                 reset_d2d_device_resources();
                 refresh_image();
                 return 0;
             }
 
-            THROW_IF_FAILED(result);
+            LOG_CAUGHT_EXCEPTION();
         }
-        CATCH_LOG();
 
         ValidateRect(wnd, nullptr);
 
@@ -570,7 +571,7 @@ void ArtworkPanel::create_d2d_device_resources()
             }
         }
     } catch (const wil::ResultException& ex) {
-        if (const auto hr = ex.GetErrorCode(); hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET) {
+        if (is_device_reset_error(ex.GetErrorCode())) {
             reset_d2d_device_resources();
             PostMessage(get_wnd(), MSG_REFRESH_IMAGE, 0, 0);
             return;
@@ -1010,8 +1011,15 @@ void ArtworkPanel::queue_decode(const album_art_data::ptr& data)
 
     const auto monitor = is_advanced_colour_active() ? nullptr : MonitorFromWindow(get_wnd(), MONITOR_DEFAULTTONEAREST);
 
-    m_artwork_decoder.decode(m_d2d_device_context, is_advanced_colour_active(), monitor, data,
-        [this, self{ptr{this}}] { invalidate_window(); });
+    m_artwork_decoder.decode(m_d2d_device_context, is_advanced_colour_active(), monitor, data, [this, self{ptr{this}}] {
+        if (is_device_reset_error(m_artwork_decoder.get_error_result())) {
+            reset_d2d_device_resources();
+            PostMessage(get_wnd(), MSG_REFRESH_IMAGE, 0, 0);
+            return;
+        }
+
+        invalidate_window();
+    });
 }
 
 void ArtworkPanel::invalidate_window() const
