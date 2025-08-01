@@ -3,6 +3,7 @@
 #include "artwork_decoder.h"
 
 #include "wcs.h"
+#include "wic.h"
 #include "win32.h"
 
 namespace cui::artwork_panel {

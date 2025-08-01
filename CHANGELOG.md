@@ -26,7 +26,8 @@
 - Direct2D is now used to scale artwork and create artwork reflections in the
   playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281),
   [#1289](https://github.com/reupen/columns_ui/pull/1289),
-  [#1292](https://github.com/reupen/columns_ui/pull/1292)]
+  [#1292](https://github.com/reupen/columns_ui/pull/1292),
+  [#1298](https://github.com/reupen/columns_ui/pull/1298)]
 
 - The buttons toolbar now supports enabled and pressed states for main menu
   commands that report their command state via the latest foobar2000 API.
