@@ -28,6 +28,13 @@
   [#1289](https://github.com/reupen/columns_ui/pull/1289),
   [#1292](https://github.com/reupen/columns_ui/pull/1292)]
 
+- The buttons toolbar now supports enabled and pressed states for main menu
+  commands that report their command state via the latest foobar2000 API.
+  [[#1297](https://github.com/reupen/columns_ui/pull/1297)]
+
+  This requires main menu commands to implement the `mainmenu_commands_v3`
+  service interface in the foobar2000 SDK.
+
 ### Bug fixes
 
 - The built-in spectrum analyser visualisation now uses the same frequency scale

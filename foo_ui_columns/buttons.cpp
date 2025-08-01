@@ -9,6 +9,47 @@
 
 namespace cui::toolbars::buttons {
 
+namespace {
+
+void update_button_state(HWND toolbar_wnd, int button_id, bool is_enabled, bool is_pressed)
+{
+    auto tb_state = LOWORD(SendMessage(toolbar_wnd, TB_GETSTATE, button_id, 0));
+
+    if (is_enabled)
+        tb_state |= TBSTATE_ENABLED;
+    else
+        tb_state &= ~TBSTATE_ENABLED;
+
+    if (is_pressed)
+        tb_state |= TBSTATE_PRESSED;
+    else
+        tb_state &= ~TBSTATE_PRESSED;
+
+    SendMessage(toolbar_wnd, TB_SETSTATE, button_id, MAKELONG(tb_state, 0));
+}
+
+} // namespace
+
+void ButtonsToolbar::ButtonStateCallback::on_button_state_change(unsigned p_new_state)
+{
+    const auto is_enabled = (p_new_state & uie::BUTTON_STATE_ENABLED) != 0;
+    const auto is_pressed = (p_new_state & uie::BUTTON_STATE_PRESSED) != 0;
+
+    update_button_state(m_toolbar_wnd, m_button_id, is_enabled, is_pressed);
+}
+
+void ButtonsToolbar::MainMenuStateCallback::menu_state_changed(const GUID& main, const GUID& sub)
+{
+    pfc::string8 _;
+    uint32_t flags{};
+    m_mainmenu_commands_v3->get_display(m_command_index, _, flags);
+
+    const auto is_enabled = (flags & mainmenu_commands::flag_disabled) == 0;
+    const auto is_pressed = (flags & mainmenu_commands::flag_checked) != 0;
+
+    update_button_state(m_toolbar_wnd, m_button_id, is_enabled, is_pressed);
+}
+
 const GUID& ButtonsToolbar::get_extension_guid() const
 {
     return extension_guid;
@@ -137,13 +178,19 @@ void ButtonsToolbar::create_toolbar()
             if (button.m_type == TYPE_SEPARATOR)
                 continue;
 
-            button.m_callback.set_wnd(this);
-            button.m_callback.set_id(gsl::narrow<int>(n));
-
-            for (auto enumerator = uie::button::enumerate(); !enumerator.finished(); ++enumerator) {
-                if ((*enumerator)->get_item_guid() == button.m_guid) {
-                    button.m_interface = *enumerator;
+            for (const auto& instance : uie::button::enumerate()) {
+                if (instance->get_item_guid() == button.m_guid) {
+                    button.m_interface = instance;
                     break;
+                }
+            }
+
+            if (button.m_type == TYPE_MENU_ITEM_MAIN && button.m_subcommand == GUID{}) {
+                mainmenu_commands::ptr mainmenu_commands_instance;
+                uint32_t command_index{};
+                if (menu_item_resolver::g_resolve_main_command(button.m_guid, mainmenu_commands_instance, command_index)
+                    && mainmenu_commands_instance->service_query_t(button.m_mainmenu_commands_v3)) {
+                    button.m_mainmenu_commands_index = command_index;
                 }
             }
 
@@ -205,35 +252,36 @@ void ButtonsToolbar::create_toolbar()
             m_hot_images.reset(ImageList_Create(
                 button_width, button_height, ILC_COLOR32 | ILC_MASK, gsl::narrow<int>(image_count), 0));
 
-        for (auto&& [n, tbbutton] : ranges::views::enumerate(tbbuttons)) {
+        for (auto&& [index, tuple] :
+            ranges::views::enumerate(ranges::views::zip(tbbuttons, m_buttons, images, images_hot))) {
+            auto&& [tbbutton, button, image, hot_image] = tuple;
             tbbutton.iString = -1; //"It works"
 
-            if (m_buttons[n].m_type == TYPE_SEPARATOR) {
-                tbbutton.idCommand = gsl::narrow<int>(n);
+            if (button.m_type == TYPE_SEPARATOR) {
+                tbbutton.idCommand = gsl::narrow<int>(index);
                 tbbutton.fsStyle = is_dark ? BTNS_BUTTON | BTNS_SHOWTEXT : BTNS_SEP;
                 tbbutton.iBitmap = I_IMAGENONE;
             } else {
-                m_buttons[n].m_callback.set_wnd(this);
-                m_buttons[n].m_callback.set_id(gsl::narrow<int>(n));
-                if (m_buttons[n].m_show == SHOW_IMAGE || m_buttons[n].m_show == SHOW_IMAGE_TEXT) {
-                    tbbutton.iBitmap = images[n].add_to_imagelist(m_standard_images.get());
-                    if (!m_buttons[n].m_use_custom_hot || !images_hot[n].is_valid())
-                        images[n].add_to_imagelist(m_hot_images.get());
+                if (button.m_show == SHOW_IMAGE || button.m_show == SHOW_IMAGE_TEXT) {
+                    tbbutton.iBitmap = image.add_to_imagelist(m_standard_images.get());
+                    if (!button.m_use_custom_hot || !hot_image.is_valid())
+                        image.add_to_imagelist(m_hot_images.get());
                     else
-                        images_hot[n].add_to_imagelist(m_hot_images.get());
-                } else
+                        hot_image.add_to_imagelist(m_hot_images.get());
+                } else {
                     tbbutton.iBitmap = I_IMAGENONE;
+                }
 
-                tbbutton.idCommand = gsl::narrow<int>(n);
+                tbbutton.idCommand = gsl::narrow<int>(index);
                 tbbutton.fsState = 0;
                 tbbutton.fsStyle = BTNS_AUTOSIZE | BTNS_BUTTON;
+
                 if (!m_text_below && m_appearance != APPEARANCE_NOEDGE
-                    && (m_buttons[n].m_show == SHOW_TEXT || m_buttons[n].m_show == SHOW_IMAGE_TEXT))
+                    && (button.m_show == SHOW_TEXT || button.m_show == SHOW_IMAGE_TEXT))
                     tbbutton.fsStyle |= BTNS_SHOWTEXT;
 
-                if (/*m_text_below || (tbb_item.fsStyle & BTNS_SHOWTEXT) */ m_buttons[n].m_show == SHOW_TEXT
-                    || m_buttons[n].m_show == SHOW_IMAGE_TEXT) {
-                    const auto display_text = m_buttons[n].get_display_text();
+                if (button.m_show == SHOW_TEXT || button.m_show == SHOW_IMAGE_TEXT) {
+                    const auto display_text = button.get_display_text();
                     pfc::stringcvt::string_os_from_utf8 str_conv(display_text.c_str());
                     pfc::array_t<TCHAR, pfc::alloc_fast_aggressive> name;
                     name.prealloc(str_conv.length() + 4);
@@ -244,18 +292,31 @@ void ButtonsToolbar::create_toolbar()
                         = SendMessage(wnd_toolbar, TB_ADDSTRING, NULL, reinterpret_cast<LPARAM>(name.get_ptr()));
                 }
 
-                if (m_buttons[n].m_interface.is_valid()) {
-                    unsigned state = m_buttons[n].m_interface->get_button_state();
-                    if (m_buttons[n].m_interface->get_button_type() == uie::BUTTON_TYPE_DROPDOWN_ARROW)
+                bool is_enabled{true};
+                bool is_pressed{};
+
+                if (button.m_interface.is_valid()) {
+                    unsigned state = button.m_interface->get_button_state();
+
+                    if (button.m_interface->get_button_type() == uie::BUTTON_TYPE_DROPDOWN_ARROW)
                         tbbutton.fsStyle |= BTNS_DROPDOWN;
-                    if (state & uie::BUTTON_STATE_ENABLED)
-                        tbbutton.fsState |= TBSTATE_ENABLED;
-                    if (state & uie::BUTTON_STATE_PRESSED)
-                        tbbutton.fsState |= TBSTATE_PRESSED;
-                    // m_buttons[n].m_interface->register_callback(m_buttons[n].m_callback);
-                } else {
-                    tbbutton.fsState |= TBSTATE_ENABLED;
+
+                    is_enabled = (state & uie::BUTTON_STATE_ENABLED) != 0;
+                    is_pressed = (state & uie::BUTTON_STATE_PRESSED) != 0;
+                } else if (button.m_mainmenu_commands_v3.is_valid()) {
+                    pfc::string8 _;
+                    uint32_t flags{};
+                    button.m_mainmenu_commands_v3->get_display(*button.m_mainmenu_commands_index, _, flags);
+
+                    is_enabled = (flags & mainmenu_commands::flag_disabled) == 0;
+                    is_pressed = (flags & mainmenu_commands::flag_checked) != 0;
                 }
+
+                if (is_enabled)
+                    tbbutton.fsState |= TBSTATE_ENABLED;
+
+                if (is_pressed)
+                    tbbutton.fsState |= TBSTATE_PRESSED;
             }
         }
 
@@ -309,9 +370,14 @@ void ButtonsToolbar::create_toolbar()
             }
         }
 
-        for (auto&& button : m_buttons) {
+        for (auto&& [index, button] : ranges::views::enumerate(m_buttons)) {
             if (button.m_interface.is_valid())
-                button.m_interface->register_callback(button.m_callback);
+                button.m_button_state_callback
+                    = std::make_shared<ButtonStateCallback>(button.m_interface, wnd_toolbar, gsl::narrow<int>(index));
+            else if (button.m_mainmenu_commands_v3.is_valid())
+                button.m_mainmenu_state_callback
+                    = std::make_shared<MainMenuStateCallback>(button.m_mainmenu_commands_v3,
+                        *button.m_mainmenu_commands_index, wnd_toolbar, gsl::narrow<int>(index));
         }
 
         ShowWindow(wnd_toolbar, SW_SHOWNORMAL);
@@ -329,10 +395,9 @@ void ButtonsToolbar::create_toolbar()
 
 void ButtonsToolbar::destroy_toolbar()
 {
-    size_t count = m_buttons.size();
-    for (size_t i = 0; i < count; i++)
-        if (m_buttons[i].m_interface.is_valid())
-            m_buttons[i].m_interface->deregister_callback(m_buttons[i].m_callback);
+    for (auto& button : m_buttons)
+        button.reset_state();
+
     DestroyWindow(wnd_toolbar);
     wnd_toolbar = nullptr;
     m_standard_images.reset();
@@ -349,8 +414,6 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     switch (msg) {
     case WM_CREATE: {
         wnd_host = wnd;
-        Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-        m_gdiplus_initialised = (Gdiplus::Ok == GdiplusStartup(&m_gdiplus_instance, &gdiplusStartupInput, nullptr));
         initialised = true;
         create_toolbar();
         m_dark_mode_notifier = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}] {
@@ -362,13 +425,8 @@ LRESULT ButtonsToolbar::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_DESTROY:
         m_dark_mode_notifier.reset();
         destroy_toolbar();
-        m_buttons.clear();
         wnd_host = nullptr;
         initialised = false;
-        if (m_gdiplus_initialised) {
-            Gdiplus::GdiplusShutdown(m_gdiplus_instance);
-            m_gdiplus_initialised = false;
-        }
         break;
     case WM_WINDOWPOSCHANGED: {
         const auto lpwp = reinterpret_cast<LPWINDOWPOS>(lp);
@@ -672,6 +730,10 @@ bool ButtonsToolbar::show_config_popup(HWND wnd_parent)
     ConfigParam param;
     param.m_selection = nullptr;
     param.m_buttons = m_buttons;
+
+    for (auto& button : param.m_buttons)
+        button.reset_state();
+
     param.m_active = 0;
     param.m_text_below = m_text_below;
     param.m_appearance = m_appearance;

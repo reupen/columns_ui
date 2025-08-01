@@ -3,50 +3,13 @@
 
 namespace cui::toolbars::buttons {
 
-void ButtonsToolbar::Button::ButtonStateCallback::on_button_state_change(unsigned p_new_state) // see t_button_state
+void ButtonsToolbar::Button::reset_state()
 {
-    auto state = LOWORD(SendMessage(m_this->wnd_toolbar, TB_GETSTATE, id, 0));
-    if (p_new_state & uie::BUTTON_STATE_ENABLED)
-        state |= TBSTATE_ENABLED;
-    else
-        state = state & ~TBSTATE_ENABLED;
-    if (p_new_state & uie::BUTTON_STATE_PRESSED)
-        state |= TBSTATE_PRESSED;
-    else
-        state = state & ~TBSTATE_PRESSED;
-    SendMessage(m_this->wnd_toolbar, TB_SETSTATE, id, MAKELONG(state, 0));
-}
-
-ButtonsToolbar::Button::ButtonStateCallback& ButtonsToolbar::Button::ButtonStateCallback::operator=(
-    const ButtonStateCallback& p_source)
-{
-    m_this = p_source.m_this;
-    return *this;
-}
-void ButtonsToolbar::Button::ButtonStateCallback::set_wnd(ButtonsToolbar* p_source)
-{
-    m_this = p_source;
-}
-void ButtonsToolbar::Button::ButtonStateCallback::set_id(const int i)
-{
-    id = i;
-}
-
-void ButtonsToolbar::Button::set(const Button& p_source)
-{
-    m_guid = p_source.m_guid;
-    m_subcommand = p_source.m_subcommand;
-    m_use_custom = p_source.m_use_custom;
-    m_use_custom_hot = p_source.m_use_custom_hot;
-    m_custom_image = p_source.m_custom_image;
-    m_custom_hot_image = p_source.m_custom_hot_image;
-    m_interface = p_source.m_interface;
-    m_callback = p_source.m_callback;
-    m_type = p_source.m_type;
-    m_filter = p_source.m_filter;
-    m_show = p_source.m_show;
-    m_use_custom_text = p_source.m_use_custom_text;
-    m_text = p_source.m_text;
+    m_interface.reset();
+    m_mainmenu_commands_v3.reset();
+    m_mainmenu_commands_index.reset();
+    m_button_state_callback.reset();
+    m_mainmenu_state_callback.reset();
 }
 
 void ButtonsToolbar::Button::write(stream_writer* out, abort_callback& p_abort) const
