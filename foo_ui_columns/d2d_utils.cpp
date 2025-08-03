@@ -11,7 +11,7 @@ wil::com_ptr<ID2D1Factory1> create_factory(D2D1_FACTORY_TYPE factory_type)
     options.debugLevel = IsDebuggerPresent() ? D2D1_DEBUG_LEVEL_INFORMATION : D2D1_DEBUG_LEVEL_NONE;
 #endif
 
-    THROW_IF_FAILED(D2D1CreateFactory(factory_type, __uuidof(ID2D1Factory1), &options, factory.put_void()));
+    THROW_IF_FAILED(D2D1CreateFactory(factory_type, options, &factory));
 
     return factory;
 }

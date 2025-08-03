@@ -385,8 +385,6 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             m_d2d_device_context->BeginDraw();
             m_d2d_device_context->Clear(d2d_background_colour);
 
-            const auto& bitmap = m_artwork_decoder.get_image();
-
             if (m_output_effect) {
                 auto [render_target_width, render_target_height] = m_d2d_device_context->GetSize();
 
@@ -547,8 +545,7 @@ void ArtworkPanel::create_d2d_device_resources()
         }
 
         if (!m_d2d_device_context) {
-            THROW_IF_FAILED(m_d2d_device->CreateDeviceContext(
-                D2D1_DEVICE_CONTEXT_OPTIONS_ENABLE_MULTITHREADED_OPTIMIZATIONS, &m_d2d_device_context));
+            THROW_IF_FAILED(m_d2d_device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &m_d2d_device_context));
         }
 
         if (m_d2d_device_context && m_dxgi_swap_chain) {

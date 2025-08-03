@@ -327,8 +327,7 @@ ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, u
     THROW_IF_FAILED(d2d_factory->CreateDevice(dxgi_device.get(), &d2d_device));
 
     wil::com_ptr<ID2D1DeviceContext> d2d_device_context;
-    THROW_IF_FAILED(d2d_device->CreateDeviceContext(
-        D2D1_DEVICE_CONTEXT_OPTIONS_ENABLE_MULTITHREADED_OPTIMIZATIONS, &d2d_device_context));
+    THROW_IF_FAILED(d2d_device->CreateDeviceContext(D2D1_DEVICE_CONTEXT_OPTIONS_NONE, &d2d_device_context));
 
     const auto bitmap_properties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
         D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED));
