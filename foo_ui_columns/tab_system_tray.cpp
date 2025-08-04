@@ -2,7 +2,11 @@
 #include "config.h"
 #include "system_tray.h"
 
-static class TabSystemTray : public PreferencesTab {
+namespace cui::prefs {
+
+namespace {
+
+class TabSystemTray : public PreferencesTab {
 public:
     bool m_initialised{};
 
@@ -87,9 +91,15 @@ public:
         return true;
     }
     cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
-} g_tab_system_tray;
+};
+
+TabSystemTray g_tab_system_tray;
+
+} // namespace
 
 PreferencesTab* g_get_tab_system_tray()
 {
     return &g_tab_system_tray;
 }
+
+} // namespace cui::prefs
