@@ -136,7 +136,7 @@ class ColoursDataSet : public fcl::dataset {
         if (old_is_dark != colours::is_dark_mode_active())
             return;
 
-        g_tab_appearance.handle_external_configuration_change();
+        prefs::g_tab_appearance.handle_external_configuration_change();
 
         colours::common_colour_callback_manager.s_on_common_colour_changed(colours::colour_flag_all);
 
