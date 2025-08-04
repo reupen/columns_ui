@@ -15,7 +15,7 @@ cfg_int cfg_child_playlist(GUID{0xbc6c99d4, 0x51c1, 0xf76e, {0x10, 0x9c, 0x62, 0
 cui::panels::playlist_view::GroupsPreferencesTab g_tab_grouping;
 
 static PreferencesTab* g_tabs[] = {
-    g_get_tab_main(),
+    cui::prefs::g_get_tab_main(),
     g_get_tab_status_bar(),
     g_get_tab_status_pane(),
     g_get_tab_system_tray(),
