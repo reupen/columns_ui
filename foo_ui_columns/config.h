@@ -23,9 +23,14 @@ extern const GUID ng_playlist_header;
 extern const GUID filter_header;
 } // namespace fonts
 
+namespace cui::prefs {
+
+PreferencesTab* g_get_tab_display2();
+
+}
+
 PreferencesTab* g_get_tab_layout();
 PreferencesTab* g_get_tab_artwork();
-PreferencesTab* g_get_tab_display2();
 PreferencesTab* g_get_tab_pview_artwork();
 PreferencesTab* g_get_tab_system_tray();
 PreferencesTab* g_get_tab_playlist_switcher();
