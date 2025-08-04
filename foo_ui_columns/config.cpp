@@ -19,7 +19,7 @@ static PreferencesTab* g_tabs[] = {
     cui::prefs::g_get_tab_status_bar(),
     cui::prefs::g_get_tab_status_pane(),
     cui::prefs::g_get_tab_system_tray(),
-    g_get_tab_artwork(),
+    cui::prefs::g_get_tab_artwork(),
 };
 
 static PreferencesTab* g_tabs_panels[] = {

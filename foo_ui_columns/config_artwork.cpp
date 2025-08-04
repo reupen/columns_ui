@@ -5,13 +5,19 @@
 #include "win32.h"
 
 namespace cui::artwork_panel {
+
 extern cfg_uint cfg_edge_style;
+
 } // namespace cui::artwork_panel
+
+namespace cui::prefs {
+
+namespace {
 
 pfc::string8 format_legacy_artwork_sources()
 {
     pfc::string8 text;
-    for (auto&& [scripts, type] : cui::artwork::legacy::legacy_sources) {
+    for (auto&& [scripts, type] : artwork::legacy::legacy_sources) {
         if (scripts->get_count() == 0)
             continue;
 
@@ -26,7 +32,7 @@ pfc::string8 format_legacy_artwork_sources()
     return text;
 }
 
-static class TabArtwork : public PreferencesTab {
+class TabArtwork : public PreferencesTab {
 public:
     void refresh_me(HWND wnd)
     {
@@ -40,10 +46,10 @@ public:
 
         const HWND use_advanced_colour_wnd = GetDlgItem(wnd, IDC_USE_ADVANCED_COLOUR);
 
-        if (!cui::win32::check_windows_10_build(17'763)) {
+        if (!win32::check_windows_10_build(17'763)) {
             EnableWindow(use_advanced_colour_wnd, false);
             uSetWindowText(use_advanced_colour_wnd, "Use Advanced Colour (requires Window 10 version 1809 or newer)");
-        } else if (cui::artwork_panel::colour_management_mode
+        } else if (artwork_panel::colour_management_mode
             == WI_EnumValue(cui::artwork_panel::ColourManagementMode::Advanced)) {
             Button_SetCheck(use_advanced_colour_wnd, BST_CHECKED);
         }
@@ -58,8 +64,7 @@ public:
         uih::combo_box_add_string_data(click_action_wnd, L"Show next available artwork type",
             WI_EnumValue(cui::artwork_panel::ClickAction::show_next_artwork_type));
 
-        const auto click_action_index
-            = uih::combo_box_find_item_by_data(click_action_wnd, cui::artwork_panel::click_action);
+        const auto click_action_index = uih::combo_box_find_item_by_data(click_action_wnd, artwork_panel::click_action);
 
         if (click_action_index != CB_ERR) {
             ComboBox_SetCurSel(click_action_wnd, click_action_index);
@@ -73,7 +78,7 @@ public:
         switch (msg) {
         case WM_INITDIALOG: {
             refresh_me(wnd);
-            if (cui::artwork::legacy::any_legacy_sources()) {
+            if (artwork::legacy::any_legacy_sources()) {
                 ShowWindow(GetDlgItem(wnd, IDC_OPEN_DISPLAY_PREFERENCES), SW_HIDE);
             } else {
                 ShowWindow(GetDlgItem(wnd, IDC_VIEW_OLD_ARTWORK_SOURCES_TEXT), SW_HIDE);
@@ -93,15 +98,15 @@ public:
                 break;
             case IDC_USE_ADVANCED_COLOUR: {
                 const auto is_checked = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::artwork_panel::colour_management_mode
+                artwork_panel::colour_management_mode
                     = WI_EnumValue(is_checked ? cui::artwork_panel::ColourManagementMode::Advanced
                                               : cui::artwork_panel::ColourManagementMode::Legacy);
-                cui::artwork_panel::ArtworkPanel::s_on_use_advanced_colour_change();
+                artwork_panel::ArtworkPanel::s_on_use_advanced_colour_change();
                 break;
             }
             case IDC_EDGESTYLE | (CBN_SELCHANGE << 16):
-                cui::artwork_panel::cfg_edge_style = ComboBox_GetCurSel((HWND)lp);
-                cui::artwork_panel::ArtworkPanel::g_on_edge_style_change();
+                artwork_panel::cfg_edge_style = ComboBox_GetCurSel((HWND)lp);
+                artwork_panel::ArtworkPanel::g_on_edge_style_change();
                 break;
             case IDC_CLICK_ACTION | (CBN_SELCHANGE << 16): {
                 auto index = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
@@ -109,7 +114,7 @@ public:
                 if (index == CB_ERR)
                     break;
 
-                cui::artwork_panel::click_action
+                artwork_panel::click_action
                     = gsl::narrow<int32_t>(ComboBox_GetItemData(reinterpret_cast<HWND>(lp), index));
                 break;
             }
@@ -132,10 +137,16 @@ public:
 
 private:
     bool m_initialising{false};
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
-} g_tab_artwork;
+    PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
+};
+
+TabArtwork g_tab_artwork;
+
+} // namespace
 
 PreferencesTab* g_get_tab_artwork()
 {
     return &g_tab_artwork;
 }
+
+} // namespace cui::prefs
