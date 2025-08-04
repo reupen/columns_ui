@@ -6,9 +6,7 @@ class ArtworkDecoderTask {
 public:
     using Ptr = std::shared_ptr<ArtworkDecoderTask>;
 
-    std::function<void()> on_complete;
-    std::stop_source stop_source;
-    std::future<void> future;
+    std::jthread thread;
 };
 
 class ArtworkDecoder {
@@ -21,7 +19,7 @@ public:
     void abort()
     {
         if (m_current_task) {
-            m_current_task->stop_source.request_stop();
+            m_current_task->thread.request_stop();
             m_aborting_tasks.emplace_back(std::move(m_current_task));
         }
     }
