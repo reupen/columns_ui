@@ -61,6 +61,9 @@ public:
                 WI_EnumValue(cui::artwork_panel::ClickAction::open_image_viewer));
         }
 
+        uih::combo_box_add_string_data(click_action_wnd, L"Show in File Explorer",
+            WI_EnumValue(cui::artwork_panel::ClickAction::show_in_file_explorer));
+
         uih::combo_box_add_string_data(click_action_wnd, L"Show next available artwork type",
             WI_EnumValue(cui::artwork_panel::ClickAction::show_next_artwork_type));
 

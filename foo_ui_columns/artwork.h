@@ -9,6 +9,7 @@ namespace cui::artwork_panel {
 enum class ClickAction : int32_t {
     open_image_viewer,
     show_next_artwork_type,
+    show_in_file_explorer,
 };
 
 enum class ColourManagementMode : int32_t {
@@ -86,6 +87,8 @@ public:
     void force_reload_artwork();
     bool is_core_image_viewer_available() const;
     void open_core_image_viewer() const;
+    bool is_show_in_file_explorer_available() const;
+    void show_in_file_explorer();
     void show_next_artwork_type();
     void set_artwork_type_index(size_t index);
 
@@ -205,6 +208,7 @@ private:
     std::unique_ptr<EventToken> m_display_change_token;
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
     ArtworkDecoder m_artwork_decoder;
+    std::optional<std::jthread> m_show_in_explorer_thread;
     size_t m_selected_artwork_type_index{0};
     std::optional<size_t> m_artwork_type_override_index{};
     uint32_t m_track_mode;

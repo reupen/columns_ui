@@ -91,6 +91,11 @@ const std::unordered_map<GUID, album_art_data_ptr>& ArtworkReader::get_artwork_d
     return m_artwork_data;
 }
 
+const std::unordered_map<GUID, album_art_path_list::ptr>& ArtworkReader::get_artwork_paths() const
+{
+    return m_artwork_paths;
+}
+
 ArtworkReaderStatus ArtworkReader::status() const
 {
     core_api::ensure_main_thread();
@@ -144,7 +149,7 @@ album_art_data_ptr ArtworkReaderManager::get_image(const GUID& p_what) const
     if (!is_ready() || m_current_reader->status() != ArtworkReaderStatus::Succeeded)
         return {};
 
-    if (p_what == album_art_ids::cover_front && m_current_reader && m_current_reader->is_from_playback()) {
+    if (p_what == album_art_ids::cover_front && m_current_reader->is_from_playback()) {
         const auto api = now_playing_album_art_notify_manager::get();
 
         if (auto data = api->current(); data.is_valid()) {
@@ -159,6 +164,29 @@ album_art_data_ptr ArtworkReaderManager::get_image(const GUID& p_what) const
     auto&& artwork_data = m_current_reader->get_artwork_data();
     const auto content_iter = artwork_data.find(p_what);
     if (content_iter != artwork_data.end())
+        return content_iter->second;
+
+    return {};
+}
+
+album_art_path_list::ptr ArtworkReaderManager::get_paths(GUID artwork_type_id) const
+{
+    if (!is_ready() || m_current_reader->status() != ArtworkReaderStatus::Succeeded)
+        return {};
+
+    if (artwork_type_id == album_art_ids::cover_front && m_current_reader->is_from_playback()) {
+        const auto api = now_playing_album_art_notify_manager_v2::tryGet();
+
+        if (api.is_empty())
+            return {};
+
+        if (auto data = api->current_v2(); data.is_valid())
+            return data.paths;
+    }
+
+    auto&& paths = m_current_reader->get_artwork_paths();
+    const auto content_iter = paths.find(artwork_type_id);
+    if (content_iter != paths.end())
         return content_iter->second;
 
     return {};
@@ -227,14 +255,17 @@ void ArtworkReaderManager::on_reader_completion(bool artwork_changed, const Artw
     }
 }
 
-album_art_data_ptr query_artwork_data(
-    GUID artwork_type_id, album_art_extractor_instance_v2::ptr extractor, abort_callback& aborter)
+std::tuple<album_art_data_ptr, album_art_path_list::ptr> query_artwork_data(
+    GUID artwork_type_id, album_art_extractor_instance_v2::ptr extractor, bool query_paths, abort_callback& aborter)
 {
     try {
         album_art_data_ptr data = extractor->query(artwork_type_id, aborter);
 
-        if (data->get_size() > 0)
-            return data;
+        if (data->get_size() > 0) {
+            const auto paths
+                = query_paths ? extractor->query_paths(artwork_type_id, aborter) : album_art_path_list::ptr{};
+            return {data, paths};
+        }
     } catch (const exception_aborted&) {
         throw;
     } catch (const exception_album_art_not_found&) {
@@ -248,7 +279,6 @@ album_art_data_ptr query_artwork_data(
 bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& p_abort)
 {
     TRACK_CALL_TEXT("read_artwork");
-    m_artwork_data.clear();
 
     const auto p_album_art_manager_v2 = album_art_manager_v2::get();
     pfc::list_t<GUID> guids;
@@ -257,17 +287,19 @@ bool ArtworkReader::read_artwork(const ArtworkReaderArgs& args, abort_callback& 
     const auto artwork_api_v2 = p_album_art_manager_v2->open(pfc::list_single_ref_t(args.track), guids, p_abort);
 
     for (auto&& artwork_id : m_artwork_type_ids) {
-        const auto data = query_artwork_data(artwork_id, artwork_api_v2, p_abort);
+        const auto [data, paths] = query_artwork_data(artwork_id, artwork_api_v2, true, p_abort);
 
-        if (data.is_valid())
+        if (data.is_valid()) {
             m_artwork_data.insert_or_assign(artwork_id, data);
+            m_artwork_paths.insert_or_assign(artwork_id, paths);
+        }
     }
 
     if (args.read_stub_image) {
         const auto stub_extractor = p_album_art_manager_v2->open_stub(p_abort);
 
         for (auto&& artwork_id : m_artwork_type_ids) {
-            const auto data = query_artwork_data(artwork_id, stub_extractor, p_abort);
+            const auto [data, _] = query_artwork_data(artwork_id, stub_extractor, false, p_abort);
 
             if (data.is_valid())
                 m_stub_images.insert_or_assign(artwork_id, data);
