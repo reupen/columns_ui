@@ -4,7 +4,11 @@
 #include "main_window.h"
 #include "status_bar.h"
 
-static class TabStatusBar : public PreferencesTab {
+namespace cui::prefs {
+
+namespace {
+
+class TabStatusBar : public PreferencesTab {
 public:
     std::vector<MenuItemInfo> m_cache{};
 
@@ -12,7 +16,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG:
-            m_cache = cui::helpers::get_main_menu_items();
+            m_cache = helpers::get_main_menu_items();
 
             populate_menu_combo(wnd, IDC_MENU_DBLCLK, IDC_MENU_DESC, cfg_statusdbl, m_cache, false);
 
@@ -41,16 +45,16 @@ public:
                 break;
             case IDC_VOL:
                 cfg_show_vol = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                set_part_sizes(cui::status_bar::t_part_volume);
+                set_part_sizes(status_bar::t_part_volume);
                 break;
             case IDC_SELCOUNT:
                 cfg_show_selcount = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::status_bar::set_part_sizes(cui::status_bar::t_part_count | cui::status_bar::t_part_volume);
+                status_bar::set_part_sizes(status_bar::t_part_count | status_bar::t_part_volume);
                 break;
             case IDC_SELTIME:
                 cfg_show_seltime = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::status_bar::set_part_sizes(
-                    cui::status_bar::t_part_length | cui::status_bar::t_part_count | cui::status_bar::t_part_volume);
+                status_bar::set_part_sizes(
+                    status_bar::t_part_length | status_bar::t_part_count | status_bar::t_part_volume);
                 break;
             case IDC_SHOW_STATUS:
                 cfg_status = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
@@ -71,10 +75,16 @@ public:
         p_out = "http://yuo.be/wiki/columns_ui:config:status_bar";
         return true;
     }
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
-} g_tab_status_bar;
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
+};
+
+TabStatusBar g_tab_status_bar;
+
+} // namespace
 
 PreferencesTab* g_get_tab_status_bar()
 {
     return &g_tab_status_bar;
 }
+
+} // namespace cui::prefs

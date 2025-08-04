@@ -16,7 +16,7 @@ cui::panels::playlist_view::GroupsPreferencesTab g_tab_grouping;
 
 static PreferencesTab* g_tabs[] = {
     cui::prefs::g_get_tab_main(),
-    g_get_tab_status_bar(),
+    cui::prefs::g_get_tab_status_bar(),
     g_get_tab_status_pane(),
     g_get_tab_system_tray(),
     g_get_tab_artwork(),
