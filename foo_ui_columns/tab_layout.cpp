@@ -204,10 +204,11 @@ bool LayoutTab::_fix_single_instance_recur(uie::splitter_window_ptr& p_window)
         uie::window_ptr p_child_window;
         uie::splitter_item_ptr p_si;
         p_window->get_panel(i, p_si);
-        if (!uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window))
-            mask[i] = true;
-        else
-            mask[i] = p_child_window->get_is_single_instance() && m_node_root->have_item(p_si->get_panel_guid());
+
+        uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window);
+
+        mask[i] = p_child_window.is_valid() && p_child_window->get_is_single_instance()
+            && m_node_root->have_item(p_si->get_panel_guid());
     }
 
     for (i = count; i > 0; i--)
@@ -247,7 +248,7 @@ bool LayoutTab::fix_paste_item(uie::splitter_item_full_v3_impl_t& item)
 {
     uie::window::ptr p_window;
     if (!uie::window::create_by_guid(item.get_panel_guid(), p_window))
-        return false;
+        return true;
 
     if (p_window->get_is_single_instance() && m_node_root->have_item(item.get_panel_guid()))
         return false;

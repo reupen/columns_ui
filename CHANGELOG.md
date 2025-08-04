@@ -41,6 +41,10 @@
 - A ‘Cut panel’ command was added to the Layout tree context menu in
   Preferences. [#1302](https://github.com/reupen/columns_ui/pull/1302)
 
+- Unknown panels (such as uninstalled panels) are now preserved when copied and
+  pasted in the Layout tree in Preferences.
+  [#1302](https://github.com/reupen/columns_ui/pull/1302)
+
 ### Bug fixes
 
 - The built-in spectrum analyser visualisation now uses the same frequency scale
