@@ -2,6 +2,8 @@
 
 #include "core_dark_list_view.h"
 
+namespace cui::prefs {
+
 class ColumnTab {
 public:
     virtual ~ColumnTab() = default;
@@ -15,8 +17,8 @@ class TabColumns : public PreferencesTab {
 public:
     static TabColumns& get_instance()
     {
-        static TabColumns tab_columns_v3_;
-        return tab_columns_v3_;
+        static TabColumns instance;
+        return instance;
     }
 
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -85,3 +87,5 @@ private:
     ColumnsListView m_columns_list_view{this};
     bool initialising{false};
 };
+
+} // namespace cui::prefs

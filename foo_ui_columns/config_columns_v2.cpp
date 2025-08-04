@@ -3,10 +3,11 @@
 #include "config.h"
 #include "config_columns_v2.h"
 #include "help.h"
-#include "prefs_utils.h"
 
-extern cfg_int g_cur_tab;
-extern cfg_uint g_last_colour;
+namespace cui::prefs {
+
+cfg_int g_cur_tab(GUID{0x1f7903e5, 0x9523, 0xac7e, {0xd4, 0xea, 0x13, 0xdd, 0xe5, 0xac, 0xc8, 0x66}}, 0);
+cfg_uint g_last_colour(GUID{0xd352a60a, 0x4d87, 0x07b9, {0x09, 0x07, 0x03, 0xa1, 0xe0, 0x08, 0x03, 0x2f}}, 0);
 
 enum {
     MSG_COLUMN_NAME_CHANGED = WM_USER + 2,
@@ -820,3 +821,5 @@ void TabColumns::move_column_down(size_t index)
         m_columns_list_view.ensure_visible(new_selection_index);
     }
 }
+
+} // namespace cui::prefs

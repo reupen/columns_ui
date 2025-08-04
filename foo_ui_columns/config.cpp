@@ -32,7 +32,7 @@ static PreferencesTab* g_tabs_playlist_view[] = {
     cui::prefs::g_get_tab_display2(),
     cui::prefs::g_get_tab_pview_artwork(),
     &g_tab_grouping,
-    &TabColumns::get_instance(),
+    &cui::prefs::TabColumns::get_instance(),
     cui::prefs::g_get_tab_global(),
 };
 

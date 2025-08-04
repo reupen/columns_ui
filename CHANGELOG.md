@@ -70,7 +70,8 @@
 - Some code was refactored.
   [[#1268](https://github.com/reupen/columns_ui/pull/1268),
   [#1269](https://github.com/reupen/columns_ui/pull/1269),
-  [#1277](https://github.com/reupen/columns_ui/pull/1277)]
+  [#1277](https://github.com/reupen/columns_ui/pull/1278),
+  [#1306](https://github.com/reupen/columns_ui/pull/1306)]
 
 ## 3.0.1
 
