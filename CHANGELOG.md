@@ -61,6 +61,10 @@
   after some operations, like a ReplayGain scan, was fixed.
   [[#1293](https://github.com/reupen/columns_ui/pull/1293)]
 
+- A possible problem where artwork stopped loading in the Artwork view until
+  foobar2000 was restarted was fixed.
+  [#1304](https://github.com/reupen/columns_ui/pull/1304)
+
 ### Internal changes
 
 - Some code was refactored.
