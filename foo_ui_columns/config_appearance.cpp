@@ -14,7 +14,7 @@
 TabDarkMode g_tab_dark_mode;
 cui::colours::ColourManagerData g_colour_manager_data;
 FontManagerData g_font_manager_data;
-TabFonts g_tab_appearance_fonts;
+cui::prefs::TabFonts g_tab_appearance_fonts;
 
 namespace cui::colours {
 
