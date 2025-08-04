@@ -176,10 +176,18 @@ void LayoutTab::insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, H
     }
 }
 
-void LayoutTab::copy_item(HWND wnd, HTREEITEM ti)
+void LayoutTab::copy_item(HWND wnd, HTREEITEM ti) const
 {
-    auto p_node = m_node_map.at(ti);
-    splitter_utils::copy_splitter_item_to_clipboard_safe(wnd, p_node->m_item->get_ptr());
+    const auto node = m_node_map.at(ti);
+    splitter_utils::copy_splitter_item_to_clipboard_safe(wnd, node->m_item->get_ptr());
+}
+
+void LayoutTab::cut_item(HWND wnd, HTREEITEM ti)
+{
+    const auto node = m_node_map.at(ti);
+
+    if (splitter_utils::copy_splitter_item_to_clipboard_safe(wnd, node->m_item->get_ptr(), true))
+        remove_node(wnd, ti);
 }
 
 bool LayoutTab::_fix_single_instance_recur(uie::splitter_window_ptr& p_window)
@@ -196,10 +204,11 @@ bool LayoutTab::_fix_single_instance_recur(uie::splitter_window_ptr& p_window)
         uie::window_ptr p_child_window;
         uie::splitter_item_ptr p_si;
         p_window->get_panel(i, p_si);
-        if (!uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window))
-            mask[i] = true;
-        else
-            mask[i] = p_child_window->get_is_single_instance() && m_node_root->have_item(p_si->get_panel_guid());
+
+        uie::window::create_by_guid(p_si->get_panel_guid(), p_child_window);
+
+        mask[i] = p_child_window.is_valid() && p_child_window->get_is_single_instance()
+            && m_node_root->have_item(p_si->get_panel_guid());
     }
 
     for (i = count; i > 0; i--)
@@ -239,7 +248,7 @@ bool LayoutTab::fix_paste_item(uie::splitter_item_full_v3_impl_t& item)
 {
     uie::window::ptr p_window;
     if (!uie::window::create_by_guid(item.get_panel_guid(), p_window))
-        return false;
+        return true;
 
     if (p_window->get_is_single_instance() && m_node_root->have_item(item.get_panel_guid()))
         return false;
@@ -733,159 +742,184 @@ INT_PTR LayoutTab::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
     } break;
     case WM_CONTEXTMENU: {
-        if ((HWND)wp == m_wnd_tree) {
-            TRACK_CALL_TEXT("tab_layout::WM_CONTEXTMENU");
-
-            POINT pt = {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)};
-            HTREEITEM treeitem = TreeView_GetSelection(m_wnd_tree);
-
-            TVHITTESTINFO ti{};
-
-            if (pt.x == -1 && pt.y == -1) {
-                RECT rc;
-                TreeView_GetItemRect(m_wnd_tree, treeitem, &rc, TRUE);
-                ti.pt.x = rc.left;
-                ti.pt.y = rc.top + (rc.bottom - rc.top) / 2;
-                pt = ti.pt;
-                MapWindowPoints(m_wnd_tree, HWND_DESKTOP, &pt, 1);
-            } else {
-                ti.pt = pt;
-                ScreenToClient(m_wnd_tree, &ti.pt);
-            }
-            SendMessage(m_wnd_tree, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&ti));
-            if (ti.hItem) {
-                enum {
-                    ID_REMOVE = 1,
-                    ID_MOVE_UP,
-                    ID_MOVE_DOWN,
-                    ID_COPY,
-                    ID_PASTE,
-                    ID_CHANGE_BASE
-                };
-                unsigned ID_INSERT_BASE = ID_CHANGE_BASE + 1;
-                HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti.hItem);
-
-                SendMessage(m_wnd_tree, TVM_SELECTITEM, TVGN_CARET, reinterpret_cast<LPARAM>(ti.hItem));
-
-                unsigned index = tree_view_get_child_index(m_wnd_tree, ti.hItem);
-
-                auto p_node = m_node_map.at(ti.hItem);
-                LayoutTabNode::ptr p_parent_node;
-
-                service_ptr_t<uie::splitter_window> p_splitter;
-                if (p_node->m_window.is_valid())
-                    p_node->m_window->service_query_t(p_splitter);
-
-                HMENU menu = CreatePopupMenu();
-
-                uie::window_info_list_simple panels;
-                get_panel_list(panels);
-
-                if (ti_parent) {
-                    p_parent_node = m_node_map.at(ti_parent);
-                }
-
-                if (!ti_parent) {
-                    HMENU menu_change_base = CreatePopupMenu();
-                    HMENU popup = nullptr;
-                    const auto count = panels.get_count();
-                    for (size_t n = 0; n < count; n++) {
-                        if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
-                            if (n)
-                                uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
-                                    panels[n - 1].category);
-                            popup = CreatePopupMenu();
-                        }
-                        uAppendMenu(popup, (MF_STRING), ID_CHANGE_BASE + n, panels[n].name);
-                        ID_INSERT_BASE++;
-                        if (n == count - 1)
-                            uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
-                                panels[n].category);
-                    }
-                    uAppendMenu(
-                        menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_change_base), "Change base");
-                }
-                unsigned ID_SWITCH_BASE = ID_INSERT_BASE + 1;
-                if (p_splitter.is_valid() && p_node->m_children.size() < p_splitter->get_maximum_panel_count()) {
-                    HMENU menu_change_base = CreatePopupMenu();
-                    HMENU popup = nullptr;
-                    const auto count = panels.get_count();
-                    size_t last = 0;
-                    for (size_t n = 0; n < count; n++) {
-                        if (!panels[n].prefer_multiple_instances || !m_node_root->have_item(panels[n].guid)) {
-                            if (!popup || uStringCompare(panels[last].category, panels[n].category)) {
-                                if (popup)
-                                    uAppendMenu(menu_change_base, MF_STRING | MF_POPUP,
-                                        reinterpret_cast<UINT_PTR>(popup), panels[last].category);
-                                popup = CreatePopupMenu();
-                            }
-                            uAppendMenu(popup, (MF_STRING), ID_INSERT_BASE + n, panels[n].name);
-                            last = n;
-                        }
-                        if (n == count - 1)
-                            uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
-                                panels[n].category);
-                    }
-                    uAppendMenu(
-                        menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_change_base), "Insert panel");
-                    ID_SWITCH_BASE += gsl::narrow<unsigned>(count);
-                }
-                if (p_splitter.is_valid()) {
-                    const auto count_exts = panels.get_count();
-                    HMENU menu_insert = CreatePopupMenu();
-                    for (size_t n = 0; n < count_exts; n++) {
-                        if (panels[n].type & uie::type_splitter) {
-                            uAppendMenu(menu_insert, (MF_STRING), ID_SWITCH_BASE + n, panels[n].name);
-                        }
-                    }
-                    AppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_insert),
-                        _T("Change splitter type"));
-                }
-                if (ti_parent) {
-                    if (GetMenuItemCount(menu))
-                        AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
-                    if (p_parent_node && index)
-                        AppendMenu(menu, MF_STRING, ID_MOVE_UP, _T("Move up"));
-                    if (p_parent_node && index + 1 < p_parent_node->m_splitter->get_panel_count())
-                        AppendMenu(menu, MF_STRING, ID_MOVE_DOWN, _T("Move down"));
-                    AppendMenu(menu, MF_STRING, ID_REMOVE, _T("Remove panel"));
-                }
-                AppendMenu(menu, MF_STRING, ID_COPY, _T("Copy panel"));
-                if (splitter_utils::is_splitter_item_in_clipboard() && p_splitter.is_valid()
-                    && p_node->m_children.size() < p_splitter->get_maximum_panel_count())
-                    AppendMenu(menu, MF_STRING, ID_PASTE, _T("Paste panel"));
-
-                menu_helpers::win32_auto_mnemonics(menu);
-
-                unsigned cmd
-                    = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
-                DestroyMenu(menu);
-
-                if (cmd) {
-                    if (cmd >= ID_SWITCH_BASE) {
-                        switch_splitter(wnd, ti.hItem, panels[cmd - ID_SWITCH_BASE].guid);
-                    } else if (cmd >= ID_INSERT_BASE) {
-                        insert_item(wnd, ti.hItem, panels[cmd - ID_INSERT_BASE].guid);
-                    } else if (cmd >= ID_CHANGE_BASE) {
-                        change_base(wnd, panels[cmd - ID_CHANGE_BASE].guid);
-                    } else if (cmd == ID_REMOVE) {
-                        remove_node(wnd, ti.hItem);
-                    } else if (cmd == ID_MOVE_UP) {
-                        move_item(wnd, ti.hItem, true);
-                    } else if (cmd == ID_MOVE_DOWN) {
-                        move_item(wnd, ti.hItem, false);
-                    } else if (cmd == ID_COPY) {
-                        copy_item(wnd, ti.hItem);
-                    } else if (cmd == ID_PASTE) {
-                        paste_item(wnd, ti.hItem);
-                    }
-                }
-            }
-        }
-        return 0;
-    } break;
+        if (handle_wm_contextmenu(wnd, reinterpret_cast<HWND>(wp), {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)}))
+            return 0;
+        break;
+    }
     }
     return 0;
+}
+
+bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
+{
+    TRACK_CALL_TEXT("tab_layout::WM_CONTEXTMENU");
+
+    if (contextmenu_wnd != m_wnd_tree)
+        return false;
+
+    HTREEITEM treeitem = TreeView_GetSelection(m_wnd_tree);
+
+    TVHITTESTINFO ti{};
+
+    if (pt.x == -1 && pt.y == -1) {
+        RECT rc;
+        TreeView_GetItemRect(m_wnd_tree, treeitem, &rc, TRUE);
+        ti.pt.x = rc.left;
+        ti.pt.y = rc.top + (rc.bottom - rc.top) / 2;
+        pt = ti.pt;
+        MapWindowPoints(m_wnd_tree, HWND_DESKTOP, &pt, 1);
+    } else {
+        ti.pt = pt;
+        ScreenToClient(m_wnd_tree, &ti.pt);
+    }
+
+    SendMessage(m_wnd_tree, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&ti));
+
+    if (ti.hItem) {
+        enum {
+            ID_REMOVE = 1,
+            ID_MOVE_UP,
+            ID_MOVE_DOWN,
+            ID_CUT,
+            ID_COPY,
+            ID_PASTE,
+            ID_CHANGE_BASE
+        };
+
+        auto ID_INSERT_BASE = ID_CHANGE_BASE + 1;
+        HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti.hItem);
+
+        SendMessage(m_wnd_tree, TVM_SELECTITEM, TVGN_CARET, reinterpret_cast<LPARAM>(ti.hItem));
+
+        unsigned index = tree_view_get_child_index(m_wnd_tree, ti.hItem);
+
+        auto p_node = m_node_map.at(ti.hItem);
+        LayoutTabNode::ptr p_parent_node;
+
+        service_ptr_t<uie::splitter_window> p_splitter;
+        if (p_node->m_window.is_valid())
+            p_node->m_window->service_query_t(p_splitter);
+
+        HMENU menu = CreatePopupMenu();
+
+        uie::window_info_list_simple panels;
+        get_panel_list(panels);
+
+        if (ti_parent) {
+            p_parent_node = m_node_map.at(ti_parent);
+        }
+
+        if (!ti_parent) {
+            HMENU menu_change_base = CreatePopupMenu();
+            HMENU popup = nullptr;
+            const auto count = panels.get_count();
+            for (size_t n = 0; n < count; n++) {
+                if (!n || uStringCompare(panels[n - 1].category, panels[n].category)) {
+                    if (n)
+                        uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
+                            panels[n - 1].category);
+                    popup = CreatePopupMenu();
+                }
+                uAppendMenu(popup, (MF_STRING), ID_CHANGE_BASE + n, panels[n].name);
+                ID_INSERT_BASE++;
+                if (n == count - 1)
+                    uAppendMenu(
+                        menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), panels[n].category);
+            }
+            uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_change_base), "Change base");
+        }
+
+        auto ID_SWITCH_BASE = ID_INSERT_BASE + 1;
+
+        if (p_splitter.is_valid() && p_node->m_children.size() < p_splitter->get_maximum_panel_count()) {
+            HMENU menu_change_base = CreatePopupMenu();
+            HMENU popup = nullptr;
+            const auto count = panels.get_count();
+            size_t last = 0;
+            for (size_t n = 0; n < count; n++) {
+                if (!panels[n].prefer_multiple_instances || !m_node_root->have_item(panels[n].guid)) {
+                    if (!popup || uStringCompare(panels[last].category, panels[n].category)) {
+                        if (popup)
+                            uAppendMenu(menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup),
+                                panels[last].category);
+                        popup = CreatePopupMenu();
+                    }
+                    uAppendMenu(popup, (MF_STRING), ID_INSERT_BASE + n, panels[n].name);
+                    last = n;
+                }
+                if (n == count - 1)
+                    uAppendMenu(
+                        menu_change_base, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(popup), panels[n].category);
+            }
+            uAppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_change_base), "Insert panel");
+            ID_SWITCH_BASE += gsl::narrow<unsigned>(count);
+        }
+
+        if (p_splitter.is_valid()) {
+            const auto count_exts = panels.get_count();
+            HMENU menu_insert = CreatePopupMenu();
+            for (size_t n = 0; n < count_exts; n++) {
+                if (panels[n].type & uie::type_splitter) {
+                    uAppendMenu(menu_insert, (MF_STRING), ID_SWITCH_BASE + n, panels[n].name);
+                }
+            }
+            AppendMenu(menu, MF_STRING | MF_POPUP, reinterpret_cast<UINT_PTR>(menu_insert), L"Change splitter type");
+        }
+        if (ti_parent) {
+            if (GetMenuItemCount(menu) > 0)
+                AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+            if (p_parent_node && index)
+                AppendMenu(menu, MF_STRING, ID_MOVE_UP, L"Move up");
+            if (p_parent_node && index + 1 < p_parent_node->m_splitter->get_panel_count())
+                AppendMenu(menu, MF_STRING, ID_MOVE_DOWN, L"Move down");
+            AppendMenu(menu, MF_STRING, ID_REMOVE, L"Remove panel");
+        }
+
+        if (GetMenuItemCount(menu) > 0)
+            AppendMenu(menu, MF_SEPARATOR, 0, nullptr);
+
+        AppendMenu(menu, MF_STRING, ID_CUT, L"Cut panel");
+        AppendMenu(menu, MF_STRING, ID_COPY, L"Copy panel");
+
+        if (splitter_utils::is_splitter_item_in_clipboard() && p_splitter.is_valid()
+            && p_node->m_children.size() < p_splitter->get_maximum_panel_count())
+            AppendMenu(menu, MF_STRING, ID_PASTE, L"Paste panel");
+
+        menu_helpers::win32_auto_mnemonics(menu);
+
+        const auto cmd
+            = TrackPopupMenu(menu, TPM_RIGHTBUTTON | TPM_NONOTIFY | TPM_RETURNCMD, pt.x, pt.y, 0, wnd, nullptr);
+        DestroyMenu(menu);
+
+        switch (cmd) {
+        case ID_REMOVE:
+            remove_node(wnd, ti.hItem);
+            break;
+        case ID_MOVE_UP:
+            move_item(wnd, ti.hItem, true);
+            break;
+        case ID_MOVE_DOWN:
+            move_item(wnd, ti.hItem, false);
+            break;
+        case ID_CUT:
+            cut_item(wnd, ti.hItem);
+            break;
+        case ID_COPY:
+            copy_item(wnd, ti.hItem);
+            break;
+        case ID_PASTE:
+            paste_item(wnd, ti.hItem);
+            break;
+        default:
+            if (cmd >= ID_SWITCH_BASE) {
+                switch_splitter(wnd, ti.hItem, panels[cmd - ID_SWITCH_BASE].guid);
+            } else if (cmd >= ID_INSERT_BASE) {
+                insert_item(wnd, ti.hItem, panels[cmd - ID_INSERT_BASE].guid);
+            }
+            break;
+        }
+    }
+    return true;
 }
 
 void LayoutTab::on_tree_selection_change(HTREEITEM tree_item)

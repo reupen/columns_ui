@@ -44,7 +44,8 @@ private:
         HWND wnd, const LayoutTabNode::ptr& node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
     void remove_node(HWND wnd, HTREEITEM ti);
     void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);
-    void copy_item(HWND wnd, HTREEITEM ti);
+    void copy_item(HWND wnd, HTREEITEM ti) const;
+    void cut_item(HWND wnd, HTREEITEM ti);
     bool _fix_single_instance_recur(uie::splitter_window_ptr& p_window);
 
     /**
@@ -94,6 +95,7 @@ private:
     void switch_to_preset(HWND wnd, size_t index);
 
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
+    bool handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt);
     void on_tree_selection_change(HTREEITEM tree_item);
 
     HWND m_wnd_tree{};
