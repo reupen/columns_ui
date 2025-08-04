@@ -6,6 +6,10 @@
 #include "dark_mode.h"
 #include "main_window.h"
 
+namespace cui::prefs {
+
+TabColours g_tab_appearance;
+
 bool TabColours::is_active()
 {
     return m_wnd != nullptr;
@@ -100,7 +104,7 @@ INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         case IDC_COLOURS_SCHEME | (CBN_SELCHANGE << 16): {
             int idx = ComboBox_GetCurSel((HWND)lp);
-            m_element_ptr->colour_set.colour_scheme = (cui::colours::ColourScheme)ComboBox_GetItemData((HWND)lp, idx);
+            m_element_ptr->colour_set.colour_scheme = (colours::ColourScheme)ComboBox_GetItemData((HWND)lp, idx);
             update_fills();
             update_buttons();
             on_colour_changed();
@@ -115,16 +119,16 @@ INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         case IDC_CHANGE_SEL_INACTIVE_FORE:
         case IDC_CUSTOM_FRAME: {
             auto& colour_set = m_element_ptr->colour_set;
-            std::unordered_map<WPARAM, std::tuple<COLORREF&, cui::colours::colour_identifier_t>> colour_map
-                = {{IDC_CHANGE_TEXT_BACK, {colour_set.background, cui::colours::colour_background}},
-                    {IDC_CHANGE_TEXT_FORE, {colour_set.text, cui::colours::colour_text}},
-                    {IDC_CHANGE_SELBACK, {colour_set.selection_background, cui::colours::colour_selection_background}},
-                    {IDC_CHANGE_SEL_FORE, {colour_set.selection_text, cui::colours::colour_selection_text}},
+            std::unordered_map<WPARAM, std::tuple<COLORREF&, colours::colour_identifier_t>> colour_map
+                = {{IDC_CHANGE_TEXT_BACK, {colour_set.background, colours::colour_background}},
+                    {IDC_CHANGE_TEXT_FORE, {colour_set.text, colours::colour_text}},
+                    {IDC_CHANGE_SELBACK, {colour_set.selection_background, colours::colour_selection_background}},
+                    {IDC_CHANGE_SEL_FORE, {colour_set.selection_text, colours::colour_selection_text}},
                     {IDC_CHANGE_SEL_INACTIVE_BACK,
-                        {colour_set.inactive_selection_background, cui::colours::colour_inactive_selection_background}},
+                        {colour_set.inactive_selection_background, colours::colour_inactive_selection_background}},
                     {IDC_CHANGE_SEL_INACTIVE_FORE,
-                        {colour_set.inactive_selection_text, cui::colours::colour_inactive_selection_text}},
-                    {IDC_CHANGE_FRAME, {colour_set.active_item_frame, cui::colours::colour_active_item_frame}}};
+                        {colour_set.inactive_selection_text, colours::colour_inactive_selection_text}},
+                    {IDC_CHANGE_FRAME, {colour_set.active_item_frame, colours::colour_active_item_frame}}};
 
             bool b_changed = false;
 
@@ -134,7 +138,7 @@ INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
             } else {
                 auto&& [colour, colour_id] = colour_map.at(wp);
                 b_changed = colour_picker(wnd, colour,
-                    cui::dark::get_system_colour(get_system_colour_id(colour_id), cui::colours::is_dark_mode_active()));
+                    dark::get_system_colour(get_system_colour_id(colour_id), colours::is_dark_mode_active()));
             }
 
             if (b_changed) {
@@ -156,14 +160,14 @@ INT_PTR TabColours::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 void TabColours::on_colour_changed()
 {
     if (m_element_api.is_valid())
-        m_element_api->on_colour_changed(cui::colours::colour_flag_all);
+        m_element_api->on_colour_changed(colours::colour_flag_all);
     else if (m_element_guid == pfc::guid_null) {
-        cui::colours::common_colour_callback_manager.s_on_common_colour_changed(cui::colours::colour_flag_all);
+        colours::common_colour_callback_manager.s_on_common_colour_changed(colours::colour_flag_all);
         size_t count = m_colours_client_list.get_count();
         for (size_t i = 0; i < count; i++) {
             const auto p_data = g_colour_manager_data.get_entry(m_colours_client_list[i].m_guid);
-            if (p_data->colour_set.colour_scheme == cui::colours::ColourSchemeGlobal)
-                m_colours_client_list[i].m_ptr->on_colour_changed(cui::colours::colour_flag_all);
+            if (p_data->colour_set.colour_scheme == colours::ColourSchemeGlobal)
+                m_colours_client_list[i].m_ptr->on_colour_changed(colours::colour_flag_all);
         }
     }
 }
@@ -174,16 +178,16 @@ void TabColours::update_scheme_combobox()
     size_t index;
     if (m_element_guid != pfc::guid_null) {
         index = ComboBox_AddString(m_wnd_colour_scheme, L"Global");
-        ComboBox_SetItemData(m_wnd_colour_scheme, index, cui::colours::ColourSchemeGlobal);
+        ComboBox_SetItemData(m_wnd_colour_scheme, index, colours::ColourSchemeGlobal);
     }
     index = ComboBox_AddString(m_wnd_colour_scheme, L"System");
-    ComboBox_SetItemData(m_wnd_colour_scheme, index, cui::colours::ColourSchemeSystem);
+    ComboBox_SetItemData(m_wnd_colour_scheme, index, colours::ColourSchemeSystem);
     if (!m_element_api.is_valid() || m_element_api->get_themes_supported()) {
         index = ComboBox_AddString(m_wnd_colour_scheme, L"Themed");
-        ComboBox_SetItemData(m_wnd_colour_scheme, index, cui::colours::ColourSchemeThemed);
+        ComboBox_SetItemData(m_wnd_colour_scheme, index, colours::ColourSchemeThemed);
     }
     index = ComboBox_AddString(m_wnd_colour_scheme, L"Custom");
-    ComboBox_SetItemData(m_wnd_colour_scheme, index, cui::colours::ColourSchemeCustom);
+    ComboBox_SetItemData(m_wnd_colour_scheme, index, colours::ColourSchemeCustom);
 
     ComboBox_SetCurSel(m_wnd_colour_scheme,
         uih::combo_box_find_item_by_data(m_wnd_colour_scheme, m_element_ptr->colour_set.colour_scheme));
@@ -191,9 +195,8 @@ void TabColours::update_scheme_combobox()
 
 void TabColours::update_title() const
 {
-    if (cui::dark::does_os_support_dark_mode())
-        uSetDlgItemText(
-            m_wnd, IDC_TITLE1, cui::colours::is_dark_mode_active() ? "Dark mode colours" : "Light mode colours");
+    if (dark::does_os_support_dark_mode())
+        uSetDlgItemText(m_wnd, IDC_TITLE1, colours::is_dark_mode_active() ? "Dark mode colours" : "Light mode colours");
 }
 
 void TabColours::handle_external_configuration_change()
@@ -210,111 +213,109 @@ void TabColours::handle_external_configuration_change()
 
 void TabColours::update_buttons()
 {
-    EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_TEXT_BACK), get_change_colour_enabled(cui::colours::colour_background));
-    EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_TEXT_FORE), get_change_colour_enabled(cui::colours::colour_text));
+    EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_TEXT_BACK), get_change_colour_enabled(colours::colour_background));
+    EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_TEXT_FORE), get_change_colour_enabled(colours::colour_text));
     EnableWindow(
-        GetDlgItem(m_wnd, IDC_CHANGE_SELBACK), get_change_colour_enabled(cui::colours::colour_selection_background));
-    EnableWindow(
-        GetDlgItem(m_wnd, IDC_CHANGE_SEL_FORE), get_change_colour_enabled(cui::colours::colour_selection_text));
+        GetDlgItem(m_wnd, IDC_CHANGE_SELBACK), get_change_colour_enabled(colours::colour_selection_background));
+    EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_SEL_FORE), get_change_colour_enabled(colours::colour_selection_text));
     EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_SEL_INACTIVE_BACK),
-        get_change_colour_enabled(cui::colours::colour_inactive_selection_background));
+        get_change_colour_enabled(colours::colour_inactive_selection_background));
     EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_SEL_INACTIVE_FORE),
-        get_change_colour_enabled(cui::colours::colour_inactive_selection_text));
-    EnableWindow(
-        GetDlgItem(m_wnd, IDC_CHANGE_FRAME), get_change_colour_enabled(cui::colours::colour_active_item_frame));
+        get_change_colour_enabled(colours::colour_inactive_selection_text));
+    EnableWindow(GetDlgItem(m_wnd, IDC_CHANGE_FRAME), get_change_colour_enabled(colours::colour_active_item_frame));
 
-    EnableWindow(g_fill_background.get_wnd(), get_colour_patch_enabled(cui::colours::colour_background));
-    EnableWindow(g_fill_text.get_wnd(), get_colour_patch_enabled(cui::colours::colour_text));
-    EnableWindow(
-        g_fill_selection_background.get_wnd(), get_colour_patch_enabled(cui::colours::colour_selection_background));
-    EnableWindow(g_fill_selection_text.get_wnd(), get_colour_patch_enabled(cui::colours::colour_selection_text));
+    EnableWindow(g_fill_background.get_wnd(), get_colour_patch_enabled(colours::colour_background));
+    EnableWindow(g_fill_text.get_wnd(), get_colour_patch_enabled(colours::colour_text));
+    EnableWindow(g_fill_selection_background.get_wnd(), get_colour_patch_enabled(colours::colour_selection_background));
+    EnableWindow(g_fill_selection_text.get_wnd(), get_colour_patch_enabled(colours::colour_selection_text));
     EnableWindow(g_fill_selection_background_inactive.get_wnd(),
-        get_colour_patch_enabled(cui::colours::colour_inactive_selection_background));
-    EnableWindow(g_fill_selection_text_inactive.get_wnd(),
-        get_colour_patch_enabled(cui::colours::colour_inactive_selection_text));
+        get_colour_patch_enabled(colours::colour_inactive_selection_background));
+    EnableWindow(
+        g_fill_selection_text_inactive.get_wnd(), get_colour_patch_enabled(colours::colour_inactive_selection_text));
 
-    EnableWindow(g_fill_active_item_frame.get_wnd(), get_colour_patch_enabled(cui::colours::colour_active_item_frame));
+    EnableWindow(g_fill_active_item_frame.get_wnd(), get_colour_patch_enabled(colours::colour_active_item_frame));
     EnableWindow(GetDlgItem(m_wnd, IDC_CUSTOM_FRAME),
-        m_element_ptr->colour_set.colour_scheme != cui::colours::ColourSchemeGlobal
+        m_element_ptr->colour_set.colour_scheme != colours::ColourSchemeGlobal
             && (!m_element_api.is_valid()
-                || (m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame)));
+                || (m_element_api->get_supported_bools() & colours::bool_flag_use_custom_active_item_frame)));
 }
 
-bool TabColours::get_colour_patch_enabled(cui::colours::colour_identifier_t p_identifier)
+bool TabColours::get_colour_patch_enabled(colours::colour_identifier_t p_identifier)
 {
-    cui::colours::helper colour_helper(m_element_guid);
+    colours::helper colour_helper(m_element_guid);
 
-    if (p_identifier == cui::colours::colour_active_item_frame) {
+    if (p_identifier == colours::colour_active_item_frame) {
         if (!m_element_api.is_valid()) {
-            return m_element_ptr->colour_set.colour_scheme == cui::colours::ColourSchemeCustom
-                || colour_helper.get_bool(cui::colours::bool_use_custom_active_item_frame);
+            return m_element_ptr->colour_set.colour_scheme == colours::ColourSchemeCustom
+                || colour_helper.get_bool(colours::bool_use_custom_active_item_frame);
         }
         const bool is_colour_supported = (m_element_api->get_supported_colours() & (1 << p_identifier)) != 0;
         const bool use_custom_frame_supported
-            = (m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame) != 0;
+            = (m_element_api->get_supported_bools() & colours::bool_flag_use_custom_active_item_frame) != 0;
 
         return is_colour_supported
-            && (!use_custom_frame_supported || colour_helper.get_bool(cui::colours::bool_use_custom_active_item_frame));
+            && (!use_custom_frame_supported || colour_helper.get_bool(colours::bool_use_custom_active_item_frame));
     }
     return !m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier));
 }
 
-bool TabColours::get_change_colour_enabled(cui::colours::colour_identifier_t p_identifier)
+bool TabColours::get_change_colour_enabled(colours::colour_identifier_t p_identifier)
 {
-    if (p_identifier == cui::colours::colour_active_item_frame) {
-        cui::colours::helper colours(m_element_guid);
+    if (p_identifier == colours::colour_active_item_frame) {
+        colours::helper colours(m_element_guid);
 
         if (m_element_api.is_valid()) {
-            return m_element_ptr->colour_set.colour_scheme != cui::colours::ColourSchemeGlobal
-                && m_element_api->get_supported_colours() & cui::colours::colour_flag_active_item_frame
-                && (!(m_element_api->get_supported_bools() & cui::colours::bool_flag_use_custom_active_item_frame)
-                    || colours.get_bool(cui::colours::bool_use_custom_active_item_frame));
+            return m_element_ptr->colour_set.colour_scheme != colours::ColourSchemeGlobal
+                && m_element_api->get_supported_colours() & colours::colour_flag_active_item_frame
+                && (!(m_element_api->get_supported_bools() & colours::bool_flag_use_custom_active_item_frame)
+                    || colours.get_bool(colours::bool_use_custom_active_item_frame));
         }
 
-        return m_element_ptr->colour_set.colour_scheme == cui::colours::ColourSchemeCustom
-            || colours.get_bool(cui::colours::bool_use_custom_active_item_frame);
+        return m_element_ptr->colour_set.colour_scheme == colours::ColourSchemeCustom
+            || colours.get_bool(colours::bool_use_custom_active_item_frame);
     }
 
-    return (m_element_ptr->colour_set.colour_scheme == cui::colours::ColourSchemeCustom
+    return (m_element_ptr->colour_set.colour_scheme == colours::ColourSchemeCustom
         && (!m_element_api.is_valid() || (m_element_api->get_supported_colours() & (1 << p_identifier))));
 }
 
 void TabColours::update_fills()
 {
-    cui::colours::helper p_manager(m_element_guid);
+    colours::helper p_manager(m_element_guid);
 
     if (p_manager.get_themed() && (!m_element_api.is_valid() || m_element_api->get_themes_supported())) {
-        const auto is_dark = cui::colours::is_dark_mode_active();
+        const auto is_dark = colours::is_dark_mode_active();
         const auto list_view_theme_class = is_dark ? L"DarkMode_ItemsView::ListView"sv : L"Explorer::ListView"sv;
 
         g_fill_selection_background.set_fill_themed(uih::FillWindow::Mode::ThemeBackgroundFill,
             list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTED, is_dark,
-            p_manager.get_colour(cui::colours::colour_selection_background));
+            p_manager.get_colour(colours::colour_selection_background));
 
         g_fill_selection_background_inactive.set_fill_themed(uih::FillWindow::Mode::ThemeBackgroundFill,
             list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTEDNOTFOCUS, is_dark,
-            p_manager.get_colour(cui::colours::colour_inactive_selection_background));
+            p_manager.get_colour(colours::colour_inactive_selection_background));
 
         g_fill_selection_text.set_fill_themed(uih::FillWindow::Mode::ThemeTextColourFill, list_view_theme_class.data(),
-            LVP_LISTITEM, LISS_SELECTED, is_dark, p_manager.get_colour(cui::colours::colour_selection_text));
+            LVP_LISTITEM, LISS_SELECTED, is_dark, p_manager.get_colour(colours::colour_selection_text));
 
         g_fill_selection_text_inactive.set_fill_themed(uih::FillWindow::Mode::ThemeTextColourFill,
             list_view_theme_class.data(), LVP_LISTITEM, LISS_SELECTEDNOTFOCUS, is_dark,
-            p_manager.get_colour(cui::colours::colour_inactive_selection_text));
+            p_manager.get_colour(colours::colour_inactive_selection_text));
 
     } else {
-        g_fill_selection_text.set_fill_colour(p_manager.get_colour(cui::colours::colour_selection_text));
-        g_fill_selection_background.set_fill_colour(p_manager.get_colour(cui::colours::colour_selection_background));
+        g_fill_selection_text.set_fill_colour(p_manager.get_colour(colours::colour_selection_text));
+        g_fill_selection_background.set_fill_colour(p_manager.get_colour(colours::colour_selection_background));
         g_fill_selection_background_inactive.set_fill_colour(
-            p_manager.get_colour(cui::colours::colour_inactive_selection_background));
-        g_fill_selection_text_inactive.set_fill_colour(
-            p_manager.get_colour(cui::colours::colour_inactive_selection_text));
+            p_manager.get_colour(colours::colour_inactive_selection_background));
+        g_fill_selection_text_inactive.set_fill_colour(p_manager.get_colour(colours::colour_inactive_selection_text));
     }
 
-    g_fill_text.set_fill_colour(p_manager.get_colour(cui::colours::colour_text));
-    g_fill_background.set_fill_colour(p_manager.get_colour(cui::colours::colour_background));
-    g_fill_active_item_frame.set_fill_colour(p_manager.get_colour(cui::colours::colour_active_item_frame));
+    g_fill_text.set_fill_colour(p_manager.get_colour(colours::colour_text));
+    g_fill_background.set_fill_colour(p_manager.get_colour(colours::colour_background));
+    g_fill_active_item_frame.set_fill_colour(p_manager.get_colour(colours::colour_active_item_frame));
 
     Button_SetCheck(
-        GetDlgItem(m_wnd, IDC_CUSTOM_FRAME), p_manager.get_bool(cui::colours::bool_use_custom_active_item_frame));
+        GetDlgItem(m_wnd, IDC_CUSTOM_FRAME), p_manager.get_bool(colours::bool_use_custom_active_item_frame));
 }
+
+} // namespace cui::prefs

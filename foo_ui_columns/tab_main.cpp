@@ -5,7 +5,11 @@
 #include "rebar.h"
 #include "main_window.h"
 
-static class TabMain : public PreferencesTab {
+namespace cui::prefs {
+
+namespace {
+
+class TabMain : public PreferencesTab {
 public:
     bool m_initialised{};
 
@@ -17,7 +21,7 @@ public:
         SendDlgItemMessage(wnd, IDC_USE_TRANSPARENCY, BM_SETCHECK, main_window::config_get_transparency_enabled(), 0);
         SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETPOS32, 0, main_window::config_get_transparency_level());
 
-        if (!cui::main_window.get_wnd())
+        if (!main_window.get_wnd())
             EnableWindow(GetDlgItem(wnd, IDC_QUICKSETUP), FALSE);
 
         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, NULL, main_window::config_main_window_title_script.get());
@@ -44,7 +48,7 @@ public:
                 break;
 
             case IDC_QUICKSETUP:
-                SendMessage(cui::main_window.get_wnd(), MSG_RUN_INITIAL_SETUP, NULL, NULL);
+                SendMessage(main_window.get_wnd(), MSG_RUN_INITIAL_SETUP, NULL, NULL);
                 break;
             case IDC_FCL_EXPORT:
                 g_export_layout(wnd);
@@ -70,19 +74,19 @@ public:
                 on_show_toolbars_change();
                 break;
             case IDC_RESET_TOOLBARS: {
-                if (cui::dark::modal_info_box(wnd, "Reset toolbars",
+                if (dark::modal_info_box(wnd, "Reset toolbars",
                         "Warning! This will reset the toolbars to the default state. Continue?",
                         uih::InfoBoxType::Neutral, uih::InfoBoxModalType::YesNo)) {
-                    if (cui::main_window.get_wnd())
-                        cui::rebar::destroy_rebar();
-                    cui::rebar::g_cfg_rebar.reset();
-                    if (cui::main_window.get_wnd()) {
-                        cui::rebar::create_rebar();
-                        if (cui::rebar::g_rebar) {
-                            ShowWindow(cui::rebar::g_rebar, SW_SHOWNORMAL);
-                            UpdateWindow(cui::rebar::g_rebar);
+                    if (main_window.get_wnd())
+                        rebar::destroy_rebar();
+                    rebar::g_cfg_rebar.reset();
+                    if (main_window.get_wnd()) {
+                        rebar::create_rebar();
+                        if (rebar::g_rebar) {
+                            ShowWindow(rebar::g_rebar, SW_SHOWNORMAL);
+                            UpdateWindow(rebar::g_rebar);
                         }
-                        cui::main_window.resize_child_windows();
+                        main_window.resize_child_windows();
                     }
                 }
             } break; /*
@@ -107,10 +111,16 @@ public:
         p_out = "http://yuo.be/wiki/columns_ui:config:main";
         return true;
     }
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
-} g_tab_main;
+    PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
+};
+
+TabMain g_tab_main;
+
+} // namespace
 
 PreferencesTab* g_get_tab_main()
 {
     return &g_tab_main;
 }
+
+} // namespace cui::prefs

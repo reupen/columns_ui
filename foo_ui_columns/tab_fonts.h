@@ -4,6 +4,8 @@
 #include "config.h"
 #include "font_picker.h"
 
+namespace cui::prefs {
+
 class TabFonts : public PreferencesTab {
 public:
     void update_mode_combobox() const;
@@ -24,8 +26,10 @@ private:
     HWND m_element_combobox{};
     HWND m_mode_combobox{};
     FontManagerData::entry_ptr_t m_element_ptr;
-    cui::fonts::client::ptr m_element_api;
+    fonts::client::ptr m_element_api;
     FontsClientList m_fonts_client_list;
-    std::optional<cui::utils::DirectWriteFontPicker> m_direct_write_font_picker;
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    std::optional<utils::DirectWriteFontPicker> m_direct_write_font_picker;
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
+
+} // namespace cui::prefs

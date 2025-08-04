@@ -131,12 +131,12 @@ class ColoursDataSet : public fcl::dataset {
         if (!mode_read)
             colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Disabled));
 
-        g_tab_dark_mode.refresh();
+        prefs::g_tab_dark_mode.refresh();
 
         if (old_is_dark != colours::is_dark_mode_active())
             return;
 
-        g_tab_appearance.handle_external_configuration_change();
+        prefs::g_tab_appearance.handle_external_configuration_change();
 
         colours::common_colour_callback_manager.s_on_common_colour_changed(colours::colour_flag_all);
 

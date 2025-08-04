@@ -11,11 +11,9 @@
 #include "setup_dialog.h"
 #include "tab_text_rendering.h"
 
-TabDarkMode g_tab_dark_mode;
 cui::colours::ColourManagerData g_colour_manager_data;
 FontManagerData g_font_manager_data;
-TabColours g_tab_appearance;
-TabFonts g_tab_appearance_fonts;
+cui::prefs::TabFonts g_tab_appearance_fonts;
 
 namespace cui::colours {
 
@@ -27,7 +25,7 @@ const GUID dark_mode_status_id = {0x1278cd90, 0x1d95, 0x48e8, {0x87, 0x3a, 0x1, 
 
 fbh::ConfigInt32 dark_mode_status(
     dark_mode_status_id, WI_EnumValue(DarkModeStatus::Disabled), [](auto&& new_value, auto&& old_value) {
-        g_tab_dark_mode.refresh();
+        prefs::g_tab_dark_mode.refresh();
         QuickSetupDialog::s_refresh();
 
         const auto old_enabled = old_value == WI_EnumValue(DarkModeStatus::Enabled)
@@ -77,7 +75,7 @@ void handle_effective_dark_mode_status_change()
         client.m_ptr->on_colour_changed(colour_flag_all);
     }
 
-    g_tab_appearance.handle_external_configuration_change();
+    prefs::g_tab_appearance.handle_external_configuration_change();
 }
 
 bool handle_system_dark_mode_status_change()
@@ -91,7 +89,7 @@ bool handle_system_dark_mode_status_change()
 
 bool handle_system_dark_mode_availability_change()
 {
-    g_tab_dark_mode.refresh();
+    prefs::g_tab_dark_mode.refresh();
 
     if (dark_mode_status == WI_EnumValue(DarkModeStatus::Enabled)) {
         handle_effective_dark_mode_status_change();
@@ -120,8 +118,8 @@ void g_set_global_colour_scheme(cui::colours::ColourScheme scheme, bool is_dark)
         return;
 
     cui::colours::common_colour_callback_manager.s_on_common_colour_changed(cui::colours::colour_flag_all);
-    if (g_tab_appearance.is_active()) {
-        g_tab_appearance.handle_external_configuration_change();
+    if (cui::prefs::g_tab_appearance.is_active()) {
+        cui::prefs::g_tab_appearance.handle_external_configuration_change();
     }
     ColoursClientList m_colours_client_list;
     ColoursClientList::g_get_list(m_colours_client_list);
@@ -135,8 +133,8 @@ void g_set_global_colour_scheme(cui::colours::ColourScheme scheme, bool is_dark)
 
 void on_global_colours_change()
 {
-    if (g_tab_appearance.is_active()) {
-        g_tab_appearance.handle_external_configuration_change();
+    if (cui::prefs::g_tab_appearance.is_active()) {
+        cui::prefs::g_tab_appearance.handle_external_configuration_change();
     }
     cui::colours::common_colour_callback_manager.s_on_common_colour_changed(cui::colours::colour_flag_all);
     ColoursClientList m_colours_client_list;
@@ -190,8 +188,8 @@ void refresh_appearance_prefs()
     }
 }
 
-static PreferencesTab* g_tabs_appearance[]
-    = {&g_tab_dark_mode, &g_tab_appearance, &g_tab_appearance_fonts, &cui::prefs::get_text_rendering_tab()};
+static PreferencesTab* g_tabs_appearance[] = {&cui::prefs::g_tab_dark_mode, &cui::prefs::g_tab_appearance,
+    &g_tab_appearance_fonts, &cui::prefs::get_text_rendering_tab()};
 
 // {FA25D859-C808-485d-8AB7-FCC10F29ECE5}
 const GUID g_guid_cfg_child_appearance = {0xfa25d859, 0xc808, 0x485d, {0x8a, 0xb7, 0xfc, 0xc1, 0xf, 0x29, 0xec, 0xe5}};

@@ -1,8 +1,12 @@
 #include "pch.h"
 #include "config.h"
 
-static class TabPlaylistSwitcherDragAndDrop : public PreferencesTab {
-    static bool initialised;
+namespace cui::prefs {
+
+namespace {
+
+class TabPlaylistSwitcherDragAndDrop : public PreferencesTab {
+    inline static bool initialised{};
 
     static void refresh_me(HWND wnd)
     {
@@ -50,10 +54,10 @@ public:
                 cfg_pgenstring = uGetWindowText((HWND)lp);
                 break;
 #if 0
-            case IDC_DROP_NAME:
+        case IDC_DROP_NAME:
                 cfg_pgen_dir = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
-            case IDC_DROP_PLAYLIST:
+        case IDC_DROP_PLAYLIST:
                 cfg_pgen_playlist = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
 #endif
@@ -87,12 +91,16 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
-} g_tab_playlist_dd;
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
+};
 
-bool TabPlaylistSwitcherDragAndDrop::initialised = false;
+TabPlaylistSwitcherDragAndDrop g_tab_playlist_dd;
+
+} // namespace
 
 PreferencesTab* g_get_tab_playlist_dd()
 {
     return &g_tab_playlist_dd;
 }
+
+} // namespace cui::prefs

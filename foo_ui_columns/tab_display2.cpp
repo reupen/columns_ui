@@ -4,7 +4,11 @@
 #include "prefs_utils.h"
 #include "playlist_item_helpers.h"
 
-static class TabPlaylistViewGeneral : public PreferencesTab {
+namespace cui::prefs {
+
+namespace {
+
+class TabPlaylistViewGeneral : public PreferencesTab {
     void refresh_me(HWND wnd)
     {
         SendDlgItemMessage(wnd, IDC_HEADER, BM_SETCHECK, cfg_header, 0);
@@ -35,7 +39,7 @@ public:
     {
         switch (msg) {
         case WM_INITDIALOG: {
-            m_menu_cache = cui::helpers::get_main_menu_items();
+            m_menu_cache = helpers::get_main_menu_items();
 
             uih::enhance_edit_control(wnd, IDC_HEIGHT);
 
@@ -49,16 +53,16 @@ public:
 
             populate_menu_combo(wnd, IDC_PLAYLIST_DOUBLE, IDC_MENU_DESC, cfg_playlist_double, m_menu_cache, true);
 
-            const auto count = cui::playlist_item_helpers::MiddleClickActionManager::get_count();
+            const auto count = playlist_item_helpers::MiddleClickActionManager::get_count();
             for (size_t n = 0; n < count; n++) {
                 uSendDlgItemMessageText(wnd, IDC_PLAYLIST_MIDDLE, CB_ADDSTRING, 0,
-                    cui::playlist_item_helpers::MiddleClickActionManager::g_pma_actions[n].name);
+                    playlist_item_helpers::MiddleClickActionManager::g_pma_actions[n].name);
                 SendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETITEMDATA, n,
-                    cui::playlist_item_helpers::MiddleClickActionManager::g_pma_actions[n].id);
+                    playlist_item_helpers::MiddleClickActionManager::g_pma_actions[n].id);
             }
 
             SendDlgItemMessage(wnd, IDC_PLAYLIST_MIDDLE, CB_SETCURSEL,
-                cui::playlist_item_helpers::MiddleClickActionManager::id_to_idx(cfg_playlist_middle_action), 0);
+                playlist_item_helpers::MiddleClickActionManager::id_to_idx(cfg_playlist_middle_action), 0);
 
             refresh_me(wnd);
             m_initialised = true;
@@ -80,7 +84,7 @@ public:
                     int new_height = GetDlgItemInt(wnd, IDC_HEIGHT, &result, TRUE);
                     if (result)
                         settings::playlist_view_item_padding = new_height;
-                    cui::panels::playlist_view::PlaylistView::g_on_vertical_item_padding_change();
+                    panels::playlist_view::PlaylistView::g_on_vertical_item_padding_change();
                 }
 
             } break;
@@ -93,38 +97,38 @@ public:
             } break;
             case IDC_SELECTION_MODEL:
                 cfg_alternative_sel = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_view::PlaylistView::g_on_alternate_selection_change();
+                panels::playlist_view::PlaylistView::g_on_alternate_selection_change();
                 break;
             case IDC_SORT_ARROWS:
                 cfg_show_sort_arrows = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_view::PlaylistView::g_on_show_sort_indicators_change();
+                panels::playlist_view::PlaylistView::g_on_show_sort_indicators_change();
                 break;
             case IDC_TOOLTIPS_CLIPPED:
                 cfg_tooltips_clipped = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_view::PlaylistView::g_on_show_tooltips_change();
+                panels::playlist_view::PlaylistView::g_on_show_tooltips_change();
                 break;
 
             case IDC_ELLIPSIS:
                 cfg_ellipsis = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_view::PlaylistView::s_redraw_all();
+                panels::playlist_view::PlaylistView::s_redraw_all();
                 break;
 
             case IDC_HEADER: {
                 cfg_header = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_view::PlaylistView::g_on_show_header_change();
+                panels::playlist_view::PlaylistView::g_on_show_header_change();
             } break;
             case IDC_NOHSCROLL: {
                 cfg_nohscroll = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_view::PlaylistView::g_on_autosize_change();
+                panels::playlist_view::PlaylistView::g_on_autosize_change();
             } break;
 
             case IDC_HHTRACK: {
                 cfg_header_hottrack = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_view::PlaylistView::g_on_sorting_enabled_change();
+                panels::playlist_view::PlaylistView::g_on_sorting_enabled_change();
             } break;
             case (CBN_SELCHANGE << 16) | IDC_PLEDGE: {
                 cfg_frame = ComboBox_GetCurSel(reinterpret_cast<HWND>(lp));
-                cui::panels::playlist_view::PlaylistView::g_on_edge_style_change();
+                panels::playlist_view::PlaylistView::g_on_edge_style_change();
             } break;
             case IDC_INLINE_MODE: {
                 main_window::config_set_inline_metafield_edit_mode(SendMessage((HWND)lp, BM_GETCHECK, 0, 0) != 0);
@@ -148,10 +152,16 @@ public:
 private:
     bool m_initialised{};
     std::vector<MenuItemInfo> m_menu_cache;
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
-} g_tab_display2;
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
+};
+
+TabPlaylistViewGeneral g_tab_display2;
+
+} // namespace
 
 PreferencesTab* g_get_tab_display2()
 {
     return &g_tab_display2;
 }
+
+} // namespace cui::prefs

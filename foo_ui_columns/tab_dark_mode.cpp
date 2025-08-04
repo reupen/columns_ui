@@ -5,10 +5,14 @@
 #include "dark_mode.h"
 #include "system_appearance_manager.h"
 
+namespace cui::prefs {
+
 constexpr auto unknown_windows_build_message
     = "Your version of Windows has not been tested for dark mode compatibility. Some dark mode features have been disabled."sv;
 constexpr auto windows_too_old_message = "Dark mode requires Windows 10 version 2004 or newer."sv;
 constexpr auto dark_mode_unavailable_message = "Dark mode is unavailable due to the current system settings."sv;
+
+TabDarkMode g_tab_dark_mode;
 
 bool TabDarkMode::is_active()
 {
@@ -25,8 +29,8 @@ void TabDarkMode::refresh()
     const auto use_system_setting_wnd = GetDlgItem(m_wnd, IDC_DARK_MODE_USE_SYSTEM_SETTING);
     const auto message_wnd = GetDlgItem(m_wnd, IDC_DARK_MODE_MESSAGE);
 
-    const auto has_os_dark_mode_support = cui::dark::does_os_support_dark_mode();
-    const auto is_dark_mode_available = cui::system_appearance_manager::is_dark_mode_available();
+    const auto has_os_dark_mode_support = dark::does_os_support_dark_mode();
+    const auto is_dark_mode_available = system_appearance_manager::is_dark_mode_available();
 
     EnableWindow(disabled_wnd, is_dark_mode_available);
     EnableWindow(enabled_wnd, is_dark_mode_available);
@@ -44,13 +48,13 @@ void TabDarkMode::refresh()
         return;
     }
 
-    if (!cui::dark::are_private_apis_allowed()) {
+    if (!dark::are_private_apis_allowed()) {
         uSetWindowText(message_wnd, unknown_windows_build_message.data());
     } else {
         uSetWindowText(message_wnd, "");
     }
 
-    const auto current_mode = static_cast<cui::colours::DarkModeStatus>(cui::colours::dark_mode_status.get());
+    const auto current_mode = static_cast<colours::DarkModeStatus>(colours::dark_mode_status.get());
 
     Button_SetCheck(disabled_wnd, current_mode == cui::colours::DarkModeStatus::Disabled ? BST_CHECKED : BST_UNCHECKED);
     Button_SetCheck(enabled_wnd, current_mode == cui::colours::DarkModeStatus::Enabled ? BST_CHECKED : BST_UNCHECKED);
@@ -90,13 +94,13 @@ INT_PTR TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         switch (wp) {
         case IDC_DARK_MODE_ENABLED:
-            cui::colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Enabled));
+            colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Enabled));
             return 0;
         case IDC_DARK_MODE_DISABLED:
-            cui::colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Disabled));
+            colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Disabled));
             return 0;
         case IDC_DARK_MODE_USE_SYSTEM_SETTING:
-            cui::colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::UseSystemSetting));
+            colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::UseSystemSetting));
             return 0;
         }
         break;
@@ -104,3 +108,5 @@ INT_PTR TabDarkMode::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     return 0;
 }
+
+} // namespace cui::prefs

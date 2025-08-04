@@ -55,10 +55,10 @@ void preview_to_console(const char* spec, bool extra)
 
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init)
 {
-    COLORREF COLOR = g_last_colour;
-    COLORREF COLORS[16] = {g_last_colour, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    COLORREF COLOR = cui::prefs::g_last_colour;
+    COLORREF COLORS[16] = {cui::prefs::g_last_colour, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     if (init || uChooseColor(&COLOR, parent, &COLORS[0])) {
-        g_last_colour = COLOR;
+        cui::prefs::g_last_colour = COLOR;
 
         pfc::string_formatter text;
         text << "$rgb(" << unsigned(COLOR & 0xff) << "," << unsigned(COLOR >> 8 & 0xff) << ","

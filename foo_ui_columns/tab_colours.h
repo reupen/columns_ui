@@ -3,6 +3,8 @@
 #include "config_appearance.h"
 #include "config.h"
 
+namespace cui::prefs {
+
 class TabColours : public PreferencesTab {
     HWND m_wnd{nullptr};
     HWND m_wnd_colour_scheme{nullptr};
@@ -15,8 +17,8 @@ class TabColours : public PreferencesTab {
     uih::FillWindow g_fill_selection_background_inactive;
     uih::FillWindow g_fill_active_item_frame;
     GUID m_element_guid{};
-    cui::colours::Entry::Ptr m_element_ptr;
-    cui::colours::client::ptr m_element_api;
+    colours::Entry::Ptr m_element_ptr;
+    colours::client::ptr m_element_api;
     ColoursClientList m_colours_client_list;
 
 public:
@@ -30,8 +32,8 @@ public:
     bool is_active();
 
 private:
-    bool get_change_colour_enabled(cui::colours::colour_identifier_t p_identifier);
-    bool get_colour_patch_enabled(cui::colours::colour_identifier_t p_identifier);
+    bool get_change_colour_enabled(colours::colour_identifier_t p_identifier);
+    bool get_colour_patch_enabled(colours::colour_identifier_t p_identifier);
 
     void update_fills();
     void update_buttons();
@@ -40,7 +42,9 @@ private:
 
     void on_colour_changed();
 
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
 
 extern TabColours g_tab_appearance;
+
+} // namespace cui::prefs

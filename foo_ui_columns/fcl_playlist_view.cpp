@@ -151,7 +151,7 @@ class PlaylistViewAppearanceDataSet : public fcl::dataset {
             const auto old_is_dark = colours::is_dark_mode_active();
             colours::dark_mode_status.set(WI_EnumValue(cui::colours::DarkModeStatus::Disabled));
 
-            g_tab_dark_mode.refresh();
+            prefs::g_tab_dark_mode.refresh();
 
             if (old_is_dark == colours::is_dark_mode_active())
                 on_global_colours_change();

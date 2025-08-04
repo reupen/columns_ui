@@ -15,25 +15,25 @@ cfg_int cfg_child_playlist(GUID{0xbc6c99d4, 0x51c1, 0xf76e, {0x10, 0x9c, 0x62, 0
 cui::panels::playlist_view::GroupsPreferencesTab g_tab_grouping;
 
 static PreferencesTab* g_tabs[] = {
-    g_get_tab_main(),
-    g_get_tab_status_bar(),
-    g_get_tab_status_pane(),
-    g_get_tab_system_tray(),
-    g_get_tab_artwork(),
+    cui::prefs::g_get_tab_main(),
+    cui::prefs::g_get_tab_status_bar(),
+    cui::prefs::g_get_tab_status_pane(),
+    cui::prefs::g_get_tab_system_tray(),
+    cui::prefs::g_get_tab_artwork(),
 };
 
 static PreferencesTab* g_tabs_panels[] = {
-    g_get_tab_playlist_switcher(),
-    g_get_tab_playlist_tabs(),
-    g_get_tab_playlist_dd(),
+    cui::prefs::g_get_tab_playlist_switcher(),
+    cui::prefs::g_get_tab_playlist_tabs(),
+    cui::prefs::g_get_tab_playlist_dd(),
 };
 
 static PreferencesTab* g_tabs_playlist_view[] = {
-    g_get_tab_display2(),
-    g_get_tab_pview_artwork(),
+    cui::prefs::g_get_tab_display2(),
+    cui::prefs::g_get_tab_pview_artwork(),
     &g_tab_grouping,
-    &TabColumns::get_instance(),
-    g_get_tab_global(),
+    &cui::prefs::TabColumns::get_instance(),
+    cui::prefs::g_get_tab_global(),
 };
 
 // {DF6B9443-DCC5-4647-8F8C-D685BF25BD09}

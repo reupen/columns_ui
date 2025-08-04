@@ -2,7 +2,9 @@
 #include "playlist_tabs.h"
 #include "config.h"
 
-static class TabPlaylistTabs : public PreferencesTab {
+namespace cui::prefs {
+namespace {
+class TabPlaylistTabs : public PreferencesTab {
 public:
     BOOL ConfigProc(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     {
@@ -12,7 +14,7 @@ public:
             SendDlgItemMessage(wnd, IDC_PLDRAG, BM_SETCHECK, cfg_drag_pl ? BST_CHECKED : BST_UNCHECKED, 0);
             SendDlgItemMessage(wnd, IDC_PLAUTOHIDE, BM_SETCHECK, cfg_pl_autohide ? BST_CHECKED : BST_UNCHECKED, 0);
             SendDlgItemMessage(wnd, IDC_PLAYLIST_TABS_MCLICK, BM_SETCHECK,
-                cui::config::cfg_playlist_tabs_middle_click ? BST_CHECKED : BST_UNCHECKED, 0);
+                config::cfg_playlist_tabs_middle_click ? BST_CHECKED : BST_UNCHECKED, 0);
 
             SendDlgItemMessage(
                 wnd, IDC_TABS_MULTILINE, BM_SETCHECK, cfg_tabs_multiline ? BST_CHECKED : BST_UNCHECKED, 0);
@@ -21,15 +23,14 @@ public:
             switch (wp) {
             case IDC_PLAUTOHIDE:
                 cfg_pl_autohide = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_tabs::g_on_autohide_tabs_change();
+                panels::playlist_tabs::g_on_autohide_tabs_change();
                 break;
             case IDC_PLAYLIST_TABS_MCLICK:
-                cui::config::cfg_playlist_tabs_middle_click
-                    = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+                config::cfg_playlist_tabs_middle_click = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
                 break;
             case IDC_TABS_MULTILINE:
                 cfg_tabs_multiline = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
-                cui::panels::playlist_tabs::g_on_multiline_tabs_change();
+                panels::playlist_tabs::g_on_multiline_tabs_change();
                 break;
             case IDC_MCLICK3:
                 cfg_plm_rename = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
@@ -54,10 +55,16 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
-} g_tab_playlist_tabs;
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
+};
+
+TabPlaylistTabs g_tab_playlist_tabs;
+
+} // namespace
 
 PreferencesTab* g_get_tab_playlist_tabs()
 {
     return &g_tab_playlist_tabs;
 }
+
+} // namespace cui::prefs

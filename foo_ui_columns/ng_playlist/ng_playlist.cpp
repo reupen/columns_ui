@@ -963,7 +963,7 @@ bool PlaylistView::notify_on_contextmenu_header(const POINT& pt, const HDHITTEST
         } else if (cmd == IDM_SEL_DES) {
             sort_by_column(*column_index, true, true);
         } else if (cmd == IDM_EDIT_COLUMN) {
-            TabColumns::get_instance().show_column(column_index_display_to_actual(*column_index));
+            prefs::TabColumns::get_instance().show_column(column_index_display_to_actual(*column_index));
         }
     }
 
