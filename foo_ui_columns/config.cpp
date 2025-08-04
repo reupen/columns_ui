@@ -24,7 +24,7 @@ static PreferencesTab* g_tabs[] = {
 
 static PreferencesTab* g_tabs_panels[] = {
     cui::prefs::g_get_tab_playlist_switcher(),
-    g_get_tab_playlist_tabs(),
+    cui::prefs::g_get_tab_playlist_tabs(),
     cui::prefs::g_get_tab_playlist_dd(),
 };
 
