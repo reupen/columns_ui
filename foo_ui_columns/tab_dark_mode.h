@@ -3,6 +3,8 @@
 
 #include "config.h"
 
+namespace cui::prefs {
+
 class TabDarkMode : public PreferencesTab {
 public:
     INT_PTR on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp);
@@ -16,7 +18,9 @@ public:
 private:
     bool m_is_updating{};
     HWND m_wnd{nullptr};
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
 };
 
 extern TabDarkMode g_tab_dark_mode;
+
+} // namespace cui::prefs
