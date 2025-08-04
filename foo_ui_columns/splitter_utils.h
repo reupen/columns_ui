@@ -23,12 +23,15 @@ void copy_splitter_item_to_clipboard(const SplitterItem* item)
 }
 
 template <typename SplitterItem>
-void copy_splitter_item_to_clipboard_safe(HWND wnd, const SplitterItem* item)
+bool copy_splitter_item_to_clipboard_safe(HWND wnd, const SplitterItem* item, bool is_cut = false)
 {
     try {
         copy_splitter_item_to_clipboard(item);
-    } catch (const exception_io& ex) {
-        dark::modeless_info_box(wnd, "Error – Copy panel", ex.what(), uih::InfoBoxType::Error);
+        return true;
+    } catch (const std::exception& ex) {
+        dark::modeless_info_box(
+            wnd, is_cut ? "Error – Cut panel" : "Error – Copy panel", ex.what(), uih::InfoBoxType::Error);
+        return false;
     }
 }
 

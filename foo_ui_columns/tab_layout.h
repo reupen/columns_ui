@@ -44,7 +44,8 @@ private:
         HWND wnd, const LayoutTabNode::ptr& node, HTREEITEM ti_parent = TVI_ROOT, HTREEITEM ti_after = TVI_LAST);
     void remove_node(HWND wnd, HTREEITEM ti);
     void insert_item(HWND wnd, HTREEITEM ti_parent, const GUID& p_guid, HTREEITEM ti_after = TVI_LAST);
-    void copy_item(HWND wnd, HTREEITEM ti);
+    void copy_item(HWND wnd, HTREEITEM ti) const;
+    void cut_item(HWND wnd, HTREEITEM ti);
     bool _fix_single_instance_recur(uie::splitter_window_ptr& p_window);
 
     /**
