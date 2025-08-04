@@ -26,8 +26,9 @@ extern const GUID filter_header;
 namespace cui::prefs {
 
 PreferencesTab* g_get_tab_display2();
+PreferencesTab* g_get_tab_global();
 
-}
+} // namespace cui::prefs
 
 PreferencesTab* g_get_tab_layout();
 PreferencesTab* g_get_tab_artwork();
@@ -39,7 +40,6 @@ PreferencesTab* g_get_tab_playlist_dd();
 PreferencesTab* g_get_tab_main();
 PreferencesTab* g_get_tab_status_bar();
 PreferencesTab* g_get_tab_status_pane();
-PreferencesTab* g_get_tab_global();
 
 void refresh_appearance_prefs();
 void colour_code_gen(HWND parent, UINT edit, bool markers, bool init);

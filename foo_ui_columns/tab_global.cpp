@@ -2,11 +2,14 @@
 #include "ng_playlist/ng_playlist.h"
 #include "config.h"
 #include "help.h"
-#include "prefs_utils.h"
 
 extern const char* default_global_style_script;
 
-static cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}}, 0);
+namespace cui::prefs {
+
+namespace {
+
+cfg_int g_cur_tab2(GUID{0x5fb6e011, 0x1ead, 0x49fe, {0x45, 0x32, 0x1c, 0x8a, 0x61, 0x01, 0x91, 0x2b}}, 0);
 
 class TabGlobal : public PreferencesTab {
 public:
@@ -75,7 +78,7 @@ public:
         case WM_DESTROY: {
             g_editor_font_notify.release();
             save_string(wnd);
-            cui::panels::playlist_view::PlaylistView::s_update_all_items();
+            panels::playlist_view::PlaylistView::s_update_all_items();
         } break;
 
         case WM_COMMAND:
@@ -116,15 +119,15 @@ public:
                 if (cmd == IDM_TFHELP) {
                     standard_commands::main_titleformat_help();
                 } else if (cmd == IDM_STYLE_HELP) {
-                    cui::help::open_colour_script_help(GetParent(wnd));
+                    help::open_colour_script_help(GetParent(wnd));
                 } else if (cmd == IDM_GLOBALS_HELP) {
-                    cui::help::open_global_variables_help(GetParent(wnd));
+                    help::open_global_variables_help(GetParent(wnd));
                 } else if (cmd == IDM_SPEEDTEST) {
                     speedtest(g_columns, cfg_global != 0);
                 } else if (cmd == IDM_PREVIEW) {
                     preview_to_console(uGetDlgItemText(wnd, IDC_STRING), g_cur_tab2 != 0 && cfg_global);
                 } else if (cmd == IDM_EDITORFONT) {
-                    auto font_description = cui::fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
+                    auto font_description = fonts::select_font(GetParent(wnd), cfg_editor_font->log_font);
                     if (font_description) {
                         cfg_editor_font = *font_description;
                         g_editor_font_notify.on_change();
@@ -133,7 +136,7 @@ public:
                     cfg_colour = default_global_style_script;
                     if (g_cur_tab2 == 1)
                         uSendDlgItemMessageText(wnd, IDC_STRING, WM_SETTEXT, 0, cfg_colour);
-                    cui::panels::playlist_view::PlaylistView::s_update_all_items();
+                    panels::playlist_view::PlaylistView::s_update_all_items();
                 }
             }
 
@@ -143,7 +146,7 @@ public:
                 break;
             case IDC_APPLY:
                 save_string(wnd);
-                cui::panels::playlist_view::PlaylistView::s_update_all_items();
+                panels::playlist_view::PlaylistView::s_update_all_items();
                 break;
             case IDC_PICK_COLOUR:
                 colour_code_gen(wnd, IDC_COLOUR, false, false);
@@ -165,10 +168,16 @@ public:
     }
 
 private:
-    cui::prefs::PreferencesTabHelper m_helper{{IDC_TITLE1}};
-} g_tab_global;
+    PreferencesTabHelper m_helper{{IDC_TITLE1}};
+};
+
+TabGlobal g_tab_global;
+
+} // namespace
 
 PreferencesTab* g_get_tab_global()
 {
     return &g_tab_global;
 }
+
+} // namespace cui::prefs

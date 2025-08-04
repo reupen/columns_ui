@@ -33,7 +33,7 @@ static PreferencesTab* g_tabs_playlist_view[] = {
     g_get_tab_pview_artwork(),
     &g_tab_grouping,
     &TabColumns::get_instance(),
-    g_get_tab_global(),
+    cui::prefs::g_get_tab_global(),
 };
 
 // {DF6B9443-DCC5-4647-8F8C-D685BF25BD09}
