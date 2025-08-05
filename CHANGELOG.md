@@ -38,6 +38,10 @@
   This requires main menu commands to implement the `mainmenu_commands_v3`
   service interface in the foobar2000 SDK.
 
+- The Artwork view now has a ‘Show in File Explorer’ context menu item and click
+  action that shows the file containing the displayed image in File Explorer.
+  [[#1307](https://github.com/reupen/columns_ui/pull/1307)]
+
 - A ‘Cut panel’ command was added to the Layout tree context menu in
   Preferences. [#1302](https://github.com/reupen/columns_ui/pull/1302)
 

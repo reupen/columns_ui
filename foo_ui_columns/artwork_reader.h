@@ -25,6 +25,7 @@ public:
 
     ArtworkReaderStatus status() const;
     const std::unordered_map<GUID, album_art_data_ptr>& get_artwork_data() const;
+    const std::unordered_map<GUID, album_art_path_list::ptr>& get_artwork_paths() const;
     const std::unordered_map<GUID, album_art_data_ptr>& get_stub_images() const;
     void set_image(GUID artwork_type_id, album_art_data_ptr data);
 
@@ -58,6 +59,7 @@ private:
     std::vector<GUID> m_artwork_type_ids;
     std::unordered_map<GUID, album_art_data_ptr> m_previous_artwork_data;
     std::unordered_map<GUID, album_art_data_ptr> m_artwork_data;
+    std::unordered_map<GUID, album_art_path_list::ptr> m_artwork_paths;
     std::unordered_map<GUID, album_art_data_ptr> m_stub_images;
     ArtworkReaderStatus m_status{ArtworkReaderStatus::Pending};
     bool m_is_from_playback{};
@@ -78,6 +80,7 @@ public:
     void abort_current_task();
 
     album_art_data_ptr get_image(const GUID& p_what) const;
+    album_art_path_list::ptr get_paths(GUID artwork_type_id) const;
     album_art_data_ptr get_stub_image(GUID artwork_type_id);
 
     void deinitialise();

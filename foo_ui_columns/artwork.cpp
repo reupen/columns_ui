@@ -92,6 +92,22 @@ int compute_intersection_area(RECT left, RECT right)
         * std::max(0l, std::min(left.bottom, right.bottom) - std::max(left.top, right.top));
 }
 
+bool can_open_path_in_explorer(const char* path)
+{
+    if (filesystem::g_is_remote_or_unrecognized(path))
+        return false;
+
+    if (!archive_impl::g_is_unpack_path(path))
+        return true;
+
+    pfc::string8 archive_path;
+    pfc::string8 archive_item_path;
+    if (!archive_impl::g_parse_unpack_path(path, archive_path, archive_item_path))
+        return false;
+
+    return !filesystem::g_is_remote_or_unrecognized(archive_path);
+}
+
 } // namespace
 
 // {005C7B29-3915-4b83-A283-C01A4EDC4F3A}
@@ -162,6 +178,12 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
         p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Open in pop-up viewer",
             "Opens the image in the foobar2000 picture viewer.", 0,
             [this, self = ptr{this}] { open_core_image_viewer(); })));
+    }
+
+    if (is_show_in_file_explorer_available()) {
+        p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Show in File Explorer",
+            "Show and select the file that is the source of the displayed image in File Explorer.", 0,
+            [this, self = ptr{this}] { show_in_file_explorer(); })));
     }
 
     p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node(
@@ -285,6 +307,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         play_callback_manager::get()->unregister_callback(this);
         now_playing_album_art_notify_manager::get()->remove(this);
         m_selection_handles.remove_all();
+        m_show_in_explorer_thread.reset();
         m_artwork_decoder.shut_down();
         if (m_artwork_reader)
             m_artwork_reader->deinitialise();
@@ -334,6 +357,9 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         switch (static_cast<ClickAction>(click_action.get())) {
         case ClickAction::open_image_viewer:
             open_core_image_viewer();
+            break;
+        case ClickAction::show_in_file_explorer:
+            show_in_file_explorer();
             break;
         case ClickAction::show_next_artwork_type:
             show_next_artwork_type();
@@ -792,6 +818,64 @@ void ArtworkPanel::open_core_image_viewer() const
     if (fb2k::imageViewer::ptr api; fb2k::imageViewer::tryGet(api)) {
         api->show(GetParent(get_wnd()), data);
     }
+}
+bool ArtworkPanel::is_show_in_file_explorer_available() const
+{
+    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const auto paths = m_artwork_reader->get_paths(artwork_type_id);
+
+    return !m_show_in_explorer_thread && paths.is_valid() && paths->get_count() > 0
+        && can_open_path_in_explorer(paths->get_path(0));
+}
+
+void ArtworkPanel::show_in_file_explorer()
+{
+    if (m_show_in_explorer_thread)
+        return;
+
+    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const auto paths = m_artwork_reader->get_paths(artwork_type_id);
+
+    if (!paths.is_valid() || paths->get_count() == 0)
+        return;
+
+    const auto path = paths->get_path(0);
+
+    if (!can_open_path_in_explorer(path))
+        return;
+
+    m_show_in_explorer_thread = std::jthread([this, self{ptr{this}}, path{std::string{path}}] {
+        (void)mmh::set_thread_description(GetCurrentThread(), L"[Columns UI] Show in Explorer");
+
+        auto scope_exit
+            = wil::scope_exit([&] { fb2k::inMainThread([this, self] { m_show_in_explorer_thread.reset(); }); });
+
+        try {
+            pfc::string8 native_path_utf8;
+
+            if (!filesystem::g_get_native_path(path.c_str(), native_path_utf8)) {
+                if (!archive_impl::g_is_unpack_path(path.c_str()))
+                    return;
+
+                pfc::string8 archive_path;
+                pfc::string8 archive_item_path;
+                if (!archive_impl::g_parse_unpack_path(path.c_str(), archive_path, archive_item_path))
+                    return;
+
+                native_path_utf8.reset();
+                if (!filesystem::g_get_native_path(archive_path.c_str(), native_path_utf8))
+                    return;
+            }
+
+            const auto native_path = mmh::to_utf16(native_path_utf8.c_str());
+
+            auto _ = wil::CoInitializeEx(COINIT_MULTITHREADED);
+            wil::unique_any<PIDLIST_ABSOLUTE, decltype(&CoTaskMemFree), CoTaskMemFree> shell_path;
+            THROW_IF_FAILED(SHParseDisplayName(native_path.c_str(), nullptr, &shell_path, 0, nullptr));
+            THROW_IF_FAILED(SHOpenFolderAndSelectItems(shell_path.get(), 0, nullptr, 0));
+        }
+        CATCH_LOG()
+    });
 }
 
 void ArtworkPanel::show_next_artwork_type()
