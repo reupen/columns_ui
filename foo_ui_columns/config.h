@@ -100,7 +100,6 @@ namespace cui::prefs {
 PreferencesTab* g_get_tab_artwork();
 PreferencesTab* g_get_tab_display2();
 PreferencesTab* g_get_tab_global();
-PreferencesTab* g_get_tab_main();
 PreferencesTab* g_get_tab_playlist_dd();
 PreferencesTab* g_get_tab_playlist_switcher();
 PreferencesTab* g_get_tab_playlist_tabs();

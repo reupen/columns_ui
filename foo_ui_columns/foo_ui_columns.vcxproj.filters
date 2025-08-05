@@ -199,7 +199,7 @@
     <ClCompile Include="tab_playlist_dd.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
-    <ClCompile Include="tab_main.cpp">
+    <ClCompile Include="tab_main_window.cpp">
       <Filter>Config UI</Filter>
     </ClCompile>
     <ClCompile Include="tab_system_tray.cpp">
@@ -644,6 +644,9 @@
     <ClCompile Include="d2d_utils.cpp">
       <Filter>Utilities</Filter>
     </ClCompile>
+    <ClCompile Include="tab_setup.cpp">
+      <Filter>Config UI</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -956,6 +959,12 @@
     </ClInclude>
     <ClInclude Include="d2d_utils.h">
       <Filter>Utilities</Filter>
+    </ClInclude>
+    <ClInclude Include="tab_main_window.h">
+      <Filter>Config UI</Filter>
+    </ClInclude>
+    <ClInclude Include="tab_setup.h">
+      <Filter>Config UI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

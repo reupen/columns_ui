@@ -169,24 +169,21 @@ BEGIN
     PUSHBUTTON      "Apply",IDC_APPLY,7,251,55,14
 END
 
-IDD_PREFS_MAIN DIALOGEX 0, 0, 327, 271
+IDD_PREFS_MAIN_WINDOW DIALOGEX 0, 0, 327, 271
 STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
 EXSTYLE WS_EX_CONTROLPARENT
 FONT 8, "MS Shell Dlg", 400, 0, 0x0
 BEGIN
-    LTEXT           "Set-up",IDC_TITLE1,7,4,313,16
-    PUSHBUTTON      "Quick set-up",IDC_QUICKSETUP,7,29,107,14
-    PUSHBUTTON      "Import configuration...",IDC_FCL_IMPORT,7,53,107,14
-    PUSHBUTTON      "Export configuration...",IDC_FCL_EXPORT,7,77,107,14
-    LTEXT           "Miscellaneous",IDC_TITLE2,7,107,313,14
-    CONTROL         "Use transparency, opacity",IDC_USE_TRANSPARENCY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,130,100,10
-    EDITTEXT        IDC_TRANSPARENCY_LEVEL,108,129,31,12,ES_AUTOHSCROLL
-    CONTROL         "",IDC_TRANSPARENCY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,140,129,11,10
-    LTEXT           "Main window title formatting script",IDC_STATIC,7,148,118,8
-    EDITTEXT        IDC_STRING,7,158,313,52,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
-    CONTROL         "Show toolbars",IDC_TOOLBARS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,219,64,10
-    LTEXT           "Before hiding the toolbars, ensure you have an alternative way of accessing preferences.",IDC_STATIC,7,232,299,8
-    PUSHBUTTON      "Reset toolbars",IDC_RESET_TOOLBARS,7,250,107,14
+    LTEXT           "Main window",IDC_TITLE1,7,4,313,14
+    CONTROL         "Use transparency, opacity",IDC_USE_TRANSPARENCY,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,29,100,10
+    EDITTEXT        IDC_TRANSPARENCY_LEVEL,108,28,31,12,ES_AUTOHSCROLL
+    CONTROL         "",IDC_TRANSPARENCY_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS | UDS_NOTHOUSANDS,140,28,12,10
+    LTEXT           "Main window title formatting script",IDC_STATIC,7,47,118,8
+    EDITTEXT        IDC_STRING,7,59,313,64,ES_MULTILINE | ES_AUTOVSCROLL | ES_WANTRETURN | WS_VSCROLL
+    LTEXT           "Toolbars",IDC_TITLE2,7,145,313,14
+    CONTROL         "Show toolbars",IDC_TOOLBARS,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,169,64,10
+    LTEXT           "Before hiding the toolbars, ensure you have an alternative way of accessing preferences.",IDC_STATIC,7,185,299,8
+    PUSHBUTTON      "Reset toolbars",IDC_RESET_TOOLBARS,7,205,107,14
 END
 
 IDD_SPECTRUM_ANALYSER_OPTIONS DIALOGEX 0, 0, 202, 145
@@ -772,6 +769,17 @@ BEGIN
     PUSHBUTTON      "Close",IDCANCEL,136,206,50,14
 END
 
+IDD_PREFS_SETUP DIALOGEX 0, 0, 327, 271
+STYLE DS_SETFONT | DS_FIXEDSYS | WS_CHILD
+EXSTYLE WS_EX_CONTROLPARENT
+FONT 8, "MS Shell Dlg", 400, 0, 0x0
+BEGIN
+    LTEXT           "Setup",IDC_TITLE1,7,4,313,16
+    PUSHBUTTON      "Quick setup",IDC_QUICKSETUP,7,31,107,14
+    PUSHBUTTON      "Import configuration...",IDC_FCL_IMPORT,7,55,107,14
+    PUSHBUTTON      "Export configuration...",IDC_FCL_EXPORT,7,79,107,14
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -829,7 +837,7 @@ BEGIN
         BOTTOMMARGIN, 265
     END
 
-    IDD_PREFS_MAIN, DIALOG
+    IDD_PREFS_MAIN_WINDOW, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 320
@@ -1096,6 +1104,14 @@ BEGIN
         RIGHTMARGIN, 186
         TOPMARGIN, 7
         BOTTOMMARGIN, 220
+    END
+
+    IDD_PREFS_SETUP, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 320
+        TOPMARGIN, 4
+        BOTTOMMARGIN, 264
     END
 END
 #endif    // APSTUDIO_INVOKED
