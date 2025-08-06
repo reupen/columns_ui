@@ -5,6 +5,8 @@
 
 #include "config.h"
 #include "config_columns_v2.h"
+#include "tab_main_window.h"
+#include "tab_setup.h"
 
 cui::fonts::ConfigFontDescription cfg_editor_font(
     GUID{0xd429d322, 0xd236, 0x7356, {0x33, 0x25, 0x4b, 0x67, 0xc5, 0xd4, 0x50, 0x3e}}, {get_menu_font()});
@@ -15,7 +17,8 @@ cfg_int cfg_child_playlist(GUID{0xbc6c99d4, 0x51c1, 0xf76e, {0x10, 0x9c, 0x62, 0
 cui::panels::playlist_view::GroupsPreferencesTab g_tab_grouping;
 
 static PreferencesTab* g_tabs[] = {
-    cui::prefs::g_get_tab_main(),
+    &cui::prefs::get_setup_tab(),
+    &cui::prefs::get_main_window_tab(),
     cui::prefs::g_get_tab_status_bar(),
     cui::prefs::g_get_tab_status_pane(),
     cui::prefs::g_get_tab_system_tray(),

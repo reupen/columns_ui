@@ -1,7 +1,9 @@
 #include "pch.h"
 #include "item_details.h"
 
+#include "d2d_utils.h"
 #include "item_details_text.h"
+#include "tab_setup.h"
 
 namespace cui::panels::item_details {
 
@@ -586,15 +588,34 @@ void ItemDetails::update_now()
 
 void ItemDetails::create_d2d_render_target()
 {
-    if (!m_d2d_context)
-        m_d2d_context = uih::d2d::Context::s_create();
+    if (!m_d2d_factory)
+        m_d2d_factory = d2d::create_main_thread_factory();
 
-    if (!m_d2d_render_target)
-        m_d2d_render_target = m_d2d_context->create_hwnd_render_target(get_wnd());
+    if (!m_d2d_render_target) {
+        RECT rect{};
+        GetClientRect(get_wnd(), &rect);
+
+        const auto size
+            = D2D1::SizeU(gsl::narrow<unsigned>(wil::rect_width(rect)), gsl::narrow<unsigned>(wil::rect_height(rect)));
+        const auto render_target_type
+            = config::use_hardware_acceleration ? D2D1_RENDER_TARGET_TYPE_DEFAULT : D2D1_RENDER_TARGET_TYPE_SOFTWARE;
+
+        THROW_IF_FAILED((*m_d2d_factory)
+                ->CreateHwndRenderTarget(D2D1::RenderTargetProperties(render_target_type),
+                    D2D1::HwndRenderTargetProperties(get_wnd(), size), &m_d2d_render_target));
+    }
 
     const auto& rendering_params = m_text_layout->rendering_params();
     m_d2d_render_target->SetTextRenderingParams(rendering_params->get(get_wnd()).get());
     m_d2d_render_target->SetTextAntialiasMode(rendering_params->d2d_text_antialiasing_mode());
+}
+
+void ItemDetails::reset_d2d_device_resources()
+{
+    m_d2d_render_target.reset();
+    m_d2d_text_brush.reset();
+    m_d2d_brush_cache.clear();
+    m_text_layout.reset();
 }
 
 void ItemDetails::invalidate_all(bool b_update)
@@ -688,6 +709,11 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
         metadb_io_v3::get()->register_callback(this);
 
+        m_use_hardware_acceleration_change_token = prefs::add_use_hardware_acceleration_changed_handler([this] {
+            reset_d2d_device_resources();
+            invalidate_all();
+        });
+
         try {
             m_direct_write_context = uih::direct_write::Context::s_create();
         }
@@ -712,6 +738,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (s_windows.empty())
             s_destroy_message_window();
 
+        m_use_hardware_acceleration_change_token.reset();
         play_callback_manager::get()->unregister_callback(this);
         metadb_io_v3::get()->unregister_callback(this);
         playlist_manager_v3::get()->unregister_callback(this);
@@ -729,7 +756,7 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         m_d2d_render_target.reset();
         m_d2d_text_brush.reset();
         m_d2d_brush_cache.clear();
-        m_d2d_context.reset();
+        m_d2d_factory.reset();
         break;
     }
     case WM_SETFOCUS:
@@ -835,6 +862,13 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_ERASEBKGND:
         return TRUE;
     case WM_PAINT: {
+        update_display_info();
+
+        if (!m_text_layout || !m_text_rect) {
+            ValidateRect(wnd, nullptr);
+            return 0;
+        }
+
         SCROLLINFO siv{};
         siv.cbSize = sizeof(siv);
         siv.fMask = SIF_POS | SIF_RANGE | SIF_PAGE;
@@ -844,65 +878,58 @@ LRESULT ItemDetails::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         colours::helper p_helper(g_guid_item_details_colour_client);
 
-        update_display_info();
-
         RECT rc_client;
         GetClientRect(wnd, &rc_client);
 
         const auto background_colour = p_helper.get_colour(colours::colour_background);
         const auto text_colour = p_helper.get_colour(colours::colour_text);
 
-        if (m_text_layout && m_text_rect) {
-            const auto is_horizontal_scroll_bar_visible
-                = m_hscroll && !m_word_wrapping && (sih.nMax - sih.nMin - 1) > gsl::narrow_cast<int>(sih.nPage);
-            const auto is_vertical_scroll_bar_visible = (siv.nMax - siv.nMin - 1) > gsl::narrow_cast<int>(siv.nPage);
-            const auto padding = gsl::narrow_cast<float>(s_get_padding());
-            const auto x_offset = uih::direct_write::px_to_dip(
-                gsl::narrow_cast<float>(is_horizontal_scroll_bar_visible ? -sih.nPos : 0) + padding);
-            const auto y_offset = uih::direct_write::px_to_dip(
-                gsl::narrow_cast<float>(is_vertical_scroll_bar_visible ? -siv.nPos : 0) + padding);
+        const auto is_horizontal_scroll_bar_visible
+            = m_hscroll && !m_word_wrapping && (sih.nMax - sih.nMin - 1) > gsl::narrow_cast<int>(sih.nPage);
+        const auto is_vertical_scroll_bar_visible = (siv.nMax - siv.nMin - 1) > gsl::narrow_cast<int>(siv.nPage);
+        const auto padding = gsl::narrow_cast<float>(s_get_padding());
+        const auto x_offset = uih::direct_write::px_to_dip(
+            gsl::narrow_cast<float>(is_horizontal_scroll_bar_visible ? -sih.nPos : 0) + padding);
+        const auto y_offset = uih::direct_write::px_to_dip(
+            gsl::narrow_cast<float>(is_vertical_scroll_bar_visible ? -siv.nPos : 0) + padding);
 
-            try {
-                create_d2d_render_target();
+        try {
+            create_d2d_render_target();
 
-                const auto context_1 = m_d2d_render_target.try_query<ID2D1DeviceContext1>();
+            const auto context_1 = m_d2d_render_target.try_query<ID2D1DeviceContext1>();
 
-                if (!m_d2d_text_brush) {
-                    const auto d2d_text_colour = uih::d2d::colorref_to_d2d_color(text_colour);
-                    THROW_IF_FAILED(m_d2d_render_target->CreateSolidColorBrush(d2d_text_colour, &m_d2d_text_brush));
-                }
-
-                const auto d2d_background_colour = uih::d2d::colorref_to_d2d_color(background_colour);
-
-                m_d2d_render_target->BeginDraw();
-
-                m_d2d_render_target->Clear(d2d_background_colour);
-
-                const auto use_colour_glyphs = m_text_layout->rendering_params()->use_colour_glyphs();
-
-                m_d2d_render_target->DrawTextLayout({x_offset, y_offset}, m_text_layout->text_layout().get(),
-                    m_d2d_text_brush.get(),
-                    use_colour_glyphs && context_1 ? D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT
-                                                   : D2D1_DRAW_TEXT_OPTIONS_NONE);
-
-                const auto result = m_d2d_render_target->EndDraw();
-
-                if (result == D2DERR_RECREATE_TARGET) {
-                    m_d2d_render_target.reset();
-                    m_d2d_text_brush.reset();
-                    m_d2d_brush_cache.clear();
-                    m_text_layout.reset();
-                    return 0;
-                }
-
-                THROW_IF_FAILED(result);
-
-                ValidateRect(wnd, nullptr);
+            if (!m_d2d_text_brush) {
+                const auto d2d_text_colour = uih::d2d::colorref_to_d2d_color(text_colour);
+                THROW_IF_FAILED(m_d2d_render_target->CreateSolidColorBrush(d2d_text_colour, &m_d2d_text_brush));
             }
-            CATCH_LOG()
+
+            const auto d2d_background_colour = uih::d2d::colorref_to_d2d_color(background_colour);
+
+            m_d2d_render_target->BeginDraw();
+
+            m_d2d_render_target->Clear(d2d_background_colour);
+
+            const auto use_colour_glyphs = m_text_layout->rendering_params()->use_colour_glyphs();
+
+            m_d2d_render_target->DrawTextLayout({x_offset, y_offset}, m_text_layout->text_layout().get(),
+                m_d2d_text_brush.get(),
+                use_colour_glyphs && context_1 ? D2D1_DRAW_TEXT_OPTIONS_ENABLE_COLOR_FONT
+                                               : D2D1_DRAW_TEXT_OPTIONS_NONE);
+
+            const auto result = m_d2d_render_target->EndDraw();
+
+            if (result == D2DERR_RECREATE_TARGET) {
+                reset_d2d_device_resources();
+                return 0;
+            }
+
+            THROW_IF_FAILED(result);
         }
-    }
+        CATCH_LOG()
+
+        ValidateRect(wnd, nullptr);
         return 0;
+    }
     }
     return DefWindowProc(wnd, msg, wp, lp);
 }

@@ -4,7 +4,7 @@ class PreferencesTab {
 public:
     virtual HWND create(HWND wnd) = 0;
     virtual const char* get_name() = 0;
-    virtual bool get_help_url(pfc::string_base& p_out) = 0;
+    virtual bool get_help_url(pfc::string_base& p_out) { return false; }
 };
 
 namespace cui::prefs {

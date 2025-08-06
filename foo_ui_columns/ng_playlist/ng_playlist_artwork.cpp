@@ -310,16 +310,7 @@ ArtworkRenderingContext::Ptr ArtworkRenderingContext::s_create(unsigned width, u
     constexpr std::array feature_levels
         = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
 
-    wil::com_ptr<ID3D11Device> d3d_device;
-    try {
-        // Prefer a WARP renderer, it has more consistent performance here
-        THROW_IF_FAILED(d3d::create_d3d_device(D3D_DRIVER_TYPE_WARP, feature_levels, &d3d_device));
-    } catch (const wil::ResultException&) {
-        THROW_IF_FAILED(d3d::create_d3d_device(D3D_DRIVER_TYPE_HARDWARE, feature_levels, &d3d_device));
-        console::print(
-            "Playlist view artwork – failed to create a software (WARP) renderer, using a hardware renderer instead");
-    }
-
+    const auto d3d_device = d3d::create_d3d_device(feature_levels);
     const auto d2d_factory = d2d::create_factory(D2D1_FACTORY_TYPE_SINGLE_THREADED);
     const auto dxgi_device = d3d_device.query<IDXGIDevice1>();
 

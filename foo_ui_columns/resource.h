@@ -4,7 +4,7 @@
 //
 #define IDC_TOOLS                       3
 #define IDC_ADD                         4
-#define IDD_PREFS_MAIN                  101
+#define IDD_PREFS_MAIN_WINDOW           101
 #define IDD_PREFS_PVIEW_GLOBALS         102
 #define IDC_PICK                        102
 #define IDD_BUTTONS_OPTIONS             105
@@ -96,6 +96,7 @@
 #define IDD_PREFS_TEXT_RENDERING        237
 #define IDD_FONT_AXES                   238
 #define IDD_ITEM_DETAILS_PICK_FONT      239
+#define IDD_PREFS_SETUP                 240
 #define IDC_INFOSECTIONS                1003
 #define IDC_STRING                      1006
 #define IDC_COLOUR                      1007
@@ -305,8 +306,8 @@
 #define IDC_AXIS_VALUE_SPIN             1201
 #define IDC_AXIS_RANGE                  1202
 #define IDC_SET_FORMAT_SNIPPET          1203
-#define IDC_TEXT_RENDERING_NOTES        1204
 #define IDC_USE_ADVANCED_COLOUR         1205
+#define IDC_HARDWARE_ACCELERATION       1207
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -316,7 +317,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1206
+#define _APS_NEXT_CONTROL_VALUE         1208
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

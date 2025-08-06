@@ -44,7 +44,7 @@ private:
     uih::Trackbar m_child;
     SeekBarTrackbarCallback m_track_bar_host;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
-    std::unique_ptr<EventToken> m_modern_colours_changed_token;
+    EventToken::Ptr m_modern_colours_changed_token;
 };
 
 } // namespace cui::toolbars::seekbar
