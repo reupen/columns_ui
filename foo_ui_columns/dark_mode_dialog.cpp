@@ -33,7 +33,7 @@ private:
     wil::unique_hbrush m_edit_background_brush;
     wil::unique_htheme m_button_theme;
     DialogDarkModeConfig m_config;
-    std::unique_ptr<EventToken> m_dark_mode_status_callback;
+    EventToken::Ptr m_dark_mode_status_callback;
 };
 
 void DialogDarkModeHelper::set_tree_view_theme(auto&& ids, bool is_dark) const

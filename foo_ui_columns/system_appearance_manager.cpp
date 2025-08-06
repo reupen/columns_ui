@@ -15,8 +15,8 @@ using namespace winrt::Windows::UI::ViewManagement;
 std::optional<ModernColours> modern_colours_cached;
 bool modern_colours_fetch_attempted{};
 std::optional<bool> dark_mode_available_cached;
-std::vector<std::shared_ptr<ModernColoursChangedHandler>> modern_colours_changed_callbacks;
-std::vector<std::shared_ptr<DisplayChangedHandler>> display_changed_callbacks;
+std::vector<std::shared_ptr<GenericEventHandler>> modern_colours_changed_callbacks;
+std::vector<std::shared_ptr<GenericEventHandler>> display_changed_callbacks;
 std::optional<bool> cleartype_enabled_cached;
 std::optional<bool> font_smoothing_enabled_cached;
 
@@ -363,40 +363,16 @@ std::optional<ModernColours> get_modern_colours()
     return modern_colours_cached;
 }
 
-struct ModernColoursChangedToken : EventToken {
-    explicit ModernColoursChangedToken(std::shared_ptr<ModernColoursChangedHandler> event_handler_ptr)
-        : m_event_handler_ptr(std::move(event_handler_ptr))
-    {
-    }
-    ~ModernColoursChangedToken() override { std::erase(modern_colours_changed_callbacks, m_event_handler_ptr); }
-    std::shared_ptr<ModernColoursChangedHandler> m_event_handler_ptr;
-};
-
-struct DisplayChangedToken : EventToken {
-    explicit DisplayChangedToken(std::shared_ptr<DisplayChangedHandler> event_handler_ptr)
-        : m_event_handler_ptr(std::move(event_handler_ptr))
-    {
-    }
-    ~DisplayChangedToken() override { std::erase(display_changed_callbacks, m_event_handler_ptr); }
-    std::shared_ptr<DisplayChangedHandler> m_event_handler_ptr;
-};
-
-std::unique_ptr<EventToken> add_modern_colours_change_handler(ModernColoursChangedHandler event_handler)
+EventToken::Ptr add_modern_colours_change_handler(GenericEventHandler event_handler)
 {
     initialise();
-
-    auto event_handler_ptr = std::make_shared<ModernColoursChangedHandler>(std::move(event_handler));
-    modern_colours_changed_callbacks.emplace_back(event_handler_ptr);
-    return {std::make_unique<ModernColoursChangedToken>(event_handler_ptr)};
+    return make_event_token(modern_colours_changed_callbacks, std::move(event_handler));
 }
 
-std::unique_ptr<EventToken> add_display_changed_handler(DisplayChangedHandler event_handler)
+EventToken::Ptr add_display_changed_handler(GenericEventHandler event_handler)
 {
     initialise();
-
-    auto event_handler_ptr = std::make_shared<DisplayChangedHandler>(std::move(event_handler));
-    display_changed_callbacks.emplace_back(event_handler_ptr);
-    return {std::make_unique<DisplayChangedToken>(event_handler_ptr)};
+    return make_event_token(display_changed_callbacks, std::move(event_handler));
 }
 
 bool is_dark_mode_available()

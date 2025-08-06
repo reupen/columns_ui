@@ -63,7 +63,7 @@ bool is_active_ui_dark(bool allow_cui_fallback)
     return allow_cui_fallback && main_window.get_wnd() && colours::is_dark_mode_active();
 }
 
-std::unique_ptr<EventToken> add_status_callback(std::function<void()> callback, bool allow_cui_fallback)
+EventToken::Ptr add_status_callback(std::function<void()> callback, bool allow_cui_fallback)
 {
     return std::make_unique<DarkModeStatusChangedToken>(std::move(callback), allow_cui_fallback);
 }
