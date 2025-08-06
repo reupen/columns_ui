@@ -5,6 +5,7 @@
 #include "d2d_utils.h"
 #include "d3d_utils.h"
 #include "imaging.h"
+#include "tab_setup.h"
 
 namespace cui::artwork_panel {
 
@@ -297,10 +298,16 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         m_display_change_token = system_appearance_manager::add_display_changed_handler(
             [wnd] { PostMessage(wnd, MSG_REFRESH_EFFECTS, 0, 0); });
+
+        m_use_hardware_acceleration_change_token = prefs::add_use_hardware_acceleration_changed_handler([&] {
+            reset_d2d_device_resources();
+            refresh_image();
+        });
         break;
     }
     case WM_DESTROY:
         std::erase(g_windows, this);
+        m_use_hardware_acceleration_change_token.reset();
         m_display_change_token.reset();
         ui_selection_manager::get()->unregister_callback(this);
         playlist_manager_v3::get()->unregister_callback(this);
@@ -504,15 +511,7 @@ void ArtworkPanel::create_d2d_device_resources()
             constexpr std::array feature_levels
                 = {D3D_FEATURE_LEVEL_11_1, D3D_FEATURE_LEVEL_11_0, D3D_FEATURE_LEVEL_10_1, D3D_FEATURE_LEVEL_10_0};
 
-            try {
-                THROW_IF_FAILED(d3d::create_d3d_device(
-                    D3D_DRIVER_TYPE_HARDWARE, feature_levels, &m_d3d_device, &m_d3d_device_context));
-            } catch (const wil::ResultException&) {
-                THROW_IF_FAILED(
-                    d3d::create_d3d_device(D3D_DRIVER_TYPE_WARP, feature_levels, &m_d3d_device, &m_d3d_device_context));
-                console::print(
-                    "Artwork view – failed to create a hardware renderer, using a software (WARP) renderer instead");
-            }
+            m_d3d_device = d3d::create_d3d_device(feature_levels, &m_d3d_device_context);
         }
 
         if (!m_d2d_factory)

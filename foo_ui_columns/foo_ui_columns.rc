@@ -778,6 +778,10 @@ BEGIN
     PUSHBUTTON      "Quick setup",IDC_QUICKSETUP,7,31,107,14
     PUSHBUTTON      "Import configuration...",IDC_FCL_IMPORT,7,55,107,14
     PUSHBUTTON      "Export configuration...",IDC_FCL_EXPORT,7,79,107,14
+    LTEXT           "Hardware acceleration",IDC_TITLE2,7,114,313,14
+    CONTROL         "Allow Direct2D hardware acceleration in built-in panels",IDC_HARDWARE_ACCELERATION,
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,141,313,10
+    LTEXT           "This option affects only the artwork view, artwork in the playlist view, and Item details.",IDC_STATIC,7,157,313,15
 END
 
 

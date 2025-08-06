@@ -493,6 +493,7 @@ private:
     void notify_on_menu_select(WPARAM wp, LPARAM lp) override;
 
 private:
+    EventToken::Ptr m_use_hardware_acceleration_change_token;
     EventToken::Ptr m_display_change_token;
     service_list_t<titleformat_object> m_scripts;
     pfc::list_t<ColumnData> m_column_data;

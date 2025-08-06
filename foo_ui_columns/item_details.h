@@ -1,5 +1,7 @@
 #pragma once
 
+#include "d2d_utils.h"
+#include "event_token.h"
 #include "pch.h"
 #include "file_info_reader.h"
 #include "item_details_text.h"
@@ -254,6 +256,7 @@ private:
     void invalidate_all(bool b_update = true);
     void update_now();
     void create_d2d_render_target();
+    void reset_d2d_device_resources();
 
     enum class ScrollbarType {
         vertical = SB_VERT,
@@ -289,10 +292,11 @@ private:
     uih::direct_write::Context::Ptr m_direct_write_context;
     std::optional<uih::direct_write::TextFormat> m_text_format;
     std::optional<uih::direct_write::TextLayout> m_text_layout;
-    uih::d2d::Context::Ptr m_d2d_context;
+    d2d::MainThreadD2D1Factory m_d2d_factory;
     wil::com_ptr<ID2D1HwndRenderTarget> m_d2d_render_target;
     wil::com_ptr<ID2D1SolidColorBrush> m_d2d_text_brush;
     std::unordered_map<COLORREF, wil::com_ptr<ID2D1SolidColorBrush>> m_d2d_brush_cache;
+    EventToken::Ptr m_use_hardware_acceleration_change_token;
 
     std::optional<RECT> m_text_rect{};
 

@@ -4,6 +4,7 @@
 
 #include "ng_playlist_groups.h"
 #include "system_appearance_manager.h"
+#include "tab_setup.h"
 #include "../config_columns_v2.h"
 #include "../playlist_item_helpers.h"
 #include "../playlist_view_tfhooks.h"
@@ -830,12 +831,23 @@ void PlaylistView::notify_on_create()
     m_display_change_token
         = system_appearance_manager::add_display_changed_handler([this, self{ptr{this}}] { flush_artwork_images(); });
 
+    m_use_hardware_acceleration_change_token = prefs::add_use_hardware_acceleration_changed_handler([this] {
+        flush_artwork_images();
+
+        if (m_artwork_manager)
+            m_artwork_manager->deinitialise();
+
+        if (get_show_group_info_area())
+            invalidate_all();
+    });
+
     console::formatter formatter;
     formatter << "Playlist view initialised in: " << pfc::format_float(timer.query(), 0, 3) << " s";
 }
 
 void PlaylistView::notify_on_destroy()
 {
+    m_use_hardware_acceleration_change_token.reset();
     m_display_change_token.reset();
 
     if (const auto active_playlist = m_playlist_api->get_active_playlist();

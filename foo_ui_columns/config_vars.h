@@ -13,6 +13,9 @@ extern advconfig_checkbox_factory advbool_system_tray_icon_x_buttons;
 extern advconfig_checkbox_factory advbool_close_to_system_tray_icon;
 
 extern cfg_bool cfg_playlist_tabs_middle_click;
+
+extern fbh::ConfigBool use_hardware_acceleration;
+
 } // namespace cui::config
 
 class ConfigWindowPlacement : public cfg_var {

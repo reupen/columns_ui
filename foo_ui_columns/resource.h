@@ -307,6 +307,7 @@
 #define IDC_AXIS_RANGE                  1202
 #define IDC_SET_FORMAT_SNIPPET          1203
 #define IDC_USE_ADVANCED_COLOUR         1205
+#define IDC_HARDWARE_ACCELERATION       1207
 #define IDC_STATIC                      -1
 
 // Next default values for new objects
@@ -316,7 +317,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        198
 #define _APS_NEXT_COMMAND_VALUE         40001
-#define _APS_NEXT_CONTROL_VALUE         1207
+#define _APS_NEXT_CONTROL_VALUE         1208
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif

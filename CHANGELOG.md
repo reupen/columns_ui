@@ -31,6 +31,13 @@
   [#1292](https://github.com/reupen/columns_ui/pull/1292),
   [#1299](https://github.com/reupen/columns_ui/pull/1299)]
 
+- The use of hardware acceleration for built-in panels that use Direct2D can now
+  be turned off or on in Preferences.
+  [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
+
+  Hardware acceleration is now disabled by default due to inconsistent
+  performance for different hardware.
+
 - The buttons toolbar now supports enabled and pressed states for main menu
   commands that report their command state via the latest foobar2000 API.
   [[#1297](https://github.com/reupen/columns_ui/pull/1297)]
@@ -48,6 +55,9 @@
 - Unknown panels (such as uninstalled panels) are now preserved when copied and
   pasted in the Layout tree in Preferences.
   [#1302](https://github.com/reupen/columns_ui/pull/1302)
+
+- The Main preferences tab was split into a Setup tab and a Main window tab.
+  [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
 
 ### Bug fixes
 

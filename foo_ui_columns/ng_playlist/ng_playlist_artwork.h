@@ -156,6 +156,7 @@ public:
         m_aborting_readers.clear();
         m_current_readers.clear();
         m_nocover_bitmap.reset();
+        m_rendering_contexts.clear();
     }
 
     void on_reader_done(ArtworkRenderingContext::Ptr context, const ArtworkReader* ptr);
@@ -177,13 +178,10 @@ private:
 
     std::shared_ptr<ArtworkRenderingContext> get_d2d_device_context();
 
-    wil::com_ptr<ID2D1Factory1> m_d2d_factory;
     std::vector<std::shared_ptr<ArtworkRenderingContext>> m_rendering_contexts;
-
     std::vector<ArtworkReader::Ptr> m_aborting_readers;
     std::vector<ArtworkReader::Ptr> m_current_readers;
     std::vector<ArtworkReader::Ptr> m_pending_readers;
-
     std::mutex m_nocover_mutex;
     wil::shared_hbitmap m_nocover_bitmap;
     size_t m_nocover_cx{};

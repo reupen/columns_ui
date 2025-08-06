@@ -1,11 +1,14 @@
 #include "pch.h"
 #include "fcl.h"
 #include "config.h"
+#include "event_token.h"
 #include "main_window.h"
 
 namespace cui::prefs {
 
 namespace {
+
+std::vector<std::shared_ptr<GenericEventHandler>> use_hardware_acceleration_changed_handlers;
 
 class SetupTab : public PreferencesTab {
 public:
@@ -32,6 +35,13 @@ public:
             case IDC_FCL_IMPORT:
                 g_import_layout(wnd);
                 break;
+            case IDC_HARDWARE_ACCELERATION:
+                config::use_hardware_acceleration = Button_GetCheck(reinterpret_cast<HWND>(lp)) == BST_CHECKED;
+
+                for (auto&& handler : use_hardware_acceleration_changed_handlers)
+                    (*handler)();
+
+                break;
             }
         }
         return 0;
@@ -45,7 +55,7 @@ public:
 
     const char* get_name() override { return "Setup"; }
 
-    PreferencesTabHelper m_helper{{IDC_TITLE1}};
+    PreferencesTabHelper m_helper{{IDC_TITLE1, IDC_TITLE2}};
 };
 
 SetupTab setup_tab;
@@ -55,6 +65,11 @@ SetupTab setup_tab;
 PreferencesTab& get_setup_tab()
 {
     return setup_tab;
+}
+
+std::unique_ptr<EventToken> add_use_hardware_acceleration_changed_handler(std::function<void()> event_handler)
+{
+    return make_event_token(use_hardware_acceleration_changed_handlers, std::move(event_handler));
 }
 
 } // namespace cui::prefs
