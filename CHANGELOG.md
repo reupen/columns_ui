@@ -100,6 +100,10 @@
   foobar2000 was restarted was fixed.
   [#1304](https://github.com/reupen/columns_ui/pull/1304)
 
+- The Artwork view now correctly updates the shown image after toggling ‘Lock
+  artwork type’ straight away.
+  [[#1312](https://github.com/reupen/columns_ui/pull/1312)]
+
 ### Internal changes
 
 - Some code was refactored.

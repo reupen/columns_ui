@@ -1042,10 +1042,25 @@ void ArtworkPanel::toggle_preserve_aspect_ratio()
 void ArtworkPanel::toggle_lock_artwork_type()
 {
     m_artwork_type_locked = !m_artwork_type_locked;
+    m_artwork_type_override_index.reset();
+
     if (m_artwork_type_locked) {
         m_selected_artwork_type_index = get_displayed_artwork_type_index();
-        m_artwork_type_override_index.reset();
+    } else if (m_artwork_reader->is_ready()
+        && !m_artwork_reader->has_image(artwork_type_ids[m_selected_artwork_type_index])) {
+        const auto artwork_type_count = gsl::narrow<uint32_t>(artwork_type_ids.size());
+
+        for (const auto offset : ranges::views::iota(1u, artwork_type_count)) {
+            const auto candidate_artwork_type_index = (m_selected_artwork_type_index + offset) % artwork_type_count;
+            const auto candidate_artwork_type_id = artwork_type_ids[candidate_artwork_type_index];
+
+            if (m_artwork_reader->has_image(candidate_artwork_type_id)) {
+                m_artwork_type_override_index = candidate_artwork_type_index;
+                break;
+            }
+        }
     }
+
     refresh_image();
 }
 
