@@ -133,6 +133,8 @@ private:
     void get_config(stream_writer* p_writer, abort_callback& p_abort) const override;
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
+    void handle_wm_contextmenu(HWND wnd, POINT pt);
+
     void update_dxgi_output_desc();
     void create_d2d_device_resources();
     void reset_d2d_device_resources(bool keep_devices = false);

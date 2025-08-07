@@ -26,6 +26,10 @@
   action that shows the file containing the displayed image in File Explorer.
   [[#1307](https://github.com/reupen/columns_ui/pull/1307)]
 
+- When right-clicking in the Artwork view, a dedicated context menu is now shown
+  (rather than the parent splitter’s context menu with Artwork view items
+  appended). [[#1312](https://github.com/reupen/columns_ui/pull/1312)]
+
 #### Playlist view
 
 - The playlist view now supports colour management for artwork images. This
@@ -51,7 +55,7 @@
 #### Preferences
 
 - Some updates were made to the layout tree context menu in Preferences.
-  [#1310](https://github.com/reupen/columns_ui/pull/1310)
+  [#1311](https://github.com/reupen/columns_ui/pull/1311)
 
   This includes updates to menu item labels, and moving the previous ‘Change
   base’ item (now ‘Replace base’) was down two positions (after ‘Splitter type’)

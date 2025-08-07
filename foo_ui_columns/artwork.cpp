@@ -401,6 +401,9 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
+    case WM_CONTEXTMENU:
+        handle_wm_contextmenu(wnd, {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)});
+        return 0;
     case MSG_REFRESH_EFFECTS:
         reset_effects();
         RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
@@ -474,6 +477,95 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     }
     return DefWindowProc(wnd, msg, wp, lp);
+}
+
+void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
+{
+    enum : uint32_t {
+        ID_OPEN_IMAGE_VIEWER = 1,
+        ID_SHOW_IN_FILE_EXPLORER,
+        ID_RELOAD_ARTWORK,
+        ID_PRESERVE_ASPECT_RATIO,
+        ID_LOCK_TYPE,
+        ID_MORE_OPTIONS,
+        ID_ARTWORK_TYPE_BASE,
+    };
+
+    const auto id_tracking_mode_base = ID_ARTWORK_TYPE_BASE + gsl::narrow<uint32_t>(artwork_type_ids.size());
+
+    uih::Menu artwork_type_submenu;
+    const auto labels_view = artwork_type_labels | ranges::views::values | ranges::views::enumerate
+        | ranges::views::transform(
+            [](auto&& item) { return std::make_tuple(gsl::narrow<uint32_t>(item.first), item.second); });
+
+    for (auto&& [index, label] : labels_view) {
+        artwork_type_submenu.append_command(ID_ARTWORK_TYPE_BASE + index, mmh::to_utf16(label).c_str(),
+            {.is_radio_checked = get_displayed_artwork_type_index() == index});
+    }
+
+    uih::Menu tracking_mode_submenu;
+
+    const auto append_tracking_mode_item = [&](TrackingMode mode) {
+        tracking_mode_submenu.append_command(id_tracking_mode_base + mode, mmh::to_utf16(tracking_mode_labels.at(mode)),
+            {.is_radio_checked = m_track_mode == mode});
+    };
+
+    append_tracking_mode_item(track_auto_selection_playing);
+    append_tracking_mode_item(track_auto_playlist_playing);
+    tracking_mode_submenu.append_separator();
+    append_tracking_mode_item(track_playing);
+    append_tracking_mode_item(track_selection);
+    append_tracking_mode_item(track_playlist);
+
+    uih::Menu menu;
+
+    if (is_core_image_viewer_available())
+        menu.append_command(ID_OPEN_IMAGE_VIEWER, L"Open in pop-up viewer");
+
+    if (is_show_in_file_explorer_available())
+        menu.append_command(ID_SHOW_IN_FILE_EXPLORER, L"Show in File Explorer");
+
+    menu.append_command(ID_RELOAD_ARTWORK, L"Reload artwork");
+    menu.append_separator();
+    menu.append_submenu(std::move(artwork_type_submenu), L"Artwork type");
+    menu.append_submenu(std::move(tracking_mode_submenu), L"Displayed track");
+    menu.append_command(ID_PRESERVE_ASPECT_RATIO, L"Preserve aspect ratio", {.is_checked = m_preserve_aspect_ratio});
+    menu.append_command(ID_LOCK_TYPE, L"Lock artwork type", {.is_checked = m_artwork_type_locked});
+    menu.append_separator();
+    menu.append_command(ID_MORE_OPTIONS, L"More options");
+
+    menu_helpers::win32_auto_mnemonics(menu.get());
+
+    const auto pt_menu = pt.x == -1 && pt.y == -1 ? POINT{} : pt;
+
+    switch (const auto cmd = menu.run(wnd, pt_menu); cmd) {
+    case ID_OPEN_IMAGE_VIEWER:
+        open_core_image_viewer();
+        break;
+    case ID_SHOW_IN_FILE_EXPLORER:
+        show_in_file_explorer();
+        break;
+    case ID_RELOAD_ARTWORK:
+        invalidate_window();
+        force_reload_artwork();
+        break;
+    case ID_PRESERVE_ASPECT_RATIO:
+        toggle_preserve_aspect_ratio();
+        break;
+    case ID_LOCK_TYPE:
+        toggle_lock_artwork_type();
+        break;
+    case ID_MORE_OPTIONS:
+        prefs::page_main.get_static_instance().show_tab("Artwork");
+        break;
+    default:
+        if (std::cmp_greater_equal(cmd, id_tracking_mode_base)) {
+            set_tracking_mode(cmd - id_tracking_mode_base);
+        } else if (cmd >= ID_ARTWORK_TYPE_BASE) {
+            set_artwork_type_index(cmd - ID_ARTWORK_TYPE_BASE);
+        }
+        break;
+    }
 }
 
 /**
