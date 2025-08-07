@@ -4,6 +4,8 @@
 
 ### Features
 
+#### Artwork view
+
 - The Artwork view now supports colour management. This improves support for
   images with an embedded colour profile and makes image colours more consistent
   with web browsers. [[#1275](https://github.com/reupen/columns_ui/pull/1275),
@@ -20,6 +22,12 @@
   HDR and high bit-depth images but is recommended only if HDR is enabled in
   Windows.
 
+- The Artwork view now has a ‘Show in File Explorer’ context menu item and click
+  action that shows the file containing the displayed image in File Explorer.
+  [[#1307](https://github.com/reupen/columns_ui/pull/1307)]
+
+#### Playlist view
+
 - The playlist view now supports colour management for artwork images. This
   improves support for images with an embedded colour profile and makes image
   colours more consistent with web browsers.
@@ -31,12 +39,7 @@
   [#1292](https://github.com/reupen/columns_ui/pull/1292),
   [#1299](https://github.com/reupen/columns_ui/pull/1299)]
 
-- The use of hardware acceleration for built-in panels that use Direct2D can now
-  be turned off or on in Preferences.
-  [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
-
-  Hardware acceleration is now disabled by default due to inconsistent
-  performance for different hardware.
+#### Buttons toolbar
 
 - The buttons toolbar now supports enabled and pressed states for main menu
   commands that report their command state via the latest foobar2000 API.
@@ -45,9 +48,7 @@
   This requires main menu commands to implement the `mainmenu_commands_v3`
   service interface in the foobar2000 SDK.
 
-- The Artwork view now has a ‘Show in File Explorer’ context menu item and click
-  action that shows the file containing the displayed image in File Explorer.
-  [[#1307](https://github.com/reupen/columns_ui/pull/1307)]
+#### Preferences
 
 - Some updates were made to the layout tree context menu in Preferences.
   [#1310](https://github.com/reupen/columns_ui/pull/1310)
@@ -65,6 +66,15 @@
 
 - The Main preferences tab was split into a Setup tab and a Main window tab.
   [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
+
+#### Other
+
+- The use of hardware acceleration for built-in panels that use Direct2D can now
+  be turned off or on in Preferences.
+  [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
+
+  Hardware acceleration is now disabled by default due to inconsistent
+  performance for different hardware.
 
 ### Bug fixes
 
