@@ -145,7 +145,6 @@ private:
     D2D1_VECTOR_2F calculate_scaling_factor(const wil::com_ptr<ID2D1Image>& image) const;
     void update_scale_effect();
     void queue_decode(const album_art_data::ptr& data);
-    void show_stub_image();
     void invalidate_window() const;
     uint32_t get_displayed_artwork_type_index() const;
     bool is_advanced_colour_active() const;

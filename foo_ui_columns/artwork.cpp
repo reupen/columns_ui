@@ -920,9 +920,7 @@ bool ArtworkPanel::is_core_image_viewer_available() const
     }
 
     const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
-    const album_art_data_ptr data = m_artwork_reader->get_image(artwork_type_id);
-
-    return data.is_valid();
+    return m_artwork_reader->has_image(artwork_type_id);
 }
 
 void ArtworkPanel::open_core_image_viewer() const
@@ -1008,9 +1006,8 @@ void ArtworkPanel::show_next_artwork_type()
     for (size_t i = 0; i + 1 < count; i++) {
         artwork_type_index = (artwork_type_index + 1) % count;
         const auto artwork_type_id = artwork_type_ids[artwork_type_index];
-        const auto data = m_artwork_reader->get_image(artwork_type_id);
 
-        if (data.is_valid()) {
+        if (m_artwork_reader->has_image(artwork_type_id)) {
             m_artwork_type_override_index.reset();
             m_selected_artwork_type_index = artwork_type_index;
             refresh_image();
@@ -1023,17 +1020,6 @@ void ArtworkPanel::set_artwork_type_index(uint32_t index)
 {
     m_selected_artwork_type_index = index;
     m_artwork_type_override_index.reset();
-
-    if (!m_artwork_reader || !m_artwork_reader->is_ready())
-        return;
-
-    const auto artwork_type_id = artwork_type_ids[m_selected_artwork_type_index];
-    const auto data = m_artwork_reader->get_image(artwork_type_id);
-
-    if (!data.is_valid()) {
-        show_stub_image();
-        return;
-    }
 
     refresh_image();
 }
@@ -1114,10 +1100,8 @@ void ArtworkPanel::on_artwork_loaded(bool artwork_changed)
     for (auto _ : ranges::views::iota(0u, iter_limit)) {
         const auto artwork_type_index = get_displayed_artwork_type_index();
         const auto artwork_type_id = artwork_type_ids[artwork_type_index];
-        const auto data = m_artwork_reader->get_image(artwork_type_id);
 
-        if (data.is_valid()) {
-            refresh_image();
+        if (m_artwork_reader->has_image(artwork_type_id)) {
             b_found = true;
             break;
         }
@@ -1125,23 +1109,25 @@ void ArtworkPanel::on_artwork_loaded(bool artwork_changed)
         m_artwork_type_override_index = (*m_artwork_type_override_index + 1) % artwork_type_count;
     }
 
-    if (!b_found) {
+    if (!b_found)
         m_artwork_type_override_index.reset();
-        show_stub_image();
-    }
+
+    refresh_image();
 }
 
-void ArtworkPanel::show_stub_image()
+void ArtworkPanel::refresh_image()
 {
+    TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
+
     if (!m_artwork_reader || !m_artwork_reader->is_ready())
         return;
 
-    album_art_data_ptr data;
+    const auto artwork_type_index = get_displayed_artwork_type_index();
+    const auto artwork_type_id = artwork_type_ids[artwork_type_index];
+    auto data = m_artwork_reader->get_image(artwork_type_id);
 
-    if (m_artwork_reader->status() != ArtworkReaderStatus::Failed) {
-        const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
+    if (data.is_empty() && m_artwork_reader->status() != ArtworkReaderStatus::Failed)
         data = m_artwork_reader->get_stub_image(artwork_type_id);
-    }
 
     reset_effects();
 
@@ -1155,30 +1141,6 @@ void ArtworkPanel::show_stub_image()
         create_d2d_device_resources();
     }
     CATCH_LOG()
-
-    queue_decode(data);
-}
-
-void ArtworkPanel::refresh_image()
-{
-    TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
-
-    if (!m_artwork_reader || !m_artwork_reader->is_ready())
-        return;
-
-    const auto artwork_type_index = get_displayed_artwork_type_index();
-    const auto artwork_type_id = artwork_type_ids[artwork_type_index];
-    const auto data = m_artwork_reader->get_image(artwork_type_id);
-
-    if (data.is_empty())
-        return;
-
-    try {
-        create_d2d_device_resources();
-    }
-    CATCH_LOG()
-
-    reset_effects();
 
     queue_decode(data);
 }
