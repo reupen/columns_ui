@@ -30,7 +30,6 @@ public:
 private:
     static HTREEITEM insert_item_in_tree_view(
         HWND wnd_tree, const char* sz_text, HTREEITEM ti_parent, HTREEITEM ti_after, bool is_expanded);
-    static void get_panel_list(uie::window_info_list_simple& p_out);
     static HTREEITEM tree_view_get_child_by_index(HWND wnd_tv, HTREEITEM ti, unsigned index);
     static unsigned tree_view_get_child_index(HWND wnd_tv, HTREEITEM ti);
 

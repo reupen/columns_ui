@@ -49,8 +49,15 @@
   action that shows the file containing the displayed image in File Explorer.
   [[#1307](https://github.com/reupen/columns_ui/pull/1307)]
 
-- A ‘Cut panel’ command was added to the Layout tree context menu in
-  Preferences. [#1302](https://github.com/reupen/columns_ui/pull/1302)
+- Some updates were made to the layout tree context menu in Preferences.
+  [#1310](https://github.com/reupen/columns_ui/pull/1310)
+
+  This includes updates to menu item labels, and moving the previous ‘Change
+  base’ item (now ‘Replace base’) was down two positions (after ‘Splitter type’)
+  when right-clicking on the root item.
+
+- A ‘Cut’ command was added to the layout tree context menu in Preferences.
+  [#1302](https://github.com/reupen/columns_ui/pull/1302)
 
 - Unknown panels (such as uninstalled panels) are now preserved when copied and
   pasted in the Layout tree in Preferences.
