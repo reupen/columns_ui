@@ -90,80 +90,36 @@ public:
     bool is_show_in_file_explorer_available() const;
     void show_in_file_explorer();
     void show_next_artwork_type();
-    void set_artwork_type_index(size_t index);
+    void set_artwork_type_index(uint32_t index);
+    void set_tracking_mode(uint32_t new_tracking_mode);
+    void toggle_preserve_aspect_ratio();
+    void toggle_lock_artwork_type();
 
     ArtworkPanel();
 
 private:
     uie::container_window_v3_config get_window_config() override;
 
-    class MenuNodeTrackMode : public ui_extension::menu_node_command_t {
-        service_ptr_t<ArtworkPanel> p_this;
-        uint32_t m_source;
-
-    public:
-        static const char* get_name(uint32_t source);
-        bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        bool get_description(pfc::string_base& p_out) const override;
-        void execute() override;
-        MenuNodeTrackMode(ArtworkPanel* p_wnd, uint32_t p_value);
-    };
-
-    class MenuNodeArtworkType : public ui_extension::menu_node_command_t {
-        service_ptr_t<ArtworkPanel> p_this;
-        uint32_t m_type;
-
-    public:
-        static const char* get_name(uint32_t source);
-        bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        bool get_description(pfc::string_base& p_out) const override;
-        void execute() override;
-        MenuNodeArtworkType(ArtworkPanel* p_wnd, uint32_t p_value);
-    };
-
     class MenuNodeSourcePopup : public ui_extension::menu_node_popup_t {
-        std::vector<ui_extension::menu_node_ptr> m_items;
-
     public:
+        explicit MenuNodeSourcePopup(service_ptr_t<ArtworkPanel> p_wnd);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         size_t get_children_count() const override;
         void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
-        explicit MenuNodeSourcePopup(ArtworkPanel* p_wnd);
+
+    private:
+        std::vector<ui_extension::menu_node_ptr> m_items;
     };
 
     class MenuNodeTypePopup : public ui_extension::menu_node_popup_t {
-        std::vector<ui_extension::menu_node_ptr> m_items;
-
     public:
+        explicit MenuNodeTypePopup(service_ptr_t<ArtworkPanel> p_wnd);
         bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
         size_t get_children_count() const override;
         void get_child(size_t p_index, uie::menu_node_ptr& p_out) const override;
-        explicit MenuNodeTypePopup(ArtworkPanel* p_wnd);
-    };
-    class MenuNodePreserveAspectRatio : public ui_extension::menu_node_command_t {
-        service_ptr_t<ArtworkPanel> p_this;
 
-    public:
-        bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        bool get_description(pfc::string_base& p_out) const override;
-        void execute() override;
-        explicit MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd);
-    };
-
-    class MenuNodeOptions : public ui_extension::menu_node_command_t {
-    public:
-        bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        bool get_description(pfc::string_base& p_out) const override;
-        void execute() override;
-    };
-    class MenuNodeLockType : public ui_extension::menu_node_command_t {
-        service_ptr_t<ArtworkPanel> p_this;
-
-    public:
-        bool get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const override;
-        bool get_description(pfc::string_base& p_out) const override;
-        void execute() override;
-        explicit MenuNodeLockType(ArtworkPanel* p_wnd);
+    private:
+        std::vector<ui_extension::menu_node_ptr> m_items;
     };
 
     void get_menu_items(ui_extension::menu_hook_t& p_hook) override;
@@ -189,7 +145,7 @@ private:
     void queue_decode(const album_art_data::ptr& data);
     void show_stub_image();
     void invalidate_window() const;
-    size_t get_displayed_artwork_type_index() const;
+    uint32_t get_displayed_artwork_type_index() const;
     bool is_advanced_colour_active() const;
 
     wil::com_ptr<ID2D1Factory1> m_d2d_factory;
@@ -210,11 +166,11 @@ private:
     std::shared_ptr<ArtworkReaderManager> m_artwork_reader;
     ArtworkDecoder m_artwork_decoder;
     std::optional<std::jthread> m_show_in_explorer_thread;
-    size_t m_selected_artwork_type_index{0};
-    std::optional<size_t> m_artwork_type_override_index{};
+    uint32_t m_selected_artwork_type_index{};
+    std::optional<uint32_t> m_artwork_type_override_index{};
     uint32_t m_track_mode;
     bool m_preserve_aspect_ratio{true};
-    bool m_artwork_type_locked{false};
+    bool m_artwork_type_locked{};
     bool m_dynamic_artwork_pending{};
     bool m_using_flip_model_swap_chain{};
     bool m_scale_effect_needs_updating{};
