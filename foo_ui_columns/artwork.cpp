@@ -120,13 +120,30 @@ const GUID g_guid_preserve_aspect_ratio = {0xa35e8697, 0xb8a, 0x4e6f, {0x9d, 0xb
 // {F5C8CE6B-5D68-4ce2-8B9F-874D8EDB03B3}
 const GUID g_guid_edge_style = {0xf5c8ce6b, 0x5d68, 0x4ce2, {0x8b, 0x9f, 0x87, 0x4d, 0x8e, 0xdb, 0x3, 0xb3}};
 
-enum TrackingMode {
+enum TrackingMode : uint32_t {
     track_auto_playlist_playing,
     track_playlist,
     track_playing,
     track_auto_selection_playing,
     track_selection,
 };
+
+const std::unordered_map<TrackingMode, wil::zstring_view> tracking_mode_labels{
+    {track_auto_selection_playing, "Automatic (current selection/playing item)"_zv},
+    {track_auto_playlist_playing, "Automatic (playlist selection/playing item)"_zv},
+    {track_playing, "Playing item"_zv},
+    {track_selection, "Current selection"_zv},
+    {track_playlist, "Playlist selection"_zv},
+};
+
+const std::unordered_map<GUID, wil::zstring_view> artwork_type_labels{
+    {album_art_ids::cover_front, "Front cover"_zv},
+    {album_art_ids::cover_back, "Back cover"_zv},
+    {album_art_ids::disc, "Disc"_zv},
+    {album_art_ids::artist, "Artist"_zv},
+};
+
+const auto artwork_type_ids = artwork_type_labels | ranges::views::keys | ranges::to<std::vector>;
 
 bool g_track_mode_includes_now_playing(size_t mode)
 {
@@ -161,16 +178,13 @@ fbh::ConfigInt32 colour_management_mode({0xb1551e5b, 0x51d7, 0x4702, {0xbe, 0x3f
 // {E32DCBA9-A2BF-4901-AB43-228628071410}
 static const GUID g_guid_colour_client = {0xe32dcba9, 0xa2bf, 0x4901, {0xab, 0x43, 0x22, 0x86, 0x28, 0x7, 0x14, 0x10}};
 
-const std::vector<GUID> g_artwork_types{
-    album_art_ids::cover_front, album_art_ids::cover_back, album_art_ids::disc, album_art_ids::artist};
-
 void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) const
 {
     p_writer->write_lendian_t(m_track_mode, p_abort);
     p_writer->write_lendian_t(static_cast<uint32_t>(current_stream_version), p_abort);
     p_writer->write_lendian_t(m_preserve_aspect_ratio, p_abort);
     p_writer->write_lendian_t(m_artwork_type_locked, p_abort);
-    p_writer->write_lendian_t(gsl::narrow<uint32_t>(m_selected_artwork_type_index), p_abort);
+    p_writer->write_lendian_t(m_selected_artwork_type_index, p_abort);
 }
 
 void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
@@ -192,12 +206,25 @@ void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
             invalidate_window();
             force_reload_artwork();
         })));
+
     p_hook.add_node(uie::menu_node_ptr(new uie::menu_node_separator_t()));
     p_hook.add_node(uie::menu_node_ptr(new MenuNodeTypePopup(this)));
     p_hook.add_node(uie::menu_node_ptr(new MenuNodeSourcePopup(this)));
-    p_hook.add_node(uie::menu_node_ptr(new MenuNodePreserveAspectRatio(this)));
-    p_hook.add_node(uie::menu_node_ptr(new MenuNodeLockType(this)));
-    p_hook.add_node(uie::menu_node_ptr(new MenuNodeOptions()));
+
+    p_hook.add_node(uie::menu_node_ptr(uie::menu_node_ptr(new uie::simple_command_menu_node("Preserve aspect ratio",
+        "Toggle whether the aspect ratio of the displayed image is preserved.",
+        m_preserve_aspect_ratio ? uie::menu_node_t::state_checked : 0,
+        [this, self = ptr{this}] { toggle_preserve_aspect_ratio(); }))));
+
+    p_hook.add_node(uie::menu_node_ptr(uie::menu_node_ptr(new uie::simple_command_menu_node("Lock artwork type",
+        "Toggle whether another the image for another artwork type should not be automatically shown when the selected "
+        "artwork type is unavailable.",
+        m_artwork_type_locked ? uie::menu_node_t::state_checked : 0,
+        [this, self = ptr{this}] { toggle_lock_artwork_type(); }))));
+
+    p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("More options",
+        "Opens the preferences page for the Artwork view where more options are available.", 0,
+        [] { prefs::page_main.get_static_instance().show_tab("Artwork"); })));
 }
 
 void ArtworkPanel::request_artwork(const metadb_handle_ptr& track, bool is_from_playback)
@@ -288,7 +315,7 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_CREATE: {
         m_artwork_reader = std::make_shared<ArtworkReaderManager>();
         now_playing_album_art_notify_manager::get()->add(this);
-        m_artwork_reader->set_types(g_artwork_types);
+        m_artwork_reader->set_types(artwork_type_ids);
         play_callback_manager::get()->register_callback(
             this, flag_on_playback_new_track | flag_on_playback_stop | flag_on_playback_edited, false);
         playlist_manager_v3::get()->register_callback(this, playlist_callback_flags);
@@ -374,6 +401,9 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     }
+    case WM_CONTEXTMENU:
+        handle_wm_contextmenu(wnd, {GET_X_LPARAM(lp), GET_Y_LPARAM(lp)});
+        return 0;
     case MSG_REFRESH_EFFECTS:
         reset_effects();
         RedrawWindow(wnd, nullptr, nullptr, RDW_INVALIDATE);
@@ -447,6 +477,95 @@ LRESULT ArtworkPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     }
     }
     return DefWindowProc(wnd, msg, wp, lp);
+}
+
+void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
+{
+    enum : uint32_t {
+        ID_OPEN_IMAGE_VIEWER = 1,
+        ID_SHOW_IN_FILE_EXPLORER,
+        ID_RELOAD_ARTWORK,
+        ID_PRESERVE_ASPECT_RATIO,
+        ID_LOCK_TYPE,
+        ID_MORE_OPTIONS,
+        ID_ARTWORK_TYPE_BASE,
+    };
+
+    const auto id_tracking_mode_base = ID_ARTWORK_TYPE_BASE + gsl::narrow<uint32_t>(artwork_type_ids.size());
+
+    uih::Menu artwork_type_submenu;
+    const auto labels_view = artwork_type_labels | ranges::views::values | ranges::views::enumerate
+        | ranges::views::transform(
+            [](auto&& item) { return std::make_tuple(gsl::narrow<uint32_t>(item.first), item.second); });
+
+    for (auto&& [index, label] : labels_view) {
+        artwork_type_submenu.append_command(ID_ARTWORK_TYPE_BASE + index, mmh::to_utf16(label).c_str(),
+            {.is_radio_checked = get_displayed_artwork_type_index() == index});
+    }
+
+    uih::Menu tracking_mode_submenu;
+
+    const auto append_tracking_mode_item = [&](TrackingMode mode) {
+        tracking_mode_submenu.append_command(id_tracking_mode_base + mode, mmh::to_utf16(tracking_mode_labels.at(mode)),
+            {.is_radio_checked = m_track_mode == mode});
+    };
+
+    append_tracking_mode_item(track_auto_selection_playing);
+    append_tracking_mode_item(track_auto_playlist_playing);
+    tracking_mode_submenu.append_separator();
+    append_tracking_mode_item(track_playing);
+    append_tracking_mode_item(track_selection);
+    append_tracking_mode_item(track_playlist);
+
+    uih::Menu menu;
+
+    if (is_core_image_viewer_available())
+        menu.append_command(ID_OPEN_IMAGE_VIEWER, L"Open in pop-up viewer");
+
+    if (is_show_in_file_explorer_available())
+        menu.append_command(ID_SHOW_IN_FILE_EXPLORER, L"Show in File Explorer");
+
+    menu.append_command(ID_RELOAD_ARTWORK, L"Reload artwork");
+    menu.append_separator();
+    menu.append_submenu(std::move(artwork_type_submenu), L"Artwork type");
+    menu.append_submenu(std::move(tracking_mode_submenu), L"Displayed track");
+    menu.append_command(ID_PRESERVE_ASPECT_RATIO, L"Preserve aspect ratio", {.is_checked = m_preserve_aspect_ratio});
+    menu.append_command(ID_LOCK_TYPE, L"Lock artwork type", {.is_checked = m_artwork_type_locked});
+    menu.append_separator();
+    menu.append_command(ID_MORE_OPTIONS, L"More options");
+
+    menu_helpers::win32_auto_mnemonics(menu.get());
+
+    const auto pt_menu = pt.x == -1 && pt.y == -1 ? POINT{} : pt;
+
+    switch (const auto cmd = menu.run(wnd, pt_menu); cmd) {
+    case ID_OPEN_IMAGE_VIEWER:
+        open_core_image_viewer();
+        break;
+    case ID_SHOW_IN_FILE_EXPLORER:
+        show_in_file_explorer();
+        break;
+    case ID_RELOAD_ARTWORK:
+        invalidate_window();
+        force_reload_artwork();
+        break;
+    case ID_PRESERVE_ASPECT_RATIO:
+        toggle_preserve_aspect_ratio();
+        break;
+    case ID_LOCK_TYPE:
+        toggle_lock_artwork_type();
+        break;
+    case ID_MORE_OPTIONS:
+        prefs::page_main.get_static_instance().show_tab("Artwork");
+        break;
+    default:
+        if (std::cmp_greater_equal(cmd, id_tracking_mode_base)) {
+            set_tracking_mode(cmd - id_tracking_mode_base);
+        } else if (cmd >= ID_ARTWORK_TYPE_BASE) {
+            set_artwork_type_index(cmd - ID_ARTWORK_TYPE_BASE);
+        }
+        break;
+    }
 }
 
 /**
@@ -800,15 +919,13 @@ bool ArtworkPanel::is_core_image_viewer_available() const
         return false;
     }
 
-    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
-    const album_art_data_ptr data = m_artwork_reader->get_image(artwork_type_id);
-
-    return data.is_valid();
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
+    return m_artwork_reader->has_image(artwork_type_id);
 }
 
 void ArtworkPanel::open_core_image_viewer() const
 {
-    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
     const album_art_data_ptr data = m_artwork_reader->get_image(artwork_type_id);
 
     if (!data.is_valid())
@@ -820,7 +937,7 @@ void ArtworkPanel::open_core_image_viewer() const
 }
 bool ArtworkPanel::is_show_in_file_explorer_available() const
 {
-    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
     const auto paths = m_artwork_reader->get_paths(artwork_type_id);
 
     return !m_show_in_explorer_thread && paths.is_valid() && paths->get_count() > 0
@@ -832,7 +949,7 @@ void ArtworkPanel::show_in_file_explorer()
     if (m_show_in_explorer_thread)
         return;
 
-    const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
     const auto paths = m_artwork_reader->get_paths(artwork_type_id);
 
     if (!paths.is_valid() || paths->get_count() == 0)
@@ -884,14 +1001,13 @@ void ArtworkPanel::show_next_artwork_type()
 
     const auto start_artwork_type_index = get_displayed_artwork_type_index();
     auto artwork_type_index = start_artwork_type_index;
-    const size_t count = g_artwork_types.size();
+    const size_t count = artwork_type_ids.size();
 
     for (size_t i = 0; i + 1 < count; i++) {
         artwork_type_index = (artwork_type_index + 1) % count;
-        const auto artwork_type_id = g_artwork_types[artwork_type_index];
-        const auto data = m_artwork_reader->get_image(artwork_type_id);
+        const auto artwork_type_id = artwork_type_ids[artwork_type_index];
 
-        if (data.is_valid()) {
+        if (m_artwork_reader->has_image(artwork_type_id)) {
             m_artwork_type_override_index.reset();
             m_selected_artwork_type_index = artwork_type_index;
             refresh_image();
@@ -900,20 +1016,49 @@ void ArtworkPanel::show_next_artwork_type()
     }
 }
 
-void ArtworkPanel::set_artwork_type_index(size_t index)
+void ArtworkPanel::set_artwork_type_index(uint32_t index)
 {
     m_selected_artwork_type_index = index;
     m_artwork_type_override_index.reset();
 
-    if (!m_artwork_reader || !m_artwork_reader->is_ready())
-        return;
+    refresh_image();
+}
 
-    const auto artwork_type_id = g_artwork_types[m_selected_artwork_type_index];
-    const auto data = m_artwork_reader->get_image(artwork_type_id);
+void ArtworkPanel::set_tracking_mode(uint32_t new_tracking_mode)
+{
+    m_track_mode = new_tracking_mode;
+    cfg_track_mode = new_tracking_mode;
+    force_reload_artwork();
+}
 
-    if (!data.is_valid()) {
-        show_stub_image();
-        return;
+void ArtworkPanel::toggle_preserve_aspect_ratio()
+{
+    m_preserve_aspect_ratio = !m_preserve_aspect_ratio;
+    cfg_preserve_aspect_ratio = m_preserve_aspect_ratio;
+    m_scale_effect_needs_updating = true;
+    invalidate_window();
+}
+
+void ArtworkPanel::toggle_lock_artwork_type()
+{
+    m_artwork_type_locked = !m_artwork_type_locked;
+    m_artwork_type_override_index.reset();
+
+    if (m_artwork_type_locked) {
+        m_selected_artwork_type_index = get_displayed_artwork_type_index();
+    } else if (m_artwork_reader->is_ready()
+        && !m_artwork_reader->has_image(artwork_type_ids[m_selected_artwork_type_index])) {
+        const auto artwork_type_count = gsl::narrow<uint32_t>(artwork_type_ids.size());
+
+        for (const auto offset : ranges::views::iota(1u, artwork_type_count)) {
+            const auto candidate_artwork_type_index = (m_selected_artwork_type_index + offset) % artwork_type_count;
+            const auto candidate_artwork_type_id = artwork_type_ids[candidate_artwork_type_index];
+
+            if (m_artwork_reader->has_image(candidate_artwork_type_id)) {
+                m_artwork_type_override_index = candidate_artwork_type_index;
+                break;
+            }
+        }
     }
 
     refresh_image();
@@ -961,42 +1106,43 @@ void ArtworkPanel::on_artwork_loaded(bool artwork_changed)
     m_artwork_type_override_index = m_selected_artwork_type_index;
 
     bool b_found = false;
-    size_t count = g_artwork_types.size();
+    const auto artwork_type_count = gsl::narrow<uint32_t>(artwork_type_ids.size());
+    auto iter_limit = artwork_type_count;
 
     if (m_artwork_type_locked)
-        count = std::min(size_t{1}, count);
+        iter_limit = std::min(1u, iter_limit);
 
-    for (size_t i = 0; i < count; i++) {
+    for (auto _ : ranges::views::iota(0u, iter_limit)) {
         const auto artwork_type_index = get_displayed_artwork_type_index();
-        const auto artwork_type_id = g_artwork_types[artwork_type_index];
-        const auto data = m_artwork_reader->get_image(artwork_type_id);
+        const auto artwork_type_id = artwork_type_ids[artwork_type_index];
 
-        if (data.is_valid()) {
-            refresh_image();
+        if (m_artwork_reader->has_image(artwork_type_id)) {
             b_found = true;
             break;
         }
 
-        m_artwork_type_override_index = (*m_artwork_type_override_index + 1) % g_artwork_types.size();
+        m_artwork_type_override_index = (*m_artwork_type_override_index + 1) % artwork_type_count;
     }
 
-    if (!b_found) {
+    if (!b_found)
         m_artwork_type_override_index.reset();
-        show_stub_image();
-    }
+
+    refresh_image();
 }
 
-void ArtworkPanel::show_stub_image()
+void ArtworkPanel::refresh_image()
 {
+    TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
+
     if (!m_artwork_reader || !m_artwork_reader->is_ready())
         return;
 
-    album_art_data_ptr data;
+    const auto artwork_type_index = get_displayed_artwork_type_index();
+    const auto artwork_type_id = artwork_type_ids[artwork_type_index];
+    auto data = m_artwork_reader->get_image(artwork_type_id);
 
-    if (m_artwork_reader->status() != ArtworkReaderStatus::Failed) {
-        const auto artwork_type_id = g_artwork_types[get_displayed_artwork_type_index()];
+    if (data.is_empty() && m_artwork_reader->status() != ArtworkReaderStatus::Failed)
         data = m_artwork_reader->get_stub_image(artwork_type_id);
-    }
 
     reset_effects();
 
@@ -1010,30 +1156,6 @@ void ArtworkPanel::show_stub_image()
         create_d2d_device_resources();
     }
     CATCH_LOG()
-
-    queue_decode(data);
-}
-
-void ArtworkPanel::refresh_image()
-{
-    TRACK_CALL_TEXT("cui::ArtworkPanel::refresh_image");
-
-    if (!m_artwork_reader || !m_artwork_reader->is_ready())
-        return;
-
-    const auto artwork_type_index = get_displayed_artwork_type_index();
-    const auto artwork_type_id = g_artwork_types[artwork_type_index];
-    const auto data = m_artwork_reader->get_image(artwork_type_id);
-
-    if (data.is_empty())
-        return;
-
-    try {
-        create_d2d_device_resources();
-    }
-    CATCH_LOG()
-
-    reset_effects();
 
     queue_decode(data);
 }
@@ -1107,7 +1229,7 @@ void ArtworkPanel::invalidate_window() const
     RedrawWindow(get_wnd(), nullptr, nullptr, RDW_INVALIDATE);
 }
 
-size_t ArtworkPanel::get_displayed_artwork_type_index() const
+uint32_t ArtworkPanel::get_displayed_artwork_type_index() const
 {
     return m_artwork_type_override_index.value_or(m_selected_artwork_type_index);
 }
@@ -1191,7 +1313,7 @@ void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callba
                 p_reader->read_lendian_t(m_artwork_type_locked, p_abort);
                 if (version >= 3) {
                     m_selected_artwork_type_index = p_reader->read_lendian_t<uint32_t>(p_abort);
-                    if (m_selected_artwork_type_index >= g_artwork_types.size()) {
+                    if (m_selected_artwork_type_index >= artwork_type_ids.size()) {
                         m_selected_artwork_type_index = 0;
                     }
                     m_artwork_type_override_index.reset();
@@ -1201,86 +1323,20 @@ void ArtworkPanel::set_config(stream_reader* p_reader, size_t size, abort_callba
     }
 }
 
-ArtworkPanel::MenuNodeTrackMode::MenuNodeTrackMode(ArtworkPanel* p_wnd, uint32_t p_value)
-    : p_this(p_wnd)
-    , m_source(p_value)
+ArtworkPanel::MenuNodeSourcePopup::MenuNodeSourcePopup(service_ptr_t<ArtworkPanel> p_wnd)
 {
-}
+    const auto make_node = [p_wnd](TrackingMode source) {
+        return uie::menu_node_ptr(new uie::simple_command_menu_node(tracking_mode_labels.at(source).c_str(), "",
+            p_wnd->m_track_mode == source ? state_radiochecked : 0,
+            [p_wnd, source] { p_wnd->set_tracking_mode(source); }));
+    };
 
-void ArtworkPanel::MenuNodeTrackMode::execute()
-{
-    p_this->m_track_mode = m_source;
-    cfg_track_mode = m_source;
-    p_this->force_reload_artwork();
-}
-
-bool ArtworkPanel::MenuNodeTrackMode::get_description(pfc::string_base& p_out) const
-{
-    return false;
-}
-
-bool ArtworkPanel::MenuNodeTrackMode::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
-{
-    p_out = get_name(m_source);
-    p_displayflags = (m_source == p_this->m_track_mode) ? state_radiochecked : 0;
-    return true;
-}
-
-const char* ArtworkPanel::MenuNodeTrackMode::get_name(uint32_t source)
-{
-    if (source == track_playing)
-        return "Playing item";
-    if (source == track_playlist)
-        return "Playlist selection";
-    if (source == track_auto_selection_playing)
-        return "Automatic (current selection/playing item)";
-    if (source == track_selection)
-        return "Current selection";
-    return "Automatic (playlist selection/playing item)";
-}
-
-ArtworkPanel::MenuNodeArtworkType::MenuNodeArtworkType(ArtworkPanel* p_wnd, uint32_t p_value)
-    : p_this(p_wnd)
-    , m_type(p_value)
-{
-}
-
-void ArtworkPanel::MenuNodeArtworkType::execute()
-{
-    p_this->set_artwork_type_index(m_type);
-}
-
-bool ArtworkPanel::MenuNodeArtworkType::get_description(pfc::string_base& p_out) const
-{
-    return false;
-}
-
-bool ArtworkPanel::MenuNodeArtworkType::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
-{
-    p_out = get_name(m_type);
-    p_displayflags = m_type == p_this->get_displayed_artwork_type_index() ? state_radiochecked : 0;
-    return true;
-}
-
-const char* ArtworkPanel::MenuNodeArtworkType::get_name(uint32_t source)
-{
-    if (source == 0)
-        return "Front cover";
-    if (source == 1)
-        return "Back cover";
-    if (source == 2)
-        return "Disc cover";
-    return "Artist picture";
-}
-
-ArtworkPanel::MenuNodeSourcePopup::MenuNodeSourcePopup(ArtworkPanel* p_wnd)
-{
-    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 3));
-    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 0));
+    m_items.emplace_back(make_node(track_auto_selection_playing));
+    m_items.emplace_back(make_node(track_auto_playlist_playing));
     m_items.emplace_back(new uie::menu_node_separator_t());
-    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 2));
-    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 4));
-    m_items.emplace_back(new MenuNodeTrackMode(p_wnd, 1));
+    m_items.emplace_back(make_node(track_playing));
+    m_items.emplace_back(make_node(track_selection));
+    m_items.emplace_back(make_node(track_playlist));
 }
 
 void ArtworkPanel::MenuNodeSourcePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
@@ -1300,13 +1356,17 @@ bool ArtworkPanel::MenuNodeSourcePopup::get_display_data(pfc::string_base& p_out
     return true;
 }
 
-ArtworkPanel::MenuNodeTypePopup::MenuNodeTypePopup(ArtworkPanel* p_wnd)
+ArtworkPanel::MenuNodeTypePopup::MenuNodeTypePopup(service_ptr_t<ArtworkPanel> p_wnd)
 {
-    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 0));
-    // m_items.add_item(new uie::menu_node_separator_t());
-    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 1));
-    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 2));
-    m_items.emplace_back(new MenuNodeArtworkType(p_wnd, 3));
+    const auto labels_view = artwork_type_labels | ranges::views::values | ranges::views::enumerate
+        | ranges::views::transform(
+            [](auto&& item) { return std::make_tuple(gsl::narrow<uint32_t>(item.first), item.second); });
+
+    for (auto&& [index, label] : labels_view) {
+        m_items.emplace_back(new uie::simple_command_menu_node(label.c_str(), "",
+            p_wnd->get_displayed_artwork_type_index() == index ? state_radiochecked : 0,
+            [p_wnd, index] { p_wnd->set_artwork_type_index(index); }));
+    }
 }
 
 void ArtworkPanel::MenuNodeTypePopup::get_child(size_t p_index, uie::menu_node_ptr& p_out) const
@@ -1323,68 +1383,6 @@ bool ArtworkPanel::MenuNodeTypePopup::get_display_data(pfc::string_base& p_out, 
 {
     p_out = "Artwork type";
     p_displayflags = 0;
-    return true;
-}
-
-ArtworkPanel::MenuNodePreserveAspectRatio::MenuNodePreserveAspectRatio(ArtworkPanel* p_wnd) : p_this(p_wnd) {}
-
-void ArtworkPanel::MenuNodePreserveAspectRatio::execute()
-{
-    p_this->m_preserve_aspect_ratio = !p_this->m_preserve_aspect_ratio;
-    cfg_preserve_aspect_ratio = p_this->m_preserve_aspect_ratio;
-    p_this->invalidate_window();
-}
-
-bool ArtworkPanel::MenuNodePreserveAspectRatio::get_description(pfc::string_base& p_out) const
-{
-    return false;
-}
-
-bool ArtworkPanel::MenuNodePreserveAspectRatio::get_display_data(
-    pfc::string_base& p_out, unsigned& p_displayflags) const
-{
-    p_out = "Preserve aspect ratio";
-    p_displayflags = (p_this->m_preserve_aspect_ratio) ? state_checked : 0;
-    return true;
-}
-
-void ArtworkPanel::MenuNodeOptions::execute()
-{
-    prefs::page_main.get_static_instance().show_tab("Artwork");
-}
-
-bool ArtworkPanel::MenuNodeOptions::get_description(pfc::string_base& p_out) const
-{
-    return false;
-}
-
-bool ArtworkPanel::MenuNodeOptions::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
-{
-    p_out = "Options";
-    p_displayflags = 0;
-    return true;
-}
-
-ArtworkPanel::MenuNodeLockType::MenuNodeLockType(ArtworkPanel* p_wnd) : p_this(p_wnd) {}
-
-void ArtworkPanel::MenuNodeLockType::execute()
-{
-    p_this->m_artwork_type_locked = !p_this->m_artwork_type_locked;
-    if (p_this->m_artwork_type_locked) {
-        p_this->m_selected_artwork_type_index = p_this->get_displayed_artwork_type_index();
-        p_this->m_artwork_type_override_index.reset();
-    }
-}
-
-bool ArtworkPanel::MenuNodeLockType::get_description(pfc::string_base& p_out) const
-{
-    return false;
-}
-
-bool ArtworkPanel::MenuNodeLockType::get_display_data(pfc::string_base& p_out, unsigned& p_displayflags) const
-{
-    p_out = "Lock artwork type";
-    p_displayflags = (p_this->m_artwork_type_locked) ? state_checked : 0;
     return true;
 }
 

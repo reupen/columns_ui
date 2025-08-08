@@ -128,3 +128,4 @@ using namespace uih::literals::spx;
 
 using namespace std::literals;
 using namespace fmt::literals;
+using namespace wil::literals;
