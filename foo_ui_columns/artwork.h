@@ -89,6 +89,8 @@ public:
     void open_core_image_viewer() const;
     bool is_show_in_file_explorer_available() const;
     void show_in_file_explorer();
+    bool is_copy_image_path_to_clipboard_available() const;
+    void copy_image_path_to_clipboard() const;
     void show_next_artwork_type();
     void set_artwork_type_index(uint32_t index);
     void set_tracking_mode(uint32_t new_tracking_mode);
