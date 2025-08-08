@@ -27,7 +27,8 @@
   [[#1307](https://github.com/reupen/columns_ui/pull/1307)]
 
 - A ‘Copy path’ command was added to the Artwork view context menu.
-  [[#1313](https://github.com/reupen/columns_ui/pull/1313)]
+  [[#1313](https://github.com/reupen/columns_ui/pull/1313),
+  [#1314](https://github.com/reupen/columns_ui/pull/1314)]
 
 - When right-clicking in the Artwork view, a dedicated context menu is now shown
   (rather than the parent splitter’s context menu with Artwork view items

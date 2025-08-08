@@ -532,6 +532,9 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
     if (is_copy_image_path_to_clipboard_available())
         menu.append_command(ID_COPY_PATH, L"Copy path");
 
+    if (menu.size() > 0)
+        menu.append_separator();
+
     menu.append_command(ID_RELOAD_ARTWORK, L"Reload artwork");
     menu.append_separator();
     menu.append_submenu(std::move(artwork_type_submenu), L"Artwork type");
