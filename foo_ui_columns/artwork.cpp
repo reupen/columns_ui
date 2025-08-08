@@ -189,17 +189,20 @@ void ArtworkPanel::get_config(stream_writer* p_writer, abort_callback& p_abort) 
 
 void ArtworkPanel::get_menu_items(ui_extension::menu_hook_t& p_hook)
 {
-    if (is_core_image_viewer_available()) {
+    if (is_core_image_viewer_available())
         p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Open in pop-up viewer",
             "Opens the image in the foobar2000 picture viewer.", 0,
             [this, self = ptr{this}] { open_core_image_viewer(); })));
-    }
 
-    if (is_show_in_file_explorer_available()) {
+    if (is_show_in_file_explorer_available())
         p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Show in File Explorer",
             "Show and select the file that is the source of the displayed image in File Explorer.", 0,
             [this, self = ptr{this}] { show_in_file_explorer(); })));
-    }
+
+    if (is_copy_image_path_to_clipboard_available())
+        p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node("Copy path",
+            "Copies the path or URL of the shown image to the clipboard.", 0,
+            [this, self = ptr{this}] { copy_image_path_to_clipboard(); })));
 
     p_hook.add_node(uie::menu_node_ptr(new uie::simple_command_menu_node(
         "Reload artwork", "Reloads the currently displayed artwork.", 0, [this, self = ptr{this}] {
@@ -484,6 +487,7 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
     enum : uint32_t {
         ID_OPEN_IMAGE_VIEWER = 1,
         ID_SHOW_IN_FILE_EXPLORER,
+        ID_COPY_PATH,
         ID_RELOAD_ARTWORK,
         ID_PRESERVE_ASPECT_RATIO,
         ID_LOCK_TYPE,
@@ -525,6 +529,9 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
     if (is_show_in_file_explorer_available())
         menu.append_command(ID_SHOW_IN_FILE_EXPLORER, L"Show in File Explorer");
 
+    if (is_copy_image_path_to_clipboard_available())
+        menu.append_command(ID_COPY_PATH, L"Copy path");
+
     menu.append_command(ID_RELOAD_ARTWORK, L"Reload artwork");
     menu.append_separator();
     menu.append_submenu(std::move(artwork_type_submenu), L"Artwork type");
@@ -544,6 +551,9 @@ void ArtworkPanel::handle_wm_contextmenu(HWND wnd, POINT pt)
         break;
     case ID_SHOW_IN_FILE_EXPLORER:
         show_in_file_explorer();
+        break;
+    case ID_COPY_PATH:
+        copy_image_path_to_clipboard();
         break;
     case ID_RELOAD_ARTWORK:
         invalidate_window();
@@ -992,6 +1002,46 @@ void ArtworkPanel::show_in_file_explorer()
         }
         CATCH_LOG()
     });
+}
+
+bool ArtworkPanel::is_copy_image_path_to_clipboard_available() const
+{
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
+    const auto paths = m_artwork_reader->get_paths(artwork_type_id);
+    return paths.is_valid() && paths->get_count() > 0;
+}
+
+void ArtworkPanel::copy_image_path_to_clipboard() const
+{
+    const auto artwork_type_id = artwork_type_ids[get_displayed_artwork_type_index()];
+    const auto paths = m_artwork_reader->get_paths(artwork_type_id);
+
+    if (!paths.is_valid() || paths->get_count() == 0)
+        return;
+
+    const auto path = paths->get_path(0);
+    pfc::string8 native_path_utf8;
+    std::string native_archive_item_path_utf8;
+
+    if (!filesystem::g_get_native_path(path, native_path_utf8) && archive_impl::g_is_unpack_path(path)) {
+        pfc::string8 archive_path;
+        pfc::string8 archive_item_relative_path;
+        pfc::string8 native_archive_path;
+
+        if (archive_impl::g_parse_unpack_path(path, archive_path, archive_item_relative_path)
+            && filesystem::g_get_native_path(archive_path.c_str(), native_archive_path)) {
+            const auto fs = filesystem::tryGet(archive_path.c_str());
+
+            if (fs.is_valid()) {
+                archive_item_relative_path.replace_char('/', fs->pathSeparator());
+                fmt::format_to(std::back_insert_iterator(native_archive_item_path_utf8), "{}{:c}{}",
+                    native_archive_path.c_str(), fs->pathSeparator(), archive_item_relative_path.c_str());
+            }
+        }
+    }
+
+    uih::set_clipboard_text(
+        native_archive_item_path_utf8.empty() ? native_path_utf8.c_str() : native_archive_item_path_utf8.c_str());
 }
 
 void ArtworkPanel::show_next_artwork_type()
