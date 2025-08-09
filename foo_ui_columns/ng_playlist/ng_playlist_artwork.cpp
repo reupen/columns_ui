@@ -14,7 +14,7 @@ namespace cui::panels::playlist_view {
 
 namespace {
 
-[[nodiscard]] D2D1_RECT_U create_hbitmap_from_d2d_bitmap(const ArtworkRenderingContext::Ptr& context,
+[[nodiscard]] D2D1_RECT_U render_d2d_bitmap(const ArtworkRenderingContext::Ptr& context,
     const wil::com_ptr<ID2D1Bitmap1>& d2d_bitmap, const wil::com_ptr<ID2D1ColorContext>& dest_colour_context,
     const int target_width, const int target_height, bool show_reflection)
 {
@@ -216,11 +216,13 @@ namespace {
 
         const auto dest_colour_context = get_or_create_colour_context_for_display(context, display_profile_name);
         const auto render_rect
-            = create_hbitmap_from_d2d_bitmap(context, d2d_bitmap, dest_colour_context, width, height, b_reflection);
+            = render_d2d_bitmap(context, d2d_bitmap, dest_colour_context, width, height, b_reflection);
+
+        const auto render_width = render_rect.right;
+        const auto render_height = render_rect.bottom;
 
         wil::com_ptr<ID2D1Bitmap1> cpu_bitmap;
-        THROW_IF_FAILED(context->d2d_device_context->CreateBitmap(
-            {gsl::narrow<unsigned>(width), gsl::narrow<unsigned>(height)}, nullptr, 0,
+        THROW_IF_FAILED(context->d2d_device_context->CreateBitmap({render_width, render_height}, nullptr, 0,
             D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_CANNOT_DRAW | D2D1_BITMAP_OPTIONS_CPU_READ,
                 D2D1::PixelFormat(DXGI_FORMAT_B8G8R8A8_UNORM, D2D1_ALPHA_MODE_PREMULTIPLIED)),
             &cpu_bitmap));
@@ -233,7 +235,7 @@ namespace {
         auto _ = gsl::finally([&] { THROW_IF_FAILED(cpu_bitmap->Unmap()); });
 
         return gdi::create_hbitmap_from_32bpp_data(
-            width, height, mapped_rect.bits, mapped_rect.pitch * height, mapped_rect.pitch);
+            render_width, render_height, mapped_rect.bits, mapped_rect.pitch * render_height, mapped_rect.pitch);
     } catch (const std::exception& ex) {
         fbh::print_to_console("Playlist view – loading image failed: ", ex.what());
         return nullptr;

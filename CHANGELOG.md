@@ -45,7 +45,8 @@
   playlist view. [[#1281](https://github.com/reupen/columns_ui/pull/1281),
   [#1289](https://github.com/reupen/columns_ui/pull/1289),
   [#1292](https://github.com/reupen/columns_ui/pull/1292),
-  [#1299](https://github.com/reupen/columns_ui/pull/1299)]
+  [#1299](https://github.com/reupen/columns_ui/pull/1299),
+  [#1317](https://github.com/reupen/columns_ui/pull/1317)]
 
 #### Buttons toolbar
 
