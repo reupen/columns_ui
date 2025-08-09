@@ -29,7 +29,7 @@ public:
     {
         const auto iter = m_this->find_active_panel_by_wnd(wnd);
 
-        if (iter == m_this->m_panels.end())
+        if (iter == m_this->m_active_panels.end())
             return;
 
         const auto p_ext = *iter;
@@ -77,7 +77,7 @@ public:
 
         const auto iter = m_this->find_active_panel_by_wnd(wnd);
 
-        if (iter == m_this->m_panels.end())
+        if (iter == m_this->m_active_panels.end())
             return false;
 
         if (m_this->get_host()->is_visible(m_this->get_wnd()))
@@ -98,7 +98,7 @@ public:
 
         const auto iter = m_this->find_active_panel_by_wnd(wnd);
 
-        if (iter == m_this->m_panels.end())
+        if (iter == m_this->m_active_panels.end())
             return false;
 
         TabCtrl_SetCurSel(m_this->m_wnd_tabs, std::distance(m_this->m_active_panels.begin(), iter));
@@ -112,7 +112,7 @@ public:
     {
         const auto iter = m_this->find_active_panel_by_wnd(wnd);
 
-        if (iter == m_this->m_panels.end())
+        if (iter == m_this->m_active_panels.end())
             return;
 
         const auto p_ext = *iter;
