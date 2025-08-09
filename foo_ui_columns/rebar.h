@@ -88,7 +88,7 @@ public:
     HWND init();
 
     void refresh_band_configs();
-    const std::vector<RebarBand>& get_bands() const { return m_bands; }
+    const std::vector<RebarBand::Ptr>& get_bands() const { return m_bands; }
 
     [[nodiscard]] std::vector<RebarBandState> get_band_states() const;
 
@@ -124,7 +124,7 @@ public:
 
     auto find_band_by_hwnd(HWND wnd)
     {
-        return std::ranges::find_if(m_bands, [&wnd](auto&& item) { return item.m_wnd == wnd; });
+        return std::ranges::find_if(m_bands, [&wnd](auto&& item) { return item->m_wnd == wnd; });
     }
 
 private:
@@ -140,7 +140,7 @@ private:
     void fix_z_order();
 
     WNDPROC m_rebar_wnd_proc{nullptr};
-    std::vector<RebarBand> m_bands;
+    std::vector<RebarBand::Ptr> m_bands;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;
 
     friend class RebarWindowHost;

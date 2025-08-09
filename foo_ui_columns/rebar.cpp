@@ -287,7 +287,7 @@ public:
             auto iterator = g_rebar_window->find_band_by_hwnd(wnd);
             if (iterator != g_rebar_window->m_bands.end()) {
                 const auto index = std::distance(g_rebar_window->m_bands.begin(), iterator);
-                iterator->m_state.m_width = width;
+                (*iterator)->m_state.m_width = width;
                 g_rebar_window->update_band(index, true);
                 return true;
             }
@@ -339,7 +339,8 @@ HWND RebarWindow::init()
 {
     auto& band_states = g_cfg_rebar.get_rebar_info();
 
-    m_bands = band_states | ranges::views::transform([](auto&& band_state) { return RebarBand{band_state}; })
+    m_bands = band_states
+        | ranges::views::transform([](auto&& band_state) { return std::make_shared<RebarBand>(band_state); })
         | ranges::to<std::vector>();
 
     if (!wnd_rebar) {
@@ -370,12 +371,12 @@ HWND RebarWindow::init()
 void RebarWindow::refresh_band_configs()
 {
     for (auto&& band : m_bands) {
-        if (band.m_wnd && band.m_window.is_valid()) {
+        if (band->m_wnd && band->m_window.is_valid()) {
             try {
                 abort_callback_dummy aborter;
-                stream_writer_memblock_ref writer(band.m_state.m_config);
-                band.m_state.m_config.set_size(0);
-                band.m_window->get_config(&writer, aborter);
+                stream_writer_memblock_ref writer(band->m_state.m_config);
+                band->m_state.m_config.set_size(0);
+                band->m_window->get_config(&writer, aborter);
             } catch (const exception_io&) {
             }
         }
@@ -386,9 +387,9 @@ bool RebarWindow::on_menu_char(unsigned short c)
 {
     bool rv = false;
     for (auto&& band : m_bands) {
-        if (band.m_window.is_valid() && band.m_wnd) {
+        if (band->m_window.is_valid() && band->m_wnd) {
             service_ptr_t<uie::menu_window> p_menu_ext;
-            if (band.m_window->service_query_t(p_menu_ext)) {
+            if (band->m_window->service_query_t(p_menu_ext)) {
                 rv = p_menu_ext->on_menuchar(c);
                 if (rv)
                     break;
@@ -401,9 +402,9 @@ bool RebarWindow::on_menu_char(unsigned short c)
 void RebarWindow::show_accelerators()
 {
     for (auto&& band : m_bands) {
-        if (band.m_window.is_valid() && band.m_wnd) {
+        if (band->m_window.is_valid() && band->m_wnd) {
             service_ptr_t<uie::menu_window> p_menu_ext;
-            if (band.m_window->service_query_t(p_menu_ext)) {
+            if (band->m_window->service_query_t(p_menu_ext)) {
                 p_menu_ext->show_accelerators();
             }
         }
@@ -413,9 +414,9 @@ void RebarWindow::show_accelerators()
 void RebarWindow::hide_accelerators()
 {
     for (auto&& band : m_bands) {
-        if (band.m_window.is_valid() && band.m_wnd) {
+        if (band->m_window.is_valid() && band->m_wnd) {
             service_ptr_t<uie::menu_window> p_menu_ext;
-            if (band.m_window->service_query_t(p_menu_ext)) {
+            if (band->m_window->service_query_t(p_menu_ext)) {
                 p_menu_ext->hide_accelerators();
             }
         }
@@ -425,9 +426,9 @@ void RebarWindow::hide_accelerators()
 bool RebarWindow::is_menu_focused()
 {
     for (auto&& band : m_bands) {
-        if (band.m_window.is_valid() && band.m_wnd) {
+        if (band->m_window.is_valid() && band->m_wnd) {
             service_ptr_t<uie::menu_window> p_menu_ext;
-            if (band.m_window->service_query_t(p_menu_ext)) {
+            if (band->m_window->service_query_t(p_menu_ext)) {
                 if (p_menu_ext->is_menu_focused())
                     return true;
             }
@@ -439,9 +440,9 @@ bool RebarWindow::is_menu_focused()
 bool RebarWindow::get_previous_menu_focus_window(HWND& wnd_previous) const
 {
     for (auto&& band : m_bands) {
-        if (band.m_window.is_valid() && band.m_wnd) {
+        if (band->m_window.is_valid() && band->m_wnd) {
             service_ptr_t<uie::menu_window_v2> p_menu_ext;
-            if (band.m_window->service_query_t(p_menu_ext)) {
+            if (band->m_window->service_query_t(p_menu_ext)) {
                 if (p_menu_ext->is_menu_focused()) {
                     wnd_previous = p_menu_ext->get_previous_focus_window();
                     return true;
@@ -457,9 +458,9 @@ bool RebarWindow::set_menu_focus()
     bool rv = false;
 
     for (auto&& band : m_bands) {
-        if (band.m_window.is_valid() && band.m_wnd) {
+        if (band->m_window.is_valid() && band->m_wnd) {
             service_ptr_t<uie::menu_window> p_menu_ext;
-            if (band.m_window->service_query_t(p_menu_ext)) {
+            if (band->m_window->service_query_t(p_menu_ext)) {
                 if (!rv) {
                     p_menu_ext->set_focus();
                     rv = true;
@@ -500,7 +501,7 @@ std::optional<LRESULT> RebarWindow::handle_custom_draw(const LPNMCUSTOMDRAW lpnm
         int row_bottom{};
 
         for (auto&& [band_index, band] : ranges::views::enumerate(m_bands)) {
-            if (band_index == 0 || band.m_state.m_break_before_band) {
+            if (band_index == 0 || band->m_state.m_break_before_band) {
                 const int row_height
                     = gsl::narrow<int>(SendMessage(lpnmcd->hdr.hwndFrom, RB_GETROWHEIGHT, band_index, 0));
                 row_bottom += row_height;
@@ -543,36 +544,46 @@ void RebarWindow::save_bands()
 
     const auto count = static_cast<UINT>(SendMessage(wnd_rebar, RB_GETBANDCOUNT, 0, 0));
 
-    bool b_death = false;
+    if (count == 0 || band_count != count)
+        return;
 
-    if (count && band_count == count) {
-        for (uint32_t n = 0; n < count; n++) {
-            const auto b_OK = SendMessage(wnd_rebar, RB_GETBANDINFO, n, reinterpret_cast<LPARAM>(&rbbi));
-            const auto band_index = static_cast<uint32_t>(rbbi.lParam);
-            if (b_OK && band_index < count) {
-                order[n] = band_index;
-                m_bands[band_index].m_state.m_width = rbbi.cx;
-                m_bands[band_index].m_state.m_break_before_band = ((rbbi.fStyle & RBBS_BREAK) != 0);
-            } else
-                b_death = true;
+    bool band_error_occurred{};
+
+    for (uint32_t n = 0; n < count; n++) {
+        if (!SendMessage(wnd_rebar, RB_GETBANDINFO, n, reinterpret_cast<LPARAM>(&rbbi))) {
+            band_error_occurred = true;
+            continue;
         }
 
-        if (!b_death)
-            destructive_reorder(m_bands, order);
-        refresh_bands();
+        const auto band = reinterpret_cast<RebarBand*>(rbbi.lParam);
+        const auto iter = ranges::find_if(m_bands, [band](auto&& item) { return item.get() == band; });
+
+        if (iter == m_bands.end()) {
+            band_error_occurred = true;
+            continue;
+        }
+
+        order[n] = std::distance(m_bands.begin(), iter);
+        band->m_state.m_width = rbbi.cx;
+        band->m_state.m_break_before_band = ((rbbi.fStyle & RBBS_BREAK) != 0);
     }
+
+    if (!band_error_occurred)
+        destructive_reorder(m_bands, order);
+
+    refresh_bands();
 }
 
 bool RebarWindow::check_band(const GUID& id)
 {
-    return std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_state.m_guid == id; })
+    return std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band->m_state.m_guid == id; })
         != m_bands.end();
 }
 
 bool RebarWindow::find_band(const GUID& id, size_t& out)
 {
     const auto iterator
-        = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band.m_state.m_guid == id; });
+        = std::find_if(m_bands.begin(), m_bands.end(), [&id](auto&& band) { return band->m_state.m_guid == id; });
 
     out = std::distance(m_bands.begin(), iterator);
     return iterator != m_bands.end();
@@ -590,18 +601,18 @@ bool RebarWindow::delete_band(const GUID& id)
 void RebarWindow::destroy_bands()
 {
     for (auto&& band : m_bands) {
-        if (!band.m_window.is_valid())
+        if (!band->m_window.is_valid())
             continue;
 
-        band.m_state.m_config.set_size(0);
-        stream_writer_memblock_ref data(band.m_state.m_config);
+        band->m_state.m_config.set_size(0);
+        stream_writer_memblock_ref data(band->m_state.m_config);
         try {
-            band.m_window->get_config(&data, fb2k::noAbort);
+            band->m_window->get_config(&data, fb2k::noAbort);
         } catch (const pfc::exception&) {
         }
-        band.m_window->destroy_window();
-        band.m_wnd = nullptr;
-        band.m_window.release();
+        band->m_window->destroy_window();
+        band->m_wnd = nullptr;
+        band->m_window.release();
     }
 }
 
@@ -624,12 +635,12 @@ void RebarWindow::delete_band(size_t n)
     if (n < m_bands.size()) {
         SendMessage(wnd_rebar, RB_SHOWBAND, n, FALSE);
         SendMessage(wnd_rebar, RB_DELETEBAND, n, 0);
-        ui_extension::window_ptr p_ext = m_bands[n].m_window;
+        ui_extension::window_ptr p_ext = m_bands[n]->m_window;
         if (p_ext.is_valid()) {
             p_ext->destroy_window();
             p_ext.release();
         }
-        cache.add_entry(m_bands[n].m_state.m_guid, m_bands[n].m_state.m_width);
+        cache.add_entry(m_bands[n]->m_state.m_guid, m_bands[n]->m_state.m_width);
         m_bands.erase(m_bands.begin() + n);
         refresh_bands();
     }
@@ -642,11 +653,15 @@ void RebarWindow::delete_band(HWND wnd, bool destroy)
         auto index = std::distance(m_bands.begin(), iter);
         SendMessage(wnd_rebar, RB_SHOWBAND, index, FALSE);
         SendMessage(wnd_rebar, RB_DELETEBAND, index, 0);
-        if (iter->m_window.is_valid()) {
+
+        const auto band = *iter;
+
+        if (band->m_window.is_valid()) {
             if (destroy)
-                iter->m_window->destroy_window();
+                band->m_window->destroy_window();
         }
-        cache.add_entry(iter->m_state.m_guid, iter->m_state.m_width);
+
+        cache.add_entry(band->m_state.m_guid, band->m_state.m_width);
         m_bands.erase(iter);
         refresh_bands();
     }
@@ -654,24 +669,24 @@ void RebarWindow::delete_band(HWND wnd, bool destroy)
 
 std::vector<RebarBandState> RebarWindow::get_band_states() const
 {
-    return m_bands | ranges::views::transform([](auto&& band) { return band.m_state; }) | ranges::to<std::vector>();
+    return m_bands | ranges::views::transform([](auto&& band) { return band->m_state; }) | ranges::to<std::vector>();
 }
 
 void RebarWindow::add_band(const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
-    m_bands.emplace_back(RebarBand{RebarBandState{guid, width}, p_ext});
+    m_bands.emplace_back(std::make_shared<RebarBand>(RebarBandState{guid, width}, p_ext));
     refresh_bands();
 }
 
 void RebarWindow::insert_band(unsigned idx, const GUID& guid, unsigned width, const ui_extension::window_ptr& p_ext)
 {
-    m_bands.emplace(m_bands.begin() + idx, RebarBand{RebarBandState{guid, width}, p_ext});
+    m_bands.emplace(m_bands.begin() + idx, std::make_shared<RebarBand>(RebarBandState{guid, width}, p_ext));
     refresh_bands();
 }
 
 void RebarWindow::update_band(size_t n, bool size)
 {
-    ui_extension::window_ptr p_ext = m_bands[n].m_window;
+    ui_extension::window_ptr p_ext = m_bands[n]->m_window;
     if (p_ext.is_valid()) {
         uREBARBANDINFO rbbi{};
         rbbi.cbSize = sizeof(uREBARBANDINFO);
@@ -681,7 +696,7 @@ void RebarWindow::update_band(size_t n, bool size)
         MINMAXINFO mmi{};
         mmi.ptMaxTrackSize.x = MAXLONG;
         mmi.ptMaxTrackSize.y = MAXLONG;
-        SendMessage(m_bands[n].m_wnd, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));
+        SendMessage(m_bands[n]->m_wnd, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));
 
         if (mmi.ptMaxTrackSize.y < 0)
             mmi.ptMaxTrackSize.y = 0;
@@ -697,7 +712,7 @@ void RebarWindow::update_band(size_t n, bool size)
 
         if (size) {
             rbbi.fMask |= RBBIM_SIZE;
-            rbbi.cx = m_bands[n].m_state.m_width;
+            rbbi.cx = m_bands[n]->m_state.m_width;
         }
 
         uRebar_InsertItem(wnd_rebar, gsl::narrow<int>(n), &rbbi, false);
@@ -720,11 +735,11 @@ void RebarWindow::refresh_bands()
         uREBARBANDINFO rbbi{};
         rbbi.cbSize = sizeof(uREBARBANDINFO);
 
-        if (!band.m_wnd) {
-            ui_extension::window_ptr p_ext = band.m_window;
+        if (!band->m_wnd) {
+            ui_extension::window_ptr p_ext = band->m_window;
             bool b_new = false;
             if (!p_ext.is_valid()) {
-                ui_extension::window::create_by_guid(band.m_state.m_guid, p_ext);
+                ui_extension::window::create_by_guid(band->m_state.m_guid, p_ext);
                 b_new = true;
             }
 
@@ -733,23 +748,23 @@ void RebarWindow::refresh_bands()
                 if (b_new) {
                     try {
                         p_ext->set_config_from_ptr(
-                            band.m_state.m_config.get_ptr(), band.m_state.m_config.get_size(), aborter);
+                            band->m_state.m_config.get_ptr(), band->m_state.m_config.get_size(), aborter);
                     } catch (const exception_io& e) {
                         console::formatter formatter;
                         formatter << "Error setting panel config: " << e.what();
                     }
                 }
-                band.m_wnd = p_ext->create_or_transfer_window(wnd_rebar, &host);
-                if (band.m_wnd) {
-                    band.m_window = p_ext;
-                    ShowWindow(band.m_wnd, SW_SHOWNORMAL);
+                band->m_wnd = p_ext->create_or_transfer_window(wnd_rebar, &host);
+                if (band->m_wnd) {
+                    band->m_window = p_ext;
+                    ShowWindow(band->m_wnd, SW_SHOWNORMAL);
 
                     rbbi.fMask |= RBBIM_CHILDSIZE;
 
                     MINMAXINFO mmi{};
                     mmi.ptMaxTrackSize.x = MAXLONG;
                     mmi.ptMaxTrackSize.y = MAXLONG;
-                    SendMessage(band.m_wnd, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));
+                    SendMessage(band->m_wnd, WM_GETMINMAXINFO, 0, reinterpret_cast<LPARAM>(&mmi));
 
                     if (mmi.ptMaxTrackSize.y < 0)
                         mmi.ptMaxTrackSize.y = 0;
@@ -766,13 +781,13 @@ void RebarWindow::refresh_bands()
             }
         }
 
-        if (band.m_wnd) {
+        if (band->m_wnd) {
             rbbi.fMask |= RBBIM_SIZE | RBBIM_CHILD | RBBIM_HEADERSIZE | RBBIM_LPARAM | RBBIM_STYLE;
-            rbbi.cx = m_bands[n].m_state.m_width;
-            rbbi.fStyle = RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS | (band.m_state.m_break_before_band ? RBBS_BREAK : 0)
+            rbbi.cx = m_bands[n]->m_state.m_width;
+            rbbi.fStyle = RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS | (band->m_state.m_break_before_band ? RBBS_BREAK : 0)
                 | (cfg_lock ? RBBS_NOGRIPPER : 0);
-            rbbi.lParam = n;
-            rbbi.hwndChild = band.m_wnd;
+            rbbi.lParam = reinterpret_cast<LPARAM>(band.get());
+            rbbi.hwndChild = band->m_wnd;
             rbbi.cxHeader = cfg_lock ? 5 : 9;
 
             uRebar_InsertItem(wnd_rebar, n, &rbbi, adding);
@@ -812,8 +827,8 @@ void RebarWindow::fix_z_order()
 {
     const auto dwp = BeginDeferWindowPos(gsl::narrow<int>(m_bands.size()));
     for (auto&& band : m_bands) {
-        if (band.m_wnd)
-            DeferWindowPos(dwp, band.m_wnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+        if (band->m_wnd)
+            DeferWindowPos(dwp, band->m_wnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
     }
     EndDeferWindowPos(dwp);
 }
