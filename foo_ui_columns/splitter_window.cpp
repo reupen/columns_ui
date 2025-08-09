@@ -45,20 +45,13 @@ void FlatSplitterPanel::destroy_children()
     for (size_t n = 0; n < count; n++) {
         std::shared_ptr<Panel> pal = m_panels[n];
         if (pal->m_child.is_valid()) {
-            //            pal->m_child_data.set_size(0);
-            //            stream_writer_memblock_ref blah(pal->m_child_data);
-            //            pal->m_child->get_config(&blah);
             pal->m_child->destroy_window();
             pal->m_wnd_child = nullptr;
             DestroyWindow(pal->m_wnd);
             pal->m_wnd = nullptr;
             pal->m_child.release();
-            pal->m_interface.release();
-            // pal->m_container.m_this.release();
         }
     }
-
-    // m_wnd = NULL;
 }
 
 std::vector<FlatSplitterPanel::Panel::Ptr>::iterator FlatSplitterPanel::find_panel_by_container_wnd(HWND wnd)
@@ -96,19 +89,7 @@ void FlatSplitterPanel::refresh_children()
             b_new = true;
         }
 
-        if (!panel->m_interface.is_valid()) {
-            service_ptr_t<service_base> temp;
-            g_splitter_host_vert.instance_create(temp);
-            uie::window_host_ptr ptr;
-            if (temp->service_query_t(ptr)) {
-                panel->m_interface = static_cast<FlatSplitterPanelHost*>(ptr.get_ptr());
-                panel->m_interface->set_window_ptr(this);
-            }
-        }
-
-        if (p_ext.is_valid()
-            && p_ext->is_available(
-                uie::window_host_ptr(static_cast<uie::window_host*>(panel->m_interface.get_ptr())))) {
+        if (p_ext.is_valid() && p_ext->is_available(m_window_host)) {
             pfc::string8 name;
             if (panel->m_use_custom_title) {
                 name = panel->m_custom_title;
@@ -134,8 +115,7 @@ void FlatSplitterPanel::refresh_children()
                     }
                 }
 
-                HWND wnd_panel = p_ext->create_or_transfer_window(
-                    wnd_host, uie::window_host_ptr(panel->m_interface.get_ptr())); // FIXX
+                HWND wnd_panel = p_ext->create_or_transfer_window(wnd_host, m_window_host);
                 if (wnd_panel) {
                     SetWindowLongPtr(wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE) | WS_CLIPSIBLINGS);
                     MINMAXINFO mmi{};
@@ -682,14 +662,12 @@ void FlatSplitterPanel::start_autohide_dehide(size_t p_panel, bool b_next_too)
 void FlatSplitterPanel::get_supported_panels(
     const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported)
 {
-    service_ptr_t<service_base> temp;
-    g_splitter_host_vert.instance_create(temp);
-    uie::window_host_ptr ptr;
-    if (temp->service_query_t(ptr))
-        (static_cast<FlatSplitterPanelHost*>(ptr.get_ptr()))->set_window_ptr(this);
+    const uie::window_host::ptr host
+        = m_window_host.is_valid() ? m_window_host : fb2k::service_new<FlatSplitterPanelHost>(this);
+
     size_t count = p_windows.get_count();
     for (size_t i = 0; i < count; i++)
-        p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
+        p_mask_unsupported.set(i, !p_windows[i]->is_available(host));
 }
 
 bool FlatSplitterPanel::is_point_ours(
@@ -1005,11 +983,6 @@ void FlatSplitterPanel::FlatSplitterPanelHost::relinquish_ownership(HWND wnd)
         m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
         m_this->on_size_changed();
     }
-}
-
-void FlatSplitterPanel::FlatSplitterPanelHost::set_window_ptr(FlatSplitterPanel* p_ptr)
-{
-    m_this = p_ptr;
 }
 
 bool FlatSplitterPanel::FlatSplitterPanelHost::set_window_visibility(HWND wnd, bool visibility)

@@ -104,8 +104,6 @@ public:
         void write(stream_writer* out, abort_callback& p_abort);
         void _export(stream_writer* out, abort_callback& p_abort);
         void import(stream_reader* t, abort_callback& p_abort);
-
-        service_ptr_t<class TabStackSplitterHost> m_interface;
     };
 
     LRESULT on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) override;
@@ -140,6 +138,7 @@ public:
 
 private:
     bool m_refresh_children_in_progress{};
+    service_ptr_t<TabStackSplitterHost> m_window_host;
     std::vector<Panel::Ptr> m_panels;
     std::vector<Panel::Ptr> m_active_panels;
     HWND m_wnd_tabs{};

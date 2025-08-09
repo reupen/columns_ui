@@ -41,9 +41,10 @@ public:
     bool set_config_item(size_t index, const GUID& p_type, stream_reader* p_source, abort_callback& p_abort) override;
 
     class FlatSplitterPanelHost : public ui_extension::window_host_ex {
-        service_ptr_t<FlatSplitterPanel> m_this;
-
     public:
+        FlatSplitterPanelHost() {}
+        explicit FlatSplitterPanelHost(FlatSplitterPanel* window_instance) : m_this(window_instance) {}
+
         const GUID& get_host_guid() const override;
 
         bool get_keyboard_shortcuts_enabled() const override;
@@ -65,9 +66,10 @@ public:
         bool is_visibility_modifiable(HWND wnd, bool desired_visibility) const override;
         bool set_window_visibility(HWND wnd, bool visibility) override;
 
-        void set_window_ptr(FlatSplitterPanel* p_ptr);
-
         void relinquish_ownership(HWND wnd) override;
+
+    private:
+        service_ptr_t<FlatSplitterPanel> m_this;
     };
 
     bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy) override;
@@ -140,8 +142,6 @@ private:
         bool m_use_custom_title{false};
         pfc::string8 m_custom_title;
 
-        service_ptr_t<class FlatSplitterPanelHost> m_interface;
-
         uih::IntegerAndDpi<uint32_t> m_size{150};
 
         uie::splitter_item_full_v2_t* create_splitter_item(bool b_set_ptr = true);
@@ -195,6 +195,7 @@ private:
     std::vector<Panel::Ptr>::iterator find_panel_by_container_wnd(HWND wnd);
     std::vector<Panel::Ptr>::iterator find_panel_by_panel_wnd(HWND wnd);
 
+    service_ptr_t<FlatSplitterPanelHost> m_window_host;
     std::vector<Panel::Ptr> m_panels;
     HWND m_wnd{nullptr};
 

@@ -11,6 +11,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
     case WM_NCCREATE:
         m_wnd = wnd;
         g_instances.add_item(this);
+        m_window_host = fb2k::service_new<FlatSplitterPanelHost>(this);
         break;
     case WM_CREATE:
         if (!g_count++) {
@@ -30,6 +31,7 @@ LRESULT FlatSplitterPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         }
         break;
     case WM_NCDESTROY:
+        m_window_host.reset();
         g_instances.remove_item(this);
         m_wnd = nullptr;
         break;

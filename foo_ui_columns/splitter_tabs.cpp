@@ -10,9 +10,10 @@ namespace cui::panels::tab_stack {
 const GUID g_guid_splitter_tabs = {0x6f000fc4, 0x3f86, 0x4fc5, {0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6}};
 
 class TabStackPanel::TabStackSplitterHost : public ui_extension::window_host {
-    service_ptr_t<TabStackPanel> m_this;
-
 public:
+    TabStackSplitterHost() {}
+    explicit TabStackSplitterHost(TabStackPanel* window_instance) : m_this(window_instance) {}
+
     const GUID& get_host_guid() const override
     {
         // {B5C88724-EDCD-46a1-90B9-C298309FDFB7}
@@ -106,8 +107,6 @@ public:
         return true;
     }
 
-    void set_window_ptr(TabStackPanel* p_ptr) { m_this = p_ptr; }
-
     void relinquish_ownership(HWND wnd) override
     {
         const auto active_iter = m_this->find_active_panel_by_wnd(wnd);
@@ -119,6 +118,9 @@ public:
 
         m_this->remove_panel(all_iter, false);
     }
+
+private:
+    service_ptr_t<TabStackPanel> m_this;
 };
 
 ui_extension::window_host_factory<TabStackPanel::TabStackSplitterHost> g_splitter_tabs_host;
@@ -126,14 +128,12 @@ ui_extension::window_host_factory<TabStackPanel::TabStackSplitterHost> g_splitte
 void TabStackPanel::get_supported_panels(
     const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported)
 {
-    service_ptr_t<service_base> temp;
-    g_splitter_tabs_host.instance_create(temp);
-    uie::window_host_ptr ptr;
-    if (temp->service_query_t(ptr))
-        (static_cast<TabStackSplitterHost*>(ptr.get_ptr()))->set_window_ptr(this);
+    const uie::window_host::ptr host
+        = m_window_host.is_valid() ? m_window_host : fb2k::service_new<TabStackSplitterHost>(this);
+
     size_t count = p_windows.get_count();
     for (size_t i = 0; i < count; i++)
-        p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
+        p_mask_unsupported.set(i, !p_windows[i]->is_available(host));
 }
 
 uie::splitter_item_full_v2_t* TabStackPanel::Panel::create_splitter_item()
@@ -179,7 +179,6 @@ void TabStackPanel::Panel::destroy()
         m_child.release();
     }
     m_this.release();
-    m_interface.release();
 }
 
 void TabStackPanel::Panel::refresh_child_data(abort_callback& p_abort)
@@ -487,6 +486,8 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 {
     switch (msg) {
     case WM_CREATE: {
+        m_window_host = fb2k::service_new<TabStackSplitterHost>(this);
+
         create_tabs();
         SetWindowPos(m_wnd_tabs, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
         refresh_children();
@@ -547,6 +548,7 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         std::erase(g_windows, this);
         destroy_children();
         destroy_tabs();
+        m_window_host.reset();
         break;
     case WM_WINDOWPOSCHANGED: {
         auto lpwp = (LPWINDOWPOS)lp;
@@ -693,19 +695,7 @@ void TabStackPanel::refresh_children()
             b_new = true;
         }
 
-        if (!panel->m_interface.is_valid()) {
-            service_ptr_t<service_base> temp;
-            g_splitter_tabs_host.instance_create(temp);
-            uie::window_host_ptr ptr;
-            if (temp->service_query_t(ptr)) {
-                panel->m_interface = static_cast<TabStackSplitterHost*>(ptr.get_ptr());
-                panel->m_interface->set_window_ptr(this);
-            }
-        }
-
-        if (p_ext.is_valid()
-            && p_ext->is_available(
-                uie::window_host_ptr(static_cast<uie::window_host*>(panel->m_interface.get_ptr())))) {
+        if (p_ext.is_valid() && p_ext->is_available(m_window_host)) {
             pfc::string8 name;
             if (panel->m_use_custom_title) {
                 name = panel->m_custom_title;
@@ -731,8 +721,7 @@ void TabStackPanel::refresh_children()
                 if (is_new_tab)
                     m_active_panels.emplace_back(panel);
 
-                HWND wnd_panel
-                    = p_ext->create_or_transfer_window(get_wnd(), uie::window_host_ptr(panel->m_interface.get_ptr()));
+                HWND wnd_panel = p_ext->create_or_transfer_window(get_wnd(), m_window_host.get_ptr());
                 if (wnd_panel) {
                     if (GetWindowLongPtr(wnd_panel, GWL_STYLE) & WS_VISIBLE) {
                         pfc::string8 name;
