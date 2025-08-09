@@ -79,7 +79,8 @@
 
 - The use of hardware acceleration for built-in panels that use Direct2D can now
   be turned off or on in Preferences.
-  [[#1308](https://github.com/reupen/columns_ui/pull/1308)]
+  [[#1308](https://github.com/reupen/columns_ui/pull/1308),
+  [#1317](https://github.com/reupen/columns_ui/pull/1317)]
 
   Hardware acceleration is now disabled by default due to inconsistent
   performance for different hardware.
