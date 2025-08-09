@@ -139,6 +139,7 @@ private:
      */
     void fix_z_order();
 
+    bool m_refresh_children_in_progress{};
     WNDPROC m_rebar_wnd_proc{nullptr};
     std::vector<RebarBand::Ptr> m_bands;
     std::unique_ptr<colours::dark_mode_notifier> m_dark_mode_notifier;

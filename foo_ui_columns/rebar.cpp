@@ -724,12 +724,20 @@ void RebarWindow::update_band(size_t n, bool size)
 
 void RebarWindow::refresh_bands()
 {
+    auto _ = wil::scope_exit(
+        [&, previous_value{m_refresh_children_in_progress}] { m_refresh_children_in_progress = previous_value; });
+
+    m_refresh_children_in_progress = true;
+
     abort_callback_dummy aborter;
 
     auto& host = g_ui_ext_host_rebar.get_static_instance();
-    auto count = m_bands.size();
-    for (auto n = 0u; n < count;) {
-        auto& band = m_bands[n];
+
+    // Create a copy to protect against window_host::relinquish_ownership() calls
+    // during iteration
+    const auto bands = m_bands;
+
+    for (auto&& band : bands) {
         bool adding = false;
 
         uREBARBANDINFO rbbi{};
@@ -783,19 +791,17 @@ void RebarWindow::refresh_bands()
 
         if (band->m_wnd) {
             rbbi.fMask |= RBBIM_SIZE | RBBIM_CHILD | RBBIM_HEADERSIZE | RBBIM_LPARAM | RBBIM_STYLE;
-            rbbi.cx = m_bands[n]->m_state.m_width;
+            rbbi.cx = band->m_state.m_width;
             rbbi.fStyle = RBBS_CHILDEDGE | RBBS_GRIPPERALWAYS | (band->m_state.m_break_before_band ? RBBS_BREAK : 0)
                 | (cfg_lock ? RBBS_NOGRIPPER : 0);
             rbbi.lParam = reinterpret_cast<LPARAM>(band.get());
             rbbi.hwndChild = band->m_wnd;
             rbbi.cxHeader = cfg_lock ? 5 : 9;
 
-            uRebar_InsertItem(wnd_rebar, n, &rbbi, adding);
-
-            n++;
+            const auto index = std::distance(m_bands.begin(), ranges::find(m_bands, band));
+            uRebar_InsertItem(wnd_rebar, gsl::narrow<int>(index), &rbbi, adding);
         } else {
-            m_bands.erase(m_bands.begin() + n);
-            --count;
+            std::erase(m_bands, band);
         }
     }
 
