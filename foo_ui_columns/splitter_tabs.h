@@ -16,7 +16,7 @@ public:
     unsigned get_type() const override;
 
     void insert_panel(size_t index, const uie::splitter_item_t* p_item) override;
-    void remove_panel(size_t index) override;
+    void remove_panel(size_t index) noexcept override;
     void replace_panel(size_t index, const uie::splitter_item_t* p_item) override;
 
     bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy) override
@@ -128,19 +128,25 @@ public:
     void on_size_changed(unsigned width, unsigned height);
     void on_size_changed();
     void on_active_tab_changed(int index_to, bool from_interaction = false);
+    std::optional<size_t> get_active_tab_index() const;
+    std::optional<size_t> get_active_panel_index() const;
+    Panel::Ptr get_active_panel() const;
+    std::optional<size_t> get_saved_active_panel_index() const;
 
     std::vector<Panel::Ptr>::iterator find_active_panel_by_wnd(HWND wnd);
+    void remove_panel(std::vector<Panel::Ptr>::iterator active_panels_iter, bool should_destroy) noexcept;
 
     TabStackPanel() = default;
 
 private:
+    bool m_refresh_children_in_progress{};
     std::vector<Panel::Ptr> m_panels;
     std::vector<Panel::Ptr> m_active_panels;
     HWND m_wnd_tabs{};
     WNDPROC m_tab_proc{};
     HWND m_up_down_control_wnd{};
     HWND m_active_child_wnd{};
-    std::optional<size_t> m_active_tab;
+    std::optional<size_t> m_saved_active_panel_index;
     static std::vector<service_ptr_t<t_self>> g_windows;
     uie::size_limit_t m_size_limits;
     int32_t m_mousewheel_delta{NULL};
