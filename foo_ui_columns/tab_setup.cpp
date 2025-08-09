@@ -19,6 +19,9 @@ public:
             uih::enhance_edit_control(wnd, IDC_STRING);
             SendDlgItemMessage(wnd, IDC_TRANSPARENCY_SPIN, UDM_SETRANGE32, 0, 255);
 
+            if (config::use_hardware_acceleration)
+                Button_SetCheck(GetDlgItem(wnd, IDC_HARDWARE_ACCELERATION), BST_CHECKED);
+
             if (!main_window.get_wnd())
                 EnableWindow(GetDlgItem(wnd, IDC_QUICKSETUP), FALSE);
 
