@@ -198,6 +198,7 @@ private:
     std::vector<Panel::Ptr> m_panels;
     HWND m_wnd{nullptr};
 
+    bool m_refresh_children_in_progress{};
     int m_last_position{};
     size_t m_panel_dragging{};
     bool m_panel_dragging_valid{false};

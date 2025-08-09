@@ -73,102 +73,104 @@ std::vector<FlatSplitterPanel::Panel::Ptr>::iterator FlatSplitterPanel::find_pan
 
 void FlatSplitterPanel::refresh_children()
 {
-    const auto count = m_panels.size();
-    pfc::array_t<bool> new_items;
-    new_items.set_count(count);
-    new_items.fill_null();
-    for (size_t n = 0; n < count; n++) {
-        if (!m_panels[n]->m_wnd) {
-            uie::window_ptr p_ext = m_panels[n]->m_child;
+    auto _ = wil::scope_exit(
+        [&, previous_value{m_refresh_children_in_progress}] { m_refresh_children_in_progress = previous_value; });
 
-            bool b_new = false;
+    m_refresh_children_in_progress = true;
 
-            if (!p_ext.is_valid()) {
-                create_by_guid(m_panels[n]->m_guid, p_ext);
-                b_new = true;
-            }
+    // Create a copy to protect against window_host::relinquish_ownership() calls
+    // during iteration
+    const auto panels = m_panels;
+    std::vector<Panel::Ptr> created_panels;
 
-            if (!m_panels[n]->m_interface.is_valid()) {
-                service_ptr_t<service_base> temp;
-                g_splitter_host_vert.instance_create(temp);
-                uie::window_host_ptr ptr;
-                if (temp->service_query_t(ptr)) {
-                    m_panels[n]->m_interface = static_cast<FlatSplitterPanelHost*>(ptr.get_ptr());
-                    m_panels[n]->m_interface->set_window_ptr(this);
-                }
-            }
+    for (auto&& panel : panels) {
+        if (panel->m_wnd)
+            continue;
 
-            if (p_ext.is_valid()
-                && p_ext->is_available(
-                    uie::window_host_ptr(static_cast<uie::window_host*>(m_panels[n]->m_interface.get_ptr())))) {
-                pfc::string8 name;
-                if (m_panels[n]->m_use_custom_title) {
-                    name = m_panels[n]->m_custom_title;
-                } else {
-                    if (!p_ext->get_short_name(name))
-                        p_ext->get_name(name);
-                }
+        uie::window_ptr p_ext = panel->m_child;
 
-                HWND wnd_host = m_panels[n]->m_container.create(m_wnd);
-                m_panels[n]->m_container.set_window_ptr(this);
+        bool b_new = false;
 
-                uSetWindowText(wnd_host, name);
-
-                if (wnd_host) {
-                    if (b_new) {
-                        try {
-                            abort_callback_dummy p_abort;
-                            p_ext->set_config_from_ptr(
-                                m_panels[n]->m_child_data.get_ptr(), m_panels[n]->m_child_data.get_size(), p_abort);
-                        } catch (const exception_io& e) {
-                            console::formatter formatter;
-                            formatter << "Error setting panel config: " << e.what();
-                        }
-                    }
-
-                    HWND wnd_panel = p_ext->create_or_transfer_window(
-                        wnd_host, uie::window_host_ptr(m_panels[n]->m_interface.get_ptr())); // FIXX
-                    if (wnd_panel) {
-                        SetWindowLongPtr(
-                            wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE) | WS_CLIPSIBLINGS);
-                        MINMAXINFO mmi{};
-                        mmi.ptMaxTrackSize.x = MAXLONG;
-                        mmi.ptMaxTrackSize.y = MAXLONG;
-                        SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
-                        helpers::clip_minmaxinfo(mmi);
-
-                        m_panels[n]->m_wnd = wnd_host;
-                        m_panels[n]->m_wnd_child = wnd_panel;
-                        m_panels[n]->m_child = p_ext;
-                        m_panels[n]->m_size_limits.min_height = mmi.ptMinTrackSize.y;
-                        m_panels[n]->m_size_limits.min_width = mmi.ptMinTrackSize.x;
-                        m_panels[n]->m_size_limits.max_width = mmi.ptMaxTrackSize.x;
-                        m_panels[n]->m_size_limits.max_height = mmi.ptMaxTrackSize.y;
-
-                        /*console::formatter() << "name: " << name <<
-                        " min width: " << (int32_t)mmi.ptMinTrackSize.x
-                        << " min height: " << (int32_t)mmi.ptMinTrackSize.y
-                        << " max width: " << (int32_t)mmi.ptMaxTrackSize.y
-                        << " max height: " << (int32_t)mmi.ptMaxTrackSize.y;*/
-
-                    } else {
-                        m_panels[n]->m_container.destroy();
-                    }
-                }
-            }
-            new_items[n] = true; // b_new;
+        if (!p_ext.is_valid()) {
+            create_by_guid(panel->m_guid, p_ext);
+            b_new = true;
         }
+
+        if (!panel->m_interface.is_valid()) {
+            service_ptr_t<service_base> temp;
+            g_splitter_host_vert.instance_create(temp);
+            uie::window_host_ptr ptr;
+            if (temp->service_query_t(ptr)) {
+                panel->m_interface = static_cast<FlatSplitterPanelHost*>(ptr.get_ptr());
+                panel->m_interface->set_window_ptr(this);
+            }
+        }
+
+        if (p_ext.is_valid()
+            && p_ext->is_available(
+                uie::window_host_ptr(static_cast<uie::window_host*>(panel->m_interface.get_ptr())))) {
+            pfc::string8 name;
+            if (panel->m_use_custom_title) {
+                name = panel->m_custom_title;
+            } else {
+                if (!p_ext->get_short_name(name))
+                    p_ext->get_name(name);
+            }
+
+            HWND wnd_host = panel->m_container.create(m_wnd);
+            panel->m_container.set_window_ptr(this);
+
+            uSetWindowText(wnd_host, name);
+
+            if (wnd_host) {
+                if (b_new) {
+                    try {
+                        abort_callback_dummy p_abort;
+                        p_ext->set_config_from_ptr(
+                            panel->m_child_data.get_ptr(), panel->m_child_data.get_size(), p_abort);
+                    } catch (const exception_io& e) {
+                        console::formatter formatter;
+                        formatter << "Error setting panel config: " << e.what();
+                    }
+                }
+
+                HWND wnd_panel = p_ext->create_or_transfer_window(
+                    wnd_host, uie::window_host_ptr(panel->m_interface.get_ptr())); // FIXX
+                if (wnd_panel) {
+                    SetWindowLongPtr(wnd_panel, GWL_STYLE, GetWindowLongPtr(wnd_panel, GWL_STYLE) | WS_CLIPSIBLINGS);
+                    MINMAXINFO mmi{};
+                    mmi.ptMaxTrackSize.x = MAXLONG;
+                    mmi.ptMaxTrackSize.y = MAXLONG;
+                    SendMessage(wnd_panel, WM_GETMINMAXINFO, 0, (LPARAM)&mmi);
+                    helpers::clip_minmaxinfo(mmi);
+
+                    panel->m_wnd = wnd_host;
+                    panel->m_wnd_child = wnd_panel;
+                    panel->m_child = p_ext;
+                    panel->m_size_limits.min_height = mmi.ptMinTrackSize.y;
+                    panel->m_size_limits.min_width = mmi.ptMinTrackSize.x;
+                    panel->m_size_limits.max_width = mmi.ptMaxTrackSize.x;
+                    panel->m_size_limits.max_height = mmi.ptMaxTrackSize.y;
+                } else {
+                    panel->m_container.destroy();
+                }
+            }
+        }
+
+        created_panels.emplace_back(panel);
     }
 
     on_size_changed();
 
     if (IsWindowVisible(get_wnd())) {
-        for (size_t n = 0; n < count; n++) {
-            if (new_items[n]) {
-                ShowWindow(m_panels[n]->m_wnd_child, SW_SHOWNORMAL);
-                ShowWindow(m_panels[n]->m_wnd, SW_SHOWNORMAL);
-            }
+        for (auto&& panel : created_panels) {
+            if (!panel->m_wnd_child)
+                continue;
+
+            ShowWindow(panel->m_wnd_child, SW_SHOWNORMAL);
+            ShowWindow(panel->m_wnd, SW_SHOWNORMAL);
         }
+
         get_host()->on_size_limit_change(get_wnd(), uie::size_limit_all);
         RedrawWindow(get_wnd(), nullptr, nullptr, RDW_UPDATENOW | RDW_ALLCHILDREN);
     }
@@ -984,6 +986,7 @@ int FlatSplitterPanel::g_get_caption_size()
 void FlatSplitterPanel::FlatSplitterPanelHost::relinquish_ownership(HWND wnd)
 {
     const auto iter = m_this->find_panel_by_panel_wnd(wnd);
+
     if (iter == m_this->m_panels.end())
         return;
 
@@ -992,11 +995,16 @@ void FlatSplitterPanel::FlatSplitterPanelHost::relinquish_ownership(HWND wnd)
     if (GetAncestor(wnd, GA_PARENT) == panel->m_wnd)
         console::warning("window left by ui extension");
 
-    DestroyWindow(panel->m_wnd);
+    panel->m_wnd_child = nullptr;
     panel->m_wnd = nullptr;
     panel->m_child.release();
+    panel->destroy();
     m_this->m_panels.erase(iter);
-    m_this->on_size_changed();
+
+    if (!m_this->m_refresh_children_in_progress) {
+        m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
+        m_this->on_size_changed();
+    }
 }
 
 void FlatSplitterPanel::FlatSplitterPanelHost::set_window_ptr(FlatSplitterPanel* p_ptr)
