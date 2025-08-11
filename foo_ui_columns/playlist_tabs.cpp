@@ -818,7 +818,10 @@ void PlaylistTabs::WindowHost::relinquish_ownership(HWND wnd)
     m_this->m_child_wnd = nullptr;
     m_this->m_host.release();
     m_this->m_child.release();
+    m_this->m_child_guid = pfc::guid_null;
+    m_this->m_child_data.set_size(0);
     m_this->reset_size_limits();
+    m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
 }
 
 bool PlaylistTabs::WindowHost::override_status_text_create(service_ptr_t<ui_status_text_override>& p_out)
