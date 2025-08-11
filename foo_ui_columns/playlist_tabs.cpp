@@ -34,14 +34,11 @@ HFONT PlaylistTabs::g_font = nullptr;
 void PlaylistTabs::get_supported_panels(
     const pfc::list_base_const_t<window::ptr>& p_windows, bit_array_var& p_mask_unsupported)
 {
-    service_ptr_t<service_base> temp;
-    g_tab_host.instance_create(temp);
-    uie::window_host_ptr ptr;
-    if (temp->service_query_t(ptr))
-        (static_cast<WindowHost*>(ptr.get_ptr()))->set_this(this);
-    size_t count = p_windows.get_count();
+    const uie::window_host::ptr host = m_host.is_valid() ? m_host : fb2k::service_new<WindowHost>(this);
+    const size_t count = p_windows.get_count();
+
     for (size_t i = 0; i < count; i++)
-        p_mask_unsupported.set(i, !p_windows[i]->is_available(ptr));
+        p_mask_unsupported.set(i, !p_windows[i]->is_available(host));
 }
 
 bool PlaylistTabs::is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy)
@@ -816,17 +813,15 @@ public:
 
 PlaylistTabsFontClient::factory<PlaylistTabsFontClient> g_font_client_switcher_tabs;
 
-void PlaylistTabs::WindowHost::set_this(PlaylistTabs* ptr)
-{
-    m_this = ptr;
-}
-
 void PlaylistTabs::WindowHost::relinquish_ownership(HWND wnd)
 {
     m_this->m_child_wnd = nullptr;
     m_this->m_host.release();
     m_this->m_child.release();
+    m_this->m_child_guid = pfc::guid_null;
+    m_this->m_child_data.set_size(0);
     m_this->reset_size_limits();
+    m_this->get_host()->on_size_limit_change(m_this->get_wnd(), uie::size_limit_all);
 }
 
 bool PlaylistTabs::WindowHost::override_status_text_create(service_ptr_t<ui_status_text_override>& p_out)

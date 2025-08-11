@@ -20,6 +20,9 @@ public:
     };
     class WindowHost : public ui_extension::window_host {
     public:
+        WindowHost() {}
+        explicit WindowHost(PlaylistTabs* window_instance) : m_this(window_instance) {}
+
         unsigned is_resize_supported(HWND wnd) const override;
 
         bool request_resize(HWND wnd, unsigned flags, unsigned width, unsigned height) override;
@@ -38,8 +41,6 @@ public:
         bool override_status_text_create(service_ptr_t<ui_status_text_override>& p_out) override;
 
         void relinquish_ownership(HWND wnd) override;
-
-        void set_this(PlaylistTabs* ptr);
 
     private:
         service_ptr_t<PlaylistTabs> m_this;

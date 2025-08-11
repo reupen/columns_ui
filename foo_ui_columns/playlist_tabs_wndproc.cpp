@@ -40,16 +40,9 @@ LRESULT PlaylistTabs::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
 
         create_tabs();
 
-        service_ptr_t<service_base> p_temp;
+        m_host = fb2k::service_new<WindowHost>(this);
+        create_child();
 
-        g_tab_host.instance_create(p_temp);
-
-        // Well simple reinterpret_cast without this mess should work fine but this is "correct"
-        m_host = static_cast<WindowHost*>(p_temp.get_ptr());
-        if (m_host.is_valid()) {
-            m_host->set_this(this);
-            create_child();
-        }
         playlist_manager::get()->register_callback(this, flag_all);
         m_dark_mode_notifier
             = std::make_unique<colours::dark_mode_notifier>([this, self = ptr{this}, wnd, wnd_tabs = wnd_tabs] {

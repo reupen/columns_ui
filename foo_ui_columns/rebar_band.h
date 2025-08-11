@@ -19,6 +19,8 @@ struct RebarBandState {
 };
 
 struct RebarBand {
+    using Ptr = std::shared_ptr<RebarBand>;
+
     RebarBandState m_state;
     ui_extension::window_ptr m_window{};
     HWND m_wnd{};
