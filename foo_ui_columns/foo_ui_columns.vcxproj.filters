@@ -966,6 +966,9 @@
     <ClInclude Include="tab_setup.h">
       <Filter>Config UI</Filter>
     </ClInclude>
+    <ClInclude Include="panel_utils.h">
+      <Filter>Utilities</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include=".clang-format" />

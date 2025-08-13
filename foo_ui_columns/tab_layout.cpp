@@ -5,57 +5,11 @@
 #include "layout.h"
 #include "config.h"
 #include "dark_mode_dialog.h"
+#include "panel_utils.h"
 #include "rename_dialog.h"
 #include "splitter_utils.h"
 
 namespace cui::prefs {
-
-namespace {
-
-class PanelInfo {
-public:
-    GUID id{};
-    std::wstring name;
-    std::wstring category;
-    bool is_single_instance{};
-    uint32_t type{};
-};
-
-std::vector<PanelInfo> get_panel_info()
-{
-    std::vector<PanelInfo> panels;
-
-    for (auto&& window : uie::window::enumerate()) {
-        PanelInfo info;
-        info.id = window->get_extension_guid();
-
-        pfc::string8 name;
-        window->get_name(name);
-        info.name = mmh::to_utf16(name.c_str());
-
-        pfc::string8 category;
-        window->get_category(category);
-        info.category = mmh::to_utf16(category.c_str());
-
-        info.is_single_instance = window->get_is_single_instance();
-        info.type = window->get_type();
-
-        panels.emplace_back(std::move(info));
-    }
-
-    std::ranges::sort(panels, [](const PanelInfo& left, const PanelInfo& right) {
-        int result = StrCmpLogicalW(left.category.c_str(), right.category.c_str());
-
-        if (result == 0)
-            result = StrCmpLogicalW(left.name.c_str(), right.name.c_str());
-
-        return result < 0;
-    });
-
-    return panels;
-}
-
-} // namespace
 
 template <class Destination, class Source>
 void merge_maps(Destination& target, Source& source)
@@ -796,7 +750,7 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
     SendMessage(m_wnd_tree, TVM_HITTEST, 0, reinterpret_cast<LPARAM>(&ti));
 
     if (ti.hItem) {
-        const auto panels = get_panel_info();
+        const auto panels = panel_utils::get_panel_info();
 
         enum {
             ID_REMOVE = 1,
@@ -829,10 +783,7 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
         if (ti_parent)
             p_parent_node = m_node_map.at(ti_parent);
 
-        auto grouped_panels
-            = panels | ranges::views::enumerate | ranges::views::chunk_by([](const auto& left, const auto& right) {
-                  return StrCmpLogicalW(left.second.category.c_str(), right.second.category.c_str()) == 0;
-              });
+        auto grouped_panels = panel_utils::get_grouped_panel_info(panels);
 
         if (p_splitter.is_valid() && p_node->m_children.size() < p_splitter->get_maximum_panel_count()) {
             uih::Menu insert_menu;
