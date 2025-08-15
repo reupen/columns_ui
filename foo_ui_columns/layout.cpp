@@ -8,6 +8,15 @@
 
 namespace {
 
+bool does_splitter_have_panel(const uie::splitter_window::ptr& splitter, GUID id)
+{
+    return ranges::any_of(ranges::views::iota(size_t{}, splitter->get_panel_count()), [&](auto&& index) {
+        uie::splitter_item_ptr item;
+        splitter->get_panel(index, item);
+        return item->get_panel_guid() == id;
+    });
+}
+
 auto get_supported_panel_info(const uie::splitter_window::ptr& splitter)
 {
     pfc::list_t<uie::window::ptr> windows;
@@ -23,7 +32,9 @@ auto get_supported_panel_info(const uie::splitter_window::ptr& splitter)
         windows.remove_mask(mask_remove);
     }
 
-    return cui::panel_utils::get_panel_info(windows);
+    return cui::panel_utils::get_panel_info(windows) | ranges::actions::remove_if([&splitter](const auto& item) {
+        return item.is_single_instance && does_splitter_have_panel(splitter, item.id);
+    });
 }
 
 } // namespace
