@@ -110,9 +110,10 @@
   artwork type’ straight away.
   [[#1312](https://github.com/reupen/columns_ui/pull/1312)]
 
-- A bug where inserting a single-instance panel into the same splitter twice
-  during live editing would crash was fixed for built-in splitters.
-  [[#1315](https://github.com/reupen/columns_ui/pull/1315)]
+- Various bugs relating to the manipulation of single-instance panels during
+  live editing were fixed.
+  [[#1315](https://github.com/reupen/columns_ui/pull/1315),
+  [#1322](https://github.com/reupen/columns_ui/pull/1322)]
 
 - Removing the active tab in a Tab stack during live editing now switches to
   another tab (rather than leaving no tab active).
