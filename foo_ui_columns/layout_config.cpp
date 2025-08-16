@@ -244,7 +244,7 @@ void ConfigLayout::Preset::set(const uie::splitter_item_t* item)
 void ConfigLayout::get_preset(size_t index, uie::splitter_item_ptr& p_out)
 {
     if (index == m_active && g_layout_window.get_wnd()) {
-        g_layout_window.get_child(p_out);
+        p_out = g_layout_window.get_child();
     } else if (index < m_presets.get_count()) {
         m_presets[index].get(p_out);
     }
@@ -274,8 +274,7 @@ size_t ConfigLayout::add_preset(const char* p_name, size_t len)
 void ConfigLayout::save_active_preset()
 {
     if (m_active < m_presets.get_count() && g_layout_window.get_wnd()) {
-        uie::splitter_item_ptr ptr;
-        g_layout_window.get_child(ptr);
+        const auto ptr = g_layout_window.get_child();
         m_presets[m_active].set(ptr.get_ptr());
     }
 }
@@ -362,8 +361,7 @@ void ConfigLayout::get_data_raw(stream_writer* out, abort_callback& p_abort)
         if (n != m_active || !g_layout_window.get_wnd())
             m_presets[n].write(out, p_abort);
         else {
-            uie::splitter_item_ptr item;
-            g_layout_window.get_child(item);
+            const auto item = g_layout_window.get_child();
             out->write_lendian_t(item->get_panel_guid(), p_abort);
             stream_writer_memblock conf;
             item->get_panel_config(&conf);

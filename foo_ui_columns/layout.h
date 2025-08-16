@@ -67,7 +67,7 @@ public:
     void refresh_child();
     void relinquish_child();
 
-    void get_child(uie::splitter_item_ptr& p_out);
+    uie::splitter_item_ptr get_child() const;
     void set_child(const uie::splitter_item_t* item);
 
     bool set_focus();
