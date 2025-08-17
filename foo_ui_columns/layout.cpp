@@ -108,7 +108,7 @@ uih::Menu create_panels_menu(const std::vector<cui::panel_utils::PanelInfo>& pan
     return menu;
 }
 
-uih::Menu create_splitters_menu(const std::vector<cui::panel_utils::PanelInfo>& panels,
+uih::Menu create_splitters_menu(const std::vector<cui::panel_utils::PanelInfo>& panels, GUID current_id,
     uih::MenuCommandCollector& command_collector, std::function<void(GUID)> handle_command)
 {
     uih::Menu menu;
@@ -116,7 +116,8 @@ uih::Menu create_splitters_menu(const std::vector<cui::panel_utils::PanelInfo>& 
     for (auto&& [index, panel] : ranges::views::enumerate(panels)) {
         if (panel.type & uie::type_splitter)
             menu.append_command(
-                command_collector.add([panel_id{panel.id}, handle_command] { handle_command(panel_id); }), panel.name);
+                command_collector.add([panel_id{panel.id}, handle_command] { handle_command(panel_id); }), panel.name,
+                {.is_radio_checked = panel.id == current_id});
     }
 
     return menu;
@@ -710,6 +711,7 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     const auto splitter_item_in_clipboard = cui::splitter_utils::is_splitter_item_in_clipboard();
     const auto can_add_panel_to_leaf
         = leaf_splitter.is_valid() && leaf_splitter->get_panel_count() < leaf_splitter->get_maximum_panel_count();
+    const auto leaf_id = leaf->get_extension_guid();
 
     uie::splitter_item_ptr splitter_item;
 
@@ -739,31 +741,15 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         }
     }
 
-    if (hierarchy_count == 1) {
-        const auto handle_replace_root = [&](GUID panel_id) { set_child(create_splitter_item(panel_id).get_ptr()); };
-
-        menu.append_submenu(
-            create_panels_menu(parent_supported_panels, commands, handle_replace_root), L"Change panel");
-
-        if (leaf_splitter.is_valid()) {
-            const auto handle_change_root_splitter = [&](GUID panel_id) {
-                const auto config = convert_splitter_and_get_config(get_wnd(), leaf_splitter, panel_id);
-
-                if (!config)
-                    return;
-
-                const auto new_splitter_item = get_child();
-                new_splitter_item->set_panel_guid(panel_id);
-                new_splitter_item->set_panel_config_from_ptr(config->get_ptr(), config->get_size());
-                set_child(new_splitter_item.get_ptr());
-            };
-
-            menu.append_submenu(create_splitters_menu(parent_supported_panels, commands, handle_change_root_splitter),
-                L"Change splitter");
-        }
-    }
-
     if (leaf_splitter.is_valid()) {
+        if (can_add_panel_to_leaf) {
+            const auto handle_add_leaf_child
+                = [&](GUID panel_id) { leaf_splitter->add_panel(create_splitter_item(panel_id).get_ptr()); };
+
+            menu.append_submenu(
+                create_panels_menu(leaf_supported_panels, commands, handle_add_leaf_child), L"Add panel");
+        }
+
         if (parent_splitter.is_valid()) {
             const auto handle_command = [&](GUID panel_id) {
                 const auto config = convert_splitter_and_get_config(get_wnd(), leaf_splitter, panel_id);
@@ -780,16 +766,33 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
             };
 
             menu.append_submenu(
-                create_splitters_menu(parent_supported_panels, commands, handle_command), L"Change splitter");
+                create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_command), L"Splitter type");
         }
+    }
 
-        if (can_add_panel_to_leaf) {
-            const auto handle_add_leaf_child
-                = [&](GUID panel_id) { leaf_splitter->add_panel(create_splitter_item(panel_id).get_ptr()); };
+    if (hierarchy_count == 1) {
+        if (leaf_splitter.is_valid()) {
+            const auto handle_change_root_splitter = [&](GUID panel_id) {
+                const auto config = convert_splitter_and_get_config(get_wnd(), leaf_splitter, panel_id);
+
+                if (!config)
+                    return;
+
+                const auto new_splitter_item = get_child();
+                new_splitter_item->set_panel_guid(panel_id);
+                new_splitter_item->set_panel_config_from_ptr(config->get_ptr(), config->get_size());
+                set_child(new_splitter_item.get_ptr());
+            };
 
             menu.append_submenu(
-                create_panels_menu(leaf_supported_panels, commands, handle_add_leaf_child), L"Add panel");
+                create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_change_root_splitter),
+                L"Splitter type");
         }
+
+        const auto handle_replace_root = [&](GUID panel_id) { set_child(create_splitter_item(panel_id).get_ptr()); };
+
+        menu.append_submenu(
+            create_panels_menu(parent_supported_panels, commands, handle_replace_root), L"Replace base");
     }
 
     if (leaf_found_in_parent) {
