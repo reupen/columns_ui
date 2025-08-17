@@ -577,10 +577,10 @@ LRESULT TabStackPanel::on_message(HWND wnd, UINT msg, WPARAM wp, LPARAM lp)
         if (!wp || lp != 0)
             break;
 
-        const auto shown_panel = get_active_panel();
+        const auto active_panel = get_active_panel();
 
-        if (shown_panel->m_wnd && !IsWindowVisible(shown_panel->m_wnd))
-            show_tab_window(shown_panel->m_wnd);
+        if (active_panel && active_panel->m_wnd && !IsWindowVisible(active_panel->m_wnd))
+            show_tab_window(active_panel->m_wnd);
         break;
     }
     case WM_CONTEXTMENU: {
