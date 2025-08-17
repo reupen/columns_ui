@@ -57,6 +57,12 @@
   This requires main menu commands to implement the `mainmenu_commands_v3`
   service interface in the foobar2000 SDK.
 
+#### Live editing
+
+- Commands for moving a panel to the previous or next position in its parent
+  splitter were added to the live editing context menu.
+  [#1325](https://github.com/reupen/columns_ui/pull/1325)
+
 #### Preferences
 
 - Some updates were made to the layout tree context menu in Preferences.
@@ -119,6 +125,10 @@
 - Removing the active tab in a Tab stack during live editing now switches to
   another tab (rather than leaving no tab active).
   [[#1315](https://github.com/reupen/columns_ui/pull/1315)]
+
+- A bug where using the ‘Paste (insert)’ live editing command in a Tab stack
+  inserted the panel in the wrong position until foobar2000 was restarted was
+  fixed. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
 ### Internal changes
 

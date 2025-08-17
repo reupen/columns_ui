@@ -793,6 +793,17 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     }
 
     if (leaf_found_in_parent) {
+        uih::Menu move_submenu;
+
+        if (index > 0)
+            move_submenu.append_command(commands.add([&] { parent_splitter->move_up(index); }), L"Previous position");
+
+        if (index + 1 < parent_splitter->get_panel_count())
+            move_submenu.append_command(commands.add([&] { parent_splitter->move_down(index); }), L"Next position");
+
+        if (move_submenu.size() > 0)
+            menu.append_submenu(std::move(move_submenu), L"Move to");
+
         const auto copy_id = commands.add([&] {
             cui::splitter_utils::copy_splitter_item_to_clipboard_safe(
                 cui::main_window.get_wnd(), splitter_item.get_ptr());
