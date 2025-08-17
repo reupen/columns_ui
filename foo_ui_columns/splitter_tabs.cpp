@@ -166,7 +166,6 @@ void TabStackPanel::Panel::set_from_splitter_item(const uie::splitter_item_t* p_
         m_use_custom_title = ptr->m_custom_title;
         ptr->get_title(m_custom_title);
     }
-    m_child = p_source->get_window_ptr();
     m_guid = p_source->get_panel_guid();
     p_source->get_panel_config_to_array(m_child_data, true);
 }
@@ -686,6 +685,11 @@ void TabStackPanel::refresh_children()
         if (panel->m_wnd)
             continue;
 
+        const auto panel_iter = ranges::find(m_panels, panel);
+
+        if (panel_iter == m_panels.end())
+            continue;
+
         panel->set_splitter_window_ptr(this);
         uie::window_ptr p_ext = panel->m_child;
 
@@ -718,8 +722,15 @@ void TabStackPanel::refresh_children()
 
                 const auto is_new_tab = !ranges::contains(m_active_panels, panel);
 
-                if (is_new_tab)
-                    m_active_panels.emplace_back(panel);
+                if (is_new_tab) {
+                    const size_t insertion_index = ranges::count_if(m_panels.begin(), panel_iter,
+                        [this](auto&& item) { return ranges::contains(m_active_panels, item); });
+
+                    if (insertion_index > m_active_panels.size())
+                        uBugCheck();
+
+                    m_active_panels.emplace(m_active_panels.begin() + insertion_index, panel);
+                }
 
                 HWND wnd_panel = p_ext->create_or_transfer_window(get_wnd(), m_window_host.get_ptr());
                 if (wnd_panel) {

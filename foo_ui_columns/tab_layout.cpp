@@ -762,8 +762,8 @@ bool LayoutTab::handle_wm_contextmenu(HWND wnd, HWND contextmenu_wnd, POINT pt)
             ID_REPLACE_ROOT_BASE,
         };
 
-        const auto id_add_child_base = ID_REPLACE_ROOT_BASE + gsl::narrow<int32_t>(panels.size());
-        const auto id_splitter_type_base = id_add_child_base + gsl::narrow<int32_t>(panels.size());
+        const auto id_add_child_base = ID_REPLACE_ROOT_BASE + gsl::narrow<uint32_t>(panels.size());
+        const auto id_splitter_type_base = id_add_child_base + gsl::narrow<uint32_t>(panels.size());
 
         HTREEITEM ti_parent = TreeView_GetParent(m_wnd_tree, ti.hItem);
 

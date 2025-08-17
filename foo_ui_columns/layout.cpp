@@ -37,14 +37,57 @@ auto get_supported_panel_info(const uie::splitter_window::ptr& splitter)
     });
 }
 
-} // namespace
+void toggle_splitter_item_boolean(const uie::splitter_window::ptr& splitter, size_t index, GUID property_id)
+{
+    if (const auto old_value = cui::splitter_utils::get_config_item<bool>(splitter, index, property_id)) {
+        splitter->set_config_item_t(index, property_id, !*old_value, fb2k::noAbort);
+    }
+}
 
-// {755971A7-109B-41dc-BED9-5A05CC07C905}
-static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5}};
+std::optional<pfc::array_t<uint8_t>> convert_splitter_and_get_config(
+    HWND wnd, const uie::splitter_window::ptr& old_splitter, GUID new_panel_id)
+{
+    uie::window_ptr window;
+    service_ptr_t<uie::splitter_window> new_splitter;
+    if (!uie::window::create_by_guid(new_panel_id, window) || !window->service_query_t(new_splitter))
+        return {};
 
-ConfigLayout cfg_layout(g_guid_layout);
+    const auto panel_count = old_splitter->get_panel_count();
+    if (panel_count > new_splitter->get_maximum_panel_count()
+        && !cui::dark::modal_info_box(wnd, "Change splitter type",
+            "The number of child items will not fit in the selected splitter type. Do you want to "
+            "continue?",
+            uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo))
+        return {};
 
-uih::Menu create_panels_menu(const std::vector<cui::panel_utils::PanelInfo>& panels, UINT base)
+    for (auto index : std::views::iota(size_t{}, panel_count)) {
+        uie::splitter_item_ptr ptr;
+        old_splitter->get_panel(index, ptr);
+        new_splitter->add_panel(ptr.get_ptr());
+    }
+
+    pfc::array_t<uint8_t> data;
+    stream_writer_memblock_ref conf(data);
+
+    try {
+        new_splitter->get_config(&conf, fb2k::noAbort);
+    } catch (const std::exception& ex) {
+        console::print("Columns UI – error changing splitter type: ", ex.what());
+        return {};
+    }
+
+    return std::make_optional(std::move(data));
+}
+
+uie::splitter_item_ptr create_splitter_item(GUID panel_id)
+{
+    uie::splitter_item_ptr item = new uie::splitter_item_simple_t;
+    item->set_panel_guid(panel_id);
+    return item;
+}
+
+uih::Menu create_panels_menu(const std::vector<cui::panel_utils::PanelInfo>& panels,
+    uih::MenuCommandCollector& command_collector, std::function<void(GUID)> handle_command)
 {
     uih::Menu menu;
 
@@ -54,7 +97,8 @@ uih::Menu create_panels_menu(const std::vector<cui::panel_utils::PanelInfo>& pan
         uih::Menu category_menu;
 
         for (auto&& [index, panel] : group) {
-            category_menu.append_command(base + gsl::narrow<uint32_t>(index), panel.name);
+            category_menu.append_command(
+                command_collector.add([panel_id{panel.id}, handle_command] { handle_command(panel_id); }), panel.name);
         }
 
         const auto& category = group.front().second.category;
@@ -64,17 +108,27 @@ uih::Menu create_panels_menu(const std::vector<cui::panel_utils::PanelInfo>& pan
     return menu;
 }
 
-uih::Menu create_splitters_menu(const std::vector<cui::panel_utils::PanelInfo>& panels, UINT base)
+uih::Menu create_splitters_menu(const std::vector<cui::panel_utils::PanelInfo>& panels, GUID current_id,
+    uih::MenuCommandCollector& command_collector, std::function<void(GUID)> handle_command)
 {
     uih::Menu menu;
 
     for (auto&& [index, panel] : ranges::views::enumerate(panels)) {
         if (panel.type & uie::type_splitter)
-            menu.append_command(base + gsl::narrow<uint32_t>(index), panel.name);
+            menu.append_command(
+                command_collector.add([panel_id{panel.id}, handle_command] { handle_command(panel_id); }), panel.name,
+                {.is_radio_checked = panel.id == current_id});
     }
 
     return menu;
 }
+
+} // namespace
+
+// {755971A7-109B-41dc-BED9-5A05CC07C905}
+static const GUID g_guid_layout = {0x755971a7, 0x109b, 0x41dc, {0xbe, 0xd9, 0x5a, 0x5, 0xcc, 0x7, 0xc9, 0x5}};
+
+ConfigLayout cfg_layout(g_guid_layout);
 
 class LayoutWindowHost : public ui_extension::window_host {
 public:
@@ -359,17 +413,20 @@ void LayoutWindow::__hide_menu_access_keys_recur(const uie::window_ptr& p_wnd)
     }
 }
 
-void LayoutWindow::get_child(uie::splitter_item_ptr& p_out)
+uie::splitter_item_ptr LayoutWindow::get_child() const
 {
-    p_out = new uie::splitter_item_simple_t;
-    p_out->set_panel_guid(m_child_guid);
+    auto item = create_splitter_item(m_child_guid);
+
     if (m_child.is_valid()) {
         stream_writer_memblock conf;
         abort_callback_dummy p_abort;
         m_child->get_config(&conf, p_abort);
-        p_out->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
-    } else
-        p_out->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
+        item->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
+    } else {
+        item->set_panel_config_from_ptr(m_child_data.get_ptr(), m_child_data.get_size());
+    }
+
+    return item;
 }
 void LayoutWindow::set_child(const uie::splitter_item_t* item)
 {
@@ -641,30 +698,12 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     const auto parent_supported_panels
         = parent_splitter.is_valid() ? get_supported_panel_info(parent_splitter) : cui::panel_utils::get_panel_info();
 
-    enum {
-        ID_REMOVE = 1,
-        ID_SHOW_CAPTION,
-        ID_LOCKED,
-        ID_COPY,
-        ID_PASTE_ADD,
-        ID_PARENT_PASTE_INSERT,
-        ID_REPLACE_ROOT_BASE
-    };
-
     uih::Menu menu;
+    uih::MenuCommandCollector commands;
 
     pfc::string8 temp;
     leaf->get_name(temp);
     menu.append_command(0, mmh::to_utf16(temp.c_str()), {.is_disabled = true});
-
-    const UINT ID_ADD_PARENT_CHILD_BASE = ID_REPLACE_ROOT_BASE + gsl::narrow<UINT>(parent_supported_panels.size());
-    const UINT ID_CHANGE_ROOT_SPLITTER_BASE
-        = ID_ADD_PARENT_CHILD_BASE + gsl::narrow<UINT>(parent_supported_panels.size());
-
-    const UINT ID_CHANGE_LEAF_SPLITTER_BASE
-        = ID_CHANGE_ROOT_SPLITTER_BASE + gsl::narrow<UINT>(parent_supported_panels.size());
-    const UINT ID_ADD_LEAF_CHILD_BASE
-        = ID_CHANGE_LEAF_SPLITTER_BASE + gsl::narrow<UINT>(parent_supported_panels.size());
 
     size_t index = pfc_infinite;
     const auto leaf_found_in_parent
@@ -672,6 +711,8 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
     const auto splitter_item_in_clipboard = cui::splitter_utils::is_splitter_item_in_clipboard();
     const auto can_add_panel_to_leaf
         = leaf_splitter.is_valid() && leaf_splitter->get_panel_count() < leaf_splitter->get_maximum_panel_count();
+    const auto leaf_id = leaf->get_extension_guid();
+
     uie::splitter_item_ptr splitter_item;
 
     if (leaf_found_in_parent) {
@@ -681,41 +722,109 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
             const auto show_caption = cui::splitter_utils::get_config_item<bool>(
                 parent_splitter, index, uie::splitter_window::bool_show_caption);
 
-            if (show_caption)
-                menu.append_command(ID_SHOW_CAPTION, L"Show caption", {.is_checked = *show_caption});
+            if (show_caption) {
+                const auto show_caption_id = commands.add([&] {
+                    toggle_splitter_item_boolean(parent_splitter, index, uie::splitter_window::bool_show_caption);
+                });
+                menu.append_command(show_caption_id, L"Show caption", {.is_checked = *show_caption});
+            }
         }
 
         const auto is_locked
             = cui::splitter_utils::get_config_item<bool>(parent_splitter, index, uie::splitter_window::bool_locked);
 
-        if (is_locked)
-            menu.append_command(ID_LOCKED, L"Locked", {.is_checked = *is_locked});
-    }
+        if (is_locked) {
+            const auto locked_id = commands.add(
+                [&] { toggle_splitter_item_boolean(parent_splitter, index, uie::splitter_window::bool_locked); });
 
-    if (hierarchy_count == 1) {
-        menu.append_submenu(create_panels_menu(parent_supported_panels, ID_REPLACE_ROOT_BASE), L"Change panel");
-
-        if (leaf_splitter.is_valid())
-            menu.append_submenu(
-                create_splitters_menu(parent_supported_panels, ID_CHANGE_ROOT_SPLITTER_BASE), L"Change splitter");
+            menu.append_command(locked_id, L"Locked", {.is_checked = *is_locked});
+        }
     }
 
     if (leaf_splitter.is_valid()) {
-        if (parent_splitter.is_valid())
-            menu.append_submenu(
-                create_splitters_menu(parent_supported_panels, ID_CHANGE_LEAF_SPLITTER_BASE), L"Change splitter");
+        if (can_add_panel_to_leaf) {
+            const auto handle_add_leaf_child
+                = [&](GUID panel_id) { leaf_splitter->add_panel(create_splitter_item(panel_id).get_ptr()); };
 
-        if (can_add_panel_to_leaf)
-            menu.append_submenu(create_panels_menu(leaf_supported_panels, ID_ADD_LEAF_CHILD_BASE), L"Add panel");
+            menu.append_submenu(
+                create_panels_menu(leaf_supported_panels, commands, handle_add_leaf_child), L"Add panel");
+        }
+
+        if (parent_splitter.is_valid()) {
+            const auto handle_command = [&](GUID panel_id) {
+                const auto config = convert_splitter_and_get_config(get_wnd(), leaf_splitter, panel_id);
+
+                if (!config)
+                    return;
+
+                uie::splitter_item_ptr new_splitter_item;
+                parent_splitter->get_panel(index, new_splitter_item);
+
+                new_splitter_item->set_panel_guid(panel_id);
+                new_splitter_item->set_panel_config_from_ptr(config->get_ptr(), config->get_size());
+                parent_splitter->replace_panel(index, new_splitter_item.get_ptr());
+            };
+
+            menu.append_submenu(
+                create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_command), L"Splitter type");
+        }
+    }
+
+    if (hierarchy_count == 1) {
+        if (leaf_splitter.is_valid()) {
+            const auto handle_change_root_splitter = [&](GUID panel_id) {
+                const auto config = convert_splitter_and_get_config(get_wnd(), leaf_splitter, panel_id);
+
+                if (!config)
+                    return;
+
+                const auto new_splitter_item = get_child();
+                new_splitter_item->set_panel_guid(panel_id);
+                new_splitter_item->set_panel_config_from_ptr(config->get_ptr(), config->get_size());
+                set_child(new_splitter_item.get_ptr());
+            };
+
+            menu.append_submenu(
+                create_splitters_menu(parent_supported_panels, leaf_id, commands, handle_change_root_splitter),
+                L"Splitter type");
+        }
+
+        const auto handle_replace_root = [&](GUID panel_id) { set_child(create_splitter_item(panel_id).get_ptr()); };
+
+        menu.append_submenu(
+            create_panels_menu(parent_supported_panels, commands, handle_replace_root), L"Replace base");
     }
 
     if (leaf_found_in_parent) {
-        menu.append_command(ID_COPY, L"Copy");
+        uih::Menu move_submenu;
 
-        if (splitter_item_in_clipboard && can_add_panel_to_leaf)
-            menu.append_command(ID_PASTE_ADD, L"Paste (add)");
+        if (index > 0)
+            move_submenu.append_command(commands.add([&] { parent_splitter->move_up(index); }), L"Previous position");
 
-        menu.append_command(ID_REMOVE, L"Remove");
+        if (index + 1 < parent_splitter->get_panel_count())
+            move_submenu.append_command(commands.add([&] { parent_splitter->move_down(index); }), L"Next position");
+
+        if (move_submenu.size() > 0)
+            menu.append_submenu(std::move(move_submenu), L"Move to");
+
+        const auto copy_id = commands.add([&] {
+            cui::splitter_utils::copy_splitter_item_to_clipboard_safe(
+                cui::main_window.get_wnd(), splitter_item.get_ptr());
+        });
+        menu.append_command(copy_id, L"Copy");
+
+        if (splitter_item_in_clipboard && can_add_panel_to_leaf) {
+            const auto paste_add_id = commands.add([&] {
+                if (const auto clipboard_splitter_item
+                    = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd())) {
+                    leaf_splitter->add_panel(clipboard_splitter_item.get());
+                }
+            });
+
+            menu.append_command(paste_add_id, L"Paste (add)");
+        }
+
+        menu.append_command(commands.add([&] { parent_splitter->remove_panel(leaf); }), L"Remove");
     }
 
     if (parent_splitter.is_valid()) {
@@ -725,138 +834,30 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         menu.append_command(0, mmh::to_utf16(temp.c_str()), {.is_disabled = true});
 
         if (parent_splitter->get_panel_count() < parent_splitter->get_maximum_panel_count()) {
-            menu.append_submenu(create_panels_menu(parent_supported_panels, ID_ADD_PARENT_CHILD_BASE), L"Add panel");
+            const auto handle_add_parent_child
+                = [&](GUID panel_id) { parent_splitter->add_panel(create_splitter_item(panel_id).get_ptr()); };
 
-            if (leaf_found_in_parent && splitter_item_in_clipboard)
-                menu.append_command(ID_PARENT_PASTE_INSERT, L"Paste (insert)");
+            menu.append_submenu(
+                create_panels_menu(parent_supported_panels, commands, handle_add_parent_child), L"Add panel");
+
+            if (leaf_found_in_parent && splitter_item_in_clipboard) {
+                const auto paste_insert_id = commands.add([&] {
+                    if (const auto clipboard_splitter_item
+                        = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd()))
+                        parent_splitter->insert_panel(index + 1, clipboard_splitter_item.get());
+                });
+
+                menu.append_command(paste_insert_id, L"Paste (insert)");
+            }
         }
     }
 
     menu_helpers::win32_auto_mnemonics(menu.get());
 
-    const auto cmd = gsl::narrow_cast<uint32_t>(menu.run(get_wnd(), p_data.m_point));
+    const auto cmd = menu.run(get_wnd(), p_data.m_point);
     m_trans_fill.destroy();
 
-    const auto parent_supported_panel_count = gsl::narrow<uint32_t>(parent_supported_panels.size());
-    const auto leaf_supported_panel_count = gsl::narrow<uint32_t>(leaf_supported_panels.size());
-
-    switch (cmd) {
-    case ID_REMOVE:
-        parent_splitter->remove_panel(leaf);
-        break;
-    case ID_SHOW_CAPTION:
-        if (const auto old_value = cui::splitter_utils::get_config_item<bool>(
-                parent_splitter, index, uie::splitter_window::bool_show_caption)) {
-            parent_splitter->set_config_item_t(
-                index, uie::splitter_window::bool_show_caption, !*old_value, fb2k::noAbort);
-        }
-        break;
-    case ID_LOCKED:
-        if (const auto old_value
-            = cui::splitter_utils::get_config_item<bool>(parent_splitter, index, uie::splitter_window::bool_locked)) {
-            parent_splitter->set_config_item_t(index, uie::splitter_window::bool_locked, !*old_value, fb2k::noAbort);
-        }
-        break;
-    case ID_COPY:
-        cui::splitter_utils::copy_splitter_item_to_clipboard_safe(cui::main_window.get_wnd(), splitter_item.get_ptr());
-        break;
-    case ID_PASTE_ADD:
-        if (const auto clipboard_splitter_item
-            = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd())) {
-            leaf_splitter->add_panel(clipboard_splitter_item.get());
-        }
-        break;
-    case ID_PARENT_PASTE_INSERT:
-        if (const auto clipboard_splitter_item
-            = cui::splitter_utils::get_splitter_item_from_clipboard_safe(cui::main_window.get_wnd()))
-            parent_splitter->insert_panel(index + 1, clipboard_splitter_item.get());
-        break;
-    default:
-        if (cmd >= ID_REPLACE_ROOT_BASE && cmd < ID_REPLACE_ROOT_BASE + parent_supported_panel_count) {
-            size_t panel_index = cmd - ID_REPLACE_ROOT_BASE;
-            uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
-            si->set_panel_guid(parent_supported_panels[panel_index].id);
-            set_child(si.get_ptr());
-        } else if (cmd >= ID_ADD_PARENT_CHILD_BASE && cmd < ID_ADD_PARENT_CHILD_BASE + parent_supported_panel_count) {
-            size_t panel_index = cmd - ID_ADD_PARENT_CHILD_BASE;
-            uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
-            si->set_panel_guid(parent_supported_panels[panel_index].id);
-            parent_splitter->add_panel(si.get_ptr());
-        } else if (cmd >= ID_CHANGE_ROOT_SPLITTER_BASE
-            && cmd < ID_CHANGE_ROOT_SPLITTER_BASE + parent_supported_panel_count) {
-            size_t panel_index = cmd - ID_CHANGE_ROOT_SPLITTER_BASE;
-
-            uie::window_ptr window;
-            service_ptr_t<uie::splitter_window> splitter;
-            if (uie::window::create_by_guid(parent_supported_panels[panel_index].id, window)
-                && window->service_query_t(splitter)) {
-                const auto count = std::min(leaf_splitter->get_panel_count(), splitter->get_maximum_panel_count());
-                if (count == leaf_splitter->get_panel_count()
-                    || cui::dark::modal_info_box(get_wnd(), "Change splitter type",
-                        "The number of child items will not fit in the selected splitter type. Do you want to "
-                        "continue?",
-                        uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo)) {
-                    for (unsigned n = 0; n < count; n++) {
-                        uie::splitter_item_ptr ptr;
-                        leaf_splitter->get_panel(n, ptr);
-                        splitter->add_panel(ptr.get_ptr());
-                    }
-                    uie::splitter_item_ptr newsi;
-                    get_child(newsi);
-
-                    stream_writer_memblock conf;
-                    try {
-                        splitter->get_config(&conf, fb2k::noAbort);
-                    } catch (const pfc::exception&) {
-                    }
-                    newsi->set_panel_guid(parent_supported_panels[panel_index].id);
-                    newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
-
-                    set_child(newsi.get_ptr());
-                }
-            }
-        } else if (cmd >= ID_ADD_LEAF_CHILD_BASE && cmd < ID_ADD_LEAF_CHILD_BASE + leaf_supported_panel_count) {
-            size_t panel_index = cmd - ID_ADD_LEAF_CHILD_BASE;
-            uie::splitter_item_ptr si = new uie::splitter_item_simple_t;
-            si->set_panel_guid(leaf_supported_panels[panel_index].id);
-            leaf_splitter->add_panel(si.get_ptr());
-        } else if (cmd >= ID_CHANGE_LEAF_SPLITTER_BASE
-            && cmd < ID_CHANGE_LEAF_SPLITTER_BASE + parent_supported_panel_count) {
-            size_t panel_index = cmd - ID_CHANGE_LEAF_SPLITTER_BASE;
-
-            uie::window_ptr window;
-            service_ptr_t<uie::splitter_window> splitter;
-            if (uie::window::create_by_guid(parent_supported_panels[panel_index].id, window)
-                && window->service_query_t(splitter)) {
-                const auto count = std::min(leaf_splitter->get_panel_count(), splitter->get_maximum_panel_count());
-                if (index != pfc_infinite
-                    && (count == leaf_splitter->get_panel_count()
-                        || cui::dark::modal_info_box(get_wnd(), "Change splitter type",
-                            "The number of child items will not fit in the selected splitter type. Do you want to "
-                            "continue?",
-                            uih::InfoBoxType::Warning, uih::InfoBoxModalType::YesNo))) {
-                    for (unsigned n = 0; n < count; n++) {
-                        uie::splitter_item_ptr ptr;
-                        leaf_splitter->get_panel(n, ptr);
-                        splitter->add_panel(ptr.get_ptr());
-                    }
-                    uie::splitter_item_ptr newsi;
-                    parent_splitter->get_panel(index, newsi);
-
-                    stream_writer_memblock conf;
-                    try {
-                        splitter->get_config(&conf, fb2k::noAbort);
-                    } catch (const pfc::exception&) {
-                    }
-                    newsi->set_panel_guid(parent_supported_panels[panel_index].id);
-                    newsi->set_panel_config_from_ptr(conf.m_data.get_ptr(), conf.m_data.get_size());
-
-                    parent_splitter->replace_panel(index, newsi.get_ptr());
-                }
-            }
-        }
-        break;
-    }
+    commands.execute(cmd);
 }
 
 bool LayoutWindow::on_hooked_message(uih::MessageHookType p_type, int code, WPARAM wp, LPARAM lp)
