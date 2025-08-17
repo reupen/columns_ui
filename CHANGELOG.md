@@ -135,6 +135,10 @@
   inserted the panel in the wrong position until foobar2000 was restarted was
   fixed. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
+- The symbol used for the active layout preset in the View/Layout menu was
+  corrected to be a filled circle rather than a tick.
+  [[#1326](https://github.com/reupen/columns_ui/pull/1326)]
+
 ### Internal changes
 
 - Some code was refactored.
