@@ -113,7 +113,8 @@
 - Various bugs relating to the manipulation of single-instance panels during
   live editing were fixed.
   [[#1315](https://github.com/reupen/columns_ui/pull/1315),
-  [#1322](https://github.com/reupen/columns_ui/pull/1322)]
+  [#1322](https://github.com/reupen/columns_ui/pull/1322),
+  [#1324](https://github.com/reupen/columns_ui/pull/1324)]
 
 - Removing the active tab in a Tab stack during live editing now switches to
   another tab (rather than leaving no tab active).
