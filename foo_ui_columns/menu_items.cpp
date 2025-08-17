@@ -196,7 +196,7 @@ class MainMenuLayoutPresets : public mainmenu_commands {
     bool get_display(uint32_t p_index, pfc::string_base& p_text, uint32_t& p_flags) override
     {
         if (g_layout_window.get_wnd()) {
-            p_flags = p_index == cfg_layout.get_active() ? flag_checked : 0;
+            p_flags = p_index == cfg_layout.get_active() ? flag_radiochecked : 0;
             get_name(p_index, p_text);
             return true;
         }
