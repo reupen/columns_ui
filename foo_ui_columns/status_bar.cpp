@@ -13,12 +13,12 @@ namespace {
 
 struct StatusBarState {
     WNDPROC status_proc{};
-    std::string playback_information_text;
-    std::string menu_item_description;
-    std::string playlist_lock_text;
-    std::string track_length_text;
-    std::string track_count_text;
-    std::string volume_text;
+    std::wstring playback_information_text;
+    std::wstring menu_item_description;
+    std::wstring playlist_lock_text;
+    std::wstring track_length_text;
+    std::wstring track_count_text;
+    std::wstring volume_text;
     wil::unique_hfont font;
     uih::direct_write::Context::Ptr direct_write_ctx;
     std::optional<uih::direct_write::TextFormat> direct_write_text_format;
@@ -116,7 +116,7 @@ LRESULT WINAPI g_status_hook(HWND wnd, UINT msg, WPARAM wp, LPARAM lp) noexcept
 void set_playback_information(std::string_view text)
 {
     if (g_status) {
-        state->playback_information_text = text;
+        state->playback_information_text = mmh::to_utf16(text);
 
         if (state->menu_item_description.empty())
             SendMessage(g_status, SB_SETTEXT, SBT_OWNERDRAW | 0, WI_EnumValue(StatusBarPartID::PlaybackInformation));
@@ -126,7 +126,7 @@ void set_playback_information(std::string_view text)
 void set_menu_item_description(std::string_view text)
 {
     if (g_status) {
-        state->menu_item_description = text;
+        state->menu_item_description = mmh::to_utf16(text);
 
         const auto part_id = text.empty() ? StatusBarPartID::PlaybackInformation : StatusBarPartID::MenuItemDescription;
 
@@ -176,52 +176,51 @@ void destroy_window()
 
 volume_popup_t volume_popup_window;
 
-std::string get_playlist_lock_text()
+std::wstring get_playlist_lock_text()
 {
     const auto api = playlist_manager::get();
     const auto playlist_index = api->get_active_playlist();
 
     pfc::string8 lock_name;
     api->playlist_lock_query_name(playlist_index, lock_name);
-    return lock_name.get_ptr();
+    return mmh::to_utf16(lock_name.c_str());
 }
 
-int calculate_volume_size(std::string_view text)
+int calculate_volume_size(std::wstring_view text)
 {
     if (!state->direct_write_text_format)
         return 0;
 
-    return state->direct_write_text_format->measure_text_width(mmh::to_utf16(text));
+    return state->direct_write_text_format->measure_text_width(text);
 }
 
-int calculate_selected_length_size(std::string_view text)
+int calculate_selected_length_size(std::wstring_view text)
 {
     if (!state->direct_write_text_format)
         return 0;
 
-    return std::max(state->direct_write_text_format->measure_text_width(mmh::to_utf16(text)),
+    return std::max(state->direct_write_text_format->measure_text_width(text),
         state->direct_write_text_format->measure_text_width(L"0d 00:00:00"));
 }
 
-int calculate_selected_count_size(std::string_view text)
+int calculate_selected_count_size(std::wstring_view text)
 {
     if (!state->direct_write_text_format)
         return 0;
 
-    return std::max(state->direct_write_text_format->measure_text_width(mmh::to_utf16(text)),
+    return std::max(state->direct_write_text_format->measure_text_width(text),
         state->direct_write_text_format->measure_text_width(L"0,000 tracks"));
 }
 
-int calculate_playback_lock_size(std::string_view text)
+int calculate_playback_lock_size(std::wstring_view text)
 {
     const auto icon_width = uih::get_font_height(state->font.get()) - 2_spx + 2_spx;
 
     return icon_width
-        + (state->direct_write_text_format ? state->direct_write_text_format->measure_text_width(mmh::to_utf16(text))
-                                           : 0);
+        + (state->direct_write_text_format ? state->direct_write_text_format->measure_text_width(text) : 0);
 }
 
-std::string get_selected_length_text(unsigned dp = 0)
+std::wstring get_selected_length_text(unsigned dp = 0)
 {
     metadb_handle_list_t<pfc::alloc_fast_aggressive> sels;
     double length = 0;
@@ -236,22 +235,22 @@ std::string get_selected_length_text(unsigned dp = 0)
     playlist_api->activeplaylist_get_selected_items(sels);
     length = helpers::calculate_tracks_total_length(sels);
 
-    return pfc::format_time_ex(length, dp).get_ptr();
+    return mmh::to_utf16(pfc::format_time_ex(length, dp).get_ptr());
 }
 
-std::string get_selected_count_text(unsigned dp = 0)
+std::wstring get_selected_count_text()
 {
     const auto playlist_api = playlist_manager::get();
 
     const auto count = playlist_api->activeplaylist_get_selection_count(pfc_infinite);
 
-    return fmt::format(std::locale(""), "{:L} {}", count, count == 1 ? "track" : "tracks");
+    return fmt::format(std::locale(""), L"{:L} {}", count, count == 1 ? L"track" : L"tracks");
 }
 
-std::string get_volume_text()
+std::wstring get_volume_text()
 {
     const float volume = playback_control::get()->get_volume();
-    return fmt::format("{:0.02f} dB", volume);
+    return fmt::format(L"{:0.02f} dB", volume);
 }
 
 void set_part_sizes(unsigned p_parts)
@@ -402,7 +401,7 @@ RECT get_adjusted_draw_item_rect(const RECT rect, const unsigned index, const St
     return adjusted_rect;
 }
 
-std::string_view get_draw_item_text(const StatusBarPartID part_id)
+std::wstring_view get_draw_item_text(const StatusBarPartID part_id)
 {
     switch (part_id) {
     case StatusBarPartID::PlaybackInformation:
@@ -423,7 +422,7 @@ std::string_view get_draw_item_text(const StatusBarPartID part_id)
 }
 
 void draw_item_content(
-    const HWND wnd, const HDC dc, const StatusBarPartID part_id, const std::string_view text, const RECT rc)
+    const HWND wnd, const HDC dc, const StatusBarPartID part_id, const std::wstring_view text, const RECT rc)
 {
     if (text.empty())
         return;
@@ -480,7 +479,7 @@ std::optional<LRESULT> handle_draw_item(const LPDRAWITEMSTRUCT lpdis)
     if (rc.right <= rc.left)
         return TRUE;
 
-    const std::string_view text = get_draw_item_text(part_id);
+    const auto text = get_draw_item_text(part_id);
 
     draw_item_content(lpdis->hwndItem, lpdis->hDC, part_id, text, rc);
 

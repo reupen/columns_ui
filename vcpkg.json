@@ -1,7 +1,7 @@
 {
   "name": "columns-ui",
   "version-string": "git",
-  "builtin-baseline": "ce613c41372b23b1f51333815feb3edd87ef8a8b",
+  "builtin-baseline": "dd3097e305afa53f7b4312371f62058d2e665320",
   "dependencies": [
     "cppwinrt",
     "fmt",
@@ -13,7 +13,7 @@
   "overrides": [
     {
       "name": "fmt",
-      "version": "11.0.2#1"
+      "version": "11.2.0"
     },
     {
       "name": "ms-gsl",
