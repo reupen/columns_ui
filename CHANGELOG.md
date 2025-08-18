@@ -106,6 +106,10 @@
 
   This applies only when the horizontal axis is set to use a logarithmic scale.
 
+- A bug where the status bar did not show the selected track count correctly
+  when the digit grouping symbol configured in Windows is a non-breaking space
+  was fixed. [[#1327](https://github.com/reupen/columns_ui/pull/1327)]
+
 - A bug where artwork images in the playlist view varied in width by up to two
   pixels was fixed. [[#1281](https://github.com/reupen/columns_ui/pull/1281)]
 
