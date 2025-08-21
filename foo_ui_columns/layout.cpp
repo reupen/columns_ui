@@ -123,6 +123,42 @@ uih::Menu create_splitters_menu(const std::vector<cui::panel_utils::PanelInfo>& 
     return menu;
 }
 
+void move_panel_up(const uie::splitter_window::ptr& splitter, size_t index)
+{
+    const auto panel_count = splitter->get_panel_count();
+
+    if (index >= panel_count)
+        return;
+
+    uie::splitter_window_v3::ptr splitter_v3;
+
+    if (splitter->service_query_t(splitter_v3)) {
+        auto permutation = mmh::Permutation(panel_count);
+        std::swap(permutation[index - 1], permutation[index]);
+        splitter_v3->reorder_panels(permutation.data(), panel_count);
+    } else {
+        splitter->move_up(index);
+    }
+}
+
+void move_panel_down(const uie::splitter_window::ptr& splitter, size_t index)
+{
+    const auto panel_count = splitter->get_panel_count();
+
+    if (index + 1 >= panel_count)
+        return;
+
+    uie::splitter_window_v3::ptr splitter_v3;
+
+    if (splitter->service_query_t(splitter_v3)) {
+        auto permutation = mmh::Permutation(panel_count);
+        std::swap(permutation[index], permutation[index + 1]);
+        splitter_v3->reorder_panels(permutation.data(), panel_count);
+    } else {
+        splitter->move_down(index);
+    }
+}
+
 } // namespace
 
 // {755971A7-109B-41dc-BED9-5A05CC07C905}
@@ -799,10 +835,12 @@ void LayoutWindow::run_live_edit_base(const LiveEditData& p_data)
         uih::Menu move_submenu;
 
         if (index > 0)
-            move_submenu.append_command(commands.add([&] { parent_splitter->move_up(index); }), L"Previous position");
+            move_submenu.append_command(
+                commands.add([&] { move_panel_up(parent_splitter, index); }), L"Previous position");
 
         if (index + 1 < parent_splitter->get_panel_count())
-            move_submenu.append_command(commands.add([&] { parent_splitter->move_down(index); }), L"Next position");
+            move_submenu.append_command(
+                commands.add([&] { move_panel_down(parent_splitter, index); }), L"Next position");
 
         if (move_submenu.size() > 0)
             menu.append_submenu(std::move(move_submenu), L"Move to");

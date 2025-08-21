@@ -7,7 +7,7 @@ enum Orientation {
     vertical,
 };
 
-class FlatSplitterPanel : public uie::container_uie_window_v3_t<uie::splitter_window_v2> {
+class FlatSplitterPanel : public uie::container_uie_window_v3_t<uie::splitter_window_v3> {
 public:
     virtual Orientation get_orientation() const = 0;
     static int g_get_caption_size();
@@ -18,6 +18,7 @@ public:
 
     void remove_panel(size_t index) override;
     void replace_panel(size_t index, const uie::splitter_item_t* p_item) override;
+    void reorder_panels(const size_t* order, size_t count) override;
 
     size_t get_panel_count() const override;
     uie::splitter_item_t* get_panel(size_t index) const override;

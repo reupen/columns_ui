@@ -4,7 +4,7 @@
 
 namespace cui::panels::tab_stack {
 
-class TabStackPanel : public uie::container_uie_window_v3_t<uie::splitter_window_v2> {
+class TabStackPanel : public uie::container_uie_window_v3_t<uie::splitter_window_v3> {
     using t_self = TabStackPanel;
 
 public:
@@ -18,6 +18,7 @@ public:
     void insert_panel(size_t index, const uie::splitter_item_t* p_item) override;
     void remove_panel(size_t index) noexcept override;
     void replace_panel(size_t index, const uie::splitter_item_t* p_item) override;
+    void reorder_panels(const size_t* order, size_t count) override;
 
     bool is_point_ours(HWND wnd_point, const POINT& pt_screen, pfc::list_base_t<window::ptr>& p_hierarchy) override
     {

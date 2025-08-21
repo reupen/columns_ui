@@ -6,6 +6,23 @@
 
 namespace cui::panels::tab_stack {
 
+namespace {
+
+pfc::string8 get_tab_title(const uie::window::ptr& panel, std::optional<pfc::string8> custom_title)
+{
+    if (custom_title)
+        return *custom_title;
+
+    pfc::string8 name;
+
+    if (!panel->get_short_name(name))
+        panel->get_name(name);
+
+    return name;
+}
+
+} // namespace
+
 // {6F000FC4-3F86-4fc5-80EA-F7AA4D9551E6}
 const GUID g_guid_splitter_tabs = {0x6f000fc4, 0x3f86, 0x4fc5, {0x80, 0xea, 0xf7, 0xaa, 0x4d, 0x95, 0x51, 0xe6}};
 
@@ -700,13 +717,8 @@ void TabStackPanel::refresh_children()
         }
 
         if (p_ext.is_valid() && p_ext->is_available(m_window_host)) {
-            pfc::string8 name;
-            if (panel->m_use_custom_title) {
-                name = panel->m_custom_title;
-            } else {
-                if (!p_ext->get_short_name(name))
-                    p_ext->get_name(name);
-            }
+            const auto tab_title = get_tab_title(
+                p_ext, panel->m_use_custom_title ? std::make_optional(panel->m_custom_title) : std::nullopt);
 
             {
                 if (b_new) {
@@ -751,7 +763,7 @@ void TabStackPanel::refresh_children()
                         continue;
 
                     const auto index = gsl::narrow_cast<int>(std::distance(m_active_panels.begin(), iter));
-                    uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(index), name, is_new_tab);
+                    uTabCtrl_InsertItemText(m_wnd_tabs, gsl::narrow<int>(index), tab_title, is_new_tab);
 
                     MINMAXINFO mmi{};
                     mmi.ptMaxTrackSize.x = MAXLONG;
@@ -834,6 +846,49 @@ void TabStackPanel::replace_panel(size_t index, const uie::splitter_item_t* p_it
         refresh_children();
 }
 
+void TabStackPanel::reorder_panels(const size_t* order, size_t count)
+{
+    if (count != m_panels.size())
+        return;
+
+    m_panels = std::span(order, count) | ranges::views::transform([this](size_t index) { return m_panels[index]; })
+        | ranges::to<std::vector>();
+
+    if (!get_wnd())
+        return;
+
+    const auto active_panel = get_active_panel();
+
+    const std::vector<Panel::Ptr> new_active_panels = m_panels
+        | ranges::views::filter([](auto&& item) { return item->m_wnd != nullptr; }) | ranges::to<std::vector>();
+
+    if (new_active_panels.size() != m_active_panels.size())
+        uBugCheck();
+
+    for (auto&& [index, panel_pair] :
+        ranges::views::enumerate(ranges::views::zip(m_active_panels, new_active_panels))) {
+        const auto& [old_panel, new_panel] = panel_pair;
+
+        if (old_panel == new_panel)
+            continue;
+
+        const auto tab_title = get_tab_title(new_panel->m_child,
+            new_panel->m_use_custom_title ? std::make_optional(new_panel->m_custom_title) : std::nullopt);
+
+        uTCITEM item{};
+        item.mask = TCIF_TEXT;
+        item.pszText = const_cast<char*>(tab_title.get_ptr());
+        uTabCtrl_SetItem(m_wnd_tabs, index, &item);
+    }
+
+    m_active_panels = new_active_panels;
+
+    if (active_panel) {
+        if (const auto iter = ranges::find(m_active_panels, active_panel); iter != m_active_panels.end())
+            TabCtrl_SetCurSel(m_wnd_tabs, std::distance(m_active_panels.begin(), iter));
+    }
+}
+
 void TabStackPanel::remove_panel(size_t index) noexcept
 {
     if (index >= m_panels.size())
@@ -856,6 +911,7 @@ void TabStackPanel::create_tabs()
     // SetWindowTheme(m_wnd_tabs, L"BrowserTab", NULL);
     SendMessage(m_wnd_tabs, WM_SETFONT, (WPARAM)g_font.get(), MAKELPARAM(0, 0));
 }
+
 void TabStackPanel::destroy_tabs()
 {
     DestroyWindow(m_wnd_tabs);
