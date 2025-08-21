@@ -39,6 +39,18 @@ void FlatSplitterPanel::replace_panel(size_t index, const uie::splitter_item_t* 
         refresh_children();
 }
 
+void FlatSplitterPanel::reorder_panels(const size_t* order, size_t count)
+{
+    if (count != m_panels.size())
+        return;
+
+    m_panels = std::span(order, count) | ranges::views::transform([this](size_t index) { return m_panels[index]; })
+        | ranges::to<std::vector>();
+
+    if (get_wnd())
+        on_size_changed();
+}
+
 void FlatSplitterPanel::destroy_children()
 {
     const auto count = m_panels.size();

@@ -61,10 +61,11 @@
 
 - Commands for moving a panel to the previous or next position in its parent
   splitter were added to the live editing context menu.
-  [#1325](https://github.com/reupen/columns_ui/pull/1325)
+  [[#1325](https://github.com/reupen/columns_ui/pull/1325),
+  [#1331](https://github.com/reupen/columns_ui/pull/1331)]
 
 - Some updates were made to pre-existing menu items in the live editing context
-  menu. [#1325](https://github.com/reupen/columns_ui/pull/1325)
+  menu. [[#1325](https://github.com/reupen/columns_ui/pull/1325)]
 
   This includes changes to the labels and position of some menu items and
   indicating the current splitter type in the renamed ‘Splitter type’ submenu.
@@ -72,7 +73,7 @@
 #### Preferences
 
 - Some updates were made to the layout tree context menu in Preferences.
-  [#1311](https://github.com/reupen/columns_ui/pull/1311)
+  [[#1311](https://github.com/reupen/columns_ui/pull/1311)]
 
   This includes changes to the labels and position of some menu items and
   indicating the current splitter type in the renamed ‘Splitter type’ submenu.
